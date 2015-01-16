@@ -1,0 +1,8 @@
+#Inviwo clang-format configuration
+
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 100
+BreakConstructorInitializersBeforeComma: true
+AccessModifierOffset: -4
+#KeepEmptyLinesAtTheStartOfBlocks: true

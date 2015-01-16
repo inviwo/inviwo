@@ -1,0 +1,6 @@
+Rawfile: boron.raw
+Resolution: 150 150 150
+Format: UINT16
+BasisVector1: 5.05970000847 0.0 0.0
+BasisVector2: 0.0 5.63039999861 0.0
+BasisVector3: 0.0 0.0 6.98849999885

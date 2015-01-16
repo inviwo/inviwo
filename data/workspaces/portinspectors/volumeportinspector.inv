@@ -1,0 +1,179 @@
+<?xml version="1.0" ?>
+<InviwoTreeData version="1.0">
+    <!-- Don't edit the following code -->
+    <ProcessorNetworkVersion content="8" />
+    <Processors>
+        <Processor type="org.inviwo.Background" identifier="Background" id="ref1">
+            <Properties>
+                <Property type="org.inviwo.ButtonProperty" identifier="Switch colors" key="Switch colors" />
+                <Property type="org.inviwo.OptionPropertyInt" identifier="backgroundStyle" key="backgroundStyle">
+                    <selectedIdentifier content="checkerBoard" />
+                </Property>
+                <Property type="org.inviwo.IntVec2Property" identifier="checkerBoardSize" key="checkerBoardSize">
+                    <value x="8" y="8" />
+                </Property>
+                <Property type="org.inviwo.FloatVec4Property" identifier="color1" key="color1">
+                    <semantics semantics="Color" />
+                    <value x="1" y="1" z="1" w="1" />
+                </Property>
+                <Property type="org.inviwo.FloatVec4Property" identifier="color2" key="color2">
+                    <semantics semantics="Color" />
+                    <value x="0.80392158" y="0.80392158" z="0.80392158" w="1" />
+                </Property>
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="-600" y="-350" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.CanvasGL" identifier="CanvasGL" id="ref2">
+            <Properties>
+                <Property type="org.inviwo.CompositeProperty" identifier="inputSize" key="inputSize">
+                    <Properties>
+                        <Property type="org.inviwo.FloatProperty" identifier="aspectRatioScaling" key="aspectRatioScaling">
+                            <visible content="0" />
+                        </Property>
+                        <Property type="org.inviwo.IntVec2Property" identifier="customInputDimensions" key="customInputDimensions">
+                            <visible content="0" />
+                            <readonly content="1" />
+                            <value x="128" y="128" />
+                        </Property>
+                        <Property type="org.inviwo.IntVec2Property" identifier="dimensions" key="dimension">
+                            <value x="128" y="128" />
+                        </Property>
+                        <Property type="org.inviwo.BoolProperty" identifier="enableCustomInputDimensions" key="enableCustomInputDimensions" />
+                        <Property type="org.inviwo.BoolProperty" identifier="keepAspectRatio" key="keepAspectRatio">
+                            <visible content="0" />
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.DirectoryProperty" identifier="layerDir" key="layerDir">
+                    <directory content="../../images" />
+                </Property>
+                <Property type="org.inviwo.ButtonProperty" identifier="saveLayer" key="saveLayer" />
+                <Property type="org.inviwo.OptionPropertyInt" identifier="visibleLayer" key="visibleLayer" />
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="-600" y="-275" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+                <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                    <position x="529" y="426" />
+                    <dimensions x="128" y="128" />
+                    <visibility content="1" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+        <Processor type="org.inviwo.VolumeSliceGL" identifier="Volume Slice" id="ref0">
+            <Properties>
+                <Property type="org.inviwo.EventProperty" identifier="gestureShiftSlice" key="gestureShiftSlice">
+                    <visible content="0" />
+                </Property>
+                <Property type="org.inviwo.BoolProperty" identifier="handleEvents" key="handleEvents" />
+                <Property type="org.inviwo.EventProperty" identifier="mouseSetMarker" key="mouseSetMarker" />
+                <Property type="org.inviwo.EventProperty" identifier="mouseShiftSlice" key="mouseShiftSlice">
+                    <visible content="0" />
+                </Property>
+                <Property type="org.inviwo.CompositeProperty" identifier="pickGroup" key="pickGroup">
+                    <Properties>
+                        <Property type="org.inviwo.FloatVec4Property" identifier="indicatorColor" key="indicatorColor">
+                            <semantics semantics="Color" />
+                            <value x="1" y="0.80000001" z="0.098039217" w="0.80000001" />
+                        </Property>
+                        <Property type="org.inviwo.BoolProperty" identifier="posPicking" key="posPicking" />
+                        <Property type="org.inviwo.BoolProperty" identifier="showIndicator" key="showIndicator">
+                            <readonly content="1" />
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.FloatVec3Property" identifier="planeNormal" key="planeNormal">
+                    <readonly content="1" />
+                </Property>
+                <Property type="org.inviwo.FloatProperty" identifier="planeOffset" key="planeOffset">
+                    <readonly content="1" />
+                </Property>
+                <Property type="org.inviwo.OptionPropertyInt" identifier="sliceAxis" key="sliceAxis" />
+                <Property type="org.inviwo.IntProperty" identifier="sliceX" key="sliceX" />
+                <Property type="org.inviwo.IntProperty" identifier="sliceY" key="sliceY">
+                    <readonly content="1" />
+                </Property>
+                <Property type="org.inviwo.IntProperty" identifier="sliceZ" key="sliceZ">
+                    <readonly content="1" />
+                </Property>
+                <Property type="org.inviwo.EventProperty" identifier="stepSliceDown" key="stepSliceDown" />
+                <Property type="org.inviwo.EventProperty" identifier="stepSliceUp" key="stepSliceUp" />
+                <Property type="org.inviwo.CompositeProperty" identifier="tfGroup" key="tfGroup">
+                    <Properties>
+                        <Property type="org.inviwo.FloatProperty" identifier="alphaOffset" key="alphaOffset" />
+                        <Property type="org.inviwo.BoolProperty" identifier="tfMappingEnabled" key="tfMappingEnabled" />
+                        <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" key="transferFunction">
+                            <MetaDataMap>
+                                <MetaDataItem type="org.inviwo.PropertyEditorWidgetMetaData" key="org.inviwo.PropertyEditorWidgetMetaData">
+                                    <position x="0" y="0" />
+                                    <dimensions x="256" y="256" />
+                                    <visibility content="0" />
+                                    <dockstatus content="Floating" />
+                                </MetaDataItem>
+                            </MetaDataMap>
+                            <transferFunction>
+                                <maskMin content="0" />
+                                <maskMax content="1" />
+                                <dataPoints>
+                                    <point>
+                                        <pos x="0" y="1" />
+                                        <rgba x="0" y="0" z="0" w="1" />
+                                    </point>
+                                    <point>
+                                        <pos x="1" y="1" />
+                                        <rgba x="1" y="1" z="1" w="1" />
+                                    </point>
+                                </dataPoints>
+                                <interpolationType_ content="0" />
+                            </transferFunction>
+                        </Property>
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.CompositeProperty" identifier="trafoGroup" key="trafoGroup">
+                    <Properties>
+                        <Property type="org.inviwo.BoolProperty" identifier="flipHorizontal" key="flipHorizontal" />
+                        <Property type="org.inviwo.BoolProperty" identifier="flipVertical" key="flipVertical" />
+                        <Property type="org.inviwo.OptionPropertyFloat" identifier="rotation" key="rotation" />
+                        <Property type="org.inviwo.OptionPropertyInt" identifier="volumeWrapping" key="volumeWrapping" />
+                    </Properties>
+                </Property>
+                <Property type="org.inviwo.FloatVec3Property" identifier="worldPosition_" key="worldPosition_" />
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="-600" y="-425" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
+    </Processors>
+    <Connections>
+        <Connection>
+            <OutPort identifier="outport">
+                <Processor type="org.inviwo.Background" identifier="Background" reference="ref1" />
+            </OutPort>
+            <InPort identifier="inport">
+                <Processor type="org.inviwo.CanvasGL" identifier="CanvasGL" reference="ref2" />
+            </InPort>
+        </Connection>
+        <Connection>
+            <OutPort identifier="image.outport">
+                <Processor type="org.inviwo.VolumeSliceGL" identifier="Volume Slice" reference="ref0" />
+            </OutPort>
+            <InPort identifier="inport">
+                <Processor type="org.inviwo.Background" identifier="Background" reference="ref1" />
+            </InPort>
+        </Connection>
+    </Connections>
+    <PropertyLinks />
+</InviwoTreeData>

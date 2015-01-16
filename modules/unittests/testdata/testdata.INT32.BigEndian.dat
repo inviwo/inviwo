@@ -1,0 +1,4 @@
+ObjectFileName:	testdata.INT32.BigEndian.raw
+Resolution:	16 16 16
+Format:	INT32
+ByteOrder:	BigEndian

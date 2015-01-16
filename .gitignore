@@ -1,0 +1,5 @@
+include/inviwo/core/common/inviwocommondefines.h
+inviwo-log.html
+**/.DS_Store
+tools/doxygen/doc
+tools/doxygen/doc-qt

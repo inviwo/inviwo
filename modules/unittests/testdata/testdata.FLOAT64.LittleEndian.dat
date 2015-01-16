@@ -1,0 +1,4 @@
+ObjectFileName:	testdata.FLOAT64.LittleEndian.raw
+Resolution:	16 16 16
+Format:	FLOAT64
+ByteOrder:	LittleEndian

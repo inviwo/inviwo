@@ -1,0 +1,4 @@
+ObjectFileName:	testdata.FLOAT32.BigEndian.raw
+Resolution:	16 16 16
+Format:	FLOAT32
+ByteOrder:	BigEndian

@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<InviwoTreeData version="1.0">
+    <!-- Don't edit the following code -->
+    <RawFile content="testdata.INT64.BigEndian.raw" />
+    <Format content="INT64" />
+    <BasisAndOffset>
+        <row0 x="2" y="0" z="0" w="0" />
+        <row1 x="0" y="2" z="0" w="0" />
+        <row2 x="0" y="0" z="2" w="0" />
+        <row3 x="-1" y="-1" z="-1" w="1" />
+    </BasisAndOffset>
+    <WorldTransform>
+        <row0 x="1" y="0" z="0" w="0" />
+        <row1 x="0" y="1" z="0" w="0" />
+        <row2 x="0" y="0" z="1" w="0" />
+        <row3 x="0" y="0" z="0" w="1" />
+    </WorldTransform>
+    <Dimension x="16" y="16" z="16" />
+    <MetaDataMap>
+        <MetaDataItem type="org.inviwo.BoolMetaData" key="LittleEndian">
+            <MetaData content="0" />
+        </MetaDataItem>
+    </MetaDataMap>
+</InviwoTreeData>

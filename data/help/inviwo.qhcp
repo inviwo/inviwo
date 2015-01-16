@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+    <docFiles>
+        <register>
+			<file>inviwo.qch</file>
+        </register>
+    </docFiles>
+</QHelpCollectionProject>

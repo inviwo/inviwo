@@ -1,0 +1,56 @@
+<!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+    <file>icons/about.png</file>
+    <file>icons/arrow_left.png</file>
+    <file>icons/arrow_right.png</file>
+    <file>icons/arrow_bidirectional.png</file>
+    <file>icons/button_cancel.png</file>
+    <file>icons/button_ok.png</file>
+    <file>icons/edit.png</file>
+    <file>icons/text_block.png</file>
+    <file>icons/html.png</file>
+    <file>icons/inviwo_light.png</file>
+    <file>icons/inviwo_dark.png</file>
+	<file>icons/edit-undo-icon.png</file>
+    <file>icons/inviwo_tmp.png</file>
+    <file>icons/linkarrow_left.png</file>
+    <file>icons/linkarrow_right.png</file>
+    <file>icons/linkarrow_bidirectional.png</file>
+    <file>icons/new.png</file>
+    <file>icons/network.png</file>
+    <file>icons/ok.png</file>
+    <file>icons/open.png</file>
+    <file>icons/player_record.png</file>
+    <file>icons/player_stop.png</file>
+    <file>icons/processor_broken.png</file>
+    <file>icons/processor_experimental.png</file>
+    <file>icons/processor_stable.png</file>
+    <file>icons/python.png</file>
+    <file>icons/save.png</file>
+    <file>icons/saveas.png</file>
+	<file>icons/stopwatch.png</file>
+    <file>icons/view-application.png</file>
+    <file>icons/view-developer.png</file>
+    <file>icons/view_choose.png</file>
+    <file>icons/view_statistics.png</file>
+    <file>icons/wallet_open.png</file>
+    
+    <file>icons/info.png</file>
+    <file>icons/warning.png</file>
+    <file>icons/error.png</file>
+
+    <file>images/splashscreen.png</file>
+
+    <file>stylesheets/inviwo.qss</file>
+    <file>stylesheets/images/arrow_down.png</file>
+    <file>stylesheets/images/arrow_up.png</file>
+    <file>stylesheets/images/arrow_darker_down.png</file>
+    <file>stylesheets/images/arrow_darker_right.png</file>
+    <file>stylesheets/images/circle.png</file>
+    <file>stylesheets/images/circle_disabled.png</file>
+    <file>stylesheets/images/circle_gray.png</file>
+    <file>stylesheets/images/circle_gray_disabled.png</file>
+    <file>stylesheets/images/close.png</file>
+    <file>stylesheets/images/undock.png</file>
+ </qresource>
+ </RCC>

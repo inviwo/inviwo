@@ -1,0 +1,4 @@
+ObjectFileName:	testdata.UINT8.LittleEndian.raw
+Resolution:	16 16 16
+Format:	UINT8
+ByteOrder:	LittleEndian

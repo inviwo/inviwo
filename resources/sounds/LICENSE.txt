@@ -1,0 +1,5 @@
+These sound files are taken from the SoundBible archive. The used sounds have been provided under the Attribution 3.0 license.
+
+error.wav: Original Title: Computer Error Alert, Uploaded: 09.11.10 | License: Attribution 3.0 | Recorded by Mike Koenig
+
+ok.wav: Original Title: Computer Error, Uploaded: 10.25.09 | License: Attribution 3.0 | Recorded by Mike Koenig
