@@ -85,6 +85,12 @@ ProcessorNetwork::~ProcessorNetwork() {
 
 void ProcessorNetwork::addProcessor(Processor* processor) {
     lock();
+
+    Tags processorTags = processor->getTags();
+    for (int i=0; i < processorTags.tags_.size(); i++)
+        if(processorTags.tags_[i].getString() == "GL")
+            return;
+
     notifyObserversProcessorNetworkWillAddProcessor(processor);
     processors_[processor->getIdentifier()] = processor;
     processor->ProcessorObservable::addObserver(this);

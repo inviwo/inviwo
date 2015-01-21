@@ -43,7 +43,6 @@
 
 namespace inviwo {
 
-bool CanvasGL::glewInitialized_ = false;
 const MeshGL* CanvasGL::screenAlignedRectGL_ = NULL;
 
 CanvasGL::CanvasGL(uvec2 dimensions)
@@ -61,6 +60,8 @@ CanvasGL::~CanvasGL() {
 }
 
 void CanvasGL::initialize() {
+    NO_SUPPORTED_GL_THEN_RETURN
+
     defaultGLState();
     shader_ = new Shader("img_texturequad.vert", "img_texturequad.frag");
     LGL_ERROR;
@@ -69,20 +70,9 @@ void CanvasGL::initialize() {
     Canvas::initialize();
 }
 
-void CanvasGL::initializeGLEW() {
-    if (!glewInitialized_) {
-        std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
-        if (preferProfile == "core") glewExperimental = GL_TRUE;
-        GLenum glewError = glewInit();
-        if (GLEW_OK != glewError) {
-            LogError(glewGetErrorString(glewError));
-        }
-        LGL_ERROR_SUPPRESS;
-        glewInitialized_ = true;
-    }
-}
-
 void CanvasGL::initializeSquare() {
+    NO_SUPPORTED_GL_THEN_RETURN
+
     const Mesh* screenAlignedRectMesh = dynamic_cast<const Mesh*>(screenAlignedRect_);
 
     if (screenAlignedRectMesh) {
@@ -104,6 +94,7 @@ void CanvasGL::deinitialize() {
 }
 
 void CanvasGL::defaultGLState(){
+    NO_SUPPORTED_GL_THEN_RETURN
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearDepth(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

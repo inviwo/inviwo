@@ -99,7 +99,7 @@ void CanvasGLFW::initializeGL() {
     
     activate();
 
-    initializeGLEW();
+    OpenGLCapabilities::initializeGLEW();
 }
 
 void CanvasGLFW::initializeSquare() {

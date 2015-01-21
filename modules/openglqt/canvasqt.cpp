@@ -212,7 +212,7 @@ void CanvasQt::activate() {
 }
 
 void CanvasQt::initializeGL() {
-    initializeGLEW();
+    OpenGLCapabilities::initializeGLEW();
 #ifndef USE_QWINDOW
     QGLWindow::initializeGL();
     activate();
