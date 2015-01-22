@@ -672,6 +672,13 @@ void LinkDialogGraphicsScene::initScene(Processor* srcProcessor,
 void LinkDialogGraphicsScene::clearSceneRepresentations() {
     srcProcessorGraphicsItem_ = NULL;
     dstProcessorGraphicsItem_ = NULL;
+
+    for(size_t i = 0; i<connectionGraphicsItems_.size(); ++i)
+        connectionGraphicsItems_[i]->cleanup();
+
+    for(size_t i = 0; i<currentConnectionGraphicsItems_.size(); ++i)
+        currentConnectionGraphicsItems_[i]->cleanup();
+   
     connectionGraphicsItems_.clear();
     currentConnectionGraphicsItems_.clear();
     propertyGraphicsItemCache_.clear();

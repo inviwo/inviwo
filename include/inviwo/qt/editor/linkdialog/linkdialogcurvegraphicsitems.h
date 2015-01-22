@@ -92,9 +92,11 @@ public:
     size_t getEndArrowHeadIndex() { return endArrowHeadIndex_;}
     void updateStartEndPoint();
     void updateConnectionDrawing();
+    void cleanup();
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
+    
 
 private:
     LinkDialogPropertyGraphicsItem* startPropertyGraphicsItem_;

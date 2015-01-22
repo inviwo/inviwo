@@ -77,12 +77,20 @@ DialogConnectionGraphicsItem::DialogConnectionGraphicsItem(
     setEndArrowHeadIndex(endPropertyGraphicsItem_->getConnectionGraphicsItemCount());
 }
 
-DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() {
-    propertyLink_ = NULL;
-    if (startPropertyGraphicsItem_)
+DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() {    
+    cleanup();
+}
+
+void DialogConnectionGraphicsItem::cleanup() { 
+    if (startPropertyGraphicsItem_) {
         startPropertyGraphicsItem_->removeConnectionGraphicsItem(this);
-    if (endPropertyGraphicsItem_)
+        startPropertyGraphicsItem_ = NULL;
+    }
+    if (endPropertyGraphicsItem_) {
         endPropertyGraphicsItem_->removeConnectionGraphicsItem(this);
+        endPropertyGraphicsItem_ = NULL;
+    }
+    propertyLink_ = NULL;
 }
 
 void DialogConnectionGraphicsItem::updateStartEndPoint() {
