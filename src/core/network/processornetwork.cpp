@@ -83,13 +83,13 @@ ProcessorNetwork::~ProcessorNetwork() {
     delete linkEvaluator_;
 }
 
-void ProcessorNetwork::addProcessor(Processor* processor) {
+bool ProcessorNetwork::addProcessor(Processor* processor) {
     lock();
 
     Tags processorTags = processor->getTags();
     for (int i=0; i < processorTags.tags_.size(); i++)
         if(processorTags.tags_[i].getString() == "GL")
-            return;
+            return false;
 
     notifyObserversProcessorNetworkWillAddProcessor(processor);
     processors_[processor->getIdentifier()] = processor;
@@ -98,6 +98,7 @@ void ProcessorNetwork::addProcessor(Processor* processor) {
     modified();
     notifyObserversProcessorNetworkDidAddProcessor(processor);
     unlock();
+    return true;
 }
 
 void ProcessorNetwork::removeProcessor(Processor* processor) {
@@ -706,8 +707,8 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     }
 
     // Processors
+    ProcessorVector processors;
     try {
-        ProcessorVector processors;
         d.deserialize("Processors", processors, "Processor");
         for (size_t i = 0; i < processors.size(); ++i) {
             if (processors[i]) {
@@ -729,12 +730,35 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
         std::vector<PortConnection*> portConnections;
         d.deserialize("Connections", portConnections, "Connection");
 
+        processors = getProcessors();
+
         for (size_t i = 0; i < portConnections.size(); i++) {
             if (portConnections[i]) {
                 Outport* outPort = portConnections[i]->getOutport();
                 Inport* inPort = portConnections[i]->getInport();
 
-                if (!(outPort && inPort && addConnection(outPort, inPort))) {
+                if (!(outPort && inPort)) {
+                    LogWarn("Unable to establish port connection, one port did not exists.");
+                    delete portConnections[i];
+                    continue;
+                }
+
+                bool inPortProceesorFound = false;
+                bool outPortProceesorFound = false;
+                for (size_t p = 0; p < processors.size(); p++) {
+                    if(inPort->getProcessor() == processors[p])
+                        inPortProceesorFound = true;
+                    else if(outPort->getProcessor() == processors[p])
+                        outPortProceesorFound = true;
+                }
+
+                if (!(inPortProceesorFound && outPortProceesorFound)) {
+                    LogWarn("Unable to establish port connection, port was owned by non-existing processor");
+                    delete portConnections[i];
+                    continue;
+                }
+
+                if (!(addConnection(outPort, inPort))) {
                     LogWarn("Unable to establish port connection.");
                 }
 

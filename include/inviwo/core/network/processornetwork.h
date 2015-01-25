@@ -101,7 +101,7 @@ public:
      * @param[in] processor The Processor to be added.
      * @see removeProcessor(), Processor::setIdentifier()
      */
-    void addProcessor(Processor* processor);
+    bool addProcessor(Processor* processor);
 
     /**
      * Removes a Processor from the ProcessorNetwork. To ensure that the network does not end up
