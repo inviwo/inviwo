@@ -292,4 +292,14 @@ std::vector<Settings*> InviwoApplication::getModuleSettings(size_t startIdx) {
     return allModuleSettings;
 }
 
+void InviwoApplication::addNonSupportedTags(const Tags t){
+    for (int i=0; i < t.tags_.size(); i++){
+        nonSupportedTags_.addTag(t.tags_[i]);
+    }
+}
+
+bool InviwoApplication::checkIfAllTagsAreSupported(const Tags t) const{
+    return (nonSupportedTags_.getMatches(t) == 0);
+}
+
 } // namespace

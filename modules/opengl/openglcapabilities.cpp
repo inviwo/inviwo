@@ -230,7 +230,7 @@ void OpenGLCapabilities::initializeGLEW() {
     if (!hasSupportedOpenGLVersion()) {
         std::string preferProfile = getPreferredProfile();
         if (preferProfile == "core") glewExperimental = GL_TRUE;
-        GLenum glewError = 1;//glewInit();
+        GLenum glewError = glewInit();
         if (GLEW_OK != glewError) {
             LogErrorCustom("OpenGLInfo", glewGetErrorString(glewError));
         }
@@ -241,6 +241,9 @@ void OpenGLCapabilities::initializeGLEW() {
         }
         LGL_ERROR_SUPPRESS;
         glewInitialized_ = true;
+
+        if(!hasSupportedOpenGLVersion())
+            InviwoApplication::getPtr()->addNonSupportedTags(Tags::GL);
     }
 }
 

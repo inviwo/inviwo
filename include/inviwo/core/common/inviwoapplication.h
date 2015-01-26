@@ -143,6 +143,9 @@ public:
 
     std::vector<Settings*> getModuleSettings(size_t startIdx = 0);
 
+    void addNonSupportedTags(const Tags);
+    bool checkIfAllTagsAreSupported(const Tags) const;
+
 protected:
     void printApplicationInfo();
 
@@ -158,6 +161,8 @@ private:
     ProcessorNetworkEvaluator* processorNetworkEvaluator_;
 
     CommandLineParser* commandLineParser_;
+
+    Tags nonSupportedTags_;
 
     bool initialized_;
 

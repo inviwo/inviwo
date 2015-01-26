@@ -78,7 +78,11 @@ public:
 
     virtual ~Tags(){}
 
+    void addTag(Tag);
+
     std::string getString() const;
+
+    int getMatches(const Tags&) const; 
 
     friend std::ostream& operator << (std::ostream& os, const inviwo::Tags& obj);
     friend bool operator==(const Tags& lhs, const Tags& rhs);

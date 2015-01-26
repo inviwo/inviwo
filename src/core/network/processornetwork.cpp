@@ -86,10 +86,10 @@ ProcessorNetwork::~ProcessorNetwork() {
 bool ProcessorNetwork::addProcessor(Processor* processor) {
     lock();
 
-    Tags processorTags = processor->getTags();
-    for (int i=0; i < processorTags.tags_.size(); i++)
-        if(processorTags.tags_[i].getString() == "GL")
-            return false;
+    if(!InviwoApplication::getPtr()->checkIfAllTagsAreSupported(processor->getTags())){
+        LogWarn("Processor '" << processor->getDisplayName() << "' was considered as not supported by the application.");
+        return false;
+    }
 
     notifyObserversProcessorNetworkWillAddProcessor(processor);
     processors_[processor->getIdentifier()] = processor;
@@ -738,28 +738,28 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
                 Inport* inPort = portConnections[i]->getInport();
 
                 if (!(outPort && inPort)) {
-                    LogWarn("Unable to establish port connection, one port did not exists.");
+                    LogWarn("Unable to establish port connectionNr." << i << " , one port did not exists.");
                     delete portConnections[i];
                     continue;
                 }
 
-                bool inPortProceesorFound = false;
-                bool outPortProceesorFound = false;
+                bool inPortProcessorFound = false;
+                bool outPortProcessorFound = false;
                 for (size_t p = 0; p < processors.size(); p++) {
                     if(inPort->getProcessor() == processors[p])
-                        inPortProceesorFound = true;
+                        inPortProcessorFound = true;
                     else if(outPort->getProcessor() == processors[p])
-                        outPortProceesorFound = true;
+                        outPortProcessorFound = true;
                 }
 
-                if (!(inPortProceesorFound && outPortProceesorFound)) {
-                    LogWarn("Unable to establish port connection, port was owned by non-existing processor");
+                if (!(inPortProcessorFound && outPortProcessorFound)) {
+                    LogWarn("Unable to establish port connection Nr." << i << " , port was owned by non-existing processor");
                     delete portConnections[i];
                     continue;
                 }
 
                 if (!(addConnection(outPort, inPort))) {
-                    LogWarn("Unable to establish port connection.");
+                    LogWarn("Unable to establish port connection Nr." << i);
                 }
 
                 delete portConnections[i];
@@ -780,11 +780,38 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
         d.deserialize("PropertyLinks", propertyLinks, "PropertyLink");
 
         for (size_t j = 0; j < propertyLinks.size(); j++) {
-            if (propertyLinks[j]->getSourceProperty() &&
-                propertyLinks[j]->getDestinationProperty()) {
-                addLink(propertyLinks[j]->getSourceProperty(),
-                        propertyLinks[j]->getDestinationProperty());
+            if (propertyLinks[j]) {
+                Property* srcProperty = propertyLinks[j]->getSourceProperty();
+                Property* destProperty = propertyLinks[j]->getDestinationProperty();
+
+                if (!(srcProperty && destProperty)) {
+                    LogWarn("Unable to establish property linking Nr: " << j << " , one property did not exists.");
+                    delete propertyLinks[j];
+                    continue;
+                }
+
+                bool srcPropertyProcessorFound = false;
+                bool destPropertyProcessorFound = false;
+                for (size_t p = 0; p < processors.size(); p++) {
+                    if(srcProperty->getOwner()->getProcessor() == processors[p])
+                        srcPropertyProcessorFound = true;
+                    else if(destProperty->getOwner()->getProcessor() == processors[p])
+                        destPropertyProcessorFound = true;
+                }
+
+                if (!(srcPropertyProcessorFound && destPropertyProcessorFound)) {
+                    LogWarn("Unable to establish property link Nr: " << j << " connection, property was owned by non-existing processor");
+                    delete propertyLinks[j];
+                    continue;
+                }
+
+                if (!(addLink(propertyLinks[j]->getSourceProperty(),
+                    propertyLinks[j]->getDestinationProperty()))) {
+                        LogWarn("Unable to establish property link Nr: " << j);
+                }
+
                 delete propertyLinks[j];
+
             } else {
                 LogWarn("Unable to establish property link Nr: " << j);
             }
