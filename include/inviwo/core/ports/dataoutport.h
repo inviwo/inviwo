@@ -100,7 +100,9 @@ void DataOutport<T>::deinitialize() {}
 
 template <typename T>
 T* DataOutport<T>::getData() {
-    ivwAssert(ownsData_, "Port does not own data, so can not return writable data.");
+    if (data_) {
+        ivwAssert(ownsData_, "Port does not own data, so can not return writable data.");
+    }
 
     if(isSequence_)
         return static_cast<DataSequence<T>*>(data_)->getCurrent();
@@ -110,7 +112,9 @@ T* DataOutport<T>::getData() {
 
 template <typename T>
 DataSequence<T>* DataOutport<T>::getDataSequence() {
-    ivwAssert(ownsData_, "Port does not own data, so can not return writable data.");
+    if (data_) {
+        ivwAssert(ownsData_, "Port does not own data, so can not return writable data.");
+    }
 
     if(isSequence_)
         return static_cast<DataSequence<T>*>(data_);
