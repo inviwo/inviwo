@@ -40,8 +40,10 @@
 
 namespace inviwo {
 
+bool OpenGLCapabilities::glewInitialized_ = false;
 std::string OpenGLCapabilities::preferredProfile_ = "core";
 int OpenGLCapabilities::glVersion_ = 0;
+std::string OpenGLCapabilities::glVersionStr_ = "0";
 
 #define OpenGLInfoNotFound(message) { LogInfoCustom("OpenGLInfo",message << " Info could not be retrieved"); }
 
@@ -216,6 +218,35 @@ int OpenGLCapabilities::getOpenGLVersion(){
     return glVersion_;
 }
 
+bool OpenGLCapabilities::hasSupportedOpenGLVersion(){
+    return (glVersion_ >= 320);
+}
+
+bool OpenGLCapabilities::hasOpenGLVersion(){
+    return (glVersion_ > 0);
+}
+
+void OpenGLCapabilities::initializeGLEW() {
+    if (!hasSupportedOpenGLVersion()) {
+        std::string preferProfile = getPreferredProfile();
+        if (preferProfile == "core") glewExperimental = GL_TRUE;
+        GLenum glewError = glewInit();
+        if (GLEW_OK != glewError) {
+            LogErrorCustom("OpenGLInfo", glewGetErrorString(glewError));
+        }
+        else{
+            const GLubyte* glversion = glGetString(GL_VERSION);
+            glVersionStr_ = std::string((glversion!=NULL ? reinterpret_cast<const char*>(glversion) : "INVALID"));
+            glVersion_ = parseAndRetrieveVersion(glVersionStr_);
+        }
+        LGL_ERROR_SUPPRESS;
+        glewInitialized_ = true;
+
+        if(!hasSupportedOpenGLVersion())
+            InviwoApplication::getPtr()->addNonSupportedTags(Tags::GL);
+    }
+}
+
 bool OpenGLCapabilities::isExtensionSupported(const char* name) {
     return (glewIsExtensionSupported(name) != '0');
 }
@@ -278,6 +309,9 @@ std::string OpenGLCapabilities::getCurrentGlobalGLSLFragmentDefines() {
 
 glm::u64 OpenGLCapabilities::getCurrentAvailableTextureMem() throw (Exception) {
     glm::u64 currentAvailableTexMeminBytes = 0;
+
+    if(!OpenGLCapabilities::hasOpenGLVersion()) 
+        return currentAvailableTexMeminBytes;
 
     try {
         GLint nCurAvailMemoryInKB[4] = {0};
@@ -399,7 +433,8 @@ bool OpenGLCapabilities::setPreferredProfile(std::string profile, bool showMessa
 }
 
 void OpenGLCapabilities::retrieveStaticInfo() {
-    //GL
+    NO_GL_THEN_RETURN
+
     const GLubyte* vendor = glGetString(GL_VENDOR);
     glVendorStr_ = std::string((vendor!=NULL ? reinterpret_cast<const char*>(vendor) : "INVALID"));
 
@@ -414,9 +449,6 @@ void OpenGLCapabilities::retrieveStaticInfo() {
 
     const GLubyte* glrender = glGetString(GL_RENDERER);
     glRenderStr_ = std::string((glrender!=NULL ? reinterpret_cast<const char*>(glrender) : "INVALID"));
-    const GLubyte* glversion = glGetString(GL_VERSION);
-    glVersionStr_ = std::string((glversion!=NULL ? reinterpret_cast<const char*>(glversion) : "INVALID"));
-    glVersion_ = parseAndRetrieveVersion(glVersionStr_);
     //GLSL
     shadersAreSupported_ = (glVersion_ >= 200);
     shadersAreSupportedARB_ = isExtensionSupported("GL_EXT_ARB_fragment_program");

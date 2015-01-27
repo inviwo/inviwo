@@ -83,8 +83,14 @@ ProcessorNetwork::~ProcessorNetwork() {
     delete linkEvaluator_;
 }
 
-void ProcessorNetwork::addProcessor(Processor* processor) {
+bool ProcessorNetwork::addProcessor(Processor* processor) {
     lock();
+
+    if(!InviwoApplication::getPtr()->checkIfAllTagsAreSupported(processor->getTags())){
+        LogWarn("Processor '" << processor->getDisplayName() << "' was considered as not supported by the application.");
+        return false;
+    }
+
     notifyObserversProcessorNetworkWillAddProcessor(processor);
     processors_[processor->getIdentifier()] = processor;
     processor->ProcessorObservable::addObserver(this);
@@ -92,6 +98,7 @@ void ProcessorNetwork::addProcessor(Processor* processor) {
     modified();
     notifyObserversProcessorNetworkDidAddProcessor(processor);
     unlock();
+    return true;
 }
 
 void ProcessorNetwork::removeProcessor(Processor* processor) {
@@ -700,8 +707,8 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     }
 
     // Processors
+    ProcessorVector processors;
     try {
-        ProcessorVector processors;
         d.deserialize("Processors", processors, "Processor");
         for (size_t i = 0; i < processors.size(); ++i) {
             if (processors[i]) {
@@ -723,13 +730,36 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
         std::vector<PortConnection*> portConnections;
         d.deserialize("Connections", portConnections, "Connection");
 
+        processors = getProcessors();
+
         for (size_t i = 0; i < portConnections.size(); i++) {
             if (portConnections[i]) {
                 Outport* outPort = portConnections[i]->getOutport();
                 Inport* inPort = portConnections[i]->getInport();
 
-                if (!(outPort && inPort && addConnection(outPort, inPort))) {
-                    LogWarn("Unable to establish port connection.");
+                if (!(outPort && inPort)) {
+                    LogWarn("Unable to establish port connectionNr." << i << " , one port did not exists.");
+                    delete portConnections[i];
+                    continue;
+                }
+
+                bool inPortProcessorFound = false;
+                bool outPortProcessorFound = false;
+                for (size_t p = 0; p < processors.size(); p++) {
+                    if(inPort->getProcessor() == processors[p])
+                        inPortProcessorFound = true;
+                    else if(outPort->getProcessor() == processors[p])
+                        outPortProcessorFound = true;
+                }
+
+                if (!(inPortProcessorFound && outPortProcessorFound)) {
+                    LogWarn("Unable to establish port connection Nr." << i << " , port was owned by non-existing processor");
+                    delete portConnections[i];
+                    continue;
+                }
+
+                if (!(addConnection(outPort, inPort))) {
+                    LogWarn("Unable to establish port connection Nr." << i);
                 }
 
                 delete portConnections[i];
@@ -750,11 +780,38 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
         d.deserialize("PropertyLinks", propertyLinks, "PropertyLink");
 
         for (size_t j = 0; j < propertyLinks.size(); j++) {
-            if (propertyLinks[j]->getSourceProperty() &&
-                propertyLinks[j]->getDestinationProperty()) {
-                addLink(propertyLinks[j]->getSourceProperty(),
-                        propertyLinks[j]->getDestinationProperty());
+            if (propertyLinks[j]) {
+                Property* srcProperty = propertyLinks[j]->getSourceProperty();
+                Property* destProperty = propertyLinks[j]->getDestinationProperty();
+
+                if (!(srcProperty && destProperty)) {
+                    LogWarn("Unable to establish property linking Nr: " << j << " , one property did not exists.");
+                    delete propertyLinks[j];
+                    continue;
+                }
+
+                bool srcPropertyProcessorFound = false;
+                bool destPropertyProcessorFound = false;
+                for (size_t p = 0; p < processors.size(); p++) {
+                    if(srcProperty->getOwner()->getProcessor() == processors[p])
+                        srcPropertyProcessorFound = true;
+                    else if(destProperty->getOwner()->getProcessor() == processors[p])
+                        destPropertyProcessorFound = true;
+                }
+
+                if (!(srcPropertyProcessorFound && destPropertyProcessorFound)) {
+                    LogWarn("Unable to establish property link Nr: " << j << " connection, property was owned by non-existing processor");
+                    delete propertyLinks[j];
+                    continue;
+                }
+
+                if (!(addLink(propertyLinks[j]->getSourceProperty(),
+                    propertyLinks[j]->getDestinationProperty()))) {
+                        LogWarn("Unable to establish property link Nr: " << j);
+                }
+
                 delete propertyLinks[j];
+
             } else {
                 LogWarn("Unable to establish property link Nr: " << j);
             }

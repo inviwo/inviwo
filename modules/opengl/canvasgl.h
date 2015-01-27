@@ -79,7 +79,6 @@ public:
     virtual void setProcessorWidgetOwner(ProcessorWidget*);
 
 protected:
-    void initializeGLEW();
     virtual void initializeSquare();
 
     void renderLayer();
@@ -96,8 +95,6 @@ protected:
     const Image* image_;
 
 private:
-
-    static bool glewInitialized_;
     static const MeshGL* screenAlignedRectGL_;
 
     BufferObjectArray* rectArray_;

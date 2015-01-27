@@ -36,6 +36,9 @@
 
 namespace inviwo {
 
+#define NO_GL_THEN_RETURN if(!OpenGLCapabilities::hasOpenGLVersion()) return;
+#define NO_SUPPORTED_GL_THEN_RETURN if(!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
+
 class IVW_MODULE_OPENGL_API OpenGLCapabilities : public Capabilities  {
 public:
     class IVW_MODULE_OPENGL_API GLSLShaderVersion {
@@ -74,6 +77,13 @@ public:
     uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes, glm::u8 percentageOfAvailableMemory = 100);
 
     static int getOpenGLVersion();
+
+    // Minimal support is OpenGL 3.2 at the moment
+    static bool hasSupportedOpenGLVersion();
+
+    static bool hasOpenGLVersion();
+
+    static void initializeGLEW();
 
     static bool isExtensionSupported(const char*);
     static bool isSupported(const char*);
@@ -115,17 +125,19 @@ protected:
     void addShaderVersion(GLSLShaderVersion);
     void addShaderVersionIfEqualOrLower(GLSLShaderVersion, int);
     void parseAndAddShaderVersion(std::string, int);
-    int parseAndRetrieveVersion(std::string);
+    
+    static int parseAndRetrieveVersion(std::string);
 
 private:
+    static bool glewInitialized_;
     static std::string preferredProfile_;
     static int glVersion_;
+    static std::string glVersionStr_;
 
     GlVendor glVendor_;
 
     std::string glVendorStr_;
     std::string glRenderStr_;
-    std::string glVersionStr_;
     std::string glslVersionStr_;
 
     //GLSL
