@@ -32,6 +32,7 @@
 #define IVW_UTILCL_H
 
 #include <modules/opencl/openclmoduledefine.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
 
 namespace inviwo {
 
