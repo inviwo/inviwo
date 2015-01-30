@@ -37,7 +37,11 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
+
+
 
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/image/layerclbase.h>
@@ -96,6 +100,9 @@ private:
     IntVec2Property workGroupSize_;
 
     BoolProperty useGLSharing_;
+
+    SimpleLightingProperty lighting_;
+    CameraProperty camera_;
 
     VolumeRaycasterCL volumeRaycaster_;
 };

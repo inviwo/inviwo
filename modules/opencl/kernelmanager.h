@@ -88,6 +88,7 @@ public:
      */
     cl::Kernel* getKernel(cl::Program* program, const std::string& kernelName, KernelOwner* owner);
 
+    void stopObservingKernel(cl::Kernel*, KernelOwner* owner);
     void stopObservingKernels(KernelOwner* owner);
 
     /**

@@ -134,7 +134,7 @@ void KernelManager::fileChanged(std::string fileName) {
         }
 
         try {
-            LogInfo(fileName + " building program");
+            LogInfo(fileName + " building program with defines: " + programIt->second.defines);
             *program = OpenCL::buildProgram(fileName, programIt->second.defines);
             LogInfo(fileName + " finished building program");
             std::vector<cl::Kernel> newKernels;
@@ -178,18 +178,6 @@ void KernelManager::fileChanged(std::string fileName) {
 
             std::vector<Processor*> processors = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
 
-            //for (size_t i=0; i<processors.size(); i++) {
-            //    KernelOwner* processor = dynamic_cast<KernelOwner*>(processors[i]);
-            //    if (processor) {
-            //        // See if this processor has any of the kernels
-            //        for (std::vector<cl::Kernel>::iterator newKernelIt = newKernels.begin(); newKernelIt != newKernels.end(); ++newKernelIt) {
-            //            if (std::find(processor->getKernels().begin(), processor->getKernels().end(), &(*newKernelIt)) != processor->getKernels().end()) {
-            //                processor->onKernelCompiled(&(*newKernelIt));
-            //            }
-            //        }
-            //    }
-            //    //processors[i]->invalidate(INVALID_RESOURCES);
-            //}
         } catch (cl::Error& err) {
             LogError(fileName << " Failed to create kernels, error:" << err.what() << "(" << err.err() << "), " << errorCodeToString(
                          err.err()) << std::endl);
@@ -213,6 +201,16 @@ void KernelManager::clear() {
         programIt->second.program = NULL;
     }
     kernelOwners_.clear();
+}
+
+void KernelManager::stopObservingKernel(cl::Kernel* kernel, KernelOwner* owner) {
+    std::pair<KernelOwnerMap::iterator, KernelOwnerMap::iterator> startEnd = kernelOwners_.equal_range(kernel);
+    for (KernelOwnerMap::iterator it = startEnd.first; it != startEnd.second; ++it) {
+        if (it->second == owner) {
+            kernelOwners_.erase(it);
+            return;
+        }
+    }
 }
 
 void KernelManager::stopObservingKernels( KernelOwner* owner ) {

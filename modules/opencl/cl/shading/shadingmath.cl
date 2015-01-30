@@ -110,6 +110,13 @@ float3 faceForward( const float3 N, const float3 I )
   return dot(N, I) < 0 ? N : -N;
 }
 
+// I Incident vector
+// N Normal vector
+// Returns the reflection direction calculated as I - 2.0 * dot(N, I) * N
+float3 reflect( float3 I, float3 N) {
+    return I - 2.f*dot(N, I)*N;
+}
+
 
 bool sameHemisphere(const float3 wo, const float3 wi) {
     return wo.z*wi.z > 0.f;

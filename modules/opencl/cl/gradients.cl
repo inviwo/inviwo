@@ -51,5 +51,21 @@ float4 calcGradient(float4 pos, read_only image3d_t volume, float4 voxelSpacing)
     return gradient;
 }
 
+// Compute world space gradient using central difference: f' = ( f(x+h)-f(x-h) ) / 2*h
+float3 gradientCentralDiff(read_only image3d_t volume, __constant VolumeParameters* volumeParams, float4 samplePos) {
+    // Of order O(h^2) central differences
+    float3 cDs;
+    // Value at f(x+h)
+    cDs.x = getNormalizedVoxel(volume, volumeParams, samplePos + volumeParams->textureSpaceGradientSpacing.xyzw).x;
+    cDs.y = getNormalizedVoxel(volume, volumeParams, samplePos + volumeParams->textureSpaceGradientSpacing.s4567).x;
+    cDs.z = getNormalizedVoxel(volume, volumeParams, samplePos + volumeParams->textureSpaceGradientSpacing.s89ab).x;
+    // Value at f(x-h)
+    cDs.x = cDs.x - getNormalizedVoxel(volume, volumeParams, samplePos - volumeParams->textureSpaceGradientSpacing.xyzw).x;
+    cDs.y = cDs.y - getNormalizedVoxel(volume, volumeParams, samplePos - volumeParams->textureSpaceGradientSpacing.s4567).x;
+    cDs.z = cDs.z - getNormalizedVoxel(volume, volumeParams, samplePos - volumeParams->textureSpaceGradientSpacing.s89ab).x;
+    // Note that this computation is performed in world space
+    // f' = ( f(x+h)-f(x-h) ) / 2*volumeParams.worldSpaceGradientSpacing
+    return (cDs)/(2.f*volumeParams->worldSpaceGradientSpacing);
+}
 
 #endif 

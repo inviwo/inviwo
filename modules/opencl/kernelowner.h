@@ -85,6 +85,13 @@ public:
      */
     cl::Kernel* addKernel(const std::string& fileName, const std::string& kernelName, const std::string& defines = "");
 
+    /** 
+     * \brief Remove kernel and effectively stop observing the kernel 
+     * 
+     * @param cl::Kernel * kernel Kernel owned by the KernelOwner
+     */
+    void removeKernel(cl::Kernel* kernel);
+
     const std::set<cl::Kernel*>& getKernels() const { return kernels_; }
 
 protected:

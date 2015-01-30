@@ -58,6 +58,8 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     , transferFunction_("transferFunction", "Transfer function", TransferFunction())
     , workGroupSize_("wgsize", "Work group size", ivec2(8, 8), ivec2(0), ivec2(256))
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
+    , lighting_("lighting", "Lighting")
+    , camera_("camera", "Camera")
 {
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
@@ -67,12 +69,16 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     addProperty(transferFunction_);
     addProperty(workGroupSize_);
     addProperty(useGLSharing_);
+    addProperty(lighting_);
+    addProperty(camera_);
 
     samplingRate_.onChange(this, &VolumeRaycasterCLProcessor::onParameterChanged);
     workGroupSize_.onChange(this, &VolumeRaycasterCLProcessor::onParameterChanged);
     useGLSharing_.onChange(this, &VolumeRaycasterCLProcessor::onParameterChanged);
+    lighting_.onChange(this, &VolumeRaycasterCLProcessor::onParameterChanged);
 
     volumeRaycaster_.addObserver(this);
+    volumeRaycaster_.setCamera(&camera_);
 }
 
 VolumeRaycasterCLProcessor::~VolumeRaycasterCLProcessor() {}
@@ -113,9 +119,11 @@ void VolumeRaycasterCLProcessor::process() {
 }
 
 void VolumeRaycasterCLProcessor::onParameterChanged() {
+    volumeRaycaster_.setLightingProperties(lighting_);
     volumeRaycaster_.samplingRate(samplingRate_.get());
     volumeRaycaster_.workGroupSize(workGroupSize_.get());
     volumeRaycaster_.useGLSharing(useGLSharing_.get());
+
 }
 
 } // namespace

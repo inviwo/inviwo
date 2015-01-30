@@ -29,6 +29,9 @@
  *********************************************************************************/
 
 #include "samplers.cl"
+#include "gradients.cl"
+#include "transformations.cl"
+#include "shading/shading.cl"
 
 __constant float REF_SAMPLING_INTERVAL = 150.f;
 #define ERT_THRESHOLD 1.0
@@ -37,7 +40,9 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
                         , read_only image2d_t entryPoints 
                         , read_only image2d_t exitPoints
                         , read_only image2d_t transferFunction 
+                        , float3 cameraPosition
                         , float samplingRate
+                        , __constant LightParameters* light
                         , write_only image2d_t output
                         , int2 outputRegionOffset
                         , int2 outputRegionSize) 
@@ -58,15 +63,36 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
         float tIncr = min(tEnd, tEnd/(samplingRate*length(direction*convert_float3(get_image_dim(volume).xyz)))); 
         direction = fast_normalize(direction);
         float samples = ceil(tEnd/tIncr);
-        tIncr = tEnd/samples;
+        tIncr = tEnd/samples; 
         // Start integrating at the center of the bins
         float t = 0.5f*tIncr; 
         float4 emissionAbsorption;
+        float3 toCameraDir = normalize(cameraPosition - transformPoint(volumeParams->textureToWorld, entry.xyz));
         while(t < tEnd) {
             float3 pos = entry.xyz+t*direction;
             float volumeSample = getNormalizedVoxel(volume, volumeParams, as_float4(pos)).x; 
             // xyz == emission, w = absorption
             emissionAbsorption = read_imagef(transferFunction, smpNormClampEdgeLinear, (float2)(volumeSample, 0.5f));
+            float3 gradient = gradientCentralDiff(volume, volumeParams, as_float4(pos));
+            gradient = normalize(gradient);
+
+            // Shading
+            // World space position
+            float3 worldSpacePosition = transformPoint(volumeParams->textureToWorld, pos);
+            // Note that the gradient is reversed since we define the normal of a surface as
+            // the direction towards a lower intensity medium (gradient points in the inreasing direction)
+            #if SHADING_MODE == 1
+                    emissionAbsorption.xyz = shadeAmbient(*light, emissionAbsorption.xyz);
+            #elif SHADING_MODE == 2
+                    emissionAbsorption.xyz = shadeDiffuse(*light, emissionAbsorption.xyz, worldSpacePosition, -gradient);
+            #elif SHADING_MODE == 3
+                    emissionAbsorption.xyz = shadeSpecular(*light, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+            #elif SHADING_MODE == 4
+                   emissionAbsorption.xyz = shadeBlinnPhong(*light,  emissionAbsorption.xyz, emissionAbsorption.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+            #elif SHADING_MODE == 5
+                   emissionAbsorption.xyz = shadePhong(*light, emissionAbsorption.xyz, emissionAbsorption.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+            #endif
+            
             // Taylor expansion approximation
             float opacity = 1.f - native_powr(1.f - emissionAbsorption.w, tIncr * REF_SAMPLING_INTERVAL);
 			result.xyz = result.xyz + (1.f - result.w) * opacity * emissionAbsorption.xyz;

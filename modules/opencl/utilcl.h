@@ -3,7 +3,7 @@
  * Inviwo - Interactive Visualization Workshop
  * Version 0.9
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2014-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,41 +25,35 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef LIGHTSOURCE_CL
-#define LIGHTSOURCE_CL
+#ifndef IVW_UTILCL_H
+#define IVW_UTILCL_H
 
-typedef enum LightSourceType {
-    LIGHT_AREA = 0,
-    LIGHT_CONE,
-    LIGHT_POINT,
-    LIGHT_DIRECTIONAL
-} LightSourceType;
+#include <modules/opencl/openclmoduledefine.h>
 
-// Note that largest variables should be placed first 
-// in order to ensure struct size
-typedef struct LightSource {
-    float16 tm; // Transformation matrix from local to world coordinates
-    float3 radiance; // Note that float3 occupies same space as float4
-    float2 size; // width, height of light source, used by area light
-    int type; // LightSourceType, use integer to handle size of struct easier
-    float area; // area of light source
-    float cosFOV;  // cos( (field of view)/2 ), used by cone light
-    
-    int padding[7];
-} LightSource;
+namespace inviwo {
 
+
+namespace utilcl {
+
+// Struct that can be transferred to OpenCL.
+// Equivalent to struct in
+// opencl/datastructures/lightsource.cl
+// Note that float3 in OpenCL is same as vec4
 typedef struct LightParameters {
-    float3 position;
-    float3 ambientColor; 
-    float3 diffuseColor;
-    float3 specularColor;
+    vec4 position;
+    vec4 ambientColor; 
+    vec4 diffuseColor;
+    vec4 specularColor;
     float specularExponent;
-    int shadingMode;
+    ShadingMode::Modes shadingMode;
 
-    char padding[56];
+    char padding[56]; // Align to power of two bytes (128)
 } LightParameters;
+}  // namspace utilcl
 
-#endif // LIGHTSOURCE_CL
+}  // namespace
+
+#endif  // IVW_UTILCL_H

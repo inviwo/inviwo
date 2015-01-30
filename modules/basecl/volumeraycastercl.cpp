@@ -29,16 +29,15 @@
  *********************************************************************************/
 
 #include "volumeraycastercl.h"
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/kernelmanager.h>
-#include <modules/opencl/buffer/buffercl.h>
 #include <modules/opencl/image/imagecl.h>
 #include <modules/opencl/image/imageclgl.h>
 #include <modules/opencl/settings/openclsettings.h> // To check if the we can use sharing
 #include <modules/opencl/syncclgl.h>
 #include <modules/opencl/volume/volumecl.h>
 #include <modules/opencl/volume/volumeclgl.h>
-
 
 namespace inviwo {
 
@@ -48,15 +47,15 @@ VolumeRaycasterCL::VolumeRaycasterCL()
     , useGLSharing_(true)
     , outputOffset_(0)
     , outputSize_(1)
+    , camera_(NULL)
+    , samplingRate_(2.f)
+    , lightStruct_(sizeof(utilcl::LightParameters), DataUINT8::get(), BufferType::POSITION_ATTRIB, BufferUsage::STATIC, NULL, CL_MEM_READ_ONLY)
     , kernel_(NULL)
 {
-    // Will compile kernel and make sure that it it
-    // recompiled whenever the file changes
-    // If the kernel fails to compile it will be set to NULL
-    kernel_ = addKernel("volumeraycaster.cl", "raycaster");
-    outputOffset(outputOffset_);
-    outputSize(outputSize_);
-    samplingRate(1.f); 
+    light_.ambientColor =vec4(1.f); light_.diffuseColor =vec4(1.f); light_.specularColor =vec4(1.f);
+    light_.specularExponent = 110.f; light_.position = vec4(0.7f); light_.shadingMode = ShadingMode::Phong;
+
+    compileKernel();
 }
 
 VolumeRaycasterCL::~VolumeRaycasterCL() {}
@@ -118,26 +117,91 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const VolumeCLBase* 
     kernel_->setArg(2, *entryCLGL);
     kernel_->setArg(3, *exitCLGL);
     kernel_->setArg(4, *transferFunctionCL);
-    kernel_->setArg(6, *outImageCL);
+    kernel_->setArg(5, camera_->getLookFrom());
+    kernel_->setArg(8, *outImageCL);
     //
     OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
 }
 
 void VolumeRaycasterCL::samplingRate(float samplingRate) {
-    if (kernel_)
-        kernel_->setArg(5, samplingRate);
+    samplingRate_ = samplingRate;
+    if (kernel_) {
+        try {
+            kernel_->setArg(6, samplingRate);
+        } catch (cl::Error& err) {
+            LogError(getCLErrorString(err));
+        }
+    }
 }
 
 void VolumeRaycasterCL::outputOffset(ivec2 val) {
-    if (kernel_)
-        kernel_->setArg(7, val);
+    if (kernel_) {
+        try {
+            kernel_->setArg(9, val);
+        } catch (cl::Error& err) {
+            LogError(getCLErrorString(err));
+        }
+    }
+        
     outputOffset_ = val;
 }
 
 void VolumeRaycasterCL::outputSize(ivec2 val) {
-    if (kernel_)
-        kernel_->setArg(8, val);
+    if (kernel_) {
+        try {
+            kernel_->setArg(10, val);
+        } catch (cl::Error& err) {
+            LogError(getCLErrorString(err));
+        }
+    }
+        
     outputSize_ = val;
+}
+
+void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, vec3 lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent) {
+    light_.position.xyz = lightPosition;
+    light_.ambientColor.xyz = ambientColor;
+    light_.diffuseColor.xyz = diffuseColor;
+    light_.specularColor.xyz = specularColor;
+    light_.specularExponent = specularExponent;
+    if (mode != light_.shadingMode) {
+        light_.shadingMode = mode;
+        compileKernel();
+    }
+    if (kernel_) {
+        try {
+            // Update data before returning it
+            lightStruct_.upload(&light_, sizeof(utilcl::LightParameters));
+            
+            kernel_->setArg(7, lightStruct_);
+        } catch (cl::Error& err) {
+            LogError(getCLErrorString(err));
+        }
+    }
+
+}
+
+void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& light) {
+    setLightingProperties(ShadingMode::Modes(light.shadingMode_.get()), light.lightPosition_.get(), light.ambientColor_.get(), light.diffuseColor_.get(), light.specularColor_.get(), light.specularExponent_.get());
+}
+
+void VolumeRaycasterCL::compileKernel() {
+
+    if (kernel_) {
+        removeKernel(kernel_);
+    }
+    std::stringstream defines;
+    if (light_.shadingMode != 0)
+        defines << " -D SHADING_MODE=" << light_.shadingMode;
+    // Will compile kernel and make sure that it it
+    // recompiled whenever the file changes
+    // If the kernel fails to compile it will be set to NULL
+    kernel_ = addKernel("volumeraycaster.cl", "raycaster", defines.str());
+    // Update kernel arguments that are only set once they are changed
+    outputOffset(outputOffset_);
+    outputSize(outputSize_);
+    samplingRate(samplingRate());
+    setLightingProperties(light_.shadingMode, light_.position.xyz, light_.ambientColor.xyz, light_.diffuseColor.xyz, light_.specularColor.xyz, light_.specularExponent);
 }
 
 } // namespace

@@ -33,14 +33,14 @@
 
 #include <modules/basecl/baseclmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
 
 #include <modules/opencl/inviwoopencl.h>
+#include <modules/opencl/buffer/buffercl.h>
 #include <modules/opencl/image/layerclbase.h>
 #include <modules/opencl/kernelowner.h>
+#include <modules/opencl/utilcl.h>
 #include <modules/opencl/volume/volumeclbase.h>
 
 namespace inviwo {
@@ -74,6 +74,11 @@ public:
     void volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL, const LayerCLBase* entryCLGL, const LayerCLBase* exitCLGL, const LayerCLBase* transferFunctionCL, LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = NULL, cl::Event *event = NULL);
     
     void samplingRate(float samplingRate);
+    float samplingRate() const { return samplingRate_; }
+
+    void setCamera(CameraProperty* camera) { camera_ = camera; }
+    void setLightingProperties(const SimpleLightingProperty& light);
+    void setLightingProperties(ShadingMode::Modes mode, vec3 lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent);
 
     svec2 workGroupSize() const { return workGroupSize_; }
     void workGroupSize(const svec2& val) { workGroupSize_ = val; }
@@ -86,13 +91,17 @@ public:
     ivec2 outputSize() const { return outputSize_; }
     void outputSize(ivec2 val);
 private:
-
+    void compileKernel();
+    // Parameters
     svec2 workGroupSize_;
     bool useGLSharing_;
-
     ivec2 outputOffset_;
     ivec2 outputSize_;
+    CameraProperty* camera_;
+    utilcl::LightParameters light_;
+    float samplingRate_;
 
+    BufferCL lightStruct_;
     cl::Kernel* kernel_;
 };
 

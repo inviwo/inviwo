@@ -37,6 +37,7 @@
 #include "shading/ashikiminbrdf.cl"
 #include "shading/wardbrdf.cl"
 #include "shading/abcbrdf.cl"
+#include "datastructures/lightsource.cl"
 
 #include "gradients.cl"
 #include "samplers.cl"  
@@ -44,6 +45,75 @@
 // http://www.cs.ucl.ac.uk/staff/j.kautz/GameCourse/04_PointLights.pdf
 
 
+// Helper functions to calculate the shading
+float3 shadeDiffuseCalculation(LightParameters light_, float3 materialDiffuseColor, float3 normal,
+                             float3 toLightDir) {
+    return materialDiffuseColor * light_.diffuseColor * max(dot(normal, toLightDir), 0.0f);
+}
+
+float3 shadeSpecularBlinnPhongCalculation(LightParameters light_, float3 materialSpecularColor,
+                                        float3 normal, float3 toLightDir, float3 toCameraDir) {
+    float3 halfway = toCameraDir + toLightDir;
+
+    // check for special case where the light source is exactly opposite
+    // to the view direction, i.e. the length of the halfway vector is zero
+    if (dot(halfway, halfway) < 1.e-6f) {  // check for squared length
+        return (float3)(0.0f);
+    } else {
+        halfway = normalize(halfway);
+        return materialSpecularColor * light_.specularColor *
+               native_powr(max(dot(normal, halfway), 0.f), light_.specularExponent);
+    }
+}
+
+float3 shadeSpecularPhongCalculation(LightParameters light_, float3 materialSpecularColor, float3 normal,
+                                   float3 toLightDir, float3 toCameraDir) {
+    // Compute reflection (not that glsl uses incident direction)
+    // Equivalent to: 2.0*dot(toLightDir, normal)*normal - toLightDir;
+    float3 r = reflect(-toLightDir, normal);
+   
+    return materialSpecularColor * light_.specularColor *
+           native_powr(max(dot(r, toCameraDir), 0.f), light_.specularExponent * 0.25f);
+}
+
+// Functions to apply different shading modes.
+// All positions and directions should be in world space!
+float3 shadeAmbient(LightParameters light_, float3 materialAmbientColor) {
+    return materialAmbientColor * light_.ambientColor;
+}
+
+float3 shadeDiffuse(LightParameters light_, float3 materialDiffuseColor, float3 position, float3 normal) {
+    return shadeDiffuseCalculation(light_, materialDiffuseColor, normal,
+                                   normalize(light_.position - position));
+}
+
+float3 shadeSpecular(LightParameters light_, float3 materialSpecularColor, float3 position, float3 normal,
+                   float3 toCameraDir) {
+    return shadeSpecularPhongCalculation(light_, materialSpecularColor, normal,
+                                         normalize(light_.position - position), toCameraDir);
+}
+
+float3 shadeBlinnPhong(LightParameters light_, float3 materialAmbientColor, float3 materialDiffuseColor,
+                     float3 materialSpecularColor, float3 position, float3 normal, float3 toCameraDir) {
+    float3 toLightDir = normalize(light_.position - position);
+    float3 resAmb = shadeAmbient(light_, materialAmbientColor);
+    float3 resDiff = shadeDiffuseCalculation(light_, materialDiffuseColor, normal, toLightDir);
+    float3 resSpec = shadeSpecularBlinnPhongCalculation(light_, materialSpecularColor, normal,
+                                                      toLightDir, toCameraDir);
+    return resAmb + resDiff + resSpec;
+}
+
+float3 shadePhong(LightParameters light_, float3 materialAmbientColor, float3 materialDiffuseColor,
+                float3 materialSpecularColor, float3 position, float3 normal, float3 toCameraDir) {
+    float3 toLightDir = normalize(light_.position - position);
+    float3 resAmb = shadeAmbient(light_, materialAmbientColor);
+    float3 resDiff = shadeDiffuseCalculation(light_, materialDiffuseColor, normal, toLightDir);
+    float3 resSpec = shadeSpecularPhongCalculation(light_, materialSpecularColor, normal, toLightDir,
+                                                 toCameraDir);
+    return resAmb + resDiff + resSpec;
+}
+
+/////// Physically based shading //////////
 #define PHASE_FUNCTION_HENYEY_GREENSTEIN 0
 #define PHASE_FUNCTION_SCHLICK 1
 #define PHASE_FUNCTION_BLINN_PHONG 2
@@ -75,8 +145,6 @@ typedef enum ShadingType {
     // z = phase function scattering
     // w = Mix between phase function and BRDF (MIX shadingtype)
 #define EXPONENT_SCALE 100.f
-
-
 
 // Maps parameter x from 0-1. Used for exposure in Blinn-Phong and other parameters. 
 inline float vrayParameterMapping(float x) {
