@@ -49,7 +49,7 @@ VolumeRaycasterCL::VolumeRaycasterCL()
     , outputSize_(1)
     , camera_(NULL)
     , samplingRate_(2.f)
-    , lightStruct_(sizeof(utilcl::LightParameters), DataUINT8::get(), BufferType::POSITION_ATTRIB, BufferUsage::STATIC, NULL, CL_MEM_READ_ONLY)
+    , lightStruct_(sizeof(utilcl::LightParameters), DataUINT8::get(), POSITION_ATTRIB, STATIC, NULL, CL_MEM_READ_ONLY)
     , kernel_(NULL)
 {
     light_.ambientColor =vec4(1.f); light_.diffuseColor =vec4(1.f); light_.specularColor =vec4(1.f);
