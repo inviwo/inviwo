@@ -78,7 +78,7 @@ public:
 
     void setCamera(CameraProperty* camera) { camera_ = camera; }
     void setLightingProperties(const SimpleLightingProperty& light);
-    void setLightingProperties(ShadingMode::Modes mode, vec3 lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent);
+    void setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent);
 
     svec2 workGroupSize() const { return workGroupSize_; }
     void workGroupSize(const svec2& val) { workGroupSize_ = val; }

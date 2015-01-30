@@ -158,11 +158,11 @@ void VolumeRaycasterCL::outputSize(ivec2 val) {
     outputSize_ = val;
 }
 
-void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, vec3 lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent) {
-    light_.position.xyz = lightPosition;
-    light_.ambientColor.xyz = ambientColor;
-    light_.diffuseColor.xyz = diffuseColor;
-    light_.specularColor.xyz = specularColor;
+void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent) {
+    light_.position = vec4(lightPosition, 1.f);
+    light_.ambientColor = vec4(ambientColor, 1.f);
+    light_.diffuseColor = vec4(diffuseColor, 1.f);
+    light_.specularColor = vec4(specularColor, 1.f);
     light_.specularExponent = specularExponent;
     if (mode != light_.shadingMode) {
         light_.shadingMode = mode;
@@ -201,7 +201,7 @@ void VolumeRaycasterCL::compileKernel() {
     outputOffset(outputOffset_);
     outputSize(outputSize_);
     samplingRate(samplingRate());
-    setLightingProperties(light_.shadingMode, light_.position.xyz, light_.ambientColor.xyz, light_.diffuseColor.xyz, light_.specularColor.xyz, light_.specularExponent);
+    setLightingProperties(light_.shadingMode, light_.position.xyz(), light_.ambientColor.xyz(), light_.diffuseColor.xyz(), light_.specularColor.xyz(), light_.specularExponent);
 }
 
 } // namespace
