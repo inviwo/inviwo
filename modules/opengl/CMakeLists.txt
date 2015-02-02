@@ -113,11 +113,11 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/compositing.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/depth.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/gradients.glsl
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/raycastgeometry.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/sampler2d.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/sampler3d.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/shading.glsl
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/structs.glsl
-	${CMAKE_CURRENT_SOURCE_DIR}/glsl/utils/raycastgeometry.glsl
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
@@ -126,8 +126,16 @@ ivw_group("Shader Files" ${SHADER_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 #--------------------------------------------------------------------
+# Handle external resources
+if(IVW_USE_GENERATED_RESOURCES)
+#--------------------------------------------------------------------
+# Generate shader resource (if GENERATE_SHADER_RESOURCES is checked)
+ivw_generate_shader_resource(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
+else()
+#--------------------------------------------------------------------
 # Add shader directory to pack
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
+endif()
 
 #--------------------------------------------------------------------
 # Build GLEW if it couldn't be found

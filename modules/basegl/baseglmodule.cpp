@@ -52,12 +52,20 @@
 #include <modules/basegl/processors/imageprocessing/imagegrayscale.h>
 #include <modules/basegl/processors/imageprocessing/imageinvert.h>
 #include <modules/basegl/processors/imageprocessing/imagemapping.h>
+#ifdef BASEGL_INCLUDE_SHADER_RESOURCES
+#include <modules/basegl/shader_resources.h>
+#endif
 
 namespace inviwo {
 
 BaseGLModule::BaseGLModule() : InviwoModule() {
     setIdentifier("BaseGL");
+
+#ifdef BASEGL_INCLUDE_SHADER_RESOURCES
+    addGeneratedShaderResources();
+#else
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "basegl/glsl");
+#endif
     
     registerProcessor(Background);
     registerProcessor(DrawLines);

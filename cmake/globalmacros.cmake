@@ -351,19 +351,44 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Create CMAKE file for pre-process 
-macro(ivw_create_shader_resource)
-    set(output "")
+macro(ivw_generate_shader_resource parent_path)
+    set(output "include(${CMAKE_SOURCE_DIR}/cmake/txt2h.cmake)\n")
+	set(shaders "")
 	foreach(current_path ${ARGN})
-		get_filename_component(filename ${current_path} NAME_WE)
-		#Add: file(READ filename variable)
-		list(APPEND output "file(READ ${current_path} ${filename})\n")
-		#Add: file(WRITE filename variable)
-		set(filename_with_dollar "\${${filename}}")
-		string(REPLACE ${CMAKE_CURRENT_SOURCE_DIR} "" current_relative_path ${current_path})
-		list(APPEND output "file(WRITE ${CMAKE_BINARY_DIR}/modules/${_projectName}${current_relative_path} ${filename_with_dollar})\n")
+		file(RELATIVE_PATH filepath0 ${parent_path} ${current_path})
+		string(REPLACE "/" "_" filepath1 ${filepath0})
+		string(REPLACE "." "_" outname ${filepath1})
+		#get_filename_component(filename ${current_path} NAME_WE)
+		#get_filename_component(extension ${current_path} EXT)
+		#string(REPLACE "." "" extension_no_point ${extension})
+		#set(outname "${filename}_${extension_no_point}")
+		set(outname_with_dollar "\${${outname}}")
+		
+		set(shaders "${shaders} ${outname}")
+				
+		#Add: file(READ outname variable)
+		set(output "${output}file(READ ${current_path} ${outname})\n")
+		
+		set(output "${output}string(REPLACE \"\;\" \"?????\" ${outname} \"${outname_with_dollar}\")\n")
+		
+		set(output "${output}ivw_text_to_header(${outname} ${outname}_header ${outname_with_dollar})\n")
+		set(outname_header_with_dollar "\${${outname}_header}")
+		
+		set(output "${output}string(REPLACE \"?????\" \"\;\" ${outname}_header \"${outname_header_with_dollar}\")\n")
+		
+		#Add: file(WRITE outname variable)
+		#string(REPLACE ${CMAKE_CURRENT_SOURCE_DIR} "" parent_relative_path ${parent_path})
+		#string(REPLACE "." "_" current_relative_path_underscore ${current_relative_path})
+		set(output "${output}file(WRITE ${CMAKE_BINARY_DIR}/modules/_generated/modules/${_projectName}/glsl/${outname}.h \"${outname_header_with_dollar}\")\n")
     endforeach()
+	string(STRIP ${shaders} shaders)
+	string(TOUPPER ${_projectName} u_project_name)
+	string(TOLOWER ${_projectName} l_project_name)
+	add_definitions(-D${u_project_name}_INCLUDE_SHADER_RESOURCES)
+	set(output "${output}ivw_create_shader_resource_header(${_projectName} shader_resource ${shaders})\n")
+	set(output "${output}file(WRITE ${CMAKE_BINARY_DIR}/modules/_generated/modules/${_projectName}/shader_resources.h \${shader_resource})\n")
 	file(WRITE ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake ${output})
-	add_custom_command(TARGET inviwo-module-${_projectName} PRE_BUILD  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake)
+	add_custom_command(TARGET inviwo-module-${_projectName} PRE_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake)
 endmacro()
 
 #--------------------------------------------------------------------

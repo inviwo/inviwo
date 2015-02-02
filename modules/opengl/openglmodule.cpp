@@ -43,6 +43,9 @@
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/rendering/meshrenderer.h>
 #include <modules/opengl/volume/volumeglconverter.h>
+#ifdef OPENGL_INCLUDE_SHADER_RESOURCES
+#include <modules/opengl/shader_resources.h>
+#endif
 
 namespace inviwo {
 
@@ -62,7 +65,13 @@ OpenGLModule::OpenGLModule() :
     }
     setIdentifier("OpenGL");
     ShaderManager::init();
+
+#ifdef OPENGL_INCLUDE_SHADER_RESOURCES
+    addGeneratedShaderResources();
+#else
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "opengl/glsl");
+#endif
+
     registerRenderer(new MeshRenderer());
     registerRepresentationConverter(new LayerRAM2GLConverter());
     registerRepresentationConverter(new LayerGL2RAMConverter());

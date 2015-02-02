@@ -168,10 +168,21 @@ std::string ShaderObject::embeddIncludes(std::string source, std::string fileNam
                     std::string includeSource = buffer.str();
 
                     if (!includeSource.empty())
-                        result << embeddIncludes(includeSource, includeFileName);// << "\n";
+                        result << embeddIncludes(includeSource, includeFileName);
 
                     includeFileFound = true;
                     break;
+                }
+            }
+
+            if(!includeFileFound){
+                std::string fileresourcekey = includeFileName;
+                std::replace(fileresourcekey.begin(), fileresourcekey.end(), '/', '_');
+                std::replace(fileresourcekey.begin(), fileresourcekey.end(), '.', '_');
+                std::string includeSource = ShaderManager::getPtr()->getShaderResource(fileresourcekey);
+                if (!includeSource.empty()){
+                    result << embeddIncludes(includeSource, includeFileName);
+                    includeFileFound = true;
                 }
             }
 
@@ -193,19 +204,30 @@ bool ShaderObject::loadSource(std::string fileName) {
 
     if (fileName.length() > 0) {
         absoluteFileName_ = fileName;
+        bool exists = false;
         if (filesystem::fileExists(fileName)) {
             // Absolute path was given
             absoluteFileName_ = fileName;
+            exists = true;
         } else {
             // Search in include directories added by modules
             std::vector<std::string> shaderSearchPaths = ShaderManager::getPtr()->getShaderSearchPaths();
 
             for (size_t i=0; i<shaderSearchPaths.size(); i++) {
                 if (filesystem::fileExists(shaderSearchPaths[i]+"/"+fileName)) {
+                    exists = true;
                     absoluteFileName_ = shaderSearchPaths[i]+"/"+fileName;
                     break;
                 }
             }
+        }
+
+        if(!exists){
+            std::string fileresourcekey = fileName;
+            std::replace(fileresourcekey.begin(), fileresourcekey.end(), '/', '_');
+            std::replace(fileresourcekey.begin(), fileresourcekey.end(), '.', '_');
+            source_ = ShaderManager::getPtr()->getShaderResource(fileresourcekey);
+            return (!source_.empty());
         }
 
         std::ifstream fileStream(absoluteFileName_.c_str());

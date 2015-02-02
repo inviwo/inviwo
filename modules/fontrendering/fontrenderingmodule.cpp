@@ -31,12 +31,20 @@
 #include <modules/fontrendering/fontrenderingmodule.h>
 #include <modules/opengl/glwrap/shadermanager.h>
 #include <modules/fontrendering/processors/textoverlaygl.h>
+#ifdef FONTRENDERING_INCLUDE_SHADER_RESOURCES
+#include <modules/fontrendering/shader_resources.h>
+#endif
 
 namespace inviwo {
 
 FontRenderingModule::FontRenderingModule() : InviwoModule() {
     setIdentifier("FontRendering");
+
+#ifdef FONTRENDERING_INCLUDE_SHADER_RESOURCES
+    addGeneratedShaderResources();
+#else
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "fontrendering/glsl");
+#endif
     
     registerProcessor(TextOverlayGL);
 }

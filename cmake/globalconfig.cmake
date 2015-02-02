@@ -147,6 +147,10 @@ mark_as_advanced(FORCE IVW_USE_GLFW_NOT_OPENGLQT)
 # Package creation
 option(IVW_PACKAGE_PROJECT "Create Inviwo Package Project" OFF)
 
+#--------------------------------------------------------------------
+# Use and generate resources when available
+option(IVW_USE_GENERATED_RESOURCES "Use and Generate File Resources" OFF)
+
 # Build shared libs or static libs
 option(IVW_PROFILING "Enable profiling" OFF)
 option(IVW_ENABLE_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)

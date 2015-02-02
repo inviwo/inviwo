@@ -64,6 +64,10 @@ public:
     void addShaderSearchPath(std::string);
     void addShaderSearchPath(InviwoApplication::PathType, std::string);
 
+    void addShaderResource(std::string, std::string);
+
+    std::string getShaderResource(std::string);
+
     void rebuildAllShaders();
 
 protected:
@@ -74,6 +78,7 @@ private:
     std::vector<Shader*> shaders_;
     OpenGLCapabilities* openGLInfoRef_;
     std::vector<std::string> shaderSearchPaths_;
+    std::map<std::string, std::string> shaderResources_;
 };
 
 } // namespace

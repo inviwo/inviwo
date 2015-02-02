@@ -177,6 +177,25 @@ void ShaderManager::addShaderSearchPath(InviwoApplication::PathType pathType, st
     }
 }
 
+void ShaderManager::addShaderResource(std::string key, std::string src){
+    size_t start_pos = 0;
+    std::string from="NEWLINE";
+    std::string to="\n";
+    while((start_pos = src.find(from, start_pos)) != std::string::npos) {
+        src.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+    shaderResources_[key] = src;
+}
+
+std::string ShaderManager::getShaderResource(std::string key){
+    if (shaderResources_.find(key) == shaderResources_.end()) {
+        return "";
+    } else {
+        return shaderResources_[key];
+    }
+}
+
 OpenGLCapabilities* ShaderManager::getOpenGLCapabilitiesObject(){
     if (!openGLInfoRef_) {
         OpenGLModule* openGLModule = getTypeFromVector<OpenGLModule>(InviwoApplication::getPtr()->getModules());
