@@ -149,6 +149,15 @@ public:
     Vector<N, unsigned int> getDimensions() const;
     void setDimensions(const Vector<N, unsigned int>& dimensions);
 
+    
+    /**
+     * Returns the matrix transformation mapping from texture coordinates
+     * to voxel index coordinates, i.e. from [0,1] to [-0.5, number of voxels-0.5]
+     * @note Data is centered on the voxel, see OpenGL specifications, figure 8.3 
+     * http://www.opengl.org/registry/doc/glspec43.core.20120806.pdf 
+     * or for instance http://bpeers.com/articles/glpixel/
+     * @see CoordinateTransformer::getTextureToIndexMatrix
+     */
     Matrix<N + 1, float> getIndexMatrix() const;
 
     virtual const StructuredCoordinateTransformer<N>& getCoordinateTransformer() const;
@@ -350,6 +359,11 @@ Matrix<N + 1, float> StructuredGridEntity<N>::getIndexMatrix() const {
     Matrix<N + 1, float> indexMatrix(1.0f);
     for (int i = 0; i < N; ++i) {
         indexMatrix[i][i] = dimensions_[i];
+    }
+
+    // Offset to coordinates to center them in the middle of the texel/voxel.
+    for (int i = 0; i < N; i++) {
+        indexMatrix[N][i] = -0.5f;
     }
     return indexMatrix;
 }
