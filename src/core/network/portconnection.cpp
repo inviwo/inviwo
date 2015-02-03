@@ -33,8 +33,8 @@
 namespace inviwo {
 
 PortConnection::PortConnection()
-    : inport_(0),
-      outport_(0) {}
+    : inport_(NULL),
+      outport_(NULL) {}
 
 PortConnection::PortConnection(Outport* outport, Inport* inport)
     : inport_(inport),
@@ -43,8 +43,8 @@ PortConnection::PortConnection(Outport* outport, Inport* inport)
 PortConnection::~PortConnection() {}
 
 void PortConnection::serialize(IvwSerializer& s) const {
-    s.serialize("OutPort", *getOutport());
-    s.serialize("InPort", *getInport());
+    s.serialize("OutPort", outport_);
+    s.serialize("InPort", inport_);
 }
 
 void PortConnection::deserialize(IvwDeserializer& d) {
