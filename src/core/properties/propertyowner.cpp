@@ -145,6 +145,7 @@ Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path)
         }
         return property;
     }
+    return NULL;
 }
 
 void PropertyOwner::setValid() {
