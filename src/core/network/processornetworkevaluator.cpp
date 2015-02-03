@@ -244,7 +244,9 @@ void ProcessorNetworkEvaluator::propagateInteractionEventImpl(Processor* process
 void ProcessorNetworkEvaluator::propagateInteractionEvent(Processor* processor,
                                                           InteractionEvent* event) {
     resetProcessorVisitedStates();
+    processorNetwork_->lock();
     propagateInteractionEventImpl(processor, event);
+    processorNetwork_->unlock();
 }
 
 bool ProcessorNetworkEvaluator::isPortConnectedToProcessor(Port* port, Processor* processor) {
