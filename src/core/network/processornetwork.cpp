@@ -834,20 +834,8 @@ Property* ProcessorNetwork::getProperty(std::vector<std::string> path) const {
     if (path.size() >= 2){
         Processor* processor = getProcessorByIdentifier(path[0]);
         if (processor) {
-            Property* property = processor->getPropertyByIdentifier(path[1]);
-            if (property) {
-                size_t i = 2;
-                while (path.size() > i) {
-                    CompositeProperty* comp = dynamic_cast<CompositeProperty*>(property);
-                    if(comp) {
-                        property = comp->getPropertyByIdentifier(path[i++]);
-                        if(!property) return NULL;
-                    }else{
-                        return NULL;
-                    }
-                }
-                return property;
-            }
+            std::vector<std::string> propPath(path.begin()+1, path.end());
+            return processor->getPropertyByPath(propPath);
         }
     }
     return NULL;

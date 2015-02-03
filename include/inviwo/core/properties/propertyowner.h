@@ -61,6 +61,7 @@ public:
 
     std::vector<Property*> getProperties() const { return properties_; }
     Property* getPropertyByIdentifier(const std::string& identifier, bool recursiveSearch = false) const;
+    Property* getPropertyByPath(const std::vector<std::string>& path) const;
     template <class T>
     std::vector<T*> getPropertiesByType(bool recursiveSearch = false) const;
 
