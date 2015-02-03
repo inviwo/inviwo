@@ -42,7 +42,7 @@
 #include <gtest/gtest.h>
 
 
-namespace inviwo{
+namespace inviwo {
 
 template<typename T>
 void testVolumeLoad(std::string filename) {

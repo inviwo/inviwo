@@ -439,6 +439,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/image-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/stacktrace-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/metadata-test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/unittests/network-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/serializer-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
