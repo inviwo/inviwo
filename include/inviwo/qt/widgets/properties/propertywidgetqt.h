@@ -103,7 +103,7 @@ public:
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
 
-    QMenu* getContextMenu();
+    virtual QMenu* getContextMenu();
 
     static int MINIMUM_WIDTH;
     static int SPACING;

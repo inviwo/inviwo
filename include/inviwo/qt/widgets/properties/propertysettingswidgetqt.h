@@ -44,6 +44,7 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 // Core
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
 
@@ -86,11 +87,28 @@ struct SinglePropertySetting {
     }
 };
 
-class IVW_QTWIDGETS_API PropertySettingsWidgetQt : public QWidget {
+class IVW_QTWIDGETS_API PropertySettingsWidgetQt : public QWidget, public PropertyWidget {
     Q_OBJECT
 public:
     PropertySettingsWidgetQt(Property* property, QWidget*);
     virtual ~PropertySettingsWidgetQt();
+
+    virtual void updateFromProperty() { reload(); };
+    virtual void showWidget() { QWidget::setVisible(true); }
+    virtual void hideWidget() { QWidget::setVisible(false); }
+
+    virtual UsageMode getUsageMode() const {
+        return property_->getUsageMode();
+    };
+
+    virtual bool getVisible() const {
+        return isVisible();
+    };
+public slots:
+    virtual void apply() = 0;
+    virtual void save() = 0;
+    virtual void reload() = 0;
+    virtual void cancel() = 0;
 
 protected:
     virtual void generateWidget() = 0;
@@ -102,15 +120,8 @@ protected:
     std::vector<SinglePropertySetting*> settings_;
 
     void keyPressEvent(QKeyEvent * event);
+    virtual void initializeEditorWidgetsMetaData() {};
 
-public slots:
-    virtual void apply() = 0;
-    virtual void save() = 0;
-    virtual void reload() = 0;
-    virtual void cancel() = 0;
-
-private:
-    Property* property_;
 };
 
 template <typename BT, typename T>

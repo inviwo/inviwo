@@ -57,6 +57,7 @@ public:
     BaseOrdinalPropertyWidgetQt(Property* property);
     virtual ~BaseOrdinalPropertyWidgetQt();
     virtual void updateFromProperty() = 0;
+    virtual QMenu* getContextMenu();
 
     typedef std::vector<QWidget*> SliderVector;
 
@@ -65,6 +66,7 @@ public slots:
     virtual void setAsMin() = 0;
     virtual void setAsMax() = 0;
     virtual void showSettings() = 0;
+    virtual void showContextMenu(const QPoint& pos);
 
     void setPropertyDisplayName();
     void showContextMenuSlider(int sliderId);
@@ -161,7 +163,7 @@ protected:
             this->settingsWidget_ =
                 new TemplatePropertySettingsWidgetQt<BT, T>(ordinalproperty_, this);
         }
-        this->settingsWidget_->reload();
+        ordinalproperty_->registerWidget(this->settingsWidget_);
         this->settingsWidget_->show();
     }
 
@@ -365,30 +367,34 @@ void OrdinalPropertyWidgetQt<BT, T>::setPropertyValue(int sliderId) {
 
 template <typename BT, typename T>
 void OrdinalPropertyWidgetQt<BT, T>::setAsMin() {
-    OrdinalBaseWidget<BT>* slider =
-        dynamic_cast<OrdinalBaseWidget<BT>*>(this->sliderWidgets_[this->sliderId_]);
-    T propValue = transformer_->min(this->ordinalproperty_->getMinValue());
-    propValue = glmwrapper<BT, T>::setval(propValue, this->sliderId_, slider->getValue());
+    if (sliderId_ >= 0 && sliderId_ < this->sliderWidgets_.size()) {
+        OrdinalBaseWidget<BT>* slider =
+            dynamic_cast<OrdinalBaseWidget<BT>*>(this->sliderWidgets_[this->sliderId_]);
+        T propValue = transformer_->min(this->ordinalproperty_->getMinValue());
+        propValue = glmwrapper<BT, T>::setval(propValue, this->sliderId_, slider->getValue());
 
-    this->ordinalproperty_->setInitiatingWidget(this);
-    this->ordinalproperty_->setMinValue(transformer_->invMin(propValue));
-    this->ordinalproperty_->clearInitiatingWidget();
+        this->ordinalproperty_->setInitiatingWidget(this);
+        this->ordinalproperty_->setMinValue(transformer_->invMin(propValue));
+        this->ordinalproperty_->clearInitiatingWidget();
 
-    slider->setMinValue(glmwrapper<BT, T>::getval(propValue, this->sliderId_));
+        slider->setMinValue(glmwrapper<BT, T>::getval(propValue, this->sliderId_));
+    }
 }
 
 template <typename BT, typename T>
 void OrdinalPropertyWidgetQt<BT, T>::setAsMax() {
-    OrdinalBaseWidget<BT>* slider =
-        dynamic_cast<OrdinalBaseWidget<BT>*>(this->sliderWidgets_[this->sliderId_]);
-    T propValue = transformer_->max(this->ordinalproperty_->getMaxValue());
-    propValue = glmwrapper<BT, T>::setval(propValue, this->sliderId_, slider->getValue());
+    if (sliderId_ >= 0 && sliderId_ < this->sliderWidgets_.size()) {
+        OrdinalBaseWidget<BT>* slider =
+            dynamic_cast<OrdinalBaseWidget<BT>*>(this->sliderWidgets_[this->sliderId_]);
+        T propValue = transformer_->max(this->ordinalproperty_->getMaxValue());
+        propValue = glmwrapper<BT, T>::setval(propValue, this->sliderId_, slider->getValue());
 
-    this->ordinalproperty_->setInitiatingWidget(this);
-    this->ordinalproperty_->setMaxValue(transformer_->invMax(propValue));
-    this->ordinalproperty_->clearInitiatingWidget();
+        this->ordinalproperty_->setInitiatingWidget(this);
+        this->ordinalproperty_->setMaxValue(transformer_->invMax(propValue));
+        this->ordinalproperty_->clearInitiatingWidget();
 
-    slider->setMaxValue(glmwrapper<BT, T>::getval(propValue, this->sliderId_));
+        slider->setMaxValue(glmwrapper<BT, T>::getval(propValue, this->sliderId_));
+    }
 }
 
 typedef OrdinalPropertyWidgetQt<float, float> FloatPropertyWidgetQt;

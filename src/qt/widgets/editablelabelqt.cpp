@@ -136,21 +136,19 @@ void EditableLabelQt::setText(std::string txt) {
 }
 
 void EditableLabelQt::showContextMenu(const QPoint& pos) {
-
-    if (!contextMenu_){
+    if (!contextMenu_) {
         contextMenu_ = new QMenu(this);
-    
-        if(propertyWidget_){
+
+        if (propertyWidget_) {
             contextMenu_->addActions(propertyWidget_->getContextMenu()->actions());
         }
-        
+
         renameAction_ = new QAction(tr("&Rename"), this);
         contextMenu_->addAction(renameAction_);
         connect(renameAction_, SIGNAL(triggered()), this, SLOT(edit()));
     }
 
     contextMenu_->exec(label_->mapToGlobal(pos));
-
 }
 
 std::string EditableLabelQt::shortenText() {

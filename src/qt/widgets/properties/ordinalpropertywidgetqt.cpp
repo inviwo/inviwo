@@ -39,6 +39,11 @@ BaseOrdinalPropertyWidgetQt::BaseOrdinalPropertyWidgetQt(Property* property)
 }
 
 BaseOrdinalPropertyWidgetQt::~BaseOrdinalPropertyWidgetQt() {
+    if (settingsWidget_) {
+        settingsWidget_->hide();
+        property_->deregisterWidget(settingsWidget_);
+        delete settingsWidget_;
+    }
 }
 
 void BaseOrdinalPropertyWidgetQt::generateWidget() {
@@ -129,10 +134,27 @@ void BaseOrdinalPropertyWidgetQt::generatesSettingsWidget() {
     contextMenu_->addAction(settingsAction_);
     contextMenu_->addAction(minAction_);
     contextMenu_->addAction(maxAction_);
+    minAction_->setVisible(false);
+    maxAction_->setVisible(false);
 }
+
+
+
+QMenu* BaseOrdinalPropertyWidgetQt::getContextMenu() {
+    if (!contextMenu_) {
+        generatesSettingsWidget();
+    }
+    return contextMenu_;
+}
+
 
 /****************************************************************************/
 // Slots:
+
+void BaseOrdinalPropertyWidgetQt::showContextMenu(const QPoint& pos) {
+    showContextMenuSlider(-1);
+}
+
 
 // Connected to label_ textChanged
 void BaseOrdinalPropertyWidgetQt::setPropertyDisplayName() {
@@ -143,37 +165,40 @@ void BaseOrdinalPropertyWidgetQt::setPropertyDisplayName() {
 void BaseOrdinalPropertyWidgetQt::showContextMenuSlider(int sliderId) {
     sliderId_ = sliderId;
 
-    if (!contextMenu_){
+    if (!contextMenu_) {
         generatesSettingsWidget();
     }
 
     PropertyWidgetQt::updateContextMenu();
-    UsageMode appVisibilityMode  = getApplicationUsageMode();
+    UsageMode appVisibilityMode = getApplicationUsageMode();
 
     if (appVisibilityMode == DEVELOPMENT) {
         settingsAction_->setVisible(true);
+    } else {
+        settingsAction_->setVisible(false);
+    }
+
+    if (appVisibilityMode == DEVELOPMENT && sliderId_ >= 0) {
         minAction_->setVisible(true);
         maxAction_->setVisible(true);
-    }else{
-        settingsAction_->setVisible(false);
+    } else {
         minAction_->setVisible(false);
         maxAction_->setVisible(false);
     }
-    
-    if (property_->getReadOnly()){
+
+    if (property_->getReadOnly()) {
         settingsAction_->setEnabled(false);
         minAction_->setEnabled(false);
         maxAction_->setEnabled(false);
-    }else{
+    } else {
         settingsAction_->setEnabled(true);
         minAction_->setEnabled(true);
         maxAction_->setEnabled(true);
     }
     contextMenu_->exec(QCursor::pos());
+
+    minAction_->setVisible(false);
+    maxAction_->setVisible(false);
 }
-
-
-
-
 
 } // namespace
