@@ -696,7 +696,11 @@ void NetworkEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
-    if (keyEvent->key() == Qt::Key_Delete) {
+    QGraphicsScene::keyPressEvent(keyEvent);
+    if (keyEvent->isAccepted()) { 
+        return;
+
+    } else if (keyEvent->key() == Qt::Key_Delete) {
         keyEvent->accept();
         ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
 
@@ -733,6 +737,7 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
                 continue;
             }
         }
+
     } else {
         KeyboardEvent pressKeyEvent(EventConverterQt::getKeyButton(keyEvent),
                                     EventConverterQt::getModifier(keyEvent),
@@ -751,41 +756,30 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
                 if (pressKeyEvent.hasBeenUsed()) break;
             }
         }
-
-        if (pressKeyEvent.hasBeenUsed()) {
-            keyEvent->accept();
-        } else {
-            keyEvent->ignore();
-            QGraphicsScene::keyPressEvent(keyEvent);
-        }
     }
 }
 
-
 void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
-    KeyboardEvent releaseKeyEvent(EventConverterQt::getKeyButton(keyEvent),
-                                  EventConverterQt::getModifier(keyEvent),
-                                  KeyboardEvent::KEY_STATE_RELEASE);
+    QGraphicsScene::keyPressEvent(keyEvent);
 
-    QList<QGraphicsItem*> selectedGraphicsItems = selectedItems();
-    ProcessorNetworkEvaluator* network =
-        InviwoApplication::getPtr()->getProcessorNetworkEvaluator();
+    if (!keyEvent->isAccepted()) {
+        KeyboardEvent releaseKeyEvent(EventConverterQt::getKeyButton(keyEvent),
+                                      EventConverterQt::getModifier(keyEvent),
+                                      KeyboardEvent::KEY_STATE_RELEASE);
 
-    for (int i = 0; i < selectedGraphicsItems.size(); i++) {
-        ProcessorGraphicsItem* processorGraphicsItem =
-            qgraphicsitem_cast<ProcessorGraphicsItem*>(selectedGraphicsItems[i]);
-        if (processorGraphicsItem) {
-            Processor* p = processorGraphicsItem->getProcessor();
-            network->propagateInteractionEvent(p, &releaseKeyEvent);
-            if (releaseKeyEvent.hasBeenUsed()) break;
+        QList<QGraphicsItem*> selectedGraphicsItems = selectedItems();
+        ProcessorNetworkEvaluator* network =
+            InviwoApplication::getPtr()->getProcessorNetworkEvaluator();
+
+        for (int i = 0; i < selectedGraphicsItems.size(); i++) {
+            ProcessorGraphicsItem* processorGraphicsItem =
+                qgraphicsitem_cast<ProcessorGraphicsItem*>(selectedGraphicsItems[i]);
+            if (processorGraphicsItem) {
+                Processor* p = processorGraphicsItem->getProcessor();
+                network->propagateInteractionEvent(p, &releaseKeyEvent);
+                if (releaseKeyEvent.hasBeenUsed()) break;
+            }
         }
-    }
-
-    if (releaseKeyEvent.hasBeenUsed()) {
-        keyEvent->accept();
-    } else {
-        keyEvent->ignore();
-        QGraphicsScene::keyPressEvent(keyEvent);
     }
 }
 
@@ -805,7 +799,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     SignalMapperObject moDeleteConnection;
 
     QList<QGraphicsItem*> graphicsItems = items(e->scenePos());
-    for (int i = 0; i < std::min(1, graphicsItems.size()); i++) {
+    for (int i = 0; i < graphicsItems.size(); i++) {
         ProcessorOutportGraphicsItem* outport =
             qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(graphicsItems[i]);
         if (outport) {
@@ -818,6 +812,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             connect(showPortInsector, SIGNAL(triggered()), &moShowInspector, SLOT(tiggerAction()));
             connect(&moShowInspector, SIGNAL(triggered(EditorGraphicsItem*)), this,
                     SLOT(contextMenuShowInspector(EditorGraphicsItem*)));
+        
+            break;
         }
 
         ProcessorInportGraphicsItem* inport =
@@ -833,6 +829,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             connect(showPortInsector, SIGNAL(triggered()), &moShowInspector, SLOT(tiggerAction()));
             connect(&moShowInspector, SIGNAL(triggered(EditorGraphicsItem*)), this,
                     SLOT(contextMenuShowInspector(EditorGraphicsItem*)));
+
+            break;
         }
 
         ProcessorGraphicsItem* processor =
@@ -873,6 +871,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                     showAction->setChecked(processorWidget->isVisible());
                 }
             }
+
+            break;
         }
 
         ConnectionGraphicsItem* portconnection =
@@ -895,6 +895,8 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             connect(showPortInsector, SIGNAL(triggered()), &moShowInspector, SLOT(tiggerAction()));
             connect(&moShowInspector, SIGNAL(triggered(EditorGraphicsItem*)), this,
                     SLOT(contextMenuShowInspector(EditorGraphicsItem*)));
+
+            break;
         }
 
         LinkConnectionGraphicsItem* linkconnection =
@@ -911,8 +913,11 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             connect(editLink, SIGNAL(triggered()), &moEditLink, SLOT(tiggerAction()));
             connect(&moEditLink, SIGNAL(triggered(EditorGraphicsItem*)), this,
                     SLOT(contextMenuEditLink(EditorGraphicsItem*)));
+
+            break;
         }
     }
+
     if (menu.actions().size() > 0) {
         menu.exec(QCursor::pos());
         e->accept();

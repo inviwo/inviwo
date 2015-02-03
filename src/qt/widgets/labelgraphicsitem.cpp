@@ -106,6 +106,7 @@ void LabelGraphicsItem::keyPressEvent(QKeyEvent* keyEvent) {
         clearFocus();
     } else {
 		QGraphicsTextItem::keyPressEvent(keyEvent);
+        keyEvent->accept();
     }
 }
 
