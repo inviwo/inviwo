@@ -367,7 +367,7 @@ void OrdinalPropertyWidgetQt<BT, T>::setPropertyValue(int sliderId) {
 
 template <typename BT, typename T>
 void OrdinalPropertyWidgetQt<BT, T>::setAsMin() {
-    if (sliderId_ >= 0 && sliderId_ < this->sliderWidgets_.size()) {
+    if (this->sliderId_ >= 0 && this->sliderId_ < this->sliderWidgets_.size()) {
         OrdinalBaseWidget<BT>* slider =
             dynamic_cast<OrdinalBaseWidget<BT>*>(this->sliderWidgets_[this->sliderId_]);
         T propValue = transformer_->min(this->ordinalproperty_->getMinValue());
@@ -383,7 +383,7 @@ void OrdinalPropertyWidgetQt<BT, T>::setAsMin() {
 
 template <typename BT, typename T>
 void OrdinalPropertyWidgetQt<BT, T>::setAsMax() {
-    if (sliderId_ >= 0 && sliderId_ < this->sliderWidgets_.size()) {
+    if (this->sliderId_ >= 0 && this->sliderId_ < this->sliderWidgets_.size()) {
         OrdinalBaseWidget<BT>* slider =
             dynamic_cast<OrdinalBaseWidget<BT>*>(this->sliderWidgets_[this->sliderId_]);
         T propValue = transformer_->max(this->ordinalproperty_->getMaxValue());
