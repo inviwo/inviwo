@@ -443,12 +443,16 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
             // Has reference identifier, data should already be allocated and we only have to find
             // and set the pointer to it.
             data = static_cast<T*>(refDataContainer_.find(type_attr, ref_attr));
+            if (!data) {
+                throw SerializationException(
+                    "Could not find reference to " + key + ": " + type_attr, key, type_attr);
+            }
             return;
         } else if (!type_attr.empty()) {
             data = IvwSerializeBase::getRegisteredType<T>(type_attr);
             if (!data) {
-                throw SerializationException(
-                    "Factory could not create " + key + ": " + type_attr, key, type_attr);
+                throw SerializationException("Factory could not create " + key + ": " + type_attr,
+                                             key, type_attr);
             }
 
         } else {
