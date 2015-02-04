@@ -52,14 +52,19 @@ void PropertyLink::serialize(IvwSerializer& s) const {
 
 void PropertyLink::deserialize(IvwDeserializer& d) {
     std::vector<Property*> linkedProperties;
-    d.deserialize("Properties", linkedProperties, "Property");
-    if (linkedProperties.size() != 2) {
-        std::string type = "test";
-        throw SerializationException("Could not create Link: " + type, "Link",
-                                     type);
+    DeserializationErrorHandle<PropertyLink> err(d, "Property", this, &PropertyLink::handleError);
+    try {
+        d.deserialize("Properties", linkedProperties, "Property");
+        srcProperty_ = linkedProperties[0];
+        dstProperty_ = linkedProperties[1];
+    } catch (SerializationException& error) {
+        throw SerializationException("Could not create link of type " + error.getType(),
+                                     "PropertyLink", error.getType());
     }
-    srcProperty_ = linkedProperties[0];
-    dstProperty_ = linkedProperties[1];
+}
+
+void PropertyLink::handleError(SerializationException& error) {
+    throw error;
 }
 
 bool operator==(const PropertyLink& lhs, const PropertyLink& rhs) {

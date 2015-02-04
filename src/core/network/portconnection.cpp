@@ -84,7 +84,7 @@ void PortConnection::deserialize(IvwDeserializer& d) {
                            (in_error ? in_type : inport_->getProcessor()->getIdentifier()) + "." +
                            inport_->getIdentifier();
 
-        throw SerializationException("Could not create PortConnection: " + type, "PortConnection",
+        throw SerializationException("Could not create PortConnection: " + type, "Connection",
                                      type);
     }
 }

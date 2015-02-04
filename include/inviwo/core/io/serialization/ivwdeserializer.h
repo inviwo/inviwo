@@ -35,13 +35,37 @@
 
 #include <inviwo/core/io/serialization/ivwserializebase.h>
 #include <inviwo/core/util/exception.h>
-
+#include <inviwo/core/io/serialization/deserializationerrorhandler.h>
 
 namespace inviwo {
 
 class IvwSerializable;
 class VersionConverter;
-    
+
+template <typename T>
+class DeserializationErrorHandle {
+public:
+    typedef void (T::*Callback)(SerializationException&);
+    DeserializationErrorHandle(IvwDeserializer&, std::string type, T* obj, Callback callback);
+    virtual ~DeserializationErrorHandle();
+
+private:
+    IvwDeserializer& d_;
+};
+
+template <typename T>
+inviwo::DeserializationErrorHandle<T>::DeserializationErrorHandle(IvwDeserializer& d,
+                                                                  std::string type, T* obj,
+                                                                  Callback callback)
+    : d_(d) {
+    d_.pushErrorHandler(new DeserializationErrorHandler<T>(type, obj, callback));
+}
+
+template <typename T>
+inviwo::DeserializationErrorHandle<T>::~DeserializationErrorHandle() {
+    delete d_.popErrorHandler();
+}
+
 class IVW_CORE_API IvwDeserializer : public  IvwSerializeBase {
 public:
     /**
@@ -66,6 +90,9 @@ public:
      * @param bool allowReference flag to manage references to avoid multiple object creation.
      */
     IvwDeserializer(std::istream& stream, const std::string& path, bool allowReference=true);
+
+    void pushErrorHandler(BaseDeserializationErrorHandler*);
+    BaseDeserializationErrorHandler* popErrorHandler();
 
     virtual ~IvwDeserializer();
 
@@ -250,6 +277,10 @@ private:
     template <class T>
     void deserializeVector(const std::string& key,
                            T& vector);
+
+    void handleError(SerializationException&);
+
+    std::vector<BaseDeserializationErrorHandler*> errorHandlers_; 
 };
 
 template<class T>
@@ -342,7 +373,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
                     deserialize(itemKey, vector[i]);
                 }
             } catch (SerializationException& e) {
-                LogWarn(e.getMessage());
+                handleError(e);
             }
             i++;
         }
@@ -371,7 +402,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T>& vector
                     deserialize(itemKey, vector[i]);
                 }
             } catch (SerializationException& e) {
-                LogWarn(e.getMessage());
+                handleError(e);
             }
             i++;
         }
@@ -408,7 +439,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::map<K, V, C, A>& 
                 deserialize(itemKey, value);
                 map[key] = value;
             } catch (SerializationException& e) {
-                LogWarn(e.getMessage());
+                handleError(e);
             }
         }
     } catch (TxException&) {}

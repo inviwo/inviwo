@@ -309,6 +309,10 @@ public:
     */
     void clear();
     
+    void handleProcessorError(SerializationException& error);
+    void handleConnectionError(SerializationException& error);
+    void handleLinkError(SerializationException& error);
+
 private:
 
     class PropertyLinkContainsTest {

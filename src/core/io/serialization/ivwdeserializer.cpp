@@ -174,4 +174,26 @@ void IvwDeserializer::convertVersion(VersionConverter* converter) {
     converter->convert(rootElement_);
 }
 
+void IvwDeserializer::pushErrorHandler(BaseDeserializationErrorHandler* handler) {
+    errorHandlers_.push_back(handler);
+}
+
+BaseDeserializationErrorHandler* IvwDeserializer::popErrorHandler() {
+    BaseDeserializationErrorHandler* back = errorHandlers_.back();
+    errorHandlers_.pop_back();
+    return back;
+}
+
+void IvwDeserializer::handleError(SerializationException& e) {
+    for (std::vector<BaseDeserializationErrorHandler*>::reverse_iterator it =
+         errorHandlers_.rbegin();
+         it != errorHandlers_.rend(); ++it) {
+        if ((*it)->getKey() == e.getKey()) {
+            (*it)->handleError(e);
+            return;
+        }
+    }
+    LogWarn(e.getMessage());
+}
+
 } //namespace
