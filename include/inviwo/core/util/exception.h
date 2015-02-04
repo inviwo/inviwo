@@ -44,8 +44,12 @@ public:
 
     virtual const std::string& getMessage() const throw();
 
-protected:
-    std::string* message_;
+private:
+    // We can safely ingnore the C4251 warning for private members.
+#pragma warning( push )
+#pragma warning( disable: 4251 )
+    std::string message_;
+#pragma warning( pop )
 };
 
 
@@ -63,8 +67,15 @@ public:
 
 class IVW_CORE_API SerializationException : public Exception {
 public:
-    SerializationException(const std::string& message = "");
+    SerializationException(std::string message = "", std::string key = "", std::string type = "");
     virtual ~SerializationException() throw() {}
+
+    virtual const std::string& getKey() const throw();
+    virtual const std::string& getType() const throw();
+
+private:
+    std::string key_;
+    std::string type_;
 };
 
 } // namespace
