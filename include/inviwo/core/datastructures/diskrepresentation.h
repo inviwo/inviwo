@@ -57,7 +57,12 @@ public:
     void readDataInto(void* dest) const;
 
 private:
+
+    // We can safely ingnore the C4251 warning for private members.
+#pragma warning( push )
+#pragma warning( disable: 4251 )
     std::string sourceFile_;
+#pragma warning( pop )
     // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
     DataReader* reader_;
 };

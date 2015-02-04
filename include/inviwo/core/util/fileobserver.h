@@ -56,7 +56,12 @@ public:
     virtual void fileChanged(std::string fileName) = 0;
 
 private:
+
+// We can safely ingnore the C4251 warning for private members.
+#pragma warning( push )
+#pragma warning( disable: 4251 )
     std::vector<std::pair<std::string, int> > observedFiles_; ///< stores the files to be observed
+#pragma warning( pop )
     ///< plus the number of observers for each
 };
 
