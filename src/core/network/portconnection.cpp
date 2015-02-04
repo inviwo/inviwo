@@ -25,20 +25,17 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/network/portconnection.h>
 
 namespace inviwo {
 
-PortConnection::PortConnection()
-    : inport_(NULL),
-      outport_(NULL) {}
+PortConnection::PortConnection() : inport_(NULL), outport_(NULL) {}
 
 PortConnection::PortConnection(Outport* outport, Inport* inport)
-    : inport_(inport),
-      outport_(outport) {}
+    : inport_(inport), outport_(outport) {}
 
 PortConnection::~PortConnection() {}
 
@@ -52,19 +49,26 @@ void PortConnection::deserialize(IvwDeserializer& d) {
     d.deserialize("OutPort", outport);
     Processor* outPortProcessor = outport.getProcessor();
 
-    if (outPortProcessor)
+    if (outPortProcessor) {
         outport_ = outPortProcessor->getOutport(outport.getIdentifier());
-    else
-        LogWarn("Could not deserialize " << outport.getIdentifier());
-
+    }
     Inport inport("");
     d.deserialize("InPort", inport);
     Processor* inPortProcessor = inport.getProcessor();
 
-    if (inPortProcessor)
+    if (inPortProcessor) {
         inport_ = inPortProcessor->getInport(inport.getIdentifier());
-    else
-        LogWarn("Could not deserialize " << inport.getIdentifier());
+    }
+
+    if (!(outport_ && inport_)) {
+        std::string type = (outPortProcessor ? outPortProcessor->getIdentifier() : "<Missing>") +
+                           "." + outport.getIdentifier() + " to " +
+                           (inPortProcessor ? inPortProcessor->getIdentifier() : "<Missing>") + "." +
+                           inport.getIdentifier();
+
+        throw SerializationException("Could not create PortConnection: " + type, "PortConnection",
+                                     type);
+    }
 }
 
-} // namespace
+}  // namespace

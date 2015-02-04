@@ -321,57 +321,65 @@ void IvwDeserializer::deserialize(const std::string& key, glm::detail::tmat2x2<T
 }
 
 template <typename T>
-void IvwDeserializer::deserialize(const std::string& key,
-                                  std::vector<T*>& sVector,
+void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                                   const std::string& itemKey) {
     try {
         TxElement* keyNode = rootElement_->FirstChildElement(key, false);
-        if(!keyNode) return;
-        NodeSwitch tempNodeSwitch(*this, keyNode);
-        unsigned int i=0;
-        TxEIt child(itemKey);
-
-        for (child = child.begin(rootElement_); child != child.end(); ++child) {
-            NodeSwitch tempNodeSwitch(*this, &(*child), false);
-
-            if (sVector.size()<=i) {
-                T* item = NULL;
-                sVector.push_back(item);
-            }
-
-            deserialize(itemKey, sVector[i]);
-            i++;
-        }
-    } catch (TxException&) {}
-}
-template <typename T>
-void IvwDeserializer::deserialize(const std::string& key,
-                                  std::vector<T>& sVector,
-                                  const std::string& itemKey) {
-    try {
-        TxElement* keyNode = rootElement_->FirstChildElement(key, false);
-        if(!keyNode) return;
-        NodeSwitch tempNodeSwitch(*this, keyNode);
+        if (!keyNode) return;
+        NodeSwitch vectorNodeSwitch(*this, keyNode);
         unsigned int i = 0;
         TxEIt child(itemKey);
 
         for (child = child.begin(rootElement_); child != child.end(); ++child) {
-            NodeSwitch tempNodeSwitch(*this, &(*child), false);
+            NodeSwitch elementNodeSwitch(*this, &(*child), false);
 
-            if (sVector.size() <= i) {
-                T item;
-                sVector.push_back(item);
+            try {
+                if (vector.size() <= i) {
+                    T* item = NULL;
+                    deserialize(itemKey, item);
+                    vector.push_back(item);
+                } else {
+                    deserialize(itemKey, vector[i]);
+                }
+            } catch (SerializationException& e) {
+                LogWarn(e.getMessage());
             }
+            i++;
+        }
+    } catch (TxException&) {}
+}
 
-            deserialize(itemKey, sVector[i]);
+template <typename T>
+void IvwDeserializer::deserialize(const std::string& key, std::vector<T>& vector,
+                                  const std::string& itemKey) {
+    try {
+        TxElement* keyNode = rootElement_->FirstChildElement(key, false);
+        if (!keyNode) return;
+        NodeSwitch vectorNodeSwitch(*this, keyNode);
+        unsigned int i = 0;
+        TxEIt child(itemKey);
+
+        for (child = child.begin(rootElement_); child != child.end(); ++child) {
+            NodeSwitch elementNodeSwitch(*this, &(*child), false);
+
+            try {
+                if (vector.size() <= i) {
+                    T item;
+                    deserialize(itemKey, item);
+                    vector.push_back(item);
+                } else {
+                    deserialize(itemKey, vector[i]);
+                }
+            } catch (SerializationException& e) {
+                LogWarn(e.getMessage());
+            }
             i++;
         }
     } catch (TxException&) {}
 }
 
 template <typename K, typename V, typename C, typename A>
-void IvwDeserializer::deserialize(const std::string& key,
-                                  std::map<K, V, C, A>& map,
+void IvwDeserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map,
                                   const std::string& itemKey,
                                   const std::string& comparisionAttribute) {
     if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
@@ -379,7 +387,7 @@ void IvwDeserializer::deserialize(const std::string& key,
 
     try {
         TxElement* keyNode = rootElement_->FirstChildElement(key, false);
-        if(!keyNode) return;
+        if (!keyNode) return;
         NodeSwitch tempNodeSwitch(*this, keyNode);
         TxEIt child(itemKey);
 
@@ -390,18 +398,23 @@ void IvwDeserializer::deserialize(const std::string& key,
             V value;
             typename std::map<K, V, C, A>::iterator it = map.find(key);
 
-            if (it != map.end())
+            if (it != map.end()) {
                 value = it->second;
-            else
+            } else {
                 value = NULL;
+            }
 
-            deserialize(itemKey, value);
-            map[key] = value;
+            try {
+                deserialize(itemKey, value);
+                map[key] = value;
+            } catch (SerializationException& e) {
+                LogWarn(e.getMessage());
+            }
         }
     } catch (TxException&) {}
 }
 
-template<class T>
+template <class T>
 inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
     TxElement* keyNode;
 
@@ -411,8 +424,9 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
         } catch (TxException&) {
             return;
         }
-    } else
+    } else {
         keyNode = rootElement_;
+    }
 
     std::string type_attr("");
     std::string ref_attr("");
@@ -428,19 +442,27 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
         if (!ref_attr.empty()) {
             // Has reference identifier, data should already be allocated and we only have to find
             // and set the pointer to it.
-            data=static_cast<T*>(refDataContainer_.find(type_attr, ref_attr));
+            data = static_cast<T*>(refDataContainer_.find(type_attr, ref_attr));
             return;
-        } else if (!type_attr.empty())
+        } else if (!type_attr.empty()) {
             data = IvwSerializeBase::getRegisteredType<T>(type_attr);
-        else
+            if (!data) {
+                throw SerializationException(
+                    "Factory could not create " + key + ": " + type_attr, key, type_attr);
+            }
+
+        } else {
             data = IvwSerializeBase::getNonRegisteredType<T>();
+            if (!data) {
+                throw SerializationException("Could not create " + key + ": " + type_attr, key,
+                                             type_attr);
+            }
+        }
     }
 
     if (data) {
         deserialize(key, *data);
-
-        if (!id_attr.empty())
-            refDataContainer_.insert(data, keyNode);
+        if (!id_attr.empty()) refDataContainer_.insert(data, keyNode);
     }
 }
 
