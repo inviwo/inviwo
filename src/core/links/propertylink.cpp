@@ -52,7 +52,7 @@ void PropertyLink::serialize(IvwSerializer& s) const {
 
 void PropertyLink::deserialize(IvwDeserializer& d) {
     std::vector<Property*> linkedProperties;
-    d.deserialize("Properties",linkedProperties, "Property");
+    d.deserialize("Properties", linkedProperties, "Property");
     if (linkedProperties.size() != 2) {
         std::string type = "test";
         throw SerializationException("Could not create Link: " + type, "Link",

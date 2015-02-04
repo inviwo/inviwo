@@ -53,50 +53,36 @@ void PortConnection::deserialize(IvwDeserializer& d) {
     std::string in_key;
     std::string in_type;
 
-    Outport outport("");
     try {
         d.deserialize("OutPort", outport_);
     } catch (SerializationException& e) {
         out_error = true;
-        out_key = e.getType();
-        out_type = e.getKey();
+        out_type = e.getType();
+        out_key = e.getKey();
     }
 
-    Inport inport("");
     try {
         d.deserialize("InPort", inport_);
     } catch (SerializationException& e) {
         in_error = true;
-        in_key = e.getType();
-        in_type = e.getKey();
+        in_type = e.getType();
+        in_key = e.getKey();
     }
 
     if (!(out_error || in_error)) {
-        Processor* outPortProcessor = outport.getProcessor();
-        if (outPortProcessor) {
-            outport_ = outPortProcessor->getOutport(outport.getIdentifier());
-        }
-        Processor* inPortProcessor = inport.getProcessor();
-        if (inPortProcessor) {
-            inport_ = inPortProcessor->getInport(inport.getIdentifier());
+        if (inport_->getProcessor()->getInport(inport_->getIdentifier()) != inport_) {
+            inport_ = inport_->getProcessor()->getInport(inport_->getIdentifier());
         }
 
-        if (!(outport_ && inport_)) {
-            std::string type =
-                (outPortProcessor ? outPortProcessor->getIdentifier() : "<Missing>") + "." +
-                outport.getIdentifier() + " to " +
-                (inPortProcessor ? inPortProcessor->getIdentifier() : "<Missing>") + "." +
-                inport.getIdentifier();
-
-            throw SerializationException("Could not create PortConnection: " + type,
-                                         "PortConnection", type);
+        if (outport_->getProcessor()->getOutport(outport_->getIdentifier()) != outport_) {
+            outport_ = outport_->getProcessor()->getOutport(outport_->getIdentifier());
         }
 
     } else {
-        std::string type = (out_error ? out_type : outport.getProcessor()->getIdentifier()) + "." +
-                           outport.getIdentifier() + " to " +
-                           (in_error ? in_type : inport.getProcessor()->getIdentifier()) + "." +
-                           inport.getIdentifier();
+        std::string type = (out_error ? out_type : outport_->getProcessor()->getIdentifier()) + "." +
+                           outport_->getIdentifier() + " to " +
+                           (in_error ? in_type : inport_->getProcessor()->getIdentifier()) + "." +
+                           inport_->getIdentifier();
 
         throw SerializationException("Could not create PortConnection: " + type, "PortConnection",
                                      type);
