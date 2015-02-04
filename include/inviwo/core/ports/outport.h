@@ -52,7 +52,7 @@ class IVW_CORE_API Outport : public Port {
     friend class MultiInport;
     friend class ImageInport;
 public:
-    Outport(std::string identifier,
+    Outport(std::string identifier = "",
             InvalidationLevel invalidationLevel=INVALID_OUTPUT);
     virtual ~Outport();
 

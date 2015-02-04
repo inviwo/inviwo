@@ -59,7 +59,7 @@ public:
      *                   of a processor.
      * @see Processor::addPort()
      */
-    Port(std::string identifier);
+    Port(std::string identifier = "");
     virtual ~Port();
 
     /**
