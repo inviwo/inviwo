@@ -107,6 +107,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/ivfvolumewriter.h    
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwdeserializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwserializable.h  
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwserialization.h
@@ -316,6 +317,7 @@ set(SOURCE_FILES
     io/ivfvolumereader.cpp 
     io/ivfvolumewriter.cpp  
     io/rawvolumereader.cpp
+    io/serialization/deserializationerrorhandler.cpp
     io/serialization/ivwdeserializer.cpp
     io/serialization/ivwserializebase.cpp
     io/serialization/ivwserializeconstants.cpp
