@@ -188,6 +188,7 @@ inline void IvwSerializer::serialize(const std::string& key, const T* const& dat
     else {
         if (refDataContainer_.find(data)) {
             TxElement* newNode = refDataContainer_.nodeCopy(data);
+            newNode->SetValue(key);
             rootElement_->LinkEndChild(newNode);
             refDataContainer_.insert(data, newNode);
         } else {

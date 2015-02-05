@@ -694,6 +694,22 @@ void ProcessorNetwork::serialize(IvwSerializer& s) const {
 void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     // This will set deserializing_ to true while keepTrueWillAlive is in scope
     // and set it to false no matter how we leave the scope
+    
+    struct ErrorHandle {
+        void handleProcessorError(SerializationException& error) {
+            messages.push_back(error.getMessage());     
+        }
+        void handleConnectionError(SerializationException& error) {
+            messages.push_back(error.getMessage());
+        }
+        void handleLinkError(SerializationException& error) {
+            messages.push_back(error.getMessage());
+        }
+  
+        std::vector<std::string> messages;
+    };
+    ErrorHandle errorHandle;
+    
     KeepTrueWhileInScope keepTrueWillAlive(&deserializing_);
 
     int version = 0;
@@ -709,8 +725,8 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     // Processors
     ProcessorVector processors;
     try {
-        DeserializationErrorHandle<ProcessorNetwork> 
-            processor_err(d, "Processor", this, &ProcessorNetwork::handleProcessorError);
+        DeserializationErrorHandle<ErrorHandle> 
+            processor_err(d, "Processor", &errorHandle, &ErrorHandle::handleProcessorError);
         d.deserialize("Processors", processors, "Processor");
         for (size_t i = 0; i < processors.size(); ++i) {
             if (processors[i]) {
@@ -730,8 +746,8 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     // Connections
     try {
         std::vector<PortConnection*> portConnections;
-        DeserializationErrorHandle<ProcessorNetwork>
-            connection_err(d, "Connection", this, &ProcessorNetwork::handleConnectionError);
+        DeserializationErrorHandle<ErrorHandle>
+            connection_err(d, "Connection", &errorHandle, &ErrorHandle::handleConnectionError);
         d.deserialize("Connections", portConnections, "Connection");
 
         processors = getProcessors();
@@ -760,8 +776,8 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     // Links
     try {
         std::vector<PropertyLink*> propertyLinks;
-        DeserializationErrorHandle<ProcessorNetwork>
-            connection_err(d, "PropertyLink", this, &ProcessorNetwork::handleLinkError);
+        DeserializationErrorHandle<ErrorHandle>
+            connection_err(d, "PropertyLink", &errorHandle, &ErrorHandle::handleLinkError);
         d.deserialize("PropertyLinks", propertyLinks, "PropertyLink");
 
         for (size_t j = 0; j < propertyLinks.size(); j++) {
@@ -779,6 +795,13 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
                 LogWarn("Unable to establish property link Nr: " << j);
             }
         }
+
+    if (!errorHandle.messages.empty()) {
+        LogWarn("There were errors while loading workspace: " + d.getFileName() + "\n" +
+                joinString(errorHandle.messages, "\n"));
+    }
+
+
     } catch (const SerializationException& exception) {
         throw IgnoreException("DeSerialization Exception " + exception.getMessage());
     } catch (...) {
@@ -804,19 +827,7 @@ Property* ProcessorNetwork::getProperty(std::vector<std::string> path) const {
     return NULL;
 }
 
-void ProcessorNetwork::handleProcessorError(SerializationException& error) {
-    LogInfo(error.getMessage());
-}
-
-void ProcessorNetwork::handleConnectionError(SerializationException& error) {
-    LogInfo(error.getMessage());
-}
-
-void ProcessorNetwork::handleLinkError(SerializationException& error) {
-    LogInfo(error.getMessage());
-}
-
-const int ProcessorNetwork::processorNetworkVersion_ = 8;
+const int ProcessorNetwork::processorNetworkVersion_ = 9;
 
 
 ProcessorNetwork::NetworkConverter::NetworkConverter(int from)
@@ -840,6 +851,8 @@ bool ProcessorNetwork::NetworkConverter::convert(TxElement* root) {
             traverseNodes(root, &ProcessorNetwork::NetworkConverter::updateMetaDataKeys);
         case 7:
             traverseNodes(root, &ProcessorNetwork::NetworkConverter::updateDimensionTag);
+        case 8:
+            traverseNodes(root, &ProcessorNetwork::NetworkConverter::updatePropertyLinks);
         default:
             break;
     }
@@ -1096,6 +1109,30 @@ void ProcessorNetwork::NetworkConverter::updateDimensionTag(TxElement* node) {
 
     if (key == "dimension") {
         node->SetValue("dimensions");
+    }
+}
+
+void ProcessorNetwork::NetworkConverter::updatePropertyLinks(TxElement* node) {
+    std::string key;
+    node->GetValue(&key);
+
+    if (key == "PropertyLink") {
+        TxElement* properties = node->FirstChildElement(false);
+        if (properties) {
+            TxElement* src = properties->FirstChild()->ToElement();
+            TxElement* dest = properties->LastChild()->ToElement();
+            src->SetValue("SourceProperty");
+            dest->SetValue("DestinationProperty");
+
+            node->InsertEndChild(*src);
+            node->InsertEndChild(*dest);
+
+            node->RemoveChild(properties);
+
+            std::stringstream ss;
+            ss << *node;
+            std::string txt = ss.str();
+        }
     }
 }
 

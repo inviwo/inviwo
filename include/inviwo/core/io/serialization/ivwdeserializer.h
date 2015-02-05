@@ -42,6 +42,34 @@ namespace inviwo {
 class IvwSerializable;
 class VersionConverter;
 
+struct IVW_CORE_API NodeDebugger {
+    struct Node {
+        Node(std::string k = "", std::string i = "", std::string t = "")
+            : key(k), identifier(i), type(t) {}
+        std::string key;
+        std::string identifier;
+        std::string type;
+    };
+    Node operator[](std::size_t idx) const {
+        if (idx < nodes_.size()) {
+            return nodes_[idx];
+        } else {
+            return Node("UnKnown", "UnKnown");
+        }
+    }
+    std::vector<std::string> getPath() const {
+        std::vector<std::string> path;
+        for (std::vector<Node>::const_reverse_iterator it = nodes_.rbegin(); it != nodes_.rend();
+             ++it) {
+            if (!it->identifier.empty()) path.push_back(it->identifier);
+        }
+        return path;
+    }
+    size_t size() const { return nodes_.size(); }
+    NodeDebugger(TxElement* node);
+    std::vector<Node> nodes_;
+};
+
 template <typename T>
 class DeserializationErrorHandle {
 public:
@@ -475,15 +503,11 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
             if (!data) {
                 std::map<std::string, TxElement*>::iterator it = referenceLookup_.find(ref_attr);
                 if (it != referenceLookup_.end()) {
-                    std::string refKey;
-                    it->second->GetValue(&refKey);
-                    std::string refType = it->second->GetAttributeOrDefault(
-                        IvwSerializeConstants::TYPE_ATTRIBUTE, "");
-                    std::string refIdentifier = it->second->GetAttributeOrDefault("identifier", "");
- 
-                    throw SerializationException("Reference to " + refKey + " not instantiated: " +
-                                                     refType + "." + refIdentifier,
-                                                 refKey, refType, refIdentifier, it->second);
+                    NodeDebugger error(keyNode);
+                    throw SerializationException(
+                        "Reference to " + error[0].key + " not instantiated: " + error[0].type +
+                            "." + error[0].identifier,
+                        error[0].key, error[0].type, error[0].identifier, it->second);
                 } else {
                     throw SerializationException(
                         "Could not find reference to " + key + ": " + type_attr, key, type_attr);
@@ -493,17 +517,21 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
         } else if (!type_attr.empty()) {
             data = IvwSerializeBase::getRegisteredType<T>(type_attr);
             if (!data) {
-                std::string id = keyNode->GetAttributeOrDefault("identifier", "");
-                throw SerializationException("Factory could not create " + key + ": " + type_attr,
-                                             key, type_attr, id, keyNode);
+                NodeDebugger error(keyNode);
+                throw SerializationException("Could not create " + key + ": \"" +
+                                                 error[0].identifier + "\" of class \"" +
+                                                 error[0].type + "\" at line: " + toString(keyNode->Row()),
+                                             key, type_attr, error[0].identifier, keyNode);
             }
 
         } else {
             data = IvwSerializeBase::getNonRegisteredType<T>();
             if (!data) {
-                std::string id = keyNode->GetAttributeOrDefault("identifier", "");
-                throw SerializationException("Could not create " + key + ": " + type_attr, key,
-                                             type_attr, id, keyNode);
+                NodeDebugger error(keyNode);
+                throw SerializationException("Could not create " + key + ": \"" +
+                                                 error[0].identifier + "\" of class \"" +
+                                                 error[0].type + "\"",
+                                             key, type_attr, error[0].identifier, keyNode);
             }
         }
     }

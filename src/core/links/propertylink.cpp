@@ -44,48 +44,54 @@ PropertyLink::PropertyLink(Property* srcProperty, Property* destProperty)
 }
 
 void PropertyLink::serialize(IvwSerializer& s) const {
-    std::vector<Property*> linkedProperties;
-    linkedProperties.push_back(srcProperty_);
-    linkedProperties.push_back(dstProperty_);
-    s.serialize("Properties", linkedProperties, "Property");
+    s.serialize("SourceProperty", srcProperty_);
+    s.serialize("DestinationProperty", dstProperty_);
 }
 
 void PropertyLink::deserialize(IvwDeserializer& d) {
-
-    struct LinkError {
-        typedef std::pair<std::string, SerializationException::SerializationExceptionData> LError;
-        void handleError(SerializationException& error) {
-            errors_.push_back(LError(error.getMessage(), error.getData()));
-        }
-        std::vector<LError> errors_; 
+    struct LError {
+        LError() : error(false), data(){};
+        bool error;
+        SerializationException::SerializationExceptionData data;
     };
+    LError src, dest;
 
-    LinkError handle;
-
-    std::vector<Property*> linkedProperties;
-    DeserializationErrorHandle<LinkError> err(d, "Property", &handle, &LinkError::handleError);
     try {
-        d.deserialize("Properties", linkedProperties, "Property");
+        d.deserialize("SourceProperty", srcProperty_);
+    } catch (SerializationException& e) {
+        src.error = true;
+        src.data = e.getData();
+    }
 
-        if (!handle.errors_.empty()) {
-            std::string processorId("");
-            TxElement* xprop = handle.errors_[0].second.node;
-            if (xprop) {
-                TxElement* xlist = xprop->Parent()->ToElement();
-                if (xlist) {
-                    TxElement* xproc = xlist->Parent()->ToElement();
-                    processorId = xproc->GetAttributeOrDefault("identifier", "");
-                }
-            }
-            throw SerializationException("Could not create link " + processorId,
-                                         "PropertyLink");
-        }
+    try {
+        d.deserialize("DestinationProperty", dstProperty_);
+    } catch (SerializationException& e) {
+        dest.error = true;
+        dest.data = e.getData();
+    }
 
-        srcProperty_ = linkedProperties[0];
-        dstProperty_ = linkedProperties[1];
-    } catch (SerializationException& error) {
-        throw SerializationException("Could not create link of type " + error.getType(),
-                                     "PropertyLink", error.getType());
+    if (src.error && dest.error) {
+        NodeDebugger ndSrc(src.data.node);
+        NodeDebugger ndDest(dest.data.node);
+        throw SerializationException("Could not create Property Link from \"" +
+                                         joinString(ndSrc.getPath(), ".") + "\" to " +
+                                         joinString(dstProperty_->getPath(), ".") +
+                                         "\". Source and destination properties not found.",
+                                     "PropertyLink");
+
+    } else if (src.error) {
+        NodeDebugger ndSrc(src.data.node);
+        throw SerializationException(
+            "Could not create Property Link from \"" + joinString(ndSrc.getPath(), ".") + "\" to " +
+                joinString(dstProperty_->getPath(), ".") + "\". Source property not found.",
+            "PropertyLink");
+    } else if (dest.error) {
+        NodeDebugger ndDest(dest.data.node);
+        throw SerializationException("Could not create Property Link from \"" +
+                                         joinString(srcProperty_->getPath(), ".") + "\" to " +
+                                         joinString(ndDest.getPath(), ".") +
+                                         "\". Destination property not found.",
+                                     "PropertyLink");
     }
 }
 

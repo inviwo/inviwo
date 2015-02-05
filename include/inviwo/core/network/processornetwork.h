@@ -308,11 +308,6 @@ public:
     * further operation.
     */
     void clear();
-    
-    void handleProcessorError(SerializationException& error);
-    void handleConnectionError(SerializationException& error);
-    void handleLinkError(SerializationException& error);
-
 private:
 
     class PropertyLinkContainsTest {
@@ -378,6 +373,7 @@ private:
         void updateShadingMode(TxElement* node);
         void updateCameraToComposite(TxElement* node);
         void updateDimensionTag(TxElement* node);
+        void updatePropertyLinks(TxElement* node);
         void traverseNodes(TxElement* node, updateType update);
     };
 };
