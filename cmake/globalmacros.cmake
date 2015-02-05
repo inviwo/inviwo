@@ -980,6 +980,9 @@ macro(ivw_add_dependencies)
       # Make string upper case
       #string(TOUPPER ${package} u_package)
       ivw_depend_name(u_package ${package})
+      if(NOT DEFINED ${u_package}_FOUND AND DEFINED ${package}_FOUND)
+        set(u_package ${package})
+      endif()
       
       #--------------------------------------------------------------------
       # Set includes and append to list
