@@ -1053,6 +1053,14 @@ macro(ivw_add_dependencies)
       
       #--------------------------------------------------------------------
       # Link library
+      if(NOT DEFINED ${u_package}_LIBRARIES  AND DEFINED ${u_package}_LIBRARY)
+        if(DEFINED ${u_package}_LIBRARY_DEBUG)
+            set(${u_package}_LIBRARIES optimized "${${u_package}_LIBRARY}" debug "${${u_package}_LIBRARY_DEBUG}")
+        else()
+            set(${u_package}_LIBRARIES "${${u_package}_LIBRARY}")
+        endif()
+      endif()
+      
        target_link_libraries(${_projectName} ${${u_package}_LIBRARIES})
       
       #--------------------------------------------------------------------
