@@ -1037,6 +1037,7 @@ macro(ivw_add_dependencies)
       #--------------------------------------------------------------------
       # Set directory links
       link_directories(${${u_package}_LIBRARY_DIR})
+	  link_directories(${${u_package}_LIBRARY_DIRS})
 
       #--------------------------------------------------------------------
       # Set directory links
