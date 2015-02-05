@@ -47,14 +47,11 @@ IvwSerializer::IvwSerializer(const std::string& fileName, bool allowReference)
 }
 
 
-
 IvwSerializer::~IvwSerializer() {
     delete rootElement_;
 }
 
 void IvwSerializer::initialize() {
-    registerFactories();
-
     try {
         TxComment* comment;
         TxDeclaration* decl = new TxDeclaration(IvwSerializeConstants::XML_VERSION, "", "");

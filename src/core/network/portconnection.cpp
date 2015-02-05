@@ -45,31 +45,28 @@ void PortConnection::serialize(IvwSerializer& s) const {
 }
 
 void PortConnection::deserialize(IvwDeserializer& d) {
-    bool out_error(false);
-    std::string out_key;
-    std::string out_type;
-
-    bool in_error(false);
-    std::string in_key;
-    std::string in_type;
+    struct SError {
+        SError() : error(false), data() {};
+        bool error;
+        SerializationException::SerializationExceptionData data;
+    };    
+    SError in, out;
 
     try {
         d.deserialize("OutPort", outport_);
     } catch (SerializationException& e) {
-        out_error = true;
-        out_type = e.getType();
-        out_key = e.getKey();
+        out.error = true;
+        out.data = e.getData();
     }
 
     try {
         d.deserialize("InPort", inport_);
     } catch (SerializationException& e) {
-        in_error = true;
-        in_type = e.getType();
-        in_key = e.getKey();
+        in.error = true;
+        in.data = e.getData();
     }
 
-    if (!(out_error || in_error)) {
+    if (!(out.error || in.error)) {
         if (inport_->getProcessor()->getInport(inport_->getIdentifier()) != inport_) {
             inport_ = inport_->getProcessor()->getInport(inport_->getIdentifier());
         }
@@ -79,13 +76,36 @@ void PortConnection::deserialize(IvwDeserializer& d) {
         }
 
     } else {
-        std::string type = (out_error ? out_type : outport_->getProcessor()->getIdentifier()) + "." +
+        std::string type = (out.error ? out.data.type : outport_->getProcessor()->getIdentifier()) + "." +
                            outport_->getIdentifier() + " to " +
-                           (in_error ? in_type : inport_->getProcessor()->getIdentifier()) + "." +
+                           (in.error ? in.data.type : inport_->getProcessor()->getIdentifier()) + "." +
                            inport_->getIdentifier();
 
-        throw SerializationException("Could not create PortConnection: " + type, "Connection",
-                                     type);
+        if (out.error && in.error) {
+            throw SerializationException("Could not create Connection from port \""
+                                         + outport_->getIdentifier() + "\" in the missing processor \""
+                                         + out.data.id + "\" of class \"" + out.data.type
+                                         + "\" to port \"" + inport_->getIdentifier()
+                                         + "\" in the missing processor \"" + in.data.id
+                                         + "\" of class \"" + in.data.type + "\"",
+                                         "Connection");
+        } else if (out.error) {
+            throw SerializationException("Could not create Connection from port \""
+                                         + outport_->getIdentifier() + "\" in the missing processor \""
+                                         + out.data.id + "\" of class \"" + out.data.type 
+                                         + "\" to port \"" + inport_->getIdentifier() 
+                                         + "\" in processor \""
+                                         + inport_->getProcessor()->getIdentifier() + "\"",
+                                         "Connection");
+        } else { // in.error
+            throw SerializationException("Could not create Connection from port \"" 
+                                         + outport_->getIdentifier() + "\" in processor \""
+                                         + outport_->getProcessor()->getIdentifier() 
+                                         + "\" to port \"" + inport_->getIdentifier() 
+                                         + "\" in the missing processor \"" + in.data.id 
+                                         + "\" of class \"" + in.data.type + "\"", 
+                                        "Connection");
+        }
     }
 }
 

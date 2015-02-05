@@ -40,32 +40,25 @@ namespace inviwo {
 
 IvwDeserializer::IvwDeserializer(IvwDeserializer& s, bool allowReference)
     : IvwSerializeBase(s.getFileName(), allowReference) {
-    registerFactories();
 
-    try {
-        readXMLData();
-    } catch (AbortException& e) {
-        throw SerializationException(e.what());
-    }
+    doc_.LoadFile();
+    rootElement_ = doc_.FirstChildElement();
+    storeReferences(rootElement_);
 }
 
 IvwDeserializer::IvwDeserializer(std::string fileName, bool allowReference)
     : IvwSerializeBase(fileName, allowReference) {
-    registerFactories();
 
-    try {
-        readXMLData();
-    } catch (AbortException& e) {
-        throw SerializationException(e.what());
-    }
+    doc_.LoadFile();
+    rootElement_ = doc_.FirstChildElement();
+    storeReferences(rootElement_);
 }
 
 IvwDeserializer::IvwDeserializer(std::istream& stream, const std::string& path, bool allowReference)
     : IvwSerializeBase(stream, path, allowReference) {
-    registerFactories();
     // Base streamed in the xml data. Get the first node.
     rootElement_ = doc_.FirstChildElement();
-
+    storeReferences(rootElement_);
 }
 
 
@@ -159,17 +152,6 @@ void IvwDeserializer::deserialize(const std::string& key, unsigned long long& da
     deserializePrimitive<unsigned long long>(key, data);
 }
 
-void IvwDeserializer::readXMLData() {
-    try {
-        doc_.LoadFile();
-        rootElement_ = doc_.FirstChildElement();
-    } catch (TxException&) {
-        std::stringstream ss;
-        ss << "Error reading file: " << IvwSerializeBase::fileName_;
-        throw (AbortException(ss.str()));
-    }
-}
-
 void IvwDeserializer::convertVersion(VersionConverter* converter) {
     converter->convert(rootElement_);
 }
@@ -194,6 +176,17 @@ void IvwDeserializer::handleError(SerializationException& e) {
         }
     }
     LogWarn(e.getMessage());
+}
+
+void IvwDeserializer::storeReferences(TxElement* node) {
+    std::string id = node->GetAttributeOrDefault("id", "");
+    if (id != "") {
+        referenceLookup_[id] = node;
+    } 
+    ticpp::Iterator<ticpp::Element> child;
+    for (child = child.begin(node); child != child.end(); child++) {
+        storeReferences(child.Get());
+    }
 }
 
 } //namespace

@@ -51,20 +51,42 @@ void PropertyLink::serialize(IvwSerializer& s) const {
 }
 
 void PropertyLink::deserialize(IvwDeserializer& d) {
+
+    struct LinkError {
+        typedef std::pair<std::string, SerializationException::SerializationExceptionData> LError;
+        void handleError(SerializationException& error) {
+            errors_.push_back(LError(error.getMessage(), error.getData()));
+        }
+        std::vector<LError> errors_; 
+    };
+
+    LinkError handle;
+
     std::vector<Property*> linkedProperties;
-    DeserializationErrorHandle<PropertyLink> err(d, "Property", this, &PropertyLink::handleError);
+    DeserializationErrorHandle<LinkError> err(d, "Property", &handle, &LinkError::handleError);
     try {
         d.deserialize("Properties", linkedProperties, "Property");
+
+        if (!handle.errors_.empty()) {
+            std::string processorId("");
+            TxElement* xprop = handle.errors_[0].second.node;
+            if (xprop) {
+                TxElement* xlist = xprop->Parent()->ToElement();
+                if (xlist) {
+                    TxElement* xproc = xlist->Parent()->ToElement();
+                    processorId = xproc->GetAttributeOrDefault("identifier", "");
+                }
+            }
+            throw SerializationException("Could not create link " + processorId,
+                                         "PropertyLink");
+        }
+
         srcProperty_ = linkedProperties[0];
         dstProperty_ = linkedProperties[1];
     } catch (SerializationException& error) {
         throw SerializationException("Could not create link of type " + error.getType(),
                                      "PropertyLink", error.getType());
     }
-}
-
-void PropertyLink::handleError(SerializationException& error) {
-    throw error;
 }
 
 bool operator==(const PropertyLink& lhs, const PropertyLink& rhs) {

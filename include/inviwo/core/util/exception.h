@@ -65,19 +65,6 @@ public:
     virtual ~AbortException() throw() {}
 };
 
-class IVW_CORE_API SerializationException : public Exception {
-public:
-    SerializationException(std::string message = "", std::string key = "", std::string type = "");
-    virtual ~SerializationException() throw() {}
-
-    virtual const std::string& getKey() const throw();
-    virtual const std::string& getType() const throw();
-
-private:
-    std::string key_;
-    std::string type_;
-};
-
 } // namespace
 
 #endif // IVW_EXCEPTION_H

@@ -232,10 +232,7 @@ public:
 
 protected:
     friend class NodeSwitch;
-    /** 
-     * \brief Read xml data and set the root element.
-     */
-    virtual void readXMLData();
+
 private:
 
     /**
@@ -275,12 +272,13 @@ private:
      * @param T & vector Glm data structures such as vec2, ive2, vec3, ivec3, etc.,
      */
     template <class T>
-    void deserializeVector(const std::string& key,
-                           T& vector);
+    void deserializeVector(const std::string& key, T& vector);
+    void storeReferences(TxElement* node);
 
     void handleError(SerializationException&);
 
-    std::vector<BaseDeserializationErrorHandler*> errorHandlers_; 
+    std::vector<BaseDeserializationErrorHandler*> errorHandlers_;
+    std::map<std::string, TxElement*> referenceLookup_;
 };
 
 template<class T>
@@ -475,22 +473,37 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
             // and set the pointer to it.
             data = static_cast<T*>(refDataContainer_.find(type_attr, ref_attr));
             if (!data) {
-                throw SerializationException(
-                    "Could not find reference to " + key + ": " + type_attr, key, type_attr);
+                std::map<std::string, TxElement*>::iterator it = referenceLookup_.find(ref_attr);
+                if (it != referenceLookup_.end()) {
+                    std::string refKey;
+                    it->second->GetValue(&refKey);
+                    std::string refType = it->second->GetAttributeOrDefault(
+                        IvwSerializeConstants::TYPE_ATTRIBUTE, "");
+                    std::string refIdentifier = it->second->GetAttributeOrDefault("identifier", "");
+ 
+                    throw SerializationException("Reference to " + refKey + " not instantiated: " +
+                                                     refType + "." + refIdentifier,
+                                                 refKey, refType, refIdentifier, it->second);
+                } else {
+                    throw SerializationException(
+                        "Could not find reference to " + key + ": " + type_attr, key, type_attr);
+                }
             }
             return;
         } else if (!type_attr.empty()) {
             data = IvwSerializeBase::getRegisteredType<T>(type_attr);
             if (!data) {
+                std::string id = keyNode->GetAttributeOrDefault("identifier", "");
                 throw SerializationException("Factory could not create " + key + ": " + type_attr,
-                                             key, type_attr);
+                                             key, type_attr, id, keyNode);
             }
 
         } else {
             data = IvwSerializeBase::getNonRegisteredType<T>();
             if (!data) {
+                std::string id = keyNode->GetAttributeOrDefault("identifier", "");
                 throw SerializationException("Could not create " + key + ": " + type_attr, key,
-                                             type_attr);
+                                             type_attr, id, keyNode);
             }
         }
     }

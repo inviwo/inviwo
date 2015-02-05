@@ -53,8 +53,6 @@ public :
     friend bool IVW_CORE_API operator==(const PropertyLink& lhs, const PropertyLink& rhs);
     friend bool IVW_CORE_API operator<(const PropertyLink& lhs, const PropertyLink& rhs);
 
-    void handleError(SerializationException& error);
-
 private:
     Property* srcProperty_;
     Property* dstProperty_;

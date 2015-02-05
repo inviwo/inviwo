@@ -95,6 +95,31 @@ typedef ticpp::Iterator<TxAttribute> TxAIt;
 
 class IvwSerializable;
 
+class IVW_CORE_API SerializationException : public Exception {
+public:
+    struct SerializationExceptionData {
+        SerializationExceptionData(std::string k = "", std::string t = "", std::string i = "",
+                                   TxElement* n = NULL)
+            : key(k), type(t), id(i), node(n) {}
+        std::string key;
+        std::string type;
+        std::string id;
+        TxElement* node;
+    };
+
+    SerializationException(std::string message = "", std::string key = "", std::string type = "",
+                           std::string id = "",  TxElement* n = NULL);
+    virtual ~SerializationException() throw() {}
+
+    virtual const std::string& getKey() const throw();
+    virtual const std::string& getType() const throw();
+    virtual const std::string& getId() const throw();
+    virtual const SerializationExceptionData& getData() const throw();
+
+private:
+    SerializationExceptionData data_;
+};
+
 class IVW_CORE_API IvwSerializeBase {
 public:
     /**

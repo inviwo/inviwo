@@ -32,32 +32,15 @@
 
 namespace inviwo {
 
-Exception::Exception(const std::string& message)
-    : message_(message) {}
+Exception::Exception(const std::string& message) : message_(message) {}
 
-Exception::~Exception() throw () {}
+Exception::~Exception() throw() {}
 
-const std::string& Exception::getMessage() const throw() {
-    return message_;
-};
+const std::string& Exception::getMessage() const throw() { return message_; };
 
-IgnoreException::IgnoreException(const std::string& message)
-    : Exception(message) {}
+IgnoreException::IgnoreException(const std::string& message) : Exception(message) {}
 
-AbortException::AbortException(const std::string& message)
-    : Exception(message) {}
-
-SerializationException::SerializationException(std::string message, std::string key,
-                                               std::string type)
-                                               : Exception(message), key_(key), type_(type) {}
-
-const std::string& SerializationException::getKey() const throw() {
-    return key_;
-}
-
-const std::string& SerializationException::getType() const throw() {
-    return type_;
-}
+AbortException::AbortException(const std::string& message) : Exception(message) {}
 
 
 } // namespace
