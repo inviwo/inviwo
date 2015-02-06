@@ -54,7 +54,7 @@ void InviwoSetupInfo::ModuleSetupInfo::deserialize(IvwDeserializer& d) {
 
 InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication* app) {
     const std::vector<InviwoModule*>& modules = app->getModules();
-    for (std::vector<const InviwoModule*>::const_iterator it = modules.begin(); it != modules.end();
+    for (std::vector<InviwoModule*>::const_iterator it = modules.begin(); it != modules.end();
          ++it) {
         modules_.push_back(ModuleSetupInfo(*it));
     }
