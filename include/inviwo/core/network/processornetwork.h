@@ -322,7 +322,7 @@ private:
   
         std::vector<std::string> messages;
     };
-
+    
     class PropertyLinkContainsTest {
     public:
         PropertyLinkContainsTest(Property* p) : p_(p) {}

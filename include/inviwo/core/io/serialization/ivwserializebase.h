@@ -222,6 +222,16 @@ public:
          * @param TxElement * node //Parent (Ticpp Node) element.
          */
         NodeSwitch(IvwSerializeBase& serializer, TxElement* node, bool retrieveChild = true);
+        
+        
+        /**
+         * \brief NodeSwitch helps track parent node during recursive/nested function calls.
+         *
+         * @param IvwSerializeBase & serializer reference to serializer or deserializer
+         * @param std::string key the child to switch to.
+         */
+        NodeSwitch(IvwSerializeBase& serializer, const std::string& key, bool retrieveChild = true);
+        
         /**
          * \brief Destructor
          */

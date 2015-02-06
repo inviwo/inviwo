@@ -62,6 +62,18 @@ IvwSerializeBase::NodeSwitch::NodeSwitch(IvwSerializeBase& serializer, TxElement
     serializer_.retrieveChild_ = retrieveChild;
 }
 
+IvwSerializeBase::NodeSwitch::NodeSwitch(IvwSerializeBase& serializer, const std::string& key,
+                                         bool retrieveChild)
+    : serializer_(serializer)
+    , storedNode_(serializer_.rootElement_)
+    , storedRetrieveChild_(serializer_.retrieveChild_) {
+    serializer_.rootElement_ = serializer_.retrieveChild_
+                                   ? serializer_.rootElement_->FirstChildElement(key)
+                                   : serializer_.rootElement_;
+
+    serializer_.retrieveChild_ = retrieveChild;
+}
+
 IvwSerializeBase::NodeSwitch::~NodeSwitch() {
     serializer_.rootElement_ = storedNode_;
     serializer_.retrieveChild_ = storedRetrieveChild_;
@@ -157,27 +169,31 @@ TxElement* IvwSerializeBase::ReferenceDataContainer::nodeCopy(const void* data) 
 }
 
 IvwSerializeBase::IvwSerializeBase(bool allowReference/*=true*/)
-    : allowRef_(allowReference) {
+    : allowRef_(allowReference)
+    , retrieveChild_(true) {
     registerFactories();
 }
 
 IvwSerializeBase::IvwSerializeBase(IvwSerializeBase& s, bool allowReference)
     : fileName_(s.fileName_)
     , doc_(s.fileName_)
-    , allowRef_(allowReference) {
+    , allowRef_(allowReference)
+    , retrieveChild_(true) {
     registerFactories();
 }
 
 IvwSerializeBase::IvwSerializeBase(std::string fileName, bool allowReference)
     : fileName_(fileName)
     , doc_(fileName)
-    , allowRef_(allowReference) {
+    , allowRef_(allowReference)
+    , retrieveChild_(true) {
     registerFactories();
 }
 
 IvwSerializeBase::IvwSerializeBase(std::istream& stream, const std::string& path, bool allowReference)
     : fileName_(path)
-    , allowRef_(allowReference) {
+    , allowRef_(allowReference)
+    , retrieveChild_(true) {
     stream >> doc_;
     registerFactories();
 }

@@ -67,16 +67,10 @@ IvwDeserializer::~IvwDeserializer() {
 
 void IvwDeserializer::deserialize(const std::string& key, IvwSerializable& sObj) {
     try {
-        TxElement* keyNode;
-
-        if (retrieveChild_)
-            keyNode = rootElement_->FirstChildElement(key);
-        else
-            keyNode = rootElement_;
-
-        NodeSwitch tempNodeSwitch(*this, keyNode);
+        NodeSwitch ns(*this, key);
         sObj.deserialize(*this);
-    } catch (TxException&) {}
+    } catch (TxException&) {
+    }
 }
 
 void IvwDeserializer::deserializeAttributes(const std::string& key, std::string& data) {
@@ -86,15 +80,11 @@ void IvwDeserializer::deserializeAttributes(const std::string& key, std::string&
 }
 
 void IvwDeserializer::deserializePrimitive(const std::string& key, std::string& data) {
-    if (retrieveChild_) {
-        rootElement_->FirstChildElement(key)->GetAttribute(
-            IvwSerializeConstants::CONTENT_ATTRIBUTE, &data);
-    } else
-        rootElement_->GetAttribute(IvwSerializeConstants::CONTENT_ATTRIBUTE, &data);
+    NodeSwitch ns(*this, key);
+    rootElement_->GetAttribute(IvwSerializeConstants::CONTENT_ATTRIBUTE, &data);
 }
 
-void IvwDeserializer::deserialize(const std::string& key,
-                                  std::string& data,
+void IvwDeserializer::deserialize(const std::string& key, std::string& data,
                                   const bool asAttribute) {
     if (asAttribute)
         deserializeAttributes(key, data);
@@ -102,15 +92,14 @@ void IvwDeserializer::deserialize(const std::string& key,
         try {
             deserializePrimitive(key, data);
         } catch (TxException&) {
-            //Try one more time to deserialize as string attribute (content attribute)
+            // Try one more time to deserialize as string attribute (content attribute)
             try {
                 deserializeAttributes(IvwSerializeConstants::CONTENT_ATTRIBUTE, data);
+            } catch (TxException&) {
             }
-            catch (TxException&) {}
         }
     }
 }
-
 
 void IvwDeserializer::deserialize(const std::string& key, bool& data) {
     deserializePrimitive<bool>(key, data);
@@ -186,21 +175,6 @@ void IvwDeserializer::storeReferences(TxElement* node) {
     ticpp::Iterator<ticpp::Element> child;
     for (child = child.begin(node); child != child.end(); child++) {
         storeReferences(child.Get());
-    }
-}
-
-NodeDebugger::NodeDebugger(TxElement* elem) {
-    while (elem) {
-        nodes_.push_back(Node(
-            elem->Value(),
-            elem->GetAttributeOrDefault("identifier", ""),
-            elem->GetAttributeOrDefault("type", "")));
-        TxNode* node = elem->Parent(false);
-        if (node) {
-            elem = dynamic_cast<TxElement*>(node);
-        } else {
-            elem = NULL;
-        }
     }
 }
 
