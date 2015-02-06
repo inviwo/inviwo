@@ -31,7 +31,7 @@
 #include <inviwo/core/io/serialization/deserializationerrorhandler.h>
 
 namespace inviwo {
-
-
+    BaseDeserializationErrorHandler::BaseDeserializationErrorHandler() {}
+    BaseDeserializationErrorHandler::~BaseDeserializationErrorHandler() {}
 } // namespace
 

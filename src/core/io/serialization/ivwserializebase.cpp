@@ -38,21 +38,6 @@
 
 namespace inviwo {
 
-SerializationException::SerializationException(std::string message, std::string key,
-                                               std::string type, std::string id, TxElement* node )
-    : Exception(message), data_(key, type, id, node) {}
-
-const std::string& SerializationException::getKey() const throw() { return data_.key; }
-
-const std::string& SerializationException::getType() const throw() { return data_.type; }
-
-const std::string& SerializationException::getId() const throw() { return data_.id; }
-
-const SerializationException::SerializationExceptionData& SerializationException::getData() const
-    throw() {
-    return data_;
-}
-
 IvwSerializeBase::NodeSwitch::NodeSwitch(IvwSerializeBase& serializer, TxElement* node,
                                          bool retrieveChild)
     : serializer_(serializer)

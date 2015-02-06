@@ -28,46 +28,28 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NODEDEBUGGER_H
-#define IVW_NODEDEBUGGER_H
+#ifndef IVW_TICPP_H
+#define IVW_TICPP_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/ticpp.h>
-#include <string>
-#include <vector>
+#ifndef TIXML_USE_TICPP
+#  define TIXML_USE_TICPP
+#endif
+
+#include <ticpp/ticpp.h>
 
 namespace inviwo {
 
-struct IVW_CORE_API NodeDebugger {
-    struct Node {
-        Node(std::string k = "", std::string i = "", std::string t = "", int l = 0)
-            : key(k), identifier(i), type(t), line(l) {}
-        std::string key;
-        std::string identifier;
-        std::string type;
-        int line;
-    };
-    Node operator[](std::size_t idx) const {
-        if (idx < nodes_.size()) {
-            return nodes_[idx];
-        } else {
-            return Node("UnKnown", "UnKnown");
-        }
-    }
-    std::vector<std::string> getPath() const {
-        std::vector<std::string> path;
-        for (std::vector<Node>::const_reverse_iterator it = nodes_.rbegin(); it != nodes_.rend();
-             ++it) {
-            if (!it->identifier.empty()) path.push_back(it->identifier);
-        }
-        return path;
-    }
-    size_t size() const { return nodes_.size(); }
-    NodeDebugger(TxElement* node);
-    std::vector<Node> nodes_;
-};
+typedef ticpp::Document TxDocument;
+typedef ticpp::Element TxElement;
+typedef ticpp::Node TxNode;
+typedef ticpp::Exception TxException;
+typedef ticpp::Declaration TxDeclaration;
+typedef ticpp::Comment TxComment;
+typedef ticpp::Attribute TxAttribute;
+typedef ticpp::Iterator<TxElement> TxEIt;
+typedef ticpp::Iterator<TxAttribute> TxAIt;
 
 } // namespace
 
-#endif // IVW_NODEDEBUGGER_H
+#endif // IVW_TICPP_H
 

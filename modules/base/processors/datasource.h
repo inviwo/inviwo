@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 

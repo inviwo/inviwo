@@ -31,13 +31,11 @@
 #ifndef IVW_SERIALIZE_BASE_H
 #define IVW_SERIALIZE_BASE_H
 
-#ifndef TIXML_USE_TICPP
-#  define TIXML_USE_TICPP
-#endif
 
-#include <ticpp/ticpp.h>
+#include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/ivwserializeconstants.h>
+#include <inviwo/core/io/serialization/serializationexception.h>
 #include <inviwo/core/util/factory.h>
 #include <map>
 
@@ -47,78 +45,11 @@
 #endif
 
 // include glm
-#ifndef GLM_FORCE_RADIANS
-#define GLM_FORCE_RADIANS
-#endif
-#ifndef GLM_SWIZZLE
-#define GLM_SWIZZLE
-#endif
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/type_precision.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/gtx/string_cast.hpp>
-
-typedef glm::ivec2 ivec2;
-typedef glm::ivec3 ivec3;
-typedef glm::ivec4 ivec4;
-typedef glm::vec2 vec2;
-typedef glm::vec3 vec3;
-typedef glm::vec4 vec4;
-typedef glm::dvec2 dvec2;
-typedef glm::dvec3 dvec3;
-typedef glm::dvec4 dvec4;
-typedef glm::bvec2 bvec2;
-typedef glm::bvec3 bvec3;
-typedef glm::bvec4 bvec4;
-typedef glm::uvec2 uvec2;
-typedef glm::uvec3 uvec3;
-typedef glm::uvec4 uvec4;
-typedef glm::mat2 mat2;
-typedef glm::mat3 mat3;
-typedef glm::mat4 mat4;
-typedef glm::quat quat;
-
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
 
-typedef ticpp::Document TxDocument;
-typedef ticpp::Element TxElement;
-typedef ticpp::Node TxNode;
-typedef ticpp::Exception TxException;
-typedef ticpp::Declaration TxDeclaration;
-typedef ticpp::Comment TxComment;
-typedef ticpp::Attribute TxAttribute;
-typedef ticpp::Iterator<TxElement> TxEIt;
-typedef ticpp::Iterator<TxAttribute> TxAIt;
-
 class IvwSerializable;
-
-class IVW_CORE_API SerializationException : public Exception {
-public:
-    struct SerializationExceptionData {
-        SerializationExceptionData(std::string k = "", std::string t = "", std::string i = "",
-                                   TxElement* n = NULL)
-            : key(k), type(t), id(i), node(n) {}
-        std::string key;
-        std::string type;
-        std::string id;
-        TxElement* node;
-    };
-
-    SerializationException(std::string message = "", std::string key = "", std::string type = "",
-                           std::string id = "",  TxElement* n = NULL);
-    virtual ~SerializationException() throw() {}
-
-    virtual const std::string& getKey() const throw();
-    virtual const std::string& getType() const throw();
-    virtual const std::string& getId() const throw();
-    virtual const SerializationExceptionData& getData() const throw();
-
-private:
-    SerializationExceptionData data_;
-};
 
 class IVW_CORE_API IvwSerializeBase {
 public:
@@ -285,16 +216,13 @@ protected:
 
 template <typename T>
 T* IvwSerializeBase::getRegisteredType(const std::string& className) {
-    T* data = 0;
+    T* data = NULL;
     std::vector<Factory*>::iterator it;
 
-    for (it = registeredFactories_.begin(); it!=registeredFactories_.end(); it++) {
+    for (it = registeredFactories_.begin(); it != registeredFactories_.end(); it++) {
         data = dynamic_cast<T*>((*it)->create(className));
-
-        if (data)
-            break;
+        if (data) break;
     }
-
     return data;
 }
 

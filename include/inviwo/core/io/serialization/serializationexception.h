@@ -28,46 +28,41 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NODEDEBUGGER_H
-#define IVW_NODEDEBUGGER_H
+#ifndef IVW_SERIALIZATIONEXCEPTION_H
+#define IVW_SERIALIZATIONEXCEPTION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/ticpp.h>
-#include <string>
-#include <vector>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-struct IVW_CORE_API NodeDebugger {
-    struct Node {
-        Node(std::string k = "", std::string i = "", std::string t = "", int l = 0)
-            : key(k), identifier(i), type(t), line(l) {}
+class IVW_CORE_API SerializationException : public Exception {
+public:
+    struct SerializationExceptionData {
+        SerializationExceptionData(std::string k = "", std::string t = "", std::string i = "",
+                                   TxElement* n = NULL)
+            : key(k), type(t), id(i), node(n) {}
         std::string key;
-        std::string identifier;
         std::string type;
-        int line;
+        std::string id;
+        TxElement* node;
     };
-    Node operator[](std::size_t idx) const {
-        if (idx < nodes_.size()) {
-            return nodes_[idx];
-        } else {
-            return Node("UnKnown", "UnKnown");
-        }
-    }
-    std::vector<std::string> getPath() const {
-        std::vector<std::string> path;
-        for (std::vector<Node>::const_reverse_iterator it = nodes_.rbegin(); it != nodes_.rend();
-             ++it) {
-            if (!it->identifier.empty()) path.push_back(it->identifier);
-        }
-        return path;
-    }
-    size_t size() const { return nodes_.size(); }
-    NodeDebugger(TxElement* node);
-    std::vector<Node> nodes_;
+
+    SerializationException(std::string message = "", std::string key = "", std::string type = "",
+                           std::string id = "",  TxElement* n = NULL);
+    virtual ~SerializationException() throw() {}
+
+    virtual const std::string& getKey() const throw();
+    virtual const std::string& getType() const throw();
+    virtual const std::string& getId() const throw();
+    virtual const SerializationExceptionData& getData() const throw();
+
+private:
+    SerializationExceptionData data_;
 };
 
 } // namespace
 
-#endif // IVW_NODEDEBUGGER_H
+#endif // IVW_SERIALIZATIONEXCEPTION_H
 

@@ -32,15 +32,14 @@
 #define IVW_DESERIALIZATIONERRORHANDLER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/exception.h>
+#include <inviwo/core/io/serialization/serializationexception.h>
 
 namespace inviwo {
 
 class IVW_CORE_API BaseDeserializationErrorHandler {
 public:
-    BaseDeserializationErrorHandler() {}
-    virtual ~BaseDeserializationErrorHandler() {}
+    BaseDeserializationErrorHandler();
+    virtual ~BaseDeserializationErrorHandler();
 
     virtual void handleError(SerializationException&) = 0;
     virtual std::string getKey() = 0;

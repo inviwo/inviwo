@@ -28,46 +28,52 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NODEDEBUGGER_H
-#define IVW_NODEDEBUGGER_H
+#ifndef IVW_GLM_H
+#define IVW_GLM_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/ticpp.h>
-#include <string>
-#include <vector>
+#ifndef GLM_FORCE_RADIANS
+#define GLM_FORCE_RADIANS
+#endif
+#ifndef GLM_SWIZZLE
+#define GLM_SWIZZLE
+#endif
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_precision.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/matrix_operation.hpp>
+#include <glm/common.hpp>
+
+#include <inviwo/core/util/glmstreamoperators.h>
 
 namespace inviwo {
 
-struct IVW_CORE_API NodeDebugger {
-    struct Node {
-        Node(std::string k = "", std::string i = "", std::string t = "", int l = 0)
-            : key(k), identifier(i), type(t), line(l) {}
-        std::string key;
-        std::string identifier;
-        std::string type;
-        int line;
-    };
-    Node operator[](std::size_t idx) const {
-        if (idx < nodes_.size()) {
-            return nodes_[idx];
-        } else {
-            return Node("UnKnown", "UnKnown");
-        }
-    }
-    std::vector<std::string> getPath() const {
-        std::vector<std::string> path;
-        for (std::vector<Node>::const_reverse_iterator it = nodes_.rbegin(); it != nodes_.rend();
-             ++it) {
-            if (!it->identifier.empty()) path.push_back(it->identifier);
-        }
-        return path;
-    }
-    size_t size() const { return nodes_.size(); }
-    NodeDebugger(TxElement* node);
-    std::vector<Node> nodes_;
-};
+typedef glm::ivec2 ivec2;
+typedef glm::ivec3 ivec3;
+typedef glm::ivec4 ivec4;
+typedef glm::vec2 vec2;
+typedef glm::vec3 vec3;
+typedef glm::vec4 vec4;
+typedef glm::dvec2 dvec2;
+typedef glm::dvec3 dvec3;
+typedef glm::dvec4 dvec4;
+typedef glm::bvec2 bvec2;
+typedef glm::bvec3 bvec3;
+typedef glm::bvec4 bvec4;
+typedef glm::uvec2 uvec2;
+typedef glm::uvec3 uvec3;
+typedef glm::uvec4 uvec4;
+typedef glm::mat2 mat2;
+typedef glm::mat3 mat3;
+typedef glm::mat4 mat4;
+typedef glm::dmat2 dmat2;
+typedef glm::dmat3 dmat3;
+typedef glm::dmat4 dmat4;
+typedef glm::quat quat;
 
 } // namespace
 
-#endif // IVW_NODEDEBUGGER_H
+#endif // IVW_GLM_H
 

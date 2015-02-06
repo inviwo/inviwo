@@ -33,7 +33,7 @@
 
 #include <inviwo/core/io/serialization/ivwserializebase.h>
 #include <inviwo/core/util/exception.h>
-
+#include <inviwo/core/io/serialization/serializationexception.h>
 namespace inviwo {
 
 class IvwSerializable;

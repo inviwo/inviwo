@@ -115,6 +115,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwserializeconstants.h    
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwserializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializationexception.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ticpp.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/links/linkconditions.h
@@ -220,6 +222,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glmstreamoperators.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/group.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/rayplaneintersection.h
@@ -325,6 +328,7 @@ set(SOURCE_FILES
     io/serialization/ivwserializeconstants.cpp
     io/serialization/ivwserializer.cpp
     io/serialization/nodedebugger.cpp
+    io/serialization/serializationexception.cpp
     io/serialization/versionconverter.cpp
     io/textfilereader.cpp   
     links/linkconditions.cpp    
