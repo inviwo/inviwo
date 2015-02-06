@@ -993,39 +993,49 @@ macro(ivw_add_dependencies)
         endif()
       endif()
            
-      #--------------------------------------------------------------------
-      # Add dependcy package variables to this package if shared build
-      #if(NOT BUILD_SHARED_LIBS)
-          #--------------------------------------------------------------------
-          # Append library directories to project list
-          set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
-          remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
-          set(${u_package}_LIBRARY_DIR ${uniqueNewLibDirs})
-          list(APPEND _allLibsDir ${${u_package}_LIBRARY_DIR})
-          
-          #--------------------------------------------------------------------
-          # Append includes to project list
-          set(uniqueNewLibs ${${u_package}_LIBRARIES})
-          remove_library_list(uniqueNewLibs "${${u_package}_LIBRARIES}" ${_allLibs})
-          set(${u_package}_LIBRARIES ${uniqueNewLibs})
-          list (APPEND _allLibs ${${u_package}_LIBRARIES})
-          
-          #--------------------------------------------------------------------
-          # Append definitions to project list
-          set(uniqueNewDefs ${${u_package}_DEFINITIONS})
-          remove_from_list(uniqueNewDefs "${${u_package}_DEFINITIONS}" ${_allDefinitions})
-          set(${u_package}_DEFINITIONS ${uniqueNewDefs})
-          list (APPEND _allDefinitions ${${u_package}_DEFINITIONS})
+	  #--------------------------------------------------------------------
+	  # Append library directories to project list
+	  set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
+	  remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
+	  list(APPEND _allLibsDir ${${u_package}_LIBRARY_DIR})
+	  
+	  foreach (libDir ${${u_package}_LIBRARY_DIRS})
+		remove_from_list(uniqueNewLibDirs ${libDir} ${_allLibsDir})
+		list(APPEND _allLibsDir ${libDir})
+	  endforeach()
+	  
+	  set(${u_package}_LIBRARY_DIRS ${uniqueNewLibDirs})
+	  
+	  #--------------------------------------------------------------------
+	  # Append includes to project list
+	  if(NOT DEFINED ${u_package}_LIBRARIES  AND DEFINED ${u_package}_LIBRARY)
+		if(DEFINED ${u_package}_LIBRARY_DEBUG)
+			set(${u_package}_LIBRARIES optimized "${${u_package}_LIBRARY}" debug "${${u_package}_LIBRARY_DEBUG}")
+		else()
+			set(${u_package}_LIBRARIES "${${u_package}_LIBRARY}")
+		endif()
+	  endif()
+	  
+	  set(uniqueNewLibs ${${u_package}_LIBRARIES})
+	  remove_library_list(uniqueNewLibs "${${u_package}_LIBRARIES}" ${_allLibs})
+	  set(${u_package}_LIBRARIES ${uniqueNewLibs})
+	  list (APPEND _allLibs ${${u_package}_LIBRARIES})
+	  
+	  #--------------------------------------------------------------------
+	  # Append definitions to project list
+	  set(uniqueNewDefs ${${u_package}_DEFINITIONS})
+	  remove_from_list(uniqueNewDefs "${${u_package}_DEFINITIONS}" ${_allDefinitions})
+	  set(${u_package}_DEFINITIONS ${uniqueNewDefs})
+	  list (APPEND _allDefinitions ${${u_package}_DEFINITIONS})
 
-          #--------------------------------------------------------------------
-          # Append link flags to project list
-          set(uniqueNewLinkFlags ${${u_package}_LINK_FLAGS})
-          remove_from_list(uniqueNewLinkFlags "${${u_package}_LINK_FLAGS}" ${_allLinkFlags})
-          set(${u_package}_LINK_FLAGS ${uniqueNewLinkFlags})
-          if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
-              list (APPEND _allLinkFlags "\"${${u_package}_LINK_FLAGS}\"")
-          endif()
-      #endif()
+	  #--------------------------------------------------------------------
+	  # Append link flags to project list
+	  set(uniqueNewLinkFlags ${${u_package}_LINK_FLAGS})
+	  remove_from_list(uniqueNewLinkFlags "${${u_package}_LINK_FLAGS}" ${_allLinkFlags})
+	  set(${u_package}_LINK_FLAGS ${uniqueNewLinkFlags})
+	  if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
+		  list (APPEND _allLinkFlags "\"${${u_package}_LINK_FLAGS}\"")
+	  endif()
 
       #--------------------------------------------------------------------
       # Set includes and append to list
@@ -1036,7 +1046,6 @@ macro(ivw_add_dependencies)
 
       #--------------------------------------------------------------------
       # Set directory links
-      link_directories(${${u_package}_LIBRARY_DIR})
 	  link_directories(${${u_package}_LIBRARY_DIRS})
 
       #--------------------------------------------------------------------
@@ -1053,15 +1062,7 @@ macro(ivw_add_dependencies)
       endif(BUILD_${u_package})
       
       #--------------------------------------------------------------------
-      # Link library
-      if(NOT DEFINED ${u_package}_LIBRARIES  AND DEFINED ${u_package}_LIBRARY)
-        if(DEFINED ${u_package}_LIBRARY_DEBUG)
-            set(${u_package}_LIBRARIES optimized "${${u_package}_LIBRARY}" debug "${${u_package}_LIBRARY_DEBUG}")
-        else()
-            set(${u_package}_LIBRARIES "${${u_package}_LIBRARY}")
-        endif()
-      endif()
-      
+      # Link library     
        target_link_libraries(${_projectName} ${${u_package}_LIBRARIES})
       
       #--------------------------------------------------------------------
