@@ -124,12 +124,16 @@ void ConsoleWidget::log(std::string logSource, unsigned int logLevel, const char
     QString message;
 
     switch (logLevel) {
-        case Info:
-            textField_->setTextColor(infoTextColor_);
-            message = QString::fromStdString("(" + logSource + ") " + logMsg);
-            infoLabel_->setText(toString(++numInfos_).c_str());
+         case Error: {
+            textField_->setTextColor(errorTextColor_);
+            std::ostringstream lineNumberStr;
+            lineNumberStr << lineNumber;
+            message = QString::fromStdString("(" + logSource + ") [" + std::string(fileName) +
+                ", " + lineNumberStr.str() + "]: " + logMsg);
+            errorsLabel_->setText(toString(++numErrors_).c_str());
             break;
-
+        }
+    
         case Warn: {
             textField_->setTextColor(warnTextColor_);
             std::ostringstream lineNumberStr;
@@ -139,19 +143,14 @@ void ConsoleWidget::log(std::string logSource, unsigned int logLevel, const char
             warningsLabel_->setText(toString(++numWarnings_).c_str());
             break;
         }
-        case Error: {
-            textField_->setTextColor(errorTextColor_);
-            std::ostringstream lineNumberStr;
-            lineNumberStr << lineNumber;
-            message = QString::fromStdString("(" + logSource + ") [" + std::string(fileName) +
-                ", " + lineNumberStr.str() + "]: " + logMsg);
-            errorsLabel_->setText(toString(++numErrors_).c_str());
-            break;
-        }
-
-        default:
+        
+        case Info:
+        default: {
             textField_->setTextColor(infoTextColor_);
             message = QString::fromStdString("(" + logSource + ") " + logMsg);
+            infoLabel_->setText(toString(++numInfos_).c_str());
+            break;
+        }
     }
 
     textField_->append(message);
