@@ -695,19 +695,6 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     // This will set deserializing_ to true while keepTrueWillAlive is in scope
     // and set it to false no matter how we leave the scope
     
-    struct ErrorHandle {
-        void handleProcessorError(SerializationException& error) {
-            messages.push_back(error.getMessage());     
-        }
-        void handleConnectionError(SerializationException& error) {
-            messages.push_back(error.getMessage());
-        }
-        void handleLinkError(SerializationException& error) {
-            messages.push_back(error.getMessage());
-        }
-  
-        std::vector<std::string> messages;
-    };
     ErrorHandle errorHandle;
     
     KeepTrueWhileInScope keepTrueWillAlive(&deserializing_);
@@ -725,7 +712,7 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     // Processors
     ProcessorVector processors;
     try {
-        DeserializationErrorHandle<ErrorHandle> 
+        DeserializationErrorHandle<ErrorHandle>
             processor_err(d, "Processor", &errorHandle, &ErrorHandle::handleProcessorError);
         d.deserialize("Processors", processors, "Processor");
         for (size_t i = 0; i < processors.size(); ++i) {

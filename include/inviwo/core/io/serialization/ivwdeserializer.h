@@ -81,19 +81,6 @@ private:
     IvwDeserializer& d_;
 };
 
-template <typename T>
-inviwo::DeserializationErrorHandle<T>::DeserializationErrorHandle(IvwDeserializer& d,
-                                                                  std::string type, T* obj,
-                                                                  Callback callback)
-    : d_(d) {
-    d_.pushErrorHandler(new DeserializationErrorHandler<T>(type, obj, callback));
-}
-
-template <typename T>
-inviwo::DeserializationErrorHandle<T>::~DeserializationErrorHandle() {
-    delete d_.popErrorHandler();
-}
-
 class IVW_CORE_API IvwDeserializer : public  IvwSerializeBase {
 public:
     /**
@@ -308,6 +295,19 @@ private:
     std::vector<BaseDeserializationErrorHandler*> errorHandlers_;
     std::map<std::string, TxElement*> referenceLookup_;
 };
+
+template <typename T>
+inviwo::DeserializationErrorHandle<T>::DeserializationErrorHandle(IvwDeserializer& d,
+                                                                  std::string type, T* obj,
+                                                                  Callback callback)
+    : d_(d) {
+    d_.pushErrorHandler(new DeserializationErrorHandler<T>(type, obj, callback));
+}
+
+template <typename T>
+inviwo::DeserializationErrorHandle<T>::~DeserializationErrorHandle() {
+    delete d_.popErrorHandler();
+}
 
 template<class T>
 void IvwDeserializer::deserialize(const std::string& key, glm::detail::tvec4<T, glm::defaultp>& data) {

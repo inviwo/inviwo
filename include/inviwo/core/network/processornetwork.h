@@ -309,6 +309,19 @@ public:
     */
     void clear();
 private:
+    struct ErrorHandle {
+        void handleProcessorError(SerializationException& error) {
+            messages.push_back(error.getMessage());     
+        }
+        void handleConnectionError(SerializationException& error) {
+            messages.push_back(error.getMessage());
+        }
+        void handleLinkError(SerializationException& error) {
+            messages.push_back(error.getMessage());
+        }
+  
+        std::vector<std::string> messages;
+    };
 
     class PropertyLinkContainsTest {
     public:
