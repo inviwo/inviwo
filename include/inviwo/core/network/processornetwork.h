@@ -314,8 +314,12 @@ private:
         ErrorHandle(const InviwoSetupInfo& info) : info_(info) {};
     
         void handleProcessorError(SerializationException& error) {
-            
-            messages.push_back(error.getMessage());
+            std::string module = info_.getModuleForProcessor(error.getType());
+            if (!module.empty()) {
+                messages.push_back(error.getMessage() + " Processor last seen in module: \"" + module + "\"");
+            } else {
+                messages.push_back(error.getMessage());
+            }
         }
         void handleConnectionError(SerializationException& error) {
             messages.push_back(error.getMessage());

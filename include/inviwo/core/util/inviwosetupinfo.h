@@ -58,6 +58,9 @@ struct IVW_CORE_API InviwoSetupInfo : public IvwSerializable {
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
     std::vector<ModuleSetupInfo> modules_;
+    
+    
+    std::string getModuleForProcessor(const std::string& processor) const;
 };
 
 }  // namespace

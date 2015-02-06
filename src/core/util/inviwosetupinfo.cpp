@@ -37,7 +37,7 @@ namespace inviwo {
 InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const InviwoModule* module) {
     name_ = module->getIdentifier();
     const std::vector<ProcessorFactoryObject*>& processors = module->getProcessors();
-    for (std::vector<const ProcessorFactoryObject*>::const_iterator it = processors.begin();
+    for (std::vector<ProcessorFactoryObject*>::const_iterator it = processors.begin();
          it != processors.end(); ++it) {
         processors_.push_back((*it)->getClassIdentifier());
     }
@@ -65,6 +65,19 @@ void InviwoSetupInfo::serialize(IvwSerializer& s) const {
 }
 void InviwoSetupInfo::deserialize(IvwDeserializer& d) {
     d.deserialize("Modules", modules_, "Module");
+}
+
+std::string InviwoSetupInfo::getModuleForProcessor(const std::string& processor) const {
+    for (std::vector<ModuleSetupInfo>::const_iterator mit = modules_.begin(); mit != modules_.end();
+         ++mit) {
+        for (std::vector<std::string>::const_iterator pit = mit->processors_.begin();
+             pit != mit->processors_.end(); ++pit) {
+            if (*pit == processor) {
+                return mit->name_;
+            }
+        }
+    }
+    return "";
 }
 
 }  // namespace
