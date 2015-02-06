@@ -37,23 +37,13 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/deserializationerrorhandler.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
 class IvwSerializable;
 class VersionConverter;
 
-
-template <typename T>
-class DeserializationErrorHandle {
-public:
-    typedef void (T::*Callback)(SerializationException&);
-    DeserializationErrorHandle(IvwDeserializer&, std::string type, T* obj, Callback callback);
-    virtual ~DeserializationErrorHandle();
-
-private:
-    IvwDeserializer& d_;
-};
 
 class IVW_CORE_API IvwDeserializer : public  IvwSerializeBase {
 public:
@@ -268,6 +258,17 @@ private:
 
     std::vector<BaseDeserializationErrorHandler*> errorHandlers_;
     std::map<std::string, TxElement*> referenceLookup_;
+};
+
+template <typename T>
+class DeserializationErrorHandle {
+public:
+    typedef void (T::*Callback)(SerializationException&);
+    DeserializationErrorHandle(IvwDeserializer&, std::string type, T* obj, Callback callback);
+    virtual ~DeserializationErrorHandle();
+
+private:
+    IvwDeserializer& d_;
 };
 
 template <typename T>

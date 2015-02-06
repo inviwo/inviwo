@@ -34,6 +34,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+namespace inviwo {
+
 /** 
  * \brief Convert from HSV to RGB color.
  *
@@ -145,6 +147,8 @@ IVW_CORE_API inline vec3 rgb2hsv(const vec3& rgb)
     }
 
     return vec3(hue,sat,val);
+}
+
 }
 
 #endif // IVW_COLORCONVERSION_H
