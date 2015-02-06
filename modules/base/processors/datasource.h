@@ -37,8 +37,6 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/resources/resourcemanager.h>
-#include <inviwo/core/resources/templateresource.h>
 
 namespace inviwo {
 
@@ -67,6 +65,7 @@ protected:
 
     PortType port_;
     FileProperty file_;
+    ButtonProperty reload_;
     DataType* loadedData_;
 
 private:
@@ -79,6 +78,7 @@ DataSource<DataType, PortType>::DataSource()
     : Processor()
     , port_("data")
     , file_("filename", "File")
+    , reload_("reload", "Reload data")
     , loadedData_(NULL)
     , isDeserializing_(false) {
     
@@ -92,7 +92,10 @@ DataSource<DataType, PortType>::DataSource()
         file_.addNameFilter(ss.str());
     }
 
+    reload_.onChange(this, &DataSource::load);
+
     addProperty(file_);
+    addProperty(reload_);
 }
 
 template <typename DataType, typename PortType>
@@ -126,40 +129,28 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
     if (isDeserializing_ || file_.get() == "") {
         return;
     }
-    /*TemplateResource<DataType>* resource =
-        ResourceManager::getPtr()->getResourceAs<TemplateResource<DataType> >(file_.get());
 
-    if (resource) {
-        port_.setData(resource->getData(), false);
-        loadedData_ = resource->getData();
-        dataLoaded(resource->getData());
-    } else {*/
-        std::string fileExtension = filesystem::getFileExtension(file_.get());
-        DataReaderType<DataType>* reader =
-            DataReaderFactory::getPtr()->getReaderForTypeAndExtension<DataType>(fileExtension);
+    std::string fileExtension = filesystem::getFileExtension(file_.get());
+    DataReaderType<DataType>* reader =
+        DataReaderFactory::getPtr()->getReaderForTypeAndExtension<DataType>(fileExtension);
 
-        if (reader) {
-            try {
-                DataType* data = reader->readMetaData(file_.get());
-                // Disabled the resourcemanager until it works properly.
-                // ResourceManager::getPtr()->addResource(
-                //    new TemplateResource<DataType>(file_.get(), data));
-                port_.setData(data, true);
-                loadedData_ = data;
-                if(deserialized) {
-                    dataDeserialized(data);
-                } else {
-                    dataLoaded(data);
-                }
+    if (reader) {
+        try {
+            DataType* data = reader->readMetaData(file_.get());
+            port_.setData(data, true);
+            loadedData_ = data;
+            if (deserialized) {
+                dataDeserialized(data);
+            } else {
+                dataLoaded(data);
             }
-            catch (DataReaderException const& e) {
-                LogError("Could not load data: " << file_.get() << ", " << e.getMessage());
-                file_.set("");
-            }
-        /*} else {
-            LogError("Could not find a data reader for file: " << file_.get());
+        } catch (DataReaderException const& e) {
+            LogError("Could not load data: " << file_.get() << ", " << e.getMessage());
             file_.set("");
-        }*/
+        }
+    } else {
+        LogError("Could not find a data reader for file: " << file_.get());
+        file_.set("");
     }
 }
 
