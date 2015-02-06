@@ -31,46 +31,32 @@
 #ifndef IVW_INVIWOSETUPINFO_H
 #define IVW_INVIWOSETUPINFO_H
 
+
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/ivwserializable.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
+#include <string>
+#include <vector>
 
 namespace inviwo {
+
+class InviwoModule;
+class InviwoApplication;
 
 struct IVW_CORE_API InviwoSetupInfo : public IvwSerializable {
     struct ModuleSetupInfo : public IvwSerializable {
         ModuleSetupInfo() : name_("") {}
-        ModuleSetupInfo(const InviwoModule* module) {
-            name_ = module->getIdentifier();
-            const std::vector<ProcessorFactoryObject*>& processors = module->getProcessors();
-            for (std::vector<ProcessorFactoryObject*>::const_iterator it = processors.cbegin();
-                 it != processors.cend(); ++it) {
-                processors_.push_back((*it)->getClassIdentifier());
-            }
-        }
-        virtual void serialize(IvwSerializer& s) const {
-            s.serialize("name", name_, true);
-            s.serialize("Processors", processors_, "Processor");
-        }
-        virtual void deserialize(IvwDeserializer& d) {
-            d.deserialize("name", name_, true);
-            d.deserialize("Processors", processors_, "Processor");
-        }
-
+        ModuleSetupInfo(const InviwoModule* module);
+        virtual void serialize(IvwSerializer& s) const;
+        virtual void deserialize(IvwDeserializer& d);
         std::string name_;
         std::vector<std::string> processors_;
     };
 
     InviwoSetupInfo(){};
-    InviwoSetupInfo(const InviwoApplication* app) {
-        const std::vector<InviwoModule*>& modules = app->getModules();
-        for (std::vector<InviwoModule*>::const_iterator it = modules.cbegin(); it != modules.cend(); ++it) {
-            modules_.push_back(ModuleSetupInfo(*it));
-        }
-    };
-    virtual void serialize(IvwSerializer& s) const { s.serialize("Modules", modules_, "Module"); }
-    virtual void deserialize(IvwDeserializer& d) { d.deserialize("Modules", modules_, "Module"); }
+    InviwoSetupInfo(const InviwoApplication* app);
+    virtual void serialize(IvwSerializer& s) const;
+    virtual void deserialize(IvwDeserializer& d);
     std::vector<ModuleSetupInfo> modules_;
 };
 

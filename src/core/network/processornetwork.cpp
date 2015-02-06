@@ -32,7 +32,6 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/settings/linksettings.h>
-#include <inviwo/core/util/inviwosetupinfo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <algorithm>
@@ -699,8 +698,6 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     // This will set deserializing_ to true while keepTrueWillAlive is in scope
     // and set it to false no matter how we leave the scope
     KeepTrueWhileInScope keepTrueWillAlive(&deserializing_);
-    
-    ErrorHandle errorHandle;
 
     int version = 0;
     d.deserialize("ProcessorNetworkVersion", version);
@@ -715,6 +712,8 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     InviwoSetupInfo info;
     d.deserialize("InviwoSetup", info);
 
+    ErrorHandle errorHandle(info);
+    
     // Processors
     ProcessorVector processors;
     try {

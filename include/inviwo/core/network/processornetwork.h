@@ -43,6 +43,7 @@
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/util/inviwosetupinfo.h>
 
 namespace inviwo {
 
@@ -310,8 +311,11 @@ public:
     void clear();
 private:
     struct ErrorHandle {
+        ErrorHandle(const InviwoSetupInfo& info) : info_(info) {};
+    
         void handleProcessorError(SerializationException& error) {
-            messages.push_back(error.getMessage());     
+            
+            messages.push_back(error.getMessage());
         }
         void handleConnectionError(SerializationException& error) {
             messages.push_back(error.getMessage());
@@ -321,6 +325,7 @@ private:
         }
   
         std::vector<std::string> messages;
+        const InviwoSetupInfo& info_;
     };
     
     class PropertyLinkContainsTest {

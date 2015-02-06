@@ -30,8 +30,41 @@
 
 #include <inviwo/core/util/inviwosetupinfo.h>
 
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwoapplication.h>
+
 namespace inviwo {
+InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const InviwoModule* module) {
+    name_ = module->getIdentifier();
+    const std::vector<ProcessorFactoryObject*>& processors = module->getProcessors();
+    for (std::vector<const ProcessorFactoryObject*>::const_iterator it = processors.begin();
+         it != processors.end(); ++it) {
+        processors_.push_back((*it)->getClassIdentifier());
+    }
+}
 
+void InviwoSetupInfo::ModuleSetupInfo::serialize(IvwSerializer& s) const {
+    s.serialize("name", name_, true);
+    s.serialize("Processors", processors_, "Processor");
+}
+void InviwoSetupInfo::ModuleSetupInfo::deserialize(IvwDeserializer& d) {
+    d.deserialize("name", name_, true);
+    d.deserialize("Processors", processors_, "Processor");
+}
 
-} // namespace
+InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication* app) {
+    const std::vector<InviwoModule*>& modules = app->getModules();
+    for (std::vector<const InviwoModule*>::const_iterator it = modules.begin(); it != modules.end();
+         ++it) {
+        modules_.push_back(ModuleSetupInfo(*it));
+    }
+}
 
+void InviwoSetupInfo::serialize(IvwSerializer& s) const {
+    s.serialize("Modules", modules_, "Module");
+}
+void InviwoSetupInfo::deserialize(IvwDeserializer& d) {
+    d.deserialize("Modules", modules_, "Module");
+}
+
+}  // namespace
