@@ -22,6 +22,11 @@
 #ifndef HALF_HALF_HPP
 #define HALF_HALF_HPP
 
+
+// Inviwo addtion, turn off constexpr since we need = default constructors in GLM
+#define HALF_ENABLE_CPP11_CONSTEXPR 0
+
+
 /// Combined gcc version number.
 #define HALF_GNUC_VERSION (__GNUC__*100+__GNUC_MINOR__)
 
