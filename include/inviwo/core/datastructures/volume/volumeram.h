@@ -99,7 +99,7 @@ public:
     template <typename T>
     static inline T periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posIn,
                                        const glm::detail::tvec3<T, glm::defaultp>& dim) {
-        glm::detail::tvec3<T, glm::defaultp> pos = glm::mod(posIn, dim);
+        glm::detail::tvec3<T, glm::defaultp> pos = posIn % dim;
         return pos.x + (pos.y * dim.x) + (pos.z * dim.x * dim.y);
     }
 
