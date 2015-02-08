@@ -116,7 +116,6 @@ void PickingManager::performUniqueColorGenerationTest(int iterations) {
                                                   << ") at iteration " << i << " with valueDiff "
                                                   << valueDiff);
             passed = false;
-            return;
         } else
             colorVec.push_back(rgbUINT8);
     }

@@ -133,7 +133,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
         components, spacing.x, spacing.y, spacing.z,
         description, courtesy, parameter, comment);
 
-    if (data2Ptr) delete data2Ptr;
+    if (data2Ptr) delete[] data2Ptr;
     if (description) delete description;
     if (courtesy) delete courtesy;
     if (parameter) delete parameter;

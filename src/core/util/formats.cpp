@@ -306,19 +306,19 @@ dvec4 DataFormatBase::valueToNormalizedVec4Double(void*) const {
 }
 
 void DataFormatBase::doubleToValue(double val, void* loc) const {
-    loc = &val;
+    *static_cast<double*>(loc) = val;
 }
 
 void DataFormatBase::vec2DoubleToValue(dvec2 val, void* loc) const {
-    loc = &val;
+    *static_cast<dvec2*>(loc) = val;
 }
 
 void DataFormatBase::vec3DoubleToValue(dvec3 val, void* loc) const {
-    loc = &val;
+    *static_cast<dvec3*>(loc) = val;
 }
 
 void DataFormatBase::vec4DoubleToValue(dvec4 val, void* loc) const {
-    loc = &val;
+    *static_cast<dvec4*>(loc) = val;
 }
 
 size_t DataFormatBase::getBitsAllocated() const {

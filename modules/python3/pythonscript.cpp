@@ -115,8 +115,6 @@ namespace inviwo {
         PyObject* errtype, *errvalue, *traceback;
         PyErr_Fetch(&errtype, &errvalue, &traceback);
         std::string log = "";
-        int errorLine = -1;
-        int errorCol = -1;
         char* msg = 0;
         PyObject* obj = 0;
 
@@ -126,8 +124,6 @@ namespace inviwo {
             char* mod = 0;
 
             if (PyArg_ParseTuple(obj, "siis", &mod, &line, &col, &code)) {
-                errorLine = line;
-                errorCol = col;
                 log = "[" + toString(line) + ":" + toString(col) + "] " + toString(msg) + ": " + toString(code);
             }
         }

@@ -291,13 +291,9 @@ void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e
 }
 
 void LinkDialogGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* e) {
-
-    float yIncrement = processorItemHeight*(1.0f/10.0f);
-        
     //note:delta can be positive or negative (wheel rotated away from user or towards user)
     int numDegrees = e->delta() / 8;
     int numSteps = numDegrees / 15;
-    yIncrement*=numSteps;
 
     currentScrollSteps_ = numSteps;
 
@@ -640,16 +636,10 @@ void LinkDialogGraphicsScene::initScene(Processor* srcProcessor,
     int xPosition = linkDialogWidth / 4;
     int yPosition = processorItemHeight;
     int xIncrement = linkDialogWidth / 2;
-    int yIncrement = processorItemHeight;
 
     srcProcessorGraphicsItem_ = addProcessorsItemsToScene(srcProcessor, xPosition, yPosition);
-    yPosition += yIncrement;
-    
     xPosition += xIncrement;
-    yPosition = processorItemHeight;
-
     dstProcessorGraphicsItem_ = addProcessorsItemsToScene(dstProcessor, xPosition, yPosition);
-    yPosition += yIncrement;    
 
     //add links
     std::vector<PropertyLink*> propertyLinks =

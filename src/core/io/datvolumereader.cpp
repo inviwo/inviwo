@@ -317,7 +317,7 @@ void DatVolumeReader::readDataInto(void* destination) const {
                     static_cast<char*>(destination)[i + j] = temp[bytes - j - 1];
             }
 
-            delete temp;
+            delete[] temp;
         }
     } else
         throw DataReaderException("Error: Could not read from raw file: " + rawFile_);
