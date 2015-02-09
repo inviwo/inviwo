@@ -701,7 +701,6 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
 
                 if (duplicate != -1) { // Duplicate found
                     edge.v2 = duplicate;
-                    duplicate = -1;
                 } else { // No duplicate end vertex found
                     outputList.push_back(E);
                     outputIndexList.push_back(static_cast<unsigned int>(outputList.size()-1));
@@ -739,7 +738,6 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
                 if (duplicate != -1) {
                     //LogInfo("Duplicate found at index "<<std::distance(outputList.begin(),it));
                     edge.v2 = duplicate;
-                    duplicate = -1;
                 } else { // Duplicate found
                     outputList.push_back(E);
                     outputIndexList.push_back(static_cast<unsigned int>(outputList.size()-1));
@@ -763,7 +761,6 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
             if (duplicate != -1) {
                 //LogInfo("Duplicate found at index "<<std::distance(outputList.begin(),it));
                 edge.v1 = duplicate;
-                duplicate = -1;
             } else { // No duplicate found
                 outputList.push_back(S);
                 outputIndexList.push_back(static_cast<unsigned int>(outputList.size()-1));
@@ -800,10 +797,9 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
     // Create edges between new (clipped) vertices
     for (unsigned int i=0; i<clippedVertInd.size(); ++i) {
         EdgeIndex edge;
-        unsigned int idx1,idx2,idx3;
+        unsigned int idx1,idx2;
         idx1 = clippedVertInd.at(i % clippedVertInd.size());
         idx2 = clippedVertInd.at((i+1) % clippedVertInd.size());
-        idx3 = clippedVertInd.at((i+2) % clippedVertInd.size());
         edge.v1 = idx1;
         edge.v2 = idx2;
 
