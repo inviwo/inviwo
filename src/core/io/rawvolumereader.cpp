@@ -95,10 +95,10 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
 
     std::string fileDirectory = filesystem::getFileDirectory(filePath);
     std::string fileExtension = filesystem::getFileExtension(filePath);
-    Volume* volume = new UniformRectiLinearVolume();
     rawFile_ = filePath;
 
     if (!parametersSet_) {
+        // TODO use uniqe ponter here. //Peter
         DataReaderDialog* readerDialog =
             dynamic_cast<DataReaderDialog*>(DialogFactory::getPtr()->getDialog("RawVolumeReader"));
         if (!readerDialog) {
@@ -110,7 +110,9 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
             dimensions_ = readerDialog->getDimensions();
             littleEndian_ = readerDialog->getEndianess();
             spacing_ = static_cast<glm::vec3>(readerDialog->getSpacing());
+            delete readerDialog;
         } else {
+            delete readerDialog;
             throw DataReaderException("Raw data import terminated by user");
         }
     }
@@ -126,6 +128,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
         // Center the data around origo.
         glm::vec3 offset(-0.5f*(basis[0]+basis[1]+basis[2]));
 
+        Volume* volume = new UniformRectiLinearVolume();
         volume->setBasis(basis);
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);
