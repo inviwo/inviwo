@@ -36,42 +36,39 @@
 
 namespace inviwo {
 
-LinkSettings::LinkSettings(const std::string &id) 
-    : Settings(id)
-    , linkProperties_("auto-link-properties", "Auto Link Properties") {
-
+LinkSettings::LinkSettings(const std::string& id)
+    : Settings(id), linkProperties_("auto-link-properties", "Auto Link Properties") {
     addProperty(linkProperties_);
 }
 
 LinkSettings::~LinkSettings() {
-    for (size_t i=0; i<linkProperties_.getProperties().size(); i++) {
+    for (size_t i = 0; i < linkProperties_.getProperties().size(); i++) {
         delete linkProperties_.getProperties()[i];
     }
 }
 
 void LinkSettings::initialize() {
-    std::vector<std::string> properties = PropertyFactory::getPtr()->getRegistedPropertyClassNames();
+    std::vector<std::string> properties =
+        PropertyFactory::getPtr()->getRegistedPropertyClassNames();
     std::sort(properties.begin(), properties.end());
 
-     CameraProperty cam("", "");
-    for (size_t i = 0; i<properties.size(); i++) {
-        BoolProperty* linkPropery = new BoolProperty("link-" + properties[i], properties[i], (properties[i] == cam.getClassIdentifier()) != 0 ? true : false);
+    CameraProperty cam("", "");
+    for (size_t i = 0; i < properties.size(); i++) {
+        BoolProperty* linkPropery =
+            new BoolProperty("link-" + properties[i], properties[i],
+                             (properties[i] == cam.getClassIdentifier()) != 0 ? true : false);
         linkProperties_.addProperty(linkPropery);
     }
 }
 
-void LinkSettings::deinitialize()  {}
+void LinkSettings::deinitialize() {}
 
-bool LinkSettings::isLinkable(const Property* property)  {
-    Property* prop = getPropertyByIdentifier("link-" + property->getClassIdentifier(),true);
-
+bool LinkSettings::isLinkable(const Property* property) const {
+    Property* prop = getPropertyByIdentifier("link-" + property->getClassIdentifier(), true);
     if (prop) {
         BoolProperty* linkOption = dynamic_cast<BoolProperty*>(prop);
-
-        if (linkOption)
-            return linkOption->get();
+        if (linkOption) return linkOption->get();
     }
-
     return false;
 }
 

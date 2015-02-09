@@ -43,7 +43,7 @@ public:
     virtual ~LinkSettings();
     virtual void initialize();
     virtual void deinitialize();
-    virtual bool isLinkable(const Property* property);
+    virtual bool isLinkable(const Property* property) const;
 
 private:
     CompositeProperty linkProperties_;
