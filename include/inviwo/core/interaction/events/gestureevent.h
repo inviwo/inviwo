@@ -52,7 +52,7 @@ public:
     };
 
     GestureEvent(vec2 deltaPos, double deltaDistance, GestureEvent::GestureType type,
-                 int state, int numFingers, vec2 screenPosNorm);
+                 int state, int numFingers, vec2 screenPosNorm, uvec2 canvasSize);
 
     GestureEvent(GestureEvent::GestureType type, int state, int numFingers);
 
@@ -67,6 +67,7 @@ public:
     inline int state() const { return state_; }
     inline int numFingers() { return numFingers_; }
     inline vec2 screenPosNormalized() { return screenPosNorm_; }
+    inline vec2 canvasSize() { return canvasSize_; }
 
     void modify(vec2);
 
@@ -89,6 +90,7 @@ private:
     vec2 deltaPos_;
     double deltaDistance_;
     vec2 screenPosNorm_;
+    uvec2 canvasSize_;
 };
 
 }  // namespace

@@ -548,7 +548,7 @@ void CanvasQt::panTriggered(QPanGesture* gesture) {
 
     //std::cout << "PAN: " << deltaPos.x << ":" << deltaPos.y << std::endl;
 
-    GestureEvent gestureEvent(deltaPos, 0.0, GestureEvent::PAN, EventConverterQt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_);
+    GestureEvent gestureEvent(deltaPos, 0.0, GestureEvent::PAN, EventConverterQt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_, getScreenDimensions());
     Canvas::gestureEvent(&gestureEvent);
 }
 
@@ -566,7 +566,7 @@ void CanvasQt::pinchTriggered(QPinchGesture* gesture) {
         gestureMode_ = false;
     }
     GestureEvent gestureEvent(vec2(gesture->centerPoint().x(), gesture->centerPoint().y()), static_cast<double>(gesture->scaleFactor())-1.0,
-        GestureEvent::PINCH, EventConverterQt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_);
+        GestureEvent::PINCH, EventConverterQt::getGestureState(gesture), lastNumFingers_, screenPositionNormalized_, getScreenDimensions());
     Canvas::gestureEvent(&gestureEvent);
 }
 

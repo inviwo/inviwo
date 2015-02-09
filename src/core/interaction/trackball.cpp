@@ -198,14 +198,28 @@ void Trackball::pinchGesture(Event* event) {
 
 void Trackball::panGesture(Event* event) {
     GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
-    vec3 offsetVector =
-        vec3(gestureEvent->deltaPos().x * 2.f, gestureEvent->deltaPos().y * 2.f, 0.f);
 
-    // The resulting rotation needs to be mapped to the camera distance,
-    // as if the trackball is located at a certain distance from the camera.
-    // TODO: Verify this
-    float zDist = (glm::length(*lookFrom_ - *lookTo_) - 1.f) / M_PI;
-    vec3 mappedOffsetVector = mapToObject(offsetVector, zDist);
+    float ratio = (float)gestureEvent->canvasSize().x 
+                / (float)gestureEvent->canvasSize().y;
+    vec2 screenScale = vec2(1.f);
+
+    if(ratio > 1.f)
+        screenScale.x = ratio;
+    else if(ratio < 1.f)
+        screenScale.y = 1.f/ratio;
+
+    vec3 offsetVector =
+        vec3(gestureEvent->deltaPos().x * screenScale.x, 
+             gestureEvent->deltaPos().y * screenScale.y, 0.f);
+
+    // if 30 degrees FOV
+    offsetVector *= 0.5f;
+
+    // Need to account for FOV. Seems to only work with 60 degrees
+    // at the moment.
+    vec3 direction = *lookFrom_ - *lookTo_;
+    float vecLength = glm::length(direction);
+    vec3 mappedOffsetVector = mapToObject(offsetVector, vecLength);
 
     *lookTo_ += mappedOffsetVector;
     *lookFrom_ += mappedOffsetVector;
@@ -293,17 +307,32 @@ void Trackball::pan(Event* event) {
     }
 
     // difference vector in trackball co-ordinates
-    vec3 trackBallOffsetVector = lastTrackballPos_ - curTrackballPos;
-    // compute next camera position
-    trackBallOffsetVector.z = 0.0f;
+    vec3 trackBallOffsetVector = vec3(lastMousePos_ - curMousePos, 0.f);
+    
+    // if 30 degrees FOV
+    trackBallOffsetVector *= 0.5f;
+    
+    trackBallOffsetVector.y = -trackBallOffsetVector.y;
 
-    //The resulting rotation needs to be mapped to the camera distance,
-    //as if the trackball is located at a certain distance from the camera.
-    //TODO: Verify this
-    //float zDist = (glm::length(*lookFrom_-*lookTo_)-1.f)/M_PI;
-    //vec3 mappedTrackBallOffsetVector = mapToCamera(trackBallOffsetVector, zDist);
+    float ratio = (float)mouseEvent->canvasSize().x 
+        / (float)mouseEvent->canvasSize().y;
+    vec2 screenScale = vec2(1.f);
 
-    vec3 mappedTrackBallOffsetVector = mapToObject(trackBallOffsetVector);
+    if(ratio > 1.f)
+        screenScale.x = ratio;
+    else if(ratio < 1.f)
+        screenScale.y = 1.f/ratio;
+
+    trackBallOffsetVector.x *= screenScale.x;
+    trackBallOffsetVector.y *= screenScale.y;
+
+    // Need to account for FOV. 
+    // Only works with 30 degrees
+    // at the moment.
+
+    vec3 direction = *lookFrom_ - *lookTo_;
+    float vecLength = glm::length(direction);
+    vec3 mappedTrackBallOffsetVector = mapToObject(trackBallOffsetVector, vecLength);
 
     if (curMousePos != lastMousePos_) {
         *lookTo_ += mappedTrackBallOffsetVector;
