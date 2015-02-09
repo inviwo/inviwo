@@ -164,14 +164,14 @@ void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
 void NetworkEditor::addPropertyWidgets(Processor* processor) {
     QCoreApplication::postEvent(
         propertyListWidget_,
-        new PropertyListEvent(PropertyListEvent::ADD, processor),
+        new PropertyListEvent(PropertyListEvent::ADD, processor->getIdentifier()),
         Qt::LowEventPriority);
 }
 
 void NetworkEditor::removePropertyWidgets(Processor* processor) {
     QCoreApplication::postEvent(
         propertyListWidget_,
-        new PropertyListEvent(PropertyListEvent::REMOVE, processor),
+        new PropertyListEvent(PropertyListEvent::REMOVE, processor->getIdentifier()),
         Qt::LowEventPriority);
 }
 

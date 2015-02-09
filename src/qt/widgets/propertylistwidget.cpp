@@ -226,12 +226,11 @@ bool PropertyListWidget::event(QEvent* e) {
         PropertyListEvent* ple = static_cast<PropertyListEvent*>(e);
         ple->accept();
 
-        Processor* p = ple->processor_;
+        Processor* p(InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(
+            ple->processorId_));
+        
         if (p == NULL) {
-            p = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(ple->processorId_);
-            if(p== NULL) {
-                return true;
-            }
+            return true;
         }
 
         switch (ple->action_) {

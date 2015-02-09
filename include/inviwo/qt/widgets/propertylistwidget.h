@@ -59,11 +59,8 @@ class IVW_QTWIDGETS_API PropertyListEvent : public QEvent {
 public:
     enum Action { ADD = 0, REMOVE = 1};
 
-    PropertyListEvent(Action action, Processor* processor)
-        : QEvent(PROPERY_LIST_EVENT), action_(action), processorId_(""), processor_(processor) {}
-
     PropertyListEvent(Action action, std::string processorId)
-        : QEvent(PROPERY_LIST_EVENT), action_(action), processorId_(processorId), processor_(NULL) {}
+        : QEvent(PROPERY_LIST_EVENT), action_(action), processorId_(processorId) {}
 
     static QEvent::Type type() {
         if (PROPERY_LIST_EVENT == QEvent::None) {
@@ -74,7 +71,6 @@ public:
 
     Action action_;
     std::string processorId_;
-    Processor* processor_;
 
 private:
     static QEvent::Type PROPERY_LIST_EVENT;
