@@ -311,7 +311,7 @@ void CameraProperty::inportChanged() {
         } else if (geometryInport && geometryInport->hasData()) {
             oldBasis_ = geometryInport->getData()->getBasis();
         }
-    } else if (data_ != data) {
+    } else if (data && data_ != data ) {
         fitWithBasis(data->getBasis());
     }
 

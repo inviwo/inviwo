@@ -113,7 +113,7 @@ void EntryExitPoints::process() {
     renderer_->render();
     utilgl::deactivateCurrentTarget();
     // generate entry points
-    ImageGL* tmpEntryPointsGL;
+    ImageGL* tmpEntryPointsGL = NULL;
 
     if (capNearClipping_.get()) {
         if (tmpEntryPoints_ == NULL ||
@@ -138,7 +138,7 @@ void EntryExitPoints::process() {
     genericShader_->deactivate();
     utilgl::deactivateCurrentTarget();
 
-    if (capNearClipping_.get()) {
+    if (capNearClipping_.get() && tmpEntryPointsGL) {
         // render an image plane aligned quad to cap the proxy geometry
         utilgl::activateAndClearTarget(entryPort_);
         TextureUnit entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit;

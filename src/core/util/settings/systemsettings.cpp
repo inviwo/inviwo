@@ -71,13 +71,15 @@ void SystemSettings::initialize() {
     logStackTraceProperty_.onChange(this,&SystemSettings::logStacktraceCallback);
     //btnAllocTestProperty_.onChange(this, &SystemSettings::allocationTest);
     //addProperty(&btnAllocTestProperty_);
-    InviwoCore* module = InviwoApplication::getPtr()->getModuleByType<InviwoCore>();
-    ivwAssert(module!=0, "Core module is not yet registered")
-    SystemCapabilities* sysInfo = getTypeFromVector<SystemCapabilities>(module->getCapabilities());
 
-    if (sysInfo) {
-        btnSysInfoProperty_.onChange(sysInfo, &SystemCapabilities::printInfo);
-        addProperty(&btnSysInfoProperty_);
+    InviwoCore* module = InviwoApplication::getPtr()->getModuleByType<InviwoCore>();
+    if (module) {
+        SystemCapabilities* sysInfo = getTypeFromVector<SystemCapabilities>(module->getCapabilities());
+
+        if (sysInfo) {
+            btnSysInfoProperty_.onChange(sysInfo, &SystemCapabilities::printInfo);
+            addProperty(&btnSysInfoProperty_);
+        }
     }
 }
 
@@ -89,7 +91,9 @@ void SystemSettings::logStacktraceCallback() {
 
 void SystemSettings::allocationTest() {
     InviwoCore* module = InviwoApplication::getPtr()->getModuleByType<InviwoCore>();
-    ivwAssert(module != 0, "Core module is not yet registered") SystemCapabilities* sysInfo =
+    if (!module) return;
+
+    SystemCapabilities* sysInfo =
         getTypeFromVector<SystemCapabilities>(module->getCapabilities());
 
     if (sysInfo) {

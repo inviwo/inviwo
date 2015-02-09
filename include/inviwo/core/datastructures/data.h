@@ -148,7 +148,11 @@ template<typename T>
 const T* Data::getRepresentation() const {
     if (!hasRepresentations()) {
         DataRepresentation* repr = const_cast<Data*>(this)->createDefaultRepresentation();
-        ivwAssert(repr != NULL, " CreateDefaultRepresentation retured NULL. Possible missing subclass implementation")
+        if (!repr) {
+            // TODO Should we throw here? /Peter
+            LogError("CreateDefaultRepresentation retured NULL. Possible missing subclass implementation");
+            return NULL;
+        }
         repr->setOwner(const_cast<Data *>(this));
         representations_.push_back(repr);
         lastValidRepresentation_ = representations_[0];

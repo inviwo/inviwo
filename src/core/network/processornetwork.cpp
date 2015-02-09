@@ -102,6 +102,8 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
 }
 
 void ProcessorNetwork::removeProcessor(Processor* processor) {
+    if (!processor) return;
+    
     // Remove all connections for this processor
      std::vector<PortConnection*> portConnections = getConnections();
     for (size_t i=0; i<portConnections.size(); i++)
@@ -164,6 +166,8 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
 }
 
 void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
+    if (!processor) return;
+    
     removeProcessor(processor);
     if (processor->isInitialized()) {
         processor->deinitialize();
@@ -459,11 +463,11 @@ void ProcessorNetwork::secondaryCacheHelper(std::vector<PropertyLink>& links, Pr
 }
 
 struct LinkCheck {
-    LinkCheck() : linkSettings_(InviwoApplication::getPtr()->getSettingsByType<LinkSettings>()) {}
-    bool operator()(const Property *p) const { return !linkSettings_->isLinkable(p); }
+    LinkCheck() : linkSettings_(*InviwoApplication::getPtr()->getSettingsByType<LinkSettings>()) {}
+    bool operator()(const Property *p) const { return !linkSettings_.isLinkable(p); }
 
 private:
-    LinkSettings *linkSettings_;
+    const LinkSettings& linkSettings_;
 };
 
 struct AutoLinkCheck {
