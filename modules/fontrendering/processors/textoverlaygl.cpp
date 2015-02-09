@@ -198,9 +198,8 @@ void TextOverlayGL::render_text(const char* text, float x, float y, float sx, fl
 
         if (*p == lf) {
             offset += (2 * h);
-            x += (fontface_->glyph->advance.x >> 6) * sx;
+            x += inputX;
             y += (fontface_->glyph->advance.y >> 6) * sy;
-            x = inputX;
             continue;
         } else if (*p == tab) {
             x += (fontface_->glyph->advance.x >> 6) * sx;
