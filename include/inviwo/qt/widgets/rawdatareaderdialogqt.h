@@ -42,7 +42,15 @@ public:
     RawDataReaderDialogQt();
     virtual ~RawDataReaderDialogQt();
 
-    virtual const DataFormatBase* getFormat(std::string fileName, uvec3* dimensions, bool* littleEndian);
+    virtual bool show();
+    
+    virtual void setFile(std::string fileName);
+    
+    virtual const DataFormatBase* getFormat() const;
+    virtual uvec3 getDimensions() const;
+    virtual dvec3 getSpacing() const;
+    virtual bool getEndianess() const;
+    
 
 private:
     QLabel* fileName_;
@@ -51,6 +59,11 @@ private:
     QSpinBox* dimX_;
     QSpinBox* dimY_;
     QSpinBox* dimZ_;
+    
+    QLineEdit* spaceX_;
+    QLineEdit* spaceY_;
+    QLineEdit* spaceZ_;
+    
     QSpinBox* timeSteps_;
     QSpinBox* headerOffset_;
     QSpinBox* timeStepOffset_;

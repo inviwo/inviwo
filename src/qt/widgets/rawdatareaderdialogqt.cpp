@@ -32,6 +32,8 @@
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QLineEdit>
+#include <QDoubleValidator>
 
 namespace inviwo {
 
@@ -78,14 +80,38 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
     dimensionsLayout->addWidget(dimY_);
     dimensionsLayout->addWidget(dimZ_);
     dimensions->setLayout(dimensionsLayout);
+    
+    
+    QLabel* spaceLabel = new QLabel("Spacing");
+    spaceX_ = new QLineEdit(this);
+    QLocale locale(spaceX_->locale());
+    spaceX_->setText(locale.toString(0.01));
+    spaceX_->setValidator(new QDoubleValidator(0.0, 1000.0, 16, spaceX_));
+    spaceY_ = new QLineEdit(this);
+    spaceY_->setText(locale.toString(0.01));
+    spaceY_->setValidator(new QDoubleValidator(0.0, 1000.0, 16, spaceY_));
+    spaceZ_ = new QLineEdit(this);
+    spaceZ_->setText(locale.toString(0.01));
+    spaceZ_->setValidator(new QDoubleValidator(0.0, 1000.0, 16, spaceZ_));
+    QWidget* space = new QWidget(this);
+    QHBoxLayout* spaceLayout = new QHBoxLayout();
+    spaceLayout->addWidget(spaceX_);
+    spaceLayout->addWidget(spaceY_);
+    spaceLayout->addWidget(spaceZ_);
+    space->setLayout(spaceLayout);
+    
+    
     QLabel* timeStepLabel = new QLabel("Time steps");
     timeSteps_= new QSpinBox();
     dataSizeLayout->addWidget(dimensionLabel, 0, 0);
     dataSizeLayout->addWidget(dimensions,     0, 1);
-    dataSizeLayout->addWidget(timeStepLabel,  1, 0);
-    dataSizeLayout->addWidget(timeSteps_,     1, 1);
+    dataSizeLayout->addWidget(spaceLabel,     1, 0);
+    dataSizeLayout->addWidget(space,          1, 1);
+    dataSizeLayout->addWidget(timeStepLabel,  2, 0);
+    dataSizeLayout->addWidget(timeSteps_,     2, 1);
     QGroupBox* dataSizeBox = new QGroupBox("Data size", this);
     dataSizeBox->setLayout(dataSizeLayout);
+    
     QGridLayout* readOptionsLayout = new QGridLayout();
     QLabel* headerOffsetLabel = new QLabel("Header offset");
     headerOffset_ = new QSpinBox();
@@ -122,33 +148,40 @@ RawDataReaderDialogQt::RawDataReaderDialogQt() {
 }
 
 RawDataReaderDialogQt::~RawDataReaderDialogQt() {
-    delete fileName_;
-    delete bitDepth_;
-    delete channels_;
-    delete dimX_;
-    delete dimY_;
-    delete dimZ_;
-    delete timeSteps_;
-    delete headerOffset_;
-    delete timeStepOffset_;
-    delete endianess_;
 }
 
-const DataFormatBase* RawDataReaderDialogQt::getFormat(std::string fileName, uvec3* dimensions, bool* littleEndian) {
+bool RawDataReaderDialogQt::show() {
+    return QDialog::exec() == QDialog::Accepted;
+}
+
+
+void RawDataReaderDialogQt::setFile(std::string fileName) {
     fileName_->setText(QString::fromStdString(fileName));
-
-    if (exec() && result() == QDialog::Accepted) {
-        const DataFormatBase* format = DataFormatBase::get(bitDepth_->currentText().toLocal8Bit().constData());
-        dimensions->x = dimX_->value();
-        dimensions->y = dimY_->value();
-        dimensions->z = dimZ_->value();
-
-        if (endianess_->currentIndex()==0) *littleEndian=true;
-        else *littleEndian=false;
-
-        return format;
-    }
-    else return 0;
 }
 
+const DataFormatBase* RawDataReaderDialogQt::getFormat() const {
+    return DataFormatBase::get(bitDepth_->currentText().toLocal8Bit().constData());
+}
+uvec3 RawDataReaderDialogQt::getDimensions() const {
+    uvec3 dimensions;
+    dimensions.x = dimX_->value();
+    dimensions.y = dimY_->value();
+    dimensions.z = dimZ_->value();
+    return dimensions;
+}
+dvec3 RawDataReaderDialogQt::getSpacing() const {
+    QLocale locale = spaceX_->locale();
+    glm::dvec3 space(0.01f);
+    
+    space.x = locale.toDouble(spaceX_->text().remove(QChar(' ')));
+    space.y = locale.toDouble(spaceY_->text().remove(QChar(' ')));
+    space.z = locale.toDouble(spaceZ_->text().remove(QChar(' ')));
+
+    return space;
+}
+
+bool RawDataReaderDialogQt::getEndianess() const {
+    return endianess_->currentIndex()==0;
+}
+    
 } // namespace

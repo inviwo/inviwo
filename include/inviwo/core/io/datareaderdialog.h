@@ -41,7 +41,13 @@ public:
     DataReaderDialog();
     virtual ~DataReaderDialog();
 
-    virtual const DataFormatBase* getFormat(std::string fileName, uvec3* dimensions, bool* endianess) = 0;
+    virtual bool show() = 0;
+    virtual void setFile(std::string fileName) = 0;
+    
+    virtual const DataFormatBase* getFormat() const = 0;
+    virtual uvec3 getDimensions() const = 0;
+    virtual dvec3 getSpacing() const = 0;
+    virtual bool getEndianess() const = 0;
 };
 
 } // namespace

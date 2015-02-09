@@ -42,7 +42,8 @@ RawVolumeReader::RawVolumeReader()
     : DataReaderType<Volume>()
     , rawFile_("")
     , littleEndian_(true)
-    , dimensions_(uvec3(0, 0, 0))
+    , dimensions_(0)
+    , spacing_(0.01f)
     , format_(NULL)
     , parametersSet_(false) {
     addExtension(FileExtension("raw", "Raw binary file"));
@@ -53,6 +54,7 @@ RawVolumeReader::RawVolumeReader(const RawVolumeReader& rhs)
     , rawFile_(rhs.rawFile_)
     , littleEndian_(true)
     , dimensions_(rhs.dimensions_)
+    , spacing_(rhs.spacing_)
     , format_(rhs.format_)
     , parametersSet_(false) {}
 
@@ -61,6 +63,7 @@ RawVolumeReader& RawVolumeReader::operator=(const RawVolumeReader& that) {
         rawFile_ = that.rawFile_;
         littleEndian_ = that.littleEndian_;
         dimensions_ = that.dimensions_;
+        spacing_ = that.spacing_;
         format_ = that.format_;
         DataReaderType<Volume>::operator=(that);
     }
@@ -96,31 +99,32 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
     rawFile_ = filePath;
 
     if (!parametersSet_) {
-        DataReaderDialog* readerDialog = dynamic_cast<DataReaderDialog*>(DialogFactory::getPtr()->getDialog("RawVolumeReader"));
+        DataReaderDialog* readerDialog =
+            dynamic_cast<DataReaderDialog*>(DialogFactory::getPtr()->getDialog("RawVolumeReader"));
         if (!readerDialog) {
             throw DataReaderException("No data reader dialog found.");
         }
-        format_ = readerDialog->getFormat(rawFile_, &dimensions_, &littleEndian_);
+        readerDialog->setFile(rawFile_);
+        if (readerDialog->show()) {
+            format_ = readerDialog->getFormat();
+            dimensions_ = readerDialog->getDimensions();
+            littleEndian_ = readerDialog->getEndianess();
+            spacing_ = static_cast<glm::vec3>(readerDialog->getSpacing());
+        } else {
+            throw DataReaderException("Raw data import terminated by user");
+        }
     }
 
     if (format_) {
-        glm::mat3 basis(2.0f);
-        glm::vec3 offset(0.0f);
-        glm::vec3 spacing(0.0f);
+        glm::mat3 basis(1.0f);
         glm::mat4 wtm(1.0f);
 
-        if (spacing != vec3(0.0f)) {
-            basis[0][0] = dimensions_.x * spacing.x;
-            basis[1][1] = dimensions_.y * spacing.y;
-            basis[2][2] = dimensions_.z * spacing.z;
-        }
+        basis[0][0] = dimensions_.x * spacing_.x;
+        basis[1][1] = dimensions_.y * spacing_.y;
+        basis[2][2] = dimensions_.z * spacing_.z;
 
-        // If not specified, center the data around origo.
-        if (offset == vec3(0.0f)) {
-            offset[0] = -basis[0][0] / 2.0f;
-            offset[1] = -basis[1][1] / 2.0f;
-            offset[2] = -basis[2][2] / 2.0f;
-        }
+        // Center the data around origo.
+        glm::vec3 offset(-0.5f*(basis[0]+basis[1]+basis[2]));
 
         volume->setBasis(basis);
         volume->setOffset(offset);
@@ -130,11 +134,13 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
         VolumeDisk* vd = new VolumeDisk(filePath, dimensions_, format_);
         vd->setDataReader(this);
         volume->addRepresentation(vd);
-        std::string size = formatBytesToString(dimensions_.x*dimensions_.y*dimensions_.z*(format_->getBytesStored()));
+        std::string size = formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
+                                               (format_->getBytesStored()));
         LogInfo("Loaded volume: " << filePath << " size: " << size);
         return volume;
-    } else
-        throw DataReaderException("Raw data import terminated by user");
+    } else {
+        throw DataReaderException("Raw data import could not determine format");
+    }
 }
 
 void RawVolumeReader::readDataInto(void* destination) const {
