@@ -99,7 +99,6 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     StringMetaData* descMetaData = data->getMetaData<StringMetaData>("description");
     if (descMetaData){
         description = new unsigned char[descMetaData->get().size() + 1];
-        description = (unsigned char *)malloc((descMetaData->get().size() + 1) * sizeof(unsigned char));
         strncpy((char *)description, descMetaData->get().c_str(), descMetaData->get().size());
         description[descMetaData->get().size()] = '\0';
     }
@@ -133,11 +132,11 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
         components, spacing.x, spacing.y, spacing.z,
         description, courtesy, parameter, comment);
 
-    if (data2Ptr) delete[] data2Ptr;
-    if (description) delete description;
-    if (courtesy) delete courtesy;
-    if (parameter) delete parameter;
-    if (comment) delete comment;
+    delete[] data2Ptr;
+    delete[] description;
+    delete[] courtesy;
+    delete[] parameter;
+    delete[] comment;
 }
 
 } // namespace
