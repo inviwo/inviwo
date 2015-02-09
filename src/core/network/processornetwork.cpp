@@ -719,10 +719,10 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     ErrorHandle errorHandle(info);
     
     // Processors
-    ProcessorVector processors;
     try {
         DeserializationErrorHandle<ErrorHandle>
             processor_err(d, "Processor", &errorHandle, &ErrorHandle::handleProcessorError);
+        ProcessorVector processors;
         d.deserialize("Processors", processors, "Processor");
         for (size_t i = 0; i < processors.size(); ++i) {
             if (processors[i]) {
@@ -745,8 +745,6 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
         DeserializationErrorHandle<ErrorHandle>
             connection_err(d, "Connection", &errorHandle, &ErrorHandle::handleConnectionError);
         d.deserialize("Connections", portConnections, "Connection");
-
-        processors = getProcessors();
 
         for (size_t i = 0; i < portConnections.size(); i++) {
             if (portConnections[i]) {

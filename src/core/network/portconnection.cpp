@@ -70,11 +70,10 @@ void PortConnection::deserialize(IvwDeserializer& d) {
         if (inport_->getProcessor()->getInport(inport_->getIdentifier()) != inport_) {
             inport_ = inport_->getProcessor()->getInport(inport_->getIdentifier());
         }
-
         if (outport_->getProcessor()->getOutport(outport_->getIdentifier()) != outport_) {
             outport_ = outport_->getProcessor()->getOutport(outport_->getIdentifier());
         }
-
+        
     } else {
         std::string type = (out.error ? out.data.type : outport_->getProcessor()->getIdentifier()) + "." +
                            outport_->getIdentifier() + " to " +

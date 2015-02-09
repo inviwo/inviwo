@@ -194,7 +194,7 @@ void PropertyOwner::deserialize(IvwDeserializer& d) {
     for (std::vector<Property*>::const_iterator it = properties_.begin(); it != properties_.end(); ++it)
         propertyMap[(*it)->getIdentifier()] = *it;
 
-    d.deserialize("Properties", propertyMap, "Property", "identifier") ;
+    d.deserialize("Properties", propertyMap, "Property", "identifier");
 }
 
 bool PropertyOwner::findPropsForComposites(TxElement* node) {
