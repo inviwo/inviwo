@@ -67,21 +67,24 @@ void ImageRAM::deinitialize() {
 bool ImageRAM::copyAndResizeRepresentation(DataRepresentation* targetRep) const {
     const ImageRAM* source = this;
     ImageRAM* target = dynamic_cast<ImageRAM*>(targetRep);
-    ivwAssert(target!=0, "Target representation missing.");
-    //Copy and resize color layers
-    size_t minSize = std::min(source->getOwner()->getNumberOfColorLayers(), target->getOwner()->getNumberOfColorLayers());
 
-    for (size_t i=0; i<minSize; ++i) {
+    if (!target) return false;
+
+    // Copy and resize color layers
+    size_t minSize = std::min(source->getOwner()->getNumberOfColorLayers(),
+                              target->getOwner()->getNumberOfColorLayers());
+
+    for (size_t i = 0; i < minSize; ++i) {
         if (!source->getColorLayerRAM(i)->copyAndResizeLayer(target->getColorLayerRAM(i)))
             return false;
     }
 
-    //Copy and resize depth layer
+    // Copy and resize depth layer
     if (source->getDepthLayerRAM() && target->getDepthLayerRAM())
         if (!source->getDepthLayerRAM()->copyAndResizeLayer(target->getDepthLayerRAM()))
             return false;
 
-    //Copy and resize picking layer
+    // Copy and resize picking layer
     if (source->getPickingLayerRAM() && target->getPickingLayerRAM())
         if (!source->getPickingLayerRAM()->copyAndResizeLayer(target->getPickingLayerRAM()))
             return false;
