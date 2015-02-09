@@ -70,7 +70,7 @@ private:
     QMenu* contextMenu_;
     QAction* renameAction_;
     void mouseDoubleClickEvent(QMouseEvent* e);
-    std::string shortenText();
+    QString shortenText();
     bool shortenText_;
 
 signals:

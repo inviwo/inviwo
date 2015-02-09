@@ -86,7 +86,7 @@ HelpWidget::HelpWidget(QWidget* parent)
     connect(helpEngine_, SIGNAL(setupFinished()), this, SLOT(setupFinished()));
 
     if (!helpEngine_->setupData()) {
-        LogWarn("Faild to setup the help engine:" << helpEngine_->error().toStdString());
+        LogWarn("Faild to setup the help engine:" << helpEngine_->error().toUtf8().constData());
         delete helpEngine_;
         helpEngine_ = NULL;
     }

@@ -321,7 +321,7 @@ ProcessorLinkGraphicsItem* ProcessorGraphicsItem::getLinkGraphicsItem() const { 
 void ProcessorGraphicsItem::onProcessorIdentifierChange(Processor* processor) {
     std::string newIdentifier = processor->getIdentifier();
     
-    if (newIdentifier != nameLabel_->text().toStdString()) {
+    if (newIdentifier != nameLabel_->text().toUtf8().constData()) {
         nameLabel_->setText(QString::fromStdString(newIdentifier));
     }
 

@@ -61,9 +61,9 @@ void EditableLabelQt::generateWidget() {
     label_ = new QLabel(this);
 
     if (shortenText_)
-        label_->setText(QString::fromStdString(shortenText()));
+        label_->setText(shortenText());
     else
-        label_->setText(QString::fromStdString(text_));
+        label_->setText(QString::fromStdString(text_.c_str()));
 
     lineEdit_ = new QLineEdit(this);
     hLayout->addWidget(lineEdit_);
@@ -105,7 +105,7 @@ QSize EditableLabelQt::minimumSizeHint() const { return sizeHint(); }
 
 void EditableLabelQt::resizeEvent(QResizeEvent *event) {
     if (shortenText_){
-        label_->setText(QString::fromStdString(shortenText()));
+        label_->setText(shortenText());
     }
     QWidget::resizeEvent(event);
 }
@@ -120,9 +120,9 @@ void EditableLabelQt::finishEditing() {
     text_ = lineEdit_->text().toLocal8Bit().constData();
 
     if (shortenText_){
-        label_->setText(QString::fromStdString(shortenText()));
+        label_->setText(shortenText());
     } else {
-        label_->setText(QString::fromStdString(text_));
+        label_->setText(QString::fromStdString(text_.c_str()));
     }
 
     label_->show();
@@ -151,17 +151,17 @@ void EditableLabelQt::showContextMenu(const QPoint& pos) {
     contextMenu_->exec(label_->mapToGlobal(pos));
 }
 
-std::string EditableLabelQt::shortenText() {
+QString EditableLabelQt::shortenText() {
     QFontMetrics fm = label_->fontMetrics();
-    return fm.elidedText(QString::fromStdString(text_), Qt::ElideRight, width()).toStdString();
+    return fm.elidedText(QString::fromStdString(text_.c_str()), Qt::ElideRight, width());
 }
 
 void EditableLabelQt::setShortenText(bool shorten) {
     shortenText_ = shorten;
     if (shortenText_) {
-        label_->setText(QString::fromStdString(shortenText()));
+        label_->setText(shortenText());
     } else {
-        label_->setText(QString::fromStdString(text_));
+        label_->setText(QString::fromStdString(text_.c_str()));
     }
 }
 

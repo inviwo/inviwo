@@ -290,7 +290,7 @@ void ProcessorTreeWidget::addProcessorsToTree() {
 
 void ProcessorTreeWidget::currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
     if(!current) return;
-    std::string classname = current->data(0, ProcessorTree::IDENTIFIER_ROLE).toString().toStdString();
+    std::string classname = current->data(0, ProcessorTree::IDENTIFIER_ROLE).toString().toUtf8().constData();
     if (!classname.empty()) helpWidget_->showDocForClassName(classname);
 }
 

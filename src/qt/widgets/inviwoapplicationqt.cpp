@@ -171,28 +171,28 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
     switch (type) {
         case QtDebugMsg:
             inviwo::LogCentral::getPtr()->log("Qt Debug", Info, context.file, context.function,
-                                                context.line, msg.toStdString());
+                                                context.line, msg.toUtf8().constData());
 
             fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
         case QtWarningMsg:
             inviwo::LogCentral::getPtr()->log("Qt Warning", Info, context.file, context.function,
-                                                context.line, msg.toStdString());
+                                                context.line, msg.toUtf8().constData());
 
             fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
         case QtCriticalMsg:
             inviwo::LogCentral::getPtr()->log("Qt Critical", Info, context.file, context.function,
-                                                context.line, msg.toStdString());
+                                                context.line, msg.toUtf8().constData());
          
             fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
         case QtFatalMsg:
             inviwo::LogCentral::getPtr()->log("Qt Fatal", Info, context.file, context.function,
-                                                context.line, msg.toStdString());
+                                                context.line, msg.toUtf8().constData());
             
             fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);

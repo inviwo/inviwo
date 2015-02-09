@@ -179,7 +179,7 @@ public:
         setLayout(&gridLayout_);
 
         reload();
-        setWindowTitle(QString::fromStdString(property_->getDisplayName()));
+        setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
     }
 
     virtual void save() {
