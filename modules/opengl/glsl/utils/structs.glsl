@@ -110,7 +110,7 @@ struct LightParameters {
     vec3 ambientColor;
     vec3 diffuseColor; 
     vec3 specularColor;
-    int specularExponent;
+    float specularExponent;
 };
 
 struct PlaneParameters {

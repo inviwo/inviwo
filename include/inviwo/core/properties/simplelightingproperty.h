@@ -76,7 +76,7 @@ public:
     FloatVec3Property ambientColor_;
     FloatVec3Property diffuseColor_; 
     FloatVec3Property specularColor_;
-    IntProperty specularExponent_;
+    FloatProperty specularExponent_;
     // Light properties
     FloatVec3Property lightPosition_;
     FloatVec3Property lightAttenuation_;
