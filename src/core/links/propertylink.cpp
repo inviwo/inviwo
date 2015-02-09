@@ -75,7 +75,7 @@ void PropertyLink::deserialize(IvwDeserializer& d) {
         NodeDebugger ndDest(dest.data.node);
         throw SerializationException("Could not create Property Link from \"" +
                                          joinString(ndSrc.getPath(), ".") + "\" to " +
-                                         joinString(dstProperty_->getPath(), ".") +
+                                         joinString(ndDest.getPath(), ".") +
                                          "\". Source and destination properties not found.",
                                      "PropertyLink");
 
