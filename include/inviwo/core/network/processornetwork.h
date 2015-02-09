@@ -37,7 +37,6 @@
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/network/processornetworkobserver.h>
-#include <inviwo/core/links/processorlink.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/links/linkevaluator.h>
 #include <inviwo/core/util/observer.h>

@@ -36,7 +36,6 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/links/processorlink.h>
 
 #include <map>
 

@@ -37,7 +37,6 @@
 #include <inviwo/core/ports/port.h>
 #include <inviwo/qt/editor/processorlinkgraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
-#include <inviwo/core/links/processorlink.h>
 
 namespace inviwo {
 
