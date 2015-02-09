@@ -377,7 +377,7 @@ void VolumeSliceGL::process() {
     utilgl::bindTexture(transferFunction_, transFuncUnit);
     utilgl::bindTexture(inport_, volUnit);
 
-    GLint wrapS, wrapT, wrapR;
+    GLint wrapS(0), wrapT(0), wrapR(0);
     if(volumeWrapping_.get() > 0){
         glGetTexParameteriv(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, &wrapS);
         glGetTexParameteriv(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, &wrapT);
