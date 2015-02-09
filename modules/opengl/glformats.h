@@ -79,7 +79,7 @@ public:
     };
 
     GLFormats() {
-        REVERSE16TO12BIT = 1.0 - (DataUINT16::max()/DataUINT12::max());
+        REVERSE16TO12BIT = 1.f - (DataUINT16::max()/DataUINT12::max());
         //1 channel
         glFormatArray_[DataFormatEnums::FLOAT16]     = GLFormat(GL_RED, GL_R16F, GL_HALF_FLOAT, 1, 2, NONE);
         glFormatArray_[DataFormatEnums::FLOAT32]     = GLFormat(GL_RED, GL_R32F, GL_FLOAT, 1, 4, NONE);

@@ -41,7 +41,7 @@ FontRenderingModule::FontRenderingModule() : InviwoModule() {
     setIdentifier("FontRendering");
 
 #ifdef FONTRENDERING_INCLUDE_SHADER_RESOURCES
-    addGeneratedShaderResources();
+    FONTRENDERING_addGeneratedShaderResources();
 #else
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "fontrendering/glsl");
 #endif

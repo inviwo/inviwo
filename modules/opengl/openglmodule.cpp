@@ -67,7 +67,7 @@ OpenGLModule::OpenGLModule() :
     ShaderManager::init();
 
 #ifdef OPENGL_INCLUDE_SHADER_RESOURCES
-    addGeneratedShaderResources();
+    OPENGL_addGeneratedShaderResources();
 #else
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "opengl/glsl");
 #endif

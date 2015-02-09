@@ -34,6 +34,10 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/util/capabilities.h>
 
+#ifdef _WIN32
+#pragma warning( disable : 4290 )
+#endif
+
 namespace inviwo {
 
 #define NO_GL_THEN_RETURN if(!OpenGLCapabilities::hasOpenGLVersion()) return;

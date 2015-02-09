@@ -62,7 +62,7 @@ BaseGLModule::BaseGLModule() : InviwoModule() {
     setIdentifier("BaseGL");
 
 #ifdef BASEGL_INCLUDE_SHADER_RESOURCES
-    addGeneratedShaderResources();
+    BASEGL_addGeneratedShaderResources();
 #else
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "basegl/glsl");
 #endif

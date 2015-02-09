@@ -399,7 +399,7 @@ bool FrameBufferObject::performAttachColorTexture(GLenum& outAttachNumber) {
     if (itUsed == buffersInUse_.end()) {
         LogError("invalid state? (FBO " << id_ << ")");
     }
-    GLenum target = colorAttachmentEnums_[0] + std::distance(buffersInUse_.begin(), itUsed);
+    GLenum target = static_cast<GLenum>(colorAttachmentEnums_[0] + std::distance(buffersInUse_.begin(), itUsed));
     drawBuffers_.push_back(target);
     outAttachNumber = target;
     buffersInUse_[target - colorAttachmentEnums_[0]] = true;

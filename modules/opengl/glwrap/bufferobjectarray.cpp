@@ -111,7 +111,7 @@ int BufferObjectArray::attachBufferObject(const BufferObject* bo){
     else{
         std::vector<const BufferObject*>::iterator it = std::find(attachedBuffers_.begin()+NUMBER_OF_BUFFER_TYPES, attachedBuffers_.end(), static_cast<const BufferObject*>(NULL));
         if (it != attachedBuffers_.end()){
-            int location = it - attachedBuffers_.begin();
+            int location = static_cast<int>(it - attachedBuffers_.begin());
             pointToObject(bo, location);
             attachedBuffers_.at(location) = bo;
             return location;
