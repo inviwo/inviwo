@@ -446,11 +446,19 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedValue(T val) {
 
 template<typename T>
 void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames, std::vector<T> values) {
+    std::string selectId = getSelectedIdentifier();
+
     options_.clear();
     for (size_t i=0; i<ids.size(); i++)
         options_.push_back(Option<T>(ids[i], displayNames[i], values[i]));
     
-    setSelectedIndex(0);
+    typename std::vector<Option<T> >::iterator it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
+    if (it != options_.end())
+        selectedIndex_ = std::distance(options_.begin(), it);
+    else
+        selectedIndex_ = 0;
+
+    propertyModified();
 }
 
 // Is...

@@ -33,14 +33,16 @@
 namespace inviwo {
 
 GestureEvent::GestureEvent(vec2 deltaPos, double deltaDistance, GestureEvent::GestureType type,
-                           int state, int numFingers, vec2 screenPosNorm)
+                           int state, int numFingers, vec2 screenPosNorm, uvec2 canvasSize)
     : InteractionEvent()
     , type_(type)
     , state_(state)
     , numFingers_(numFingers)
     , deltaPos_(deltaPos)
     , deltaDistance_(deltaDistance)
-    , screenPosNorm_(screenPosNorm) {}
+    , screenPosNorm_(screenPosNorm)
+    , canvasSize_(canvasSize)
+    {}
 
 GestureEvent::GestureEvent(GestureEvent::GestureType type,
                            int state, int numFingers)
@@ -50,7 +52,8 @@ GestureEvent::GestureEvent(GestureEvent::GestureType type,
     , numFingers_(numFingers)
     , deltaPos_(0)
     , deltaDistance_(0)
-    , screenPosNorm_(0) {}
+    , screenPosNorm_(0)
+    , canvasSize_(0) {}
 
 
 GestureEvent::GestureEvent(const GestureEvent& rhs) 
@@ -60,7 +63,8 @@ GestureEvent::GestureEvent(const GestureEvent& rhs)
     , numFingers_(rhs.numFingers_)
     , deltaPos_(rhs.deltaPos_)
     , deltaDistance_(rhs.deltaDistance_)
-    , screenPosNorm_(rhs.screenPosNorm_) {
+    , screenPosNorm_(rhs.screenPosNorm_)
+    , canvasSize_(rhs.canvasSize_){
 }
 
 GestureEvent& GestureEvent::operator=(const GestureEvent& that) {
@@ -72,6 +76,7 @@ GestureEvent& GestureEvent::operator=(const GestureEvent& that) {
         deltaPos_ = that.deltaPos_;
         deltaDistance_ = that.deltaDistance_;
         screenPosNorm_ = that.screenPosNorm_;
+        canvasSize_ = that.canvasSize_;
     }
     return *this;
 }
