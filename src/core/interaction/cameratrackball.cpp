@@ -36,6 +36,7 @@ CameraTrackball::CameraTrackball(CameraProperty* cameraProp)
     : Trackball(&cameraProp->getLookFrom(), &cameraProp->getLookTo(), &cameraProp->getLookUp())
     , cameraProp_(cameraProp) {
     static_cast<TrackballObservable*>(this)->addObserver(this);
+    cameraProp_->onChange(this, &CameraTrackball::onCameraPropertyChange);
 }
 
 CameraTrackball::~CameraTrackball() {}
@@ -62,6 +63,10 @@ void CameraTrackball::onLookToChanged(const Trackball* trackball) {
 
 void CameraTrackball::onLookUpChanged(const Trackball* trackball) {
     cameraProp_->updateViewMatrix();
+}
+
+void CameraTrackball::onCameraPropertyChange(){
+    setPanSpeedFactor(cameraProp_->getFovy()/60.f);
 }
 
 }  // namespace

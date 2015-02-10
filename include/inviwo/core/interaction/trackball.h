@@ -98,6 +98,9 @@ public:
     const vec3* getLookFrom() const { return lookFrom_; }
     const vec3* getLookUp() const { return lookUp_; }
 
+protected:
+    void setPanSpeedFactor(float psf);
+
 private:
     enum Direction { UP = 0, LEFT, DOWN, RIGHT };
 
@@ -131,6 +134,7 @@ private:
     void panGesture(Event* event);
 
     float pixelWidth_;
+    float panSpeedFactor_;
     bool isMouseBeingPressedAndHold_;
 
     vec2 lastMousePos_;

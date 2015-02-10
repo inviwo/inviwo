@@ -40,6 +40,7 @@ PropertyClassIdentifier(Trackball, "org.inviwo.Trackball");
 Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
     : CompositeProperty("trackball", "Trackball")
     , pixelWidth_(0.007f)
+    , panSpeedFactor_(1.f)
     , isMouseBeingPressedAndHold_(false)
     , lastMousePos_(ivec2(0))
     , lastTrackballPos_(vec3(0.5f))
@@ -153,6 +154,10 @@ void Trackball::invokeInteractionEvent(Event* event) {
     CompositeProperty::invokeInteractionEvent(event);
 }
 
+void Trackball::setPanSpeedFactor(float psf) { 
+    panSpeedFactor_ = psf; 
+}
+
 vec3 Trackball::mapNormalizedMousePosToTrackball(const vec2& mousePos, float dist /*= 1.f*/) {
     // set x and y to lie in interval [-r, r]
     float r = RADIUS;
@@ -212,11 +217,8 @@ void Trackball::panGesture(Event* event) {
         vec3(gestureEvent->deltaPos().x * screenScale.x, 
              gestureEvent->deltaPos().y * screenScale.y, 0.f);
 
-    // if 30 degrees FOV
-    offsetVector *= 0.5f;
+    offsetVector *= panSpeedFactor_;
 
-    // Need to account for FOV. Seems to only work with 60 degrees
-    // at the moment.
     vec3 direction = *lookFrom_ - *lookTo_;
     float vecLength = glm::length(direction);
     vec3 mappedOffsetVector = mapToObject(offsetVector, vecLength);
@@ -231,13 +233,6 @@ void Trackball::rotate(Event* event) {
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
     
     vec2 curMousePos = mouseEvent->posNormalized();
-
-    // The resulting rotation needs to be mapped to the camera distance,
-    // as if the trackball is located at a certain distance from the camera.
-    // TODO: Verify this
-    // float zDist = (glm::length(*lookFrom_-*lookTo_)-1.f)/M_PI;
-    // vec3 curTrackballPos = mapNormalizedMousePosToTrackball(curMousePos, zDist);
-
     vec3 curTrackballPos = mapNormalizedMousePosToTrackball(curMousePos);
 
     // disable movements on first press
@@ -309,8 +304,7 @@ void Trackball::pan(Event* event) {
     // difference vector in trackball co-ordinates
     vec3 trackBallOffsetVector = vec3(lastMousePos_ - curMousePos, 0.f);
     
-    // if 30 degrees FOV
-    trackBallOffsetVector *= 0.5f;
+    trackBallOffsetVector *= panSpeedFactor_;
     
     trackBallOffsetVector.y = -trackBallOffsetVector.y;
 
@@ -325,10 +319,6 @@ void Trackball::pan(Event* event) {
 
     trackBallOffsetVector.x *= screenScale.x;
     trackBallOffsetVector.y *= screenScale.y;
-
-    // Need to account for FOV. 
-    // Only works with 30 degrees
-    // at the moment.
 
     vec3 direction = *lookFrom_ - *lookTo_;
     float vecLength = glm::length(direction);
