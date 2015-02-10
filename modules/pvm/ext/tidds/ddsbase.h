@@ -26,10 +26,18 @@
 
 #if defined(_WIN32)
 
+#ifdef INVIWO_ALL_DYN_LINK
+#ifdef TIDDS_EXPORTS
+#define TIDDS_EXT __declspec(dllexport)
+#else
+#define TIDDS_EXT extern __declspec(dllimport)
+#endif
+#else
 #ifdef TIDDS_EXPORTS
 #define TIDDS_EXT
 #else
 #define TIDDS_EXT extern
+#endif
 #endif
 
 #else
