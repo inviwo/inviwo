@@ -450,7 +450,8 @@ void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<std::stri
     for (size_t i=0; i<ids.size(); i++)
         options_.push_back(Option<T>(ids[i], displayNames[i], values[i]));
     
-    setSelectedIndex(0);
+    selectedIndex_ == 0;
+    propertyModified();
 }
 
 // Is...
