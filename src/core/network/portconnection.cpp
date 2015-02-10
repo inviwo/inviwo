@@ -46,10 +46,10 @@ void PortConnection::serialize(IvwSerializer& s) const {
 
 void PortConnection::deserialize(IvwDeserializer& d) {
     struct SError {
-        SError() : error(false), data() {};
+        SError() : error(false), data(){};
         bool error;
         SerializationException::SerializationExceptionData data;
-    };    
+    };
     SError in, out;
 
     try {
@@ -66,45 +66,27 @@ void PortConnection::deserialize(IvwDeserializer& d) {
         in.data = e.getData();
     }
 
-    if (!(out.error || in.error)) {
-        if (inport_->getProcessor()->getInport(inport_->getIdentifier()) != inport_) {
-            inport_ = inport_->getProcessor()->getInport(inport_->getIdentifier());
-        }
-        if (outport_->getProcessor()->getOutport(outport_->getIdentifier()) != outport_) {
-            outport_ = outport_->getProcessor()->getOutport(outport_->getIdentifier());
-        }
-        
-    } else {
-        std::string type = (out.error ? out.data.type : outport_->getProcessor()->getIdentifier()) + "." +
-                           outport_->getIdentifier() + " to " +
-                           (in.error ? in.data.type : inport_->getProcessor()->getIdentifier()) + "." +
-                           inport_->getIdentifier();
-
-        if (out.error && in.error) {
-            throw SerializationException("Could not create Connection from port \""
-                                         + outport_->getIdentifier() + "\" in the missing processor \""
-                                         + out.data.id + "\" of class \"" + out.data.type
-                                         + "\" to port \"" + inport_->getIdentifier()
-                                         + "\" in the missing processor \"" + in.data.id
-                                         + "\" of class \"" + in.data.type + "\"",
-                                         "Connection");
-        } else if (out.error) {
-            throw SerializationException("Could not create Connection from port \""
-                                         + outport_->getIdentifier() + "\" in the missing processor \""
-                                         + out.data.id + "\" of class \"" + out.data.type 
-                                         + "\" to port \"" + inport_->getIdentifier() 
-                                         + "\" in processor \""
-                                         + inport_->getProcessor()->getIdentifier() + "\"",
-                                         "Connection");
-        } else { // in.error
-            throw SerializationException("Could not create Connection from port \"" 
-                                         + outport_->getIdentifier() + "\" in processor \""
-                                         + outport_->getProcessor()->getIdentifier() 
-                                         + "\" to port \"" + inport_->getIdentifier() 
-                                         + "\" in the missing processor \"" + in.data.id 
-                                         + "\" of class \"" + in.data.type + "\"", 
-                                        "Connection");
-        }
+    if (out.error && in.error) {
+        NodeDebugger ndOut(out.data.node);
+        NodeDebugger ndIn(in.data.node);
+        throw SerializationException("Could not create Connection from \"" +
+                                         joinString(ndOut.getPath(), ".") + "\" to port \"" +
+                                         joinString(ndIn.getPath(), ".") + "\"",
+                                     "Connection");
+    } else if (out.error) {
+        NodeDebugger ndOut(out.data.node);
+        throw SerializationException("Could not create Connection from \"" +
+                                         joinString(ndOut.getPath(), ".") + "\" to port \"" +
+                                         inport_->getIdentifier() + "\" in processor \"" +
+                                         inport_->getProcessor()->getIdentifier() + "\"",
+                                     "Connection");
+    } else if (in.error) {
+        NodeDebugger ndIn(in.data.node);
+        throw SerializationException("Could not create Connection from port \"" +
+                                         outport_->getIdentifier() + "\" in processor \"" +
+                                         outport_->getProcessor()->getIdentifier() +
+                                         "\" to port \"" + joinString(ndIn.getPath(), ".") + "\"",
+                                     "Connection");
     }
 }
 

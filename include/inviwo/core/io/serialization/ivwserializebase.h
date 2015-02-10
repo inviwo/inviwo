@@ -63,9 +63,7 @@ struct StandardIdentifier : public ElementIdentifier<T> {
         : key_(key), ptr_(ptr) {}
 
     virtual void setKey(TxElement* node) { identifier_ = node->GetAttributeOrDefault(key_, ""); }
-    virtual bool operator()(const T* elem) const {
-        return identifier_ == (*elem.*ptr_)();
-    }
+    virtual bool operator()(const T* elem) const { return identifier_ == (*elem.*ptr_)(); }
 
 private:
     funcPtr ptr_;
