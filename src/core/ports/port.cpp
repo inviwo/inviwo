@@ -71,7 +71,7 @@ void Port::serialize(IvwSerializer& s) const {
 
 void Port::deserialize(IvwDeserializer& d) {
     d.deserialize("identifier", identifier_, true);
-    d.deserialize("Processor", processor_);
+//    d.deserialize("Processor", processor_);
 }
 
 void Port::invalidate(InvalidationLevel invalidationLevel) {

@@ -315,7 +315,8 @@ void Processor::deserialize(IvwDeserializer& d) {
     if (interactionHandlers_.size() != 0)
         d.deserialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
 
-    d.deserialize("InPorts", inports_, "InPort");
+    StandardIdentifier<Inport*> inportIdentifier;
+    d.deserialize("InPorts", inports_, "InPort", &inportIdentifier);
     d.deserialize("OutPorts", outports_, "OutPort");
 
     for (std::vector<Inport*>::iterator it = inports_.begin(); it!=inports_.end(); ++it) {

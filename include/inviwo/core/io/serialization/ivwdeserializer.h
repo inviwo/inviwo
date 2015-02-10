@@ -101,6 +101,14 @@ public:
     void deserialize(const std::string& key,
                      std::vector<T*>& sVector,
                      const std::string& itemKey);
+
+    template <typename T, typename C>
+    void deserialize(const std::string& key,
+                     std::vector<T*>& sVector,
+                     const std::string& itemKey,
+                     ElementIdentifier<C*>* identifier);
+
+
     template <typename T>
     void deserialize(const std::string& key,
                      std::vector<T>& sVector,
@@ -373,6 +381,41 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
         }
     } catch (TxException&) {}
 }
+
+
+template <typename T, typename C>
+void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vector,
+                                  const std::string& itemKey, ElementIdentifier<C*>* identifier) {
+    try {
+        NodeSwitch vectorNodeSwitch(*this, key);
+
+        unsigned int i = 0;
+        TxEIt child(itemKey);
+        for (child = child.begin(rootElement_); child != child.end(); ++child) {
+
+            identifier->setKey(child->GetAttributeOrDefault(identifier->getIdentifierKey(),""));        
+            
+            bool t = (*identifier)(vector[0]);
+            
+            std::vector<T*>::iterator it = std::find_if(vector.begin(), vector.end(), *identifier);
+
+            try {
+                if (it != vector.end()) {
+                    NodeSwitch elementNodeSwitch(*this, &(*child), false);
+                    deserialize(itemKey, *it);
+                } else {
+                    T* item = NULL;
+                    NodeSwitch elementNodeSwitch(*this, &(*child), false);
+                    deserialize(itemKey, item);
+                    vector.push_back(item);
+                }
+            } catch (SerializationException& e) {
+                handleError(e);
+            }
+        }
+    } catch (TxException&) {}
+}
+
 
 template <typename T>
 void IvwDeserializer::deserialize(const std::string& key, std::vector<T>& vector,

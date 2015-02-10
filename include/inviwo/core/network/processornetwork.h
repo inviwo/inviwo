@@ -395,6 +395,8 @@ private:
         void updateCameraToComposite(TxElement* node);
         void updateDimensionTag(TxElement* node);
         void updatePropertyLinks(TxElement* node);
+        void updatePortsInProcessors(TxElement* node);
+
         void traverseNodes(TxElement* node, updateType update);
     };
 };

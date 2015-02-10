@@ -49,6 +49,21 @@
 
 namespace inviwo {
 
+template <typename T>
+struct ElementIdentifier {
+    virtual std::string getIdentifierKey() const  = 0;
+    virtual void setKey(std::string key) = 0;
+    virtual bool operator()(const T& elem) const = 0;
+};
+
+template <typename T>
+struct StandardIdentifier : public ElementIdentifier<T> {
+    virtual std::string getIdentifierKey() const { return "identifier"; }
+    virtual void setKey(std::string key) { identifier = key; }
+    virtual bool operator()(const T& elem) const { return elem->getIdentifier() == identifier; }
+    std::string identifier;
+};
+
 class IvwSerializable;
 
 class IVW_CORE_API IvwSerializeBase {
@@ -198,10 +213,11 @@ public:
         int referenceCount_;
     };
 
-protected:
 
     static std::string nodeToString(const TxElement& node);
 
+
+protected:
     friend class NodeSwitch;
 
     std::vector<Factory*> registeredFactories_;
