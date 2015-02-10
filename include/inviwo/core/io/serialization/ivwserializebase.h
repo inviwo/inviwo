@@ -51,17 +51,26 @@ namespace inviwo {
 
 template <typename T>
 struct ElementIdentifier {
-    virtual std::string getIdentifierKey() const  = 0;
-    virtual void setKey(std::string key) = 0;
-    virtual bool operator()(const T& elem) const = 0;
+    virtual void setKey(TxElement*) = 0;
+    virtual bool operator()(const T* elem) const = 0;
 };
 
 template <typename T>
 struct StandardIdentifier : public ElementIdentifier<T> {
-    virtual std::string getIdentifierKey() const { return "identifier"; }
-    virtual void setKey(std::string key) { identifier = key; }
-    virtual bool operator()(const T& elem) const { return elem->getIdentifier() == identifier; }
-    std::string identifier;
+    typedef std::string (T::*funcPtr)() const;
+
+    StandardIdentifier(std::string key = "identifier", funcPtr ptr = &T::getIdentifier)
+        : key_(key), ptr_(ptr) {}
+
+    virtual void setKey(TxElement* node) { identifier_ = node->GetAttributeOrDefault(key_, ""); }
+    virtual bool operator()(const T* elem) const {
+        return identifier_ == (*elem.*ptr_)();
+    }
+
+private:
+    funcPtr ptr_;
+    std::string key_;
+    std::string identifier_;
 };
 
 class IvwSerializable;

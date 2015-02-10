@@ -149,6 +149,9 @@ template <typename T>
 void IvwSerializer::serialize(const std::string& key,
                               const std::vector<T>& vector,
                               const std::string& itemKey) {
+
+    if (vector.empty()) return;
+    
     TxElement* newNode = new TxElement(key);
     rootElement_->LinkEndChild(newNode);
     NodeSwitch tempNodeSwitch(*this, newNode);
@@ -167,6 +170,8 @@ void IvwSerializer::serialize(const std::string& key, const std::map<K, V, C, A>
     if (!isPrimitiveType(typeid(K)))
         throw SerializationException("Error: map key has to be a primitive type");
 
+    if (map.empty()) return;
+    
     TxElement* newNode = new TxElement(key);
     rootElement_->LinkEndChild(newNode);
     NodeSwitch tempNodeSwitch(*this, newNode);

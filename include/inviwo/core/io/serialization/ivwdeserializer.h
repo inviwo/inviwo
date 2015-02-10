@@ -106,7 +106,7 @@ public:
     void deserialize(const std::string& key,
                      std::vector<T*>& sVector,
                      const std::string& itemKey,
-                     ElementIdentifier<C*>* identifier);
+                     C identifier);
 
 
     template <typename T>
@@ -385,7 +385,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
 
 template <typename T, typename C>
 void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vector,
-                                  const std::string& itemKey, ElementIdentifier<C*>* identifier) {
+                                  const std::string& itemKey, C identifier) {
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
 
@@ -393,11 +393,9 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
         TxEIt child(itemKey);
         for (child = child.begin(rootElement_); child != child.end(); ++child) {
 
-            identifier->setKey(child->GetAttributeOrDefault(identifier->getIdentifierKey(),""));        
-            
-            bool t = (*identifier)(vector[0]);
-            
-            std::vector<T*>::iterator it = std::find_if(vector.begin(), vector.end(), *identifier);
+            identifier.setKey(child.Get());
+            typename std::vector<T*>::iterator it =
+                std::find_if(vector.begin(), vector.end(), identifier);
 
             try {
                 if (it != vector.end()) {
@@ -413,7 +411,8 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
                 handleError(e);
             }
         }
-    } catch (TxException&) {}
+    } catch (TxException&) {
+    }
 }
 
 

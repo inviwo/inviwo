@@ -297,9 +297,7 @@ void Processor::serialize(IvwSerializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("identifier", identifier_, true);
 
-    if (!interactionHandlers_.empty())
-        s.serialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
-
+    s.serialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
     s.serialize("InPorts", inports_, "InPort");
     s.serialize("OutPorts", outports_, "OutPort");
 
@@ -312,12 +310,11 @@ void Processor::deserialize(IvwDeserializer& d) {
     d.deserialize("identifier", identifier, true);
     setIdentifier(identifier); // Need to use setIdentifier to make sure we get a unique id.
 
-    if (interactionHandlers_.size() != 0)
-        d.deserialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
+    d.deserialize("InteractonHandlers", interactionHandlers_, "InteractionHandler");
 
-    StandardIdentifier<Inport*> inportIdentifier;
-    d.deserialize("InPorts", inports_, "InPort", &inportIdentifier);
-    d.deserialize("OutPorts", outports_, "OutPort");
+    StandardIdentifier<Port> inportIdentifier;
+    d.deserialize("InPorts", inports_, "InPort", inportIdentifier);
+    d.deserialize("OutPorts", outports_, "OutPort", inportIdentifier);
 
     for (std::vector<Inport*>::iterator it = inports_.begin(); it!=inports_.end(); ++it) {
         (*it)->setProcessor(this);
