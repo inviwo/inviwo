@@ -22,44 +22,44 @@
 #ifndef DDSBASE_H
 #define DDSBASE_H
 
-#undef TIDDS_API
+#undef TIDDS_EXT
 
 #if defined(_WIN32)
 
 #ifdef TIDDS_EXPORTS
-#define TIDDS_API extern __declspec(dllexport)
+#define TIDDS_EXT
 #else
-#define TIDDS_API extern __declspec(dllimport)
+#define TIDDS_EXT extern
 #endif
 
 #else
 
 #if defined(__GNUC__) && __GNUC__>=4
-#define TIDDS_API extern __attribute__ ((visibility("default")))
+#define TIDDS_EXT extern __attribute__ ((visibility("default")))
 #elif defined(__SUNPRO_C) || defined(__SUNPRO_CC)
-#define TIDDS_API extern __global
+#define TIDDS_EXT extern __global
 #else
-#define TIDDS_API extern
+#define TIDDS_EXT extern
 #endif
 
 #endif
 
-#ifndef TIDDS_API
-#define TIDDS_API extern
+#ifndef TIDDS_EXT
+#define TIDDS_EXT extern
 #endif
 
 #include "codebase.h" // universal code base
 
-TIDDS_API void writeDDSfile(const char *filename, unsigned char *data, size_t bytes, unsigned int skip = 0, unsigned int strip = 0, int nofree = 0);
-TIDDS_API unsigned char *readDDSfile(const char *filename, size_t *bytes);
+TIDDS_EXT void writeDDSfile(const char *filename, unsigned char *data, size_t bytes, unsigned int skip = 0, unsigned int strip = 0, int nofree = 0);
+TIDDS_EXT unsigned char *readDDSfile(const char *filename, size_t *bytes);
 
-TIDDS_API void writeRAWfile(const char *filename, unsigned char *data, size_t bytes, int nofree = 0);
-TIDDS_API unsigned char *readRAWfile(const char *filename, size_t *bytes);
+TIDDS_EXT void writeRAWfile(const char *filename, unsigned char *data, size_t bytes, int nofree = 0);
+TIDDS_EXT unsigned char *readRAWfile(const char *filename, size_t *bytes);
 
-TIDDS_API void writePNMimage(const char *filename, unsigned const char *image, unsigned int width, unsigned int height, unsigned int components, int dds = 0);
-TIDDS_API unsigned char *readPNMimage(const char *filename, unsigned int *width, unsigned int *height, unsigned int *components);
+TIDDS_EXT void writePNMimage(const char *filename, unsigned const char *image, unsigned int width, unsigned int height, unsigned int components, int dds = 0);
+TIDDS_EXT unsigned char *readPNMimage(const char *filename, unsigned int *width, unsigned int *height, unsigned int *components);
 
-TIDDS_API void writePVMvolume(const char *filename, unsigned const char *volume,
+TIDDS_EXT void writePVMvolume(const char *filename, unsigned const char *volume,
                     unsigned int width,unsigned int height,unsigned int depth,unsigned int components=1,
                     float scalex=1.0f,float scaley=1.0f,float scalez=1.0f,
                     unsigned const char *description=NULL,
@@ -67,7 +67,7 @@ TIDDS_API void writePVMvolume(const char *filename, unsigned const char *volume,
                     unsigned const char *parameter=NULL,
                     unsigned const char *comment=NULL);
 
-TIDDS_API unsigned char *readPVMvolume(const char *filename,
+TIDDS_EXT unsigned char *readPVMvolume(const char *filename,
                              unsigned int *width,unsigned int *height,unsigned int *depth,unsigned int *components=NULL,
                              float *scalex=NULL,float *scaley=NULL,float *scalez=NULL,
                              unsigned char **description=NULL,
@@ -75,13 +75,13 @@ TIDDS_API unsigned char *readPVMvolume(const char *filename,
                              unsigned char **parameter=NULL,
                              unsigned char **comment=NULL);
 
-TIDDS_API unsigned int checksum(unsigned const char *data, unsigned int bytes);
+TIDDS_EXT unsigned int checksum(unsigned const char *data, unsigned int bytes);
 
-TIDDS_API void swapbytes(unsigned char *data, unsigned int bytes);
-TIDDS_API void convbytes(unsigned char *data, unsigned int bytes);
-TIDDS_API void convfloat(unsigned char *data, unsigned int bytes);
+TIDDS_EXT void swapbytes(unsigned char *data, unsigned int bytes);
+TIDDS_EXT void convbytes(unsigned char *data, unsigned int bytes);
+TIDDS_EXT void convfloat(unsigned char *data, unsigned int bytes);
 
-TIDDS_API unsigned char *quantize(unsigned char *volume,
+TIDDS_EXT unsigned char *quantize(unsigned char *volume,
                         unsigned int width,unsigned int height,unsigned int depth,
                         BOOLINT nofree=FALSE,
                         BOOLINT linear=FALSE,
