@@ -67,26 +67,22 @@ void PortConnection::deserialize(IvwDeserializer& d) {
     }
 
     if (out.error && in.error) {
-        NodeDebugger ndOut(out.data.node);
-        NodeDebugger ndIn(in.data.node);
         throw SerializationException("Could not create Connection from \"" +
-                                         joinString(ndOut.getPath(), ".") + "\" to port \"" +
-                                         joinString(ndIn.getPath(), ".") + "\"",
+                                     out.data.nd.getDescription() + " to " +
+                                     in.data.nd.getDescription() +
+                                     ". Outport and Inport not found."
                                      "Connection");
     } else if (out.error) {
-        NodeDebugger ndOut(out.data.node);
-        std::string message = "Could not create Connection from \"" +
-            joinString(ndOut.getPath(), ".") + "\" to port \"" +
-            inport_->getIdentifier() + "\" in processor \"" +
-            inport_->getProcessor()->getIdentifier() + "\"";
+        std::string message = "Could not create Connection from \"" + out.data.nd.getDescription() +
+                              " to port \"" + inport_->getIdentifier() + "\" in processor \"" +
+                              inport_->getProcessor()->getIdentifier() + "\". Outport not found";
         delete outport_;
         throw SerializationException(message, "Connection");
     } else if (in.error) {
-        NodeDebugger ndIn(in.data.node);
         std::string message = "Could not create Connection from port \"" +
-            outport_->getIdentifier() + "\" in processor \"" +
-            outport_->getProcessor()->getIdentifier() +
-            "\" to port \"" + joinString(ndIn.getPath(), ".") + "\"";
+                              outport_->getIdentifier() + "\" in processor \"" +
+                              outport_->getProcessor()->getIdentifier() + "\" to " +
+                              in.data.nd.getDescription() + ". Inport not found";
         delete inport_;
         throw SerializationException(message, "Connection");
     }

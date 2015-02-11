@@ -29,17 +29,17 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/serialization/nodedebugger.h>
+#include <sstream>
+
+
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
 NodeDebugger::NodeDebugger(TxElement* elem) {
     while (elem) {
-        nodes_.push_back(Node(
-            elem->Value(),
-            elem->GetAttributeOrDefault("identifier", ""),
-            elem->GetAttributeOrDefault("type", ""),
-            elem->Row()
-            ));
+        nodes_.push_back(Node(elem->Value(), elem->GetAttributeOrDefault("identifier", ""),
+                              elem->GetAttributeOrDefault("type", ""), elem->Row()));
         TxNode* node = elem->Parent(false);
         if (node) {
             elem = dynamic_cast<TxElement*>(node);
@@ -49,5 +49,39 @@ NodeDebugger::NodeDebugger(TxElement* elem) {
     }
 }
 
-} // namespace
+inviwo::NodeDebugger::Node NodeDebugger::operator[](std::size_t idx) const {
+    if (idx < nodes_.size()) {
+        return nodes_[idx];
+    } else {
+        return Node("UnKnown", "UnKnown");
+    }
+}
 
+std::vector<std::string> NodeDebugger::getPath() const {
+    std::vector<std::string> path;
+    for (std::vector<Node>::const_reverse_iterator it = nodes_.rbegin(); it != nodes_.rend();
+         ++it) {
+        if (!it->identifier.empty()) path.push_back(it->identifier);
+    }
+    return path;
+}
+
+std::string NodeDebugger::getDescription() const {
+    std::vector<std::string> parts;
+    for (std::vector<Node>::const_iterator it = nodes_.begin(); it != nodes_.end(); ++it) {
+        if (!it->identifier.empty()) {
+            std::stringstream ss;
+            ss << it->key << ": \"" << it->identifier << "\" of class \"" << it->type << "\"";
+            parts.push_back(ss.str());
+        }
+    }
+    return joinString(parts, " in ");
+}
+
+size_t NodeDebugger::size() const { return nodes_.size(); }
+
+NodeDebugger::Node::Node(std::string k /*= ""*/, std::string i /*= ""*/, std::string t /*= ""*/,
+                         int l /*= 0*/)
+    : key(k), identifier(i), type(t), line(l) {}
+
+}  // namespace

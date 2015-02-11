@@ -315,7 +315,7 @@ private:
         void handleProcessorError(SerializationException& error) {
             std::string module = info_.getModuleForProcessor(error.getType());
             if (!module.empty()) {
-                messages.push_back(error.getMessage() + " Processor last seen in module: \"" + module + "\"");
+                messages.push_back(error.getMessage() + " Processor was in module: \"" + module + "\"");
             } else {
                 messages.push_back(error.getMessage());
             }

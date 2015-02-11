@@ -40,30 +40,20 @@ namespace inviwo {
 
 struct IVW_CORE_API NodeDebugger {
     struct Node {
-        Node(std::string k = "", std::string i = "", std::string t = "", int l = 0)
-            : key(k), identifier(i), type(t), line(l) {}
+        Node(std::string k = "", std::string i = "", std::string t = "", int l = 0);
         std::string key;
         std::string identifier;
         std::string type;
         int line;
     };
-    Node operator[](std::size_t idx) const {
-        if (idx < nodes_.size()) {
-            return nodes_[idx];
-        } else {
-            return Node("UnKnown", "UnKnown");
-        }
-    }
-    std::vector<std::string> getPath() const {
-        std::vector<std::string> path;
-        for (std::vector<Node>::const_reverse_iterator it = nodes_.rbegin(); it != nodes_.rend();
-             ++it) {
-            if (!it->identifier.empty()) path.push_back(it->identifier);
-        }
-        return path;
-    }
-    size_t size() const { return nodes_.size(); }
+
     NodeDebugger(TxElement* node);
+
+    Node operator[](std::size_t idx) const;
+    std::vector<std::string> getPath() const;
+    std::string getDescription() const;
+    size_t size() const;
+
     std::vector<Node> nodes_;
 };
 

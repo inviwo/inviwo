@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/io/serialization/nodedebugger.h>
 
 namespace inviwo {
 
@@ -42,11 +43,11 @@ public:
     struct SerializationExceptionData {
         SerializationExceptionData(std::string k = "", std::string t = "", std::string i = "",
                                    TxElement* n = NULL)
-            : key(k), type(t), id(i), node(n) {}
+            : key(k), type(t), id(i), nd(n) {}
         std::string key;
         std::string type;
         std::string id;
-        TxElement* node;
+        NodeDebugger nd;
     };
 
     SerializationException(std::string message = "", std::string key = "", std::string type = "",

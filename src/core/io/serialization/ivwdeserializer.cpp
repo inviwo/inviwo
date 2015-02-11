@@ -143,6 +143,9 @@ void IvwDeserializer::deserialize(const std::string& key, unsigned long long& da
 
 void IvwDeserializer::convertVersion(VersionConverter* converter) {
     converter->convert(rootElement_);
+    // Re-generate the reference table
+    referenceLookup_.clear();
+    storeReferences(doc_.FirstChildElement());
 }
 
 void IvwDeserializer::pushErrorHandler(BaseDeserializationErrorHandler* handler) {

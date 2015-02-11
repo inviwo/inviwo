@@ -25,23 +25,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/links/propertylink.h>
 
 namespace inviwo {
 
-PropertyLink::PropertyLink()
-    : srcProperty_(NULL),
-      dstProperty_(NULL) {
-}
+PropertyLink::PropertyLink() : srcProperty_(NULL), dstProperty_(NULL) {}
 
 PropertyLink::~PropertyLink() {}
 
 PropertyLink::PropertyLink(Property* srcProperty, Property* destProperty)
-    : srcProperty_(srcProperty), dstProperty_(destProperty) {
-}
+    : srcProperty_(srcProperty), dstProperty_(destProperty) {}
 
 void PropertyLink::serialize(IvwSerializer& s) const {
     s.serialize("SourceProperty", srcProperty_);
@@ -71,38 +67,30 @@ void PropertyLink::deserialize(IvwDeserializer& d) {
     }
 
     if (src.error && dest.error) {
-        NodeDebugger ndSrc(src.data.node);
-        NodeDebugger ndDest(dest.data.node);
-        throw SerializationException("Could not create Property Link from \"" +
-                                         joinString(ndSrc.getPath(), ".") + "\" to " +
-                                         joinString(ndDest.getPath(), ".") +
-                                         "\". Source and destination properties not found.",
-                                     "PropertyLink");
+        throw SerializationException(
+            "Could not create Property Link from " + src.data.nd.getDescription() + " to " +
+                dest.data.nd.getDescription() + ". Source and destination properties not found.",
+            "PropertyLink");
 
     } else if (src.error) {
-        NodeDebugger ndSrc(src.data.node);
         throw SerializationException(
-            "Could not create Property Link from \"" + joinString(ndSrc.getPath(), ".") + "\" to " +
+            "Could not create Property Link from " + src.data.nd.getDescription() + " to " +
                 joinString(dstProperty_->getPath(), ".") + "\". Source property not found.",
             "PropertyLink");
     } else if (dest.error) {
-        NodeDebugger ndDest(dest.data.node);
-        throw SerializationException("Could not create Property Link from \"" +
-                                         joinString(srcProperty_->getPath(), ".") + "\" to " +
-                                         joinString(ndDest.getPath(), ".") +
-                                         "\". Destination property not found.",
-                                     "PropertyLink");
+        throw SerializationException(
+            "Could not create Property Link from \"" + joinString(srcProperty_->getPath(), ".") +
+                "\" to " + dest.data.nd.getDescription() + ". Destination property not found.",
+            "PropertyLink");
     }
 }
 
 bool operator==(const PropertyLink& lhs, const PropertyLink& rhs) {
     return lhs.srcProperty_ == rhs.srcProperty_ && lhs.dstProperty_ == rhs.dstProperty_;
 }
-bool operator!=(const PropertyLink& lhs, const PropertyLink& rhs) {
-    return !operator==(lhs, rhs);
-}
+bool operator!=(const PropertyLink& lhs, const PropertyLink& rhs) { return !operator==(lhs, rhs); }
 
-bool  operator<(const PropertyLink& lhs, const PropertyLink& rhs) {
+bool operator<(const PropertyLink& lhs, const PropertyLink& rhs) {
     if (lhs.srcProperty_ != rhs.srcProperty_) {
         return lhs.srcProperty_ < rhs.srcProperty_;
     } else {
@@ -110,5 +98,4 @@ bool  operator<(const PropertyLink& lhs, const PropertyLink& rhs) {
     }
 }
 
-} // namespace
-
+}  // namespace
