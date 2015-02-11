@@ -330,17 +330,17 @@ private:
         std::vector<std::string> messages;
         const InviwoSetupInfo& info_;
     };
-    
+
     class PropertyLinkContainsTest {
     public:
         PropertyLinkContainsTest(Property* p) : p_(p) {}
         bool operator()(const PropertyLink& link) {
-            return link.getSourceProperty() == p_ || link.getDestinationProperty()==p_;
+            return link.getSourceProperty() == p_ || link.getDestinationProperty() == p_;
         }
+
     private:
         Property* p_;
     };
-
 
     //Property Linking support
     void performLinkingOnPropertyChange(Property* modifiedProperty);
