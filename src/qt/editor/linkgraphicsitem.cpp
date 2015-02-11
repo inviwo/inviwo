@@ -347,6 +347,17 @@ std::string getLinkInfoTableRows(const std::vector<PropertyLink *> &links, const
     return str;
 }
 
+class LinkConnectionGraphicsItemMatchReverse {
+public:
+    LinkConnectionGraphicsItemMatchReverse(PropertyLink* link) : link_(link) {}
+    bool operator()(const PropertyLink* link) const {
+        return link->getDestinationProperty() == link_->getSourceProperty() &&
+            link->getSourceProperty() == link_->getDestinationProperty();
+    }
+private:
+    PropertyLink* link_;
+};
+
 void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     Processor* p1 = inLink_->getProcessorGraphicsItem()->getProcessor();
     Processor* p2 = outLink_->getProcessorGraphicsItem()->getProcessor();
@@ -360,15 +371,6 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     std::vector<PropertyLink*> outgoing;  // from processor 1
     std::vector<PropertyLink*> incoming;  // toward processor 1
 
-    struct MatchReverse {
-        MatchReverse(PropertyLink* link) : link_(link) {}
-        bool operator()(const PropertyLink* link) const {
-            return link->getDestinationProperty() == link_->getSourceProperty() &&
-                   link->getSourceProperty() == link_->getDestinationProperty();
-        }
-        PropertyLink* link_;
-    };
-
     for (std::vector<PropertyLink*>::const_iterator it = propertyLinks.begin();
          it != propertyLinks.end(); ++it) {
         Processor* linkSrc =
@@ -377,7 +379,7 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
         if (linkSrc == p1) {
             // forward link
             std::vector<PropertyLink*>::iterator sit =
-                std::find_if(incoming.begin(), incoming.end(), MatchReverse(*it));
+                std::find_if(incoming.begin(), incoming.end(), LinkConnectionGraphicsItemMatchReverse(*it));
             if (sit != incoming.end()) {
                 bidirectional.push_back(*it);
                 incoming.erase(sit);
@@ -386,7 +388,7 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
             }
         } else {  // if (linkSrc == processorB)
             std::vector<PropertyLink*>::iterator sit =
-                std::find_if(outgoing.begin(), outgoing.end(), MatchReverse(*it));
+                std::find_if(outgoing.begin(), outgoing.end(), LinkConnectionGraphicsItemMatchReverse(*it));
             if (sit != outgoing.end()) {
                 bidirectional.push_back(*it);
                 outgoing.erase(sit);
