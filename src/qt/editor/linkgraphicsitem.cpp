@@ -333,9 +333,88 @@ void LinkConnectionGraphicsItem::updateShape() {
 }
 
 
-void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
-    //showToolTipHelper(e, QString(link_->getLinkInfoHtml().c_str()));
+std::string getLinkInfoTableRows(const std::vector<PropertyLink *> &links, const std::string &imgName) {
+    std::string str;
+    std::vector<PropertyLink *>::const_iterator it = links.begin();
+    while (it != links.end()) {
+        Property* srcProperty = (*it)->getSourceProperty();
+        Property* dstProperty = (*it)->getDestinationProperty();
+        str += "<tr><td align='center'>" + srcProperty->getDisplayName()
+            + "</td><td width='30px' align='center' valign='middle'><img src='" + imgName
+            + "'></td><td align='center'>" + dstProperty->getDisplayName() + "</td></tr>";
+        ++it;
+    }
+    return str;
 }
 
+void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
+    Processor* p1 = inLink_->getProcessorGraphicsItem()->getProcessor();
+    Processor* p2 = outLink_->getProcessorGraphicsItem()->getProcessor();
+
+    const std::vector<PropertyLink*> propertyLinks =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getLinksBetweenProcessors(p1, p2);
+
+    // collect all links based on their direction
+
+    std::vector<PropertyLink*> bidirectional;
+    std::vector<PropertyLink*> outgoing;  // from processor 1
+    std::vector<PropertyLink*> incoming;  // toward processor 1
+
+    struct MatchReverse {
+        MatchReverse(PropertyLink* link) : link_(link) {}
+        bool operator()(const PropertyLink* link) const {
+            return link->getDestinationProperty() == link_->getSourceProperty() &&
+                   link->getSourceProperty() == link_->getDestinationProperty();
+        }
+        PropertyLink* link_;
+    };
+
+    for (std::vector<PropertyLink*>::const_iterator it = propertyLinks.begin();
+         it != propertyLinks.end(); ++it) {
+        Processor* linkSrc =
+            dynamic_cast<Processor*>((*it)->getSourceProperty()->getOwner()->getProcessor());
+
+        if (linkSrc == p1) {
+            // forward link
+            std::vector<PropertyLink*>::iterator sit =
+                std::find_if(incoming.begin(), incoming.end(), MatchReverse(*it));
+            if (sit != incoming.end()) {
+                bidirectional.push_back(*it);
+                incoming.erase(sit);
+            } else {
+                outgoing.push_back(*it);
+            }
+        } else {  // if (linkSrc == processorB)
+            std::vector<PropertyLink*>::iterator sit =
+                std::find_if(outgoing.begin(), outgoing.end(), MatchReverse(*it));
+            if (sit != outgoing.end()) {
+                bidirectional.push_back(*it);
+                outgoing.erase(sit);
+            } else {
+                incoming.push_back(*it);
+            }
+        }
+    }
+
+    // set up a HTML table containing three columns:
+    //    props of outProcesser, link indicator, props of inProcessor
+    std::string info =
+        "<html><head/><body style=''>\
+           <table border='0' cellspacing='2' cellpadding='0' style='border-color:white;white-space:pre;'>";
+    // put in the table header consisting of both processor names
+    info += "<tr style='color:#bbb;font-weight:bold;'><td align='center'>" + p1->getIdentifier() +
+            "</td><td align='center'></td><td align='center'>" + p2->getIdentifier() + "</td></tr>";
+
+    // add outgoing links first
+    info.append(getLinkInfoTableRows(outgoing, ":/icons/linkarrow_right.png"));
+    // add bidirectional links
+    info.append(getLinkInfoTableRows(bidirectional, ":/icons/linkarrow_bidirectional.png"));
+    // add incoming links
+    info.append(getLinkInfoTableRows(incoming, ":/icons/linkarrow_left.png"));
+
+    info.append("</table></body></html>");
+
+    showToolTipHelper(e, QString(info.c_str()));
+}
 
 }  // namespace
