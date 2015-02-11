@@ -109,7 +109,7 @@ namespace inviwo {
         PyObject * temp_bytes = PyUnicode_AsEncodedString(args, "ASCII", "strict"); // Owned reference
         if (temp_bytes != NULL) {
             char* my_result = PyBytes_AS_STRING(temp_bytes); // Borrowed pointer
-            std::string str = strdup(my_result);
+            std::string str = my_result;
             Py_DECREF(temp_bytes);
             return str;
         }
