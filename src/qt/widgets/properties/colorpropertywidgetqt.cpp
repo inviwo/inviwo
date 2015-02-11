@@ -59,7 +59,6 @@ void ColorPropertyWidgetQt::generateWidget() {
     colorDialog_->setOption(QColorDialog::ShowAlphaChannel, true);
     colorDialog_->setOption(QColorDialog::NoButtons, true);
     colorDialog_->setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
-    //colorDialog_->setWindowFlags(Qt::WindowStaysOnTopHint);
     colorDialog_->setWindowModality(Qt::NonModal);
     btnColor_ = new IvwPushButton(this);
     btnColor_->setEnabled(!property_->getReadOnly());

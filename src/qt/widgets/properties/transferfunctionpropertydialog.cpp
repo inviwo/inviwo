@@ -161,7 +161,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
     pointMoveMode_->setCurrentIndex(0);
     connect(pointMoveMode_, SIGNAL(currentIndexChanged(int)), this, SLOT(changeMoveMode(int)));
 
-    colorDialog_ = new QColorDialog();
+    colorDialog_ = new QColorDialog(this);
     colorDialog_->hide();
     colorDialog_->setOption(QColorDialog::ShowAlphaChannel, true);
     colorDialog_->setOption(QColorDialog::NoButtons, true);
