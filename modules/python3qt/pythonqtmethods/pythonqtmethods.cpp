@@ -42,36 +42,59 @@
 
 namespace inviwo {
 
-PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
-    if (!(PyTuple_Size(args) == 1)) {
-        std::ostringstream errStr;
-        errStr << "loadWorkspace() takes 1 argument: filename";
-        errStr << " (" << PyTuple_Size(args) << " given)";
-        PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
-        return 0;
-    }
-
-    // check parameter if is string
-    if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
-        PyErr_SetString(PyExc_TypeError, "loadWorkspace() first argument must be a string");
-        return 0;
-    }
-
-    std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
-
-    if (!filesystem::fileExists(filename)) {
-        filename = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + filename;
-
-        if (!filesystem::fileExists(filename)) {
-            std::string msg = std::string("loadWorkspace() could not find file") + filename;
-            PyErr_SetString(PyExc_TypeError, msg.c_str());
+    PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
+        if (!(PyTuple_Size(args) == 1)) {
+            std::ostringstream errStr;
+            errStr << "loadWorkspace() takes 1 argument: filename";
+            errStr << " (" << PyTuple_Size(args) << " given)";
+            PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
             return 0;
         }
+
+        // check parameter if is string
+        if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
+            PyErr_SetString(PyExc_TypeError, "loadWorkspace() first argument must be a string");
+            return 0;
+        }
+
+        std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
+
+        if (!filesystem::fileExists(filename)) {
+            filename = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + filename;
+
+            if (!filesystem::fileExists(filename)) {
+                std::string msg = std::string("loadWorkspace() could not find file") + filename;
+                PyErr_SetString(PyExc_TypeError, msg.c_str());
+                return 0;
+            }
+        }
+
+        NetworkEditor::getPtr()->loadNetwork(filename);
+        Py_RETURN_NONE;
     }
 
-    NetworkEditor::getPtr()->loadNetwork(filename);
-    Py_RETURN_NONE;
-}
+
+    PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* args) {
+        if (!(PyTuple_Size(args) == 1)) {
+            std::ostringstream errStr;
+            errStr << "saveWorkspace() takes 1 argument: filename";
+            errStr << " (" << PyTuple_Size(args) << " given)";
+            PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
+            return 0;
+        }
+
+        // check parameter if is string
+        if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
+            PyErr_SetString(PyExc_TypeError, "saveWorkspace() first argument must be a string");
+            return 0;
+        }
+
+        std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
+
+        NetworkEditor::getPtr()->saveNetwork(filename);
+        Py_RETURN_NONE;
+    }
+
 
 PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/) {
     NetworkEditor::getPtr()->setModified(false);

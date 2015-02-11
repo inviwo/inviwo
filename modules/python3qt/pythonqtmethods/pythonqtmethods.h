@@ -37,15 +37,23 @@
 namespace inviwo {
 
     PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* /*args*/);
+    PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_prompt(PyObject* /*self*/, PyObject* /*args*/);
 
-class IVW_MODULE_PYTHON3QT_API PyLoadNetworkMethod : public PyMethod {
-public:
-    std::string getName() const { return "loadWorkspace"; }
-    std::string getDesc() const { return "Load a new workspace into the network."; }
-    virtual PyCFunction getFunc() { return py_loadWorkspace; }
-};
+    class IVW_MODULE_PYTHON3QT_API PyLoadNetworkMethod : public PyMethod {
+    public:
+        std::string getName() const { return "loadWorkspace"; }
+        std::string getDesc() const { return "Load a new workspace into the network."; }
+        virtual PyCFunction getFunc() { return py_loadWorkspace; }
+    };
+
+    class IVW_MODULE_PYTHON3QT_API PySaveNetworkMethod : public PyMethod {
+    public:
+        std::string getName() const { return "saveWorkspace"; }
+        std::string getDesc() const { return "Saves the current workspace."; }
+        virtual PyCFunction getFunc() { return py_saveWorkspace; }
+    };
 
 
 class IVW_MODULE_PYTHON3QT_API PyQuitInviwoMethod : public PyMethod {
