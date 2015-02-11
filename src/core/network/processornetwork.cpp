@@ -1158,8 +1158,7 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
     std::map<std::string, TxElement*> processorsInports;
 
     ticpp::Iterator<TxElement> child;
-    for (child = child.begin(processorlist); child != child.end();
-         child++) {
+    for (child = child.begin(processorlist); child != child.end(); child++) {
         // create
 
         TxElement* outports = new TxElement("OutPorts");
@@ -1172,19 +1171,18 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
     }
 
     TxNode* connectionlist = root->FirstChild("Connections");
-    for (child = child.begin(connectionlist); child != child.end();
-         child++) {
-
+    for (child = child.begin(connectionlist); child != child.end(); child++) {
         TxElement* outport = child->FirstChild("OutPort")->ToElement();
         if (outport->GetAttributeOrDefault("reference", "").empty()) {
-            std::string pid = outport->FirstChild("Processor")->ToElement()->GetAttributeOrDefault("identifier", "");
+            std::string pid = outport->FirstChild("Processor")->ToElement()->GetAttributeOrDefault(
+                "identifier", "");
             outport->RemoveChild(outport->FirstChild());
 
-            TxElement* outclone = outport->Clone()->ToElement();    
-            
+            TxElement* outclone = outport->Clone()->ToElement();
+
             std::string id = outport->GetAttributeOrDefault("id", "");
             if (id.empty()) id = refs.getNewRef();
-                       
+
             outport->SetAttribute("reference", id);
             outport->RemoveAttribute("id");
 
@@ -1194,14 +1192,15 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
 
         TxElement* inport = child->FirstChild("InPort")->ToElement();
         if (inport->GetAttributeOrDefault("reference", "").empty()) {
-            std::string pid = inport->FirstChild("Processor")->ToElement()->GetAttributeOrDefault("identifier", "");
+            std::string pid = inport->FirstChild("Processor")->ToElement()->GetAttributeOrDefault(
+                "identifier", "");
             inport->RemoveChild(inport->FirstChild());
 
             TxElement* inclone = inport->Clone()->ToElement();
 
             std::string id = inport->GetAttributeOrDefault("id", "");
             if (id.empty()) id = refs.getNewRef();
-            
+
             inport->SetAttribute("reference", id);
             inport->RemoveAttribute("id");
 
@@ -1210,7 +1209,15 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
         }
     }
 
-    std::string newroot = IvwSerializeBase::nodeToString(*root);
+    for (std::map<std::string, TxElement*>::iterator it = processorsOutports.begin();
+         it != processorsOutports.end(); ++it) {
+        delete it->second;
+    }
+
+    for (std::map<std::string, TxElement*>::iterator it = processorsInports.begin();
+         it != processorsInports.end(); ++it) {
+        delete it->second;
+    }
 }
 
 } // namespace

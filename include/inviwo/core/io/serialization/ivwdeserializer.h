@@ -359,29 +359,34 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
                                   const std::string& itemKey) {
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
-        
+
         unsigned int i = 0;
         TxEIt child(itemKey);
         for (child = child.begin(rootElement_); child != child.end(); ++child) {
             // In the next deserialization call do net fetch the "child" since we are looping...
             // hence the "false" as the last arg.
             NodeSwitch elementNodeSwitch(*this, &(*child), false);
-            try {
-                if (vector.size() <= i) {
-                    T* item = NULL;
+
+            if (vector.size() <= i) {
+                T* item = NULL;
+                try {
                     deserialize(itemKey, item);
                     vector.push_back(item);
-                } else {
-                    deserialize(itemKey, vector[i]);
+                } catch (SerializationException& e) {
+                    delete item;
+                    handleError(e);
                 }
-            } catch (SerializationException& e) {
-                handleError(e);
+            } else {
+                try {
+                    deserialize(itemKey, vector[i]);
+                } catch (SerializationException& e) {
+                    handleError(e);
+                }
             }
             i++;
         }
     } catch (TxException&) {}
 }
-
 
 template <typename T, typename C>
 void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vector,
@@ -392,29 +397,32 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
         unsigned int i = 0;
         TxEIt child(itemKey);
         for (child = child.begin(rootElement_); child != child.end(); ++child) {
-
             identifier.setKey(child.Get());
             typename std::vector<T*>::iterator it =
                 std::find_if(vector.begin(), vector.end(), identifier);
 
-            try {
-                if (it != vector.end()) {
-                    NodeSwitch elementNodeSwitch(*this, &(*child), false);
+            if (it != vector.end()) {
+                NodeSwitch elementNodeSwitch(*this, &(*child), false);
+                try {
                     deserialize(itemKey, *it);
-                } else {
-                    T* item = NULL;
-                    NodeSwitch elementNodeSwitch(*this, &(*child), false);
+                } catch (SerializationException& e) {
+                    handleError(e);
+                }
+            } else {
+                T* item = NULL;
+                NodeSwitch elementNodeSwitch(*this, &(*child), false);
+                try {
                     deserialize(itemKey, item);
                     vector.push_back(item);
+                } catch (SerializationException& e) {
+                    delete item;
+                    handleError(e);
                 }
-            } catch (SerializationException& e) {
-                handleError(e);
             }
         }
     } catch (TxException&) {
     }
 }
-
 
 template <typename T>
 void IvwDeserializer::deserialize(const std::string& key, std::vector<T>& vector,

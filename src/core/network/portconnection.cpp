@@ -75,18 +75,20 @@ void PortConnection::deserialize(IvwDeserializer& d) {
                                      "Connection");
     } else if (out.error) {
         NodeDebugger ndOut(out.data.node);
-        throw SerializationException("Could not create Connection from \"" +
-                                         joinString(ndOut.getPath(), ".") + "\" to port \"" +
-                                         inport_->getIdentifier() + "\" in processor \"" +
-                                         inport_->getProcessor()->getIdentifier() + "\"",
-                                     "Connection");
+        std::string message = "Could not create Connection from \"" +
+            joinString(ndOut.getPath(), ".") + "\" to port \"" +
+            inport_->getIdentifier() + "\" in processor \"" +
+            inport_->getProcessor()->getIdentifier() + "\"";
+        delete outport_;
+        throw SerializationException(message, "Connection");
     } else if (in.error) {
         NodeDebugger ndIn(in.data.node);
-        throw SerializationException("Could not create Connection from port \"" +
-                                         outport_->getIdentifier() + "\" in processor \"" +
-                                         outport_->getProcessor()->getIdentifier() +
-                                         "\" to port \"" + joinString(ndIn.getPath(), ".") + "\"",
-                                     "Connection");
+        std::string message = "Could not create Connection from port \"" +
+            outport_->getIdentifier() + "\" in processor \"" +
+            outport_->getProcessor()->getIdentifier() +
+            "\" to port \"" + joinString(ndIn.getPath(), ".") + "\"";
+        delete inport_;
+        throw SerializationException(message, "Connection");
     }
 }
 
