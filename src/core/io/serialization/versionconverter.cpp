@@ -37,15 +37,15 @@ VersionConverter::VersionConverter() {}
 bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProperty& prop) {
     LogInfoCustom("VersionConverter", "  Looking for matching sub properties");
 
-    TxElement* propitem = new TxElement("Property");
-    propitem->SetAttribute("type", prop.getClassIdentifier());
-    propitem->SetAttribute("identifier", prop.getIdentifier());
-    propitem->SetAttribute("displayName", prop.getDisplayName());
-    propitem->SetAttribute("key", prop.getIdentifier());
-    TxElement* list = new TxElement("Properties");
+    TxElement propitem("Property");
+    propitem.SetAttribute("type", prop.getClassIdentifier());
+    propitem.SetAttribute("identifier", prop.getIdentifier());
+    propitem.SetAttribute("displayName", prop.getDisplayName());
+    propitem.SetAttribute("key", prop.getIdentifier());
+    TxElement list("Properties");
 
-    propitem->LinkEndChild(list);
-    node->LinkEndChild(propitem);
+    propitem.InsertEndChild(list);
+    node->InsertEndChild(propitem);
 
     std::vector<Property*> props = prop.getProperties();
 
@@ -69,7 +69,7 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
                                                           " found in type: "
                                                       << type << " id: " << id);
 
-                list->InsertEndChild(*(child.Get()));
+                list.InsertEndChild(*(child.Get()));
                 match = true;
             }
         }
