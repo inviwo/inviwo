@@ -38,6 +38,8 @@
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/qt/editor/processorlinkgraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 
