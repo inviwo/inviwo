@@ -75,7 +75,7 @@ Layer* FreeImageReader::readMetaData(std::string filePath) {
     Layer* layer = new Layer();
 
     LayerDisk* layerDisk = new LayerDisk(filePath);
-    layerDisk->setDataReader(this);
+    layerDisk->setDataReader(this->clone());
 
     layer->addRepresentation(layerDisk);
 

@@ -289,7 +289,7 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
     }
     else{
         VolumeDisk* vd = new VolumeDisk(filePath, dimensions_, format_);
-        vd->setDataReader(this);
+        vd->setDataReader(this->clone());
         volume->addRepresentation(vd);
         std::string size = formatBytesToString(bytes);
         LogInfo("Loaded volume: " << filePath << " size: " << size);

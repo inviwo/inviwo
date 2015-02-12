@@ -58,7 +58,7 @@ public:
 
 private:
 
-    // We can safely ingnore the C4251 warning for private members.
+    // We can safely ignore the C4251 warning for private members.
 #pragma warning( push )
 #pragma warning( disable: 4251 )
     std::string sourceFile_;

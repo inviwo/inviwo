@@ -108,7 +108,7 @@ Volume* IvfVolumeReader::readMetaData(std::string filePath)  {
     volume->getMetaDataMap()->deserialize(d);
     littleEndian_ = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian_);
     VolumeDisk* vd = new VolumeDisk(filePath, dimensions_, format_);
-    vd->setDataReader(this);
+    vd->setDataReader(this->clone());
     volume->addRepresentation(vd);
     return volume;
 }

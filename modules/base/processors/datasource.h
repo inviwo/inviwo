@@ -149,6 +149,7 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
             LogError("Could not load data: " << file_.get() << ", " << e.getMessage());
             file_.set("");
         }
+        delete reader;
     } else {
         LogError("Could not find a data reader for file: " << file_.get());
         file_.set("");
