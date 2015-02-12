@@ -72,6 +72,8 @@ void VolumeMaxCLProcessor::initialize() {
 
 void VolumeMaxCLProcessor::deinitialize() {
     Processor::deinitialize();
+    delete tmpVolume_;
+    tmpVolume_ = NULL;
 }
 
 void VolumeMaxCLProcessor::process() {
