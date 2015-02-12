@@ -35,6 +35,7 @@
 #include <QVector2D>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
 #include <inviwo/core/ports/port.h>
+#include <inviwo/core/links/propertylink.h>
 #include <inviwo/qt/editor/processorlinkgraphicsitem.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 
