@@ -99,6 +99,7 @@ void ImageSource::load() {
             LogError("Could not load data: " << imageFileName_.get() << ", " << e.getMessage());
             imageFileName_.set("");
         }
+        delete reader;
     } else {
         LogError("Could not find a data reader for file: " << imageFileName_.get());
         imageFileName_.set("");
