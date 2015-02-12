@@ -194,11 +194,11 @@ ImageOutport::ImageOutport(std::string identifier, ImageType type, const DataFor
 }
 
 ImageOutport::~ImageOutport() {
-    if (isDataOwner()) {
-        for (ImagePortMap::iterator it = imageDataMap_.begin(); it != imageDataMap_.end(); ++it)
+    for (ImagePortMap::iterator it = imageDataMap_.begin(); it != imageDataMap_.end(); ++it) {
+        if (isDataOwner() || it->second != data_) {
             delete it->second;
+        }
     }
-
     data_ = NULL;  // As data_ is referenced in imageDataMap_.
 }
 
