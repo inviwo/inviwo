@@ -45,6 +45,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/matrix_operation.hpp>
 #include <glm/common.hpp>
+#include <glm/detail/precision.hpp>
 
 #include <inviwo/core/util/glmstreamoperators.h>
 
@@ -74,6 +75,145 @@ typedef glm::dmat4 dmat4;
 typedef glm::quat quat;
 
 } // namespace
+
+namespace glm {
+
+
+#define VECTORIZE2_MAT(func)                                                        \
+    template <typename T, precision P>                                              \
+    GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> func(detail::tmat2x2<T, P> const& x) { \
+        return detail::tmat2x2<T, P>(                                               \
+			func(x[0][0]), func(x[1][0]),                                           \
+            func(x[0][1]), func(x[1][1])                                            \
+            );                                                                      \
+    }
+
+#define VECTORIZE3_MAT(func)                                                          \
+    template <typename T, precision P>                                                \
+    GLM_FUNC_QUALIFIER detail::tmat3x3<T, P> func(detail::tmat3x3<T, P> const& x) {   \
+        return detail::tmat3x3<T, P>(                                                 \
+            func(x[0][0]), func(x[1][0]), func(x[2][0]),                              \
+            func(x[0][1]), func(x[1][1]), func(x[2][1]),                              \
+            func(x[0][2]), func(x[1][2]), func(x[2][2])                               \
+            );                                                                        \
+    }
+
+#define VECTORIZE4_MAT(func)                                                        \
+    template <typename T, precision P>                                              \
+    GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> func(detail::tmat4x4<T, P> const& x) { \
+        return detail::tmat4x4<T, P>(                                               \
+            func(x[0][0]), func(x[1][0]), func(x[2][0]), func(x[3][0]),             \
+            func(x[0][1]), func(x[1][1]), func(x[2][1]), func(x[3][1]),             \
+            func(x[0][2]), func(x[1][2]), func(x[2][2]), func(x[3][2]),             \
+            func(x[0][3]), func(x[1][3]), func(x[2][3]), func(x[3][3])              \
+            );                                                                      \
+    }
+
+
+#define VECTORIZE_MAT(func) \
+    VECTORIZE2_MAT(func)    \
+    VECTORIZE3_MAT(func)    \
+    VECTORIZE4_MAT(func)
+
+
+#define VECTORIZE2_MAT_SCA(func)                                                    \
+    template <typename T, precision P>                                              \
+    GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> func(detail::tmat2x2<T, P> const& x,   \
+                                                  T const& y) {                     \
+        return detail::tmat2x2<T, P>(                                               \
+			func(x[0][0], y), func(x[1][0], y),                                     \
+            func(x[0][1], y), func(x[1][1], y)                                      \
+            );                                                                      \
+    }
+
+#define VECTORIZE3_MAT_SCA(func)                                                    \
+    template <typename T, precision P>                                              \
+    GLM_FUNC_QUALIFIER detail::tmat3x3<T, P> func(detail::tmat3x3<T, P> const& x,   \
+                                                  T const& y) {                     \
+        return detail::tmat3x3<T, P>(                                               \
+            func(x[0][0], y), func(x[1][0], y), func(x[2][0], y),                   \
+            func(x[0][1], y), func(x[1][1], y), func(x[2][1], y),                   \
+            func(x[0][2], y), func(x[1][2], y), func(x[2][2], y)                    \
+            );                                                                      \
+    }
+
+#define VECTORIZE4_MAT_SCA(func)                                                    \
+    template <typename T, precision P>                                              \
+    GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> func(detail::tmat4x4<T, P> const& x,   \
+                                                  T const& y) {                     \
+        return detail::tmat4x4<T, P>(                                               \
+            func(x[0][0], y), func(x[1][0], y), func(x[2][0], y), func(x[3][0], y), \
+            func(x[0][1], y), func(x[1][1], y), func(x[2][1], y), func(x[3][1], y), \
+            func(x[0][2], y), func(x[1][2], y), func(x[2][2], y), func(x[3][2], y), \
+            func(x[0][3], y), func(x[1][3], y), func(x[2][3], y), func(x[3][3], y)  \
+            );                                                                      \
+    }
+
+#define VECTORIZE_MAT_SCA(func) \
+    VECTORIZE2_MAT_SCA(func)    \
+    VECTORIZE3_MAT_SCA(func)    \
+    VECTORIZE4_MAT_SCA(func)
+
+
+#define VECTORIZE2_MAT_MAT(func)                                                    \
+    template <typename T, precision P>                                              \
+    GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> func(detail::tmat2x2<T, P> const& x,   \
+                                                  detail::tmat2x2<T, P> const& y) { \
+        return detail::tmat2x2<T, P>(                                               \
+			func(x[0][0], y[0][0]), func(x[1][0], y[1][0]),                         \
+            func(x[0][1], y[0][1]), func(x[1][1], y[1][1])                          \
+            );                                                                      \
+    }
+
+#define VECTORIZE3_MAT_MAT(func)                                                      \
+    template <typename T, precision P>                                                \
+    GLM_FUNC_QUALIFIER detail::tmat3x3<T, P> func(detail::tmat3x3<T, P> const& x,     \
+                                                  detail::tmat3x3<T, P> const& y) {   \
+        return detail::tmat3x3<T, P>(                                                 \
+            func(x[0][0], y[0][0]), func(x[1][0], y[1][0]), func(x[2][0], y[2][0]),   \
+            func(x[0][1], y[0][1]), func(x[1][1], y[1][1]), func(x[2][1], y[2][1]),   \
+            func(x[0][2], y[0][2]), func(x[1][2], y[1][2]), func(x[2][2], y[2][2])    \
+            );                                                                        \
+    }
+
+#define VECTORIZE4_MAT_MAT(func)                                                                            \
+    template <typename T, precision P>                                                                      \
+    GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> func(detail::tmat4x4<T, P> const& x,                           \
+                                                  detail::tmat4x4<T, P> const& y) {                         \
+        return detail::tmat4x4<T, P>(                                                                       \
+            func(x[0][0], y[0][0]), func(x[1][0], y[1][0]), func(x[2][0], y[2][0]), func(x[3][0], y[3][0]), \
+            func(x[0][1], y[0][1]), func(x[1][1], y[1][1]), func(x[2][1], y[2][1]), func(x[3][1], y[3][1]), \
+            func(x[0][2], y[0][2]), func(x[1][2], y[1][2]), func(x[2][2], y[2][2]), func(x[3][2], y[3][2]), \
+            func(x[0][3], y[0][3]), func(x[1][3], y[1][3]), func(x[2][3], y[2][3]), func(x[3][3], y[3][3])  \
+            );                                                                                              \
+    }
+
+#define VECTORIZE_MAT_MAT(func) \
+    VECTORIZE2_MAT_MAT(func)    \
+    VECTORIZE3_MAT_MAT(func)    \
+    VECTORIZE4_MAT_MAT(func)
+
+
+VECTORIZE_MAT(abs)
+VECTORIZE_MAT(sign)
+VECTORIZE_MAT(floor)
+VECTORIZE_MAT(trunc)
+VECTORIZE_MAT(round)
+VECTORIZE_MAT(roundEven)
+VECTORIZE_MAT(ceil)
+VECTORIZE_MAT(fract)
+
+VECTORIZE_MAT_SCA(mod)
+VECTORIZE_MAT_SCA(min)
+VECTORIZE_MAT_SCA(max)
+
+VECTORIZE_MAT_MAT(min)
+VECTORIZE_MAT_MAT(max)
+VECTORIZE_MAT_MAT(mod)
+
+} // namespace
+
+
 
 #endif // IVW_GLM_H
 
