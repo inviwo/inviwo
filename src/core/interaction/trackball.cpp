@@ -145,6 +145,8 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
     addProperty(stepPanRight_);
     addProperty(pinchGesture_);
     addProperty(panGesture_);
+    
+    setCollapsed(true);
 }
 
 Trackball::~Trackball() {}

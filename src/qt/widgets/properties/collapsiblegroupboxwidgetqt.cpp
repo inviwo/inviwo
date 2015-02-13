@@ -138,17 +138,6 @@ void CollapsibleGroupBoxWidgetQt::hideWidget() {
     }
 }
 
-void CollapsibleGroupBoxWidgetQt::toggleCollapsed() {
-    if (collapsed_) {
-        propertyWidgetGroup_->show();
-        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_darker_down.png"));
-    } else {
-        propertyWidgetGroup_->hide();
-        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_darker_right.png"));
-    }
-    collapsed_ = !collapsed_;
-}
-
 void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
     properties_.push_back(prop);
 
@@ -263,16 +252,6 @@ void CollapsibleGroupBoxWidgetQt::updateWidgets() {
         propertyWidgets_.at(i)->updateContextMenu();
 }
 
-void CollapsibleGroupBoxWidgetQt::serialize(IvwSerializer& s) const {
-    s.serialize("collapsed", collapsed_);
-    s.serialize("displayName", displayName_);
-}
-
-void CollapsibleGroupBoxWidgetQt::deserialize(IvwDeserializer& d) {
-    d.deserialize("collapsed", collapsed_);
-    d.deserialize("displayName", displayName_);
-}
-
 void CollapsibleGroupBoxWidgetQt::resetPropertyToDefaultState() {
     InviwoApplication::getPtr()->getProcessorNetwork()->lock();
 
@@ -287,8 +266,23 @@ void CollapsibleGroupBoxWidgetQt::labelDidChange() {
     setDisplayName(label_->getText());
 }
 
-bool CollapsibleGroupBoxWidgetQt::isCollapsed() {
+void CollapsibleGroupBoxWidgetQt::toggleCollapsed() {
+    setCollapsed(!isCollapsed());
+}
+
+bool CollapsibleGroupBoxWidgetQt::isCollapsed() const {
     return collapsed_;
+}
+
+void CollapsibleGroupBoxWidgetQt::setCollapsed(bool collapse) {
+    if (collapsed_ && !collapse) {
+        propertyWidgetGroup_->show();
+        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_darker_down.png"));
+    } else if (!collapsed_ && collapse) {
+        propertyWidgetGroup_->hide();
+        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_darker_right.png"));
+    }
+    collapsed_ = collapse;
 }
 
     

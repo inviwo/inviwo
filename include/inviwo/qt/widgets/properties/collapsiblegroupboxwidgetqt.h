@@ -56,7 +56,6 @@ public:
     CollapsibleGroupBoxWidgetQt(std::string displayName = "");
     virtual std::string getDisplayName() const;
     virtual void setDisplayName(const std::string& displayName);
-    bool isCollapsed();
 
     void addProperty(Property* tmpProperty);
     std::vector<Property*> getProperties();
@@ -66,6 +65,9 @@ public:
     PropertyOwner* getPropertyOwner() const;
 
     void setShowIfEmpty(bool val);
+    
+    virtual bool isCollapsed() const;
+    virtual void setCollapsed(bool value);
 
     // Overridden from PropertyWidget
     virtual void showWidget();
@@ -84,9 +86,6 @@ public:
     // Overridden from QWidget
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
-
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
 
 public slots:
     void toggleCollapsed();

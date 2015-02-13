@@ -48,6 +48,9 @@ class IVW_QTWIDGETS_API CompositePropertyWidgetQt : public CollapsibleGroupBoxWi
 public:
     CompositePropertyWidgetQt(CompositeProperty* property);
     virtual void updateFromProperty();
+    
+    virtual bool isCollapsed() const;
+    virtual void setCollapsed(bool value);
 
 protected slots:
     virtual void setDeveloperUsageMode(bool value);

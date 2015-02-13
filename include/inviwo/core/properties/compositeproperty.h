@@ -74,6 +74,10 @@ public:
     virtual void setVisible(bool val);
 
     virtual void updateVisibility();
+    
+    virtual bool isCollapsed() const;
+    virtual void setCollapsed(bool value);
+    
 
     // Override from the property owner
     virtual Processor* getProcessor();
@@ -82,6 +86,9 @@ public:
 
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
+    
+private:
+    bool collapsed_;
 };
 
 } // namespace

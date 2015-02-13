@@ -39,17 +39,18 @@ PropertyClassIdentifier(CompositeProperty, "org.inviwo.CompositeProperty");
 CompositeProperty::CompositeProperty(std::string identifier, std::string displayName,
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
-    : Property(identifier, displayName, invalidationLevel, semantics), PropertyOwner() {}
+    : Property(identifier, displayName, invalidationLevel, semantics)
+    , PropertyOwner()
+    , collapsed_(false) {}
 
 CompositeProperty::CompositeProperty(const CompositeProperty& rhs)
-    : Property(rhs)
-    , PropertyOwner(rhs) {
-}
+    : Property(rhs), PropertyOwner(rhs), collapsed_(rhs.collapsed_) {}
 
 CompositeProperty& CompositeProperty::operator=(const CompositeProperty& that) {
     if (this != &that) {
         Property::operator=(that);
         PropertyOwner::operator=(that);
+        collapsed_ = that.collapsed_;
     }
     return *this;
 }
@@ -174,12 +175,13 @@ void CompositeProperty::resetToDefaultState() {
 void CompositeProperty::serialize(IvwSerializer& s) const{
     Property::serialize(s);
     PropertyOwner::serialize(s);
+    s.serialize("collapsed", collapsed_);
 }
 
 void CompositeProperty::deserialize(IvwDeserializer& d){
     Property::deserialize(d);
     PropertyOwner::deserialize(d);
-
+    d.deserialize("collapsed", collapsed_);
 }
 
 std::vector<std::string> CompositeProperty::getPath() const {
@@ -210,6 +212,15 @@ const Processor* CompositeProperty::getProcessor() const {
     }
 }
 
+bool CompositeProperty::isCollapsed() const {
+    return collapsed_;
+}
+void CompositeProperty::setCollapsed(bool value) {
+    if (collapsed_ != value) {
+        collapsed_ = value;
+        Property::propertyModified();
+    }
+}
 
 
 

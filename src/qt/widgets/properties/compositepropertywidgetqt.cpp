@@ -52,6 +52,8 @@ void CompositePropertyWidgetQt::updateFromProperty() {
     for (size_t i = 0; i < propertyWidgets_.size(); i++)
         propertyWidgets_[i]->updateFromProperty();
     this->setDisabled(property_->getReadOnly());
+    
+    setCollapsed(property_->isCollapsed());
 }
 
 void CompositePropertyWidgetQt::labelDidChange() {
@@ -67,6 +69,16 @@ void CompositePropertyWidgetQt::setDeveloperUsageMode(bool value) {
 void CompositePropertyWidgetQt::setApplicationUsageMode(bool value) {
     CollapsibleGroupBoxWidgetQt::setApplicationUsageMode(value);
     property_->setUsageMode(APPLICATION);
+}
+
+bool CompositePropertyWidgetQt::isCollapsed() const {
+    return property_->isCollapsed();
+}
+void CompositePropertyWidgetQt::setCollapsed(bool value) {
+    CollapsibleGroupBoxWidgetQt::setCollapsed(value);
+    if (property_->isCollapsed() != value) {
+        property_->setCollapsed(value);
+    }
 }
 
 } // namespace

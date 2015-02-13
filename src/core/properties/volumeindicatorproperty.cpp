@@ -115,6 +115,8 @@ VolumeIndicatorProperty::VolumeIndicatorProperty(std::string identifier, std::st
     mode_.addOption("plane", "Plane", 0);
     mode_.addOption("cross", "Cross", 1);
     mode_.onChange(this, &VolumeIndicatorProperty::onModeChange);
+    
+    setCollapsed(true);
     setAllPropertiesCurrentStateAsDefault();
 }
 
