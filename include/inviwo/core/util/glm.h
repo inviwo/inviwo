@@ -83,7 +83,7 @@ namespace glm {
     template <typename T, precision P>                                              \
     GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> func(detail::tmat2x2<T, P> const& x) { \
         return detail::tmat2x2<T, P>(                                               \
-			func(x[0][0]), func(x[1][0]),                                           \
+            func(x[0][0]), func(x[1][0]),                                           \
             func(x[0][1]), func(x[1][1])                                            \
             );                                                                      \
     }
@@ -105,7 +105,7 @@ namespace glm {
             func(x[0][0]), func(x[1][0]), func(x[2][0]), func(x[3][0]),             \
             func(x[0][1]), func(x[1][1]), func(x[2][1]), func(x[3][1]),             \
             func(x[0][2]), func(x[1][2]), func(x[2][2]), func(x[3][2]),             \
-            func(x[0][3]), func(x[1][3]), func(x[2][3]), func(x[3][3])              \
+            func(x[0][3]), func(x[1][3]), func(x[2][3]), func(x[3][3])              \
             );                                                                      \
     }
 
@@ -121,7 +121,7 @@ namespace glm {
     GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> func(detail::tmat2x2<T, P> const& x,   \
                                                   T const& y) {                     \
         return detail::tmat2x2<T, P>(                                               \
-			func(x[0][0], y), func(x[1][0], y),                                     \
+            func(x[0][0], y), func(x[1][0], y),                                     \
             func(x[0][1], y), func(x[1][1], y)                                      \
             );                                                                      \
     }
@@ -145,7 +145,7 @@ namespace glm {
             func(x[0][0], y), func(x[1][0], y), func(x[2][0], y), func(x[3][0], y), \
             func(x[0][1], y), func(x[1][1], y), func(x[2][1], y), func(x[3][1], y), \
             func(x[0][2], y), func(x[1][2], y), func(x[2][2], y), func(x[3][2], y), \
-            func(x[0][3], y), func(x[1][3], y), func(x[2][3], y), func(x[3][3], y)  \
+            func(x[0][3], y), func(x[1][3], y), func(x[2][3], y), func(x[3][3], y)  \
             );                                                                      \
     }
 
@@ -160,7 +160,7 @@ namespace glm {
     GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> func(detail::tmat2x2<T, P> const& x,   \
                                                   detail::tmat2x2<T, P> const& y) { \
         return detail::tmat2x2<T, P>(                                               \
-			func(x[0][0], y[0][0]), func(x[1][0], y[1][0]),                         \
+            func(x[0][0], y[0][0]), func(x[1][0], y[1][0]),                         \
             func(x[0][1], y[0][1]), func(x[1][1], y[1][1])                          \
             );                                                                      \
     }
@@ -184,7 +184,7 @@ namespace glm {
             func(x[0][0], y[0][0]), func(x[1][0], y[1][0]), func(x[2][0], y[2][0]), func(x[3][0], y[3][0]), \
             func(x[0][1], y[0][1]), func(x[1][1], y[1][1]), func(x[2][1], y[2][1]), func(x[3][1], y[3][1]), \
             func(x[0][2], y[0][2]), func(x[1][2], y[1][2]), func(x[2][2], y[2][2]), func(x[3][2], y[3][2]), \
-            func(x[0][3], y[0][3]), func(x[1][3], y[1][3]), func(x[2][3], y[2][3]), func(x[3][3], y[3][3])  \
+            func(x[0][3], y[0][3]), func(x[1][3], y[1][3]), func(x[2][3], y[2][3]), func(x[3][3], y[3][3])  \
             );                                                                                              \
     }
 
@@ -212,8 +212,6 @@ VECTORIZE_MAT_MAT(max)
 VECTORIZE_MAT_MAT(mod)
 
 } // namespace
-
-
 
 #endif // IVW_GLM_H
 
