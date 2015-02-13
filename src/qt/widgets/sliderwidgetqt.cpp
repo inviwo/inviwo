@@ -101,6 +101,7 @@ void BaseSliderWidgetQt::applyIncrement() {
 
 void BaseSliderWidgetQt::updateFromSlider() {
     int newValue = slider_->value();
+    slider_->setStyleSheet(QString());
     if(newValue != sliderValue_) {
         sliderValue_ = newValue;
         newSliderValue(sliderValue_);
@@ -130,6 +131,13 @@ void BaseSliderWidgetQt::updateSlider() {
     sliderValue_ = transformValueToSlider();
     slider_->blockSignals(true);
     slider_->setValue(sliderValue_);
+    if (slider_->maximum() < sliderValue_ || slider_->minimum() > sliderValue_) {
+        // Mark out of range
+        slider_->setStyleSheet(QString("QSlider::handle { border: 1px solid rgb(255, 0, 0) }"));
+    } else  {
+        slider_->setStyleSheet(QString());
+    }
+
     slider_->blockSignals(false);
 }
 

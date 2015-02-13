@@ -195,6 +195,11 @@ template <typename T>
 void OrdinalProperty<T>::setMinValue(const T& value) {
     if (value == minValue_) return;
     minValue_ = value;
+    
+    // Make sure min < value < max
+    this->value_.value = glm::max(this->value_.value, minValue_.value);
+    maxValue_.value = glm::max(maxValue_.value, minValue_.value);
+
     Property::propertyModified();
 }
 
@@ -202,6 +207,11 @@ template <typename T>
 void OrdinalProperty<T>::setMaxValue(const T& value) {
     if (value == maxValue_) return;
     maxValue_ = value;
+    
+    // Make sure min < value < max
+    this->value_.value = glm::min(this->value_.value, maxValue_.value);
+    minValue_.value = glm::min(minValue_.value, maxValue_.value);
+    
     Property::propertyModified();
 }
 
