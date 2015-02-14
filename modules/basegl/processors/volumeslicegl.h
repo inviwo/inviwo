@@ -85,9 +85,8 @@ protected:
 
     void invalidateMesh();
 
-    void sliceXChange();
-    void sliceYChange();
-    void sliceZChange();
+    void sliceChange();
+    void positionChange();
     void rotationModeChange();
 
 private:

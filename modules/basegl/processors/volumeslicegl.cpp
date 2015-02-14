@@ -129,14 +129,14 @@ VolumeSliceGL::VolumeSliceGL()
     addProperty(sliceY_);
     addProperty(sliceZ_);
     // Invalidate selected voxel cursor when current slice changes
-    sliceX_.onChange(this, &VolumeSliceGL::sliceXChange);
-    sliceY_.onChange(this, &VolumeSliceGL::sliceYChange);
-    sliceZ_.onChange(this, &VolumeSliceGL::sliceZChange);
+    sliceX_.onChange(this, &VolumeSliceGL::sliceChange);
+    sliceY_.onChange(this, &VolumeSliceGL::sliceChange);
+    sliceZ_.onChange(this, &VolumeSliceGL::sliceChange);
 
     addProperty(planeNormal_);
     addProperty(planePosition_);
     
-    planePosition_.onChange(this, &VolumeSliceGL::invalidateMesh);
+    planePosition_.onChange(this, &VolumeSliceGL::positionChange);
     planeNormal_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
     
 
@@ -266,15 +266,18 @@ void VolumeSliceGL::modeChange() {
     switch (sliceAlongAxis_.get()) {
         case CoordinateEnums::X:
             sliceX_.setReadOnly(false);
-            sliceXChange();
+            planeNormal_.set(vec3(-1.0f, 0.0f, 0.0f));
+            sliceChange();
             break;
         case CoordinateEnums::Y:
             sliceY_.setReadOnly(false);
-            sliceYChange();
+            planeNormal_.set(vec3(0.0f, -1.0f, 0.0f));
+            sliceChange();
             break;
         case CoordinateEnums::Z:
             sliceZ_.setReadOnly(false);
-            sliceZChange();
+            planeNormal_.set(vec3(0.0f, 0.0f, -1.0f));
+            sliceChange();
             break;
         case 3: // General plane
         default:
@@ -290,7 +293,7 @@ void VolumeSliceGL::modeChange() {
 }
 
 void VolumeSliceGL::planeSettingsChanged() {
-    if(!inport_.hasData()) return;
+    if (!inport_.hasData()) return;
 
     vec3 normal = glm::normalize(planeNormal_.get());
     // Make sure we keep the aspect of the input data.
@@ -378,7 +381,7 @@ void VolumeSliceGL::process() {
     utilgl::bindTexture(inport_, volUnit);
 
     GLint wrapS(0), wrapT(0), wrapR(0);
-    if(volumeWrapping_.get() > 0){
+    if (volumeWrapping_.get() > 0) {
         glGetTexParameteriv(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, &wrapS);
         glGetTexParameteriv(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, &wrapT);
         glGetTexParameteriv(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, &wrapR);
@@ -541,9 +544,10 @@ void VolumeSliceGL::updateIndicatorMesh() {
 void VolumeSliceGL::invalidateMesh() { meshDirty_ = true; }
 
 void VolumeSliceGL::shiftSlice(int shift) {
-        vec3 newPos = planePosition_.get() + static_cast<float>(shift)/100.0f * glm::normalize(planeNormal_.get()); 
-        newPos = glm::clamp(newPos,vec3(0.0f),vec3(1.0f));
-        planePosition_.set(newPos);
+    vec3 newPos = planePosition_.get() +
+                  static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
+    newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
+    planePosition_.set(newPos);
 }
 
 void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
@@ -555,8 +559,7 @@ void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
         * vec4(pos, 0.0f, 1.0f));
 
     if ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f)) {
-        // invalid position
-        return;
+        pos = glm::clamp(pos, vec2(0.0f), vec2(1.0f));
     }
 
     vec4 newpos(inverseSliceRotation_ * vec4(planePosition_.get(),1.0f));
@@ -624,26 +627,32 @@ void VolumeSliceGL::eventGestureShiftSlice(Event* event){
         shiftSlice(-1);
 }
 
-void VolumeSliceGL::sliceXChange() {
-    planeNormal_.set(vec3(-1.0f, 0.0f, 0.0f));
-    planePosition_.set(
-        vec3(static_cast<float>(sliceX_.get() - 1) / static_cast<float>(sliceX_.getMaxValue() - 1),
-        planePosition_.get().y, planePosition_.get().z));
+void VolumeSliceGL::sliceChange() {
+    if (!inport_.hasData()) return;
+
+    const mat4 indexToTexture(
+        inport_.getData()->getCoordinateTransformer().getIndexToTextureMatrix());
+    const vec4 indexPos(sliceX_.get()-1, sliceY_.get()-1, sliceZ_.get()-1, 1.0);
+    const vec3 texturePos(vec3(indexToTexture * indexPos));
+
+    planePosition_.set(texturePos);
 }
 
-void VolumeSliceGL::sliceYChange() {
-    planeNormal_.set(vec3(0.0f, -1.0f, 0.0f));
-    planePosition_.set(
-        vec3(planePosition_.get().x,
-        static_cast<float>(sliceY_.get() - 1) / static_cast<float>(sliceY_.getMaxValue() - 1),
-        planePosition_.get().z));
-}
+void VolumeSliceGL::positionChange() {
+    if (!inport_.hasData()) return;
 
-void VolumeSliceGL::sliceZChange() {
-    planeNormal_.set(vec3(0.0f, 0.0f, -1.0f));
-    planePosition_.set(vec3(
-        planePosition_.get().x, planePosition_.get().y,
-        static_cast<float>(sliceZ_.get() - 1) / static_cast<float>(sliceZ_.getMaxValue() - 1)));
+    const mat4 textureToIndex(
+        inport_.getData()->getCoordinateTransformer().getTextureToIndexMatrix());
+    const vec4 texturePos(planePosition_.get(), 1.0);
+    const ivec3 indexPos(ivec3(textureToIndex * texturePos));
+
+    disableInvalidation();
+    sliceX_.set(indexPos.x+1);
+    sliceY_.set(indexPos.y+1);
+    sliceZ_.set(indexPos.z+1);
+    enableInvalidation();
+
+    invalidateMesh();
 }
 
 void VolumeSliceGL::rotationModeChange() {
