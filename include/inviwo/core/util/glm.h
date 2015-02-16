@@ -44,6 +44,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/matrix_operation.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 #include <glm/common.hpp>
 #include <glm/detail/precision.hpp>
 
