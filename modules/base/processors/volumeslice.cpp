@@ -45,7 +45,7 @@ ProcessorCodeState(VolumeSlice, CODE_STATE_STABLE);
 VolumeSlice::VolumeSlice()
     : Processor()
     , inport_("volume.inport")
-    , outport_("image.outport", COLOR_ONLY)
+    , outport_("image.outport")
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
     , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8) 
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
@@ -135,7 +135,7 @@ void VolumeSlice::process() {
         static_cast<unsigned int>(sliceNumber_.get() - 1));
 
     Image* outImage =
-        new Image(sliceImage->getDimensions(), COLOR_ONLY, sliceImage->getDataFormat());
+        new Image(sliceImage->getDimensions(), sliceImage->getDataFormat());
     outImage->getColorLayer()->addRepresentation(sliceImage);
 
     outport_.setData(outImage);

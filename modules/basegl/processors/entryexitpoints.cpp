@@ -47,8 +47,8 @@ ProcessorCodeState(EntryExitPoints, CODE_STATE_STABLE);
 EntryExitPoints::EntryExitPoints()
     : Processor()
     , geometryPort_("geometry")
-    , entryPort_("entry-points", COLOR_DEPTH, DataVec4UINT16::get())
-    , exitPort_("exit-points", COLOR_DEPTH, DataVec4UINT16::get())
+    , entryPort_("entry-points", DataVec4UINT16::get())
+    , exitPort_("exit-points", DataVec4UINT16::get())
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), &geometryPort_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
@@ -102,7 +102,7 @@ void EntryExitPoints::process() {
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_ALWAYS);
     // generate exit points
-    utilgl::activateAndClearTarget(exitPort_);
+    utilgl::activateAndClearTarget(exitPort_, COLOR_DEPTH);
     glPointSize(1.f);
     glCullFace(GL_FRONT);
     genericShader_->activate();
@@ -118,19 +118,17 @@ void EntryExitPoints::process() {
     if (capNearClipping_.get()) {
         if (tmpEntryPoints_ == NULL ||
             tmpEntryPoints_->getDimensions() != entryPort_.getDimensions() ||
-            tmpEntryPoints_->getImageType() != entryPort_.getData()->getImageType() ||
             tmpEntryPoints_->getDataFormat() != entryPort_.getData()->getDataFormat()) {
             delete tmpEntryPoints_;
             tmpEntryPoints_ =
-                new Image(entryPort_.getDimensions(), entryPort_.getData()->getImageType(),
-                          entryPort_.getData()->getDataFormat());
+                new Image(entryPort_.getDimensions(), entryPort_.getData()->getDataFormat());
         }
-
         tmpEntryPointsGL = tmpEntryPoints_->getEditableRepresentation<ImageGL>();
         tmpEntryPointsGL->activateBuffer();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        utilgl::clearCurrentTarget();
+
     } else {
-        utilgl::activateAndClearTarget(entryPort_);
+        utilgl::activateAndClearTarget(entryPort_, COLOR_DEPTH);
     }
 
     glCullFace(GL_BACK);
@@ -140,18 +138,12 @@ void EntryExitPoints::process() {
 
     if (capNearClipping_.get() && tmpEntryPointsGL) {
         // render an image plane aligned quad to cap the proxy geometry
-        utilgl::activateAndClearTarget(entryPort_);
+        utilgl::activateAndClearTarget(entryPort_, COLOR_DEPTH);
         TextureUnit entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit;
         tmpEntryPointsGL->getColorLayerGL()->bindTexture(entryColorUnit.getEnum());
         tmpEntryPointsGL->getDepthLayerGL()->bindTexture(entryDepthUnit.getEnum());
         utilgl::bindTextures(exitPort_, exitColorUnit.getEnum(), exitDepthUnit.getEnum());
         capNearClippingPrg_->activate();
-
-        capNearClippingPrg_->setUniform("screenDim_", static_cast<vec2>(entryPort_.getDimensions()));
-        capNearClippingPrg_->setUniform(
-            "screenDimRCP_", vec2(1.0f, 1.0f) / static_cast<vec2>(entryPort_.getDimensions()));
-
-        utilgl::setShaderUniforms(capNearClippingPrg_, entryPort_, "outportParameters_");
 
         capNearClippingPrg_->setUniform("entryColorTex_", entryColorUnit.getUnitNumber());
         capNearClippingPrg_->setUniform("entryDepthTex_", entryDepthUnit.getUnitNumber());

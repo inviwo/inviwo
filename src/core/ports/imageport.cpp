@@ -58,7 +58,8 @@ void ImageInport::connectTo(Outport* outport) {
         connectedImageOutport->changeDataDimensions(&resizeEvent);
     } else if (!isOutportDeterminingSize()) {
         // Resize outport if any outport within the same port dependency set is connected
-        std::vector<Port*> portSet = getProcessor()->getPortsByDependencySet(getProcessor()->getPortDependencySet(this));
+        std::vector<Port*> portSet =
+            getProcessor()->getPortsByDependencySet(getProcessor()->getPortDependencySet(this));
         for (size_t j = 0; j < portSet.size(); j++) {
             ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(portSet[j]);
             if (imageOutport && imageOutport->isConnected()) {
@@ -171,25 +172,15 @@ void ImageInport::passOnDataToOutport(ImageOutport* outport) const {
 
 ////////////////////////////// ImageOutport ////////////////////////////////////////////
 
-ImageOutport::ImageOutport(std::string identifier,
+ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            InvalidationLevel invalidationLevel,
                            bool handleResizeEvents)
     : DataOutport<Image>(identifier, invalidationLevel)
     , dimensions_(uvec2(256, 256))
     , mapDataInvalid_(true)
     , handleResizeEvents_(handleResizeEvents) {
-    setData(new Image(dimensions_));
-    dataChanged();
-}
-
-ImageOutport::ImageOutport(std::string identifier, ImageType type, const DataFormatBase* format,
-                           InvalidationLevel invalidationLevel,
-                           bool handleResizeEvents)
-    : DataOutport<Image>(identifier, invalidationLevel)
-    , dimensions_(uvec2(256, 256))
-    , mapDataInvalid_(true)
-    , handleResizeEvents_(handleResizeEvents) {
-    setData(new Image(dimensions_, type, format));
+    
+    setData(new Image(dimensions_, format));
     dataChanged();
 }
 
@@ -207,7 +198,8 @@ void ImageOutport::propagateResizeEventToPredecessor(ResizeEvent* resizeEvent) {
         return;
     }
     // Only propagate resize event to inports within the same port dependency group
-    std::vector<Port*> portSet = getProcessor()->getPortsByDependencySet(getProcessor()->getPortDependencySet(this));
+    std::vector<Port*> portSet =
+        getProcessor()->getPortsByDependencySet(getProcessor()->getPortDependencySet(this));
     bool propagationEnded = true;
     uvec2 size = resizeEvent->size();
     uvec2 prevSize = resizeEvent->previousSize();
@@ -218,16 +210,17 @@ void ImageOutport::propagateResizeEventToPredecessor(ResizeEvent* resizeEvent) {
             imageInport->changeDataDimensions(scaleResizeEvent(imageInport, resizeEvent));
             resizeEvent->setSize(size);
             resizeEvent->setPreviousSize(prevSize);
-        }
-        else{
-            MultiDataInport<Image, ImageInport>* multiImageInport = dynamic_cast<MultiDataInport<Image, ImageInport>*>(portSet[j]);
-            if(multiImageInport){
+        } else {
+            MultiDataInport<Image, ImageInport>* multiImageInport =
+                dynamic_cast<MultiDataInport<Image, ImageInport>*>(portSet[j]);
+            if (multiImageInport) {
                 propagationEnded = false;
                 std::vector<Inport*> inports = multiImageInport->getInports();
-                for(size_t i=0; i<inports.size(); ++i){
+                for (size_t i = 0; i < inports.size(); ++i) {
                     ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
-                    if(imageInport){
-                        imageInport->changeDataDimensions(scaleResizeEvent(imageInport, resizeEvent));
+                    if (imageInport) {
+                        imageInport->changeDataDimensions(
+                            scaleResizeEvent(imageInport, resizeEvent));
                         resizeEvent->setSize(size);
                         resizeEvent->setPreviousSize(prevSize);
                     }
@@ -275,7 +268,9 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
         registeredDimensions.push_back(data_->getDimensions());
 
         //Fix for data_ size not correct in imageDataMap
-        for (std::map<std::string, Image*>::iterator it = imageDataMap_.begin(); it != imageDataMap_.end(); ++it) {
+        for (std::map<std::string, Image*>::iterator it = imageDataMap_.begin();
+             it != imageDataMap_.end(); ++it) {
+             
             if (it->second == data_){
                 std::string dataDim = glm::to_string(registeredDimensions[0]);
                 if (it->first != dataDim){
@@ -408,13 +403,13 @@ uvec2 ImageOutport::getDimensions() const {
 
 Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
     if (mapDataInvalid_) {
-        //If data_ dimensionsis zero, we need to update data_ first
+        // If data_ dimensionsis zero, we need to update data_ first
         uvec2 zeroDim = uvec2(0);
-        if (data_->getDimensions() == zeroDim){
+        if (data_->getDimensions() == zeroDim) {
             data_->getRepresentation<ImageRAM>();
 
-            //Remove any reference to zero sized image and add reference to data_
-            if (data_->getDimensions() != zeroDim){
+            // Remove any reference to zero sized image and add reference to data_
+            if (data_->getDimensions() != zeroDim) {
                 std::string zeroDimString = glm::to_string(zeroDim);
                 imageDataMap_.erase(zeroDimString);
 
@@ -423,7 +418,8 @@ Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
                 if (imageDataMap_.find(dataDimString) != imageDataMap_.end())
                     imageDataMap_[dataDimString] = data_;
                 else
-                    imageDataMap_.insert(std::make_pair(glm::to_string(data_->getDimensions()), data_));
+                    imageDataMap_.insert(
+                        std::make_pair(glm::to_string(data_->getDimensions()), data_));
             }
         }
 
@@ -440,10 +436,9 @@ Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
 
     // TODO: Map traverse is expensive. Optimize
     for (ImagePortMap::iterator it = imageDataMap_.begin(); it != imageDataMap_.end(); ++it) {
-        if (it->second->getDimensions() == requiredDimensions){ 
+        if (it->second->getDimensions() == requiredDimensions) {
             return it->second;
-        }
-        else if(it->first == glm::to_string(requiredDimensions)){
+        } else if (it->first == glm::to_string(requiredDimensions)) {
             it->second->resize(requiredDimensions);
             return it->second;
         }

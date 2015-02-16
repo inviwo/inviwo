@@ -53,9 +53,9 @@ public:
     void deinitialize();
     virtual ImageGL* clone() const;
 
-    void reAttachAllLayers(bool overRideImageType = false);
+    void reAttachAllLayers(ImageType type = ALL_LAYERS);
 
-    void activateBuffer(bool overRideImageType = false);
+    void activateBuffer(ImageType type = ALL_LAYERS);
     void deactivateBuffer();
 
     virtual bool copyAndResizeRepresentation(DataRepresentation*) const;

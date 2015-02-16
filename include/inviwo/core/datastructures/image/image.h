@@ -25,7 +25,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGE_H
@@ -43,9 +43,8 @@ class ImageInport;
 
 class IVW_CORE_API Image : public DataGroup {
 public:
-    Image(uvec2 dimensions = uvec2(32, 32), ImageType type = COLOR_DEPTH,
-          const DataFormatBase* format = DataVec4UINT8::get(), bool allowMissingLayers = false);
-    Image(Layer* colorLayer, ImageType type = COLOR_DEPTH, bool allowMissingLayers = false);
+    Image(uvec2 dimensions = uvec2(32, 32), const DataFormatBase* format = DataVec4UINT8::get());
+    Image(Layer* colorLayer);
     Image(const Image&);
     Image& operator=(const Image& that);
     virtual Image* clone() const;
@@ -53,7 +52,8 @@ public:
     virtual std::string getDataInfo() const;
 
     void deinitialize();
-    void initialize(uvec2 dimensions, const DataFormatBase*, Layer* colorLayer = NULL);
+    void initialize(Layer* colorLayer = NULL, uvec2 dimensions = uvec2(32, 32),
+                    const DataFormatBase* format = DataVec4UINT8::get());
 
     uvec2 getDimensions() const;
 
@@ -76,19 +76,14 @@ public:
     void resize(uvec2 dimensions);
     void resizeRepresentations(Image* targetImage, uvec2 targetDim) const;
 
-    ImageType getImageType() const;
     const DataFormatBase* getDataFormat() const;
 
 protected:
-    std::vector<Layer*> colorLayers_;   //< owning pointer
-    Layer* depthLayer_;                 //< owning pointer      
-    Layer* pickingLayer_;               //< owning pointer
-
-private:
-    bool allowMissingLayers_;
-    ImageType imageType_;
+    std::vector<Layer*> colorLayers_;  //< owning pointer
+    Layer* depthLayer_;                //< owning pointer
+    Layer* pickingLayer_;              //< owning pointer
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_IMAGE_H
+#endif  // IVW_IMAGE_H

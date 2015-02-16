@@ -50,7 +50,7 @@ ISORaycaster::ISORaycaster()
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")
-    , outport_("outport", COLOR_DEPTH)
+    , outport_("outport")
     , channel_("channel", "Render Channel")
     , raycasting_("raycasting", "Raycasting")
     , lighting_("lighting", "Lighting")
@@ -126,7 +126,7 @@ void ISORaycaster::process() {
     utilgl::bindTextures(exitPort_, exitColorUnit.getEnum(), exitDepthUnit.getEnum());
     utilgl::bindTexture(volumePort_, volUnit);
 
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
     shader_->activate();
     
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

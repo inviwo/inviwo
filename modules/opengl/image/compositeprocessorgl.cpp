@@ -52,9 +52,9 @@ void CompositeProcessorGL::deinitialize() {
     Processor::deinitialize();
 }
 
-void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageInport& inport) {
+void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageType type, ImageInport& inport) {
     if (inport.isReady() && outport.isReady()) {
-        utilgl::activateTarget(outport);
+        utilgl::activateTarget(outport, type);
         TextureUnit inportColorUnit, inportDepthUnit, inportPickingUnit;
         utilgl::bindTextures(inport, inportColorUnit.getEnum(), inportDepthUnit.getEnum(),
                      inportPickingUnit.getEnum());

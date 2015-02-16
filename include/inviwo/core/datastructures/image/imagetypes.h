@@ -41,7 +41,8 @@ enum ImageType {
     COLOR_ONLY = 0,
     COLOR_DEPTH = 1,
     COLOR_PICKING = 2,
-    COLOR_DEPTH_PICKING = 3
+    COLOR_DEPTH_PICKING = 3,
+    ALL_LAYERS = COLOR_DEPTH_PICKING
 };
 
 enum LayerType {

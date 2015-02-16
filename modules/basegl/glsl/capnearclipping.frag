@@ -50,7 +50,8 @@ void main() {
 
     if (entryDepth > exitDepth) {
         // entry points are clipped by near plane
-        // Convert texture coordinates to normalized device coordinates. (ndc) The z value will always be -1 on the clipping plane
+        // Convert texture coordinates to normalized device coordinates (ndc).
+        // The z value will always be -1 on the clipping plane
         vec4 cameraCoordinates = vec4(2.0f*texCoord_.xy-1.0f, -1.0f, 1.0f);
         // convert the ndc back to the volume texture coordinates
         entryColor = NDCToTextureMat_ * cameraCoordinates * nearDist_;

@@ -43,7 +43,7 @@ ProcessorCodeState(FindEdges, CODE_STATE_EXPERIMENTAL);
 FindEdges::FindEdges()
     : Processor()
     , inport_("inport")
-    , outport_("outport", COLOR_ONLY)
+    , outport_("outport")
     , alpha_("alpha", "Alpha", 0.5f, 0.0f, 1.0f) {
 
     addPort(inport_);
@@ -67,7 +67,7 @@ void FindEdges::process() {
     inport_.passOnDataToOutport(&outport_);
 
     TextureUnit image;
-    utilgl::activateTarget(outport_);
+    utilgl::activateTarget(outport_, COLOR_ONLY);
     utilgl::bindColorTexture(inport_, image);
     shader_->activate();
     shader_->setUniform("inport_", image.getUnitNumber());

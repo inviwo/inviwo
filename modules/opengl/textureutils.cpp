@@ -38,18 +38,18 @@
 namespace inviwo {
 
 namespace utilgl {
-void activateTarget(ImageOutport& outport) {
+void activateTarget(ImageOutport& outport, ImageType type) {
     Image* outImage = outport.getData();
     ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
-    outImageGL->activateBuffer();
+    outImageGL->activateBuffer(type);
 }
 
 void deactivateCurrentTarget() { FrameBufferObject::deactivateFBO(); }
 
 void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
-void activateAndClearTarget(ImageOutport& outport) {
-    activateTarget(outport);
+void activateAndClearTarget(ImageOutport& outport, ImageType type) {
+    activateTarget(outport, type);
     clearCurrentTarget();
 }
 

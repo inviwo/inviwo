@@ -43,7 +43,7 @@ ProcessorCodeState(ToneMappingCPUProcessor, CODE_STATE_BROKEN);
 ToneMappingCPUProcessor::ToneMappingCPUProcessor()
     : Processor(),
       inport_("image.inport"),
-      outport_("image.outport", COLOR_ONLY, DataVec3UINT8::get()),
+      outport_("image.outport", DataVec3UINT8::get()),
       toneMappingMethod_("toneMappingMethod", "Tone Mapping Method"),
       drago03Gamma_("drago03Gamma", "Gamma", 2.2, 0.0, 5.0),
       drago03Exposure_("drago03Exposure", "Exposure", 0.0, 0.0, 5.0),
@@ -118,7 +118,7 @@ void ToneMappingCPUProcessor::process() {
         FreeImage_ToneMapping(bitmap, tmo, first, second);
 
         if(outport_.getData()->getDataFormat() != DataVec3UINT8::get() || outport_.getData()->getDimensions() != inImageRam->getDimensions()){
-            outport_.setData(new Image(outport_.getData()->getDimensions(), COLOR_ONLY, DataVec3UINT8::get()));
+            outport_.setData(new Image(outport_.getData()->getDimensions(), DataVec3UINT8::get()));
         }
         
         ImageRAM* outImageRam = outport_.getData()->getEditableRepresentation<ImageRAM>();

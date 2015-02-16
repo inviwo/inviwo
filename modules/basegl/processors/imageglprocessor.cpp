@@ -39,7 +39,7 @@ namespace inviwo {
 ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     : Processor()
     , inport_(fragmentShader + "inport")
-    , outport_(fragmentShader + "outport", COLOR_ONLY)
+    , outport_(fragmentShader + "outport")
     , internalInvalid_(false)
     , fragmentShader_(fragmentShader)
     , shader_(NULL)
@@ -69,7 +69,7 @@ void ImageGLProcessor::process() {
         internalInvalid_ = false;
         const DataFormatBase* format = inport_.getData()->getDataFormat();
 
-        Image *img = new Image(inport_.getData()->getDimensions(), COLOR_ONLY, format);
+        Image *img = new Image(inport_.getData()->getDimensions(), format);
         img->copyMetaDataFrom(*inport_.getData());
         outport_.setData(img);
     }
@@ -78,7 +78,7 @@ void ImageGLProcessor::process() {
     TextureUnit imgUnit;    
     utilgl::bindColorTexture(inport_, imgUnit);
 
-    utilgl::activateTarget(outport_);
+    utilgl::activateTarget(outport_, COLOR_ONLY);
     shader_->activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

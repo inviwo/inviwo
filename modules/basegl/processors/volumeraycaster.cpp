@@ -53,7 +53,7 @@ VolumeRaycaster::VolumeRaycaster()
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")
-    , outport_("outport", COLOR_DEPTH)
+    , outport_("outport")
     , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
@@ -132,7 +132,7 @@ void VolumeRaycaster::process() {
     utilgl::bindTextures(exitPort_, exitColorUnit, exitDepthUnit);
     utilgl::bindTexture(volumePort_, volUnit);
 
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
     shader_->activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

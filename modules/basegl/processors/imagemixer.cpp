@@ -94,7 +94,7 @@ void ImageMixer::process() {
         //internalInvalid_ = false;
         const DataFormatBase* format = inport0_.getData()->getDataFormat();
 
-        Image *img = new Image(inport0_.getData()->getDimensions(), COLOR_ONLY, format);
+        Image *img = new Image(inport0_.getData()->getDimensions(), format);
         img->copyMetaDataFrom(*inport0_.getData());
         outport_.setData(img);
     }
@@ -103,7 +103,7 @@ void ImageMixer::process() {
     utilgl::bindColorTexture(inport0_, imgUnit0);
     utilgl::bindColorTexture(inport1_, imgUnit1);
 
-    utilgl::activateTarget(outport_);
+    utilgl::activateAndClearTarget(outport_);
     shader_->activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

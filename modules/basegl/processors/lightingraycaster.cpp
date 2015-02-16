@@ -54,7 +54,7 @@ LightingRaycaster::LightingRaycaster()
     , entryPort_("entry-points")
     , exitPort_("exit-points")
     , lightVolumePort_("lightVolume")
-    , outport_("outport", COLOR_DEPTH)
+    , outport_("outport")
     , enableLightColor_("supportColoredLight", "Enable Light Color", false,
                         INVALID_RESOURCES)
     , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &volumePort_)
@@ -138,7 +138,7 @@ void LightingRaycaster::process() {
     TextureUnit lightVolUnit;
     utilgl::bindTexture(lightVolumePort_, lightVolUnit);
     
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
     shader_->activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

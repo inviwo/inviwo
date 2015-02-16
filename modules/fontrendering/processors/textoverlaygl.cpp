@@ -231,7 +231,7 @@ void TextOverlayGL::render_text(const char* text, float x, float y, float sx, fl
 
 void TextOverlayGL::process() {   
     inport_.passOnDataToOutport(&outport_);   
-    utilgl::activateTarget(outport_);
+    utilgl::activateTarget(outport_, COLOR_DEPTH);
 
     glDepthFunc(GL_ALWAYS);
     glEnable(GL_BLEND);

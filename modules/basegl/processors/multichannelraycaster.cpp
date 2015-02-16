@@ -53,7 +53,7 @@ MultichannelRaycaster::MultichannelRaycaster()
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")
-    , outport_("outport", COLOR_DEPTH)
+    , outport_("outport")
     , transferFunctions_("transfer-functions", "Transfer functions")
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera")
@@ -152,7 +152,7 @@ void MultichannelRaycaster::process() {
         tfUnitNumbers[channel] = transFuncUnits[channel].getUnitNumber();
     }
     
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
     shader_->activate();
     
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

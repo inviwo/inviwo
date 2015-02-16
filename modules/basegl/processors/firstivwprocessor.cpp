@@ -44,7 +44,7 @@ ProcessorCodeState(FirstIvwProcessor, CODE_STATE_STABLE);
 FirstIvwProcessor::FirstIvwProcessor()
     : Processor()
     , color_("color", "Color", vec3(1.0f), vec3(0.0f), vec3(1.0f), vec3(0.1f))
-    , outport_("outport", COLOR_ONLY) {
+    , outport_("outport") {
     addProperty(color_);
     addPort(outport_);
 }
@@ -78,7 +78,7 @@ void FirstIvwProcessor::deinitialize() {
 
 void FirstIvwProcessor::process() {
     glDisable(GL_DEPTH_TEST);
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
     shader_->activate();
 
     //Render Quad

@@ -35,23 +35,16 @@
 
 namespace inviwo {
 
-Image::Image(uvec2 dimensions, ImageType type, const DataFormatBase* format,
-             bool allowMissingLayers)
-    : DataGroup(), allowMissingLayers_(allowMissingLayers), imageType_(type) {
-    initialize(dimensions, format);
+Image::Image(uvec2 dimensions, const DataFormatBase* format) : DataGroup() {
+    initialize(NULL, dimensions, format);
 }
 
-Image::Image(Layer* colorLayer, ImageType type, bool allowMissingLayers)
-    : DataGroup(), allowMissingLayers_(allowMissingLayers), imageType_(type) {
-    if (colorLayer) {
-        initialize(colorLayer->getDimensions(), colorLayer->getDataFormat(), colorLayer);
-    } else {
-        initialize(uvec2(32, 32), DataVec4UINT8::get());
-    }
+Image::Image(Layer* colorLayer) : DataGroup() {
+    initialize(colorLayer);
 }
 
 Image::Image(const Image& rhs)
-    : DataGroup(rhs), allowMissingLayers_(rhs.allowMissingLayers_), imageType_(rhs.imageType_) {
+    : DataGroup(rhs) {
     for (std::vector<Layer*>::const_iterator it = rhs.colorLayers_.begin();
          it != rhs.colorLayers_.end(); ++it) {
         addColorLayer((*it)->clone());
@@ -75,8 +68,6 @@ Image::Image(const Image& rhs)
 Image& Image::operator=(const Image& that) {
     if (this != &that) {
         DataGroup::operator=(that);
-        allowMissingLayers_ = that.allowMissingLayers_;
-        imageType_ = that.imageType_;
         deinitialize();
 
         for (std::vector<Layer*>::const_iterator it = that.colorLayers_.begin();
@@ -121,24 +112,17 @@ void Image::deinitialize() {
     pickingLayer_ = NULL;
 }
 
-void Image::initialize(uvec2 dimensions, const DataFormatBase* format, Layer* colorLayer) {
+void Image::initialize(Layer* colorLayer, uvec2 dimensions, const DataFormatBase* format) {
     if (colorLayer) {
         addColorLayer(colorLayer);
+        dimensions = colorLayer->getDimensions();
+        format = colorLayer->getDataFormat();
     } else {
         addColorLayer(new Layer(dimensions, format));
     }
 
-    if (!allowMissingLayers_ || typeContainsDepth(imageType_)) {
-        depthLayer_ = new Layer(dimensions, DataFLOAT32::get(), DEPTH_LAYER);
-    } else {
-        depthLayer_ = NULL;
-    }
-
-    if (!allowMissingLayers_ || typeContainsPicking(imageType_)) {
-        pickingLayer_ = new Layer(dimensions, format, PICKING_LAYER);
-    } else {
-        pickingLayer_ = NULL;
-    }
+    depthLayer_ = new Layer(dimensions, DataFLOAT32::get(), DEPTH_LAYER);
+    pickingLayer_ = new Layer(dimensions, format, PICKING_LAYER);
 }
 
 uvec2 Image::getDimensions() const {
@@ -287,10 +271,6 @@ void Image::resizeRepresentations(Image* targetImage, uvec2 targetDim) const {
         const ImageRAM* imageRAM = this->getRepresentation<ImageRAM>();
         imageRAM->copyAndResizeRepresentation(targetImage->getEditableRepresentation<ImageRAM>());
     }
-}
-
-ImageType Image::getImageType() const {
-    return imageType_;
 }
 
 const DataFormatBase* Image::getDataFormat() const {

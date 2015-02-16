@@ -53,7 +53,7 @@ public:
     // overloaded method called when INVALID_RESOURCE property is set
     virtual void initializeResources();
 
-    void compositePortsToOutport(ImageOutport& outport, ImageInport& inport);
+    void compositePortsToOutport(ImageOutport& outport, ImageType type, ImageInport& inport);
 
 protected:
     std::string shaderFileName_;

@@ -43,7 +43,7 @@ ImageCompositeProcessorGL::ImageCompositeProcessorGL()
 	: CompositeProcessorGL()
     , imageInport1_("imageInport1")
     , imageInport2_("imageInport2")
-    , outport_("outport", COLOR_DEPTH) {
+    , outport_("outport") {
 	
     addPort(imageInport1_);
     addPort(imageInport2_);
@@ -52,7 +52,7 @@ ImageCompositeProcessorGL::ImageCompositeProcessorGL()
 	
 void ImageCompositeProcessorGL::process() {
     imageInport1_.passOnDataToOutport(&outport_);
-    compositePortsToOutport(outport_, imageInport2_);
+    compositePortsToOutport(outport_, COLOR_DEPTH, imageInport2_);
 }
 
 } // namespace

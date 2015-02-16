@@ -44,7 +44,7 @@ ProcessorCodeState(Background, CODE_STATE_STABLE);
 Background::Background()
     : Processor()
     , inport_("inport")
-    , outport_("outport", COLOR_ONLY)
+    , outport_("outport")
     , backgroundStyle_("backgroundStyle", "Style", INVALID_RESOURCES)
     , color1_("color1", "Color 1", vec4(0.0f, 0.0f, 0.0f, 1.0f))
     , color2_("color2", "Color 2", vec4(1.0f))
@@ -132,7 +132,7 @@ void Background::process() {
 
     if (inport_.hasData()) inport_.passOnDataToOutport(&outport_);
 
-    utilgl::activateTarget(outport_);
+    utilgl::activateTarget(outport_, COLOR_ONLY);
 
     TextureUnit srcColorUnit, srcDepthUnit;
     if (inport_.hasData()) utilgl::bindColorTexture(inport_, srcColorUnit);

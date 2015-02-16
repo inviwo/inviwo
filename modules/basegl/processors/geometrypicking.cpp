@@ -48,7 +48,7 @@ GeometryPicking::GeometryPicking()
     : CompositeProcessorGL()
     , geometryInport_("geometryInport")
     , imageInport_("imageInport")
-    , outport_("outport", COLOR_DEPTH_PICKING)
+    , outport_("outport")
     , position_("position", "Position", vec3(0.0f), vec3(-100.f), vec3(100.f))
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f))
@@ -93,7 +93,7 @@ void GeometryPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
 }
 
 void GeometryPicking::process() {
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
     MeshRenderer renderer(static_cast<const Mesh*>(geometryInport_.getData()));
     shader_->activate();
     shader_->setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
@@ -115,7 +115,7 @@ void GeometryPicking::process() {
 
     shader_->deactivate();
     utilgl::deactivateCurrentTarget();
-    compositePortsToOutport(outport_, imageInport_);
+    compositePortsToOutport(outport_, COLOR_ONLY, imageInport_);
 }
 
 }  // namespace

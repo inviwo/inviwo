@@ -80,7 +80,7 @@ void ImageGL::deinitialize() {
 
 ImageGL* ImageGL::clone() const { return new ImageGL(*this); }
 
-void ImageGL::reAttachAllLayers(bool overRideImageType) {
+void ImageGL::reAttachAllLayers(ImageType type) {
     frameBufferObject_->activate();
     frameBufferObject_->detachAllTextures();
     pickingAttachmentID_ = 0;
@@ -90,43 +90,42 @@ void ImageGL::reAttachAllLayers(bool overRideImageType) {
         frameBufferObject_->attachColorTexture(colorLayersGL_[i]->getTexture());
     }
 
-    if (depthLayerGL_ && (overRideImageType || typeContainsDepth(this->getOwner()->getImageType()))) {
+    if (depthLayerGL_ && typeContainsDepth(type)) {
         depthLayerGL_->getTexture()->bind();
         frameBufferObject_->attachTexture(depthLayerGL_->getTexture(),
                                           static_cast<GLenum>(GL_DEPTH_ATTACHMENT));
     }
 
-    if (pickingLayerGL_ && (overRideImageType || typeContainsPicking(this->getOwner()->getImageType()))) {
+    if (pickingLayerGL_ && typeContainsPicking(type)) {
         pickingLayerGL_->getTexture()->bind();
         pickingAttachmentID_ =
             frameBufferObject_->attachColorTexture(pickingLayerGL_->getTexture(), 0, true, 1);
     }
-    
+
     glBindTexture(GL_TEXTURE_2D, 0);
 
     frameBufferObject_->checkStatus();
     frameBufferObject_->deactivate();
 }
 
-void ImageGL::activateBuffer(bool overRideImageType) {
+void ImageGL::activateBuffer(ImageType type) {
     frameBufferObject_->activate();
 
     const std::vector<GLenum>& drawBuffers = frameBufferObject_->getDrawBuffers();
-    if (!drawBuffers.empty()){
-         GLsizei numBuffersToDrawTo = static_cast<GLsizei>(drawBuffers.size());
+    if (!drawBuffers.empty()) {
+        GLsizei numBuffersToDrawTo = static_cast<GLsizei>(drawBuffers.size());
 
-         // Don't draw picking if type is none picking
-         if(!overRideImageType && !typeContainsPicking(this->getOwner()->getImageType())) 
-             numBuffersToDrawTo--;
+        // Don't draw picking if type is none picking
+        if (!typeContainsPicking(type)) numBuffersToDrawTo--;
 
-         glDrawBuffers(numBuffersToDrawTo, &drawBuffers[0]);
-         LGL_ERROR;
+        glDrawBuffers(numBuffersToDrawTo, &drawBuffers[0]);
+        LGL_ERROR;
     }
 
-    if (!overRideImageType && !typeContainsDepth(this->getOwner()->getImageType())){
+    if (!typeContainsDepth(type)) {
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
-    }else{
+    } else {
         glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
     }
@@ -156,7 +155,7 @@ bool ImageGL::copyAndResizeRepresentation(DataRepresentation* targetRep) const {
         source->getPickingLayerGL()->bindTexture(pickingUnit.getEnum());
     }
     // Render to FBO, with correct scaling
-    target->activateBuffer(true);
+    target->activateBuffer(ALL_LAYERS);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     float ratioSource = (float)source->getDimensions().x / (float)source->getDimensions().y;
@@ -360,7 +359,7 @@ void ImageGL::update(bool editable) {
     }
 
     // Attach all targets
-    reAttachAllLayers(true);
+    reAttachAllLayers(ALL_LAYERS);
 }
 
 void ImageGL::renderImagePlaneRect() const {

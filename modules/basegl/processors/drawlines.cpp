@@ -46,7 +46,7 @@ ProcessorCodeState(DrawLines, CODE_STATE_STABLE);
 DrawLines::DrawLines()
     : CompositeProcessorGL()
     , inport_("inport")
-    , outport_("outport", COLOR_ONLY)
+    , outport_("outport")
     , lineSize_("lineSize", "Line Size", 1.f, 1.f, 10.f)
     , lineColor_("lineColor", "Line Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Lines")
@@ -107,7 +107,7 @@ void DrawLines::deinitialize() {
 void DrawLines::process() {
     inport_.passOnDataToOutport(&outport_);
 
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
     bool reEnableLineSmooth = false;
     if (glIsEnabled(GL_LINE_SMOOTH)) {
         glDisable(GL_LINE_SMOOTH);
@@ -122,7 +122,7 @@ void DrawLines::process() {
     if (reEnableLineSmooth)
         glEnable(GL_LINE_SMOOTH);
     utilgl::deactivateCurrentTarget();
-    compositePortsToOutport(outport_, inport_);
+    compositePortsToOutport(outport_, COLOR_ONLY, inport_);
 }
 
 void DrawLines::addPoint(vec2 p) {

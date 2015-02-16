@@ -47,7 +47,7 @@ ProcessorCodeState(ImageLayoutGL, CODE_STATE_EXPERIMENTAL);
 ImageLayoutGL::ImageLayoutGL()
     : Processor()
     , multiinport_("multiinport")
-    , outport_("outport", COLOR_DEPTH_PICKING)
+    , outport_("outport")
     , layout_("layout", "Layout")
     , resizeContent_("resizeContent", "Resize Content", false)
     , horizontalSplitter_("horizontalSplitter", "Horizontal Splitter", 0.5f, 0.f, 1.f)
@@ -151,7 +151,7 @@ void ImageLayoutGL::process() {
     // updateViewports();
     TextureUnit colorUnit, depthUnit, pickingUnit;
 
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
 
     shader_->activate();
     shader_->setUniform("screenDim_", dim);

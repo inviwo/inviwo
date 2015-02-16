@@ -25,7 +25,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGEPORT_H
@@ -48,12 +48,12 @@ public:
                 InvalidationLevel invalidationLevel = INVALID_OUTPUT);
     virtual ~ImageInport();
 
-    /** 
-     * Connects this inport to the outport. Propagates 
-     * the inport size to the outport if the processor is 
-     * an end processor (Canvas) or any of the 
-     * dependent outports of this inport are connected. 
-     * 
+    /**
+     * Connects this inport to the outport. Propagates
+     * the inport size to the outport if the processor is
+     * an end processor (Canvas) or any of the
+     * dependent outports of this inport are connected.
+     *
      * @note Does not check if the outport is an ImageOutport
      * @param Outport * outport ImageOutport to connect
      */
@@ -87,11 +87,7 @@ class IVW_CORE_API ImageOutport : public DataOutport<Image>, public EventHandler
     friend class ImageInport;
 
 public:
-    ImageOutport(std::string identifier,
-                 InvalidationLevel invalidationLevel = INVALID_OUTPUT,
-                 bool handleResizeEvents = true);
-    ImageOutport(std::string identifier, ImageType type,
-                 const DataFormatBase* format = DataVec4UINT8::get(),
+    ImageOutport(std::string identifier, const DataFormatBase* format = DataVec4UINT8::get(),
                  InvalidationLevel invalidationLevel = INVALID_OUTPUT,
                  bool handleResizeEvents = true);
 
@@ -137,9 +133,10 @@ public:
 protected:
     Image* getResizedImageData(uvec2 dimensions);
     void setLargestImageData(ResizeEvent* resizeEvent);
-    /** 
-     * \brief Propagates resize event to this processor's inports within the same dependency set (group)
-     * 
+    /**
+     * \brief Propagates resize event to this processor's inports within the same dependency set
+     *(group)
+     *
      * @param ResizeEvent * resizeEvent Event to be propagated
      */
     void propagateResizeEventToPredecessor(ResizeEvent* resizeEvent);
@@ -156,6 +153,6 @@ private:
     ImagePortMap imageDataMap_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_IMAGEPORT_H
+#endif  // IVW_IMAGEPORT_H

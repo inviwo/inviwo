@@ -55,7 +55,7 @@ ProcessorCodeState(VolumeSliceGL, CODE_STATE_STABLE);
 VolumeSliceGL::VolumeSliceGL()
     : Processor()
     , inport_("volume.inport")
-    , outport_("image.outport", COLOR_ONLY)
+    , outport_("image.outport")
     , trafoGroup_("trafoGroup", "Transformations")
     , pickGroup_("pickGroup", "Position Selection")
     , tfGroup_("tfGroup", "Transfer Function")
@@ -393,7 +393,7 @@ void VolumeSliceGL::process() {
     }
     TextureUnit::setZeroUnit();
 
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
     shader_->activate();
 
     if (tfMappingEnabled_.get()) {

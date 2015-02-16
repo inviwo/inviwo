@@ -46,7 +46,7 @@ ProcessorCodeState(DrawPoints, CODE_STATE_STABLE);
 DrawPoints::DrawPoints()
     : CompositeProcessorGL()
     , inport_("image.inport")
-    , outport_("image.outport", COLOR_ONLY) 
+    , outport_("image.outport")
     , pointSize_("pointSize", "Point Size", 5, 1, 10)
     , pointColor_("pointColor", "Point Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Drawing")
@@ -98,7 +98,7 @@ void DrawPoints::deinitialize() {
 void DrawPoints::process() {
     inport_.passOnDataToOutport(&outport_);
 
-    utilgl::activateAndClearTarget(outport_);
+    utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
     glPointSize(static_cast<float>(pointSize_.get()));
     pointShader_->activate();
     pointShader_->setUniform("color_", pointColor_.get());
@@ -106,7 +106,7 @@ void DrawPoints::process() {
     pointShader_->deactivate();
     glPointSize(1.f);
     utilgl::deactivateCurrentTarget();
-    compositePortsToOutport(outport_, inport_);
+    compositePortsToOutport(outport_, COLOR_ONLY, inport_);
 }
 
 void DrawPoints::addPoint(vec2 p) {
