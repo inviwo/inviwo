@@ -60,7 +60,7 @@ struct StandardIdentifier : public ElementIdentifier<T> {
     typedef std::string (T::*funcPtr)() const;
 
     StandardIdentifier(std::string key = "identifier", funcPtr ptr = &T::getIdentifier)
-        : key_(key), ptr_(ptr) {}
+        : ptr_(ptr), key_(key) {}
 
     virtual void setKey(TxElement* node) { identifier_ = node->GetAttributeOrDefault(key_, ""); }
     virtual bool operator()(const T* elem) const { return identifier_ == (*elem.*ptr_)(); }
