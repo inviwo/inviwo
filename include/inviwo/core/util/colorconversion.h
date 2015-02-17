@@ -46,64 +46,7 @@ namespace inviwo {
  * @param hsv Color in the [0 1]^3 range.
  * @return RGB color in [0 1]^3 range.
  */
-IVW_CORE_API inline vec3 hsv2rgb(vec3 hsv)
-{
-    float hue = hsv.x;
-    float sat = hsv.y;
-    float val = hsv.z;
-    float x = 0.f, y = 0.f, z = 0.f;
-
-    if (hue == 1.f)
-        hue = 0.f;
-    else
-        hue *= 6.f;
-
-    int i = int(glm::floor(hue));
-    float f = hue-i;
-    float p = val*(1-sat);
-    float q = val*(1-(sat*f));
-    float t = val*(1-(sat*(1-f)));
-
-    switch (i) {
-        case 0:
-            x = val;
-            y = t;
-            z = p;
-            break;
-
-        case 1:
-            x = q;
-            y = val;
-            z = p;
-            break;
-
-        case 2:
-            x = p;
-            y = val;
-            z = t;
-            break;
-
-        case 3:
-            x = p;
-            y = q;
-            z = val;
-            break;
-
-        case 4:
-            x = t;
-            y = p;
-            z = val;
-            break;
-
-        case 5:
-            x = val;
-            y = p;
-            z = q;
-            break;
-    }
-
-    return vec3(x,y,z);
-}
+IVW_CORE_API vec3 hsv2rgb(vec3 hsv);
 
 /** 
  * \brief Convert from RGB to HSV color.
@@ -115,46 +58,14 @@ IVW_CORE_API inline vec3 hsv2rgb(vec3 hsv)
  * @param rgb Color in the [0 1]^3 range.
  * @return HSV color in the [0 1]^3 range.
  */
-IVW_CORE_API inline vec3 rgb2hsv(vec3 rgb)
-{
-    const float& x = rgb.r;
-    const float& y = rgb.g;
-    const float& z = rgb.b;
-    float maximum = (x > y) ? ((x > z) ? x : z) : ((y > z) ? y : z);
-    float minimum = (x < y) ? ((x < z) ? x : z) : ((y < z) ? y : z);
-    float range = maximum - minimum;
-    float val    = maximum;
-    float sat   = 0.f;
-    float hue   = 0.f;
-
-    if (maximum != 0.f)
-        sat = range/maximum;
-
-    if (sat != 0.f) {
-        float h;
-
-        if (x == maximum)
-            h = (y - z) / range;
-        else if (y == maximum)
-            h = 2.f + (z - x) / range;
-        else
-            h = 4.f + (x - y) / range;
-
-        hue = h/6.f;
-
-        if (hue < 0.f)
-            hue += 1.f;
-    }
-
-    return vec3(hue,sat,val);
-}
+IVW_CORE_API vec3 rgb2hsv(vec3 rgb);
 
 /** 
  * \brief Convert from XYZ to Lab color space
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space
  * and http://www.brucelindbloom.com/
  * @param xyz Color in the [0 1]^3 range
- * @param whitePoint Default white point is D65
+ * @param whitePoint Normalized white point. Default white point is D65.
  * @return vec3 Color in Lab space 
  */
 IVW_CORE_API vec3 xyz2lab(vec3 xyz, vec3 whitePoint = vec3(0.95047f, 1.f, 1.08883f));
@@ -164,7 +75,7 @@ IVW_CORE_API vec3 xyz2lab(vec3 xyz, vec3 whitePoint = vec3(0.95047f, 1.f, 1.0888
  * See http://en.wikipedia.org/wiki/Lab_color_space
  * and http://www.brucelindbloom.com/
  * @param lab Color
- * @param whitePoint Default white point is D65
+ * @param whitePoint Normalized white point. Default white point is D65.
  * @return Lab color 
  */
 IVW_CORE_API vec3 lab2xyz(vec3 lab, const vec3 whitePoint = vec3(0.95047f, 1.f, 1.08883f));
