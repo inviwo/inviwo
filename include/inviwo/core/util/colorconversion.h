@@ -91,13 +91,13 @@ IVW_CORE_API vec3 lab2xyz(vec3 lab, const vec3 whitePoint = vec3(0.95047f, 1.f, 
 IVW_CORE_API vec3 rgb2xyz(const vec3 rgb);
 
 /** 
- * \brief Convert from XYZ color to RGB using D65 white point.
+ * \brief Convert from XYZ color to sRGB using D65 white point.
  *
  * See http://en.wikipedia.org/wiki/CIE_1931_color_space,
  * http://www.brucelindbloom.com/
  * and http://en.wikipedia.org/wiki/RGB_color_model 
- * @param const vec3 & xyz 
- * @return IVW_CORE_API vec3 
+ * @param xyz color in the [0 1]^3 range.
+ * @return sRGB color in the [0 1]^3 range.
  */
 IVW_CORE_API vec3 xyz2rgb(vec3 xyz);
 
