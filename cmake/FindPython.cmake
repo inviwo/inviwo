@@ -133,20 +133,120 @@ elseif(APPLE)
 
 elseif(UNIX)
     set(UNIX_INCLUDE_PATHS /usr/local/pyenv/versions/2.7.6/include/python2.7 /usr/include/python2.7 /usr/include/python2.6 /usr/include/python2.5)
-    set(UNIX_LIB_PATHS /usr/local/pyenv/versions/2.7.6/lib/ /usr/lib/i386-linux-gnu)
-    find_path(PYTHON_INCLUDE_DIR Python.h ${UNIX_INCLUDE_PATHS})
-    if(BUILD_SHARED_LIBS)
-        set(PYTHON_UNIX_LIBS libpython2.7.so libpython2.6.so libpython2.5.so libpython2.4.so)
-    else()
-        set(PYTHON_UNIX_LIBS libpython2.7.a libpython2.6.a libpython2.5.a libpython2.4.a)
+     set(UNIX_LIB_PATHS /usr/local/pyenv/versions/2.7.6/lib/ /usr/lib/i386-linux-gnu /usr/lib/python2.7 /usr/lib/python2.6 /usr/lib/python2.5)
+   
+
+    #numpy
+    find_path(PYTHON_BASE_DIR python python2.7 python2.6 python2.5 python2.4 ${PYTHON_BASE_DIR})
+
+    execute_process(COMMAND "${PYTHON_BASE_DIR}/python" "-c"
+                        "try: import sys; print(sys.path);\nexcept: print('failed')\n"
+                        RESULT_VARIABLE PIP_STATUS
+                        OUTPUT_VARIABLE PYTHON_SYS_PATH_OUTPUT
+                        ERROR_VARIABLE PIP_ERROR
+                        OUTPUT_STRIP_TRAILING_WHITESPACE
+                       )
+    if (PYTHON_SYS_PATH_OUTPUT MATCHES "failed")
+    	message (FATAL_ERROR "Failed to find system path " )
     endif()
-    find_library(PYTHON_LIBRARIES NAMES ${PYTHON_UNIX_LIBS} PATHS ${UNIX_LIB_PATHS})
     
-    FIND_PACKAGE_HANDLE_STANDARD_ARGS(Python DEFAULT_MSG PYTHON_LIBRARIES PYTHON_INCLUDE_DIR)
+    #FIND_PACKAGE_HANDLE_STANDARD_ARGS(Python DEFAULT_MSG PYTHON_LIBRARIES PYTHON_INCLUDE_DIR)
+
+
+    #message (FATAL_ERROR "System path from python " ${PYTHON_SYS_PATH_OUTPUT} )
+
+    if(PYTHON_BASE_DIR)
+        find_path(PYTHON_INCLUDE_DIR Python.h ${UNIX_INCLUDE_PATHS})       
+        
+    	if(BUILD_SHARED_LIBS)
+    	    set(PYTHON_LIBRARY libpython2.7 libpython2.7.so libpython2.6.so libpython2.5.so libpython2.4.so)
+    	else()
+    	    set(PYTHON_LIBRARY libpython2.7 libpython2.7.a libpython2.6.a libpython2.5.a libpython2.4.a)
+    	endif()	        
+
+    	find_library(PYTHON_LIBRARIES GLOB_RECURSE NAMES ${PYTHON_LIBRARY} PATHS ${UNIX_LIB_PATHS})
+
+	find_path(PYTHON_LIBRARY_DIR GLOB_RECURSE NAMES ${PYTHON_LIBRARY}  PATHS ${UNIX_LIB_PATHS})
+
+	#get_filename_component(PYTHON_LIBRARY_DIR PYTHON_LIBRARIES DIRECTORY)
+        #get_filename_component(PYTHON_LIBRARIES ${PYTHON_LIBRARIES} NAME)
+    endif(PYTHON_BASE_DIR)
+
+    if(PYTHON_BASE_DIR AND IVW_MODULE_PYPACKAGES)
+   
+        #numpy
+        execute_process(COMMAND "${PYTHON_BASE_DIR}/python" "-c"
+                        "import numpy; print(numpy.__version__)"
+                        RESULT_VARIABLE NUMPY_STATUS
+                        OUTPUT_VARIABLE NUMPY_OUTPUT_VERSION
+                        ERROR_VARIABLE NUMPY_ERROR
+                        OUTPUT_STRIP_TRAILING_WHITESPACE
+                       )
+
+        if (NUMPY_OUTPUT_VERSION MATCHES "failed")
+            message (FATAL_ERROR "Missing Missing Python Package Numpy. Install using pip or easy_install ")
+        endif()
+
+        #message (FATAL_ERROR "Numpy Status " "${NUMPY_STATUS}" )
+        #message (FATAL_ERROR "Numpy Version " "${NUMPY_OUTPUT_VERSION}" )
+        #message (FATAL_ERROR "Numpy Error " "${NUMPY_ERROR}" )
+
+        execute_process(COMMAND "${PYTHON_BASE_DIR}/python" "-c"
+                        "import numpy;print(numpy.get_include())"
+                        RESULT_VARIABLE NUMPY_STATUS
+                        OUTPUT_VARIABLE NUMPY_OUTPUT_INCLUDES
+                        ERROR_VARIABLE NUMPY_ERROR
+                        OUTPUT_STRIP_TRAILING_WHITESPACE
+                       )
+
+        if (NUMPY_STATUS MATCHES 0)
+            set(PYTHON_NUMPY_FOUND TRUE CACHE INTERNAL "Python numpy development package is available")     
+            find_path(PYTHON_NUMPY_INCLUDE_DIR arrayobject.h
+                      "${NUMPY_OUTPUT_INCLUDES}\\numpy"          
+                      DOC "Directory where the arrayobject.h header file can be found. This file is part of the numpy package"
+                     )
+            LIST(APPEND PYTHON_INCLUDE_DIR "${PYTHON_NUMPY_INCLUDE_DIR}")   
+        else()  
+            #message (FATAL_ERROR "Numpy not found : ${NUMPY_OUTPUT_INCLUDES}" )
+            set(PYTHON_NUMPY_FOUND FALSE)
+        endif()
+
+        #Setuptools and EasyInstall
+        execute_process(COMMAND "${PYTHON_BASE_DIR}/python" "-c"
+                        "from setuptools.command import easy_install;import setuptools;print(setuptools.__version__)"
+                        RESULT_VARIABLE SETUPTOOLS_STATUS
+                        OUTPUT_VARIABLE SETUPTOOLS_OUTPUT_VERSION
+                        ERROR_VARIABLE SETUPTOOLS_ERROR
+                        OUTPUT_STRIP_TRAILING_WHITESPACE
+                       )
+        if (SETUPTOOLS_OUTPUT_VERSION MATCHES "failed")
+            message (FATAL_ERROR "Missing Python Package Setuptools. Install using pip or easy_install ")
+        endif()     
+
+        #pip
+        execute_process(COMMAND "${PYTHON_BASE_DIR}/python" "-c"
+                        "import pip;print(pip.__version__)"
+                        RESULT_VARIABLE PIP_STATUS
+                        OUTPUT_VARIABLE PIP_OUTPUT_VERSION
+                        ERROR_VARIABLE PIP_ERROR
+                        OUTPUT_STRIP_TRAILING_WHITESPACE
+                       )
+        if (PIP_OUTPUT_VERSION MATCHES "failed")
+            message (FATAL_ERROR "Missing Python Package Pip. Install using easy_install ")
+        endif()
+
+    endif()    
     
+    FIND_PACKAGE_HANDLE_STANDARD_ARGS( Python DEFAULT_MSG PYTHON_LIBRARY_DIR PYTHON_INCLUDE_DIR )
+
     mark_as_advanced(PYTHON_FOUND)
+    mark_as_advanced(PYTHON_VERSION)
     mark_as_advanced(PYTHON_INCLUDE_DIR)
     mark_as_advanced(PYTHON_LIBRARY_DIR)
+    mark_as_advanced(PYTHON_LIBRARY)
     mark_as_advanced(PYTHON_LIBRARIES)
+    mark_as_advanced(PYTHON_BASE_DIR)
+    mark_as_advanced(PYTHON_NUMPY_FOUND)
+    mark_as_advanced(PYTHON_NUMPY_INCLUDE_DIR)
 endif()
 
