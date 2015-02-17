@@ -47,8 +47,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/common.hpp>
 #include <glm/detail/precision.hpp>
-
-#include <inviwo/core/util/glmstreamoperators.h>
+#include <glm/gtx/io.hpp>
 
 namespace inviwo {
 

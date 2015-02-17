@@ -34,19 +34,10 @@
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/links/linkconditions.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <algorithm>
 
 namespace inviwo {
-
-namespace {
-class KeepTrueWhileInScope {
-public:
-    KeepTrueWhileInScope(bool* b) : variable_(b) { (*variable_) = true; }
-    ~KeepTrueWhileInScope() { (*variable_) = false; }
-private:
-    bool* variable_;
-};
-}
 
 ProcessorPair::ProcessorPair(Processor* p1, Processor* p2) 
 : processor1_(p1<p2?p1:p2), processor2_(p1<p2?p2:p1) {}
