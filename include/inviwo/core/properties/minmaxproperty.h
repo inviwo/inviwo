@@ -108,6 +108,12 @@ MinMaxProperty<T>::MinMaxProperty(std::string identifier, std::string displayNam
     , range_("range", glm::detail::tvec2<T, glm::defaultp>(rangeMin, rangeMax))
     , increment_("increment", increment)
     , minSeparation_("minSeparation", minSeparation) {
+
+    // invariant: range_.x <= value_.x <= value_.y + minseperation <= range_.y 
+    // Assume range_.x is correct.
+    value_.value.x = std::max(value_.value.x, range_.value.x);
+    value_.value.y = std::max(value_.value.y, value_.value.x + minSeparation_.value);
+    range_.value.y = std::max(range_.value.y, value_.value.y);
 }
 
 template <typename T>

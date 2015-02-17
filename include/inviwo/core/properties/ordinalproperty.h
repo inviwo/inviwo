@@ -123,6 +123,11 @@ OrdinalProperty<T>::OrdinalProperty(const std::string& identifier, const std::st
     , minValue_("minvalue", minValue)
     , maxValue_("maxvalue", maxValue)
     , increment_("increment", increment) {
+
+    // Invariant minValue_ < value_ < maxValue_
+    // Assume minValue is correct.
+    value_.value = glm::max(value_.value, minValue_.value);
+    maxValue_.value = glm::max(maxValue_.value, value_.value);
 }
 
 
