@@ -399,6 +399,7 @@ set(SOURCE_FILES
     util/assertion.cpp
     util/canvas.cpp
     util/clock.cpp
+	util/colorconversion.cpp
     util/commandlineparser.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp

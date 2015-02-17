@@ -46,7 +46,7 @@ namespace inviwo {
  * @param hsv Color in the [0 1]^3 range.
  * @return RGB color in [0 1]^3 range.
  */
-IVW_CORE_API inline vec3 hsv2rgb(const vec3& hsv)
+IVW_CORE_API inline vec3 hsv2rgb(vec3 hsv)
 {
     float hue = hsv.x;
     float sat = hsv.y;
@@ -115,7 +115,7 @@ IVW_CORE_API inline vec3 hsv2rgb(const vec3& hsv)
  * @param rgb Color in the [0 1]^3 range.
  * @return HSV color in the [0 1]^3 range.
  */
-IVW_CORE_API inline vec3 rgb2hsv(const vec3& rgb)
+IVW_CORE_API inline vec3 rgb2hsv(vec3 rgb)
 {
     const float& x = rgb.r;
     const float& y = rgb.g;
@@ -148,6 +148,71 @@ IVW_CORE_API inline vec3 rgb2hsv(const vec3& rgb)
 
     return vec3(hue,sat,val);
 }
+
+/** 
+ * \brief Convert from XYZ to Lab color space
+ * See http://en.wikipedia.org/wiki/CIE_1931_color_space
+ * and http://www.brucelindbloom.com/
+ * @param xyz Color in the [0 1]^3 range
+ * @param whitePoint Default white point is D65
+ * @return vec3 Color in Lab space 
+ */
+IVW_CORE_API vec3 xyz2lab(vec3 xyz, vec3 whitePoint = vec3(0.95047f, 1.f, 1.08883f));
+
+/** 
+ * \brief Convert from Lab to XYZ color space
+ * See http://en.wikipedia.org/wiki/Lab_color_space
+ * and http://www.brucelindbloom.com/
+ * @param lab Color
+ * @param whitePoint Default white point is D65
+ * @return Lab color 
+ */
+IVW_CORE_API vec3 lab2xyz(vec3 lab, const vec3 whitePoint = vec3(0.95047f, 1.f, 1.08883f));
+
+/** 
+ * \brief Convert from sRGB color to XYZ using D65 white point
+ * See http://en.wikipedia.org/wiki/CIE_1931_color_space,
+ * http://www.brucelindbloom.com/
+ * and http://en.wikipedia.org/wiki/RGB_color_model 
+ * @param rgb Color in the [0 1]^3 range
+ * @return XYZ color in the [0 1]^3 range.
+ */
+IVW_CORE_API vec3 rgb2xyz(const vec3 rgb);
+
+/** 
+ * \brief Convert from XYZ color to RGB using D65 white point.
+ *
+ * See http://en.wikipedia.org/wiki/CIE_1931_color_space,
+ * http://www.brucelindbloom.com/
+ * and http://en.wikipedia.org/wiki/RGB_color_model 
+ * @param const vec3 & xyz 
+ * @return IVW_CORE_API vec3 
+ */
+IVW_CORE_API vec3 xyz2rgb(vec3 xyz);
+
+/** 
+ * \brief Convert from sRGB color to Lab using D65 white point.
+ *
+ * See http://en.wikipedia.org/wiki/Lab_color_space
+ * http://www.brucelindbloom.com/
+ * and http://en.wikipedia.org/wiki/RGB_color_model 
+ * 
+ * @param rgb Color in the [0 1]^3 range.
+ * @return Lab color
+ */
+IVW_CORE_API vec3 rgb2lab(vec3 rgb);
+
+/** 
+ * \brief Convert from Lab color to sRGB using D65 white point.
+ *
+ * See http://en.wikipedia.org/wiki/Lab_color_space
+ * http://www.brucelindbloom.com/
+ * and http://en.wikipedia.org/wiki/RGB_color_model 
+ * 
+ * @param lab 
+ * @return Color in the [0 1]^3 range.
+ */
+IVW_CORE_API vec3 lab2rgb(vec3 lab);
 
 }
 
