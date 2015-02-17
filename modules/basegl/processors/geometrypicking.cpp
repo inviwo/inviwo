@@ -115,7 +115,7 @@ void GeometryPicking::process() {
 
     shader_->deactivate();
     utilgl::deactivateCurrentTarget();
-    compositePortsToOutport(outport_, COLOR_ONLY, imageInport_);
+    compositePortsToOutport(outport_, COLOR_DEPTH_PICKING, imageInport_);
 }
 
 }  // namespace
