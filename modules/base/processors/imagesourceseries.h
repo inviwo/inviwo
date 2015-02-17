@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
 
@@ -64,6 +65,7 @@ private:
     ButtonProperty findFilesButton_;
     DirectoryProperty imageFileDirectory_;
     IntProperty currentImageIndex_;
+    StringProperty imageFileName_;
 
     std::vector<FileExtension> validExtensions_;
 };

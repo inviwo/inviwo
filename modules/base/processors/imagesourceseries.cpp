@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/imagedisk.h>
 #include <inviwo/core/datastructures/image/layerdisk.h>
+#include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
 
@@ -46,19 +47,25 @@ ProcessorCodeState(ImageSourceSeries, CODE_STATE_EXPERIMENTAL);
 ImageSourceSeries::ImageSourceSeries()
     : Processor()
     , outport_("image.outport")
-    , findFilesButton_("findFiles", "Find Files")
+    , findFilesButton_("findFiles", "Update File List")
     , imageFileDirectory_("imageFileDirectory", "Image file directory", "image" ,
                           InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES,"images"))
-    , currentImageIndex_("currentImageIndex", "Image index", 1, 1, 1, 1) {
+    , currentImageIndex_("currentImageIndex", "Image index", 1, 1, 1, 1)
+    , imageFileName_("imageFileName", "Image file name") {
+
     addPort(outport_);
     addProperty(imageFileDirectory_);
     addProperty(findFilesButton_);
     addProperty(currentImageIndex_);
+    addProperty(imageFileName_);
 
     validExtensions_ = DataReaderFactory::getPtr()->getExtensionsForType<Layer>();
 
     imageFileDirectory_.registerFileIndexingHandle(&currentImageIndex_);
+    imageFileDirectory_.onChange(this, &ImageSourceSeries::onFindFiles);
     findFilesButton_.onChange(this, &ImageSourceSeries::onFindFiles);
+
+    imageFileName_.setReadOnly(true);
 }
 
 ImageSourceSeries::~ImageSourceSeries() {}
@@ -96,6 +103,7 @@ void ImageSourceSeries::onFindFiles() {
     }
 
     currentImageIndex_.set(1);
+    imageFileName_.set(displayNames[0]);
 }
 
 /**
@@ -131,17 +139,34 @@ void ImageSourceSeries::process() {
             return;
         }
 
-        std::string currentFileName = fileNames[currentIndex-1];
-        LayerDisk* outLayerDisk = outImage->getColorLayer()->getEditableRepresentation<LayerDisk>();
+        std::string currentFileName = fileNames[currentIndex - 1];
+        imageFileName_.set(filesystem::getFileNameWithExtension(currentFileName));
 
-        if (!outLayerDisk || outLayerDisk->getSourceFile() != currentFileName) {
-            outLayerDisk = new LayerDisk(currentFileName);
-            outImage->getColorLayer()->clearRepresentations();
-            outImage->getColorLayer()->addRepresentation(outLayerDisk);
+        std::string fileExtension = filesystem::getFileExtension(currentFileName);
+        DataReaderType<Layer>* reader =
+            DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(fileExtension);
+
+        if (reader) {
+            try {
+                Layer* outLayer = reader->readMetaData(currentFileName);
+                // Call getRepresentation here to force read a ram representation.
+                // Otherwise the default image size, i.e. 256x265, will be reported 
+                // until you do the conversion. Since the LayerDisk does not have any metadata.
+                outLayer->getRepresentation<LayerRAM>();
+                Image* outImage = new Image(outLayer);
+                outImage->getRepresentation<ImageRAM>();
+
+                outport_.setData(outImage);
+
+            }
+            catch (DataReaderException const& e) {
+                LogError("Could not load data: " << currentFileName << ", " << e.getMessage());
+            }
+            delete reader;
         }
-
-        //Original image dimension loaded from disk may differ from requested dimension.
-        outLayerDisk->resize(outImage->getDimensions());
+        else {
+            LogError("Could not find a data reader for file: " << currentFileName);
+        }
     }
 }
 
