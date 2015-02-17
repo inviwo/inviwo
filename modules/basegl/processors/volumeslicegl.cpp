@@ -295,15 +295,35 @@ void VolumeSliceGL::modeChange() {
 void VolumeSliceGL::planeSettingsChanged() {
     if (!inport_.hasData()) return;
 
-    vec3 normal = glm::normalize(planeNormal_.get());
+    const vec3 normal = glm::normalize(planeNormal_.get());
     // Make sure we keep the aspect of the input data.
-    mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
+    const mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
 
-    mat4 boxrotation = 
-        glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal))
-        * glm::rotate(imageRotation_.get(), normal);
-             
-    Plane plane(planePosition_.get(), glm::normalize(planeNormal_.get()));
+//    const mat4 boxrotation(glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal)) *
+//                           glm::rotate(imageRotation_.get(), normal));
+    
+//    const mat4 boxrotation(glm::rotate(imageRotation_.get(), normal) *
+//                           glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal)));
+
+    
+    const vec3 center(texToWorld * vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    const vec3 worldNormal(glm::normalize(vec3(glm::inverseTranspose(texToWorld) * vec4(normal, 0.0f))));
+
+    // In worldSpace.
+    const mat4 boxrotation(glm::translate(center) *
+                           glm::rotate(imageRotation_.get(), vec3(0.0f, 0.0f, 1.0f)) *
+                           glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), worldNormal)) *
+                           glm::translate(-center)
+                           );
+
+    std::string trf = toString(texToWorld);
+    std::string rot = toString(boxrotation);
+    
+    LogInfo(getIdentifier() << " t2w: " << trf);
+    LogInfo(getIdentifier() << " rot: " << rot);
+    
+
+    const Plane plane(planePosition_.get(), glm::normalize(planeNormal_.get()));
 
     std::vector<IntersectionResult> points;
     points.reserve(12);
@@ -312,12 +332,12 @@ void VolumeSliceGL::planeSettingsChanged() {
     points.push_back(plane.getSegmentIntersection(vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 1.0f, 0.0f)));
     points.push_back(plane.getSegmentIntersection(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f)));
     points.push_back(plane.getSegmentIntersection(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f)));
-                                                                                                 
+
     points.push_back(plane.getSegmentIntersection(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f)));
     points.push_back(plane.getSegmentIntersection(vec3(1.0f, 0.0f, 0.0f), vec3(1.0f, 0.0f, 1.0f)));
     points.push_back(plane.getSegmentIntersection(vec3(1.0f, 1.0f, 0.0f), vec3(1.0f, 1.0f, 1.0f)));
     points.push_back(plane.getSegmentIntersection(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 1.0f)));
-                                                                                                 
+
     points.push_back(plane.getSegmentIntersection(vec3(0.0f, 0.0f, 1.0f), vec3(1.0f, 0.0f, 1.0f)));
     points.push_back(plane.getSegmentIntersection(vec3(1.0f, 0.0f, 1.0f), vec3(1.0f, 1.0f, 1.0f)));
     points.push_back(plane.getSegmentIntersection(vec3(1.0f, 1.0f, 1.0f), vec3(0.0f, 1.0f, 1.0f)));
@@ -325,11 +345,12 @@ void VolumeSliceGL::planeSettingsChanged() {
 
     vec2 xrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
     vec2 yrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
-    for (std::vector<IntersectionResult>::iterator it = points.begin(); it!=points.end(); ++it) {
+    for (std::vector<IntersectionResult>::iterator it = points.begin(); it != points.end(); ++it) {
         if (it->intersects_) {
-
-            vec4 corner = vec4(it->intersection_,1.0f);
-            corner = boxrotation*texToWorld*corner;
+            vec4 corner = vec4(it->intersection_, 1.0f);
+            corner = boxrotation * texToWorld * corner;
+            
+            LogInfo(getIdentifier() << " b " << it->intersection_ << " a: " << corner);
 
             xrange[0] = std::min(xrange[0], corner.x);
             xrange[1] = std::max(xrange[1], corner.x);
@@ -340,17 +361,32 @@ void VolumeSliceGL::planeSettingsChanged() {
 
     ratioSource_ = glm::abs((xrange[1] - xrange[0]) / (yrange[1] - yrange[0]));
 
-    // Goal: define a transformation that maps the view 2D texture coordinates into 
+    LogInfo(getIdentifier() << " ratio Source: " << ratioSource_ << " dx: " << xrange[1] - xrange[0] << " dy: " << yrange[1] - yrange[0]);
+
+    // Goal: define a transformation that maps the view 2D texture coordinates into
     // 3D texture coordinates at at some plane in the volume.
 
-    mat4 flipMatX(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1);
-    mat4 flipMatY(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1);
+    const mat4 flipMatX(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1);
+    const mat4 flipMatY(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1);
 
-    mat4 rotation = glm::translate(vec3(0.5f))
-        * glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal))
-        * glm::rotate(imageRotation_.get(), vec3(0.0f, 0.0f, 1.0f))
-        * glm::scale(vec3(imageScale_*std::sqrt(ratioSource_), imageScale_/ std::sqrt(ratioSource_), 1.0f))
-        * glm::translate(vec3(-0.5f));
+
+    const vec2 targetDim(outport_.getDimensions());
+    const float targetRatio = targetDim.x / targetDim.y;
+    
+    const float ratio(ratioSource_ / targetRatio);
+
+    const vec3 scale(imageScale_ / (ratio > 1.0f ? ratio : 1.0f),
+                     imageScale_ * (ratio > 1.0f ? 1.0f : ratio),
+                     1.0f);
+    
+    //vec3 scale(imageScale_ * std::sqrt(ratioSource_),
+    //                              imageScale_ / std::sqrt(ratioSource_), 1.0f)
+
+    mat4 rotation(glm::translate(vec3(0.5f)) *
+                  glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal)) *
+                  glm::rotate(imageRotation_.get(), vec3(0.0f, 0.0f, 1.0f)) *
+                  glm::scale(scale) *
+                  glm::translate(vec3(-0.5f)));
 
     if (flipHorizontal_) rotation *= flipMatX;
     if (flipVertical_) rotation *= flipMatY;
@@ -358,10 +394,10 @@ void VolumeSliceGL::planeSettingsChanged() {
     // Save the inverse rotation.
     inverseSliceRotation_ = glm::inverse(rotation);
 
-    // Set all the uniforms 
+    // Set all the uniforms
     if (shader_) {
         shader_->activate();
-        shader_->setUniform("sliceRotation_", rotation);     
+        shader_->setUniform("sliceRotation_", rotation);
         shader_->deactivate();
     }
 
@@ -376,10 +412,13 @@ void VolumeSliceGL::process() {
         modeChange();
     }
     
+    planeSettingsChanged(); // temp...
+    
     TextureUnit transFuncUnit, volUnit;
     utilgl::bindTexture(transferFunction_, transFuncUnit);
     utilgl::bindTexture(inport_, volUnit);
 
+    vec4 borderColor(1.0f,0.0f,0.0f,1.0f);
     GLint wrapS(0), wrapT(0), wrapR(0);
     if (volumeWrapping_.get() > 0) {
         glGetTexParameteriv(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, &wrapS);
@@ -389,7 +428,7 @@ void VolumeSliceGL::process() {
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, volumeWrapping_.get());
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, volumeWrapping_.get());
         if(volumeWrapping_.get() == GL_CLAMP_TO_BORDER)
-            glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(vec4(0.f)));
+            glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(borderColor));
     }
     TextureUnit::setZeroUnit();
 
@@ -411,7 +450,7 @@ void VolumeSliceGL::process() {
     } else {
         scaleMat_ = glm::scale(glm::vec3(ratioSource_ / ratioTarget, 1.0f, 1.0f));
     }
-    shader_->setUniform("dataToClip_", scaleMat_);
+    shader_->setUniform("dataToClip_", mat4(1.0f));
 
     utilgl::singleDrawImagePlaneRect();
     shader_->deactivate();
