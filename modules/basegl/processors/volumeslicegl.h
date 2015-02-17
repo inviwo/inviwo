@@ -143,12 +143,13 @@ private:
     Mesh* meshCrossHair_;
     Mesh* meshBox_;  // second mesh needed since Mesh does not support multiple connectivity types
     bool meshDirty_;
+    bool updating_;
 
+    mat4 sliceRotation_;
     mat4 inverseSliceRotation_; // Used to calculate the slice "z position" from the plain point. 
     uvec3 volumeDimensions_;
-    float ratioSource_; // Save the x/y ratio of the current plane.
-    mat4 scaleMat_;
-
+    uvec2 outportDimensions_;
+    mat4 texToWorld_;
 };
 }
 

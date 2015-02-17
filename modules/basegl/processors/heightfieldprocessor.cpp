@@ -31,7 +31,6 @@
 #include "heightfieldprocessor.h"
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <inviwo/core/datastructures/light/directionallight.h>
-#include <inviwo/core/util/glmstreamoperators.h>
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/textureutils.h>
 

@@ -3,7 +3,7 @@
  * Inviwo - Interactive Visualization Workshop
  * Version 0.9
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,46 +25,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_GLMOPERATORS_H
-#define IVW_GLMOPERATORS_H
+#include <inviwo/core/util/raiiutils.h>
 
-template<typename T>
-std::ostream& operator << (std::ostream& s, glm::detail::tvec2<T, glm::defaultp> const& v) {
-    s << glm::to_string(v);
-    return s;
-}
+namespace inviwo {
 
-template<typename T>
-std::ostream& operator << (std::ostream& s, glm::detail::tvec3<T, glm::defaultp> const& v) {
-    s << glm::to_string(v);
-    return s;
-}
 
-template<typename T>
-std::ostream& operator << (std::ostream& s, glm::detail::tvec4<T, glm::defaultp> const& v) {
-    s << glm::to_string(v);
-    return s;
-}
 
-template<typename T>
-std::ostream& operator << (std::ostream& s, glm::detail::tmat2x2<T, glm::defaultp> const& m) {
-    s << glm::to_string(m);
-    return s;
-}
+} // namespace
 
-template<typename T>
-std::ostream& operator << (std::ostream& s, glm::detail::tmat3x3<T, glm::defaultp> const& m) {
-    s << glm::to_string(m);
-    return s;
-}
-
-template<typename T>
-std::ostream& operator << (std::ostream& s, glm::detail::tmat4x4<T, glm::defaultp> const& m) {
-    s << glm::to_string(m);
-    return s;
-}
-
-#endif
