@@ -78,6 +78,7 @@ public:
     static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
 
 private:
+    using TemplateProperty<T>::value_;
     ValueWrapper<T> minValue_;
     ValueWrapper<T> maxValue_;
     ValueWrapper<T> increment_;

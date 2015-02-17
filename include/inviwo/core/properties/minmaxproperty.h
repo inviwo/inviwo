@@ -86,6 +86,8 @@ protected:
     void validateValues();
 
 private:
+    using TemplateProperty<glm::detail::tvec2<T, glm::defaultp> >::value_;
+    
     ValueWrapper<glm::detail::tvec2<T, glm::defaultp> > range_;
     ValueWrapper<T> increment_;
     ValueWrapper<T> minSeparation_;
