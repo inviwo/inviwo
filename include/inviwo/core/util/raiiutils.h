@@ -3,7 +3,7 @@
  * Inviwo - Interactive Visualization Workshop
  * Version 0.9
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,51 +25,25 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_IMAGESOURCESERIES_H
-#define IVW_IMAGESOURCESERIES_H
+#ifndef IVW_RAIIUTILS_H
+#define IVW_RAIIUTILS_H
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 
 namespace inviwo {
 
-class FileExtension;
-
-class IVW_MODULE_BASE_API ImageSourceSeries : public Processor {
+class KeepTrueWhileInScope {
 public:
-    ImageSourceSeries();
-    ~ImageSourceSeries();
-
-    InviwoProcessorInfo();
-
-    virtual void initialize();
-    virtual void deinitialize();
-    virtual void onFindFiles();
-
-protected:
-    virtual void process();
-
-    bool isValidImageFile(std::string);
+    KeepTrueWhileInScope(bool* b) : variable_(b) { (*variable_) = true; }
+    ~KeepTrueWhileInScope() { (*variable_) = false; }
 
 private:
-    ImageOutport outport_;
-    ButtonProperty findFilesButton_;
-    DirectoryProperty imageFileDirectory_;
-    IntProperty currentImageIndex_;
-    StringProperty imageFileName_;
-
-    std::vector<FileExtension> validExtensions_;
+    bool* variable_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_IMAGESOURCESERIES_H
+#endif  // IVW_RAIIUTILS_H

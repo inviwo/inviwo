@@ -394,7 +394,6 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
 
-        unsigned int i = 0;
         TxEIt child(itemKey);
         for (child = child.begin(rootElement_); child != child.end(); ++child) {
             identifier.setKey(child.Get());

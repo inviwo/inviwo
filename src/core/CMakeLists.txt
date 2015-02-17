@@ -222,13 +222,13 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formats.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/glmstreamoperators.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/group.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/rayplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/raiiutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/referencecounter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/rendercontext.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/linksettings.h
@@ -412,6 +412,7 @@ set(SOURCE_FILES
     util/inviwosetupinfo.cpp
     util/logcentral.cpp
     util/observer.cpp    
+    util/raiiutils.cpp
     util/rendercontext.cpp
     util/settings/linksettings.cpp    
     util/settings/settings.cpp    
