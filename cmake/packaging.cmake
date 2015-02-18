@@ -1,7 +1,6 @@
  #################################################################################
  #
  # Inviwo - Interactive Visualization Workshop
- # Version 0.9
  #
  # Copyright (c) 2014-2015 Inviwo Foundation
  # All rights reserved.
@@ -34,6 +33,7 @@ set(CPACK_PACKAGE_VENDOR "Inviwo Foundation")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Interactive Visualization Workshop")
 set(CPACK_PACKAGE_VERSION_MAJOR "${IVW_MAJOR_VERSION}")
 set(CPACK_PACKAGE_VERSION_MINOR "${IVW_MINOR_VERSION}")
+set(CPACK_PACKAGE_VERSION_PATCH "${IVW_PATCH_VERSION}")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${IVW_ROOT_DIR}/README.md")
 set(CPACK_RESOURCE_FILE_LICENSE "${IVW_ROOT_DIR}/LICENSE")
 if(WIN32)

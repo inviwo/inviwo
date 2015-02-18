@@ -1,7 +1,6 @@
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
- * Version 0.9
  *
  * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
