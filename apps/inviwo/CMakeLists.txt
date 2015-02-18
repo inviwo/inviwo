@@ -105,6 +105,7 @@ endif()
 #--------------------------------------------------------------------
 # Create application
 add_executable(inviwo MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${HEADER_FILES} ${MOC_FILES} ${QRC_FILE} ${RES_FILES})
+set_property(TARGET inviwo PROPERTY CXX_STANDARD 11)
 
 #--------------------------------------------------------------------
 # Add application to pack

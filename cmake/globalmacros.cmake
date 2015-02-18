@@ -746,6 +746,8 @@ macro(ivw_create_module)
   # Create library
   add_library(inviwo-module-${_projectName} ${ARGN} ${MOD_CLASS_FILES} ${DEPEND_PATH})
   
+  set_property(TARGET inviwo-module-${_projectName} PROPERTY CXX_STANDARD 11)
+
   #--------------------------------------------------------------------
   # Add dependencies
   set(tmpProjectName ${_projectName})
