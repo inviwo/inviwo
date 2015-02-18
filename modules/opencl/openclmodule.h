@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/opencl/openclmoduledefine.h>
+
 namespace inviwo {
 /*
  * See inviwoopencl.h for usage.
@@ -43,9 +44,6 @@ public:
 
     void initialize();
 
-protected:
-    void setupModuleSettings();
-    ButtonProperty btnOpenCLInfo_;
 };
 
 } // namespace

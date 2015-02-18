@@ -27,9 +27,9 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/core/util/settings/systemsettings.h>
-
 #include <modules/opencl/settings/openclsettings.h>
+#include <modules/opencl/openclmodule.h>
+#include <modules/opencl/openclcapabilities.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/kernelmanager.h>
 
@@ -39,6 +39,7 @@ OpenCLSettings::OpenCLSettings(std::string id) :
     Settings(id)
     , openCLDeviceProperty_("openCLDevice","Default device")
     , enableOpenGLSharing_("glsharing", "Enable OpenGL sharing", true)
+    , btnOpenCLInfo_("printOpenCLInfo", "Print OpenCL Info")
 {}
 
 OpenCLSettings::~OpenCLSettings() {
@@ -62,6 +63,16 @@ void OpenCLSettings::initialize() {
     addProperty(enableOpenGLSharing_);
     openCLDeviceProperty_.onChange(this, &OpenCLSettings::changeDevice);
     enableOpenGLSharing_.onChange(this, &OpenCLSettings::changeDevice);
+
+    addProperty(btnOpenCLInfo_);
+    OpenCLModule* openCLModule = getTypeFromVector<OpenCLModule>(InviwoApplication::getPtr()->getModules());
+    if (openCLModule){
+        OpenCLCapabilities* openclInfo = getTypeFromVector<OpenCLCapabilities>(openCLModule->getCapabilities());
+
+        if (openclInfo){
+            btnOpenCLInfo_.onChange(openclInfo, &OpenCLCapabilities::printDetailedInfo);
+        }
+    }
 }
 
 void OpenCLSettings::deinitialize()  {}

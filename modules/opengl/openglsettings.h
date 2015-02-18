@@ -35,13 +35,14 @@
 #include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <modules/opengl/openglcapabilities.h>
 
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API OpenGLSettings : public Settings {
 
 public:
-    OpenGLSettings();
+    OpenGLSettings(OpenGLCapabilities*);
     virtual ~OpenGLSettings();
     virtual void initialize();
     virtual void deinitialize();
@@ -54,6 +55,7 @@ protected:
     void updateProfile();
 
 private:
+    OpenGLCapabilities* openGlCap_;
     bool hasOutputedGLSLVersionOnce_;
     std::string contextMode_;
 };

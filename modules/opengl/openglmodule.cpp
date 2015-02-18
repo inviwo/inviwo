@@ -51,8 +51,6 @@ OpenGLModule::OpenGLModule() :
     InviwoModule() {
     setIdentifier("OpenGL");
 
-    registerSettings(new OpenGLSettings());
-
     ShaderManager::init();
 
 #ifdef OPENGL_INCLUDE_SHADER_RESOURCES
@@ -77,7 +75,10 @@ OpenGLModule::OpenGLModule() :
 
     registerProcessor(CanvasProcessorGL);
     registerProcessor(GeometryRenderProcessorGL);
-    registerCapabilities(new OpenGLCapabilities());
+
+    OpenGLCapabilities* openGLCap = new OpenGLCapabilities();
+    registerCapabilities(openGLCap);
+    registerSettings(new OpenGLSettings(openGLCap));
 }
 
 

@@ -41,12 +41,10 @@
 #include <modules/opencl/kernelmanager.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
-OpenCLModule::OpenCLModule() : InviwoModule(), btnOpenCLInfo_("printOpenCLInfo", "Print OpenCL Info") {
+OpenCLModule::OpenCLModule() : InviwoModule() {
     setIdentifier("OpenCL");
 
     // Buffer CL
@@ -108,22 +106,6 @@ void OpenCLModule::initialize() {
     
     KernelManager::init();
     InviwoModule::initialize();
-}
-
-void OpenCLModule::setupModuleSettings() {
-    //New OpengCLSettings class can be created if required.
-    SystemSettings* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-
-    if (settings) {
-        OpenCLCapabilities* openclInfo = getTypeFromVector<OpenCLCapabilities>(getCapabilities());
-
-        if (openclInfo) {
-            btnOpenCLInfo_.onChange(openclInfo, &OpenCLCapabilities::printDetailedInfo);
-            settings->addProperty(&btnOpenCLInfo_);
-        }
-    }
-
-    InviwoModule::setupModuleSettings();
 }
 
 } // namespace

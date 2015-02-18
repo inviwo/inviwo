@@ -33,6 +33,7 @@
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <modules/opencl/openclmoduledefine.h>
 
 namespace inviwo {
@@ -52,6 +53,7 @@ protected:
 private:
     OptionPropertyInt openCLDeviceProperty_; // List of devices
     BoolProperty enableOpenGLSharing_;
+    ButtonProperty btnOpenCLInfo_;
 
 };
 
