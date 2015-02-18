@@ -110,8 +110,8 @@ std::vector<std::string> DirectoryProperty::getFiles(std::string filters) const 
 
 void DirectoryProperty::setDirectoryTree(std::vector<std::string> dirTree) {
     directoryTree_ = dirTree;
+    propertyModified();
 }
-
 
 void DirectoryProperty::serialize(IvwSerializer& s) const {
     Property::serialize(s);

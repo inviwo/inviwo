@@ -79,7 +79,10 @@ void ImageSourceSeries::deinitialize() {
 
 void ImageSourceSeries::onFindFiles() {
     std::vector<std::string> files = imageFileDirectory_.getFiles();
-    //imageFilesInDirectory_.clearOptions();
+    currentImageIndex_.setReadOnly(files.empty());
+    if(files.empty())
+        return;
+
     std::vector<std::string> ids;
     std::vector<std::string> displayNames;
 
@@ -91,18 +94,13 @@ void ImageSourceSeries::onFindFiles() {
         }
     }
 
-    //TODO: following settings leads to crash. under investigation.
-    if (ids.size())
+    if (ids.size()){
         currentImageIndex_.setMaxValue(static_cast<const int>(ids.size()));
-
-    if (!ids.size()) {
-        ids.push_back("noImage");
-        displayNames.push_back("noImage");
-        files.push_back("");
+        imageFileName_.set(displayNames[0]);
     }
 
-    currentImageIndex_.set(1);
-    imageFileName_.set(displayNames[0]);
+    if(ids.size() < currentImageIndex_.get())
+        currentImageIndex_.set(1);
 }
 
 /**
@@ -114,6 +112,10 @@ void ImageSourceSeries::process() {
     if (outImage) {
         std::vector<std::string> filesInDirectory = imageFileDirectory_.getFiles();
         std::vector<std::string> fileNames;
+
+        if(filesInDirectory.empty()){
+            return;
+        }
 
         for (size_t i=0; i<filesInDirectory.size(); i++) {
             if (isValidImageFile(filesInDirectory[i])) {
