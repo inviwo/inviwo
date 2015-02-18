@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/widgets/sliderwidgetqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <inviwo/qt/widgets/qtwidgetmodule.h>
 
 namespace inviwo {
 
@@ -118,7 +119,7 @@ protected:
     }
     virtual QString reprToEditor(T val) {
         QLocale locale = BaseOrdinalEditorWidget::editor_->locale();
-        return locale.toString(val);
+        return QStringHelper<T>::toLocaleString(locale,val);// locale.toString(val);
     }
 };
 

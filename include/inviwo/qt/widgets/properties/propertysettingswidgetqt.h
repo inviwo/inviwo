@@ -45,6 +45,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/qt/widgets/qtwidgetmodule.h>
 
 
 namespace inviwo {
@@ -236,14 +237,10 @@ public:
 
         for (size_t i = 0; i < components.x; i++) {
             for (size_t j = 0; j < components.y; j++) {
-                settings_[count]->min_->setText(
-                    locale.toString(glmwrapper<BT, T>::getval(min, count)));
-                settings_[count]->val_->setText(
-                    locale.toString(glmwrapper<BT, T>::getval(val, count)));
-                settings_[count]->max_->setText(
-                    locale.toString(glmwrapper<BT, T>::getval(max, count)));
-                settings_[count]->inc_->setText(
-                    locale.toString(glmwrapper<BT, T>::getval(inc, count)));
+                settings_[count]->min_->setText( QStringHelper<BT>::toLocaleString(locale,glmwrapper<BT, T>::getval(min, count)));
+                settings_[count]->val_->setText( QStringHelper<BT>::toLocaleString(locale,glmwrapper<BT, T>::getval(val, count)));
+                settings_[count]->max_->setText( QStringHelper<BT>::toLocaleString(locale,glmwrapper<BT, T>::getval(max, count)));
+                settings_[count]->inc_->setText( QStringHelper<BT>::toLocaleString(locale,glmwrapper<BT, T>::getval(inc, count)));
                 count++;
             }
         }

@@ -34,6 +34,9 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwomodule.h>
 
+#include <QString>
+#include <QLocale>
+
 namespace inviwo {
 
 class IVW_QTWIDGETS_API QtWidgetModule : public InviwoModule {
@@ -43,6 +46,24 @@ public:
     virtual ~QtWidgetModule() {}
 
 };
+
+template<typename T>
+class IVW_QTWIDGETS_API QStringHelper{
+public:
+	static QString toLocaleString(QLocale locale,T value){
+		return locale.toString(value);
+	}
+};
+
+template<>
+class IVW_QTWIDGETS_API QStringHelper<long int>{
+public:
+	static QString toLocaleString(QLocale locale,long int value){
+		return locale.toString(static_cast<long long>(value));
+	}
+};
+
+
 
 } // namespace
 
