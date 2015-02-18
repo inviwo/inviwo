@@ -51,7 +51,6 @@ public:
 
     OptionPropertyInt applicationUsageModeProperty_;
     BoolProperty txtEditorProperty_;
-    BoolProperty shaderReloadingProperty_;
     BoolProperty enablePortInformationProperty_;
     BoolProperty enablePortInspectorsProperty_;
     IntProperty portInspectorSize_;

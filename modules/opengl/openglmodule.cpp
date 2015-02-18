@@ -30,8 +30,6 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/settings/systemsettings.h>
 #include <modules/opengl/buffer/bufferglconverter.h>
 #include <modules/opengl/buffer/elementbuffergl.h>
 #include <modules/opengl/buffer/elementbufferglconverter.h>
@@ -41,6 +39,7 @@
 #include <modules/opengl/image/layerglconverter.h>
 #include <modules/opengl/openglmodule.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/openglsettings.h>
 #include <modules/opengl/rendering/meshrenderer.h>
 #include <modules/opengl/volume/volumeglconverter.h>
 #ifdef OPENGL_INCLUDE_SHADER_RESOURCES
@@ -50,20 +49,11 @@
 namespace inviwo {
 
 OpenGLModule::OpenGLModule() :
-    InviwoModule()
-    , btnOpenGLInfo_("printOpenGLInfo", "Print OpenGL Info")
-    , selectedOpenGLProfile_("selectedOpenGLProfile", "OpenGL Profile")
-    , hasOutputedGLSLVersionOnce_(false) {
-    selectedOpenGLProfile_.addOption("core", "Core");
-    selectedOpenGLProfile_.addOption("compatibility", "Compatibility");
-    selectedOpenGLProfile_.setSelectedIdentifier(OpenGLCapabilities::getPreferredProfile());
-    selectedOpenGLProfile_.setCurrentStateAsDefault();
-    SystemSettings* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    if(settings){
-        settings->addProperty(&selectedOpenGLProfile_);
-        settings->loadFromDisk();
-    }
+    InviwoModule() {
     setIdentifier("OpenGL");
+
+    registerSettings(new OpenGLSettings());
+
     ShaderManager::init();
 
 #ifdef OPENGL_INCLUDE_SHADER_RESOURCES
@@ -89,47 +79,11 @@ OpenGLModule::OpenGLModule() :
     registerProcessor(CanvasProcessorGL);
     registerProcessor(GeometryRenderProcessorGL);
     registerCapabilities(new OpenGLCapabilities());
-    contextMode_ = OpenGLCapabilities::getPreferredProfile();
 }
 
 
 
 OpenGLModule::~OpenGLModule() {
-    //ShaderManager::deleteInstance();
-}
-
-void OpenGLModule::updateProfile(){
-    OpenGLCapabilities* openglInfo = getTypeFromVector<OpenGLCapabilities>(getCapabilities());
-
-    if (openglInfo) {
-        if(openglInfo->setPreferredProfile(selectedOpenGLProfile_.getSelectedValue(), !hasOutputedGLSLVersionOnce_)){
-            ShaderManager::getPtr()->rebuildAllShaders();
-            if(contextMode_ != selectedOpenGLProfile_.getSelectedValue())
-                LogInfoCustom("OpenGLInfo", "Restart application to enable " << selectedOpenGLProfile_.getSelectedValue() << " mode.");
-        }
-        hasOutputedGLSLVersionOnce_ = true;
-    }
-}
-
-void OpenGLModule::setupModuleSettings() {
-    //New OpengGLSettings class can be created if required.
-    SystemSettings* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-
-    if (settings) {
-        OpenGLCapabilities* openglInfo = getTypeFromVector<OpenGLCapabilities>(getCapabilities());
-
-        if (openglInfo) {
-            btnOpenGLInfo_.onChange(openglInfo, &OpenGLCapabilities::printDetailedInfo);
-            settings->addProperty(&btnOpenGLInfo_);
-
-            if(openglInfo->getCurrentShaderVersion().getVersion() >= 150){
-                selectedOpenGLProfile_.onChange(this, &OpenGLModule::updateProfile);
-                updateProfile();
-            }
-            else
-                selectedOpenGLProfile_.setVisible(false);
-        }
-    }
 }
 
 } // namespace

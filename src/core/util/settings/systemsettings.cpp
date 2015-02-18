@@ -39,7 +39,6 @@ SystemSettings::SystemSettings() :
 Settings("System Settings")
     , applicationUsageModeProperty_("applicationUsageMode", "Application usage mode")
     , txtEditorProperty_("txtEditor", "Use system text editor", true)
-    , shaderReloadingProperty_("shaderReloading", "Automatically reload shaders", true)
     , enablePortInformationProperty_("enablePortInformation", "Enable port information", true)
     , enablePortInspectorsProperty_("enablePortInspectors", "Enable port inspectors", false)
     , portInspectorSize_("portInspectorSize", "Port inspector size", 128, 1, 1024)
@@ -60,7 +59,6 @@ void SystemSettings::initialize() {
     applicationUsageModeProperty_.setCurrentStateAsDefault();
     addProperty(&applicationUsageModeProperty_);
     addProperty(&txtEditorProperty_);
-    addProperty(&shaderReloadingProperty_);
     addProperty(&enablePortInformationProperty_);
     addProperty(&enablePortInspectorsProperty_);
     addProperty(&portInspectorSize_);

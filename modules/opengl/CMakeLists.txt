@@ -38,6 +38,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopengl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglcapabilities.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglmodule.h
+	${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshrenderer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shaderutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/textureobserver.h
@@ -82,6 +83,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopengl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglcapabilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglmodule.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshrenderer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shaderutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/textureutils.cpp

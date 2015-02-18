@@ -3,7 +3,7 @@
  * Inviwo - Interactive Visualization Workshop
  * Version 0.9
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,23 +28,37 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_OPENGLMODULE_H
-#define IVW_OPENGLMODULE_H
+#ifndef IVW_OPENGLSETTINGS_H
+#define IVW_OPENGLSETTINGS_H
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API OpenGLModule : public InviwoModule {
+class IVW_MODULE_OPENGL_API OpenGLSettings : public Settings {
 
 public:
-    OpenGLModule();
-    ~OpenGLModule();
+    OpenGLSettings();
+    virtual ~OpenGLSettings();
+    virtual void initialize();
+    virtual void deinitialize();
+
+    BoolProperty shaderReloadingProperty_;
+    ButtonProperty btnOpenGLInfo_;
+    OptionPropertyString selectedOpenGLProfile_;
+
+protected:
+    void updateProfile();
+
+private:
+    bool hasOutputedGLSLVersionOnce_;
+    std::string contextMode_;
 };
 
 } // namespace
 
-#endif // IVW_OPENGLMODULE_H
+#endif // IVW_OPENGLSETTINGS_H
