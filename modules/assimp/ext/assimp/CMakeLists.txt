@@ -1,5 +1,4 @@
-cmake_minimum_required( VERSION 2.6 )
-PROJECT( Assimp )
+ivw_project( assimp )
 
 # Define here the needed parameters
 set (ASSIMP_VERSION_MAJOR 3)
@@ -32,8 +31,8 @@ if(NOT GIT_COMMIT_HASH)
 endif(NOT GIT_COMMIT_HASH)
 
 configure_file(
-  ${CMAKE_SOURCE_DIR}/revision.h.in
-  ${CMAKE_BINARY_DIR}/revision.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/revision.h.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/revision.h
 )
 
 include_directories(${CMAKE_BINARY_DIR})
@@ -186,7 +185,7 @@ ENDIF ( ASSIMP_BUILD_COMPILER STREQUAL "")
 MARK_AS_ADVANCED ( ASSIMP_BUILD_ARCHITECTURE ASSIMP_BUILD_COMPILER )
 
 ADD_SUBDIRECTORY( code/ )
-SET ( ASSIMP_BUILD_ASSIMP_TOOLS ON CACHE BOOL
+SET ( ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL
 	"If the supplementary tools for Assimp are built in addition to the library."
 )
 IF ( ASSIMP_BUILD_ASSIMP_TOOLS )
@@ -208,7 +207,7 @@ IF ( ASSIMP_BUILD_SAMPLES)
 ENDIF ( ASSIMP_BUILD_SAMPLES )
 
 IF ( WIN32 )
-	SET ( ASSIMP_BUILD_TESTS ON CACHE BOOL
+	SET ( ASSIMP_BUILD_TESTS OFF CACHE BOOL
 		"If the test suite for Assimp is built in addition to the library."
 	)
 	
@@ -272,3 +271,8 @@ if(CMAKE_CPACK_COMMAND AND UNIX AND ASSIMP_OPT_BUILD_PACKAGES)
   include(CPack)
   include(DebSourcePPA)
 endif()
+
+# Creates VS folder structure
+ivw_define_standard_definitions(assimp)
+ivw_vs_folder(assimp ext)
+

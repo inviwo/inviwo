@@ -1,3 +1,5 @@
+add_subdirectory(ext/assimp)
+
 #--------------------------------------------------------------------
 # Inviwo assimp Module
 ivw_module(assimp)
@@ -16,6 +18,7 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
+include_directories(ext/assimp/include)
 
 #--------------------------------------------------------------------
 # Add shaders
