@@ -61,9 +61,10 @@ ivw_link_directories(${LIBRARY_OUTPUT_PATH})
 #--------------------------------------------------------------------
 # Create application
 add_executable(unittests MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
-set_property(TARGET unittests PROPERTY CXX_STANDARD 11)
-set_property(TARGET unittests PROPERTY CXX_STANDARD_REQUIRED ON)
-
+if(NOT MSVC11)
+	set_property(TARGET unittests PROPERTY CXX_STANDARD 11)
+	set_property(TARGET unittests PROPERTY CXX_STANDARD_REQUIRED ON)
+endif()
 #--------------------------------------------------------------------
 # Add dependencies
 ivw_add_dependencies(${package_list})

@@ -50,8 +50,10 @@ ivw_add_dependency_directories(${package_list})
 #--------------------------------------------------------------------
 # Create application
 add_executable(inviwo_glfwminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
-set_property(TARGET inviwo_glfwminimum PROPERTY CXX_STANDARD 11)
-set_property(TARGET inviwo_glfwminimum PROPERTY CXX_STANDARD_REQUIRED ON)
+if(NOT MSVC11)
+    set_property(TARGET inviwo_glfwminimum PROPERTY CXX_STANDARD 11)
+    set_property(TARGET inviwo_glfwminimum PROPERTY CXX_STANDARD_REQUIRED ON)
+endif()
 #--------------------------------------------------------------------
 # Move to folder
 ivw_vs_folder(inviwo_glfwminimum minimals)
