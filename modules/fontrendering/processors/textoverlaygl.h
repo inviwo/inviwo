@@ -31,20 +31,17 @@
 #define IVW_TEXTOVERLAYGL_H
 
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
+#include <modules/fontrendering/textrenderer.h>
+
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <ft2build.h>
-#include FT_FREETYPE_H
+
 
 namespace inviwo {
-
-class Shader;
-class Mesh;
 
 class IVW_MODULE_FONTRENDERING_API TextOverlayGL : public Processor {
 public:
@@ -55,35 +52,23 @@ public:
 
     void initialize();
     void deinitialize();
-
-    
 protected:
     virtual void process();
-    void render_text(const char* text, float x, float y, float sx, float sy);
-    vec2 measure_text(const char* text, float sx, float sy);
-
 
 private:
     void initMesh();
 
     ImageInport inport_;
     ImageOutport outport_;
-    FT_Library fontlib_;
-    FT_Face fontface_;
     StringProperty text_;
-
-    unsigned int font_size_;
-    float xpos_;
-    float ypos_;
     
     FloatVec4Property color_;
     OptionPropertyInt fontSize_;
     FloatVec2Property fontPos_;
     FloatVec2Property refPos_;
-    Shader* textShader_;
 
-    GLuint texCharacter_;
-    Mesh* mesh_;
+    TextRenderer* textRenderer_;
+
 };
 
 } // namespace
