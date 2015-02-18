@@ -1,4 +1,4 @@
-/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -57,7 +57,7 @@ VolumeRaycaster::VolumeRaycaster()
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera")
-    , lighting_("lighting", "Lighting")
+    , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator")
     , toggleShading_("toggleShading", "Toggle Shading",
         new KeyboardEvent('L'), 

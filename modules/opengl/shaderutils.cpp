@@ -72,7 +72,7 @@ void addShaderDefines(Shader* shader, const SimpleLightingProperty& property) {
 }
 
 void setShaderUniforms(Shader* shader, const SimpleLightingProperty& property, std::string name) {
-    shader->setUniform(name + ".position", property.lightPosition_.get());
+    shader->setUniform(name + ".position", property.getTransformedPosition());
     shader->setUniform(name + ".ambientColor", property.ambientColor_.get());
     shader->setUniform(name + ".diffuseColor", property.diffuseColor_.get());
     shader->setUniform(name + ".specularColor", property.specularColor_.get());

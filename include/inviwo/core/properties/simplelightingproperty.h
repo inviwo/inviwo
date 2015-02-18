@@ -55,11 +55,19 @@ namespace ShadingMode {
     };
 }
 
+
+
+class CameraProperty;
+
 class IVW_CORE_API SimpleLightingProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();
 
+    enum class Space : int {WORLD, VIEW};
+
+
     SimpleLightingProperty(std::string identifier, std::string displayName,
+                           CameraProperty* camera = nullptr,
                            InvalidationLevel = INVALID_OUTPUT,
                            PropertySemantics semantics = PropertySemantics::Default);
     
@@ -68,7 +76,13 @@ public:
     virtual SimpleLightingProperty* clone() const;
     virtual ~SimpleLightingProperty();
     
+    // Light properties
     OptionPropertyInt shadingMode_;
+    OptionPropertyInt referenceFrame_;
+    FloatVec3Property lightPosition_;
+    FloatVec3Property lightAttenuation_;
+    BoolProperty applyLightAttenuation_;
+
     // Material properties
     // Diffuse color often come from the object 
     // so we neglect it here
@@ -76,11 +90,11 @@ public:
     FloatVec3Property diffuseColor_; 
     FloatVec3Property specularColor_;
     FloatProperty specularExponent_;
-    // Light properties
-    FloatVec3Property lightPosition_;
-    FloatVec3Property lightAttenuation_;
-    BoolProperty applyLightAttenuation_;
+    
+    vec3 getTransformedPosition() const;
 
+private:
+    CameraProperty* camera_; //< Non-owning reference.
 };
 
 } // namespace

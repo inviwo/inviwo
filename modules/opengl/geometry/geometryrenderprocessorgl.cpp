@@ -59,7 +59,7 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     , polygonMode_("polygonMode", "Polygon Mode")
     , renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
     , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
-    , lightingProperty_("lighting", "Lighting")
+    , lightingProperty_("lighting", "Lighting", &camera_)
 {
     
     addPort(inport_);

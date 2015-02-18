@@ -56,7 +56,7 @@ MultichannelRaycaster::MultichannelRaycaster()
     , transferFunctions_("transfer-functions", "Transfer functions")
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera")
-    , lighting_("lighting", "Lighting") {
+    , lighting_("lighting", "Lighting", &camera_) {
 
     transferFunctions_.addProperty(new TransferFunctionProperty(
         "transferFunction1", "Channel 1", TransferFunction(), &volumePort_));
