@@ -46,7 +46,10 @@
 namespace inviwo {
 
 DirectoryPropertyWidgetQt::DirectoryPropertyWidgetQt(DirectoryProperty* property)
-    : PropertyWidgetQt(property), property_(property) {
+    : PropertyWidgetQt(property)
+    , property_(property)
+    , updatedFromWidget_(false) 
+{
     generateWidget();
     updateFromProperty();
 }
@@ -88,6 +91,11 @@ void DirectoryPropertyWidgetQt::setPropertyValue() {
 }
 
 void DirectoryPropertyWidgetQt::updateFromProperty() {
+    if(updatedFromWidget_){
+        updatedFromWidget_ = false;
+        return;
+    }
+
     QDir currentDir = QDir(QString::fromStdString(property_->get()));
     lineEdit_->setText(currentDir.dirName());
     setPropertyTreeInfo(property_->get());
@@ -110,6 +118,7 @@ void DirectoryPropertyWidgetQt::setPropertyTreeInfo(std::string path) {
         directoryTreeInfo.push_back(fileName);
     }
 
+    updatedFromWidget_ = true;
     property_->setDirectoryTree(directoryTreeInfo);
 }
 

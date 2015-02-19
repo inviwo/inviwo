@@ -51,17 +51,19 @@ public:
 
     void updateFromProperty();
 
-private:
-    DirectoryProperty* property_;
-    QLineEdit* lineEdit_;
-    QToolButton* openButton_;
-    EditableLabelQt* directoryLabel_;
-    void generateWidget();
-
 public slots:
     void setPropertyValue();
     void setPropertyTreeInfo(std::string path);
     void setPropertyDisplayName();
+
+private:
+    void generateWidget();
+
+    DirectoryProperty* property_;
+    QLineEdit* lineEdit_;
+    QToolButton* openButton_;
+    EditableLabelQt* directoryLabel_;
+    bool updatedFromWidget_;
 };
 
 } // namespace
