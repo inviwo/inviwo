@@ -58,7 +58,18 @@ T stringTo(const std::string& str) {
 }
 
 IVW_CORE_API std::vector<std::string> splitString(const std::string& str, char delimeter = ' ');
-IVW_CORE_API std::string joinString(const std::vector<std::string>& str, std::string delimeter = " ");
+
+template <typename T>
+std::string joinString(const std::vector<T>& str, std::string delimeter = " ") {
+    std::stringstream ss;
+    for (int i = 0; i < static_cast<int>(str.size()) - 1; ++i) {
+        ss << str[i] << delimeter;
+    }
+    if (!str.empty()) ss << str.back();
+
+    return ss.str();
+}
+
 
 template <typename Iterator>
 std::string joinString(Iterator begin, Iterator end, std::string delimeter = " ") {
