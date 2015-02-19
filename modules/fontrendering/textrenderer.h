@@ -34,6 +34,7 @@
 #include <modules/fontrendering/fontrenderingmoduledefine.h>
 #include <modules/fontrendering/fontrenderingmodule.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/glwrap/shader.h>

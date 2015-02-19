@@ -56,6 +56,7 @@ TextRenderer::TextRenderer(const std::string& fontPath): renderer_(NULL) {
     glGenTextures(1, &texCharacter_);
 
     initMesh();
+    setFontSize(12);
 }
 
 TextRenderer::~TextRenderer() {
