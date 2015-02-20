@@ -36,14 +36,14 @@
 
 namespace inviwo {
 
-OpenGLSettings::OpenGLSettings(OpenGLCapabilities* openglInfo) :
-Settings("OpenGL Settings")
+OpenGLSettings::OpenGLSettings(OpenGLCapabilities* openglInfo)
+    : Settings("OpenGL Settings")
     , shaderReloadingProperty_("shaderReloading", "Automatically reload shaders", true)
     , btnOpenGLInfo_("printOpenGLInfo", "Print OpenGL Info")
     , selectedOpenGLProfile_("selectedOpenGLProfile", "OpenGL Profile")
-    , hasOutputedGLSLVersionOnce_(false)
     , openGlCap_(openglInfo)
-    {
+    , hasOutputedGLSLVersionOnce_(false) {
+    
     selectedOpenGLProfile_.addOption("core", "Core");
     selectedOpenGLProfile_.addOption("compatibility", "Compatibility");
     selectedOpenGLProfile_.setSelectedIdentifier(OpenGLCapabilities::getPreferredProfile());
@@ -56,7 +56,7 @@ Settings("OpenGL Settings")
     addProperty(&selectedOpenGLProfile_);
     selectedOpenGLProfile_.onChange(this, &OpenGLSettings::updateProfile);
 
-    if (openGlCap_){
+    if (openGlCap_) {
         btnOpenGLInfo_.onChange(openGlCap_, &OpenGLCapabilities::printDetailedInfo);
     }
 
@@ -66,21 +66,25 @@ Settings("OpenGL Settings")
 OpenGLSettings::~OpenGLSettings() {}
 
 void OpenGLSettings::initialize() {
-    if (openGlCap_){
-        if (openGlCap_->getCurrentShaderVersion().getVersion() < 150){
+    if (openGlCap_) {
+        if (openGlCap_->getCurrentShaderVersion().getVersion() < 150) {
             selectedOpenGLProfile_.setVisible(false);
         }
     }
 }
 
-void OpenGLSettings::deinitialize()  {}
+void OpenGLSettings::deinitialize() {}
 
-void OpenGLSettings::updateProfile(){
-    if (openGlCap_){
-        if (openGlCap_->setPreferredProfile(selectedOpenGLProfile_.getSelectedValue(), !hasOutputedGLSLVersionOnce_) && hasOutputedGLSLVersionOnce_){
+void OpenGLSettings::updateProfile() {
+    if (openGlCap_) {
+        if (openGlCap_->setPreferredProfile(selectedOpenGLProfile_.getSelectedValue(),
+                                            !hasOutputedGLSLVersionOnce_) &&
+            hasOutputedGLSLVersionOnce_) {
             ShaderManager::getPtr()->rebuildAllShaders();
             if (contextMode_ != selectedOpenGLProfile_.getSelectedValue())
-                LogInfoCustom("OpenGLInfo", "Restart application to enable " << selectedOpenGLProfile_.getSelectedValue() << " mode.");
+                LogInfoCustom("OpenGLInfo", "Restart application to enable "
+                                                << selectedOpenGLProfile_.getSelectedValue()
+                                                << " mode.");
         }
         hasOutputedGLSLVersionOnce_ = true;
     }
