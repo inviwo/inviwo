@@ -71,6 +71,12 @@ protected:
     ValueWrapper<T> value_;
 };
 
+template <typename CTy, typename CTr, typename T>
+std::basic_ostream<CTy, CTr> &operator<<(std::basic_ostream<CTy, CTr> &os,
+                                         const TemplateProperty<T> &prop) {
+    return os << prop.get();
+}
+
 template <typename T>
 TemplateProperty<T>::TemplateProperty(const std::string& identifier, const std::string& displayName,
                                       const T& value,
