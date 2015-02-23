@@ -47,7 +47,7 @@ ProcessorCodeState(MultichannelRaycaster, CODE_STATE_EXPERIMENTAL);
 
 MultichannelRaycaster::MultichannelRaycaster()
     : Processor()
-    , shader_(NULL)
+    , shader_(nullptr)
     , shaderFileName_("multichannelraycaster.frag")
     , volumePort_("volume")
     , entryPort_("entry-points")
@@ -57,7 +57,6 @@ MultichannelRaycaster::MultichannelRaycaster()
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting", &camera_) {
-
     transferFunctions_.addProperty(new TransferFunctionProperty(
         "transferFunction1", "Channel 1", TransferFunction(), &volumePort_));
     transferFunctions_.addProperty(new TransferFunctionProperty(
@@ -97,8 +96,8 @@ void MultichannelRaycaster::initialize() {
 }
 
 void MultichannelRaycaster::deinitialize() {
-    if (shader_) delete shader_;
-    shader_ = NULL;
+    delete shader_;
+    shader_ = nullptr;
     Processor::deinitialize();
 }
 

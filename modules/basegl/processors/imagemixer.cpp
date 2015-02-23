@@ -45,10 +45,9 @@ ImageMixer::ImageMixer()
     , inport0_("inport0")
     , inport1_("inport1")
     , outport_("outport")
-    , blendingMode_("blendMode", "Blend Mode", INVALID_RESOURCES) 
+    , blendingMode_("blendMode", "Blend Mode", INVALID_RESOURCES)
     , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
-    , shader_(NULL)
-{
+    , shader_(nullptr) {
     addPort(inport0_);
     addPort(inport1_);
     addPort(outport_);

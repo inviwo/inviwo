@@ -107,24 +107,23 @@ inline void definePermutationMatrices(mat4& permMat, mat4& permLightMat, int per
 }
 
 LightVolumeGL::LightVolumeGL()
-    : Processor(),
-      inport_("inport"),
-      outport_("outport"),
-      lightSource_("lightSource"),
-      supportColoredLight_("supportColoredLight", "Support Light Color", false),
-      volumeSizeOption_("volumeSizeOption", "Light Volume Size"),
-      transferFunction_("transferFunction", "Transfer function", TransferFunction(), &inport_),
-      floatPrecision_("floatPrecision", "Float Precision", false),
-      propagationShader_(NULL),
-      mergeShader_(NULL),
-      mergeFBO_(NULL),
-      internalVolumesInvalid_(false),
-      volumeDimOut_(uvec3(0)),
-      lightDir_(vec3(0.f)),
-      lightPos_(vec3(0.f)),
-      lightColor_(vec4(1.f)),
-      calculatedOnes_(false)
-{
+    : Processor()
+    , inport_("inport")
+    , outport_("outport")
+    , lightSource_("lightSource")
+    , supportColoredLight_("supportColoredLight", "Support Light Color", false)
+    , volumeSizeOption_("volumeSizeOption", "Light Volume Size")
+    , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &inport_)
+    , floatPrecision_("floatPrecision", "Float Precision", false)
+    , propagationShader_(nullptr)
+    , mergeShader_(nullptr)
+    , mergeFBO_(nullptr)
+    , internalVolumesInvalid_(false)
+    , volumeDimOut_(uvec3(0))
+    , lightDir_(vec3(0.f))
+    , lightPos_(vec3(0.f))
+    , lightColor_(vec4(1.f))
+    , calculatedOnes_(false) {
     addPort(inport_);
     addPort(outport_);
     addPort(lightSource_);
@@ -148,11 +147,14 @@ LightVolumeGL::~LightVolumeGL() {
 void LightVolumeGL::initialize() {
     Processor::initialize();
 
-    propagationShader_ = new Shader("lighting/lightpropagation.vert", "lighting/lightpropagation.geom", "lighting/lightpropagation.frag", true);
-    mergeShader_ = new Shader("lighting/lightvolumeblend.vert", "lighting/lightvolumeblend.geom", "lighting/lightvolumeblend.frag", true);
+    propagationShader_ =
+        new Shader("lighting/lightpropagation.vert", "lighting/lightpropagation.geom",
+                   "lighting/lightpropagation.frag", true);
+    mergeShader_ = new Shader("lighting/lightvolumeblend.vert", "lighting/lightvolumeblend.geom",
+                              "lighting/lightvolumeblend.frag", true);
 
-    for (int i=0; i<2; ++i) {
-        propParams_[i].fbo = new FrameBufferObject();
+    for (auto& elem : propParams_) {
+        elem.fbo = new FrameBufferObject();
     }
 
     mergeFBO_ = new FrameBufferObject();
@@ -161,20 +163,20 @@ void LightVolumeGL::initialize() {
 
 void LightVolumeGL::deinitialize() {
     delete propagationShader_;
-    propagationShader_ = NULL;
+    propagationShader_ = nullptr;
     delete mergeShader_;
-    mergeShader_ = NULL;
+    mergeShader_ = nullptr;
 
-    for (int i=0; i<2; ++i) {
-        delete propParams_[i].fbo;
-        propParams_[i].fbo = NULL;
-        delete propParams_[i].vol;
-        propParams_[i].vol = NULL;
+    for (auto& elem : propParams_) {
+        delete elem.fbo;
+        elem.fbo = nullptr;
+        delete elem.vol;
+        elem.vol = nullptr;
     }
 
     delete mergeFBO_;
-    mergeFBO_ = NULL;
-    
+    mergeFBO_ = nullptr;
+
     Processor::deinitialize();
 }
 
@@ -380,33 +382,33 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
                 format = DataUINT8::get();
         }
 
-        for (int i=0; i<2; ++i) {
-            if (!propParams_[i].vol || propParams_[i].vol->getDataFormat() != format) {
-                if (propParams_[i].vol)
-                    delete propParams_[i].vol;
+        for (auto& elem : propParams_) {
+            if (!elem.vol || elem.vol->getDataFormat() != format) {
+                if (elem.vol) delete elem.vol;
 
-                propParams_[i].vol = new VolumeGL(volumeDimOut_, format, false);
-                propParams_[i].vol->getTexture()->setTextureParameterFunction(this, &LightVolumeGL::propagation3DTextureParameterFunction);
-                propParams_[i].vol->getTexture()->initialize(NULL);
+                elem.vol = new VolumeGL(volumeDimOut_, format, false);
+                elem.vol->getTexture()->setTextureParameterFunction(
+                    this, &LightVolumeGL::propagation3DTextureParameterFunction);
+                elem.vol->getTexture()->initialize(nullptr);
             }
             else {
-                propParams_[i].vol->setDimensions(volumeDimOut_);
+                elem.vol->setDimensions(volumeDimOut_);
             }
         }
 
-        outport_.setData(NULL);
+        outport_.setData(nullptr);
         VolumeGL* volumeGL = new VolumeGL(volumeDimOut_, format);
-        volumeGL->getTexture()->initialize(NULL);
+        volumeGL->getTexture()->initialize(nullptr);
         outport_.setData(new Volume(volumeGL));
 
         internalVolumesInvalid_ = false;
         return true;
     }
     else if (lightColorChanged) {
-        for (int i=0; i<2; ++i) {
-            propParams_[i].vol->getTexture()->bind();
+        for (auto& elem : propParams_) {
+            elem.vol->getTexture()->bind();
             borderColorTextureParameterFunction();
-            propParams_[i].vol->getTexture()->unbind();
+            elem.vol->getTexture()->unbind();
         }
     }
 

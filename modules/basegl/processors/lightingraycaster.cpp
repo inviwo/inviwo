@@ -89,7 +89,7 @@ void LightingRaycaster::initialize() {
 
 void LightingRaycaster::deinitialize() {
     if (shader_) delete shader_;
-    shader_ = NULL;
+    shader_ = nullptr;
     Processor::deinitialize();
 }
 

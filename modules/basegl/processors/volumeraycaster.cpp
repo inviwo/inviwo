@@ -92,8 +92,8 @@ void VolumeRaycaster::initialize() {
 }
 
 void VolumeRaycaster::deinitialize() {
-    if (shader_) delete shader_;
-    shader_ = NULL;
+    delete shader_;
+    shader_ = nullptr;
     Processor::deinitialize();
 }
 

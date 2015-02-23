@@ -50,16 +50,16 @@ DrawLines::DrawLines()
     , lineColor_("lineColor", "Line Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Lines")
     , mouseDraw_("mouseDraw", "Draw Line",
-    new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_CTRL,
-    MouseEvent::MOUSE_STATE_ANY),
-    new Action(this, &DrawLines::eventDraw))
-    , keyEnableDraw_("keyEnableDraw", "Enable Draw", 
-    new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
-    new Action(this, &DrawLines::eventEnableDraw))
-    , lines_(NULL)
-    , lineRenderer_(NULL) 
-    , lineShader_(NULL)
-{
+                 new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_CTRL,
+                                MouseEvent::MOUSE_STATE_ANY),
+                 new Action(this, &DrawLines::eventDraw))
+    , keyEnableDraw_(
+          "keyEnableDraw", "Enable Draw",
+          new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
+          new Action(this, &DrawLines::eventEnableDraw))
+    , lines_(nullptr)
+    , lineRenderer_(nullptr)
+    , lineShader_(nullptr) {
     addPort(inport_);
     addPort(outport_);
 
@@ -96,11 +96,11 @@ void DrawLines::initialize() {
 void DrawLines::deinitialize() {
     CompositeProcessorGL::deinitialize();
     delete lineShader_;
-    lineShader_ = NULL;
+    lineShader_ = nullptr;
     delete lineRenderer_;
-    lineRenderer_ = NULL;
+    lineRenderer_ = nullptr;
     delete lines_;
-    lines_ = NULL;
+    lines_ = nullptr;
 }
 
 void DrawLines::process() {
