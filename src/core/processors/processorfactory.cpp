@@ -62,7 +62,7 @@ IvwSerializable* ProcessorFactory::create(const std::string &classIdentifier) co
     if (it != processorClassMap_.end())
         return it->second->create();
 
-    return NULL;
+    return nullptr;
 }
 
 bool ProcessorFactory::isValidType(const std::string &classIdentifier) const {

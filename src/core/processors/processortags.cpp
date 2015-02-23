@@ -61,16 +61,16 @@ Tags::Tags() {}
 
 Tags::Tags(const std::string tags) {
     std::vector<std::string> strings = splitString(tags, ',');
-    for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it) {
-        addTag(Tag(trim(*it)));
+    for (auto& strings_it : strings) {
+        addTag(Tag(trim(strings_it)));
     }
 }
 
 Tags::Tags(const char* chartags) {
     const std::string tags(chartags);
     std::vector<std::string> strings = splitString(tags, ',');
-    for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it) {
-        addTag(Tag(trim(*it)));
+    for (auto& strings_it : strings) {
+        addTag(Tag(trim(strings_it)));
     }
 }
 
@@ -87,8 +87,8 @@ Tags& Tags::operator=(const Tags& that) {
 Tags& Tags::operator=(const std::string& that) {
     tags_.clear();
     std::vector<std::string> strings = splitString(that, ',');
-    for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it) {
-        addTag(Tag(trim(*it)));
+    for (auto& strings_it : strings) {
+        addTag(Tag(trim(strings_it)));
     }
     return *this;
 }
@@ -107,9 +107,9 @@ std::string Tags::getString() const {
 
 int Tags::getMatches(const Tags& input) const{
     int matches = 0;
-    for (int i=0; i < input.tags_.size(); i++){
-        for (int j=0; j < tags_.size(); j++){
-            if(input.tags_[i] == tags_[j]){
+    for (auto& elem : input.tags_) {
+        for (auto& t : tags_) {
+            if (elem == t) {
                 matches++;
             }
         }
