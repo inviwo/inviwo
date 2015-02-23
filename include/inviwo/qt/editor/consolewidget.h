@@ -46,11 +46,20 @@ public:
     ConsoleWidget(QWidget* parent);
     ~ConsoleWidget();
 
-    void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
+    virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
              const char* functionName, int lineNumber, std::string logMsg) override;
+
+    virtual void logProcessor(std::string processorIdentifier, LogLevel level, LogAudience audience,
+                              std::string msg, const char* file, const char* function,
+                              int line) override;
+
+    virtual void logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
+                            const char* function, int line) override;
 
 private:
     void keyPressEvent(QKeyEvent* keyEvent);
+
+    void logMessage(LogLevel level, QString message);
 
     QTextEdit* textField_;
     /// Log level colors
