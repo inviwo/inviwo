@@ -48,7 +48,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
 {
     
     timer_ = InviwoApplication::getPtr()->createTimer();
-    if (timer_ == NULL){
+    if (timer_ == nullptr) {
         LogWarn("Failed to create timer");
     }
     else{

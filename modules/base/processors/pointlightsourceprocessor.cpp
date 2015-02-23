@@ -48,11 +48,12 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light radius", 1.5f, 0.0f, 3.0f)
     , lightDiffuse_("lightDiffuse", "Color", vec4(1.0f))
-    , lightPosition_("lightPosition", "Light Source Position", vec3(-2.f, -50.f, 90.f), vec3(-100.f), vec3(100.f))
+    , lightPosition_("lightPosition", "Light Source Position", vec3(-2.f, -50.f, 90.f),
+                     vec3(-100.f), vec3(100.f))
     , lightEnabled_("lightEnabled", "Enabled", true)
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), NULL, VALID) 
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", false)
-    {
+    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
+              vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
+    , handleInteractionEvents_("handleEvents", "Handle interaction events", false) {
     addPort(outport_);
     lighting_.addProperty(lightPosition_);
     lighting_.addProperty(lightDiffuse_);
@@ -78,8 +79,7 @@ PointLightSourceProcessor::~PointLightSourceProcessor() {
     removeInteractionHandler(lightInteractionHandler_);
     delete lightInteractionHandler_;
     const std::vector<InteractionHandler*>& interactionHandlers = getInteractionHandlers();
-    for(size_t i=0; i<interactionHandlers.size(); ++i) {
-        InteractionHandler* handler = interactionHandlers[i];
+    for (auto handler : interactionHandlers) {
         removeInteractionHandler(handler);
         LogWarn("Interaction handler was not removed and deleted");
     }

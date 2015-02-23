@@ -62,7 +62,7 @@ VolumeSource::VolumeSource()
     , b_("b", "B", vec3(0.0f, 1.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
     , c_("c", "C", vec3(0.0f, 0.0f, 1.0f), vec3(-10.0f), vec3(10.0f))
     , offset_("offset", "Offset", vec3(0.0f), vec3(-10.0f), vec3(10.0f))
-    
+
     , overrideA_("overrideA", "A", vec3(1.0f, 0.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
     , overrideB_("overrideB", "B", vec3(0.0f, 1.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
     , overrideC_("overrideC", "C", vec3(0.0f, 0.0f, 1.0f), vec3(-10.0f), vec3(10.0f))
@@ -75,8 +75,7 @@ VolumeSource::VolumeSource()
     , playSequence_("playSequence", "Play Sequence", false)
     , volumesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, VALID)
 
-    , sequenceTimer_(NULL) {
-
+    , sequenceTimer_(nullptr) {
     DataSource<Volume, VolumeOutport>::file_.setContentType("volume");
     DataSource<Volume, VolumeOutport>::file_.setDisplayName("Volume file");
 

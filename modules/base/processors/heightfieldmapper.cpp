@@ -93,7 +93,7 @@ void HeightFieldMapper::process() {
     int numInputChannels = format->getComponents();
     glm::uvec2 dim = srcImg->getDimensions();
 
-    Image *outImg = NULL;
+    Image *outImg = nullptr;
 
     // check format of output image
     if (!outImg || (outImg->getDataFormat()->getId() != DataFormatEnums::FLOAT32)) {

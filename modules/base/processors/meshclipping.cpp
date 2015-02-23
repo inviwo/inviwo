@@ -261,7 +261,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
             indexAttrInfo = inputMesh->getIndexBuffers()[0].first.ct;
         } else {
             LogError("Unsupported mesh type, only simeple and basic meshes are supported");
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -411,12 +411,12 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
             //Then create one triangle per edge
             std::vector<Edge3D> uniqueintersectionsEdges;
 
-            for (size_t i=0; i<intersectionsEdges.size(); ++i) {
-                if (!equal(intersectionsEdges.at(i).v1, intersectionsEdges.at(i).v2, EPSILON)) {
-                    if (uniqueintersectionsEdges.empty()
-                        || std::find(uniqueintersectionsEdges.begin(), uniqueintersectionsEdges.end(),
-                                     intersectionsEdges.at(i)) == uniqueintersectionsEdges.end()) {
-                        uniqueintersectionsEdges.push_back(intersectionsEdges.at(i));
+            for (auto& intersectionsEdge : intersectionsEdges) {
+                if (!equal(intersectionsEdge.v1, intersectionsEdge.v2, EPSILON)) {
+                    if (uniqueintersectionsEdges.empty() ||
+                        std::find(uniqueintersectionsEdges.begin(), uniqueintersectionsEdges.end(),
+                                  intersectionsEdge) == uniqueintersectionsEdges.end()) {
+                        uniqueintersectionsEdges.push_back(intersectionsEdge);
                     }
                 }
             }
@@ -492,7 +492,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
                 vec3 u, v;
                 vec3 n = plane.getNormal();
 
-                for (size_t p=0; p < polygons.size(); ++p) {
+                for (auto& polygon : polygons) {
                     //Skip x-y plane if current plane is parallel to x-y plane
                     //or skip x-z plane if current plane is parallel to x-z plane
                     //or skip y-z if both skipXY and skip XZ are false
@@ -508,9 +508,9 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
                         centroid.y = 0.f;
                         signedArea = 0.f;
 
-                        for (size_t i=0; i < polygons[p].size(); ++i) {
-                            p0 = polygons[p].get(i).v1;
-                            p1 = polygons[p].get(i).v2;
+                        for (size_t i = 0; i < polygon.size(); ++i) {
+                            p0 = polygon.get(i).v1;
+                            p1 = polygon.get(i).v2;
                             a = p0.x*p1.y - p1.x*p0.y;
                             signedArea += a;
                             centroid.x += (p0.x + p1.x)*a;
@@ -536,9 +536,9 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
                         centroid.z = 0.f;
                         signedArea = 0.f;
 
-                        for (size_t i=0; i < polygons[p].size(); ++i) {
-                            p0 = polygons[p].get(i).v1;
-                            p1 = polygons[p].get(i).v2;
+                        for (size_t i = 0; i < polygon.size(); ++i) {
+                            p0 = polygon.get(i).v1;
+                            p1 = polygon.get(i).v2;
                             a = p0.x*p1.z - p1.x*p0.z;
                             signedArea += a;
                             centroid.x += (p0.x + p1.x)*a;
@@ -564,9 +564,9 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
                         centroid.z = 0.f;
                         signedArea = 0.f;
 
-                        for (size_t i=0; i < polygons[p].size(); ++i) {
-                            p0 = polygons[p].get(i).v1;
-                            p1 = polygons[p].get(i).v2;
+                        for (size_t i = 0; i < polygon.size(); ++i) {
+                            p0 = polygon.get(i).v1;
+                            p1 = polygon.get(i).v2;
                             a = p0.y*p1.z - p1.y*p0.z;
                             signedArea += a;
                             centroid.y += (p0.y + p1.y)*a;
@@ -653,7 +653,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
 
     if (!inputMesh) {
         LogError("Can only clip a SimpleMesh*");
-        return NULL;
+        return nullptr;
     }
 
     /* ---TODO / bugs
@@ -672,10 +672,10 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
     std::vector<EdgeIndex> outputEdgeList; // output edge list
 
     // Iterate over edges extracted from triangle strip list, and perform clipping against plane
-    for (unsigned int i=0; i<edgeList.size(); ++i) {
+    for (auto& elem : edgeList) {
         //LogInfo("i = "<<i);
-        unsigned int Sind = edgeList.at(i).v1;
-        unsigned int Eind = edgeList.at(i).v2;
+        unsigned int Sind = elem.v1;
+        unsigned int Eind = elem.v2;
         glm::vec3 S = inputList->at(Sind);
         glm::vec3 E = inputList->at(Eind);
         EdgeIndex edge;
@@ -784,8 +784,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
     // End, for each clip plane
     LogInfo("outputList.size() = "<<outputList.size()<<", std::distance = "<<std::distance(outputList.begin(), outputList.end()));
 
-    for (size_t i=0; i<outputIndexList.size(); ++i)
-        LogInfo("Vertex indices: " << outputIndexList.at(i));
+    for (auto& elem : outputIndexList) LogInfo("Vertex indices: " << elem);
 
     for (size_t i=0; i<outputList.size(); ++i)
         LogInfo("Output verts, " << i << ": ("+glm::to_string(outputList.at(i)[0])+", "+glm::to_string(outputList.at(i)[1])+", "+glm::to_string(

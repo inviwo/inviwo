@@ -72,8 +72,8 @@ void VolumeSubsample::process() {
     if (enabled_.get() && subSampleFactor_.get() > 0) {
         const VolumeRAM* vol = inport_.getData()->getRepresentation<VolumeRAM>();
 
-        Volume* volume = NULL;
-        
+        Volume* volume = nullptr;
+
         if(subSampleFactor_.get() == 2)
             volume = new Volume(VolumeRAMSubSample::apply(vol, VolumeRAMSubSample::HALF));
         
