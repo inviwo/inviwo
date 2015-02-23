@@ -46,9 +46,8 @@ DataWriter& DataWriter::operator=(const DataWriter& that) {
         overwrite_ = that.overwrite_;
         extensions_.clear();
 
-        for (std::vector<FileExtension>::const_iterator it = that.getExtensions().begin();
-             it != that.getExtensions().end(); ++it)
-            extensions_.push_back(*it);
+        for (const auto &elem : that.getExtensions())
+          extensions_.push_back(elem);
     }
 
     return *this;

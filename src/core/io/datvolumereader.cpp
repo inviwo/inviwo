@@ -39,12 +39,8 @@
 namespace inviwo {
 
 DatVolumeReader::DatVolumeReader()
-    : DataReaderType<Volume>()
-    , rawFile_("")
-    , filePos_(0)
-    , littleEndian_(true)
-    , dimensions_(uvec3(0, 0, 0))
-    , format_(NULL) {
+    : DataReaderType<Volume>(), rawFile_(""), filePos_(0), littleEndian_(true),
+      dimensions_(uvec3(0, 0, 0)), format_(nullptr) {
     addExtension(FileExtension("dat", "Inviwo dat file format"));
 }
 
@@ -210,7 +206,7 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
     if (dimensions_ == uvec3(0))
         throw DataReaderException("Error: Unable to find \"Resolution\" tag in .dat file: " +
                                   filePath);
-    else if (format_ == NULL)
+    else if (format_ == nullptr)
         throw DataReaderException("Error: Unable to find \"Format\" tag in .dat file: " + filePath);
     else if (rawFile_ == "")
         throw DataReaderException("Error: Unable to find \"ObjectFilename\" tag in .dat file: " +
@@ -264,8 +260,8 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
     if(sequences > 1){
         DataSequence<Volume>* volumeSequence = new DataSequence<Volume>(*volume);
 
-        VolumeDisk* vd = NULL;
-        Volume* oneSeq = NULL;
+        VolumeDisk *vd = nullptr;
+        Volume *oneSeq = nullptr;
 
         for(size_t t=0; t<sequences-1; ++t){
             filePos_ = t*bytes;

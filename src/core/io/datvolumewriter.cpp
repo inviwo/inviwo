@@ -87,11 +87,12 @@ void DatVolumeWriter::writeData(const Volume* data, const std::string filePath) 
 
     std::vector<std::string> keys = data->getMetaDataMap()->getKeys();
 
-    for (std::vector<std::string>::iterator it = keys.begin(); it != keys.end(); ++it) {
-        MetaData* m = data->getMetaDataMap()->get(*it);
+    for (auto &key : keys) {
+      MetaData *m = data->getMetaDataMap()->get(key);
         StringMetaData* sm = dynamic_cast<StringMetaData*>(m);
 
-        if (sm) writeKeyToString(ss, *it, sm->get());
+        if (sm)
+          writeKeyToString(ss, key, sm->get());
     }
 
     std::ofstream f(filePath.c_str());
