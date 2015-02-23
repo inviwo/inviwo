@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-PropertyLink::PropertyLink() : srcProperty_(NULL), dstProperty_(NULL) {}
+PropertyLink::PropertyLink() : srcProperty_(nullptr), dstProperty_(nullptr) {}
 
 PropertyLink::~PropertyLink() {}
 

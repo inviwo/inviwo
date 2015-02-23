@@ -37,8 +37,8 @@ namespace inviwo {
 LinkEvaluator::LinkEvaluator() {}
 
 void LinkEvaluator::evaluate(Property* src, Property* dst) {
-    ivwAssert(src!=0, "source property expected");
-    ivwAssert(dst!=0, "destination property expected");
+    ivwAssert(src != nullptr, "source property expected");
+    ivwAssert(dst != nullptr, "destination property expected");
 
     //TODO create a link evaluator for each link and cache the converter so that it does need to be looked up for each frame
 	PropertyConverter* convetrter = PropertyConverterManager::getPtr()->getConverter(src,dst);
