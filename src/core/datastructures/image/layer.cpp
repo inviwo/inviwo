@@ -77,10 +77,10 @@ void Layer::resize(uvec2 dimensions) {
         std::vector<DataRepresentation*>::iterator it = std::find(representations_.begin(), representations_.end(), lastValidRepresentation_);
 
         // First delete the representations before erasing them from the vector
-        for (size_t i=0; i<representations_.size(); i++) {
-            if (representations_[i] != lastValidRepresentation_) {
-                delete representations_[i];
-                representations_[i] = NULL;
+        for (auto& elem : representations_) {
+            if (elem != lastValidRepresentation_) {
+                delete elem;
+                elem = nullptr;
             }
         }
 
@@ -116,8 +116,8 @@ void Layer::resizeRepresentations(Layer* targetLayer, uvec2 targetDim) {
     //TODO: And also need to be tested on multiple representations_ such as LayerRAM, LayerDisk etc.,
     //TODO: optimize the code
     targetLayer->resize(targetDim);
-    LayerRepresentation* layerRepresentation = 0;
-    LayerRepresentation* targetRepresentation = 0;
+    LayerRepresentation* layerRepresentation = nullptr;
+    LayerRepresentation* targetRepresentation = nullptr;
     std::vector<DataRepresentation*>& targetRepresentations = targetLayer->representations_;
 
     if (targetRepresentations.size()) {
@@ -141,7 +141,7 @@ void Layer::resizeRepresentations(Layer* targetLayer, uvec2 targetDim) {
         }
     }
     else {
-        ivwAssert(lastValidRepresentation_!=0, "Last valid representation is expected.");
+        ivwAssert(lastValidRepresentation_ != nullptr, "Last valid representation is expected.");
         targetLayer->setAllRepresentationsAsInvalid();
         targetLayer->createDefaultRepresentation();
         LayerRepresentation* lastValidRepresentation = dynamic_cast<LayerRepresentation*>(lastValidRepresentation_);

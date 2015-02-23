@@ -44,7 +44,7 @@ DataRepresentation* GeometryDisk2RAMConverter::createFrom(const DataRepresentati
         return static_cast<MeshRAM*>(meshdisk->readData());
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void GeometryDisk2RAMConverter::update(const DataRepresentation* source,

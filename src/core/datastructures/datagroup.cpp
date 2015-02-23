@@ -56,8 +56,7 @@ bool DataGroup::hasRepresentations() const {
 }
 
 void DataGroup::setRepresentationsAsInvalid() {
-    for (int i=0; i<static_cast<int>(representations_.size()); ++i)
-        representations_[i]->setAsInvalid();
+    for (auto& elem : representations_) elem->setAsInvalid();
 }
 
 void DataGroup::clearRepresentations() {

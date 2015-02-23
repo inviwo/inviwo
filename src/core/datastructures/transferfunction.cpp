@@ -223,8 +223,8 @@ void TransferFunction::deserialize(IvwDeserializer& d) {
     d.deserialize("maskMin", maskMin_);
     d.deserialize("maskMax", maskMax_);
     d.deserialize("dataPoints", points_, "point");
-    for (TFPoints::iterator it = points_.begin(); it != points_.end(); ++it) {
-        (*it)->addObserver(this);
+    for (auto& elem : points_) {
+        (elem)->addObserver(this);
     }
     int type = static_cast<int>(interpolationType_);
     d.deserialize("interpolationType_", type);

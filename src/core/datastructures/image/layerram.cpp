@@ -35,8 +35,7 @@
 namespace inviwo {
 
 LayerRAM::LayerRAM(uvec2 dimensions, LayerType type, const DataFormatBase* format)
-    : LayerRepresentation(dimensions, type, format), data_(NULL) {
-}
+    : LayerRepresentation(dimensions, type, format), data_(nullptr) {}
 
 LayerRAM::LayerRAM(const LayerRAM& rhs)
     : LayerRepresentation(rhs) {
@@ -78,16 +77,16 @@ LayerRAM* createLayerRAM(const uvec2& dimensions, LayerType type, const DataForm
     {
         case DataFormatEnums::NOT_SPECIALIZED:
             LogErrorCustom("createLayerRAM", "Invalid format");
-            return NULL;
+            return nullptr;
 #define DataFormatIdMacro(i) case DataFormatEnums::i: return new LayerRAMCustomPrecision<Data##i::type, Data##i::bits>(dimensions, type); break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
         default:
             LogErrorCustom("createLayerRAM", "Invalid format or not implemented");
-            return NULL;
+            return nullptr;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 } // namespace

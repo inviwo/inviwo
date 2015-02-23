@@ -93,9 +93,9 @@ bool ImageRAM::copyAndResizeRepresentation(DataRepresentation* targetRep) const 
 
 void ImageRAM::update(bool editable) {
     colorLayersRAM_.clear();
-    depthLayerRAM_ = NULL;
-    pickingLayerRAM_ = NULL;
- 
+    depthLayerRAM_ = nullptr;
+    pickingLayerRAM_ = nullptr;
+
     if (editable) {
         Image *owner = this->getOwner();
         for (size_t i=0; i<owner->getNumberOfColorLayers(); ++i){

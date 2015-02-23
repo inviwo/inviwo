@@ -53,21 +53,19 @@ std::string BaseData::getDataInfo() const{
 Data::Data()
     : BaseData()
     , validRepresentations_(0)
-    , lastValidRepresentation_(NULL)
-    , dataFormatBase_(DataFormatBase::get()) {
-}
+    , lastValidRepresentation_(nullptr)
+    , dataFormatBase_(DataFormatBase::get()) {}
 
 Data::Data(const DataFormatBase* format)
     : BaseData()
     , validRepresentations_(0)
-    , lastValidRepresentation_(NULL)
-    , dataFormatBase_(format) {
-}
+    , lastValidRepresentation_(nullptr)
+    , dataFormatBase_(format) {}
 
 Data::Data(const Data& rhs)
     : BaseData(rhs)
     , validRepresentations_(0)
-    , lastValidRepresentation_(NULL)
+    , lastValidRepresentation_(nullptr)
     , dataFormatBase_(rhs.dataFormatBase_) {
     rhs.copyRepresentationsTo(this);
 }
@@ -120,7 +118,7 @@ void Data::removeRepresentation(DataRepresentation* representation)
     if (it != representations_.end()) {
         // Update last valid representation
         if (lastValidRepresentation_ == *it) {
-            lastValidRepresentation_ = NULL;
+            lastValidRepresentation_ = nullptr;
 
             for (int i = static_cast<int>(representations_.size())-1; i >= 0; --i) {
                 // Check if this representation is valid

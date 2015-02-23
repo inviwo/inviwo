@@ -52,7 +52,7 @@ DataRepresentation* VolumeDisk2RAMConverter::createFrom(const DataRepresentation
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 void VolumeDisk2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
     const VolumeDisk* volumeSrc = static_cast<const VolumeDisk*>(source);

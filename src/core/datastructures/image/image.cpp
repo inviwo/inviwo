@@ -35,7 +35,7 @@
 namespace inviwo {
 
 Image::Image(uvec2 dimensions, const DataFormatBase* format) : DataGroup() {
-    initialize(NULL, dimensions, format);
+    initialize(nullptr, dimensions, format);
 }
 
 Image::Image(Layer* colorLayer) : DataGroup() {
@@ -44,23 +44,22 @@ Image::Image(Layer* colorLayer) : DataGroup() {
 
 Image::Image(const Image& rhs)
     : DataGroup(rhs) {
-    for (std::vector<Layer*>::const_iterator it = rhs.colorLayers_.begin();
-         it != rhs.colorLayers_.end(); ++it) {
-        addColorLayer((*it)->clone());
+    for (const auto& elem : rhs.colorLayers_) {
+        addColorLayer((elem)->clone());
     }
 
     const Layer* depth = rhs.getDepthLayer();
     if (depth) {
         depthLayer_ = depth->clone();
     } else {
-        depthLayer_ = NULL;
+        depthLayer_ = nullptr;
     }
 
     const Layer* picking = rhs.getPickingLayer();
     if (picking) {
         pickingLayer_ = picking->clone();
     } else {
-        pickingLayer_ = NULL;
+        pickingLayer_ = nullptr;
     }
 }
 
@@ -69,23 +68,22 @@ Image& Image::operator=(const Image& that) {
         DataGroup::operator=(that);
         deinitialize();
 
-        for (std::vector<Layer*>::const_iterator it = that.colorLayers_.begin();
-             it != that.colorLayers_.end(); ++it) {
-            addColorLayer((*it)->clone());
+        for (const auto& elem : that.colorLayers_) {
+            addColorLayer((elem)->clone());
         }
 
         const Layer* depth = that.getDepthLayer();
         if (depth) {
             depthLayer_ = depth->clone();
         } else {
-            depthLayer_ = NULL;
+            depthLayer_ = nullptr;
         }
 
         const Layer* picking = that.getPickingLayer();
         if (picking) {
             pickingLayer_ = that.pickingLayer_->clone();
         } else {
-            pickingLayer_ = NULL;
+            pickingLayer_ = nullptr;
         }
     }
 
@@ -102,13 +100,12 @@ Image::~Image() {
 }
 
 void Image::deinitialize() {
-    for (std::vector<Layer*>::iterator it = colorLayers_.begin(); it != colorLayers_.end(); ++it)
-        delete(*it);
+    for (auto& elem : colorLayers_) delete (elem);
     colorLayers_.clear();
     delete depthLayer_;
-    depthLayer_ = NULL;
+    depthLayer_ = nullptr;
     delete pickingLayer_;
-    pickingLayer_ = NULL;
+    pickingLayer_ = nullptr;
 }
 
 void Image::initialize(Layer* colorLayer, uvec2 dimensions, const DataFormatBase* format) {
@@ -146,7 +143,7 @@ const Layer* Image::getLayer(LayerType type, size_t idx) const {
             return getPickingLayer();
     }
 
-    return NULL;
+    return nullptr;
 }
 
 Layer* Image::getLayer(LayerType type, size_t idx) {
@@ -161,7 +158,7 @@ Layer* Image::getLayer(LayerType type, size_t idx) {
             return getPickingLayer();
     }
 
-    return NULL;
+    return nullptr;
 }
 
 const Layer* Image::getColorLayer(size_t idx) const {
@@ -196,8 +193,7 @@ void Image::resize(uvec2 dimensions) {
     setRepresentationsAsInvalid();
 
     //Resize all layers
-    for (std::vector<Layer*>::iterator it = colorLayers_.begin() ; it != colorLayers_.end(); ++it)
-        (*it)->resize(dimensions);
+    for (auto& elem : colorLayers_) (elem)->resize(dimensions);
 
     if (depthLayer_)
         depthLayer_->resize(dimensions);
@@ -246,8 +242,8 @@ void Image::resizeRepresentations(Image* targetImage, uvec2 targetDim) const {
             }
         }
 
-        ImageRepresentation* sourceImageRepresentation = 0;
-        ImageRepresentation* targetImageRepresentation = 0;
+        ImageRepresentation* sourceImageRepresentation = nullptr;
+        ImageRepresentation* targetImageRepresentation = nullptr;
 
         bool copyDone = false;
         for (size_t i = 0; i < targetRepresentations.size() && !copyDone; i++) {

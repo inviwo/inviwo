@@ -116,17 +116,14 @@ void BasicMesh::append(const BasicMesh* mesh) {
         ->getEditableRepresentation<NormalBufferRAM>()
         ->append(norm->getDataContainer());
 
-    for (size_t i = 0; i < mesh->indexAttributes_.size(); ++i) {
-        std::pair<AttributesInfo, IndexBuffer*> buffer = mesh->indexAttributes_[i];
-
+    for (auto buffer : mesh->indexAttributes_) {
         IndexBufferRAM* ind = addIndexBuffer(buffer.first.rt, buffer.first.ct);
 
         const std::vector<unsigned int>* newinds =
             buffer.second->getRepresentation<IndexBufferRAM>()->getDataContainer();
 
-        for (std::vector<unsigned int>::const_iterator it = newinds->begin(); it != newinds->end();
-             ++it) {
-            ind->add(static_cast<const unsigned int>(*it + size));
+        for (const auto& newind : *newinds) {
+            ind->add(static_cast<const unsigned int>(newind + size));
         }
     }
 }
@@ -416,24 +413,24 @@ BasicMesh* BasicMesh::colorsphere(const vec3& center,
                 vec3 vertex;
                 vec3 tcoord;
                 vec4 color((quad + 1.0f) / 2.0f, 1.0f);
-                for (std::vector<vec2>::iterator it = spheremesh.begin(); it != spheremesh.end(); ++it) {
-                    normal = quad * tospherical(*it);
+                for (auto& elem : spheremesh) {
+                    normal = quad * tospherical(elem);
                     vertex = center + radius*normal;
-                    tcoord = vec3(quad.x*(*it).x, quad.y*(*it).y, 0.0f);
+                    tcoord = vec3(quad.x * (elem).x, quad.y * (elem).y, 0.0f);
                     temp->addVertex(vertex, normal, tcoord, color);
                 }
 
                 if (quad.x*quad.y*quad.z > 0) {
-                    for (std::vector<uvec3>::iterator it = sphereind.begin(); it != sphereind.end(); ++it) {
-                        inds->add(it->x);
-                        inds->add(it->y);
-                        inds->add(it->z);
+                    for (auto& elem : sphereind) {
+                        inds->add(elem.x);
+                        inds->add(elem.y);
+                        inds->add(elem.z);
                     }
                 } else {
-                    for (std::vector<uvec3>::iterator it = sphereind.begin(); it != sphereind.end(); ++it) {
-                        inds->add(it->z);
-                        inds->add(it->y);
-                        inds->add(it->x);
+                    for (auto& elem : sphereind) {
+                        inds->add(elem.z);
+                        inds->add(elem.y);
+                        inds->add(elem.x);
                     }
                 }
                 mesh->append(temp);

@@ -59,13 +59,12 @@ void MeshRAM::update(bool editable) {
 
     Mesh* owner = static_cast<Mesh*>(this->getOwner());
     if (editable) {
-        for (std::vector<Buffer*>::const_iterator it = owner->getBuffers().begin();
-             it != owner->getBuffers().end(); ++it)
-            attributesRAM_.push_back((*it)->getEditableRepresentation<BufferRAM>());
+        for (const auto& elem : owner->getBuffers())
+            attributesRAM_.push_back((elem)->getEditableRepresentation<BufferRAM>());
     } else {
-        for (std::vector<Buffer*>::const_iterator it = owner->getBuffers().begin();
-             it != owner->getBuffers().end(); ++it)
-            attributesRAM_.push_back(const_cast<BufferRAM*>((*it)->getRepresentation<BufferRAM>()));
+        for (const auto& elem : owner->getBuffers())
+            attributesRAM_.push_back(
+                const_cast<BufferRAM*>((elem)->getRepresentation<BufferRAM>()));
     }
 }
 

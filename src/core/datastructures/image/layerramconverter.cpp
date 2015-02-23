@@ -60,7 +60,7 @@ DataRepresentation* LayerDisk2RAMConverter::createFrom(const DataRepresentation*
             LogError("Cannot convert format from Disk to RAM:" << layerDisk->getDataFormat()->getString());
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void LayerDisk2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {

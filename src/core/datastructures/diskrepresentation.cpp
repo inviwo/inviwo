@@ -32,14 +32,14 @@
 
 namespace inviwo {
 
-DiskRepresentation::DiskRepresentation() : sourceFile_(""), reader_(NULL) {}
+DiskRepresentation::DiskRepresentation() : sourceFile_(""), reader_(nullptr) {}
 
-DiskRepresentation::DiskRepresentation(std::string srcFile) : sourceFile_(srcFile), reader_(NULL) {}
+DiskRepresentation::DiskRepresentation(std::string srcFile)
+    : sourceFile_(srcFile), reader_(nullptr) {}
 
 DiskRepresentation::DiskRepresentation(const DiskRepresentation& rhs)
-    : sourceFile_(rhs.sourceFile_)
-    , reader_(NULL) {
-    setDataReader(rhs.reader_!=NULL?rhs.reader_->clone():NULL);
+    : sourceFile_(rhs.sourceFile_), reader_(nullptr) {
+    setDataReader(rhs.reader_ != nullptr ? rhs.reader_->clone() : nullptr);
 }
 
 DiskRepresentation& DiskRepresentation::operator=(const DiskRepresentation& that) {
@@ -48,10 +48,10 @@ DiskRepresentation& DiskRepresentation::operator=(const DiskRepresentation& that
 
         if (reader_) {
             delete reader_;
-            reader_ = NULL;
+            reader_ = nullptr;
         }
 
-        setDataReader(that.reader_!=NULL?that.reader_->clone():NULL);
+        setDataReader(that.reader_ != nullptr ? that.reader_->clone() : nullptr);
     }
 
     return *this;
@@ -64,7 +64,7 @@ DiskRepresentation* DiskRepresentation::clone() const {
 DiskRepresentation::~DiskRepresentation() {
     if (reader_) {
         delete reader_;
-        reader_ = NULL;
+        reader_ = nullptr;
     }
 }
 
@@ -91,7 +91,7 @@ void* DiskRepresentation::readData() const {
     if (reader_)
         return reader_->readData();
 
-    return NULL;
+    return nullptr;
 }
 
 void DiskRepresentation::readDataInto(void* dest) const {
