@@ -74,12 +74,12 @@ PropertyWidget* PropertyWidgetFactory::create(Property* property) {
     }
 
     LogWarn("Can not find a property widget for property: " << property->getClassIdentifier() << "("<< sematics <<")");
-    return 0;
+    return nullptr;
 }
 
 IvwSerializable* PropertyWidgetFactory::create(const std::string &className) const {
     // Widgets are not serializable...
-    return 0;
+    return nullptr;
 }
 
 bool PropertyWidgetFactory::isValidType(const std::string &className) const {

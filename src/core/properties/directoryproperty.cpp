@@ -41,22 +41,20 @@ DirectoryProperty::DirectoryProperty(std::string identifier, std::string display
                                      InvalidationLevel invalidationLevel,
                                      PropertySemantics semantics)
     : TemplateProperty<std::string>(identifier, displayName, value, invalidationLevel, semantics)
-    , fileIndexingHandle_(NULL)
-    , contentType_(contentType) {
-}
+    , fileIndexingHandle_(nullptr)
+    , contentType_(contentType) {}
 
 DirectoryProperty::DirectoryProperty(const DirectoryProperty& rhs)
     : TemplateProperty<std::string>(rhs)
     , directoryTree_(rhs.directoryTree_)
-    , fileIndexingHandle_(NULL) // Fix?
-    , contentType_(rhs.contentType_) {
-}
+    , fileIndexingHandle_(nullptr)  // Fix?
+    , contentType_(rhs.contentType_) {}
 
 DirectoryProperty& DirectoryProperty::operator=(const DirectoryProperty& that) {
     if (this != &that) {
         TemplateProperty<std::string>::operator=(that);
         directoryTree_ = that.directoryTree_;
-        fileIndexingHandle_ = NULL;  // Fix?
+        fileIndexingHandle_ = nullptr;  // Fix?
         contentType_ = that.contentType_;
     }
     return *this;
@@ -81,23 +79,23 @@ std::vector<std::string> DirectoryProperty::getFiles(std::string filters) const 
 
     // Matching with star as part of name or ext is not implemented at the moment.
     // Only: *.*, *.ext, name.*, name.ext
-    for (size_t i = 0; i < directoryTree_.size(); i++) {
+    for (auto& elem : directoryTree_) {
         std::string file = get() + "/";
-        file = filesystem::getFileDirectory(file) + directoryTree_[i];
+        file = filesystem::getFileDirectory(file) + elem;
 
         if (arbitaryName && arbitaryExt) {
             validFilesWithExtension.push_back(file);
             continue;
         }
 
-        std::string fileExt = filesystem::getFileExtension(directoryTree_[i]);
+        std::string fileExt = filesystem::getFileExtension(elem);
 
         if (arbitaryName && fileExt == filterExt) {
             validFilesWithExtension.push_back(file);
             continue;
         }
 
-        std::string fileName = filesystem::getFileNameWithoutExtension(directoryTree_[i]);
+        std::string fileName = filesystem::getFileNameWithoutExtension(elem);
 
         if (fileName == filterName && fileExt == filterExt) {
             validFilesWithExtension.push_back(file);
