@@ -105,10 +105,11 @@ endif()
 #--------------------------------------------------------------------
 # Create application
 add_executable(inviwo MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${HEADER_FILES} ${MOC_FILES} ${QRC_FILE} ${RES_FILES})
-if(NOT MSVC11)
-	set_property(TARGET inviwo PROPERTY CXX_STANDARD 11)
-	set_property(TARGET inviwo PROPERTY CXX_STANDARD_REQUIRED ON)
-endif()
+
+#--------------------------------------------------------------------
+# Define standard properties
+ivw_define_standard_properties(inviwo)
+
 #--------------------------------------------------------------------
 # Add application to pack
 if(IVW_PACKAGE_PROJECT)
