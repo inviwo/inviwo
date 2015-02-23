@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/rendering/geometryrendererfactory.h>
@@ -34,28 +34,27 @@ namespace inviwo {
 
 struct CanRenderGeometry {
 public:
-    CanRenderGeometry(const Geometry* geom): geom_(geom) {};
-    bool operator()(const GeometryRenderer* renderer)
-    { return renderer->canRender(geom_); }
+    CanRenderGeometry(const Geometry* geom) : geom_(geom){};
+    bool operator()(const GeometryRenderer* renderer) { return renderer->canRender(geom_); }
+
 private:
     const Geometry* geom_;
 };
 
-GeometryRendererFactory::GeometryRendererFactory() {
-}
+GeometryRendererFactory::GeometryRendererFactory() {}
 
 void GeometryRendererFactory::registerObject(GeometryRenderer* renderer) {
     renderers_.insert(renderer);
 }
 
 GeometryRenderer* GeometryRendererFactory::create(const Geometry* geom) const {
-    std::set<GeometryRenderer*>::const_iterator it = std::find_if(renderers_.begin(), renderers_.end(), CanRenderGeometry(geom));
+    std::set<GeometryRenderer*>::const_iterator it =
+        std::find_if(renderers_.begin(), renderers_.end(), CanRenderGeometry(geom));
 
     if (it != renderers_.end())
         return (*it)->create(geom);
     else
-        return NULL;
+        return nullptr;
 };
 
-} // namespace
-
+}  // namespace
