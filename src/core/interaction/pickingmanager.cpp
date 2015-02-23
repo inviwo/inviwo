@@ -36,9 +36,7 @@
 namespace inviwo {
 
 PickingManager::~PickingManager() {
-    for (std::vector<PickingObject*>::iterator it = pickingObjects_.begin();
-         it != pickingObjects_.end(); it++)
-        delete *it;
+    for (auto& elem : pickingObjects_) delete elem;
 }
 
 bool PickingManager::unregisterPickingObject(const PickingObject* p) {
@@ -70,7 +68,7 @@ PickingObject* PickingManager::getPickingObjectFromColor(const DataVec3UINT8::ty
 
     if (it != pickingObjects_.end()) return (*it);
 
-    return NULL;
+    return nullptr;
 }
 
 PickingObject* PickingManager::generatePickingObject(size_t id) {
@@ -81,7 +79,7 @@ PickingObject* PickingManager::generatePickingObject(size_t id) {
 
     if (valueDiff > 0.7f) {
         LogError("Maximum number of picking colors reached at ID : " << id);
-        return NULL;
+        return nullptr;
     }
 
     vec3 hsv = vec3(idF * M_PI - floor(idF * M_PI), 0.5f, 0.95f - valueDiff);

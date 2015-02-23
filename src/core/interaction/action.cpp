@@ -31,9 +31,7 @@
 
 namespace inviwo {
 
-Action::Action()
-    : callback_(NULL) {
-}
+Action::Action() : callback_(nullptr) {}
 
 Action::Action(const Action& rhs)
     : callback_(rhs.callback_) {

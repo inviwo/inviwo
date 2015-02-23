@@ -491,31 +491,27 @@ void Trackball::reset(Event* event) {
 
 void TrackballObservable::notifyAllChanged(const Trackball* trackball) const {
     // Notify observers
-    for (ObserverSet::iterator it = observers_->begin(), itEnd = observers_->end(); it != itEnd;
-         ++it) {
+    for (const auto& elem : *observers_) {
         // static_cast can be used since only template class objects can be added
-        static_cast<TrackballObserver*>(*it)->onAllTrackballChanged(trackball);
+        static_cast<TrackballObserver*>(elem)->onAllTrackballChanged(trackball);
     }
 }
 
 void TrackballObservable::notifyLookFromChanged(const Trackball* trackball) const {
-    for (ObserverSet::iterator it = observers_->begin(), itEnd = observers_->end(); it != itEnd;
-         ++it) {
-        static_cast<TrackballObserver*>(*it)->onLookFromChanged(trackball);
+    for (const auto& elem : *observers_) {
+        static_cast<TrackballObserver*>(elem)->onLookFromChanged(trackball);
     }
 }
 
 void TrackballObservable::notifyLookToChanged(const Trackball* trackball) const {
-    for (ObserverSet::iterator it = observers_->begin(), itEnd = observers_->end(); it != itEnd;
-         ++it) {
-        static_cast<TrackballObserver*>(*it)->onLookToChanged(trackball);
+    for (const auto& elem : *observers_) {
+        static_cast<TrackballObserver*>(elem)->onLookToChanged(trackball);
     }
 }
 
 void TrackballObservable::notifyLookUpChanged(const Trackball* trackball) const {
-    for (ObserverSet::iterator it = observers_->begin(), itEnd = observers_->end(); it != itEnd;
-         ++it) {
-        static_cast<TrackballObserver*>(*it)->onLookUpChanged(trackball);
+    for (const auto& elem : *observers_) {
+        static_cast<TrackballObserver*>(elem)->onLookUpChanged(trackball);
     }
 }
 
