@@ -172,7 +172,7 @@ public:
 
     virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
                      const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg);
+                     std::string logMsg) override;
 };
 
 class IVW_CORE_API FileLogger : public Logger {
@@ -182,7 +182,7 @@ public:
 
     virtual void log(std::string logSource, LogLevel logLevel, LogAudience audience,
                      const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg);
+                     std::string logMsg) override;
 
 private:
     std::ofstream* fileStream_;
