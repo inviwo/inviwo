@@ -35,9 +35,9 @@ namespace inviwo {
 MetaDataMap::MetaDataMap() {}
 
 MetaDataMap::MetaDataMap(const MetaDataMap& inMap) {
-    for (cIterator cIt = inMap.metaData_.begin(); cIt!=inMap.metaData_.end(); ++cIt) {
-        if (cIt->second) {
-            metaData_[cIt->first] = cIt->second->clone();
+    for (const auto& elem : inMap.metaData_) {
+        if (elem.second) {
+            metaData_[elem.first] = elem.second->clone();
         }
     }
 }
@@ -83,8 +83,7 @@ void MetaDataMap::rename(const std::string &newKey, const std::string &oldKey) {
 std::vector<std::string> MetaDataMap::getKeys() const {
     std::vector<std::string> keys;
 
-    for (cIterator cIt = metaData_.begin(); cIt!=metaData_.end(); ++cIt)
-        keys.push_back(cIt->first);
+    for (const auto& elem : metaData_) keys.push_back(elem.first);
 
     return keys;
 }
@@ -94,7 +93,7 @@ MetaData* MetaDataMap::get(const std::string &key) {
 
     if (it!=metaData_.end())
         return it->second;
-    return NULL;
+    return nullptr;
 }
 
 const MetaData* MetaDataMap::get(const std::string &key) const {
@@ -103,14 +102,13 @@ const MetaData* MetaDataMap::get(const std::string &key) const {
     if (it!=metaData_.end())
         return const_cast<const MetaData*>(it->second);
 
-    return NULL;
+    return nullptr;
 }
 
 MetaDataMap& MetaDataMap::operator=(const MetaDataMap& map) {
     removeAll();
 
-    for (cIterator cIt = map.metaData_.begin(); cIt!=map.metaData_.end(); ++cIt)
-        metaData_[cIt->first] = cIt->second->clone();
+    for (const auto& elem : map.metaData_) metaData_[elem.first] = elem.second->clone();
 
     return *this;
 }
@@ -129,12 +127,12 @@ bool operator==(const MetaDataMap& lhs, const MetaDataMap& rhs) {
     if (lhs.metaData_.size() != rhs.metaData_.size()) {
         return false;
     }
-    for (cIterator cIt = lhs.metaData_.begin(); cIt != lhs.metaData_.end(); ++cIt) {
-        cIterator elem = rhs.metaData_.find(cIt->first);
+    for (const auto& _cIt : lhs.metaData_) {
+        cIterator elem = rhs.metaData_.find(_cIt.first);
         if (elem == rhs.metaData_.end()) {
             return false;
         }
-        if (*(elem->second) != *(cIt->second)) {
+        if (*(elem->second) != *(_cIt.second)) {
             return false;
         }
     }
