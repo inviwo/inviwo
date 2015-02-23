@@ -54,19 +54,14 @@ void getInviwoUserSettingsPath();
 
 // TODO: are the first two constructors needed? Otherwise remove.
 InviwoApplication::InviwoApplication()
-    : displayName_("Inviwo")
-    , basePath_("")
-    , commandLineParser_(NULL){
+    : displayName_("Inviwo"), basePath_(""), commandLineParser_(nullptr) {
     processorNetwork_ = new ProcessorNetwork();
     processorNetworkEvaluator_ = new ProcessorNetworkEvaluator(processorNetwork_);
     init(this);
 }
 
-InviwoApplication::InviwoApplication(std::string displayName,
-                                     std::string basePath)
-    : displayName_(displayName)
-    , basePath_(basePath)
-    , commandLineParser_(NULL) {
+InviwoApplication::InviwoApplication(std::string displayName, std::string basePath)
+    : displayName_(displayName), basePath_(basePath), commandLineParser_(nullptr) {
     processorNetwork_ = new ProcessorNetwork();
     processorNetworkEvaluator_ = new ProcessorNetworkEvaluator(processorNetwork_);
     init(this);
@@ -92,8 +87,7 @@ InviwoApplication::~InviwoApplication() {
     if (initialized_)
         deinitialize();
 
-    for (size_t i=0; i<modules_.size(); i++) {
-        InviwoModule* module = modules_[i];
+    for (auto module : modules_) {
         delete module;
     }
 
@@ -136,8 +130,8 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
     
     //Load settings from core
     const std::vector<Settings*> coreSettings = ivwCore->getSettings();
-    for (std::vector<Settings*>::const_iterator it = coreSettings.begin(); it!=coreSettings.end(); ++it) {
-        (*it)->loadFromDisk();
+    for (const auto& coreSetting : coreSettings) {
+        (coreSetting)->loadFromDisk();
     }
     
     //Create and register other modules
@@ -149,8 +143,8 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
 
     //Load settings from other modules
     std::vector<Settings*> settings = getModuleSettings(1);
-    for (std::vector<Settings*>::iterator it = settings.begin(); it!=settings.end(); ++it) {
-        (*it)->loadFromDisk();
+    for (auto& setting : settings) {
+        (setting)->loadFromDisk();
     }
 
     initialized_ = true;
@@ -164,8 +158,7 @@ void InviwoApplication::deinitialize() {
     // (OpenGL/OpenCL) features after their module 
     // has been deinitialized
     ResourceManager::deleteInstance();
-    for (size_t i=0; i<modules_.size(); i++)
-        modules_[i]->deinitialize();
+    for (auto& elem : modules_) elem->deinitialize();
 
     DataReaderFactory::deleteInstance();
     DataWriterFactory::deleteInstance();
@@ -267,8 +260,8 @@ Timer* InviwoApplication::createTimer() const {
 #ifdef WIN32
     return new WindowsTimer();
 #else
-    LogWarn("This application has not implemented any timer"); 
-    return NULL;
+    LogWarn("This application has not implemented any timer");
+    return nullptr;
 #endif
 }
 
@@ -292,8 +285,8 @@ std::vector<Settings*> InviwoApplication::getModuleSettings(size_t startIdx) {
 }
 
 void InviwoApplication::addNonSupportedTags(const Tags t){
-    for (int i=0; i < t.tags_.size(); i++){
-        nonSupportedTags_.addTag(t.tags_[i]);
+    for (auto& elem : t.tags_) {
+        nonSupportedTags_.addTag(elem);
     }
 }
 
