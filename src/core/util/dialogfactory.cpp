@@ -52,13 +52,13 @@ Dialog* DialogFactory::getDialog(const std::string &className) const {
     if (it != map_.end()) {
         return it->second->create();
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
 IvwSerializable* DialogFactory::create(const std::string &className) const {
     // Dialogs are not serializable...
-    return 0;
+    return nullptr;
 }
 
 bool DialogFactory::isValidType(const std::string &className) const {

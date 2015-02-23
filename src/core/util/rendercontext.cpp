@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-RenderContext::RenderContext() : defaultContext_(NULL) {}
+RenderContext::RenderContext() : defaultContext_(nullptr) {}
 
 RenderContext::~RenderContext() {}
 

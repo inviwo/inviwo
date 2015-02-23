@@ -48,8 +48,8 @@ Observer::Observer(const Observer& other) {
 Observer& Observer::operator=(const Observer& other) {
     if (this != &other) {
         removeObservations();
-        for (ObservableSet::iterator it = other.observables_->begin(), itEnd = other.observables_->end(); it!=itEnd; ++it) {
-            addObservation(*it);
+        for (const auto& elem : *other.observables_) {
+            addObservation(elem);
         }
     }
     return *this;
@@ -98,8 +98,8 @@ ObservableInterface::ObservableInterface(const ObservableInterface& other) {
 ObservableInterface& ObservableInterface::operator=(const ObservableInterface& other) {
     if (this != &other) {
         removeObservers();
-        for (ObserverSet::iterator it = other.observers_->begin(), itEnd = other.observers_->end(); it!=itEnd; ++it) {
-            addObserver(*it);
+        for (const auto& elem : *other.observers_) {
+            addObserver(elem);
         }
     }
     return *this;

@@ -34,8 +34,8 @@
 
 namespace inviwo {
 
-SystemSettings::SystemSettings() :
-Settings("System Settings")
+SystemSettings::SystemSettings()
+    : Settings("System Settings")
     , applicationUsageModeProperty_("applicationUsageMode", "Application usage mode")
     , txtEditorProperty_("txtEditor", "Use system text editor", true)
     , enablePortInformationProperty_("enablePortInformation", "Enable port information", true)
@@ -44,10 +44,10 @@ Settings("System Settings")
     , enablePickingProperty_("enablePicking", "Enable picking", true)
     , enableSoundProperty_("enableSound", "Enable sound", true)
     , useRAMPercentProperty_("useRAMPercent", "Max memory usage (%)", 50, 1, 100)
-    , logStackTraceProperty_("logStackTraceProperty","Error stack trace log", false)
+    , logStackTraceProperty_("logStackTraceProperty", "Error stack trace log", false)
     , btnAllocTestProperty_("allocTest", "Perform Allocation Test")
     , btnSysInfoProperty_("printSysInfo", "Print System Info")
-    , allocTest_(0) {}
+    , allocTest_(nullptr) {}
 
 SystemSettings::~SystemSettings() {}
 

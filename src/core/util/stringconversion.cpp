@@ -91,7 +91,7 @@ std::string parseTypeIdName(std::string str) {
     };
     const char* cstr = str.c_str();
     int status = -4;
-    handle result(abi::__cxa_demangle(cstr, NULL, NULL, &status));
+    handle result(abi::__cxa_demangle(cstr, nullptr, nullptr, &status));
     if (status == 0) str = result.p;
 #else
     replaceInString(str, "class", "");

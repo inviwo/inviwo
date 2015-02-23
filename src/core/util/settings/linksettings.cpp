@@ -52,10 +52,10 @@ void LinkSettings::initialize() {
     std::sort(properties.begin(), properties.end());
 
     CameraProperty cam("", "");
-    for (size_t i = 0; i < properties.size(); i++) {
+    for (auto& propertie : properties) {
         BoolProperty* linkPropery =
-            new BoolProperty("link-" + properties[i], properties[i],
-                             (properties[i] == cam.getClassIdentifier()) != 0 ? true : false);
+            new BoolProperty("link-" + propertie, propertie,
+                             (propertie == cam.getClassIdentifier()) != 0 ? true : false);
         linkProperties_.addProperty(linkPropery);
     }
 }

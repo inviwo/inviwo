@@ -78,7 +78,7 @@ FileLogger::~FileLogger() {
     (*fileStream_) << "</p>" << std::endl;
     fileStream_->close();
     delete fileStream_;
-    fileStream_ = NULL;
+    fileStream_ = nullptr;
 }
 
 void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience audience,
