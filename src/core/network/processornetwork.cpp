@@ -76,8 +76,9 @@ ProcessorNetwork::~ProcessorNetwork() {
 bool ProcessorNetwork::addProcessor(Processor* processor) {
     lock();
 
-    if(!InviwoApplication::getPtr()->checkIfAllTagsAreSupported(processor->getTags())){
-        LogWarn("Processor '" << processor->getDisplayName() << "' was considered as not supported by the application.");
+    if (!InviwoApplication::getPtr()->checkIfAllTagsAreSupported(processor->getTags())) {
+        LogNetworkWarn("Processor '" << processor->getDisplayName()
+                                     << "' was considered as not supported by the application.");
         return false;
     }
 
@@ -683,7 +684,7 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     d.deserialize("ProcessorNetworkVersion", version);
 
     if (version != processorNetworkVersion_) {
-        LogWarn("Loading old workspace (" << d.getFileName()<< ") version: "
+        LogNetworkWarn("Loading old workspace (" << d.getFileName()<< ") version: "
                 << version << ". Updating to version: " << processorNetworkVersion_);
         NetworkConverter nv(version);
         d.convertVersion(&nv);
@@ -704,7 +705,7 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
             if (processors[i]) {
                 addProcessor(processors[i]);
             } else {
-                LogWarn("Failed deserialization: Processor Nr." << i);
+                LogNetworkWarn("Failed deserialization: Processor Nr." << i);
             }
         }
     } catch (const SerializationException& exception) {
@@ -728,12 +729,12 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
                 Inport* inPort = portConnections[i]->getInport();
 
                 if (!(outPort && inPort && addConnection(outPort, inPort))) {
-                    LogWarn("Unable to establish port connection Nr." << i);
+                    LogNetworkWarn("Unable to establish port connection Nr." << i);
                 }
 
                 delete portConnections[i];
             } else {
-                LogWarn("Failed deserialization: Port Connection Nr." << i);
+                LogNetworkWarn("Failed deserialization: Port Connection Nr." << i);
             }
         }
     } catch (const SerializationException& exception) {
@@ -756,18 +757,18 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
                 Property* destProperty = propertyLinks[j]->getDestinationProperty();
 
                 if (!(srcProperty && destProperty && addLink(srcProperty, destProperty))) {
-                    LogWarn("Unable to establish property link Nr: " << j);
+                    LogNetworkWarn("Unable to establish property link Nr: " << j);
                 }
 
                 delete propertyLinks[j];
 
             } else {
-                LogWarn("Unable to establish property link Nr: " << j);
+                LogNetworkWarn("Unable to establish property link Nr: " << j);
             }
         }
 
     if (!errorHandle.messages.empty()) {
-        LogWarn("There were errors while loading workspace: " + d.getFileName() + "\n" +
+        LogNetworkWarn("There were errors while loading workspace: " + d.getFileName() + "\n" +
                 joinString(errorHandle.messages, "\n"));
     }
 
@@ -1044,7 +1045,7 @@ void ProcessorNetwork::NetworkConverter::updateCameraToComposite(TxElement* node
             // insert new node
             node->InsertEndChild(newNode);
 
-            LogWarn("Camera property updated to composite property. Workspace requires resave")
+            LogNetworkWarn("Camera property updated to composite property. Workspace requires resave")
         }
     }
 }
