@@ -107,7 +107,9 @@ void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience audie
     (*fileStream_) << "</font><br>" << std::endl;
 }
 
-LogCentral::LogCentral() : logLevel_{LogLevel::Info}, loggers_{}, logStacktrace_{true} {}
+LogCentral::LogCentral() : 
+    logLevel_(LogLevel::Info),  
+    logStacktrace_(true) {}
 
 LogCentral::~LogCentral() {
     for (auto& logger : loggers_) delete logger;
