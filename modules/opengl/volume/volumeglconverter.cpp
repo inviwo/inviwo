@@ -73,7 +73,7 @@ DataRepresentation* VolumeGL2RAMConverter::createFrom(const DataRepresentation* 
         LogError("Cannot convert format from GL to RAM:" << volumeGL->getDataFormat()->getString());
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void VolumeGL2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {

@@ -51,7 +51,7 @@ Texture2DArray::Texture2DArray(const Texture2DArray& rhs)
     , dimensions_(rhs.dimensions_)
 {
     setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
-    initialize(NULL);
+    initialize(nullptr);
     if(OpenGLCapabilities::getOpenGLVersion() >= 430){
         //GPU memcpy
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), 
@@ -68,7 +68,7 @@ Texture2DArray& Texture2DArray::operator=(const Texture2DArray& rhs) {
         Texture::operator=(rhs);
         dimensions_ = rhs.dimensions_;
         setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
-        initialize(NULL);
+        initialize(nullptr);
         if(OpenGLCapabilities::getOpenGLVersion() >= 430){
             //GPU memcpy
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), 

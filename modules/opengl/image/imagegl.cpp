@@ -36,18 +36,18 @@ namespace inviwo {
 
 ImageGL::ImageGL()
     : ImageRepresentation()
-    , rectArray_(NULL)
-    , frameBufferObject_(NULL)
-    , shader_(NULL)
+    , rectArray_(nullptr)
+    , frameBufferObject_(nullptr)
+    , shader_(nullptr)
     , initialized_(false) {
     initialize();
 }
 
 ImageGL::ImageGL(const ImageGL& rhs)
     : ImageRepresentation(rhs)
-    , rectArray_(NULL)
-    , frameBufferObject_(NULL)
-    , shader_(NULL)
+    , rectArray_(nullptr)
+    , frameBufferObject_(nullptr)
+    , shader_(nullptr)
     , initialized_(false) {
     initialize();
 }
@@ -70,11 +70,11 @@ void ImageGL::initialize() {
 void ImageGL::deinitialize() {
     frameBufferObject_->deactivate();
     delete frameBufferObject_;
-    frameBufferObject_ = NULL;
+    frameBufferObject_ = nullptr;
     delete shader_;
-    shader_ = NULL;
+    shader_ = nullptr;
     delete rectArray_;
-    rectArray_ = NULL;
+    rectArray_ = nullptr;
 }
 
 ImageGL* ImageGL::clone() const { return new ImageGL(*this); }
@@ -84,9 +84,9 @@ void ImageGL::reAttachAllLayers(ImageType type) {
     frameBufferObject_->detachAllTextures();
     pickingAttachmentID_ = 0;
 
-    for (size_t i = 0; i < colorLayersGL_.size(); ++i) {
-        colorLayersGL_[i]->getTexture()->bind();
-        frameBufferObject_->attachColorTexture(colorLayersGL_[i]->getTexture());
+    for (auto& elem : colorLayersGL_) {
+        elem->getTexture()->bind();
+        frameBufferObject_->attachColorTexture(elem->getTexture());
     }
 
     if (depthLayerGL_ && typeContainsDepth(type)) {
@@ -270,7 +270,7 @@ LayerGL* ImageGL::getLayerGL(LayerType type, size_t idx) {
             return getPickingLayerGL();
     }
 
-    return NULL;
+    return nullptr;
 }
 
 const LayerGL* ImageGL::getLayerGL(LayerType type, size_t idx) const {
@@ -285,7 +285,7 @@ const LayerGL* ImageGL::getLayerGL(LayerType type, size_t idx) const {
             return getPickingLayerGL();
     }
 
-    return NULL;
+    return nullptr;
 }
 
 LayerGL* ImageGL::getColorLayerGL(size_t idx) { return colorLayersGL_.at(idx); }
@@ -318,8 +318,8 @@ void ImageGL::updateExistingLayers() const {
 
 void ImageGL::update(bool editable) {
     colorLayersGL_.clear();
-    depthLayerGL_ = NULL;
-    pickingLayerGL_ = NULL;
+    depthLayerGL_ = nullptr;
+    pickingLayerGL_ = nullptr;
 
     if (editable) {
         Image* owner = this->getOwner();

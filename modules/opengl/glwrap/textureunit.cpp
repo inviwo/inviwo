@@ -31,13 +31,13 @@
 
 namespace inviwo {
 
-std::vector<bool>* TextureUnit::textureUnits_ = NULL;
+std::vector<bool>* TextureUnit::textureUnits_ = nullptr;
 
 TextureUnit::TextureUnit()
     : unitEnum_(0)
     , unitNumber_(0)
 {
-    ivwAssert(textureUnits_!=NULL, "Texture unit handler not initialized.");
+    ivwAssert(textureUnits_ != nullptr, "Texture unit handler not initialized.");
 
     // check which texture unit is available
     for (size_t i=1; i<textureUnits_->size(); i++) {
@@ -68,7 +68,7 @@ void TextureUnit::initialize(int numUnits) {
 void TextureUnit::deinitialize() {
     if (textureUnits_) {
         delete textureUnits_;
-        textureUnits_ = NULL;
+        textureUnits_ = nullptr;
     }
 }
 

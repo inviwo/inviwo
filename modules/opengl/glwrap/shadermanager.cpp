@@ -40,19 +40,18 @@ namespace inviwo {
 
 ShaderManager::ShaderManager() : FileObserver() {
     InviwoApplication::getPtr()->registerFileObserver(this);
-    openGLInfoRef_ = NULL;
+    openGLInfoRef_ = nullptr;
 }
 
 void ShaderManager::registerShader(Shader* shader) {
     shaders_.push_back(shader);
     const Shader::ShaderObjectMap* shaderObjects = shader->getShaderObjects();
 
-    for (Shader::ShaderObjectMap::const_iterator it = shaderObjects->begin(); it != shaderObjects->end(); it++) {
-        startFileObservation(it->second->getAbsoluteFileName());
-        std::vector<std::string> shaderIncludes = it->second->getIncludeFileNames();
+    for (const auto& shaderObject : *shaderObjects) {
+        startFileObservation(shaderObject.second->getAbsoluteFileName());
+        std::vector<std::string> shaderIncludes = shaderObject.second->getIncludeFileNames();
 
-        for (size_t i=0; i<shaderIncludes.size(); i++)
-            startFileObservation(shaderIncludes[i]);
+        for (auto& shaderInclude : shaderIncludes) startFileObservation(shaderInclude);
     }
 }
 
@@ -60,13 +59,12 @@ void ShaderManager::unregisterShader(Shader* shader) {
     shaders_.erase(std::remove(shaders_.begin(), shaders_.end(), shader), shaders_.end());
     const Shader::ShaderObjectMap* shaderObjects = shader->getShaderObjects();
 
-    for (Shader::ShaderObjectMap::const_iterator it = shaderObjects->begin(); it != shaderObjects->end(); it++) {
-        if (it->second != NULL) {
-            stopFileObservation(it->second->getAbsoluteFileName());
-            std::vector<std::string> shaderIncludes = it->second->getIncludeFileNames();
+    for (const auto& shaderObject : *shaderObjects) {
+        if (shaderObject.second != nullptr) {
+            stopFileObservation(shaderObject.second->getAbsoluteFileName());
+            std::vector<std::string> shaderIncludes = shaderObject.second->getIncludeFileNames();
 
-            for (size_t i = 0; i < shaderIncludes.size(); i++)
-                stopFileObservation(shaderIncludes[i]);
+            for (auto& shaderInclude : shaderIncludes) stopFileObservation(shaderInclude);
         }
     }
 }
@@ -79,21 +77,23 @@ void ShaderManager::fileChanged(std::string shaderFilename) {
             if (isObserved(shaderFilename)) {
                 bool successfulReload = false;
 
-                for (size_t i = 0; i < shaders_.size(); i++) {
+                for (auto& elem : shaders_) {
                     bool relink = false;
-                    const Shader::ShaderObjectMap* shaderObjects = shaders_[i]->getShaderObjects();
+                    const Shader::ShaderObjectMap* shaderObjects = elem->getShaderObjects();
 
-                    for (Shader::ShaderObjectMap::const_iterator it = shaderObjects->begin(); it != shaderObjects->end(); it++) {
-                        std::vector<std::string> shaderIncludes = it->second->getIncludeFileNames();
+                    for (const auto& shaderObject : *shaderObjects) {
+                        std::vector<std::string> shaderIncludes =
+                            shaderObject.second->getIncludeFileNames();
 
-                        if (it->second->getAbsoluteFileName() == shaderFilename ||
-                            std::find(shaderIncludes.begin(), shaderIncludes.end(), shaderFilename) != shaderIncludes.end()) {
-                            successfulReload = it->second->rebuild();
+                        if (shaderObject.second->getAbsoluteFileName() == shaderFilename ||
+                            std::find(shaderIncludes.begin(), shaderIncludes.end(),
+                                      shaderFilename) != shaderIncludes.end()) {
+                            successfulReload = shaderObject.second->rebuild();
                             relink = true;
                         }
                     }
 
-                    if (relink) shaders_[i]->link();
+                    if (relink) elem->link();
                 }
 
                 if (successfulReload) {
@@ -102,10 +102,10 @@ void ShaderManager::fileChanged(std::string shaderFilename) {
                     //TODO: Don't invalidate all processors when shader change, invalidate only owners if shader has one.
                     std::vector<Processor*> processors = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
 
-                    for (size_t i = 0; i < processors.size(); i++) {
-                        std::string tags = processors[i]->getTags().getString();
+                    for (auto& processor : processors) {
+                        std::string tags = processor->getTags().getString();
                         if (tags.find_first_of(Tags::GL.getString()) != std::string::npos)
-                            processors[i]->invalidate(INVALID_RESOURCES);
+                            processor->invalidate(INVALID_RESOURCES);
                     }
                 }
                 else InviwoApplication::getPtr()->playSound(InviwoApplication::IVW_ERROR);
@@ -172,8 +172,8 @@ void ShaderManager::addShaderSearchPath(InviwoApplication::PathType pathType, st
         LogInfo("\t" << InviwoApplication::getPtr()->getPath(pathType) + relativeShaderSearchPath);
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
         if (pathType == InviwoApplication::PATH_MODULES){
-            for (int i = 0; i < IVW_EXTERNAL_MODULES_PATH_COUNT; ++i){
-                LogInfo("\t" << externalModulePaths_[i] << "/"  << relativeShaderSearchPath);
+            for (auto& elem : externalModulePaths_) {
+                LogInfo("\t" << elem << "/" << relativeShaderSearchPath);
             }
         }
 #endif
@@ -213,8 +213,8 @@ void ShaderManager::rebuildAllShaders(){
     if(shaders_.empty())
         return;
 
-    for (std::vector<Shader*>::iterator it = shaders_.begin(); it != shaders_.end(); ++it) {
-        (*it)->rebuild();
+    for (auto& shader : shaders_) {
+        shader->rebuild();
     }
     LogInfo("Rebuild of all shaders completed");
 }

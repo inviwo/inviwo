@@ -42,16 +42,16 @@
 
 namespace inviwo {
 
-const MeshGL* CanvasGL::screenAlignedRectGL_ = NULL;
+const MeshGL* CanvasGL::screenAlignedRectGL_ = nullptr;
 
 CanvasGL::CanvasGL(uvec2 dimensions)
     : Canvas(dimensions)
-    , imageGL_(NULL)
-    , image_(NULL)
-    , rectArray_(NULL)
+    , imageGL_(nullptr)
+    , image_(nullptr)
+    , rectArray_(nullptr)
     , layerType_(COLOR_LAYER)
-    , shader_(NULL)
-    , noiseShader_(NULL)
+    , shader_(nullptr)
+    , noiseShader_(nullptr)
     , singleChannel_(false) {}
 
 CanvasGL::~CanvasGL() {
@@ -82,13 +82,13 @@ void CanvasGL::initializeSquare() {
 
 void CanvasGL::deinitialize() {
     delete shader_;
-    shader_ = NULL;
+    shader_ = nullptr;
     delete noiseShader_;
-    noiseShader_ = NULL;
+    noiseShader_ = nullptr;
     delete rectArray_;
-    rectArray_ = NULL;
-    image_ = NULL;
-    imageGL_ = NULL;
+    rectArray_ = nullptr;
+    image_ = nullptr;
+    imageGL_ = nullptr;
     Canvas::deinitialize();
 }
 
@@ -117,14 +117,14 @@ void CanvasGL::render(const Image* image, LayerType layerType) {
         }
         renderLayer();
     } else {
-        imageGL_ = NULL;
+        imageGL_ = nullptr;
         renderNoise();
     }
 }
 
 void CanvasGL::resize(uvec2 size) {
-    imageGL_ = NULL;
-    pickingContainer_->setPickingSource(NULL);  
+    imageGL_ = nullptr;
+    pickingContainer_->setPickingSource(nullptr);
     Canvas::resize(size);
 }
 
@@ -239,9 +239,9 @@ void CanvasGL::disableDrawImagePlaneRect() {
 
 void  CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
     //Clear internal state
-    image_ = NULL;
-    imageGL_ = NULL;
-    pickingContainer_->setPickingSource(NULL);
+    image_ = nullptr;
+    imageGL_ = nullptr;
+    pickingContainer_->setPickingSource(nullptr);
     Canvas::setProcessorWidgetOwner(widget);
 }
 

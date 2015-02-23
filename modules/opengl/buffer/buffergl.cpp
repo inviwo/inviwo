@@ -31,16 +31,15 @@
 
 namespace inviwo {
 
-BufferGL::BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, BufferObject* data)
-    : BufferRepresentation(size, format, type, usage)
-    , buffer_(data)
-    , bufferArray_(NULL) {
+BufferGL::BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage,
+                   BufferObject* data)
+    : BufferRepresentation(size, format, type, usage), buffer_(data), bufferArray_(nullptr) {
     initialize();
     LGL_ERROR_SUPPRESS;
 }
 
 BufferGL::BufferGL(const BufferGL& rhs): BufferRepresentation(rhs) {
-    bufferArray_ = NULL;
+    bufferArray_ = nullptr;
     buffer_ = rhs.getBufferObject()->clone();
 }
 
@@ -56,7 +55,7 @@ void BufferGL::setSize( size_t size ) {
     if (size == getSize()) {
         return;
     }
-    initialize(NULL, size*getSizeOfElement());
+    initialize(nullptr, size * getSizeOfElement());
     BufferRepresentation::setSize(size);
 }
 
@@ -92,7 +91,7 @@ void BufferGL::deinitialize() {
         delete buffer_;
     }
     delete bufferArray_;
-    bufferArray_ = NULL;
+    bufferArray_ = nullptr;
 }
 
 void BufferGL::download(void* data) const {

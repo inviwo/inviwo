@@ -51,7 +51,7 @@ Texture2D::Texture2D(const Texture2D& rhs)
     , dimensions_(rhs.dimensions_)
 {
     setTextureParameterFunction(this, &Texture2D::default2DTextureParameterFunction);
-    initialize(NULL);
+    initialize(nullptr);
     if(OpenGLCapabilities::getOpenGLVersion() >= 430){
         //GPU memcpy
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), 
@@ -68,7 +68,7 @@ Texture2D& Texture2D::operator=(const Texture2D& rhs) {
         Texture::operator=(rhs);
         dimensions_ = rhs.dimensions_;
         setTextureParameterFunction(this, &Texture2D::default2DTextureParameterFunction);
-        initialize(NULL);
+        initialize(nullptr);
 
         if(OpenGLCapabilities::getOpenGLVersion() >= 430){
             //GPU memcpy
@@ -123,7 +123,7 @@ void Texture2D::upload(const void* data) {
 
 void Texture2D::resize(uvec2 dimensions) {
     dimensions_ = dimensions;
-    initialize(NULL);
+    initialize(nullptr);
 }
 
 void Texture2D::default2DTextureParameterFunction(Texture* tex) {

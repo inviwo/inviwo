@@ -123,8 +123,8 @@ void GeometryRenderProcessorGL::initialize() {
 
 void GeometryRenderProcessorGL::deinitialize() {
     // Delete all renderers
-    for (std::vector<GeometryRenderer*>::iterator it = renderers_.begin(), endIt = renderers_.end(); it != endIt; ++it) {
-        delete *it;
+    for (auto& elem : renderers_) {
+        delete elem;
     }
     if (shader_) 
         delete shader_;
@@ -271,9 +271,9 @@ void GeometryRenderProcessorGL::centerViewOnGeometry() {
 
     maxPos = (*pos)[0];
     minPos = maxPos;
-    for (size_t i = 0; i < pos->size(); ++i) {
-        maxPos = glm::max(maxPos, (*pos)[i]);
-        minPos = glm::min(minPos, (*pos)[i]);
+    for (auto& po : *pos) {
+        maxPos = glm::max(maxPos, po);
+        minPos = glm::min(minPos, po);
     }
 
     mat4 modelMatrix = geom->getModelMatrix();

@@ -77,7 +77,7 @@ void LayerGL::initialize() {
 void LayerGL::deinitialize() {
     if (texture_ && texture_->decreaseRefCount() <= 0) {
         delete texture_;
-        texture_ = NULL;
+        texture_ = nullptr;
     }
 }
 

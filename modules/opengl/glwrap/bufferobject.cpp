@@ -63,7 +63,7 @@ BufferObject::BufferObject(const BufferObject& rhs)
     initialize();
     // TODO: Verify that data copying works. What about backwards compability?
     // Initialize size of buffer
-    initialize(NULL, rhs.sizeInBytes_);
+    initialize(nullptr, rhs.sizeInBytes_);
     // Now bind the second buffer, this buffer is already bound 
     glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
     // Copy data (OpenGL 3.1 functionality...)

@@ -131,8 +131,7 @@ std::string ShaderObject::embeddDefines(std::string source) {
 std::string ShaderObject::embeddOutDeclarations(std::string source) {
     std::ostringstream result;
 
-    for (size_t i=0; i<outDeclarations_.size(); i++) {
-        std::string curDeclaration = outDeclarations_[i];
+    for (auto curDeclaration : outDeclarations_) {
         result << "out vec4 " << curDeclaration << ";\n";
         lineNumberResolver_.push_back(std::pair<std::string, unsigned int>("Out Declaration", 0));
     }
@@ -157,9 +156,9 @@ std::string ShaderObject::embeddIncludes(std::string source, std::string fileNam
             bool includeFileFound = false;
             std::vector<std::string> shaderSearchPaths = ShaderManager::getPtr()->getShaderSearchPaths();
 
-            for (size_t i=0; i<shaderSearchPaths.size(); i++) {
-                if (filesystem::fileExists(shaderSearchPaths[i]+"/"+includeFileName)) {
-                    includeFileName = shaderSearchPaths[i]+"/"+includeFileName;
+            for (auto& shaderSearchPath : shaderSearchPaths) {
+                if (filesystem::fileExists(shaderSearchPath + "/" + includeFileName)) {
+                    includeFileName = shaderSearchPath + "/" + includeFileName;
                     includeFileNames_.push_back(includeFileName);
                     std::ifstream includeFileStream(includeFileName.c_str());
                     std::stringstream buffer;
@@ -212,10 +211,10 @@ bool ShaderObject::loadSource(std::string fileName) {
             // Search in include directories added by modules
             std::vector<std::string> shaderSearchPaths = ShaderManager::getPtr()->getShaderSearchPaths();
 
-            for (size_t i=0; i<shaderSearchPaths.size(); i++) {
-                if (filesystem::fileExists(shaderSearchPaths[i]+"/"+fileName)) {
+            for (auto& shaderSearchPath : shaderSearchPaths) {
+                if (filesystem::fileExists(shaderSearchPath + "/" + fileName)) {
                     exists = true;
-                    absoluteFileName_ = shaderSearchPaths[i]+"/"+fileName;
+                    absoluteFileName_ = shaderSearchPath + "/" + fileName;
                     break;
                 }
             }
@@ -247,7 +246,7 @@ bool ShaderObject::loadSource(std::string fileName) {
 
 void ShaderObject::upload() {
     const char* source = sourceProcessed_.c_str();
-    glShaderSource(id_, 1, &source, 0);
+    glShaderSource(id_, 1, &source, nullptr);
     LGL_ERROR;
 }
 
@@ -258,7 +257,7 @@ std::string ShaderObject::getShaderInfoLog() {
 
     if (maxLogLength > 1) {
         GLchar* shaderInfoLog = new GLchar[maxLogLength];
-        ivwAssert(shaderInfoLog!=0, "could not allocate memory for compiler log");
+        ivwAssert(shaderInfoLog != nullptr, "could not allocate memory for compiler log");
         GLsizei logLength;
         glGetShaderInfoLog(id_, maxLogLength, &logLength, shaderInfoLog);
         std::istringstream shaderInfoLogStr(shaderInfoLog);
@@ -372,9 +371,8 @@ void ShaderObject::clearShaderExtensions() {
 void ShaderObject::addOutDeclaration(std::string name) {
     bool outExists = false;
 
-    for (size_t i=0; i<outDeclarations_.size(); i++)
-        if (outDeclarations_[i] == name)
-            outExists = true;
+    for (auto& elem : outDeclarations_)
+        if (elem == name) outExists = true;
 
     if (!outExists)
         outDeclarations_.push_back(name);

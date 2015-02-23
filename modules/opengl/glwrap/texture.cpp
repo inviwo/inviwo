@@ -209,7 +209,7 @@ void Texture::downloadToPBO() const {
         bind();
         bindToPBO();
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
-        glGetTexImage(target_, 0, format_, dataType_, 0);
+        glGetTexImage(target_, 0, format_, dataType_, nullptr);
         unbindToPBO();
         dataInReadBackPBO_ = true;
     }
@@ -218,7 +218,7 @@ void Texture::downloadToPBO() const {
 void Texture::loadFromPBO(const Texture* src) {
     setupAsyncReadBackPBO();
     src->bindFromPBO();
-    upload(NULL);
+    upload(nullptr);
     unbind();
     src->unbindFromPBO();
     LGL_ERROR;
@@ -227,7 +227,8 @@ void Texture::loadFromPBO(const Texture* src) {
 void Texture::setupAsyncReadBackPBO() {
     bind();
     glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, pboBack_);
-    glBufferDataARB(GL_PIXEL_PACK_BUFFER_ARB, getNumberOfValues()*getSizeInBytes(), NULL, GL_STREAM_READ_ARB);
+    glBufferDataARB(GL_PIXEL_PACK_BUFFER_ARB, getNumberOfValues() * getSizeInBytes(), nullptr,
+                    GL_STREAM_READ_ARB);
     glBindBufferARB(GL_PIXEL_PACK_BUFFER_ARB, 0);
     unbind();
     dataInReadBackPBO_ = false;
