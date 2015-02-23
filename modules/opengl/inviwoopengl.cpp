@@ -24,11 +24,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/util/logcentral.h>
+
+namespace inviwo {
 
 void LogGLError(const char* fileName, const char* functionName, int lineNumber) {
     GLenum err = glGetError();
@@ -59,7 +61,8 @@ void LogGLError(const char* fileName, const char* functionName, int lineNumber) 
         const GLubyte* errorString = gluErrorString(err);
         errorMessage << (errorString ? (const char*)errorString : "undefined");
 #endif
-        inviwo::LogCentral::getPtr()->log("OpenGL", inviwo::Error, fileName, functionName,
-                                            lineNumber, errorMessage.str());
+        inviwo::LogCentral::getPtr()->log("OpenGL", LogLevel::Error, LogAudience::Developer,
+                                          fileName, functionName, lineNumber, errorMessage.str());
     }
+}
 }

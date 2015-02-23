@@ -117,13 +117,13 @@ void ConsoleWidget::showContextMenu(const QPoint& pos) {
     delete menu;
 }
 
-void ConsoleWidget::log(std::string logSource, unsigned int logLevel, const char* fileName,
+void ConsoleWidget::log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
                         const char* functionName, int lineNumber, std::string logMsg) {
     IVW_UNUSED_PARAM(functionName);
     QString message;
 
     switch (logLevel) {
-         case Error: {
+         case LogLevel::Error: {
             textField_->setTextColor(errorTextColor_);
             std::ostringstream lineNumberStr;
             lineNumberStr << lineNumber;
@@ -133,7 +133,7 @@ void ConsoleWidget::log(std::string logSource, unsigned int logLevel, const char
             break;
         }
     
-        case Warn: {
+        case LogLevel::Warn: {
             textField_->setTextColor(warnTextColor_);
             std::ostringstream lineNumberStr;
             lineNumberStr << lineNumber;
@@ -143,7 +143,7 @@ void ConsoleWidget::log(std::string logSource, unsigned int logLevel, const char
             break;
         }
         
-        case Info:
+        case LogLevel::Info:
         default: {
             textField_->setTextColor(infoTextColor_);
             message = QString::fromStdString("(" + logSource + ") " + logMsg);

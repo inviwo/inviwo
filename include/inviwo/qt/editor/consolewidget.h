@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CONSOLEWIDGET_H
@@ -46,17 +46,17 @@ public:
     ConsoleWidget(QWidget* parent);
     ~ConsoleWidget();
 
-    void log(std::string logSource, unsigned int logLevel, const char* fileName, const char* functionName, int lineNumber, std::string logMsg);
+    void log(std::string logSource, LogLevel logLevel, LogAudience audience, const char* fileName,
+             const char* functionName, int lineNumber, std::string logMsg) override;
 
 private:
-	void keyPressEvent(QKeyEvent* keyEvent);
+    void keyPressEvent(QKeyEvent* keyEvent);
 
     QTextEdit* textField_;
     /// Log level colors
     QColor infoTextColor_;
     QColor warnTextColor_;
     QColor errorTextColor_;
-
 
     QLabel* errorsLabel_;
     QLabel* warningsLabel_;
@@ -69,6 +69,6 @@ public slots:
     void showContextMenu(const QPoint& pos);
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_CONSOLELISTWIDGET_H
+#endif  // IVW_CONSOLELISTWIDGET_H
