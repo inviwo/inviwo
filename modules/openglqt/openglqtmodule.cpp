@@ -53,7 +53,7 @@ OpenGLQtModule::~OpenGLQtModule() {}
 
 void OpenGLQtModule::deinitialize() {
     if (qtGLSharedCanvas_ == RenderContext::getPtr()->getDefaultRenderContext()) {
-        RenderContext::getPtr()->setDefaultRenderContext(NULL);
+        RenderContext::getPtr()->setDefaultRenderContext(nullptr);
         qtGLSharedCanvas_->deinitialize();
         delete qtGLSharedCanvas_;
     }

@@ -37,11 +37,7 @@
 namespace inviwo {
 
 CanvasProcessorWidgetQt::CanvasProcessorWidgetQt()
-    : QWidget()
-    , CanvasProcessorWidget()
-    , canvas_(NULL)
-    , hasSharedCanvas_(false) {
-
+    : QWidget(), CanvasProcessorWidget(), canvas_(nullptr), hasSharedCanvas_(false) {
     setMinimumSize(32, 32);
     setFocusPolicy(Qt::NoFocus);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -49,7 +45,7 @@ CanvasProcessorWidgetQt::CanvasProcessorWidgetQt()
 }
 
 CanvasProcessorWidgetQt::~CanvasProcessorWidgetQt() {
-    if (hasSharedCanvas_ && canvas_) canvas_->setParent(NULL);
+    if (hasSharedCanvas_ && canvas_) canvas_->setParent(nullptr);
 }
 
 CanvasProcessorWidgetQt* CanvasProcessorWidgetQt::create() const {
@@ -68,10 +64,10 @@ void CanvasProcessorWidgetQt::initialize() {
         canvas_ = sharedCanvas;
         hasSharedCanvas_ = true;
     } else {
-        canvas_ = new CanvasQt(NULL, uvec2(dim.x, dim.y));
+        canvas_ = new CanvasQt(nullptr, uvec2(dim.x, dim.y));
     }
 
-    canvas_->setEventPropagator(NULL);
+    canvas_->setEventPropagator(nullptr);
 
     if (!canvas_->isInitialized()) canvas_->initialize();
 
@@ -110,13 +106,13 @@ void CanvasProcessorWidgetQt::deinitialize() {
     if (canvas_) {        
         this->hide();
         if (hasSharedCanvas_) {
-            canvas_->setProcessorWidgetOwner(NULL);
+            canvas_->setProcessorWidgetOwner(nullptr);
             layout()->removeWidget(canvas_);
-            canvas_->setParent(NULL);
+            canvas_->setParent(nullptr);
         } else {
             canvas_->deinitialize();
-        }     
-        canvas_ = NULL; // Qt will take care of deleting the canvas
+        }
+        canvas_ = nullptr;  // Qt will take care of deleting the canvas
     }
     CanvasProcessorWidget::deinitialize();
 }

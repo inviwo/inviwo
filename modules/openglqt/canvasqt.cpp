@@ -57,7 +57,7 @@ inline QGLContextFormat GetQGLFormat() {
 }
 
 QGLContextFormat CanvasQt::sharedFormat_ = GetQGLFormat();
-CanvasQt* CanvasQt::sharedCanvas_ = NULL;
+CanvasQt* CanvasQt::sharedCanvas_ = nullptr;
 
 #if defined(USE_NEW_OPENGLWIDGET)
 QGLWindow* CanvasQt::sharedGLContext_ = NULL;
@@ -143,7 +143,7 @@ CanvasQt::CanvasQt(QGLParent* parent, uvec2 dim)
     }
 }
 #else
-QGLWindow* CanvasQt::sharedGLContext_ = NULL;
+QGLWindow* CanvasQt::sharedGLContext_ = nullptr;
 
 CanvasQt::CanvasQt(QGLParent* parent, uvec2 dim)
     : QGLWindow(sharedFormat_, parent, sharedGLContext_)
@@ -467,8 +467,8 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
 
     if(lastNumFingers_ > 1){
         vec2 fpos = vec2(0.f);
-        for(int i=0; i<touch->touchPoints().size(); i++)
-            fpos += vec2(touch->touchPoints().at(i).pos().x(), glm::floor(touch->touchPoints().at(i).pos().y()));
+        for (auto& elem : touch->touchPoints())
+            fpos += vec2(elem.pos().x(), glm::floor(elem.pos().y()));
 
         fpos /= static_cast<float>(touch->touchPoints().size());
 
@@ -480,9 +480,9 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
 }
 
 bool CanvasQt::gestureEvent(QGestureEvent* ge) {
-    QGesture* gesture = NULL;
-    QPanGesture* panGesture = NULL;
-    QPinchGesture* pinchGesture = NULL;
+    QGesture* gesture = nullptr;
+    QPanGesture* panGesture = nullptr;
+    QPinchGesture* pinchGesture = nullptr;
 
     if((gesture = ge->gesture(Qt::PanGesture))){
         panGesture = static_cast<QPanGesture *>(gesture);
