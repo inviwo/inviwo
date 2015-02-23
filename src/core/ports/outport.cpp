@@ -53,28 +53,26 @@ void Outport::invalidate(InvalidationLevel invalidationLevel) {
 }
 
 void Outport::invalidateConnectedInports(InvalidationLevel invalidationLevel){
-    for (size_t i=0; i<connectedInports_.size(); i++)
-        connectedInports_[i]->invalidate(invalidationLevel);
+    for (auto& elem : connectedInports_) elem->invalidate(invalidationLevel);
 }
 
 void Outport::setInvalidationLevel(InvalidationLevel invalidationLevel){
     invalidationLevel_ = invalidationLevel;
-    for (size_t i=0; i<connectedInports_.size(); i++)
-        connectedInports_[i]->setInvalidationLevel(invalidationLevel);
+    for (auto& elem : connectedInports_) elem->setInvalidationLevel(invalidationLevel);
 }
 
 template <typename T>
 void Outport::getSuccessorsUsingPortType(std::vector<Processor*>& successorProcessors) {
-    for (size_t i=0; i<connectedInports_.size(); i++) {
-        Processor* decendantProcessor = connectedInports_[i]->getProcessor();
+    for (auto& elem : connectedInports_) {
+        Processor* decendantProcessor = elem->getProcessor();
 
         if (std::find(successorProcessors.begin(), successorProcessors.end(), decendantProcessor)== successorProcessors.end())
-            successorProcessors.push_back(connectedInports_[i]->getProcessor());
+            successorProcessors.push_back(elem->getProcessor());
 
         std::vector<Outport*> outports = decendantProcessor->getOutports();
 
-        for (size_t j=0; j<outports.size(); j++) {
-            T* outPort = dynamic_cast<T*>(outports[j]);
+        for (auto& outport : outports) {
+            T* outPort = dynamic_cast<T*>(outport);
 
             if (outPort)
                 outPort->template getSuccessorsUsingPortType<T>(successorProcessors);

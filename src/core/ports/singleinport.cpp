@@ -33,12 +33,8 @@
 
 namespace inviwo {
 
-SingleInport::SingleInport(std::string identifier,
-                           InvalidationLevel invalidationLevel)
-    : Inport(identifier)
-    , connectedOutport_(NULL)
-    , invalidationLevel_(invalidationLevel) {
-}
+SingleInport::SingleInport(std::string identifier, InvalidationLevel invalidationLevel)
+    : Inport(identifier), connectedOutport_(nullptr), invalidationLevel_(invalidationLevel) {}
 
 SingleInport::~SingleInport() {}
 
@@ -53,16 +49,14 @@ void SingleInport::connectTo(Outport* outport) {
 void SingleInport::disconnectFrom(Outport* outport) {
     if (outport == connectedOutport_) {
         onInvalidCallback_.invokeAll();
-        connectedOutport_ = NULL;
+        connectedOutport_ = nullptr;
         outport->disconnectFrom(this);
         changed_ = true;
         invalidate(INVALID_OUTPUT);
     }
 }
 
-bool SingleInport::isConnected() const {
-    return (connectedOutport_!=NULL);
-}
+bool SingleInport::isConnected() const { return (connectedOutport_ != nullptr); }
 
 bool SingleInport::isConnectedTo(Outport* outport) const {
     return connectedOutport_==outport;

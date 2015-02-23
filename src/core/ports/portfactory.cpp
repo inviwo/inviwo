@@ -46,9 +46,7 @@ void PortFactory::registeryObject(PortFactoryObject* port) {
         LogWarn("Port with class name: " << className << " already registed");
 }
 
-IvwSerializable* PortFactory::create(const std::string &className) const {
-    return NULL;
-}
+IvwSerializable *PortFactory::create(const std::string &className) const { return nullptr; }
 
 bool PortFactory::isValidType(const std::string &className) const {
     PortClassMap::const_iterator it = portClassMap_.find(className);
@@ -65,14 +63,13 @@ Port* PortFactory::getPort(const std::string &className,const std::string &ident
     if (it != portClassMap_.end())
         return it->second->create(identifier);
     else
-        return NULL;
+        return nullptr;
 }
 
 std::vector<std::string> PortFactory::getRegistedPortClassNames() {
     std::vector<std::string> classNames;
 
-    for (PortClassMap::iterator it = portClassMap_.begin(); it != portClassMap_.end(); ++it)
-        classNames.push_back(it->first);
+    for (auto &elem : portClassMap_) classNames.push_back(elem.first);
 
     return classNames;
 }

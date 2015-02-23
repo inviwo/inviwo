@@ -72,8 +72,8 @@ void Inport::getPredecessorsUsingPortType(std::vector<Processor*>& predecessorsP
 
             std::vector<Inport*> inports = predecessorsProcessor->getInports();
 
-            for (size_t j=0; j<inports.size(); j++) {
-                T* inPort = dynamic_cast<T*>(inports[j]);
+            for (auto& inport : inports) {
+                T* inPort = dynamic_cast<T*>(inport);
 
                 if (inPort)
                     inPort->template getPredecessorsUsingPortType<T>(predecessorsProcessors);
