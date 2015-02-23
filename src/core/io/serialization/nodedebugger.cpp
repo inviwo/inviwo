@@ -43,7 +43,7 @@ NodeDebugger::NodeDebugger(TxElement* elem) {
         if (node) {
             elem = dynamic_cast<TxElement*>(node);
         } else {
-            elem = NULL;
+            elem = nullptr;
         }
     }
 }
@@ -67,10 +67,10 @@ std::vector<std::string> NodeDebugger::getPath() const {
 
 std::string NodeDebugger::getDescription() const {
     std::vector<std::string> parts;
-    for (std::vector<Node>::const_iterator it = nodes_.begin(); it != nodes_.end(); ++it) {
-        if (!it->identifier.empty()) {
+    for (const auto& elem : nodes_) {
+        if (!elem.identifier.empty()) {
             std::stringstream ss;
-            ss << it->key << ": \"" << it->identifier << "\" of class \"" << it->type << "\"";
+            ss << elem.key << ": \"" << elem.identifier << "\" of class \"" << elem.type << "\"";
             parts.push_back(ss.str());
         }
     }
