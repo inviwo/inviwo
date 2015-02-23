@@ -33,7 +33,7 @@
 namespace inviwo {
 
 BaseSliderWidgetQt::BaseSliderWidgetQt()
-    : QWidget(), spinBox_(NULL), slider_(NULL), spinnerValue_(0.0), sliderValue_(0) {
+    : QWidget(), spinBox_(nullptr), slider_(nullptr), spinnerValue_(0.0), sliderValue_(0) {
     generateWidget();
 }
 

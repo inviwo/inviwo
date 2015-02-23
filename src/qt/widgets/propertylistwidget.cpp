@@ -144,9 +144,9 @@ void PropertyListWidget::removeAndDeleteProcessorProperties(Processor* processor
 
         std::vector<PropertyWidgetQt*> propertyWidgets = it->second->getPropertyWidgets();
 
-        for (size_t i = 0; i < propertyWidgets.size(); i++) {
-            if (propertyWidgets[i]->getProperty())
-                propertyWidgets[i]->getProperty()->deregisterWidget(propertyWidgets[i]);
+        for (auto& propertyWidget : propertyWidgets) {
+            if (propertyWidget->getProperty())
+                propertyWidget->getProperty()->deregisterWidget(propertyWidget);
         }
 
         delete it->second;
@@ -183,8 +183,8 @@ CollapsibleGroupBoxWidgetQt* PropertyListWidget::createPropertiesForProcessor(
     widget->hideWidget();
 
     std::vector<Property*> props = processor->getProperties();
-    for (size_t i = 0; i < props.size(); i++) {
-        widget->addProperty(props[i]);
+    for (auto& prop : props) {
+        widget->addProperty(prop);
     }   
     widgetMap_[processor] = widget;
 
@@ -213,8 +213,8 @@ void PropertyListWidget::setUsageMode(UsageMode usageMode) {
     }
 
     if (usageMode == DEVELOPMENT) {
-        for (WidgetMap::iterator it = devWidgets_.begin(); it != devWidgets_.end(); ++it) {
-            it->second->showWidget();
+        for (auto& elem : devWidgets_) {
+            elem.second->showWidget();
         }
     }
 }
@@ -227,8 +227,8 @@ bool PropertyListWidget::event(QEvent* e) {
 
         Processor* p(InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(
             ple->processorId_));
-        
-        if (p == NULL) {
+
+        if (p == nullptr) {
             return true;
         }
 

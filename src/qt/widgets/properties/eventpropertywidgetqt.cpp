@@ -42,10 +42,10 @@ namespace inviwo {
 
 EventPropertyWidgetQt::EventPropertyWidgetQt(EventProperty* eventproperty)
     : PropertyWidgetQt(eventproperty)
-    , eventproperty_ (eventproperty)
-    , tmpEvent_(NULL)
-    , keyevent_(NULL)
-    , mouseEvent_(NULL) {
+    , eventproperty_(eventproperty)
+    , tmpEvent_(nullptr)
+    , keyevent_(nullptr)
+    , mouseEvent_(nullptr) {
     generateWidget();
 }
 

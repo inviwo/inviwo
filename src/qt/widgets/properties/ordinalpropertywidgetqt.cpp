@@ -32,10 +32,7 @@
 namespace inviwo {
 
 BaseOrdinalPropertyWidgetQt::BaseOrdinalPropertyWidgetQt(Property* property)
-    : PropertyWidgetQt(property)
-    , settingsWidget_(NULL)
-    , contextMenu_(NULL) {
-}
+    : PropertyWidgetQt(property), settingsWidget_(nullptr), contextMenu_(nullptr) {}
 
 BaseOrdinalPropertyWidgetQt::~BaseOrdinalPropertyWidgetQt() {
     if (settingsWidget_) {

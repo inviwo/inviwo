@@ -92,12 +92,12 @@ void InviwoApplicationQt::fileChanged(QString fileName) {
     if (QFile::exists(fileName)) {
         std::string fileNameStd = fileName.toLocal8Bit().constData();
 
-        for (size_t i = 0; i < fileObservers_.size(); i++) {
-            std::vector<std::string> observedFiles = fileObservers_[i]->getFiles();
+        for (auto& elem : fileObservers_) {
+            std::vector<std::string> observedFiles = elem->getFiles();
 
             if (std::find(observedFiles.begin(), observedFiles.end(), fileNameStd) !=
                 observedFiles.end())
-                fileObservers_[i]->fileChanged(fileNameStd);
+                elem->fileChanged(fileNameStd);
         }
 
         if (!fileWatcher_->files().contains(fileName)) {
@@ -145,7 +145,7 @@ void InviwoApplicationQt::wait(int ms) {
     Sleep(uint(ms));
 #else
     struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
-    nanosleep(&ts, NULL);
+    nanosleep(&ts, nullptr);
 #endif
 }
 

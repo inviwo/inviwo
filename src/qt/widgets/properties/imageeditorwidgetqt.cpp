@@ -41,8 +41,9 @@ SimpleGraphicsScene::SimpleGraphicsScene(QWidget* parent) : QGraphicsScene(paren
 // Simple Graphics Rectangle Item with label
 // used by Simple Graphics View
 
-SimpleWithRectangleLabel::SimpleWithRectangleLabel(QPointF rectSize, QGraphicsScene* scene, int index)
-    : QGraphicsRectItem(), label_(0), uniqueIndex_(index) {
+SimpleWithRectangleLabel::SimpleWithRectangleLabel(QPointF rectSize, QGraphicsScene* scene,
+                                                   int index)
+    : QGraphicsRectItem(), label_(nullptr), uniqueIndex_(index) {
     setRect(0, 0, rectSize.x(), rectSize.y());
     label_ = new LabelGraphicsItem(this);
     label_->setPos(0, 0);
@@ -76,13 +77,13 @@ int SimpleWithRectangleLabel::getIndex() {return uniqueIndex_;}
 
 SimpleGraphicsView::SimpleGraphicsView(QWidget* parent)
     : QGraphicsView(parent)
-    , scene_(0)
+    , scene_(nullptr)
     , rubberBandActive_(false)
     , readOnly_(false)
     , hideLabels_(false)
     , hideLabelDescriptions_(false)
     , fillRectangle_(false)
-    , currentRectItem_(0) {
+    , currentRectItem_(nullptr) {
     setRenderHint(QPainter::Antialiasing, true);
     setMouseTracking(true);
     setDragMode(QGraphicsView::RubberBandDrag);
@@ -129,8 +130,9 @@ void SimpleGraphicsView::mouseDoubleClickEvent(QMouseEvent* e) {
     //graphicsItems.size()==1 because of background pixmap item
     if (e->button()==Qt::LeftButton && graphicsItems.size()>1) {
         //Delete rectangle
-        for (int i=0; i<graphicsItems.size(); i++) {
-            SimpleWithRectangleLabel* rectItem = qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItems[i]);
+        for (auto& graphicsItem : graphicsItems) {
+            SimpleWithRectangleLabel* rectItem =
+                qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItem);
 
             if (rectItem)
                 rectItem->editLabel();
@@ -159,13 +161,12 @@ void SimpleGraphicsView::mousePressEvent(QMouseEvent* e) {
 
         if (e->modifiers() == Qt::ControlModifier) {
             //Delete rectangle
-            for (int i=0; i<graphicsItems.size(); i++) {
-                QGraphicsRectItem* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(graphicsItems[i]);
+            for (auto& graphicsItem : graphicsItems) {
+                QGraphicsRectItem* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(graphicsItem);
 
                 if (rectItem) {
                     if (!readOnly_) {
-                        if (currentRectItem_ == rectItem)
-                            currentRectItem_ = 0;
+                        if (currentRectItem_ == rectItem) currentRectItem_ = nullptr;
 
                         scene_->removeItem(rectItem);
                     }
@@ -174,8 +175,8 @@ void SimpleGraphicsView::mousePressEvent(QMouseEvent* e) {
         }
         else {
             //selection
-            for (int i=0; i<graphicsItems.size(); i++) {
-                QGraphicsRectItem* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(graphicsItems[i]);
+            for (auto& graphicsItem : graphicsItems) {
+                QGraphicsRectItem* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(graphicsItem);
 
                 if (rectItem) {
                     if (currentRectItem_) {
@@ -183,7 +184,7 @@ void SimpleGraphicsView::mousePressEvent(QMouseEvent* e) {
                         shadowEffect_->setOffset(0.0);
                         shadowEffect_->setBlurRadius(0.0);
                         currentRectItem_->setGraphicsEffect(shadowEffect_);
-                        currentRectItem_ = 0;
+                        currentRectItem_ = nullptr;
                     }
 
                     currentRectItem_ = rectItem;
@@ -205,8 +206,9 @@ std::vector<ImgRect> SimpleGraphicsView::getRectList() {
     std::vector<ImgRect> rectList;
     QList<QGraphicsItem*> graphicsItems = items();
 
-    for (int i=0; i<graphicsItems.size(); i++) {
-        SimpleWithRectangleLabel* rectItem = qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItems[i]);
+    for (auto& graphicsItem : graphicsItems) {
+        SimpleWithRectangleLabel* rectItem =
+            qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItem);
 
         if (rectItem) {
             ImgRect r;
@@ -248,8 +250,8 @@ void SimpleGraphicsView::mouseMoveEvent(QMouseEvent* e) {
 
     if (e->button()==Qt::LeftButton) {
         //graphicsItems.size()==1 because of background pixmap item
-        for (int i=0; i<graphicsItems.size(); i++) {
-            QGraphicsRectItem* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(graphicsItems[i]);
+        for (auto& graphicsItem : graphicsItems) {
+            QGraphicsRectItem* rectItem = qgraphicsitem_cast<QGraphicsRectItem*>(graphicsItem);
 
             if (rectItem == currentRectItem_) {
                 //LogWarn("Rect Item Move");
@@ -277,15 +279,17 @@ void SimpleGraphicsView::hideLabels(bool hide) {
     QList<QGraphicsItem*> graphicsItems = items();
 
     if (hideLabels_) {
-        for (int i=0; i<graphicsItems.size(); i++) {
-            SimpleWithRectangleLabel* rectItem = qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItems[i]);
+        for (auto& graphicsItem : graphicsItems) {
+            SimpleWithRectangleLabel* rectItem =
+                qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItem);
 
             if (rectItem) rectItem->hide();
         }
     }
     else {
-        for (int i=0; i<graphicsItems.size(); i++) {
-            SimpleWithRectangleLabel* rectItem = qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItems[i]);
+        for (auto& graphicsItem : graphicsItems) {
+            SimpleWithRectangleLabel* rectItem =
+                qgraphicsitem_cast<SimpleWithRectangleLabel*>(graphicsItem);
 
             if (rectItem) rectItem->show();
         }
@@ -336,19 +340,15 @@ void SimpleGraphicsView::setCurrentLabelPositionToTextField() {
 
 void SimpleGraphicsView::clearRectItems() {
     scene_->clear();
-    currentRectItem_ = 0;
+    currentRectItem_ = nullptr;
     shadowEffect_ = new QGraphicsDropShadowEffect();
     shadowEffect_->setOffset(3.0);
     shadowEffect_->setBlurRadius(3.0);
 }
 /////////////////////////////////////////////////
 // Image Labeling widget
-ImageLabelWidget::ImageLabelWidget() 
-    : scene_(0)
-    , view_(0)
-    , backGroundImage_(0)
-    , sceneScaleFactor_(1.2f) {
-    
+ImageLabelWidget::ImageLabelWidget()
+    : scene_(nullptr), view_(nullptr), backGroundImage_(nullptr), sceneScaleFactor_(1.2f) {
     generateWidget();
 }
 
@@ -519,7 +519,8 @@ void ImageLabelWidget::onCurrentItemPositionChange(vec2 centerPos) {
 
 /////////////////////////////////////////////////
 // Image Editor widget
-ImageEditorWidgetQt::ImageEditorWidgetQt(Property* property) : PropertyWidgetQt(property), imageLabelWidget_(0) {
+ImageEditorWidgetQt::ImageEditorWidgetQt(Property* property)
+    : PropertyWidgetQt(property), imageLabelWidget_(nullptr) {
     generateWidget();
     updateFromProperty();
 }
@@ -575,9 +576,9 @@ void ImageEditorWidgetQt::loadImageLabel() {
         ImageEditorProperty* imageProperty  = static_cast<ImageEditorProperty*>(property_);
         const std::vector<ImageLabel> labels = imageProperty->getLabels();
 
-        for (size_t i=0; i<labels.size(); i++) {
-            QPointF topLeft(labels[i].getTopLeft()[0], labels[i].getTopLeft()[1]);
-            QPointF rectSize(labels[i].getSize()[0], labels[i].getSize()[1]);
+        for (auto& label : labels) {
+            QPointF topLeft(label.getTopLeft()[0], label.getTopLeft()[1]);
+            QPointF rectSize(label.getSize()[0], label.getSize()[1]);
             imageLabelWidget_->view_->addRectangle(topLeft, rectSize);
         }
     }
@@ -597,10 +598,10 @@ bool ImageEditorWidgetQt::writeImageLabel() {
         //if (rectList.size())
         imageEditorProperty->clearLabels();
 
-        for (size_t i=0; i<rectList.size(); i++) {
-            vec2 topLeft(rectList[i].rect_.topLeft().x(), rectList[i].rect_.topLeft().y());
-            vec2 rectSize(rectList[i].rect_.size().width(), rectList[i].rect_.size().height());
-            imageEditorProperty->addLabel(topLeft, rectSize, rectList[i].label_);
+        for (auto& elem : rectList) {
+            vec2 topLeft(elem.rect_.topLeft().x(), elem.rect_.topLeft().y());
+            vec2 rectSize(elem.rect_.size().width(), elem.rect_.size().height());
+            imageEditorProperty->addLabel(topLeft, rectSize, elem.label_);
         }
     }
 

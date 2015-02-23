@@ -50,10 +50,9 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     , TransferFunctionObserver()
     , sliderRange_(1000)
     , tfProperty_(tfProperty)
-    , tfEditor_(NULL)
-    , tfEditorView_(NULL)
-    , tfPixmap_(NULL) {
-
+    , tfEditor_(nullptr)
+    , tfEditorView_(nullptr)
+    , tfPixmap_(nullptr) {
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     generateWidget();
     tfProperty_->get().addObserver(this);
@@ -331,10 +330,10 @@ void TransferFunctionPropertyDialog::setPointColor(QColor color) {
 
     // update Color dialog to reflect the color changes
     setColorDialogColor(color);
-    
-    for (int i=0; i<selection.size(); i++) {
+
+    for (auto& elem : selection) {
         TransferFunctionEditorControlPoint* tfcp =
-            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selection.at(i));
+            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
 
         if (tfcp) {
             tfcp->getPoint()->setRGB(newRgb);
@@ -351,9 +350,9 @@ void TransferFunctionPropertyDialog::setPointColorDialog(QColor color) {
     colorWheel_->setColor(color);
     colorWheel_->blockSignals(false);
 
-    for (int i = 0; i < selection.size(); i++) {
+    for (auto& elem : selection) {
         TransferFunctionEditorControlPoint* tfcp =
-            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selection.at(i));
+            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
 
         if (tfcp) {
             tfcp->getPoint()->setRGB(newRgb);

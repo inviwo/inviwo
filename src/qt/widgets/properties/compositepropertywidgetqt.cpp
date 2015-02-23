@@ -39,8 +39,8 @@ CompositePropertyWidgetQt::CompositePropertyWidgetQt(CompositeProperty* property
     setPropertyOwner(property);
     PropertyWidget::setProperty(property);
     std::vector<Property*> subProperties = property_->getProperties();
-    for (size_t i = 0; i < subProperties.size(); i++) {
-        addProperty(subProperties[i]);
+    for (auto& subPropertie : subProperties) {
+        addProperty(subPropertie);
     }
 
     property->addObserver(this);
@@ -48,8 +48,7 @@ CompositePropertyWidgetQt::CompositePropertyWidgetQt(CompositeProperty* property
 }                           
 
 void CompositePropertyWidgetQt::updateFromProperty() {
-    for (size_t i = 0; i < propertyWidgets_.size(); i++)
-        propertyWidgets_[i]->updateFromProperty();
+    for (auto& elem : propertyWidgets_) elem->updateFromProperty();
     this->setDisabled(property_->getReadOnly());
     
     setCollapsed(property_->isCollapsed());

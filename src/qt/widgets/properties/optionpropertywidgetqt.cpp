@@ -94,8 +94,8 @@ void OptionPropertyWidgetQt::updateFromProperty() {
     comboBox_->clear();
     std::vector<std::string> names = property_->getDisplayNames();
 
-    for (size_t i = 0; i < names.size(); i++) {
-        QString option = QString::fromStdString(names[i]);
+    for (auto& name : names) {
+        QString option = QString::fromStdString(name);
         comboBox_->addItem(option);
     }
     comboBox_->setCurrentIndex(static_cast<int>(property_->getSelectedIndex()));

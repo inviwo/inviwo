@@ -50,66 +50,62 @@ enum GLSLSyntaxThins { //rename
 };
 }
 
+static const char* glsl_types[] = {"\\bfloat", "\\b[bi]?vec[2-4]\\b", "\\bint", "\\bbool\\b",
+                                   "\\bmat[2-4]\\b", "\\bvoid\\b", "\\bsampler[1-3]D\\b",
+                                   "\\bsamplerCube\\b", "\\bsampler[1-2]DShadow\\b", nullptr};
 
-
-static const char* glsl_types[] = {"\\bfloat","\\b[bi]?vec[2-4]\\b",
-                                   "\\bint",        "\\bbool\\b",
-                                   "\\bmat[2-4]\\b", "\\bvoid\\b",
-                                   "\\bsampler[1-3]D\\b",
-                                   "\\bsamplerCube\\b",
-                                   "\\bsampler[1-2]DShadow\\b",0
-                                  };
-
-static const char* glsl_qualifiers[] = {"\\bstruct\\b","\\buniform\\b","\\battribute\\b","\\bvarying\\b","\\bconst\\b","\\bin\\b","\\bout\\b","\\binout\\b","\\bconst\\b",0};
-static const char* glsl_builtins_var[] = {"gl_ModelViewMatrix\\b","\\bgl_ModelViewProjectionMatrix\\b","\\bgl_ProjectionMatrix\\b","\\bgl_TextureMatrix\\b",
-                                          "\\bgl_ModelViewMatrixInverse\\b","\\bgl_ModelViewProjectionMatrixInverse\\b","\\bgl_ProjectionMatrixInverse\\b","\\bgl_TextureMatrixInverse\\b",
-                                          "\\bgl_ModelViewMatrixTranspose\\b","\\bgl_ModelViewProjectionMatrixTranspose\\b","\\bgl_ProjectionMatrixTranspose\\b","\\bgl_TextureMatrixTranspose\\b",
-                                          "\\bgl_ModelViewMatrixInverseTranspose\\b","\\bgl_ModelViewProjectionMatrixInverseTranspose\\b","\\bgl_ProjectionMatrixInverseTranspose\\b","\\bgl_TextureMatrixInverseTranspose\\b",
-                                          "\\bgl_NormalMatrix\\b","\\bgl_NormalScale\\b","\\bgl_DepthRangeParameters\\b","\\bgl_DepthRangeParameters\\b","\\bgl_DepthRange\\b",
-                                          "\\bgl_FogParameters\\b","\\bgl_Fog\\b","\\bgl_LightSourceParameters\\b","\\bgl_LightSource\\b",
-                                          "\\bgl_LightModelParameters\\b","\\bgl_LightModel\\b","\\bgl_LightModelProducts\\b","\\bgl_FrontLightModelProduct\\b","\\bgl_BackLightModelProduct\\b",
-                                          "\\bgl_LightProducts\\b","\\b gl_FrontLightProduct\\b","\\b gl_BackLightProduct\\b","\\bgl_MaterialParameters\\b","\\bgl_FrontMaterial\\b",
-                                          "\\bgl_BackMaterial\\b","\\bgl_PointParameters\\b","\\bgl_Point\\b","\\bgl_TextureEnvColor\\b",
-                                          "\\bgl_ClipPlane\\b","\\bgl_EyePlaneS\\b","\\bgl_EyePlaneT\\b",
-                                          "\\bgl_EyePlaneR\\b","\\bgl_EyePlaneQ\\b","\\bgl_ObjectPlaneS\\b","\\bgl_ObjectPlaneT\\b","\\bgl_ObjectPlaneR\\b","\\bgl_ObjectPlaneQ\\b",
-                                          "\\bgl_Position\\b","\\bgl_PointSize\\b","\\bgl_ClipVertex\\b",
-                                          "\\bgl_Vertex\\b","\\bgl_Normal\\b","\\bgl_Color\\b",
-                                          "\\bgl_SecondaryColor\\b","\\bgl_MultiTexCoord[0-7]\\b",
-                                          "\\bgl_FogCoord\\b","\\bgl_FrontColor\\b","\\bgl_BackColor\\b",
-                                          "\\bgl_FrontSecondaryColor\\b","\\bgl_BackSecondaryColor\\b","\\bgl_TexCoord\\b",
-                                          "\\bgl_FogFragCoord\\b","\\bgl_FragData\\b","\\bgl_FragDepth\\b",
-                                          "\\bgl_FragColor\\b","\\bgl_FragCoord\\b","\\bgl_FrontFacing\\b",
-                                          "\\bgl_MaxVertexUniformComponents\\b","\\bgl_MaxFragmentUniformComponents\\b","\\bgl_MaxVertexAttribs\\b",
-                                          "\\bgl_MaxVaryingFloats\\b","\\bgl_MaxDrawBuffers \\b","\\bgl_MaxTextureCoords\\b",
-                                          "\\bgl_MaxTextureUnits\\b","\\bgl_MaxTextureImageUnits\\b","\\bgl_MaxVertexTextureImageUnits\\b",
-                                          "\\bgl_MaxCombinedTextureImageUnits\\b","\\bgl_MaxLights\\b","\\bgl_MaxClipPlanes\\b",
-                                          0
-                                         };
-static const char* glsl_builtins_func[] = { "\\bsin\\b","\\bcos\\b","\\btab\\b","\\basin\\b",
-                                            "\\bacos\\b","\\batan\\b","\\bradians\\b","\\bdegrees\\b",
-                                            "\\bpow\\b","\\bexp\\b","\\blog\\b","\\bexp2\\b",
-                                            "\\blog2\\b","\\bsqrt\\b","\\binversesqrt\\b",
-                                            "\\babs\\b","\\bceil\\b","\\bclamp\\b","\\bfloor\\b",
-                                            "\\bfract\\b","\\bmax\\b","\\bmin\\b","\\bmix\\b",
-                                            "\\bmod\\b","\\bsign\\b","\\bsmoothstep\\b","\\bstep\\b",
-                                            "\\bmatrixCompMult\\b"
-                                            "\\bftransform\\b","\\bcross\\b","\\bdistance\\b","\\bdot\\b",
-                                            "\\bfaceforward\\b","\\blength\\b","\\bnormalize\\b",
-                                            "\\breflect\\b","\\brefract\\b","\\bdFdx\\b","\\bdFdy\\b",
-                                            "\\bfwidth\\b","\\ball\\b","\\bany\\b","\\bequal\\b",
-                                            "\\bgreaterThan\\b","\\bgreaterThanEqual\\b",
-                                            "\\blessThan\\b","\\blessThanEqual\\b","\\bnot\\b",
-                                            "\\bnotEqual\\b","\\btexture[1-3]D\\b","\\btexture1DProj\\b",
-                                            "\\btexture[1-3]DProj\\b",
-                                            "\\btextureCube\\b","\\bshadow[1-2]D\\b"
-                                            "\\bshadow[1-2]DProj\\b",
-                                            "\\btexture[1-3]DProjLod\\b",
-                                            "\\btexture[1-2]DLod\\b",
-                                            "\\btextureCubeLod\\b","\\bshadow[1-2]DLod\\b"
-                                            "\\bshadow1DProjLod\\b","\\bshadow2DProjLod\\b",
-                                            "\\bnoise[1-4]\\b",
-                                            0
-                                          };
+static const char* glsl_qualifiers[] = {
+    "\\bstruct\\b", "\\buniform\\b", "\\battribute\\b", "\\bvarying\\b", "\\bconst\\b",
+    "\\bin\\b",     "\\bout\\b",     "\\binout\\b",     "\\bconst\\b",   nullptr};
+static const char* glsl_builtins_var[] = {
+    "gl_ModelViewMatrix\\b", "\\bgl_ModelViewProjectionMatrix\\b", "\\bgl_ProjectionMatrix\\b",
+    "\\bgl_TextureMatrix\\b", "\\bgl_ModelViewMatrixInverse\\b",
+    "\\bgl_ModelViewProjectionMatrixInverse\\b", "\\bgl_ProjectionMatrixInverse\\b",
+    "\\bgl_TextureMatrixInverse\\b", "\\bgl_ModelViewMatrixTranspose\\b",
+    "\\bgl_ModelViewProjectionMatrixTranspose\\b", "\\bgl_ProjectionMatrixTranspose\\b",
+    "\\bgl_TextureMatrixTranspose\\b", "\\bgl_ModelViewMatrixInverseTranspose\\b",
+    "\\bgl_ModelViewProjectionMatrixInverseTranspose\\b",
+    "\\bgl_ProjectionMatrixInverseTranspose\\b", "\\bgl_TextureMatrixInverseTranspose\\b",
+    "\\bgl_NormalMatrix\\b", "\\bgl_NormalScale\\b", "\\bgl_DepthRangeParameters\\b",
+    "\\bgl_DepthRangeParameters\\b", "\\bgl_DepthRange\\b", "\\bgl_FogParameters\\b",
+    "\\bgl_Fog\\b", "\\bgl_LightSourceParameters\\b", "\\bgl_LightSource\\b",
+    "\\bgl_LightModelParameters\\b", "\\bgl_LightModel\\b", "\\bgl_LightModelProducts\\b",
+    "\\bgl_FrontLightModelProduct\\b", "\\bgl_BackLightModelProduct\\b", "\\bgl_LightProducts\\b",
+    "\\b gl_FrontLightProduct\\b", "\\b gl_BackLightProduct\\b", "\\bgl_MaterialParameters\\b",
+    "\\bgl_FrontMaterial\\b", "\\bgl_BackMaterial\\b", "\\bgl_PointParameters\\b", "\\bgl_Point\\b",
+    "\\bgl_TextureEnvColor\\b", "\\bgl_ClipPlane\\b", "\\bgl_EyePlaneS\\b", "\\bgl_EyePlaneT\\b",
+    "\\bgl_EyePlaneR\\b", "\\bgl_EyePlaneQ\\b", "\\bgl_ObjectPlaneS\\b", "\\bgl_ObjectPlaneT\\b",
+    "\\bgl_ObjectPlaneR\\b", "\\bgl_ObjectPlaneQ\\b", "\\bgl_Position\\b", "\\bgl_PointSize\\b",
+    "\\bgl_ClipVertex\\b", "\\bgl_Vertex\\b", "\\bgl_Normal\\b", "\\bgl_Color\\b",
+    "\\bgl_SecondaryColor\\b", "\\bgl_MultiTexCoord[0-7]\\b", "\\bgl_FogCoord\\b",
+    "\\bgl_FrontColor\\b", "\\bgl_BackColor\\b", "\\bgl_FrontSecondaryColor\\b",
+    "\\bgl_BackSecondaryColor\\b", "\\bgl_TexCoord\\b", "\\bgl_FogFragCoord\\b",
+    "\\bgl_FragData\\b", "\\bgl_FragDepth\\b", "\\bgl_FragColor\\b", "\\bgl_FragCoord\\b",
+    "\\bgl_FrontFacing\\b", "\\bgl_MaxVertexUniformComponents\\b",
+    "\\bgl_MaxFragmentUniformComponents\\b", "\\bgl_MaxVertexAttribs\\b",
+    "\\bgl_MaxVaryingFloats\\b", "\\bgl_MaxDrawBuffers \\b", "\\bgl_MaxTextureCoords\\b",
+    "\\bgl_MaxTextureUnits\\b", "\\bgl_MaxTextureImageUnits\\b",
+    "\\bgl_MaxVertexTextureImageUnits\\b", "\\bgl_MaxCombinedTextureImageUnits\\b",
+    "\\bgl_MaxLights\\b", "\\bgl_MaxClipPlanes\\b", nullptr};
+static const char* glsl_builtins_func[] = {
+    "\\bsin\\b", "\\bcos\\b", "\\btab\\b", "\\basin\\b", "\\bacos\\b", "\\batan\\b",
+    "\\bradians\\b", "\\bdegrees\\b", "\\bpow\\b", "\\bexp\\b", "\\blog\\b", "\\bexp2\\b",
+    "\\blog2\\b", "\\bsqrt\\b", "\\binversesqrt\\b", "\\babs\\b", "\\bceil\\b", "\\bclamp\\b",
+    "\\bfloor\\b", "\\bfract\\b", "\\bmax\\b", "\\bmin\\b", "\\bmix\\b", "\\bmod\\b", "\\bsign\\b",
+    "\\bsmoothstep\\b", "\\bstep\\b",
+    "\\bmatrixCompMult\\b"
+    "\\bftransform\\b",
+    "\\bcross\\b", "\\bdistance\\b", "\\bdot\\b", "\\bfaceforward\\b", "\\blength\\b",
+    "\\bnormalize\\b", "\\breflect\\b", "\\brefract\\b", "\\bdFdx\\b", "\\bdFdy\\b", "\\bfwidth\\b",
+    "\\ball\\b", "\\bany\\b", "\\bequal\\b", "\\bgreaterThan\\b", "\\bgreaterThanEqual\\b",
+    "\\blessThan\\b", "\\blessThanEqual\\b", "\\bnot\\b", "\\bnotEqual\\b", "\\btexture[1-3]D\\b",
+    "\\btexture1DProj\\b", "\\btexture[1-3]DProj\\b", "\\btextureCube\\b",
+    "\\bshadow[1-2]D\\b"
+    "\\bshadow[1-2]DProj\\b",
+    "\\btexture[1-3]DProjLod\\b", "\\btexture[1-2]DLod\\b", "\\btextureCubeLod\\b",
+    "\\bshadow[1-2]DLod\\b"
+    "\\bshadow1DProjLod\\b",
+    "\\bshadow2DProjLod\\b", "\\bnoise[1-4]\\b", nullptr};
 //static const char* glsl_preprocessor[] = {"#","#define","#include","#if","#ifdef","#ifdef","#else","#elif","#endif","#error","#pragma","#line","__LINE__","__FILE__","__VERSION__",0};
 
 
@@ -124,7 +120,7 @@ public:
         , blockEnd_(QRegExp::escape("*/")) {
     }
 
-    virtual Result eval(const QString& text ,const int& previousBlockState) {
+    virtual Result eval(const QString& text, const int& previousBlockState) override {
         Result res;
         res.format = &format_;
 
@@ -182,7 +178,7 @@ public:
     GLSLPreProcessorFormater(const QTextCharFormat& format) : format_(format) {
     }
 
-    virtual Result eval(const QString& text ,const int& previousBlockState) {
+    virtual Result eval(const QString& text, const int& previousBlockState) override {
         Result res;
         res.format = &format_;
 
@@ -200,7 +196,7 @@ private:
 
 class GLSLKeywordFormater : public SyntaxFormater {
 public:
-    virtual Result eval(const QString& text,const int& previousBlockState) {
+    virtual Result eval(const QString& text, const int& previousBlockState) override {
         Result result;
         result.format = &format_;
         std::vector<QRegExp>::iterator reg;

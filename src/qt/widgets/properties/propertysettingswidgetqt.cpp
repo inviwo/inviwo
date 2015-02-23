@@ -33,13 +33,12 @@
 namespace inviwo {
 
 PropertySettingsWidgetQt::PropertySettingsWidgetQt(Property* property, QWidget* parent)
-    : QWidget(NULL)
+    : QWidget(nullptr)
     , PropertyWidget(property)
     , gridLayout_(this)
     , btnApply_("Apply", this)
     , btnOk_("Ok", this)
     , btnCancel_("Cancel", this) {
-    
     this->setWindowFlags(Qt::WindowStaysOnTopHint);
 }
 

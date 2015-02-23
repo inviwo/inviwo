@@ -93,14 +93,14 @@ void PropertySelectionTreeWidget::addProcessorNetwork(ProcessorNetwork* processo
         return;
     }
 
-    for (size_t i=0; i<processors.size(); i++) {
-        std::vector<Property*> properties = processors[i]->getProperties();
-        std::string processorId = processors[i]->getIdentifier();
+    for (auto& processor : processors) {
+        std::vector<Property*> properties = processor->getProperties();
+        std::string processorId = processor->getIdentifier();
         QTreeWidgetItem* processorItem = new QTreeWidgetItem(QStringList(QString::fromStdString(processorId)));
         worksapceItem->addChild(processorItem);
 
-        for (size_t j=0; j<properties.size(); j++) {
-            std::string id = properties[j]->getIdentifier();
+        for (auto& propertie : properties) {
+            std::string id = propertie->getIdentifier();
             QTreeWidgetItem* newItem = new QTreeWidgetItem(QStringList(QString::fromStdString(id)));
             processorItem->addChild(newItem);
             newItem->setFlags(newItem->flags() | Qt::ItemIsUserCheckable);

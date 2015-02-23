@@ -88,10 +88,10 @@ TransferFunctionEditor::TransferFunctionEditor(TransferFunction* transferFunctio
 }
 
 TransferFunctionEditor::~TransferFunctionEditor() {
-    for (size_t i = 0; i < points_.size(); i++) delete points_[i];
+    for (auto& elem : points_) delete elem;
     points_.clear();
-    
-    for (size_t i = 0; i < connections_.size(); i++) delete connections_[i];
+
+    for (auto& elem : connections_) delete elem;
     connections_.clear();
 }
 
@@ -155,22 +155,22 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
     InviwoApplication::getPtr()->getProcessorNetwork()->lock();
 	if (k == 'A' && keyEvent->modifiers() == Qt::ControlModifier) {                // Select all
         QList<QGraphicsItem*> itemList = items();
-        for (int i = 0; i < itemList.size(); i++) {
-            itemList[i]->setSelected(true);
+        for (auto& elem : itemList) {
+            elem->setSelected(true);
         }
 
 	}
 	else if (k == 'D' && keyEvent->modifiers() == Qt::ControlModifier) {         // Select none
         QList<QGraphicsItem*> itemList = selectedItems();
-        for (int i = 0; i < itemList.size(); i++) {
-            itemList[i]->setSelected(false);
+        for (auto& elem : itemList) {
+            elem->setSelected(false);
         }
 
     } else if (k == Qt::Key_Delete) {  // Delete selected
         QList<QGraphicsItem*> itemList = selectedItems();
-        for (int i = 0; i < itemList.size(); i++) {
+        for (auto& elem : itemList) {
             TransferFunctionEditorControlPoint* p =
-                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(itemList[i]);
+                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
             if (p) {
                 removeControlPoint(p);
             }
@@ -207,8 +207,8 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
         }
 
         QList<QGraphicsItem*> selitems = selectedItems();
-        for (int i = 0; i < selitems.size(); i++) {
-            selitems[i]->setPos(selitems[i]->pos() + delta);
+        for (auto& selitem : selitems) {
+            selitem->setPos(selitem->pos() + delta);
         }
 
 	}
@@ -218,9 +218,9 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
         QList<QGraphicsItem*> selitems = selectedItems();
 
         std::vector<TransferFunctionEditorControlPoint*> points;
-        for (int i = 0; i < selitems.size(); i++) {
+        for (auto& selitem : selitems) {
             TransferFunctionEditorControlPoint* p =
-                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitems[i]);
+                qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitem);
             if (p) points.push_back(p);
         }
         std::stable_sort(points.begin(), points.end(),
@@ -318,19 +318,19 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
         QList<QGraphicsItem*> selitems = selectedItems();
 		if (keyEvent->modifiers() & Qt::ControlModifier) { // Create group
             groups_[group].clear();
-            for (int i = 0; i < selitems.size(); i++) {
+            for (auto& selitem : selitems) {
                 TransferFunctionEditorControlPoint* p =
-                    qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitems[i]);
+                    qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selitem);
                 if (p) groups_[group].push_back(p);
             }
         } else {
 			if (!(keyEvent->modifiers() & Qt::ShiftModifier)) {
-                 for (int i = 0; i < selitems.size(); i++) {
-                    selitems[i]->setSelected(false);
+                            for (auto& selitem : selitems) {
+                                selitem->setSelected(false);
                  }
             }
-            for (int i = 0; i < static_cast<int>(groups_[group].size()); i++) {
-                groups_[group][i]->setSelected(true);
+            for (auto& elem : groups_[group]) {
+                elem->setSelected(true);
             }     
         }
     } else {
@@ -380,14 +380,14 @@ TransferFunctionEditorControlPoint* TransferFunctionEditor::getControlPointGraph
     const QPointF pos) const {
     QList<QGraphicsItem*> graphicsItems = items(pos);
 
-    for (int i = 0; i < graphicsItems.size(); i++) {
+    for (auto& graphicsItem : graphicsItems) {
         TransferFunctionEditorControlPoint* controlPointGraphicsItem =
-            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(graphicsItems[i]);
+            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(graphicsItem);
 
         if (controlPointGraphicsItem) return controlPointGraphicsItem;
     }
 
-    return 0;
+    return nullptr;
 }
 
 void TransferFunctionEditor::onControlPointAdded(TransferFunctionDataPoint* p) {
@@ -410,9 +410,9 @@ void TransferFunctionEditor::onControlPointRemoved(TransferFunctionDataPoint* p)
     std::vector<TransferFunctionEditorControlPoint*>::iterator it;
     
     // remove point from all groups
-    for (int i = 0; i < static_cast<int>(groups_.size()); i++){
-        it = std::find_if(groups_[i].begin(), groups_[i].end(), ControlPointEquals(p)); 
-        if (it != groups_[i].end()) groups_[i].erase(it);
+    for (auto& elem : groups_) {
+        it = std::find_if(elem.begin(), elem.end(), ControlPointEquals(p));
+        if (it != elem.end()) elem.erase(it);
     }
     
     // remove item.
@@ -438,19 +438,19 @@ void TransferFunctionEditor::updateConnections() {
         delete c;
         connections_.pop_back();
     }
-    
-    connections_[0]->left_ = NULL;
-    connections_[connections_.size()-1]->right_ = NULL;
-    
+
+    connections_[0]->left_ = nullptr;
+    connections_[connections_.size() - 1]->right_ = nullptr;
+
     for (int i = 0; i < static_cast<int>(points_.size()); ++i){
         points_[i]->left_ = connections_[i];
         points_[i]->right_ = connections_[i+1];
         connections_[i]->right_ = points_[i];
         connections_[i+1]->left_ = points_[i];
     }
-    
-    for (int i = 0; i < static_cast<int>(connections_.size()); ++i){
-        connections_[i]->updateShape();
+
+    for (auto& elem : connections_) {
+        elem->updateShape();
     }
 }
 
