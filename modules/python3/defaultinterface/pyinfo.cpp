@@ -44,8 +44,7 @@ namespace inviwo {
     PyObject* py_info(PyObject* self, PyObject* args) {
         static PyInfoMethod p;
 
-        if (!p.testParams(args))
-            return 0;
+        if (!p.testParams(args)) return nullptr;
 
         inviwo::PyModule::getModuleByPyObject(self)->printInfo();
         Py_RETURN_NONE;

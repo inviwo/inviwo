@@ -48,12 +48,7 @@
 
 namespace inviwo {
 
-    PythonScript::PythonScript()
-        : source_("")
-        , byteCode_(0)
-        , isCompileNeeded_(false)
-    {
-    }
+PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_(false) {}
 
     PythonScript::~PythonScript() {
         Py_XDECREF(BYTE_CODE);
@@ -69,7 +64,7 @@ namespace inviwo {
 
         if (isCompileNeeded_) {
             Py_XDECREF(BYTE_CODE);
-            byteCode_ = 0;
+            byteCode_ = nullptr;
         }
 
         return !isCompileNeeded_;
@@ -84,7 +79,7 @@ namespace inviwo {
             return false;
         }
 
-        ivwAssert(byteCode_ != 0, "No byte code");
+        ivwAssert(byteCode_ != nullptr, "No byte code");
 
         if (outputInfo)
             LogInfo("Running compiled script ...");
@@ -104,7 +99,7 @@ namespace inviwo {
         source_ = source;
         isCompileNeeded_ = true;
         Py_XDECREF(BYTE_CODE);
-        byteCode_ = 0;
+        byteCode_ = nullptr;
     }
 
     bool PythonScript::checkCompileError() {
@@ -114,13 +109,13 @@ namespace inviwo {
         PyObject* errtype, *errvalue, *traceback;
         PyErr_Fetch(&errtype, &errvalue, &traceback);
         std::string log = "";
-        char* msg = 0;
-        PyObject* obj = 0;
+        char* msg = nullptr;
+        PyObject* obj = nullptr;
 
         if (PyArg_ParseTuple(errvalue, "sO", &msg, &obj)) {
             int line, col;
-            char* code = 0;
-            char* mod = 0;
+            char* code = nullptr;
+            char* mod = nullptr;
 
             if (PyArg_ParseTuple(obj, "siis", &mod, &line, &col, &code)) {
                 log = "[" + toString(line) + ":" + toString(col) + "] " + toString(msg) + ": " + toString(code);
@@ -150,10 +145,10 @@ namespace inviwo {
             return true;
 
         std::string pyException = "";
-        PyObject* pyError_type = 0;
-        PyObject* pyError_value = 0;
-        PyObject* pyError_traceback = 0;
-        PyObject* pyError_string = 0;
+        PyObject* pyError_type = nullptr;
+        PyObject* pyError_value = nullptr;
+        PyObject* pyError_traceback = nullptr;
+        PyObject* pyError_string = nullptr;
         PyErr_Fetch(&pyError_type, &pyError_value, &pyError_traceback);
         int errorLine = -1;
         std::string stacktraceStr;
@@ -188,10 +183,11 @@ namespace inviwo {
         s << errorLine;
         pyException.append(std::string("[") + s.str() + std::string("] "));
 
-             if (pyError_value && (pyError_string = PyObject_Str(pyError_value)) != 0 && (PyValueParser::is<std::string>(pyError_string))) {
+        if (pyError_value && (pyError_string = PyObject_Str(pyError_value)) != nullptr &&
+            (PyValueParser::is<std::string>(pyError_string))) {
                  pyException.append(PyValueParser::parse<std::string>(pyError_string));
                  Py_XDECREF(pyError_string);
-                 pyError_string = 0;
+                 pyError_string = nullptr;
                  }
                  else {
                  pyException.append("<No data available>");

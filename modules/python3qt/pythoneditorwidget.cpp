@@ -53,9 +53,9 @@ namespace inviwo {
 const static std::string defaultSource =
     "# Inviwo Python script \nimport inviwo \nimport inviwoqt \n\ninviwo.info() \ninviwoqt.info() "
     "\n";
-PythonEditorWidget* PythonEditorWidget::instance_ = 0;
+PythonEditorWidget* PythonEditorWidget::instance_ = nullptr;
 PythonEditorWidget* PythonEditorWidget::getPtr() {
-    ivwAssert(instance_ != 0, "Singleton not yet created");
+    ivwAssert(instance_ != nullptr, "Singleton not yet created");
     return instance_;
 }
 
@@ -66,7 +66,7 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent)
     , errorTextColor_(255, 107, 107)
     , script_()
     , unsavedChanges_(false) {
-    ivwAssert(instance_ == 0, "This is a Singelton, constructor may only be called once")
+    ivwAssert(instance_ == nullptr, "This is a Singelton, constructor may only be called once")
         instance_ = this;
     setObjectName("PythonEditor");
     settings_.beginGroup("PythonEditor");

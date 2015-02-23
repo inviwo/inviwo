@@ -44,7 +44,7 @@ namespace inviwo {
 PyObject* py_snapshot(PyObject* /*self*/, PyObject* args) {
     static PySnapshotMethod p;
 
-    if (!p.testParams(args)) return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string canvasName = "";
     std::string filename = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
@@ -53,7 +53,7 @@ PyObject* py_snapshot(PyObject* /*self*/, PyObject* args) {
         canvasName = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1)));
     }
 
-    CanvasProcessor* canvas = 0;
+    CanvasProcessor* canvas = nullptr;
 
     if (canvasName.size() != 0) {
         canvas = dynamic_cast<CanvasProcessor*>(
@@ -73,7 +73,7 @@ PyObject* py_snapshot(PyObject* /*self*/, PyObject* args) {
 
     if (!canvas) {
         PyErr_SetString(PyExc_TypeError, "snapshot() no canvas found");
-        return 0;
+        return nullptr;
     }
 
     canvas->saveImageLayer(filename.c_str());
@@ -83,12 +83,12 @@ PyObject* py_snapshot(PyObject* /*self*/, PyObject* args) {
 PyObject* py_snapshotCanvas(PyObject* /*self*/, PyObject* args) {
     static PySnapshotCanvasMethod p;
 
-    if (!p.testParams(args)) return 0;
+    if (!p.testParams(args)) return nullptr;
 
     unsigned int index;
-    const char* filename = 0;
+    const char* filename = nullptr;
 
-    if (!PyArg_ParseTuple(args, "is:canvasSnapshot", &index, &filename)) return 0;
+    if (!PyArg_ParseTuple(args, "is:canvasSnapshot", &index, &filename)) return nullptr;
 
     std::vector<CanvasProcessor*> canvases =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
@@ -97,7 +97,7 @@ PyObject* py_snapshotCanvas(PyObject* /*self*/, PyObject* args) {
         std::string msg = std::string("snapshotCanvas() index out of range with index: ") +
                           toString(index) + " ,canvases avilable: " + toString(canvases.size());
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     canvases[index]->saveImageLayer(filename);
@@ -141,13 +141,13 @@ PyObject* py_getMemoryUsage(PyObject* /*self*/, PyObject* /*args*/) {
         std::string msg =
             std::string("getMemoryUsage() failed . Inviwo Application modulde not found");
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
     InviwoModule* m = InviwoApplication::getPtr()->getModuleByType<InviwoCore>();
     if (!m) {
         std::string msg = std::string("getMemoryUsage() failed . Inviwo Core modulde not found");
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     for (size_t i = 0; m->getCapabilities().size(); i++) {
@@ -161,7 +161,7 @@ PyObject* py_getMemoryUsage(PyObject* /*self*/, PyObject* /*args*/) {
         std::string("getMemoryUsage() failed . No system capabilites found in Inivo Core");
     PyErr_SetString(PyExc_TypeError, msg.c_str());
 
-    return 0;
+    return nullptr;
 }
 
 PyObject* py_clearResourceManager(PyObject* /*self*/, PyObject* /*args*/) {
@@ -172,7 +172,7 @@ PyObject* py_clearResourceManager(PyObject* /*self*/, PyObject* /*args*/) {
     std::string msg =
         std::string("clearResourceManager() failed . ResourceManager::getPtr() return NULL");
     PyErr_SetString(PyExc_TypeError, msg.c_str());
-    return 0;
+    return nullptr;
 }
 
 PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
@@ -191,17 +191,17 @@ PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
             std::string msg =
                 std::string("disableEvaluation() could not find ProcessorNetworkEvaluator");
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return 0;
+            return nullptr;
         }
 
         std::string msg = std::string("disableEvaluation() could not find ProcessorNetwork");
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     std::string msg = std::string("disableEvaluation() could not find InviwoApplication");
     PyErr_SetString(PyExc_TypeError, msg.c_str());
-    return 0;
+    return nullptr;
 }
 
 PyObject* py_enableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
@@ -220,17 +220,17 @@ PyObject* py_enableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
             std::string msg =
                 std::string("disableEvaluation() could not find ProcessorNetworkEvaluator");
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return 0;
+            return nullptr;
         }
 
         std::string msg = std::string("disableEvaluation() could not find ProcessorNetwork");
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     std::string msg = std::string("disableEvaluation() could not find InviwoApplication");
     PyErr_SetString(PyExc_TypeError, msg.c_str());
-    return 0;
+    return nullptr;
 }
 
 PySnapshotMethod::PySnapshotMethod() : filename_("filename"), canvas_("canvas", true) {

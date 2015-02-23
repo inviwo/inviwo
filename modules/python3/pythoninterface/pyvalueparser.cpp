@@ -106,7 +106,7 @@ namespace inviwo {
     };
     std::string parseStr(PyObject* args) {
         PyObject * temp_bytes = PyUnicode_AsEncodedString(args, "ASCII", "strict"); // Owned reference
-        if (temp_bytes != NULL) {
+        if (temp_bytes != nullptr) {
             char* my_result = PyBytes_AS_STRING(temp_bytes); // Borrowed pointer
             std::string str = my_result;
             Py_DECREF(temp_bytes);
@@ -487,7 +487,7 @@ namespace inviwo {
         }
         std::string msg = std::string("Could create a python value of property  ") + p->getIdentifier() + " which is of type " + p->getClassIdentifier();
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     template <typename T, int size>

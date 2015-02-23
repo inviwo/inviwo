@@ -43,21 +43,20 @@ namespace inviwo {
 PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     static PyListPropertiesMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     if (PyTuple_Size(args) != 1) {
         std::ostringstream errStr;
         errStr << "listProperties() takes exactly 1 argument: processor name";
         errStr << " (" << PyTuple_Size(args) << " given)";
         PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
-        return 0;
+        return nullptr;
     }
 
     // check parameter if is string
     if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
         PyErr_SetString(PyExc_TypeError, "listProperties() argument must be a string");
-        return 0;
+        return nullptr;
     }
 
     std::string processorName = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
