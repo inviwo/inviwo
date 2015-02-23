@@ -238,9 +238,8 @@ void NetworkEditor::removeLink(LinkConnectionGraphicsItem* linkGraphicsItem) {
         linkGraphicsItem->getDestProcessorGraphicsItem()->getProcessor());
 
     network->lock();
-    for (ProcessorNetwork::PropertyLinkVector::iterator it = links.begin(); it != links.end();
-         ++it) {
-        network->removeLink((*it)->getSourceProperty(), (*it)->getDestinationProperty());
+    for (auto& link : links) {
+        network->removeLink((link)->getSourceProperty(), (link)->getDestinationProperty());
     }
     network->unlock();
 }
@@ -286,11 +285,11 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
         CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
         canvasProcessor->deinitialize();
         std::vector<Processor*> processors = portInspector->getProcessors();
-        for (size_t i = 0; i < processors.size(); i++) {
+        for (auto& processor : processors) {
             // For Debugging
             //ProcessorMetaData* meta = processors[i]->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             //meta->setVisibile(true);
-            network->addProcessor(processors[i]);
+            network->addProcessor(processor);
         }
         canvasProcessor->initialize(); // This is needed since, we need to call initialize after we
                                        // add the canvas to the processor.
@@ -298,23 +297,23 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
         // Connect the port to inspect to the inports of the inspector network
         Outport* outport = dynamic_cast<Outport*>(port);
         std::vector<Inport*> inports = portInspector->getInports();
-        for (size_t i = 0; i < inports.size(); i++) network->addConnection(outport, inports[i]);
+        for (auto& inport : inports) network->addConnection(outport, inport);
 
         // Add connections to the network
         std::vector<PortConnection*> connections = portInspector->getConnections();
-        for (size_t i = 0; i < connections.size(); i++) {
-            network->addConnection(connections[i]->getOutport(), connections[i]->getInport());
+        for (auto& connection : connections) {
+            network->addConnection(connection->getOutport(), connection->getInport());
         }
 
         // Add links to the network
         std::vector<PropertyLink*> links = portInspector->getPropertyLinks();
-        for (size_t i = 0; i < links.size(); i++) {
-            network->addLink(links[i]->getSourceProperty(), links[i]->getDestinationProperty());
+        for (auto& link : links) {
+            network->addLink(link->getSourceProperty(), link->getDestinationProperty());
         }
 
         // Do autolinking.
-        for (size_t i = 0; i < processors.size(); i++) {
-            network->autoLinkProcessor(processors[i]);
+        for (auto& processor : processors) {
+            network->autoLinkProcessor(processor);
         }
 
         // Setup the widget
@@ -349,8 +348,8 @@ void NetworkEditor::removePortInspector(Outport* port) {
             network->lock();
             // Remove processors from the network
             std::vector<Processor*> processors = it->second->getProcessors();
-            for (size_t i = 0; i < processors.size(); i++) network->removeProcessor(processors[i]);
-           
+            for (auto& processor : processors) network->removeProcessor(processor);
+
             network->unlock();
             it->second->setActive(false);
             portInspectors_.erase(it);
@@ -376,8 +375,8 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, 
         wm->setVisibile(false);
 
         std::vector<Processor*> processors = portInspector->getProcessors();
-        for (size_t i = 0; i < processors.size(); i++) {
-            network->addProcessor(processors[i]);
+        for (auto& processor : processors) {
+            network->addProcessor(processor);
         }
 
         canvasProcessor->initialize(); // This is needed since, we need to call initialize after we
@@ -386,23 +385,23 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, 
         // Connect the port to inspect to the inports of the inspector network
         Outport* outport = dynamic_cast<Outport*>(port);
         std::vector<Inport*> inports = portInspector->getInports();
-        for (size_t i = 0; i < inports.size(); i++) network->addConnection(outport, inports[i]);
+        for (auto& inport : inports) network->addConnection(outport, inport);
 
         // Add connections to the network
         std::vector<PortConnection*> connections = portInspector->getConnections();
-        for (size_t i = 0; i < connections.size(); i++) {
-            network->addConnection(connections[i]->getOutport(), connections[i]->getInport());
+        for (auto& connection : connections) {
+            network->addConnection(connection->getOutport(), connection->getInport());
         }
 
         // Add links to the network
         std::vector<PropertyLink*> links = portInspector->getPropertyLinks();
-        for (size_t i = 0; i < links.size(); i++) {
-            network->addLink(links[i]->getSourceProperty(), links[i]->getDestinationProperty());
+        for (auto& link : links) {
+            network->addLink(link->getSourceProperty(), link->getDestinationProperty());
         }
 
         // Do autolinking.
-        for (size_t i = 0; i < processors.size(); i++) {
-            network->autoLinkProcessor(processors[i]);
+        for (auto& processor : processors) {
+            network->autoLinkProcessor(processor);
         }
 
         int size = InviwoApplication::getPtr()
@@ -416,7 +415,7 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, 
 
         // remove the network...
         network->lock();
-        for (size_t i = 0; i < processors.size(); i++) network->removeProcessor(processors[i]);
+        for (auto& processor : processors) network->removeProcessor(processor);
         network->unlock();
 
         wm->setVisibile(true);
@@ -451,17 +450,17 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
 
     std::vector<Processor*> processors = processorNetwork->getProcessors();
 
-    for (size_t i = 0; i < processors.size(); i++) {
-        std::string newIdentifier = identifierPrefix + "_" + processors[i]->getIdentifier();
-        processors[i]->setIdentifier(newIdentifier);
-        ProcessorMetaData* meta = processors[i]->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    for (auto& processor : processors) {
+        std::string newIdentifier = identifierPrefix + "_" + processor->getIdentifier();
+        processor->setIdentifier(newIdentifier);
+        ProcessorMetaData* meta =
+            processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
         meta->setPosition(meta->getPosition() + pos);
-        network->addProcessor(processors[i]);
+        network->addProcessor(processor);
     }
 
     std::vector<PortConnection*> connections = processorNetwork->getConnections();
-    for (size_t i = 0; i < connections.size(); i++) {
-        PortConnection* connection = connections[i];
+    for (auto connection : connections) {
         Outport* outport = connection->getOutport();
         Inport* inport = connection->getInport();
         // first remove the connection from the loaded network to avoid an already connected warning
@@ -470,8 +469,8 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
     }
 
     std::vector<PropertyLink*> links = processorNetwork->getLinks();
-    for (size_t i = 0; i < links.size(); i++) {
-        network->addLink(links[i]->getSourceProperty(), links[i]->getDestinationProperty());
+    for (auto& link : links) {
+        network->addLink(link->getSourceProperty(), link->getDestinationProperty());
     }
 
     network->unlock();
@@ -494,9 +493,9 @@ std::vector<std::string> NetworkEditor::saveSnapshotsInExternalNetwork(
     std::vector<Processor*> processors =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
 
-    for (size_t i = 0; i < processors.size(); i++) {
-        if (processors[i]->getIdentifier().find(identifierPrefix) != std::string::npos) {
-            CanvasProcessor* canvasProcessor = dynamic_cast<CanvasProcessor*>(processors[i]);
+    for (auto& processor : processors) {
+        if (processor->getIdentifier().find(identifierPrefix) != std::string::npos) {
+            CanvasProcessor* canvasProcessor = dynamic_cast<CanvasProcessor*>(processor);
 
             if (canvasProcessor) {
                 std::string snapShotFilePath =
@@ -517,9 +516,9 @@ void NetworkEditor::removeExternalNetwork(std::string identifierPrefix) {
     std::vector<Processor*> processors =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
 
-    for (size_t i = 0; i < processors.size(); i++) {
-        if (processors[i]->getIdentifier().find(identifierPrefix) != std::string::npos)
-            InviwoApplication::getPtr()->getProcessorNetwork()->removeProcessor(processors[i]);
+    for (auto& processor : processors) {
+        if (processor->getIdentifier().find(identifierPrefix) != std::string::npos)
+            InviwoApplication::getPtr()->getProcessorNetwork()->removeProcessor(processor);
     }
 
     InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
@@ -622,11 +621,10 @@ void NetworkEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
 void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
 
-    for (ProcessorMap::iterator it = processorGraphicsItems_.begin();
-         it != processorGraphicsItems_.end(); ++it) {
-        QPointF pos = it->second->pos();
+    for (auto& elem : processorGraphicsItems_) {
+        QPointF pos = elem.second->pos();
         QPointF newpos = snapToGrid(pos);
-        if (pos != newpos) it->second->setPos(newpos);
+        if (pos != newpos) elem.second->setPos(newpos);
     }
 
     if (connectionCurve_) {
@@ -706,20 +704,20 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
         // delete selected graphics items
 
         QList<QGraphicsItem*> selectedGraphicsItems = selectedItems();
-        for (int i = 0; i < selectedGraphicsItems.size(); i++) {
+        for (auto& selectedGraphicsItem : selectedGraphicsItems) {
             // Remove Connection
             ConnectionGraphicsItem* connectionGraphicsItem =
-                qgraphicsitem_cast<ConnectionGraphicsItem*>(selectedGraphicsItems[i]);
+                qgraphicsitem_cast<ConnectionGraphicsItem*>(selectedGraphicsItem);
             if (connectionGraphicsItem) {
                 removeConnection(connectionGraphicsItem);
             }
         }
 
         selectedGraphicsItems = selectedItems();
-        for (int i = 0; i < selectedGraphicsItems.size(); i++) {
+        for (auto& selectedGraphicsItem : selectedGraphicsItems) {
             // Remove Link
             LinkConnectionGraphicsItem* linkGraphicsItem =
-                qgraphicsitem_cast<LinkConnectionGraphicsItem*>(selectedGraphicsItems[i]);
+                qgraphicsitem_cast<LinkConnectionGraphicsItem*>(selectedGraphicsItem);
             if (linkGraphicsItem) {
                 removeLink(linkGraphicsItem);
                 continue;
@@ -727,10 +725,10 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
         }
 
         selectedGraphicsItems = selectedItems();
-        for (int i = 0; i < selectedGraphicsItems.size(); i++) {
+        for (auto& selectedGraphicsItem : selectedGraphicsItems) {
             // Remove Processor
             ProcessorGraphicsItem* processorGraphicsItem =
-                qgraphicsitem_cast<ProcessorGraphicsItem*>(selectedGraphicsItems[i]);
+                qgraphicsitem_cast<ProcessorGraphicsItem*>(selectedGraphicsItem);
             if (processorGraphicsItem && !processorGraphicsItem->isEditingProcessorName()) {
                 network->removeAndDeleteProcessor(processorGraphicsItem->getProcessor());
                 continue;
@@ -798,9 +796,9 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
     SignalMapperObject moDeleteConnection;
 
     QList<QGraphicsItem*> graphicsItems = items(e->scenePos());
-    for (int i = 0; i < graphicsItems.size(); i++) {
+    for (auto& graphicsItem : graphicsItems) {
         ProcessorOutportGraphicsItem* outport =
-            qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(graphicsItems[i]);
+            qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(graphicsItem);
         if (outport) {
             QAction* showPortInsector = menu.addAction(tr("Port Inspector"));
             showPortInsector->setCheckable(true);
@@ -816,7 +814,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         }
 
         ProcessorInportGraphicsItem* inport =
-            qgraphicsitem_cast<ProcessorInportGraphicsItem*>(graphicsItems[i]);
+            qgraphicsitem_cast<ProcessorInportGraphicsItem*>(graphicsItem);
         if (inport) {
             QAction* showPortInsector = menu.addAction(tr("Port Inspector"));
             showPortInsector->setCheckable(true);
@@ -832,8 +830,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             break;
         }
 
-        ProcessorGraphicsItem* processor =
-            qgraphicsitem_cast<ProcessorGraphicsItem*>(graphicsItems[i]);
+        ProcessorGraphicsItem* processor = qgraphicsitem_cast<ProcessorGraphicsItem*>(graphicsItem);
         if (processor) {
             QAction* renameAction = menu.addAction(tr("Rename Processor"));
             QAction* deleteAction = menu.addAction(tr("Delete Processor"));
@@ -875,7 +872,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         }
 
         ConnectionGraphicsItem* portconnection =
-            qgraphicsitem_cast<ConnectionGraphicsItem*>(graphicsItems[i]);
+            qgraphicsitem_cast<ConnectionGraphicsItem*>(graphicsItem);
         if (portconnection) {
             QAction* deleteConnection = menu.addAction(tr("Delete Connection"));
             moDeleteConnection.item_ = portconnection;
@@ -899,7 +896,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
         }
 
         LinkConnectionGraphicsItem* linkconnection =
-            qgraphicsitem_cast<LinkConnectionGraphicsItem*>(graphicsItems[i]);
+            qgraphicsitem_cast<LinkConnectionGraphicsItem*>(graphicsItem);
         if (linkconnection) {
             QAction* deleteLink = menu.addAction(tr("Delete Links"));
             moDeleteLink.item_ = linkconnection;
@@ -944,8 +941,8 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
             
             bool inputmatch = false;
             // try to find a match between connection outport and one of the new processors inports
-            for (size_t i = 0; i < processor->getInports().size(); ++i) {
-                if (processor->getInports().at(i)->canConnectTo(connectionItem->getOutport())) {
+            for (auto& elem : processor->getInports()) {
+                if (elem->canConnectTo(connectionItem->getOutport())) {
                     inputmatch = true;
                     break;
                 }
@@ -953,8 +950,8 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
 
             bool outputmatch = false;
             // try to find a match between connection inport and one of the new processors outports
-            for (size_t i = 0; i < processor->getOutports().size(); ++i) {
-                if (connectionItem->getInport()->canConnectTo(processor->getOutports().at(i))) {
+            for (auto& elem : processor->getOutports()) {
+                if (connectionItem->getInport()->canConnectTo(elem)) {
                     outputmatch = true;
                     break;
                 }
@@ -1046,15 +1043,15 @@ void NetworkEditor::placeProcessorOnConnection(Processor* processor,
     Inport* inport = NULL;
     Outport* outport = NULL;
 
-    for (size_t i = 0; i < inports.size(); ++i) {
-        if (inports.at(i)->canConnectTo(connectionOutport)) {
-            inport = inports.at(i);
+    for (auto& inports_i : inports) {
+        if (inports_i->canConnectTo(connectionOutport)) {
+            inport = inports_i;
             break;
         }
     }
-    for (size_t i = 0; i < outports.size(); ++i) {
-        if (connectionInport->canConnectTo(outports.at(i))) {
-            outport = outports.at(i);
+    for (auto& outports_i : outports) {
+        if (connectionInport->canConnectTo(outports_i)) {
+            outport = outports_i;
             break;
         }
     }
@@ -1098,11 +1095,9 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
             // MultiInports may have several connected outports
             std::vector<Outport*> previouslyConnectedOutports =
                 oldInports.at(i)->getConnectedOutports();
-            for (std::vector<Outport*>::iterator it = previouslyConnectedOutports.begin(),
-                                                 itEnd = previouslyConnectedOutports.end();
-                 it != itEnd; ++it) {
+            for (auto& previouslyConnectedOutport : previouslyConnectedOutports) {
                 // save new connection connectionOutportoldInport-processorInport
-                newConnections.push_back(std::make_pair(*it, inports.at(i)));
+                newConnections.push_back(std::make_pair(previouslyConnectedOutport, inports.at(i)));
             }
         }
     }
@@ -1110,11 +1105,10 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
     for (size_t i = 0; i < std::min(outports.size(), oldOutports.size()); ++i) {
         std::vector<Inport*> previouslyConnectedInports = oldOutports.at(i)->getConnectedInports();
 
-        for (size_t j = 0; j < previouslyConnectedInports.size(); ++j) {
-            if (previouslyConnectedInports.at(j)->canConnectTo(outports.at(i))) {
+        for (auto& previouslyConnectedInport : previouslyConnectedInports) {
+            if (previouslyConnectedInport->canConnectTo(outports.at(i))) {
                 // save new connection processorOutport-connectionInport
-                newConnections.push_back(
-                    std::make_pair(outports.at(i), previouslyConnectedInports.at(j)));
+                newConnections.push_back(std::make_pair(outports.at(i), previouslyConnectedInport));
             }
         }
     }
@@ -1125,13 +1119,13 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
     std::vector<Property*> oldProps = oldProcessor->getProperties();
     
     std::map<Property*, Property*> propertymap;
-    
-    for (std::vector<Property*>::iterator newit = newProps.begin(); newit != newProps.end(); ++newit) {
-        for (std::vector<Property*>::iterator oldit = oldProps.begin(); oldit != oldProps.end(); ++oldit) {
-            if ( (*newit)->getIdentifier() == (*oldit)->getIdentifier()
-                && (*newit)->getClassIdentifier() == (*oldit)->getClassIdentifier()) {
-                (*newit)->set(*oldit);
-                propertymap[(*oldit)] = (*newit);
+
+    for (auto& newProp : newProps) {
+        for (auto& oldProp : oldProps) {
+            if ((newProp)->getIdentifier() == (oldProp)->getIdentifier() &&
+                (newProp)->getClassIdentifier() == (oldProp)->getClassIdentifier()) {
+                (newProp)->set(oldProp);
+                propertymap[(oldProp)] = (newProp);
             }
         }
     }
@@ -1139,28 +1133,28 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
     // Move propertylinks to the new processor
     std::vector<PropertyLink*> links = network->getLinks();
     std::map<Property*, Property*>::iterator match;
-    
-    for (std::vector<Property*>::iterator oldit = oldProps.begin(); oldit != oldProps.end(); ++oldit) {
-        for (std::vector<PropertyLink*>::iterator linkit = links.begin(); linkit != links.end(); ++linkit) {
-            if ( (*linkit)->getDestinationProperty() == (*oldit) ) {
-                match = propertymap.find(*oldit);
+
+    for (auto& oldProp : oldProps) {
+        for (auto& link : links) {
+            if ((link)->getDestinationProperty() == (oldProp)) {
+                match = propertymap.find(oldProp);
                 if( match != propertymap.end()) {
                     // add link from
-                    Property* start = (*linkit)->getSourceProperty();
+                    Property* start = (link)->getSourceProperty();
                     // to
                     Property* end = match->second;
                     
                     network->addLink(start, end);
                 }
             }
-            if ( (*linkit)->getSourceProperty() == (*oldit) ) {
-                match = propertymap.find(*oldit);
+            if ((link)->getSourceProperty() == (oldProp)) {
+                match = propertymap.find(oldProp);
                 if( match != propertymap.end()) {
                     // add link from
                     Property* start = match->second;
                      //to
-                    Property* end = (*linkit)->getDestinationProperty();
-                    
+                    Property* end = (link)->getDestinationProperty();
+
                     network->addLink(start, end);
                 }
             }
@@ -1171,8 +1165,8 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
     network->removeProcessor(oldProcessor);
 
     // create all new connections
-    for (size_t i = 0; i < newConnections.size(); ++i)
-        network->addConnection(newConnections.at(i).first, newConnections.at(i).second);
+    for (auto& newConnection : newConnections)
+        network->addConnection(newConnection.first, newConnection.second);
 
     network->unlock();
 }
@@ -1188,23 +1182,21 @@ void NetworkEditor::clearNetwork() {
     // We need to clear the portInspectors manually otherwise the pointers in the 
     // PortInspector networks won't be cleared
     PortInspectorMap portInspectors = portInspectors_;
-    for (PortInspectorMap::iterator it = portInspectors.begin(); it != portInspectors.end(); ++it) {
-        removePortInspector(it->first);
+    for (auto& portInspector : portInspectors) {
+        removePortInspector(portInspector.first);
     }
 
     // Invalidate inports to alert processors that they should stop their calculations.
     std::vector<Processor*> processors =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
-    for (size_t p = 0; p < processors.size(); p++) {
-        std::vector<Inport*> inports = processors[p]->getInports();
-        for (size_t i = 0; i < inports.size(); i++)
-            inports[i]->invalidate(INVALID_OUTPUT);
+    for (auto processor : processors) {
+        for (auto& inport : processor->getInports()) inport->invalidate(INVALID_OUTPUT);
     }
 
     ResourceManager::getPtr()->clearAllResources();
 
-    for (size_t i = 0; i < processors.size(); i++) {
-        InviwoApplication::getPtr()->getProcessorNetwork()->removeAndDeleteProcessor(processors[i]);
+    for (auto& processor : processors) {
+        InviwoApplication::getPtr()->getProcessorNetwork()->removeAndDeleteProcessor(processor);
     }
 
     InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
@@ -1373,18 +1365,16 @@ void NetworkEditor::initiateLink(ProcessorLinkGraphicsItem* item, QPointF pos) {
 
 void NetworkEditor::updateLeds() {
     // Update the status items
-    for (ProcessorMap::iterator it = processorGraphicsItems_.begin();
-         it != processorGraphicsItems_.end(); it++) {
-        it->second->getStatusItem()->update();
+    for (auto& elem : processorGraphicsItems_) {
+        elem.second->getStatusItem()->update();
     }
 }
 
 void NetworkEditor::resetAllTimeMeasurements() {
 #if IVW_PROFILING
     // Update the status items
-    for (ProcessorMap::iterator it = processorGraphicsItems_.begin();
-        it != processorGraphicsItems_.end(); it++) {
-            it->second->resetTimeMeasurements();
+    for (auto& elem : processorGraphicsItems_) {
+        elem.second->resetTimeMeasurements();
     }
 #endif
 }
@@ -1392,8 +1382,7 @@ void NetworkEditor::resetAllTimeMeasurements() {
 // Manage various tooltips.
 void NetworkEditor::helpEvent(QGraphicsSceneHelpEvent* e) {
     QList<QGraphicsItem*> graphicsItems = items(e->scenePos());
-    for (int i = 0; i < graphicsItems.size(); ++i) {
-        QGraphicsItem* item = graphicsItems[i];
+    for (auto item : graphicsItems) {
         switch (item->type()) {
             case ProcessorGraphicsItem::Type:
                 qgraphicsitem_cast<ProcessorGraphicsItem*>(item)->showToolTip(e);
@@ -1516,8 +1505,8 @@ void NetworkEditor::onProcessorNetworkWillRemoveProcessor(Processor* processor) 
     setModified(true);
     
     std::vector<Outport*> outports = processor->getOutports();
-    for (std::vector<Outport*>::iterator it = outports.begin(); it != outports.end(); ++it) {
-        removePortInspector(*it);
+    for (auto& outport : outports) {
+        removePortInspector(outport);
     }
     
     removeProcessorRepresentations(processor);

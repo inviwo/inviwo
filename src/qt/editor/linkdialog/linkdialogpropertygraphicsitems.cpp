@@ -72,9 +72,9 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem (
     if (compProp) {
         // LogWarn("Found composite sub properties")
         std::vector<Property*> subProperties = compProp->getProperties();
-        for (size_t j = 0; j < subProperties.size(); j++) {
+        for (auto& subPropertie : subProperties) {
             LinkDialogPropertyGraphicsItem* compItem = new LinkDialogPropertyGraphicsItem(
-                processor, subProperties[j], this, subPropertyLevel_ + 1);
+                processor, subPropertie, this, subPropertyLevel_ + 1);
             compItem->hide();
             subPropertyGraphicsItems_.push_back(compItem);
         }
@@ -104,12 +104,10 @@ void LinkDialogPropertyGraphicsItem::setPropertyItemIndex(int &currIndex) {
     setIndex(currIndex);
     currIndex++;
     if (isExpanded_) {
-        for (size_t i=0; i<subPropertyGraphicsItems_.size(); i++)
-            subPropertyGraphicsItems_[i]->setPropertyItemIndex(currIndex);
+        for (auto& elem : subPropertyGraphicsItems_) elem->setPropertyItemIndex(currIndex);
     }
     else {
-        for (size_t i=0; i<subPropertyGraphicsItems_.size(); i++)
-            subPropertyGraphicsItems_[i]->setIndex(index_);
+        for (auto& elem : subPropertyGraphicsItems_) elem->setIndex(index_);
     }
     
     /*
@@ -172,9 +170,9 @@ void LinkDialogPropertyGraphicsItem::expand(bool expandSubProperties) {
     if (!subPropertyGraphicsItems_.size()) return;
     isExpanded_ = true;
     if (!expandSubProperties) return;
-    for (size_t i=0; i<subPropertyGraphicsItems_.size(); i++) {
-        subPropertyGraphicsItems_[i]->expand(true);
-        subPropertyGraphicsItems_[i]->show();
+    for (auto& elem : subPropertyGraphicsItems_) {
+        elem->expand(true);
+        elem->show();
     }
 }
 
@@ -182,9 +180,9 @@ void LinkDialogPropertyGraphicsItem::collapse(bool collapseSubProperties) {
     if (!subPropertyGraphicsItems_.size()) return;
     isExpanded_ = false;
     if (!collapseSubProperties) return;
-    for (size_t i=0; i<subPropertyGraphicsItems_.size(); i++) {
-        subPropertyGraphicsItems_[i]->collapse(true);
-        subPropertyGraphicsItems_[i]->hide();
+    for (auto& elem : subPropertyGraphicsItems_) {
+        elem->collapse(true);
+        elem->hide();
     }
 }
 
@@ -241,7 +239,7 @@ DialogConnectionGraphicsItem* LinkDialogPropertyGraphicsItem::getArrowConnection
             return connectionItems_[i];
     }
 
-    return 0;
+    return nullptr;
 }
 
 QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort, bool computeRight) const {
@@ -363,27 +361,26 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
     p->save();
     QPoint arrowDim(arrowDimensionWidth, arrowDimensionHeight);
 
-    for (size_t i=0; i<connectionItems_.size(); i++) {
+    for (auto& elem : connectionItems_) {
         //Determine if arrow need to be drawn pointing left or right side
-        bool right = isArrowPointedRight(connectionItems_[i]);
+        bool right = isArrowPointedRight(elem);
         //If arrow points right, then get the rectangle aligned to the left-
         //boundary of property item (rectangle) and vice versa
-        QRectF arrowRect = calculateArrowRect(connectionItems_[i], !right);
+        QRectF arrowRect = calculateArrowRect(elem, !right);
         QPainterPath rectPath;
 
         //determine color of start and end arrow
-        if (connectionItems_[i]->getEndProperty()==this) {
-            arrowRect = calculateArrowRect(connectionItems_[i]->getEndArrowHeadIndex(), !right);
+        if (elem->getEndProperty() == this) {
+            arrowRect = calculateArrowRect(elem->getEndArrowHeadIndex(), !right);
             p->setPen(Qt::black);
             p->setBrush(Qt::green);
-        }
-        else if (connectionItems_[i]->getStartProperty()==this) {
-            arrowRect = calculateArrowRect(connectionItems_[i]->getStartArrowHeadIndex(), !right);
+        } else if (elem->getStartProperty() == this) {
+            arrowRect = calculateArrowRect(elem->getStartArrowHeadIndex(), !right);
             p->setPen(Qt::transparent);
             p->setBrush(Qt::transparent);
         }
 
-        if (connectionItems_[i]->isBidirectional()) {
+        if (elem->isBidirectional()) {
             p->setPen(Qt::black);
             p->setBrush(Qt::green);
         }
@@ -485,11 +482,11 @@ std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::get
 
     std::vector<LinkDialogPropertyGraphicsItem*> subProps;
 
-    for (size_t i=0; i<subPropertyGraphicsItems_.size(); i++) {
-        subProps.push_back(subPropertyGraphicsItems_[i]);
-        std::vector<LinkDialogPropertyGraphicsItem*> props = subPropertyGraphicsItems_[i]->getSubPropertyItemList(recursive);
-        for (size_t j=0; j<props.size(); j++)
-            subProps.push_back(props[j]);
+    for (auto& elem : subPropertyGraphicsItems_) {
+        subProps.push_back(elem);
+        std::vector<LinkDialogPropertyGraphicsItem*> props =
+            elem->getSubPropertyItemList(recursive);
+        for (auto& prop : props) subProps.push_back(prop);
     }
 
     return subProps;

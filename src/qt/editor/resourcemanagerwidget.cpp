@@ -68,8 +68,7 @@ void ResourceManagerWidget::resourceRemoved(const Resource* resource)
 {
     QList<QStandardItem*> foundItem = model_->findItems(QString::fromStdString(resource->getIdentifier()));
 
-    for (QList<QStandardItem*>::iterator it = foundItem.begin(); it != foundItem.end(); ++it)
-        model_->removeRow(model_->indexFromItem(*it).row());
+    for (auto& elem : foundItem) model_->removeRow(model_->indexFromItem(elem).row());
 }
 
 void ResourceManagerWidget::keyPressEvent(QKeyEvent* keyEvent)
@@ -90,8 +89,8 @@ void ResourceManagerWidget::removeSelectedItems()
 
     qSort(rows.begin(), rows.end(), qGreater<int>());
 
-    for (size_t i=0; i<rows.size(); i++) {
-        std::string resrcIdentifier(model_->item(rows[i])->text().toLocal8Bit().constData());
+    for (auto& row : rows) {
+        std::string resrcIdentifier(model_->item(row)->text().toLocal8Bit().constData());
         ResourceManager::getPtr()->removeResource(resrcIdentifier);
     }
 

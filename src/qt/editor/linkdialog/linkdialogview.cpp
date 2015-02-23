@@ -32,7 +32,8 @@
 
 namespace inviwo {
 
-LinkDialogGraphicsView::LinkDialogGraphicsView(QWidget* parent) : QGraphicsView(parent), scene_(0) {
+LinkDialogGraphicsView::LinkDialogGraphicsView(QWidget* parent)
+    : QGraphicsView(parent), scene_(nullptr) {
     setRenderHint(QPainter::Antialiasing, true);
     setMouseTracking(true);
     setDragMode(QGraphicsView::RubberBandDrag);

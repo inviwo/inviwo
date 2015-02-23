@@ -58,7 +58,7 @@ SettingsWidget::~SettingsWidget() {}
 void SettingsWidget::updateSettingsWidget() {
     std::vector<Settings*> settings = InviwoApplication::getPtr()->getModuleSettings();
 
-    for (size_t i = 0; i < settings.size(); i++) {
+    for (auto& setting : settings) {
         // Scroll widget
         QScrollArea* scrollAreaTab = new QScrollArea(tabWidget_);
         scrollAreaTab->setWidgetResizable(true);
@@ -76,32 +76,31 @@ void SettingsWidget::updateSettingsWidget() {
         listWidget->setLayout(listLayout);
         scrollAreaTab->setWidget(listWidget);
 
-        std::vector<Property*> props = settings[i]->getProperties();
- 
-        for (size_t j = 0; j < props.size(); j++) {
+        std::vector<Property*> props = setting->getProperties();
 
-            PropertyWidgetQt* propertyWidget = static_cast<PropertyWidgetQt*>(
-                PropertyWidgetFactory::getPtr()->create(props[j]));
+        for (auto& prop : props) {
+            PropertyWidgetQt* propertyWidget =
+                static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
 
             if (propertyWidget) {
                 listLayout->addWidget(propertyWidget);
-                props[j]->registerWidget(propertyWidget);
+                prop->registerWidget(propertyWidget);
                 propertyWidget->showWidget();
                 connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
                         SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
             } else {
-                LogWarn("Could not find a widget for property: " << props[j]->getClassIdentifier());
+                LogWarn("Could not find a widget for property: " << prop->getClassIdentifier());
             }
         }
 
-        tabWidget_->addTab(scrollAreaTab, tr(settings[i]->getIdentifier().c_str()));
+        tabWidget_->addTab(scrollAreaTab, tr(setting->getIdentifier().c_str()));
     }
 }
 
 void SettingsWidget::saveSettings() {
     const std::vector<Settings*> settings = InviwoApplication::getPtr()->getModuleSettings();
-    for (size_t i = 0; i < settings.size(); i++) {
-        settings[i]->saveToDisk();
+    for (auto& setting : settings) {
+        setting->saveToDisk();
     }
 }
 

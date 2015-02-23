@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h>
@@ -39,21 +39,25 @@
 
 namespace inviwo {
 
-LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem() : GraphicsItemData<Processor>(), animateExpansion_(1.0) {
+LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem()
+    : GraphicsItemData<Processor>(), animateExpansion_(1.0) {
     setZValue(LINKDIALOG_PROCESSOR_GRAPHICSITEM_DEPTH);
-    //setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
-    setRect(-processorItemWidth/2, -processorItemHeight/2, processorItemWidth, processorItemHeight);
+    // setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
+    setRect(-processorItemWidth / 2, -processorItemHeight / 2, processorItemWidth,
+            processorItemHeight);
     QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
     processorShadowEffect->setOffset(3.0);
     processorShadowEffect->setBlurRadius(3.0);
     setGraphicsEffect(processorShadowEffect);
     nameLabel_ = new LabelGraphicsItem(this);
-    nameLabel_->setPos(-processorItemWidth/2.0+processorLabelHeight/2.0, -processorItemHeight/2.0+processorLabelHeight);
+    nameLabel_->setPos(-processorItemWidth / 2.0 + processorLabelHeight / 2.0,
+                       -processorItemHeight / 2.0 + processorLabelHeight);
     nameLabel_->setDefaultTextColor(Qt::white);
     nameLabel_->setFont(QFont("Segoe", processorLabelHeight, QFont::Black, false));
     nameLabel_->setCrop(9, 8);
     classLabel_ = new LabelGraphicsItem(this);
-    classLabel_->setPos(-processorItemWidth/2.0+processorLabelHeight/2.0, -processorItemHeight/2.0+processorLabelHeight*2.5);
+    classLabel_->setPos(-processorItemWidth / 2.0 + processorLabelHeight / 2.0,
+                        -processorItemHeight / 2.0 + processorLabelHeight * 2.5);
     classLabel_->setDefaultTextColor(Qt::lightGray);
     classLabel_->setFont(QFont("Segoe", processorLabelHeight, QFont::Normal, true));
     classLabel_->setCrop(9, 8);
@@ -61,8 +65,8 @@ LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem() : GraphicsIte
 
 LinkDialogProcessorGraphicsItem::~LinkDialogProcessorGraphicsItem() {}
 
-QSizeF LinkDialogProcessorGraphicsItem::sizeHint(Qt::SizeHint which, const QSizeF& constraint) const
-{
+QSizeF LinkDialogProcessorGraphicsItem::sizeHint(Qt::SizeHint which,
+                                                 const QSizeF& constraint) const {
     switch (which) {
         case Qt::MinimumSize:
         case Qt::MaximumSize:
@@ -76,7 +80,8 @@ QSizeF LinkDialogProcessorGraphicsItem::sizeHint(Qt::SizeHint which, const QSize
     return constraint;
 }
 
-void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) {
+void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
+                                            QWidget* widget) {
     IVW_UNUSED_PARAM(options);
     IVW_UNUSED_PARAM(widget);
     p->save();
@@ -102,24 +107,26 @@ void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraph
     p->setBrush(grad);
     QPainterPath roundRectPath;
     QRectF bRect = rect();
-    roundRectPath.moveTo(bRect.left(), bRect.top()+processorRoundedCorners);
-    roundRectPath.lineTo(bRect.left(), bRect.bottom()-processorRoundedCorners);
-    roundRectPath.arcTo(bRect.left(), bRect.bottom()-(2*processorRoundedCorners), (2*processorRoundedCorners), (2*processorRoundedCorners),
-                        180.0, 90.0);
-    roundRectPath.lineTo(bRect.right()-processorRoundedCorners, bRect.bottom());
-    roundRectPath.arcTo(bRect.right()-(2*processorRoundedCorners), bRect.bottom()-(2*processorRoundedCorners), (2*processorRoundedCorners),
-                        (2*processorRoundedCorners), 270.0, 90.0);
-    roundRectPath.lineTo(bRect.right(), bRect.top()+processorRoundedCorners);
-    roundRectPath.arcTo(bRect.right()-(2*processorRoundedCorners), bRect.top(), (2*processorRoundedCorners), (2*processorRoundedCorners), 0.0,
-                        90.0);
-    roundRectPath.lineTo(bRect.left()+processorRoundedCorners, bRect.top());
-    roundRectPath.arcTo(bRect.left(), bRect.top(), (2*processorRoundedCorners), (2*processorRoundedCorners), 90.0, 90.0);
+    roundRectPath.moveTo(bRect.left(), bRect.top() + processorRoundedCorners);
+    roundRectPath.lineTo(bRect.left(), bRect.bottom() - processorRoundedCorners);
+    roundRectPath.arcTo(bRect.left(), bRect.bottom() - (2 * processorRoundedCorners),
+                        (2 * processorRoundedCorners), (2 * processorRoundedCorners), 180.0, 90.0);
+    roundRectPath.lineTo(bRect.right() - processorRoundedCorners, bRect.bottom());
+    roundRectPath.arcTo(bRect.right() - (2 * processorRoundedCorners),
+                        bRect.bottom() - (2 * processorRoundedCorners),
+                        (2 * processorRoundedCorners), (2 * processorRoundedCorners), 270.0, 90.0);
+    roundRectPath.lineTo(bRect.right(), bRect.top() + processorRoundedCorners);
+    roundRectPath.arcTo(bRect.right() - (2 * processorRoundedCorners), bRect.top(),
+                        (2 * processorRoundedCorners), (2 * processorRoundedCorners), 0.0, 90.0);
+    roundRectPath.lineTo(bRect.left() + processorRoundedCorners, bRect.top());
+    roundRectPath.arcTo(bRect.left(), bRect.top(), (2 * processorRoundedCorners),
+                        (2 * processorRoundedCorners), 90.0, 90.0);
     p->drawPath(roundRectPath);
     p->restore();
 }
 
-
-QVariant LinkDialogProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
+QVariant LinkDialogProcessorGraphicsItem::itemChange(GraphicsItemChange change,
+                                                     const QVariant& value) {
     return QGraphicsItem::itemChange(change, value);
 }
 
@@ -132,13 +139,15 @@ void LinkDialogProcessorGraphicsItem::setProcessor(Processor* processor, bool ex
         propertyGraphicsItems_.clear();
         std::vector<Property*> properties = processor->getProperties();
 
-        for (size_t i=0; i<properties.size(); i++) {
-            LinkDialogPropertyGraphicsItem* compItem = new LinkDialogPropertyGraphicsItem(this, properties[i]);
+        for (auto& propertie : properties) {
+            LinkDialogPropertyGraphicsItem* compItem =
+                new LinkDialogPropertyGraphicsItem(this, propertie);
             compItem->show();
             propertyGraphicsItems_.push_back(compItem);
-            std::vector<LinkDialogPropertyGraphicsItem*> subPropGraphicsItems = compItem->getSubPropertyItemList(true);
-            for (size_t j=0; j<subPropGraphicsItems.size(); j++) {
-                propertyGraphicsItems_.push_back(subPropGraphicsItems[j]);
+            std::vector<LinkDialogPropertyGraphicsItem*> subPropGraphicsItems =
+                compItem->getSubPropertyItemList(true);
+            for (auto& subPropGraphicsItem : subPropGraphicsItems) {
+                propertyGraphicsItems_.push_back(subPropGraphicsItem);
             }
         }
 
@@ -151,25 +160,22 @@ void LinkDialogProcessorGraphicsItem::setProcessor(Processor* processor, bool ex
 
 void LinkDialogProcessorGraphicsItem::updatePropertyItemPositions(bool animateExpansion) {
     int globalIndex = 0;
-    for (size_t i=0; i<propertyGraphicsItems_.size(); i++) {
-        if (propertyGraphicsItems_[i]->getLevel() == 0)
-            propertyGraphicsItems_[i]->setPropertyItemIndex(globalIndex);
+    for (auto& elem : propertyGraphicsItems_) {
+        if (elem->getLevel() == 0) elem->setPropertyItemIndex(globalIndex);
     }
 
     if (animateExpansion) {
         animationStart();
-    }
-    else {
-        animateExpansion_=1.0f;
+    } else {
+        animateExpansion_ = 1.0f;
         updateAll();
     }
-
 }
 
 void LinkDialogProcessorGraphicsItem::animationStart() {
     animateExpansion_ = 0.1f;
 
-    QTimeLine *anim = new QTimeLine(50, this);
+    QTimeLine* anim = new QTimeLine(50, this);
     anim->setUpdateInterval(20);
     connect(anim, SIGNAL(valueChanged(qreal)), SLOT(animate(qreal)));
     connect(anim, SIGNAL(finished()), SLOT(animationEnd()));
@@ -177,23 +183,20 @@ void LinkDialogProcessorGraphicsItem::animationStart() {
 }
 
 void LinkDialogProcessorGraphicsItem::animate(qreal incr) {
-    if (animateExpansion_>1.0 || animateExpansion_<0.0f) {
+    if (animateExpansion_ > 1.0 || animateExpansion_ < 0.0f) {
         animationEnd();
-    }
-    else {
-        animateExpansion_+=incr;
+    } else {
+        animateExpansion_ += incr;
         updateAll();
     }
 }
 
 void LinkDialogProcessorGraphicsItem::updateAll() {
-    for (size_t i=0; i<propertyGraphicsItems_.size(); i++)
-        propertyGraphicsItems_[i]->updatePositionBasedOnIndex(animateExpansion_);
+    for (auto& elem : propertyGraphicsItems_) elem->updatePositionBasedOnIndex(animateExpansion_);
 
-    for (size_t i=0; i<propertyGraphicsItems_.size(); i++) {
-        std::vector<DialogConnectionGraphicsItem*> connections = propertyGraphicsItems_[i]->getConnectionGraphicsItems();
-        for (size_t j=0; j<connections.size(); j++)
-            connections[j]->updateConnectionDrawing();
+    for (auto connections : propertyGraphicsItems_) {
+        for (auto& connection : connections->getConnectionGraphicsItems())
+            connection->updateConnectionDrawing();
     }
 }
 
@@ -201,8 +204,7 @@ void LinkDialogProcessorGraphicsItem::animationEnd() {
     animateExpansion_ = 1.0f;
     sender()->~QObject();
     updateAll();
-    for (size_t i=0; i<propertyGraphicsItems_.size(); i++)
-        propertyGraphicsItems_[i]->setAnimate(false);
+    for (auto& elem : propertyGraphicsItems_) elem->setAnimate(false);
 }
 
-} //namespace
+}  // namespace

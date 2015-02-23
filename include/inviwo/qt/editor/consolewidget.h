@@ -57,7 +57,7 @@ public:
                             const char* function, int line) override;
 
 private:
-    void keyPressEvent(QKeyEvent* keyEvent);
+    void keyPressEvent(QKeyEvent* keyEvent) override;
 
     void logMessage(LogLevel level, QString message);
 

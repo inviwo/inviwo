@@ -139,40 +139,42 @@ void LinkDialog::clickedSmartLinkPushButton() {
     int selectedTypes = (int) NoLinkCondition;
     std::vector<std::string> selectedConditons = smartLinkOptions_->getCheckedItems();
 
-    for (size_t i=0; i<selectedConditons.size(); i++) {
-        if (selectedConditons[i] == SimpleCondition::conditionName())
+    for (auto& selectedConditon : selectedConditons) {
+        if (selectedConditon == SimpleCondition::conditionName())
             selectedTypes|=SimpleCondition::conditionType();
 
-        if (selectedConditons[i] == PartiallyMatchingIdCondition::conditionName())
+        if (selectedConditon == PartiallyMatchingIdCondition::conditionName())
             selectedTypes|=PartiallyMatchingIdCondition::conditionType();
     }
 
-    for (size_t i=0; i<srcProperties.size(); i++) {
-        for (size_t j=0; j<dstProperties.size(); j++) {
-
-            bool linkSubProperties = linkDialogScene_->isPropertyExpanded(srcProperties[i]) ||
-                                     linkDialogScene_->isPropertyExpanded(dstProperties[j]);
+    for (auto& srcPropertie : srcProperties) {
+        for (auto& dstPropertie : dstProperties) {
+            bool linkSubProperties = linkDialogScene_->isPropertyExpanded(srcPropertie) ||
+                                     linkDialogScene_->isPropertyExpanded(dstPropertie);
 
             if (linkSubProperties) {
-                if (AutoLinker::canLink(srcProperties[i], dstProperties[j], (LinkingConditions) selectedTypes)) {
-                    CompositeProperty* compSrc = IS_COMPOSITE_PROPERTY(srcProperties[i]);
-                    CompositeProperty* compDst = IS_COMPOSITE_PROPERTY(dstProperties[j]);
+                if (AutoLinker::canLink(srcPropertie, dstPropertie,
+                                        (LinkingConditions)selectedTypes)) {
+                    CompositeProperty* compSrc = IS_COMPOSITE_PROPERTY(srcPropertie);
+                    CompositeProperty* compDst = IS_COMPOSITE_PROPERTY(dstPropertie);
                     if ( compSrc && compDst) {
                         //If composite property then try to link sub-properties only
                         std::vector<Property*> s = compSrc->getProperties();
                         std::vector<Property*> d = compDst->getProperties();
-                        for (size_t ii=0; ii<s.size(); ii++) {
-                            for (size_t jj=0; jj<d.size(); jj++) {
-                                if (AutoLinker::canLink(s[ii], d[jj], (LinkingConditions) selectedTypes)) {
-                                    linkDialogScene_->addPropertyLink(s[ii], d[jj], true);
+                        for (auto& elem : s) {
+                            for (auto& d_jj : d) {
+                                if (AutoLinker::canLink(elem, d_jj,
+                                                        (LinkingConditions)selectedTypes)) {
+                                    linkDialogScene_->addPropertyLink(elem, d_jj, true);
                                 }
                             }
                         }
                     }
                 }
             } else {
-                if (AutoLinker::canLink(srcProperties[i], dstProperties[j], (LinkingConditions) selectedTypes))
-                    linkDialogScene_->addPropertyLink(srcProperties[i], dstProperties[j], true);
+                if (AutoLinker::canLink(srcPropertie, dstPropertie,
+                                        (LinkingConditions)selectedTypes))
+                    linkDialogScene_->addPropertyLink(srcPropertie, dstPropertie, true);
             }
         }
     }

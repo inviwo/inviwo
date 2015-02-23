@@ -134,8 +134,8 @@ void ProcessorInportGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void ProcessorInportGraphicsItem::updateConnectionPositions() {
-    for (size_t i = 0; i < connections_.size(); i++) {
-        connections_[i]->updateShape();
+    for (auto& elem : connections_) {
+        elem->updateShape();
     }
 }
 
@@ -161,8 +161,8 @@ void ProcessorOutportGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent* e) 
 }
 
 void ProcessorOutportGraphicsItem::updateConnectionPositions() {
-    for (size_t i = 0; i < connections_.size(); i++) {
-        connections_[i]->updateShape();
+    for (auto& elem : connections_) {
+        elem->updateShape();
     }
 }
 

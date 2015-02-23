@@ -46,12 +46,11 @@ EditorGraphicsItem::EditorGraphicsItem(QGraphicsItem* parent) : QGraphicsRectIte
 EditorGraphicsItem::~EditorGraphicsItem() {}
 
 QPoint EditorGraphicsItem::mapPosToSceen(QPointF inPos) const {
-    if (scene() != NULL                                  // the focus item belongs to a scene
-        && !scene()->views().isEmpty()                   // that scene is displayed in a view...
-        && scene()->views().first() != NULL              // ... which is not null...
-        && scene()->views().first()->viewport() != NULL  // ... and has a viewport
+    if (scene() != nullptr                                  // the focus item belongs to a scene
+        && !scene()->views().isEmpty()                      // that scene is displayed in a view...
+        && scene()->views().first() != nullptr              // ... which is not null...
+        && scene()->views().first()->viewport() != nullptr  // ... and has a viewport
         ) {
-
         QPointF sceneP = mapToScene(inPos);
         QGraphicsView* v = scene()->views().first();
         QPoint viewP = v->mapFromScene(sceneP);
@@ -99,7 +98,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     if(!inspector && !portinfo) return;
 
-    std::vector<unsigned char>* data = NULL;
+    std::vector<unsigned char>* data = nullptr;
     int size = settings->portInspectorSize_.get();
 
     QString info("<html><head/><body style=''>");

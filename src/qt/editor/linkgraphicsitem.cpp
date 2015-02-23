@@ -200,7 +200,7 @@ QPainterPath LinkConnectionDragGraphicsItem::obtainCurvePath() const {
 }
 
 void LinkConnectionDragGraphicsItem::reactToProcessorHover(ProcessorGraphicsItem* processor) {
-    if(processor != NULL) {
+    if (processor != nullptr) {
         inLeft_ = processor->getLinkGraphicsItem()->getRightPos();
         inRight_ = processor->getLinkGraphicsItem()->getLeftPos();
     } else {
@@ -373,29 +373,30 @@ void LinkConnectionGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
     std::vector<PropertyLink*> outgoing;  // from processor 1
     std::vector<PropertyLink*> incoming;  // toward processor 1
 
-    for (std::vector<PropertyLink*>::const_iterator it = propertyLinks.begin();
-         it != propertyLinks.end(); ++it) {
-        Processor* linkSrc =
-            dynamic_cast<Processor*>((*it)->getSourceProperty()->getOwner()->getProcessor());
+    for (const auto& propertyLink : propertyLinks) {
+        Processor* linkSrc = dynamic_cast<Processor*>(
+            (propertyLink)->getSourceProperty()->getOwner()->getProcessor());
 
         if (linkSrc == p1) {
             // forward link
             std::vector<PropertyLink*>::iterator sit =
-                std::find_if(incoming.begin(), incoming.end(), LinkConnectionGraphicsItemMatchReverse(*it));
+                std::find_if(incoming.begin(), incoming.end(),
+                             LinkConnectionGraphicsItemMatchReverse(propertyLink));
             if (sit != incoming.end()) {
-                bidirectional.push_back(*it);
+                bidirectional.push_back(propertyLink);
                 incoming.erase(sit);
             } else {
-                outgoing.push_back(*it);
+                outgoing.push_back(propertyLink);
             }
         } else {  // if (linkSrc == processorB)
             std::vector<PropertyLink*>::iterator sit =
-                std::find_if(outgoing.begin(), outgoing.end(), LinkConnectionGraphicsItemMatchReverse(*it));
+                std::find_if(outgoing.begin(), outgoing.end(),
+                             LinkConnectionGraphicsItemMatchReverse(propertyLink));
             if (sit != outgoing.end()) {
-                bidirectional.push_back(*it);
+                bidirectional.push_back(propertyLink);
                 outgoing.erase(sit);
             } else {
-                incoming.push_back(*it);
+                incoming.push_back(propertyLink);
             }
         }
     }

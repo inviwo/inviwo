@@ -39,7 +39,7 @@
 namespace inviwo {
 
 ProcessorLinkGraphicsItem::ProcessorLinkGraphicsItem(ProcessorGraphicsItem* parent)
-    : EditorGraphicsItem(parent), processor_(parent), leftItem_(NULL), rightItem_(NULL) {
+    : EditorGraphicsItem(parent), processor_(parent), leftItem_(nullptr), rightItem_(nullptr) {
     setFlags(ItemSendsScenePositionChanges);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
 
@@ -78,8 +78,8 @@ void ProcessorLinkGraphicsItem::removeLink(LinkConnectionGraphicsItem* link) {
 }
 
 void ProcessorLinkGraphicsItem::updateLinkPositions() {
-    for (size_t i = 0; i < links_.size(); i++) {
-        links_[i]->updateShape();
+    for (auto& elem : links_) {
+        elem->updateShape();
     }
 }
 

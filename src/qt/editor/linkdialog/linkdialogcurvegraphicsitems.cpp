@@ -82,13 +82,13 @@ DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() {
 void DialogConnectionGraphicsItem::cleanup() { 
     if (startPropertyGraphicsItem_) {
         startPropertyGraphicsItem_->removeConnectionGraphicsItem(this);
-        startPropertyGraphicsItem_ = NULL;
+        startPropertyGraphicsItem_ = nullptr;
     }
     if (endPropertyGraphicsItem_) {
         endPropertyGraphicsItem_->removeConnectionGraphicsItem(this);
-        endPropertyGraphicsItem_ = NULL;
+        endPropertyGraphicsItem_ = nullptr;
     }
-    propertyLink_ = NULL;
+    propertyLink_ = nullptr;
 }
 
 void DialogConnectionGraphicsItem::updateStartEndPoint() {

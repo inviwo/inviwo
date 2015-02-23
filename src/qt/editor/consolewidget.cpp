@@ -40,11 +40,17 @@
 
 namespace inviwo {
 
-ConsoleWidget::ConsoleWidget(QWidget* parent) : InviwoDockWidget(tr("Console"), parent)
-    , infoTextColor_(153,153,153), warnTextColor_(221,165,8), errorTextColor_(255,107,107)
-    , errorsLabel_(NULL), warningsLabel_(NULL), infoLabel_(NULL)
-    , numErrors_(0), numWarnings_(0), numInfos_(0)
-{
+ConsoleWidget::ConsoleWidget(QWidget* parent)
+    : InviwoDockWidget(tr("Console"), parent)
+    , infoTextColor_(153, 153, 153)
+    , warnTextColor_(221, 165, 8)
+    , errorTextColor_(255, 107, 107)
+    , errorsLabel_(nullptr)
+    , warningsLabel_(nullptr)
+    , infoLabel_(nullptr)
+    , numErrors_(0)
+    , numWarnings_(0)
+    , numInfos_(0) {
     setObjectName("ConsoleWidget");
     setAllowedAreas(Qt::BottomDockWidgetArea);
     textField_ = new QTextEdit(this);
