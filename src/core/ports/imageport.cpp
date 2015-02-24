@@ -185,7 +185,7 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
 
 ImageOutport::~ImageOutport() {
     for (auto& elem : imageDataMap_) {
-        if (isDataOwner() || elem.second != data_) {
+        if (isDataOwner() && elem.second != data_) {
             delete elem.second;
         }
     }
