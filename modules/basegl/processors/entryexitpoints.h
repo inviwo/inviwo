@@ -72,7 +72,7 @@ private:
     Shader* genericShader_;
     Shader* capNearClippingPrg_;
     Image* tmpEntryPoints_;
-    GeometryRenderer* renderer_;
+    GeometryDrawer* drawer_;
 };
 
 } // namespace

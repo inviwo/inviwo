@@ -32,26 +32,26 @@
 
 namespace inviwo {
 
-struct CanRenderGeometry {
+struct CanDrawGeometry {
 public:
-    CanRenderGeometry(const Geometry* geom) : geom_(geom){};
-    bool operator()(const GeometryRenderer* renderer) { return renderer->canRender(geom_); }
+    CanDrawGeometry(const Geometry* geom) : geom_(geom){};
+    bool operator()(const GeometryDrawer* drawer) { return drawer->canDraw(geom_); }
 
 private:
     const Geometry* geom_;
 };
 
-GeometryRendererFactory::GeometryRendererFactory() {}
+GeometryDrawerFactory::GeometryDrawerFactory() {}
 
-void GeometryRendererFactory::registerObject(GeometryRenderer* renderer) {
-    renderers_.insert(renderer);
+void GeometryDrawerFactory::registerObject(GeometryDrawer* drawer) {
+    drawers_.insert(drawer);
 }
 
-GeometryRenderer* GeometryRendererFactory::create(const Geometry* geom) const {
-    std::set<GeometryRenderer*>::const_iterator it =
-        std::find_if(renderers_.begin(), renderers_.end(), CanRenderGeometry(geom));
+GeometryDrawer* GeometryDrawerFactory::create(const Geometry* geom) const {
+    std::set<GeometryDrawer*>::const_iterator it =
+        std::find_if(drawers_.begin(), drawers_.end(), CanDrawGeometry(geom));
 
-    if (it != renderers_.end())
+    if (it != drawers_.end())
         return (*it)->create(geom);
     else
         return nullptr;

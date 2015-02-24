@@ -43,16 +43,16 @@ class IVW_CORE_API Mesh : public Geometry {
 
 public:
     struct AttributesInfo {
-        GeometryEnums::RenderType rt;
+        GeometryEnums::DrawType dt;
         GeometryEnums::ConnectivityType ct;
-        AttributesInfo() : rt(GeometryEnums::POINTS), ct(GeometryEnums::NONE) {}
-        AttributesInfo(GeometryEnums::RenderType r, GeometryEnums::ConnectivityType c) : rt(r), ct(c) {}
+        AttributesInfo() : dt(GeometryEnums::POINTS), ct(GeometryEnums::NONE) {}
+        AttributesInfo(GeometryEnums::DrawType d, GeometryEnums::ConnectivityType c) : dt(d), ct(c) {}
     };
 
     typedef std::vector<std::pair<AttributesInfo, IndexBuffer*> > IndexVector; 
 
     Mesh();
-    Mesh(GeometryEnums::RenderType rt, GeometryEnums::ConnectivityType ct);
+    Mesh(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
 
     Mesh(const Mesh& rhs);
     Mesh& operator=(const Mesh& that);

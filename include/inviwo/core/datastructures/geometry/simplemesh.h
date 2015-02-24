@@ -37,7 +37,7 @@ namespace inviwo {
 
 class IVW_CORE_API SimpleMesh : public Mesh {
 public:
-    SimpleMesh(GeometryEnums::RenderType rt = GeometryEnums::POINTS,
+    SimpleMesh(GeometryEnums::DrawType dt = GeometryEnums::POINTS,
                GeometryEnums::ConnectivityType ct = GeometryEnums::NONE);
     SimpleMesh(const SimpleMesh& rhs);
     SimpleMesh& operator=(const SimpleMesh& that);
@@ -48,7 +48,7 @@ public:
 
     void addVertex(vec3 pos, vec3 texCoord, vec4 color);
     void addIndex(unsigned int idx);
-    void setIndicesInfo(GeometryEnums::RenderType, GeometryEnums::ConnectivityType);
+    void setIndicesInfo(GeometryEnums::DrawType, GeometryEnums::ConnectivityType);
     const Position3dBuffer* getVertexList() const;
     const TexCoord3dBuffer* getTexCoordList() const;
     const ColorBuffer* getColorList() const;

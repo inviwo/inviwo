@@ -58,7 +58,7 @@ DrawPoints::DrawPoints()
           new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
           new Action(this, &DrawPoints::eventEnableDraw))
     , points_(nullptr)
-    , pointRenderer_(nullptr)
+    , pointDrawer_(nullptr)
     , pointShader_(nullptr)
     , drawModeEnabled_(false) {
     addPort(inport_);
@@ -81,17 +81,17 @@ void DrawPoints::initialize() {
     pointShader_ = new Shader("img_color.frag");
     points_ = new Mesh(GeometryEnums::POINTS, GeometryEnums::NONE);
     points_->addAttribute(new Position2dBuffer());
-    pointRenderer_ = new MeshRenderer(points_);
+    pointDrawer_ = new MeshDrawer(points_);
 }
 
 void DrawPoints::deinitialize() {
     CompositeProcessorGL::deinitialize();
     delete pointShader_;
     pointShader_ = nullptr;
-    delete pointRenderer_;
-    pointRenderer_ = nullptr;
+    delete pointDrawer_;
+    pointDrawer_ = nullptr;
     delete points_;
-    pointRenderer_ = nullptr;
+    pointDrawer_ = nullptr;
 }
 
 void DrawPoints::process() {
@@ -99,7 +99,7 @@ void DrawPoints::process() {
     glPointSize(static_cast<float>(pointSize_.get()));
     pointShader_->activate();
     pointShader_->setUniform("color_", pointColor_.get());
-    pointRenderer_->render();
+    pointDrawer_->draw();
     pointShader_->deactivate();
     glPointSize(1.f);
     utilgl::deactivateCurrentTarget();

@@ -95,7 +95,7 @@ private:
 
 
     Mesh* points_;
-    MeshRenderer* pointRenderer_;
+    MeshDrawer* pointDrawer_;
 
     Shader* pointShader_;
 

@@ -109,7 +109,7 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
     DataReaderFactory::init();
     DataWriterFactory::init();
     DialogFactory::init();
-    GeometryRendererFactory::init();
+    GeometryDrawerFactory::init();
     MetaDataFactory::init();
     PickingManager::init();
     PortFactory::init();
@@ -163,7 +163,7 @@ void InviwoApplication::deinitialize() {
     DataReaderFactory::deleteInstance();
     DataWriterFactory::deleteInstance();
     DialogFactory::deleteInstance();
-    GeometryRendererFactory::deleteInstance();
+    GeometryDrawerFactory::deleteInstance();
     MetaDataFactory::deleteInstance();
     PickingManager::deleteInstance();
     PortFactory::deleteInstance();

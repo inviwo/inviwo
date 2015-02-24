@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRY_RENDERER_FACTORY_H
-#define IVW_GEOMETRY_RENDERER_FACTORY_H
+#ifndef IVW_GEOMETRY_DRAWER_FACTORY_H
+#define IVW_GEOMETRY_DRAWER_FACTORY_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/geometry/geometry.h>
@@ -39,19 +39,19 @@
 
 namespace inviwo {
 
-class IVW_CORE_API GeometryRendererFactory : public Singleton<GeometryRendererFactory>  {
+class IVW_CORE_API GeometryDrawerFactory : public Singleton<GeometryDrawerFactory>  {
 public:
-    GeometryRendererFactory();
-    virtual ~GeometryRendererFactory() {}
+    GeometryDrawerFactory();
+    virtual ~GeometryDrawerFactory() {}
 
-    void registerObject(GeometryRenderer* renderer);
-    virtual GeometryRenderer* create(const Geometry* geom) const;
+    void registerObject(GeometryDrawer* renderer);
+    virtual GeometryDrawer* create(const Geometry* geom) const;
 
 
 private:
-    std::set<GeometryRenderer*> renderers_;
+    std::set<GeometryDrawer*> drawers_;
 };
 
 } // namespace
 
-#endif // IVW_GEOMETRY_RENDERER_FACTORY_H
+#endif // IVW_GEOMETRY_DRAWER_FACTORY_H

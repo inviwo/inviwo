@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_MESHGLRENDERER_H
-#define IVW_MESHGLRENDERER_H
+#ifndef IVW_MESHGLDRAWER_H
+#define IVW_MESHGLDRAWER_H
 
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -37,50 +37,50 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API MeshRenderer: public GeometryRenderer {
+class IVW_MODULE_OPENGL_API MeshDrawer: public GeometryDrawer {
 
 public:
-    MeshRenderer();
-    MeshRenderer(const Mesh* mesh);
-    MeshRenderer(const Mesh* mesh, Mesh::AttributesInfo);
-    MeshRenderer(const Mesh* mesh, GeometryEnums::RenderType rt, GeometryEnums::ConnectivityType ct);
-    virtual ~MeshRenderer();
+    MeshDrawer();
+    MeshDrawer(const Mesh* mesh);
+    MeshDrawer(const Mesh* mesh, Mesh::AttributesInfo);
+    MeshDrawer(const Mesh* mesh, GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
+    virtual ~MeshDrawer();
 
-    virtual void render();
-    virtual void render(GeometryEnums::RenderType rt);
+    virtual void draw();
+    virtual void draw(GeometryEnums::DrawType dt);
 
     const MeshGL* getMeshGL() const;
 
     GLenum getDefaultDrawMode();
-    GLenum getDrawMode(GeometryEnums::RenderType, GeometryEnums::ConnectivityType);
+    GLenum getDrawMode(GeometryEnums::DrawType, GeometryEnums::ConnectivityType);
 
-    virtual const Geometry* getGeometry() const { return meshToRender_; }
+    virtual const Geometry* getGeometry() const { return meshToDraw_; }
 
 protected:
-    virtual GeometryRenderer* create(const Geometry* geom) const {
-        return new MeshRenderer(static_cast<const Mesh*>(geom));
+    virtual GeometryDrawer* create(const Geometry* geom) const {
+        return new MeshDrawer(static_cast<const Mesh*>(geom));
     }
-    virtual bool canRender(const Geometry* geom) const {
+    virtual bool canDraw(const Geometry* geom) const {
         return dynamic_cast<const Mesh*>(geom) != NULL;
     }
 
     virtual void initialize(Mesh::AttributesInfo = Mesh::AttributesInfo());
     void initializeIndexBuffer(const Buffer* indexBuffer, Mesh::AttributesInfo ai);
-    void renderArray(GeometryEnums::RenderType) const;
-    void renderElements(GeometryEnums::RenderType) const;
-    void emptyFunc(GeometryEnums::RenderType rt) const {};
+    void drawArray(GeometryEnums::DrawType) const;
+    void drawElements(GeometryEnums::DrawType) const;
+    void emptyFunc(GeometryEnums::DrawType dt) const {};
 
-    typedef void (MeshRenderer::*DrawFunc)(GeometryEnums::RenderType) const;
+    typedef void (MeshDrawer::*DrawFunc)(GeometryEnums::DrawType) const;
     struct DrawMethod {
         DrawFunc drawFunc;
         GLenum drawMode;
         std::vector<const Buffer*> elementBufferList;
     };
 
-    DrawMethod drawMethods_[GeometryEnums::NUMBER_OF_RENDER_TYPES];
-    const Mesh* meshToRender_;
+    DrawMethod drawMethods_[GeometryEnums::NUMBER_OF_DRAW_TYPES];
+    const Mesh* meshToDraw_;
 };
 
 } // namespace
 
-#endif // IVW_MESHGLRENDERER_H
+#endif // IVW_MESHGLDRAWER_H

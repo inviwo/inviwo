@@ -78,7 +78,7 @@ protected:
     ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
 
-    std::vector<GeometryRenderer*> renderers_;
+    std::vector<GeometryDrawer*> drawers_;
     
     CompositeProperty geomProperties_;
     OptionPropertyInt cullFace_;

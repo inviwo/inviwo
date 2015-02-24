@@ -92,7 +92,7 @@ public:
     const std::vector< std::pair<std::string, ProcessorWidget*> >& getProcessorWidgets() const;
     const std::vector<PropertyFactoryObject*>& getProperties() const;
     const std::vector<PropertyWidgetFactoryObject*>& getPropertyWidgets() const;
-    const std::vector<GeometryRenderer*>& getRenderers() const;
+    const std::vector<GeometryDrawer*>& getDrawers() const;
     const std::vector<RepresentationConverter*>& getRepresentationConverters() const;
     const std::vector<Resource*>& getResources() const;
     const std::vector<Settings*>& getSettings() const;
@@ -132,7 +132,7 @@ protected:
     void registerProcessorWidget(std::string processorClassName, ProcessorWidget* processorWidget);
     void registerPropertyObject(PropertyFactoryObject* property);
     void registerPropertyWidgetObject(PropertyWidgetFactoryObject* property);
-    void registerRenderer(GeometryRenderer* renderer);
+    void registerDrawer(GeometryDrawer* drawer);
     void registerRepresentationConverter(RepresentationConverter* representationConverter);
     void registerResource(Resource* resource);
     void registerSettings(Settings* settings);
@@ -163,7 +163,7 @@ private:
     std::vector<std::pair<std::string, ProcessorWidget*> > processorWidgets_;
     std::vector<PropertyFactoryObject*> properties_;
     std::vector<PropertyWidgetFactoryObject*> propertyWidgets_;
-    std::vector<GeometryRenderer*> renderers_;
+    std::vector<GeometryDrawer*> drawers_;
     std::vector<RepresentationConverter*> representationConverters_;
     std::vector<Resource*> resources_;
 };

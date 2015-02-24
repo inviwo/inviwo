@@ -40,7 +40,7 @@ namespace inviwo {
 
 
 
-TextRenderer::TextRenderer(const std::string& fontPath): renderer_(NULL) {
+TextRenderer::TextRenderer(const std::string& fontPath): drawer_(NULL) {
     textShader_ = new Shader("fontrendering_freetype.vert", "fontrendering_freetype.frag", true);
     int error = 0;
 
@@ -65,7 +65,7 @@ TextRenderer::~TextRenderer() {
     textShader_ = NULL;
     glDeleteTextures(1, &texCharacter_);
     delete mesh_;
-    delete renderer_;
+    delete drawer_;
 }
 
 void TextRenderer::render(const char* text, float x, float y, const vec2& scale, vec4 color) {
@@ -126,7 +126,7 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
         mesh_->setModelMatrix(glm::translate(vec3(x2, -y2, 0.f))*glm::scale(vec3(w, -h, 1.f)));
         utilgl::setShaderUniforms(textShader_, *mesh_, "geometry_");                
         
-        renderer_->render();
+        drawer_->draw();
         x += (fontface_->glyph->advance.x >> 6) * scale.x;
         y += (fontface_->glyph->advance.y >> 6) * scale.y;
     }
@@ -211,7 +211,7 @@ void TextRenderer::initMesh() {
     mesh_->addAttribute(texCoordsBuffer);
     mesh_->addIndicies(Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP), indices_);
 
-    renderer_ = new MeshRenderer(mesh_);
+    drawer_ = new MeshDrawer(mesh_);
 }
 
 void TextRenderer::setFontSize(int val) {

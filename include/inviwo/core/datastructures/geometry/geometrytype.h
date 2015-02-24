@@ -51,12 +51,12 @@ enum CartesianCoordinateAxis {
 
 namespace GeometryEnums {
 
-enum RenderType {
+enum DrawType {
     NOT_SPECIFIED,
     POINTS,
     LINES,
     TRIANGLES,
-    NUMBER_OF_RENDER_TYPES
+    NUMBER_OF_DRAW_TYPES
 };
 
 enum ConnectivityType {

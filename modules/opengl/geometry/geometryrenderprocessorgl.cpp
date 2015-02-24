@@ -116,8 +116,8 @@ void GeometryRenderProcessorGL::initialize() {
 }
 
 void GeometryRenderProcessorGL::deinitialize() {
-    // Delete all renderers
-    for (auto& elem : renderers_) {
+    // Delete all drawers
+    for (auto& elem : drawers_) {
         delete elem;
     }
     if (shader_) 
@@ -186,9 +186,9 @@ void GeometryRenderProcessorGL::process() {
     else if (polygonMode_.get()==GL_POINT)
         glPointSize((GLfloat)renderPointSize_.get());
 
-    for (std::vector<GeometryRenderer*>::const_iterator it = renderers_.begin(), endIt = renderers_.end(); it != endIt; ++it) {       
+    for (std::vector<GeometryDrawer*>::const_iterator it = drawers_.begin(), endIt = drawers_.end(); it != endIt; ++it) {       
         utilgl::setShaderUniforms(shader_, *(*it)->getGeometry(), "geometry_");                
-        (*it)->render();
+        (*it)->draw();
     }
 
     if (polygonMode_.get()==GL_LINE) {
@@ -266,16 +266,16 @@ void GeometryRenderProcessorGL::updateRenderers() {
     std::vector<const Geometry*> geometries = inport_.getData();
 
     if (geometries.empty()) {
-        while (!renderers_.empty()) {
-            delete renderers_.back();
-            renderers_.pop_back();
+        while (!drawers_.empty()) {
+            delete drawers_.back();
+            drawers_.pop_back();
         }
     }
 
-    if (!renderers_.empty()) {
-        std::vector<GeometryRenderer*>::iterator it = renderers_.begin();
+    if (!drawers_.empty()) {
+        std::vector<GeometryDrawer*>::iterator it = drawers_.begin();
 
-        while (it!=renderers_.end()) {
+        while (it!=drawers_.end()) {
             const Geometry* geo = (*it)->getGeometry();
             bool geometryRemoved = true;
 
@@ -288,8 +288,8 @@ void GeometryRenderProcessorGL::updateRenderers() {
             }
 
             if (geometryRemoved) {
-                GeometryRenderer* tmp = (*it);
-                it = renderers_.erase(it); //geometry removed, so we delete the old renderer
+                GeometryDrawer* tmp = (*it);
+                it = drawers_.erase(it); //geometry removed, so we delete the old renderer
                 delete tmp;
             } else {
                 ++it;
@@ -298,10 +298,10 @@ void GeometryRenderProcessorGL::updateRenderers() {
     }
 
     for (size_t i = 0; i < geometries.size() ; ++i) { //create new renderer for new geometries
-        GeometryRenderer* renderer = GeometryRendererFactory::getPtr()->create(geometries[i]);
+        GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geometries[i]);
 
         if (renderer) {
-            renderers_.push_back(renderer);
+            drawers_.push_back(renderer);
         }
     }
 }
