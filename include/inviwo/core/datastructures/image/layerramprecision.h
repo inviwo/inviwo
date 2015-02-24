@@ -68,12 +68,12 @@ private:
 template<typename T, size_t B>
 class LayerRAMCustomPrecision : public LayerRAMPrecision<T> {
 public:
-    LayerRAMCustomPrecision(uvec2 dimensions = uvec2(256,256),
+    LayerRAMCustomPrecision(uvec2 dimensions = uvec2(32,32),
                             LayerType type = COLOR_LAYER,
                             const DataFormatBase* format = defaultformat())
         : LayerRAMPrecision<T>(dimensions, type, format) {
     }
-    LayerRAMCustomPrecision(T* data, uvec2 dimensions = uvec2(256,256),
+    LayerRAMCustomPrecision(T* data, uvec2 dimensions = uvec2(32,32),
                             LayerType type = COLOR_LAYER,
                             const DataFormatBase* format = defaultformat())
         : LayerRAMPrecision<T>(data, dimensions, type, format) {

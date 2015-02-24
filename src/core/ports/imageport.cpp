@@ -372,10 +372,11 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
             Image* invalidImage = imageDataMap_[invalidImageDataString];
 
             //Make sure you don't delete data thats not owned
-            if (isDataOwner() || invalidImage != data_) {
-                imageDataMap_.erase(invalidImageDataString);
+            if (isDataOwner() && invalidImage != data_) {
                 delete invalidImage;
             }
+
+            imageDataMap_.erase(invalidImageDataString);
         }
     }
 
