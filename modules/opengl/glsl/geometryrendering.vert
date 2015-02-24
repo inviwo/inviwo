@@ -34,27 +34,14 @@ uniform GeometryParameters geometry_;
 uniform CameraParameters camera_;
 
 out vec4 worldPosition_;
-out vec3 texCoord_;
-
-// Color and normal may come from a texture 
-#if !USE_COLOR_TEXTURE
-out vec4 color_;
-#endif
-#if !USE_NORMAL_TEXTURE
 out vec3 normal_;
-#endif
-
-
+out vec4 color_;
+out vec3 texCoord_;
  
 void main() {
-    texCoord_ = in_TexCoord;
-    #if !USE_COLOR_TEXTURE
     color_ = in_Color;
-    #endif
-    #if !USE_NORMAL_TEXTURE
-    normal_ = geometry_.dataToWorldNormalMatrix * in_Normal;
-    #endif
-
+    texCoord_ = in_TexCoord;
     worldPosition_ = geometry_.dataToWorld * in_Vertex;
+    normal_ = geometry_.dataToWorldNormalMatrix * in_Normal;
     gl_Position = camera_.worldToClip * worldPosition_;
 }

@@ -50,30 +50,6 @@ namespace inviwo {
 class Shader;
 class CameraTrackball;
 
-/** \docpage{org.inviwo.GeometryRenderProcessorGL, Geometry Renderer}
- * Renders a geometry with optional shading onto an image. 
- * 
- * 
- * ### Inports
- *   * __GeometryMultiInport__ Input geometry to render.
- *   * __ImageInport__ Color texture for color mapping (optional).
- *   * __ImageInport__ Normal map input (optional). Normals in texture are assumed to lie in [0 1]^3, data space.
- *
- * ### Outports
- *   * __ImageOutport__ The rendered geometry.
- * 
- * ### Properties
- *   * __Cull Face__ Option to remove geometry facing away from the camera.
- *   * __Polygon Mode__ Specifies how polygons will be rasterized.
- *   * __Point Size__ Size of renderered points in pixels (only for Point polygon mode). 
- *   * __Line Width__ Thickness of renderered lines in pixels (only for Lines polygon mode). 
- *
- */
-
-/**
- * \brief Renders a geometry with optional texture and normal mapping to an image.
- *
- */
 class IVW_MODULE_OPENGL_API GeometryRenderProcessorGL : public Processor {
 public:
     GeometryRenderProcessorGL();
@@ -83,16 +59,11 @@ public:
 
     virtual void initialize();
     virtual void deinitialize();
+
     virtual void initializeResources();
 
-    virtual bool isReady() const {
-        // only the mesh input port is mandatory
-        return inport_.isReady(); 
-    }
-
-    virtual void process();
 protected:
-
+    virtual void process();
     void centerViewOnGeometry();
     void resetViewParams();
     void changeRenderMode();
@@ -100,8 +71,6 @@ protected:
     void updateRenderers();
 
     GeometryMultiInport inport_;
-    ImageInport colors_; //!< inport for the 2D color texture (optional)
-    ImageInport normals_; //!< inport for the 2D normal map texture (optional)
     ImageOutport outport_;
 
     CameraProperty camera_;
