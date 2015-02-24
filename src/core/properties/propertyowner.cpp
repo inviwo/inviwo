@@ -117,11 +117,12 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
 
 Property* PropertyOwner::getPropertyByIdentifier(const std::string& identifier,
                                                  bool recursiveSearch) const {
-    for (auto& elem : properties_) {
-        if (elem->getIdentifier() == identifier) return elem;
+    for (auto& property : properties_) {
+        if (property->getIdentifier() == identifier) return property;
     }
     if (recursiveSearch) {
-        for (auto p : compositeProperties_) {
+        for (auto compositeProperty : compositeProperties_) {
+            Property* p = compositeProperty->getPropertyByIdentifier(identifier, true);
             if (p) return p;
         }
     }
