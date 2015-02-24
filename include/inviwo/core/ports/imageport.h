@@ -137,8 +137,9 @@ protected:
      *(group)
      *
      * @param ResizeEvent * resizeEvent Event to be propagated
+     * @return bool * If propagation ended or not
      */
-    void propagateResizeEventToPredecessor(ResizeEvent* resizeEvent);
+    bool propagateResizeEventToPredecessor(ResizeEvent* resizeEvent);
     ResizeEvent* scaleResizeEvent(ImageInport*, ResizeEvent*);
 
 private:

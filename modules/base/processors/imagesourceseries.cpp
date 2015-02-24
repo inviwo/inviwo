@@ -86,9 +86,9 @@ void ImageSourceSeries::onFindFiles() {
     std::vector<std::string> ids;
     std::vector<std::string> displayNames;
 
-    for (auto& file : files) {
-        if (isValidImageFile(file)) {
-            std::string displayName = filesystem::getFileNameWithExtension(file);
+    for (size_t i=0; i<files.size(); i++) {
+        if (isValidImageFile(files[i])) {
+            std::string displayName = filesystem::getFileNameWithExtension(files[i]);
             ids.push_back(displayName+"_id");
             displayNames.push_back(displayName);
         }
@@ -117,9 +117,9 @@ void ImageSourceSeries::process() {
             return;
         }
 
-        for (auto& elem : filesInDirectory) {
-            if (isValidImageFile(elem)) {
-                fileNames.push_back(elem);
+        for (size_t i=0; i<filesInDirectory.size(); i++) {
+            if (isValidImageFile(filesInDirectory[i])) {
+                fileNames.push_back(filesInDirectory[i]);
             }
         }
 

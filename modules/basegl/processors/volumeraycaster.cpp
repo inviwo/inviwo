@@ -123,15 +123,14 @@ void VolumeRaycaster::onVolumeChange() {
 }
 
 void VolumeRaycaster::process() {
-    entryPort_.passOnDataToOutport(&outport_);
-
     TextureUnit tfUnit, entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit, volUnit;
     utilgl::bindTexture(transferFunction_, tfUnit);
     utilgl::bindTextures(entryPort_, entryColorUnit, entryDepthUnit);
     utilgl::bindTextures(exitPort_, exitColorUnit, exitDepthUnit);
     utilgl::bindTexture(volumePort_, volUnit);
 
-    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
+    utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
+    utilgl::clearCurrentTarget();
     shader_->activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

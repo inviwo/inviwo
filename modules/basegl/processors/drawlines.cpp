@@ -104,9 +104,7 @@ void DrawLines::deinitialize() {
 }
 
 void DrawLines::process() {
-    inport_.passOnDataToOutport(&outport_);
-
-    utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
+    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
     bool reEnableLineSmooth = false;
     if (glIsEnabled(GL_LINE_SMOOTH)) {
         glDisable(GL_LINE_SMOOTH);

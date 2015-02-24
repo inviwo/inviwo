@@ -95,9 +95,7 @@ void DrawPoints::deinitialize() {
 }
 
 void DrawPoints::process() {
-    inport_.passOnDataToOutport(&outport_);
-
-    utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
+    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
     glPointSize(static_cast<float>(pointSize_.get()));
     pointShader_->activate();
     pointShader_->setUniform("color_", pointColor_.get());

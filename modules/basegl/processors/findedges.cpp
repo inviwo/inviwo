@@ -63,10 +63,8 @@ void FindEdges::deinitialize() {
 }
 
 void FindEdges::process() {
-    inport_.passOnDataToOutport(&outport_);
-
     TextureUnit image;
-    utilgl::activateTarget(outport_, COLOR_ONLY);
+    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
     utilgl::bindColorTexture(inport_, image);
     shader_->activate();
     shader_->setUniform("inport_", image.getUnitNumber());

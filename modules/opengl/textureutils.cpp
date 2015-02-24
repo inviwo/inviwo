@@ -37,20 +37,28 @@
 namespace inviwo {
 
 namespace utilgl {
+
 void activateTarget(ImageOutport& outport, ImageType type) {
     Image* outImage = outport.getData();
     ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
     outImageGL->activateBuffer(type);
 }
 
-void deactivateCurrentTarget() { FrameBufferObject::deactivateFBO(); }
-
-void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
-
 void activateAndClearTarget(ImageOutport& outport, ImageType type) {
     activateTarget(outport, type);
     clearCurrentTarget();
 }
+
+void activateTargetAndCopySource(ImageOutport& outport, ImageInport& inport, ImageType type){
+    Image* outImage = outport.getData();
+    ImageGL* outImageGL = outImage->getEditableRepresentation<ImageGL>();
+    inport.passOnDataToOutport(&outport);
+    outImageGL->activateBuffer(type);
+}
+
+void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+
+void deactivateCurrentTarget() { FrameBufferObject::deactivateFBO(); }
 
 void updateAndActivateTarget(ImageOutport& outport, ImageInport& inport) {
     Image* outImage = outport.getData();

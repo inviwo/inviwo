@@ -46,6 +46,8 @@ ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     addPort(outport_);
 
     inport_.onChange(this,&ImageGLProcessor::inportChanged);
+    inport_.setOutportDeterminesSize(true);
+    outport_.setHandleResizeEvents(false);
 }
 
 ImageGLProcessor::~ImageGLProcessor() {}
@@ -66,17 +68,19 @@ void ImageGLProcessor::process() {
     if (internalInvalid_ || inport_.getInvalidationLevel() >= INVALID_OUTPUT) {
         internalInvalid_ = false;
         const DataFormatBase* format = inport_.getData()->getDataFormat();
-
-        Image *img = new Image(inport_.getData()->getDimensions(), format);
-        img->copyMetaDataFrom(*inport_.getData());
-        outport_.setData(img);
+        uvec2 dimensions = inport_.getData()->getDimensions();
+        if (!outport_.hasData() || format != outport_.getData()->getDataFormat()
+            || dimensions != outport_.getData()->getDimensions()){
+            Image *img = new Image(dimensions, format);
+            img->copyMetaDataFrom(*inport_.getData());
+            outport_.setData(img);
+        }
     }
-    inport_.passOnDataToOutport(&outport_);
 
     TextureUnit imgUnit;    
     utilgl::bindColorTexture(inport_, imgUnit);
 
-    utilgl::activateTarget(outport_, COLOR_ONLY);
+    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
     shader_->activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

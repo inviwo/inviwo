@@ -133,8 +133,6 @@ void MultichannelRaycaster::initializeResources() {
 
 void MultichannelRaycaster::process() {   
     LGL_ERROR;
-    entryPort_.passOnDataToOutport(&outport_);
-
     TextureUnit entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit, volUnit;
     utilgl::bindTextures(entryPort_, entryColorUnit.getEnum(), entryDepthUnit.getEnum());
     utilgl::bindTextures(exitPort_, exitColorUnit.getEnum(), exitDepthUnit.getEnum());
@@ -150,7 +148,8 @@ void MultichannelRaycaster::process() {
         tfUnitNumbers[channel] = transFuncUnits[channel].getUnitNumber();
     }
     
-    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
+    utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
+    utilgl::clearCurrentTarget();
     shader_->activate();
     
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

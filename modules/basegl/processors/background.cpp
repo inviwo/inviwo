@@ -129,9 +129,10 @@ void Background::initializeResources() {
 void Background::process() {
     if (inport_.hasData() != hadData_) initializeResources();
 
-    if (inport_.hasData()) inport_.passOnDataToOutport(&outport_);
-
-    utilgl::activateTarget(outport_, COLOR_ONLY);
+    if (inport_.hasData())
+        utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
+    else
+        utilgl::activateTarget(outport_, COLOR_ONLY);
 
     TextureUnit srcColorUnit, srcDepthUnit;
     if (inport_.hasData()) utilgl::bindColorTexture(inport_, srcColorUnit);
