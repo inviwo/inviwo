@@ -141,16 +141,13 @@ void NormalizedHistogram::calculatePercentiles() {
     }
 }
 
-double sumSquare(double a, double b) {
-    return a + b*b;
-}
-
 void NormalizedHistogram::calculateHistStats() {
     std::vector<double> temp = std::vector<double>(data_->size(), 0.0);
     std::copy(data_->begin(), data_->end(), temp.begin());
     std::sort(temp.begin(), temp.end());
     double sum = std::accumulate(data_->begin(), data_->end(), 0.0);
-    double sum2 = std::accumulate(data_->begin(), data_->end(), 0.0, sumSquare);
+    double sum2 = std::accumulate(data_->begin(), data_->end(), 0.0, 
+        [](double a, double b) { return a + b*b; });
 
     histStats_.min = *temp.begin();
     histStats_.max = *(temp.end() - 1);
