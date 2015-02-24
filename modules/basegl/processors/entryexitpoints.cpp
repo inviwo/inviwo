@@ -29,7 +29,7 @@
 
 #include "entryexitpoints.h"
 #include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/rendering/geometryrendererfactory.h>
+#include <inviwo/core/rendering/geometrydrawerfactory.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/clockgl.h>

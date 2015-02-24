@@ -39,7 +39,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
-#include <inviwo/core/rendering/geometryrendererfactory.h>
+#include <inviwo/core/rendering/geometrydrawerfactory.h>
 #include <inviwo/core/util/dialogfactory.h>
 
 #include <pathsexternalmodules.h>

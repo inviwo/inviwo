@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/opengl/buffer/elementbuffergl.h>
-#include <modules/opengl/rendering/meshrenderer.h>
+#include <modules/opengl/rendering/meshdrawer.h>
 
 namespace inviwo {
 

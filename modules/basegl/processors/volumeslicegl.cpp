@@ -30,7 +30,7 @@
 #include "volumeslicegl.h"
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/image/layergl.h>
-#include <modules/opengl/rendering/meshrenderer.h>
+#include <modules/opengl/rendering/meshdrawer.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/textureutils.h>

@@ -41,7 +41,7 @@
 #include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
-#include <inviwo/core/rendering/geometryrendererfactory.h>
+#include <inviwo/core/rendering/geometrydrawerfactory.h>
 #include <inviwo/core/resources/resourcemanager.h>
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/filesystem.h>

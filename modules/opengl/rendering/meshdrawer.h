@@ -32,7 +32,7 @@
 
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/rendering/geometryrenderer.h>
+#include <inviwo/core/rendering/geometrydrawer.h>
 #include <vector>
 
 namespace inviwo {

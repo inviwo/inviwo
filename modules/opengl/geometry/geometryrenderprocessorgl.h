@@ -41,7 +41,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/rendering/geometryrenderer.h>
+#include <inviwo/core/rendering/geometrydrawer.h>
 #include <modules/opengl/openglmoduledefine.h>
 #include <vector>
 

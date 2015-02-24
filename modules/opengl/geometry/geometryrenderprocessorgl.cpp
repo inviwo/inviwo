@@ -31,8 +31,8 @@
 #include <modules/opengl/geometry/geometrygl.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/trackball.h>
-#include <inviwo/core/rendering/geometryrendererfactory.h>
-#include <modules/opengl/rendering/meshrenderer.h>
+#include <inviwo/core/rendering/geometrydrawerfactory.h>
+#include <modules/opengl/rendering/meshdrawer.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>

@@ -47,7 +47,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
 #include <inviwo/core/properties/propertywidgetfactoryobject.h>
-#include <inviwo/core/rendering/geometryrenderer.h>
+#include <inviwo/core/rendering/geometrydrawer.h>
 #include <inviwo/core/resources/resource.h>
 #include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/dialogfactoryobject.h>
