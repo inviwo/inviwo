@@ -34,39 +34,37 @@ namespace inviwo {
 
 VolumeRAM::VolumeRAM(uvec3 dimensions, const DataFormatBase* format)
     : VolumeRepresentation(dimensions, format)
-    , data_(NULL)
+    , data_(nullptr)
     , ownsDataPtr_(true)
-    , histograms_(NULL)
+    , histograms_(nullptr)
     , calculatingHistogram_(false)
     , stopHistogramCalculation_(false) {}
 
 VolumeRAM::VolumeRAM(const VolumeRAM& rhs)
     : VolumeRepresentation(rhs)
-    , data_(NULL)
+    , data_(nullptr)
     , ownsDataPtr_(rhs.ownsDataPtr_)
-    , histograms_(NULL)
+    , histograms_(nullptr)
     , calculatingHistogram_(false)
     , stopHistogramCalculation_(false) {
     if (rhs.histograms_) {
         histograms_ = new std::vector<NormalizedHistogram*>();
-        for (std::vector<NormalizedHistogram*>::iterator it = rhs.histograms_->begin();
-             it != rhs.histograms_->end(); ++it) {
-            histograms_->push_back(new NormalizedHistogram(*it));
+        for (auto& elem : *rhs.histograms_) {
+            histograms_->push_back(new NormalizedHistogram(elem));
         }
     }
 }
 VolumeRAM& VolumeRAM::operator=(const VolumeRAM& that) {
     if (this != &that) {
         VolumeRepresentation::operator=(that);
-        data_ = NULL;
+        data_ = nullptr;
         ownsDataPtr_ = that.ownsDataPtr_;
         calculatingHistogram_ = false;
         stopHistogramCalculation_ = false;
 
         if (histograms_) {
-            for (std::vector<NormalizedHistogram*>::iterator it = that.histograms_->begin();
-                 it != that.histograms_->end(); ++it) {
-                delete *it;
+            for (auto& elem : *that.histograms_) {
+                delete elem;
             }
             histograms_->clear();
         }
@@ -75,12 +73,11 @@ VolumeRAM& VolumeRAM::operator=(const VolumeRAM& that) {
             if (!histograms_) {
                 histograms_ = new std::vector<NormalizedHistogram*>();
             }
-            for (std::vector<NormalizedHistogram*>::iterator it = that.histograms_->begin();
-                 it != that.histograms_->end(); ++it) {
-                histograms_->push_back(new NormalizedHistogram(*it));
+            for (auto& elem : *that.histograms_) {
+                histograms_->push_back(new NormalizedHistogram(elem));
             }
         } else {
-            histograms_ = NULL;
+            histograms_ = nullptr;
         }
     }
 
@@ -95,13 +92,12 @@ void VolumeRAM::deinitialize() {
     // child class (should not delete void pointer
     // since destructor will not be called for object.
     if (histograms_) {
-        for (std::vector<NormalizedHistogram*>::iterator it = histograms_->begin();
-             it != histograms_->end(); ++it) {
-            delete *it;
+        for (auto& elem : *histograms_) {
+            delete elem;
         }
         histograms_->clear();
         delete histograms_;
-        histograms_ = NULL;
+        histograms_ = nullptr;
     }
 }
 
@@ -110,7 +106,7 @@ void* VolumeRAM::getData() { return data_; }
 const void* VolumeRAM::getData() const { return const_cast<void*>(data_); }
 
 bool VolumeRAM::hasNormalizedHistogram() const {
-    return (histograms_ != NULL && !histograms_->empty() && histograms_->at(0)->isValid());
+    return (histograms_ != nullptr && !histograms_->empty() && histograms_->at(0)->isValid());
 }
 
 NormalizedHistogram* VolumeRAM::getNormalizedHistogram(int sampleRate,
@@ -133,7 +129,7 @@ const NormalizedHistogram* VolumeRAM::getNormalizedHistogram(int sampleRate,
     if (histograms_ && static_cast<int>(histograms_->size()) > component) {
         return histograms_->at(component);
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -160,7 +156,7 @@ size_t VolumeRAM::getNumberOfBytes() const{
 
 VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format, void* dataPtr) {
     // TODO: Add more formats
-    VolumeRAM* result = 0;
+    VolumeRAM* result = nullptr;
 
     switch (format->getId()) {
         case DataFormatEnums::NOT_SPECIALIZED:

@@ -271,11 +271,11 @@ std::string getRelativePath(const std::string& bPath, const std::string& absolut
     }
 
     // handle non-matching tokens
-    for (size_t i = 0; i < basePathTokens.size(); i++)
-        if (basePathTokens[i] != "") relativePath += "../";
+    for (auto& basePathToken : basePathTokens)
+        if (basePathToken != "") relativePath += "../";
 
-    for (size_t i = 0; i < absolutePathTokens.size(); i++)
-        if (absolutePathTokens[i] != "") relativePath += (absolutePathTokens[i] + "/");
+    for (auto& absolutePathToken : absolutePathTokens)
+        if (absolutePathToken != "") relativePath += (absolutePathToken + "/");
 
     return relativePath + fileName;
 }

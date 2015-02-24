@@ -71,7 +71,7 @@ DataRepresentation* ElementBufferGL2RAMConverter::createFrom(const DataRepresent
         LogError("Cannot convert format from GL to RAM:" << src->getDataFormat()->getString());
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void ElementBufferGL2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {

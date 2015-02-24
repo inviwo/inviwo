@@ -77,10 +77,10 @@ void Buffer::setSize(size_t size) {
             std::vector<DataRepresentation*>::iterator it = std::find(representations_.begin(), representations_.end(), lastValidRepresentation_);
 
             // First delete the representations before erasing them from the vector
-            for (size_t i=0; i<representations_.size(); i++) {
-                if (representations_[i] != lastValidRepresentation_) {
-                    delete representations_[i];
-                    representations_[i] = NULL;
+            for (auto& elem : representations_) {
+                if (elem != lastValidRepresentation_) {
+                    delete elem;
+                    elem = nullptr;
                 }
             }
 

@@ -62,7 +62,7 @@ namespace inviwo {
  */
 
 HelpWidget::HelpWidget(QWidget* parent)
-    : InviwoDockWidget(tr("Help"), parent), helpBrowser_(NULL), helpEngine_(NULL) {
+    : InviwoDockWidget(tr("Help"), parent), helpBrowser_(nullptr), helpEngine_(nullptr) {
     setObjectName("HelpWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
@@ -87,7 +87,7 @@ HelpWidget::HelpWidget(QWidget* parent)
     if (!helpEngine_->setupData()) {
         LogWarn("Faild to setup the help engine:" << helpEngine_->error().toUtf8().constData());
         delete helpEngine_;
-        helpEngine_ = NULL;
+        helpEngine_ = nullptr;
     }
 }
 

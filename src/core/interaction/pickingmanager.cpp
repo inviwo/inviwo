@@ -36,9 +36,7 @@
 namespace inviwo {
 
 PickingManager::~PickingManager() {
-    for (std::vector<PickingObject*>::iterator it = pickingObjects_.begin();
-         it != pickingObjects_.end(); it++)
-        delete *it;
+    for (auto& elem : pickingObjects_) delete elem;
 }
 
 bool PickingManager::unregisterPickingObject(const PickingObject* p) {
@@ -70,18 +68,18 @@ PickingObject* PickingManager::getPickingObjectFromColor(const DataVec3UINT8::ty
 
     if (it != pickingObjects_.end()) return (*it);
 
-    return NULL;
+    return nullptr;
 }
 
 PickingObject* PickingManager::generatePickingObject(size_t id) {
     float idF = static_cast<float>(id);
     // Hue /Saturation / Value
     // Hue is based on Golden Ratio for unique and distinct color differences.
-    float valueDiff = 0.05f * floor(idF / 100.f);
+    float valueDiff = 0.05f * std::floor(idF / 100.f);
 
     if (valueDiff > 0.7f) {
         LogError("Maximum number of picking colors reached at ID : " << id);
-        return NULL;
+        return nullptr;
     }
 
     vec3 hsv = vec3(idF * M_PI - floor(idF * M_PI), 0.5f, 0.95f - valueDiff);
@@ -97,7 +95,7 @@ void PickingManager::performUniqueColorGenerationTest(int iterations) {
 
     for (int i = 0; i < iterations; i++) {
         float idF = static_cast<float>(i);
-        float valueDiff = 0.05f * floor(idF / 100.f);
+        float valueDiff = 0.05f * std::floor(idF / 100.f);
 
         if (valueDiff > 0.85f) {
             LogError("Maximum number of picking colors reached at ID : " << i);

@@ -43,21 +43,20 @@ namespace inviwo {
 PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     static PyListPropertiesMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     if (PyTuple_Size(args) != 1) {
         std::ostringstream errStr;
         errStr << "listProperties() takes exactly 1 argument: processor name";
         errStr << " (" << PyTuple_Size(args) << " given)";
         PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
-        return 0;
+        return nullptr;
     }
 
     // check parameter if is string
     if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
         PyErr_SetString(PyExc_TypeError, "listProperties() argument must be a string");
-        return 0;
+        return nullptr;
     }
 
     std::string processorName = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
@@ -70,9 +69,9 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     } else {
         std::vector<Property*> props = processor->getProperties();
 
-        for (std::vector<Property*>::const_iterator p = props.begin(); p != props.end(); ++p) {
-            std::string name = (*p)->getIdentifier();
-            std::string type  = (*p)->getClassIdentifier();
+        for(auto prop : props) {
+            std::string name = prop->getIdentifier();
+            std::string type  = prop->getClassIdentifier();
             PyRun_SimpleString(("print(\""+ name + " : "+ type + "\")").c_str());
         }
     }

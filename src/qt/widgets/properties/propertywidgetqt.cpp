@@ -76,16 +76,16 @@ int PropertyWidgetQt::MARGIN = 0;
 PropertyWidgetQt::PropertyWidgetQt()
     : QWidget()
     , PropertyWidget()
-    , usageModeItem_(NULL)
-    , usageModeActionGroup_(NULL)
-    , developerUsageModeAction_(NULL)
-    , applicationUsageModeAction_(NULL)
-    , copyAction_(NULL)
-    , pasteAction_(NULL)
-    , copyPathAction_(NULL)
-    , semanicsMenuItem_(NULL)
-    , semanticsActionGroup_(NULL)
-    , contextMenu_(NULL)  {
+    , usageModeItem_(nullptr)
+    , usageModeActionGroup_(nullptr)
+    , developerUsageModeAction_(nullptr)
+    , applicationUsageModeAction_(nullptr)
+    , copyAction_(nullptr)
+    , pasteAction_(nullptr)
+    , copyPathAction_(nullptr)
+    , semanicsMenuItem_(nullptr)
+    , semanticsActionGroup_(nullptr)
+    , contextMenu_(nullptr) {
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(showContextMenu(const QPoint&)));
@@ -95,13 +95,13 @@ PropertyWidgetQt::PropertyWidgetQt()
 PropertyWidgetQt::PropertyWidgetQt(Property* property)
     : QWidget()
     , PropertyWidget(property)
-    , usageModeItem_(NULL)
-    , usageModeActionGroup_(NULL)
-    , developerUsageModeAction_(NULL)
-    , applicationUsageModeAction_(NULL)
-    , semanicsMenuItem_(NULL)
-    , semanticsActionGroup_(NULL)
-    , contextMenu_(NULL) {
+    , usageModeItem_(nullptr)
+    , usageModeActionGroup_(nullptr)
+    , developerUsageModeAction_(nullptr)
+    , applicationUsageModeAction_(nullptr)
+    , semanicsMenuItem_(nullptr)
+    , semanticsActionGroup_(nullptr)
+    , contextMenu_(nullptr) {
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(showContextMenu(const QPoint&)));
@@ -241,20 +241,18 @@ void PropertyWidgetQt::generateContextMenu() {
             
             std::vector<PropertySemantics> semantics =
                 PropertyWidgetFactory::getPtr()->getSupportedSemanicsForProperty(property_);
-        
-            
-            for (std::vector<PropertySemantics>::iterator it = semantics.begin();
-                 it!=semantics.end(); ++it) {
-            
-                QAction* semanticAction = new QAction(QString::fromStdString(it->getString()),semanticsActionGroup_);
+
+            for (auto& semantic : semantics) {
+                QAction* semanticAction = new QAction(QString::fromStdString(semantic.getString()),
+                                                      semanticsActionGroup_);
                 semanticAction->setCheckable(true);
                 semanicsMenuItem_->addAction(semanticAction);
-                if (*it == property_->getSemantics()) {
+                if (semantic == property_->getSemantics()) {
                     semanticAction->setChecked(true);
                 } else {
                     semanticAction->setChecked(false);
                 }
-                semanticAction->setData(QString::fromStdString(it->getString()));
+                semanticAction->setData(QString::fromStdString(semantic.getString()));
             }
             
             connect(semanticsActionGroup_, SIGNAL(triggered(QAction*)),
@@ -324,9 +322,8 @@ void PropertyWidgetQt::generateModuleMenuActions() {
     std::vector<ModuleCallbackAction*> moduleActions = app->getCallbackActions();
     std::map<std::string, std::vector<ModuleCallbackAction*> > callbackMapPerModule;
 
-    for (size_t i = 0; i < moduleActions.size(); i++)
-        callbackMapPerModule[moduleActions[i]->getModule()->getIdentifier()].push_back(
-            moduleActions[i]);
+    for (auto& moduleAction : moduleActions)
+        callbackMapPerModule[moduleAction->getModule()->getIdentifier()].push_back(moduleAction);
 
     std::map<std::string, std::vector<ModuleCallbackAction*> >::iterator mapIt;
 
@@ -337,11 +334,11 @@ void PropertyWidgetQt::generateModuleMenuActions() {
             QMenu* submenu = new QMenu(tr(mapIt->first.c_str()));
             moduleSubMenus_[mapIt->first.c_str()] = submenu;
 
-            for (size_t i = 0; i < moduleActions.size(); i++) {
-                QAction* action = new QAction(tr(moduleActions[i]->getActionName().c_str()), this);
+            for (auto& moduleAction : moduleActions) {
+                QAction* action = new QAction(tr(moduleAction->getActionName().c_str()), this);
                 action->setCheckable(true);
                 submenu->addAction(action);
-                action->setChecked(moduleActions[i]->getActionState() ==
+                action->setChecked(moduleAction->getActionState() ==
                                    ModuleCallBackActionState::Enabled);
                 connect(action, SIGNAL(triggered()), this, SLOT(moduleAction()));
             }
@@ -353,8 +350,8 @@ void PropertyWidgetQt::updateModuleMenuActions() {
     InviwoApplication* app = InviwoApplication::getPtr();
     std::vector<ModuleCallbackAction*> moduleActions = app->getCallbackActions();
 
-    for (size_t i = 0; i < moduleActions.size(); i++) {
-        std::string moduleName = moduleActions[i]->getModule()->getIdentifier();
+    for (auto& moduleAction : moduleActions) {
+        std::string moduleName = moduleAction->getModule()->getIdentifier();
         QMapIterator<QString, QMenu*> it(moduleSubMenus_);
 
         while (it.hasNext()) {
@@ -363,14 +360,13 @@ void PropertyWidgetQt::updateModuleMenuActions() {
             if (it.key().toLocal8Bit().constData() == moduleName) {
                 QList<QAction*> actions = it.value()->actions();
 
-                for (int j = 0; j < actions.size(); j++) {
-                    if (actions[j]->text().toLocal8Bit().constData() ==
-                        moduleActions[i]->getActionName()) {
+                for (auto& action : actions) {
+                    if (action->text().toLocal8Bit().constData() == moduleAction->getActionName()) {
                         // FIXME: Following setChecked is not behaving as expected on some special
                         // case. This needs to be investigated.
                         // bool blockState = actions[j]->blockSignals(true);
-                        actions[j]->setChecked(moduleActions[i]->getActionState() ==
-                                               ModuleCallBackActionState::Enabled);
+                        action->setChecked(moduleAction->getActionState() ==
+                                           ModuleCallBackActionState::Enabled);
                         // actions[j]->blockSignals(blockState);
                     }
                 }
@@ -412,10 +408,10 @@ void PropertyWidgetQt::moduleAction() {
         std::vector<ModuleCallbackAction*> moduleActions = app->getCallbackActions();
         std::string actionName(action->text().toLocal8Bit().constData());
 
-        for (size_t i = 0; i < moduleActions.size(); i++) {
-            if (moduleActions[i]->getActionName() == actionName) {
-                moduleActions[i]->getCallBack()->invoke(property_);
-                action->setChecked(moduleActions[i]->getActionState() ==
+        for (auto& moduleAction : moduleActions) {
+            if (moduleAction->getActionName() == actionName) {
+                moduleAction->getCallBack()->invoke(property_);
+                action->setChecked(moduleAction->getActionState() ==
                                    ModuleCallBackActionState::Enabled);
             }
         }
@@ -474,9 +470,9 @@ std::string PropertyWidgetQt::makeToolTipRow(std::string item, std::string val) 
 std::string PropertyWidgetQt::makeToolTipRow(std::string item, std::vector<std::string> vals) const {
     std::stringstream ss;
     ss << "<tr><td style='color:#bbb;padding-right:8px;'>" << item << "</td>";
-    
-    for(size_t i = 0; i < vals.size(); ++i){
-        ss << "<td align=center><nobr>" + vals[i] + "</nobr></td>";
+
+    for (auto& val : vals) {
+        ss << "<td align=center><nobr>" + val + "</nobr></td>";
     }
     ss << "</tr>" << std::endl;
     
@@ -539,15 +535,14 @@ void PropertyWidgetQt::paste() {
 }
 
 void PropertyWidgetQt::copyPath() {
-    if (property_ == NULL){
+    if (property_ == nullptr) {
         return;
     }
     std::string path = joinString(property_->getPath(),".");
     QApplication::clipboard()->setText(path.c_str());
 }
 
-
-const Property* PropertyWidgetQt::copySource = NULL;
+const Property* PropertyWidgetQt::copySource = nullptr;
 
 //////////////////////////////////////////////////////////////////////////
 

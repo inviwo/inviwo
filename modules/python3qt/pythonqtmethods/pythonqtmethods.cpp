@@ -47,13 +47,13 @@ namespace inviwo {
             errStr << "loadWorkspace() takes 1 argument: filename";
             errStr << " (" << PyTuple_Size(args) << " given)";
             PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
-            return 0;
+            return nullptr;
         }
 
         // check parameter if is string
         if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
             PyErr_SetString(PyExc_TypeError, "loadWorkspace() first argument must be a string");
-            return 0;
+            return nullptr;
         }
 
         std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
@@ -64,7 +64,7 @@ namespace inviwo {
             if (!filesystem::fileExists(filename)) {
                 std::string msg = std::string("loadWorkspace() could not find file") + filename;
                 PyErr_SetString(PyExc_TypeError, msg.c_str());
-                return 0;
+                return nullptr;
             }
         }
 
@@ -79,13 +79,13 @@ namespace inviwo {
             errStr << "saveWorkspace() takes 1 argument: filename";
             errStr << " (" << PyTuple_Size(args) << " given)";
             PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
-            return 0;
+            return nullptr;
         }
 
         // check parameter if is string
         if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
             PyErr_SetString(PyExc_TypeError, "saveWorkspace() first argument must be a string");
-            return 0;
+            return nullptr;
         }
 
         std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
@@ -104,7 +104,7 @@ PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/) {
 PyObject* py_prompt(PyObject* /*self*/, PyObject* args) {
     PyPromptMethod p;
     if (!p.testParams(args)) {
-        return 0;
+        return nullptr;
     }
     std::string title = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     std::string message = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1)));
@@ -116,7 +116,7 @@ PyObject* py_prompt(PyObject* /*self*/, PyObject* args) {
     }
 
     bool ok;
-    QString text = QInputDialog::getText(0, title.c_str(), message.c_str(), QLineEdit::Normal,
+    QString text = QInputDialog::getText(nullptr, title.c_str(), message.c_str(), QLineEdit::Normal,
                                          defaultValue.c_str(), &ok);
     if (ok && !text.isEmpty()) {
         std::string t = text.toLocal8Bit().constData();

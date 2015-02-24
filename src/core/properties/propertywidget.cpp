@@ -32,9 +32,10 @@
 
 namespace inviwo {
 
-PropertyWidget::PropertyWidget() : property_(NULL), propertyEditor_(NULL) {}
+PropertyWidget::PropertyWidget() : property_(nullptr), propertyEditor_(nullptr) {}
 
-PropertyWidget::PropertyWidget(Property* property) : property_(property), propertyEditor_(NULL) {}
+PropertyWidget::PropertyWidget(Property* property)
+    : property_(property), propertyEditor_(nullptr) {}
 
 PropertyWidget::~PropertyWidget() {}
 
@@ -50,7 +51,7 @@ void PropertyWidget::setEditorWidget(PropertyEditorWidget* propertyEditorWidget)
 
 PropertyEditorWidget* PropertyWidget::getEditorWidget() const { return propertyEditor_; }
 
-bool PropertyWidget::hasEditorWidget() const { return (propertyEditor_ != NULL); }
+bool PropertyWidget::hasEditorWidget() const { return (propertyEditor_ != nullptr); }
 
 void PropertyWidget::initializeEditorWidgetsMetaData() {}
 
@@ -58,7 +59,7 @@ void PropertyWidget::initializeEditorWidgetsMetaData() {}
 
 // Additional widgets owned by property
 
-PropertyEditorWidget::PropertyEditorWidget() : metaData_(0) {}
+PropertyEditorWidget::PropertyEditorWidget() : metaData_(nullptr) {}
 
 PropertyEditorWidget::~PropertyEditorWidget() {}
 

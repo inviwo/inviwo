@@ -79,16 +79,14 @@ void MeshGL::update(bool editable) {
     attributesArray_->bind(); // Have to call bind before clear.
     attributesArray_->clear();
     if (editable) {
-        for (std::vector<Buffer*>::const_iterator it = owner->getBuffers().begin();
-             it != owner->getBuffers().end(); ++it) {
-            BufferGL* bufGL = (*it)->getEditableRepresentation<BufferGL>();
+        for (Buffer* buf : owner->getBuffers()) {
+            BufferGL* bufGL = buf->getEditableRepresentation<BufferGL>();
             attributesGL_.push_back(bufGL);
             attributesArray_->attachBufferObject(bufGL->getBufferObject());
         }
     } else {
-        for (std::vector<Buffer*>::const_iterator it = owner->getBuffers().begin();
-             it != owner->getBuffers().end(); ++it) {
-            const BufferGL* bufGL = (*it)->getRepresentation<BufferGL>();
+        for (Buffer* buf : owner->getBuffers()) {
+            const BufferGL* bufGL = buf->getRepresentation<BufferGL>();
             attributesGL_.push_back(bufGL);
             attributesArray_->attachBufferObject(bufGL->getBufferObject());
         }

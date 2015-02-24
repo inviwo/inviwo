@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-DataFormatBase* DataFormatBase::instance_[] = {NULL};
+DataFormatBase* DataFormatBase::instance_[] = {nullptr};
 
 DataFormatBase::DataFormatBase()
     : formatId_(id())
@@ -260,14 +260,14 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int
             break;
 
     }
-    return NULL;
+    return nullptr;
 }
 
 void DataFormatBase::cleanDataFormatBases() {
-    for (int i = 0; i<DataFormatEnums::NUMBER_OF_FORMATS; i++) {
-        if (instance_[i]) {
-            delete instance_[i];
-            instance_[i] = 0;
+    for (auto& elem : instance_) {
+        if (elem) {
+            delete elem;
+            elem = nullptr;
         }
     }
 }

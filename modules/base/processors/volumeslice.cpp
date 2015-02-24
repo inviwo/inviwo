@@ -106,25 +106,25 @@ void VolumeSlice::shiftSlice(int shift) {
 void VolumeSlice::process() {
     const VolumeRAM* vol = inport_.getData()->getRepresentation<VolumeRAM>();
 
-    uvec3 dims = vol->getDimensions();
+    const ivec3 dims(vol->getDimensions());
 
     switch (sliceAlongAxis_.get()) {
         case CoordinateEnums::X:
             if (dims.x != sliceNumber_.getMaxValue()) {
-                sliceNumber_.setMaxValue(static_cast<int>(dims.x));
-                sliceNumber_.set(static_cast<int>(dims.x) / 2);
+                sliceNumber_.setMaxValue(dims.x);
+                sliceNumber_.set(dims.x / 2);
             }
             break;
         case CoordinateEnums::Y:
             if (dims.y != sliceNumber_.getMaxValue()) {
-                sliceNumber_.setMaxValue(static_cast<int>(dims.y));
-                sliceNumber_.set(static_cast<int>(dims.y) / 2);
+                sliceNumber_.setMaxValue(dims.y);
+                sliceNumber_.set(dims.y / 2);
             }
             break;
         case CoordinateEnums::Z:
             if (dims.z != sliceNumber_.getMaxValue()) {
-                sliceNumber_.setMaxValue(static_cast<int>(dims.z));
-                sliceNumber_.set(static_cast<int>(dims.z) / 2);
+                sliceNumber_.setMaxValue(dims.z);
+                sliceNumber_.set(dims.z / 2);
             }
             break;
     }

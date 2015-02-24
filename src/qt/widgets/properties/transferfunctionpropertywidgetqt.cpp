@@ -36,15 +36,16 @@
 
 namespace inviwo {
 
-TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(TransferFunctionProperty* property) 
-    : PropertyWidgetQt(property), transferFunctionDialog_(NULL) {
+TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
+    TransferFunctionProperty* property)
+    : PropertyWidgetQt(property), transferFunctionDialog_(nullptr) {
     generateWidget();
     updateFromProperty();
 }
 
 TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
     transferFunctionDialog_->hide();
-    setEditorWidget(NULL);
+    setEditorWidget(nullptr);
     delete transferFunctionDialog_;
     delete btnOpenTF_;
 }

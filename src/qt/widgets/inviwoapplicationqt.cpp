@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
@@ -36,7 +36,7 @@
 #endif
 
 #ifdef Q_OS_WIN
-#include <windows.h> // for Sleep
+#include <windows.h>  // for Sleep
 #else
 #include <time.h>
 #endif
@@ -46,35 +46,30 @@
 
 namespace inviwo {
 
-InviwoApplicationQt::InviwoApplicationQt(std::string displayName,
-        std::string basePath,
-        int& argc,
-        char** argv)
+InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string basePath, int& argc,
+                                         char** argv)
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName, basePath)
-    , windowDecorationOffset_(0,0) {
+    , windowDecorationOffset_(0, 0) {
     QCoreApplication::setOrganizationName("Inviwo Foundation");
     QCoreApplication::setOrganizationDomain("inviwo.org");
     QCoreApplication::setApplicationName(displayName.c_str());
     fileWatcher_ = new QFileSystemWatcher(this);
     connect(fileWatcher_, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
-    
-    // Make qt write errors in the console;
-    #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+
+// Make qt write errors in the console;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     qInstallMessageHandler(&InviwoApplicationQt::logQtMessages);
-    #endif
+#endif
 }
 
-InviwoApplicationQt::~InviwoApplicationQt() {
-}
+InviwoApplicationQt::~InviwoApplicationQt() {}
 
-void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) {
-    mainWindow_ = mainWindow;
-}
+void InviwoApplicationQt::setMainWindow(QMainWindow* mainWindow) { mainWindow_ = mainWindow; }
 
 void InviwoApplicationQt::registerFileObserver(FileObserver* fileObserver) {
     ivwAssert(std::find(fileObservers_.begin(), fileObservers_.end(), fileObserver) ==
-              fileObservers_.end(),
+                  fileObservers_.end(),
               "File observer already registered.");
     fileObservers_.push_back(fileObserver);
 }
@@ -82,15 +77,13 @@ void InviwoApplicationQt::registerFileObserver(FileObserver* fileObserver) {
 void InviwoApplicationQt::startFileObservation(std::string fileName) {
     QString qFileName = QString::fromStdString(fileName);
 
-    if (!fileWatcher_->files().contains(qFileName))
-        fileWatcher_->addPath(qFileName);
+    if (!fileWatcher_->files().contains(qFileName)) fileWatcher_->addPath(qFileName);
 }
 
 void InviwoApplicationQt::stopFileObservation(std::string fileName) {
     QString qFileName = QString::fromStdString(fileName);
 
-    if (fileWatcher_->files().contains(qFileName))
-        fileWatcher_->removePath(qFileName);
+    if (fileWatcher_->files().contains(qFileName)) fileWatcher_->removePath(qFileName);
 }
 
 void InviwoApplicationQt::fileChanged(QString fileName) {
@@ -99,12 +92,12 @@ void InviwoApplicationQt::fileChanged(QString fileName) {
     if (QFile::exists(fileName)) {
         std::string fileNameStd = fileName.toLocal8Bit().constData();
 
-        for (size_t i = 0; i < fileObservers_.size(); i++) {
-            std::vector<std::string> observedFiles = fileObservers_[i]->getFiles();
+        for (auto& elem : fileObservers_) {
+            std::vector<std::string> observedFiles = elem->getFiles();
 
             if (std::find(observedFiles.begin(), observedFiles.end(), fileNameStd) !=
                 observedFiles.end())
-                fileObservers_[i]->fileChanged(fileNameStd);
+                elem->fileChanged(fileNameStd);
         }
 
         if (!fileWatcher_->files().contains(fileName)) {
@@ -113,9 +106,7 @@ void InviwoApplicationQt::fileChanged(QString fileName) {
     }
 }
 
-void InviwoApplicationQt::closeInviwoApplication() {
-    QCoreApplication::quit();
-}
+void InviwoApplicationQt::closeInviwoApplication() { QCoreApplication::quit(); }
 
 void InviwoApplicationQt::playSound(unsigned int soundID) {
 // Qt currently does not support playing sounds from resources
@@ -145,65 +136,63 @@ void InviwoApplicationQt::initialize(registerModuleFuncPtr regModuleFunc) {
     module->initialize();
 }
 
-Timer* InviwoApplicationQt::createTimer()const {
-    return new TimerQt();
-}
+Timer* InviwoApplicationQt::createTimer() const { return new TimerQt(); }
 
 void InviwoApplicationQt::wait(int ms) {
-    if (ms <= 0)
-        return;
+    if (ms <= 0) return;
 
 #ifdef Q_OS_WIN
     Sleep(uint(ms));
 #else
-    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
-    nanosleep(&ts, NULL);
+    struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
+    nanosleep(&ts, nullptr);
 #endif
 }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext &context,
-                                        const QString &msg) {
-
-    #ifdef IVW_DEBUG
+void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext& context,
+                                        const QString& msg) {
+#ifdef IVW_DEBUG
     QByteArray localMsg = msg.toLocal8Bit();
     switch (type) {
         case QtDebugMsg:
-            inviwo::LogCentral::getPtr()->log("Qt Debug", Info, context.file, context.function,
-                                                context.line, msg.toUtf8().constData());
+            inviwo::LogCentral::getPtr()->log("Qt Debug", LogLevel::Info, LogAudience::Developer,
+                                              context.file, context.function, context.line,
+                                              msg.toUtf8().constData());
 
             fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
         case QtWarningMsg:
-            inviwo::LogCentral::getPtr()->log("Qt Warning", Info, context.file, context.function,
-                                                context.line, msg.toUtf8().constData());
+            inviwo::LogCentral::getPtr()->log("Qt Warning", LogLevel::Info, LogAudience::Developer,
+                                              context.file, context.function, context.line,
+                                              msg.toUtf8().constData());
 
             fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
         case QtCriticalMsg:
-            inviwo::LogCentral::getPtr()->log("Qt Critical", Info, context.file, context.function,
-                                                context.line, msg.toUtf8().constData());
-         
+            inviwo::LogCentral::getPtr()->log("Qt Critical", LogLevel::Info, LogAudience::Developer,
+                                              context.file, context.function, context.line,
+                                              msg.toUtf8().constData());
+
             fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             break;
         case QtFatalMsg:
-            inviwo::LogCentral::getPtr()->log("Qt Fatal", Info, context.file, context.function,
-                                                context.line, msg.toUtf8().constData());
-            
+            inviwo::LogCentral::getPtr()->log("Qt Fatal", LogLevel::Info, LogAudience::Developer,
+                                              context.file, context.function, context.line,
+                                              msg.toUtf8().constData());
+
             fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             abort();
     }
-    #endif
+#endif
 }
 #endif
 
-QPoint InviwoApplicationQt::getWindowDecorationOffset() const {
-   return windowDecorationOffset_;
-}
+QPoint InviwoApplicationQt::getWindowDecorationOffset() const { return windowDecorationOffset_; }
 
 void InviwoApplicationQt::setWindowDecorationOffset(QPoint windowDecorationOffset) {
     windowDecorationOffset_ = windowDecorationOffset;
@@ -245,7 +234,7 @@ QPoint InviwoApplicationQt::offsetWidget() {
     ivec2 pos(0, 0);
     pos += baseOffset + ivec2(40 * offsetCounter++);
 
-    if (offsetCounter == 10) { //reset offset
+    if (offsetCounter == 10) {  // reset offset
         offsetCounter = 0;
         baseOffset.x += 200;
         if (baseOffset.x >= 800) {
@@ -259,5 +248,4 @@ QPoint InviwoApplicationQt::offsetWidget() {
     return QPoint(pos.x, pos.y);
 }
 
-
-} // namespace
+}  // namespace

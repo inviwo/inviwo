@@ -35,10 +35,8 @@ namespace inviwo {
 
 PropertyClassIdentifier(Property, "org.inviwo.undefined");
 
-Property::Property(const std::string &identifier,
-                   const std::string &displayName,
-                   InvalidationLevel invalidationLevel,
-                   PropertySemantics semantics)
+Property::Property(const std::string& identifier, const std::string& displayName,
+                   InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : IvwSerializable()
     , MetaDataOwner()
     , serializationMode_(DEFAULT)
@@ -50,9 +48,8 @@ Property::Property(const std::string &identifier,
     , visible_("visible", true)
     , propertyModified_(false)
     , invalidationLevel_(invalidationLevel)
-    , owner_(NULL)
-    , initiatingWidget_(NULL) {
-}
+    , owner_(nullptr)
+    , initiatingWidget_(nullptr) {}
 
 Property::Property(const Property& rhs)
     : IvwSerializable()
@@ -180,13 +177,11 @@ void Property::deregisterWidget(PropertyWidget* propertyWidget) {
 void Property::setInitiatingWidget(PropertyWidget* propertyWidget){
     initiatingWidget_ = propertyWidget;
 }
-void Property::clearInitiatingWidget() {
-    initiatingWidget_ = NULL;
-}
+void Property::clearInitiatingWidget() { initiatingWidget_ = nullptr; }
 void Property::updateWidgets() {
-    for(size_t i = 0; i < propertyWidgets_.size(); i++) {
-        if(propertyWidgets_[i] != 0 && propertyWidgets_[i] != initiatingWidget_) {
-            propertyWidgets_[i]->updateFromProperty();
+    for (auto& elem : propertyWidgets_) {
+        if (elem != nullptr && elem != initiatingWidget_) {
+            elem->updateFromProperty();
         }
     }
 }
@@ -270,15 +265,15 @@ void Property::updateVisibility() {
     UsageMode mode = getUsageMode();
 
     if (getVisible() == false) {
-        for (size_t i = 0; i < propertyWidgets_.size(); i++) propertyWidgets_[i]->hideWidget();
+        for (auto& elem : propertyWidgets_) elem->hideWidget();
     }
 
     if (mode == APPLICATION) {
-        for (size_t i = 0; i < propertyWidgets_.size(); i++) propertyWidgets_[i]->showWidget();
+        for (auto& elem : propertyWidgets_) elem->showWidget();
     } else if (mode == DEVELOPMENT && appMode == DEVELOPMENT) {
-        for (size_t i = 0; i < propertyWidgets_.size(); i++) propertyWidgets_[i]->showWidget();
+        for (auto& elem : propertyWidgets_) elem->showWidget();
     } else if (mode == DEVELOPMENT && appMode == APPLICATION) {
-        for (size_t i = 0; i < propertyWidgets_.size(); i++) propertyWidgets_[i]->hideWidget();
+        for (auto& elem : propertyWidgets_) elem->hideWidget();
     }
 
 }

@@ -33,10 +33,14 @@
 
 namespace inviwo {
 
-
 BaseAnglePropertyWidgetQt::BaseAnglePropertyWidgetQt(Property* prop)
-    : PropertyWidgetQt(prop), settingsAction_(NULL), minAction_(NULL), maxAction_(NULL), 
-    settingsWidget_(NULL), displayName_(NULL), angleWidget_(NULL)  {
+    : PropertyWidgetQt(prop)
+    , settingsAction_(nullptr)
+    , minAction_(nullptr)
+    , maxAction_(nullptr)
+    , settingsWidget_(nullptr)
+    , displayName_(nullptr)
+    , angleWidget_(nullptr) {
     generateWidget();
     generatesSettingsWidget();
 }

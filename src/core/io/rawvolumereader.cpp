@@ -38,13 +38,8 @@
 namespace inviwo {
 
 RawVolumeReader::RawVolumeReader()
-    : DataReaderType<Volume>()
-    , rawFile_("")
-    , littleEndian_(true)
-    , dimensions_(0)
-    , spacing_(0.01f)
-    , format_(NULL)
-    , parametersSet_(false) {
+    : DataReaderType<Volume>(), rawFile_(""), littleEndian_(true),
+      dimensions_(0), spacing_(0.01f), format_(nullptr), parametersSet_(false) {
     addExtension(FileExtension("raw", "Raw binary file"));
 }
 

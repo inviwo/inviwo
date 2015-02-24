@@ -216,60 +216,53 @@ void ProcessorTreeWidget::addProcessorsToTree() {
     // add processors from all modules to the list
     InviwoApplication* inviwoApp = InviwoApplication::getPtr();
 
-    if (listView_->currentIndex() == 2){
+    if (listView_->currentIndex() == 2) {
         addToplevelItemTo("Stable Processors");
         addToplevelItemTo("Experimental Processors");
         addToplevelItemTo("Broken Processors");
     }
-    
-    
-    for (size_t curModuleId=0; curModuleId<inviwoApp->getModules().size(); curModuleId++) {
-        std::vector<ProcessorFactoryObject*> curProcessorList =
-        inviwoApp->getModules()[curModuleId]->getProcessors();
-        
+
+    for (auto& elem : inviwoApp->getModules()) {
+        std::vector<ProcessorFactoryObject*> curProcessorList = elem->getProcessors();
+
         QList<QTreeWidgetItem*> items;
-        for (size_t curProcessorId=0; curProcessorId<curProcessorList.size(); curProcessorId++) {
-            if (lineEdit_->text().isEmpty() ||
-                processorFits(curProcessorList[curProcessorId], lineEdit_->text())) {
-                
+        for (auto& processor : curProcessorList) {
+            if (lineEdit_->text().isEmpty() || processorFits(processor, lineEdit_->text())) {
                 std::string categoryName;
-                
+
                 switch (listView_->currentIndex()) {
-                    case 0: // By Alphabet
-                        categoryName =
-                            curProcessorList[curProcessorId]->getDisplayName().substr(0, 1);
+                    case 0:  // By Alphabet
+                        categoryName = processor->getDisplayName().substr(0, 1);
                         break;
-                    case 1: // By Category
-                        categoryName = curProcessorList[curProcessorId]->getCategory();
+                    case 1:  // By Category
+                        categoryName = processor->getCategory();
                         break;
-                    case 2: // By Code State
-                        categoryName =
-                            getCodeStateString(curProcessorList[curProcessorId]->getCodeState());
+                    case 2:  // By Code State
+                        categoryName = getCodeStateString(processor->getCodeState());
                         break;
-                    case 3: //By Module
-                        categoryName = inviwoApp->getModules()[curModuleId]->getIdentifier();
+                    case 3:  // By Module
+                        categoryName = elem->getIdentifier();
                         break;
                     default:
                         categoryName = "Unkonwn";
                 }
-                
+
                 QString category = QString::fromStdString(categoryName);
                 items = processorTree_->findItems(category, Qt::MatchFixedString, 0);
-                
+
                 if (items.empty()) items.push_back(addToplevelItemTo(category));
-                addProcessorItemTo(items[0], curProcessorList[curProcessorId],
-                                   inviwoApp->getModules()[curModuleId]->getIdentifier());
+                addProcessorItemTo(items[0], processor, elem->getIdentifier());
             }
         }
     }
-    
+
     // Apply sorting
     switch (listView_->currentIndex()) {
-        case 2: {// By Code State
+        case 2: {  // By Code State
             int i = 0;
             while (i < processorTree_->topLevelItemCount()) {
                 QTreeWidgetItem* item = processorTree_->topLevelItem(i);
-                if(item->childCount()==0){
+                if (item->childCount() == 0) {
                     delete processorTree_->takeTopLevelItem(i);
                 } else {
                     item->sortChildren(0, Qt::AscendingOrder);
@@ -282,7 +275,7 @@ void ProcessorTreeWidget::addProcessorsToTree() {
             processorTree_->sortItems(0, Qt::AscendingOrder);
             break;
     }
-    
+
     processorTree_->expandAll();
     processorTree_->resizeColumnToContents(1);
 }

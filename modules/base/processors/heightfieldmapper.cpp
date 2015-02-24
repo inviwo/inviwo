@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "heightfieldmapper.h"
@@ -34,10 +34,10 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(HeightFieldMapper, "org.inviwo.HeightFieldMapper");
-ProcessorDisplayName(HeightFieldMapper,  "Height Field Mapper");
-ProcessorTags(HeightFieldMapper, Tags::CPU); 
+ProcessorDisplayName(HeightFieldMapper, "Height Field Mapper");
+ProcessorTags(HeightFieldMapper, Tags::CPU);
 ProcessorCategory(HeightFieldMapper, "Heightfield");
-ProcessorCodeState(HeightFieldMapper, CODE_STATE_EXPERIMENTAL); 
+ProcessorCodeState(HeightFieldMapper, CODE_STATE_EXPERIMENTAL);
 
 HeightFieldMapper::HeightFieldMapper()
     : Processor()
@@ -46,8 +46,7 @@ HeightFieldMapper::HeightFieldMapper()
     , scalingModeProp_("scalingmode", "Scaling Mode")
     , heightRange_("heightrange", "Height Range", 0.0f, 1.0f, -1.0e1f, 1.0e1f)
     , maxHeight_("maxheight", "Maximum Height", 1.0f, 0.0f, 1.0e1f)
-    , seaLevel_("sealevel", "Sea Level", 0.0f, -1.0e1f, 1.0e1f)
-{
+    , seaLevel_("sealevel", "Sea Level", 0.0f, -1.0e1f, 1.0e1f) {
     addPort(inport_);
     addPort(outport_);
 
@@ -70,17 +69,12 @@ HeightFieldMapper::HeightFieldMapper()
 
 HeightFieldMapper::~HeightFieldMapper() {}
 
-void HeightFieldMapper::initialize() {
-    Processor::initialize();
-}
+void HeightFieldMapper::initialize() { Processor::initialize(); }
 
-void HeightFieldMapper::deinitialize() {
-    Processor::deinitialize();
-}
+void HeightFieldMapper::deinitialize() { Processor::deinitialize(); }
 
 void HeightFieldMapper::process() {
-    if (!inport_.isReady())
-        return;
+    if (!inport_.isReady()) return;
 
     const Image *srcImg = inport_.getData();
     if (!srcImg) {
@@ -89,11 +83,11 @@ void HeightFieldMapper::process() {
     }
 
     // check the number of channels
-    const DataFormatBase* format = srcImg->getDataFormat();
+    const DataFormatBase *format = srcImg->getDataFormat();
     int numInputChannels = format->getComponents();
     glm::uvec2 dim = srcImg->getDimensions();
 
-    Image *outImg = NULL;
+    Image *outImg = nullptr;
 
     // check format of output image
     if (!outImg || (outImg->getDataFormat()->getId() != DataFormatEnums::FLOAT32)) {
@@ -101,54 +95,56 @@ void HeightFieldMapper::process() {
         Image *img = new Image(dim, DataFLOAT32::get());
         outport_.setData(img);
         outImg = img;
-    }
-    else if (outImg->getDimensions() != dim) {
+    } else if (outImg->getDimensions() != dim) {
         // adjust dimensions of output image
         outImg->resize(dim);
     }
 
     LayerRAM *dstLayer = outImg->getColorLayer(0)->getEditableRepresentation<LayerRAM>();
-    float *data = static_cast<float*>(dstLayer->getData());
+    float *data = static_cast<float *>(dstLayer->getData());
 
     // convert input image to float image
     const LayerRAM *srcLayer = srcImg->getColorLayer(0)->getRepresentation<LayerRAM>();
 
     // special case: input image is already FLOAT32 with 1 channel
     if ((numInputChannels == 1) && (format->getId() == DataFormatEnums::FLOAT32)) {
-        const float *srcData = static_cast<const float*>(srcLayer->getData());
+        const float *srcData = static_cast<const float *>(srcLayer->getData());
         std::copy(srcData, srcData + dim.x * dim.y, data);
-    }
-    else {
+    } else {
         switch (numInputChannels) {
-        case 2:
-            for (unsigned int y=0; y<dim.y; ++y) {
-                for (unsigned int x=0; x<dim.x; ++x) {
-                    data[y * dim.x + x] = srcLayer->getValueAsVec2Double(glm::uvec2(x, y)).r;
+            case 2:
+                for (unsigned int y = 0; y < dim.y; ++y) {
+                    for (unsigned int x = 0; x < dim.x; ++x) {
+                        data[y * dim.x + x] =
+                            static_cast<float>(srcLayer->getValueAsVec2Double(glm::uvec2(x, y)).r);
+                    }
                 }
-            }
-            break;
-        case 3:
-            for (unsigned int y=0; y<dim.y; ++y) {
-                for (unsigned int x=0; x<dim.x; ++x) {
-                    data[y * dim.x + x] = srcLayer->getValueAsVec3Double(glm::uvec2(x, y)).r;
+                break;
+            case 3:
+                for (unsigned int y = 0; y < dim.y; ++y) {
+                    for (unsigned int x = 0; x < dim.x; ++x) {
+                        data[y * dim.x + x] =
+                            static_cast<float>(srcLayer->getValueAsVec3Double(glm::uvec2(x, y)).r);
+                    }
                 }
-            }
-            break;
-        case 4:
-            for (unsigned int y=0; y<dim.y; ++y) {
-                for (unsigned int x=0; x<dim.x; ++x) {
-                    data[y * dim.x + x] = srcLayer->getValueAsVec4Double(glm::uvec2(x, y)).r;
+                break;
+            case 4:
+                for (unsigned int y = 0; y < dim.y; ++y) {
+                    for (unsigned int x = 0; x < dim.x; ++x) {
+                        data[y * dim.x + x] =
+                            static_cast<float>(srcLayer->getValueAsVec4Double(glm::uvec2(x, y)).r);
+                    }
                 }
-            }
-            break;
-        case 1:
-        default:
-            for (unsigned int y=0; y<dim.y; ++y) {
-                for (unsigned int x=0; x<dim.x; ++x) {
-                    data[y * dim.x + x] = srcLayer->getValueAsSingleDouble(glm::uvec2(x, y));
+                break;
+            case 1:
+            default:
+                for (unsigned int y = 0; y < dim.y; ++y) {
+                    for (unsigned int x = 0; x < dim.x; ++x) {
+                        data[y * dim.x + x] =
+                            static_cast<float>(srcLayer->getValueAsSingleDouble(glm::uvec2(x, y)));
+                    }
                 }
-            }
-            break;
+                break;
         }
     }
 
@@ -159,40 +155,34 @@ void HeightFieldMapper::process() {
     float maxVal = *std::max_element(data, data + numValues);
 
     switch (scalingModeProp_.get()) {
-    case HeightFieldScaling::SeaLevel:
-        {
+        case HeightFieldScaling::SeaLevel: {
             // scale heightfield based on sea level and min/max height
             float sealevel = seaLevel_.get();
             float aboveSea = maxVal - sealevel;
             float belowSea = minVal - sealevel;
 
             float factor = maxHeight_.get() / std::max(aboveSea, std::abs(belowSea));
-            for (std::size_t i=0; i<numValues; ++i) {
+            for (std::size_t i = 0; i < numValues; ++i) {
                 data[i] = (data[i] - sealevel) * factor;
             }
-        }
-        break;
-    case HeightFieldScaling::DataRange:
-        {
+        } break;
+        case HeightFieldScaling::DataRange: {
             // scale data to [heightRange_.min : heightRange_.max]
             glm::vec2 range(heightRange_.get());
 
             float factor = (range.y - range.x) / (maxVal - minVal);
-            for (std::size_t i=0; i<numValues; ++i) {
-                data[i] = (data[i] - minVal) * factor  + range.x;
+            for (std::size_t i = 0; i < numValues; ++i) {
+                data[i] = (data[i] - minVal) * factor + range.x;
             }
-        }
-        break;
-    case HeightFieldScaling::FixedRange:
-    default:
-        {
+        } break;
+        case HeightFieldScaling::FixedRange:
+        default: {
             // scale data to [0:1] range
             float delta = 1.0f / (maxVal - minVal);
-            for (std::size_t i=0; i<numValues; ++i) {
+            for (std::size_t i = 0; i < numValues; ++i) {
                 data[i] = (data[i] - minVal) * delta;
             }
-        }
-        break;
+        } break;
     }
 }
 
@@ -203,4 +193,4 @@ void HeightFieldMapper::scalingModeChanged() {
     seaLevel_.setVisible(mode == HeightFieldScaling::SeaLevel);
 }
 
-} // namespace
+}  // namespace

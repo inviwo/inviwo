@@ -166,7 +166,7 @@ bool SystemCapabilities::lookupDiskInfo() {
             if (status == SIGAR_OK) {
                 DiskInfo currentDiskInfo;
                 currentDiskInfo.diskType = std::string(disk_info.type_name);
-                currentDiskInfo.diskType[0] = toupper(currentDiskInfo.diskType[0]);
+                currentDiskInfo.diskType[0] = static_cast<char>(toupper(currentDiskInfo.diskType[0]));
 
                 if (currentDiskInfo.diskType == "Local") {
                     currentDiskInfo.diskName = std::string(disk_info.dev_name);
@@ -261,9 +261,10 @@ void SystemCapabilities::printInfo() {
 
     // Try to retrieve Disk information
     if (successDiskInfo_) {
-        for (unsigned long i=0; i<infoDisks_.size(); i++)
-            LogInfoCustom("SystemInfo","Disk: " << infoDisks_[i].diskName << " Total - " << formatBytesToString(infoDisks_[i].total) << ", Free - " << formatBytesToString(
-                        infoDisks_[i].free));
+        for (auto& elem : infoDisks_)
+            LogInfoCustom("SystemInfo", "Disk: " << elem.diskName << " Total - "
+                                                 << formatBytesToString(elem.total) << ", Free - "
+                                                 << formatBytesToString(elem.free));
     }
     else
         SystemInfoNotFound("Disk:");

@@ -35,8 +35,9 @@ namespace inviwo {
 PortInspectorFactory::PortInspectorFactory() {}
 
 PortInspectorFactory::~PortInspectorFactory() {
-    for (PortInsectorCache::iterator cit = cache_.begin(); cit != cache_.end(); ++cit) {
-        for (std::vector<PortInspector*>::iterator vit = cit->second.begin(); vit != cit->second.end(); ++vit) {
+    for (auto& elem : cache_) {
+        for (std::vector<PortInspector*>::iterator vit = elem.second.begin();
+             vit != elem.second.end(); ++vit) {
             delete *vit;
         }
     }
@@ -55,9 +56,9 @@ PortInspector* PortInspectorFactory::getPortInspectorForPortClass(const std::str
     // Look in cache for an inactive port insepctor.
     PortInsectorCache::iterator cit = cache_.find(className);
     if (cit != cache_.end()) {
-        for (std::vector<PortInspector*>::iterator vit = cit->second.begin(); vit != cit->second.end(); ++vit) {
-            if (!(*vit)->isActive()){
-                return *vit;
+        for (auto& elem : cit->second) {
+            if (!(elem)->isActive()) {
+                return elem;
             }
         }
     }
@@ -69,7 +70,7 @@ PortInspector* PortInspectorFactory::getPortInspectorForPortClass(const std::str
         cache_[className].push_back(p);
         return p;
     }
-    return NULL;
+    return nullptr;
 }
 
 bool PortInspectorFactory::isValidType(const std::string &className) const {

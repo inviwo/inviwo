@@ -50,7 +50,7 @@ Background::Background()
     , checkerBoardSize_("checkerBoardSize", "Checker Board Size", ivec2(10, 10), ivec2(1, 1),
                         ivec2(256, 256))
     , switchColors_("Switch colors", "switch colors", VALID)
-    , shader_(NULL) {
+    , shader_(nullptr) {
     addPort(inport_);
     addPort(outport_);
     backgroundStyle_.addOption("linearGradient", "Linear gradient", 0);
@@ -84,7 +84,7 @@ void Background::initialize() {
 
 void Background::deinitialize() {
     delete shader_;
-    shader_ = NULL;
+    shader_ = nullptr;
     Processor::deinitialize();
 }
 

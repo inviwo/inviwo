@@ -198,7 +198,7 @@ QPointF ConnectionDragGraphicsItem::getStartPoint() const {
 }
 
 void ConnectionDragGraphicsItem::reactToPortHover(ProcessorInportGraphicsItem* inport) {
-    if (inport != NULL) {
+    if (inport != nullptr) {
         if (inport->getPort()->canConnectTo(outport_->getPort())) {
             setBorderColor(Qt::green);
         } else {

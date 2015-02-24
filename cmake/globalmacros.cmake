@@ -645,6 +645,15 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Specify console as target
+macro(ivw_define_standard_properties project_name)
+    if(NOT MSVC)
+		set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 11)
+		set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
+	endif()
+endmacro()
+
+#--------------------------------------------------------------------
+# Specify console as target
 macro(ivw_vs_executable_setup project_name)
     if(WIN32)
       if(MSVC)
@@ -746,10 +755,10 @@ macro(ivw_create_module)
   # Create library
   add_library(inviwo-module-${_projectName} ${ARGN} ${MOD_CLASS_FILES} ${DEPEND_PATH})
   
-  if(NOT MSVC11)
-    set_property(TARGET inviwo-module-${_projectName} PROPERTY CXX_STANDARD 11)
-    set_property(TARGET inviwo-module-${_projectName} PROPERTY CXX_STANDARD_REQUIRED ON)
-  endif()
+  #--------------------------------------------------------------------
+  # Define standard properties
+  ivw_define_standard_properties(inviwo-module-${_projectName})
+  
   #--------------------------------------------------------------------
   # Add dependencies
   set(tmpProjectName ${_projectName})

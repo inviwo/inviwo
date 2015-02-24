@@ -40,11 +40,17 @@
 
 namespace inviwo {
 
-ConsoleWidget::ConsoleWidget(QWidget* parent) : InviwoDockWidget(tr("Console"), parent)
-    , infoTextColor_(153,153,153), warnTextColor_(221,165,8), errorTextColor_(255,107,107)
-    , errorsLabel_(NULL), warningsLabel_(NULL), infoLabel_(NULL)
-    , numErrors_(0), numWarnings_(0), numInfos_(0)
-{
+ConsoleWidget::ConsoleWidget(QWidget* parent)
+    : InviwoDockWidget(tr("Console"), parent)
+    , infoTextColor_(153, 153, 153)
+    , warnTextColor_(221, 165, 8)
+    , errorTextColor_(255, 107, 107)
+    , errorsLabel_(nullptr)
+    , warningsLabel_(nullptr)
+    , infoLabel_(nullptr)
+    , numErrors_(0)
+    , numWarnings_(0)
+    , numInfos_(0) {
     setObjectName("ConsoleWidget");
     setAllowedAreas(Qt::BottomDockWidgetArea);
     textField_ = new QTextEdit(this);
@@ -117,46 +123,70 @@ void ConsoleWidget::showContextMenu(const QPoint& pos) {
     delete menu;
 }
 
-void ConsoleWidget::log(std::string logSource, unsigned int logLevel, const char* fileName,
-                        const char* functionName, int lineNumber, std::string logMsg) {
-    IVW_UNUSED_PARAM(functionName);
-    QString message;
-
-    switch (logLevel) {
-         case Error: {
+void ConsoleWidget::logMessage(LogLevel level, QString message) {
+    switch (level) {
+        case LogLevel::Error: {
             textField_->setTextColor(errorTextColor_);
-            std::ostringstream lineNumberStr;
-            lineNumberStr << lineNumber;
-            message = QString::fromStdString("(" + logSource + ") [" + std::string(fileName) +
-                ", " + lineNumberStr.str() + "]: " + logMsg);
             errorsLabel_->setText(toString(++numErrors_).c_str());
             break;
         }
-    
-        case Warn: {
+        case LogLevel::Warn: {
             textField_->setTextColor(warnTextColor_);
-            std::ostringstream lineNumberStr;
-            lineNumberStr << lineNumber;
-            message = QString::fromStdString("(" + logSource + ") [" + std::string(fileName) +
-                ", " + lineNumberStr.str() + "]: " + logMsg);
             warningsLabel_->setText(toString(++numWarnings_).c_str());
+
             break;
         }
-        
-        case Info:
-        default: {
+        case LogLevel::Info: {
             textField_->setTextColor(infoTextColor_);
-            message = QString::fromStdString("(" + logSource + ") " + logMsg);
             infoLabel_->setText(toString(++numInfos_).c_str());
             break;
         }
     }
-
     textField_->append(message);
     QTextCursor c =  textField_->textCursor();
     c.movePosition(QTextCursor::End);
     textField_->setTextCursor(c);
+
 }
+
+void ConsoleWidget::log(std::string logSource, LogLevel level, LogAudience audience,
+                        const char* fileName, const char* function, int line, std::string msg) {
+    IVW_UNUSED_PARAM(function);
+    
+    QString message;
+    std::string lineNo = toString(line);
+    switch (level) {
+        case LogLevel::Error:
+        case LogLevel::Warn: {
+            message = QString::fromStdString("(" + logSource + ") [" + std::string(fileName) +
+                                             ", " + lineNo + "]: " + msg);
+            break;
+        }
+        case LogLevel::Info:
+        default: {
+            message = QString::fromStdString("(" + logSource + ") " + msg);
+            break;
+        }
+    }
+    logMessage(level, message);
+}
+
+void ConsoleWidget::logProcessor(std::string processorIdentifier, LogLevel level, LogAudience audience,
+                              std::string msg, const char* file, const char* function,
+                              int line) {
+    
+    QString message = QString::fromStdString("Processor " + processorIdentifier + ": " + msg);
+    logMessage(level, message);
+}
+
+void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience,
+                              std::string msg, const char* file, const char* function,
+                              int line) {
+    
+    QString message = QString::fromStdString("ProcessorNetwork: " + msg);
+    logMessage(level, message);
+}
+
 
 void ConsoleWidget::keyPressEvent(QKeyEvent* keyEvent) {
 	if (keyEvent->key() == Qt::Key_E && keyEvent->modifiers() == Qt::ControlModifier){

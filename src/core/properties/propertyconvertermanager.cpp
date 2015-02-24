@@ -46,12 +46,13 @@ PropertyConverterManager::~PropertyConverterManager() {
 
 bool PropertyConverterManager::canConvert(const std::string &srcClassIdentifier,
                                           const std::string &dstClassIdentifier) const {
-    return getConverter(srcClassIdentifier, dstClassIdentifier) != 0;
+    return getConverter(srcClassIdentifier, dstClassIdentifier) != nullptr;
 }
 
 bool PropertyConverterManager::canConvert(const Property *srcProperty,
                                           const Property *dstProperty) const {
-    return getConverter(srcProperty->getClassIdentifier(), dstProperty->getClassIdentifier()) != 0;
+    return getConverter(srcProperty->getClassIdentifier(), dstProperty->getClassIdentifier()) !=
+           nullptr;
 }
 
 PropertyConverter *PropertyConverterManager::getConverter(
@@ -61,7 +62,7 @@ PropertyConverter *PropertyConverterManager::getConverter(
     if (converter != converters_.end()) {
         return converter->second;
     }
-    return 0;
+    return nullptr;
 }
 
 PropertyConverter *PropertyConverterManager::getConverter(const Property *srcProperty,

@@ -50,17 +50,17 @@ DrawPoints::DrawPoints()
     , pointColor_("pointColor", "Point Color", vec4(1.f))
     , clearButton_("clearButton", "Clear Drawing")
     , mouseDraw_("mouseDraw", "Draw Point",
-    new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_CTRL,
-    MouseEvent::MOUSE_STATE_ANY),
-    new Action(this, &DrawPoints::eventDraw))
-    , keyEnableDraw_("keyEnableDraw", "Enable Draw", 
-    new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
-    new Action(this, &DrawPoints::eventEnableDraw))
-    , points_(NULL)
-    , pointRenderer_(NULL)
-    , pointShader_(NULL)
-    , drawModeEnabled_(false)
-{
+                 new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_CTRL,
+                                MouseEvent::MOUSE_STATE_ANY),
+                 new Action(this, &DrawPoints::eventDraw))
+    , keyEnableDraw_(
+          "keyEnableDraw", "Enable Draw",
+          new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
+          new Action(this, &DrawPoints::eventEnableDraw))
+    , points_(nullptr)
+    , pointRenderer_(nullptr)
+    , pointShader_(nullptr)
+    , drawModeEnabled_(false) {
     addPort(inport_);
     addPort(outport_);
 
@@ -87,11 +87,11 @@ void DrawPoints::initialize() {
 void DrawPoints::deinitialize() {
     CompositeProcessorGL::deinitialize();
     delete pointShader_;
-    pointShader_ = NULL;
+    pointShader_ = nullptr;
     delete pointRenderer_;
-    pointRenderer_ = NULL;
+    pointRenderer_ = nullptr;
     delete points_;
-    pointRenderer_ = NULL;
+    pointRenderer_ = nullptr;
 }
 
 void DrawPoints::process() {

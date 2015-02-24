@@ -72,7 +72,7 @@ void GeometryPicking::initialize() {
 void GeometryPicking::deinitialize() {
     CompositeProcessorGL::deinitialize();
     delete shader_;
-    shader_ = NULL;
+    shader_ = nullptr;
     PickingManager::getPtr()->unregisterPickingObject(widgetPickingObject_);
 }
 

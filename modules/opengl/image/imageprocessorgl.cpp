@@ -50,7 +50,7 @@ void ImageProcessorGL::initialize() {
 
 void ImageProcessorGL::deinitialize() {
     delete shader_;
-    shader_ = 0;
+    shader_ = nullptr;
     Processor::deinitialize();
 }
 

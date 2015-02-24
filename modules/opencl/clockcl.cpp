@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/clockcl.h>
@@ -35,16 +35,17 @@
 namespace inviwo {
 
 ScopedClockCL::~ScopedClockCL() {
-    try { 
-        profilingEvent_->wait(); 
+    try {
+        profilingEvent_->wait();
         std::stringstream message;
         message << logMessage_ << ": " << profilingEvent_->getElapsedTime() << " ms";
-        LogCentral::getPtr()->log(logSource_, inviwo::Info, __FILE__, __FUNCTION__, __LINE__, message.str());
-        //LogInfo("Exec time: " << profilingEvent->getElapsedTime() << " ms"); 
-    } catch (cl::Error& err) { 
-        LogError(getCLErrorString(err)); 
-    } 
-    delete profilingEvent_; 
-}  
+        LogCentral::getPtr()->log(logSource_, LogLevel::Info, LogAudience::Developer, __FILE__,
+                                  __FUNCTION__, __LINE__, message.str());
+        // LogInfo("Exec time: " << profilingEvent->getElapsedTime() << " ms");
+    } catch (cl::Error& err) {
+        LogError(getCLErrorString(err));
+    }
+    delete profilingEvent_;
+}
 
-} // namespace
+}  // namespace

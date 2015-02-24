@@ -86,9 +86,9 @@ void ImageSourceSeries::onFindFiles() {
     std::vector<std::string> ids;
     std::vector<std::string> displayNames;
 
-    for (size_t i=0; i<files.size(); i++) {
-        if (isValidImageFile(files[i])) {
-            std::string displayName = filesystem::getFileNameWithExtension(files[i]);
+    for (auto& file : files) {
+        if (isValidImageFile(file)) {
+            std::string displayName = filesystem::getFileNameWithExtension(file);
             ids.push_back(displayName+"_id");
             displayNames.push_back(displayName);
         }
@@ -99,7 +99,7 @@ void ImageSourceSeries::onFindFiles() {
         imageFileName_.set(displayNames[0]);
     }
 
-    if(ids.size() < currentImageIndex_.get())
+    if(ids.size() < static_cast<size_t>(currentImageIndex_.get()))
         currentImageIndex_.set(1);
 }
 
@@ -117,9 +117,9 @@ void ImageSourceSeries::process() {
             return;
         }
 
-        for (size_t i=0; i<filesInDirectory.size(); i++) {
-            if (isValidImageFile(filesInDirectory[i])) {
-                fileNames.push_back(filesInDirectory[i]);
+        for (auto& elem : filesInDirectory) {
+            if (isValidImageFile(elem)) {
+                fileNames.push_back(elem);
             }
         }
 
@@ -154,10 +154,10 @@ void ImageSourceSeries::process() {
                 // Otherwise the default image size, i.e. 256x265, will be reported 
                 // until you do the conversion. Since the LayerDisk does not have any metadata.
                 outLayer->getRepresentation<LayerRAM>();
-                Image* outImage = new Image(outLayer);
-                outImage->getRepresentation<ImageRAM>();
+                Image* newOutImage = new Image(outLayer);
+                newOutImage->getRepresentation<ImageRAM>();
 
-                outport_.setData(outImage);
+                outport_.setData(newOutImage);
 
             }
             catch (DataReaderException const& e) {

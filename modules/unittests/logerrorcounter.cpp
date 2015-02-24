@@ -35,21 +35,22 @@ LogErrorCounter::LogErrorCounter() {}
 
 LogErrorCounter::~LogErrorCounter() {}
 
-void LogErrorCounter::log(std::string logSource, unsigned int logLevel, const char* fileName,
-                          const char* functionName, int lineNumber, std::string logMsg) {
+void LogErrorCounter::log(std::string logSource, LogLevel logLevel, LogAudience audience,
+                          const char* fileName, const char* functionName, int lineNumber,
+                          std::string logMsg) {
     messageCount_[static_cast<LogLevel>(logLevel)]++;
 }
 
-size_t LogErrorCounter::getCount(const LogLevel& level) const { 
-    std::map<LogLevel,size_t>::const_iterator it = messageCount_.find(level);
-    if(it == messageCount_.end()) return 0;
-    return it->second; 
+size_t LogErrorCounter::getCount(const LogLevel& level) const {
+    std::map<LogLevel, size_t>::const_iterator it = messageCount_.find(level);
+    if (it == messageCount_.end()) return 0;
+    return it->second;
 }
 
-size_t LogErrorCounter::getInfoCount() const { return getCount(Info); }
+size_t LogErrorCounter::getInfoCount() const { return getCount(LogLevel::Info); }
 
-size_t LogErrorCounter::getWarnCount() const { return getCount(Warn); }
+size_t LogErrorCounter::getWarnCount() const { return getCount(LogLevel::Warn); }
 
-size_t LogErrorCounter::getErrorCount() const { return getCount(Error); }
+size_t LogErrorCounter::getErrorCount() const { return getCount(LogLevel::Error); }
 
 }  // namespace

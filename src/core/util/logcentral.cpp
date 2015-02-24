@@ -24,21 +24,38 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stacktrace.h>
 #include <inviwo/core/util/filesystem.h>
-
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
+
+void Logger::logProcessor(std::string processorIdentifier, LogLevel level, LogAudience audience,
+                          std::string msg, const char* file, const char* function, int line) {
+    Processor* p = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(
+        processorIdentifier);
+    if (p) {
+        log(parseTypeIdName(std::string(typeid(p).name())), level, audience, file, function, line,
+            processorIdentifier + " " + msg);
+    }
+}
+
+void Logger::logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
+                        const char* function, int line) {
+    log("ProcessorNetwork", level, audience, file, function, line, msg);
+}
 
 ConsoleLogger::ConsoleLogger() : Logger() {}
 ConsoleLogger::~ConsoleLogger() {}
 
-void ConsoleLogger::log(std::string logSource, unsigned int logLevel, const char* fileName,
-                        const char* functionName, int lineNumber, std::string logMsg) {
+void ConsoleLogger::log(std::string logSource, LogLevel logLevel, LogAudience audience,
+                        const char* fileName, const char* functionName, int lineNumber,
+                        std::string logMsg) {
     IVW_UNUSED_PARAM(fileName);
     IVW_UNUSED_PARAM(logLevel);
     IVW_UNUSED_PARAM(functionName);
@@ -46,16 +63,14 @@ void ConsoleLogger::log(std::string logSource, unsigned int logLevel, const char
     std::cout << "(" << logSource << ") " << logMsg << std::endl;
 }
 
-FileLogger::FileLogger(std::string logPath)
-    : Logger()
-{
-    if (filesystem::getFileExtension(logPath) != ""){
+FileLogger::FileLogger(std::string logPath) : Logger() {
+    if (filesystem::getFileExtension(logPath) != "") {
         fileStream_ = new std::ofstream(logPath.c_str());
-    }
-    else{
+    } else {
         fileStream_ = new std::ofstream(logPath.append("/inviwo-log.html").c_str());
     }
-    (*fileStream_) << "<p><font size='+1'>Inviwo (V " << IVW_VERSION << ") Log File</font></p><br>" << std::endl;
+    (*fileStream_) << "<p><font size='+1'>Inviwo (V " << IVW_VERSION << ") Log File</font></p><br>"
+                   << std::endl;
     (*fileStream_) << "<p>" << std::endl;
 }
 
@@ -63,26 +78,27 @@ FileLogger::~FileLogger() {
     (*fileStream_) << "</p>" << std::endl;
     fileStream_->close();
     delete fileStream_;
-    fileStream_ = NULL;
+    fileStream_ = nullptr;
 }
 
-void FileLogger::log(std::string logSource, unsigned int logLevel, const char* fileName,
-                     const char* functionName, int lineNumber, std::string logMsg) {
+void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience audience,
+                     const char* fileName, const char* functionName, int lineNumber,
+                     std::string logMsg) {
     IVW_UNUSED_PARAM(fileName);
     IVW_UNUSED_PARAM(logLevel);
     IVW_UNUSED_PARAM(functionName);
     IVW_UNUSED_PARAM(lineNumber);
 
     switch (logLevel) {
-        case inviwo::Info:
+        case LogLevel::Info:
             (*fileStream_) << "<font color='#000000'>Info: ";
             break;
 
-        case inviwo::Warn:
+        case LogLevel::Warn:
             (*fileStream_) << "<font color='#FF8000'>Warn: ";
             break;
 
-        case inviwo::Error:
+        case LogLevel::Error:
             (*fileStream_) << "<font color='#FF0000'>Error: ";
             break;
     }
@@ -91,57 +107,68 @@ void FileLogger::log(std::string logSource, unsigned int logLevel, const char* f
     (*fileStream_) << "</font><br>" << std::endl;
 }
 
-LogCentral::LogCentral() : logLevel_(Info) , logStacktrace_(true) {
-    loggers_ = new std::vector<Logger*>();
-}
+LogCentral::LogCentral() : 
+    logLevel_(LogLevel::Info),  
+    logStacktrace_(true) {}
+
 LogCentral::~LogCentral() {
-    for (std::vector<Logger*>::iterator it = loggers_->begin(), itEnd = loggers_->end(); it != itEnd; ++it) {
-        delete (*it);
-    }
-    delete loggers_;
+    for (auto& logger : loggers_) delete logger;
 }
 
-void LogCentral::registerLogger(Logger* logger) {
-    loggers_->push_back(logger);
-}
+void LogCentral::registerLogger(Logger* logger) { loggers_.push_back(logger); }
 
 void LogCentral::unregisterLogger(Logger* logger) {
-    std::vector<Logger*>::iterator it = find(loggers_->begin(), loggers_->end(), logger);
-
-    if (it != loggers_->end()) {
-        delete (*it);
-        loggers_->erase(it);
+    auto it = std::find(loggers_.begin(), loggers_.end(), logger);
+    if (it != loggers_.end()) {
+        delete logger;
+        loggers_.erase(it);
     }
 }
 
-void LogCentral::log(std::string logSource, unsigned int logLevel, const char* fileName, const char* functionName, int lineNumber,
-                     std::string logMsg) {
-    std::string msg = logMsg;
-
-    if (logStacktrace_ && logLevel == Error) {
+void LogCentral::log(std::string source, LogLevel level, LogAudience audience, const char* file,
+                     const char* function, int line, std::string msg) {
+    if (logStacktrace_ && level == LogLevel::Error && audience == LogAudience::Developer) {
         std::stringstream ss;
-        ss << logMsg;
-        std::vector<std::string> stacktrace = getStackTrace();
+        ss << msg;
 
-        for (size_t i = 3; i < stacktrace.size(); ++i) { //start at i == 3 to remove log and getStacktrace from stackgrace
+        std::vector<std::string> stacktrace = getStackTrace();
+        // start at i == 3 to remove log and getStacktrace from stackgrace
+        for (size_t i = 3; i < stacktrace.size(); ++i) {
             ss << std::endl << stacktrace[i];
         }
+        // append an extra line break to easier seperate several stacktraces in a row
+        ss << std::endl;
 
-        ss << std::endl; //append an extra line break to easier seperate several stacktraces in a row
         msg = ss.str();
     }
 
-    if (logLevel >= logLevel_)
-        for (size_t i=0; i<loggers_->size(); i++)
-            loggers_->at(i)->log(logSource, logLevel, fileName, functionName, lineNumber, msg);
+    if (level >= logLevel_) {
+        for (const auto& logger : loggers_) {
+            logger->log(source, level, audience, file, function, line, msg);
+        }
+    }
 }
 
-void LogCentral::setLogStacktrace(const bool& logStacktrace) {
-    logStacktrace_ = logStacktrace;
+void LogCentral::logProcessor(std::string processorIdentifier, LogLevel level, LogAudience audience,
+                              std::string msg, const char* file, const char* function, int line) {
+    if (level >= logLevel_) {
+        for (const auto& logger : loggers_) {
+            logger->logProcessor(processorIdentifier, level, audience, msg, file, function, line);
+        }
+    }
 }
 
-bool LogCentral::getLogStacktrace()const {
-    return logStacktrace_;
+void LogCentral::logNetwork(LogLevel level, LogAudience audience, std::string msg, const char* file,
+                            const char* function, int line) {
+    if (level >= logLevel_) {
+        for (const auto& logger : loggers_) {
+            logger->logNetwork(level, audience, msg, file, function, line);
+        }
+    }
 }
 
-} // namespace
+void LogCentral::setLogStacktrace(const bool& logStacktrace) { logStacktrace_ = logStacktrace; }
+
+bool LogCentral::getLogStacktrace() const { return logStacktrace_; }
+
+}  // namespace

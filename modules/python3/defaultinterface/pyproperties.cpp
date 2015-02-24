@@ -53,8 +53,7 @@ namespace inviwo {
 PyObject* py_setPropertyValue(PyObject* self, PyObject* args) {
     static PySetPropertyValueMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     PyObject* parameter = PyTuple_GetItem(args, 1);
         
@@ -63,7 +62,7 @@ PyObject* py_setPropertyValue(PyObject* self, PyObject* args) {
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     PyValueParser::setProperty(theProperty,parameter);
@@ -77,8 +76,7 @@ PyObject* py_setPropertyValue(PyObject* self, PyObject* args) {
 PyObject* py_setPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     static PySetPropertyMaxValueMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     PyObject* parameter = PyTuple_GetItem(args, 1);
@@ -88,7 +86,7 @@ PyObject* py_setPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     OrdinalProperty<float>* ordinalFloat = dynamic_cast<OrdinalProperty<float>*>(theProperty);
@@ -137,8 +135,7 @@ PyObject* py_setPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
 PyObject* py_setPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     static PySetPropertyMinValueMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     PyObject* parameter = PyTuple_GetItem(args, 1);
@@ -148,7 +145,7 @@ PyObject* py_setPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     OrdinalProperty<float>* ordinalFloat = dynamic_cast<OrdinalProperty<float>*>(theProperty);
@@ -198,8 +195,7 @@ PyObject* py_setPropertyMinValue(PyObject* /*self*/, PyObject* args) {
 PyObject* py_getPropertyValue(PyObject* /*self*/, PyObject* args) {
     static PyGetPropertyValueMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
 
@@ -208,7 +204,7 @@ PyObject* py_getPropertyValue(PyObject* /*self*/, PyObject* args) {
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     return PyValueParser::getProperty(theProperty);
@@ -220,8 +216,7 @@ PyObject* py_getPropertyValue(PyObject* /*self*/, PyObject* args) {
 PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     static PyGetPropertyMaxValueMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
 
@@ -230,7 +225,7 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     CAST_N_GETMAX(FloatProperty,theProperty,parser);
@@ -253,8 +248,7 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
 PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     static PyGetPropertyMinValueMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
 
@@ -263,7 +257,7 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     CAST_N_GETMIN(FloatProperty,theProperty,parser);
@@ -286,8 +280,7 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
 PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
     static PyClickButtonMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     
@@ -296,7 +289,7 @@ PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     ButtonProperty* button = dynamic_cast<ButtonProperty*>(theProperty);
@@ -304,7 +297,7 @@ PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
     if (!button) {
         std::string msg = std::string("clickButton() found property is not a ButtonProperty: ") + theProperty->getClassIdentifier();
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     button->propertyModified();

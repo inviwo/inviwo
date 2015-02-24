@@ -116,7 +116,7 @@ void LabelGraphicsItem::focusInEvent(QFocusEvent* event) {
 
 void LabelGraphicsItem::focusOutEvent(QFocusEvent* event) {
     focusOut_ = true;
-    setFlags(0);
+    setFlags(nullptr);
     setTextInteractionFlags(Qt::NoTextInteraction);
     QTextCursor cur = QTextCursor(textCursor());
     cur.clearSelection();

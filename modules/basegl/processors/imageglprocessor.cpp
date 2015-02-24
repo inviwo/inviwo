@@ -41,8 +41,7 @@ ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     , outport_(fragmentShader + "outport")
     , internalInvalid_(false)
     , fragmentShader_(fragmentShader)
-    , shader_(NULL)
-{
+    , shader_(nullptr) {
     addPort(inport_);
     addPort(outport_);
 

@@ -41,8 +41,8 @@ struct ResourceComparer {
 };
 
 ResourceManager::~ResourceManager() {
-    for (std::vector<Resource*>::iterator it = resources_->begin(); it != resources_->end(); ++it) {
-        delete *it;
+    for (auto& elem : *resources_) {
+        delete elem;
     }
     delete resources_;
 }
@@ -54,14 +54,14 @@ Resource* ResourceManager::getResource(const std::string& identifier)
     if (it != resources_->end())
         return *it;
     else
-        return NULL;
+        return nullptr;
 }
 
 void ResourceManager::clearAllResources() {
     // Deallocate resources
-    for (std::vector<Resource*>::iterator it = resources_->begin(); it != resources_->end(); ++it) {
-        notifyResourceRemoved(*it);
-        delete *it;
+    for (auto& elem : *resources_) {
+        notifyResourceRemoved(elem);
+        delete elem;
     }
 
     resources_->clear();

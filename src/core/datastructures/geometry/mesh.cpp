@@ -46,9 +46,8 @@ Mesh::Mesh(const Mesh& rhs) : Geometry(rhs) {
         }
     }
 
-    for (IndexVector::const_iterator it = rhs.indexAttributes_.begin();
-         it != rhs.indexAttributes_.end(); ++it) {
-        addIndicies(it->first, static_cast<IndexBuffer*>(it->second->clone()));
+    for (const auto& elem : rhs.indexAttributes_) {
+        addIndicies(elem.first, static_cast<IndexBuffer*>(elem.second->clone()));
     }
 }
 
@@ -67,9 +66,8 @@ Mesh& Mesh::operator=(const Mesh& that) {
             }
         }
 
-        for (IndexVector::const_iterator it = that.indexAttributes_.begin();
-             it != that.indexAttributes_.end(); ++it) {
-            addIndicies(it->first, static_cast<IndexBuffer*>(it->second->clone()));
+        for (const auto& elem : that.indexAttributes_) {
+            addIndicies(elem.first, static_cast<IndexBuffer*>(elem.second->clone()));
         }
     }
     return *this;
@@ -91,9 +89,8 @@ void Mesh::deinitialize() {
         if (*itOwnership) delete (*it);
     }
 
-    for (IndexVector::iterator it = indexAttributes_.begin(), itEnd = indexAttributes_.end();
-         it != itEnd; ++it) {
-        delete it->second;
+    for (auto& elem : indexAttributes_) {
+        delete elem.second;
     }
 
     attributes_.clear();

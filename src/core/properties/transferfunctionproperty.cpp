@@ -79,9 +79,7 @@ TransferFunctionProperty* TransferFunctionProperty::clone() const {
     return new TransferFunctionProperty(*this);
 }
 
-TransferFunctionProperty::~TransferFunctionProperty() {
-    volumeInport_ = NULL;
-}
+TransferFunctionProperty::~TransferFunctionProperty() { volumeInport_ = nullptr; }
 
 void TransferFunctionProperty::setShowHistogram(int type) {
     showHistogram_ = type;

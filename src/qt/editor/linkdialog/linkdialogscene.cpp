@@ -60,8 +60,8 @@ LinkDialogGraphicsScene::LinkDialogGraphicsScene(QWidget* parent)
 
 LinkDialogGraphicsScene::~LinkDialogGraphicsScene() {
     // We need to make sure to delete the links first. since they referer to the properties
-    for(size_t i = 0; i<connectionGraphicsItems_.size(); ++i) {
-        delete connectionGraphicsItems_[i];
+    for (auto& elem : connectionGraphicsItems_) {
+        delete elem;
     }
     currentConnectionGraphicsItems_.clear();
     connectionGraphicsItems_.clear();
@@ -80,12 +80,10 @@ QGraphicsItem* LinkDialogGraphicsScene::getPropertyGraphicsItemOf(Property* prop
     processorGraphicsItems.push_back(srcProcessorGraphicsItem_);
     processorGraphicsItems.push_back(dstProcessorGraphicsItem_);
 
-    for (size_t i = 0; i < processorGraphicsItems.size(); i++) {
-        std::vector<LinkDialogPropertyGraphicsItem*> propertyItems =
-            processorGraphicsItems[i]->getPropertyItemList();
-        for (size_t j = 0; j < propertyItems.size(); j++) {
-            if (propertyItems[j]->getGraphicsItemData() == property) {
-                graphicsItem = propertyItems[j];
+    for (auto propertyItems : processorGraphicsItems) {
+        for (auto& propertyItem : propertyItems->getPropertyItemList()) {
+            if (propertyItem->getGraphicsItemData() == property) {
+                graphicsItem = propertyItem;
                 break;
             }
         }
@@ -94,16 +92,13 @@ QGraphicsItem* LinkDialogGraphicsScene::getPropertyGraphicsItemOf(Property* prop
 
     if (!graphicsItem) {
         //This is slightly expensive search. So do it only if you don't find required item in immediate children
-        for (size_t i = 0; i < processorGraphicsItems.size(); i++) {
-            std::vector<LinkDialogPropertyGraphicsItem*> propertyItems =
-                processorGraphicsItems[i]->getPropertyItemList();
-
-            for (size_t j = 0; j < propertyItems.size(); j++) {
+        for (auto propertyItems : processorGraphicsItems) {
+            for (auto& propertyItem : propertyItems->getPropertyItemList()) {
                 std::vector<LinkDialogPropertyGraphicsItem*> subPropertyItems =
-                    propertyItems[j]->getSubPropertyItemList(true);
-                for (size_t k = 0; k < subPropertyItems.size(); k++) {
-                    if ( subPropertyItems[k]->getGraphicsItemData() == property) {
-                        graphicsItem = subPropertyItems[k];
+                    propertyItem->getSubPropertyItemList(true);
+                for (auto& subPropertyItem : subPropertyItems) {
+                    if (subPropertyItem->getGraphicsItemData() == property) {
+                        graphicsItem = subPropertyItem;
                         break;
                     }
                 }
@@ -244,9 +239,9 @@ void LinkDialogGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
     if (keyEvent->key() == Qt::Key_Delete) {
         QList<QGraphicsItem*> selectedGraphicsItems = selectedItems();
 
-        for (int i = 0; i < selectedGraphicsItems.size(); i++) {
+        for (auto& selectedGraphicsItem : selectedGraphicsItems) {
             DialogConnectionGraphicsItem* connectionGraphicsItem =
-                qgraphicsitem_cast<DialogConnectionGraphicsItem*>(selectedGraphicsItems[i]);
+                qgraphicsitem_cast<DialogConnectionGraphicsItem*>(selectedGraphicsItem);
 
             if (connectionGraphicsItem) {
                 removeConnectionFromCurrentList(connectionGraphicsItem);
@@ -320,11 +315,12 @@ void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
         if (!scrollLeft && pos.x()<linkDialogWidth/2) continue;
         procGraphicsItem->setPos(pos.x()+scrollOffset.x(), pos.y()+scrollOffset.y());
         std::vector<LinkDialogPropertyGraphicsItem*> propItems = procGraphicsItem->getPropertyItemList();
-        for (size_t i=0; i<propItems.size(); i++) {
-            propItems[i]->updatePositionBasedOnIndex();
-            const std::vector<DialogConnectionGraphicsItem*> connections = propItems[i]->getConnectionGraphicsItems();
-            for (size_t j=0; j<connections.size(); j++) {
-                connections[j]->updateConnectionDrawing();
+        for (auto& propItem : propItems) {
+            propItem->updatePositionBasedOnIndex();
+            const std::vector<DialogConnectionGraphicsItem*> connections =
+                propItem->getConnectionGraphicsItems();
+            for (auto& connection : connections) {
+                connection->updateConnectionDrawing();
             }
         }
     }
@@ -382,14 +378,14 @@ void LinkDialogGraphicsScene::expandOrCollapseLinkedPropertyItems(
 
         std::vector<LinkDialogPropertyGraphicsItem*> subProps =
             propertyItem->getSubPropertyItemList(true);
-        for (size_t i = 0; i < subProps.size(); i++) {
+        for (auto& subProp : subProps) {
             std::vector<Property*> linkedSubProps =
-                processorNetwork_->getLinkedProperties(subProps[i]->getGraphicsItemData());
-            for (size_t j = 0; j < linkedSubProps.size(); j++) {
-                Property* parentProperty = dynamic_cast<Property*>(linkedSubProps[j]->getOwner());
-                if (parentProperty && (linkedSubProps[j]->getOwner()->getProcessor() ==
+                processorNetwork_->getLinkedProperties(subProp->getGraphicsItemData());
+            for (auto& linkedSubProp : linkedSubProps) {
+                Property* parentProperty = dynamic_cast<Property*>(linkedSubProp->getOwner());
+                if (parentProperty && (linkedSubProp->getOwner()->getProcessor() ==
                                            dstProcessorGraphicsItem_->getProcessor() ||
-                                       linkedSubProps[j]->getOwner()->getProcessor() ==
+                                       linkedSubProp->getOwner()->getProcessor() ==
                                            srcProcessorGraphicsItem_->getProcessor())) {
                     LinkDialogPropertyGraphicsItem* endP =
                         qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
@@ -455,40 +451,38 @@ void LinkDialogGraphicsScene::cleanupAfterRemoveLink(DialogConnectionGraphicsIte
     LinkDialogPropertyGraphicsItem* endProperty = propertyLink->getEndProperty();
 
     //re-assign connection ids
-    for (size_t i=0; i<connectionGraphicsItems_.size(); i++) {
-        if (connectionGraphicsItems_[i] == propertyLink) continue;
-        else if (connectionGraphicsItems_[i]->getStartProperty() == startProperty) {
-            size_t index = connectionGraphicsItems_[i]->getStartArrowHeadIndex();
+    for (auto& elem : connectionGraphicsItems_) {
+        if (elem == propertyLink)
+            continue;
+        else if (elem->getStartProperty() == startProperty) {
+            size_t index = elem->getStartArrowHeadIndex();
 
             if (index > propertyLink->getStartArrowHeadIndex())
-                connectionGraphicsItems_[i]->setStartArrowHeadIndex(index-1);
-        }
-        else if (connectionGraphicsItems_[i]->getEndProperty() == startProperty) {
-            size_t index = connectionGraphicsItems_[i]->getEndArrowHeadIndex();
+                elem->setStartArrowHeadIndex(index - 1);
+        } else if (elem->getEndProperty() == startProperty) {
+            size_t index = elem->getEndArrowHeadIndex();
 
             if (index > propertyLink->getStartArrowHeadIndex())
-                connectionGraphicsItems_[i]->setEndArrowHeadIndex(index-1);
+                elem->setEndArrowHeadIndex(index - 1);
         }
     }
 
-    for (size_t i=0; i<connectionGraphicsItems_.size(); i++) {
-        if (connectionGraphicsItems_[i] == propertyLink) continue;
-        else if (connectionGraphicsItems_[i]->getEndProperty() == endProperty) {
-            size_t index = connectionGraphicsItems_[i]->getEndArrowHeadIndex();
+    for (auto& elem : connectionGraphicsItems_) {
+        if (elem == propertyLink)
+            continue;
+        else if (elem->getEndProperty() == endProperty) {
+            size_t index = elem->getEndArrowHeadIndex();
+
+            if (index > propertyLink->getEndArrowHeadIndex()) elem->setEndArrowHeadIndex(index - 1);
+        } else if (elem->getStartProperty() == endProperty) {
+            size_t index = elem->getStartArrowHeadIndex();
 
             if (index > propertyLink->getEndArrowHeadIndex())
-                connectionGraphicsItems_[i]->setEndArrowHeadIndex(index-1);
-        }
-        else if (connectionGraphicsItems_[i]->getStartProperty() == endProperty) {
-            size_t index = connectionGraphicsItems_[i]->getStartArrowHeadIndex();
-
-            if (index > propertyLink->getEndArrowHeadIndex())
-                connectionGraphicsItems_[i]->setStartArrowHeadIndex(index-1);
+                elem->setStartArrowHeadIndex(index - 1);
         }
     }
 
-    for (size_t i=0; i<connectionGraphicsItems_.size(); i++)
-        connectionGraphicsItems_[i]->updateConnectionDrawing();
+    for (auto& elem : connectionGraphicsItems_) elem->updateConnectionDrawing();
 
     update();
 }
@@ -552,12 +546,10 @@ void LinkDialogGraphicsScene::removeConnectionFromCurrentList(
 
 DialogConnectionGraphicsItem* LinkDialogGraphicsScene::getConnectionGraphicsItem(
     LinkDialogPropertyGraphicsItem* outProperty, LinkDialogPropertyGraphicsItem* inProperty) {
-    for (size_t i = 0; i < connectionGraphicsItems_.size(); i++) {
-        if ((connectionGraphicsItems_[i]->getStartProperty() == outProperty &&
-             connectionGraphicsItems_[i]->getEndProperty() == inProperty) ||
-            (connectionGraphicsItems_[i]->getStartProperty() == inProperty &&
-             connectionGraphicsItems_[i]->getEndProperty() == outProperty))
-            return connectionGraphicsItems_[i];
+    for (auto& elem : connectionGraphicsItems_) {
+        if ((elem->getStartProperty() == outProperty && elem->getEndProperty() == inProperty) ||
+            (elem->getStartProperty() == inProperty && elem->getEndProperty() == outProperty))
+            return elem;
     }
 
     return NULL;
@@ -584,8 +576,7 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRep
 
     cItem->show();
 
-    for (size_t i = 0; i < connectionGraphicsItems_.size(); i++)
-        connectionGraphicsItems_[i]->updateConnectionDrawing();
+    for (auto& elem : connectionGraphicsItems_) elem->updateConnectionDrawing();
 
     update();
 
@@ -643,8 +634,8 @@ void LinkDialogGraphicsScene::initScene(Processor* srcProcessor,
     //add links
     std::vector<PropertyLink*> propertyLinks =
         processorNetwork_->getLinksBetweenProcessors(srcProcessor, dstProcessor);
-    for (size_t j = 0; j < propertyLinks.size(); j++) {
-        initializePropertyLinkRepresentation(propertyLinks[j]);
+    for (auto& propertyLink : propertyLinks) {
+        initializePropertyLinkRepresentation(propertyLink);
     }
 
     LinkDialogProcessorGraphicsItem* procGraphicsItem=0;
@@ -662,12 +653,10 @@ void LinkDialogGraphicsScene::clearSceneRepresentations() {
     srcProcessorGraphicsItem_ = NULL;
     dstProcessorGraphicsItem_ = NULL;
 
-    for(size_t i = 0; i<connectionGraphicsItems_.size(); ++i)
-        connectionGraphicsItems_[i]->cleanup();
+    for (auto& elem : connectionGraphicsItems_) elem->cleanup();
 
-    for(size_t i = 0; i<currentConnectionGraphicsItems_.size(); ++i)
-        currentConnectionGraphicsItems_[i]->cleanup();
-   
+    for (auto& elem : currentConnectionGraphicsItems_) elem->cleanup();
+
     connectionGraphicsItems_.clear();
     currentConnectionGraphicsItems_.clear();
     propertyGraphicsItemCache_.clear();
@@ -685,7 +674,7 @@ LinkDialogProcessorGraphicsItem* LinkDialogGraphicsScene::addProcessorsItemsToSc
 
     std::vector<LinkDialogPropertyGraphicsItem*> propItems =
         procGraphicsItem->getPropertyItemList();
-    for (size_t i = 0; i < propItems.size(); i++) addItem(propItems[i]);
+    for (auto& propItem : propItems) addItem(propItem);
 
     return procGraphicsItem;
 }

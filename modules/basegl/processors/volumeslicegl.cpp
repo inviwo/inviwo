@@ -73,7 +73,6 @@ VolumeSliceGL::VolumeSliceGL()
     , imageRotation_("imageRotation", "Angle", 0, 0, glm::radians(360.f))
     , flipHorizontal_("flipHorizontal", "Flip Horizontal View", false)
     , flipVertical_("flipVertical", "Flip Vertical View", false)
-    
     , volumeWrapping_("volumeWrapping", "Volume Texture Wrapping")
     , posPicking_("posPicking", "Enable Picking", false)
     , showIndicator_("showIndicator", "Show Position Indicator", true)
@@ -103,10 +102,10 @@ VolumeSliceGL::VolumeSliceGL()
     , gestureShiftSlice_("gestureShiftSlice", "Gesture Slice Shift",
                          new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
                          new Action(this, &VolumeSliceGL::eventGestureShiftSlice))
-    , shader_(NULL)
-    , indicatorShader_(NULL)
-    , meshCrossHair_(NULL)
-    , meshBox_(NULL)
+    , shader_(nullptr)
+    , indicatorShader_(nullptr)
+    , meshCrossHair_(nullptr)
+    , meshBox_(nullptr)
     , meshDirty_(true)
     , updating_(false)
     , sliceRotation_(1.0f)
@@ -114,7 +113,6 @@ VolumeSliceGL::VolumeSliceGL()
     , volumeDimensions_(8u)
     , outportDimensions_(1u)
     , texToWorld_(1.0f) {
-
     addPort(inport_);
     addPort(outport_);
 
@@ -331,9 +329,9 @@ void VolumeSliceGL::planeSettingsChanged() {
     // Calculate the aspect of the intersected plane in world space.
     vec2 xrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
     vec2 yrange(std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
-    for (std::vector<IntersectionResult>::iterator it = points.begin(); it != points.end(); ++it) {
-        if (it->intersects_) {
-            vec4 corner = vec4(it->intersection_, 1.0f);
+    for (auto& point : points) {
+        if (point.intersects_) {
+            vec4 corner = vec4(point.intersection_, 1.0f);
             corner = boxrotation * texToWorld * corner;
             
             xrange[0] = std::min(xrange[0], corner.x);
@@ -438,7 +436,7 @@ void VolumeSliceGL::process() {
     
     utilgl::deactivateCurrentTarget();
 
-    if (volumeWrapping_.get() > 0){
+    if (volumeWrapping_.get() > 0) {
         volUnit.activate();
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, wrapS);
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, wrapT);

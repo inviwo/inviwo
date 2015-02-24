@@ -43,16 +43,13 @@ PropertyClassIdentifier(CameraProperty, "org.inviwo.CameraProperty");
 
 CameraProperty::CameraProperty(std::string identifier, std::string displayName, vec3 eye,
                                vec3 center, vec3 lookUp, Inport* inport,
-                               InvalidationLevel invalidationLevel,
-                               PropertySemantics semantics)
+                               InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , EventListener()
-    , lookFrom_("lookFrom", "Look from", eye, -vec3(10.0f), vec3(10.0f), vec3(0.1f),
-                VALID, PropertySemantics("Spherical"))
-    , lookTo_("lookTo", "Look to", center, -vec3(10.0f), vec3(10.0f), vec3(0.1f),
-              VALID)
-    , lookUp_("lookUp", "Look up", lookUp, -vec3(10.0f), vec3(10.0f), vec3(0.1f),
-              VALID)
+    , lookFrom_("lookFrom", "Look from", eye, -vec3(10.0f), vec3(10.0f), vec3(0.1f), VALID,
+                PropertySemantics("Spherical"))
+    , lookTo_("lookTo", "Look to", center, -vec3(10.0f), vec3(10.0f), vec3(0.1f), VALID)
+    , lookUp_("lookUp", "Look up", lookUp, -vec3(10.0f), vec3(10.0f), vec3(0.1f), VALID)
     , fovy_("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f, VALID)
     , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f, VALID)
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f, VALID)
@@ -60,9 +57,8 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     , fitToBasis_("fitToBasis_", "Fit to basis", true, VALID)
     , lockInvalidation_(false)
     , inport_(inport)
-    , data_(NULL)
+    , data_(nullptr)
     , oldBasis_(0) {
-
     lookFrom_.onChange(this, &CameraProperty::updateViewMatrix);
     lookTo_.onChange(this, &CameraProperty::updateViewMatrix);
     lookUp_.onChange(this, &CameraProperty::updateViewMatrix);
@@ -102,9 +98,8 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , fitToBasis_(rhs.fitToBasis_)
     , lockInvalidation_(false)
     , inport_(rhs.inport_)
-    , data_(NULL)
+    , data_(nullptr)
     , oldBasis_(0) {
-
     if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
 
     inportChanged();
@@ -126,7 +121,7 @@ CameraProperty& CameraProperty::operator=(const CameraProperty& that) {
         if(inport_) inport_->removeOnChange(this);
         inport_ = that.inport_;
         if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
-        data_ = NULL;
+        data_ = nullptr;
         oldBasis_ = mat3(0);
 
         inportChanged();
@@ -282,7 +277,7 @@ void CameraProperty::fitWithBasis(const mat3& basis) {
 }
 
 void CameraProperty::fitReset() {
-    data_ = NULL;
+    data_ = nullptr;
     oldBasis_ = mat3(0.0f);
     if (fitToBasis_) {
         inportChanged();
@@ -294,8 +289,9 @@ void CameraProperty::inportChanged() {
 
     VolumeInport* volumeInport = dynamic_cast<VolumeInport*>(inport_);
     GeometryInport* geometryInport = dynamic_cast<GeometryInport*>(inport_);
-    const SpatialEntity<3>* data = NULL;  // using SpatialEntity since Geometry is not derived from
-                                          // data
+
+    // using SpatialEntity since Geometry is not derived from data
+    const SpatialEntity<3>* data = nullptr;
 
     if (volumeInport) {
         data = volumeInport->getData();
@@ -303,7 +299,7 @@ void CameraProperty::inportChanged() {
         data = geometryInport->getData();
     }
 
-    if (data_ == NULL && oldBasis_ == mat3(0.0f)) {  // first time only
+    if (data_ == nullptr && oldBasis_ == mat3(0.0f)) {  // first time only
         if (volumeInport && volumeInport->hasData()) {
             oldBasis_ = volumeInport->getData()->getBasis();
         } else if (geometryInport && geometryInport->hasData()) {

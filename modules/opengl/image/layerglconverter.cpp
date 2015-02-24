@@ -47,7 +47,7 @@ DataRepresentation* LayerRAM2GLConverter::createFrom(const DataRepresentation* s
         return layerGL;
     }
 
-    return NULL;
+    return nullptr;
 }
 void LayerRAM2GLConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
     const LayerRAM* layerSrc = static_cast<const LayerRAM*>(source);
@@ -78,7 +78,7 @@ DataRepresentation* LayerGL2RAMConverter::createFrom(const DataRepresentation* s
         LogError("Cannot convert format from GL to RAM:" << layerGL->getDataFormat()->getString());
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void LayerGL2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {

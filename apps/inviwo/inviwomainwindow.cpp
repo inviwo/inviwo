@@ -291,7 +291,7 @@ void InviwoMainWindow::addMenuActions() {
 
     recentFileSeparator_ = fileMenuItem_->addSeparator();
 
-    for (int i = 0; i < maxNumRecentFiles_; i++) {
+    for (size_t i = 0; i < maxNumRecentFiles_; i++) {
         workspaceActionRecent_[i] = new QAction(this);
         workspaceActionRecent_[i]->setVisible(false);
         connect(workspaceActionRecent_[i], SIGNAL(triggered()), this, SLOT(openRecentWorkspace()));

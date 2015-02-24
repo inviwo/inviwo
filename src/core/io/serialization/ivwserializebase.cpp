@@ -112,21 +112,21 @@ size_t IvwSerializeBase::ReferenceDataContainer::find(const void* data) {
 }
 
 void* IvwSerializeBase::ReferenceDataContainer::find(const std::string& type, const std::string& reference_or_id) {
-    void* data = 0;
+    void* data = nullptr;
 
     if (reference_or_id.empty())
         return data;
 
-    for (RefMap::iterator it = referenceMap_.begin(); it != referenceMap_.end(); ++it) {
+    for (auto& elem : referenceMap_) {
         std::string type_attrib("");
         std::string ref_attrib("");
         std::string id_attrib("");
-        it->second.node_->GetAttribute(IvwSerializeConstants::TYPE_ATTRIBUTE, &type_attrib, false);
-        it->second.node_->GetAttribute(IvwSerializeConstants::REF_ATTRIBUTE, &ref_attrib, false);
-        it->second.node_->GetAttribute(IvwSerializeConstants::ID_ATTRIBUTE, &id_attrib, false);
+        elem.second.node_->GetAttribute(IvwSerializeConstants::TYPE_ATTRIBUTE, &type_attrib, false);
+        elem.second.node_->GetAttribute(IvwSerializeConstants::REF_ATTRIBUTE, &ref_attrib, false);
+        elem.second.node_->GetAttribute(IvwSerializeConstants::ID_ATTRIBUTE, &id_attrib, false);
 
         if (type_attrib == type && (ref_attrib == reference_or_id || id_attrib == reference_or_id)) {
-            data = const_cast<void*>(it->first);
+            data = const_cast<void*>(elem.first);
             break;
         }
     }
@@ -137,7 +137,7 @@ void* IvwSerializeBase::ReferenceDataContainer::find(const std::string& type, co
 TxElement* IvwSerializeBase::ReferenceDataContainer::nodeCopy(const void* data) {
     std::pair<RefMap::iterator, RefMap::iterator> pIt;
     std::vector<ReferenceData> nodes;
-    TxElement* nodeCopy=0;
+    TxElement* nodeCopy = nullptr;
     pIt = referenceMap_.equal_range(data);
 
     for (RefMap::iterator mIt = pIt.first; mIt != pIt.second; ++mIt) {

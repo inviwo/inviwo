@@ -215,7 +215,7 @@ void PVMVolumeReader::printMetaInfo(MetaDataOwner* metaDataOwner, std::string ke
     if (metaData){
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        key[0] = toupper(key[0]);
+        key[0] = static_cast<char>(toupper(key[0]));
         LogInfo(key << ": " << metaStr);
     }
 }

@@ -73,16 +73,16 @@ BufferRAM* createBufferRAM(size_t size, const DataFormatBase* format, BufferType
     {
         case DataFormatEnums::NOT_SPECIALIZED:
             LogErrorCustom("createBufferRAM", "Invalid format");
-            return NULL;
+            return nullptr;
 #define DataFormatIdMacro(i) case DataFormatEnums::i: return new BufferRAMCustomPrecision<Data##i::type, Data##i::bits>(size, format, type, usage); break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
         default:
             LogErrorCustom("createBufferRAM", "Invalid format or not implemented");
-            return NULL;
+            return nullptr;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 

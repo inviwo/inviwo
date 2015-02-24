@@ -88,8 +88,8 @@ Shader::Shader(const char *vertexFilename, const char *geometryFilename,
 Shader::Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader) {
     initialize();
 
-    for (size_t i = 0; i < shaderObjects.size(); ++i)
-        (*shaderObjects_)[shaderObjects[i]->getShaderType()] = shaderObjects[i];
+    for (auto &shaderObject : shaderObjects)
+        (*shaderObjects_)[shaderObject->getShaderType()] = shaderObject;
 
     attachAllShaderObjects();
     linkAndRegister(linkShader);
@@ -112,10 +112,9 @@ void Shader::linkAndRegister(bool linkShader) {
 void Shader::deinitialize() {
     ShaderManager::getPtr()->unregisterShader(this);
 
-    for (ShaderObjectMap::iterator it = shaderObjects_->begin(); it != shaderObjects_->end();
-         it++) {
-        detachShaderObject(it->second);
-        delete it->second;
+    for (auto &elem : *shaderObjects_) {
+        detachShaderObject(elem.second);
+        delete elem.second;
     }
 
     delete shaderObjects_;
@@ -135,18 +134,16 @@ void Shader::link() {
 }
 
 void Shader::build() {
-    for (ShaderObjectMap::iterator it = shaderObjects_->begin(); it != shaderObjects_->end();
-         it++) {
-        it->second->build();
+    for (auto &elem : *shaderObjects_) {
+        elem.second->build();
     }
 
     link();
 }
 
 void Shader::rebuild() {
-    for (ShaderObjectMap::iterator it = shaderObjects_->begin(); it != shaderObjects_->end();
-         it++) {
-        it->second->rebuild();
+    for (auto &elem : *shaderObjects_) {
+        elem.second->rebuild();
     }
 
     link();
@@ -173,16 +170,14 @@ void Shader::detachShaderObject(ShaderObject *shaderObject) {
 }
 
 void Shader::attachAllShaderObjects() {
-    for (ShaderObjectMap::iterator it = shaderObjects_->begin(); it != shaderObjects_->end();
-         it++) {
-        attachShaderObject(it->second);
+    for (auto &elem : *shaderObjects_) {
+        attachShaderObject(elem.second);
     }
 }
 
 void Shader::detachAllShaderObject() {
-    for (ShaderObjectMap::iterator it = shaderObjects_->begin(); it != shaderObjects_->end();
-         it++) {
-        detachShaderObject(it->second);
+    for (auto &elem : *shaderObjects_) {
+        detachShaderObject(elem.second);
     }
 }
 
@@ -285,7 +280,7 @@ ShaderObject* Shader::getFragmentShaderObject() const {
     if (it != shaderObjects_->end()) {
         return it->second;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -294,7 +289,7 @@ ShaderObject* Shader::getGeometryShaderObject() const {
     if (it != shaderObjects_->end()) {
         return it->second;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -303,7 +298,7 @@ ShaderObject* Shader::getVertexShaderObject() const {
     if (it != shaderObjects_->end()) {
         return it->second;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 

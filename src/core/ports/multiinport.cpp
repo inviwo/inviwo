@@ -50,7 +50,7 @@ MultiInport::~MultiInport() {
         delete *it;
 
     delete inports_;
-    inports_ = NULL;
+    inports_ = nullptr;
 
     it = vectorInports_->begin();
     endIt = vectorInports_->end();
@@ -59,7 +59,7 @@ MultiInport::~MultiInport() {
         delete *it;
 
     delete vectorInports_;
-    vectorInports_ = NULL;
+    vectorInports_ = nullptr;
 }
 
 InvalidationLevel MultiInport::getInvalidationLevel() const {
@@ -217,7 +217,7 @@ Outport* MultiInport::getConnectedOutport() const {
             return (*(vectorInports_->begin()))->getConnectedOutport();
         }
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 

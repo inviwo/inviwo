@@ -71,18 +71,18 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     : ProcessorObserver()
     , LabelGraphicsItemObserver()
     , processor_(processor)
-    , processorMeta_(NULL)
-    , progressItem_(NULL)
-    , statusItem_(NULL)
-    , linkItem_(NULL)
+    , processorMeta_(nullptr)
+    , progressItem_(nullptr)
+    , statusItem_(nullptr)
+    , linkItem_(nullptr)
     #if IVW_PROFILING
     , processCount_(0)
-    , countLabel_(NULL)
+    , countLabel_(nullptr)
     , maxEvalTime_(0.0)
     , evalTime_(0.0)
     , totEvalTime_(0.0)
     #endif
-    {
+{
 
     setZValue(PROCESSORGRAPHICSITEM_DEPTH);
     setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
@@ -126,18 +126,18 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     outportX = rect().left() + 12.5f;
     outportY = rect().bottom() - 4.5f;
 
-    for (size_t i = 0; i < inports.size(); i++) {
-        addInport(inports[i]);
+    for (auto& inport : inports) {
+        addInport(inport);
     }
 
-    for (size_t i = 0; i < outports.size(); i++) {
-        addOutport(outports[i]);
-	}
+    for (auto& outport : outports) {
+        addOutport(outport);
+        }
 
     statusItem_ = new ProcessorStatusGraphicsItem(this, processor_);
 
     ProgressBarOwner* progressBarOwner = dynamic_cast<ProgressBarOwner*>(processor_);
-    if ((progressBarOwner != NULL)) {
+    if ((progressBarOwner != nullptr)) {
         progressItem_ =
             new ProcessorProgressGraphicsItem(this, &(progressBarOwner->getProgressBar()));
     }

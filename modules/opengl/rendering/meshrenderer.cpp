@@ -32,10 +32,7 @@
 
 namespace inviwo {
 
-
-
-MeshRenderer::MeshRenderer(): meshToRender_(NULL) {
-}
+MeshRenderer::MeshRenderer() : meshToRender_(nullptr) {}
 
 MeshRenderer::MeshRenderer(const Mesh* mesh)
     : meshToRender_(mesh) {
@@ -153,10 +150,8 @@ void MeshRenderer::renderElements(GeometryEnums::RenderType rt) const {
     while (it != drawMethods_[rt].elementBufferList.end()) {
         const ElementBufferGL* elementBufferGL = (*it)->getRepresentation<ElementBufferGL>();
         elementBufferGL->bind();
-        glDrawElements(drawMethods_[rt].drawMode,
-                       static_cast<GLsizei>(elementBufferGL->getSize()),
-                       elementBufferGL->getFormatType(),
-                       0);
+        glDrawElements(drawMethods_[rt].drawMode, static_cast<GLsizei>(elementBufferGL->getSize()),
+                       elementBufferGL->getFormatType(), nullptr);
         ++it;
     }
 }

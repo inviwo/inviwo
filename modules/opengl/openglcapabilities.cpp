@@ -235,7 +235,8 @@ void OpenGLCapabilities::initializeGLEW() {
         }
         else{
             const GLubyte* glversion = glGetString(GL_VERSION);
-            glVersionStr_ = std::string((glversion!=NULL ? reinterpret_cast<const char*>(glversion) : "INVALID"));
+            glVersionStr_ = std::string(
+                (glversion != nullptr ? reinterpret_cast<const char*>(glversion) : "INVALID"));
             glVersion_ = parseAndRetrieveVersion(glVersionStr_);
         }
         LGL_ERROR_SUPPRESS;
@@ -435,7 +436,8 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     NO_GL_THEN_RETURN
 
     const GLubyte* vendor = glGetString(GL_VENDOR);
-    glVendorStr_ = std::string((vendor!=NULL ? reinterpret_cast<const char*>(vendor) : "INVALID"));
+    glVendorStr_ =
+        std::string((vendor != nullptr ? reinterpret_cast<const char*>(vendor) : "INVALID"));
 
     if (glVendorStr_.find("NVIDIA") != std::string::npos)
         glVendor_ = VENDOR_NVIDIA;
@@ -447,16 +449,18 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         glVendor_ = VENDOR_UNKNOWN;
 
     const GLubyte* glrender = glGetString(GL_RENDERER);
-    glRenderStr_ = std::string((glrender!=NULL ? reinterpret_cast<const char*>(glrender) : "INVALID"));
+    glRenderStr_ =
+        std::string((glrender != nullptr ? reinterpret_cast<const char*>(glrender) : "INVALID"));
     //GLSL
     shadersAreSupported_ = (glVersion_ >= 200);
     shadersAreSupportedARB_ = isExtensionSupported("GL_EXT_ARB_fragment_program");
     GLint numberOfSupportedVersions = 0;
-    const GLubyte* glslStrByte = NULL;
+    const GLubyte* glslStrByte = nullptr;
 #ifdef GL_VERSION_4_3
     if(glVersion_ >= 430){
         glslStrByte = glGetString(GL_SHADING_LANGUAGE_VERSION);
-        glslVersionStr_ = std::string((glslStrByte!=NULL ? reinterpret_cast<const char*>(glslStrByte) : "000"));
+        glslVersionStr_ = std::string(
+            (glslStrByte != nullptr ? reinterpret_cast<const char*>(glslStrByte) : "000"));
         glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &numberOfSupportedVersions);
         int glslVersion = parseAndRetrieveVersion(glslVersionStr_);
 
@@ -472,7 +476,8 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         else if (isShadersSupportedARB())
             glslStrByte = glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
 
-        glslVersionStr_ = std::string((glslStrByte!=NULL ? reinterpret_cast<const char*>(glslStrByte) : "000"));
+        glslVersionStr_ = std::string(
+            (glslStrByte != nullptr ? reinterpret_cast<const char*>(glslStrByte) : "000"));
         int glslVersion = parseAndRetrieveVersion(glslVersionStr_);
 
         if (glslVersion != 0) {

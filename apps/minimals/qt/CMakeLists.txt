@@ -59,6 +59,10 @@ ivw_add_dependency_directories(${package_list})
 add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
+# Define standard properties
+ivw_define_standard_properties(inviwo_qtminimum)
+
+#--------------------------------------------------------------------
 # Move to folder
 ivw_vs_folder(inviwo_qtminimum minimals)
 

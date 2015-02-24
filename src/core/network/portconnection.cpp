@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-PortConnection::PortConnection() : inport_(NULL), outport_(NULL) {}
+PortConnection::PortConnection() : inport_(nullptr), outport_(nullptr) {}
 
 PortConnection::PortConnection(Outport* outport, Inport* inport)
     : inport_(inport), outport_(outport) {}

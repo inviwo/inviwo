@@ -92,14 +92,14 @@ public:
         if (clock_.getElapsedTime() > logIfAtLeastMilliSec_) {
             std::stringstream message;
             message << logMessage_ << ": " << clock_.getElapsedTime() << " ms";
-            LogCentral::getPtr()->log(logSource_, inviwo::Info, __FILE__, __FUNCTION__, __LINE__,
-                                      message.str());
+            LogCentral::getPtr()->log(logSource_, LogLevel::Info, LogAudience::Developer, __FILE__,
+                                      __FUNCTION__, __LINE__, message.str());
         }
     }
 
 private:
     // Default constructor not allowed
-    ScopedClockGL() {};
+    ScopedClockGL(){};
     ClockGL clock_;
     std::string logSource_;
     std::string logMessage_;

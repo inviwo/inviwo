@@ -49,6 +49,8 @@ ProcessorCodeState(GeometryRenderProcessorGL, CODE_STATE_STABLE);
 GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     : Processor()
     , inport_("geometry.inport")
+    , colors_("colors.inport", true)
+    , normals_("normalmap.inport", true)
     , outport_("image.outport")
     , camera_("camera", "Camera")
     , centerViewOnGeometry_("centerView", "Center view on geometry")
@@ -63,6 +65,10 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
 {
     
     addPort(inport_);
+    addPort(colors_);
+    colors_.onChange(this, &GeometryRenderProcessorGL::initializeResources);
+    addPort(normals_);
+    normals_.onChange(this, &GeometryRenderProcessorGL::initializeResources);
     addPort(outport_);
     addProperty(camera_);
     centerViewOnGeometry_.onChange(this, &GeometryRenderProcessorGL::centerViewOnGeometry);
@@ -117,8 +123,8 @@ void GeometryRenderProcessorGL::initialize() {
 
 void GeometryRenderProcessorGL::deinitialize() {
     // Delete all renderers
-    for (std::vector<GeometryRenderer*>::iterator it = renderers_.begin(), endIt = renderers_.end(); it != endIt; ++it) {
-        delete *it;
+    for (auto& elem : renderers_) {
+        delete elem;
     }
     if (shader_) 
         delete shader_;
@@ -129,6 +135,21 @@ void GeometryRenderProcessorGL::deinitialize() {
 void GeometryRenderProcessorGL::initializeResources() {
     // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
+    if (colors_.isReady()) {
+        // Set define to 1 (true) 
+        shader_->getVertexShaderObject()->addShaderDefine("USE_COLOR_TEXTURE", "1");
+        shader_->getFragmentShaderObject()->addShaderDefine("USE_COLOR_TEXTURE", "1");
+    } else {
+        shader_->getVertexShaderObject()->removeShaderDefine("USE_COLOR_TEXTURE");
+        shader_->getFragmentShaderObject()->removeShaderDefine("USE_COLOR_TEXTURE");
+    }
+    if (normals_.isReady()) {
+        shader_->getVertexShaderObject()->addShaderDefine("USE_NORMAL_TEXTURE", "1");
+        shader_->getFragmentShaderObject()->addShaderDefine("USE_NORMAL_TEXTURE", "1");
+    } else {
+        shader_->getVertexShaderObject()->removeShaderDefine("USE_NORMAL_TEXTURE");
+        shader_->getFragmentShaderObject()->removeShaderDefine("USE_NORMAL_TEXTURE");
+    }
     shader_->build();
 }
 
@@ -186,6 +207,19 @@ void GeometryRenderProcessorGL::process() {
     else if (polygonMode_.get()==GL_POINT)
         glPointSize((GLfloat)renderPointSize_.get());
 
+    // bind input textures
+    TextureUnit colorTexUnit, normalTexUnit;
+    
+    
+    if (colors_.isReady()) {
+        utilgl::bindColorTexture(colors_, colorTexUnit.getEnum());
+        shader_->setUniform("colorTex_", colorTexUnit.getUnitNumber());
+    } 
+    if (normals_.isReady()) {
+        utilgl::bindColorTexture(normals_, normalTexUnit.getEnum());
+        shader_->setUniform("normalTex_", normalTexUnit.getUnitNumber());
+    }
+
     for (std::vector<GeometryRenderer*>::const_iterator it = renderers_.begin(), endIt = renderers_.end(); it != endIt; ++it) {       
         utilgl::setShaderUniforms(shader_, *(*it)->getGeometry(), "geometry_");                
         (*it)->render();
@@ -237,9 +271,9 @@ void GeometryRenderProcessorGL::centerViewOnGeometry() {
 
     maxPos = (*pos)[0];
     minPos = maxPos;
-    for (size_t i = 0; i < pos->size(); ++i) {
-        maxPos = glm::max(maxPos, (*pos)[i]);
-        minPos = glm::min(minPos, (*pos)[i]);
+    for (auto& po : *pos) {
+        maxPos = glm::max(maxPos, po);
+        minPos = glm::min(minPos, po);
     }
 
     mat4 modelMatrix = geom->getModelMatrix();

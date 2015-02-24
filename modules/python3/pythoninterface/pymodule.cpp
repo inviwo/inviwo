@@ -38,8 +38,7 @@ namespace inviwo {
 
 std::map<PyObject*,PyModule*> PyModule::instances_;
 
-PyModule::PyModule(std::string moduleName):moduleName_(moduleName) , embMethods_(0) {
-
+PyModule::PyModule(std::string moduleName) : moduleName_(moduleName), embMethods_(nullptr) {
     addMethod(new PyInfoMethod());
 }
 
@@ -59,10 +58,10 @@ PyMethodDef* PyModule::getPyMethodDefs(){
         embMethods_[i].ml_flags = methods_[i]->getFlags();
         embMethods_[i].ml_doc = methods_[i]->getDesc2();
     }
-    embMethods_[N].ml_name = NULL;
-    embMethods_[N].ml_meth = NULL;
+    embMethods_[N].ml_name = nullptr;
+    embMethods_[N].ml_meth = nullptr;
     embMethods_[N].ml_flags = 0;
-    embMethods_[N].ml_doc = NULL;
+    embMethods_[N].ml_doc = nullptr;
     return embMethods_;
 
 }
@@ -74,10 +73,10 @@ void PyModule::addMethod(PyMethod* method) {
 const char* PyModule::getModuleName() {return moduleName_.c_str();}
 
 void PyModule::printInfo() {
-    for (unsigned int i = 0; i<methods_.size(); i++) {
+    for (auto& elem : methods_) {
         std::string msg = "print(\"";
-        msg += methods_[i]->getName() + ":\t";
-        msg += methods_[i]->getDesc();
+        msg += elem->getName() + ":\t";
+        msg += elem->getDesc();
         msg += "\")\n";
         PyRun_SimpleString(msg.c_str());
     }

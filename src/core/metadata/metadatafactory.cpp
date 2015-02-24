@@ -50,7 +50,7 @@ IvwSerializable* MetaDataFactory::create(const std::string &className) const {
     if (it != metaDataClassMap_.end())
         return it->second->clone();
     else
-        return 0;
+        return nullptr;
 }
 
 bool MetaDataFactory::isValidType(const std::string &className) const {

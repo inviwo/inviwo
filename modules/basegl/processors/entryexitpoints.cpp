@@ -52,10 +52,10 @@ EntryExitPoints::EntryExitPoints()
               vec3(0.0f, 1.0f, 0.0f), &geometryPort_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
     , trackball_(&camera_)
-    , genericShader_(NULL)
-    , capNearClippingPrg_(NULL)
-    , tmpEntryPoints_(NULL)
-    , renderer_(NULL) {
+    , genericShader_(nullptr)
+    , capNearClippingPrg_(nullptr)
+    , tmpEntryPoints_(nullptr)
+    , renderer_(nullptr) {
     addPort(geometryPort_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -76,13 +76,13 @@ void EntryExitPoints::initialize() {
 
 void EntryExitPoints::deinitialize() {
     delete tmpEntryPoints_;
-    tmpEntryPoints_ = NULL;
+    tmpEntryPoints_ = nullptr;
     delete genericShader_;
-    genericShader_ = NULL;
+    genericShader_ = nullptr;
     delete capNearClippingPrg_;
-    capNearClippingPrg_ = NULL;
+    capNearClippingPrg_ = nullptr;
     delete renderer_;
-    renderer_ = NULL;
+    renderer_ = nullptr;
     Processor::deinitialize();
 }
 
@@ -90,13 +90,9 @@ void EntryExitPoints::process() {
     const Geometry* geom = geometryPort_.getData();
 
     // Check if no renderer exist or if geometry changed
-    if (renderer_ == NULL) {
-        onGeometryChange();
-    }
+    if (!renderer_) onGeometryChange();
 
-    if (renderer_ == NULL) {
-        return;
-    }
+    if (!renderer_) return;
 
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_ALWAYS);
@@ -112,10 +108,10 @@ void EntryExitPoints::process() {
     renderer_->render();
     utilgl::deactivateCurrentTarget();
     // generate entry points
-    ImageGL* tmpEntryPointsGL = NULL;
+    ImageGL* tmpEntryPointsGL = nullptr;
 
     if (capNearClipping_.get()) {
-        if (tmpEntryPoints_ == NULL ||
+        if (tmpEntryPoints_ == nullptr ||
             tmpEntryPoints_->getDimensions() != entryPort_.getDimensions() ||
             tmpEntryPoints_->getDataFormat() != entryPort_.getData()->getDataFormat()) {
             delete tmpEntryPoints_;
@@ -167,7 +163,7 @@ void EntryExitPoints::process() {
 
 void EntryExitPoints::onGeometryChange() {
     delete renderer_;
-    renderer_ = NULL;
+    renderer_ = nullptr;
     if (geometryPort_.hasData())
         renderer_ = GeometryRendererFactory::getPtr()->create(geometryPort_.getData());
 }

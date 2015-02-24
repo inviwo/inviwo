@@ -33,12 +33,13 @@
 #include <inviwo/core/metadata/processormetadata.h>
 
 namespace inviwo {
-PortInspector::PortInspector(std::string portClassIdentifier, std::string inspectorWorkspaceFileName)
+PortInspector::PortInspector(std::string portClassIdentifier,
+                             std::string inspectorWorkspaceFileName)
     : inspectorNetworkFileName_(inspectorWorkspaceFileName)
     , portClassIdentifier_(portClassIdentifier)
     , active_(false)
     , needsUpdate_(false)
-    , inspectorNetwork_(NULL) {
+    , inspectorNetwork_(nullptr) {
     InviwoApplication::getPtr()->registerFileObserver(this);
 }
 
@@ -95,12 +96,12 @@ void PortInspector::initialize() {
     if (active_ == false && needsUpdate_) {
         if (inspectorNetwork_) {
             delete inspectorNetwork_;
-            inspectorNetwork_ = NULL;
+            inspectorNetwork_ = nullptr;
             processors_.clear();
             inPorts_.clear();
             connections_.clear();
             propertyLinks_.clear();
-            canvasProcessor_ = NULL;
+            canvasProcessor_ = nullptr;
         }
 
         stopFileObservation(inspectorNetworkFileName_);
@@ -120,8 +121,7 @@ void PortInspector::initialize() {
         inspectorNetwork_->deserialize(xmlDeserializer);
         processors_ = inspectorNetwork_->getProcessors();
 
-        for (size_t i = 0; i < processors_.size(); i++) {
-            Processor* processor = processors_[i];
+        for (auto processor : processors_) {
             // Set Identifiers
             std::string newIdentifier =
                 getPortClassName() + "_Port_Inspector_" + processor->getIdentifier();
@@ -130,8 +130,8 @@ void PortInspector::initialize() {
             // Find the and save inports.
             std::vector<Inport*> inports = processor->getInports();
 
-            for (size_t i = 0; i < inports.size(); i++) {
-                if (!inports[i]->isConnected()) inPorts_.push_back(inports[i]);
+            for (auto& inport : inports) {
+                if (!inport->isConnected()) inPorts_.push_back(inport);
             }
 
             ProcessorMetaData* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
@@ -150,8 +150,7 @@ void PortInspector::initialize() {
         // Store the connections and and disconnect them.
         connections_ = inspectorNetwork_->getConnections();
 
-        for (size_t i = 0; i < connections_.size(); i++)
-            connections_[i]->getInport()->disconnectFrom(connections_[i]->getOutport());
+        for (auto& elem : connections_) elem->getInport()->disconnectFrom(elem->getOutport());
 
         // store the processor links.
         propertyLinks_ = inspectorNetwork_->getLinks();

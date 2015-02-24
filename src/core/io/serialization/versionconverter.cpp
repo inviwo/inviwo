@@ -50,7 +50,7 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
 
     bool res = false;
 
-    for (size_t i = 0; i < props.size(); ++i) {
+    for (auto& p : props) {
         bool match = false;
 
         ticpp::Iterator<ticpp::Element> child;
@@ -60,11 +60,11 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
             std::string type = child->GetAttributeOrDefault("type", "");
             std::string id = child->GetAttributeOrDefault("identifier", "");
 
-            if (props[i]->getIdentifier() == id &&
-                (props[i]->getClassIdentifier() == type ||
-                 props[i]->getClassIdentifier() == splitString(type, '.').back())) {
+            if (p->getIdentifier() == id &&
+                (p->getClassIdentifier() == type ||
+                 p->getClassIdentifier() == splitString(type, '.').back())) {
                 LogInfoCustom("VersionConverter", "    Match for sub property: " +
-                                                          joinString(props[i]->getPath(), ".") +
+                                                          joinString(p->getPath(), ".") +
                                                           " found in type: "
                                                       << type << " id: " << id);
 
@@ -74,7 +74,7 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
         }
         if (!match) {
             LogWarnCustom("VersionConverter", "    No match found for sup property: " +
-                                                  joinString(props[i]->getPath(), "."));
+                                                  joinString(p->getPath(), "."));
         }
         res = res && match;
     }
@@ -113,18 +113,16 @@ bool util::xmlFindMatchingSubPropertiesForComposites(
 
     bool res = true;
 
-    for (size_t i = 0; i < props.size(); ++i) {
-        if (!util::xmlHasProp(pelm[0], *props[i])) {
+    for (auto& prop : props) {
+        if (!util::xmlHasProp(pelm[0], *prop)) {
             LogWarnCustom("VersionConverter",
-                          "Could not find serialized version of composite property: "
-                              << joinString(props[i]->getPath(),"."));
+                          "Could not find serialized version of composite property: " << joinString(
+                              prop->getPath(), "."));
 
-            
-            bool foundMatchingComposite =
-                util::xmlCopyMatchingCompositeProperty(pelm[0], *props[i]);
+            bool foundMatchingComposite = util::xmlCopyMatchingCompositeProperty(pelm[0], *prop);
             bool foundSubProp = false;
             if (!foundMatchingComposite) {
-               foundSubProp = util::xmlCopyMatchingSubPropsIntoComposite(pelm[0], *props[i]);
+                foundSubProp = util::xmlCopyMatchingSubPropsIntoComposite(pelm[0], *prop);
             }
             res = res && (foundSubProp || foundMatchingComposite);
         }
@@ -162,7 +160,7 @@ TxElement* util::xmlGetElement(TxElement* node, std::string path) {
             }
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 bool util::xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop) {

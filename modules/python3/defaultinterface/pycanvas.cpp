@@ -54,10 +54,9 @@ PyObject* py_canvascount(PyObject* /*self*/, PyObject* /*args*/) {
 PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
     static PyResizeCanvasMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
-    CanvasProcessor* canvas = 0;
+    CanvasProcessor* canvas = nullptr;
     PyObject* arg0 = PyTuple_GetItem(args,0);
     bool argIsString = PyValueParser::is<std::string>(arg0);
 
@@ -68,7 +67,7 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
         if (!processor) {
             std::string msg = std::string("resizeCanvas(canvas,width,height) no processor with name: ") + id;
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return 0;
+            return nullptr;
         }
 
         canvas = dynamic_cast<CanvasProcessor*>(processor);
@@ -77,7 +76,7 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
             std::string msg = std::string("resizeCanvas(canvas,width,height) processor with name: ") + id + " is not a canvas processor, it is a" +
                 processor->getClassIdentifier();
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return 0;
+            return nullptr;
         }
     } else {
         int id = PyValueParser::parse<int>(arg0);
@@ -86,14 +85,14 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
         if (canvases.size()==0) {
             std::string msg = std::string("resizeCanvas(canvas,width,height) no canvases found in current network") ;
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return 0;
+            return nullptr;
         }
 
         if (static_cast<int>(canvases.size())<=id) {
             std::string msg = std::string("resizeCanvas(canvas,width,height) index out of bounds, index given: ") + toString(
                                   id) + ", max index possible: " + toString(canvases.size()-1) ;
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return 0;
+            return nullptr;
         }
 
         canvas = canvases[id];
@@ -107,7 +106,7 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
     if (w <= 0 || h <= 0) {
         std::string msg = std::string("resizeCanvas(canvas,width,height) width and height must have positive non-zero values ");
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     static_cast<IntVec2Property*>(canvas->getPropertyByIdentifier("dimensions"))->set(ivec2(w,h));

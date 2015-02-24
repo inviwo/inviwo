@@ -50,9 +50,7 @@ void PropertyFactory::registeryObject(PropertyFactoryObject* property) {
         
 }
 
-IvwSerializable* PropertyFactory::create(const std::string &className) const {
-    return NULL;
-}
+IvwSerializable *PropertyFactory::create(const std::string &className) const { return nullptr; }
 
 bool PropertyFactory::isValidType(const std::string &className) const {
     PropertyClassMap::const_iterator it = propertyClassMap_.find(className);
@@ -69,14 +67,13 @@ Property* PropertyFactory::getProperty(const std::string &className, const std::
     if (it != propertyClassMap_.end())
         return it->second->create(identifier, displayName);
     else
-        return NULL;
+        return nullptr;
 }
 
 std::vector<std::string> PropertyFactory::getRegistedPropertyClassNames() {
     std::vector<std::string> classNames;
 
-    for (PropertyClassMap::iterator it = propertyClassMap_.begin(); it != propertyClassMap_.end(); ++it)
-        classNames.push_back(it->first);
+    for (auto &elem : propertyClassMap_) classNames.push_back(elem.first);
 
     return classNames;
 }

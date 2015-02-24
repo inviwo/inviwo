@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-ProcessorWidgetQt::ProcessorWidgetQt() : QWidget(NULL), ProcessorWidget() {}
+ProcessorWidgetQt::ProcessorWidgetQt() : QWidget(nullptr), ProcessorWidget() {}
 
 ProcessorWidgetQt::~ProcessorWidgetQt() {}
 

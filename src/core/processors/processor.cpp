@@ -46,8 +46,9 @@ ProcessorCategory(Processor, "undefined");
 ProcessorCodeState(Processor, CODE_STATE_EXPERIMENTAL);
 
 Processor::Processor()
-    : PropertyOwner(), ProcessorObservable()
-    , processorWidget_(NULL)
+    : PropertyOwner()
+    , ProcessorObservable()
+    , processorWidget_(nullptr)
     , identifier_("")
     , initialized_(false)
     , invalidationEnabled_(true)
@@ -59,7 +60,7 @@ Processor::~Processor() {
     usedIdentifiers_.erase(identifier_);
     portDependencySets_.deinitialize();
     if (processorWidget_) {
-        processorWidget_->setProcessor(NULL);
+        processorWidget_->setProcessor(nullptr);
     }
 }
 
@@ -123,36 +124,30 @@ ProcessorWidget* Processor::getProcessorWidget() const {
     return processorWidget_;
 }
 
-bool Processor::hasProcessorWidget() const {
-    return (processorWidget_ != NULL);
-}
+bool Processor::hasProcessorWidget() const { return (processorWidget_ != nullptr); }
 
 Port* Processor::getPort(const std::string &identifier) const {
-    for (std::vector<Inport*>::const_iterator it = inports_.begin(); it != inports_.end(); ++it)
-        if ((*it)->getIdentifier() == identifier)
-            return (*it);
+    for (const auto& elem : inports_)
+        if ((elem)->getIdentifier() == identifier) return (elem);
 
-    for (std::vector<Outport*>::const_iterator it = outports_.begin(); it != outports_.end(); ++it)
-        if ((*it)->getIdentifier() == identifier)
-            return (*it);
+    for (const auto& elem : outports_)
+        if ((elem)->getIdentifier() == identifier) return (elem);
 
-    return NULL;
+    return nullptr;
 }
 
 Inport* Processor::getInport(const std::string &identifier) const {
-    for (std::vector<Inport*>::const_iterator it = inports_.begin(); it != inports_.end(); ++it)
-        if ((*it)->getIdentifier() == identifier)
-            return (*it);
+    for (const auto& elem : inports_)
+        if ((elem)->getIdentifier() == identifier) return (elem);
 
-    return NULL;
+    return nullptr;
 }
 
 Outport* Processor::getOutport(const std::string &identifier) const {
-    for (std::vector<Outport*>::const_iterator it = outports_.begin(); it != outports_.end(); ++it)
-        if ((*it)->getIdentifier() == identifier)
-            return (*it);
+    for (const auto& elem : outports_)
+        if ((elem)->getIdentifier() == identifier) return (elem);
 
-    return NULL;
+    return nullptr;
 }
 
 const std::vector<Inport*>& Processor::getInports() const {
@@ -180,37 +175,31 @@ std::string Processor::getPortDependencySet(Port* port) const {
 }
 
 bool Processor::allInportsConnected() const {
-    for (std::vector<Inport*>::const_iterator it = inports_.begin(); it != inports_.end(); ++it)
-        if (!(*it)->isConnected())
-            return false;
+    for (const auto& elem : inports_)
+        if (!(elem)->isConnected()) return false;
 
     return true;
 }
 
 bool Processor::allInportsAreReady() const {
-    for (std::vector<Inport*>::const_iterator it = inports_.begin(); it != inports_.end(); ++it)
-        if (!(*it)->isReady())
-            return false;
+    for (const auto& elem : inports_)
+        if (!(elem)->isReady()) return false;
 
     return true;
 }
 
 void Processor::initialize() {
-    for (std::vector<Inport*>::iterator it = inports_.begin(); it != inports_.end(); ++it)
-        (*it)->initialize();
+    for (auto& elem : inports_) (elem)->initialize();
 
-    for (std::vector<Outport*>::iterator it = outports_.begin(); it != outports_.end(); ++it)
-        (*it)->initialize();
+    for (auto& elem : outports_) (elem)->initialize();
 
     initialized_ = true;
 }
 
 void Processor::deinitialize() {
-    for (std::vector<Inport*>::iterator it = inports_.begin(); it != inports_.end(); ++it)
-        (*it)->deinitialize();
+    for (auto& elem : inports_) (elem)->deinitialize();
 
-    for (std::vector<Outport*>::iterator it = outports_.begin(); it != outports_.end(); ++it)
-        (*it)->deinitialize();
+    for (auto& elem : outports_) (elem)->deinitialize();
 
     initialized_ = false;
 }
@@ -244,8 +233,8 @@ void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifi
 }
 
 void Processor::invalidateSuccesors(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
-    for (std::vector<Outport*>::iterator it = outports_.begin(); it != outports_.end(); ++it){
-        (*it)->invalidate(INVALID_OUTPUT);
+    for (auto& elem : outports_) {
+        (elem)->invalidate(INVALID_OUTPUT);
     }
 }
 
@@ -288,8 +277,7 @@ const std::vector<InteractionHandler*>& Processor::getInteractionHandlers() cons
 void Processor::invokeInteractionEvent(Event* event) {
     PropertyOwner::invokeInteractionEvent(event);
 
-    for (size_t i=0; i<interactionHandlers_.size(); i++)
-        interactionHandlers_[i]->invokeEvent(event);
+    for (auto& elem : interactionHandlers_) elem->invokeEvent(event);
 }
 
 void Processor::serialize(IvwSerializer& s) const {
@@ -315,11 +303,11 @@ void Processor::deserialize(IvwDeserializer& d) {
     d.deserialize("InPorts", inports_, "InPort", inportIdentifier);
     d.deserialize("OutPorts", outports_, "OutPort", inportIdentifier);
 
-    for (std::vector<Inport*>::iterator it = inports_.begin(); it!=inports_.end(); ++it) {
-        (*it)->setProcessor(this);
+    for (auto& elem : inports_) {
+        (elem)->setProcessor(this);
     }
-    for (std::vector<Outport*>::iterator it = outports_.begin(); it!=outports_.end(); ++it) {
-        (*it)->setProcessor(this);
+    for (auto& elem : outports_) {
+        (elem)->setProcessor(this);
     }
 
     PropertyOwner::deserialize(d);
@@ -329,11 +317,9 @@ void Processor::deserialize(IvwDeserializer& d) {
 void Processor::setValid() {
     PropertyOwner::setValid();
 
-    for (std::vector<Inport*>::iterator it = inports_.begin(); it != inports_.end(); ++it)
-        (*it)->setChanged(false);
+    for (auto& elem : inports_) (elem)->setChanged(false);
 
-    for (std::vector<Outport*>::iterator it = outports_.begin(); it != outports_.end(); ++it)
-        (*it)->setInvalidationLevel(VALID);
+    for (auto& elem : outports_) (elem)->setInvalidationLevel(VALID);
 }
 
 void Processor::enableInvalidation() {

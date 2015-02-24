@@ -46,7 +46,8 @@ CanvasProcessor::CanvasProcessor()
     , inport_("inport")
     , dimensions_("dimensions", "Canvas Size", ivec2(256, 256), ivec2(128, 128), ivec2(4096, 4096),
                   ivec2(1, 1), VALID)
-    , enableCustomInputDimensions_("enableCustomInputDimensions", "Separate Image Size", false, VALID)
+    , enableCustomInputDimensions_("enableCustomInputDimensions", "Separate Image Size", false,
+                                   VALID)
     , customInputDimensions_("customInputDimensions", "Image Size", ivec2(256, 256),
                              ivec2(128, 128), ivec2(4096, 4096), ivec2(1, 1), VALID)
     , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, VALID)
@@ -56,10 +57,9 @@ CanvasProcessor::CanvasProcessor()
     , saveLayerButton_("saveLayer", "Save Image Layer", VALID)
     , inputSize_("inputSize", "Input Dimension Parameters")
     , previousImageSize_(customInputDimensions_)
-    , evaluator_(NULL)
-    , canvasWidget_(NULL)
+    , evaluator_(nullptr)
+    , canvasWidget_(nullptr)
     , queuedRequest_(false) {
-
     addPort(inport_);
     addProperty(inputSize_);
 
@@ -109,9 +109,9 @@ void CanvasProcessor::initialize() {
 void CanvasProcessor::deinitialize() {
     if (processorWidget_) {
         processorWidget_->hide();
-        canvasWidget_->getCanvas()->setEventPropagator(NULL);
+        canvasWidget_->getCanvas()->setEventPropagator(nullptr);
     }
-    canvasWidget_ = NULL;
+    canvasWidget_ = nullptr;
     Processor::deinitialize();
 }
 
@@ -196,7 +196,7 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
         const Layer* layer = image->getLayer(static_cast<LayerType>(visibleLayer_.get()));
         if (layer){
             std::string fileExtension = filesystem::getFileExtension(snapshotPath);
-            DataWriterType<Layer>* writer = NULL;
+            DataWriterType<Layer>* writer = nullptr;
             bool deleteWriter = true;
             if(Canvas::generalLayerWriter_ && fileExtension == "png"){
                 writer = Canvas::generalLayerWriter_;
@@ -231,7 +231,7 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
 }
 
 std::vector<unsigned char>* CanvasProcessor::getImageLayerAsCodedBuffer(const std::string& type) {
-    if (!inport_.hasData()) return NULL;
+    if (!inport_.hasData()) return nullptr;
     const Image* image = inport_.getData();
     const Layer* layer = image->getLayer(static_cast<LayerType>(visibleLayer_.get()));
 
@@ -253,7 +253,7 @@ std::vector<unsigned char>* CanvasProcessor::getImageLayerAsCodedBuffer(const st
         LogError("Error: Cound not find layer to write");
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void CanvasProcessor::process() {
@@ -266,7 +266,7 @@ void CanvasProcessor::process() {
 void CanvasProcessor::doIfNotReady() {
     if(canvasWidget_ && canvasWidget_->getCanvas()) {
         canvasWidget_->getCanvas()->activate();
-        canvasWidget_->getCanvas()->render(NULL, static_cast<LayerType>(visibleLayer_.get()));
+        canvasWidget_->getCanvas()->render(nullptr, static_cast<LayerType>(visibleLayer_.get()));
     }
 }
 

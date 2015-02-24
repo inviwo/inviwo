@@ -66,8 +66,8 @@ ProcessorNetwork::ProcessorNetwork()
 }
 
 ProcessorNetwork::~ProcessorNetwork() {
-    for (ProcessorMap::iterator it = processors_.begin(); it != processors_.end(); ++it) {
-        delete it->second;
+    for (auto& elem : processors_) {
+        delete elem.second;
     }
     processors_.clear();
     delete linkEvaluator_;
@@ -76,8 +76,9 @@ ProcessorNetwork::~ProcessorNetwork() {
 bool ProcessorNetwork::addProcessor(Processor* processor) {
     lock();
 
-    if(!InviwoApplication::getPtr()->checkIfAllTagsAreSupported(processor->getTags())){
-        LogWarn("Processor '" << processor->getDisplayName() << "' was considered as not supported by the application.");
+    if (!InviwoApplication::getPtr()->checkIfAllTagsAreSupported(processor->getTags())) {
+        LogNetworkWarn("Processor '" << processor->getDisplayName()
+                                     << "' was considered as not supported by the application.");
         return false;
     }
 
@@ -96,10 +97,9 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
     
     // Remove all connections for this processor
      std::vector<PortConnection*> portConnections = getConnections();
-    for (size_t i=0; i<portConnections.size(); i++)
-        if (portConnections[i]->involvesProcessor(processor))
-            removeConnection(portConnections[i]->getOutport(),
-            portConnections[i]->getInport());
+     for (auto& portConnection : portConnections)
+         if (portConnection->involvesProcessor(processor))
+             removeConnection(portConnection->getOutport(), portConnection->getInport());
 
     //FIXME: Crashing!!
     /*std::vector<Outport*> outports;
@@ -127,21 +127,22 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
     // was made to, hence will will not find it, and can not delete it!
     // TODO when the MultiInport behaves as a standard port, remove this.
     PortConnectionMap connections = portConnectionsMap_;
-    for (PortConnectionMap::iterator it = connections.begin(); it != connections.end(); ++it) {
-        if(it->second->getInport()->getProcessor() == processor ||
-           it->second->getOutport()->getProcessor() == processor) {
-        
-            removeConnection(it->second->getOutport(), it->second->getInport());
+    for (auto& connection : connections) {
+        if (connection.second->getInport()->getProcessor() == processor ||
+            connection.second->getOutport()->getProcessor() == processor) {
+            removeConnection(connection.second->getOutport(), connection.second->getInport());
         }
     }
     // end workaround.
 
     // Remove all links for this processor
     PropertyLinkMap propertyLinks = propertyLinks_;
-    for (PropertyLinkMap::iterator it = propertyLinks.begin(); it != propertyLinks.end(); ++it) {
-        if (it->second->getSourceProperty()->getOwner()->getProcessor() == processor ||
-            it->second->getDestinationProperty()->getOwner()->getProcessor() == processor) {
-            removeLink(it->second->getSourceProperty(), it->second->getDestinationProperty());
+    for (auto& propertyLink : propertyLinks) {
+        if (propertyLink.second->getSourceProperty()->getOwner()->getProcessor() == processor ||
+            propertyLink.second->getDestinationProperty()->getOwner()->getProcessor() ==
+                processor) {
+            removeLink(propertyLink.second->getSourceProperty(),
+                       propertyLink.second->getDestinationProperty());
         }
     }
     
@@ -173,8 +174,8 @@ Processor* ProcessorNetwork::getProcessorByIdentifier(std::string identifier) co
 
 std::vector<Processor*> ProcessorNetwork::getProcessors() const {
     ProcessorVector processors;
-    for (ProcessorMap::const_iterator it = processors_.begin(); it != processors_.end(); ++it) {
-        processors.push_back(it->second);
+    for (const auto& elem : processors_) {
+        processors.push_back(elem.second);
     }
     return processors;
 }
@@ -286,9 +287,8 @@ PropertyLink* ProcessorNetwork::getLink(Property* sourceProperty,
 
 std::vector<PropertyLink*> ProcessorNetwork::getLinks() const {
     PropertyLinkVector links;
-    for (PropertyLinkMap::const_iterator it = propertyLinks_.begin(); it != propertyLinks_.end();
-         ++it) {
-        links.push_back(it->second);
+    for (const auto& elem : propertyLinks_) {
+        links.push_back(elem.second);
     }
     return links;
 }
@@ -358,9 +358,8 @@ void ProcessorNetwork::removeFromPrimaryCache(PropertyLink* propertyLink) {
 void ProcessorNetwork::updatePropertyLinkCaches() {
     clearSecondaryCache();
     propertyLinkPrimaryCache_.clear();
-    for (PropertyLinkMap::iterator it = propertyLinks_.begin(); it != propertyLinks_.end();
-         ++it) {
-        addToPrimaryCache(it->second);
+    for (auto& elem : propertyLinks_) {
+        addToPrimaryCache(elem.second);
     }
 }
 
@@ -381,15 +380,15 @@ std::vector<Property*> ProcessorNetwork::getLinkedProperties(Property* property)
     if (propertyLinkSecondaryCache_.find(property) != propertyLinkSecondaryCache_.end()) {
         const std::vector<PropertyLink>& list = propertyLinkSecondaryCache_[property];
         std::vector<Property*> pvec;
-        for (std::vector<PropertyLink>::const_iterator it = list.begin(); it!=list.end(); ++it) {
-            pvec.push_back(it->getDestinationProperty());
+        for (const auto& elem : list) {
+            pvec.push_back(elem.getDestinationProperty());
         }
         return pvec;
     } else {
         const std::vector<PropertyLink>& list = addToSecondaryCache(property);
         std::vector<Property*> pvec;
-        for (std::vector<PropertyLink>::const_iterator it = list.begin(); it!=list.end(); ++it) {
-            pvec.push_back(it->getDestinationProperty());
+        for (const auto& elem : list) {
+            pvec.push_back(elem.getDestinationProperty());
         }
         return pvec;
     }
@@ -398,8 +397,8 @@ std::vector<Property*> ProcessorNetwork::getLinkedProperties(Property* property)
 std::vector<PropertyLink>& ProcessorNetwork::addToSecondaryCache(Property* src) {
     std::vector<PropertyLink> links;
     std::vector<Property*> dest = propertyLinkPrimaryCache_[src];
-    for (std::vector<Property*>::iterator it = dest.begin(); it != dest.end(); ++it) {
-        if (src != *it) secondaryCacheHelper(links, src, *it);
+    for (auto& elem : dest) {
+        if (src != elem) secondaryCacheHelper(links, src, elem);
     }
 
     propertyLinkSecondaryCache_[src] = links;
@@ -417,8 +416,8 @@ void ProcessorNetwork::secondaryCacheHelper(std::vector<PropertyLink>& links, Pr
              newSrc = dynamic_cast<Property*>(newSrc->getOwner())) {
             // Recurse over outgoing links.
             std::vector<Property*> dest = propertyLinkPrimaryCache_[newSrc];
-            for (std::vector<Property*>::iterator it = dest.begin(); it != dest.end(); ++it) {
-                if (newSrc != *it) secondaryCacheHelper(links, newSrc, *it);
+            for (auto& elem : dest) {
+                if (newSrc != elem) secondaryCacheHelper(links, newSrc, elem);
             }
         }
 
@@ -426,12 +425,11 @@ void ProcessorNetwork::secondaryCacheHelper(std::vector<PropertyLink>& links, Pr
         CompositeProperty* cp = dynamic_cast<CompositeProperty*>(dst);
         if (cp) {
             std::vector<Property*> srcProps = cp->getProperties();
-            for (std::vector<Property*>::iterator sit = srcProps.begin(); sit != srcProps.end();
-                 ++sit) {
+            for (auto& srcProp : srcProps) {
                 // Recurse over outgoing links.
-                std::vector<Property*> dest = propertyLinkPrimaryCache_[*sit]; 
-                for (std::vector<Property*>::iterator it = dest.begin(); it != dest.end(); ++it) {
-                    if (*sit != *it) secondaryCacheHelper(links, *sit, *it);
+                std::vector<Property*> dest = propertyLinkPrimaryCache_[srcProp];
+                for (auto& elem : dest) {
+                    if (srcProp != elem) secondaryCacheHelper(links, srcProp, elem);
                 }
             }
         }
@@ -503,9 +501,9 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
     }
 
     std::vector<Property*> properties;
-    for (ProcessorMap::iterator it = processors_.begin(); it != processors_.end(); ++it) {
-        if( it->second != processor) {
-            std::vector<Property*> p = getPropertiesRecursive(it->second);
+    for (auto& elem : processors_) {
+        if (elem.second != processor) {
+            std::vector<Property*> p = getPropertiesRecursive(elem.second);
             properties.insert(properties.end(),p.begin(), p.end());
         }
     }
@@ -514,18 +512,17 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
         return;
     }
 
-
-    for(std::vector<Property*>::iterator dit = destprops.begin(); dit!=destprops.end(); ++dit) {
+    for (auto& destprop : destprops) {
         std::vector<Property*> candidates = properties;
-        AutoLinkCheck autoLinkChecker(*dit, LinkMatchingTypeAndId);
+        AutoLinkCheck autoLinkChecker(destprop, LinkMatchingTypeAndId);
         std::remove_if(candidates.begin(), candidates.end(), autoLinkChecker);
-        AutoLinkSort sorter(*dit);
+        AutoLinkSort sorter(destprop);
         std::sort(candidates.begin(), candidates.end(), sorter);
 
         if(candidates.size()>0) {
-            addLink(candidates[0], *dit);
+            addLink(candidates[0], destprop);
             evaluatePropertyLinks(candidates[0]); // Propagate the link to the new Processor.
-            addLink(*dit, candidates[0]);
+            addLink(destprop, candidates[0]);
         }        
     }
 }
@@ -533,9 +530,9 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
 std::vector<Property*> ProcessorNetwork::getPropertiesRecursive(PropertyOwner* owner) {
     std::vector<Property*> properties;
     std::vector<Property*> props = owner->getProperties();
-    for(std::vector<Property*>::iterator it = props.begin(); it!=props.end(); ++it) {
-        properties.push_back(*it);
-        PropertyOwner* o = dynamic_cast<PropertyOwner*>(*it);
+    for (auto& prop : props) {
+        properties.push_back(prop);
+        PropertyOwner* o = dynamic_cast<PropertyOwner*>(prop);
         if(o){
             std::vector<Property*> p = getPropertiesRecursive(o);
             properties.insert(properties.end(),p.begin(), p.end());
@@ -553,14 +550,11 @@ void ProcessorNetwork::clear() {
 
     //Invalidate inports to alert processors that they should stop their calculations.
     // TODO Check if needed? solve in a nicer way... /Peter
-    for (size_t p=0; p<processors.size(); p++){
-        std::vector<Inport*> inports = processors[p]->getInports();
-        for (size_t i=0; i<inports.size(); i++)
-            inports[i]->invalidate(INVALID_OUTPUT);
+    for (auto processor : processors) {
+        for (auto& inport : processor->getInports()) inport->invalidate(INVALID_OUTPUT);
     }
 
-    for (size_t i=0; i<processors.size(); i++)
-        removeAndDeleteProcessor(processors[i]);
+    for (auto& processor : processors) removeAndDeleteProcessor(processor);
 
     locked_ = 0; // make sure we remove all locks.
     unlock();
@@ -656,8 +650,8 @@ void ProcessorNetwork::evaluatePropertyLinks(Property* modifiedProperty) {
     linking_ = true;
 
     const std::vector<PropertyLink>& links = getTriggerdLinksForProperty(modifiedProperty);
-    for (size_t i = 0; i < links.size(); i++) {
-        linkEvaluator_->evaluate(links[i].getSourceProperty(), links[i].getDestinationProperty());
+    for (auto& link : links) {
+        linkEvaluator_->evaluate(link.getSourceProperty(), link.getDestinationProperty());
     }
    
     if (isLinking()) linking_ = false; 
@@ -683,7 +677,7 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
     d.deserialize("ProcessorNetworkVersion", version);
 
     if (version != processorNetworkVersion_) {
-        LogWarn("Loading old workspace (" << d.getFileName()<< ") version: "
+        LogNetworkWarn("Loading old workspace (" << d.getFileName()<< ") version: "
                 << version << ". Updating to version: " << processorNetworkVersion_);
         NetworkConverter nv(version);
         d.convertVersion(&nv);
@@ -704,7 +698,7 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
             if (processors[i]) {
                 addProcessor(processors[i]);
             } else {
-                LogWarn("Failed deserialization: Processor Nr." << i);
+                LogNetworkWarn("Failed deserialization: Processor Nr." << i);
             }
         }
     } catch (const SerializationException& exception) {
@@ -728,12 +722,12 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
                 Inport* inPort = portConnections[i]->getInport();
 
                 if (!(outPort && inPort && addConnection(outPort, inPort))) {
-                    LogWarn("Unable to establish port connection Nr." << i);
+                    LogNetworkWarn("Unable to establish port connection Nr." << i);
                 }
 
                 delete portConnections[i];
             } else {
-                LogWarn("Failed deserialization: Port Connection Nr." << i);
+                LogNetworkWarn("Failed deserialization: Port Connection Nr." << i);
             }
         }
     } catch (const SerializationException& exception) {
@@ -756,18 +750,18 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
                 Property* destProperty = propertyLinks[j]->getDestinationProperty();
 
                 if (!(srcProperty && destProperty && addLink(srcProperty, destProperty))) {
-                    LogWarn("Unable to establish property link Nr: " << j);
+                    LogNetworkWarn("Unable to establish property link Nr: " << j);
                 }
 
                 delete propertyLinks[j];
 
             } else {
-                LogWarn("Unable to establish property link Nr: " << j);
+                LogNetworkWarn("Unable to establish property link Nr: " << j);
             }
         }
 
     if (!errorHandle.messages.empty()) {
-        LogWarn("There were errors while loading workspace: " + d.getFileName() + "\n" +
+        LogNetworkWarn("There were errors while loading workspace: " + d.getFileName() + "\n" +
                 joinString(errorHandle.messages, "\n"));
     }
 
@@ -1037,14 +1031,14 @@ void ProcessorNetwork::NetworkConverter::updateCameraToComposite(TxElement* node
                 }
             }
 
-            for (size_t i = 0; i < toBeDeleted.size(); i++) {
-                node->RemoveChild(toBeDeleted[i]);
+            for (auto& elem : toBeDeleted) {
+                node->RemoveChild(elem);
             }
 
             // insert new node
             node->InsertEndChild(newNode);
 
-            LogWarn("Camera property updated to composite property. Workspace requires resave")
+            LogNetworkWarn("Camera property updated to composite property. Workspace requires resave")
         }
     }
 }
@@ -1185,14 +1179,12 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
         }
     }
 
-    for (std::map<std::string, TxElement*>::iterator it = processorsOutports.begin();
-         it != processorsOutports.end(); ++it) {
-        delete it->second;
+    for (auto& processorsOutport : processorsOutports) {
+        delete processorsOutport.second;
     }
 
-    for (std::map<std::string, TxElement*>::iterator it = processorsInports.begin();
-         it != processorsInports.end(); ++it) {
-        delete it->second;
+    for (auto& processorsInport : processorsInports) {
+        delete processorsInport.second;
     }
 }
 

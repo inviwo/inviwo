@@ -45,15 +45,14 @@ namespace inviwo {
 TransferFunctionEditorControlPoint::TransferFunctionEditorControlPoint(
     TransferFunctionDataPoint* datapoint, const DataMapper& dataMap)
     : QGraphicsItem()
-    , left_(NULL)
-    , right_(NULL)
+    , left_(nullptr)
+    , right_(nullptr)
     , size_(14.0f)
     , showLabel_(false)
     , isEditingPoint_(false)
     , dataPoint_(datapoint)
     , dataMap_(dataMap)
     , currentPos_() {
-
     setFlags(ItemIgnoresTransformations | ItemIsFocusable | ItemIsMovable | ItemIsSelectable |
              ItemSendsGeometryChanges);
     setZValue(1);

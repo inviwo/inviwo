@@ -55,72 +55,71 @@ InviwoModule::~InviwoModule() {
         LogWarn("Module '" + getIdentifier() +
                 "' should have been deinitialized before destruction.");
 
-    for (size_t i = 0; i < capabilities_.size(); i++) delete capabilities_[i];
+    for (auto& elem : capabilities_) delete elem;
 
     capabilities_.clear();
 
-    for (size_t i = 0; i < data_.size(); i++) delete data_[i];
+    for (auto& elem : data_) delete elem;
 
     data_.clear();
 
-    for (size_t i = 0; i < dataReaders_.size(); i++) delete dataReaders_[i];
+    for (auto& elem : dataReaders_) delete elem;
 
     dataReaders_.clear();
 
-    for (size_t i = 0; i < dataRepresentations_.size(); i++) delete dataRepresentations_[i];
+    for (auto& elem : dataRepresentations_) delete elem;
 
     dataRepresentations_.clear();
 
-    for (size_t i = 0; i < dataWriters_.size(); i++) delete dataWriters_[i];
+    for (auto& elem : dataWriters_) delete elem;
 
     dataWriters_.clear();
 
-    for (size_t i = 0; i < dialogs_.size(); i++) delete dialogs_[i];
+    for (auto& elem : dialogs_) delete elem;
 
     dialogs_.clear();
 
-    for (size_t i = 0; i < metadata_.size(); i++) delete metadata_[i];
+    for (auto& elem : metadata_) delete elem;
 
     metadata_.clear();
 
-    for (size_t i = 0; i < moduleSettings_.size(); i++) delete moduleSettings_[i];
+    for (auto& elem : moduleSettings_) delete elem;
 
     moduleSettings_.clear();
 
-    for (size_t i = 0; i < ports_.size(); i++) delete ports_[i];
+    for (auto& elem : ports_) delete elem;
 
     ports_.clear();
 
-    for (size_t i = 0; i < portInspectors_.size(); i++) delete portInspectors_[i];
+    for (auto& elem : portInspectors_) delete elem;
 
     portInspectors_.clear();
 
-    for (size_t i = 0; i < processors_.size(); i++) delete processors_[i];
+    for (auto& elem : processors_) delete elem;
 
     processors_.clear();
 
-    for (size_t i = 0; i < processorWidgets_.size(); i++) delete processorWidgets_[i].second;
+    for (auto& elem : processorWidgets_) delete elem.second;
 
     processorWidgets_.clear();
 
-    for (size_t i = 0; i < properties_.size(); i++) delete properties_[i];
+    for (auto& elem : properties_) delete elem;
 
     properties_.clear();
 
-    for (size_t i = 0; i < propertyWidgets_.size(); i++) delete propertyWidgets_[i];
+    for (auto& elem : propertyWidgets_) delete elem;
 
     propertyWidgets_.clear();
 
-    for (size_t i = 0; i < representationConverters_.size(); i++)
-        delete representationConverters_[i];
+    for (auto& elem : representationConverters_) delete elem;
 
     representationConverters_.clear();
 
-    for (size_t i = 0; i < resources_.size(); i++) delete resources_[i];
+    for (auto& elem : resources_) delete elem;
 
     resources_.clear();
 
-    for (size_t i = 0; i < renderers_.size(); i++) delete renderers_[i];
+    for (auto& elem : renderers_) delete elem;
 
     renderers_.clear();
 }
@@ -134,8 +133,8 @@ std::string InviwoModule::getPath() const {
         return InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + moduleNameLowerCase;
     }
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
-    for(int i=0; i < IVW_EXTERNAL_MODULES_PATH_COUNT; ++i) {
-        std::string directory = externalModulePaths_[i] + "/" + moduleNameLowerCase;
+    for (auto& elem : externalModulePaths_) {
+        std::string directory = elem + "/" + moduleNameLowerCase;
         if(filesystem::directoryExists(directory)) {
             return directory;
         }
@@ -146,9 +145,9 @@ std::string InviwoModule::getPath() const {
 }
 
 void InviwoModule::initialize() {
-    for (size_t i = 0; i < capabilities_.size(); i++) {
-        capabilities_[i]->initialize();
-        capabilities_[i]->printInfo();
+    for (auto& elem : capabilities_) {
+        elem->initialize();
+        elem->printInfo();
     }
 
     setupModuleSettings();
@@ -162,7 +161,7 @@ void InviwoModule::deinitialize() { initialized_ = false; }
 void InviwoModule::setIdentifier(const std::string& identifier) { identifier_ = identifier; }
 
 void InviwoModule::setupModuleSettings() {
-    for (size_t i = 0; i < moduleSettings_.size(); i++) moduleSettings_[i]->initialize();
+    for (auto& elem : moduleSettings_) elem->initialize();
 }
 
 const std::vector<Capabilities*>& InviwoModule::getCapabilities() const { return capabilities_; }

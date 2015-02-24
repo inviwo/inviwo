@@ -65,7 +65,7 @@ NormalizedHistogram::NormalizedHistogram(const NormalizedHistogram &rhs) {
 
 NormalizedHistogram::~NormalizedHistogram() {
     delete data_;
-    data_ = NULL;
+    data_ = nullptr;
 }
 
 NormalizedHistogram& NormalizedHistogram::operator=(const NormalizedHistogram &rhs) {

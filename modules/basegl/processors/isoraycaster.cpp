@@ -45,7 +45,7 @@ ProcessorCodeState(ISORaycaster, CODE_STATE_STABLE);
 
 ISORaycaster::ISORaycaster()
     : Processor()
-    , shader_(NULL)
+    , shader_(nullptr)
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")
@@ -55,7 +55,6 @@ ISORaycaster::ISORaycaster()
     , lighting_("lighting", "Lighting")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, 3.5f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f)) {
-              
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -86,7 +85,7 @@ void ISORaycaster::initialize() {
 
 void ISORaycaster::deinitialize() {
     if (shader_) delete shader_;
-    shader_ = NULL;
+    shader_ = nullptr;
     Processor::deinitialize();
 }
 

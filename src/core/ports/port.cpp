@@ -34,10 +34,7 @@ namespace inviwo {
 
 uvec3 Port::colorCode = uvec3(128,128,128);
 
-Port::Port(std::string identifier)
-    : identifier_(identifier),
-      processor_(0)
-{}
+Port::Port(std::string identifier) : identifier_(identifier), processor_(nullptr) {}
 
 Port::~Port() {}
 

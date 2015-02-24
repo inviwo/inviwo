@@ -46,7 +46,7 @@ Texture3D::Texture3D(uvec3 dimensions, GLint format, GLint internalformat, GLenu
 
 Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimensions_) {
     setTextureParameterFunction(this, &Texture3D::default3DTextureParameterFunction);
-    initialize(NULL);
+    initialize(nullptr);
     if(OpenGLCapabilities::getOpenGLVersion() >= 430){
         //GPU memcpy
         glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), 
@@ -63,7 +63,7 @@ Texture3D& Texture3D::operator=(const Texture3D& rhs) {
         Texture::operator=(rhs);
         dimensions_ = rhs.dimensions_;
         setTextureParameterFunction(this, &Texture3D::default3DTextureParameterFunction);
-        initialize(NULL);
+        initialize(nullptr);
         if(OpenGLCapabilities::getOpenGLVersion() >= 430){
             //GPU memcpy
             glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), 

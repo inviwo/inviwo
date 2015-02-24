@@ -122,7 +122,7 @@ inline void barycentricInsidePolygon2D(vec2 p, const std::vector<vec2>& v, std::
 
     for (size_t i = 0; i < numV; ++i) {
         s[i] = v[i] - p;
-        ri[i] = sqrt(glm::dot(s[i], s[i]));
+        ri[i] = std::sqrt(glm::dot(s[i], s[i]));
     }
 
     size_t ip;
@@ -183,44 +183,44 @@ std::vector<unsigned int> edgeListtoTriangleList(std::vector<EdgeIndex>& edges) 
 // Extract edges from triangle strip list
 std::vector<EdgeIndex> triangleListtoEdgeList(const std::vector<unsigned int>* triList) {
     std::vector<EdgeIndex> result;
-    LogInfoCustom("MeshClipping", "Size of tri list: " << triList->size()-1);
+    LogInfoCustom("MeshClipping", "Size of tri list: " << triList->size() - 1);
 
-    for (size_t i=0; i<triList->size(); ++i) {
+    for (size_t i = 0; i < triList->size(); ++i) {
         EdgeIndex e1;
 
-        if (i==0 || i%3 == 0)  {
-            if (i+1<static_cast<int>(triList->size())) {
+        if (i == 0 || i % 3 == 0) {
+            if (i + 1 < triList->size()) {
                 e1.v1 = triList->at(i);
-                e1.v2 = triList->at(i+1);
+                e1.v2 = triList->at(i + 1);
 
-                if (result.empty() || std::find(result.begin(),result.end(),e1) == result.end()) {
+                if (result.empty() || std::find(result.begin(), result.end(), e1) == result.end()) {
                     result.push_back(e1);
                 }
             }
 
-            if (i+2<static_cast<int>(triList->size())) {
+            if (i + 2 < triList->size()) {
                 e1.v1 = triList->at(i);
-                e1.v2 = triList->at(i+2);
+                e1.v2 = triList->at(i + 2);
 
-                if (result.empty() || std::find(result.begin(),result.end(),e1) == result.end()) {
+                if (result.empty() || std::find(result.begin(), result.end(), e1) == result.end()) {
                     result.push_back(e1);
                 }
             }
-        } else if ((i-1)%3 == 0) {
-            if (i+2<static_cast<int>(triList->size())) {
+        } else if ((i - 1) % 3 == 0) {
+            if (i + 2 < triList->size()) {
                 e1.v1 = triList->at(i);
-                e1.v2 = triList->at(i+2);
+                e1.v2 = triList->at(i + 2);
 
-                if (result.empty() || std::find(result.begin(), result.end(),e1) == result.end()) {
+                if (result.empty() || std::find(result.begin(), result.end(), e1) == result.end()) {
                     result.push_back(e1);
                 }
             }
-        } else if ((i+1)%3 == 0) {
-            if (i+1<static_cast<int>(triList->size())) {
+        } else if ((i + 1) % 3 == 0) {
+            if (i + 1 < triList->size()) {
                 e1.v1 = triList->at(i);
-                e1.v2 = triList->at(i+1);
+                e1.v2 = triList->at(i + 1);
 
-                if (result.empty() || std::find(result.begin(), result.end(),e1) == result.end()) {
+                if (result.empty() || std::find(result.begin(), result.end(), e1) == result.end()) {
                     result.push_back(e1);
                 }
             }
@@ -229,8 +229,9 @@ std::vector<EdgeIndex> triangleListtoEdgeList(const std::vector<unsigned int>* t
 
     LogInfoCustom("MeshClipping", "Size of edge list: " << result.size());
 
-    for (size_t i=0; i<result.size(); ++i) {
-        LogInfoCustom("MeshClipping", "Edge, " << i << " = " << result.at(i).v1 << "->" << result.at(i).v2);
+    for (size_t i = 0; i < result.size(); ++i) {
+        LogInfoCustom("MeshClipping", "Edge, " << i << " = " << result.at(i).v1 << "->"
+                                               << result.at(i).v2);
     }
 
     return result;
@@ -243,25 +244,25 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
     const std::vector<vec4>* colorList;
     const std::vector<unsigned int>* triangleList;
     
-    const SimpleMesh* inputMesh = dynamic_cast<const SimpleMesh*>(in);
-    if (inputMesh) {
-        vertexList = inputMesh->getVertexList()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
-        texcoordlist = inputMesh->getTexCoordList()->getRepresentation<TexCoord3dBufferRAM>()->getDataContainer();
-        colorList = inputMesh->getColorList()->getRepresentation<ColorBufferRAM>()->getDataContainer();
-        triangleList = inputMesh->getIndexList()->getRepresentation<IndexBufferRAM>()->getDataContainer();
-        indexAttrInfo = inputMesh->getIndexAttributesInfo(0).ct;
+    const SimpleMesh* simpleInputMesh = dynamic_cast<const SimpleMesh*>(in);
+    if (simpleInputMesh) {
+        vertexList = simpleInputMesh->getVertexList()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
+        texcoordlist = simpleInputMesh->getTexCoordList()->getRepresentation<TexCoord3dBufferRAM>()->getDataContainer();
+        colorList = simpleInputMesh->getColorList()->getRepresentation<ColorBufferRAM>()->getDataContainer();
+        triangleList = simpleInputMesh->getIndexList()->getRepresentation<IndexBufferRAM>()->getDataContainer();
+        indexAttrInfo = simpleInputMesh->getIndexAttributesInfo(0).ct;
     } else {
         // TODO do clipping in all the index list now we only consider the first one 
-        const BasicMesh* inputMesh = dynamic_cast<const BasicMesh*>(in);
-        if(inputMesh) {
-            vertexList = inputMesh->getVertices()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
-            texcoordlist = inputMesh->getTexCoords()->getRepresentation<TexCoord3dBufferRAM>()->getDataContainer();
-            colorList = inputMesh->getColors()->getRepresentation<ColorBufferRAM>()->getDataContainer();
-            triangleList = inputMesh->getIndexBuffers()[0].second->getRepresentation<IndexBufferRAM>()->getDataContainer();
-            indexAttrInfo = inputMesh->getIndexBuffers()[0].first.ct;
+        const BasicMesh* basicInputMesh = dynamic_cast<const BasicMesh*>(in);
+        if(basicInputMesh) {
+            vertexList = basicInputMesh->getVertices()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
+            texcoordlist = basicInputMesh->getTexCoords()->getRepresentation<TexCoord3dBufferRAM>()->getDataContainer();
+            colorList = basicInputMesh->getColors()->getRepresentation<ColorBufferRAM>()->getDataContainer();
+            triangleList = basicInputMesh->getIndexBuffers()[0].second->getRepresentation<IndexBufferRAM>()->getDataContainer();
+            indexAttrInfo = basicInputMesh->getIndexBuffers()[0].first.ct;
         } else {
             LogError("Unsupported mesh type, only simeple and basic meshes are supported");
-            return NULL;
+            return nullptr;
         }
     }
 
@@ -411,12 +412,12 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
             //Then create one triangle per edge
             std::vector<Edge3D> uniqueintersectionsEdges;
 
-            for (size_t i=0; i<intersectionsEdges.size(); ++i) {
-                if (!equal(intersectionsEdges.at(i).v1, intersectionsEdges.at(i).v2, EPSILON)) {
-                    if (uniqueintersectionsEdges.empty()
-                        || std::find(uniqueintersectionsEdges.begin(), uniqueintersectionsEdges.end(),
-                                     intersectionsEdges.at(i)) == uniqueintersectionsEdges.end()) {
-                        uniqueintersectionsEdges.push_back(intersectionsEdges.at(i));
+            for (auto& intersectionsEdge : intersectionsEdges) {
+                if (!equal(intersectionsEdge.v1, intersectionsEdge.v2, EPSILON)) {
+                    if (uniqueintersectionsEdges.empty() ||
+                        std::find(uniqueintersectionsEdges.begin(), uniqueintersectionsEdges.end(),
+                                  intersectionsEdge) == uniqueintersectionsEdges.end()) {
+                        uniqueintersectionsEdges.push_back(intersectionsEdge);
                     }
                 }
             }
@@ -492,7 +493,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
                 vec3 u, v;
                 vec3 n = plane.getNormal();
 
-                for (size_t p=0; p < polygons.size(); ++p) {
+                for (auto& polygon : polygons) {
                     //Skip x-y plane if current plane is parallel to x-y plane
                     //or skip x-z plane if current plane is parallel to x-z plane
                     //or skip y-z if both skipXY and skip XZ are false
@@ -508,9 +509,9 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
                         centroid.y = 0.f;
                         signedArea = 0.f;
 
-                        for (size_t i=0; i < polygons[p].size(); ++i) {
-                            p0 = polygons[p].get(i).v1;
-                            p1 = polygons[p].get(i).v2;
+                        for (size_t i = 0; i < polygon.size(); ++i) {
+                            p0 = polygon.get(i).v1;
+                            p1 = polygon.get(i).v2;
                             a = p0.x*p1.y - p1.x*p0.y;
                             signedArea += a;
                             centroid.x += (p0.x + p1.x)*a;
@@ -536,9 +537,9 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
                         centroid.z = 0.f;
                         signedArea = 0.f;
 
-                        for (size_t i=0; i < polygons[p].size(); ++i) {
-                            p0 = polygons[p].get(i).v1;
-                            p1 = polygons[p].get(i).v2;
+                        for (size_t i = 0; i < polygon.size(); ++i) {
+                            p0 = polygon.get(i).v1;
+                            p1 = polygon.get(i).v2;
                             a = p0.x*p1.z - p1.x*p0.z;
                             signedArea += a;
                             centroid.x += (p0.x + p1.x)*a;
@@ -564,9 +565,9 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
                         centroid.z = 0.f;
                         signedArea = 0.f;
 
-                        for (size_t i=0; i < polygons[p].size(); ++i) {
-                            p0 = polygons[p].get(i).v1;
-                            p1 = polygons[p].get(i).v2;
+                        for (size_t i = 0; i < polygon.size(); ++i) {
+                            p0 = polygon.get(i).v1;
+                            p1 = polygon.get(i).v2;
                             a = p0.y*p1.z - p1.y*p0.z;
                             signedArea += a;
                             centroid.y += (p0.y + p1.y)*a;
@@ -653,7 +654,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
 
     if (!inputMesh) {
         LogError("Can only clip a SimpleMesh*");
-        return NULL;
+        return nullptr;
     }
 
     /* ---TODO / bugs
@@ -672,10 +673,10 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
     std::vector<EdgeIndex> outputEdgeList; // output edge list
 
     // Iterate over edges extracted from triangle strip list, and perform clipping against plane
-    for (unsigned int i=0; i<edgeList.size(); ++i) {
+    for (auto& elem : edgeList) {
         //LogInfo("i = "<<i);
-        unsigned int Sind = edgeList.at(i).v1;
-        unsigned int Eind = edgeList.at(i).v2;
+        unsigned int Sind = elem.v1;
+        unsigned int Eind = elem.v2;
         glm::vec3 S = inputList->at(Sind);
         glm::vec3 E = inputList->at(Eind);
         EdgeIndex edge;
@@ -784,8 +785,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
     // End, for each clip plane
     LogInfo("outputList.size() = "<<outputList.size()<<", std::distance = "<<std::distance(outputList.begin(), outputList.end()));
 
-    for (size_t i=0; i<outputIndexList.size(); ++i)
-        LogInfo("Vertex indices: " << outputIndexList.at(i));
+    for (auto& elem : outputIndexList) LogInfo("Vertex indices: " << elem);
 
     for (size_t i=0; i<outputList.size(); ++i)
         LogInfo("Output verts, " << i << ": ("+glm::to_string(outputList.at(i)[0])+", "+glm::to_string(outputList.at(i)[1])+", "+glm::to_string(

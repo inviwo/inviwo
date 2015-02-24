@@ -53,6 +53,8 @@
 
 #include "glformats.h"
 
+namespace inviwo {
+
 IVW_MODULE_OPENGL_API void LogGLError(const char* fileName, const char* functionName, int lineNumber);
 
 #if defined(IVW_DEBUG)
@@ -62,5 +64,7 @@ IVW_MODULE_OPENGL_API void LogGLError(const char* fileName, const char* function
 #define LGL_ERROR
 #define LGL_ERROR_SUPPRESS
 #endif
+
+}
 
 #endif // IVW_INVIWOOPENGL_H

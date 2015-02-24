@@ -51,11 +51,11 @@ namespace inviwo {
 static PyObject* py_stdout(PyObject* /*self*/, PyObject* args);
 class PyStdOutCatcher : public PyMethod {
 public:
-    virtual std::string getName() const { return "ivwPrint"; }
-    virtual std::string getDesc() const {
+    virtual std::string getName() const override { return "ivwPrint"; }
+    virtual std::string getDesc() const override {
         return " Only for internal use. Redirect std output to python editor widget.";
     }
-    virtual PyCFunction getFunc() { return py_stdout; }
+    virtual PyCFunction getFunc() override { return py_stdout; }
 };
 
 static PyObject* py_stdout(PyObject* /*self*/, PyObject* args) {
@@ -78,10 +78,10 @@ static PyObject* py_stdout(PyObject* /*self*/, PyObject* args) {
 
 PyInviwo::PyInviwo()
     : isInit_(false)
-    , inviwoPyModule_(0)
-    , inviwoInternalPyModule_(0)
-    , mainDict_(0)
-    , modulesDict_(0) {
+    , inviwoPyModule_(nullptr)
+    , inviwoInternalPyModule_(nullptr)
+    , mainDict_(nullptr)
+    , modulesDict_(nullptr) {
     init(this);
 
     initPythonCInterface();
@@ -94,8 +94,8 @@ PyInviwo::~PyInviwo() {
 
 void PyInviwo::registerPyModule(PyModule* pyModule) {
     if (Py_IsInitialized()) {
-        struct PyModuleDef moduleDef = {PyModuleDef_HEAD_INIT, pyModule->getModuleName(), NULL, -1,
-                                        pyModule->getPyMethodDefs()};
+        struct PyModuleDef moduleDef = {PyModuleDef_HEAD_INIT, pyModule->getModuleName(), nullptr,
+                                        -1, pyModule->getPyMethodDefs()};
 
         PyObject* obj = PyModule_Create(&moduleDef);
 
@@ -168,9 +168,9 @@ void PyInviwo::importModule(const std::string &moduleName){
     const static std::string __key__ = "__";
     char * key = new char[moduleName.size() + 5];
     sprintf(key,"__%s__", moduleName.c_str());
-    if (PyDict_GetItemString(mainDict_, key) == NULL) {
+    if (PyDict_GetItemString(mainDict_, key) == nullptr) {
         PyObject* pMod = PyImport_ImportModule(moduleName.c_str());
-        if (NULL != pMod){
+        if (nullptr != pMod) {
             PyDict_SetItemString(mainDict_, key, pMod);
             LogInfo("Imported python module: " << moduleName);
         }

@@ -51,8 +51,8 @@ ImageLayoutGL::ImageLayoutGL()
     , resizeContent_("resizeContent", "Resize Content", false)
     , horizontalSplitter_("horizontalSplitter", "Horizontal Splitter", 0.5f, 0.f, 1.f)
     , verticalSplitter_("verticalSplitter", "Vertical Splitter", 0.5f, 0.f, 1.f)
-    , shader_(NULL)
-    , layoutHandler_(NULL)
+    , shader_(nullptr)
+    , layoutHandler_(nullptr)
     , currentLayout_(ImageLayoutTypes::CrossSplit)
     , currentDim_(0u, 0u)
     , resizeEnabled_(false) {
@@ -96,7 +96,7 @@ void ImageLayoutGL::initialize() {
 
 void ImageLayoutGL::deinitialize() {
     delete shader_;
-    shader_ = NULL;
+    shader_ = nullptr;
     Processor::deinitialize();
 }
 

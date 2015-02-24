@@ -65,21 +65,18 @@ void FileObserver::stopFileObservation(std::string fileName) {
 }
 
 void FileObserver::increaseNumObservers(std::string fileName) {
-    for (size_t i=0; i<observedFiles_.size(); i++)
-        if (observedFiles_.at(i).first == fileName)
-            observedFiles_.at(i).second++;
+    for (auto& elem : observedFiles_)
+        if (elem.first == fileName) elem.second++;
 }
 
 void FileObserver::decreaseNumObservers(std::string fileName) {
-    for (size_t i=0; i<observedFiles_.size(); i++)
-        if (observedFiles_.at(i).first == fileName)
-            observedFiles_.at(i).second--;
+    for (auto& elem : observedFiles_)
+        if (elem.first == fileName) elem.second--;
 }
 
 int FileObserver::getNumObservers(std::string fileName) {
-    for (size_t i=0; i<observedFiles_.size(); i++)
-        if (observedFiles_.at(i).first == fileName)
-            return observedFiles_.at(i).second;
+    for (auto& elem : observedFiles_)
+        if (elem.first == fileName) return elem.second;
 
     return 0;
 }
@@ -91,8 +88,7 @@ bool FileObserver::isObserved(std::string fileName) {
 std::vector<std::string> FileObserver::getFiles() {
     std::vector<std::string> files;
 
-    for (size_t i=0; i<observedFiles_.size(); i++)
-        files.push_back(observedFiles_.at(i).first);
+    for (auto& elem : observedFiles_) files.push_back(elem.first);
 
     return files;
 }

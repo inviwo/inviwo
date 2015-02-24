@@ -50,10 +50,9 @@ TransferFunctionEditorView::TransferFunctionEditorView(TransferFunctionProperty*
     , volumeInport_(tfProperty->getVolumeInport())
     , showHistogram_(tfProperty->getShowHistogram())
     , histogramTheadWorking_(false)
-    , workerThread_(NULL)
+    , workerThread_(nullptr)
     , invalidatedHistogram_(true)
     , maskHorizontal_(0.0f, 1.0f) {
-
     setMouseTracking(true);
     setRenderHint(QPainter::Antialiasing, true);
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
@@ -86,7 +85,7 @@ TransferFunctionEditorView::~TransferFunctionEditorView() {
     if (workerThread_) {
         const VolumeRAM* volumeRAM = volumeInport_->getData()->getRepresentation<VolumeRAM>();
         volumeRAM->stopHistogramCalculation();
-        workerThread_ = NULL;
+        workerThread_ = nullptr;
     }
     if (volumeInport_) {
         volumeInport_->onInvalid(this, &TransferFunctionEditorView::onVolumeInportInvalid, false);
@@ -146,7 +145,7 @@ void TransferFunctionEditorView::onVolumeInportInvalid() {
     if (workerThread_) {
         const VolumeRAM* volumeRAM = volumeInport_->getData()->getRepresentation<VolumeRAM>();
         volumeRAM->stopHistogramCalculation();
-        workerThread_ = NULL;
+        workerThread_ = nullptr;
     }
     invalidatedHistogram_ = true;
     this->resetCachedContent();
@@ -159,7 +158,7 @@ void TransferFunctionEditorView::setShowHistogram(int type) {
 }
 
 void TransferFunctionEditorView::histogramThreadFinished() {
-    workerThread_ = NULL;
+    workerThread_ = nullptr;
     histogramTheadWorking_ = false;
     invalidatedHistogram_ = true;
     this->resetCachedContent();
@@ -174,7 +173,7 @@ void TransferFunctionEditorView::updateHistogram() {
     const NormalizedHistogram* normHistogram;
     QRectF sRect = sceneRect();
 
-    while((normHistogram = getNormalizedHistogram(channel)) !=NULL) {
+    while ((normHistogram = getNormalizedHistogram(channel)) != nullptr) {
         ++channel;
         histograms_.push_back(QPolygonF());        
         const std::vector<double>* normHistogramData = normHistogram->getData();
@@ -245,9 +244,9 @@ const NormalizedHistogram* TransferFunctionEditorView::getNormalizedHistogram(in
                 workerThread_->start();
             }
         }
-    } 
+    }
 
-    return NULL;
+    return nullptr;
 }
 
 void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF& rect) {
@@ -273,7 +272,7 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
     // histogram
     if (showHistogram_ > 0) {
         updateHistogram();
-        for (int i = 0; i < static_cast<int>(histograms_.size()); ++i) {
+        for (auto& elem : histograms_) {
             QPen pen;
             pen.setColor(QColor(68, 102, 170, 150));
             pen.setWidthF(2.0f);
@@ -284,8 +283,8 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
             brush.setColor(QColor(68, 102, 170, 100));
             brush.setStyle(Qt::SolidPattern);
             painter->setBrush(brush);
-            
-            painter->drawPolygon(histograms_[i]);
+
+            painter->drawPolygon(elem);
         }
     }
 }
@@ -313,9 +312,9 @@ void TransferFunctionEditorView::onVolumeInportChange() {
         editor->setDataMap(volumeInport_->getData()->dataMap_);
         if (editor) {
             QList<QGraphicsItem*> items = editor->items();
-            for (QList<QGraphicsItem*>::iterator it = items.begin(); it != items.end(); it++) {
+            for (auto& item : items) {
                 TransferFunctionEditorControlPoint* cp =
-                    qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(*it);
+                    qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(item);
                 if (cp) {
                     cp->setDataMap(volumeInport_->getData()->dataMap_);
                 }
@@ -342,8 +341,6 @@ HistogramWorkerQt::HistogramWorkerQt(const VolumeRAM* volumeRAM, std::size_t num
     : volumeRAM_(volumeRAM), numBins_(numBins) {
 }
 
-HistogramWorkerQt::~HistogramWorkerQt() {
-    volumeRAM_ = NULL;
-}
+HistogramWorkerQt::~HistogramWorkerQt() { volumeRAM_ = nullptr; }
 
 }  // namespace inviwo

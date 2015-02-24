@@ -158,9 +158,7 @@ BaseDeserializationErrorHandler* IvwDeserializer::popErrorHandler() {
 }
 
 void IvwDeserializer::handleError(SerializationException& e) {
-    for (std::vector<BaseDeserializationErrorHandler*>::reverse_iterator it =
-         errorHandlers_.rbegin();
-         it != errorHandlers_.rend(); ++it) {
+  for (auto it = errorHandlers_.rbegin(); it != errorHandlers_.rend(); ++it) {
         if ((*it)->getKey() == e.getKey()) {
             (*it)->handleError(e);
             return;

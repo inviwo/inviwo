@@ -36,12 +36,8 @@
 namespace inviwo {
 
 IvfVolumeReader::IvfVolumeReader()
-    : DataReaderType<Volume>()
-    , rawFile_("")
-    , filePos_(0)
-    , littleEndian_(true)
-    , dimensions_(uvec3(0))
-    , format_(NULL) {
+    : DataReaderType<Volume>(), rawFile_(""), filePos_(0), littleEndian_(true),
+      dimensions_(uvec3(0)), format_(nullptr) {
     addExtension(FileExtension("ivf", "Inviwo ivf file format"));
 }
 

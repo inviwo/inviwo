@@ -63,67 +63,66 @@ CompositeProperty::~CompositeProperty() {}
 
 void CompositeProperty::setOwner(PropertyOwner* owner) {
     Property::setOwner(owner);
-    for (size_t i = 0; i < properties_.size(); i++) properties_[i]->setOwner(this);
+    for (auto& elem : properties_) elem->setOwner(this);
 }
 
 UsageMode CompositeProperty::getUsageMode() const {
     UsageMode mode = DEVELOPMENT;
-    for (size_t i = 0; i < properties_.size(); i++) {
-        mode = std::min(mode, properties_[i]->getUsageMode());
+    for (auto& elem : properties_) {
+        mode = std::min(mode, elem->getUsageMode());
     }
     return mode;
 }
 void CompositeProperty::setUsageMode(UsageMode usageMode) {
-    for (size_t i = 0; i < properties_.size(); i++) {
-        properties_[i]->setUsageMode(usageMode);
+    for (auto& elem : properties_) {
+        elem->setUsageMode(usageMode);
     }
     Property::setUsageMode(usageMode);
 }
 
 void CompositeProperty::updateVisibility() {
     Property::updateVisibility();
-    for (size_t i = 0; i < properties_.size(); i++) {
-        properties_[i]->updateVisibility();
+    for (auto& elem : properties_) {
+        elem->updateVisibility();
     }     
 }
 
 bool CompositeProperty::getVisible() {
     bool visible = false;
-    for (size_t i = 0; i < properties_.size(); i++) {
-        visible = visible || properties_[i]->getVisible();
+    for (auto& elem : properties_) {
+        visible = visible || elem->getVisible();
     }
     return visible;
 }
 
 void CompositeProperty::setVisible(bool val) {
-    for (size_t i = 0; i < properties_.size(); i++) {
-        properties_[i]->setVisible(val);
+    for (auto& elem : properties_) {
+        elem->setVisible(val);
     }
     Property::setVisible(val);
 }
 
 bool CompositeProperty::getReadOnly() const {
     bool readOnly = true;
-    for (size_t i = 0; i < properties_.size(); i++) {
-        readOnly = readOnly && properties_[i]->getReadOnly();
+    for (auto& elem : properties_) {
+        readOnly = readOnly && elem->getReadOnly();
     }
     return readOnly;
 }
 
 void CompositeProperty::setReadOnly(const bool& value) {
-    for (size_t i = 0; i < properties_.size(); i++) properties_[i]->setReadOnly(value);
+    for (auto& elem : properties_) elem->setReadOnly(value);
 }
 
 void CompositeProperty::setPropertyModified(bool modified) {
-    for (size_t i = 0; i < properties_.size(); i++)
-        properties_[i]->setPropertyModified(modified);
+    for (auto& elem : properties_) elem->setPropertyModified(modified);
 
     Property::setPropertyModified(modified);
 }
 
 bool CompositeProperty::isPropertyModified() const {
-    for (size_t i = 0; i < properties_.size(); i++)
-        if (properties_[i]->isPropertyModified()) return true;
+    for (auto& elem : properties_)
+        if (elem->isPropertyModified()) return true;
 
     return false;
 }
@@ -159,14 +158,14 @@ void CompositeProperty::invalidate(InvalidationLevel invalidationLevel,
 
 void CompositeProperty::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
-    for (size_t i = 0; i < properties_.size(); i++) {
-        properties_[i]->setCurrentStateAsDefault();
+    for (auto& elem : properties_) {
+        elem->setCurrentStateAsDefault();
     }
 }
 
 void CompositeProperty::resetToDefaultState() {
-    for (size_t i = 0; i < properties_.size(); i++) {
-        properties_[i]->resetToDefaultState();
+    for (auto& elem : properties_) {
+        elem->resetToDefaultState();
     }
     Property::resetToDefaultState();
 }
@@ -198,7 +197,7 @@ Processor* CompositeProperty::getProcessor() {
     if (owner) {
         return owner->getProcessor();
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -207,7 +206,7 @@ const Processor* CompositeProperty::getProcessor() const {
     if (owner) {
         return owner->getProcessor();
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 

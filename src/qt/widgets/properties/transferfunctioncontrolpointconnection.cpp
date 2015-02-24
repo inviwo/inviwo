@@ -37,7 +37,7 @@
 namespace inviwo {
 
 TransferFunctionControlPointConnection::TransferFunctionControlPointConnection()
-    : QGraphicsItem(), left_(NULL), right_(NULL), path_(), shape_(), rect_() {
+    : QGraphicsItem(), left_(nullptr), right_(nullptr), path_(), shape_(), rect_() {
     updateShape();
 }
 
@@ -62,7 +62,7 @@ void TransferFunctionControlPointConnection::paint(QPainter* p,
 }
 
 void TransferFunctionControlPointConnection::updateShape() {
-    if (left_ == NULL && right_ == NULL) {
+    if (left_ == nullptr && right_ == nullptr) {
         path_ = QPainterPath();
     }
     

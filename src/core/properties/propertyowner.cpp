@@ -60,7 +60,8 @@ PropertyOwner::~PropertyOwner() {
 }
 
 void PropertyOwner::addProperty(Property* property) {
-    ivwAssert(getPropertyByIdentifier(property->getIdentifier())==0, "Property already exist");
+    ivwAssert(getPropertyByIdentifier(property->getIdentifier()) == nullptr,
+              "Property already exist");
     notifyObserversWillAddProperty(property, properties_.size());
     properties_.push_back(property);
     property->setOwner(this);
@@ -94,7 +95,7 @@ Property* PropertyOwner::removeProperty(Property& property) {
 }
 
 Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
-    Property* prop = NULL;
+    Property* prop = nullptr;
     if (it != properties_.end()) {
         prop = *it;
         size_t index = std::distance(properties_.begin(), it);
@@ -116,16 +117,15 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
 
 Property* PropertyOwner::getPropertyByIdentifier(const std::string& identifier,
                                                  bool recursiveSearch) const {
-    for (size_t i = 0; i < properties_.size(); i++) {
-        if (properties_[i]->getIdentifier() == identifier) return properties_[i];
+    for (auto& elem : properties_) {
+        if (elem->getIdentifier() == identifier) return elem;
     }
     if (recursiveSearch) {
-        for (size_t i = 0; i < compositeProperties_.size(); i++) {
-            Property* p = compositeProperties_[i]->getPropertyByIdentifier(identifier, true);
+        for (auto p : compositeProperties_) {
             if (p) return p;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path) const {
@@ -136,20 +136,19 @@ Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path)
             CompositeProperty* comp = dynamic_cast<CompositeProperty*>(property);
             if (comp) {
                 property = comp->getPropertyByIdentifier(path[i]);
-                if (!property) return NULL;
+                if (!property) return nullptr;
             } else {
-                return NULL;
+                return nullptr;
             }
             ++i;
         }
         return property;
     }
-    return NULL;
+    return nullptr;
 }
 
 void PropertyOwner::setValid() {
-    for (size_t i=0; i<properties_.size(); i++)
-        properties_[i]->setPropertyModified(false);
+    for (auto& elem : properties_) elem->setPropertyModified(false);
 
     invalidationLevel_ = VALID;
 }
@@ -163,8 +162,7 @@ void PropertyOwner::invalidate(InvalidationLevel invalidationLevel,
 void PropertyOwner::serialize(IvwSerializer& s) const {
     std::map<std::string, Property*> propertyMap;
 
-    for (std::vector<Property*>::const_iterator it = properties_.begin(); it != properties_.end(); ++it)
-        propertyMap[(*it)->getIdentifier()] = *it;
+    for (const auto& elem : properties_) propertyMap[(elem)->getIdentifier()] = elem;
 
     s.serialize("Properties", propertyMap, "Property");
 }
@@ -208,13 +206,11 @@ bool PropertyOwner::findPropsForComposites(TxElement* node) {
 }
 
 void PropertyOwner::setAllPropertiesCurrentStateAsDefault(){
-    for (std::vector<Property*>::iterator it = properties_.begin(); it != properties_.end(); ++it)
-        (*it)->setCurrentStateAsDefault();
+    for (auto& elem : properties_) (elem)->setCurrentStateAsDefault();
 }
 
 void PropertyOwner::resetAllPoperties(){
-    for (std::vector<Property*>::iterator it = properties_.begin(); it != properties_.end(); ++it)
-        (*it)->resetToDefaultState();
+    for (auto& elem : properties_) (elem)->resetToDefaultState();
 }
 
 bool PropertyOwner::property_has_identifier::operator () (const Property* p) {
@@ -235,16 +231,14 @@ std::vector<std::string> PropertyOwner::getPath() const {
 }
 
 void PropertyOwner::invokeInteractionEvent(Event* event) {
-    for (std::vector<EventProperty*>::iterator it = eventProperties_.begin();
-         it != eventProperties_.end(); ++it) {
-        if ((*it)->getEvent()->matching(event)) {
-            (*it)->getAction()->invoke(event);
+    for (auto& elem : eventProperties_) {
+        if ((elem)->getEvent()->matching(event)) {
+            (elem)->getAction()->invoke(event);
             if (event->hasBeenUsed()) return;
         }
     }
-    for (std::vector<CompositeProperty*>::iterator it = compositeProperties_.begin();
-         it != compositeProperties_.end(); ++it) {
-        (*it)->invokeInteractionEvent(event);
+    for (auto& elem : compositeProperties_) {
+        (elem)->invokeInteractionEvent(event);
         if (event->hasBeenUsed()) return;
     }
 }

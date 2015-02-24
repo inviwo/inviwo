@@ -34,11 +34,11 @@
 namespace inviwo {
 
 ProcessorWidget::ProcessorWidget()
-    : ProcessorWidgetObservable(), processor_(NULL), metaData_(NULL) {}
+    : ProcessorWidgetObservable(), processor_(nullptr), metaData_(nullptr) {}
 
 ProcessorWidget::~ProcessorWidget() {
     if (processor_) {
-        processor_->setProcessorWidget(NULL);
+        processor_->setProcessorWidget(nullptr);
     }
 }
 
@@ -47,7 +47,7 @@ void ProcessorWidget::initialize() {
         ProcessorWidgetMetaData::CLASS_IDENTIFIER);
 }
 
-void ProcessorWidget::deinitialize() { metaData_ = NULL; }
+void ProcessorWidget::deinitialize() { metaData_ = nullptr; }
 
 void ProcessorWidget::setVisible(bool visible) {
     metaData_->setVisibile(visible);

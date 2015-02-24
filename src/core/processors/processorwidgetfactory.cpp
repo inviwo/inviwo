@@ -51,7 +51,7 @@ ProcessorWidget* ProcessorWidgetFactory::create(std::string processorClassName) 
     if (it != processorWidgetMap_.end())
         return it->second->create();
     else
-        return NULL;
+        return nullptr;
 }
 
 ProcessorWidget* ProcessorWidgetFactory::create(Processor* processor) const {

@@ -52,7 +52,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, QWidget* pare
     setCacheMode(QGraphicsView::CacheBackground);
 }
 
-NetworkEditorView::~NetworkEditorView() { QGraphicsView::setScene(NULL); }
+NetworkEditorView::~NetworkEditorView() { QGraphicsView::setScene(nullptr); }
 
 void NetworkEditorView::initialize() {
     NetworkEditorObserver::addObservation(networkEditor_);	
@@ -64,7 +64,7 @@ void NetworkEditorView::hideNetwork(bool hide) {
         if (scene()) {
             scrollPos_.x = horizontalScrollBar()->value();
             scrollPos_.y = verticalScrollBar()->value();
-            QGraphicsView::setScene(NULL);
+            QGraphicsView::setScene(nullptr);
         }
     } else {
         if (scene() != networkEditor_) {

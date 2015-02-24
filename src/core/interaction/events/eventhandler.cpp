@@ -36,7 +36,7 @@ EventHandler::EventHandler() : eventListeners_() {}
 EventHandler::~EventHandler() {}
 
 void EventHandler::broadcast(Event* event) {
-    for (size_t i = 0; i < eventListeners_.size(); i++) eventListeners_[i]->invokeEvent(event);
+    for (auto& elem : eventListeners_) elem->invokeEvent(event);
 }
 
 bool EventHandler::addEventListener(EventListener* listener) {

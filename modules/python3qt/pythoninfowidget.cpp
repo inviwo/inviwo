@@ -64,8 +64,8 @@ void PythonInfoWidget::buildWidget() {
     layout_->addWidget(tabWidget_);
     std::vector<PyModule*> modules = PyInviwo::getPtr()->getAllPythonModules();
 
-    for (size_t i = 0; i<modules.size(); ++i) {
-        onModuleRegistered(modules[i]);
+    for (auto& module : modules) {
+        onModuleRegistered(module);
     }
 
     content->setLayout(layout_);

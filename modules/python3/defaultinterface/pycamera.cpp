@@ -42,8 +42,7 @@ namespace inviwo {
 PyObject* py_setCameraFocus(PyObject* /*self*/, PyObject* args) {
     static PySetCameraFocusMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
 
@@ -52,7 +51,7 @@ PyObject* py_setCameraFocus(PyObject* /*self*/, PyObject* args) {
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     CameraProperty* cam = dynamic_cast<CameraProperty*>(theProperty);
@@ -67,7 +66,7 @@ PyObject* py_setCameraFocus(PyObject* /*self*/, PyObject* args) {
             std::string msg = std::string("setCameraFocus() Failed to parse values for camera, needs to be on the format: (posX,posY,posZ) ") +
                               path;
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return 0;
+            return nullptr;
         }
 
         cam->setLookTo(focus);
@@ -75,15 +74,14 @@ PyObject* py_setCameraFocus(PyObject* /*self*/, PyObject* args) {
     } else {
         std::string msg = std::string("setCameraFocus() not a camera property: ") + theProperty->getClassIdentifier();
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 }
 
 PyObject* py_setCameraUp(PyObject* /*self*/, PyObject* args) {
     static PySetCameraUpMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
 
@@ -92,7 +90,7 @@ PyObject* py_setCameraUp(PyObject* /*self*/, PyObject* args) {
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     CameraProperty* cam = dynamic_cast<CameraProperty*>(theProperty);
@@ -106,7 +104,7 @@ PyObject* py_setCameraUp(PyObject* /*self*/, PyObject* args) {
                              )) {
             std::string msg = std::string("setCameraUp() Failed to parse values for camera, needs to be on the format: (dirX,dirY,dirZ) ") + path;
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return 0;
+            return nullptr;
         }
 
         cam->setLookUp(up);
@@ -114,7 +112,7 @@ PyObject* py_setCameraUp(PyObject* /*self*/, PyObject* args) {
     } else {
         std::string msg = std::string("setCameraUp() not a camera property: ") + theProperty->getClassIdentifier();
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 }
 
@@ -123,15 +121,14 @@ PyObject* py_setCameraUp(PyObject* /*self*/, PyObject* args) {
 PyObject* py_setCameraPos(PyObject* /*self*/, PyObject* args) {
     static PySetCameraPosMethod p;
 
-    if (!p.testParams(args))
-        return 0;
+    if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 
     CameraProperty* cam = dynamic_cast<CameraProperty*>(theProperty);
@@ -146,7 +143,7 @@ PyObject* py_setCameraPos(PyObject* /*self*/, PyObject* args) {
             std::string msg = std::string("setPropertyValue() Failed to parse values for camera, needs to be on the format: (posX,posY,posZ) ") +
                               path;
             PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return 0;
+            return nullptr;
         }
 
        vec3 polFrom = vec3(from[0] * std::sin(static_cast<double>(from[1])) * std::cos(static_cast<double>(from[2])),
@@ -160,7 +157,7 @@ PyObject* py_setCameraPos(PyObject* /*self*/, PyObject* args) {
     } else {
         std::string msg = std::string("setCameraPosition() not a camera property: ") + theProperty->getClassIdentifier();
         PyErr_SetString(PyExc_TypeError, msg.c_str());
-        return 0;
+        return nullptr;
     }
 }
 

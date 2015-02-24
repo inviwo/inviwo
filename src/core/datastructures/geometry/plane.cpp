@@ -95,9 +95,7 @@ IntersectionResult Plane::getSegmentIntersection(const vec3& start, const vec3& 
     // Line not in plane 
     vec3 d = stop - start;
     float denom = glm::dot(normal_, d);
-    if (fabs(denom) > 1e-6) {
-        float numerator = glm::dot(point_ - start, normal_);
-
+    if (std::abs(denom) > 1e-6) {
         float tHit = numerator / denom;
 
         if (tHit >= 0.0f && tHit <= 1.0f) {

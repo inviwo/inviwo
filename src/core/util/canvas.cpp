@@ -41,17 +41,16 @@ namespace inviwo {
 
 EventHandler* eventHandler_();
 
-Geometry* Canvas::screenAlignedRect_ = NULL;
-DataWriterType<Layer>* Canvas::generalLayerWriter_ = NULL;
+Geometry* Canvas::screenAlignedRect_ = nullptr;
+DataWriterType<Layer>* Canvas::generalLayerWriter_ = nullptr;
 
 Canvas::Canvas(uvec2 dimensions)
     : initialized_(false)
     , shared_(true)
     , screenDimensions_(dimensions)
-    , propagator_(NULL)
+    , propagator_(nullptr)
     , pickingContainer_(new PickingContainer())
-    , ownerWidget_(NULL) {
-
+    , ownerWidget_(nullptr) {
     if (!screenAlignedRect_) {
         shared_ = false;
         Position2dBuffer* verticesBuffer = new Position2dBuffer();
@@ -93,16 +92,16 @@ Canvas::Canvas(uvec2 dimensions)
 Canvas::~Canvas() {
     if (!shared_) {
         delete screenAlignedRect_;
-        screenAlignedRect_ = NULL;
+        screenAlignedRect_ = nullptr;
 
         delete generalLayerWriter_;
-        generalLayerWriter_ = NULL;
+        generalLayerWriter_ = nullptr;
     }
 
     delete pickingContainer_;
 
     if (this == RenderContext::getPtr()->getDefaultRenderContext()) {
-        RenderContext::getPtr()->setDefaultRenderContext(NULL);
+        RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
 }
 
@@ -111,12 +110,10 @@ void Canvas::initialize() {
         pickingContainer_ = new PickingContainer();
 
     initialized_ = true;
-    propagator_ = NULL;
+    propagator_ = nullptr;
 }
 
-void Canvas::deinitialize() {
-    propagator_ = NULL;
-}
+void Canvas::deinitialize() { propagator_ = nullptr; }
 
 void Canvas::render(const Image* im, LayerType layerType/* = COLOR_LAYER*/) {}
 

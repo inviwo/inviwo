@@ -24,15 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/logcentral.h>
-
-//static const double CLOCKS_PER_MS = CLOCKS_PER_SEC / 1000.0;
-//static const double INV_CLOCKS_PER_MS = 1.0 / CLOCKS_PER_MS; Not used? /Peter
-
 
 namespace inviwo {
 
@@ -58,27 +54,24 @@ void Clock::stop() {
 #endif
 }
 
-float Clock::getElapsedMiliseconds() const {
-    return 1000.f*getElapsedSeconds();
-}
+float Clock::getElapsedMiliseconds() const { return 1000.f * getElapsedSeconds(); }
 
 float Clock::getElapsedSeconds() const {
 #ifdef WIN32
-    return static_cast<float>(stopTime_.QuadPart-startTime_.QuadPart) / ticksPerSecond_.QuadPart;
+    return static_cast<float>(stopTime_.QuadPart - startTime_.QuadPart) / ticksPerSecond_.QuadPart;
 #else
-    return static_cast<float>(stopTime_ - startTime_)/static_cast<float>(CLOCKS_PER_SEC);
+    return static_cast<float>(stopTime_ - startTime_) / static_cast<float>(CLOCKS_PER_SEC);
 #endif
 }
-
-
 
 ScopedClockCPU::~ScopedClockCPU() {
     clock_.stop();
     if (clock_.getElapsedMiliseconds() > logIfAtLeastMilliSec_) {
         std::stringstream message;
         message << logMessage_ << ": " << clock_.getElapsedMiliseconds() << " ms";
-        LogCentral::getPtr()->log(logSource_, inviwo::Info, __FILE__, __FUNCTION__, __LINE__, message.str());
+        LogCentral::getPtr()->log(logSource_, LogLevel::Info, LogAudience::Developer, __FILE__,
+                                  __FUNCTION__, __LINE__, message.str());
     }
 }
 
-}//namespace
+}  // namespace

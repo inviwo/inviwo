@@ -93,7 +93,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
 
     // Read all pvm volumes
     std::vector<Volume*> volumes;
-    for (int i = 0; i < files.size(); i++){
+    for (size_t i = 0; i < files.size(); i++){
         Volume* newVol = PVMVolumeReader::readPVMData(fileDirectory + files[i]);
         if (newVol)
             volumes.push_back(newVol);
@@ -114,7 +114,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     const DataFormatBase* format = volumes[0]->getDataFormat();
     uvec3 mdim = volumes[0]->getDimensions();
     bool returnFirst = false;
-    for (int i = 1; i < volumes.size(); i++){
+    for (size_t i = 1; i < volumes.size(); i++){
         if (format != volumes[i]->getDataFormat()) {
             if ((format == DataUINT12::get() && volumes[i]->getDataFormat() == DataUINT16::get())
                 || (format == DataUINT16::get() && volumes[i]->getDataFormat() == DataUINT12::get())) {
@@ -154,7 +154,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     StringMetaData* metaData = volume->getMetaData<StringMetaData>("description");
     if (metaData){
         std::string descStr = metaData->get();
-        for (int i = 1; i < volumes.size(); i++){
+        for (size_t i = 1; i < volumes.size(); i++){
             metaData = volumes[0]->getMetaData<StringMetaData>("description");
             if (metaData) descStr = descStr + ", " + metaData->get();
         }
@@ -166,7 +166,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     unsigned char* dataPtr = static_cast<unsigned char*>(mvolRAM->getData());
 
     std::vector<const unsigned char*> volumesDataPtr;
-    for (int i = 0; i < volumes.size(); i++){
+    for (size_t i = 0; i < volumes.size(); i++){
         volumesDataPtr.push_back(static_cast<const unsigned char*>(volumes[i]->getRepresentation<VolumeRAM>()->getData()));
     }
 
@@ -184,7 +184,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     }
 
     // Delete the single channel volumes
-    for (int i = 0; i < volumes.size(); i++){
+    for (size_t i = 0; i < volumes.size(); i++){
         delete volumes[i];
     }
 
@@ -218,7 +218,7 @@ void MPVMVolumeReader::printMetaInfo(MetaDataOwner* metaDataOwner, std::string k
     if (metaData){
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
-        key[0] = toupper(key[0]);
+        key[0] = static_cast<char>(toupper(key[0]));
         LogInfo(key << ": " << metaStr);
     }
 }
