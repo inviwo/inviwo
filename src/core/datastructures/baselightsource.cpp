@@ -69,7 +69,7 @@ uvec2 getSamplesPerLight(uvec2 nSamples, int nLightSources) {
 mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
     vec3 A = vec3(0,0,1);
     vec3 B = dir;//B(0,1,0);
-    float angle = acos(glm::dot(A,B));
+    float angle = std::acos(glm::dot(A,B));
     if (glm::all(glm::equal(A, B))) {
         A = vec3(0,1,0);
     }

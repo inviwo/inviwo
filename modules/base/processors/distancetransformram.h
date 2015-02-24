@@ -271,7 +271,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
             // update data to regular distances by applying the square root
 #pragma omp parallel for
             for (glm::i64 i=0; i<static_cast<glm::i64>(volSize); ++i) {
-                data[i] = static_cast<T>(sqrt(static_cast<float>(data[i])) * scale);
+                data[i] = static_cast<T>(std::sqrt(static_cast<float>(data[i])) * scale);
             }
         }
         clock.stop();

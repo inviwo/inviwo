@@ -146,7 +146,7 @@ vec3 BasicMesh::orthvec(const vec3& vec){
     vec3 u(1.0f, 0.0f, 0.0f);
     vec3 n = glm::normalize(vec);
     float p = glm::dot(u, n);
-    if (abs(p) != 1.0f) {
+    if (std::abs(p) != 1.0f) {
         return glm::normalize(u - p*n);
     }else{
         return vec3(0.0f,1.0f,0.0f);
@@ -179,10 +179,10 @@ BasicMesh* BasicMesh::disk(const vec3& center,
     vec3 to = vec3(0.5f,0.0f,0.0f);
     vec3 p;
     vec3 t;
-    float angle = 2.0f*M_PI / segments;
+    double angle = 2.0*M_PI / segments;
     for (size_t i = 0; i < segments; ++i) {
-        p = center + radius * glm::rotate(orth, static_cast<float>(i) * angle, normal);
-        t = tc + glm::rotate(to,static_cast<float>(i) * angle, tn);
+        p = center + radius * glm::rotate(orth, static_cast<float>(i * angle), normal);
+        t = tc + glm::rotate(to,static_cast<float>(i * angle), tn);
         mesh->addVertex(p, normal, t, color);
         inds->add(0);
         inds->add(static_cast<const unsigned int>(1+i));
@@ -205,23 +205,21 @@ BasicMesh* BasicMesh::cone(const vec3& start,
     IndexBufferRAM* inds = mesh->addIndexBuffer(GeometryEnums::TRIANGLES, GeometryEnums::NONE);
     vec3 normal = glm::normalize(stop-start);
     vec3 orth = orthvec(normal);
-    float angle = 2.0f*M_PI / segments;
-    float j;
+    double angle = 2.0*M_PI / segments;
     for (size_t i = 0; i < segments; ++i) {
-        j = static_cast<float>(i);
         mesh->addVertex(stop, 
-                        calcnormal(glm::rotate(orth, (j + 0.5f) * angle, normal), stop - start), 
+                        calcnormal(glm::rotate(orth, static_cast<float>((i + 0.5) * angle), normal), stop - start),
                         tc, 
                         color);
 
-        mesh->addVertex(start + radius*glm::rotate(orth, j * angle, normal),
-                        calcnormal(glm::rotate(orth, j * angle, normal), stop - start),
-                        tc + to*glm::rotate(orth, j * angle, tn),
+        mesh->addVertex(start + radius*glm::rotate(orth, static_cast<float>(i * angle), normal),
+                        calcnormal(glm::rotate(orth, static_cast<float>(i * angle), normal), stop - start),
+                        tc + to*glm::rotate(orth, static_cast<float>(i * angle), tn),
                         color);
 
-        mesh->addVertex(start + radius*glm::rotate(orth, (j+1.0f) * angle, normal),
-                        calcnormal(glm::rotate(orth, (j+1.0f) * angle, normal), stop - start),
-                        tc + to*glm::rotate(orth, (j+1) * angle, tn),
+        mesh->addVertex(start + radius*glm::rotate(orth, static_cast<float>((i+1.0) * angle), normal),
+                        calcnormal(glm::rotate(orth, static_cast<float>((i+1.0) * angle), normal), stop - start),
+                        tc + to*glm::rotate(orth, static_cast<float>((i+1.0) * angle), tn),
                         color);
 
         inds->add(static_cast<const unsigned int>(i * 3 + 0));
@@ -245,12 +243,12 @@ BasicMesh* BasicMesh::cylinder(const vec3& start,
     vec3 normal = glm::normalize(stop-start);
     vec3 orth = orthvec(normal);
     vec3 o;                                   
-    float angle = 2.0f*M_PI / segments;
+    double angle = 2.0*M_PI / segments;
     float j;
     
     for (size_t i = 0; i < segments; ++i) {
         j = static_cast<float>(i);
-        o = glm::rotate(orth, j * angle, normal);
+        o = glm::rotate(orth, static_cast<float>(i * angle), normal);
         mesh->addVertex(start + radius*o, o, vec3(j/segments,0.0f,0.0f), color);
         mesh->addVertex(stop + radius*o, o, vec3(j/segments,1.0f,0.0f), color);
 
@@ -573,7 +571,7 @@ BasicMesh* BasicMesh::coordindicator(const vec3& center,
                               arrowRadius,
                               segments);
 
-    BasicMesh* sphere = colorsphere(center, 0.7*size);
+    BasicMesh* sphere = colorsphere(center, 0.7f*size);
 
     mesh->append(sphere);
     mesh->append(xarrow);

@@ -75,7 +75,7 @@ PickingObject* PickingManager::generatePickingObject(size_t id) {
     float idF = static_cast<float>(id);
     // Hue /Saturation / Value
     // Hue is based on Golden Ratio for unique and distinct color differences.
-    float valueDiff = 0.05f * floor(idF / 100.f);
+    float valueDiff = 0.05f * std::floor(idF / 100.f);
 
     if (valueDiff > 0.7f) {
         LogError("Maximum number of picking colors reached at ID : " << id);
@@ -95,7 +95,7 @@ void PickingManager::performUniqueColorGenerationTest(int iterations) {
 
     for (int i = 0; i < iterations; i++) {
         float idF = static_cast<float>(i);
-        float valueDiff = 0.05f * floor(idF / 100.f);
+        float valueDiff = 0.05f * std::floor(idF / 100.f);
 
         if (valueDiff > 0.85f) {
             LogError("Maximum number of picking colors reached at ID : " << i);

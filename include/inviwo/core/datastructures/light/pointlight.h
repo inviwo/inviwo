@@ -42,7 +42,7 @@ public:
     virtual ~PointLight() {};
     virtual PointLight* clone() const { return new PointLight(*this); }
 
-    virtual float getArea() const { return 4.f*M_PI*size_.x*size_.y; }
+    virtual float getArea() const { return 4.f*static_cast<float>(M_PI)*size_.x*size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
