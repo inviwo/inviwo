@@ -31,7 +31,7 @@
 
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
-#include <modules/opengl/rendering/meshrenderer.h>
+#include <modules/opengl/rendering/meshdrawer.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
 
@@ -93,7 +93,7 @@ void GeometryPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
 
 void GeometryPicking::process() {
     utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
-    MeshRenderer renderer(static_cast<const Mesh*>(geometryInport_.getData()));
+    MeshDrawer drawer(static_cast<const Mesh*>(geometryInport_.getData()));
     shader_->activate();
     shader_->setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
 
@@ -108,7 +108,7 @@ void GeometryPicking::process() {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glDepthFunc(GL_ALWAYS);
-    renderer.render();
+    drawer.draw();
     glDepthFunc(GL_LESS);
     glDisable(GL_CULL_FACE);
 

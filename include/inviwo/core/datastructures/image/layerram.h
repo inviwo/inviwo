@@ -39,7 +39,7 @@ namespace inviwo {
 class IVW_CORE_API LayerRAM : public LayerRepresentation {
 
 public:
-    LayerRAM(uvec2 dimensions= uvec2(256,256), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataVec4UINT8::get());
+    LayerRAM(uvec2 dimensions = uvec2(32,32), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataVec4UINT8::get());
     LayerRAM(const LayerRAM& rhs);
     LayerRAM& operator=(const LayerRAM& that);
     LayerRAM* clone() const = 0;

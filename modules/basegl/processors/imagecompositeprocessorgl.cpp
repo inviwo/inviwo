@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "imagecompositeprocessorgl.h"
+#include <modules/opengl/image/imagegl.h>
 
 namespace inviwo {
 
@@ -39,17 +40,18 @@ ProcessorCategory(ImageCompositeProcessorGL, "Image Operation");
 ProcessorCodeState(ImageCompositeProcessorGL, CODE_STATE_EXPERIMENTAL);
 
 ImageCompositeProcessorGL::ImageCompositeProcessorGL()
-	: CompositeProcessorGL()
+    : CompositeProcessorGL()
     , imageInport1_("imageInport1")
     , imageInport2_("imageInport2")
     , outport_("outport") {
-	
+    
     addPort(imageInport1_);
     addPort(imageInport2_);
     addPort(outport_);
 }
-	
+    
 void ImageCompositeProcessorGL::process() {
+    ImageGL* outImageGL = outport_.getData()->getEditableRepresentation<ImageGL>();
     imageInport1_.passOnDataToOutport(&outport_);
     compositePortsToOutport(outport_, COLOR_DEPTH, imageInport2_);
 }

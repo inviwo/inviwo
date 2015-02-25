@@ -31,8 +31,8 @@
 #include <modules/opengl/geometry/geometrygl.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/trackball.h>
-#include <inviwo/core/rendering/geometryrendererfactory.h>
-#include <modules/opengl/rendering/meshrenderer.h>
+#include <inviwo/core/rendering/geometrydrawerfactory.h>
+#include <modules/opengl/rendering/meshdrawer.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
@@ -49,8 +49,6 @@ ProcessorCodeState(GeometryRenderProcessorGL, CODE_STATE_STABLE);
 GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     : Processor()
     , inport_("geometry.inport")
-    , colors_("colors.inport", true)
-    , normals_("normalmap.inport", true)
     , outport_("image.outport")
     , camera_("camera", "Camera")
     , centerViewOnGeometry_("centerView", "Center view on geometry")
@@ -65,10 +63,6 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
 {
     
     addPort(inport_);
-    addPort(colors_);
-    colors_.onChange(this, &GeometryRenderProcessorGL::initializeResources);
-    addPort(normals_);
-    normals_.onChange(this, &GeometryRenderProcessorGL::initializeResources);
     addPort(outport_);
     addProperty(camera_);
     centerViewOnGeometry_.onChange(this, &GeometryRenderProcessorGL::centerViewOnGeometry);
@@ -122,8 +116,8 @@ void GeometryRenderProcessorGL::initialize() {
 }
 
 void GeometryRenderProcessorGL::deinitialize() {
-    // Delete all renderers
-    for (auto& elem : renderers_) {
+    // Delete all drawers
+    for (auto& elem : drawers_) {
         delete elem;
     }
     if (shader_) 
@@ -135,21 +129,6 @@ void GeometryRenderProcessorGL::deinitialize() {
 void GeometryRenderProcessorGL::initializeResources() {
     // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
-    if (colors_.isReady()) {
-        // Set define to 1 (true) 
-        shader_->getVertexShaderObject()->addShaderDefine("USE_COLOR_TEXTURE", "1");
-        shader_->getFragmentShaderObject()->addShaderDefine("USE_COLOR_TEXTURE", "1");
-    } else {
-        shader_->getVertexShaderObject()->removeShaderDefine("USE_COLOR_TEXTURE");
-        shader_->getFragmentShaderObject()->removeShaderDefine("USE_COLOR_TEXTURE");
-    }
-    if (normals_.isReady()) {
-        shader_->getVertexShaderObject()->addShaderDefine("USE_NORMAL_TEXTURE", "1");
-        shader_->getFragmentShaderObject()->addShaderDefine("USE_NORMAL_TEXTURE", "1");
-    } else {
-        shader_->getVertexShaderObject()->removeShaderDefine("USE_NORMAL_TEXTURE");
-        shader_->getFragmentShaderObject()->removeShaderDefine("USE_NORMAL_TEXTURE");
-    }
     shader_->build();
 }
 
@@ -207,22 +186,9 @@ void GeometryRenderProcessorGL::process() {
     else if (polygonMode_.get()==GL_POINT)
         glPointSize((GLfloat)renderPointSize_.get());
 
-    // bind input textures
-    TextureUnit colorTexUnit, normalTexUnit;
-    
-    
-    if (colors_.isReady()) {
-        utilgl::bindColorTexture(colors_, colorTexUnit.getEnum());
-        shader_->setUniform("colorTex_", colorTexUnit.getUnitNumber());
-    } 
-    if (normals_.isReady()) {
-        utilgl::bindColorTexture(normals_, normalTexUnit.getEnum());
-        shader_->setUniform("normalTex_", normalTexUnit.getUnitNumber());
-    }
-
-    for (std::vector<GeometryRenderer*>::const_iterator it = renderers_.begin(), endIt = renderers_.end(); it != endIt; ++it) {       
+    for (std::vector<GeometryDrawer*>::const_iterator it = drawers_.begin(), endIt = drawers_.end(); it != endIt; ++it) {       
         utilgl::setShaderUniforms(shader_, *(*it)->getGeometry(), "geometry_");                
-        (*it)->render();
+        (*it)->draw();
     }
 
     if (polygonMode_.get()==GL_LINE) {
@@ -300,16 +266,16 @@ void GeometryRenderProcessorGL::updateRenderers() {
     std::vector<const Geometry*> geometries = inport_.getData();
 
     if (geometries.empty()) {
-        while (!renderers_.empty()) {
-            delete renderers_.back();
-            renderers_.pop_back();
+        while (!drawers_.empty()) {
+            delete drawers_.back();
+            drawers_.pop_back();
         }
     }
 
-    if (!renderers_.empty()) {
-        std::vector<GeometryRenderer*>::iterator it = renderers_.begin();
+    if (!drawers_.empty()) {
+        std::vector<GeometryDrawer*>::iterator it = drawers_.begin();
 
-        while (it!=renderers_.end()) {
+        while (it!=drawers_.end()) {
             const Geometry* geo = (*it)->getGeometry();
             bool geometryRemoved = true;
 
@@ -322,8 +288,8 @@ void GeometryRenderProcessorGL::updateRenderers() {
             }
 
             if (geometryRemoved) {
-                GeometryRenderer* tmp = (*it);
-                it = renderers_.erase(it); //geometry removed, so we delete the old renderer
+                GeometryDrawer* tmp = (*it);
+                it = drawers_.erase(it); //geometry removed, so we delete the old renderer
                 delete tmp;
             } else {
                 ++it;
@@ -332,10 +298,10 @@ void GeometryRenderProcessorGL::updateRenderers() {
     }
 
     for (size_t i = 0; i < geometries.size() ; ++i) { //create new renderer for new geometries
-        GeometryRenderer* renderer = GeometryRendererFactory::getPtr()->create(geometries[i]);
+        GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geometries[i]);
 
         if (renderer) {
-            renderers_.push_back(renderer);
+            drawers_.push_back(renderer);
         }
     }
 }

@@ -168,14 +168,20 @@ void FreeImageUtils::saveLayer(const char* filename, const Layer* inputLayer) {
     if (imageFormat != FIF_UNKNOWN && inputLayer != NULL) {
         const LayerRAM* imageRam = inputLayer->getRepresentation<LayerRAM>();
         assert(imageRam != NULL);
-        FIBITMAP* bitmap = createBitmapFromData(imageRam);
+        FIBITMAP* bitmap = createBitmapFromData(imageRam, false);
         BOOL saved = 0;
 
         if (imageFormat == FIF_JPEG) {
             FIBITMAP* bitmapJPG = FreeImage_ConvertTo24Bits(bitmap);
             saved = FreeImage_Save(imageFormat, bitmapJPG, filename, 100);
             FreeImage_Unload(bitmapJPG);
-        } else
+        }
+        else if (imageFormat == FIF_PNG) {
+            FIBITMAP* bitmapPNG = FreeImage_ConvertTo32Bits(bitmap);
+            saved = FreeImage_Save(imageFormat, bitmapPNG, filename);
+            FreeImage_Unload(bitmapPNG);
+        }
+        else
             saved = FreeImage_Save(imageFormat, bitmap, filename, static_cast<int>(imageRam->getDataFormat()->getBitsAllocated()));
 
         if (saved == 0) {
@@ -367,17 +373,15 @@ FIBITMAP* FreeImageUtils::allocateBitmap(FREE_IMAGE_TYPE type, uvec2 dim, size_t
 
 template<typename T>
 FIBITMAP* FreeImageUtils::createBitmapFromData(const T* data, FREE_IMAGE_TYPE type, uvec2 dim, size_t bitsPerPixel, int channels,
-                                        const DataFormatBase* format) {
+        const DataFormatBase* format, bool noScaling) {
     FIBITMAP* dib = allocateBitmap(type, dim, bitsPerPixel, channels);
     if(!dib)
         return NULL;
     unsigned int bytespp = FreeImage_GetLine(dib) / FreeImage_GetWidth(dib);
     T* bits = (T*)FreeImage_GetBits(dib);
-
-    // FIXME: I commented this out (Martin, issue #650)
-    /*
+  
     //Scale normalized float value to from 0 - 1 to 0  - 255
-    if (type == FIT_FLOAT) {
+    if (!noScaling && type == FIT_FLOAT) {
         T value;
         format->doubleToValue(255.0, &value);
 
@@ -388,7 +392,6 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const T* data, FREE_IMAGE_TYPE ty
         return dibConvert;
     }
     else
-    */
         memcpy(bits, data, dim.x*dim.y*bytespp);
 
     return dib;
@@ -396,13 +399,13 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const T* data, FREE_IMAGE_TYPE ty
 
 template<typename T>
 FIBITMAP* FreeImageUtils::handleBitmapCreations(const T* data, FREE_IMAGE_TYPE type, uvec2 dim, size_t bitsPerPixel, int channels,
-        const DataFormatBase* format) {
-    FIBITMAP* bitmap = createBitmapFromData<T>(data, type, dim, bitsPerPixel, channels, format);
+         const DataFormatBase* format, bool noScaling) {
+    FIBITMAP* bitmap = createBitmapFromData<T>(data, type, dim, bitsPerPixel, channels, format, noScaling);
     switchChannels(bitmap, dim, channels);
     return bitmap;
 }
 
-FIBITMAP* FreeImageUtils::createBitmapFromData(const LayerRAM* inputLayer) {
+FIBITMAP* FreeImageUtils::createBitmapFromData(const LayerRAM* inputLayer, bool noScaling) {
     initLoader();
     FREE_IMAGE_TYPE formatType = getFreeImageFormatFromDataFormat(inputLayer->getDataFormatId());
 
@@ -411,7 +414,7 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const LayerRAM* inputLayer) {
     case inviwo::DataFormatEnums::NOT_SPECIALIZED:
             LogErrorCustom("createBitmapFromData", "Invalid format");
             return NULL;
-#define DataFormatIdMacro(i) case inviwo::DataFormatEnums::i: return handleBitmapCreations<Data##i::type>(static_cast<const Data##i::type*>(inputLayer->getData()), formatType, inputLayer->getDimensions(), Data##i::bitsAllocated(), Data##i::components(), inputLayer->getDataFormat());
+#define DataFormatIdMacro(i) case inviwo::DataFormatEnums::i: return handleBitmapCreations<Data##i::type>(static_cast<const Data##i::type*>(inputLayer->getData()), formatType, inputLayer->getDimensions(), Data##i::bitsAllocated(), Data##i::components(), inputLayer->getDataFormat(), noScaling);
 #include <inviwo/core/util/formatsdefinefunc.h>
 
         default:
@@ -526,7 +529,7 @@ std::vector<unsigned char>* FreeImageUtils::saveLayerToBuffer(const char* type, 
     if (imageFormat != FIF_UNKNOWN && inputLayer != NULL) {
         const LayerRAM* imageRam = inputLayer->getRepresentation<LayerRAM>();
         assert(imageRam != NULL);
-        FIBITMAP* bitmap = createBitmapFromData(imageRam);
+        FIBITMAP* bitmap = createBitmapFromData(imageRam, false);
         BOOL saved = 0;
 
         FIMEMORY* mem = FreeImage_OpenMemory();

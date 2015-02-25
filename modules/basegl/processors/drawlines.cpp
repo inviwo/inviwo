@@ -58,7 +58,7 @@ DrawLines::DrawLines()
           new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
           new Action(this, &DrawLines::eventEnableDraw))
     , lines_(nullptr)
-    , lineRenderer_(nullptr)
+    , lineDrawer_(nullptr)
     , lineShader_(nullptr) {
     addPort(inport_);
     addPort(outport_);
@@ -90,23 +90,21 @@ void DrawLines::initialize() {
     lineShader_ = new Shader("img_color.frag");
     lines_ = new Mesh(GeometryEnums::LINES, GeometryEnums::STRIP);
     lines_->addAttribute(new Position2dBuffer());
-    lineRenderer_ = new MeshRenderer(lines_);
+    lineDrawer_ = new MeshDrawer(lines_);
 }
 
 void DrawLines::deinitialize() {
     CompositeProcessorGL::deinitialize();
     delete lineShader_;
     lineShader_ = nullptr;
-    delete lineRenderer_;
-    lineRenderer_ = nullptr;
+    delete lineDrawer_;
+    lineDrawer_ = nullptr;
     delete lines_;
     lines_ = nullptr;
 }
 
 void DrawLines::process() {
-    inport_.passOnDataToOutport(&outport_);
-
-    utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
+    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
     bool reEnableLineSmooth = false;
     if (glIsEnabled(GL_LINE_SMOOTH)) {
         glDisable(GL_LINE_SMOOTH);
@@ -115,7 +113,7 @@ void DrawLines::process() {
     glLineWidth(static_cast<GLfloat>(lineSize_.get()));
     lineShader_->activate();
     lineShader_->setUniform("color_", lineColor_.get());
-    lineRenderer_->render();
+    lineDrawer_->draw();
     lineShader_->deactivate();
     glLineWidth(1.f);
     if (reEnableLineSmooth)

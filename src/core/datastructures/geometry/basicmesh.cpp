@@ -75,10 +75,10 @@ void BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
         normal);
 }
 
-IndexBufferRAM* BasicMesh::addIndexBuffer(GeometryEnums::RenderType rt,
+IndexBufferRAM* BasicMesh::addIndexBuffer(GeometryEnums::DrawType dt,
                                           GeometryEnums::ConnectivityType ct) {
     IndexBuffer* indices_ = new IndexBuffer();
-    addIndicies(Mesh::AttributesInfo(rt, ct), indices_);
+    addIndicies(Mesh::AttributesInfo(dt, ct), indices_);
     return indices_->getEditableRepresentation<IndexBufferRAM>();
 }
 
@@ -117,7 +117,7 @@ void BasicMesh::append(const BasicMesh* mesh) {
         ->append(norm->getDataContainer());
 
     for (auto buffer : mesh->indexAttributes_) {
-        IndexBufferRAM* ind = addIndexBuffer(buffer.first.rt, buffer.first.ct);
+        IndexBufferRAM* ind = addIndexBuffer(buffer.first.dt, buffer.first.ct);
 
         const std::vector<unsigned int>* newinds =
             buffer.second->getRepresentation<IndexBufferRAM>()->getDataContainer();

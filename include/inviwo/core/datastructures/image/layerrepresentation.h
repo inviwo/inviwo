@@ -43,7 +43,7 @@ class IVW_CORE_API LayerRepresentation : public DataRepresentation {
     friend class Layer;
 
 public:
-    LayerRepresentation(uvec2 dimensions = uvec2(256,256), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataVec4UINT8::get());
+    LayerRepresentation(uvec2 dimensions = uvec2(32,32), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataVec4UINT8::get());
     LayerRepresentation(const LayerRepresentation& rhs);
     LayerRepresentation& operator=(const LayerRepresentation& that);
     virtual LayerRepresentation* clone() const = 0;

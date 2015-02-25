@@ -196,8 +196,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/geometryrenderer.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/geometryrendererfactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/geometrydrawer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/geometrydrawerfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanagerobserver.h
@@ -236,6 +236,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/systemsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singleton.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stacktrace.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
@@ -394,12 +395,12 @@ set(SOURCE_FILES
     properties/stringproperty.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
-    rendering/geometryrendererfactory.cpp
+    rendering/geometrydrawerfactory.cpp
     resources/resourcemanager.cpp
     util/assertion.cpp
     util/canvas.cpp
     util/clock.cpp
-	util/colorconversion.cpp
+    util/colorconversion.cpp
     util/commandlineparser.cpp
     util/dialogfactory.cpp
     util/dialogfactoryobject.cpp
@@ -420,6 +421,7 @@ set(SOURCE_FILES
     util/settings/systemsettings.cpp    
     util/singleton.cpp
     util/stacktrace.cpp
+    util/stdextensions.cpp
     util/stringconversion.cpp
     util/systemcapabilities.cpp
     util/timer.cpp
@@ -449,7 +451,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/image-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/stacktrace-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/metadata-test.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/unittests/network-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/unittests/network-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/serializer-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})

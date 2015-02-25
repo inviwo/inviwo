@@ -100,7 +100,7 @@ public:
     /**
     * Create bitmap from image.
     */
-    static FIBITMAP* createBitmapFromData(const LayerRAM* inputImage);
+    static FIBITMAP* createBitmapFromData(const LayerRAM* inputImage, bool noScaling = true);
 
     /**
     * Copy bitmap to layer
@@ -130,11 +130,11 @@ private:
 
     template<typename T>
     static FIBITMAP* handleBitmapCreations(const T* data, FREE_IMAGE_TYPE type, uvec2 dim, size_t bitsPerPixel, int channels,
-                                           const DataFormatBase* format);
+                                          const DataFormatBase* format, bool noScaling = true);
 
     template<typename T>
     static FIBITMAP* createBitmapFromData(const T* data, FREE_IMAGE_TYPE type, uvec2 dim, size_t bitsPerPixel, int channels,
-                                          const DataFormatBase* format);
+                                          const DataFormatBase* format, bool noScaling = true);
 
     /**
     * Switch red and blue channels in the bitmap.

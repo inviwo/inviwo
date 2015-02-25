@@ -33,7 +33,7 @@ namespace inviwo {
 
 Mesh::Mesh() : Geometry(), defaultAttributeInfo_(AttributesInfo()) {}
 
-Mesh::Mesh(GeometryEnums::RenderType rt, GeometryEnums::ConnectivityType ct) : Geometry(), defaultAttributeInfo_(AttributesInfo(rt, ct)) {}
+Mesh::Mesh(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct) : Geometry(), defaultAttributeInfo_(AttributesInfo(dt, ct)) {}
 
 Mesh::Mesh(const Mesh& rhs) : Geometry(rhs) {
     std::vector<bool>::const_iterator itOwnership = rhs.attributesOwnership_.begin();
@@ -113,7 +113,7 @@ std::string Mesh::getDataInfo() const{
         << "<tr><td style='color:#bbb;padding-right:8px;'>Type</td><td><nobr>Mesh</nobr></td></tr>\n"
         << "<tr><td style='color:#bbb;padding-right:8px;'>Data</td><td><nobr>";
 
-    switch (getDefaultAttributesInfo().rt) {
+    switch (getDefaultAttributesInfo().dt) {
         case GeometryEnums::POINTS:
             ss << "Points";
             break;

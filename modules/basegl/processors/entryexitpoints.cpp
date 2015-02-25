@@ -29,7 +29,7 @@
 
 #include "entryexitpoints.h"
 #include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/rendering/geometryrendererfactory.h>
+#include <inviwo/core/rendering/geometrydrawerfactory.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/clockgl.h>
@@ -55,7 +55,7 @@ EntryExitPoints::EntryExitPoints()
     , genericShader_(nullptr)
     , capNearClippingPrg_(nullptr)
     , tmpEntryPoints_(nullptr)
-    , renderer_(nullptr) {
+    , drawer_(nullptr) {
     addPort(geometryPort_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -81,8 +81,8 @@ void EntryExitPoints::deinitialize() {
     genericShader_ = nullptr;
     delete capNearClippingPrg_;
     capNearClippingPrg_ = nullptr;
-    delete renderer_;
-    renderer_ = nullptr;
+    delete drawer_;
+    drawer_ = nullptr;
     Processor::deinitialize();
 }
 
@@ -90,9 +90,9 @@ void EntryExitPoints::process() {
     const Geometry* geom = geometryPort_.getData();
 
     // Check if no renderer exist or if geometry changed
-    if (!renderer_) onGeometryChange();
+    if (!drawer_) onGeometryChange();
 
-    if (!renderer_) return;
+    if (!drawer_) return;
 
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_ALWAYS);
@@ -105,7 +105,7 @@ void EntryExitPoints::process() {
     mat4 modelMatrix = geom->getCoordinateTransformer(&camera_).getDataToClipMatrix();
     genericShader_->setUniform("dataToClip_", modelMatrix);
 
-    renderer_->render();
+    drawer_->draw();
     utilgl::deactivateCurrentTarget();
     // generate entry points
     ImageGL* tmpEntryPointsGL = nullptr;
@@ -127,7 +127,7 @@ void EntryExitPoints::process() {
     }
 
     glCullFace(GL_BACK);
-    renderer_->render();
+    drawer_->draw();
     genericShader_->deactivate();
     utilgl::deactivateCurrentTarget();
 
@@ -162,10 +162,10 @@ void EntryExitPoints::process() {
 }
 
 void EntryExitPoints::onGeometryChange() {
-    delete renderer_;
-    renderer_ = nullptr;
+    delete drawer_;
+    drawer_ = nullptr;
     if (geometryPort_.hasData())
-        renderer_ = GeometryRendererFactory::getPtr()->create(geometryPort_.getData());
+        drawer_ = GeometryDrawerFactory::getPtr()->create(geometryPort_.getData());
 }
 
 }  // namespace

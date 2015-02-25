@@ -39,7 +39,7 @@
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
-#include <inviwo/core/rendering/geometryrendererfactory.h>
+#include <inviwo/core/rendering/geometrydrawerfactory.h>
 #include <inviwo/core/util/dialogfactory.h>
 
 #include <pathsexternalmodules.h>
@@ -119,9 +119,9 @@ InviwoModule::~InviwoModule() {
 
     resources_.clear();
 
-    for (auto& elem : renderers_) delete elem;
+    for (auto& elem : drawers_) delete elem;
 
-    renderers_.clear();
+    drawers_.clear();
 }
 
 std::string InviwoModule::getIdentifier() const { return identifier_; }
@@ -193,7 +193,7 @@ const std::vector<PropertyWidgetFactoryObject*>& InviwoModule::getPropertyWidget
 const std::vector<RepresentationConverter*>& InviwoModule::getRepresentationConverters() const {
     return representationConverters_;
 }
-const std::vector<GeometryRenderer*>& InviwoModule::getRenderers() const { return renderers_; }
+const std::vector<GeometryDrawer*>& InviwoModule::getDrawers() const { return drawers_; }
 const std::vector<Resource*>& InviwoModule::getResources() const { return resources_; }
 const std::vector<Settings*>& InviwoModule::getSettings() const { return moduleSettings_; }
 
@@ -244,9 +244,9 @@ void InviwoModule::registerPropertyWidgetObject(PropertyWidgetFactoryObject* pro
     propertyWidgets_.push_back(propertyWidget);
     PropertyWidgetFactory::getPtr()->registerObject(propertyWidget);
 }
-void InviwoModule::registerRenderer(GeometryRenderer* renderer) {
-    renderers_.push_back(renderer);
-    GeometryRendererFactory::getPtr()->registerObject(renderer);
+void InviwoModule::registerDrawer(GeometryDrawer* drawer) {
+    drawers_.push_back(drawer);
+    GeometryDrawerFactory::getPtr()->registerObject(drawer);
 }
 void InviwoModule::registerRepresentationConverter(
     RepresentationConverter* representationConverter) {

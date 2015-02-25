@@ -36,6 +36,7 @@ __constant float REF_SAMPLING_INTERVAL = 150.f;
 #define ERT_THRESHOLD 1.0
 
 __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters* volumeParams
+                        , read_only image2d_t background
                         , read_only image2d_t entryPoints 
                         , read_only image2d_t exitPoints
                         , read_only image2d_t transferFunction 
@@ -58,6 +59,7 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
     float tEnd = fast_length(direction); 
 
     float4 result = (float4)(0.f); 
+    //float4 result = read_imagef(background, smpNormClampEdgeLinear, convert_float2(outputRegionOffset+globalId)/convert_float2(get_image_dim(output))); 
     if(tEnd > 0.f) {     
         float tIncr = min(tEnd, tEnd/(samplingRate*length(direction*convert_float3(get_image_dim(volume).xyz)))); 
         direction = fast_normalize(direction);
@@ -100,9 +102,10 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
             if (result.w > ERT_THRESHOLD) t = tEnd;   
             else t += tIncr;   
         }
-
-    }
-         
+    } 
+    float4 backgroundColor = read_imagef(background, smpNormClampEdgeLinear, (convert_float2(outputRegionOffset+globalId)+0.5f)/convert_float2(get_image_dim(output))); 
+    result.xyz += backgroundColor.xyz * backgroundColor.w * (1.0 - result.w);
+    result.w += backgroundColor.w * (1.0 - result.w);
     write_imagef(output, outputRegionOffset+globalId,  result);     
   
 }

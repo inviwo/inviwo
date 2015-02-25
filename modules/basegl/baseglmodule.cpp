@@ -51,6 +51,7 @@
 #include <modules/basegl/processors/imageprocessing/imagegrayscale.h>
 #include <modules/basegl/processors/imageprocessing/imageinvert.h>
 #include <modules/basegl/processors/imageprocessing/imagemapping.h>
+#include <modules/basegl/processors/imageprocessing/imageresample.h>
 #ifdef BASEGL_INCLUDE_SHADER_RESOURCES
 #include <modules/basegl/shader_resources.h>
 #endif
@@ -90,6 +91,7 @@ BaseGLModule::BaseGLModule() : InviwoModule() {
     registerProcessor(ImageGrayscale);
     registerProcessor(ImageInvert);
     registerProcessor(ImageMapping);
+    registerProcessor(ImageResample);
 }
 
 } // namespace

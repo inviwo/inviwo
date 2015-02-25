@@ -44,8 +44,8 @@ KernelManager::~KernelManager() {
     clear();
 }
 
-cl::Program* KernelManager::buildProgram(const std::string& fileName, const std::string& defines /*= ""*/) {
-
+cl::Program* KernelManager::buildProgram(const std::string& fileName, const std::string& defines /*= ""*/, bool& wasBuilt) {
+    wasBuilt = false;
     std::string absoluteFileName = fileName;
     if (!filesystem::fileExists(absoluteFileName)) {
         // Search in include directories added by modules
@@ -91,6 +91,7 @@ cl::Program* KernelManager::buildProgram(const std::string& fileName, const std:
     uniqueProgram.program = program;
     programs_.insert(std::pair<std::string, ProgramIdentifier>(absoluteFileName, uniqueProgram));
     startFileObservation(absoluteFileName);
+    wasBuilt = true;
     return program;
 }
 

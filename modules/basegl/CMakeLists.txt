@@ -21,6 +21,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
+	${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
@@ -50,6 +51,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
@@ -70,9 +72,10 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_findedges.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_gamma.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_graysc.frag
+	${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_invert.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mix.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_invert.frag
+	${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_resample.frag
 	${CMAKE_CURRENT_SOURCE_DIR}/glsl/multichannelraycaster.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumeslice.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightingraycasting.frag

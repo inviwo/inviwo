@@ -59,18 +59,18 @@ public:
 
     void setDimensions(uvec3 dimensions);
 
-    void setValueFromSingleDouble(const uvec3& pos, double val);
-    void setValueFromVec2Double(const uvec3& pos, dvec2 val);
-    void setValueFromVec3Double(const uvec3& pos, dvec3 val);
-    void setValueFromVec4Double(const uvec3& pos, dvec4 val);
+    virtual void setValueFromSingleDouble(const uvec3& pos, double val) override;
+    virtual void setValueFromVec2Double(const uvec3& pos, dvec2 val) override;
+    virtual void setValueFromVec3Double(const uvec3& pos, dvec3 val) override;
+    virtual void setValueFromVec4Double(const uvec3& pos, dvec4 val) override;
 
     void setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset, const uvec3& subSize,
                              const uvec3& subOffset);
 
-    double getValueAsSingleDouble(const uvec3& pos) const;
-    dvec2 getValueAsVec2Double(const uvec3& pos) const;
-    dvec3 getValueAsVec3Double(const uvec3& pos) const;
-    dvec4 getValueAsVec4Double(const uvec3& pos) const;
+    virtual double getValueAsSingleDouble(const uvec3& pos) const override;
+    virtual dvec2 getValueAsVec2Double(const uvec3& pos) const override;
+    virtual dvec3 getValueAsVec3Double(const uvec3& pos) const override;
+    virtual dvec4 getValueAsVec4Double(const uvec3& pos) const override;
 
 private:
     static const DataFormatBase* defaultformat() { return GenericDataFormat(T)::get(); }

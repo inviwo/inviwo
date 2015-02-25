@@ -34,7 +34,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/image/compositeprocessorgl.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <modules/opengl/rendering/meshrenderer.h>
+#include <modules/opengl/rendering/meshdrawer.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
@@ -95,7 +95,7 @@ private:
 
 
     Mesh* points_;
-    MeshRenderer* pointRenderer_;
+    MeshDrawer* pointDrawer_;
 
     Shader* pointShader_;
 

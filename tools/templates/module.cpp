@@ -70,7 +70,7 @@ namespace inviwo {
 	// registerMetaData(MetaData* meta);   
     // registerPortInspector(PortInspector* portInspector);
     // registerProcessorWidget(std::string processorClassName, ProcessorWidget* processorWidget);
-    // registerRenderer(GeometryRenderer* renderer);
+    // registerDrawer(GeometryDrawer* renderer);
     // registerResource(Resource* resource);	
 }
 

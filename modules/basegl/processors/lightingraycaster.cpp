@@ -127,8 +127,6 @@ void LightingRaycaster::onVolumeChange() {
 
 
 void LightingRaycaster::process() {
-    entryPort_.passOnDataToOutport(&outport_);
-
     TextureUnit tfUnit, entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit, volUnit;
     utilgl::bindTexture(transferFunction_, tfUnit);
     utilgl::bindTextures(entryPort_, entryColorUnit, entryDepthUnit);
@@ -137,7 +135,7 @@ void LightingRaycaster::process() {
     TextureUnit lightVolUnit;
     utilgl::bindTexture(lightVolumePort_, lightVolUnit);
     
-    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
+    utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
     shader_->activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

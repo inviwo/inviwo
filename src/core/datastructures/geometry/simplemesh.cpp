@@ -32,13 +32,13 @@
 
 namespace inviwo {
 
-SimpleMesh::SimpleMesh(GeometryEnums::RenderType rt, GeometryEnums::ConnectivityType ct)
-    : Mesh(rt, ct) {
+SimpleMesh::SimpleMesh(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct)
+    : Mesh(dt, ct) {
 
     addAttribute(new Position3dBuffer()); // pos 0
     addAttribute(new TexCoord3dBuffer()); // pos 1
     addAttribute(new ColorBuffer());      // pos 2
-    addIndicies(Mesh::AttributesInfo(rt,ct),  new IndexBuffer());
+    addIndicies(Mesh::AttributesInfo(dt,ct),  new IndexBuffer());
 }
 
 SimpleMesh::SimpleMesh(const SimpleMesh& rhs) : Mesh(rhs) {}
@@ -68,8 +68,8 @@ void SimpleMesh::addIndex(unsigned int idx) {
     indexAttributes_[0].second->getEditableRepresentation<IndexBufferRAM>()->add(idx);
 }
 
-void SimpleMesh::setIndicesInfo(GeometryEnums::RenderType rt, GeometryEnums::ConnectivityType ct) {
-    indexAttributes_[0].first = Mesh::AttributesInfo(rt, ct);
+void SimpleMesh::setIndicesInfo(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct) {
+    indexAttributes_[0].first = Mesh::AttributesInfo(dt, ct);
 }
 
 const Position3dBuffer* SimpleMesh::getVertexList() const {

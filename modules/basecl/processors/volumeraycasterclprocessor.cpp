@@ -52,6 +52,7 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")
+    , backgroundPort_("background")
     , outport_("outport")
     , samplingRate_("samplingRate", "Sampling rate", 1.0f, 1.0f, 15.0f)
     , transferFunction_("transferFunction", "Transfer function", TransferFunction())
@@ -63,6 +64,7 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
+    addPort(backgroundPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
     addProperty(samplingRate_);
     addProperty(transferFunction_);
@@ -98,7 +100,7 @@ void VolumeRaycasterCLProcessor::deinitialize() {
 }
 
 bool VolumeRaycasterCLProcessor::isReady() const {
-    return Processor::isReady() && volumeRaycaster_.isValid();
+    return volumePort_.isReady() && entryPort_.isReady() && exitPort_.isReady() && volumeRaycaster_.isValid();
 }
 
 void VolumeRaycasterCLProcessor::process() {
@@ -108,7 +110,12 @@ void VolumeRaycasterCLProcessor::process() {
         // This macro will create an event called profilingEvent if IVW_PROFILING is enabled,
         // otherwise the profilingEvent will be declared as a null pointer
         IVW_OPENCL_PROFILING(profilingEvent, "")
-
+        if (backgroundPort_.isReady()) {
+            volumeRaycaster_.setBackground(backgroundPort_.getData()->getColorLayer());
+        } else {
+            // Use default background
+            volumeRaycaster_.setBackground(nullptr);
+        }
         volumeRaycaster_.outputSize(outport_.getDimensions());
         volumeRaycaster_.volumeRaycast(volumePort_.getData(), entryPort_.getData(), exitPort_.getData(), transferFunction_.get().getData(), outport_.getData(), NULL, profilingEvent);
     } catch (cl::Error& err) {

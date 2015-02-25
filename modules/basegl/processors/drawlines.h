@@ -34,7 +34,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/image/compositeprocessorgl.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <modules/opengl/rendering/meshrenderer.h>
+#include <modules/opengl/rendering/meshdrawer.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
@@ -99,7 +99,7 @@ private:
     EventProperty keyEnableDraw_;
 
     Mesh* lines_;
-    MeshRenderer* lineRenderer_;
+    MeshDrawer* lineDrawer_;
 
     Shader* lineShader_;
 

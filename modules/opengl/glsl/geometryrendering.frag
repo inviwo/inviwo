@@ -33,33 +33,10 @@ uniform LightParameters light_;
 uniform CameraParameters camera_;
 
 in vec4 worldPosition_;
-in vec3 texCoord_;
-
-// Determine if we should use textures  
-// instead of buffer data
-#if USE_COLOR_TEXTURE
-uniform sampler2D colorTex_;
-#else
-in vec4 color_;
-#endif
-
-#if USE_NORMAL_TEXTURE
-uniform GeometryParameters geometry_;
-uniform sampler2D normalTex_;
-#else 
 in vec3 normal_;
-#endif
+in vec4 color_;
 
 void main() {
-#if USE_COLOR_TEXTURE
-    vec4 color_ = texture(colorTex_, texCoord_.xy);
-#endif
-#if USE_NORMAL_TEXTURE
-    // Normals in texture are assumed to lie in [0 1]^3.
-    // First transform them to [-1 1]^3 and then
-    // from data to world space.
-    vec3 normal_ = geometry_.dataToWorldNormalMatrix * (2.0 * texture(normalTex_, texCoord_.xy).xyz - 1.0);
-#endif
     vec4 fragColor = vec4(1.0);
     vec3 toCameraDir_ = camera_.position - worldPosition_.xyz;
     fragColor.rgb = APPLY_LIGHTING(light_, color_.rgb, color_.rgb, vec3(1.0), worldPosition_.xyz,

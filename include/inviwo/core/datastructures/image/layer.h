@@ -41,7 +41,7 @@ class LayerRepresentation;
 
 class IVW_CORE_API Layer : public Data, public StructuredGridEntity<2> {
 public:
-    Layer(uvec2 dimensions = uvec2(256,256), const DataFormatBase* format = DataVec4UINT8::get(), LayerType type = COLOR_LAYER);
+    Layer(uvec2 dimensions = uvec2(32,32), const DataFormatBase* format = DataVec4UINT8::get(), LayerType type = COLOR_LAYER);
     Layer(LayerRepresentation*);
     Layer(const Layer&);
     Layer& operator=(const Layer& that);

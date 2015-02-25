@@ -30,7 +30,7 @@
 #include "volumeslicegl.h"
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/image/layergl.h>
-#include <modules/opengl/rendering/meshrenderer.h>
+#include <modules/opengl/rendering/meshdrawer.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/textureutils.h>
@@ -452,8 +452,8 @@ void VolumeSliceGL::renderPositionIndicator() {
         updateIndicatorMesh();
     }
 
-    MeshRenderer renderer(meshCrossHair_);
-    MeshRenderer rendererBox(meshBox_);
+    MeshDrawer drawer(meshCrossHair_);
+    MeshDrawer drawerBox(meshBox_);
 
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
@@ -470,8 +470,8 @@ void VolumeSliceGL::renderPositionIndicator() {
     indicatorShader_->setUniform("dataToClip_", mat4(1.0f));
 
     glDepthFunc(GL_ALWAYS);
-    renderer.render();
-    rendererBox.render();
+    drawer.draw();
+    drawerBox.draw();
     glDepthFunc(GL_LESS);
     glDisable(GL_BLEND);
     glDisable(GL_LINE_SMOOTH);

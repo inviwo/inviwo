@@ -46,7 +46,7 @@ public:
     virtual ~BasicMesh();
     
     void addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
-    IndexBufferRAM* addIndexBuffer(GeometryEnums::RenderType rt, GeometryEnums::ConnectivityType ct);
+    IndexBufferRAM* addIndexBuffer(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
 
     virtual std::string getDataInfo() const;
 

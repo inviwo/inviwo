@@ -38,7 +38,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/glwrap/shader.h>
-#include <modules/opengl/rendering/meshrenderer.h>
+#include <modules/opengl/rendering/meshdrawer.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -77,7 +77,7 @@ protected:
     Shader* textShader_;
     GLuint texCharacter_;
     Mesh* mesh_;
-    MeshRenderer* renderer_;
+    MeshDrawer* drawer_;
 
 };
 

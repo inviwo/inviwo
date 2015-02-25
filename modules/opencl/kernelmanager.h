@@ -63,18 +63,26 @@ public:
     KernelManager();
     virtual ~KernelManager();
     /**
+
+     *
+     * @param fileName (const std::string &) File name
+     * @param defines (const std::string &) Compiler defines
+     * @return (cl::Program*) Pointer to a program no matter if it was succesfully built or not.
+     */
+    /** 
      * Creates and builds an OpenCL program. Will automatically reload the program and
      * kernels when the file changes.
      * Only provide the file name as the file will be searched for in all the include paths.
      * The KernelManager will make sure that the processor is not evaluated if building fails.
      * @note KernelManager manages pointer memory, do not delete it.
      *
-     * @param fileName (const std::string &) File name
-     * @param defines (const std::string &) Compiler defines
-     * @return (cl::Program*) Pointer to a program no matter if it was succesfully built or not.
+     * @param const std::string & fileName Name of file. Added search paths will be used to find the file
+     * @param bool & wasBuilt Outputs true if program was built, false if a previously built (cached) program is used.
+     * @param const std::string & defines Compiler defines
+     * @return cl::Program*  Pointer to a program no matter if it was succesfully built or not. Do not delete it.
      */
-    cl::Program* buildProgram(const std::string& fileName, const std::string& defines = "");
-
+    cl::Program* buildProgram(const std::string& fileName, const std::string& defines, bool& wasBuilt);
+    cl::Program* buildProgram(const std::string& fileName, const std::string& defines = "") { bool wasBuilt; return buildProgram(fileName, defines, wasBuilt); }
 
     /**
      * Creates a kernel from a previously created cl::Program.

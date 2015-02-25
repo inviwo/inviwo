@@ -274,7 +274,7 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
 
         filePos_ = (sequences-1)*bytes;
         vd = new VolumeDisk(filePath, dimensions_, format_);
-        vd->setDataReader(this);
+        vd->setDataReader(this->clone());
         volume->addRepresentation(vd);
         volumeSequence->add(volume);
 

@@ -38,7 +38,7 @@
 #include <inviwo/core/ports/geometryport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/rendering/geometryrenderer.h>
+#include <inviwo/core/rendering/geometrydrawer.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -72,7 +72,7 @@ private:
     Shader* genericShader_;
     Shader* capNearClippingPrg_;
     Image* tmpEntryPoints_;
-    GeometryRenderer* renderer_;
+    GeometryDrawer* drawer_;
 };
 
 } // namespace
