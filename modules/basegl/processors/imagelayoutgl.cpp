@@ -48,14 +48,12 @@ ImageLayoutGL::ImageLayoutGL()
     , multiinport_("multiinport")
     , outport_("outport")
     , layout_("layout", "Layout")
-    , resizeContent_("resizeContent", "Resize Content", false)
     , horizontalSplitter_("horizontalSplitter", "Horizontal Splitter", 0.5f, 0.f, 1.f)
     , verticalSplitter_("verticalSplitter", "Vertical Splitter", 0.5f, 0.f, 1.f)
     , shader_(nullptr)
     , layoutHandler_(nullptr)
     , currentLayout_(ImageLayoutTypes::CrossSplit)
-    , currentDim_(0u, 0u)
-    , resizeEnabled_(false) {
+    , currentDim_(0u, 0u) {
     addPort(multiinport_);
     multiinport_.onChange(this, &ImageLayoutGL::multiInportChanged);
     addPort(outport_);
@@ -70,14 +68,12 @@ ImageLayoutGL::ImageLayoutGL()
     layout_.setSelectedValue(ImageLayoutTypes::CrossSplit);
     layout_.setCurrentStateAsDefault();
     addProperty(layout_);
-    addProperty(resizeContent_);
     horizontalSplitter_.setVisible(false);
     addProperty(horizontalSplitter_);
     verticalSplitter_.setVisible(false);
     addProperty(verticalSplitter_);
 
     layout_.onChange(this, &ImageLayoutGL::onStatusChange);
-    resizeContent_.onChange(this, &ImageLayoutGL::onStatusChange);
 
     layoutHandler_ = new ImageLayoutGLInteractionHandler(this);
     addInteractionHandler(layoutHandler_);
@@ -127,16 +123,22 @@ const std::vector<Inport*>& ImageLayoutGL::getInports(Event* e) const {
     return Processor::getInports();
 }
 
+const std::vector<uvec4>& ImageLayoutGL::getViewCoords(){
+    return viewCoords_;
+}
+
 void ImageLayoutGL::multiInportChanged() {
     if (multiinport_.isConnected()) {
         updateViewports(true);
         std::vector<Inport*> inports = multiinport_.getInports();
         size_t minNum = std::min(inports.size(), viewCoords_.size());
+        vec2 dim = outport_.getData()->getDimensions();
         for (size_t i = 0; i < minNum; ++i) {
             ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
             if (imageInport) {
-                // TODO: use scale depending on viewport and output dimension
-                imageInport->setResizeScale(vec2(0.25f, 0.25f));
+                imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w)/dim);
+                ResizeEvent e(viewCoords_[i].zw);
+                imageInport->changeDataDimensions(&e);
             }
         }
     }
@@ -177,8 +179,7 @@ void ImageLayoutGL::updateViewports(bool force) {
     uvec2 dim(256u, 256u);
     if (outport_.isConnected()) dim = outport_.getData()->getDimensions();
 
-    if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get()) &&
-        (resizeEnabled_ == resizeContent_.get()))
+    if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get()))
         return;  // no changes
 
     viewCoords_.clear();
@@ -219,24 +220,9 @@ void ImageLayoutGL::updateViewports(bool force) {
 
     currentDim_ = dim;
     currentLayout_ = static_cast<ImageLayoutTypes::Layout>(layout_.get());
-    resizeEnabled_ = resizeContent_.get();
-
-    // propagate viewport size to connected inports
-    if (resizeEnabled_) {
-        std::vector<Inport*> inports = multiinport_.getInports();
-        size_t minNum = std::min(inports.size(), viewCoords_.size());
-        for (std::size_t i = 0; i < minNum; ++i) {
-            ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
-            if (imageInport) {
-                uvec2 viewportDim(viewCoords_[i].z, viewCoords_[i].w);
-                ResizeEvent e(viewportDim);
-                imageInport->changeDataDimensions(&e);
-            }
-        }
-    }
 }
 
-void ImageLayoutGL::onStatusChange() { updateViewports(); }
+void ImageLayoutGL::onStatusChange() { multiInportChanged(); }
 
 ImageLayoutGL::ImageLayoutGLInteractionHandler::ImageLayoutGLInteractionHandler(ImageLayoutGL* src)
     : InteractionHandler()
@@ -248,6 +234,8 @@ ImageLayoutGL::ImageLayoutGLInteractionHandler::ImageLayoutGLInteractionHandler(
     , activePosition_(ivec2(0)) {}
 
 void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
+    const std::vector<uvec4>& viewCoords = src_->getViewCoords();
+
     MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event);
     if (mouseEvent) {
         if (!viewportActive_ && mouseEvent->state() == activePositionChangeEvent_.state()) {
@@ -261,40 +249,13 @@ void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
         ivec2 mPos = mouseEvent->pos();
         uvec2 cSize = mouseEvent->canvasSize();
 
-        switch (src_->layout_.getSelectedValue()) {
-            case ImageLayoutTypes::HorizontalSplit:
-                cSize.y /= 2;
-                if (activePosition_.y > static_cast<int>(cSize.y)) {
-                    mPos.y -= cSize.y;
-                }
-                mouseEvent->modify(mPos, cSize);
-                break;
-            case ImageLayoutTypes::VerticalSplit:
-                cSize.x /= 2;
-                if (activePosition_.x > static_cast<int>(cSize.x)) {
-                    mPos.x -= cSize.x;
-                }
-                mouseEvent->modify(mPos, cSize);
-                break;
-            case ImageLayoutTypes::CrossSplit:
-                cSize /= 2;
-                if (activePosition_.x > static_cast<int>(cSize.x)) {
-                    mPos.x -= cSize.x;
-                }
-                if (activePosition_.y > static_cast<int>(cSize.y)) {
-                    mPos.y -= cSize.y;
-                }
-                mouseEvent->modify(mPos, cSize);
-                break;
-            case ImageLayoutTypes::ThreeLeftOneRight:
-                // TODO: Implement this coordinate transformation
-                break;
-            case ImageLayoutTypes::ThreeRightOneLeft:
-                // TODO: Implement this coordinate transformation
-                break;
-            case ImageLayoutTypes::Single:
-            default:
-                break;
+        for (size_t i = 0; i < viewCoords.size(); ++i) {
+            if(activePosition_.x >= viewCoords[i].x && activePosition_.x < viewCoords[i].x+viewCoords[i].z
+                && activePosition_.y >= viewCoords[i].y && activePosition_.y < viewCoords[i].y+viewCoords[i].w){
+                    ivec2 vc = ivec2(viewCoords[i].x, viewCoords[i].y);
+                    mouseEvent->modify(mPos-vc, viewCoords[i].zw);
+                    break;
+            }
         }
 
         return;
@@ -303,38 +264,16 @@ void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
     GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
     if (gestureEvent) {
         vec2 mPosNorm = gestureEvent->screenPosNormalized();
+        vec2 cSize = gestureEvent->canvasSize();
+        vec2 mPos = mPosNorm * cSize;
 
-        switch (src_->layout_.getSelectedValue()) {
-            case ImageLayoutTypes::HorizontalSplit:
-                if (mPosNorm.y > 0.5f) {
-                    mPosNorm.y -= 0.5f;
-                }
-                gestureEvent->modify(mPosNorm);
-                break;
-            case ImageLayoutTypes::VerticalSplit:
-                if (mPosNorm.x > 0.5f) {
-                    mPosNorm.x -= 0.5f;
-                }
-                gestureEvent->modify(mPosNorm);
-                break;
-            case ImageLayoutTypes::CrossSplit:
-                if (mPosNorm.x > 0.5f) {
-                    mPosNorm.x -= 0.5f;
-                }
-                if (mPosNorm.y > 0.5f) {
-                    mPosNorm.y -= 0.5f;
-                }
-                gestureEvent->modify(mPosNorm);
-                break;
-            case ImageLayoutTypes::ThreeLeftOneRight:
-                // TODO: Implement this coordinate transformation
-                break;
-            case ImageLayoutTypes::ThreeRightOneLeft:
-                // TODO: Implement this coordinate transformation
-                break;
-            case ImageLayoutTypes::Single:
-            default:
-                break;
+        for (size_t i = 0; i < viewCoords.size(); ++i) {
+            if(mPos.x >= viewCoords[i].x && mPos.x < viewCoords[i].x+viewCoords[i].z
+                && mPos.y >= viewCoords[i].y && mPos.y < viewCoords[i].y+viewCoords[i].w){
+                    vec2 vc = vec2(viewCoords[i].x, viewCoords[i].y);
+                    gestureEvent->modify((mPos-vc)/mPos);
+                    break;
+            }
         }
 
         return;

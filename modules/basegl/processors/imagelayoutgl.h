@@ -69,11 +69,12 @@ public:
     void deinitialize();
 
     const std::vector<Inport*>& getInports(Event*) const;
-
-    void multiInportChanged();
+    const std::vector<uvec4>& getViewCoords();
 
 protected:
     void process();
+
+    void multiInportChanged();
     void updateViewports(bool force=false);
     void onStatusChange();
 
@@ -101,7 +102,6 @@ private:
     ImageOutport outport_;
 
     OptionPropertyInt layout_;
-    BoolProperty resizeContent_;
     FloatProperty horizontalSplitter_;
     FloatProperty verticalSplitter_;
 
@@ -111,7 +111,6 @@ private:
 
     ImageLayoutTypes::Layout currentLayout_;
     uvec2 currentDim_;
-    bool resizeEnabled_;
 
     std::vector<uvec4> viewCoords_;
 
