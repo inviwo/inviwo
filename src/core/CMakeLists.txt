@@ -236,6 +236,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/systemsettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/singleton.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stacktrace.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/stdextensions.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
@@ -420,6 +421,7 @@ set(SOURCE_FILES
     util/settings/systemsettings.cpp    
     util/singleton.cpp
     util/stacktrace.cpp
+    util/stdextensions.cpp
     util/stringconversion.cpp
     util/systemcapabilities.cpp
     util/timer.cpp
