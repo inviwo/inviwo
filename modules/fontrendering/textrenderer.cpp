@@ -111,7 +111,7 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
 
         if (*p == lf) {
             offset += (2 * h);
-            x += inputX;
+            x = inputX;
             y += (fontface_->glyph->advance.y >> 6) * scale.y;
             continue;
         } else if (*p == tab) {
