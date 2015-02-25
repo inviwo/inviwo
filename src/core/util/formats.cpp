@@ -90,175 +90,175 @@ const DataFormatBase* DataFormatBase::get(std::string name) {
     else return DataFormatBase::get();
 }
 
-const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int components, int precision) {
+const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int components,
+                                          int precision) {
     switch (type) {
         case DataFormatEnums::FLOAT_TYPE:
             switch (components) {
-        case 1:
-            switch (precision) {
-        case 16:
-            return DataFLOAT16::get();
-        case 32:
-            return DataFLOAT32::get();
-        case 64:
-            return DataFLOAT64::get();
-            }
-            break;
-        case 2:
-            switch (precision) {
-        case 16:
-            return DataVec2FLOAT16::get();
-        case 32:
-            return DataVec2FLOAT32::get();
-        case 64:
-            return DataVec2FLOAT64::get();
-            }
-            break;
-        case 3:
-            switch (precision) {
-        case 16:
-            return DataVec3FLOAT16::get();
-        case 32:
-            return DataVec3FLOAT32::get();
-        case 64:
-            return DataVec3FLOAT64::get();
-            }
-            break;
-        case 4:
-            switch (precision) {
-        case 16:
-            return DataVec4FLOAT16::get();
-        case 32:
-            return DataVec4FLOAT32::get();
-        case 64:
-            return DataVec4FLOAT64::get();
-            }
-            break;
+                case 1:
+                    switch (precision) {
+                        case 16:
+                            return DataFLOAT16::get();
+                        case 32:
+                            return DataFLOAT32::get();
+                        case 64:
+                            return DataFLOAT64::get();
+                    }
+                    break;
+                case 2:
+                    switch (precision) {
+                        case 16:
+                            return DataVec2FLOAT16::get();
+                        case 32:
+                            return DataVec2FLOAT32::get();
+                        case 64:
+                            return DataVec2FLOAT64::get();
+                    }
+                    break;
+                case 3:
+                    switch (precision) {
+                        case 16:
+                            return DataVec3FLOAT16::get();
+                        case 32:
+                            return DataVec3FLOAT32::get();
+                        case 64:
+                            return DataVec3FLOAT64::get();
+                    }
+                    break;
+                case 4:
+                    switch (precision) {
+                        case 16:
+                            return DataVec4FLOAT16::get();
+                        case 32:
+                            return DataVec4FLOAT32::get();
+                        case 64:
+                            return DataVec4FLOAT64::get();
+                    }
+                    break;
             }
             break;
         case DataFormatEnums::SIGNED_INTEGER_TYPE:
             switch (components) {
-        case 1:
-            switch (precision) {
-        case 8:
-            return DataINT8::get();
-        case 12:
-            return DataINT12::get();
-        case 16:
-            return DataINT16::get();
-        case 32:
-            return DataINT32::get();
-        case 64:
-            return DataINT64::get();
-            }
-            break;
-        case 2:
-            switch (precision) {
-        case 8:
-            return DataVec2INT8::get();
-        case 12:
-            return DataVec2INT12::get();
-        case 16:
-            return DataVec2INT16::get();
-        case 32:
-            return DataVec2INT32::get();
-        case 64:
-            return DataVec2INT64::get();
-            }
-            break;
-        case 3:
-            switch (precision) {
-        case 8:
-            return DataVec3INT8::get();
-        case 12:
-            return DataVec3INT12::get();
-        case 16:
-            return DataVec3INT16::get();
-        case 32:
-            return DataVec3INT32::get();
-        case 64:
-            return DataVec3INT64::get();
-            }
-            break;
-        case 4:
-            switch (precision) {
-        case 8:
-            return DataVec4INT8::get();
-        case 12:
-            return DataVec4INT12::get();
-        case 16:
-            return DataVec4INT16::get();
-        case 32:
-            return DataVec4INT32::get();
-        case 64:
-            return DataVec4INT64::get();
-            }
-            break;
+                case 1:
+                    switch (precision) {
+                        case 8:
+                            return DataINT8::get();
+                        case 12:
+                            return DataINT12::get();
+                        case 16:
+                            return DataINT16::get();
+                        case 32:
+                            return DataINT32::get();
+                        case 64:
+                            return DataINT64::get();
+                    }
+                    break;
+                case 2:
+                    switch (precision) {
+                        case 8:
+                            return DataVec2INT8::get();
+                        case 12:
+                            return DataVec2INT12::get();
+                        case 16:
+                            return DataVec2INT16::get();
+                        case 32:
+                            return DataVec2INT32::get();
+                        case 64:
+                            return DataVec2INT64::get();
+                    }
+                    break;
+                case 3:
+                    switch (precision) {
+                        case 8:
+                            return DataVec3INT8::get();
+                        case 12:
+                            return DataVec3INT12::get();
+                        case 16:
+                            return DataVec3INT16::get();
+                        case 32:
+                            return DataVec3INT32::get();
+                        case 64:
+                            return DataVec3INT64::get();
+                    }
+                    break;
+                case 4:
+                    switch (precision) {
+                        case 8:
+                            return DataVec4INT8::get();
+                        case 12:
+                            return DataVec4INT12::get();
+                        case 16:
+                            return DataVec4INT16::get();
+                        case 32:
+                            return DataVec4INT32::get();
+                        case 64:
+                            return DataVec4INT64::get();
+                    }
+                    break;
             }
             break;
         case DataFormatEnums::UNSIGNED_INTEGER_TYPE:
             switch (components) {
-        case 1:
-            switch (precision) {
-        case 8:
-            return DataUINT8::get();
-        case 12:
-            return DataUINT12::get();
-        case 16:
-            return DataUINT16::get();
-        case 32:
-            return DataUINT32::get();
-        case 64:
-            return DataUINT64::get();
-            }
-            break;
-        case 2:
-            switch (precision) {
-        case 8:
-            return DataVec2UINT8::get();
-        case 12:
-            return DataVec2UINT12::get();
-        case 16:
-            return DataVec2UINT16::get();
-        case 32:
-            return DataVec2UINT32::get();
-        case 64:
-            return DataVec2UINT64::get();
-            }
-            break;
-        case 3:
-            switch (precision) {
-        case 8:
-            return DataVec3UINT8::get();
-        case 12:
-            return DataVec3UINT12::get();
-        case 16:
-            return DataVec3UINT16::get();
-        case 32:
-            return DataVec3UINT32::get();
-        case 64:
-            return DataVec3UINT64::get();
-            }
-            break;
-        case 4:
-            switch (precision) {
-        case 8:
-            return DataVec4UINT8::get();
-        case 12:
-            return DataVec4UINT12::get();
-        case 16:
-            return DataVec4UINT16::get();
-        case 32:
-            return DataVec4UINT32::get();
-        case 64:
-            return DataVec4UINT64::get();
-            }
-            break;
+                case 1:
+                    switch (precision) {
+                        case 8:
+                            return DataUINT8::get();
+                        case 12:
+                            return DataUINT12::get();
+                        case 16:
+                            return DataUINT16::get();
+                        case 32:
+                            return DataUINT32::get();
+                        case 64:
+                            return DataUINT64::get();
+                    }
+                    break;
+                case 2:
+                    switch (precision) {
+                        case 8:
+                            return DataVec2UINT8::get();
+                        case 12:
+                            return DataVec2UINT12::get();
+                        case 16:
+                            return DataVec2UINT16::get();
+                        case 32:
+                            return DataVec2UINT32::get();
+                        case 64:
+                            return DataVec2UINT64::get();
+                    }
+                    break;
+                case 3:
+                    switch (precision) {
+                        case 8:
+                            return DataVec3UINT8::get();
+                        case 12:
+                            return DataVec3UINT12::get();
+                        case 16:
+                            return DataVec3UINT16::get();
+                        case 32:
+                            return DataVec3UINT32::get();
+                        case 64:
+                            return DataVec3UINT64::get();
+                    }
+                    break;
+                case 4:
+                    switch (precision) {
+                        case 8:
+                            return DataVec4UINT8::get();
+                        case 12:
+                            return DataVec4UINT12::get();
+                        case 16:
+                            return DataVec4UINT16::get();
+                        case 32:
+                            return DataVec4UINT32::get();
+                        case 64:
+                            return DataVec4UINT64::get();
+                    }
+                    break;
             }
             break;
         default:
             break;
-
     }
     return nullptr;
 }
