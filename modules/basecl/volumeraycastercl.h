@@ -53,7 +53,7 @@ public:
     VolumeRaycasterCL();
     ~VolumeRaycasterCL();
 
-    bool isValid() const { return kernel_ != NULL; }
+    bool isValid() const { return kernel_ != nullptr; }
 
 
 
@@ -68,9 +68,9 @@ public:
      * @param const VECTOR_CLASS<cl::Event> * waitForEvents 
      * @param cl::Event * event 
      */
-    void volumeRaycast(const Volume* volume, const Image* entryPoints, const Image* exitPoints, const Layer* transferFunction, Image* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents = NULL, cl::Event *event = NULL);
+    void volumeRaycast(const Volume* volume, const Image* entryPoints, const Image* exitPoints, const Layer* transferFunction, Image* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
     
-    void volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL, const LayerCLBase* entryCLGL, const LayerCLBase* exitCLGL, const LayerCLBase* transferFunctionCL, LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = NULL, cl::Event *event = NULL);
+    void volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL, const LayerCLBase* background, const LayerCLBase* entryCL, const LayerCLBase* exitCL, const LayerCLBase* transferFunctionCL, LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
     
     void samplingRate(float samplingRate);
     float samplingRate() const { return samplingRate_; }
@@ -78,6 +78,18 @@ public:
     void setCamera(CameraProperty* camera) { camera_ = camera; }
     void setLightingProperties(const SimpleLightingProperty& light);
     void setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent);
+
+    const Layer* getBackground() const { 
+        if (background_) return background_; 
+        else return &defaultBackground_;
+    }
+    /** 
+     * \brief Set background to use in the rendering. 
+     *
+     * The default background, black, will be used if layer is a nullptr. 
+     * @param Layer * val Layer to use as background. Will not take ownership.
+     */
+    void setBackground(const Layer* val) { background_ = val; }
 
     svec2 workGroupSize() const { return workGroupSize_; }
     void workGroupSize(const svec2& val) { workGroupSize_ = val; }
@@ -89,6 +101,14 @@ public:
     void outputOffset(ivec2 val);
     ivec2 outputSize() const { return outputSize_; }
     void outputSize(ivec2 val);
+
+    /**
+    * Called when kernel has compiled. Set all parameters and notify observers
+    */
+    virtual void notifyObserversKernelCompiled(const cl::Kernel* kernel);
+
+    void setKernelArguments();
+
 private:
     void compileKernel();
     // Parameters
@@ -99,6 +119,9 @@ private:
     CameraProperty* camera_;
     utilcl::LightParameters light_;
     float samplingRate_;
+
+    const Layer* background_;
+    Layer defaultBackground_;
 
     BufferCL lightStruct_;
     cl::Kernel* kernel_;

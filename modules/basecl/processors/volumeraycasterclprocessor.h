@@ -54,6 +54,7 @@ namespace inviwo {
  *   * __VolumeInport__ The volume data to render.
  *   * __ImageInport__ The entry point.
  *   * __ImageInport__ The exit point.
+ *   * __ImageInport__ Background (optional). 
  *
  * ### Outports
  *   * __ImageOutport__ Light reaching the camera through the volume.
@@ -92,6 +93,7 @@ private:
     VolumeInport volumePort_;
     ImageInport entryPort_;
     ImageInport exitPort_;
+    ImageInport backgroundPort_; //! Optional background
     ImageOutport outport_;
 
     FloatProperty samplingRate_;

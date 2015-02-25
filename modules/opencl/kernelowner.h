@@ -55,7 +55,7 @@ class IVW_MODULE_OPENCL_API KernelObservable: public Observable<KernelObserver> 
 public:
     KernelObservable(): Observable<KernelObserver>() {};
 
-    void notifyObserversKernelCompiled(const cl::Kernel* kernel) const;
+    virtual void notifyObserversKernelCompiled(const cl::Kernel* kernel);
 };
 
 /** \class KernelOwner
@@ -103,34 +103,21 @@ protected:
  * when a kernel has been compiled.
  * @see ProcessorKernelOwner
  */
-class IVW_MODULE_OPENCL_API ProcessorKernelOwner: public KernelObserver {
+class IVW_MODULE_OPENCL_API ProcessorKernelOwner: public KernelOwner {
 public:
     ProcessorKernelOwner(Processor* processor);
     virtual ~ProcessorKernelOwner() {};
 
     /**
-     * Calls invalidate on Processor specified in the constructor.
+     * Notifies kernel observers that the kernel was compiled and
+     * calls invalidate(INVALID_RESOURCES) on Processor specified in the constructor.
      * Override this method to perform operations after a successful kernel 
      * compilation. 
      * @param kernel The kernel that was compiled
      */
-    virtual void onKernelCompiled(const cl::Kernel* kernel);
-    /**
-     * Builds, adds and returns the kernel if successfully built. 
-     * Only provide the file name as the file will be searched for in all the include paths.
-     *
-     * @note Do not delete the returned kernel
-     * @param filePath Name of the file containing kernel, i.e. myfile.cl
-     * @param kernelName Name of kernel
-     * @param defines Defines to be set when building kernel
-     * @return bool Kernel if successfully built, otherwise NULL
-     */
-    cl::Kernel* addKernel(const std::string& fileName, const std::string& kernelName, const std::string& defines = "") { return kernelOwner.addKernel(fileName, kernelName, defines); }
-
-    const std::set<cl::Kernel*>& getKernels() const { return kernelOwner.getKernels(); }
+    virtual void notifyObserversKernelCompiled(const cl::Kernel* kernel);
 protected:
     Processor* processor_;
-    KernelOwner kernelOwner;
 };
 
 } // namespace

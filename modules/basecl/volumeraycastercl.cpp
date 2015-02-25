@@ -46,10 +46,12 @@ VolumeRaycasterCL::VolumeRaycasterCL()
     , useGLSharing_(true)
     , outputOffset_(0)
     , outputSize_(1)
-    , camera_(NULL)
+    , camera_(nullptr)
     , samplingRate_(2.f)
-    , lightStruct_(sizeof(utilcl::LightParameters), DataUINT8::get(), POSITION_ATTRIB, STATIC, NULL, CL_MEM_READ_ONLY)
-    , kernel_(NULL)
+    , lightStruct_(sizeof(utilcl::LightParameters), DataUINT8::get(), POSITION_ATTRIB, STATIC, nullptr, CL_MEM_READ_ONLY)
+    , kernel_(nullptr)
+    , background_(nullptr)
+    , defaultBackground_(uvec2(1), DataVec4UINT8::get())
 {
     light_.ambientColor =vec4(1.f); light_.diffuseColor =vec4(1.f); light_.specularColor =vec4(1.f);
     light_.specularExponent = 110.f; light_.position = vec4(0.7f); light_.shadingMode = ShadingMode::Phong;
@@ -57,10 +59,10 @@ VolumeRaycasterCL::VolumeRaycasterCL()
     compileKernel();
 }
 
-VolumeRaycasterCL::~VolumeRaycasterCL() {}
+VolumeRaycasterCL::~VolumeRaycasterCL() { }
 
 
-void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Image* entryPoints, const Image* exitPoints, const Layer* transferFunction, Image* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents /*= NULL*/, cl::Event *event /*= NULL*/) {
+void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Image* entryPoints, const Image* exitPoints, const Layer* transferFunction, Image* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents /*= nullptr*/, cl::Event *event /*= nullptr*/) {
 
     svec2 localWorkGroupSize(workGroupSize_);
     svec2 globalWorkGroupSize(getGlobalWorkGroupSize(outputSize_.x, localWorkGroupSize.x), getGlobalWorkGroupSize(outputSize_.y,
@@ -79,24 +81,38 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Image* entryPo
                 ImageCLGL* outImageCL = outImage->getEditableRepresentation<ImageCLGL>();
                 const VolumeCLGL* volumeCL = volume->getRepresentation<VolumeCLGL>();
                 const LayerCLGL* transferFunctionCL = transferFunction->getRepresentation<LayerCLGL>();
+                const LayerCLBase* background;
+                if (background_) {
+                    background = background_->getRepresentation<LayerCLGL>();
+                    glSync.addToAquireGLObjectList(static_cast<const LayerCLGL*>(background));
+                } else {
+                    background = defaultBackground_.getRepresentation<LayerCL>();
+                }
                 // Shared objects must be acquired before use.
                 glSync.addToAquireGLObjectList(entryCL);
                 glSync.addToAquireGLObjectList(exitCL);
                 glSync.addToAquireGLObjectList(outImageCL);
                 glSync.addToAquireGLObjectList(volumeCL);
                 glSync.addToAquireGLObjectList(transferFunctionCL);
+                
                 // Acquire all of the objects at once
                 glSync.aquireAllObjects();
 
-                volumeRaycast(volume, volumeCL, entryCL->getLayerCL(), exitCL->getLayerCL(), transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
+                volumeRaycast(volume, volumeCL, background, entryCL->getLayerCL(), exitCL->getLayerCL(), transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
             } else {
                 const ImageCL* entryCL = entryPoints->getRepresentation<ImageCL>();
                 const ImageCL* exitCL = exitPoints->getRepresentation<ImageCL>();
                 ImageCL* outImageCL = outImage->getEditableRepresentation<ImageCL>();
                 const VolumeCL* volumeCL = volume->getRepresentation<VolumeCL>();
                 const LayerCL* transferFunctionCL = transferFunction->getRepresentation<LayerCL>();
-
-                volumeRaycast(volume, volumeCL, entryCL->getLayerCL(), exitCL->getLayerCL(), transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
+                //const LayerCL* background = background_->getRepresentation<LayerCL>();
+                const LayerCL* background;
+                if (background_) {
+                    background = background_->getRepresentation<LayerCL>();
+                } else {
+                    background = defaultBackground_.getRepresentation<LayerCL>();
+                }
+                volumeRaycast(volume, volumeCL, background, entryCL->getLayerCL(), exitCL->getLayerCL(), transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
             }
 
             // This macro will destroy the profiling event and print the timing in the console if IVW_PROFILING is enabled
@@ -107,17 +123,18 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Image* entryPo
 }
 
 
-void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL, const LayerCLBase* entryCLGL, const LayerCLBase* exitCLGL, const LayerCLBase* transferFunctionCL, LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents /*= NULL*/, cl::Event *event /*= NULL*/) {
+void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL, const LayerCLBase* background, const LayerCLBase* entryCLGL, const LayerCLBase* exitCLGL, const LayerCLBase* transferFunctionCL, LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents /*= nullptr*/, cl::Event *event /*= nullptr*/) {
     // Note that the overloaded setArg methods requires 
     // the reference to an object (not the pointer), 
     // which is why we need to dereference the pointers
     kernel_->setArg(0, *volumeCL);
     kernel_->setArg(1, *(volumeCL->getVolumeStruct(volume).getRepresentation<BufferCL>())); // Scaling for 12-bit data
-    kernel_->setArg(2, *entryCLGL);
-    kernel_->setArg(3, *exitCLGL);
-    kernel_->setArg(4, *transferFunctionCL);
-    kernel_->setArg(5, camera_->getLookFrom());
-    kernel_->setArg(8, *outImageCL);
+    kernel_->setArg(2, *background);
+    kernel_->setArg(3, *entryCLGL);
+    kernel_->setArg(4, *exitCLGL);
+    kernel_->setArg(5, *transferFunctionCL);
+    kernel_->setArg(6, camera_->getLookFrom());
+    kernel_->setArg(9, *outImageCL);
     //
     OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
 }
@@ -126,7 +143,7 @@ void VolumeRaycasterCL::samplingRate(float samplingRate) {
     samplingRate_ = samplingRate;
     if (kernel_) {
         try {
-            kernel_->setArg(6, samplingRate);
+            kernel_->setArg(7, samplingRate);
         } catch (cl::Error& err) {
             LogError(getCLErrorString(err));
         }
@@ -136,7 +153,7 @@ void VolumeRaycasterCL::samplingRate(float samplingRate) {
 void VolumeRaycasterCL::outputOffset(ivec2 val) {
     if (kernel_) {
         try {
-            kernel_->setArg(9, val);
+            kernel_->setArg(10, val);
         } catch (cl::Error& err) {
             LogError(getCLErrorString(err));
         }
@@ -148,13 +165,27 @@ void VolumeRaycasterCL::outputOffset(ivec2 val) {
 void VolumeRaycasterCL::outputSize(ivec2 val) {
     if (kernel_) {
         try {
-            kernel_->setArg(10, val);
+            kernel_->setArg(11, val);
         } catch (cl::Error& err) {
             LogError(getCLErrorString(err));
         }
     }
         
     outputSize_ = val;
+}
+
+void VolumeRaycasterCL::notifyObserversKernelCompiled(const cl::Kernel* kernel) {
+    // Update kernel arguments that are only set once they are changed
+    setKernelArguments();
+    // Notify observers
+    KernelObservable::notifyObserversKernelCompiled(kernel);
+}
+
+void VolumeRaycasterCL::setKernelArguments() {
+    outputOffset(outputOffset_);
+    outputSize(outputSize_);
+    samplingRate(samplingRate());
+    setLightingProperties(light_.shadingMode, light_.position.xyz(), light_.ambientColor.xyz(), light_.diffuseColor.xyz(), light_.specularColor.xyz(), light_.specularExponent);
 }
 
 void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent) {
@@ -172,7 +203,7 @@ void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec
             // Update data before returning it
             lightStruct_.upload(&light_, sizeof(utilcl::LightParameters));
             
-            kernel_->setArg(7, lightStruct_);
+            kernel_->setArg(8, lightStruct_);
         } catch (cl::Error& err) {
             LogError(getCLErrorString(err));
         }
@@ -194,13 +225,9 @@ void VolumeRaycasterCL::compileKernel() {
         defines << " -D SHADING_MODE=" << light_.shadingMode;
     // Will compile kernel and make sure that it it
     // recompiled whenever the file changes
-    // If the kernel fails to compile it will be set to NULL
+    // If the kernel fails to compile it will be set to nullptr
     kernel_ = addKernel("volumeraycaster.cl", "raycaster", defines.str());
-    // Update kernel arguments that are only set once they are changed
-    outputOffset(outputOffset_);
-    outputSize(outputSize_);
-    samplingRate(samplingRate());
-    setLightingProperties(light_.shadingMode, light_.position.xyz(), light_.ambientColor.xyz(), light_.diffuseColor.xyz(), light_.specularColor.xyz(), light_.specularExponent);
+    setKernelArguments();
 }
 
 } // namespace

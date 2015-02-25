@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-void KernelObservable::notifyObserversKernelCompiled(const cl::Kernel* kernel) const {
+void KernelObservable::notifyObserversKernelCompiled(const cl::Kernel* kernel) {
     // Notify observers
     for (ObserverSet::const_iterator it = observers_->begin(), itEnd = observers_->end(); it != itEnd; ++it) {
         // static_cast can be used since only template class objects can be added
@@ -46,8 +46,8 @@ cl::Kernel* KernelOwner::addKernel(const std::string& fileName,
                             const std::string& kernelName,
                             const std::string& defines /*= ""*/ ) {
     if (fileName.length() > 0) {
-
-        cl::Program* program = KernelManager::getPtr()->buildProgram(fileName, defines);
+        bool wasBuilt;
+        cl::Program* program = KernelManager::getPtr()->buildProgram(fileName, defines, wasBuilt);
 
         cl::Kernel* kernel = KernelManager::getPtr()->getKernel(program, kernelName, this);
         if (kernel) {
@@ -55,7 +55,7 @@ cl::Kernel* KernelOwner::addKernel(const std::string& fileName,
         }
         return kernel;
 
-    } else return NULL;
+    } else return nullptr;
 }
 
 KernelOwner::~KernelOwner() {
@@ -69,12 +69,12 @@ void KernelOwner::removeKernel(cl::Kernel* kernel) {
 }
 
 ProcessorKernelOwner::ProcessorKernelOwner(Processor* processor)
-    : KernelObserver()
+    : KernelOwner()
     , processor_(processor) {
-    kernelOwner.addObserver(this);
 }
 
-void ProcessorKernelOwner::onKernelCompiled( const cl::Kernel* kernel ) {
+void ProcessorKernelOwner::notifyObserversKernelCompiled(const cl::Kernel* kernel) {
+    KernelOwner::notifyObserversKernelCompiled(kernel);
     processor_->invalidate(INVALID_RESOURCES);
 }
 
