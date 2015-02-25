@@ -33,6 +33,8 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/basegl/processors/imageglprocessor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/baseoptionproperty.h>
 
 namespace inviwo {
 
@@ -46,6 +48,18 @@ public:
     ImageResample();
     virtual ~ImageResample();
     InviwoProcessorInfo();
+
+    void initialize();
+
+protected:
+    void interpolationTypeChanged();
+    void dimensionChanged();
+    void dimensionSourceChanged();
+
+private:
+    OptionPropertyInt interpolationType_;
+    OptionPropertyInt dimensionSource_;
+    IntVec2Property dimensions_;
 };
 
 } // namespace
