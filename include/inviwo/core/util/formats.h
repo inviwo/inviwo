@@ -313,8 +313,8 @@ public:
     //    template <class T>
     //    U operator()(Args... args)
     // function.
-    template <typename U, typename T, typename... Args>
-    auto dispatch(T& obj, Args&&... args) const -> U;
+    //template <typename U, typename T, typename... Args>
+    //auto dispatch(T& obj, Args&&... args) const -> U;
 
 protected:
     static DataFormatBase* instance_[DataFormatEnums::NUMBER_OF_FORMATS];
@@ -1306,7 +1306,7 @@ public:
     }
 };
 
-template <typename U, typename T, typename... Args>
+/*template <typename U, typename T, typename... Args>
 auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> U {
     switch (formatId_) {
 #define DataFormatIdMacro(i) \
@@ -1315,7 +1315,7 @@ auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> U {
 #undef DataFormatIdMacro
         default: return nullptr;
     }
-}
+}*/
 
 #define CallFunctionWithTemplateArgsForType(fun, id) \
     switch (id) {\
