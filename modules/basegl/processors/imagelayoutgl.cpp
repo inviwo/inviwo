@@ -137,7 +137,7 @@ void ImageLayoutGL::multiInportChanged() {
             ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
             if (imageInport) {
                 imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w)/dim);
-                ResizeEvent e(viewCoords_[i].zw);
+                ResizeEvent e(uvec2(viewCoords_[i].z, viewCoords_[i].w));
                 imageInport->changeDataDimensions(&e);
             }
         }
@@ -253,7 +253,7 @@ void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
             if(activePosition_.x >= viewCoords[i].x && activePosition_.x < viewCoords[i].x+viewCoords[i].z
                 && activePosition_.y >= viewCoords[i].y && activePosition_.y < viewCoords[i].y+viewCoords[i].w){
                     ivec2 vc = ivec2(viewCoords[i].x, viewCoords[i].y);
-                    mouseEvent->modify(mPos-vc, viewCoords[i].zw);
+                    mouseEvent->modify(mPos-vc, uvec2(viewCoords[i].z, viewCoords[i].w));
                     break;
             }
         }
