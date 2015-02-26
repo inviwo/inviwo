@@ -32,16 +32,15 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <memory>
-#include <functional>
 
 namespace inviwo {
 
 namespace util {
 // Since make_unique is a c++14 feature, roll our own in the mean time.
-/*template <typename T, typename... Args>
+template <typename T, typename... Args>
 std::unique_ptr<T> make_unique(Args&&... args) {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
-}*/
+}
 
 }
 }  // namespace
