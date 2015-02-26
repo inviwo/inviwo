@@ -46,6 +46,7 @@ namespace utilgl {
 
 // SimpleLightingProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader* shader, const SimpleLightingProperty& property);
+IVW_MODULE_OPENGL_API void addShaderDefines(Shader* shader, const ShadingMode::Modes& mode);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const SimpleLightingProperty& property,
                                              std::string name);
 

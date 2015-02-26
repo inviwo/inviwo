@@ -35,37 +35,41 @@ namespace inviwo {
 namespace utilgl {
 
 void addShaderDefines(Shader* shader, const SimpleLightingProperty& property) {
+    addShaderDefines(shader, ShadingMode::Modes(property.shadingMode_.get()));
+}
+
+void addShaderDefines(Shader* shader, const ShadingMode::Modes& mode) {
     // implementations in  modules/opengl/glsl/utils/shading.glsl
     std::string shadingKey =
         "APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, "
         "materialSpecularColor, position, normal, toCameraDir)";
     std::string shadingValue = "";
 
-    switch (property.shadingMode_.get()) {
-        case ShadingMode::Ambient:
-            shadingValue = "shadeAmbient(lighting, materialAmbientColor);";
-            break;
-        case ShadingMode::Diffuse:
-            shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal);";
-            break;
-        case ShadingMode::Specular:
-            shadingValue =
-                "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir);";
-            break;
-        case ShadingMode::BlinnPhong:
-            shadingValue =
-                "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir);";
-            break;
-        case ShadingMode::Phong:
-            shadingValue =
-                "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir);";
-            break;
-        case ShadingMode::None:
-        default:
-            shadingValue = "materialAmbientColor;";
-            break;
+    switch (mode) {
+    case ShadingMode::Ambient:
+        shadingValue = "shadeAmbient(lighting, materialAmbientColor);";
+        break;
+    case ShadingMode::Diffuse:
+        shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal);";
+        break;
+    case ShadingMode::Specular:
+        shadingValue =
+            "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir);";
+        break;
+    case ShadingMode::BlinnPhong:
+        shadingValue =
+            "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
+            "materialSpecularColor, position, normal, toCameraDir);";
+        break;
+    case ShadingMode::Phong:
+        shadingValue =
+            "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
+            "materialSpecularColor, position, normal, toCameraDir);";
+        break;
+    case ShadingMode::None:
+    default:
+        shadingValue = "materialAmbientColor;";
+        break;
     }
 
     shader->getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
