@@ -88,6 +88,7 @@ ImageLayoutGL::~ImageLayoutGL() {
 void ImageLayoutGL::initialize() {
     Processor::initialize();
     shader_ = new Shader("img_texturequad.vert", "img_copy.frag");
+    onStatusChange();
 }
 
 void ImageLayoutGL::deinitialize() {
@@ -132,14 +133,35 @@ void ImageLayoutGL::multiInportChanged() {
         updateViewports(true);
         std::vector<Inport*> inports = multiinport_.getInports();
         size_t minNum = std::min(inports.size(), viewCoords_.size());
-        vec2 dim = outport_.getData()->getDimensions();
+        uvec2 outDimU = outport_.getData()->getDimensions();
+        vec2 outDim = vec2(outDimU.x, outDimU.y);
         for (size_t i = 0; i < minNum; ++i) {
             ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
             if (imageInport) {
-                imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w)/dim);
-                ResizeEvent e(uvec2(viewCoords_[i].z, viewCoords_[i].w));
+                imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);               
+            }
+        }
+    }
+}
+
+void ImageLayoutGL::onStatusChange() { 
+    updateViewports(true);
+    std::vector<Inport*> inports = multiinport_.getInports();
+    size_t minNum = std::min(inports.size(), viewCoords_.size());
+    uvec2 outDimU = outport_.getData()->getDimensions();
+    vec2 outDim = vec2(outDimU.x, outDimU.y);
+    for (size_t i = 0; i < minNum; ++i) {
+        ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
+        if (imageInport) {
+            uvec2 inDimU = imageInport->getDimensions();
+            imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);
+            uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
+            if (inDimNewU != inDimU){
+                ResizeEvent e(inDimNewU);
+                e.setPreviousSize(inDimU);
                 imageInport->changeDataDimensions(&e);
             }
+
         }
     }
 }
@@ -221,8 +243,6 @@ void ImageLayoutGL::updateViewports(bool force) {
     currentDim_ = dim;
     currentLayout_ = static_cast<ImageLayoutTypes::Layout>(layout_.get());
 }
-
-void ImageLayoutGL::onStatusChange() { multiInportChanged(); }
 
 ImageLayoutGL::ImageLayoutGLInteractionHandler::ImageLayoutGLInteractionHandler(ImageLayoutGL* src)
     : InteractionHandler()
