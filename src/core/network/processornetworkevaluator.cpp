@@ -369,7 +369,6 @@ void ProcessorNetworkEvaluator::requestEvaluate() {
     evaluate();
 }
 
-
 void ProcessorNetworkEvaluator::evaluate() {
     // lock processor network to avoid concurrent evaluation
     processorNetwork_->lock();
@@ -387,39 +386,38 @@ void ProcessorNetworkEvaluator::evaluate() {
         updateProcessorStates();
     }
 
-    std::vector<Processor *>::iterator it = processorsSorted_.begin();
-    while (it != processorsSorted_.end()) {
-        if (!(*it)->isValid()) {
-            if ((*it)->isReady()) {
+    for (auto processor : processorsSorted_) {
+        if (!processor->isValid()) {
+            if (processor->isReady()) {
                 // re-initialize resources (e.g., shaders) if necessary
-                if ((*it)->getInvalidationLevel() >= INVALID_RESOURCES)
-                    (*it)->initializeResources();
+                if (processor->getInvalidationLevel() >= INVALID_RESOURCES)
+                    processor->initializeResources();
 
                 // call onChange for all invalid inports
-                const std::vector<Inport *>& inports = (*it)->getInports();
-                std::vector<Inport *>::const_iterator inport_it = inports.begin();
-                while (inport_it != inports.end()) {
-                    (*inport_it)->callOnChangeIfChanged();
-                     ++inport_it;
+                for (auto inport : processor->getInports()) {
+                    inport->callOnChangeIfChanged();
                 }
 
-                // do the actual processing
-                #if IVW_PROFILING 
-                (*it)->notifyObserversAboutToProcess(*it);
-                #endif
-                (*it)->process();
-                #if IVW_PROFILING 
-                (*it)->notifyObserversFinishedProcess(*it);
+                #if IVW_PROFILING
+                processor->notifyObserversAboutToProcess(processor);
                 #endif
 
-                // set processor as valid
-                (*it)->setValid();
-            }
-            else{
-                (*it)->doIfNotReady();
+                try {
+                    // do the actual processing
+                    processor->process();
+                    // set processor as valid
+                    processor->setValid();
+                } catch (Exception& e) {
+                    LogError(e.getMessage());
+                }
+
+                #if IVW_PROFILING
+                processor->notifyObserversFinishedProcess(processor);
+                #endif
+            } else {
+                processor->doIfNotReady();
             }
         }
-        ++it;
     }
     resetProcessorVisitedStates();
 
