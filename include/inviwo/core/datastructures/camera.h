@@ -38,48 +38,52 @@ namespace inviwo {
 /**
  * \class CameraBase
  *
- * \brief Base class for cameras. 
+ * \brief Base class for cameras.
  * Override this class to set your own projection matrix.
  * @see PerspectiveCamera
  * @see OrthographicCamera
  */
-class IVW_CORE_API CameraBase { 
+class IVW_CORE_API CameraBase : public IvwSerializable {
 public:
-    /** 
+    /**
      * \brief Default parameters creates a right handed coordinate system
      * with camera looking towards the negative z-axis.
      * with X = (1, 0, 0), Y = (0, 1, 0), Z = (0, 0, -1)
-     * 
-     * @param vec3 eye Camera position ( look from )
-     * @param vec3 center Camera focus point (look to)
+     *
+     * @param vec3 lookFrom Camera position (eye)
+     * @param vec3 lookTo Camera focus point (center)
      * @param vec3 lookUp Camera up direction
      */
-    CameraBase(vec3 eye = vec3(0.0f, 0.0f, 2.0f),
-              vec3 center = vec3(0.0f),
-              vec3 lookUp = vec3(0.0f, 1.0f, 0.0f));
-    virtual ~CameraBase(){}
+    CameraBase(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
+               vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
+               float farPlane = 10000.0f);
+    virtual ~CameraBase() {}
 
-    inviwo::vec3 getLookFrom() const { return lookFrom_; }
-    void setLookFrom(inviwo::vec3 val) { lookFrom_ = val; invalidateViewMatrix(); }
-    inviwo::vec3 getLookTo() const { return lookTo_; }
-    void setLookTo(inviwo::vec3 val) { lookTo_ = val; invalidateViewMatrix(); }
-    inviwo::vec3 getLookUp() const { return lookUp_; }
-    void setLookUp(inviwo::vec3 val) { lookUp_ = val; invalidateViewMatrix(); }
+    vec3 getLookFrom() const;
+    void setLookFrom(vec3 val);
 
+    vec3 getLookTo() const;
+    void setLookTo(vec3 val);
 
-    float getNearPlaneDist() const { return nearPlane_; }
-    void setNearPlane(float val) { nearPlane_ = val; invalidateProjectionMatrix();}
-    float getFarPlaneDist() const { return farPlane_; }
-    void setFarPlane(float val) { farPlane_ = val; invalidateProjectionMatrix(); }
+    vec3 getLookUp() const;
+    void setLookUp(vec3 val);
+
+    float getNearPlane() const;
+    void setNearPlane(float val);
+
+    float getFarPlane() const;
+    void setFarPlane(float val);
 
     const mat4& viewMatrix() const;
     const mat4& projectionMatrix() const;
-    mat4 inverseViewMatrix() const { return glm::inverse(viewMatrix()); }
-    mat4 inverseProjectionMatrix() const { return glm::inverse(projectionMatrix()); }
+    mat4 inverseViewMatrix() const;
+    mat4 inverseProjectionMatrix() const;
+
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
 protected:
-
-    /** 
+    /**
      * \brief Calculate and return the projection matrix for the camera.
      *
      * Implement this function to provide your own projection computation functionality.
@@ -88,14 +92,9 @@ protected:
      * @see PerspectiveCamera
      * @see OrthographicCamera
      */
-    virtual mat4 calculateProjectionMatrix() const = 0; 
-    void invalidateViewMatrix() { invalidViewMatrix_ = true; }
-    void invalidateProjectionMatrix() { invalidProjectionMatrix_ = true; }
-
-    // Make mutable to allow then to be changed even though they are called from const function. 
-    // This allows us to perform lazy evaluation.
-    mutable mat4 viewMatrix_;
-    mutable mat4 projectionMatrix_;
+    virtual mat4 calculateProjectionMatrix() const = 0;
+    void invalidateViewMatrix();
+    void invalidateProjectionMatrix();
 
     vec3 lookFrom_;
     vec3 lookTo_;
@@ -104,27 +103,34 @@ protected:
     float nearPlane_;
     float farPlane_;
 
+    // Make mutable to allow then to be changed even though they are called from const function.
+    // This allows us to perform lazy evaluation.
     mutable bool invalidViewMatrix_;
     mutable bool invalidProjectionMatrix_;
+    mutable mat4 viewMatrix_;
+    mutable mat4 projectionMatrix_;
+    mutable mat4 inverseViewMatrix_;
+    mutable mat4 inverseProjectionMatrix_;
 };
 
-class IVW_CORE_API PerspectiveCamera: public CameraBase { 
+class IVW_CORE_API PerspectiveCamera : public CameraBase {
 public:
-    PerspectiveCamera(vec3 eye = vec3(0.0f, 0.0f, 2.0f)
-        , vec3 center = vec3(0.0f)
-        , vec3 lookUp = vec3(0.0f, 1.0f, 0.0f)
-        , float fieldOfView = 60.f, float aspectRatio = 1.f): CameraBase(eye, center, lookUp), fovy_(fieldOfView), aspectRatio_(aspectRatio) {};
-    virtual ~PerspectiveCamera(){}
+    PerspectiveCamera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
+                      vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
+                      float farPlane = 10000.0f, float fieldOfView = 60.f, float aspectRatio = 1.f);
+    virtual ~PerspectiveCamera() {}
 
-    float getFovy() const { return fovy_; }
-    void setFovy(float val) { fovy_ = val; invalidateProjectionMatrix(); }
-    float getAspectRatio() const { return aspectRatio_; }
-    void setAspectRatio(float val) { aspectRatio_ = val; invalidateProjectionMatrix(); }
+    float getFovy() const;
+    void setFovy(float val);
+    float getAspectRatio() const;
+    void setAspectRatio(float val);
+
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
+
 protected:
+    virtual mat4 calculateProjectionMatrix() const override;
 
-    mat4 calculateProjectionMatrix() const {
-        return glm::perspective(fovy_, aspectRatio_, nearPlane_, farPlane_);
-    };
     float fovy_;
     float aspectRatio_;
 };
@@ -132,39 +138,107 @@ protected:
 /**
  * \class OrthographicCamera
  *
- * \brief Camera with no perspective projection. 
+ * \brief Camera with no perspective projection.
  * Objects far away will apear as large as objects close.
  * @see CameraBase
  * @see OrthographicCamera
  */
-class IVW_CORE_API OrthographicCamera: public CameraBase { 
+class IVW_CORE_API OrthographicCamera : public CameraBase {
 public:
-    OrthographicCamera(vec3 eye = vec3(0.0f, 0.0f, 2.0f)
-        , vec3 center = vec3(0.0f)
-        , vec3 lookUp = vec3(0.0f, 1.0f, 0.0f)
-        , vec4 frustum = vec4(-1, 1, -1, 1)): CameraBase(eye, center, lookUp), frustum_(frustum) {};
-    virtual ~OrthographicCamera(){}
+    OrthographicCamera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
+                       vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
+                       float farPlane = 10000.0f, vec4 frustum = vec4(-1, 1, -1, 1));
+    virtual ~OrthographicCamera() {}
 
-    inviwo::vec4 getFrustum() const { return frustum_; }
-    /** 
+    vec4 getFrustum() const;
+    /**
      * \brief Left, right, bottom, top view volume
      *
      * Set view frustum used for projection matrix calculation.
-     * 
-     * @param inviwo::vec4 val 
-     * @return void 
+     *
+     * @param inviwo::vec4 val
+     * @return void
      */
-    void setFrustum(inviwo::vec4 val) { frustum_ = val; invalidateProjectionMatrix(); }
-protected:
+    void setFrustum(inviwo::vec4 val);
 
-    mat4 calculateProjectionMatrix() const {
-        return glm::ortho(frustum_.x, frustum_.y, frustum_.z, frustum_.w, nearPlane_, farPlane_);
-    };
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
+
+protected:
+    virtual mat4 calculateProjectionMatrix() const override;
+
     // Left, right, bottom, top view volume
     vec4 frustum_;
 };
 
-} // namespace
+// Implementation details
 
-#endif // IVW_CAMERA_H
+inline vec3 CameraBase::getLookFrom() const { return lookFrom_; }
+inline void CameraBase::setLookFrom(vec3 val) {
+    lookFrom_ = val;
+    invalidateViewMatrix();
+}
+inline vec3 CameraBase::getLookTo() const { return lookTo_; }
+inline void CameraBase::setLookTo(vec3 val) {
+    lookTo_ = val;
+    invalidateViewMatrix();
+}
+inline vec3 CameraBase::getLookUp() const { return lookUp_; }
+inline void CameraBase::setLookUp(vec3 val) {
+    lookUp_ = val;
+    invalidateViewMatrix();
+}
 
+inline float CameraBase::getNearPlane() const { return nearPlane_; }
+inline void CameraBase::setNearPlane(float val) {
+    nearPlane_ = val;
+    invalidateProjectionMatrix();
+}
+inline float CameraBase::getFarPlane() const { return farPlane_; }
+inline void CameraBase::setFarPlane(float val) {
+    farPlane_ = val;
+    invalidateProjectionMatrix();
+}
+
+inline mat4 CameraBase::inverseViewMatrix() const {
+    if (invalidViewMatrix_) viewMatrix();
+    return inverseViewMatrix_;
+}
+
+inline mat4 CameraBase::inverseProjectionMatrix() const {
+    if (invalidProjectionMatrix_) projectionMatrix();
+    return inverseProjectionMatrix_;
+}
+
+inline void CameraBase::invalidateViewMatrix() { invalidViewMatrix_ = true; }
+inline void CameraBase::invalidateProjectionMatrix() { invalidProjectionMatrix_ = true; }
+
+inline float PerspectiveCamera::getFovy() const { return fovy_; }
+inline void PerspectiveCamera::setFovy(float val) {
+    fovy_ = val;
+    invalidateProjectionMatrix();
+}
+inline float PerspectiveCamera::getAspectRatio() const { return aspectRatio_; }
+inline void PerspectiveCamera::setAspectRatio(float val) {
+    aspectRatio_ = val;
+    invalidateProjectionMatrix();
+}
+
+inline mat4 PerspectiveCamera::calculateProjectionMatrix() const {
+    return glm::perspective(fovy_, aspectRatio_, nearPlane_, farPlane_);
+};
+
+inline vec4 OrthographicCamera::getFrustum() const { return frustum_; }
+
+inline void OrthographicCamera::setFrustum(inviwo::vec4 val) {
+    frustum_ = val;
+    invalidateProjectionMatrix();
+}
+
+inline mat4 OrthographicCamera::calculateProjectionMatrix() const {
+    return glm::ortho(frustum_.x, frustum_.y, frustum_.z, frustum_.w, nearPlane_, farPlane_);
+};
+
+}  // namespace
+
+#endif  // IVW_CAMERA_H

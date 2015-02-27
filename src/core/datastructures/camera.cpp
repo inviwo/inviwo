@@ -31,34 +31,78 @@
 
 namespace inviwo {
 
-CameraBase::CameraBase(vec3 eye /*= vec3(0.0f, 0.0f, -2.0f)*/, vec3 center /*= vec3(0.0f)*/, vec3 lookUp /*= vec3(0.0f, 1.0f, 0.0f)*/)
-    : lookFrom_(eye)
-    , lookTo_(center)
+CameraBase::CameraBase(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float farPlane)
+    : lookFrom_(lookFrom)
+    , lookTo_(lookTo)
     , lookUp_(lookUp)
-    , farPlane_(10000.0f)
-    , nearPlane_(0.01f) 
+    , nearPlane_(nearPlane)
+    , farPlane_(farPlane)
     , invalidViewMatrix_(true)
-    , invalidProjectionMatrix_(true) {
-
-}
+    , invalidProjectionMatrix_(true) {}
 
 const mat4& CameraBase::viewMatrix() const {
     if (invalidViewMatrix_) {
         viewMatrix_ = glm::lookAt(lookFrom_, lookTo_, lookUp_);
+        inverseViewMatrix_ = glm::inverse(viewMatrix_);
         invalidViewMatrix_ = false;
     }
     return viewMatrix_;
-    //mat4 view = glm::mat4_cast(orientation_);
-    //return glm::translate(view, -lookFrom_);
 }
 
 const mat4& CameraBase::projectionMatrix() const {
     if (invalidProjectionMatrix_) {
         projectionMatrix_ = calculateProjectionMatrix();
+        inverseProjectionMatrix_ = glm::inverse(projectionMatrix_);
         invalidProjectionMatrix_ = false;
     }
     return projectionMatrix_;
 }
 
-} // namespace
+void CameraBase::serialize(IvwSerializer& s) const {
+    s.serialize("lookFrom", lookFrom_);
+    s.serialize("lookTo", lookTo_);
+    s.serialize("lookUp", lookUp_);
+    s.serialize("nearPlane", nearPlane_);
+    s.serialize("farPlane", farPlane_);
+}
+void CameraBase::deserialize(IvwDeserializer& d) {
+    d.deserialize("lookFrom", lookFrom_);
+    d.deserialize("lookTo", lookTo_);
+    d.deserialize("lookUp", lookUp_);
+    d.deserialize("nearPlane", nearPlane_);
+    d.deserialize("farPlane", farPlane_);
+    invalidProjectionMatrix_ = true;
+    invalidViewMatrix_ = true;
+}
 
+PerspectiveCamera::PerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
+                                     float farPlane, float fieldOfView, float aspectRatio)
+    : CameraBase(lookFrom, lookTo, lookUp, nearPlane, farPlane)
+    , fovy_(fieldOfView)
+    , aspectRatio_(aspectRatio){};
+
+void PerspectiveCamera::serialize(IvwSerializer& s) const {
+    CameraBase::serialize(s);
+    s.serialize("fovy", fovy_);
+    s.serialize("aspectRatio", aspectRatio_);
+}
+void PerspectiveCamera::deserialize(IvwDeserializer& d) {
+    d.deserialize("fovy", fovy_);
+    d.deserialize("aspectRatio", aspectRatio_);
+    CameraBase::deserialize(d);
+};
+
+OrthographicCamera::OrthographicCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
+                                       float farPlane, vec4 frustum)
+    : CameraBase(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum){};
+
+void OrthographicCamera::serialize(IvwSerializer& s) const {
+    CameraBase::serialize(s);
+    s.serialize("frustum", frustum_);
+}
+void OrthographicCamera::deserialize(IvwDeserializer& d) {
+    d.deserialize("frustum", frustum_);
+    CameraBase::deserialize(d);
+}
+
+}  // namespace
