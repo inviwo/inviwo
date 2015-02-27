@@ -24,22 +24,21 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-Exception::Exception(const std::string& message) : message_(message) {}
+Exception::Exception(const std::string& message) : std::exception(message.c_str()) {}
 
 Exception::~Exception() throw() {}
 
-const std::string& Exception::getMessage() const throw() { return message_; };
+std::string Exception::getMessage() const throw() { return std::string(what()); };
 
 IgnoreException::IgnoreException(const std::string& message) : Exception(message) {}
 
 AbortException::AbortException(const std::string& message) : Exception(message) {}
 
-
-} // namespace
+}  // namespace

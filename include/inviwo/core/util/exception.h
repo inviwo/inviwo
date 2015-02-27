@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_EXCEPTION_H
@@ -32,25 +32,16 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <iostream>
+#include <string>
 
 namespace inviwo {
 
 class IVW_CORE_API Exception : public std::exception {
-
 public:
     Exception(const std::string& message = "");
-    virtual ~Exception() throw ();
-
-    virtual const std::string& getMessage() const throw();
-
-private:
-    // We can safely ingnore the C4251 warning for private members.
-#pragma warning( push )
-#pragma warning( disable: 4251 )
-    std::string message_;
-#pragma warning( pop )
+    virtual ~Exception() throw();
+    virtual std::string getMessage() const throw();
 };
-
 
 class IVW_CORE_API IgnoreException : public Exception {
 public:
@@ -64,6 +55,6 @@ public:
     virtual ~AbortException() throw() {}
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_EXCEPTION_H
+#endif  // IVW_EXCEPTION_H
