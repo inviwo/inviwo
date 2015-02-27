@@ -116,7 +116,7 @@ void DataSequence<T>::add(T* d) {
 
 template <typename T>
 void DataSequence<T>::setCurrentIndex(int idx) {
-    currentIdx_ = idx;
+    currentIdx_ = glm::clamp(idx, 0, static_cast<int>(sequenceContainer_.size()) - 1);
 }
 
 template <typename T>
