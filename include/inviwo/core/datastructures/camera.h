@@ -68,11 +68,21 @@ public:
     vec3 getLookUp() const;
     void setLookUp(vec3 val);
 
-    float getNearPlane() const;
-    void setNearPlane(float val);
+    float getNearPlaneDist() const;
+    /** 
+     * \brief Set distance to the near plane from lookFrom.
+     * 
+     * @param val Distance
+     */
+    void setNearPlaneDist(float val);
 
-    float getFarPlane() const;
-    void setFarPlane(float val);
+    float getFarPlaneDist() const;
+    /** 
+     * \brief Set distance to the far plane from lookFrom.
+     * 
+     * @param val Distance
+     */
+    void setFarPlaneDist(float val);
 
     const mat4& viewMatrix() const;
     const mat4& projectionMatrix() const;
@@ -100,8 +110,8 @@ protected:
     vec3 lookTo_;
     vec3 lookUp_;
 
-    float nearPlane_;
-    float farPlane_;
+    float nearPlaneDist_; ///< Distance to the near plane from lookFrom.
+    float farPlaneDist_;  ///< Distance to the far plane from lookFrom.
 
     // Make mutable to allow then to be changed even though they are called from const function.
     // This allows us to perform lazy evaluation.
@@ -189,14 +199,14 @@ inline void CameraBase::setLookUp(vec3 val) {
     invalidateViewMatrix();
 }
 
-inline float CameraBase::getNearPlane() const { return nearPlane_; }
-inline void CameraBase::setNearPlane(float val) {
-    nearPlane_ = val;
+inline float CameraBase::getNearPlaneDist() const { return nearPlaneDist_; }
+inline void CameraBase::setNearPlaneDist(float val) {
+    nearPlaneDist_ = val;
     invalidateProjectionMatrix();
 }
-inline float CameraBase::getFarPlane() const { return farPlane_; }
-inline void CameraBase::setFarPlane(float val) {
-    farPlane_ = val;
+inline float CameraBase::getFarPlaneDist() const { return farPlaneDist_; }
+inline void CameraBase::setFarPlaneDist(float val) {
+    farPlaneDist_ = val;
     invalidateProjectionMatrix();
 }
 
@@ -225,7 +235,7 @@ inline void PerspectiveCamera::setAspectRatio(float val) {
 }
 
 inline mat4 PerspectiveCamera::calculateProjectionMatrix() const {
-    return glm::perspective(fovy_, aspectRatio_, nearPlane_, farPlane_);
+    return glm::perspective(fovy_, aspectRatio_, nearPlaneDist_, farPlaneDist_);
 };
 
 inline vec4 OrthographicCamera::getFrustum() const { return frustum_; }
@@ -236,7 +246,7 @@ inline void OrthographicCamera::setFrustum(inviwo::vec4 val) {
 }
 
 inline mat4 OrthographicCamera::calculateProjectionMatrix() const {
-    return glm::ortho(frustum_.x, frustum_.y, frustum_.z, frustum_.w, nearPlane_, farPlane_);
+    return glm::ortho(frustum_.x, frustum_.y, frustum_.z, frustum_.w, nearPlaneDist_, farPlaneDist_);
 };
 
 }  // namespace
