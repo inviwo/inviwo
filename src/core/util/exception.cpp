@@ -31,11 +31,12 @@
 
 namespace inviwo {
 
-Exception::Exception(const std::string& message) : std::exception(message.c_str()) {}
+Exception::Exception(const std::string& message) : std::exception(), message_(message) {}
 
 Exception::~Exception() throw() {}
 
-std::string Exception::getMessage() const throw() { return std::string(what()); };
+std::string Exception::getMessage() const throw() { return message_; };
+const char* Exception::what() const throw() { return message_.c_str(); }
 
 IgnoreException::IgnoreException(const std::string& message) : Exception(message) {}
 

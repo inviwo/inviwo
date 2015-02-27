@@ -41,6 +41,10 @@ public:
     Exception(const std::string& message = "");
     virtual ~Exception() throw();
     virtual std::string getMessage() const throw();
+    virtual const char* what() const throw() override;
+
+private:
+    std::string message_;
 };
 
 class IVW_CORE_API IgnoreException : public Exception {
