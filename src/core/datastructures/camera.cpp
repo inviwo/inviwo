@@ -44,8 +44,8 @@ CameraBase::CameraBase(vec3 eye /*= vec3(0.0f, 0.0f, -2.0f)*/, vec3 center /*= v
 
 const mat4& CameraBase::viewMatrix() const {
     if (invalidViewMatrix_) {
-        const_cast<CameraBase*>(this)->updateViewMatrix();
-        const_cast<CameraBase*>(this)->invalidViewMatrix_ = false;
+        viewMatrix_ = glm::lookAt(lookFrom_, lookTo_, lookUp_);
+        invalidViewMatrix_ = false;
     }
     return viewMatrix_;
     //mat4 view = glm::mat4_cast(orientation_);
@@ -54,14 +54,10 @@ const mat4& CameraBase::viewMatrix() const {
 
 const mat4& CameraBase::projectionMatrix() const {
     if (invalidProjectionMatrix_) {
-        const_cast<CameraBase*>(this)->updateProjectionMatrix();
-        const_cast<CameraBase*>(this)->invalidProjectionMatrix_ = false;
+        projectionMatrix_ = calculateProjectionMatrix();
+        invalidProjectionMatrix_ = false;
     }
     return projectionMatrix_;
-}
-
-void CameraBase::updateViewMatrix() {
-    viewMatrix_ = glm::lookAt(lookFrom_, lookTo_, lookUp_);
 }
 
 } // namespace

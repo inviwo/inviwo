@@ -76,14 +76,26 @@ public:
     const mat4& projectionMatrix() const;
     mat4 inverseViewMatrix() const { return glm::inverse(viewMatrix()); }
     mat4 inverseProjectionMatrix() const { return glm::inverse(projectionMatrix()); }
+
 protected:
-    void updateViewMatrix();
-    virtual void updateProjectionMatrix() = 0;
+
+    /** 
+     * \brief Calculate and return the projection matrix for the camera.
+     *
+     * Implement this function to provide your own projection computation functionality.
+     * For example orthogonal or perspective projection.
+     * This function will be called when the projection matrix is invalid.
+     * @see PerspectiveCamera
+     * @see OrthographicCamera
+     */
+    virtual mat4 calculateProjectionMatrix() const = 0; 
     void invalidateViewMatrix() { invalidViewMatrix_ = true; }
     void invalidateProjectionMatrix() { invalidProjectionMatrix_ = true; }
 
-    mat4 viewMatrix_;
-    mat4 projectionMatrix_;
+    // Make mutable to allow then to be changed even though they are called from const function. 
+    // This allows us to perform lazy evaluation.
+    mutable mat4 viewMatrix_;
+    mutable mat4 projectionMatrix_;
 
     vec3 lookFrom_;
     vec3 lookTo_;
@@ -92,8 +104,8 @@ protected:
     float nearPlane_;
     float farPlane_;
 
-    bool invalidViewMatrix_;
-    bool invalidProjectionMatrix_;
+    mutable bool invalidViewMatrix_;
+    mutable bool invalidProjectionMatrix_;
 };
 
 class IVW_CORE_API PerspectiveCamera: public CameraBase { 
@@ -110,8 +122,8 @@ public:
     void setAspectRatio(float val) { aspectRatio_ = val; invalidateProjectionMatrix(); }
 protected:
 
-    virtual void updateProjectionMatrix() {
-        projectionMatrix_ = glm::perspective(fovy_, aspectRatio_, nearPlane_, farPlane_);
+    mat4 calculateProjectionMatrix() const {
+        return glm::perspective(fovy_, aspectRatio_, nearPlane_, farPlane_);
     };
     float fovy_;
     float aspectRatio_;
@@ -145,8 +157,8 @@ public:
     void setFrustum(inviwo::vec4 val) { frustum_ = val; invalidateProjectionMatrix(); }
 protected:
 
-    virtual void updateProjectionMatrix() {
-        projectionMatrix_ = glm::ortho(frustum_.x, frustum_.y, frustum_.z, frustum_.w, nearPlane_, farPlane_);
+    mat4 calculateProjectionMatrix() const {
+        return glm::ortho(frustum_.x, frustum_.y, frustum_.z, frustum_.w, nearPlane_, farPlane_);
     };
     // Left, right, bottom, top view volume
     vec4 frustum_;
