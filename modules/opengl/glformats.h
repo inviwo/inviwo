@@ -34,13 +34,12 @@
 #include <inviwo/core/util/formats.h>
 #include <inviwo/core/util/assertion.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglexception.h>
 
 namespace inviwo {
 
 class GLFormats {
-
 public:
-
     enum Normalization {
         NONE,
         NORMALIZED,
@@ -126,7 +125,10 @@ public:
     };
 
     GLFormat getGLFormat(DataFormatEnums::Id id) const {
-        ivwAssert(glFormatArray_[static_cast<int>(id)].valid, "Accessing invalid GLFormat");
+        if (!glFormatArray_[static_cast<int>(id)].valid) {
+            throw OpenGLException("Error no OpenGL format available for selected data format: " 
+                                  + std::string(DataFormatBase::get(id)->getString()));
+        }
         return glFormatArray_[static_cast<int>(id)];
     };
 
