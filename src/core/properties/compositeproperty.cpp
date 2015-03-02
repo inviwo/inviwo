@@ -63,66 +63,53 @@ CompositeProperty::~CompositeProperty() {}
 
 void CompositeProperty::setOwner(PropertyOwner* owner) {
     Property::setOwner(owner);
-    for (auto& elem : properties_) elem->setOwner(this);
+    for (Property* property: properties_) property->setOwner(this);
 }
 
 UsageMode CompositeProperty::getUsageMode() const {
     UsageMode mode = DEVELOPMENT;
-    for (auto& elem : properties_) {
-        mode = std::min(mode, elem->getUsageMode());
-    }
+    for (Property* property : properties_) mode = std::min(mode, property->getUsageMode());
     return mode;
 }
 void CompositeProperty::setUsageMode(UsageMode usageMode) {
-    for (auto& elem : properties_) {
-        elem->setUsageMode(usageMode);
-    }
+    for (Property* property : properties_) property->setUsageMode(usageMode);
     Property::setUsageMode(usageMode);
 }
 
 void CompositeProperty::updateVisibility() {
     Property::updateVisibility();
-    for (auto& elem : properties_) {
-        elem->updateVisibility();
-    }     
+    for (Property* property : properties_) property->updateVisibility();
 }
 
 bool CompositeProperty::getVisible() {
     bool visible = false;
-    for (auto& elem : properties_) {
-        visible = visible || elem->getVisible();
-    }
+    for (Property* property : properties_) visible = visible || property->getVisible();
     return visible;
 }
 
 void CompositeProperty::setVisible(bool val) {
-    for (auto& elem : properties_) {
-        elem->setVisible(val);
-    }
+    for (Property* property : properties_) property->setVisible(val);
     Property::setVisible(val);
 }
 
 bool CompositeProperty::getReadOnly() const {
     bool readOnly = true;
-    for (auto& elem : properties_) {
-        readOnly = readOnly && elem->getReadOnly();
-    }
+    for (Property* property : properties_) readOnly = readOnly && property->getReadOnly();
     return readOnly;
 }
 
 void CompositeProperty::setReadOnly(const bool& value) {
-    for (auto& elem : properties_) elem->setReadOnly(value);
+    for (Property* property : properties_) property->setReadOnly(value);
 }
 
 void CompositeProperty::setPropertyModified(bool modified) {
-    for (auto& elem : properties_) elem->setPropertyModified(modified);
-
+    for (Property* property: properties_) property->setPropertyModified(modified);
     Property::setPropertyModified(modified);
 }
 
 bool CompositeProperty::isPropertyModified() const {
-    for (auto& elem : properties_)
-        if (elem->isPropertyModified()) return true;
+    for (Property* property : properties_)
+        if (property->isPropertyModified()) return true;
 
     return false;
 }
