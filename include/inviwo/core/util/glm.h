@@ -48,6 +48,8 @@
 #include <glm/detail/precision.hpp>
 #include <glm/gtx/io.hpp>
 
+#include <type_traits>
+
 namespace inviwo {
 
 typedef glm::ivec2 ivec2;
@@ -72,6 +74,57 @@ typedef glm::dmat2 dmat2;
 typedef glm::dmat3 dmat3;
 typedef glm::dmat4 dmat4;
 typedef glm::quat quat;
+
+
+
+namespace util {
+
+template<class U, class T, class BinaryOperation>
+U accumulate(T x, U init, BinaryOperation op) {
+    init = op(init, x);
+    return init;
+}
+
+template <class U, glm::precision P, template <typename, glm::precision> class vecType,
+          class BinaryOperation>
+typename std::enable_if<
+            std::is_same< typename std::decay<vecType<U, P>>::type ,
+                          glm::detail::tvec2<U, P>>::value ||
+            std::is_same< typename std::decay<vecType<U, P>>::type ,
+                          glm::detail::tvec3<U, P>>::value ||
+            std::is_same< typename std::decay<vecType<U, P>>::type ,
+                          glm::detail::tvec4<U, P>>::value, U >::type
+    accumulate(vecType<U, P> const& x, U init, BinaryOperation op) {
+    for (int i = 0; i < x.length(); ++i) init = op(init, x[i]);
+
+    return init;
+}
+
+template <class U, glm::precision P, template <typename, glm::precision> class vecType,
+          class BinaryOperation>
+typename std::enable_if<
+            std::is_same< typename std::decay<vecType<U, P>>::type ,
+                          glm::detail::tmat2x2<U, P>>::value ||
+            std::is_same< typename std::decay<vecType<U, P>>::type ,
+                          glm::detail::tmat3x3<U, P>>::value ||
+            std::is_same< typename std::decay<vecType<U, P>>::type ,
+                          glm::detail::tmat4x4<U, P>>::value, U >::type
+    accumulate(vecType<U, P> const& x, U init, BinaryOperation op) {
+    for (int i = 0; i < x.length(); ++i)
+        for (int j = 0; j< x[i].length(); ++j)
+            init = op(init, x[i][j]);
+
+    return init;
+}
+
+//template<typename T>
+//struct rank {
+//    static const int value = 1;
+//}
+
+
+
+} // namespace util
 
 } // namespace
 
