@@ -54,6 +54,7 @@ FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
 void FilePropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
+    setLayout(hLayout);
 
     label_ = new EditableLabelQt(this, property_->getDisplayName());
     hLayout->addWidget(label_);
@@ -65,13 +66,22 @@ void FilePropertyWidgetQt::generateWidget() {
 
     lineEdit_ = new QLineEdit(this);
     lineEdit_->setReadOnly(true);
+    
+    QSizePolicy sp = lineEdit_->sizePolicy();
+    sp.setHorizontalStretch(3);
+    lineEdit_->setSizePolicy(sp);
+    
     openButton_ = new QToolButton(this);
     openButton_->setIcon(QIcon(":/icons/open.png"));
     hWidgetLayout->addWidget(lineEdit_);
     hWidgetLayout->addWidget(openButton_);
+    
+    sp = widget->sizePolicy();
+    sp.setHorizontalStretch(3);
+    widget->setSizePolicy(sp);
+    
     hLayout->addWidget(widget);
 
-    setLayout(hLayout);
 
     connect(label_, SIGNAL(textChanged()), this, SLOT(setPropertyDisplayName()));
     connect(openButton_, SIGNAL(pressed()), this, SLOT(setPropertyValue()));
