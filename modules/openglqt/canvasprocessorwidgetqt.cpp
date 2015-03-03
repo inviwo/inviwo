@@ -179,16 +179,12 @@ void CanvasProcessorWidgetQt::moveEvent(QMoveEvent* event) {
 
 void CanvasProcessorWidgetQt::setProcessor(Processor* processor) {
     CanvasProcessorWidget::setProcessor(processor);
-    processor->ProcessorObservable::addObserver(this);
+    if (processor) processor->ProcessorObservable::addObserver(this);
 }
 
 void CanvasProcessorWidgetQt::onProcessorIdentifierChange(Processor*) {
     setWindowTitle(QString::fromStdString(processor_->getIdentifier()));
 }
-
-
-
-
 
 
 
