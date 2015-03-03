@@ -94,6 +94,7 @@ public:
  */
 template<typename T>
 class BaseTemplateOptionProperty : public BaseOptionProperty {
+public:
     
     template <typename U>
     struct Option : public IvwSerializable {
@@ -124,7 +125,7 @@ class BaseTemplateOptionProperty : public BaseOptionProperty {
         }
     };
 
-
+private:
     template <typename U>
     struct MatchId {
         MatchId(const std::string& s) : s_(s) {}
@@ -153,7 +154,7 @@ class BaseTemplateOptionProperty : public BaseOptionProperty {
         const U& s_;
     };
 
-public:
+public: 
     typedef T valueType;
 
     BaseTemplateOptionProperty(std::string identifier, 
@@ -193,6 +194,7 @@ public:
     virtual bool setSelectedDisplayName(std::string name);
     virtual bool setSelectedValue(T val);
     virtual void replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames, std::vector<T> values);
+    virtual void replaceOptions(std::vector<Option<T>> options);
     
     virtual bool isSelectedIndex(size_t index) const;
     virtual bool isSelectedIdentifier(std::string identifier) const;
@@ -259,10 +261,14 @@ public:
     virtual void addOption(std::string identifier, std::string displayName);
 };
 
-typedef TemplateOptionProperty<int> OptionPropertyInt;
-typedef TemplateOptionProperty<float> OptionPropertyFloat;
-typedef TemplateOptionProperty<double> OptionPropertyDouble;
+using OptionPropertyInt = TemplateOptionProperty<int>;
+using OptionPropertyFloat = TemplateOptionProperty<float>;
+using OptionPropertyDouble = TemplateOptionProperty<double>;
 
+using OptionPropertyIntOption = TemplateOptionProperty<int>::Option<int>;
+using OptionPropertyFloatOption = TemplateOptionProperty<float>::Option<float>;
+using OptionPropertyDoubleOption = TemplateOptionProperty<double>::Option<double>;
+using OptionPropertyStringOption = OptionPropertyString::Option<std::string>;
 
 template <typename T>
 BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(std::string identifier,
@@ -445,13 +451,31 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedValue(T val) {
 
 template<typename T>
 void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames, std::vector<T> values) {
-    std::string selectId = getSelectedIdentifier();
+    std::string selectId{};
+    if (!options_.empty()) selectId = getSelectedIdentifier();
 
     options_.clear();
     for (size_t i=0; i<ids.size(); i++)
-        options_.push_back(Option<T>(ids[i], displayNames[i], values[i]));
+        options_.emplace_back(ids[i], displayNames[i], values[i]);
     
-    typename std::vector<Option<T> >::iterator it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
+    auto it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
+    if (it != options_.end())
+        selectedIndex_ = std::distance(options_.begin(), it);
+    else
+        selectedIndex_ = 0;
+
+    propertyModified();
+}
+
+template<typename T>
+void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<Option<T>> options) {
+    std::string selectId{};
+    if (!options_.empty()) selectId = getSelectedIdentifier();
+    
+    options_.clear();
+    std::copy(options.begin(), options.end(), std::back_inserter(options_));
+
+    auto it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
     if (it != options_.end())
         selectedIndex_ = std::distance(options_.begin(), it);
     else
