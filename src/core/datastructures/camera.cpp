@@ -35,8 +35,8 @@ CameraBase::CameraBase(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
     : lookFrom_(lookFrom)
     , lookTo_(lookTo)
     , lookUp_(lookUp)
-    , nearPlane_(nearPlane)
-    , farPlane_(farPlane)
+    , nearPlaneDist_(nearPlane)
+    , farPlaneDist_(farPlane)
     , invalidViewMatrix_(true)
     , invalidProjectionMatrix_(true) {}
 
@@ -62,15 +62,15 @@ void CameraBase::serialize(IvwSerializer& s) const {
     s.serialize("lookFrom", lookFrom_);
     s.serialize("lookTo", lookTo_);
     s.serialize("lookUp", lookUp_);
-    s.serialize("nearPlane", nearPlane_);
-    s.serialize("farPlane", farPlane_);
+    s.serialize("nearPlaneDist", nearPlaneDist_);
+    s.serialize("farPlaneDist", farPlaneDist_);
 }
 void CameraBase::deserialize(IvwDeserializer& d) {
     d.deserialize("lookFrom", lookFrom_);
     d.deserialize("lookTo", lookTo_);
     d.deserialize("lookUp", lookUp_);
-    d.deserialize("nearPlane", nearPlane_);
-    d.deserialize("farPlane", farPlane_);
+    d.deserialize("nearPlaneDist", nearPlaneDist_);
+    d.deserialize("farPlaneDist", farPlaneDist_);
     invalidProjectionMatrix_ = true;
     invalidViewMatrix_ = true;
 }
