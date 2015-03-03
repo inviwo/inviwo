@@ -68,58 +68,48 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Image* entryPo
     svec2 globalWorkGroupSize(getGlobalWorkGroupSize(outputSize_.x, localWorkGroupSize.x), getGlobalWorkGroupSize(outputSize_.y,
         localWorkGroupSize.y));
 
-    try {
-        // This macro will create an event called profilingEvent if IVW_PROFILING is enabled,
-        // otherwise the profilingEvent will be declared as a null pointer
-        IVW_OPENCL_PROFILING(profilingEvent, "")
-
-            if (useGLSharing_) {
-                // SyncCLGL will synchronize with OpenGL upon creation and destruction
-                SyncCLGL glSync;
-                const ImageCLGL* entryCL = entryPoints->getRepresentation<ImageCLGL>();
-                const ImageCLGL* exitCL = exitPoints->getRepresentation<ImageCLGL>();
-                ImageCLGL* outImageCL = outImage->getEditableRepresentation<ImageCLGL>();
-                const VolumeCLGL* volumeCL = volume->getRepresentation<VolumeCLGL>();
-                const LayerCLGL* transferFunctionCL = transferFunction->getRepresentation<LayerCLGL>();
-                const LayerCLBase* background;
-                if (background_) {
-                    background = background_->getRepresentation<LayerCLGL>();
-                    glSync.addToAquireGLObjectList(static_cast<const LayerCLGL*>(background));
-                } else {
-                    background = defaultBackground_.getRepresentation<LayerCL>();
-                }
-                // Shared objects must be acquired before use.
-                glSync.addToAquireGLObjectList(entryCL);
-                glSync.addToAquireGLObjectList(exitCL);
-                glSync.addToAquireGLObjectList(outImageCL);
-                glSync.addToAquireGLObjectList(volumeCL);
-                glSync.addToAquireGLObjectList(transferFunctionCL);
+    if (useGLSharing_) {
+        // SyncCLGL will synchronize with OpenGL upon creation and destruction
+        SyncCLGL glSync;
+        const ImageCLGL* entryCL = entryPoints->getRepresentation<ImageCLGL>();
+        const ImageCLGL* exitCL = exitPoints->getRepresentation<ImageCLGL>();
+        ImageCLGL* outImageCL = outImage->getEditableRepresentation<ImageCLGL>();
+        const VolumeCLGL* volumeCL = volume->getRepresentation<VolumeCLGL>();
+        const LayerCLGL* transferFunctionCL = transferFunction->getRepresentation<LayerCLGL>();
+        const LayerCLBase* background;
+        if (background_) {
+            background = background_->getRepresentation<LayerCLGL>();
+            glSync.addToAquireGLObjectList(static_cast<const LayerCLGL*>(background));
+        } else {
+            background = defaultBackground_.getRepresentation<LayerCL>();
+        }
+        // Shared objects must be acquired before use.
+        glSync.addToAquireGLObjectList(entryCL);
+        glSync.addToAquireGLObjectList(exitCL);
+        glSync.addToAquireGLObjectList(outImageCL);
+        glSync.addToAquireGLObjectList(volumeCL);
+        glSync.addToAquireGLObjectList(transferFunctionCL);
                 
-                // Acquire all of the objects at once
-                glSync.aquireAllObjects();
+        // Acquire all of the objects at once
+        glSync.aquireAllObjects();
 
-                volumeRaycast(volume, volumeCL, background, entryCL->getLayerCL(), exitCL->getLayerCL(), transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
-            } else {
-                const ImageCL* entryCL = entryPoints->getRepresentation<ImageCL>();
-                const ImageCL* exitCL = exitPoints->getRepresentation<ImageCL>();
-                ImageCL* outImageCL = outImage->getEditableRepresentation<ImageCL>();
-                const VolumeCL* volumeCL = volume->getRepresentation<VolumeCL>();
-                const LayerCL* transferFunctionCL = transferFunction->getRepresentation<LayerCL>();
-                //const LayerCL* background = background_->getRepresentation<LayerCL>();
-                const LayerCL* background;
-                if (background_) {
-                    background = background_->getRepresentation<LayerCL>();
-                } else {
-                    background = defaultBackground_.getRepresentation<LayerCL>();
-                }
-                volumeRaycast(volume, volumeCL, background, entryCL->getLayerCL(), exitCL->getLayerCL(), transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
-            }
-
-            // This macro will destroy the profiling event and print the timing in the console if IVW_PROFILING is enabled
-
-    } catch (cl::Error& err) {
-        LogError(getCLErrorString(err));
+        volumeRaycast(volume, volumeCL, background, entryCL->getLayerCL(), exitCL->getLayerCL(), transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
+    } else {
+        const ImageCL* entryCL = entryPoints->getRepresentation<ImageCL>();
+        const ImageCL* exitCL = exitPoints->getRepresentation<ImageCL>();
+        ImageCL* outImageCL = outImage->getEditableRepresentation<ImageCL>();
+        const VolumeCL* volumeCL = volume->getRepresentation<VolumeCL>();
+        const LayerCL* transferFunctionCL = transferFunction->getRepresentation<LayerCL>();
+        //const LayerCL* background = background_->getRepresentation<LayerCL>();
+        const LayerCL* background;
+        if (background_) {
+            background = background_->getRepresentation<LayerCL>();
+        } else {
+            background = defaultBackground_.getRepresentation<LayerCL>();
+        }
+        volumeRaycast(volume, volumeCL, background, entryCL->getLayerCL(), exitCL->getLayerCL(), transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
     }
+
 }
 
 
