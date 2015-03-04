@@ -405,11 +405,11 @@ void ProcessorNetworkEvaluator::evaluate() {
                 try {
                     // do the actual processing
                     processor->process();
-                    // set processor as valid
-                    processor->setValid();
                 } catch (Exception& e) {
                     LogError(e.getMessage());
                 }
+                // set processor as valid
+                processor->setValid();
 
                 #if IVW_PROFILING
                 processor->notifyObserversFinishedProcess(processor);
