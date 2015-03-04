@@ -31,105 +31,84 @@
 #define IVW_CALLBACK_H
 
 #include <inviwo/core/common/inviwo.h>
+#include <functional>
 
 namespace inviwo {
 
 class BaseCallBack {
 public:
-    BaseCallBack() {};
-    virtual ~BaseCallBack() {};
-    virtual void invoke() const=0;
+    BaseCallBack(){};
+    virtual ~BaseCallBack(){};
+    virtual void invoke() const = 0;
+    virtual bool involvesObject(void *) const { return false; }
 };
 
 template <typename T>
 class MemberFunctionCallBack : public BaseCallBack {
 public:
-    typedef void (T::*fPointerType)();
+    using fPointerType = void (T::*)();
+
+    MemberFunctionCallBack(T* obj, fPointerType func) : func_(func), obj_(obj) {}
     virtual ~MemberFunctionCallBack() {}
-    MemberFunctionCallBack(T* obj, fPointerType functionPtr)
-        : functionPtr_(functionPtr)
-        , obj_(obj) {}
+    virtual void invoke() const { if (func_)(*obj_.*func_)(); }
 
-    virtual void invoke() const {
-        if (functionPtr_)(*obj_.*functionPtr_)();
-    }
-
+    bool involvesObject(void* ptr) const override { return static_cast<void*>(obj_) == ptr;}
 private:
-    fPointerType functionPtr_;
+    fPointerType func_;
     T* obj_;
 };
 
+class LambdaCallBack : public BaseCallBack {
+public:
+    LambdaCallBack(std::function<void()> func) : func_{func} {}
+    virtual ~LambdaCallBack(){};
+    virtual void invoke() const { if (func_) func_(); }
+
+private:
+    std::function<void()> func_;
+};
 
 // Example usage
-// CallBackList cbList;
-// cbList.addMemberFunction(&myClassObject, &MYClassObject::myFunction);
+// CallBackList list;
+// list.addMemberFunction(&myClassObject, &MYClassObject::myFunction);
+
 class CallBackList {
 public:
     CallBackList() {}
     virtual ~CallBackList() {
-        std::map<void*, BaseCallBack*>::iterator it;
-
-        for (it = callBackList_.begin(); it != callBackList_.end(); ++it) delete it->second;
-
+        for (BaseCallBack* cb : callBackList_) delete cb;
         callBackList_.clear();
     }
 
     void invokeAll() const {
-        std::map<void*, BaseCallBack*>::const_iterator it;
-        for (it = callBackList_.begin(); it != callBackList_.end(); ++it) it->second->invoke();
+        for (BaseCallBack* cb : callBackList_) cb->invoke();
     }
 
     template <typename T>
     void addMemberFunction(T* o, void (T::*m)()) {
-        std::map<void*, BaseCallBack*>::iterator it = callBackList_.find(o);
-
-        if (it != callBackList_.end()) {
-            delete it->second;
-            it->second = new MemberFunctionCallBack<T>(o, m);
-        } else {
-            callBackList_[o] = new MemberFunctionCallBack<T>(o, m);
-        }
+        callBackList_.push_back(new MemberFunctionCallBack<T>(o, m));
+    }
+    void addLambdaCallback(std::function<void()> lambda) {
+        callBackList_.push_back(new LambdaCallBack(lambda));
     }
 
     template <typename T>
     void removeMemberFunction(T* o) {
-        std::map<void*, BaseCallBack*>::iterator it = callBackList_.find(o);
-
-        if (it != callBackList_.end()) {
-            delete it->second;
-            callBackList_.erase(it);
-        }
+        std::remove_if(callBackList_.begin(), callBackList_.end(), [o](BaseCallBack* cb) -> bool {
+            if (cb->involvesObject(o)) {
+                delete cb;
+                return true;
+            } else {
+                return false;
+            }
+        });
     }
 
 private:
-    std::map<void*, BaseCallBack*> callBackList_;
+    std::vector<BaseCallBack*> callBackList_;
 };
 
-class SingleCallBack {
-public:
-    SingleCallBack() : callBack_(0) {}
-
-    virtual ~SingleCallBack() {
-        delete callBack_;
-    }
-
-    void invoke() const {
-        if (callBack_)
-            callBack_->invoke();
-    }
-
-    template <typename T>
-    void addMemberFunction(T* o, void (T::*m)()) {
-        if (callBack_)
-            delete callBack_;
-
-        callBack_ = new MemberFunctionCallBack<T>(o,m);
-    }
-
-private:
-    BaseCallBack* callBack_;
-};
-
+// SingleCallBack removed use std::function instead.
 
 } // namespace
 

@@ -31,7 +31,8 @@
 #define IVW_TIMER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/util/callback.h>
+#include <functional>
+
 #ifdef WIN32
 // For WindowsTimer
 #include <windows.h>
@@ -70,7 +71,7 @@ public:
      */
     template <typename T>
     void setElapsedTimeCallback(T* o, void (T::*m)()) {
-        onChangeCallback_.addMemberFunction(o,m);
+        callback_ = std::bind(m, o);
     }
     /**
      * This function will be called when the time has elapsed.
@@ -79,12 +80,10 @@ public:
      * @note Derived classes should call this function when the time has elapsed.
      */
     void onIntervalEvent() const {
-        onChangeCallback_.invoke();
+        callback_();
     }
 protected:
-
-    SingleCallBack onChangeCallback_;
-
+    std::function<void()> callback_;
 };
 
 #ifdef WIN32
