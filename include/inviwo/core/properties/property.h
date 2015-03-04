@@ -39,6 +39,7 @@
 #include <inviwo/core/util/callback.h>
 #include <inviwo/core/metadata/metadataowner.h>
 
+#include <functional>
 
 namespace inviwo {
 
@@ -162,6 +163,7 @@ public:
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
 
+    void onChange(std::function<void()> callback);
     template <typename T> void onChange(T* o, void (T::*m)());
     template <typename T> void removeOnChange(T* o);
 

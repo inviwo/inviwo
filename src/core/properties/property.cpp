@@ -316,7 +316,9 @@ PropertySerializationMode Property::getSerializationMode() const {
     return serializationMode_;
 }
 
-
+void Property::onChange(std::function<void()> callback) {
+    onChangeCallback_.addLambdaCallback(callback);   
+}
 
 
 
