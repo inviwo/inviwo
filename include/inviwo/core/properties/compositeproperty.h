@@ -51,40 +51,38 @@ public:
     virtual CompositeProperty* clone() const;
     virtual ~CompositeProperty();
 
-    virtual void setOwner(PropertyOwner* owner);
-
-    virtual bool getReadOnly() const; // returns true if all sub properties are read only
-    virtual void setReadOnly(const bool& value);
-
-    //override original function in property
-    virtual void set(const Property* src);
-    virtual void setPropertyModified(bool modified);
-    virtual bool isPropertyModified() const;
-
-    virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = 0);
-
-    virtual void setCurrentStateAsDefault();
-    virtual void resetToDefaultState();
-    
-    virtual UsageMode getUsageMode() const; // returns the lowest mode of all sub properties
-    virtual void setUsageMode(UsageMode visibilityMode);
-    virtual bool getVisible(); // returns true if any sub property is visible 
-    virtual void setVisible(bool val);
-
-    virtual void updateVisibility();
-    
     virtual bool isCollapsed() const;
     virtual void setCollapsed(bool value);
+
+    // Override original functions in Property
+    virtual void setOwner(PropertyOwner* owner) override;
+
+    virtual bool getReadOnly() const override; // returns true if all sub properties are read only
+    virtual void setReadOnly(const bool& value) override;
+
+    virtual void set(const Property* src) override;
+    virtual void setPropertyModified(bool modified) override;
+    virtual bool isPropertyModified() const override;
+
+    virtual void setCurrentStateAsDefault() override;
+    virtual void resetToDefaultState() override;
     
+    virtual UsageMode getUsageMode() const override; // returns the lowest mode of all sub properties
+    virtual void setUsageMode(UsageMode visibilityMode) override;
+    virtual bool getVisible() override; // returns true if any sub property is visible 
+    virtual void setVisible(bool val) override;
 
-    // Override from the property owner
-    virtual Processor* getProcessor();
-    virtual const Processor* getProcessor() const;
-    virtual std::vector<std::string> getPath() const;
+    virtual void updateVisibility() override;
+       
+    // Override from the PropertyOwner
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* modifiedProperty = 0) override;
+    virtual Processor* getProcessor() override;
+    virtual const Processor* getProcessor() const override;
+    virtual std::vector<std::string> getPath() const override;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
     
 private:
     bool collapsed_;
