@@ -261,8 +261,12 @@ int inviwo::TemplateSliderWidget<T>::transformIncrementToSpinnerDecimals() {
     double inc = reprToSpinner(increment_);
     std::ostringstream buff;
     buff << inc;
-    std::string str2 = buff.str().substr(buff.str().find(".") + 1, buff.str().length());
-    return (static_cast<int>(str2.length()));
+    const std::string str{buff.str()};
+    auto periodPosition = str.find(".");
+    if (periodPosition == std::string::npos)
+        return 0;
+    else
+        return str.length() - periodPosition - 1;
 }
 
 template <typename T>
