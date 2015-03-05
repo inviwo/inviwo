@@ -73,6 +73,12 @@ public:
                                const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
                                const float& radius = 1.0f,
                                const size_t& segments=16);
+    static BasicMesh* line(const vec3& start,
+                            const vec3& stop, 
+                            const vec3& normal,
+                            const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                            const float&width = 1.0f,
+                            const ivec2& res = ivec2(1));
     static BasicMesh* arrow(const vec3& start,
                             const vec3& stop,
                             const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),

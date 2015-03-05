@@ -34,6 +34,7 @@
 #include <modules/opengl/glwrap/shader.h>
 
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
@@ -54,6 +55,7 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const SimpleLightin
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader* shader, const CameraProperty& property);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const CameraProperty& property,
                                              std::string name);
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const CameraBase& property, std::string name);
 
 // SpatialEntity
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const SpatialEntity<3>& object,

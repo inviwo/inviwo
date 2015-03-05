@@ -276,6 +276,42 @@ BasicMesh* BasicMesh::cylinder(const vec3& start,
 }
 
     
+BasicMesh* BasicMesh::line(const vec3& start, const vec3& stop, const vec3& normal, const vec4& color /*= vec4(1.0f, 0.0f, 0.0f, 1.0f)*/, const float&width /*= 1.0f*/, const ivec2& inres /*= ivec2(1)*/) {
+    BasicMesh* mesh = new BasicMesh();
+    mesh->setModelMatrix(mat4(1.f));
+    IndexBufferRAM* inds = mesh->addIndexBuffer(GeometryEnums::TRIANGLES, GeometryEnums::NONE);
+
+    vec3 right = orthvec(normal);
+    vec3 up = glm::cross(right, normal);
+    vec3 direction = stop - start;
+
+    vec3 startCornerPoint = start - 0.5f * width * up;
+    ivec2 res = inres + ivec2(1);
+
+    for (int j = 0; j < res.y; j++) {
+        for (int i = 0; i < res.x; i++) {
+            mesh->addVertex(
+                startCornerPoint + static_cast<float>(i) / static_cast<float>(inres.x) * direction +
+                static_cast<float>(j) / static_cast<float>(inres.y) * width * up,
+                normal, vec3(static_cast<float>(i) / static_cast<float>(inres.x),
+                static_cast<float>(j) / static_cast<float>(inres.y), 0.0f),
+                color);
+
+            if (i != inres.x && j != inres.y) {
+                inds->add(i + res.x * j);
+                inds->add(i + 1 + res.x * j);
+                inds->add(i + res.x * (j + 1));
+
+                inds->add(i + 1 + res.x * j);
+                inds->add(i + 1 + res.x * (j + 1));
+                inds->add(i + res.x * (j + 1));
+            }
+        }
+    }
+
+    return mesh;
+}
+
 BasicMesh* BasicMesh::arrow(const vec3& start,
                             const vec3& stop,
                             const vec4& color,
