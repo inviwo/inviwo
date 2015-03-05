@@ -109,6 +109,7 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
             cit = std::find(compositeProperties_.begin(),compositeProperties_.end(), *it);
         if (cit != compositeProperties_.end()) compositeProperties_.erase(cit);
 
+        prop->setOwner(nullptr);
         properties_.erase(it);
         notifyObserversDidRemoveProperty(prop, index);
     }
