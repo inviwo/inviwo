@@ -33,7 +33,8 @@
 namespace inviwo {
 
 VolumeRAM::VolumeRAM(uvec3 dimensions, const DataFormatBase* format)
-    : VolumeRepresentation(dimensions, format)
+    : VolumeRepresentation(format)
+    , dimensions_(dimensions)
     , data_(nullptr)
     , ownsDataPtr_(true)
     , histograms_(nullptr)
@@ -42,11 +43,13 @@ VolumeRAM::VolumeRAM(uvec3 dimensions, const DataFormatBase* format)
 
 VolumeRAM::VolumeRAM(const VolumeRAM& rhs)
     : VolumeRepresentation(rhs)
+    , dimensions_(rhs.dimensions_)
     , data_(nullptr)
     , ownsDataPtr_(rhs.ownsDataPtr_)
     , histograms_(nullptr)
     , calculatingHistogram_(false)
     , stopHistogramCalculation_(false) {
+
     if (rhs.histograms_) {
         histograms_ = new std::vector<NormalizedHistogram*>();
         for (auto& elem : *rhs.histograms_) {
@@ -57,6 +60,7 @@ VolumeRAM::VolumeRAM(const VolumeRAM& rhs)
 VolumeRAM& VolumeRAM::operator=(const VolumeRAM& that) {
     if (this != &that) {
         VolumeRepresentation::operator=(that);
+        dimensions_ = that.dimensions_;
         data_ = nullptr;
         ownsDataPtr_ = that.ownsDataPtr_;
         calculatingHistogram_ = false;
@@ -104,6 +108,15 @@ void VolumeRAM::deinitialize() {
 void* VolumeRAM::getData() { return data_; }
 
 const void* VolumeRAM::getData() const { return const_cast<void*>(data_); }
+
+void VolumeRAM::setData(void* data) {
+    deinitialize();
+    data_ = data;
+}
+
+void VolumeRAM::removeDataOwnership() {
+    ownsDataPtr_ = false;
+}
 
 bool VolumeRAM::hasNormalizedHistogram() const {
     return (histograms_ != nullptr && !histograms_->empty() && histograms_->at(0)->isValid());
@@ -153,6 +166,8 @@ void VolumeRAM::setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset
 size_t VolumeRAM::getNumberOfBytes() const{
     return getDataFormat()->getBytesAllocated()*dimensions_.x*dimensions_.y*dimensions_.z;
 }
+
+
 
 VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format, void* dataPtr) {
     // TODO: Add more formats

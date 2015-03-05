@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/volume/volumedisk.h>
@@ -32,35 +32,30 @@
 namespace inviwo {
 
 VolumeDisk::VolumeDisk(uvec3 dimensions, const DataFormatBase* format)
-    : VolumeRepresentation(dimensions, format), DiskRepresentation() {
-}
+    : VolumeRepresentation(format), DiskRepresentation(), dimensions_(dimensions) {}
 
 VolumeDisk::VolumeDisk(std::string srcFile, uvec3 dimensions, const DataFormatBase* format)
-    : VolumeRepresentation(dimensions, format), DiskRepresentation(srcFile) {
-    initialize();
-}
+    : VolumeRepresentation(format), DiskRepresentation(srcFile), dimensions_(dimensions) {}
 
 VolumeDisk::VolumeDisk(const VolumeDisk& rhs)
-    : VolumeRepresentation(rhs)
-    , DiskRepresentation(rhs) {
-}
+    : VolumeRepresentation(rhs), DiskRepresentation(rhs) {}
 
 VolumeDisk& VolumeDisk::operator=(const VolumeDisk& that) {
     if (this != &that) {
         VolumeRepresentation::operator=(that);
         DiskRepresentation::operator=(that);
     }
-
     return *this;
 }
 
-VolumeDisk* VolumeDisk::clone() const {
-    return new VolumeDisk(*this);
-}
+VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 
 VolumeDisk::~VolumeDisk() {}
 
-void VolumeDisk::initialize() {}
-void VolumeDisk::deinitialize() {}
+void VolumeDisk::setDimensions(uvec3 dimensions) {
+    throw Exception("Can not set dimension of a Volume Disk");
+}
 
-} // namespace
+const uvec3& VolumeDisk::getDimensions() const { return dimensions_; }
+
+}  // namespace

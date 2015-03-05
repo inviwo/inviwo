@@ -44,10 +44,10 @@ public:
                        const DataFormatBase* format = defaultformat());
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
-    virtual VolumeRAMPrecision<T>* clone() const;
+    virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
 
-    virtual void performOperation(DataOperation* dop) const;
+    virtual void performOperation(DataOperation* dop) const override;
 
     virtual void initialize();
     virtual void initialize(void*);
@@ -80,26 +80,15 @@ template <typename T, size_t B>
 class VolumeRAMCustomPrecision : public VolumeRAMPrecision<T> {
 public:
     VolumeRAMCustomPrecision(uvec3 dimensions = uvec3(128, 128, 128),
-                             const DataFormatBase* format = defaultformat())
-        : VolumeRAMPrecision<T>(dimensions, format) {}
+                             const DataFormatBase* format = defaultformat());
     VolumeRAMCustomPrecision(T* data, uvec3 dimensions = uvec3(128, 128, 128),
-                             const DataFormatBase* format = defaultformat())
-        : VolumeRAMPrecision<T>(data, dimensions, format) {}
+                             const DataFormatBase* format = defaultformat());
+    VolumeRAMCustomPrecision(const VolumeRAMCustomPrecision<T, B>& rhs);
+    VolumeRAMCustomPrecision<T, B>& operator=(const VolumeRAMCustomPrecision<T, B>& that);
+    virtual VolumeRAMCustomPrecision<T, B>* clone() const override;
+    virtual ~VolumeRAMCustomPrecision(){};
 
-    VolumeRAMCustomPrecision(const VolumeRAMCustomPrecision<T, B>& rhs)
-        : VolumeRAMPrecision<T>(rhs) {}
-    VolumeRAMCustomPrecision<T, B>& operator=(const VolumeRAMCustomPrecision<T, B>& that) {
-        if (this != &that) {
-            VolumeRAMPrecision<T>::operator=(that); 
-        }
-        return *this;
-    }
-    virtual VolumeRAMCustomPrecision<T, B>* clone() const {
-        return new VolumeRAMCustomPrecision<T, B>(*this);
-    }
-
-    virtual ~VolumeRAMCustomPrecision() {};
-    void performOperation(DataOperation*) const;
+    void performOperation(DataOperation*) const override;
 
 private:
     static const DataFormatBase* defaultformat() { return DataFormat<T, B>::get(); }
@@ -170,11 +159,6 @@ VolumeRAMPrecision<T>* VolumeRAMPrecision<T>::clone() const {
 template<typename T>
 void VolumeRAMPrecision<T>::performOperation(DataOperation* dop) const {
     executeOperationOnVolumeRAMPrecision<T, GenericDataBits(T)>(dop);
-}
-
-template<typename T, size_t B>
-void VolumeRAMCustomPrecision<T,B>::performOperation(DataOperation* dop) const {
-    executeOperationOnVolumeRAMPrecision<T, B>(dop);
 }
 
 template<typename T>
@@ -274,6 +258,39 @@ dvec4 VolumeRAMPrecision<T>::getValueAsVec4Double(const uvec3& pos) const {
     T val = data[posToIndex(pos, dimensions_)];
     result = getDataFormat()->valueToNormalizedVec4Double(&val);
     return result;
+}
+
+template <typename T, size_t B>
+VolumeRAMCustomPrecision::VolumeRAMCustomPrecision(uvec3 dimensions = uvec3(128, 128, 128),
+                                                   const DataFormatBase* format = defaultformat())
+    : VolumeRAMPrecision<T>(dimensions, format) {}
+
+template <typename T, size_t B>
+VolumeRAMCustomPrecision::VolumeRAMCustomPrecision(T* data, uvec3 dimensions = uvec3(128, 128, 128),
+                             const DataFormatBase* format = defaultformat())
+        : VolumeRAMPrecision<T>(data, dimensions, format) {}
+
+
+template <typename T, size_t B>
+VolumeRAMCustomPrecision::VolumeRAMCustomPrecision(const VolumeRAMCustomPrecision<T, B>& rhs)
+        : VolumeRAMPrecision<T>(rhs) {}
+
+template <typename T, size_t B>
+VolumeRAMCustomPrecision<T, B>& VolumeRAMCustomPrecision::operator=(const VolumeRAMCustomPrecision<T, B>& that) {
+        if (this != &that) {
+            VolumeRAMPrecision<T>::operator=(that); 
+        }
+        return *this;
+    }
+
+template <typename T, size_t B>
+VolumeRAMCustomPrecision<T, B>* VolumeRAMCustomPrecision::clone() const override {
+        return new VolumeRAMCustomPrecision<T, B>(*this);
+    }
+
+template<typename T, size_t B>
+void VolumeRAMCustomPrecision<T,B>::performOperation(DataOperation* dop) const {
+    executeOperationOnVolumeRAMPrecision<T, B>(dop);
 }
 
 #define DataFormatIdMacro(i) typedef VolumeRAMCustomPrecision<Data##i::type, Data##i::bits> VolumeRAM_##i;

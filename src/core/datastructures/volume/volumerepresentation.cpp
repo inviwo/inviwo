@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
@@ -32,34 +32,21 @@
 
 namespace inviwo {
 
-VolumeRepresentation::VolumeRepresentation(uvec3 dimensions)
-    : DataRepresentation()
-      , dimensions_(dimensions) 
+VolumeRepresentation::VolumeRepresentation() : DataRepresentation() {}
 
-{}
-
-VolumeRepresentation::VolumeRepresentation(uvec3 dimensions, const DataFormatBase* format)
-    : DataRepresentation(format)
-    , dimensions_(dimensions) 
-{}
+VolumeRepresentation::VolumeRepresentation(const DataFormatBase* format)
+    : DataRepresentation(format) {}
 
 VolumeRepresentation::VolumeRepresentation(const VolumeRepresentation& rhs)
-    : DataRepresentation(rhs)
-    , dimensions_(rhs.dimensions_)
-{
-}
+    : DataRepresentation(rhs) {}
 
 VolumeRepresentation& VolumeRepresentation::operator=(const VolumeRepresentation& that) {
     if (this != &that) {
-        dimensions_ = that.dimensions_;
         DataRepresentation::operator=(that);
     }
-
     return *this;
 }
-VolumeRepresentation* VolumeRepresentation::clone() const {
-    return new VolumeRepresentation(*this);
-}
+
 VolumeRepresentation::~VolumeRepresentation() {}
 
-} // namespace
+}  // namespace
