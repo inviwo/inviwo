@@ -494,7 +494,8 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
     LinkCheck linkChecker;
 
     std::vector<Property*> destprops = getPropertiesRecursive(processor);
-    destprops.erase(std::remove_if(destprops.begin(), destprops.end(), linkChecker), destprops.end()); //remove properties for which autolinking is disalbed
+    destprops.erase(std::remove_if(destprops.begin(), destprops.end(), linkChecker),
+                    destprops.end());  // remove properties for which autolinking is disalbed
 
     if (destprops.size() == 0) {  // no candidates for autolinking in the new processor
         return;
@@ -504,10 +505,11 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
     for (auto& elem : processors_) {
         if (elem.second != processor) {
             std::vector<Property*> p = getPropertiesRecursive(elem.second);
-            properties.insert(properties.end(),p.begin(), p.end());
+            properties.insert(properties.end(), p.begin(), p.end());
         }
     }
-    properties.erase(std::remove_if(properties.begin(), properties.end(), linkChecker), properties.end()); //remove properties for which autolinking is disalbed
+    properties.erase(std::remove_if(properties.begin(), properties.end(), linkChecker),
+                     properties.end());  // remove properties for which autolinking is disalbed
     if (properties.size() == 0) {  // no candidates for autolinking in the new processor
         return;
     }
@@ -515,15 +517,16 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
     for (auto& destprop : destprops) {
         std::vector<Property*> candidates = properties;
         AutoLinkCheck autoLinkChecker(destprop, LinkMatchingTypeAndId);
-        std::remove_if(candidates.begin(), candidates.end(), autoLinkChecker);
+        candidates.erase(std::remove_if(candidates.begin(), candidates.end(), autoLinkChecker),
+                         candidates.end());
         AutoLinkSort sorter(destprop);
         std::sort(candidates.begin(), candidates.end(), sorter);
 
-        if(candidates.size()>0) {
+        if (candidates.size() > 0) {
             addLink(candidates[0], destprop);
-            evaluatePropertyLinks(candidates[0]); // Propagate the link to the new Processor.
+            evaluatePropertyLinks(candidates[0]);  // Propagate the link to the new Processor.
             addLink(destprop, candidates[0]);
-        }        
+        }
     }
 }
 
