@@ -30,6 +30,8 @@
 #include <inviwo/qt/widgets/sliderwidgetqt.h>
 #include <limits>
 
+#include <QStyle>
+
 namespace inviwo {
 
 BaseSliderWidgetQt::BaseSliderWidgetQt()
@@ -129,13 +131,15 @@ void BaseSliderWidgetQt::updateSpinBox() {
 void BaseSliderWidgetQt::updateSlider() {
     sliderValue_ = transformValueToSlider();
     slider_->blockSignals(true);
-    slider_->setValue(sliderValue_);
-    if (slider_->maximum() < sliderValue_ || slider_->minimum() > sliderValue_) {
-        // Mark out of range
-        slider_->setStyleSheet(QString("QSlider::handle { border: 1px solid rgb(255, 0, 0) }"));
-    } else  {
-        slider_->setStyleSheet(QString());
+
+    bool isOutOfBounds = (slider_->maximum() < sliderValue_ || slider_->minimum() > sliderValue_);
+    if (isOutOfBounds != slider_->property("outOfBounds").toBool() ) {
+        slider_->setProperty("outOfBounds", isOutOfBounds);
+        slider_->style()->unpolish(slider_);
+        slider_->style()->polish(slider_);
     }
+
+    slider_->setValue(sliderValue_);
 
     slider_->blockSignals(false);
 }
