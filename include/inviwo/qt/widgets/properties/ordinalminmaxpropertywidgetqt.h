@@ -173,7 +173,7 @@ protected:
         double inc = Transformer<T>::valueToSpinbox(minMaxProperty_, minMaxProperty_->getIncrement());
         std::ostringstream buff;
         buff << inc;
-        const std::string str { buff.str() };
+        const std::string str(buff.str());
         auto periodPosition = str.find(".");
         if (periodPosition == std::string::npos) 
             return 0;
