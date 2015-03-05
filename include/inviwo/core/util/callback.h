@@ -46,7 +46,7 @@ public:
 template <typename T>
 class MemberFunctionCallBack : public BaseCallBack {
 public:
-    using fPointerType = void (T::*)();
+    typedef void (T::*fPointerType)();
 
     MemberFunctionCallBack(T* obj, fPointerType func) : func_(func), obj_(obj) {}
     virtual ~MemberFunctionCallBack() {}

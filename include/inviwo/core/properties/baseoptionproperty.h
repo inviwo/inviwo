@@ -261,14 +261,14 @@ public:
     virtual void addOption(std::string identifier, std::string displayName);
 };
 
-using OptionPropertyInt = TemplateOptionProperty<int>;
-using OptionPropertyFloat = TemplateOptionProperty<float>;
-using OptionPropertyDouble = TemplateOptionProperty<double>;
+typedef TemplateOptionProperty<int> OptionPropertyInt;
+typedef TemplateOptionProperty<float> OptionPropertyFloat;
+typedef TemplateOptionProperty<double> OptionPropertyDouble;
 
-using OptionPropertyIntOption = TemplateOptionProperty<int>::Option<int>;
-using OptionPropertyFloatOption = TemplateOptionProperty<float>::Option<float>;
-using OptionPropertyDoubleOption = TemplateOptionProperty<double>::Option<double>;
-using OptionPropertyStringOption = OptionPropertyString::Option<std::string>;
+typedef TemplateOptionProperty<int>::Option<int> OptionPropertyIntOption;
+typedef TemplateOptionProperty<float>::Option<float> OptionPropertyFloatOption;
+typedef TemplateOptionProperty<double>::Option<double> OptionPropertyDoubleOption;
+typedef OptionPropertyString::Option<std::string> OptionPropertyStringOption;
 
 template <typename T>
 BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(std::string identifier,
