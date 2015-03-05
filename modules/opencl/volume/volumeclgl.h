@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMECLGL_H
@@ -39,8 +39,9 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENCL_API VolumeCLGL: public VolumeCLBase, public VolumeRepresentation, public TextureObserver {
-
+class IVW_MODULE_OPENCL_API VolumeCLGL : public VolumeCLBase,
+                                         public VolumeRepresentation,
+                                         public TextureObserver {
 public:
     VolumeCLGL(const DataFormatBase* format = DataFormatBase::get(), Texture3D* data = NULL);
     VolumeCLGL(const uvec3& dimensions, const DataFormatBase* format, Texture3D* data);
@@ -48,16 +49,16 @@ public:
 
     virtual VolumeCLGL* clone() const;
     virtual ~VolumeCLGL();
-    virtual void initialize() {};
+    virtual void initialize(){};
     virtual void deinitialize();
 
-
     void initialize(Texture3D* texture);
-    virtual void setDimensions(uvec3 dimensions);
+    virtual const uvec3& getDimensions() const override;
+    virtual void setDimensions(uvec3 dimensions) override;
 
-    virtual cl::Image3D& getEditable() { return *static_cast<cl::Image3D*>(clImage_); }
-    virtual const cl::Image3D& get() const { return *const_cast<const cl::Image3D*>(static_cast<const cl::Image3D*>(clImage_)); }
-    const Texture3D* getTexture() const { return texture_; }
+    virtual cl::Image3D& getEditable();
+    virtual const cl::Image3D& get() const;
+    const Texture3D* getTexture() const;
 
     /**
     * This method will be called before the texture is initialized.
@@ -71,21 +72,17 @@ public:
     */
     virtual void notifyAfterTextureInitialization();
 
-    void aquireGLObject(std::vector<cl::Event>* syncEvents = NULL, const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue()) const {
-        std::vector<cl::Memory> syncImages(1, *clImage_);
-        queue.enqueueAcquireGLObjects(&syncImages, syncEvents);
-    }
-    void releaseGLObject(std::vector<cl::Event>* syncEvents = NULL, cl::Event* event= NULL,
-                         const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue()) const {
-        std::vector<cl::Memory> syncImages(1, *clImage_);
-        queue.enqueueReleaseGLObjects(&syncImages, syncEvents, event);
-    }
+    void aquireGLObject(std::vector<cl::Event>* syncEvents = NULL,
+                        const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue()) const;
+    void releaseGLObject(std::vector<cl::Event>* syncEvents = NULL, cl::Event* event = NULL,
+                         const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue()) const;
 
 protected:
+    uvec3 dimensions_;
     Texture3D* texture_;
 };
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -94,8 +91,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::VolumeCLGL& value);
 
-} // namespace cl
+}  // namespace cl
 
-
-
-#endif // IVW_VOLUMECLGL_H
+#endif  // IVW_VOLUMECLGL_H

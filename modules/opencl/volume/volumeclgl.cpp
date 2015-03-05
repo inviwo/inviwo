@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/volume/volumeclgl.h>
@@ -35,7 +35,8 @@
 namespace inviwo {
 
 VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
-    : VolumeRepresentation(data != NULL ? data->getDimensions(): uvec3(64), format)
+    : VolumeRepresentation(format)
+    , dimensions_(data != NULL ? data->getDimensions() : uvec3(64))
     , texture_(data) {
     if (data) {
         initialize(data);
@@ -43,19 +44,16 @@ VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
 }
 
 VolumeCLGL::VolumeCLGL(const uvec3& dimensions, const DataFormatBase* format, Texture3D* data)
-    : VolumeRepresentation(dimensions, format)
-    , texture_(data) {
+    : VolumeRepresentation(format), dimensions_(dimensions), texture_(data) {
     initialize(data);
 }
 
 VolumeCLGL::VolumeCLGL(const VolumeCLGL& rhs)
-    : VolumeRepresentation(rhs) {
+    : VolumeRepresentation(rhs), dimensions_(rhs.dimensions_) {
     initialize(rhs.texture_);
 }
 
-VolumeCLGL::~VolumeCLGL() {
-    deinitialize();
-}
+VolumeCLGL::~VolumeCLGL() { deinitialize(); }
 
 void VolumeCLGL::initialize(Texture3D* texture) {
     ivwAssert(texture != 0, "Cannot initialize with null OpenGL texture");
@@ -64,8 +62,10 @@ void VolumeCLGL::initialize(Texture3D* texture) {
     CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture);
 
     if (it == OpenCLImageSharing::clImageSharingMap_.end()) {
-        clImage_ = new cl::Image3DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_3D, 0, texture->getID());
-        OpenCLImageSharing::clImageSharingMap_.insert(TextureCLImageSharingPair(texture_, new OpenCLImageSharing(clImage_)));
+        clImage_ = new cl::Image3DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                     GL_TEXTURE_3D, 0, texture->getID());
+        OpenCLImageSharing::clImageSharingMap_.insert(
+            TextureCLImageSharingPair(texture_, new OpenCLImageSharing(clImage_)));
     } else {
         clImage_ = it->second->sharedMemory_;
         it->second->increaseRefCount();
@@ -75,9 +75,9 @@ void VolumeCLGL::initialize(Texture3D* texture) {
     VolumeCLGL::initialize();
 }
 
-VolumeCLGL* VolumeCLGL::clone() const {
-    return new VolumeCLGL(*this);
-}
+const uvec3& VolumeCLGL::getDimensions() const { return dimensions_; }
+
+VolumeCLGL* VolumeCLGL::clone() const { return new VolumeCLGL(*this); }
 
 void VolumeCLGL::deinitialize() {
     // Delete OpenCL image before texture
@@ -116,7 +116,9 @@ void VolumeCLGL::notifyAfterTextureInitialization() {
 
     if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
         if (it->second->getRefCount() == 0) {
-            it->second->sharedMemory_ = new cl::Image3DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_3D, 0, texture_->getID());
+            it->second->sharedMemory_ =
+                new cl::Image3DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_3D,
+                                  0, texture_->getID());
         }
 
         clImage_ = it->second->sharedMemory_;
@@ -124,28 +126,47 @@ void VolumeCLGL::notifyAfterTextureInitialization() {
     }
 }
 
+void VolumeCLGL::aquireGLObject(
+    std::vector<cl::Event>* syncEvents /*= NULL*/,
+    const cl::CommandQueue& queue /*= OpenCL::getPtr()->getQueue()*/) const {
+    std::vector<cl::Memory> syncImages(1, *clImage_);
+    queue.enqueueAcquireGLObjects(&syncImages, syncEvents);
+}
+
+void VolumeCLGL::releaseGLObject(
+    std::vector<cl::Event>* syncEvents /*= NULL*/, cl::Event* event /*= NULL*/,
+    const cl::CommandQueue& queue /*= OpenCL::getPtr()->getQueue()*/) const {
+    std::vector<cl::Memory> syncImages(1, *clImage_);
+    queue.enqueueReleaseGLObjects(&syncImages, syncEvents, event);
+}
+
 void VolumeCLGL::setDimensions(uvec3 dimensions) {
     if (dimensions == dimensions_) {
         return;
     }
+    dimensions_ = dimensions;
 
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.
     const_cast<Texture3D*>(texture_)->uploadAndResize(NULL, dimensions);
-    VolumeRepresentation::setDimensions(dimensions);
 }
 
+cl::Image3D& VolumeCLGL::getEditable() { return *static_cast<cl::Image3D*>(clImage_); }
 
-} // namespace
+const cl::Image3D& VolumeCLGL::get() const {
+    return *const_cast<const cl::Image3D*>(static_cast<const cl::Image3D*>(clImage_));
+}
+
+const Texture3D* VolumeCLGL::getTexture() const { return texture_; }
+
+}  // namespace
 
 namespace cl {
 
 template <>
-cl_int Kernel::setArg(cl_uint index, const inviwo::VolumeCLGL& value)
-{
+cl_int Kernel::setArg(cl_uint index, const inviwo::VolumeCLGL& value) {
     return setArg(index, value.get());
 }
 
-
-} // namespace cl
+}  // namespace cl

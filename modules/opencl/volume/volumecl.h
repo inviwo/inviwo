@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMECL_H
@@ -38,20 +38,21 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENCL_API VolumeCL: public VolumeCLBase, public VolumeRepresentation {
-
+class IVW_MODULE_OPENCL_API VolumeCL : public VolumeCLBase, public VolumeRepresentation {
 public:
     VolumeCL(const DataFormatBase* format = DataFormatBase::get(), const void* data = NULL);
-    VolumeCL(uvec3 dimensions, const DataFormatBase* format = DataFormatBase::get(), const void* data = NULL);
+    VolumeCL(uvec3 dimensions, const DataFormatBase* format = DataFormatBase::get(),
+             const void* data = NULL);
     virtual ~VolumeCL();
     VolumeCL(const VolumeCL& rhs);
-    virtual void initialize() {};
+    virtual void initialize(){};
     virtual void deinitialize();
     virtual VolumeCL* clone() const;
 
     void initialize(const void* voxels);
 
-    virtual void setDimensions(uvec3 dimensions) { dimensions_ = dimensions; deinitialize(); initialize(); }
+    virtual const uvec3& getDimensions() const override;
+    virtual void setDimensions(uvec3 dimensions) override;
 
     void upload(const void* data);
     /**
@@ -61,18 +62,17 @@ public:
      * @return (void)
      */
     void download(void* data) const;
-    cl::ImageFormat getFormat() const { return imageFormat_;}
+    cl::ImageFormat getFormat() const;
 
-    virtual cl::Image3D& getEditable() { return *static_cast<cl::Image3D*>(clImage_); }
-    virtual const cl::Image3D& get() const { return *const_cast<const cl::Image3D*>(static_cast<const cl::Image3D*>(clImage_)); }
+    virtual cl::Image3D& getEditable();
+    virtual const cl::Image3D& get() const;
 
 protected:
+    uvec3 dimensions_;
     cl::ImageFormat imageFormat_;
 };
 
-
-
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -81,6 +81,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::VolumeCL& value);
 
-} // namespace cl
+}  // namespace cl
 
-#endif // IVW_VOLUMECL_H
+#endif  // IVW_VOLUMECL_H

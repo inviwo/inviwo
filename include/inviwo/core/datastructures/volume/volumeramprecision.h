@@ -57,7 +57,8 @@ public:
     void* getData(size_t);
     const void* getData(size_t) const;
 
-    void setDimensions(uvec3 dimensions);
+    virtual const uvec3& getDimensions() const override;
+    virtual void setDimensions(uvec3 dimensions) override;
 
     virtual void setValueFromSingleDouble(const uvec3& pos, double val) override;
     virtual void setValueFromVec2Double(const uvec3& pos, dvec2 val) override;
@@ -171,6 +172,11 @@ const void* VolumeRAMPrecision<T>::getData(size_t pos) const{
     return const_cast<const T*>(static_cast<T*>(data_))+pos;
 }
 
+template <typename T>
+const uvec3& inviwo::VolumeRAMPrecision<T>::getDimensions() const  {
+    return dimensions_;
+}
+
 template<typename T>
 void VolumeRAMPrecision<T>::setDimensions(uvec3 dimensions) { 
     dimensions_ = dimensions; 
@@ -261,22 +267,22 @@ dvec4 VolumeRAMPrecision<T>::getValueAsVec4Double(const uvec3& pos) const {
 }
 
 template <typename T, size_t B>
-VolumeRAMCustomPrecision::VolumeRAMCustomPrecision(uvec3 dimensions = uvec3(128, 128, 128),
+VolumeRAMCustomPrecision<T,B>::VolumeRAMCustomPrecision(uvec3 dimensions = uvec3(128, 128, 128),
                                                    const DataFormatBase* format = defaultformat())
     : VolumeRAMPrecision<T>(dimensions, format) {}
 
 template <typename T, size_t B>
-VolumeRAMCustomPrecision::VolumeRAMCustomPrecision(T* data, uvec3 dimensions = uvec3(128, 128, 128),
+VolumeRAMCustomPrecision<T,B>::VolumeRAMCustomPrecision(T* data, uvec3 dimensions = uvec3(128, 128, 128),
                              const DataFormatBase* format = defaultformat())
         : VolumeRAMPrecision<T>(data, dimensions, format) {}
 
 
 template <typename T, size_t B>
-VolumeRAMCustomPrecision::VolumeRAMCustomPrecision(const VolumeRAMCustomPrecision<T, B>& rhs)
+VolumeRAMCustomPrecision<T,B>::VolumeRAMCustomPrecision(const VolumeRAMCustomPrecision<T, B>& rhs)
         : VolumeRAMPrecision<T>(rhs) {}
 
 template <typename T, size_t B>
-VolumeRAMCustomPrecision<T, B>& VolumeRAMCustomPrecision::operator=(const VolumeRAMCustomPrecision<T, B>& that) {
+VolumeRAMCustomPrecision<T, B>& VolumeRAMCustomPrecision<T,B>::operator=(const VolumeRAMCustomPrecision<T, B>& that) {
         if (this != &that) {
             VolumeRAMPrecision<T>::operator=(that); 
         }
@@ -284,7 +290,7 @@ VolumeRAMCustomPrecision<T, B>& VolumeRAMCustomPrecision::operator=(const Volume
     }
 
 template <typename T, size_t B>
-VolumeRAMCustomPrecision<T, B>* VolumeRAMCustomPrecision::clone() const override {
+VolumeRAMCustomPrecision<T, B>* VolumeRAMCustomPrecision<T,B>::clone() const {
         return new VolumeRAMCustomPrecision<T, B>(*this);
     }
 
