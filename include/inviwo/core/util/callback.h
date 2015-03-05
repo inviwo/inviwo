@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CALLBACK_H
@@ -40,7 +40,7 @@ public:
     BaseCallBack(){};
     virtual ~BaseCallBack(){};
     virtual void invoke() const = 0;
-    virtual bool involvesObject(void *) const { return false; }
+    virtual bool involvesObject(void*) const { return false; }
 };
 
 template <typename T>
@@ -50,9 +50,12 @@ public:
 
     MemberFunctionCallBack(T* obj, fPointerType func) : func_(func), obj_(obj) {}
     virtual ~MemberFunctionCallBack() {}
-    virtual void invoke() const { if (func_)(*obj_.*func_)(); }
+    virtual void invoke() const {
+        if (func_) (*obj_.*func_)();
+    }
 
-    bool involvesObject(void* ptr) const override { return static_cast<void*>(obj_) == ptr;}
+    bool involvesObject(void* ptr) const override { return static_cast<void*>(obj_) == ptr; }
+
 private:
     fPointerType func_;
     T* obj_;
@@ -62,7 +65,9 @@ class LambdaCallBack : public BaseCallBack {
 public:
     LambdaCallBack(std::function<void()> func) : func_{func} {}
     virtual ~LambdaCallBack(){};
-    virtual void invoke() const { if (func_) func_(); }
+    virtual void invoke() const {
+        if (func_) func_();
+    }
 
 private:
     std::function<void()> func_;
@@ -94,14 +99,16 @@ public:
 
     template <typename T>
     void removeMemberFunction(T* o) {
-        std::remove_if(callBackList_.begin(), callBackList_.end(), [o](BaseCallBack* cb) -> bool {
-            if (cb->involvesObject(o)) {
-                delete cb;
-                return true;
-            } else {
-                return false;
-            }
-        });
+        callBackList_.erase(std::remove_if(callBackList_.begin(), callBackList_.end(),
+                                           [o](BaseCallBack* cb) -> bool {
+                                if (cb->involvesObject(o)) {
+                                    delete cb;
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            }),
+                            callBackList_.end());
     }
 
 private:
@@ -110,6 +117,6 @@ private:
 
 // SingleCallBack removed use std::function instead.
 
-} // namespace
+}  // namespace
 
-#endif // IVW_CALLBACK_H
+#endif  // IVW_CALLBACK_H
