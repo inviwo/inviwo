@@ -39,20 +39,16 @@ namespace inviwo {
 
 class IVW_CORE_API VolumeRAM : public VolumeRepresentation {
 public:
-    VolumeRAM(uvec3 dimensions = uvec3(128, 128, 128),
-              const DataFormatBase* format = DataFormatBase::get());
+    VolumeRAM(const DataFormatBase* format = DataFormatBase::get());
     VolumeRAM(const VolumeRAM& rhs);
     VolumeRAM& operator=(const VolumeRAM& that);
     virtual VolumeRAM* clone() const = 0;
     virtual ~VolumeRAM();
 
     virtual void performOperation(DataOperation*) const = 0;
-    virtual void initialize();
-    virtual void deinitialize();
 
-    void* getData();
-    const void* getData() const;
-
+    virtual void* getData() = 0;
+    virtual const void* getData() const = 0;
     virtual void* getData(size_t) = 0;
     virtual const void* getData(size_t) const = 0;
 
@@ -62,9 +58,8 @@ public:
      * @param void * data is raw volume data pointer
      * @return void none
      */
-    void setData(void* data);
-
-    void removeDataOwnership();
+    virtual void setData(void* data) = 0;
+    virtual void removeDataOwnership() = 0;
 
     bool hasNormalizedHistogram() const;
     NormalizedHistogram* getNormalizedHistogram(int delta = -1, std::size_t maxNumberOfBins = 2048u,
@@ -72,6 +67,9 @@ public:
     const NormalizedHistogram* getNormalizedHistogram(int delta = -1,
                                                       std::size_t maxNumberOfBins = 2048u,
                                                       int component = 0) const;
+    bool shouldStopHistogramCalculation() const { return stopHistogramCalculation_; }
+    void stopHistogramCalculation() const { stopHistogramCalculation_ = true; }
+
 
     virtual void setValueFromSingleDouble(const uvec3& pos, double val) = 0;
     virtual void setValueFromVec2Double(const uvec3& pos, dvec2 val) = 0;
@@ -87,7 +85,7 @@ public:
     virtual dvec3 getValueAsVec3Double(const uvec3& pos) const = 0;
     virtual dvec4 getValueAsVec4Double(const uvec3& pos) const = 0;
 
-    size_t getNumberOfBytes() const;
+    virtual size_t getNumberOfBytes() const = 0;
 
     template <typename T>
     static T posToIndex(const glm::detail::tvec3<T, glm::defaultp>& pos,
@@ -96,15 +94,9 @@ public:
     static T periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posIn,
                                 const glm::detail::tvec3<T, glm::defaultp>& dim);
 
-    bool shouldStopHistogramCalculation() const { return stopHistogramCalculation_; }
-    void stopHistogramCalculation() const { stopHistogramCalculation_ = true; }
 
 protected:
     void calculateHistogram(int delta, std::size_t maxNumberOfBins) const;
-
-    uvec3 dimensions_;
-    void* data_;
-    bool ownsDataPtr_;
 
     mutable std::vector<NormalizedHistogram*>* histograms_;
     mutable bool calculatingHistogram_;
@@ -128,12 +120,12 @@ T VolumeRAM::periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posI
  * Factory for volumes.
  * Creates an VolumeRAM with data type specified by format.
  *
- * @param dimensionsof volume to create.
+ * @param dimensions of volume to create.
  * @param format of volume to create.
- * @return NULL if no valid format was specified.
+ * @return nullptr if no valid format was specified.
  */
 IVW_CORE_API VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format,
-                                        void* dataPtr = NULL);
+                                        void* dataPtr = nullptr);
 
 }  // namespace
 
