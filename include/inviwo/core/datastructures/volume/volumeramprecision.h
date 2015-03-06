@@ -75,7 +75,7 @@ public:
     virtual dvec3 getValueAsVec3Double(const uvec3& pos) const override;
     virtual dvec4 getValueAsVec4Double(const uvec3& pos) const override;
 
-    virtual size_t VolumeRAM::getNumberOfBytes() const override;
+    virtual size_t getNumberOfBytes() const override;
 
 private:
     uvec3 dimensions_;
@@ -299,14 +299,13 @@ dvec4 VolumeRAMPrecision<T>::getValueAsVec4Double(const uvec3& pos) const {
 }
 
 template <typename T, size_t B>
-VolumeRAMCustomPrecision<T, B>::VolumeRAMCustomPrecision(
-    uvec3 dimensions = uvec3(128, 128, 128), const DataFormatBase* format = defaultformat())
+VolumeRAMCustomPrecision<T, B>::VolumeRAMCustomPrecision(uvec3 dimensions,
+                                                         const DataFormatBase* format)
     : VolumeRAMPrecision<T>(dimensions, format) {}
 
 template <typename T, size_t B>
-VolumeRAMCustomPrecision<T, B>::VolumeRAMCustomPrecision(
-    T* data, uvec3 dimensions = uvec3(128, 128, 128),
-    const DataFormatBase* format = defaultformat())
+VolumeRAMCustomPrecision<T, B>::VolumeRAMCustomPrecision(T* data, uvec3 dimensions,
+                                                         const DataFormatBase* format)
     : VolumeRAMPrecision<T>(data, dimensions, format) {}
 
 template <typename T, size_t B>
