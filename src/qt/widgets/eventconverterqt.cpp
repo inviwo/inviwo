@@ -43,14 +43,17 @@ EventConverterQt::EventConverterQt() {}
 EventConverterQt::~EventConverterQt() {}
 
 MouseEvent::MouseButton inviwo::EventConverterQt::getMouseButton(const QMouseEvent* e) {
-    if (e->buttons() == Qt::LeftButton)
-        return MouseEvent::MOUSE_BUTTON_LEFT;
-    else if (e->buttons() == Qt::RightButton)
-        return MouseEvent::MOUSE_BUTTON_RIGHT;
-    else if (e->buttons() == Qt::MiddleButton)
-        return MouseEvent::MOUSE_BUTTON_MIDDLE;
-
-    return MouseEvent::MOUSE_BUTTON_NONE;
+	switch (e->buttons())
+	{
+	case Qt::LeftButton:
+		return MouseEvent::MOUSE_BUTTON_LEFT;
+	case Qt::RightButton:
+		return MouseEvent::MOUSE_BUTTON_RIGHT;
+	case Qt::MiddleButton:
+		return MouseEvent::MOUSE_BUTTON_MIDDLE;
+	default:
+		return MouseEvent::MOUSE_BUTTON_NONE;
+	}
 }
 
 MouseEvent::MouseButton EventConverterQt::getMouseButtonCausingEvent(const QMouseEvent* e) {
@@ -58,14 +61,17 @@ MouseEvent::MouseButton EventConverterQt::getMouseButtonCausingEvent(const QMous
 	// include the button that caused the event.
 	// The QMouseEvent::getButton function
 	// returns the button that caused the event
-	if (e->button() == Qt::LeftButton)
+	switch (e->button())
+	{
+	case Qt::LeftButton:
 		return MouseEvent::MOUSE_BUTTON_LEFT;
-	else if (e->buttons() == Qt::RightButton)
+	case Qt::RightButton:
 		return MouseEvent::MOUSE_BUTTON_RIGHT;
-	else if (e->buttons() == Qt::MiddleButton)
+	case Qt::MiddleButton:
 		return MouseEvent::MOUSE_BUTTON_MIDDLE;
-
-	return MouseEvent::MOUSE_BUTTON_NONE;
+	default:
+		return MouseEvent::MOUSE_BUTTON_NONE;
+	}
 }
 
 MouseEvent::MouseButton inviwo::EventConverterQt::getMouseWheelButton(const QWheelEvent* e) {
