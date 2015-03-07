@@ -76,15 +76,15 @@ private:
     BufferUsage usage_;
 };
 
-template<typename T, size_t B, BufferType A>
+template<typename T, BufferType A>
 class BufferPrecision : public Buffer {
 
 public:
     BufferPrecision(size_t size = 0, BufferUsage usage = STATIC)
-        : Buffer(size, DataFormat<T,B>::get(), A, usage) {
+        : Buffer(size, DataFormat<T>::get(), A, usage) {
     }
     BufferPrecision(BufferUsage usage)
-        : Buffer(0, DataFormat<T,B>::get(), A, usage) {
+        : Buffer(0, DataFormat<T>::get(), A, usage) {
     }
     BufferPrecision(const BufferPrecision& rhs)
         : Buffer(rhs) {
@@ -96,20 +96,20 @@ public:
 
         return *this;
     }
-    virtual BufferPrecision<T, B, A>* clone() const {
-        return new BufferPrecision<T, B, A>(*this);
+    virtual BufferPrecision<T, A>* clone() const {
+        return new BufferPrecision<T, A>(*this);
     }
 
     virtual ~BufferPrecision() { }
 
 private:
     static const DataFormatBase* defaultformat() {
-        return  DataFormat<T, B>::get();
+        return  DataFormat<T>::get();
     }
 
 };
 
-#define DataFormatBuffers(D, BUFFER_TYPE) BufferPrecision<D::type, D::bits, BUFFER_TYPE>
+#define DataFormatBuffers(D, BUFFER_TYPE) BufferPrecision<D::type, BUFFER_TYPE>
 
 typedef DataFormatBuffers(DataVec2FLOAT32, POSITION_ATTRIB) Position2dBuffer;
 typedef DataFormatBuffers(DataVec2FLOAT32, TEXCOORD_ATTRIB) TexCoord2dBuffer;
@@ -120,7 +120,7 @@ typedef DataFormatBuffers(DataVec3FLOAT32, TEXCOORD_ATTRIB) TexCoord3dBuffer;
 typedef DataFormatBuffers(DataFLOAT32, CURVATURE_ATTRIB) CurvatureBuffer;
 typedef DataFormatBuffers(DataUINT32, INDEX_ATTRIB) IndexBuffer;
 
-#define DataFormatIdMacro(i) typedef BufferPrecision<Data##i::type, Data##i::bits, POSITION_ATTRIB> Buffer_##i;
+#define DataFormatIdMacro(i) typedef BufferPrecision<Data##i::type, POSITION_ATTRIB> Buffer_##i;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
 

@@ -145,17 +145,15 @@ void DistanceTransformRAM::updateOutport() {
         break;
 //#define DataFormatIdMacro(i) case i: computeDistanceTransform<Data##i::type, Data##i::bits>(); break;
 //#include <inviwo/core/util/formatsdefinefunc.h>
-#define DataFormatIdMacro(i) case DataFormatEnums::i: computeDistanceTransform<Data##i::type, Data##i::bits>(); break;
+#define DataFormatIdMacro(i) case DataFormatEnums::i: computeDistanceTransform<Data##i::type>(); break;
 DataFormatIdMacro(FLOAT16)
 DataFormatIdMacro(FLOAT32)
 DataFormatIdMacro(FLOAT64)
 DataFormatIdMacro(INT8)
-DataFormatIdMacro(INT12)
 DataFormatIdMacro(INT16)
 DataFormatIdMacro(INT32)
 DataFormatIdMacro(INT64)
 DataFormatIdMacro(UINT8)
-DataFormatIdMacro(UINT12)
 DataFormatIdMacro(UINT16)
 DataFormatIdMacro(UINT32)
 DataFormatIdMacro(UINT64)

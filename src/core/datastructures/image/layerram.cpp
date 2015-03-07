@@ -73,12 +73,14 @@ void LayerRAM::setData(void* data) {
 }
 
 LayerRAM* createLayerRAM(const uvec2& dimensions, LayerType type, const DataFormatBase* format) {
-    switch (format->getId())
-    {
+    switch (format->getId()) {
         case DataFormatEnums::NOT_SPECIALIZED:
             LogErrorCustom("createLayerRAM", "Invalid format");
             return nullptr;
-#define DataFormatIdMacro(i) case DataFormatEnums::i: return new LayerRAMCustomPrecision<Data##i::type, Data##i::bits>(dimensions, type); break;
+#define DataFormatIdMacro(i)                                           \
+    case DataFormatEnums::i:                                           \
+        return new LayerRAMPrecision<Data##i::type>(dimensions, type); \
+        break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
         default:

@@ -68,13 +68,16 @@ void BufferRAM::setSize(size_t size) {
     initialize();
 }
 
-BufferRAM* createBufferRAM(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage) {
-    switch (format->getId())
-    {
+BufferRAM* createBufferRAM(size_t size, const DataFormatBase* format, BufferType type,
+                           BufferUsage usage) {
+    switch (format->getId()) {
         case DataFormatEnums::NOT_SPECIALIZED:
             LogErrorCustom("createBufferRAM", "Invalid format");
             return nullptr;
-#define DataFormatIdMacro(i) case DataFormatEnums::i: return new BufferRAMCustomPrecision<Data##i::type, Data##i::bits>(size, format, type, usage); break;
+#define DataFormatIdMacro(i)                                                     \
+    case DataFormatEnums::i:                                                     \
+        return new BufferRAMPrecision<Data##i::type>(size, format, type, usage); \
+        break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
         default:

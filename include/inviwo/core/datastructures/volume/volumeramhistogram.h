@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMERAMHISTOGRAM_H
@@ -49,7 +49,7 @@ public:
 
     virtual ~VolumeRAMNormalizedHistogram() {}
 
-    template <typename T, size_t B>
+    template <typename T>
     void evaluate();
 
     static inline std::vector<NormalizedHistogram*>* apply(
@@ -68,25 +68,26 @@ public:
         const Volume* volume = reinterpret_cast<const Volume*>(volumeRAM->getOwner());
         dvec2 dataRange = volume->dataMap_.dataRange;
 
-        double delta = (dataRange.y - dataRange.x) / static_cast<double>(maxNumberOfBins-1);
+        double delta = (dataRange.y - dataRange.x) / static_cast<double>(maxNumberOfBins - 1);
 
         switch (volumeRAM->getDataFormat()->getNumericType()) {
-        case DataFormatEnums::NOT_SPECIALIZED_TYPE:
-            break;
-        case DataFormatEnums::FLOAT_TYPE:
-            break;
-        case DataFormatEnums::UNSIGNED_INTEGER_TYPE:
-            if (delta < 1.0) {
-                delta = 1.0;
-            }
-            break;
-        case DataFormatEnums::SIGNED_INTEGER_TYPE:
-            if (delta < 1.0) {
-                delta = 1.0;
-            }
-            break;
+            case DataFormatEnums::NOT_SPECIALIZED_TYPE:
+                break;
+            case DataFormatEnums::FLOAT_TYPE:
+                break;
+            case DataFormatEnums::UNSIGNED_INTEGER_TYPE:
+                if (delta < 1.0) {
+                    delta = 1.0;
+                }
+                break;
+            case DataFormatEnums::SIGNED_INTEGER_TYPE:
+                if (delta < 1.0) {
+                    delta = 1.0;
+                }
+                break;
         }
-        return std::min(maxNumberOfBins,static_cast<size_t>(std::ceil((dataRange.y - dataRange.x) / delta) + 1));
+        return std::min(maxNumberOfBins,
+                        static_cast<size_t>(std::ceil((dataRange.y - dataRange.x) / delta) + 1));
     }
 
 private:
@@ -95,8 +96,7 @@ private:
     size_t maxNumberOfBins_;
 };
 
-
-template <typename T, typename V, typename vec, typename ivec, size_t B, int N>
+template <typename T, typename V, typename vec, typename ivec, int N>
 void calculateVecHist(std::vector<NormalizedHistogram*>* histograms, const VolumeRAM* volumeRAM,
                       int sampleRate, size_t numberOfBinsInHistogram) {
     std::vector<std::vector<double>*> histData;
@@ -171,8 +171,7 @@ void calculateVecHist(std::vector<NormalizedHistogram*>* histograms, const Volum
     }
 }
 
-
-template <typename T, size_t B, int N>
+template <typename T, int N>
 class HistogramCalculator {
 public:
     static void calculate(std::vector<NormalizedHistogram*>* histograms, const VolumeRAM* volumeRAM,
@@ -214,9 +213,8 @@ public:
                     sum2 += val * val;
                     count++;
 
-                    int ind =
-                        static_cast<int>((val - dataRange.x) / (dataRange.y - dataRange.x) *
-                                            (numberOfBinsInHistogram - 1));
+                    int ind = static_cast<int>((val - dataRange.x) / (dataRange.y - dataRange.x) *
+                                               (numberOfBinsInHistogram - 1));
 
                     if (ind >= 0 && ind < static_cast<int>(numberOfBinsInHistogram)) {
                         histData->at(ind)++;
@@ -241,8 +239,8 @@ public:
     };
 };
 
-template <typename T, size_t B, int N>
-class HistogramCalculator<glm::detail::tvec2<T, glm::defaultp>, B, N> {
+template <typename T, int N>
+class HistogramCalculator<glm::detail::tvec2<T, glm::defaultp>, N> {
 public:
     typedef glm::detail::tvec2<T, glm::defaultp> V;
     typedef glm::detail::tvec2<double, glm::defaultp> vec;
@@ -250,13 +248,13 @@ public:
 
     static void calculate(std::vector<NormalizedHistogram*>* histograms, const VolumeRAM* volumeRAM,
                           int sampleRate, size_t numberOfBinsInHistogram) {
-        calculateVecHist<T, V, vec, ivec, B, 2>(histograms, volumeRAM, sampleRate,
-                                                numberOfBinsInHistogram);
+        calculateVecHist<T, V, vec, ivec, 2>(histograms, volumeRAM, sampleRate,
+                                             numberOfBinsInHistogram);
     }
 };
 
-template <typename T, size_t B, int N>
-class HistogramCalculator<glm::detail::tvec3<T, glm::defaultp>, B, N> {
+template <typename T, int N>
+class HistogramCalculator<glm::detail::tvec3<T, glm::defaultp>, N> {
 public:
     typedef glm::detail::tvec3<T, glm::defaultp> V;
     typedef glm::detail::tvec3<double, glm::defaultp> vec;
@@ -264,12 +262,12 @@ public:
 
     static void calculate(std::vector<NormalizedHistogram*>* histograms, const VolumeRAM* volumeRAM,
                           int sampleRate, size_t numberOfBinsInHistogram) {
-        calculateVecHist<T, V, vec, ivec, B, 3>(histograms, volumeRAM, sampleRate,
-                                                numberOfBinsInHistogram);
+        calculateVecHist<T, V, vec, ivec, 3>(histograms, volumeRAM, sampleRate,
+                                             numberOfBinsInHistogram);
     }
 };
-template <typename T, size_t B, int N>
-class HistogramCalculator<glm::detail::tvec4<T, glm::defaultp>, B, N> {
+template <typename T, int N>
+class HistogramCalculator<glm::detail::tvec4<T, glm::defaultp>, N> {
 public:
     typedef glm::detail::tvec4<T, glm::defaultp> V;
     typedef glm::detail::tvec4<double, glm::defaultp> vec;
@@ -277,19 +275,15 @@ public:
 
     static void calculate(std::vector<NormalizedHistogram*>* histograms, const VolumeRAM* volumeRAM,
                           int sampleRate, size_t numberOfBinsInHistogram) {
-        calculateVecHist<T, V, vec, ivec, B, 4>(histograms, volumeRAM, sampleRate,
-                                                numberOfBinsInHistogram);
+        calculateVecHist<T, V, vec, ivec, 4>(histograms, volumeRAM, sampleRate,
+                                             numberOfBinsInHistogram);
     }
 };
-
 
 template <typename T>
 class VolumeRAMPrecision;
 
-template <typename T, size_t B>
-class VolumeRAMCustomPrecision;
-
-template <typename T, size_t B>
+template <typename T>
 void VolumeRAMNormalizedHistogram::evaluate() {
     const VolumeRAMPrecision<T>* volumeRAM =
         dynamic_cast<const VolumeRAMPrecision<T>*>(getInputVolume());
@@ -308,21 +302,21 @@ void VolumeRAMNormalizedHistogram::evaluate() {
 
     switch (volumeRAM->getDataFormat()->getComponents()) {
         case 1:
-            HistogramCalculator<T, B, 1>::calculate(histograms_, volumeRAM, sampleRate_,
-                                                     numberOfBinsInHistogram);
+            HistogramCalculator<T, 1>::calculate(histograms_, volumeRAM, sampleRate_,
+                                                 numberOfBinsInHistogram);
             break;
         case 2:
-            HistogramCalculator<T, B, 2>::calculate(histograms_, volumeRAM, sampleRate_,
-                                                     numberOfBinsInHistogram);
+            HistogramCalculator<T, 2>::calculate(histograms_, volumeRAM, sampleRate_,
+                                                 numberOfBinsInHistogram);
             break;
         case 3:
-            HistogramCalculator<T, B, 3>::calculate(histograms_, volumeRAM, sampleRate_,
-                                                     numberOfBinsInHistogram);
-            break; 
+            HistogramCalculator<T, 3>::calculate(histograms_, volumeRAM, sampleRate_,
+                                                 numberOfBinsInHistogram);
+            break;
         case 4:
-            HistogramCalculator<T, B, 4>::calculate(histograms_, volumeRAM, sampleRate_,
-                                                     numberOfBinsInHistogram);
-            break; 
+            HistogramCalculator<T, 4>::calculate(histograms_, volumeRAM, sampleRate_,
+                                                 numberOfBinsInHistogram);
+            break;
         default:
             break;
     }

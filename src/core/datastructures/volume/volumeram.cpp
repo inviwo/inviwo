@@ -137,17 +137,16 @@ void VolumeRAM::setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset
 }
 
 VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format, void* dataPtr) {
-    // TODO: Add more formats
     VolumeRAM* result = nullptr;
 
     switch (format->getId()) {
         case DataFormatEnums::NOT_SPECIALIZED:
             LogErrorCustom("createVolumeRAM", "Invalid format");
             break;
-#define DataFormatIdMacro(i)                                               \
-    case DataFormatEnums::i:                                               \
-        return new VolumeRAMCustomPrecision<Data##i::type, Data##i::bits>( \
-            static_cast<Data##i::type*>(dataPtr), dimensions);             \
+#define DataFormatIdMacro(i)                                                               \
+    case DataFormatEnums::i:                                                               \
+        return new VolumeRAMPrecision<Data##i::type>(static_cast<Data##i::type*>(dataPtr), \
+                                                     dimensions);                          \
         break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
@@ -155,7 +154,6 @@ VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format
             LogErrorCustom("createVolumeRAM", "Invalid format or not implemented");
             break;
     }
-
     return result;
 }
 

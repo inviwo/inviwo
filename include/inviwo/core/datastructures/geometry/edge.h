@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_EDGE_H
@@ -32,46 +32,41 @@
 
 namespace inviwo {
 
-template<typename T>
+template <typename T>
 class Edge {
-
 public:
     T v1, v2;
 
-    Edge(T in1) : v1(in1), v2(in1) {};
+    Edge(T in1) : v1(in1), v2(in1){};
 
-    Edge(T in1, T in2) : v1(in1), v2(in2) {};
+    Edge(T in1, T in2) : v1(in1), v2(in2){};
 
     bool operator==(const Edge<T>& e) const {
-        return ((this->v1==e.v1) && (this->v2==e.v2)) || ((this->v1==e.v2) && (this->v2==e.v1));
+        return ((this->v1 == e.v1) && (this->v2 == e.v2)) ||
+               ((this->v1 == e.v2) && (this->v2 == e.v1));
     }
 
 protected:
-    //Protected as it can't instantiate v1 and v2;
+    // Protected as it can't instantiate v1 and v2;
     Edge() {}
-
 };
 
-template<typename T, size_t B>
+template <typename T>
 class EdgeDataFormat : public Edge<T> {
-
 public:
     EdgeDataFormat() : Edge<T>() {
-        DataFormat<T,B>::get()->doubleToValue(0.0, &this->v1);
+        DataFormat<T>::get()->doubleToValue(0.0, &this->v1);
         this->v2 = this->v1;
     }
 
-    EdgeDataFormat(T in1) : Edge<T>(in1) {};
-    EdgeDataFormat(T in1, T in2) : Edge<T>(in1, in2) {};
-
+    EdgeDataFormat(T in1) : Edge<T>(in1){};
+    EdgeDataFormat(T in1, T in2) : Edge<T>(in1, in2){};
 };
 
-#define DataFormatEdge(D) EdgeDataFormat<D::type, D::bits>
+typedef EdgeDataFormat<DataUINT32::type> EdgeIndex;
+typedef EdgeDataFormat<DataVec2FLOAT32::type> Edge2D;
+typedef EdgeDataFormat<DataVec3FLOAT32::type> Edge3D;
 
-typedef DataFormatEdge(DataUINT32) EdgeIndex;
-typedef DataFormatEdge(DataVec2FLOAT32) Edge2D;
-typedef DataFormatEdge(DataVec3FLOAT32) Edge3D;
+}  // namespace
 
-} // namespace
-
-#endif // IVW_EDGE_H
+#endif  // IVW_EDGE_H

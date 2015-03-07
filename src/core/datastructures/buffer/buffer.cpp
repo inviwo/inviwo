@@ -64,7 +64,7 @@ Buffer::~Buffer() {
 }
 
 size_t Buffer::getSizeInBytes() {
-    return size_ * dataFormatBase_->getBytesStored();
+    return size_ * dataFormatBase_->getSize();
 }
 
 void Buffer::setSize(size_t size) {

@@ -75,42 +75,10 @@ public:
     void clear();
 
 private:
-    static const DataFormatBase* defaultformat() { return GenericDataFormat(T)::get(); }
+    static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
     std::vector<T>* data_;
 };
 
-template <typename T, size_t B>
-class BufferRAMCustomPrecision : public BufferRAMPrecision<T> {
-public:
-    BufferRAMCustomPrecision(size_t size = 0,
-                             const DataFormatBase* format = DataFormat<T, B>::get(),
-                             BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC)
-        : BufferRAMPrecision<T>(size, format, type, usage) {}
-    virtual ~BufferRAMCustomPrecision(){};
-
-    BufferRAMCustomPrecision(const BufferRAMCustomPrecision<T, B>& rhs);
-
-    BufferRAMCustomPrecision<T, B>& operator=(const BufferRAMCustomPrecision<T, B>& rhs) {
-        if (this != &rhs) {
-            BufferRAMPrecision<T>::operator=(rhs);
-        }
-        return *this;
-    };
-
-    virtual BufferRAMCustomPrecision<T, B>* clone() const;
-
-private:
-    static const DataFormatBase* defaultformat() { return DataFormat<T, B>::get(); }
-};
-
-template<typename T, size_t B>
-inviwo::BufferRAMCustomPrecision<T, B>::BufferRAMCustomPrecision(const BufferRAMCustomPrecision<T, B>& rhs)
-    : BufferRAMPrecision<T>(rhs) {}
-
-template<typename T, size_t B>
-BufferRAMCustomPrecision<T, B>* inviwo::BufferRAMCustomPrecision<T, B>::clone() const {
-    return new BufferRAMCustomPrecision<T,B>(*this);
-}
 
 template<typename T>
 BufferRAMPrecision<T>::BufferRAMPrecision(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage) :
@@ -264,7 +232,7 @@ void BufferRAMPrecision<T>::clear() {
     size_ = 0;
 }
 
-#define DataFormatIdMacro(i) typedef BufferRAMCustomPrecision<Data##i::type, Data##i::bits> BufferRAM_##i;
+#define DataFormatIdMacro(i) typedef BufferRAMPrecision<Data##i::type> BufferRAM_##i;
 #include <inviwo/core/util/formatsdefinefunc.h>
 #undef DataFormatIdMacro
 

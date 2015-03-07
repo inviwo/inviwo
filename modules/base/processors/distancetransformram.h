@@ -69,7 +69,7 @@ private:
     void updateOutport();
     void paramChanged();
 
-    template <typename T, size_t B>
+    template <typename T>
     void computeDistanceTransform(); 
 
     VolumeInport volumePort_;
@@ -92,7 +92,7 @@ private:
 template <typename Type>
 Type Square(Type a) { return (a * a); }
 
-template <typename T, size_t B>
+template <typename T>
 void DistanceTransformRAM::computeDistanceTransform() {
     const VolumeRAM *srcVol = volumePort_.getData()->getRepresentation<VolumeRAM>();
     VolumeRAM *vol = outport_.getData()->getEditableRepresentation<VolumeRAM>();

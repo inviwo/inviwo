@@ -33,28 +33,13 @@ namespace inviwo {
 
 DataFormatBase* DataFormatBase::instance_[] = {nullptr};
 
-DataFormatBase::DataFormatBase()
-    : formatId_(id())
-    , bitsAllocated_(bitsAllocated())
-    , bitsStored_(bitsStored())
-    , components_(components()) {
-    formatStr_ = new std::string(str());
-}
+DataFormatBase::DataFormatBase() : formatId_(id()), components_(components()), size_(size()), formatStr_("") {}
 
-DataFormatBase::DataFormatBase(DataFormatEnums::Id t, size_t bA, size_t bS, int c, double max, double min, DataFormatEnums::NumericType nt, std::string s)
-    : formatId_(t)
-    , bitsAllocated_(bA)
-    , bitsStored_(bS)
-    , components_(c)
-    , numericType_(nt)
-    , max_(max)
-    , min_(min) {
-    formatStr_ = new std::string(s);
-}
+DataFormatBase::DataFormatBase(DataFormatEnums::Id t, int c, size_t size, double max, double min,
+                               DataFormatEnums::NumericType nt, std::string s)
+    : formatId_(t), components_(c), size_(size), numericType_(nt), max_(max), min_(min), formatStr_(s) {}
 
-DataFormatBase::~DataFormatBase() {
-    delete formatStr_;
-}
+DataFormatBase::~DataFormatBase() {}
 
 const DataFormatBase* DataFormatBase::get() {
     if (!instance_[DataFormatEnums::NOT_SPECIALIZED])
@@ -81,7 +66,6 @@ const DataFormatBase* DataFormatBase::get(std::string name) {
     else if (name == "UCHAR") return DataUINT8::get();
     else if (name == "CHAR") return DataINT8::get();
     else if (name == "USHORT") return DataUINT16::get();
-    else if (name == "USHORT_12") return DataUINT12::get();
     else if (name == "SHORT") return DataINT16::get();
     else if (name == "UINT") return DataUINT32::get();
     else if (name == "INT") return DataINT32::get();
@@ -143,8 +127,6 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int
                     switch (precision) {
                         case 8:
                             return DataINT8::get();
-                        case 12:
-                            return DataINT12::get();
                         case 16:
                             return DataINT16::get();
                         case 32:
@@ -157,8 +139,6 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int
                     switch (precision) {
                         case 8:
                             return DataVec2INT8::get();
-                        case 12:
-                            return DataVec2INT12::get();
                         case 16:
                             return DataVec2INT16::get();
                         case 32:
@@ -171,8 +151,6 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int
                     switch (precision) {
                         case 8:
                             return DataVec3INT8::get();
-                        case 12:
-                            return DataVec3INT12::get();
                         case 16:
                             return DataVec3INT16::get();
                         case 32:
@@ -185,8 +163,6 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int
                     switch (precision) {
                         case 8:
                             return DataVec4INT8::get();
-                        case 12:
-                            return DataVec4INT12::get();
                         case 16:
                             return DataVec4INT16::get();
                         case 32:
@@ -203,8 +179,6 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int
                     switch (precision) {
                         case 8:
                             return DataUINT8::get();
-                        case 12:
-                            return DataUINT12::get();
                         case 16:
                             return DataUINT16::get();
                         case 32:
@@ -217,8 +191,6 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int
                     switch (precision) {
                         case 8:
                             return DataVec2UINT8::get();
-                        case 12:
-                            return DataVec2UINT12::get();
                         case 16:
                             return DataVec2UINT16::get();
                         case 32:
@@ -231,8 +203,6 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int
                     switch (precision) {
                         case 8:
                             return DataVec3UINT8::get();
-                        case 12:
-                            return DataVec3UINT12::get();
                         case 16:
                             return DataVec3UINT16::get();
                         case 32:
@@ -245,8 +215,6 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int
                     switch (precision) {
                         case 8:
                             return DataVec4UINT8::get();
-                        case 12:
-                            return DataVec4UINT12::get();
                         case 16:
                             return DataVec4UINT16::get();
                         case 32:
@@ -320,24 +288,12 @@ void DataFormatBase::vec4DoubleToValue(dvec4 val, void* loc) const {
     *static_cast<dvec4*>(loc) = val;
 }
 
-size_t DataFormatBase::getBitsAllocated() const {
-    return bitsAllocated_;
+size_t DataFormatBase::getSize() const {
+    return size_;
 }
 
 DataFormatEnums::NumericType DataFormatBase::getNumericType() const {
     return numericType_;
-}
-
-size_t DataFormatBase::getBitsStored() const {
-    return bitsStored_;
-}
-
-size_t DataFormatBase::getBytesAllocated() const {
-    return static_cast<size_t>(glm::ceil(BITS_TO_BYTES(static_cast<float>(getBitsAllocated()))));
-}
-
-size_t DataFormatBase::getBytesStored() const {
-    return static_cast<size_t>(glm::ceil(BITS_TO_BYTES(static_cast<float>(getBitsStored()))));
 }
 
 int DataFormatBase::getComponents() const {
@@ -353,7 +309,7 @@ double DataFormatBase::getMin() const {
 }
 
 const char* DataFormatBase::getString() const {
-    return formatStr_->c_str();
+    return formatStr_.c_str();
 }
 
 DataFormatEnums::Id DataFormatBase::getId() const {

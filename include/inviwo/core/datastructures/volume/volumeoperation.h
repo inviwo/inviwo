@@ -44,8 +44,7 @@ public:
 
     const VolumeRepresentation* getInputVolume() { return in_; }
 
-
-    template <typename T, size_t B>
+    template <typename T>
     void evaluate(){}
 
     template<typename VO>
@@ -54,7 +53,7 @@ public:
         if(!t) return; //todo maybe print error= 
 
         DataFormatEnums::Id id_ = getInputVolume()->getDataFormat()->getId();
-        CallFunctionWithTemplateArgsForType(t->template evaluate,id_);
+        CallFunctionWithTemplateArgsForType(t->template evaluate, id_);
     }
 
 

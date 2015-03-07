@@ -64,7 +64,7 @@ public:
      *
      * @return Size of element in bytes.
      */
-    virtual size_t getSizeOfElement() const { return getDataFormat()->getBytesStored(); };
+    virtual size_t getSizeOfElement() const { return getDataFormat()->getSize(); };
 
     BufferType getBufferType() const { return type_; }
     BufferUsage getBufferUsage() const { return usage_; }

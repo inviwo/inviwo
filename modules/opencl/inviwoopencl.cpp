@@ -827,10 +827,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             clFormat = cl::ImageFormat(CL_R, CL_SNORM_INT8);
             break;
 
-        case DataFormatEnums::INT12:
-            clFormat = cl::ImageFormat(CL_R, CL_SNORM_INT16);
-            break;
-
         case DataFormatEnums::INT16:
             clFormat = cl::ImageFormat(CL_R, CL_SNORM_INT16);
             break;
@@ -845,10 +841,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
 
         case DataFormatEnums::UINT8:
             clFormat = cl::ImageFormat(CL_R, CL_UNORM_INT8);
-            break;
-
-        case DataFormatEnums::UINT12:
-            clFormat = cl::ImageFormat(CL_R, CL_UNORM_INT16);
             break;
 
         case DataFormatEnums::UINT16:
@@ -879,10 +871,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             clFormat = cl::ImageFormat(CL_RG, CL_SNORM_INT8);
             break;
 
-        case DataFormatEnums::Vec2INT12:
-            clFormat = cl::ImageFormat(CL_RG, CL_SNORM_INT16);
-            break;
-
         case DataFormatEnums::Vec2INT16:
             clFormat = cl::ImageFormat(CL_RG, CL_SNORM_INT16);
             break;
@@ -897,10 +885,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
 
         case DataFormatEnums::Vec2UINT8:
             clFormat = cl::ImageFormat(CL_RG, CL_UNORM_INT8);
-            break;
-
-        case DataFormatEnums::Vec2UINT12:
-            clFormat = cl::ImageFormat(CL_RG, CL_UNORM_INT16);
             break;
 
         case DataFormatEnums::Vec2UINT16:
@@ -931,10 +915,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
             break;
 
-        case DataFormatEnums::Vec3INT12:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
-            break;
-
         case DataFormatEnums::Vec3INT16:
             LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
             break;
@@ -948,10 +928,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::Vec3UINT8:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
-            break;
-
-        case DataFormatEnums::Vec3UINT12:
             LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
             break;
 
@@ -983,10 +959,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             clFormat = cl::ImageFormat(CL_RGBA, CL_SNORM_INT8);
             break;
 
-        case DataFormatEnums::Vec4INT12:
-            clFormat = cl::ImageFormat(CL_RGBA, CL_SNORM_INT16);
-            break;
-
         case DataFormatEnums::Vec4INT16:
             clFormat = cl::ImageFormat(CL_RGBA, CL_SNORM_INT16);
             break;
@@ -1002,10 +974,6 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
         case DataFormatEnums::Vec4UINT8:
             clFormat = cl::ImageFormat(CL_RGBA, CL_UNORM_INT8);
             break; // TODO: Find out why CL_UNORM_INT8 does not work
-
-        case DataFormatEnums::Vec4UINT12:
-            clFormat = cl::ImageFormat(CL_RGBA, CL_UNORM_INT16);
-            break;
 
         case DataFormatEnums::Vec4UINT16:
             clFormat = cl::ImageFormat(CL_RGBA, CL_UNORM_INT16);

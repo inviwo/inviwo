@@ -255,7 +255,7 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
 
     volume->setDataFormat(format_);
 
-    size_t bytes = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getBytesAllocated());
+    size_t bytes = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
 
     if(sequences > 1){
         DataSequence<Volume>* volumeSequence = new DataSequence<Volume>(*volume);
@@ -296,12 +296,12 @@ void DatVolumeReader::readDataInto(void* destination) const {
     std::fstream fin(rawFile_.c_str(), std::ios::in | std::ios::binary);
 
     if (fin.good()) {
-        std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getBytesAllocated());
+        std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
         fin.seekg(filePos_);
         fin.read(static_cast<char*>(destination), size);
 
-        if (!littleEndian_ && format_->getBytesAllocated() > 1) {
-            std::size_t bytes = format_->getBytesAllocated();
+        if (!littleEndian_ && format_->getSize() > 1) {
+            std::size_t bytes = format_->getSize();
             char* temp = new char[bytes];
 
             for (std::size_t i = 0; i < size; i += bytes) {
@@ -321,7 +321,7 @@ void DatVolumeReader::readDataInto(void* destination) const {
 }
 
 void* DatVolumeReader::readData() const {
-    std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getBytesAllocated());
+    std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
     char* data = new char[size];
 
     if (data) {

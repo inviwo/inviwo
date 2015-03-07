@@ -47,7 +47,7 @@ public:
         : VolumeOperation(in), iso_(iso), color_(color) {}
     virtual ~MarchingTetrahedron() {}
 
-    template <typename T, size_t B>
+    template <typename T>
     void evaluate();
 
     static inline Geometry* apply(const VolumeRepresentation *in, const double &iso,
@@ -230,7 +230,7 @@ double MarchingTetrahedron::getValue(const T *src, uvec3 pos, uvec3 dim) {
     return -(v - iso_);
 }
 
-template <typename T, size_t B>
+template <typename T>
 void MarchingTetrahedron::evaluate() {
     const VolumeRAMPrecision<T> *volume =
         dynamic_cast<const VolumeRAMPrecision<T> *>(getInputVolume());

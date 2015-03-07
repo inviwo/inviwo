@@ -47,7 +47,7 @@ public:
     VolumeRAMSubSample(const VolumeRepresentation* in, FACTOR factor) : VolumeOperation(in), factor_(factor) {}
     virtual ~VolumeRAMSubSample() {}
 
-    template<typename T, size_t B>
+    template<typename T>
     void evaluate();
 
     static inline VolumeRAM* apply(const VolumeRepresentation* in, FACTOR factor) {
@@ -102,12 +102,12 @@ public:
     };
 };*/
 
-template<typename T, size_t B>
+template<typename T>
 void VolumeRAMSubSample::evaluate() {
     const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(getInputVolume());
 
     if (!volume) {
-        setOutput(NULL);
+        setOutput(nullptr);
         return;
     }
 
@@ -121,7 +121,7 @@ void VolumeRAMSubSample::evaluate() {
     size_t dX = static_cast<size_t>(newDims.x);
 
     //allocate space
-    VolumeRAMPrecision<T>* newVolume = new VolumeRAMCustomPrecision<T, B>(newDims);
+    VolumeRAMPrecision<T>* newVolume = new VolumeRAMPrecision<T>(newDims);
 
     //get data pointers
     const T* src = reinterpret_cast<const T*>(volume->getData());
