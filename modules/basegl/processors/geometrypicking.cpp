@@ -55,6 +55,7 @@ GeometryPicking::GeometryPicking()
     addPort(geometryInport_);
     addPort(imageInport_);
     addPort(outport_);
+    outport_.addResizeEventListener(&camera_);
     addProperty(position_);
     addProperty(camera_);
     addProperty(trackball_);

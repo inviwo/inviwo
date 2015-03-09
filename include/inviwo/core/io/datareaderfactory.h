@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/singleton.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <inviwo/core/io/datareader.h>
 
@@ -70,7 +71,7 @@ public:
 
     template <typename T>
     DataReaderType<T>* getReaderForTypeAndExtension(const std::string &ext) {
-        ExtensionMap::iterator it = readerForExtension_.find(ext);
+		ExtensionMap::iterator it = readerForExtension_.find(toLower(ext));
 
         if (it != readerForExtension_.end()) {
             DataReaderType<T>* r = dynamic_cast<DataReaderType<T>* >(it->second);

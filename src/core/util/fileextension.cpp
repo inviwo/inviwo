@@ -30,15 +30,19 @@
 #include <inviwo/core/util/fileextension.h>
 
 #include <inviwo/core/util/singleton.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
 FileExtension::FileExtension()
     : extension_("txt")
     , description_("Textfile") {};
+
 FileExtension::FileExtension(std::string extension, std::string description)
-    : extension_(extension)
-    , description_(description) {};
+    : extension_(toLower(extension)) // Make sure that the extension is given in lower case 
+	, description_(description) {
+	
+};
 
 } // namespace
 
