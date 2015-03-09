@@ -42,30 +42,39 @@ namespace inviwo {
 EventConverterQt::EventConverterQt() {}
 EventConverterQt::~EventConverterQt() {}
 
-int EventConverterQt::getKeyButton(QKeyEvent* e) {
-    return e->key();
-    
-// This does not work on OSX and makes no sense. 
-//    char key = toupper(e->nativeVirtualKey());
-//
-//    if ((key >= '0' && key <= '9')||(key >= 'A' && key <= 'Z'))
-//        return key;
-//    else
-//        return 0;
+MouseEvent::MouseButton inviwo::EventConverterQt::getMouseButton(const QMouseEvent* e) {
+	switch (e->buttons())
+	{
+	case Qt::LeftButton:
+		return MouseEvent::MOUSE_BUTTON_LEFT;
+	case Qt::RightButton:
+		return MouseEvent::MOUSE_BUTTON_RIGHT;
+	case Qt::MiddleButton:
+		return MouseEvent::MOUSE_BUTTON_MIDDLE;
+	default:
+		return MouseEvent::MOUSE_BUTTON_NONE;
+	}
 }
 
-MouseEvent::MouseButton inviwo::EventConverterQt::getMouseButton(QMouseEvent* e) {
-    if (e->buttons() == Qt::LeftButton)
-        return MouseEvent::MOUSE_BUTTON_LEFT;
-    else if (e->buttons() == Qt::RightButton)
-        return MouseEvent::MOUSE_BUTTON_RIGHT;
-    else if (e->buttons() == Qt::MiddleButton)
-        return MouseEvent::MOUSE_BUTTON_MIDDLE;
-
-    return MouseEvent::MOUSE_BUTTON_NONE;
+MouseEvent::MouseButton EventConverterQt::getMouseButtonCausingEvent(const QMouseEvent* e) {
+	// QMouseEvent::getButtons does not
+	// include the button that caused the event.
+	// The QMouseEvent::getButton function
+	// returns the button that caused the event
+	switch (e->button())
+	{
+	case Qt::LeftButton:
+		return MouseEvent::MOUSE_BUTTON_LEFT;
+	case Qt::RightButton:
+		return MouseEvent::MOUSE_BUTTON_RIGHT;
+	case Qt::MiddleButton:
+		return MouseEvent::MOUSE_BUTTON_MIDDLE;
+	default:
+		return MouseEvent::MOUSE_BUTTON_NONE;
+	}
 }
 
-MouseEvent::MouseButton inviwo::EventConverterQt::getMouseWheelButton(QWheelEvent* e) {
+MouseEvent::MouseButton inviwo::EventConverterQt::getMouseWheelButton(const QWheelEvent* e) {
     if (e->buttons() == Qt::LeftButton)
         return MouseEvent::MOUSE_BUTTON_LEFT;
     else if (e->buttons() == Qt::RightButton)
@@ -77,7 +86,7 @@ MouseEvent::MouseButton inviwo::EventConverterQt::getMouseWheelButton(QWheelEven
 }
 
 #ifndef QT_NO_GESTURES
-GestureEvent::GestureState inviwo::EventConverterQt::getGestureState(QGesture* gesture){
+GestureEvent::GestureState inviwo::EventConverterQt::getGestureState(const QGesture* gesture){
     if (gesture->state() == Qt::GestureStarted)
         return GestureEvent::GESTURE_STATE_STARTED;
     else if (gesture->state() == Qt::GestureUpdated)
@@ -91,7 +100,7 @@ GestureEvent::GestureState inviwo::EventConverterQt::getGestureState(QGesture* g
 }
 #endif
 
-InteractionEvent::Modifier inviwo::EventConverterQt::getModifier(QInputEvent* e) {
+InteractionEvent::Modifier inviwo::EventConverterQt::getModifier(const QInputEvent* e) {
     if (e->modifiers() == Qt::ShiftModifier)
         return InteractionEvent::MODIFIER_SHIFT;
     else if (e->modifiers() == Qt::ControlModifier)
@@ -100,6 +109,18 @@ InteractionEvent::Modifier inviwo::EventConverterQt::getModifier(QInputEvent* e)
         return InteractionEvent::MODIFIER_ALT;
 
     return InteractionEvent::MODIFIER_NONE;
+}
+
+int EventConverterQt::getKeyButton(const QKeyEvent* e) {
+    return e->key();
+    
+// This does not work on OSX and makes no sense. 
+//    char key = toupper(e->nativeVirtualKey());
+//
+//    if ((key >= '0' && key <= '9')||(key >= 'A' && key <= 'Z'))
+//        return key;
+//    else
+//        return 0;
 }
 
 } // namespace
