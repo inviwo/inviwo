@@ -36,9 +36,13 @@ namespace inviwo {
 FileExtension::FileExtension()
     : extension_("txt")
     , description_("Textfile") {};
+
 FileExtension::FileExtension(std::string extension, std::string description)
     : extension_(extension)
-    , description_(description) {};
+	, description_(description) {
+	// Make sure that the extension is given in lower case 
+	std::transform(extension_.begin(), extension_.end(), extension_.begin(), std::tolower);
+};
 
 } // namespace
 

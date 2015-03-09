@@ -41,7 +41,7 @@ public:
     FileExtension(std::string extension, std::string description);
     virtual ~FileExtension() {};
 
-    std::string extension_;
+    std::string extension_; ///< File extension in lower case letters.
     std::string description_;
 };
 
