@@ -127,6 +127,16 @@ T VolumeRAM::periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posI
 IVW_CORE_API VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format,
                                         void* dataPtr = nullptr);
 
+template <typename T> class VolumeRAMPrecision;
+struct VolumeRamDispatcher {
+    using type = VolumeRAM*;
+    template <class T>
+    VolumeRAM* dispatch(void* dataPtr, const uvec3& dimensions) {
+        typedef typename T::type F;
+        return new VolumeRAMPrecision<F>(static_cast<F*>(dataPtr), dimensions);
+    }
+};
+
 }  // namespace
 
 #endif  // IVW_VOLUMERAM_H

@@ -159,11 +159,11 @@ public:
     virtual void vec3DoubleToValue(dvec3, void*) const;
     virtual void vec4DoubleToValue(dvec4, void*) const;
 
-    // T Models a type with a function:
-    //    template <class T>
-    //    U dispatch(Args... args)
-    // add a type
+    // T Models a type with a type
     //    T::type = return type
+    // and a function:
+    //    template <class T>
+    //    type dispatch(Args... args);
     template <typename T, typename... Args>
     auto dispatch(T& obj, Args&&... args) const -> typename T::type;
 
