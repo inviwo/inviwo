@@ -34,12 +34,11 @@
 #pragma warning(disable : 4756)
 #pragma warning(disable : 4244) // min/max to double.
 
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <limits>
 #include <string>
-
-#include <half/half.hpp>
 
 /*! \brief Defines general useful formats and new data types
  * Non-virtual, meaning no dynamic_cast as string comparison is as fast/faster
@@ -136,6 +135,15 @@ public:
     static std::string str() { return "Error, type specialization not implemented"; }
     static DataFormatEnums::Id id() { return DataFormatEnums::NOT_SPECIALIZED; }
 
+    size_t getSize() const;
+    int getComponents() const;
+
+    DataFormatEnums::NumericType getNumericType() const;
+    double getMax() const;
+    double getMin() const;
+    const char* getString() const;
+    DataFormatEnums::Id getId() const;
+
     virtual double valueToDouble(void*) const;
     virtual dvec2 valueToVec2Double(void*) const;
     virtual dvec3 valueToVec3Double(void*) const;
@@ -150,14 +158,6 @@ public:
     virtual void vec2DoubleToValue(dvec2, void*) const;
     virtual void vec3DoubleToValue(dvec3, void*) const;
     virtual void vec4DoubleToValue(dvec4, void*) const;
-    size_t getSize() const;
-    int getComponents() const;
-
-    DataFormatEnums::NumericType getNumericType() const;
-    double getMax() const;
-    double getMin() const;
-    const char* getString() const;
-    DataFormatEnums::Id getId() const;
 
     // T Models a type with a function:
     //    template <class T>
@@ -180,7 +180,7 @@ protected:
     std::string formatStr_;
 };
 
-template<typename T>
+template <typename T>
 class IVW_CORE_API DataFormat : public DataFormatBase {
 public:
     typedef T type;
@@ -189,14 +189,9 @@ public:
     static const size_t typesize = sizeof(type);
     static const size_t compsize = sizeof(primitive);
 
-    DataFormat() : DataFormatBase(id(),
-                                      components(),
-                                      size(),
-                                      maxToDouble(),
-                                      minToDouble(),
-                                      numericType(),
-                                      str()) {
-    }
+    DataFormat()
+        : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), numericType(),
+                         str()) {}
 
     virtual ~DataFormat() {}
 
@@ -211,7 +206,9 @@ public:
 
     static size_t size() { return typesize; }
     static int components() { return comp; }
-    static DataFormatEnums::NumericType numericType() { return DataFormatEnums::NOT_SPECIALIZED_TYPE; }
+    static DataFormatEnums::NumericType numericType() {
+        return DataFormatEnums::NOT_SPECIALIZED_TYPE;
+    }
 
     static T max() { return std::numeric_limits<T>::max(); }
     static T min() { return std::numeric_limits<T>::min(); }
@@ -222,195 +219,123 @@ public:
     static std::string str() { return DataFormatBase::str(); }
     static DataFormatEnums::Id id() { return DataFormatBase::id(); }
 
-    inline double valueToDouble(void* val) const { return DataFormatBase::valueToDouble(val); }
-    inline dvec2 valueToVec2Double(void* val) const { return DataFormatBase::valueToVec2Double(val); }
-    inline dvec3 valueToVec3Double(void* val) const { return DataFormatBase::valueToVec3Double(val); }
-    inline dvec4 valueToVec4Double(void* val) const { return DataFormatBase::valueToVec4Double(val); }
+    virtual double valueToDouble(void* val) const {
+        return util::glm_convert<double>(*static_cast<type*>(val));
+    }
+    virtual dvec2 valueToVec2Double(void* val) const {
+        return util::glm_convert<dvec2>(*static_cast<type*>(val));
+    }
+    virtual dvec3 valueToVec3Double(void* val) const {
+        return util::glm_convert<dvec3>(*static_cast<type*>(val));
+    }
+    virtual dvec4 valueToVec4Double(void* val) const {
+        return util::glm_convert<dvec4>(*static_cast<type*>(val));
+    }
 
-    inline double valueToNormalizedDouble(void* val) const { return DataFormatBase::valueToNormalizedDouble(val); }
-    inline dvec2 valueToNormalizedVec2Double(void* val) const { return DataFormatBase::valueToNormalizedVec2Double(val); }
-    inline dvec3 valueToNormalizedVec3Double(void* val) const { return DataFormatBase::valueToNormalizedVec3Double(val); }
-    inline dvec4 valueToNormalizedVec4Double(void* val) const { return DataFormatBase::valueToNormalizedVec4Double(val); }
+    virtual double valueToNormalizedDouble(void* val) const {
+        return util::glm_convert_normalized<double>(*static_cast<type*>(val));
+    }
+    virtual dvec2 valueToNormalizedVec2Double(void* val) const {
+        return util::glm_convert_normalized<dvec2>(*static_cast<type*>(val));
+    }
+    virtual dvec3 valueToNormalizedVec3Double(void* val) const {
+        return util::glm_convert_normalized<dvec3>(*static_cast<type*>(val));
+    }
+    virtual dvec4 valueToNormalizedVec4Double(void* val) const {
+        return util::glm_convert_normalized<dvec4>(*static_cast<type*>(val));
+    }
 
-    inline void doubleToValue(double val, void* loc) const { DataFormatBase::doubleToValue(val, loc); }
-    inline void vec2DoubleToValue(dvec2 val, void* loc) const { DataFormatBase::vec2DoubleToValue(val, loc); }
-    inline void vec3DoubleToValue(dvec3 val, void* loc) const { DataFormatBase::vec3DoubleToValue(val, loc); }
-    inline void vec4DoubleToValue(dvec4 val, void* loc) const { DataFormatBase::vec4DoubleToValue(val, loc); }
+    virtual void doubleToValue(double in, void* out) const {
+        *static_cast<type*>(out) = util::glm_convert<type>(in);
+    }
+    virtual void vec2DoubleToValue(dvec2 in, void* out) const {
+        *static_cast<type*>(out) = util::glm_convert<type>(in);
+    }
+    virtual void vec3DoubleToValue(dvec3 in, void* out) const {
+        *static_cast<type*>(out) = util::glm_convert<type>(in);
+    }
+    virtual void vec4DoubleToValue(dvec4 in, void* out) const {
+        *static_cast<type*>(out) = util::glm_convert<type>(in);
+    }
 };
 
-template <typename T>
-class DataFormat<glm::detail::tvec2<T, glm::defaultp>> : public DataFormatBase {
+template <typename T, template <typename, glm::precision> class G>
+class DataFormat<G<T, glm::defaultp>> : public DataFormatBase {
 public:
-    typedef glm::detail::tvec2<T, glm::defaultp> type;
+    typedef G<T, glm::defaultp> type;
     typedef T primitive;
-    static const size_t comp = 2;
+    static const size_t comp = util::extent<type, 0>::value;
     static const size_t typesize = sizeof(type);
     static const size_t compsize = sizeof(primitive);
 
-    DataFormat() : DataFormatBase(id(),
-        components(),
-        size(),
-        maxToDouble(),
-        minToDouble(),
-        numericType(),
-        str()) {
-    }
+    DataFormat()
+        : DataFormatBase(id(), components(), size(), maxToDouble(), minToDouble(), numericType(),
+                         str()) {}
 
     virtual ~DataFormat() {}
 
-    static const DataFormat<glm::detail::tvec2<T, glm::defaultp>>* get() {
+    static const DataFormat<type>* get() {
         DataFormatBase* d = DataFormatBase::getNonConst(id());
         if (!d) {
-            d = new DataFormat<glm::detail::tvec2<T, glm::defaultp>>();
+            d = new DataFormat<type>();
             instance_[id()] = d;
         }
-        return static_cast<DataFormat<glm::detail::tvec2<T, glm::defaultp>>*>(d);
+        return static_cast<DataFormat<type>*>(d);
     }
 
     static size_t size() { return typesize; }
     static int components() { return comp; }
     static DataFormatEnums::NumericType numericType() { return DataFormat<T>::numericType(); }
 
-    static glm::detail::tvec2<T, glm::defaultp> max() { return glm::detail::tvec2<T, glm::defaultp>(DataFormat<T>::max()); }
-    static glm::detail::tvec2<T, glm::defaultp> min() { return glm::detail::tvec2<T, glm::defaultp>(DataFormat<T>::min()); }
+    static type max() { return type(DataFormat<T>::max()); }
+    static type min() { return type(DataFormat<T>::min()); }
 
-    static double maxToDouble() { return static_cast<double>(max()); }
-    static double minToDouble() { return static_cast<double>(min()); }
+    static double maxToDouble() { return static_cast<double>(DataFormat<T>::max()); }
+    static double minToDouble() { return static_cast<double>(DataFormat<T>::min()); }
 
-    static std::string str() { return "Vec2"+DataFormat<T>::str(); }
+    static std::string str() { return "Vec" + toString(comp) + DataFormat<T>::str(); }
     static DataFormatEnums::Id id() { return DataFormat<T>::id(); }
 
-    inline double valueToDouble(void* val) const { return DataFormat<T>::valueToDouble(val); }
-    inline dvec2 valueToVec2Double(void* val) const { return DataFormat<T>::valueToVec2Double(val); }
-    inline dvec3 valueToVec3Double(void* val) const { return DataFormat<T>::valueToVec3Double(val); }
-    inline dvec4 valueToVec4Double(void* val) const { return DataFormat<T>::valueToVec4Double(val); }
+    virtual double valueToDouble(void* val) const {
+        return util::glm_convert<double>(*static_cast<type*>(val));
+    }
+    virtual dvec2 valueToVec2Double(void* val) const {
+        return util::glm_convert<dvec2>(*static_cast<type*>(val));
+    }
+    virtual dvec3 valueToVec3Double(void* val) const {
+        return util::glm_convert<dvec3>(*static_cast<type*>(val));
+    }
+    virtual dvec4 valueToVec4Double(void* val) const {
+        return util::glm_convert<dvec4>(*static_cast<type*>(val));
+    }
 
-    inline double valueToNormalizedDouble(void* val) const { return 0.0; }
-    inline dvec2 valueToNormalizedVec2Double(void* val) const { return DataFormat<T>::valueToNormalizedVec2Double(val); }
-    inline dvec3 valueToNormalizedVec3Double(void* val) const { return DataFormat<T>::valueToNormalizedVec3Double(val); }
-    inline dvec4 valueToNormalizedVec4Double(void* val) const { return DataFormat<T>::valueToNormalizedVec4Double(val); }
+    virtual double valueToNormalizedDouble(void* val) const {
+        return util::glm_convert_normalized<double>(*static_cast<type*>(val));
+    }
+    virtual dvec2 valueToNormalizedVec2Double(void* val) const {
+        return util::glm_convert_normalized<dvec2>(*static_cast<type*>(val));
+    }
+    virtual dvec3 valueToNormalizedVec3Double(void* val) const {
+        return util::glm_convert_normalized<dvec3>(*static_cast<type*>(val));
+    }
+    virtual dvec4 valueToNormalizedVec4Double(void* val) const {
+        return util::glm_convert_normalized<dvec4>(*static_cast<type*>(val));
+    }
 
-    inline void doubleToValue(double val, void* loc) const { DataFormat<T>::doubleToValue(val, loc); }
-    inline void vec2DoubleToValue(dvec2 val, void* loc) const { DataFormat<T>::vec2DoubleToValue(val, loc); }
-    inline void vec3DoubleToValue(dvec3 val, void* loc) const { DataFormat<T>::vec3DoubleToValue(val, loc); }
-    inline void vec4DoubleToValue(dvec4 val, void* loc) const { DataFormat<T>::vec4DoubleToValue(val, loc); }
+    virtual void doubleToValue(double in, void* out) const {
+        *static_cast<type*>(out) = util::glm_convert<type>(in);
+    }
+    virtual void vec2DoubleToValue(dvec2 in, void* out) const {
+        *static_cast<type*>(out) = util::glm_convert<type>(in);
+    }
+    virtual void vec3DoubleToValue(dvec3 in, void* out) const {
+        *static_cast<type*>(out) = util::glm_convert<type>(in);
+    }
+    virtual void vec4DoubleToValue(dvec4 in, void* out) const {
+        *static_cast<type*>(out) = util::glm_convert<type>(in);
+    }
 };
 
-template <typename T>
-class DataFormat<glm::detail::tvec3<T, glm::defaultp>> : public DataFormatBase {
-public:
-    typedef glm::detail::tvec3<T, glm::defaultp> type;
-    typedef T primitive;
-    static const size_t comp = 3;
-    static const size_t typesize = sizeof(type);
-    static const size_t compsize = sizeof(primitive);
-
-    DataFormat() : DataFormatBase(id(),
-        components(),
-        size(),
-        maxToDouble(),
-        minToDouble(),
-        numericType(),
-        str()) {
-    }
-
-    virtual ~DataFormat() {}
-
-    static const DataFormat<glm::detail::tvec3<T, glm::defaultp>>* get() {
-        DataFormatBase* d = DataFormatBase::getNonConst(id());
-        if (!d) {
-            d = new DataFormat<glm::detail::tvec3<T, glm::defaultp>>();
-            instance_[id()] = d;
-        }
-        return static_cast<DataFormat<glm::detail::tvec3<T, glm::defaultp>>*>(d);
-    }
-
-    static size_t size() { return typesize; }
-    static int components() { return comp; }
-    static DataFormatEnums::NumericType numericType() { return DataFormat<T>::numericType(); }
-
-    static glm::detail::tvec3<T, glm::defaultp> max() { return glm::detail::tvec3<T, glm::defaultp>(DataFormat<T>::max()); }
-    static glm::detail::tvec3<T, glm::defaultp> min() { return glm::detail::tvec3<T, glm::defaultp>(DataFormat<T>::min()); }
-
-    static double maxToDouble() { return static_cast<double>(max()); }
-    static double minToDouble() { return static_cast<double>(min()); }
-
-    static std::string str() { return "Vec3"+DataFormat<T>::str(); }
-    static DataFormatEnums::Id id() { return DataFormat<T>::id(); }
-
-    inline double valueToDouble(void* val) const { return DataFormat<T>::valueToDouble(val); }
-    inline dvec2 valueToVec2Double(void* val) const { return DataFormat<T>::valueToVec2Double(val); }
-    inline dvec3 valueToVec3Double(void* val) const { return DataFormat<T>::valueToVec3Double(val); }
-    inline dvec4 valueToVec4Double(void* val) const { return DataFormat<T>::valueToVec4Double(val); }
-
-    inline double valueToNormalizedDouble(void* val) const { return DataFormat<T>::valueToNormalizedDouble(val); }
-    inline dvec2 valueToNormalizedVec2Double(void* val) const { return DataFormat<T>::valueToNormalizedVec2Double(val); }
-    inline dvec3 valueToNormalizedVec3Double(void* val) const { return DataFormat<T>::valueToNormalizedVec3Double(val); }
-    inline dvec4 valueToNormalizedVec4Double(void* val) const { return DataFormat<T>::valueToNormalizedVec4Double(val); }
-
-    inline void doubleToValue(double val, void* loc) const { DataFormat<T>::doubleToValue(val, loc); }
-    inline void vec2DoubleToValue(dvec2 val, void* loc) const { DataFormat<T>::vec2DoubleToValue(val, loc); }
-    inline void vec3DoubleToValue(dvec3 val, void* loc) const { DataFormat<T>::vec3DoubleToValue(val, loc); }
-    inline void vec4DoubleToValue(dvec4 val, void* loc) const { DataFormat<T>::vec4DoubleToValue(val, loc); }
-};
-
-template <typename T>
-class DataFormat<glm::detail::tvec4<T, glm::defaultp>> : public DataFormatBase {
-public:
-    typedef glm::detail::tvec4<T, glm::defaultp> type;
-    typedef T primitive;
-    static const size_t comp = 4;
-    static const size_t typesize = sizeof(type);
-    static const size_t compsize = sizeof(primitive);
-
-    DataFormat() : DataFormatBase(id(),
-        components(),
-        size(),
-        maxToDouble(),
-        minToDouble(),
-        numericType(),
-        str()) {
-    }
-
-    virtual ~DataFormat() {}
-
-    static const DataFormat<glm::detail::tvec4<T, glm::defaultp>>* get() {
-        DataFormatBase* d = DataFormatBase::getNonConst(id());
-        if (!d) {
-            d = new DataFormat<glm::detail::tvec4<T, glm::defaultp>>();
-            instance_[id()] = d;
-        }
-        return static_cast<DataFormat<glm::detail::tvec4<T, glm::defaultp>>*>(d);
-    }
-
-    static size_t size() { return typesize; }
-    static int components() { return comp; }
-    static DataFormatEnums::NumericType numericType() { return DataFormat<T>::numericType(); }
-
-    static glm::detail::tvec4<T, glm::defaultp> max() { return glm::detail::tvec4<T, glm::defaultp>(DataFormat<T>::max()); }
-    static glm::detail::tvec4<T, glm::defaultp> min() { return glm::detail::tvec4<T, glm::defaultp>(DataFormat<T>::min()); }
-
-    static double maxToDouble() { return static_cast<double>(max()); }
-    static double minToDouble() { return static_cast<double>(min()); }
-
-    static std::string str() { return "Vec4"+DataFormat<T>::str(); }
-    static DataFormatEnums::Id id() { return DataFormat<T>::id(); }
-
-    inline double valueToDouble(void* val) const { return DataFormat<T>::valueToDouble(val); }
-    inline dvec2 valueToVec2Double(void* val) const { return DataFormat<T>::valueToVec2Double(val); }
-    inline dvec3 valueToVec3Double(void* val) const { return DataFormat<T>::valueToVec3Double(val); }
-    inline dvec4 valueToVec4Double(void* val) const { return DataFormat<T>::valueToVec4Double(val); }
-
-    inline double valueToNormalizedDouble(void* val) const { return DataFormat<T>::valueToNormalizedDouble(val); }
-    inline dvec2 valueToNormalizedVec2Double(void* val) const { return DataFormat<T>::valueToNormalizedVec2Double(val); }
-    inline dvec3 valueToNormalizedVec3Double(void* val) const { return DataFormat<T>::valueToNormalizedVec3Double(val); }
-    inline dvec4 valueToNormalizedVec4Double(void* val) const { return DataFormat<T>::valueToNormalizedVec4Double(val); }
-
-    inline void doubleToValue(double val, void* loc) const { DataFormat<T>::doubleToValue(val, loc); }
-    inline void vec2DoubleToValue(dvec2 val, void* loc) const { DataFormat<T>::vec2DoubleToValue(val, loc); }
-    inline void vec3DoubleToValue(dvec3 val, void* loc) const { DataFormat<T>::vec3DoubleToValue(val, loc); }
-    inline void vec4DoubleToValue(dvec4 val, void* loc) const { DataFormat<T>::vec4DoubleToValue(val, loc); }
-};
 
 /*---------------Single Value Formats------------------*/
 
@@ -507,141 +432,6 @@ typedef DataFormat<glm::u16vec4> DataVec4UINT16;
 typedef DataFormat<glm::u32vec4> DataVec4UINT32;
 typedef DataFormat<glm::u64vec4> DataVec4UINT64;
 
-/*--------------- Conversions------------------*/
-
-template <typename T>
-inline glm::detail::tvec2<T, glm::defaultp> singleToVec2(T val) {
-    return glm::detail::tvec2<T, glm::defaultp>(val);
-}
-
-template <typename T>
-inline glm::detail::tvec3<T, glm::defaultp> singleToVec3(T val) {
-    return glm::detail::tvec3<T, glm::defaultp>(val);
-}
-
-template <typename T>
-inline glm::detail::tvec4<T, glm::defaultp> singleToVec4(T val) {
-    return glm::detail::tvec4<T, glm::defaultp>(val);
-}
-
-template <typename T>
-glm::detail::tvec3<T, glm::defaultp> vec2ToVec3(glm::detail::tvec2<T, glm::defaultp> val) {
-    glm::detail::tvec3<T, glm::defaultp> result =
-        glm::detail::tvec3<T, glm::defaultp>(static_cast<T>(0));
-    result.x = val.x;
-    result.y = val.y;
-    return result;
-}
-
-template <typename T>
-glm::detail::tvec4<T, glm::defaultp> vec2ToVec4(glm::detail::tvec2<T, glm::defaultp> val) {
-    glm::detail::tvec4<T, glm::defaultp> result =
-        glm::detail::tvec4<T, glm::defaultp>(static_cast<T>(0));
-    result.x = val.x;
-    result.y = val.y;
-    return result;
-}
-
-template <typename T>
-inline glm::detail::tvec4<T, glm::defaultp> vec3ToVec4(glm::detail::tvec3<T, glm::defaultp> val) {
-    glm::detail::tvec4<T, glm::defaultp> result =
-        glm::detail::tvec4<T, glm::defaultp>(static_cast<T>(0));
-    result.x = val.x;
-    result.y = val.y;
-    result.z = val.z;
-    return result;
-}
-
-//typename D = dest, typename S = src
-
-template<typename D, typename S>
-inline D normalizeSigned(S val) {
-    return (static_cast<D>(val) - static_cast<D>(DataFormat<S>::min())) /
-        (static_cast<D>(DataFormat<S>::max()) - static_cast<D>(DataFormat<S>::min()));
-}
-
-template<typename D, typename S>
-inline D normalizeUnsigned(S val) {
-    return static_cast<D>(val) / static_cast<D>(DataFormat<S>::max());
-}
-
-template<typename D, typename S>
-inline D normalizeSignedSingle(void* val) {
-    S valT = *static_cast<S*>(val);
-    return normalizeSigned<D, S>(valT);
-}
-
-template<typename D, typename S>
-inline D normalizeUnsignedSingle(void* val) {
-    S valT = *static_cast<S*>(val);
-    return normalizeUnsigned<D, S>(valT);
-}
-
-template <typename D, typename S>
-inline glm::detail::tvec2<D, glm::defaultp> normalizeSignedVec2(void* val) {
-    glm::detail::tvec2<S, glm::defaultp> valT =
-        *static_cast<glm::detail::tvec2<S, glm::defaultp>*>(val);
-    glm::detail::tvec2<D, glm::defaultp> result;
-    result.x = normalizeSigned<D, S>(valT.x);
-    result.y = normalizeSigned<D, S>(valT.y);
-    return result;
-}
-
-template <typename D, typename S>
-inline glm::detail::tvec2<D, glm::defaultp> normalizeUnsignedVec2(void* val) {
-    glm::detail::tvec2<S, glm::defaultp> valT =
-        *static_cast<glm::detail::tvec2<S, glm::defaultp>*>(val);
-    glm::detail::tvec2<D, glm::defaultp> result;
-    result.x = normalizeUnsigned<D, S>(valT.x);
-    result.y = normalizeUnsigned<D, S>(valT.y);
-    return result;
-}
-
-template <typename D, typename S>
-inline glm::detail::tvec3<D, glm::defaultp> normalizeSignedVec3(void* val) {
-    glm::detail::tvec3<S, glm::defaultp> valT =
-        *static_cast<glm::detail::tvec3<S, glm::defaultp>*>(val);
-    glm::detail::tvec3<D, glm::defaultp> result;
-    result.x = normalizeSigned<D, S>(valT.x);
-    result.y = normalizeSigned<D, S>(valT.y);
-    result.y = normalizeSigned<D, S>(valT.y);
-    return result;
-}
-
-template <typename D, typename S>
-inline glm::detail::tvec3<D, glm::defaultp> normalizeUnsignedVec3(void* val) {
-    glm::detail::tvec3<S, glm::defaultp> valT =
-        *static_cast<glm::detail::tvec3<S, glm::defaultp>*>(val);
-    glm::detail::tvec3<D, glm::defaultp> result;
-    result.x = normalizeUnsigned<D, S>(valT.x);
-    result.y = normalizeUnsigned<D, S>(valT.y);
-    result.z = normalizeUnsigned<D, S>(valT.z);
-    return result;
-}
-
-template <typename D, typename S>
-inline glm::detail::tvec4<D, glm::defaultp> normalizeSignedVec4(void* val) {
-    glm::detail::tvec4<S, glm::defaultp> valT =
-        *static_cast<glm::detail::tvec4<S, glm::defaultp>*>(val);
-    glm::detail::tvec4<D, glm::defaultp> result;
-    result.x = normalizeSigned<D, S>(valT.x);
-    result.y = normalizeSigned<D, S>(valT.y);
-    result.y = normalizeSigned<D, S>(valT.y);
-    result.w = normalizeSigned<D, S>(valT.w);
-    return result;
-}
-
-template <typename D, typename S>
-inline glm::detail::tvec4<D, glm::defaultp> normalizeUnsignedVec4(void* val) {
-    glm::detail::tvec4<S, glm::defaultp> valT =
-        *static_cast<glm::detail::tvec4<S, glm::defaultp>*>(val);
-    glm::detail::tvec4<D, glm::defaultp> result;
-    result.x = normalizeUnsigned<D, S>(valT.x);
-    result.y = normalizeUnsigned<D, S>(valT.y);
-    result.z = normalizeUnsigned<D, S>(valT.z);
-    result.w = normalizeUnsigned<D, S>(valT.w);
-    return result;
-}
 
 /*---------------Single Value Formats------------------*/
 
@@ -663,6 +453,21 @@ template<> inline DataFormatEnums::Id DataUINT16::id() { return DataFormatEnums:
 template<> inline DataFormatEnums::Id DataUINT32::id() { return DataFormatEnums::UINT32; }
 template<> inline DataFormatEnums::Id DataUINT64::id() { return DataFormatEnums::UINT64; }
 
+// Numeric type Specializations
+template<> inline DataFormatEnums::NumericType DataFLOAT16::numericType() { return DataFormatEnums::FLOAT_TYPE; }
+template<> inline DataFormatEnums::NumericType DataFLOAT32::numericType() { return DataFormatEnums::FLOAT_TYPE; }
+template<> inline DataFormatEnums::NumericType DataFLOAT64::numericType() { return DataFormatEnums::FLOAT_TYPE; }
+
+template<> inline DataFormatEnums::NumericType DataINT8::numericType()  { return DataFormatEnums::SIGNED_INTEGER_TYPE; }
+template<> inline DataFormatEnums::NumericType DataINT16::numericType() { return DataFormatEnums::SIGNED_INTEGER_TYPE; }
+template<> inline DataFormatEnums::NumericType DataINT32::numericType() { return DataFormatEnums::SIGNED_INTEGER_TYPE; }
+template<> inline DataFormatEnums::NumericType DataINT64::numericType() { return DataFormatEnums::SIGNED_INTEGER_TYPE; }
+
+template<> inline DataFormatEnums::NumericType DataUINT8::numericType()  { return DataFormatEnums::UNSIGNED_INTEGER_TYPE; }
+template<> inline DataFormatEnums::NumericType DataUINT16::numericType() { return DataFormatEnums::UNSIGNED_INTEGER_TYPE; }
+template<> inline DataFormatEnums::NumericType DataUINT32::numericType() { return DataFormatEnums::UNSIGNED_INTEGER_TYPE; }
+template<> inline DataFormatEnums::NumericType DataUINT64::numericType() { return DataFormatEnums::UNSIGNED_INTEGER_TYPE; }
+
 // String Function Specializations
 template<> inline std::string DataFLOAT16::str() { return "FLOAT16"; }
 template<> inline std::string DataFLOAT32::str() { return "FLOAT32"; }
@@ -678,129 +483,6 @@ template<> inline std::string DataUINT16::str() { return "UINT16"; }
 template<> inline std::string DataUINT32::str() { return "UINT32"; }
 template<> inline std::string DataUINT64::str() { return "UINT64"; }
 
-// Type Conversion Specializations
-#define DataConvertSingle(F) \
-        DataFromDouble(F) \
-        DataToDouble(F)
-
-#define DataFromDouble(F)                                          \
-    template <>                                                    \
-    inline void F::doubleToValue(double val, void* loc) const {    \
-        *static_cast<F::type*>(loc) = static_cast<F::type>(val);   \
-    }                                                              \
-    template <>                                                    \
-    inline void F::vec2DoubleToValue(dvec2 val, void* loc) const { \
-        *static_cast<F::type*>(loc) = static_cast<F::type>(val.x); \
-    }                                                              \
-    template <>                                                    \
-    inline void F::vec3DoubleToValue(dvec3 val, void* loc) const { \
-        *static_cast<F::type*>(loc) = static_cast<F::type>(val.x); \
-    }                                                              \
-    template <>                                                    \
-    inline void F::vec4DoubleToValue(dvec4 val, void* loc) const { \
-        *static_cast<F::type*>(loc) = static_cast<F::type>(val.x); \
-    }
-
-#define DataToDouble(F)                                                                \
-    template <>                                                                        \
-    inline double F::valueToDouble(void* val) const {                                  \
-        return static_cast<double>(*static_cast<F::type*>(val));                       \
-    }                                                                                  \
-    template <>                                                                        \
-    inline dvec2 F::valueToVec2Double(void* val) const {                               \
-        return singleToVec2<double>(static_cast<double>(*static_cast<F::type*>(val))); \
-    }                                                                                  \
-    template <>                                                                        \
-    inline dvec3 F::valueToVec3Double(void* val) const {                               \
-        return singleToVec3<double>(static_cast<double>(*static_cast<F::type*>(val))); \
-    }                                                                                  \
-    template <>                                                                        \
-    inline dvec4 F::valueToVec4Double(void* val) const {                               \
-        return singleToVec4<double>(static_cast<double>(*static_cast<F::type*>(val))); \
-    }
-
-#define DataUnchanged(F)                                                               \
-    template <>                                                                        \
-    inline DataFormatEnums::NumericType F::numericType() {                             \
-        return DataFormatEnums::FLOAT_TYPE;                                            \
-    }                                                                                  \
-    template <>                                                                        \
-    inline double F::valueToNormalizedDouble(void* val) const {                        \
-        return static_cast<double>(*static_cast<F::type*>(val));                       \
-    }                                                                                  \
-    template <>                                                                        \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {                     \
-        return singleToVec2<double>(static_cast<double>(*static_cast<F::type*>(val))); \
-    }                                                                                  \
-    template <>                                                                        \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {                     \
-        return singleToVec3<double>(static_cast<double>(*static_cast<F::type*>(val))); \
-    }                                                                                  \
-    template <>                                                                        \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {                     \
-        return singleToVec4<double>(static_cast<double>(*static_cast<F::type*>(val))); \
-    }                                                                                  \
-    DataConvertSingle(F)
-
-#define DataNormalizedSignedSingle(F)                                             \
-    template <>                                                                   \
-    inline DataFormatEnums::NumericType F::numericType() {                        \
-        return DataFormatEnums::SIGNED_INTEGER_TYPE;                              \
-    }                                                                             \
-    template <>                                                                   \
-    inline double F::valueToNormalizedDouble(void* val) const {                   \
-        return normalizeSignedSingle<double, F::type>(val);                       \
-    }                                                                             \
-    template <>                                                                   \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {                \
-        return singleToVec2<double>(normalizeSignedSingle<double, F::type>(val)); \
-    }                                                                             \
-    template <>                                                                   \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {                \
-        return singleToVec3<double>(normalizeSignedSingle<double, F::type>(val)); \
-    }                                                                             \
-    template <>                                                                   \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {                \
-        return singleToVec4<double>(normalizeSignedSingle<double, F::type>(val)); \
-    }                                                                             \
-    DataConvertSingle(F)
-
-#define DataNormalizedUnsignedSingle(F)                                             \
-    template <>                                                                     \
-    inline DataFormatEnums::NumericType F::numericType() {                          \
-        return DataFormatEnums::UNSIGNED_INTEGER_TYPE;                              \
-    }                                                                               \
-    template <>                                                                     \
-    inline double F::valueToNormalizedDouble(void* val) const {                     \
-        return normalizeUnsignedSingle<double, F::type>(val);                       \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {                  \
-        return singleToVec2<double>(normalizeUnsignedSingle<double, F::type>(val)); \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {                  \
-        return singleToVec3<double>(normalizeUnsignedSingle<double, F::type>(val)); \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {                  \
-        return singleToVec4<double>(normalizeUnsignedSingle<double, F::type>(val)); \
-    }                                                                               \
-    DataConvertSingle(F)
-
-DataUnchanged(DataFLOAT16)
-DataUnchanged(DataFLOAT32)
-DataUnchanged(DataFLOAT64)
-
-DataNormalizedSignedSingle(DataINT8)
-DataNormalizedSignedSingle(DataINT16)
-DataNormalizedSignedSingle(DataINT32)
-DataNormalizedSignedSingle(DataINT64)
-
-DataNormalizedUnsignedSingle(DataUINT8)
-DataNormalizedUnsignedSingle(DataUINT16)
-DataNormalizedUnsignedSingle(DataUINT32)
-DataNormalizedUnsignedSingle(DataUINT64)
 
 /*---------------Vec2 Formats--------------------*/
 
@@ -822,129 +504,6 @@ template<> inline DataFormatEnums::Id DataVec2UINT16::id() { return DataFormatEn
 template<> inline DataFormatEnums::Id DataVec2UINT32::id() { return DataFormatEnums::Vec2UINT32; }
 template<> inline DataFormatEnums::Id DataVec2UINT64::id() { return DataFormatEnums::Vec2UINT64; }
 
-// Vec to Single
-#define DataVecToSingle(F, G)        \
-    template <>                      \
-    inline double F::maxToDouble() { \
-        return max().x;              \
-    }                                \
-    template <>                      \
-    inline double F::minToDouble() { \
-        return min().x;              \
-    }
-
-// Type Conversion Specializations
-#define DataConvertVec2(F, G) DataVecToSingle(F, G) DataFromVec2(F, G) DataToVec2(F, G)
-
-#define DataFromVec2(F, G)                                             \
-    template <>                                                        \
-    inline double F::valueToDouble(void* val) const {                  \
-        return static_cast<double>(static_cast<F::type*>(val)->x);     \
-    }                                                                  \
-    template <>                                                        \
-    inline dvec2 F::valueToVec2Double(void* val) const {               \
-        return dvec2(*static_cast<F::type*>(val));                     \
-    }                                                                  \
-    template <>                                                        \
-    inline dvec3 F::valueToVec3Double(void* val) const {               \
-        return vec2ToVec3<double>(dvec2(*static_cast<F::type*>(val))); \
-    }                                                                  \
-    template <>                                                        \
-    inline dvec4 F::valueToVec4Double(void* val) const {               \
-        return vec2ToVec4<double>(dvec2(*static_cast<F::type*>(val))); \
-    }
-
-#define DataToVec2(F, G)                                                                \
-    template <>                                                                         \
-    inline void F::doubleToValue(double val, void* loc) const {                         \
-        *static_cast<F::type*>(loc) = singleToVec2<G::type>(static_cast<G::type>(val)); \
-    }                                                                                   \
-    template <>                                                                         \
-    inline void F::vec2DoubleToValue(dvec2 val, void* loc) const {                      \
-        *static_cast<F::type*>(loc) =                                                   \
-            F::type(static_cast<G::type>(val.x), static_cast<G::type>(val.y));          \
-    }                                                                                   \
-    template <>                                                                         \
-    inline void F::vec3DoubleToValue(dvec3 val, void* loc) const {                      \
-        *static_cast<F::type*>(loc) =                                                   \
-            F::type(static_cast<G::type>(val.x), static_cast<G::type>(val.y));          \
-    }                                                                                   \
-    template <>                                                                         \
-    inline void F::vec4DoubleToValue(dvec4 val, void* loc) const {                      \
-        *static_cast<F::type*>(loc) =                                                   \
-            F::type(static_cast<G::type>(val.x), static_cast<G::type>(val.y));          \
-    }
-
-#define DataUnchangedVec2(F, G)                                        \
-    template <>                                                        \
-    inline double F::valueToNormalizedDouble(void* val) const {        \
-        return static_cast<double>(static_cast<F::type*>(val)->x);     \
-    }                                                                  \
-    template <>                                                        \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {     \
-        return dvec2(*static_cast<F::type*>(val));                     \
-    }                                                                  \
-    template <>                                                        \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {     \
-        return vec2ToVec3<double>(dvec2(*static_cast<F::type*>(val))); \
-    }                                                                  \
-    template <>                                                        \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {     \
-        return vec2ToVec4<double>(dvec2(*static_cast<F::type*>(val))); \
-    }                                                                  \
-    DataConvertVec2(F, G)
-
-#define DataNormalizedSignedVec2(F, G)                                        \
-    template <>                                                               \
-    inline double F::valueToNormalizedDouble(void* val) const {               \
-        return normalizeSignedVec2<double, G::type>(val).x;                   \
-    }                                                                         \
-    template <>                                                               \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {            \
-        return normalizeSignedVec2<double, G::type>(val);                     \
-    }                                                                         \
-    template <>                                                               \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {            \
-        return vec2ToVec3<double>(normalizeSignedVec2<double, G::type>(val)); \
-    }                                                                         \
-    template <>                                                               \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {            \
-        return vec2ToVec4<double>(normalizeSignedVec2<double, G::type>(val)); \
-    }                                                                         \
-    DataConvertVec2(F, G)
-
-#define DataNormalizedUnsignedVec2(F, G)                                        \
-    template <>                                                                 \
-    inline double F::valueToNormalizedDouble(void* val) const {                 \
-        return normalizeUnsignedVec2<double, G::type>(val).x;                   \
-    }                                                                           \
-    template <>                                                                 \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {              \
-        return normalizeUnsignedVec2<double, G::type>(val);                     \
-    }                                                                           \
-    template <>                                                                 \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {              \
-        return vec2ToVec3<double>(normalizeUnsignedVec2<double, G::type>(val)); \
-    }                                                                           \
-    template <>                                                                 \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {              \
-        return vec2ToVec4<double>(normalizeUnsignedVec2<double, G::type>(val)); \
-    }                                                                           \
-    DataConvertVec2(F, G)
-
-DataUnchangedVec2(DataVec2FLOAT16, DataFLOAT16)
-DataUnchangedVec2(DataVec2FLOAT32, DataFLOAT32)
-DataUnchangedVec2(DataVec2FLOAT64, DataFLOAT64)
-
-DataNormalizedSignedVec2(DataVec2INT8, DataINT8)
-DataNormalizedSignedVec2(DataVec2INT16, DataINT16)
-DataNormalizedSignedVec2(DataVec2INT32, DataINT32)
-DataNormalizedSignedVec2(DataVec2INT64, DataINT64)
-
-DataNormalizedUnsignedVec2(DataVec2UINT8, DataUINT8)
-DataNormalizedUnsignedVec2(DataVec2UINT16, DataUINT16)
-DataNormalizedUnsignedVec2(DataVec2UINT32, DataUINT32)
-DataNormalizedUnsignedVec2(DataVec2UINT64, DataUINT64)
 
 /*---------------Vec3 Formats--------------------*/
 
@@ -966,122 +525,7 @@ template<> inline DataFormatEnums::Id DataVec3UINT16::id() { return DataFormatEn
 template<> inline DataFormatEnums::Id DataVec3UINT32::id() { return DataFormatEnums::Vec3UINT32; }
 template<> inline DataFormatEnums::Id DataVec3UINT64::id() { return DataFormatEnums::Vec3UINT64; }
 
-// Type Conversion Specializations
-#define DataConvertVec3(F, G) DataVecToSingle(F, G) DataFromVec3(F, G) DataToVec3(F, G)
 
-#define DataFromVec3(F, G)                                                          \
-    template <>                                                                     \
-    inline double F::valueToDouble(void* val) const {                               \
-        return static_cast<double>(static_cast<F::type*>(val)->x);                  \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec2 F::valueToVec2Double(void* val) const {                            \
-        return dvec2(static_cast<F::type*>(val)->x, static_cast<F::type*>(val)->y); \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec3 F::valueToVec3Double(void* val) const {                            \
-        return dvec3(static_cast<F::type*>(val)->x, static_cast<F::type*>(val)->y,  \
-                     static_cast<F::type*>(val)->z);                                \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec4 F::valueToVec4Double(void* val) const {                            \
-        return vec3ToVec4<double>(dvec3(*static_cast<F::type*>(val)));              \
-    }
-
-#define DataToVec3(F, G)                                                                        \
-    template <>                                                                                 \
-    inline void F::doubleToValue(double val, void* loc) const {                                 \
-        *static_cast<F::type*>(loc) = singleToVec3<G::type>(static_cast<G::type>(val));         \
-    }                                                                                           \
-    template <>                                                                                 \
-    inline void F::vec2DoubleToValue(dvec2 val, void* loc) const {                              \
-        *static_cast<F::type*>(loc) = F::type(                                                  \
-            static_cast<G::type>(val.x), static_cast<G::type>(val.y), static_cast<G::type>(0)); \
-    }                                                                                           \
-    template <>                                                                                 \
-    inline void F::vec3DoubleToValue(dvec3 val, void* loc) const {                              \
-        *static_cast<F::type*>(loc) =                                                           \
-            F::type(static_cast<G::type>(val.x), static_cast<G::type>(val.y),                   \
-                    static_cast<G::type>(val.z));                                               \
-    }                                                                                           \
-    template <>                                                                                 \
-    inline void F::vec4DoubleToValue(dvec4 val, void* loc) const {                              \
-        *static_cast<F::type*>(loc) =                                                           \
-            F::type(static_cast<G::type>(val.x), static_cast<G::type>(val.y),                   \
-                    static_cast<G::type>(val.z));                                               \
-    }
-
-#define DataUnchangedVec3(F, G)                                                     \
-    template <>                                                                     \
-    inline double F::valueToNormalizedDouble(void* val) const {                     \
-        return static_cast<double>(static_cast<F::type*>(val)->x);                  \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {                  \
-        return dvec2(static_cast<F::type*>(val)->x, static_cast<F::type*>(val)->y); \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {                  \
-        return dvec3(static_cast<F::type*>(val)->x, static_cast<F::type*>(val)->y,  \
-                     static_cast<F::type*>(val)->z);                                \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {                  \
-        return vec3ToVec4<double>(dvec3(*static_cast<F::type*>(val)));              \
-    }                                                                               \
-    DataConvertVec3(F, G)
-
-#define DataNormalizedSignedVec3(F, G)                                        \
-    template <>                                                               \
-    inline double F::valueToNormalizedDouble(void* val) const {               \
-        return normalizeSignedVec3<double, G::type>(val).x;                   \
-    }                                                                         \
-    template <>                                                               \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {            \
-        return normalizeSignedVec3<double, G::type>(val).xy();                \
-    }                                                                         \
-    template <>                                                               \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {            \
-        return normalizeSignedVec3<double, G::type>(val);                     \
-    }                                                                         \
-    template <>                                                               \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {            \
-        return vec3ToVec4<double>(normalizeSignedVec3<double, G::type>(val)); \
-    }                                                                         \
-    DataConvertVec3(F, G)
-
-#define DataNormalizedUnsignedVec3(F, G)                                        \
-    template <>                                                                 \
-    inline double F::valueToNormalizedDouble(void* val) const {                 \
-        return normalizeUnsignedVec3<double, G::type>(val).x;                   \
-    }                                                                           \
-    template <>                                                                 \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {              \
-        return normalizeUnsignedVec3<double, G::type>(val).xy();                \
-    }                                                                           \
-    template <>                                                                 \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {              \
-        return normalizeUnsignedVec3<double, G::type>(val);                     \
-    }                                                                           \
-    template <>                                                                 \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {              \
-        return vec3ToVec4<double>(normalizeUnsignedVec3<double, G::type>(val)); \
-    }                                                                           \
-    DataConvertVec3(F, G)
-
-DataUnchangedVec3(DataVec3FLOAT16, DataFLOAT16)
-DataUnchangedVec3(DataVec3FLOAT32, DataFLOAT32)
-DataUnchangedVec3(DataVec3FLOAT64, DataFLOAT64)
-
-DataNormalizedSignedVec3(DataVec3INT8, DataINT8)
-DataNormalizedSignedVec3(DataVec3INT16, DataINT16)
-DataNormalizedSignedVec3(DataVec3INT32, DataINT32)
-DataNormalizedSignedVec3(DataVec3INT64, DataINT64)
-
-DataNormalizedUnsignedVec3(DataVec3UINT8, DataUINT8)
-DataNormalizedUnsignedVec3(DataVec3UINT16, DataUINT16)
-DataNormalizedUnsignedVec3(DataVec3UINT32, DataUINT32)
-DataNormalizedUnsignedVec3(DataVec3UINT64, DataUINT64)
 
 /*---------------Vec4 Formats--------------------*/
 
@@ -1103,123 +547,102 @@ template<> inline DataFormatEnums::Id DataVec4UINT16::id() { return DataFormatEn
 template<> inline DataFormatEnums::Id DataVec4UINT32::id() { return DataFormatEnums::Vec4UINT32; }
 template<> inline DataFormatEnums::Id DataVec4UINT64::id() { return DataFormatEnums::Vec4UINT64; }
 
-// Type Conversion Specializations
-#define DataConvertVec4(F, G) DataVecToSingle(F, G) DataFromVec4(F, G) DataToVec4(F, G)
 
-#define DataFromVec4(F, G)                                                          \
-    template <>                                                                     \
-    inline double F::valueToDouble(void* val) const {                               \
-        return static_cast<double>((*static_cast<F::type*>(val)).x);                \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec2 F::valueToVec2Double(void* val) const {                            \
-        return dvec2(static_cast<F::type*>(val)->x, static_cast<F::type*>(val)->y); \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec3 F::valueToVec3Double(void* val) const {                            \
-        return dvec3(static_cast<F::type*>(val)->x, static_cast<F::type*>(val)->y,  \
-                     static_cast<F::type*>(val)->z);                                \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec4 F::valueToVec4Double(void* val) const {                            \
-        return dvec4(*static_cast<F::type*>(val));                                  \
+template <typename T, typename... Args>
+auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type {
+    switch (formatId_) {
+        case DataFormatEnums::FLOAT16:
+            return obj.template dispatch<DataFLOAT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::FLOAT32:
+            return obj.template dispatch<DataFLOAT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::FLOAT64:
+            return obj.template dispatch<DataFLOAT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::INT8:
+            return obj.template dispatch<DataINT8>(std::forward<Args>(args)...);
+        case DataFormatEnums::INT16:
+            return obj.template dispatch<DataINT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::INT32:
+            return obj.template dispatch<DataINT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::INT64:
+            return obj.template dispatch<DataINT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::UINT8:
+            return obj.template dispatch<DataUINT8>(std::forward<Args>(args)...);
+        case DataFormatEnums::UINT16:
+            return obj.template dispatch<DataUINT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::UINT32:
+            return obj.template dispatch<DataUINT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::UINT64:
+            return obj.template dispatch<DataUINT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2FLOAT16:
+            return obj.template dispatch<DataVec2FLOAT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2FLOAT32:
+            return obj.template dispatch<DataVec2FLOAT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2FLOAT64:
+            return obj.template dispatch<DataVec2FLOAT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2INT8:
+            return obj.template dispatch<DataVec2INT8>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2INT16:
+            return obj.template dispatch<DataVec2INT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2INT32:
+            return obj.template dispatch<DataVec2INT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2INT64:
+            return obj.template dispatch<DataVec2INT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2UINT8:
+            return obj.template dispatch<DataVec2UINT8>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2UINT16:
+            return obj.template dispatch<DataVec2UINT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2UINT32:
+            return obj.template dispatch<DataVec2UINT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec2UINT64:
+            return obj.template dispatch<DataVec2UINT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3FLOAT16:
+            return obj.template dispatch<DataVec3FLOAT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3FLOAT32:
+            return obj.template dispatch<DataVec3FLOAT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3FLOAT64:
+            return obj.template dispatch<DataVec3FLOAT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3INT8:
+            return obj.template dispatch<DataVec3INT8>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3INT16:
+            return obj.template dispatch<DataVec3INT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3INT32:
+            return obj.template dispatch<DataVec3INT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3INT64:
+            return obj.template dispatch<DataVec3INT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3UINT8:
+            return obj.template dispatch<DataVec3UINT8>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3UINT16:
+            return obj.template dispatch<DataVec3UINT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3UINT32:
+            return obj.template dispatch<DataVec3UINT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec3UINT64:
+            return obj.template dispatch<DataVec3UINT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4FLOAT16:
+            return obj.template dispatch<DataVec4FLOAT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4FLOAT32:
+            return obj.template dispatch<DataVec4FLOAT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4FLOAT64:
+            return obj.template dispatch<DataVec4FLOAT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4INT8:
+            return obj.template dispatch<DataVec4INT8>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4INT16:
+            return obj.template dispatch<DataVec4INT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4INT32:
+            return obj.template dispatch<DataVec4INT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4INT64:
+            return obj.template dispatch<DataVec4INT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4UINT8:
+            return obj.template dispatch<DataVec4UINT8>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4UINT16:
+            return obj.template dispatch<DataVec4UINT16>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4UINT32:
+            return obj.template dispatch<DataVec4UINT32>(std::forward<Args>(args)...);
+        case DataFormatEnums::Vec4UINT64:
+            return obj.template dispatch<DataVec4UINT64>(std::forward<Args>(args)...);
+        default:
+            return nullptr;
     }
-
-#define DataToVec4(F, G)                                                                \
-    template <>                                                                         \
-    inline void F::doubleToValue(double val, void* loc) const {                         \
-        *static_cast<F::type*>(loc) = singleToVec4<G::type>(static_cast<G::type>(val)); \
-    }                                                                                   \
-    template <>                                                                         \
-    inline void F::vec2DoubleToValue(dvec2 val, void* loc) const {                      \
-        *static_cast<F::type*>(loc) =                                                   \
-            F::type(static_cast<G::type>(val.x), static_cast<G::type>(val.y),           \
-                    static_cast<G::type>(0), static_cast<G::type>(1));                  \
-    }                                                                                   \
-    template <>                                                                         \
-    inline void F::vec3DoubleToValue(dvec3 val, void* loc) const {                      \
-        *static_cast<F::type*>(loc) =                                                   \
-            F::type(static_cast<G::type>(val.x), static_cast<G::type>(val.y),           \
-                    static_cast<G::type>(val.z), static_cast<G::type>(1));              \
-    }                                                                                   \
-    template <>                                                                         \
-    inline void F::vec4DoubleToValue(dvec4 val, void* loc) const {                      \
-        *static_cast<F::type*>(loc) =                                                   \
-            F::type(static_cast<G::type>(val.x), static_cast<G::type>(val.y),           \
-                    static_cast<G::type>(val.z), static_cast<G::type>(val.w));          \
-    }
-
-#define DataUnchangedVec4(F, G)                                                     \
-    template <>                                                                     \
-    inline double F::valueToNormalizedDouble(void* val) const {                     \
-        return static_cast<double>((*static_cast<F::type*>(val)).x);                \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const {                  \
-        return dvec2(static_cast<F::type*>(val)->x, static_cast<F::type*>(val)->y); \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const {                  \
-        return dvec3(static_cast<F::type*>(val)->x, static_cast<F::type*>(val)->y,  \
-                     static_cast<F::type*>(val)->z);                                \
-    }                                                                               \
-    template <>                                                                     \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const {                  \
-        return dvec4(*static_cast<F::type*>(val));                                  \
-    }                                                                               \
-    DataConvertVec4(F, G)
-
-#define DataNormalizedSignedVec4(F, G)                             \
-    template <>                                                    \
-    inline double F::valueToNormalizedDouble(void* val) const {    \
-        return normalizeSignedVec4<double, G::type>(val).x;        \
-    }                                                              \
-    template <>                                                    \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const { \
-        return normalizeSignedVec4<double, G::type>(val).xy();     \
-    }                                                              \
-    template <>                                                    \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const { \
-        return normalizeSignedVec4<double, G::type>(val).xyz();    \
-    }                                                              \
-    template <>                                                    \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const { \
-        return normalizeSignedVec4<double, G::type>(val);          \
-    }                                                              \
-    DataConvertVec4(F, G)
-
-#define DataNormalizedUnsignedVec4(F, G)                           \
-    template <>                                                    \
-    inline double F::valueToNormalizedDouble(void* val) const {    \
-        return normalizeUnsignedVec4<double, G::type>(val).x;      \
-    }                                                              \
-    template <>                                                    \
-    inline dvec2 F::valueToNormalizedVec2Double(void* val) const { \
-        return normalizeUnsignedVec4<double, G::type>(val).xy();   \
-    }                                                              \
-    template <>                                                    \
-    inline dvec3 F::valueToNormalizedVec3Double(void* val) const { \
-        return normalizeUnsignedVec4<double, G::type>(val).xyz();  \
-    }                                                              \
-    template <>                                                    \
-    inline dvec4 F::valueToNormalizedVec4Double(void* val) const { \
-        return normalizeUnsignedVec4<double, G::type>(val);        \
-    }                                                              \
-    DataConvertVec4(F, G)
-
-DataUnchangedVec4(DataVec4FLOAT16, DataFLOAT16)
-DataUnchangedVec4(DataVec4FLOAT32, DataFLOAT32)
-DataUnchangedVec4(DataVec4FLOAT64, DataFLOAT64)
-
-DataNormalizedSignedVec4(DataVec4INT8, DataINT8)
-DataNormalizedSignedVec4(DataVec4INT16, DataINT16)
-DataNormalizedSignedVec4(DataVec4INT32, DataINT32)
-DataNormalizedSignedVec4(DataVec4INT64, DataINT64)
-
-DataNormalizedUnsignedVec4(DataVec4UINT8, DataUINT8)
-DataNormalizedUnsignedVec4(DataVec4UINT16, DataUINT16)
-DataNormalizedUnsignedVec4(DataVec4UINT32, DataUINT32)
-DataNormalizedUnsignedVec4(DataVec4UINT64, DataUINT64)
+}
 
 
 template <typename T>
@@ -1272,107 +695,6 @@ DEFAULTVALUES(bool, uvec2(1, 1), "Bool", false, false, true, true)
 
 #undef DEFAULTVALUES
 
-
-// BT is the vector base type, ie float, int,.. T is the GLM vector or float, int..
-template <typename BT, typename T>
-class glmwrapper {};
-
-template <typename T>
-class glmwrapper<T, glm::detail::tmat4x4<T, glm::defaultp> > {
-public:
-    static T getval(glm::detail::tmat4x4<T, glm::defaultp> mat, size_t const ind) {
-        return mat[static_cast<int>(ind)/4][static_cast<int>(ind) % 4];
-    }
-    static glm::detail::tmat4x4<T, glm::defaultp> setval(glm::detail::tmat4x4<T, glm::defaultp> mat,
-                                                          size_t const ind, T val) {
-        mat[static_cast<int>(ind) / 4][static_cast<int>(ind) % 4] = val;
-        return mat;
-    }
-};
-template <typename T>
-class glmwrapper<T, glm::detail::tmat3x3<T, glm::defaultp> > {
-public:
-    static T getval(glm::detail::tmat3x3<T, glm::defaultp> mat, size_t const ind) {
-        return mat[static_cast<int>(ind) / 3][static_cast<int>(ind) % 3];
-    }
-    static glm::detail::tmat3x3<T, glm::defaultp> setval(glm::detail::tmat3x3<T, glm::defaultp> mat,
-                                                          size_t const ind, T val) {
-        mat[static_cast<int>(ind) / 3][static_cast<int>(ind) % 3] = val;
-        return mat;
-    }
-};
-template <typename T>
-class glmwrapper<T, glm::detail::tmat2x2<T, glm::defaultp> > {
-public:
-    static T getval(glm::detail::tmat2x2<T, glm::defaultp> mat, size_t const ind) {
-        return mat[static_cast<int>(ind) / 2][static_cast<int>(ind) % 2];
-    }
-    static glm::detail::tmat2x2<T, glm::defaultp> setval(glm::detail::tmat2x2<T, glm::defaultp> mat,
-                                                          size_t const ind, T val) {
-        mat[static_cast<int>(ind) / 2][static_cast<int>(ind) % 2] = val;
-        return mat;
-    }
-};
-
-template <typename T>
-class glmwrapper<T, glm::detail::tvec4<T, glm::defaultp> > {
-public:
-    static T getval(glm::detail::tvec4<T, glm::defaultp> vec, size_t const ind) {
-        return vec[static_cast<int>(ind)];
-    }
-    static glm::detail::tvec4<T, glm::defaultp> setval(glm::detail::tvec4<T, glm::defaultp> vec,
-                                                       size_t const ind, T val) {
-        vec[static_cast<int>(ind)] = val;
-        return vec;
-    }
-};
-template <typename T>
-class glmwrapper<T, glm::detail::tvec3<T, glm::defaultp> > {
-public:
-    static T getval(glm::detail::tvec3<T, glm::defaultp> vec, size_t const ind) {
-        return vec[static_cast<int>(ind)];
-    }
-    static glm::detail::tvec3<T, glm::defaultp> setval(glm::detail::tvec3<T, glm::defaultp> vec,
-                                                       size_t const ind, T val) {
-        vec[static_cast<int>(ind)] = val;
-        return vec;
-    }
-};
-template <typename T>
-class glmwrapper<T, glm::detail::tvec2<T, glm::defaultp> > {
-public:
-    static T getval(glm::detail::tvec2<T, glm::defaultp> vec, size_t const ind) {
-        return vec[static_cast<int>(ind)];
-    }
-    static glm::detail::tvec2<T, glm::defaultp> setval(glm::detail::tvec2<T, glm::defaultp> vec,
-                                                       size_t const ind, T val) {
-        vec[static_cast<int>(ind)] = val;
-        return vec;
-    }
-};
-template <typename T>
-class glmwrapper<T, T> {
-public:
-    static T getval(T val, size_t const ind) {
-        return val;
-    }
-    static T setval(T org, size_t const ind, T val) {
-        return val;
-    }
-};
-
-template <typename T, typename... Args>
-auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type {
-    switch (formatId_) {
-#define DataFormatIdMacro(i) \
-    case DataFormatEnums::i: \
-        return obj.template dispatch<Data##i>(std::forward<Args>(args)...);
-#include <inviwo/core/util/formatsdefinefunc.h>
-#undef DataFormatIdMacro
-        default:
-            return nullptr;
-    }
-}
 
 #define CallFunctionWithTemplateArgsForType(fun, id) \
     switch (id) {\
