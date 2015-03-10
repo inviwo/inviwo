@@ -326,8 +326,8 @@ void VolumeSource::process() {
         if (loadedData_->dataMap_.dataRange != dataRange_.get() &&
             loadedData_->hasRepresentation<VolumeRAM>()) {
             VolumeRAM* volumeRAM = loadedData_->getEditableRepresentation<VolumeRAM>();
-            if (volumeRAM->hasNormalizedHistogram()) {
-                volumeRAM->getNormalizedHistogram()->setValid(false);
+            if (volumeRAM->hasHistograms()) {
+                volumeRAM->getHistograms().setValid(false);
             }
         }
 

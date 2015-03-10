@@ -32,105 +32,17 @@
 
 namespace inviwo {
 
-VolumeRAM::VolumeRAM(const DataFormatBase* format)
-    : VolumeRepresentation(format)
-    , histograms_(nullptr)
-    , calculatingHistogram_(false)
-    , stopHistogramCalculation_(false) {}
+VolumeRAM::VolumeRAM(const DataFormatBase* format) : VolumeRepresentation(format) {}
 
-VolumeRAM::VolumeRAM(const VolumeRAM& rhs)
-    : VolumeRepresentation(rhs)
-    , histograms_(nullptr)
-    , calculatingHistogram_(false)
-    , stopHistogramCalculation_(false) {
-    if (rhs.histograms_) {
-        histograms_ = new std::vector<NormalizedHistogram*>();
-        for (auto& elem : *rhs.histograms_) {
-            histograms_->push_back(new NormalizedHistogram(elem));
-        }
-    }
-}
+VolumeRAM::VolumeRAM(const VolumeRAM& rhs) : VolumeRepresentation(rhs) {}
 VolumeRAM& VolumeRAM::operator=(const VolumeRAM& that) {
     if (this != &that) {
         VolumeRepresentation::operator=(that);
-        calculatingHistogram_ = false;
-        stopHistogramCalculation_ = false;
-
-        if (histograms_) {
-            for (auto& elem : *that.histograms_) {
-                delete elem;
-            }
-            histograms_->clear();
-        }
-
-        if (that.histograms_) {
-            if (!histograms_) {
-                histograms_ = new std::vector<NormalizedHistogram*>();
-            }
-            for (auto& elem : *that.histograms_) {
-                histograms_->push_back(new NormalizedHistogram(elem));
-            }
-        } else {
-            histograms_ = nullptr;
-        }
     }
 
     return *this;
 }
-VolumeRAM::~VolumeRAM() {
-    if (histograms_) {
-        for (auto& elem : *histograms_) {
-            delete elem;
-        }
-        histograms_->clear();
-        delete histograms_;
-        histograms_ = nullptr;
-    }
-}
-
-bool VolumeRAM::hasNormalizedHistogram() const {
-    return (histograms_ != nullptr && !histograms_->empty() && histograms_->at(0)->isValid());
-}
-
-NormalizedHistogram* VolumeRAM::getNormalizedHistogram(int sampleRate, std::size_t maxNumberOfBins,
-                                                       int component) {
-    if (!calculatingHistogram_ && getData() != nullptr &&
-        (!histograms_ || !histograms_->at(component)->isValid()))
-        calculateHistogram(sampleRate, maxNumberOfBins);
-
-    return histograms_->at(component);
-}
-
-const NormalizedHistogram* VolumeRAM::getNormalizedHistogram(int sampleRate,
-                                                             std::size_t maxNumberOfBins,
-                                                             int component) const {
-    if (getData() != nullptr && !calculatingHistogram_ &&
-        (!histograms_ || histograms_->empty() ||
-         (static_cast<int>(histograms_->size()) > component &&
-          !histograms_->at(component)->isValid())))
-        calculateHistogram(sampleRate, maxNumberOfBins);
-
-    if (histograms_ && static_cast<int>(histograms_->size()) > component) {
-        return histograms_->at(component);
-    } else {
-        return nullptr;
-    }
-}
-
-void VolumeRAM::calculateHistogram(int sampleRate, std::size_t maxNumberOfBins) const {
-    calculatingHistogram_ = true;
-    stopHistogramCalculation_ = false;
-
-    if (sampleRate < 0) {
-        uvec3 dim = getDimensions();
-        int maxDim = std::max(dim.x, std::max(dim.y, dim.z));
-        sampleRate = std::max(1, int(float(maxDim) / 64.0f));
-    }
-
-    histograms_ =
-        VolumeRAMNormalizedHistogram::apply(this, histograms_, sampleRate, maxNumberOfBins);
-    calculatingHistogram_ = false;
-}
+VolumeRAM::~VolumeRAM() {}
 
 void VolumeRAM::setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset) {
     setValuesFromVolume(src, dstOffset, src->getDimensions(), uvec3(0));

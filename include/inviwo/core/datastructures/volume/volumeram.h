@@ -61,16 +61,15 @@ public:
     virtual void setData(void* data) = 0;
     virtual void removeDataOwnership() = 0;
 
-    bool hasNormalizedHistogram() const;
-    NormalizedHistogram* getNormalizedHistogram(int delta = -1, std::size_t maxNumberOfBins = 2048u,
-                                                int component = 0);
-    const NormalizedHistogram* getNormalizedHistogram(int delta = -1,
-                                                      std::size_t maxNumberOfBins = 2048u,
-                                                      int component = 0) const;
-    bool shouldStopHistogramCalculation() const { return stopHistogramCalculation_; }
-    void stopHistogramCalculation() const { stopHistogramCalculation_ = true; }
+    // Histograms
+    virtual bool hasHistograms() const = 0;
+    virtual HistogramContainer& getHistograms(size_t bins = 2048u, uvec3 sampleRate = uvec3(1)) = 0;
 
+    virtual const HistogramContainer& getHistograms(size_t bins = 2048u,
+                                                    uvec3 sampleRate = uvec3(1)) const = 0;
+    virtual void calculateHistograms(size_t bins, uvec3 sampleRate, const bool& stop) const = 0;
 
+    // uniform getters and setters
     virtual void setValueFromSingleDouble(const uvec3& pos, double val) = 0;
     virtual void setValueFromVec2Double(const uvec3& pos, dvec2 val) = 0;
     virtual void setValueFromVec3Double(const uvec3& pos, dvec3 val) = 0;
@@ -93,14 +92,6 @@ public:
     template <typename T>
     static T periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posIn,
                                 const glm::detail::tvec3<T, glm::defaultp>& dim);
-
-
-protected:
-    void calculateHistogram(int delta, std::size_t maxNumberOfBins) const;
-
-    mutable std::vector<NormalizedHistogram*>* histograms_;
-    mutable bool calculatingHistogram_;
-    mutable bool stopHistogramCalculation_;
 };
 
 template <typename T>
@@ -127,7 +118,8 @@ T VolumeRAM::periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posI
 IVW_CORE_API VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format,
                                         void* dataPtr = nullptr);
 
-template <typename T> class VolumeRAMPrecision;
+template <typename T>
+class VolumeRAMPrecision;
 struct VolumeRamDispatcher {
     using type = VolumeRAM*;
     template <class T>

@@ -404,6 +404,38 @@ To glm_convert_normalized(From x) {
     return res;
 }
 
+
+// GLM element access wrapper functions. 
+
+// vector like access
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0> 
+auto glmcomp(T& elem, size_t i) -> T& {
+    return elem;
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0> 
+auto glmcomp(T& elem, size_t i) -> typename T::value_type& {
+    return elem[i];
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0> 
+auto glmcomp(T& elem, size_t i) -> typename T::value_type& {
+    return elem[i / util::extent<T, 0>::value][i % util::extent<T, 1>::value];
+}
+
+// matrix like access
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0> 
+auto glmcomp(T& elem, size_t i, size_t j) -> T& {
+    return elem;
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0> 
+auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type& {
+    return elem[i];
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0> 
+auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type&{
+    return elem[i][j];
+}
+
+
 } // namespace util
 
 
@@ -434,13 +466,13 @@ public:
     static T getval(G<T, P> mat, const size_t ind) {
         return mat[static_cast<int>(ind) /
                    util::extent<G<T, P>, 0>::value][static_cast<int>(ind) %
-                                                    util::extent<G<T, P>, 0>::value];
+                                                    util::extent<G<T, P>, 1>::value];
     }
     template <typename U = T, typename std::enable_if<util::rank<G<U, P>>::value == 2, int>::type = 0>
     static G<T, P> setval(G<T, P> mat, const size_t ind, T val) {
         mat[static_cast<int>(ind) /
             util::extent<G<T, P>, 0>::value][static_cast<int>(ind) %
-                                             util::extent<G<T, P>, 0>::value] = val;
+                                             util::extent<G<T, P>, 1>::value] = val;
         return mat;
     }
 };

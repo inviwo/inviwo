@@ -36,19 +36,20 @@
 namespace inviwo {
 
 //The NormalizedHistogram has a array of bins and all bins are normalized.
-//It can be denormalized using the maxiumBinValue_.
+//It can be de-normalized using the maxiumBinValue_.
 class IVW_CORE_API NormalizedHistogram {
 
 public:
     NormalizedHistogram(size_t);
-    NormalizedHistogram(const NormalizedHistogram*);
-    NormalizedHistogram(const NormalizedHistogram&);
+    NormalizedHistogram(const NormalizedHistogram& rhs);
+    NormalizedHistogram& operator=(const NormalizedHistogram& that);
+    virtual NormalizedHistogram* clone() const;
     virtual ~NormalizedHistogram();
-
-    NormalizedHistogram& operator=(const NormalizedHistogram&);
 
     std::vector<double>* getData();
     const std::vector<double>* getData() const;
+    double& operator[](size_t i);
+    const double& operator[](size_t i) const;
 
     bool exists() const;
 
@@ -75,13 +76,36 @@ public:
     dvec2 dataRange_;
 
 protected:
-    std::vector<double>* data_;
+    std::vector<double> data_;
     double maximumBinCount_; //The maximum count (used for normalization)
     bool valid_;
-
-
-
 };
+
+class IVW_CORE_API HistogramContainer {
+public:
+    HistogramContainer();
+    HistogramContainer(const HistogramContainer& rhs);
+    HistogramContainer& operator=(const HistogramContainer& that);
+
+    HistogramContainer(HistogramContainer&& rhs);
+    HistogramContainer& operator=(HistogramContainer&& that);
+
+    NormalizedHistogram& operator[](size_t i) const;
+    virtual HistogramContainer* clone() const;
+    virtual ~HistogramContainer();
+
+    size_t size() const;
+    bool empty() const;
+    NormalizedHistogram* get(size_t i) const;
+    void add(NormalizedHistogram* hist);
+
+    void setValid(bool valid);
+    bool isValid() const;
+
+private:
+    std::vector<NormalizedHistogram*> histograms_;
+};
+
 
 } // namespace
 

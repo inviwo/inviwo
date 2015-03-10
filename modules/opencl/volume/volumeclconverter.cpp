@@ -88,8 +88,8 @@ void VolumeCL2RAMConverter::update(const DataRepresentation* source, DataReprese
 
     volumeSrc->download(volumeDst->getData());
 
-    if (volumeDst->hasNormalizedHistogram())
-        volumeDst->getNormalizedHistogram()->setValid(false);
+    if (volumeDst->hasHistograms())
+        volumeDst->getHistograms().setValid(false);
 }
 
 } // namespace

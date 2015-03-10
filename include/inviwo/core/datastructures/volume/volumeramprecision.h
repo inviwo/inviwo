@@ -31,6 +31,7 @@
 #define IVW_VOLUMERAMPRECISION_H
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramhistogram.h>
 #include <inviwo/core/datastructures/volume/volumeramoperationexecuter.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -41,9 +42,9 @@ template <typename T>
 class VolumeRAMPrecision : public VolumeRAM {
 public:
     VolumeRAMPrecision(uvec3 dimensions = uvec3(128, 128, 128),
-                       const DataFormatBase* format = defaultformat());
+                       const DataFormatBase* format = DataFormat<T>::get());
     VolumeRAMPrecision(T* data, uvec3 dimensions = uvec3(128, 128, 128),
-                       const DataFormatBase* format = defaultformat());
+                       const DataFormatBase* format = DataFormat<T>::get());
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
@@ -64,6 +65,13 @@ public:
     virtual const uvec3& getDimensions() const override;
     virtual void setDimensions(uvec3 dimensions) override;
 
+    virtual bool hasHistograms() const override;
+    virtual HistogramContainer& getHistograms(size_t bins = 2048u,
+                                              uvec3 sampleRate = uvec3(1)) override;
+    virtual const HistogramContainer& getHistograms(size_t bins = 2048u,
+                                                    uvec3 sampleRate = uvec3(1)) const override;
+    virtual void calculateHistograms(size_t bins, uvec3 sampleRate, const bool& stop) const override;
+
     virtual void setValueFromSingleDouble(const uvec3& pos, double val) override;
     virtual void setValueFromVec2Double(const uvec3& pos, dvec2 val) override;
     virtual void setValueFromVec3Double(const uvec3& pos, dvec3 val) override;
@@ -83,10 +91,8 @@ private:
     uvec3 dimensions_;
     bool ownsDataPtr_;
     std::unique_ptr<T[]> data_;
-
-    static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
+    mutable HistogramContainer histCont_;
 };
-
 
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(uvec3 dimensions, const DataFormatBase* format)
@@ -164,7 +170,7 @@ template <typename T>
 void inviwo::VolumeRAMPrecision<T>::setData(void* d) {
     std::unique_ptr<T[]> data(static_cast<T*>(d));
     data_.swap(data);
-    
+
     if (!ownsDataPtr_) data.release();
     ownsDataPtr_ = true;
 }
@@ -218,8 +224,8 @@ void VolumeRAMPrecision<T>::setValuesFromVolume(const VolumeRAM* src, const uvec
                                                 const uvec3& subSize, const uvec3& subOffset) {
     const T* srcData = reinterpret_cast<const T*>(src->getData());
 
-    size_t initialStartPos =
-        (dstOffset.z * (dimensions_.x * dimensions_.y)) + (dstOffset.y * dimensions_.x) + dstOffset.x;
+    size_t initialStartPos = (dstOffset.z * (dimensions_.x * dimensions_.y)) +
+                             (dstOffset.y * dimensions_.x) + dstOffset.x;
 
     uvec3 srcDims = src->getDimensions();
     size_t dataSize = subSize.x * getDataFormat()->getSize();
@@ -256,11 +262,48 @@ dvec4 VolumeRAMPrecision<T>::getValueAsVec4Double(const uvec3& pos) const {
     return util::glm_convert_normalized<dvec4>(data_[posToIndex(pos, dimensions_)]);
 }
 
-#define DataFormatIdMacro(i) \
-    typedef VolumeRAMPrecision<Data##i::type> VolumeRAM_##i;
+template <typename T>
+const HistogramContainer& inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
+                                                                       uvec3 sampleRate) const {
+    if (!hasHistograms()) {
+        bool stop = false;
+        calculateHistograms(bins, sampleRate, stop);
+    }
+
+    return histCont_;
+}
+
+template <typename T>
+HistogramContainer& inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
+                                                                 uvec3 sampleRate) {
+    if (!hasHistograms()) {
+        bool stop = false;
+        calculateHistograms(bins, sampleRate, stop);
+    }
+
+    return histCont_;
+
+}
+
+template <typename T>
+void inviwo::VolumeRAMPrecision<T>::calculateHistograms(size_t bins, uvec3 sampleRate,
+                                                        const bool& stop) const {
+    const Volume* volume = dynamic_cast<const Volume*>(getOwner());
+    if (volume) {
+        dvec2 dataRange = volume->dataMap_.dataRange;
+        histCont_ = util::calculateVolumeHistogram(data_.get(), dimensions_, dataRange, stop, bins,
+                                                   sampleRate);
+    }
+}
+
+template <typename T>
+bool inviwo::VolumeRAMPrecision<T>::hasHistograms() const {
+    return !histCont_.empty() && histCont_.isValid();
+}
+
+#define DataFormatIdMacro(i) typedef VolumeRAMPrecision<Data##i::type> VolumeRAM_##i;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
 }  // namespace
-
 
 #endif  // IVW_VOLUMERAMPRECISION_H
