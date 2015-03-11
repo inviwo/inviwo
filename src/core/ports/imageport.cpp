@@ -185,7 +185,7 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
 
 ImageOutport::~ImageOutport() {
     for (auto& elem : imageDataMap_) {
-        if (isDataOwner() && elem.second != data_) {
+        if (isDataOwner() || elem.second != data_) {
             delete elem.second;
         }
     }
@@ -372,7 +372,7 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
             Image* invalidImage = imageDataMap_[invalidImageDataString];
 
             //Make sure you don't delete data thats not owned
-            if (isDataOwner() && invalidImage != data_) {
+            if (isDataOwner() || invalidImage != data_) {
                 delete invalidImage;
             }
 
