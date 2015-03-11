@@ -80,7 +80,7 @@ private:
     // retrieve predecessors from global processor state list (look-up)
     const ProcessorList& getStoredPredecessors(Processor* processor) const;
     // retrieve predecessors based on given event
-    ProcessorList getDirectPredecessors(Processor* processor, Event* event=NULL) const;
+    ProcessorList getDirectPredecessors(Processor* processor, Event* event=nullptr) const;
     void traversePredecessors(Processor* processor);
     void determineProcessingOrder();
     void updateProcessorStates();
@@ -105,7 +105,7 @@ private:
     // map for managing processor states (predecessors, visited flags, etc.)
     // TODO: replace std::map with std::unordered_map when using C++11!
     //
-    // map contains a dummy element for NULL processor
+    // map contains a dummy element for nullptr processor
     typedef std::map<Processor*, ProcessorState> ProcMap;
     typedef ProcMap::iterator ProcMapIt;
     typedef ProcMap::const_iterator const_ProcMapIt;

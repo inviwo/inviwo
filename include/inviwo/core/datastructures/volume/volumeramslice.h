@@ -68,14 +68,14 @@ void VolumeRAMSlice::evaluate() {
     const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(getInputVolume());
 
     if (!volume) {
-        setOutput(NULL);
+        setOutput(nullptr);
         return;
     }
 
     uvec3 dataDims = volume->getDimensions();
     if (sliceAlongAxis_ == CoordinateEnums::X){ // Along z axis (ZY Plane)
         if (sliceNum_ >= dataDims.x){
-            setOutput(NULL);
+            setOutput(nullptr);
             return;
         }
 
@@ -102,7 +102,7 @@ void VolumeRAMSlice::evaluate() {
         setOutput(sliceImage);
     } else if(sliceAlongAxis_ == CoordinateEnums::Y){ // Along y axis (XZ plane)
         if (sliceNum_ >= dataDims.y){
-            setOutput(NULL);
+            setOutput(nullptr);
             return;
         }
 
@@ -129,7 +129,7 @@ void VolumeRAMSlice::evaluate() {
         setOutput(sliceImage);
     } else if(sliceAlongAxis_ == CoordinateEnums::Z){ // Along z axis (XY Plane)
         if (sliceNum_ >= dataDims.z){
-            setOutput(NULL);
+            setOutput(nullptr);
             return;
         }
 

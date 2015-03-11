@@ -63,13 +63,13 @@ namespace inviwo {
 // call LogInfo with the execution time.
 // Example:
 // IVW_OPENCL_PROFILING(profilingEvent, "")
-// OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*ernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, NULL, profilingEvent);
+// OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*ernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, nullptr, profilingEvent);
 // 
 
 //#if IVW_PROFILING 
 //    #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = new cl::Event(); 
 //#else 
-//    #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = NULL; 
+//    #define IVW_OPENCL_PROFILING(profilingEvent, "") cl::Event* profilingEvent = nullptr; 
 //#endif 
 //#if IVW_PROFILING 
 //    #define  \
@@ -87,7 +87,7 @@ namespace inviwo {
 //#if IVW_PROFILING 
 //#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = new cl::Event(); 
 //#else 
-//#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = NULL; 
+//#define IVW_OPENCL_PROFILING(profilingEvent, "")N(name) cl::Event* name = nullptr; 
 //#endif 
 //#if IVW_PROFILING 
 //#define N(name) \

@@ -55,7 +55,7 @@ T* getTypeFromVector(std::vector<U> vec) {
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 template<class T, class U>

@@ -57,7 +57,7 @@ public:
     virtual ~VolumeCLGL2RAMConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeCLGL*>(source) != NULL;
+        return dynamic_cast<const VolumeCLGL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
@@ -70,7 +70,7 @@ public:
     virtual ~VolumeGL2CLGLConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeGL*>(source) != NULL;
+        return dynamic_cast<const VolumeGL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
@@ -82,7 +82,7 @@ public:
     virtual ~VolumeCLGL2CLConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeCLGL*>(source) != NULL;
+        return dynamic_cast<const VolumeCLGL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
@@ -94,7 +94,7 @@ public:
     virtual ~VolumeCLGL2GLConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeCLGL*>(source) != NULL;
+        return dynamic_cast<const VolumeCLGL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);

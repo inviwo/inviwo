@@ -44,7 +44,7 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API BufferCLGL : public BufferCLBase, public BufferRepresentation, public BufferObjectObserver {
 
 public:
-    BufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, BufferObject* data = NULL,
+    BufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, BufferObject* data = nullptr,
                cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     BufferCLGL(const BufferCLGL& rhs);
     virtual ~BufferCLGL();
@@ -59,12 +59,12 @@ public:
     const cl::Buffer& getBuffer() const { return *(clBuffer_); }
     BufferObject* getBufferGL() const { return bufferObject_; }
 
-    void aquireGLObject(std::vector<cl::Event>* syncEvents = NULL) const {
+    void aquireGLObject(std::vector<cl::Event>* syncEvents = nullptr) const {
         std::vector<cl::Memory> syncBuffers(1, *clBuffer_);
         OpenCL::getPtr()->getQueue().enqueueAcquireGLObjects(&syncBuffers, syncEvents);
     }
 
-    void releaseGLObject(std::vector<cl::Event>* syncEvents = NULL, cl::Event* event= NULL) const {
+    void releaseGLObject(std::vector<cl::Event>* syncEvents = nullptr, cl::Event* event= nullptr) const {
         std::vector<cl::Memory> syncBuffers(1, *clBuffer_);
         OpenCL::getPtr()->getQueue().enqueueReleaseGLObjects(&syncBuffers, syncEvents, event);
     }

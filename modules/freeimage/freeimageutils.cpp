@@ -165,9 +165,9 @@ void FreeImageUtils::saveLayer(const char* filename, const Layer* inputLayer) {
     initLoader();
     FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFIFFromFilename(filename);
 
-    if (imageFormat != FIF_UNKNOWN && inputLayer != NULL) {
+    if (imageFormat != FIF_UNKNOWN && inputLayer != nullptr) {
         const LayerRAM* imageRam = inputLayer->getRepresentation<LayerRAM>();
-        assert(imageRam != NULL);
+        assert(imageRam != nullptr);
         FIBITMAP* bitmap = createBitmapFromData(imageRam, false);
         BOOL saved = 0;
 
@@ -193,8 +193,8 @@ void FreeImageUtils::saveLayer(const char* filename, const Layer* inputLayer) {
         FreeImage_Unload(bitmap);
     }
     else {
-        if (inputLayer == NULL) {
-            LogErrorCustom("ImageIO", "Cannot save NULL image.");
+        if (inputLayer == nullptr) {
+            LogErrorCustom("ImageIO", "Cannot save nullptr image.");
         } else {
             //Unknown file ending
             LogErrorCustom("ImageIO", "Unknown file ending.");
@@ -307,10 +307,10 @@ void* FreeImageUtils::rescaleLayer(const Layer* inputLayer, uvec2 dst_dim) {
 }
 
 void* FreeImageUtils::rescaleLayerRAM(const LayerRAM* srcLayerRam, uvec2 dst_dim) {
-    ivwAssert(srcLayerRam!=NULL, "LayerRAM representation does not exist.");
+    ivwAssert(srcLayerRam!=nullptr, "LayerRAM representation does not exist.");
     initLoader();
-    void* rawData = NULL;
-    FIBITMAP* bitmap = NULL;
+    void* rawData = nullptr;
+    FIBITMAP* bitmap = nullptr;
     FREE_IMAGE_TYPE formatType = getFreeImageFormatFromDataFormat(srcLayerRam->getDataFormatId());
 
     ivwAssert(srcLayerRam->getDimensions()!=uvec2(0), "Trying to rescale layer with zero dimensions.");
@@ -319,19 +319,19 @@ void* FreeImageUtils::rescaleLayerRAM(const LayerRAM* srcLayerRam, uvec2 dst_dim
     {
     case inviwo::DataFormatEnums::NOT_SPECIALIZED:
             LogErrorCustom("rescaleLayerRAM", "Invalid format");
-            rawData = NULL;
+            rawData = nullptr;
             break;
 #define DataFormatIdMacro(i) case inviwo::DataFormatEnums::i: bitmap = handleBitmapCreations<Data##i::type>(static_cast<const Data##i::type*>(srcLayerRam->getData()), formatType, srcLayerRam->getDimensions(), Data##i::bitsAllocated(), Data##i::components(), srcLayerRam->getDataFormat()); \
-        rawData = fiBitmapToDataArrayAndRescale<Data##i::type>(NULL, bitmap, dst_dim, Data##i::bitsAllocated(), Data##i::components()); break;
+        rawData = fiBitmapToDataArrayAndRescale<Data##i::type>(nullptr, bitmap, dst_dim, Data##i::bitsAllocated(), Data##i::components()); break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
         default:
             LogErrorCustom("rescaleLayerRAM", "Invalid format or not implemented");
-            rawData = NULL;
+            rawData = nullptr;
             break;
     }
 
-    ivwAssert(rawData!=NULL, "Unable to rescale image ram representation.");
+    ivwAssert(rawData!=nullptr, "Unable to rescale image ram representation.");
 
     FreeImage_Unload(bitmap);
     return rawData;
@@ -376,7 +376,7 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const T* data, FREE_IMAGE_TYPE ty
         const DataFormatBase* format, bool noScaling) {
     FIBITMAP* dib = allocateBitmap(type, dim, bitsPerPixel, channels);
     if(!dib)
-        return NULL;
+        return nullptr;
     unsigned int bytespp = FreeImage_GetLine(dib) / FreeImage_GetWidth(dib);
     T* bits = (T*)FreeImage_GetBits(dib);
   
@@ -413,7 +413,7 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const LayerRAM* inputLayer, bool 
     {
     case inviwo::DataFormatEnums::NOT_SPECIALIZED:
             LogErrorCustom("createBitmapFromData", "Invalid format");
-            return NULL;
+            return nullptr;
 #define DataFormatIdMacro(i) case inviwo::DataFormatEnums::i: return handleBitmapCreations<Data##i::type>(static_cast<const Data##i::type*>(inputLayer->getData()), formatType, inputLayer->getDimensions(), Data##i::bitsAllocated(), Data##i::components(), inputLayer->getDataFormat(), noScaling);
 #include <inviwo/core/util/formatsdefinefunc.h>
 
@@ -422,7 +422,7 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const LayerRAM* inputLayer, bool 
             break;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void FreeImageUtils::copyBitmapToData(FIBITMAP* bitmap, LayerRAM* outImage){
@@ -449,7 +449,7 @@ void* FreeImageUtils::fiBitmapToDataArray(void* dst, FIBITMAP* bitmap, size_t bi
     uvec2 dim(width, height);
     FIBITMAP* bitmapNEW = allocateBitmap(type, dim, bitsPerPixel, channels);
     if(!bitmapNEW)
-        return NULL;
+        return nullptr;
     FreeImage_Paste(bitmapNEW, bitmap, 0, 0, 256);
     switchChannels(bitmapNEW, dim, channels);
     void* pixelValues = static_cast<void*>(FreeImage_GetBits(bitmapNEW));
@@ -495,7 +495,7 @@ void* FreeImageUtils::fiBitmapToDataArrayAndRescale(void* dst, FIBITMAP* bitmap,
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(bitmap);
     FIBITMAP* bitmapTmp = allocateBitmap(type, dimTmp, bitsPerPixel, channels);
     if(!bitmapTmp)
-        return NULL;
+        return nullptr;
     //Paste source into our tmp, to be used for scaling
     FreeImage_Paste(bitmapTmp, bitmap, pasteLeft, pasteTop, 256);
 
@@ -526,9 +526,9 @@ std::vector<unsigned char>* FreeImageUtils::saveLayerToBuffer(const char* type, 
     initLoader();
     FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFIFFromFilename(type);
 
-    if (imageFormat != FIF_UNKNOWN && inputLayer != NULL) {
+    if (imageFormat != FIF_UNKNOWN && inputLayer != nullptr) {
         const LayerRAM* imageRam = inputLayer->getRepresentation<LayerRAM>();
-        assert(imageRam != NULL);
+        assert(imageRam != nullptr);
         FIBITMAP* bitmap = createBitmapFromData(imageRam, false);
         BOOL saved = 0;
 
@@ -538,7 +538,7 @@ std::vector<unsigned char>* FreeImageUtils::saveLayerToBuffer(const char* type, 
                     static_cast<int>(imageRam->getDataFormat()->getBitsAllocated()));
         
         DWORD size_in_bytes = 0;
-        BYTE *mem_buffer = NULL;
+        BYTE *mem_buffer = nullptr;
         if (!FreeImage_AcquireMemory(mem, &mem_buffer, &size_in_bytes))
 
         if (saved == 0) {
@@ -556,5 +556,5 @@ std::vector<unsigned char>* FreeImageUtils::saveLayerToBuffer(const char* type, 
         //Unknown file ending
         LogErrorCustom("ImageIO", "Unknown file ending.");
     }
-    return NULL;
+    return nullptr;
 }

@@ -71,14 +71,14 @@ void VolumeRAMSubSet::evaluate() {
     const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(getInputVolume());
 
     if (!volume) {
-        setOutput(NULL);
+        setOutput(nullptr);
         return;
     }
 
     uvec3 dataDims = volume->getDimensions();
 
     if (newOffset_.x > dataDims.x && newOffset_.y > dataDims.y && newOffset_.z > dataDims.z) {
-        setOutput(NULL);
+        setOutput(nullptr);
         return;
     }
 

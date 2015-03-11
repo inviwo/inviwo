@@ -99,7 +99,7 @@ void FreeImageReader::readDataInto(void* destination) const {
 }
 
 void* FreeImageReader::readData() const {
-    void* data = NULL;
+    void* data = nullptr;
 
     LayerDisk* layerDisk = dynamic_cast<LayerDisk*>(owner_);
     if(layerDisk){
@@ -107,9 +107,9 @@ void* FreeImageReader::readData() const {
         DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
 
         if (dimensions != uvec2(0))
-            data = FreeImageUtils::loadImageToDataAndRescale(NULL, layerDisk->getSourceFile(), dimensions, formatId);
+            data = FreeImageUtils::loadImageToDataAndRescale(nullptr, layerDisk->getSourceFile(), dimensions, formatId);
         else{
-            data = FreeImageUtils::loadImageToData(NULL, layerDisk->getSourceFile(), dimensions, formatId);
+            data = FreeImageUtils::loadImageToData(nullptr, layerDisk->getSourceFile(), dimensions, formatId);
             layerDisk->setDimensions(dimensions);
         }
 

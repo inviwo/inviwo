@@ -95,11 +95,11 @@ MultiDataInport<T, U>::~MultiDataInport() {
 
 template <typename T, typename U>
 void MultiDataInport<T, U>::connectTo(Outport* outport) {
-    ivwAssert(dynamic_cast<DataOutport<T>*>(outport)!=NULL
-              || dynamic_cast<VectorDataOutport<T*>*>(outport) != NULL
+    ivwAssert(dynamic_cast<DataOutport<T>*>(outport)!=nullptr
+              || dynamic_cast<VectorDataOutport<T*>*>(outport) != nullptr
               , "Trying to connect incompatible ports.")
     // U is a Port class
-    Inport* inport = NULL;
+    Inport* inport = nullptr;
     if (dynamic_cast<DataOutport<T>*>(outport)) {
         inport = new U(getIdentifier());
         inports_->push_back(inport);

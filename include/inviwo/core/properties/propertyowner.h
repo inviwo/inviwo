@@ -68,13 +68,13 @@ public:
     virtual void setValid();
     InvalidationLevel getInvalidationLevel() const { return invalidationLevel_; }
     virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = NULL);
+                            Property* modifiedProperty = nullptr);
 
     // Should return the processor that the owner belongs or is.
     // This should be overridden by all subclasses.
     // It is used by the linking.
-    virtual Processor* getProcessor() { return NULL; }
-    virtual const Processor* getProcessor() const { return NULL; }
+    virtual Processor* getProcessor() { return nullptr; }
+    virtual const Processor* getProcessor() const { return nullptr; }
 
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);

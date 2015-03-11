@@ -47,10 +47,10 @@ public:
      * @param size
      * @param type
      * @param format
-     * @param data Data to transfer. Does not transfer data if data is NULL.
+     * @param data Data to transfer. Does not transfer data if data is nullptr.
      * @param readWriteFlag Determine how memory will be used by Kernels: CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
      */
-    BufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, const void* data = NULL,
+    BufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, const void* data = nullptr,
              cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     BufferCL(const BufferCL& rhs);
     virtual ~BufferCL();
@@ -58,7 +58,7 @@ public:
     virtual void initialize();
     virtual void deinitialize();
     virtual BufferCL* clone() const;
-    virtual void setSize(size_t size) {  BufferRepresentation::setSize(size); deinitialize(); initialize(NULL); }
+    virtual void setSize(size_t size) {  BufferRepresentation::setSize(size); deinitialize(); initialize(nullptr); }
 
     const Buffer* getAttribute() const;
 
@@ -87,7 +87,7 @@ protected:
     /**
      * Create and optionally transfer data to device.
      *
-     * @param data Data to transfer. Does not transfer data if data is NULL.
+     * @param data Data to transfer. Does not transfer data if data is nullptr.
      */
     void initialize(const void* data);
 

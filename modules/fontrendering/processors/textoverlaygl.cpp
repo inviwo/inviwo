@@ -51,7 +51,7 @@ TextOverlayGL::TextOverlayGL()
     , fontSize_("Font size", "Font size")
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , refPos_("Reference", "Reference", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
-    , textRenderer_(NULL) {
+    , textRenderer_(nullptr) {
 
     addPort(inport_);
     addPort(outport_);

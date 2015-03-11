@@ -70,7 +70,7 @@ public:
  *
  * @param size of buffer to create.
  * @param format of buffer to create.
- * @return NULL if no valid format was specified.
+ * @return nullptr if no valid format was specified.
  */
 IVW_CORE_API BufferRAM* createBufferRAM(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage);
 

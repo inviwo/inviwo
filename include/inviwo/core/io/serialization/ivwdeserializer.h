@@ -367,7 +367,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
             NodeSwitch elementNodeSwitch(*this, &(*child), false);
 
             if (vector.size() <= i) {
-                T* item = NULL;
+                T* item = nullptr;
                 try {
                     deserialize(itemKey, item);
                     vector.push_back(item);
@@ -407,7 +407,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
                     handleError(e);
                 }
             } else {
-                T* item = NULL;
+                T* item = nullptr;
                 NodeSwitch elementNodeSwitch(*this, &(*child), false);
                 try {
                     deserialize(itemKey, item);
@@ -470,7 +470,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::map<K, V, C, A>& 
             child->GetAttribute(comparisionAttribute, &key);
             
             typename std::map<K, V, C, A>::iterator it = map.find(key);
-            V value = (it != map.end() ? it->second : NULL);
+            V value = (it != map.end() ? it->second : nullptr);
  
             try {
                 deserialize(itemKey, value);

@@ -47,10 +47,10 @@ namespace inviwo {
 LinkDialogGraphicsScene::LinkDialogGraphicsScene(QWidget* parent)
     : QGraphicsScene(parent)
     , currentScrollSteps_(0)
-    , linkCurve_(NULL)
-    , startProperty_(NULL)
-    , endProperty_(NULL)
-    , processorNetwork_(NULL)
+    , linkCurve_(nullptr)
+    , startProperty_(nullptr)
+    , endProperty_(nullptr)
+    , processorNetwork_(nullptr)
     , expandProperties_(false)
     , mouseOnLeftSide_(false) {
 
@@ -75,7 +75,7 @@ QGraphicsItem* LinkDialogGraphicsScene::getPropertyGraphicsItemOf(Property* prop
         propertyGraphicsItemCache_.find(property);
     if (it != propertyGraphicsItemCache_.end()) return it->second;
 
-    LinkDialogPropertyGraphicsItem* graphicsItem = NULL;
+    LinkDialogPropertyGraphicsItem* graphicsItem = nullptr;
     std::vector<LinkDialogProcessorGraphicsItem*> processorGraphicsItems;
     processorGraphicsItems.push_back(srcProcessorGraphicsItem_);
     processorGraphicsItems.push_back(dstProcessorGraphicsItem_);
@@ -172,7 +172,7 @@ void LinkDialogGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
 void LinkDialogGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     if (linkCurve_) {
         delete linkCurve_;
-        linkCurve_ = NULL;
+        linkCurve_ = nullptr;
         endProperty_ = getSceneGraphicsItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos());
 
         if (endProperty_ && (endProperty_!=startProperty_)) {
@@ -191,15 +191,15 @@ void LinkDialogGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
             }
         }
 
-        startProperty_ = NULL;
-        endProperty_ = NULL;
+        startProperty_ = nullptr;
+        endProperty_ = nullptr;
         e->accept();
     } else {
         QGraphicsScene::mouseReleaseEvent(e);
     }
 
-    startProperty_ = NULL;
-    endProperty_ = NULL;
+    startProperty_ = nullptr;
+    endProperty_ = nullptr;
 }
 
 void LinkDialogGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
@@ -552,7 +552,7 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::getConnectionGraphicsItem
             return elem;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRepresentation(
@@ -563,9 +563,9 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRep
     LinkDialogPropertyGraphicsItem* end = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
         getPropertyGraphicsItemOf(propertyLink->getDestinationProperty()));
 
-    if (start == NULL || end == NULL) return NULL;
+    if (start == nullptr || end == nullptr) return nullptr;
 
-    DialogConnectionGraphicsItem* cItem = NULL;
+    DialogConnectionGraphicsItem* cItem = nullptr;
     cItem = getConnectionGraphicsItem(start, end);
 
     if (!cItem) {
@@ -584,7 +584,7 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRep
 }
 
 void LinkDialogGraphicsScene::removePropertyLinkRepresentation(PropertyLink* propertyLink) {
-    DialogConnectionGraphicsItem* cItem = NULL;
+    DialogConnectionGraphicsItem* cItem = nullptr;
     std::vector<DialogConnectionGraphicsItem*>::iterator it;
     for (it = connectionGraphicsItems_.begin(); it != connectionGraphicsItems_.end(); ++it) {
         if((*it)->getPropertyLink() == propertyLink) {
@@ -650,8 +650,8 @@ void LinkDialogGraphicsScene::initScene(Processor* srcProcessor,
 }
 
 void LinkDialogGraphicsScene::clearSceneRepresentations() {
-    srcProcessorGraphicsItem_ = NULL;
-    dstProcessorGraphicsItem_ = NULL;
+    srcProcessorGraphicsItem_ = nullptr;
+    dstProcessorGraphicsItem_ = nullptr;
 
     for (auto& elem : connectionGraphicsItems_) elem->cleanup();
 

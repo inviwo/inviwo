@@ -123,9 +123,9 @@ protected:
  *
  * @param dimensionsof volume to create.
  * @param format of volume to create.
- * @return NULL if no valid format was specified.
+ * @return nullptr if no valid format was specified.
  */
-IVW_CORE_API VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format, void* dataPtr = NULL);
+IVW_CORE_API VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format, void* dataPtr = nullptr);
 
 } // namespace
 

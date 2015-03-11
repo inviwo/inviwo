@@ -42,7 +42,7 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API BufferGL: public BufferRepresentation {
 
 public:
-    BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, BufferObject* data = NULL);
+    BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, BufferObject* data = nullptr);
     BufferGL(const BufferGL& rhs);
     virtual ~BufferGL();
     virtual BufferGL* clone() const;

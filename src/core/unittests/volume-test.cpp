@@ -50,14 +50,14 @@ void testVolumeLoad(std::string filename) {
     std::string fileExtension = filesystem::getFileExtension(file);
     DataReaderType<Volume>* reader =
         DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Volume>(fileExtension);
-    ASSERT_TRUE(reader != NULL);
+    ASSERT_TRUE(reader != nullptr);
     Volume* volume = reader->readMetaData(file);
     const VolumeRAMPrecision<T>* volumeRAM =
         static_cast<const VolumeRAMPrecision<T>*>(volume->getRepresentation<VolumeRAM>());
-    ASSERT_TRUE(volumeRAM != NULL);
+    ASSERT_TRUE(volumeRAM != nullptr);
     
     const T* data = static_cast<const T*>(volumeRAM->getData());
-    ASSERT_TRUE(data != NULL);
+    ASSERT_TRUE(data != nullptr);
 
     uvec3 dim = volume->getDimensions();
     long long ref0;
@@ -97,7 +97,7 @@ void testVolumeClone(std::string filename) {
     std::string fileExtension = filesystem::getFileExtension(file);
     DataReaderType<Volume>* reader =
         DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Volume>(fileExtension);
-    ASSERT_TRUE(reader != NULL);
+    ASSERT_TRUE(reader != nullptr);
     Volume* volume = reader->readMetaData(file);
     Volume* volume1 = volume->clone();
 

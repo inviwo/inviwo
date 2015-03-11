@@ -236,7 +236,7 @@ void MarchingTetrahedron::evaluate() {
         dynamic_cast<const VolumeRAMPrecision<T> *>(getInputVolume());
 
     if (!volume) {
-        setOutput(NULL);
+        setOutput(nullptr);
         return;
     }
 

@@ -106,7 +106,7 @@ DataRepresentation* LayerCLGL2CLConverter::createFrom(const DataRepresentation* 
         src->aquireGLObject(glSync.getGLSyncEvent());
         OpenCL::getPtr()->getQueue().enqueueCopyImage(src->get(), static_cast<LayerCL*>(destination)->get(), glm::svec3(0), glm::svec3(0),
                 glm::svec3(src->getDimensions(), 1));
-        src->releaseGLObject(NULL, glSync.getLastReleaseGLEvent());
+        src->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     }
     return destination;
 }
@@ -122,7 +122,7 @@ void LayerCLGL2CLConverter::update(const DataRepresentation* source, DataReprese
     {   SyncCLGL glSync;
         src->aquireGLObject(glSync.getGLSyncEvent());
         OpenCL::getPtr()->getQueue().enqueueCopyImage(src->get(), dst->get(), glm::svec3(0), glm::svec3(0), glm::svec3(src->getDimensions(), 1));
-        src->releaseGLObject(NULL, glSync.getLastReleaseGLEvent());
+        src->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     }
 }
 

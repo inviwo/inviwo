@@ -51,7 +51,7 @@ public:
     virtual std::string getDataInfo() const;
 
     void deinitialize();
-    void initialize(Layer* colorLayer = NULL, uvec2 dimensions = uvec2(32, 32),
+    void initialize(Layer* colorLayer = nullptr, uvec2 dimensions = uvec2(32, 32),
                     const DataFormatBase* format = DataVec4UINT8::get());
 
     uvec2 getDimensions() const;

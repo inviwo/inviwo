@@ -40,7 +40,7 @@ namespace inviwo {
 
 
 
-TextRenderer::TextRenderer(const std::string& fontPath): drawer_(NULL) {
+TextRenderer::TextRenderer(const std::string& fontPath): drawer_(nullptr) {
     textShader_ = new Shader("fontrendering_freetype.vert", "fontrendering_freetype.frag", true);
     int error = 0;
 
@@ -62,7 +62,7 @@ TextRenderer::TextRenderer(const std::string& fontPath): drawer_(NULL) {
 TextRenderer::~TextRenderer() {
     FT_Done_Face(fontface_);
     delete textShader_;
-    textShader_ = NULL;
+    textShader_ = nullptr;
     glDeleteTextures(1, &texCharacter_);
     delete mesh_;
     delete drawer_;

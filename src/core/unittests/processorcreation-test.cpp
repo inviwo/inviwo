@@ -52,10 +52,10 @@ protected:
         size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
 
         IvwSerializable *s = ProcessorFactory::getPtr()->create(GetParam());
-        ASSERT_TRUE(s != NULL);
+        ASSERT_TRUE(s != nullptr);
 
         p = static_cast<Processor *>(s);
-        ASSERT_TRUE(p != NULL);
+        ASSERT_TRUE(p != nullptr);
 
         EXPECT_EQ(warnCount, LogErrorCounter::getPtr()->getWarnCount());
         EXPECT_EQ(errCount, LogErrorCounter::getPtr()->getErrorCount());

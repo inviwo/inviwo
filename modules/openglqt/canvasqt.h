@@ -81,7 +81,7 @@ class IVW_MODULE_OPENGLQT_API CanvasQt : public QGLWindow, public CanvasGL {
     friend class CanvasProcessorWidgetQt;
 
 public:
-    explicit CanvasQt(QGLParent* parent = NULL, uvec2 dim = uvec2(256,256));
+    explicit CanvasQt(QGLParent* parent = nullptr, uvec2 dim = uvec2(256,256));
     ~CanvasQt();
 
     static void defineDefaultContextFormat();

@@ -160,7 +160,7 @@ T* LinkDialogGraphicsScene::getSceneGraphicsItemAt(const QPointF pos,
             if (graphicsItem) return graphicsItem;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 }  // namespace

@@ -66,7 +66,7 @@ public:
 
     virtual bool isConnectedTo(Outport* outport) const { return false; }
 
-    virtual Outport* getConnectedOutport() const { return NULL; }
+    virtual Outport* getConnectedOutport() const { return nullptr; }
     virtual std::vector<Outport*> getConnectedOutports() const { return std::vector<Outport*>(); }
 
     std::vector<Processor*> getPredecessors();

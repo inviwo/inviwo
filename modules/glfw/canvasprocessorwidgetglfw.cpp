@@ -36,7 +36,7 @@ namespace inviwo {
 
 CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW()
     : CanvasProcessorWidget()
-    , canvas_(NULL)
+    , canvas_(nullptr)
     , hasSharedCanvas_(false) {}
 
 CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() {}
@@ -73,10 +73,10 @@ void CanvasProcessorWidgetGLFW::deinitialize() {
     if (canvas_) {
         this->hide();
         if(hasSharedCanvas_)
-            canvas_->setProcessorWidgetOwner(NULL);
+            canvas_->setProcessorWidgetOwner(nullptr);
         else
             delete canvas_;
-        canvas_ = NULL;
+        canvas_ = nullptr;
     }
 
     ProcessorWidget::deinitialize();

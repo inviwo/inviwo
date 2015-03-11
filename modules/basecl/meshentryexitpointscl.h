@@ -65,10 +65,10 @@ public:
      * @param cl::Event * event 
      * @return bool 
      */
-    bool computeEntryExitPoints(const Mesh* mesh, const mat4& worldToView, const mat4& viewToClip, Layer* entryPoints, Layer* exitPoints, bool useGLSharing, const VECTOR_CLASS<cl::Event> *waitForEvents = NULL, cl::Event *event = NULL);
+    bool computeEntryExitPoints(const Mesh* mesh, const mat4& worldToView, const mat4& viewToClip, Layer* entryPoints, Layer* exitPoints, bool useGLSharing, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
 
     void computeEntryExitPoints(const mat4& NDCToTextureMat, const mat4& worldToTextureMat, const BufferCLBase* vertices, const BufferCLBase* indices, int nIndices, const LayerCLBase* entryPointsCL, const LayerCLBase* exitPointsCL,
-        const uvec2& outportDim, const VECTOR_CLASS<cl::Event> *waitForEvents = NULL, cl::Event* event = NULL);
+        const uvec2& outportDim, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event* event = nullptr);
 
     svec2 getWorkGroupSize() const { return workGroupSize_; }
     void setWorkGroupSize(svec2 val) { workGroupSize_ = val; }

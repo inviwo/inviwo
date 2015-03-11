@@ -39,7 +39,7 @@ PFNCLCREATEEVENTFROMGLSYNCKHR clCreateEventFromGLsync =
 namespace inviwo {
 
 SyncCLGL::SyncCLGL(const cl::Context& context, const cl::CommandQueue& queue)
-    : releaseEvent_(NULL), syncEvents_(NULL), context_(context), queue_(queue) {
+    : releaseEvent_(nullptr), syncEvents_(nullptr), context_(context), queue_(queue) {
 #if defined(CL_VERSION_1_1) && defined(GL_ARB_cl_event) && \
     defined(CL_COMMAND_GL_FENCE_SYNC_OBJECT_KHR)
     // FIXME: We can only do this if it is supported by the device, otherwise we get unresolved
@@ -100,7 +100,7 @@ void SyncCLGL::aquireAllObjects() const {
 
 void SyncCLGL::releaseAllGLObjects() const {
     if (!syncedObjects_.empty())
-        queue_.enqueueReleaseGLObjects(&syncedObjects_, NULL, releaseEvent_);
+        queue_.enqueueReleaseGLObjects(&syncedObjects_, nullptr, releaseEvent_);
 }
 
 }  // end namespace

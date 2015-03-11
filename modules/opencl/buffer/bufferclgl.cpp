@@ -87,7 +87,7 @@ void BufferCLGL::deinitialize() {
 
     if (bufferObject_ && bufferObject_->decreaseRefCount() <= 0) {
         delete bufferObject_;
-        bufferObject_ = NULL;
+        bufferObject_ = nullptr;
     }
 }
 
