@@ -54,6 +54,11 @@ public:
     const TexCoord3dBuffer* getTexCoords() const;
     const ColorBuffer* getColors() const;
     const NormalBuffer* getNormals() const;
+
+	Position3dBuffer* getVertices();
+	TexCoord3dBuffer* getTexCoords();
+	ColorBuffer* getColors();
+	NormalBuffer* getNormals();
     
     void append(const BasicMesh* mesh);
     
