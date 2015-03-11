@@ -50,19 +50,28 @@ void ImageInport::connectTo(Outport* outport) {
     connectedOutport_ = outport;
     outport->connectTo(this);
 
-    if (getProcessor()->isEndProcessor()) {
-        // Resize outport if no outports exist (Canvas)
-        ResizeEvent resizeEvent(getDimensions());
-        ImageOutport* connectedImageOutport = dynamic_cast<ImageOutport*>(outport);
+    ImageOutport* connectedImageOutport = dynamic_cast<ImageOutport*>(outport);
+    uvec2 dim;
+    if (isOutportDeterminingSize() && isConnected()) {
+        dim = connectedImageOutport->getDimensions();
+    }
+    else {
+        dim = dimensions_;
+    }
+
+    if (getProcessor()->isEndProcessor() || isOutportDeterminingSize()) {
+        ResizeEvent resizeEvent(dim);
+        if (connectedImageOutport->isHandlingResizeEvents())
+            resizeEvent.setSize(dimensions_);
         connectedImageOutport->changeDataDimensions(&resizeEvent);
-    } else if (!isOutportDeterminingSize()) {
+    } else {
         // Resize outport if any outport within the same port dependency set is connected
         std::vector<Port*> portSet =
             getProcessor()->getPortsByDependencySet(getProcessor()->getPortDependencySet(this));
         for (size_t j = 0; j < portSet.size(); j++) {
             ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(portSet[j]);
             if (imageOutport && imageOutport->isConnected()) {
-                ResizeEvent resizeEvent(getDimensions());
+                ResizeEvent resizeEvent(dim);
                 ImageOutport* connectedImageOutport = dynamic_cast<ImageOutport*>(outport);
                 connectedImageOutport->changeDataDimensions(&resizeEvent);
             }
@@ -77,7 +86,7 @@ void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {
     // set dimensionsbased on port groups
     std::vector<std::string> portDependencySets = getProcessor()->getPortDependencySets();
     std::vector<Port*> portSet;
-    uvec2 dimMax(0);
+    uvec2 dimMax(resizeEvent->size());
     bool hasImageOutport = false;
 
     for (size_t i = 0; i < portDependencySets.size(); i++) {
@@ -125,12 +134,7 @@ void ImageInport::setResizeScale(vec2 scaling) { resizeScale_ = scaling; }
 vec2 ImageInport::getResizeScale() { return resizeScale_; }
 
 uvec2 ImageInport::getDimensions() const {
-    if (isOutportDeterminingSize() && isConnected()) {
-        ImageOutport* outport = dynamic_cast<ImageOutport*>(getConnectedOutport());
-        return outport->getDimensions();
-    } else {
-        return dimensions_;
-    }
+    return dimensions_;
 }
 
 const Image* ImageInport::getData() const {
@@ -303,11 +307,13 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
 
     for (auto& inport : inports) {
         ImageInport* imageInport = dynamic_cast<ImageInport*>(inport);
-        if (imageInport)
+        if (imageInport && !imageInport->isOutportDeterminingSize())
             registeredDimensions.push_back(imageInport->getDimensions());
     }
 
-    if (registeredDimensions.empty()) return;
+    if (registeredDimensions.empty()){
+        registeredDimensions.push_back(resizeEvent->size());
+    }
 
     std::vector<std::string> registeredDimensionsStrings;
 
