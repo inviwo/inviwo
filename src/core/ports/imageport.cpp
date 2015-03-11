@@ -189,9 +189,9 @@ ImageOutport::~ImageOutport() {
             delete elem.second;
         }
     }
-    if (data_){
+    if (isDataOwner()){
         delete data_;
-        data_ = NULL;
+        data_ = nullptr;
     }
 }
 
