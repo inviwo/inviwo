@@ -185,11 +185,14 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
 
 ImageOutport::~ImageOutport() {
     for (auto& elem : imageDataMap_) {
-        if (isDataOwner() || elem.second != data_) {
+        if (elem.second != data_) {
             delete elem.second;
         }
     }
-    data_ = NULL;  // As data_ is referenced in imageDataMap_.
+    if (data_){
+        delete data_;
+        data_ = NULL;
+    }
 }
 
 bool ImageOutport::propagateResizeEventToPredecessor(ResizeEvent* resizeEvent) {
@@ -371,12 +374,11 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
         for (auto& invalidImageDataString : invalidImageDataStrings) {
             Image* invalidImage = imageDataMap_[invalidImageDataString];
 
-            //Make sure you don't delete data thats not owned
-            if (isDataOwner() || invalidImage != data_) {
+            //Make sure you don't delete data_
+            if (invalidImage != data_) {
                 delete invalidImage;
+                imageDataMap_.erase(invalidImageDataString);
             }
-
-            imageDataMap_.erase(invalidImageDataString);
         }
     }
 
