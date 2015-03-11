@@ -131,14 +131,33 @@ void BasicMesh::append(const BasicMesh* mesh) {
 const Position3dBuffer* BasicMesh::getVertices() const {
     return static_cast<Position3dBuffer*>(attributes_[0]);
 }
+
+Position3dBuffer* BasicMesh::getVertices() {
+	return static_cast<Position3dBuffer*>(attributes_[0]);
+}
+
 const TexCoord3dBuffer* BasicMesh::getTexCoords() const {
     return static_cast<TexCoord3dBuffer*>(attributes_[1]);
 }
+
+TexCoord3dBuffer* BasicMesh::getTexCoords() {
+	return static_cast<TexCoord3dBuffer*>(attributes_[1]);
+}
+
 const ColorBuffer* BasicMesh::getColors() const {
     return static_cast<ColorBuffer*>(attributes_[2]);
 }
+
+ColorBuffer* BasicMesh::getColors() {
+	return static_cast<ColorBuffer*>(attributes_[2]);
+}
+
 const NormalBuffer* BasicMesh::getNormals() const {
     return static_cast<NormalBuffer*>(attributes_[3]);
+}
+
+NormalBuffer* BasicMesh::getNormals() {
+	return static_cast<NormalBuffer*>(attributes_[3]);
 }
     
     
