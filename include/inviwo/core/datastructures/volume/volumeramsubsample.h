@@ -107,7 +107,7 @@ void VolumeRAMSubSample::evaluate() {
     const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(getInputVolume());
 
     if (!volume) {
-        setOutput(nullptr);
+        setOutput(NULL);
         return;
     }
 

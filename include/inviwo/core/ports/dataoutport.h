@@ -81,7 +81,7 @@ protected:
 template <typename T>
 DataOutport<T>::DataOutport(std::string identifier, InvalidationLevel invalidationLevel)
     : Outport(identifier, invalidationLevel),
-    data_(nullptr), ownsData_(false), isSequence_(false)
+    data_(NULL), ownsData_(false), isSequence_(false)
 {
 }
 
@@ -118,7 +118,7 @@ DataSequence<T>* DataOutport<T>::getDataSequence() {
     if(isSequence_)
         return static_cast<DataSequence<T>*>(data_);
 
-    return nullptr;
+    return NULL;
 }
 
 template <typename T>
@@ -134,7 +134,7 @@ const DataSequence<T>* DataOutport<T>::getConstDataSequence() const {
     if(isSequence_)
         return const_cast<const DataSequence<T>*>(static_cast<DataSequence<T>*>(data_));
 
-    return nullptr;
+    return NULL;
 }
 
 template <typename T>
@@ -146,7 +146,7 @@ void DataOutport<T>::setData(T* data, bool ownsData) {
         }
     }
 
-    isSequence_ = (dynamic_cast<DataSequence<T>*>(data) != nullptr);
+    isSequence_ = (dynamic_cast<DataSequence<T>*>(data) != NULL);
 
     ownsData_ = ownsData;
     //Add reference to new data
@@ -166,7 +166,7 @@ void DataOutport<T>::setConstData(const T* data) {
 
     ownsData_ = false;
 
-    isSequence_ = (dynamic_cast<const DataSequence<T>*>(data) != nullptr);
+    isSequence_ = (dynamic_cast<const DataSequence<T>*>(data) != NULL);
 
     //Add reference to new data
     data_ = const_cast<T*>(data);
@@ -181,12 +181,12 @@ T* DataOutport<T>::detachDataFromOutport() {
         return data_;
     }
 
-    return nullptr;
+    return NULL;
 }
 
 template <typename T>
 bool DataOutport<T>::hasData() const {
-    return (data_ != nullptr);
+    return (data_ != NULL);
 }
 
 template <typename T>

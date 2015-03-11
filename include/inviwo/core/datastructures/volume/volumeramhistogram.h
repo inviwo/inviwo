@@ -40,7 +40,7 @@ namespace inviwo {
 class IVW_CORE_API VolumeRAMNormalizedHistogram : public VolumeOperation {
 public:
     VolumeRAMNormalizedHistogram(const VolumeRepresentation* in,
-                                 std::vector<NormalizedHistogram*>* oldHist = nullptr,
+                                 std::vector<NormalizedHistogram*>* oldHist = NULL,
                                  int sampleRate = 1, size_t maxNumberOfBins = 2048)
         : VolumeOperation(in)
         , sampleRate_(sampleRate)
@@ -53,7 +53,7 @@ public:
     void evaluate();
 
     static inline std::vector<NormalizedHistogram*>* apply(
-        const VolumeRepresentation* in, std::vector<NormalizedHistogram*>* oldHist = nullptr,
+        const VolumeRepresentation* in, std::vector<NormalizedHistogram*>* oldHist = NULL,
         int sampleRate = 1, size_t maxNumberOfBins = 2048) {
         VolumeRAMNormalizedHistogram subsetOP =
             VolumeRAMNormalizedHistogram(in, oldHist, sampleRate, maxNumberOfBins);
@@ -295,7 +295,7 @@ void VolumeRAMNormalizedHistogram::evaluate() {
         dynamic_cast<const VolumeRAMPrecision<T>*>(getInputVolume());
 
     if (!volumeRAM || !volumeRAM->getOwner()) {
-        setOutput(nullptr);
+        setOutput(NULL);
         return;
     }
 
@@ -334,7 +334,7 @@ void VolumeRAMNormalizedHistogram::evaluate() {
         }
         histograms_->clear();
         delete histograms_;
-        histograms_ = nullptr;
+        histograms_ = NULL;
     }
 
     setOutput(histograms_);

@@ -35,7 +35,7 @@
 namespace inviwo {
 
 VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
-    : VolumeRepresentation(data != nullptr ? data->getDimensions(): uvec3(64), format)
+    : VolumeRepresentation(data != NULL ? data->getDimensions(): uvec3(64), format)
     , texture_(data) {
     if (data) {
         initialize(data);
@@ -94,7 +94,7 @@ void VolumeCLGL::deinitialize() {
 
     if (texture_ && texture_->decreaseRefCount() <= 0) {
         delete texture_;
-        texture_ = nullptr;
+        texture_ = NULL;
     }
 }
 
@@ -132,7 +132,7 @@ void VolumeCLGL::setDimensions(uvec3 dimensions) {
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.
-    const_cast<Texture3D*>(texture_)->uploadAndResize(nullptr, dimensions);
+    const_cast<Texture3D*>(texture_)->uploadAndResize(NULL, dimensions);
     VolumeRepresentation::setDimensions(dimensions);
 }
 

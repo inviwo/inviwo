@@ -122,7 +122,7 @@ void GeometryRenderProcessorGL::deinitialize() {
     }
     if (shader_) 
         delete shader_;
-    shader_ = nullptr;
+    shader_ = NULL;
     Processor::deinitialize();
 }
 
@@ -217,14 +217,14 @@ void GeometryRenderProcessorGL::centerViewOnGeometry() {
 
     const Mesh* geom = dynamic_cast<const Mesh*>(geometries[0]);
 
-    if (geom == nullptr) {
+    if (geom == NULL) {
         return;
     }
 
     const Position3dBufferRAM* posBuffer = dynamic_cast<const Position3dBufferRAM*>(
         geom->getAttributes(0)->getRepresentation<BufferRAM>());
 
-    if (posBuffer == nullptr) {
+    if (posBuffer == NULL) {
         return;
     }
 

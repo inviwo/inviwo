@@ -149,8 +149,8 @@ const T* Data::getRepresentation() const {
         DataRepresentation* repr = const_cast<Data*>(this)->createDefaultRepresentation();
         if (!repr) {
             // TODO Should we throw here? /Peter
-            LogError("CreateDefaultRepresentation retured nullptr. Possible missing subclass implementation");
-            return nullptr;
+            LogError("CreateDefaultRepresentation retured NULL. Possible missing subclass implementation");
+            return NULL;
         }
         repr->setOwner(const_cast<Data *>(this));
         representations_.push_back(repr);
@@ -191,7 +191,7 @@ const T* Data::createNewRepresentationUsingConverters() const {
     if (converter) {
         result = converter->createFrom(lastValidRepresentation_);
         if(!result)
-            return nullptr;
+            return NULL;
         result->setOwner(const_cast<Data *>(this));
         representations_.push_back(result);
         setRepresentationAsValid(static_cast<int>(representations_.size())-1);
@@ -227,7 +227,7 @@ const T* Data::createNewRepresentationUsingConverters() const {
             if (!updatedRepresentation) {
                 lastValidRepresentation_ = (*converterIt)->createFrom(lastValidRepresentation_);
                 if(!lastValidRepresentation_)
-                    return nullptr;
+                    return NULL;
                 lastValidRepresentation_->setOwner(const_cast<Data *>(this));
                 representations_.push_back(lastValidRepresentation_);
                 setRepresentationAsValid(static_cast<int>(representations_.size())-1);
@@ -238,7 +238,7 @@ const T* Data::createNewRepresentationUsingConverters() const {
         return dynamic_cast<T*>(lastValidRepresentation_);
     }
 
-    return nullptr;
+    return NULL;
 }
 
 template<typename T>
@@ -281,7 +281,7 @@ RepresentationConverterPackage<T>* Data::findRepresentationConverterPackage(Data
     RepresentationConverterPackage<T>* converterPackage = representationConverterFactory->getRepresentationConverterPackage<T>
         (validRepresentation);
 
-    DataRepresentation* result = nullptr;
+    DataRepresentation* result = NULL;
     if (converterPackage)
         return converterPackage;
     else {

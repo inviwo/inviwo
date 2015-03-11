@@ -49,7 +49,7 @@ public:
     TransferFunctionProperty(const std::string &identifier,
                              const std::string &displayName,
                              const TransferFunction &value = TransferFunction(),
-                             VolumeInport* volumeInport = nullptr,
+                             VolumeInport* volumeInport = NULL,
                              InvalidationLevel invalidationLevel=INVALID_OUTPUT,
                              PropertySemantics semantics=PropertySemantics::Default);
     

@@ -64,7 +64,7 @@ public:
     virtual ~RepresentationConverterType() {};
 
     bool canConvertTo(const DataRepresentation* destination) const {
-        return dynamic_cast<const TO*>(destination) != nullptr;
+        return dynamic_cast<const TO*>(destination) != NULL;
     }
 };
 
@@ -103,7 +103,7 @@ public:
                 return (*it)->createFrom(source);
         }
 
-        return nullptr;
+        return NULL;
     }
     virtual void update(const DataRepresentation* source, DataRepresentation* destination) {
         for (std::vector<RepresentationConverter*>::iterator it = converters_->begin() ; it != converters_->end(); ++it) {

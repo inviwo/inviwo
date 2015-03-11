@@ -59,14 +59,14 @@ public:
             }
         }
 
-        return nullptr;
+        return NULL;
     }
 
     //Get best converter package that can convert from the source to T
     template <typename T>
     RepresentationConverterPackage<T>* getRepresentationConverterPackage(DataRepresentation* source) {
         // TODO: optimize performance, e.g., by using a hash table
-        RepresentationConverterPackage<T>* currentConverterPackage = nullptr;
+        RepresentationConverterPackage<T>* currentConverterPackage = NULL;
 
         for (size_t i=0; i<representationConverters_.size(); i++) {
             RepresentationConverterPackage<T>* repConverterPackage = dynamic_cast<RepresentationConverterPackage<T>*>(representationConverters_[i]);

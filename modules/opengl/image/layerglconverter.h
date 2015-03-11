@@ -43,7 +43,7 @@ public:
     virtual ~LayerRAM2GLConverter();
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerRAM*>(source) != nullptr;
+        return dynamic_cast<const LayerRAM*>(source) != NULL;
     }
 
     DataRepresentation* createFrom(const DataRepresentation* source);
@@ -57,7 +57,7 @@ public:
     virtual ~LayerGL2RAMConverter();
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerGL*>(source) != nullptr;
+        return dynamic_cast<const LayerGL*>(source) != NULL;
     }
 
     DataRepresentation* createFrom(const DataRepresentation* source);

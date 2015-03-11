@@ -138,12 +138,12 @@ void createDirectoryRecursivly(std::string path) {
 #ifdef _WIN32
 static std::string helperSHGetKnownFolderPath(const KNOWNFOLDERID& id) {
     PWSTR path;
-    HRESULT hr = SHGetKnownFolderPath(id, 0, nullptr, &path);
+    HRESULT hr = SHGetKnownFolderPath(id, 0, NULL, &path);
     std::string s = "";
     if (SUCCEEDED(hr)) {
         char ch[1024];
         static const char DefChar = ' ';
-        WideCharToMultiByte(CP_ACP, 0, path, -1, ch, 1024, &DefChar, nullptr);
+        WideCharToMultiByte(CP_ACP, 0, path, -1, ch, 1024, &DefChar, NULL);
         s = std::string(ch);
     } else {
         LogErrorCustom("filesystem::getUserSettingsPath",

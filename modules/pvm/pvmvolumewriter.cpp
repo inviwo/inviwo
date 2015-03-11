@@ -84,7 +84,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     spacing.y = basis[1][1] / dim.y;
     spacing.z = basis[2][2] / dim.z;
 
-    unsigned char *data2Ptr = nullptr;
+    unsigned char *data2Ptr = NULL;
     if (components == 2){
         size_t size = dim.x*dim.y*dim.z;
         data2Ptr = new unsigned char[size*components];
@@ -94,7 +94,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
         dataPtr = (const unsigned char *)data2Ptr;
     }
 
-    unsigned char *description = nullptr;
+    unsigned char *description = NULL;
     StringMetaData* descMetaData = data->getMetaData<StringMetaData>("description");
     if (descMetaData){
         description = new unsigned char[descMetaData->get().size() + 1];
@@ -102,7 +102,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
         description[descMetaData->get().size()] = '\0';
     }
 
-    unsigned char *courtesy = nullptr;
+    unsigned char *courtesy = NULL;
     StringMetaData* courMetaData = data->getMetaData<StringMetaData>("courtesy");
     if (courMetaData){
         courtesy = new unsigned char[courMetaData->get().size() + 1];
@@ -110,7 +110,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
         courtesy[courMetaData->get().size()] = '\0';
     }
 
-    unsigned char *parameter = nullptr;
+    unsigned char *parameter = NULL;
     StringMetaData* paraMetaData = data->getMetaData<StringMetaData>("parameter");
     if (paraMetaData){
         parameter = new unsigned char[paraMetaData->get().size() + 1];
@@ -118,7 +118,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
         parameter[paraMetaData->get().size()] = '\0';
     }
 
-    unsigned char *comment = nullptr;
+    unsigned char *comment = NULL;
     StringMetaData* commMetaData = data->getMetaData<StringMetaData>("comment");
     if (commMetaData){
         comment = new unsigned char[commMetaData->get().size() + 1];

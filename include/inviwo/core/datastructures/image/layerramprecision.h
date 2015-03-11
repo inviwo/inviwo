@@ -148,7 +148,7 @@ void LayerRAMPrecision<T>::initialize() {
 
 template<typename T>
 void LayerRAMPrecision<T>::initialize(void* data) {
-    if (data == nullptr)
+    if (data == NULL)
         data_ = new T[dimensions_.x*dimensions_.y];
     else
         data_ = data;
@@ -158,7 +158,7 @@ template<typename T>
 void LayerRAMPrecision<T>::deinitialize() {
     if (data_) {
         delete[] static_cast<T*>(data_);
-        data_ = nullptr;
+        data_ = NULL;
     }
 }
 

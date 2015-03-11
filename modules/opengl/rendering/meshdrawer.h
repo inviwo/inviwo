@@ -61,7 +61,7 @@ protected:
         return new MeshDrawer(static_cast<const Mesh*>(geom));
     }
     virtual bool canDraw(const Geometry* geom) const {
-        return dynamic_cast<const Mesh*>(geom) != nullptr;
+        return dynamic_cast<const Mesh*>(geom) != NULL;
     }
 
     virtual void initialize(Mesh::AttributesInfo = Mesh::AttributesInfo());

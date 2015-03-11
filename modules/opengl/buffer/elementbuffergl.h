@@ -49,7 +49,7 @@ public:
                     const DataFormatBase* format,
                     BufferType type,
                     BufferUsage usage,
-                    ElementBufferObject* data = nullptr);
+                    ElementBufferObject* data = NULL);
     
     virtual ~ElementBufferGL();
 

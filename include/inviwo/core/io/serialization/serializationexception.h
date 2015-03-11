@@ -41,7 +41,7 @@ class IVW_CORE_API SerializationException : public Exception {
 public:
     struct SerializationExceptionData {
         SerializationExceptionData(std::string k = "", std::string t = "", std::string i = "",
-                                   TxElement* n = nullptr)
+                                   TxElement* n = NULL)
             : key(k), type(t), id(i), nd(n) {}
         std::string key;
         std::string type;
@@ -50,7 +50,7 @@ public:
     };
 
     SerializationException(std::string message = "", std::string key = "", std::string type = "",
-                           std::string id = "",  TxElement* n = nullptr);
+                           std::string id = "",  TxElement* n = NULL);
     virtual ~SerializationException() throw() {}
 
     virtual const std::string& getKey() const throw();

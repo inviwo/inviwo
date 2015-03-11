@@ -32,7 +32,7 @@
 namespace inviwo {
 
 LayerCLBase::LayerCLBase()
-    : clImage_(nullptr)
+    : clImage_(NULL)
 {
 }
 

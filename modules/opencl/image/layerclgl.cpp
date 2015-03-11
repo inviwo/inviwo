@@ -90,7 +90,7 @@ void LayerCLGL::deinitialize() {
 
     if (texture_ && texture_->decreaseRefCount() <= 0) {
         delete texture_;
-        texture_ = nullptr;
+        texture_ = NULL;
     }
 }
 

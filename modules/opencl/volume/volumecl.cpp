@@ -46,7 +46,7 @@ VolumeCL::VolumeCL(uvec3 dimensions, const DataFormatBase* format, const void* d
 
 VolumeCL::VolumeCL(const VolumeCL& rhs)
     : VolumeRepresentation(rhs), imageFormat_(rhs.imageFormat_) {
-    initialize(nullptr);
+    initialize(NULL);
     OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::svec3(0),
                                                   glm::svec3(0), glm::svec3(dimensions_));
 }
@@ -57,7 +57,7 @@ void VolumeCL::initialize(const void* voxels) {
     clImage_ = new cl::Image3D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
                                dimensions_.x, dimensions_.y, dimensions_.z);
 
-    if (voxels != nullptr) {
+    if (voxels != NULL) {
         OpenCL::getPtr()->getQueue().enqueueWriteImage(*clImage_, true, glm::svec3(0),
                                                        glm::svec3(dimensions_), 0, 0,
                                                        const_cast<void*>(voxels));

@@ -46,7 +46,7 @@ public:
     virtual ~GeometryDisk2RAMConverter();
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const MeshDisk*>(source) != nullptr;
+        return dynamic_cast<const MeshDisk*>(source) != NULL;
     }
 
     DataRepresentation* createFrom(const DataRepresentation* source);

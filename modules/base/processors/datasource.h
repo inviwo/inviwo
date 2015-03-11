@@ -79,7 +79,7 @@ DataSource<DataType, PortType>::DataSource()
     , port_("data")
     , file_("filename", "File")
     , reload_("reload", "Reload data")
-    , loadedData_(nullptr)
+    , loadedData_(NULL)
     , isDeserializing_(false) {
     
     addPort(port_);

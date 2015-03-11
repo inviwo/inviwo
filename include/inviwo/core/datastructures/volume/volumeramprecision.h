@@ -158,7 +158,7 @@ template<typename T>
 void inviwo::VolumeRAMPrecision<T>::deinitialize() {
     if (data_ && ownsDataPtr_) {
         delete[] static_cast<T*>(data_);
-        data_ = nullptr;
+        data_ = NULL;
     }
 }
 

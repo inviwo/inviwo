@@ -54,7 +54,7 @@ VolumeFirstHitCLProcessor::VolumeFirstHitCLProcessor()
     , transferFunction_("transferFunction", "Transfer function", TransferFunction())
     , workGroupSize_("wgsize", "Work group size", ivec2(8, 8), ivec2(0), ivec2(256))
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
-    , kernel_(nullptr) {
+    , kernel_(NULL) {
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -76,7 +76,7 @@ void VolumeFirstHitCLProcessor::initialize() {
 void VolumeFirstHitCLProcessor::deinitialize() { Processor::deinitialize(); }
 
 void VolumeFirstHitCLProcessor::process() {
-    if (kernel_ == nullptr) {
+    if (kernel_ == NULL) {
         return;
     }
 
@@ -116,7 +116,7 @@ void VolumeFirstHitCLProcessor::process() {
         exit->getLayerCL()->releaseGLObject();
         output->getLayerCL()->releaseGLObject();
         tfCL->releaseGLObject();
-        volume->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
+        volume->releaseGLObject(NULL, glSync.getLastReleaseGLEvent());
     } else {
         const ImageCL* entry = entryPort_.getData()->getRepresentation<ImageCL>();
         const ImageCL* exit = exitPort_.getData()->getRepresentation<ImageCL>();
@@ -148,7 +148,7 @@ void VolumeFirstHitCLProcessor::firstHit(const cl::Image& volumeCL, const cl::Im
         kernel_->setArg(arg++, stepSize);
         kernel_->setArg(arg++, output);
         OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(
-            *kernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, nullptr, profilingEvent);
+            *kernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, NULL, profilingEvent);
     }
     catch (cl::Error& err) {
         LogError(getCLErrorString(err));

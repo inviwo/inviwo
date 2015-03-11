@@ -32,7 +32,7 @@
 namespace inviwo {
 
 ImageCL::ImageCL()
-    : ImageRepresentation(), layerCL_(nullptr) {}
+    : ImageRepresentation(), layerCL_(NULL) {}
 
 ImageCL::ImageCL(const ImageCL& rhs)
     : ImageRepresentation(rhs) {}
@@ -68,7 +68,7 @@ bool ImageCL::copyAndResizeRepresentation(DataRepresentation* targetRep) const {
 
 void ImageCL::update(bool editable) {
     //TODO: Convert more then just first color layer
-    layerCL_ = nullptr;
+    layerCL_ = NULL;
     Image *owner = this->getOwner();
 
     if (editable) {

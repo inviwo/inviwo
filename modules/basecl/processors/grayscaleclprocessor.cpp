@@ -49,7 +49,7 @@ GrayscaleCLProcessor::GrayscaleCLProcessor()
     , input_("color image")
     , outport_("outport")
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
-    , kernel_(nullptr)
+    , kernel_(NULL)
 {
     addPort(input_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
@@ -73,7 +73,7 @@ void GrayscaleCLProcessor::deinitialize() {
 }
 
 void GrayscaleCLProcessor::process() {
-    if (kernel_ == nullptr) {
+    if (kernel_ == NULL) {
         return;
     }
 

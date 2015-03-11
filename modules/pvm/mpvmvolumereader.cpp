@@ -199,7 +199,7 @@ void MPVMVolumeReader::readDataInto(void*) const {
 }
 
 void* MPVMVolumeReader::readData() const {
-    return nullptr;
+    return NULL;
 }
 
 void MPVMVolumeReader::printPVMMeta(Volume* volume, std::string filePath){

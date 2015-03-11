@@ -52,7 +52,7 @@ public:
     virtual ~ElementBufferCLGL2GLConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const ElementBufferCLGL*>(source) != nullptr;
+        return dynamic_cast<const ElementBufferCLGL*>(source) != NULL;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
@@ -65,7 +65,7 @@ public:
     virtual ~ElementBufferGL2CLGLConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const BufferGL*>(source) != nullptr;
+        return dynamic_cast<const BufferGL*>(source) != NULL;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);

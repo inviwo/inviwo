@@ -146,7 +146,7 @@ const Image* ImageInport::getData() const {
             return const_cast<const Image*>(outport->getResizedImageData(dimensions_));
         }
     } else {
-        return nullptr;
+        return NULL;
     }
 }
 

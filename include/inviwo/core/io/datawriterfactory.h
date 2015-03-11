@@ -78,7 +78,7 @@ public:
                 return r->clone();
         }
 
-        return nullptr;
+        return NULL;
     }
 
     typedef std::map<std::string, DataWriter*> ExtensionMap;
