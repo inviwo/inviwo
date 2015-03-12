@@ -116,6 +116,22 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
     return prop;
 }
 
+std::vector<Property*> PropertyOwner::getProperties(bool recursive) const {
+    if (!recursive) {
+        return properties_;
+    } else {
+        std::vector<Property*> result;
+        result.reserve(properties_.size());
+        result.insert(result.end(), properties_.begin(), properties_.end());
+
+        for (auto comp : compositeProperties_) {
+            std::vector<Property*> subprops = comp->getProperties(true);
+            result.insert(result.end(), subprops.begin(), subprops.end());
+        }
+        return result;
+    }
+}
+
 Property* PropertyOwner::getPropertyByIdentifier(const std::string& identifier,
                                                  bool recursiveSearch) const {
     for (Property* property : properties_) {
