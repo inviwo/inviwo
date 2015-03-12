@@ -155,6 +155,7 @@ void PyInviwo::initPythonCInterface() {
     importModule("sys");
     importModule("os");
     importModule("glob");
+    importModule("random");
 
 
     addModulePath(InviwoApplication::getPtr()->getBasePath() + "/modules/python3/scripts");
