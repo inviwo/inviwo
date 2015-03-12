@@ -33,6 +33,7 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
@@ -143,8 +144,9 @@ Image* VolumeSlice::VolumeSliceDispatcher::dispatch(const Volume* vol,
         image->resize(dim);
     }
 
+    // Make sure there is a ImageRAM in image, and get LayerRAM
     LayerRAMPrecision<D>* layer = dynamic_cast<LayerRAMPrecision<D>*>(
-        image->getColorLayer()->getEditableRepresentation<LayerRAM>());
+        image->getEditableRepresentation<ImageRAM>()->getColorLayerRAM());
 
     if (!layer) return nullptr;
 

@@ -31,7 +31,6 @@
 #define IVW_VOLUMERAMOPERATIONEXECUTER_H
 
 #include <inviwo/core/datastructures/dataoperation.h>
-#include <inviwo/core/datastructures/volume/volumeramslice.h>
 #include <inviwo/core/datastructures/volume/volumeramsubset.h>
 #include <inviwo/core/datastructures/volume/volumeramsubsample.h>
 
@@ -51,13 +50,6 @@ void executeOperationOnVolumeRAMPrecision(DataOperation* dop) {
 
     if (volSubSampleDop) {
         volSubSampleDop->evaluate<T>();
-        return;
-    }
-
-    VolumeRAMSlice* volSliceDop = dynamic_cast<VolumeRAMSlice*>(dop);
-
-    if (volSliceDop) {
-        volSliceDop->evaluate<T>();
         return;
     }
 };
