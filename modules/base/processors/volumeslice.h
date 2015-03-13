@@ -33,6 +33,7 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/image/imageram.h>

@@ -68,7 +68,7 @@ protected:
     void resetViewParams();
     void changeRenderMode();
 
-    void updateRenderers();
+    void updateDrawers();
 
     GeometryMultiInport inport_;
     ImageOutport outport_;
@@ -77,8 +77,6 @@ protected:
     ButtonProperty centerViewOnGeometry_;
     ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
-
-    std::vector<GeometryDrawer*> drawers_;
     
     CompositeProperty geomProperties_;
     OptionPropertyInt cullFace_;
@@ -88,6 +86,9 @@ protected:
     SimpleLightingProperty lightingProperty_;
 
     Shader* shader_;
+
+	std::vector<GeometryDrawer*> drawers_;
+	std::vector<Inport*> drawersPort_;
 };
 
 } // namespace
