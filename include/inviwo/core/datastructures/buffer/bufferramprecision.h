@@ -49,8 +49,8 @@ public:
     virtual void deinitialize();
     virtual BufferRAMPrecision<T>* clone() const;
 
-    virtual void* getData() { return (data_->empty() ? NULL : &data_->front()); }
-    virtual const void* getData() const { return (data_->empty() ? NULL : &data_->front()); }
+    virtual void* getData() { return (data_->empty() ? nullptr : &data_->front()); }
+    virtual const void* getData() const { return (data_->empty() ? nullptr : &data_->front()); }
 
     const std::vector<T>* getDataContainer() const { return data_; }
 
@@ -112,7 +112,7 @@ inviwo::BufferRAMPrecision<T>::~BufferRAMPrecision() {
 
 template<typename T>
 void BufferRAMPrecision<T>::initialize() {
-    initialize(NULL);
+    initialize(nullptr);
 }
 
 template<typename T>
@@ -120,7 +120,7 @@ void BufferRAMPrecision<T>::initialize(void* data) {
     if (data_!=0)
         delete data_;
 
-    if (data == NULL)
+    if (data == nullptr)
         data_ = new std::vector<T>(size_);
     else
         data_ = new std::vector<T>(static_cast<T*>(data), static_cast<T*>(data)+size_);
@@ -130,7 +130,7 @@ template<typename T>
 void inviwo::BufferRAMPrecision<T>::deinitialize() {
     if (data_) {
         delete data_;
-        data_ = NULL;
+        data_ = nullptr;
     }
 }
 

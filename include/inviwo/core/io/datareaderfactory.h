@@ -80,7 +80,7 @@ public:
                 return r->clone();
         }
 
-        return NULL;
+        return nullptr;
     }
 
     typedef std::map<std::string, DataReader*> ExtensionMap;

@@ -42,7 +42,7 @@ class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 
 public:
     LayerGL(uvec2 dimensions = uvec2(256,256), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataVec4UINT8::get(),
-            Texture2D* tex = NULL);
+            Texture2D* tex = nullptr);
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
     virtual ~LayerGL();

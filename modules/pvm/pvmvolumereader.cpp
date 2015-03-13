@@ -57,7 +57,7 @@ PVMVolumeReader* PVMVolumeReader::clone() const { return new PVMVolumeReader(*th
 Volume* PVMVolumeReader::readMetaData(const std::string filePath) {
     Volume* volume = readPVMData(filePath);
 
-    if (!volume) return NULL;
+    if (!volume) return nullptr;
 
     // Print information
     uvec3 dim = volume->getDimensions();
@@ -74,7 +74,7 @@ Volume* PVMVolumeReader::readMetaData(const std::string filePath) {
 
 void PVMVolumeReader::readDataInto(void*) const { return; }
 
-void* PVMVolumeReader::readData() const { return NULL; }
+void* PVMVolumeReader::readData() const { return nullptr; }
 
 Volume* PVMVolumeReader::readPVMData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
@@ -92,7 +92,7 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
     glm::vec3 spacing(0.0f);
 
     // Reading MPVM volume
-    unsigned char* data = NULL;
+    unsigned char* data = nullptr;
     unsigned int bytesPerVoxel;
     unsigned char* description;
     unsigned char* courtesy;
@@ -107,7 +107,7 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
         LogErrorCustom("PVMVolumeReader", e.what());
     }
 
-    if (data == NULL) {
+    if (data == nullptr) {
         throw DataReaderException("Error: Could not read data in PVM file: " + filePath);
     }
 

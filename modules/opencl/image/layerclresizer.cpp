@@ -53,7 +53,7 @@ void LayerCLResizer::resize(const cl::Image& src, const cl::Image& dst, const uv
         cl::Event event;
         OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(instance.resizeKernel_, cl::NullRange, cl::NDRange(resizeToDimension[0],
                 resizeToDimension[1]),
-                cl::NullRange, NULL, &event);
+                cl::NullRange, nullptr, &event);
         event.wait();
 #if IVW_PROFILING
         LogInfoCustom("LayerCLResizer", "Image resizing from (" << src.getImageInfo<CL_IMAGE_WIDTH>() << ", " << src.getImageInfo<CL_IMAGE_HEIGHT>()

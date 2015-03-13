@@ -71,7 +71,7 @@ namespace inviwo {
 InviwoMainWindow::InviwoMainWindow()
     : QMainWindow()
     , ProcessorNetworkObserver()
-    , visibilityModeProperty_(NULL) {
+    , visibilityModeProperty_(nullptr) {
     NetworkEditor::init();
     networkEditor_ = NetworkEditor::getPtr();
     // initialize console widget first to receive log messages

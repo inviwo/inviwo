@@ -129,7 +129,7 @@ ProcessorNetworkEvaluator::getStoredPredecessors(Processor* processor) const {
     }
     else {
         // processor not found, return reference to empty list of dummy element
-        return processorStates_.find(NULL)->second.pred;
+        return processorStates_.find(nullptr)->second.pred;
     }
 }
 
@@ -191,7 +191,7 @@ void ProcessorNetworkEvaluator::updateProcessorStates() {
     processorStates_.clear();
     // insert dummy processor to be able to return a reference to an 
     // empty predecessor list, if a processor does not exist (getStoredPredecessors())
-    processorStates_.insert(ProcMapPair(NULL, ProcessorState()));
+    processorStates_.insert(ProcMapPair(nullptr, ProcessorState()));
 
     // update all processor states, i.e. collecting predecessors
     std::vector<Processor*>::const_iterator it = processors.begin();

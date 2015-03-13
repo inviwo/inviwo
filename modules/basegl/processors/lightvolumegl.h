@@ -71,7 +71,7 @@ protected:
         mat4 axisPermutationLight;
         vec4 permutedLightDirection;
 
-        PropagationParameters() : fbo(NULL), vol(NULL) {}
+        PropagationParameters() : fbo(nullptr), vol(nullptr) {}
         ~PropagationParameters();
     };
 

@@ -79,10 +79,10 @@ const int NetworkEditor::GRID_SPACING = 25;
 
 NetworkEditor::NetworkEditor()
     : QGraphicsScene()
-    , oldConnectionTarget_(NULL)
-    , oldProcessorTarget_(NULL)
-    , connectionCurve_(NULL)
-    , linkCurve_(NULL)
+    , oldConnectionTarget_(nullptr)
+    , oldProcessorTarget_(nullptr)
+    , connectionCurve_(nullptr)
+    , linkCurve_(nullptr)
     , filename_("")
     , modified_(false) {
     InviwoApplication::getPtr()->getProcessorNetwork()->addObserver(this);
@@ -130,7 +130,7 @@ void NetworkEditor::removeProcessorRepresentations(Processor* processor) {
     ProcessorWidget* processorWidget = processor->getProcessorWidget();
     if (processorWidget) {
         processorWidget->deinitialize();
-        processor->setProcessorWidget(NULL);
+        processor->setProcessorWidget(nullptr);
         delete processorWidget;
     }
 }
@@ -152,7 +152,7 @@ void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
     // obtain processor graphics item through processor
     ProcessorGraphicsItem* processorGraphicsItem = getProcessorGraphicsItem(processor);
 
-    if (oldProcessorTarget_ == processorGraphicsItem) oldProcessorTarget_ = NULL;
+    if (oldProcessorTarget_ == processorGraphicsItem) oldProcessorTarget_ = nullptr;
 
     removeItem(processorGraphicsItem);
     processorGraphicsItems_.erase(processor);
@@ -210,7 +210,7 @@ void NetworkEditor::removeConnection(ConnectionGraphicsItem* connectionGraphicsI
 
 void NetworkEditor::removeConnectionGraphicsItem(PortConnection* connection) {
     ConnectionGraphicsItem* connectionGraphicsItem = connectionGraphicsItems_[connection];
-    if (oldConnectionTarget_ == connectionGraphicsItem) oldConnectionTarget_ = NULL;
+    if (oldConnectionTarget_ == connectionGraphicsItem) oldConnectionTarget_ = nullptr;
     connectionGraphicsItems_.erase(connection);
     delete connectionGraphicsItem;
 }
@@ -228,7 +228,7 @@ LinkConnectionGraphicsItem* NetworkEditor::addLinkGraphicsItem(Processor* proces
         addItem(linkGraphicsItem);
         return linkGraphicsItem;
     }
-    return NULL;
+    return nullptr;
 }
 
 void NetworkEditor::removeLink(LinkConnectionGraphicsItem* linkGraphicsItem) {
@@ -362,7 +362,7 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, 
         PortInspectorFactory::getPtr()->getPortInspectorForPortClass(port->getClassIdentifier());
 
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
-    std::vector<unsigned char>* data = NULL;
+    std::vector<unsigned char>* data = nullptr;
 
     if (portInspector && !portInspector->isActive()) {
         portInspector->setActive(true);
@@ -551,7 +551,7 @@ ProcessorGraphicsItem* NetworkEditor::getProcessorGraphicsItem(Processor* key) c
     if (it != processorGraphicsItems_.end()) {
         return it->second;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -561,7 +561,7 @@ ConnectionGraphicsItem* NetworkEditor::getConnectionGraphicsItem(PortConnection*
     if (it != connectionGraphicsItems_.end()) {
         return it->second;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -571,7 +571,7 @@ LinkConnectionGraphicsItem* NetworkEditor::getLinkGraphicsItem(ProcessorPair key
     if (it != linkGraphicsItems_.end()) {
         return it->second;
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -632,7 +632,7 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
         Outport* startPort = connectionCurve_->getOutportGraphicsItem()->getPort();
 
         delete connectionCurve_;
-        connectionCurve_ = NULL;
+        connectionCurve_ = nullptr;
 
         ProcessorInportGraphicsItem* endItem = getProcessorInportGraphicsItemAt(e->scenePos());
         if (endItem && endItem->getPort()->canConnectTo(startPort)) {
@@ -655,7 +655,7 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
         Processor* startProcessor = start->getProcessor();
 
         delete linkCurve_;
-        linkCurve_ = NULL;
+        linkCurve_ = nullptr;
 
         ProcessorGraphicsItem* endProcessorItem = getProcessorGraphicsItemAt(e->scenePos());
         if (endProcessorItem) {
@@ -971,7 +971,7 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
         } else if (oldConnectionTarget_ && !connectionItem) {  //< Connection no longer targeted
             oldConnectionTarget_->resetBorderColors();
             oldConnectionTarget_->clearMidPoint();
-            oldConnectionTarget_ = NULL;
+            oldConnectionTarget_ = nullptr;
 
         } else if (!connectionItem) {  // processor replacement
             ProcessorGraphicsItem* processorItem = getProcessorGraphicsItemAt(e->scenePos());
@@ -983,7 +983,7 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
                 oldProcessorTarget_ = processorItem;
             } else if (!processorItem && oldProcessorTarget_) {  // processor no longer targeted
                 oldProcessorTarget_->setSelected(false);
-                oldProcessorTarget_ = NULL;
+                oldProcessorTarget_ = nullptr;
             }
         }
     }
@@ -1025,8 +1025,8 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
             }
 
             // clear oldDragTarget
-            oldConnectionTarget_ = NULL;
-            oldProcessorTarget_ = NULL;
+            oldConnectionTarget_ = nullptr;
+            oldProcessorTarget_ = nullptr;
         }
     }
 }
@@ -1040,8 +1040,8 @@ void NetworkEditor::placeProcessorOnConnection(Processor* processor,
 
     InviwoApplication::getPtr()->getProcessorNetwork()->lock();
 
-    Inport* inport = NULL;
-    Outport* outport = NULL;
+    Inport* inport = nullptr;
+    Outport* outport = nullptr;
 
     for (auto& inports_i : inports) {
         if (inports_i->canConnectTo(connectionOutport)) {
@@ -1424,7 +1424,7 @@ void NetworkEditor::contextMenuRenameProcessor(EditorGraphicsItem* item) {
 }
 
 void NetworkEditor::contextMenuShowInspector(EditorGraphicsItem* item) {   
-    Outport* port = NULL;
+    Outport* port = nullptr;
     QPointF pos;
     ProcessorInportGraphicsItem* pin = qgraphicsitem_cast<ProcessorInportGraphicsItem*>(item);
     ProcessorOutportGraphicsItem* pout = qgraphicsitem_cast<ProcessorOutportGraphicsItem*>(item);

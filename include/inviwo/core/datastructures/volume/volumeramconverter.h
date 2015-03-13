@@ -44,7 +44,7 @@ public:
     virtual ~VolumeDisk2RAMConverter();
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeDisk*>(source) != NULL;
+        return dynamic_cast<const VolumeDisk*>(source) != nullptr;
     }
 
     DataRepresentation* createFrom(const DataRepresentation* source);

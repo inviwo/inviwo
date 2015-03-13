@@ -51,7 +51,7 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API LayerCLGL : public LayerCLBase, public LayerRepresentation, public TextureObserver {
 public:
     LayerCLGL(uvec2 dimensions = uvec2(64), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataFormatBase::get(),
-              Texture2D* data = NULL);
+              Texture2D* data = nullptr);
     virtual ~LayerCLGL();
     LayerCLGL(const LayerCLGL& rhs);
 
@@ -81,11 +81,11 @@ public:
     */
     virtual void notifyAfterTextureInitialization();
 
-    void aquireGLObject(std::vector<cl::Event>* syncEvents = NULL) const {
+    void aquireGLObject(std::vector<cl::Event>* syncEvents = nullptr) const {
         std::vector<cl::Memory> syncLayers(1, *clImage_);
         OpenCL::getPtr()->getQueue().enqueueAcquireGLObjects(&syncLayers, syncEvents);
     }
-    void releaseGLObject(std::vector<cl::Event>* syncEvents = NULL, cl::Event* event= NULL) const {
+    void releaseGLObject(std::vector<cl::Event>* syncEvents = nullptr, cl::Event* event= nullptr) const {
         std::vector<cl::Memory> syncLayers(1, *clImage_);
         OpenCL::getPtr()->getQueue().enqueueReleaseGLObjects(&syncLayers, syncEvents, event);
     }

@@ -43,7 +43,7 @@ class IVW_MODULE_OPENCL_API VolumeCLGL : public VolumeCLBase,
                                          public VolumeRepresentation,
                                          public TextureObserver {
 public:
-    VolumeCLGL(const DataFormatBase* format = DataFormatBase::get(), Texture3D* data = NULL);
+    VolumeCLGL(const DataFormatBase* format = DataFormatBase::get(), Texture3D* data = nullptr);
     VolumeCLGL(const uvec3& dimensions, const DataFormatBase* format, Texture3D* data);
     VolumeCLGL(const VolumeCLGL& rhs);
 
@@ -72,9 +72,9 @@ public:
     */
     virtual void notifyAfterTextureInitialization();
 
-    void aquireGLObject(std::vector<cl::Event>* syncEvents = NULL,
+    void aquireGLObject(std::vector<cl::Event>* syncEvents = nullptr,
                         const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue()) const;
-    void releaseGLObject(std::vector<cl::Event>* syncEvents = NULL, cl::Event* event = NULL,
+    void releaseGLObject(std::vector<cl::Event>* syncEvents = nullptr, cl::Event* event = nullptr,
                          const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue()) const;
 
 protected:

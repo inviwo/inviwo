@@ -87,9 +87,9 @@ bool DataInport<T>::canConnectTo(Port* port) const {
 template <typename T>
 void DataInport<T>::connectTo(Outport* port) {
     DataOutport<T>* dataPort = dynamic_cast<DataOutport<T>*>(port);
-    ivwAssert(dataPort!=NULL, "Trying to connect incompatible ports.")
+    ivwAssert(dataPort!=nullptr, "Trying to connect incompatible ports.")
 
-    if (dataPort != NULL)
+    if (dataPort != nullptr)
         SingleInport::connectTo(port);
     else
         LogWarn("Trying to connect incompatible ports.");
@@ -101,7 +101,7 @@ const T* DataInport<T>::getData() const {
         // Safe to static cast since we are unable to connect other outport types.
         return static_cast< DataOutport<T>* >(connectedOutport_)->getConstData();
     } else
-        return NULL;
+        return nullptr;
 }
 
 template <typename T>

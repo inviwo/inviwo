@@ -46,7 +46,7 @@ public:
     virtual ~ElementBufferRAM2CLConverter();
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const BufferRAM*>(source) != NULL;
+        return dynamic_cast<const BufferRAM*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
@@ -59,7 +59,7 @@ public:
     virtual ~ElementBufferCL2RAMConverter();
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const ElementBufferCL*>(source) != NULL;
+        return dynamic_cast<const ElementBufferCL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);

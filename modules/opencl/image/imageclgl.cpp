@@ -33,7 +33,7 @@
 namespace inviwo {
 
 ImageCLGL::ImageCLGL()
-    : ImageRepresentation(), layerCLGL_(NULL)
+    : ImageRepresentation(), layerCLGL_(nullptr)
 {}
 
 ImageCLGL::ImageCLGL(const ImageCLGL& rhs)
@@ -71,7 +71,7 @@ bool ImageCLGL::copyAndResizeRepresentation(DataRepresentation* targetRep) const
 
 void ImageCLGL::update(bool editable) {
     //TODO: Convert more then just first color layer
-    layerCLGL_ = NULL;
+    layerCLGL_ = nullptr;
     Image *owner = this->getOwner();
 
     if (editable) {

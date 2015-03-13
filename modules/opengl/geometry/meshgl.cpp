@@ -36,12 +36,12 @@ namespace inviwo {
 
 MeshGL::MeshGL()
     : GeometryGL()
-    , attributesArray_(NULL) {
+    , attributesArray_(nullptr) {
 }
 
 MeshGL::MeshGL(const MeshGL& rhs)
     : GeometryGL(rhs)
-    , attributesArray_(NULL){
+    , attributesArray_(nullptr){
 }
 
 MeshGL::~MeshGL() {
@@ -54,7 +54,7 @@ void MeshGL::initialize() {
 
 void MeshGL::deinitialize() {
     delete attributesArray_;
-    attributesArray_ = NULL;
+    attributesArray_ = nullptr;
 }
 
 MeshGL* MeshGL::clone() const {

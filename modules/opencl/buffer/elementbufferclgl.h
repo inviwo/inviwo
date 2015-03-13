@@ -45,7 +45,7 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API ElementBufferCLGL : public BufferCLGL {
 
 public:
-    ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, BufferObject* data = NULL,
+    ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, BufferObject* data = nullptr,
                cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     ElementBufferCLGL(const ElementBufferCLGL& rhs);
     virtual ~ElementBufferCLGL();

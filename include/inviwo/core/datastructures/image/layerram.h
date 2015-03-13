@@ -82,7 +82,7 @@ protected:
  *
  * @param dimensionsof layer to create.
  * @param format of layer to create.
- * @return NULL if no valid format was specified.
+ * @return nullptr if no valid format was specified.
  */
 IVW_CORE_API LayerRAM* createLayerRAM(const uvec2& dimensions, LayerType type, const DataFormatBase* format);
 

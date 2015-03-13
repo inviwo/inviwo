@@ -75,7 +75,7 @@ private:
 template <typename T>
 T* Layer::getEditableRepresentation() {
     T* repr =  Data::getEditableRepresentation<T>();
-    if (!repr) return NULL;
+    if (!repr) return nullptr;
     this->setDataFormat(repr->getDataFormat());
     this->setDimensions(repr->getDimensions());
     return repr;
@@ -84,7 +84,7 @@ T* Layer::getEditableRepresentation() {
 template <typename T>
 const T* Layer::getRepresentation() const {
     const T* repr = Data::getRepresentation<T>();
-    if (!repr) return NULL;
+    if (!repr) return nullptr;
     const_cast<Layer*>(this)->setDataFormat(repr->getDataFormat());
     const_cast<Layer*>(this)->setDimensions(repr->getDimensions());
     return repr;

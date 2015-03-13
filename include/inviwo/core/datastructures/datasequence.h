@@ -132,7 +132,7 @@ T* DataSequence<T>::getCurrent() {
     if(!sequenceContainer_.empty())
         sequenceContainer_[0];
 
-    return NULL;
+    return nullptr;
 }
 
 template <typename T>

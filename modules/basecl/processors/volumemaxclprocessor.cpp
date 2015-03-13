@@ -51,8 +51,8 @@ VolumeMaxCLProcessor::VolumeMaxCLProcessor()
     , workGroupSize_("wgsize", "Work group size", ivec3(8), ivec3(0), ivec3(256))
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
     , supportsVolumeWrite_(false)
-    , tmpVolume_(NULL)
-    , kernel_(NULL)
+    , tmpVolume_(nullptr)
+    , kernel_(nullptr)
 {
     addPort(inport_);
     addPort(outport_);
@@ -72,11 +72,11 @@ void VolumeMaxCLProcessor::initialize() {
 void VolumeMaxCLProcessor::deinitialize() {
     Processor::deinitialize();
     delete tmpVolume_;
-    tmpVolume_ = NULL;
+    tmpVolume_ = nullptr;
 }
 
 void VolumeMaxCLProcessor::process() {
-    if (kernel_ == NULL) {
+    if (kernel_ == nullptr) {
         return;
     }
     const Volume* volume = inport_.getData();
@@ -133,7 +133,7 @@ void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume, const Vo
             kernel_->setArg(argIndex++, *volumeOutCL);
         } else {
             size_t outDimFlattened = outDim.x*outDim.y*outDim.z;
-            if (tmpVolume_ == NULL || tmpVolume_->getSize() != outDimFlattened) {
+            if (tmpVolume_ == nullptr || tmpVolume_->getSize() != outDimFlattened) {
                 delete tmpVolume_; tmpVolume_ = new Buffer_UINT8(outDimFlattened);
                 //delete tmpVolume_; tmpVolume_ = new Buffer_UINT32(outDimFlattened);
                 //delete tmpVolume_; tmpVolume_ = new Buffer_FLOAT32(outDimFlattened);
@@ -144,7 +144,7 @@ void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume, const Vo
         kernel_->setArg(argIndex++, ivec4(outDim, 0));
         kernel_->setArg(argIndex++, ivec4(volumeRegionSize_.get()));
                
-        OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, globalWorkGroupSize , localWorkgroupSize, NULL, &events[0]);
+        OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, globalWorkGroupSize , localWorkgroupSize, nullptr, &events[0]);
 
         if (!supportsVolumeWrite_) {
             std::vector<cl::Event> waitFor(1, events[0]);

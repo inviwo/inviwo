@@ -72,7 +72,7 @@ TEST_F(NetworkTest, NetworkGetPropery) {
     path.push_back("filename");
 
     const Property* prop = network.getProperty(path);
-    ASSERT_TRUE(prop != NULL);
+    ASSERT_TRUE(prop != nullptr);
 }
 
 TEST_F(NetworkTest, NetworkGetSubPropery) {
@@ -82,48 +82,48 @@ TEST_F(NetworkTest, NetworkGetSubPropery) {
     path.push_back("dimensions");
 
     const Property* prop = network.getProperty(path);
-    ASSERT_TRUE(prop != NULL);
+    ASSERT_TRUE(prop != nullptr);
 }
 
 TEST_F(NetworkTest, NetworkGetProcessorByIdentifier) {
     const Processor* p = network.getProcessorByIdentifier("volumeSource");
-    ASSERT_TRUE(p != NULL);
+    ASSERT_TRUE(p != nullptr);
 }
 
 TEST_F(NetworkTest, NetworkGetProcessorByType) {
     const std::vector<VolumeSlice*> ps = network.getProcessorsByType<VolumeSlice>();
     ASSERT_EQ(1, ps.size());
-    ASSERT_TRUE(ps[0] != NULL);
+    ASSERT_TRUE(ps[0] != nullptr);
 }
 
 TEST_F(NetworkTest, ProcessorGetPropertyByIdentifier) {
     const Processor* p = network.getProcessorByIdentifier("volumeSource");
-    ASSERT_TRUE(p != NULL);
+    ASSERT_TRUE(p != nullptr);
 
     const Property* prop = p->getPropertyByIdentifier("filename");
-    ASSERT_TRUE(prop != NULL);
+    ASSERT_TRUE(prop != nullptr);
 }
 
 TEST_F(NetworkTest, ProcessorGetPropertyByType) {
     const Processor* p = network.getProcessorByIdentifier("volumeSource");
-    ASSERT_TRUE(p != NULL);
+    ASSERT_TRUE(p != nullptr);
 
     const std::vector<FloatVec3Property*> props = p->getPropertiesByType<FloatVec3Property>(true);
     ASSERT_EQ(8, props.size());
 
-    ASSERT_TRUE(props[0] != NULL);
+    ASSERT_TRUE(props[0] != nullptr);
 }
 
 TEST_F(NetworkTest, ProcessorGetProperty) {
     const Processor* p = network.getProcessorByIdentifier("volumeSource");
-    ASSERT_TRUE(p != NULL);
+    ASSERT_TRUE(p != nullptr);
 
     std::vector<std::string> path;
     path.push_back("Information");
     path.push_back("dimensions");
 
     const Property* prop = p->getPropertyByPath(path);
-    ASSERT_TRUE(prop != NULL);
+    ASSERT_TRUE(prop != nullptr);
 }
 
 }

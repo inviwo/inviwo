@@ -150,7 +150,7 @@ public:
      * \brief For allocating objects such as processors, properties.. using registered factories.
      *
      * @param const std::string & className is used by registered factories to allocate the required object.
-     * @return T* NULL if allocation fails or className does not exist in any factories.
+     * @return T* nullptr if allocation fails or className does not exist in any factories.
      */
     template <typename T>
     T* getRegisteredType(const std::string& className);
@@ -238,7 +238,7 @@ protected:
 
 template <typename T>
 T* IvwSerializeBase::getRegisteredType(const std::string& className) {
-    T* data = NULL;
+    T* data = nullptr;
     std::vector<Factory*>::iterator it;
 
     for (it = registeredFactories_.begin(); it != registeredFactories_.end(); it++) {

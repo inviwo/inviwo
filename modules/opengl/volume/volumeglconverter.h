@@ -46,11 +46,11 @@ public:
     virtual ~VolumeRAM2GLConverter();
 
     bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeRAM*>(source) != NULL;
+        return dynamic_cast<const VolumeRAM*>(source) != nullptr;
     }
 
     bool isConverterReverse(RepresentationConverter* converter) { 
-        return dynamic_cast<RepresentationConverterType<VolumeRAM>*>(converter) != NULL;
+        return dynamic_cast<RepresentationConverterType<VolumeRAM>*>(converter) != nullptr;
     }
 
     DataRepresentation* createFrom(const DataRepresentation* source);
@@ -64,11 +64,11 @@ public:
     virtual ~VolumeGL2RAMConverter();
 
     bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeGL*>(source) != NULL;
+        return dynamic_cast<const VolumeGL*>(source) != nullptr;
     }
 
     bool isConverterReverse(RepresentationConverter* converter) { 
-        return dynamic_cast<RepresentationConverterType<VolumeGL>*>(converter) != NULL;
+        return dynamic_cast<RepresentationConverterType<VolumeGL>*>(converter) != nullptr;
     }
 
     DataRepresentation* createFrom(const DataRepresentation* source);

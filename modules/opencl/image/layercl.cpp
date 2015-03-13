@@ -41,7 +41,7 @@ LayerCL::LayerCL(uvec2 dimensions, LayerType type, const DataFormatBase* format,
 LayerCL::LayerCL(const LayerCL& rhs)
     : LayerRepresentation(rhs)
     , layerFormat_(rhs.layerFormat_) {
-    initialize(NULL);
+    initialize(nullptr);
     OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_ , glm::svec3(0), glm::svec3(0), glm::svec3(dimensions_, 1));
 }
 
@@ -50,10 +50,10 @@ LayerCL::~LayerCL() {
 }
 
 void LayerCL::initialize(const void* texels) {
-    if (texels != NULL) {
+    if (texels != nullptr) {
         // Could performance be increased by using pinned memory?
         // 3.1.1 http://www.nvidia.com/content/cudazone/CUDABrowser/downloads/papers/NVIDIA_OpenCL_BestPracticesGuide.pdf
-        //cl::Buffer pinnedMem(OpenCL::getPtr()->getContext(), CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(texels), NULL, NULL);
+        //cl::Buffer pinnedMem(OpenCL::getPtr()->getContext(), CL_MEM_READ_ONLY | CL_MEM_ALLOC_HOST_PTR, sizeof(texels), nullptr, nullptr);
         //unsigned char* mappedMem = (unsigned char*)OpenCL::getPtr()->getQueue().enqueueMapBuffer(pinnedMem, true, CL_MAP_WRITE, 0, sizeof(texels), 0);
         //memcpy(mappedMem, texels, sizeof(texels));
         //OpenCL::getPtr()->getQueue().enqueueWriteLayer(*layer2D_, true, glm::svec3(0), glm::svec3(dimensions_, 1), 0, 0, mappedMem);

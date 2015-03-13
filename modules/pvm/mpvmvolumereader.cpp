@@ -175,7 +175,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
 
 void MPVMVolumeReader::readDataInto(void*) const { return; }
 
-void* MPVMVolumeReader::readData() const { return NULL; }
+void* MPVMVolumeReader::readData() const { return nullptr; }
 
 void MPVMVolumeReader::printPVMMeta(Volume* volume, std::string filePath) {
     uvec3 dim = volume->getDimensions();

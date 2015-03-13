@@ -116,7 +116,7 @@ void ImageRAMPrecision<T>::initialize() {
 
 template<typename T>
 void ImageRAMPrecision<T>::initialize(void* data) {
-    if (data == NULL)
+    if (data == nullptr)
         data_ = new T[dimensions_.x*dimensions_.y];
     else
         data_ = data;
@@ -126,12 +126,12 @@ template<typename T>
 void ImageRAMPrecision<T>::deinitialize() {
     if (data_) {
         delete[] static_cast<T*>(data_);
-        data_ = NULL;
+        data_ = nullptr;
     }
 
     if (pickingData_) {
         delete[] static_cast<T*>(pickingData_);
-        pickingData_ = NULL;
+        pickingData_ = nullptr;
     }
 }
 

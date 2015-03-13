@@ -36,7 +36,7 @@ namespace inviwo {
 
 VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
     : VolumeRepresentation(format)
-    , dimensions_(data != NULL ? data->getDimensions() : uvec3(64))
+    , dimensions_(data != nullptr ? data->getDimensions() : uvec3(64))
     , texture_(data) {
     if (data) {
         initialize(data);
@@ -94,7 +94,7 @@ void VolumeCLGL::deinitialize() {
 
     if (texture_ && texture_->decreaseRefCount() <= 0) {
         delete texture_;
-        texture_ = NULL;
+        texture_ = nullptr;
     }
 }
 
@@ -127,14 +127,14 @@ void VolumeCLGL::notifyAfterTextureInitialization() {
 }
 
 void VolumeCLGL::aquireGLObject(
-    std::vector<cl::Event>* syncEvents /*= NULL*/,
+    std::vector<cl::Event>* syncEvents /*= nullptr*/,
     const cl::CommandQueue& queue /*= OpenCL::getPtr()->getQueue()*/) const {
     std::vector<cl::Memory> syncImages(1, *clImage_);
     queue.enqueueAcquireGLObjects(&syncImages, syncEvents);
 }
 
 void VolumeCLGL::releaseGLObject(
-    std::vector<cl::Event>* syncEvents /*= NULL*/, cl::Event* event /*= NULL*/,
+    std::vector<cl::Event>* syncEvents /*= nullptr*/, cl::Event* event /*= nullptr*/,
     const cl::CommandQueue& queue /*= OpenCL::getPtr()->getQueue()*/) const {
     std::vector<cl::Memory> syncImages(1, *clImage_);
     queue.enqueueReleaseGLObjects(&syncImages, syncEvents, event);
@@ -149,7 +149,7 @@ void VolumeCLGL::setDimensions(uvec3 dimensions) {
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.
-    const_cast<Texture3D*>(texture_)->uploadAndResize(NULL, dimensions);
+    const_cast<Texture3D*>(texture_)->uploadAndResize(nullptr, dimensions);
 }
 
 cl::Image3D& VolumeCLGL::getEditable() { return *static_cast<cl::Image3D*>(clImage_); }

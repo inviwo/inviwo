@@ -80,7 +80,7 @@ public:
      * @param filePath Name of the file containing kernel, i.e. myfile.cl
      * @param kernelName Name of kernel
      * @param defines Defines to be set when building kernel
-     * @return bool Kernel if successfully built, otherwise NULL
+     * @return bool Kernel if successfully built, otherwise nullptr
      */
     cl::Kernel* addKernel(const std::string& fileName, const std::string& kernelName, const std::string& defines = "");
 

@@ -56,7 +56,7 @@ public:
     virtual ~LayerCLGL2RAMConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerCLGL*>(source) != NULL;
+        return dynamic_cast<const LayerCLGL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
@@ -69,7 +69,7 @@ public:
     virtual ~LayerCLGL2GLConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerCLGL*>(source) != NULL;
+        return dynamic_cast<const LayerCLGL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
@@ -82,7 +82,7 @@ public:
     virtual ~LayerCLGL2CLConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerCLGL*>(source) != NULL;
+        return dynamic_cast<const LayerCLGL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
@@ -95,7 +95,7 @@ public:
     virtual ~LayerGL2CLGLConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerGL*>(source) != NULL;
+        return dynamic_cast<const LayerGL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);

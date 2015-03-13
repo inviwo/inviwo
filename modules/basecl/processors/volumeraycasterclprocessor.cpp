@@ -117,7 +117,7 @@ void VolumeRaycasterCLProcessor::process() {
             volumeRaycaster_.setBackground(nullptr);
         }
         volumeRaycaster_.outputSize(outport_.getDimensions());
-        volumeRaycaster_.volumeRaycast(volumePort_.getData(), entryPort_.getData(), exitPort_.getData(), transferFunction_.get().getData(), outport_.getData(), NULL, profilingEvent);
+        volumeRaycaster_.volumeRaycast(volumePort_.getData(), entryPort_.getData(), exitPort_.getData(), transferFunction_.get().getData(), outport_.getData(), nullptr, profilingEvent);
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));
     }

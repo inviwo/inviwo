@@ -41,7 +41,7 @@ BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferType type, B
 BufferCL::BufferCL(const BufferCL& rhs)
     : BufferRepresentation(rhs.getSize(), rhs.getDataFormat(), rhs.getBufferType(), rhs.getBufferUsage()), readWriteFlag_(rhs.readWriteFlag_)
 {
-    initialize(NULL);
+    initialize(nullptr);
     OpenCL::getPtr()->getQueue().enqueueCopyBuffer(rhs.getBuffer(), *clBuffer_ , 0, 0, getSize()*getSizeOfElement());
 }
 
@@ -80,12 +80,12 @@ void BufferCL::initialize() {
 
 void BufferCL::deinitialize() {
     delete clBuffer_;
-    clBuffer_ = NULL;
+    clBuffer_ = nullptr;
 }
 
 void BufferCL::initialize(const void* data) {
     // Generate a new buffer
-    if (data != NULL) {
+    if (data != nullptr) {
         // CL_MEM_COPY_HOST_PTR can be used with CL_MEM_ALLOC_HOST_PTR to initialize the contents of the cl_mem object allocated using host-accessible (e.g. PCIe) memory.
         clBuffer_ = new cl::Buffer(OpenCL::getPtr()->getContext(),
                                  readWriteFlag_ | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,

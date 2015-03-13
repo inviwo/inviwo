@@ -49,7 +49,7 @@ void CanvasProcessorGL::process() {
 
 void CanvasProcessorGL::doIfNotReady() {
     CanvasProcessor::doIfNotReady();
-    //getCanvas()->render(NULL, static_cast<LayerType>(visibleLayer_.get()));
+    //getCanvas()->render(nullptr, static_cast<LayerType>(visibleLayer_.get()));
 }
 
 } // namespace
