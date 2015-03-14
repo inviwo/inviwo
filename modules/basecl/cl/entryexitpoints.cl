@@ -72,6 +72,12 @@ __kernel void entryExitPointsKernel(float16 NDCToTextureMat
     }
 
 	if(t1 != 0.f) {  
+		// We are inside the geometry if the
+		// closest hit point is equal
+		// to the farthest
+		if (t0 == t1) {
+			t0 = 0.f;
+		}
         write_imagef(entryPoints, globalId,  (float4)(entry.xyz+t0*dir, 1.f));     
 		write_imagef(exitPoints, globalId,  (float4)(entry.xyz+t1*dir,1.f)); 
 	} else {
