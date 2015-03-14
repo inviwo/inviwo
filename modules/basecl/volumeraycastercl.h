@@ -61,10 +61,10 @@ public:
      * \brief Perform volume rendering on the input volume. 
      * 
      * @param const Volume * volume 
-     * @param const Image * entryPoints Start point of ray in texture space.
-     * @param const Image * exitPoints End point of ray in texture space.
+     * @param const Layer * entryPoints Start point of ray in texture space.
+     * @param const Layer * exitPoints End point of ray in texture space.
      * @param const Layer * transferFunction Transfer function, mapping value to color and opacity.
-     * @param Image * outImage Output image 
+     * @param Layer * outImage Output image 
      * @param const VECTOR_CLASS<cl::Event> * waitForEvents 
      * @param cl::Event * event 
      */
