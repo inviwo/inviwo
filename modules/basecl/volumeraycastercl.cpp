@@ -29,6 +29,7 @@
 
 #include "volumeraycastercl.h"
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/kernelmanager.h>
 #include <modules/opencl/image/imagecl.h>
@@ -62,7 +63,7 @@ VolumeRaycasterCL::VolumeRaycasterCL()
 VolumeRaycasterCL::~VolumeRaycasterCL() { }
 
 
-void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Image* entryPoints, const Image* exitPoints, const Layer* transferFunction, Image* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents /*= nullptr*/, cl::Event *event /*= nullptr*/) {
+void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints, const Layer* transferFunction, Layer* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents /*= nullptr*/, cl::Event *event /*= nullptr*/) {
 
     svec2 localWorkGroupSize(workGroupSize_);
     svec2 globalWorkGroupSize(getGlobalWorkGroupSize(outputSize_.x, localWorkGroupSize.x), getGlobalWorkGroupSize(outputSize_.y,
@@ -71,9 +72,9 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Image* entryPo
     if (useGLSharing_) {
         // SyncCLGL will synchronize with OpenGL upon creation and destruction
         SyncCLGL glSync;
-        const ImageCLGL* entryCL = entryPoints->getRepresentation<ImageCLGL>();
-        const ImageCLGL* exitCL = exitPoints->getRepresentation<ImageCLGL>();
-        ImageCLGL* outImageCL = outImage->getEditableRepresentation<ImageCLGL>();
+		const LayerCLGL* entryCL = entryPoints->getRepresentation<LayerCLGL>();
+		const LayerCLGL* exitCL = exitPoints->getRepresentation<LayerCLGL>();
+		LayerCLGL* outImageCL = outImage->getEditableRepresentation<LayerCLGL>();
         const VolumeCLGL* volumeCL = volume->getRepresentation<VolumeCLGL>();
         const LayerCLGL* transferFunctionCL = transferFunction->getRepresentation<LayerCLGL>();
         const LayerCLBase* background;
@@ -93,7 +94,7 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Image* entryPo
         // Acquire all of the objects at once
         glSync.aquireAllObjects();
 
-        volumeRaycast(volume, volumeCL, background, entryCL->getLayerCL(), exitCL->getLayerCL(), transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
+        volumeRaycast(volume, volumeCL, background, entryCL, exitCL, transferFunctionCL, outImageCL, globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
     } else {
         const ImageCL* entryCL = entryPoints->getRepresentation<ImageCL>();
         const ImageCL* exitCL = exitPoints->getRepresentation<ImageCL>();
@@ -203,6 +204,11 @@ void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec
 
 void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& light) {
     setLightingProperties(ShadingMode::Modes(light.shadingMode_.get()), light.lightPosition_.get(), light.ambientColor_.get(), light.diffuseColor_.get(), light.specularColor_.get(), light.specularExponent_.get());
+}
+
+void VolumeRaycasterCL::setDefaultBackgroundColor(const vec4 color) {
+	LayerRAM_Vec4UINT8* defaultBGRAM = defaultBackground_.getEditableRepresentation < LayerRAM_Vec4UINT8 >();
+	defaultBGRAM->setValueFromVec4Double(uvec2(0), glm::dvec4(color));
 }
 
 void VolumeRaycasterCL::compileKernel() {
