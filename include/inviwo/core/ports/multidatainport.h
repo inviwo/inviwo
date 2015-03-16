@@ -79,7 +79,7 @@ public:
 
     std::vector<const T*> getData() const;
 
-	std::vector<const T*> getDataFromPort(Inport*) const;
+    std::vector<const T*> getDataFromPort(Inport*) const;
 
     bool hasData() const;
 
@@ -135,28 +135,28 @@ std::vector<const T*> inviwo::MultiDataInport<T, U>::getData() const {
 
 template < typename T, typename U /*= DataInport<T> */>
 std::vector<const T*> inviwo::MultiDataInport<T, U>::getDataFromPort(Inport* port) const {
-	std::vector<const T*> data;
-	InportVec::const_iterator it = inports_->begin();
-	InportVec::const_iterator endIt = inports_->end();
+    std::vector<const T*> data;
+    InportVec::const_iterator it = inports_->begin();
+    InportVec::const_iterator endIt = inports_->end();
 
-	for (; it != endIt; ++it) {
-		if ((*it) == port){
-			data.push_back(static_cast<U*>(*it)->getData());
-			return data;
-		}
-	}
+    for (; it != endIt; ++it) {
+        if ((*it) == port){
+            data.push_back(static_cast<U*>(*it)->getData());
+            return data;
+        }
+    }
 
-	it = vectorInports_->begin();
-	endIt = vectorInports_->end();
-	for (; it != endIt; ++it) {
-		if ((*it) == port){
-			const VectorData<T*>* vecdata = static_cast<VectorDataInport<T*>*>(*it)->getData();
-			data.insert(data.end(), vecdata->vector.begin(), vecdata->vector.end());
-			return data;
-		}
-	}
+    it = vectorInports_->begin();
+    endIt = vectorInports_->end();
+    for (; it != endIt; ++it) {
+        if ((*it) == port){
+            const VectorData<T*>* vecdata = static_cast<VectorDataInport<T*>*>(*it)->getData();
+            data.insert(data.end(), vecdata->vector.begin(), vecdata->vector.end());
+            return data;
+        }
+    }
 
-	return data;
+    return data;
 }
 
 template < typename T, typename U /*= DataInport<T> */>

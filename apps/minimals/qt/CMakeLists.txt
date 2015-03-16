@@ -77,7 +77,7 @@ else()
     install(TARGETS inviwo_qtminimum
             RUNTIME DESTINATION bin
             BUNDLE DESTINATION bin
-	        ARCHIVE DESTINATION lib
+            ARCHIVE DESTINATION lib
             LIBRARY DESTINATION lib
             COMPONENT qt_app)
 endif()

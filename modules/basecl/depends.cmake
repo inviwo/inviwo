@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # Dependencies for current module
 set(dependencies
-	InviwoOpenGLModule
+    InviwoOpenGLModule
     InviwoOpenCLModule
 )

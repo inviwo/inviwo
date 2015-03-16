@@ -120,12 +120,12 @@ public:
      */
     IvwSerializeBase(std::istream& stream, const std::string& path, bool allowReference=true);
     
-	/**
+    /**
      * \brief Destructor
      */
     virtual ~IvwSerializeBase();
     
-	/**
+    /**
      * \brief gets the xml file name.
      */
     virtual std::string getFileName();
@@ -141,7 +141,7 @@ public:
      */
     bool isPrimitiveType(const std::type_info& type) const;
 
-	/**
+    /**
      * \brief Registers all factories from all modules.
      */
     virtual void registerFactories(void);

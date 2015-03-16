@@ -48,7 +48,7 @@ OptionPropertyString::OptionPropertyString(
     : TemplateOptionProperty<std::string>(identifier, displayName, invalidationLevel, semantics) {}
 
 OptionPropertyString::OptionPropertyString(const OptionPropertyString& rhs)
-: TemplateOptionProperty<std::string>(rhs)	{
+: TemplateOptionProperty<std::string>(rhs)    {
 }
 
 OptionPropertyString& OptionPropertyString::operator=(const OptionPropertyString& that) {

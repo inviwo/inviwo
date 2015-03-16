@@ -40,8 +40,8 @@ FileExtension::FileExtension()
 
 FileExtension::FileExtension(std::string extension, std::string description)
     : extension_(toLower(extension)) // Make sure that the extension is given in lower case 
-	, description_(description) {
-	
+    , description_(description) {
+    
 };
 
 } // namespace

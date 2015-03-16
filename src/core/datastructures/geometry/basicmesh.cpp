@@ -133,7 +133,7 @@ const Position3dBuffer* BasicMesh::getVertices() const {
 }
 
 Position3dBuffer* BasicMesh::getVertices() {
-	return static_cast<Position3dBuffer*>(attributes_[0]);
+    return static_cast<Position3dBuffer*>(attributes_[0]);
 }
 
 const TexCoord3dBuffer* BasicMesh::getTexCoords() const {
@@ -141,7 +141,7 @@ const TexCoord3dBuffer* BasicMesh::getTexCoords() const {
 }
 
 TexCoord3dBuffer* BasicMesh::getTexCoords() {
-	return static_cast<TexCoord3dBuffer*>(attributes_[1]);
+    return static_cast<TexCoord3dBuffer*>(attributes_[1]);
 }
 
 const ColorBuffer* BasicMesh::getColors() const {
@@ -149,7 +149,7 @@ const ColorBuffer* BasicMesh::getColors() const {
 }
 
 ColorBuffer* BasicMesh::getColors() {
-	return static_cast<ColorBuffer*>(attributes_[2]);
+    return static_cast<ColorBuffer*>(attributes_[2]);
 }
 
 const NormalBuffer* BasicMesh::getNormals() const {
@@ -157,7 +157,7 @@ const NormalBuffer* BasicMesh::getNormals() const {
 }
 
 NormalBuffer* BasicMesh::getNormals() {
-	return static_cast<NormalBuffer*>(attributes_[3]);
+    return static_cast<NormalBuffer*>(attributes_[3]);
 }
     
     

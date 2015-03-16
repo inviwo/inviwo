@@ -39,7 +39,7 @@ ProcessorCategory(FindEdges, "Image Operation");
 ProcessorCodeState(FindEdges, CODE_STATE_EXPERIMENTAL);
 
 FindEdges::FindEdges()
-	: ImageGLProcessor("img_findedges.frag")
+    : ImageGLProcessor("img_findedges.frag")
     , alpha_("alpha", "Alpha", 0.5f, 0.0f, 1.0f) {
     addProperty(alpha_);
 }

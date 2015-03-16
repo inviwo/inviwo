@@ -100,7 +100,7 @@ void ImageResample::dimensionSourceChanged(){
         outport_.setHandleResizeEvents(false);
         dimensions_.setVisible(false);
         internalInvalid_ = true;
-    	break;
+        break;
     case 1: //resizeEvents
         inport_.setOutportDeterminesSize(false);
         outport_.setHandleResizeEvents(true);

@@ -72,9 +72,9 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPo
     if (useGLSharing_) {
         // SyncCLGL will synchronize with OpenGL upon creation and destruction
         SyncCLGL glSync;
-		const LayerCLGL* entryCL = entryPoints->getRepresentation<LayerCLGL>();
-		const LayerCLGL* exitCL = exitPoints->getRepresentation<LayerCLGL>();
-		LayerCLGL* outImageCL = outImage->getEditableRepresentation<LayerCLGL>();
+        const LayerCLGL* entryCL = entryPoints->getRepresentation<LayerCLGL>();
+        const LayerCLGL* exitCL = exitPoints->getRepresentation<LayerCLGL>();
+        LayerCLGL* outImageCL = outImage->getEditableRepresentation<LayerCLGL>();
         const VolumeCLGL* volumeCL = volume->getRepresentation<VolumeCLGL>();
         const LayerCLGL* transferFunctionCL = transferFunction->getRepresentation<LayerCLGL>();
         const LayerCLBase* background;
@@ -207,8 +207,8 @@ void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& ligh
 }
 
 void VolumeRaycasterCL::setDefaultBackgroundColor(const vec4 color) {
-	LayerRAM_Vec4UINT8* defaultBGRAM = defaultBackground_.getEditableRepresentation < LayerRAM_Vec4UINT8 >();
-	defaultBGRAM->setValueFromVec4Double(uvec2(0), glm::dvec4(color));
+    LayerRAM_Vec4UINT8* defaultBGRAM = defaultBackground_.getEditableRepresentation < LayerRAM_Vec4UINT8 >();
+    defaultBGRAM->setValueFromVec4Double(uvec2(0), glm::dvec4(color));
 }
 
 void VolumeRaycasterCL::compileKernel() {

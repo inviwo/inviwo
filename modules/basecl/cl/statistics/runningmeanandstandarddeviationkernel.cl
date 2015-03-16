@@ -55,7 +55,7 @@ __kernel void runningMeanAndStandardDeviationKernel(
         float4 mean = read_imagef(prevMeanImg, smpUNormNoClampNearest, globalId);  
         float4 std = read_imagef(prevStdImg, smpUNormNoClampNearest, globalId);  
         float multiplier = 1.f;
-		runningMeanAndStandardDeviation(iteration, multiplier, sample, &mean, &std);
+        runningMeanAndStandardDeviation(iteration, multiplier, sample, &mean, &std);
         write_imagef(newStdImg, globalId, std);
         write_imagef(nextMeanImg, globalId, mean);
         

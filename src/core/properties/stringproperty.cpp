@@ -39,7 +39,7 @@ StringProperty::StringProperty(std::string identifier, std::string displayName, 
     : TemplateProperty<std::string>(identifier, displayName, value, invalidationLevel, semantics) {}
 
 StringProperty::StringProperty(const StringProperty& rhs)
-    : TemplateProperty<std::string>(rhs)	{
+    : TemplateProperty<std::string>(rhs)    {
 }
 
 StringProperty& StringProperty::operator=(const StringProperty& that) {

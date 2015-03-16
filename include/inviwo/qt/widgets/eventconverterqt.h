@@ -48,31 +48,31 @@ public:
     ~EventConverterQt();
 
     /** 
-	 * \brief  Convert the button state
-	 * when the event was generated 
-	 * to an inviwo button.
-	 *
+     * \brief  Convert the button state
+     * when the event was generated 
+     * to an inviwo button.
+     *
      * Converts QMouseEvent::getButtons().
-	 *
+     *
      * @param QMouseEvent * e 
      * @return MouseEvent::MouseButton 
      */
     static MouseEvent::MouseButton getMouseButton(const QMouseEvent* e);
-	/** 
-	 * \brief Convert the button originally 
-	 * causing the event to an inviwo button.
-	 *
-	 * Converts QMouseEvent::getButton().
-	 * 
-	 * @note Qt does not include the button 
-	 * that caused a release event in the regular 
-	 * QMouseEvent::getButtons function, which is 
-	 * why a separate conversion function
-	 * is necessary 
-	 * @param QMouseEvent * e 
-	 * @return MouseEvent::MouseButton 
-	 */
-	static MouseEvent::MouseButton getMouseButtonCausingEvent(const QMouseEvent* e);
+    /** 
+     * \brief Convert the button originally 
+     * causing the event to an inviwo button.
+     *
+     * Converts QMouseEvent::getButton().
+     * 
+     * @note Qt does not include the button 
+     * that caused a release event in the regular 
+     * QMouseEvent::getButtons function, which is 
+     * why a separate conversion function
+     * is necessary 
+     * @param QMouseEvent * e 
+     * @return MouseEvent::MouseButton 
+     */
+    static MouseEvent::MouseButton getMouseButtonCausingEvent(const QMouseEvent* e);
     static MouseEvent::MouseButton getMouseWheelButton(const QWheelEvent* e);
     static InteractionEvent::Modifier getModifier(const QInputEvent* e);
 #ifndef QT_NO_GESTURES

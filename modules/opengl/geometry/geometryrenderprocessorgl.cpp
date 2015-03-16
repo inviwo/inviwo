@@ -186,9 +186,9 @@ void GeometryRenderProcessorGL::process() {
     else if (polygonMode_.get()==GL_POINT)
         glPointSize((GLfloat)renderPointSize_.get());
 
-	for (auto drawer : drawers_) {
-		utilgl::setShaderUniforms(shader_, *(drawer->getGeometry()), "geometry_");
-		drawer->draw();
+    for (auto drawer : drawers_) {
+        utilgl::setShaderUniforms(shader_, *(drawer->getGeometry()), "geometry_");
+        drawer->draw();
     }
 
     if (polygonMode_.get()==GL_LINE) {
@@ -263,64 +263,64 @@ void GeometryRenderProcessorGL::centerViewOnGeometry() {
 }
 
 void GeometryRenderProcessorGL::updateDrawers() {
-	std::vector<Inport*> inports = inport_.getInports();
+    std::vector<Inport*> inports = inport_.getInports();
 
-	// Copy draw information vectors and clear them
-	// , vectors should have the same size
-	std::vector<GeometryDrawer*> ds = drawers_;
-	drawers_.clear();
-	std::vector<Inport*> dsPort = drawersPort_;
-	drawersPort_.clear();
+    // Copy draw information vectors and clear them
+    // , vectors should have the same size
+    std::vector<GeometryDrawer*> ds = drawers_;
+    drawers_.clear();
+    std::vector<Inport*> dsPort = drawersPort_;
+    drawersPort_.clear();
 
-	// Loop over all inports and make sure all renderers are valid
-	// Else create new ones
-	// All geometries will be rendered in correct order based on port connection
-	// and order inside port
-	for (size_t i = 0; i < inports.size(); i++) {
-		bool addNew = false;
-		// If inport changed, delete all old drawers 
-		// associated with that inport and create new ones
-		if (inports[i]->isChanged()){
-			for (size_t j = 0; j < dsPort.size(); j++) {
-				if (dsPort[j] == inports[i]) 
-					delete ds[j];
-			}
-			addNew = true;
-		}
-		else {
-			// if the inport is not found in the vector
-			// this port was just connected
-			bool found = false;
-			for (size_t j = 0; j < dsPort.size(); j++) {
-				if (dsPort[j] == inports[i]){
-					found = true;
-					break;
-				}
-			}
-			if (!found)
-				addNew = true;
-		}
+    // Loop over all inports and make sure all renderers are valid
+    // Else create new ones
+    // All geometries will be rendered in correct order based on port connection
+    // and order inside port
+    for (size_t i = 0; i < inports.size(); i++) {
+        bool addNew = false;
+        // If inport changed, delete all old drawers 
+        // associated with that inport and create new ones
+        if (inports[i]->isChanged()){
+            for (size_t j = 0; j < dsPort.size(); j++) {
+                if (dsPort[j] == inports[i]) 
+                    delete ds[j];
+            }
+            addNew = true;
+        }
+        else {
+            // if the inport is not found in the vector
+            // this port was just connected
+            bool found = false;
+            for (size_t j = 0; j < dsPort.size(); j++) {
+                if (dsPort[j] == inports[i]){
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                addNew = true;
+        }
 
-		if (addNew){
-			std::vector<const Geometry*> geometries = inport_.getDataFromPort(inports[i]);
-			for (size_t j = 0; j < geometries.size(); ++j) { //create new renderer for new geometries
-				GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geometries[j]);
+        if (addNew){
+            std::vector<const Geometry*> geometries = inport_.getDataFromPort(inports[i]);
+            for (size_t j = 0; j < geometries.size(); ++j) { //create new renderer for new geometries
+                GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geometries[j]);
 
-				if (renderer) {
-					drawers_.push_back(renderer);
-					drawersPort_.push_back(inports[i]);
-				}
-			}
-		}
-		else{
-			for (size_t j = 0; j < dsPort.size(); j++) {
-				if (dsPort[j] == inports[i]){
-					drawers_.push_back(ds[j]);
-					drawersPort_.push_back(inports[i]);
-				}
-			}
-		}
-	}
+                if (renderer) {
+                    drawers_.push_back(renderer);
+                    drawersPort_.push_back(inports[i]);
+                }
+            }
+        }
+        else{
+            for (size_t j = 0; j < dsPort.size(); j++) {
+                if (dsPort[j] == inports[i]){
+                    drawers_.push_back(ds[j]);
+                    drawersPort_.push_back(inports[i]);
+                }
+            }
+        }
+    }
 }
 
 void GeometryRenderProcessorGL::resetViewParams() {

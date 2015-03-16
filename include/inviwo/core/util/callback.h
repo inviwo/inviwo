@@ -81,48 +81,48 @@ class CallBackList {
 public:
     CallBackList() {}
     virtual ~CallBackList() {
-		clear();
+        clear();
     }
 
     void invokeAll() const {
         for (BaseCallBack* cb : callBackList_) cb->invoke();
     }
 
-	template <typename T>
-	const BaseCallBack* addMemberFunction(T* o, void (T::*m)()) {
-		MemberFunctionCallBack<T>* callBack = new MemberFunctionCallBack<T>(o, m);
-		callBackList_.push_back(callBack);
-		return callBack;
+    template <typename T>
+    const BaseCallBack* addMemberFunction(T* o, void (T::*m)()) {
+        MemberFunctionCallBack<T>* callBack = new MemberFunctionCallBack<T>(o, m);
+        callBackList_.push_back(callBack);
+        return callBack;
     }
-	const BaseCallBack* addLambdaCallback(std::function<void()> lambda) {
-		LambdaCallBack* callBack = new LambdaCallBack(lambda);
-		callBackList_.push_back(callBack);
-		return callBack;
+    const BaseCallBack* addLambdaCallback(std::function<void()> lambda) {
+        LambdaCallBack* callBack = new LambdaCallBack(lambda);
+        callBackList_.push_back(callBack);
+        return callBack;
     }
 
-	/** 
-	 * \brief Deletes and removes callback if the callback was added before.
-	 * 
-	 * @note Callback pointer is invalid after calling remove if true is returned.
-	 * @param callback Callback to be removed.
-	 * @return bool True if removed, false otherwise.
-	 */
-	bool remove(const BaseCallBack* callback) {
-		auto it = std::find(callBackList_.begin(), callBackList_.end(), callback);
-		if (it != callBackList_.end()) {
-			delete *it;
-			callBackList_.erase(it);
-			return true;
-		}
-		return false;
-	}
-	/** 
-	 * \brief Deletes and removes all added callbacks.
-	 */
-	void clear() {
-		for (BaseCallBack* cb : callBackList_) delete cb;
-		callBackList_.clear();
-	}
+    /** 
+     * \brief Deletes and removes callback if the callback was added before.
+     * 
+     * @note Callback pointer is invalid after calling remove if true is returned.
+     * @param callback Callback to be removed.
+     * @return bool True if removed, false otherwise.
+     */
+    bool remove(const BaseCallBack* callback) {
+        auto it = std::find(callBackList_.begin(), callBackList_.end(), callback);
+        if (it != callBackList_.end()) {
+            delete *it;
+            callBackList_.erase(it);
+            return true;
+        }
+        return false;
+    }
+    /** 
+     * \brief Deletes and removes all added callbacks.
+     */
+    void clear() {
+        for (BaseCallBack* cb : callBackList_) delete cb;
+        callBackList_.clear();
+    }
 
     /** 
      * \brief Delete and remove all callbacks associated with the object.

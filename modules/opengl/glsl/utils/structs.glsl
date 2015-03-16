@@ -78,9 +78,9 @@ struct VolumeParameters {
     mat4 textureToIndex;                   // Transform from [0 1] to [-0.5 dim-0.5]
     mat4 indexToTexture;                   // Transform from [-0.5 dim-0.5] to [0 1]
     mat3 textureSpaceGradientSpacing;      // Maximum possible distance to go without ending up 
-										   // outside of a voxel (half of minimum voxel spacing 
-										   // for volumes with orthogonal basis)
-    vec3 dimensions;		               // Number of voxels (dim) per axis 
+                                           // outside of a voxel (half of minimum voxel spacing 
+                                           // for volumes with orthogonal basis)
+    vec3 dimensions;                       // Number of voxels (dim) per axis 
     vec3 reciprocalDimensions;             // 1 over the number of voxels
     float worldSpaceGradientSpacing;       // Spacing between gradient samples in world space 
     float formatScaling;                   // Map value from data range [min,max] to [0,1]

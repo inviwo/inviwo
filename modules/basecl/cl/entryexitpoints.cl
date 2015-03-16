@@ -44,8 +44,8 @@ __kernel void entryExitPointsKernel(float16 NDCToTextureMat
         return;
     }
 
-	float2 normalizedScreenCoord = (float2)(get_global_id(0)+0.5f, get_global_id(1)+0.5f)/convert_float2(get_image_dim(entryPoints));
-	
+    float2 normalizedScreenCoord = (float2)(get_global_id(0)+0.5f, get_global_id(1)+0.5f)/convert_float2(get_image_dim(entryPoints));
+    
     // Compute near and far plane points along ray (device coordinates goes from [-1 -1 -1] to [1 1 1]
     float3 normalizedDeviceCoordNear = (float3)(2.0f*normalizedScreenCoord-1.0f, -1.f);
     float3 normalizedDeviceCoordFar = (float3)(2.0f*normalizedScreenCoord-1.0f, 1.f);
@@ -71,17 +71,17 @@ __kernel void entryExitPointsKernel(float16 NDCToTextureMat
         indices+=1;
     }
 
-	if(t1 != 0.f) {  
-		// We are inside the geometry if the
-		// closest hit point is equal
-		// to the farthest
-		if (t0 == t1) {
-			t0 = 0.f;
-		}
+    if(t1 != 0.f) {  
+        // We are inside the geometry if the
+        // closest hit point is equal
+        // to the farthest
+        if (t0 == t1) {
+            t0 = 0.f;
+        }
         write_imagef(entryPoints, globalId,  (float4)(entry.xyz+t0*dir, 1.f));     
-		write_imagef(exitPoints, globalId,  (float4)(entry.xyz+t1*dir,1.f)); 
-	} else {
-		write_imagef(entryPoints, globalId,  (float4)(0.f));     
-		write_imagef(exitPoints, globalId,  (float4)(0.f));    
-	} 
+        write_imagef(exitPoints, globalId,  (float4)(entry.xyz+t1*dir,1.f)); 
+    } else {
+        write_imagef(entryPoints, globalId,  (float4)(0.f));     
+        write_imagef(exitPoints, globalId,  (float4)(0.f));    
+    } 
 }

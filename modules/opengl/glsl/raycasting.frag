@@ -84,28 +84,28 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume_, volumeParameters_, samplePos);
-		color = APPLY_CLASSIFICATION(transferFunc_, voxel);
-		if (color.a > 0) {
-			vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume_, volumeParameters_, samplePos, channel_);
-			gradient = normalize(gradient);
+        color = APPLY_CLASSIFICATION(transferFunc_, voxel);
+        if (color.a > 0) {
+            vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume_, volumeParameters_, samplePos, channel_);
+            gradient = normalize(gradient);
 
 
-			// World space position
-			vec3 worldSpacePosition = (volumeParameters_.textureToWorld * vec4(samplePos, 1.0)).xyz;
-			// Note that the gradient is reversed since we define the normal of a surface as
-			// the direction towards a lower intensity medium (gradient points in the inreasing direction)
-			color.rgb = APPLY_LIGHTING(light_, color.rgb, color.rgb, vec3(1.0), worldSpacePosition, -gradient, toCameraDir);
+            // World space position
+            vec3 worldSpacePosition = (volumeParameters_.textureToWorld * vec4(samplePos, 1.0)).xyz;
+            // Note that the gradient is reversed since we define the normal of a surface as
+            // the direction towards a lower intensity medium (gradient points in the inreasing direction)
+            color.rgb = APPLY_LIGHTING(light_, color.rgb, color.rgb, vec3(1.0), worldSpacePosition, -gradient, toCameraDir);
 
-			result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionIndicator_);
-			result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera_, isoValue_,
-				t, tDepth, tIncr);
-		}
+            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionIndicator_);
+            result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera_, isoValue_,
+                t, tDepth, tIncr);
+        }
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
             t = tEnd;
         } else {
             t += tIncr;
-		}
+        }
     }
 
     if (tDepth != -1.0) {
@@ -113,7 +113,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
                                      texture(exitDepthTex_, texCoords).x);
     } else {
         tDepth = 1.0;
-	}
+    }
 
     gl_FragDepth = tDepth;
     return result;

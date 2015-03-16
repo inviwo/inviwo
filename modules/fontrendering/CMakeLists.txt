@@ -1,5 +1,5 @@
 if(IVW_MODULE_FONTRENDERING)
-	add_subdirectory(ext/freetype)
+    add_subdirectory(ext/freetype)
 endif(IVW_MODULE_FONTRENDERING)
 
 #--------------------------------------------------------------------

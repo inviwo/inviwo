@@ -67,7 +67,7 @@ else()
     install(TARGETS GLEW
             RUNTIME DESTINATION bin
             BUNDLE DESTINATION bin
-	        ARCHIVE DESTINATION lib
+            ARCHIVE DESTINATION lib
             LIBRARY DESTINATION lib
             COMPONENT modules)
 endif()

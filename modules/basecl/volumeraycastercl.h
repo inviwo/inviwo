@@ -68,7 +68,7 @@ public:
      * @param const VECTOR_CLASS<cl::Event> * waitForEvents 
      * @param cl::Event * event 
      */
-	void volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints, const Layer* transferFunction, Layer* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
+    void volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints, const Layer* transferFunction, Layer* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
     
     void volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL, const LayerCLBase* background, const LayerCLBase* entryCL, const LayerCLBase* exitCL, const LayerCLBase* transferFunctionCL, LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
     
@@ -90,13 +90,13 @@ public:
      * @param Layer * val Layer to use as background. Will not take ownership.
      */
     void setBackground(const Layer* val) { background_ = val; }
-	/**
-	* \brief Set the default background color to use in the rendering.
-	* Will only be used if background layer is set to nullptr.
-	*
-	* @param RGBA color in [0 1]^4
-	*/
-	void setDefaultBackgroundColor(const vec4 color);
+    /**
+    * \brief Set the default background color to use in the rendering.
+    * Will only be used if background layer is set to nullptr.
+    *
+    * @param RGBA color in [0 1]^4
+    */
+    void setDefaultBackgroundColor(const vec4 color);
 
     svec2 workGroupSize() const { return workGroupSize_; }
     void workGroupSize(const svec2& val) { workGroupSize_ = val; }

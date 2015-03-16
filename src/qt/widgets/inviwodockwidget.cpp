@@ -47,12 +47,12 @@ void InviwoDockWidget::show(){
 }
 
 void InviwoDockWidget::keyPressEvent(QKeyEvent* keyEvent) {
-	if (keyEvent->key() == Qt::Key_Escape && isFloating()){
+    if (keyEvent->key() == Qt::Key_Escape && isFloating()){
         hide();
     } else {
-		keyEvent->ignore();
+        keyEvent->ignore();
     }
-	QDockWidget::keyPressEvent(keyEvent);
+    QDockWidget::keyPressEvent(keyEvent);
 }
 
 } // namespace

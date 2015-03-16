@@ -315,7 +315,7 @@ void CanvasQt::mouseReleaseEvent(QMouseEvent* e) {
 #endif
 
     MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()),
-		EventConverterQt::getMouseButtonCausingEvent(e), MouseEvent::MOUSE_STATE_RELEASE,
+        EventConverterQt::getMouseButtonCausingEvent(e), MouseEvent::MOUSE_STATE_RELEASE,
                           EventConverterQt::getModifier(e), getScreenDimensions());
     e->accept();
     Canvas::mouseReleaseEvent(&mouseEvent);

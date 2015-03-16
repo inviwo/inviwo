@@ -54,8 +54,8 @@ class IVW_MODULE_BASE_API PixelToBufferProcessor : public Processor, public Inte
 public:
     PixelToBufferProcessor();
     virtual ~PixelToBufferProcessor(){}
-	
-	InviwoProcessorInfo();
+    
+    InviwoProcessorInfo();
     void setPixelToCollectFrom(const ivec2& xy);
     void clearOutput();
     virtual void invokeEvent(Event* event);

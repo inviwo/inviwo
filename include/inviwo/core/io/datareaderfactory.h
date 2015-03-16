@@ -71,7 +71,7 @@ public:
 
     template <typename T>
     DataReaderType<T>* getReaderForTypeAndExtension(const std::string &ext) {
-		ExtensionMap::iterator it = readerForExtension_.find(toLower(ext));
+        ExtensionMap::iterator it = readerForExtension_.find(toLower(ext));
 
         if (it != readerForExtension_.end()) {
             DataReaderType<T>* r = dynamic_cast<DataReaderType<T>* >(it->second);

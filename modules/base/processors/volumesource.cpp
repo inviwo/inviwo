@@ -122,7 +122,7 @@ VolumeSource::VolumeSource()
     basis_.addProperty(overrideB_);
     basis_.addProperty(overrideC_);
     basis_.addProperty(overrideOffset_);
-	addProperty(basis_);
+    addProperty(basis_);
         
     playSequence_.onChange(this, &VolumeSource::onPlaySequenceToggled);
     selectedSequenceIndex_.onChange(this, &VolumeSource::onSequenceIndexChanged);

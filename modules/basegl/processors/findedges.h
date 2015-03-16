@@ -44,7 +44,7 @@ public:
     InviwoProcessorInfo();
 
 protected:
-	virtual void preProcess();
+    virtual void preProcess();
 
 private:
     FloatProperty alpha_;

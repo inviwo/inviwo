@@ -70,7 +70,7 @@ BaseModule::BaseModule() : InviwoModule() {
     registerProcessor(DirectionalLightSourceProcessor);
     registerProcessor(DistanceTransformRAM);
     registerProcessor(GeometrySource);
-	registerProcessor(HeightFieldMapper);
+    registerProcessor(HeightFieldMapper);
     registerProcessor(ImageExport);
     registerProcessor(ImageSource);
     registerProcessor(ImageSourceSeries);

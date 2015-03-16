@@ -109,14 +109,14 @@ mat4x3 gradientAllForwardDiff(vec4 intensity, sampler3D volume, VolumeParameters
     // Of order O(h^2) forward differences
     // Value at f(x+h)
     mat3x4 fDs;
-	// Moving a fixed distance h along each xyz-axis in world space, which correspond to moving along
+    // Moving a fixed distance h along each xyz-axis in world space, which correspond to moving along
     // three basis vectors in texture space. 
     // This will be the minimum world space voxel spacing for volumes with orthogonal basis function.
     fDs[0] = getNormalizedVoxel(volume, volumeParams, samplePos + volumeParams.textureSpaceGradientSpacing[0]);
     fDs[1] = getNormalizedVoxel(volume, volumeParams, samplePos + volumeParams.textureSpaceGradientSpacing[1]);
     fDs[2] = getNormalizedVoxel(volume, volumeParams, samplePos + volumeParams.textureSpaceGradientSpacing[2]);
     // f' = ( f(x+h)-f(x) ) / h
-	return transpose(fDs - mat3x4(intensity,intensity,intensity)) / volumeParams.worldSpaceGradientSpacing;
+    return transpose(fDs - mat3x4(intensity,intensity,intensity)) / volumeParams.worldSpaceGradientSpacing;
 }
 
 // Compute world space gradient using central difference: f' = ( f(x+h)-f(x-h) ) / 2*h
@@ -139,7 +139,7 @@ mat4x3 gradientAllCentralDiff(vec4 intensity, sampler3D volume, VolumeParameters
 mat4x3 gradientAllBackwardDiff(vec4 intensity, sampler3D volume, VolumeParameters volumeParams, vec3 samplePos) {
     // Of order O(h^2) backward differences
     mat3x4 fDs;
-	// Value at f(x-h)
+    // Value at f(x-h)
     fDs[0] = getNormalizedVoxel(volume, volumeParams, samplePos - volumeParams.textureSpaceGradientSpacing[0]);
     fDs[1] = getNormalizedVoxel(volume, volumeParams, samplePos - volumeParams.textureSpaceGradientSpacing[1]);
     fDs[2] = getNormalizedVoxel(volume, volumeParams, samplePos - volumeParams.textureSpaceGradientSpacing[2]);

@@ -111,7 +111,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             t = tEnd;
         } else {
             t += tIncr;
-		}
+        }
     }
 
     if (tDepth != -1.0) {
@@ -119,7 +119,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
                                      texture(exitDepthTex_, texCoords).z);
     } else {
         tDepth = 1.0;
-	}
+    }
 
     gl_FragDepth = tDepth;
     return result;

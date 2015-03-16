@@ -70,12 +70,12 @@ list(REMOVE_ITEM package_list InviwoGLUTModule)
 list(REMOVE_ITEM package_list InviwoSDLModule)
 
 if(IVW_MODULE_UNITTESTS)
-	option(IVW_RUN_UNITTEST_ON_STARTUP "Run all registered unittest when Inviwo starts" OFF)
-	if(IVW_RUN_UNITTEST_ON_STARTUP)
-		add_definitions(-DIVW_RUN_UNITTEST_ON_STARTUP)
+    option(IVW_RUN_UNITTEST_ON_STARTUP "Run all registered unittest when Inviwo starts" OFF)
+    if(IVW_RUN_UNITTEST_ON_STARTUP)
+        add_definitions(-DIVW_RUN_UNITTEST_ON_STARTUP)
     else()
         list(REMOVE_ITEM package_list InviwoUnitTestsModule)
-	endif()
+    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -121,7 +121,7 @@ else()
     install(TARGETS inviwo
             RUNTIME DESTINATION bin
             BUNDLE DESTINATION bin
-	        ARCHIVE DESTINATION lib
+            ARCHIVE DESTINATION lib
             LIBRARY DESTINATION lib
             COMPONENT qt_app)
 endif()
@@ -136,39 +136,39 @@ ivw_add_dependencies(${package_list})
 ivw_compile_optimize_inviwo_core()
 
 if(IVW_ENABLE_MSVC_MEMLEAK_TEST)
-	IF(WIN32)
-		IF(MSVC)
-			if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-				add_custom_command(TARGET inviwo POST_BUILD 
-									COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-										${IVW_EXTENSIONS_DIR}/vld/bin/Win64/vld_x64.dll 
-										${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x64.dll)	
-										
-				add_custom_command(TARGET inviwo POST_BUILD 
-									COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-										${IVW_EXTENSIONS_DIR}/vld/bin/Win64/dbghelp.dll 
-										${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)	
-										
-				add_custom_command(TARGET inviwo POST_BUILD 
-									COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-										${IVW_EXTENSIONS_DIR}/vld/bin/Win64/Microsoft.DTfW.DHL.manifest 
-										${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)	
-			else ()
-				add_custom_command(TARGET inviwo POST_BUILD 
-									COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-										${IVW_EXTENSIONS_DIR}/vld/bin/Win32/vld_x86.dll 
-										${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x86.dll)	
-										
-				add_custom_command(TARGET inviwo POST_BUILD 
-									COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-										${IVW_EXTENSIONS_DIR}/vld/bin/Win32/dbghelp.dll 
-										${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)	
-										
-				add_custom_command(TARGET inviwo POST_BUILD 
-									COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-										${IVW_EXTENSIONS_DIR}/vld/bin/Win32/Microsoft.DTfW.DHL.manifest 
-										${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)	
-			endif()
-		ENDIF(MSVC)
-	ENDIF(WIN32)
+    IF(WIN32)
+        IF(MSVC)
+            if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+                add_custom_command(TARGET inviwo POST_BUILD 
+                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/vld_x64.dll 
+                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x64.dll)    
+                                        
+                add_custom_command(TARGET inviwo POST_BUILD 
+                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/dbghelp.dll 
+                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
+                                        
+                add_custom_command(TARGET inviwo POST_BUILD 
+                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/Microsoft.DTfW.DHL.manifest 
+                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
+            else ()
+                add_custom_command(TARGET inviwo POST_BUILD 
+                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/vld_x86.dll 
+                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x86.dll)    
+                                        
+                add_custom_command(TARGET inviwo POST_BUILD 
+                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/dbghelp.dll 
+                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
+                                        
+                add_custom_command(TARGET inviwo POST_BUILD 
+                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/Microsoft.DTfW.DHL.manifest 
+                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
+            endif()
+        ENDIF(MSVC)
+    ENDIF(WIN32)
 endif()

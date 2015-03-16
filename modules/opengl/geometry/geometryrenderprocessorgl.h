@@ -87,8 +87,8 @@ protected:
 
     Shader* shader_;
 
-	std::vector<GeometryDrawer*> drawers_;
-	std::vector<Inport*> drawersPort_;
+    std::vector<GeometryDrawer*> drawers_;
+    std::vector<Inport*> drawersPort_;
 };
 
 } // namespace

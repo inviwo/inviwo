@@ -55,7 +55,7 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, QWidget* pare
 NetworkEditorView::~NetworkEditorView() { QGraphicsView::setScene(nullptr); }
 
 void NetworkEditorView::initialize() {
-    NetworkEditorObserver::addObservation(networkEditor_);	
+    NetworkEditorObserver::addObservation(networkEditor_);    
     QGraphicsView::setScene(networkEditor_);
 }
 

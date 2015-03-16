@@ -12,7 +12,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumemaxclprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycasterclprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/runningimagemeanandstandarddeviationcl.h
-	${CMAKE_CURRENT_SOURCE_DIR}/volumeraycastercl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/volumeraycastercl.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -26,7 +26,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumemaxclprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycasterclprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/runningimagemeanandstandarddeviationcl.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/volumeraycastercl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/volumeraycastercl.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

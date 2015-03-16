@@ -61,10 +61,10 @@ void ImageInport::connectTo(Outport* outport) {
 
     if (getProcessor()->isEndProcessor() || isOutportDeterminingSize()) {
         ResizeEvent resizeEvent(dim);
-		if (connectedImageOutport->isHandlingResizeEvents())
-			resizeEvent.setSize(dimensions_);
-		else
-			dimensions_ = dim;
+        if (connectedImageOutport->isHandlingResizeEvents())
+            resizeEvent.setSize(dimensions_);
+        else
+            dimensions_ = dim;
         connectedImageOutport->changeDataDimensions(&resizeEvent);
     } else {
         // Resize outport if any outport within the same port dependency set is connected

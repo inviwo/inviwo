@@ -33,7 +33,7 @@
 namespace inviwo {
 
 bool SimpleCondition::canLink(const Property* src,const Property* dst) {
-	return PropertyConverterManager::getPtr()->canConvert(src,dst);
+    return PropertyConverterManager::getPtr()->canConvert(src,dst);
 }
 
 bool PartiallyMatchingIdCondition::canLink(const Property* src, const Property* dst) {
