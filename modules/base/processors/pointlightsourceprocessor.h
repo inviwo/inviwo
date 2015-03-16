@@ -31,7 +31,7 @@
 #define IVW_POINT_LIGHT_SOURCE_PROCESSOR_H
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/baselightsource.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
 #include <inviwo/core/interaction/trackball.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/dataoutport.h>

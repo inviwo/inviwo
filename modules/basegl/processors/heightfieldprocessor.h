@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/datastructures/baselightsource.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
 
 #include <modules/opengl/geometry/geometryrenderprocessorgl.h>
 #include <modules/opengl/glwrap/shader.h>

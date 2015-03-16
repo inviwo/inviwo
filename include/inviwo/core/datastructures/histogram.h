@@ -38,7 +38,6 @@ namespace inviwo {
 //The NormalizedHistogram has a array of bins and all bins are normalized.
 //It can be de-normalized using the maxiumBinValue_.
 class IVW_CORE_API NormalizedHistogram {
-
 public:
     NormalizedHistogram(size_t);
     NormalizedHistogram(const NormalizedHistogram& rhs);
@@ -64,7 +63,6 @@ public:
     double getMaximumBinValue() const;
 
     struct Stats {
-    public:
         double min;
         double max;
         double mean;

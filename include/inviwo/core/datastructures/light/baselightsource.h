@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BASELIGHT_H
@@ -37,19 +37,14 @@
 namespace inviwo {
 
 namespace LightSourceType {
-enum Enum {
-    LIGHT_AREA = 0,
-    LIGHT_CONE,
-    LIGHT_POINT,
-    LIGHT_DIRECTIONAL
-};
+enum Enum { LIGHT_AREA = 0, LIGHT_CONE, LIGHT_POINT, LIGHT_DIRECTIONAL };
 }
 // TODO: Change/add transformation and size information to meters instead of texture space.
 
-class IVW_CORE_API LightSource: public SpatialEntity<3> {
+class IVW_CORE_API LightSource : public SpatialEntity<3> {
 public:
-    LightSource(): fieldOfView_(static_cast<float>(0.5*M_PI)) {};
-    virtual ~LightSource() {};
+    LightSource() : fieldOfView_(static_cast<float>(0.5 * M_PI)){};
+    virtual ~LightSource(){};
 
     virtual float getArea() const = 0;
 
@@ -60,14 +55,16 @@ public:
     virtual vec3 getPower() const = 0;
 
     /**
-     * Get the intensity (color) from the light source given in watt per steradian (flux density per solid angle, W*s*r^-1).
+     * Get the intensity (color) from the light source given in watt per steradian (flux density per
+     *solid angle, W*s*r^-1).
      *
      * @return Flux density per solid angle, W*s*r^-1
      */
     const vec3 getIntensity() const { return intensity_; }
 
     /**
-     * Set the intensity (color) from the light source given in watt per steradian (flux density per solid angle, W*s*r^-1).
+     * Set the intensity (color) from the light source given in watt per steradian (flux density per
+     *solid angle, W*s*r^-1).
      *
      * @param intensity
      */
@@ -115,9 +112,10 @@ public:
     virtual std::string getDataInfo() const { return "LightSource"; }
 
 protected:
-    vec3 intensity_; // Color of light source, flux density per solid angle (given in watt per steradian W*s*r^-1)
-    float fieldOfView_; // Field of view in radians
-    vec2 size_; // width, height in world space
+    vec3 intensity_;     // Color of light source, flux density per solid angle (given in watt per
+                         // steradian W*s*r^-1)
+    float fieldOfView_;  // Field of view in radians
+    vec2 size_;          // width, height in world space
     bool enabled_;
 };
 
@@ -126,21 +124,25 @@ protected:
 // Note that largest variables should be placed first
 // in order to ensure struct size
 typedef struct {
-    mat4 tm; // Transformation matrix from local to world coordinates
-    vec4 radiance; // cl_float3 == cl_float4
-    vec2 size; // width, height
-    int type; // LightSourceType, use integer to handle size of struct easier
-    float area; // area of light source
-    float cosFOV; // cos( (field of view)/2 ), used by cone light
+    mat4 tm;        // Transformation matrix from local to world coordinates
+    vec4 radiance;  // cl_float3 == cl_float4
+    vec2 size;      // width, height
+    int type;       // LightSourceType, use integer to handle size of struct easier
+    float area;     // area of light source
+    float cosFOV;   // cos( (field of view)/2 ), used by cone light
 
-    int padding[7]; // OpenCL requires sizes that are power of two (32, 64, 128 and so on)
+    int padding[7];  // OpenCL requires sizes that are power of two (32, 64, 128 and so on)
 } PackedLightSource;
 
 // Transform a BaseLightSource to PackedLightSource
-IVW_CORE_API PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float radianceScale);
+IVW_CORE_API PackedLightSource
+baseLightToPackedLight(const LightSource* lightsource, float radianceScale);
 
-// Transform a BaseLightSource to PackedLightSource and apply the transformation matrix to the light source transformation matrix
-IVW_CORE_API PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float radianceScale, const mat4& transformLightMat);
+// Transform a BaseLightSource to PackedLightSource and apply the transformation matrix to the light
+// source transformation matrix
+IVW_CORE_API PackedLightSource baseLightToPackedLight(const LightSource* lightsource,
+                                                      float radianceScale,
+                                                      const mat4& transformLightMat);
 
 // Calculate how many samples to take from each light source.
 // x component contains the amount of samples to take in x and y dimensions
@@ -150,7 +152,6 @@ IVW_CORE_API uvec2 getSamplesPerLight(uvec2 nSamples, int nLightSources);
 // Calculate the object to texture transformation matrix for the light
 IVW_CORE_API mat4 getLightTransformationMatrix(vec3 pos, vec3 dir);
 
+}  // namespace inviwo
 
-} // namespace inviwo
-
-#endif // IVW_BASELIGHT_H
+#endif  // IVW_BASELIGHT_H

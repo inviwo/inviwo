@@ -11,8 +11,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwocoredefine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodule.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h    
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/baselightsource.h 
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/buffer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferramprecision.h
@@ -54,7 +53,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerrepresentation.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h 
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/directionallight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/pointlight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/spotlight.h
@@ -248,7 +248,6 @@ set(SOURCE_FILES
     common/inviwocore.cpp
     common/inviwomodule.cpp
     common/moduleaction.cpp
-    datastructures/baselightsource.cpp 
     datastructures/buffer/buffer.cpp
     datastructures/buffer/bufferram.cpp
     datastructures/buffer/bufferrepresentation.cpp
@@ -282,6 +281,7 @@ set(SOURCE_FILES
     datastructures/image/layerram.cpp
     datastructures/image/layerramconverter.cpp
     datastructures/image/layerrepresentation.cpp
+    datastructures/light/baselightsource.cpp
     datastructures/representationconverter.cpp
     datastructures/representationconverterfactory.cpp
     datastructures/transferfunction.cpp
