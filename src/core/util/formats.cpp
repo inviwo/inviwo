@@ -66,7 +66,6 @@ const DataFormatBase* DataFormatBase::get(std::string name) {
     else if (name == "UCHAR") return DataUINT8::get();
     else if (name == "CHAR") return DataINT8::get();
     else if (name == "USHORT") return DataUINT16::get();
-	else if (name == "USHORT_12") return DataUINT16::get();
     else if (name == "SHORT") return DataINT16::get();
     else if (name == "UINT") return DataUINT32::get();
     else if (name == "INT") return DataINT32::get();
