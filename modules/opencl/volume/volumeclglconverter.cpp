@@ -78,7 +78,7 @@ void VolumeCLGL2RAMConverter::update(const DataRepresentation* source, DataRepre
     volumeSrc->getTexture()->download(volumeDst->getData());
 
     if (volumeDst->hasHistograms())
-        volumeDst->getHistograms().setValid(false);
+        volumeDst->getHistograms()->setValid(false);
 }
 
 

@@ -29,7 +29,6 @@
 
 #include <inviwo/core/io/ivfvolumereader.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/volume/volumetypeclassification.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/util/filesystem.h>
 
@@ -80,7 +79,7 @@ Volume* IvfVolumeReader::readMetaData(std::string filePath)  {
 
     std::string fileDirectory = filesystem::getFileDirectory(filePath);
     std::string fileExtension = filesystem::getFileExtension(filePath);
-    Volume* volume = new UniformRectiLinearVolume();
+    Volume* volume = new Volume();
     IvwDeserializer d(filePath);
     d.deserialize("RawFile", rawFile_);
     rawFile_ = fileDirectory + rawFile_;

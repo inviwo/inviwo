@@ -66,9 +66,9 @@ public:
     virtual void setDimensions(uvec3 dimensions) override;
 
     virtual bool hasHistograms() const override;
-    virtual HistogramContainer& getHistograms(size_t bins = 2048u,
+    virtual HistogramContainer* getHistograms(size_t bins = 2048u,
                                               uvec3 sampleRate = uvec3(1)) override;
-    virtual const HistogramContainer& getHistograms(size_t bins = 2048u,
+    virtual const HistogramContainer* getHistograms(size_t bins = 2048u,
                                                     uvec3 sampleRate = uvec3(1)) const override;
     virtual void calculateHistograms(size_t bins, uvec3 sampleRate, const bool& stop) const override;
 
@@ -263,25 +263,25 @@ dvec4 VolumeRAMPrecision<T>::getValueAsVec4Double(const uvec3& pos) const {
 }
 
 template <typename T>
-const HistogramContainer& inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
+const HistogramContainer* inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
                                                                        uvec3 sampleRate) const {
     if (!hasHistograms()) {
         bool stop = false;
         calculateHistograms(bins, sampleRate, stop);
     }
 
-    return histCont_;
+    return &histCont_;
 }
 
 template <typename T>
-HistogramContainer& inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
+HistogramContainer* inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
                                                                  uvec3 sampleRate) {
     if (!hasHistograms()) {
         bool stop = false;
         calculateHistograms(bins, sampleRate, stop);
     }
 
-    return histCont_;
+    return &histCont_;
 
 }
 

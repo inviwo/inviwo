@@ -31,7 +31,6 @@
 #include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/volume/volumetypeclassification.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -84,7 +83,7 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
     std::istream* f = new std::ifstream(filePath.c_str());
     std::string textLine;
     std::string formatFlag = "";
-    Volume* volume = new UniformRectiLinearVolume();
+    Volume* volume = new Volume();
     glm::mat3 basis(2.0f);
     glm::vec3 offset(0.0f);
     bool hasOffset = false;

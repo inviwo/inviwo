@@ -87,7 +87,7 @@ void VolumeGL2RAMConverter::update(const DataRepresentation* source, DataReprese
     volumeSrc->getTexture()->download(volumeDst->getData());
 
     if (volumeDst->hasHistograms())
-        volumeDst->getHistograms().setValid(false);
+        volumeDst->getHistograms()->setValid(false);
 }
 
 } // namespace

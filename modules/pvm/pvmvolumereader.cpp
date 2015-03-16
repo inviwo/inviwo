@@ -29,7 +29,6 @@
 
 #include <modules/pvm/pvmvolumereader.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumetypeclassification.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -138,7 +137,7 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
         swapbytes(data, static_cast<unsigned int>(size));
     }
 
-    Volume* volume = new UniformRectiLinearVolume();
+    Volume* volume = new Volume();
 
     // Additional information
     std::stringstream ss;

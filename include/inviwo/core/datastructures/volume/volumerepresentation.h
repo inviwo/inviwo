@@ -46,10 +46,10 @@ public:
     VolumeRepresentation(const DataFormatBase* format);
     VolumeRepresentation(const VolumeRepresentation& rhs);
     VolumeRepresentation& operator=(const VolumeRepresentation& that);
-    virtual VolumeRepresentation* clone() const = 0;
+    virtual VolumeRepresentation* clone() const override = 0;
     virtual ~VolumeRepresentation();
 
-    virtual void performOperation(DataOperation*) const {};
+    virtual void performOperation(DataOperation*) const override {};
 
     // Removes old data and reallocate for new dimensions.
     // Needs to be overloaded by child classes.

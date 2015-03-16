@@ -42,10 +42,10 @@ public:
     VolumeRAM(const DataFormatBase* format = DataFormatBase::get());
     VolumeRAM(const VolumeRAM& rhs);
     VolumeRAM& operator=(const VolumeRAM& that);
-    virtual VolumeRAM* clone() const = 0;
+    virtual VolumeRAM* clone() const override = 0;
     virtual ~VolumeRAM();
 
-    virtual void performOperation(DataOperation*) const = 0;
+    virtual void performOperation(DataOperation*) const override = 0;
 
     virtual void* getData() = 0;
     virtual const void* getData() const = 0;
@@ -63,9 +63,9 @@ public:
 
     // Histograms
     virtual bool hasHistograms() const = 0;
-    virtual HistogramContainer& getHistograms(size_t bins = 2048u, uvec3 sampleRate = uvec3(1)) = 0;
+    virtual HistogramContainer* getHistograms(size_t bins = 2048u, uvec3 sampleRate = uvec3(1)) = 0;
 
-    virtual const HistogramContainer& getHistograms(size_t bins = 2048u,
+    virtual const HistogramContainer* getHistograms(size_t bins = 2048u,
                                                     uvec3 sampleRate = uvec3(1)) const = 0;
     virtual void calculateHistograms(size_t bins, uvec3 sampleRate, const bool& stop) const = 0;
 

@@ -81,19 +81,20 @@ std::string Volume::getDataInfo() const {
     if (hasRepresentation<VolumeRAM>()) {
         const VolumeRAM* volumeRAM = getRepresentation<VolumeRAM>();
         if (volumeRAM->hasHistograms()) {
-            const HistogramContainer& histograms = volumeRAM->getHistograms();
-            for (size_t i = 0; i < histograms.size(); ++i) {
+            const HistogramContainer* histograms = volumeRAM->getHistograms();
+            for (size_t i = 0; i < histograms->size(); ++i) {
                 ss << "<tr><td style='color:#bbb;padding-right:8px;'>Stats</td><td><nobr>"
-                   << "Channel " << i << " Min: " << histograms[i].stats_.min << " Mean: " << histograms[i].stats_.mean
-                   << " Max: " << histograms[i].stats_.max
-                   << " Std: " << histograms[i].stats_.standardDeviation << "</nobr></td></tr>\n";
+                   << "Channel " << i << " Min: " << (*histograms)[i].stats_.min
+                   << " Mean: " << (*histograms)[i].stats_.mean
+                   << " Max: " << (*histograms)[i].stats_.max
+                   << " Std: " << (*histograms)[i].stats_.standardDeviation << "</nobr></td></tr>\n";
 
                 ss << "<tr><td style='color:#bbb;padding-right:8px;'>Percentiles</td><td><nobr>"
-                   << "(1: " << histograms[i].stats_.percentiles[1]
-                   << ", 25: " << histograms[i].stats_.percentiles[25]
-                   << ", 50: " << histograms[i].stats_.percentiles[50]
-                   << ", 75: " << histograms[i].stats_.percentiles[75]
-                   << ", 99: " << histograms[i].stats_.percentiles[99] << ")"
+                   << "(1: " << (*histograms)[i].stats_.percentiles[1]
+                   << ", 25: " << (*histograms)[i].stats_.percentiles[25]
+                   << ", 50: " << (*histograms)[i].stats_.percentiles[50]
+                   << ", 75: " << (*histograms)[i].stats_.percentiles[75]
+                   << ", 99: " << (*histograms)[i].stats_.percentiles[99] << ")"
                    << "</nobr></td></tr>\n";
             }
         }

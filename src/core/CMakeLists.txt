@@ -27,7 +27,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/dataoperation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datarepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datasequence.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datatypeclassification.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/diskrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/basicmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/edge.h
@@ -78,7 +77,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramsubsample.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramsubset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumerepresentation.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumetypeclassification.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/action.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/cameratrackball.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/event.h
@@ -295,7 +293,6 @@ set(SOURCE_FILES
     datastructures/volume/volumeram.cpp
     datastructures/volume/volumeramconverter.cpp
     datastructures/volume/volumerepresentation.cpp
-    datastructures/volume/volumetypeclassification.cpp
     interaction/action.cpp
     interaction/cameratrackball.cpp
     interaction/events/event.cpp

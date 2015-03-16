@@ -31,7 +31,6 @@
 #include <inviwo/core/io/rawvolumereader.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/volume/volumetypeclassification.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 
@@ -122,7 +121,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
         // Center the data around origo.
         glm::vec3 offset(-0.5f*(basis[0]+basis[1]+basis[2]));
 
-        Volume* volume = new UniformRectiLinearVolume();
+        Volume* volume = new Volume();
         volume->setBasis(basis);
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);

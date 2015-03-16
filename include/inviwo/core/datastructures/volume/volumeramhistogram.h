@@ -89,7 +89,7 @@ HistogramContainer calculateVolumeHistogram(const T* data, uvec3 dimensions,
 
                 for (size_t i = 0; i < extent; ++i) {
                     v = util::glmcomp(ind, i);
-                    if (v >= 0 && v < bins) {
+                    if (v < bins) {
                         histograms[i][v]++;
                     } 
                 }

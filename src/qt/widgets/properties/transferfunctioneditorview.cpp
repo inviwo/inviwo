@@ -170,12 +170,12 @@ void TransferFunctionEditorView::updateHistogram() {
     histograms_.clear();
     QRectF sRect = sceneRect();
 
-    const HistogramContainer& histCont = getNormalizedHistograms();
+    const HistogramContainer* histCont = getNormalizedHistograms();
 
-    for(size_t channel = 0; channel <  histCont.size(); ++channel) {
+    for(size_t channel = 0; channel <  histCont->size(); ++channel) {
 
         histograms_.push_back(QPolygonF());        
-        const std::vector<double>* normHistogramData = histCont[channel].getData();
+        const std::vector<double>* normHistogramData = (*histCont)[channel].getData();
         double histSize = static_cast<double>(normHistogramData->size());
         double stepSize = sRect.width() / histSize;
 
@@ -187,20 +187,20 @@ void TransferFunctionEditorView::updateHistogram() {
                 scale = 1.0;
                 break;
             case 2:  // show 99%
-                scale = histCont[channel].histStats_.percentiles[99];
+                scale = (*histCont)[channel].histStats_.percentiles[99];
                 break;
             case 3:  // show 95%
-                scale = histCont[channel].histStats_.percentiles[95];
+                scale = (*histCont)[channel].histStats_.percentiles[95];
                 break;
             case 4:  // show 90%
-                scale = histCont[channel].histStats_.percentiles[90];
+                scale = (*histCont)[channel].histStats_.percentiles[90];
                 break;
             case 5:  // show log%
                 scale = 1.0;
                 break;
         }
         double height;
-        double maxCount = histCont[channel].getMaximumBinValue();
+        double maxCount = (*histCont)[channel].getMaximumBinValue();
 
         histograms_.back() << QPointF(0.0f,0.0f);
 
@@ -223,7 +223,7 @@ void TransferFunctionEditorView::updateHistogram() {
     invalidatedHistogram_ = false;
 }
 
-const HistogramContainer& TransferFunctionEditorView::getNormalizedHistograms() {
+const HistogramContainer* TransferFunctionEditorView::getNormalizedHistograms() {
     if (volumeInport_ && volumeInport_->hasData()) {
         const VolumeRAM* volumeRAM = volumeInport_->getData()->getRepresentation<VolumeRAM>();
 
@@ -247,7 +247,7 @@ const HistogramContainer& TransferFunctionEditorView::getNormalizedHistograms() 
         }
     }
 
-    return HistogramContainer();
+    return nullptr;
 }
 
 void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF& rect) {

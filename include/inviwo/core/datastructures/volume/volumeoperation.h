@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEOPERATION_H
@@ -45,24 +45,21 @@ public:
     const VolumeRepresentation* getInputVolume() { return in_; }
 
     template <typename T>
-    void evaluate(){}
+    void evaluate() {}
 
-    template<typename VO>
-    void evaluateFor(){
+    template <typename VO>
+    void evaluateFor() {
         VO* t = dynamic_cast<VO*>(this);
-        if(!t) return; //todo maybe print error= 
+        if (!t) return;  // todo maybe print error=
 
         DataFormatEnums::Id id_ = getInputVolume()->getDataFormat()->getId();
         CallFunctionWithTemplateArgsForType(t->template evaluate, id_);
     }
 
-
 private:
     const VolumeRepresentation* in_;
 };
 
+}  // namespace
 
-
-} // namespace
-
-#endif // IVW_VOLUMEOPERATION_H
+#endif  // IVW_VOLUMEOPERATION_H

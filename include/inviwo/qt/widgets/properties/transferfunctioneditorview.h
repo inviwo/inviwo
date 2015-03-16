@@ -84,7 +84,7 @@ public slots:
     void updateZoom();
 
 protected:
-    const HistogramContainer& getNormalizedHistograms();
+    const HistogramContainer* getNormalizedHistograms();
 
     void resizeEvent(QResizeEvent* event);
     void drawForeground(QPainter* painter, const QRectF& rect);

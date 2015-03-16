@@ -37,8 +37,6 @@ namespace inviwo {
 
 class IVW_CORE_API VolumeRAMSubSample : public VolumeOperation {
 
-//friend class VolumeHalfSampleCalculator;
-
 public:
     enum FACTOR{
         HALF=2
@@ -66,41 +64,6 @@ private:
 
 template<typename T>
 class VolumeRAMPrecision;
-
-template<typename T, size_t B>
-class VolumeRAMCustomPrecision;
-
-/*template<typename T>
-class VolumeHalfSampleCalculator {
-public:
-    static void calculate(VolumeRAMSubSample* op, T* dst, const T* src, uvec3 dstDims, uvec3 srcDims){
-        op->halfsample<T, DataFLOAT64::type>(dst, src, dstDims, srcDims);
-    };
-};
-
-template<typename T>
-class VolumeHalfSampleCalculator<glm::detail::tvec2<T, glm::defaultp> > {
-public:
-    static void calculate(VolumeRAMSubSample* op, T* dst, const T* src, uvec3 dstDims, uvec3 srcDims){
-        op->halfsample<T, DataVec2FLOAT64::type>(dst, src, dstDims, srcDims);
-    };
-};
-
-template<typename T>
-class VolumeHalfSampleCalculator<glm::detail::tvec3<T, glm::defaultp> > {
-public:
-    static void calculate(VolumeRAMSubSample* op, T* dst, const T* src, uvec3 dstDims, uvec3 srcDims){
-        op->halfsample<T, DataVec3FLOAT64::type>(dst, src, dstDims, srcDims);
-    };
-};
-
-template<typename T>
-class VolumeHalfSampleCalculator<glm::detail::tvec4<T, glm::defaultp> > {
-public:
-    static void calculate(VolumeRAMSubSample* op, T* dst, const T* src, uvec3 dstDims, uvec3 srcDims){
-        op->halfsample<T, DataVec4FLOAT64::type>(dst, src, dstDims, srcDims);
-    };
-};*/
 
 template<typename T>
 void VolumeRAMSubSample::evaluate() {

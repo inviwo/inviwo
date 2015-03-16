@@ -35,21 +35,21 @@
 namespace inviwo {
 
 NormalizedHistogram::NormalizedHistogram(size_t numberOfBins)
-    : maximumBinCount_(1.f), valid_(false), data_(numberOfBins, 0.f) {}
+    : data_(numberOfBins, 0.f), maximumBinCount_(1.f), valid_(false) {}
 
 NormalizedHistogram::NormalizedHistogram(const NormalizedHistogram& rhs)
-    : maximumBinCount_(rhs.maximumBinCount_)
-    , stats_(rhs.stats_)
-    , valid_(rhs.valid_)
-    , data_(rhs.data_) {}
+    : stats_(rhs.stats_)
+    , data_(rhs.data_)
+    , maximumBinCount_(rhs.maximumBinCount_)
+    , valid_(rhs.valid_) {}
 
 NormalizedHistogram& NormalizedHistogram::operator=(const NormalizedHistogram &that) {
     if (this != &that) {
-        maximumBinCount_ = that.getMaximumBinValue();
         stats_ = that.stats_;
-        valid_ = that.valid_;
         data_.resize(that.data_.size());
         std::copy(that.data_.begin(), that.data_.end(), data_.begin());
+        maximumBinCount_ = that.getMaximumBinValue();
+        valid_ = that.valid_;
     }
     return *this;
 }
