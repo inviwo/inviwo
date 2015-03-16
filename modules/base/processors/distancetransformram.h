@@ -112,7 +112,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
     // implementation of Euclidean Distance Transform according to Saito's algorithm
     //  T. Saito and J.I. Toriwaki. New algorithms for Euclidean distance transformations 
     //    of an n-dimensional digitized picture with applications. Pattern Recognition, 27(11). 
-    //    pp. 1551–1565, 1994.
+    //    pp. 1551-1565, 1994.
 
     double totalTime = 0.0;
 

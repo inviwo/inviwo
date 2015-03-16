@@ -2,6 +2,7 @@ import fnmatch
 import os
 import fileinput
 import re
+import codecs
 
 try:
 	import colorama
@@ -70,6 +71,28 @@ def replace_matches(files, expr, repl):
 					print("+ {0:5d} {1:s}".format(i,replaced))
 				else:
 					f.write(line)
+
+
+def check_file_type(files, enc):
+	matches = []
+	for f in files:
+		try:
+			fh = codecs.open(f, 'r', encoding=enc)
+			fh.readlines()
+			fh.seek(0)
+		except UnicodeDecodeError:
+			print(f)
+			matches.append(f)
+
+	return matches
+
+def convert_file(file, enc):
+	with open(file, 'br') as f:
+		buff = f.read()
+	text = buff.decode(enc, errors='replace')
+	with open(file, 'w') as f:
+		f.write(text)
+
 
 source_extensions = ('*.cpp', '*.h')
 

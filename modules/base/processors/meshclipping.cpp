@@ -686,7 +686,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
         if (plane.isInside(E)) {
             if (!plane.isInside(S)) { // Going in
                 //LogInfo("Going in!");
-                //Måste stoppa in alla verts till edges i rätt ordning för att inte mucka upp vert-id:n
+                // Must put in all the vert to edges in the right order not to mess up the vert-ids
                 glm::vec3 clippedVert = plane.getIntersection(S,E);
                 outputList.push_back(clippedVert);
                 outputIndexList.push_back(static_cast<unsigned int>(outputList.size()-1)); // Ny vertex, uppdatera edge-listan
@@ -811,7 +811,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane
     for(size_t i=0; i<outputEdgeList.size();++i) {
         LogInfo("Edge, " << i << " = " << outputEdgeList.at(i).v1 << "->" << outputEdgeList.at(i).v2);
     }*/
-    // Bygg ny SimpleMesh här från outputList-vektor
+    // Build a new SimpleMesh here form outputList-vektor
     //LogInfo("Buildning new mesh from clipped vertices.");
     SimpleMesh* outputMesh = new SimpleMesh();
 
