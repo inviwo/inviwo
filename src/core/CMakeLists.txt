@@ -12,7 +12,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodule.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h    
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/axisalignedboundingbox.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/baselightsource.h 
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/buffer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferram.h
