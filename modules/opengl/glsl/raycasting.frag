@@ -100,6 +100,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera_, isoValue_,
                 t, tDepth, tIncr);
         }
+        else
+            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionIndicator_);
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
             t = tEnd;

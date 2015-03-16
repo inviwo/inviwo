@@ -115,7 +115,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
 
     // Create new format
     const DataFormatBase* mformat =
-        DataFormatBase::get(format->getNumericType(), volumes.size(), format->getSize());
+        DataFormatBase::get(format->getNumericType(), volumes.size(), format->getSize()*8);
 
     // Create new volume
     Volume* volume = new Volume();
