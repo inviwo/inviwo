@@ -187,6 +187,9 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
         } else if (key == "format") {
             ss >> formatFlag;
             format_ = DataFormatBase::get(formatFlag);
+			if (formatFlag == "USHORT_12" && glm::all(glm::equal(datarange, dvec2(0)))) {
+				datarange.y = 4095;
+			}
         } else if (key == "datarange") {
             ss >> datarange.x;
             ss >> datarange.y;
