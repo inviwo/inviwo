@@ -32,61 +32,24 @@
 
 namespace inviwo {
 
-BufferRAM::BufferRAM(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage)
-    : BufferRepresentation(size, format, type, usage) {
-    BufferRAM::initialize();
-}
-BufferRAM::BufferRAM(const BufferRAM& rhs) : BufferRepresentation(rhs) {
-    BufferRAM::initialize();
-}
+BufferRAM::BufferRAM(const DataFormatBase* format, BufferType type, BufferUsage usage)
+    : BufferRepresentation(format, type, usage) {}
+    
+BufferRAM::BufferRAM(const BufferRAM& rhs) : BufferRepresentation(rhs) {}
+
 BufferRAM& BufferRAM::operator=(const BufferRAM& that) {
     if (this != &that) {
-        deinitialize();
         BufferRepresentation::operator=(that);
-        initialize();
     }
-
     return *this;
 }
-BufferRAM::~BufferRAM() {
-    deinitialize();
-}
 
-void BufferRAM::initialize() {
-}
-
-void BufferRAM::deinitialize() {
-    // Make sure that data is deinitialized in
-    // child class (should not delete void pointer
-    // since destructor will not be called for object).
-}
-
-void BufferRAM::setSize(size_t size) {
-    size_ = size;
-    // Delete and reallocate data_ to new size
-    deinitialize();
-    initialize();
-}
+BufferRAM::~BufferRAM() {}
 
 BufferRAM* createBufferRAM(size_t size, const DataFormatBase* format, BufferType type,
                            BufferUsage usage) {
-    switch (format->getId()) {
-        case DataFormatEnums::NOT_SPECIALIZED:
-            LogErrorCustom("createBufferRAM", "Invalid format");
-            return nullptr;
-#define DataFormatIdMacro(i)                                                     \
-    case DataFormatEnums::i:                                                     \
-        return new BufferRAMPrecision<Data##i::type>(size, format, type, usage); \
-        break;
-#include <inviwo/core/util/formatsdefinefunc.h>
-
-        default:
-            LogErrorCustom("createBufferRAM", "Invalid format or not implemented");
-            return nullptr;
-    }
-
-    return nullptr;
+    BufferRamDispatcher disp;
+    return format->dispatch(disp, size, format, type, usage);
 }
-
 
 }

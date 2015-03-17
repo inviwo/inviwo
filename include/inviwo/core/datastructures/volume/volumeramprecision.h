@@ -301,9 +301,6 @@ bool inviwo::VolumeRAMPrecision<T>::hasHistograms() const {
     return !histCont_.empty() && histCont_.isValid();
 }
 
-#define DataFormatIdMacro(i) typedef VolumeRAMPrecision<Data##i::type> VolumeRAM_##i;
-#include <inviwo/core/util/formatsdefinefunc.h>
-
 }  // namespace
 
 #endif  // IVW_VOLUMERAMPRECISION_H

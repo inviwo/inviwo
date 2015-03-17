@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFER_RAM_H
@@ -37,18 +37,13 @@
 namespace inviwo {
 
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
-
 public:
-    BufferRAM(size_t size, const DataFormatBase* format = DataFormatBase::get(), BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
+    BufferRAM(const DataFormatBase* format = DataFormatBase::get(),
+              BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
     BufferRAM(const BufferRAM& rhs);
     BufferRAM& operator=(const BufferRAM& that);
     virtual BufferRAM* clone() const = 0;
     virtual ~BufferRAM();
-
-    virtual void initialize();
-    virtual void deinitialize();
-
-    virtual void setSize(size_t size);
 
     virtual void* getData() = 0;
     virtual const void* getData() const = 0;
@@ -72,8 +67,21 @@ public:
  * @param format of buffer to create.
  * @return nullptr if no valid format was specified.
  */
-IVW_CORE_API BufferRAM* createBufferRAM(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage);
+IVW_CORE_API BufferRAM* createBufferRAM(size_t size, const DataFormatBase* format, BufferType type,
+                                        BufferUsage usage);
+    
+template <typename T>
+class BufferRAMPrecision;
+struct BufferRamDispatcher {
+    using type = BufferRAM*;
+    template <class T>
+    BufferRAM* dispatch(size_t size, const DataFormatBase* format, BufferType type,
+                        BufferUsage usage) {
+        typedef typename T::type F;
+        return new BufferRAMPrecision<F>(size, format, type, usage);
+    }
+};
 
-} // namespace
+}  // namespace
 
-#endif // IVW_BUFFER_RAM_H
+#endif  // IVW_BUFFER_RAM_H

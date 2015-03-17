@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFERCL_H
@@ -38,8 +38,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENCL_API BufferCL: public BufferCLBase, public BufferRepresentation {
-
+class IVW_MODULE_OPENCL_API BufferCL : public BufferCLBase, public BufferRepresentation {
 public:
     /**
      * .
@@ -48,53 +47,46 @@ public:
      * @param type
      * @param format
      * @param data Data to transfer. Does not transfer data if data is nullptr.
-     * @param readWriteFlag Determine how memory will be used by Kernels: CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
+     * @param readWriteFlag Determine how memory will be used by Kernels: CL_MEM_READ_ONLY,
+     *CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
      */
-    BufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, const void* data = nullptr,
-             cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
+    BufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC,
+             const void* data = nullptr, cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     BufferCL(const BufferCL& rhs);
     virtual ~BufferCL();
 
-    virtual void initialize();
-    virtual void deinitialize();
     virtual BufferCL* clone() const;
-    virtual void setSize(size_t size) {  BufferRepresentation::setSize(size); deinitialize(); initialize(nullptr); }
+    virtual size_t getSize() const override;
+    virtual void setSize(size_t size) override;
 
     const Buffer* getAttribute() const;
 
     cl::Buffer getEditableBuffer() { return *clBuffer_; }
     const cl::Buffer& getBuffer() const { return *const_cast<const cl::Buffer*>(clBuffer_); }
 
-    /** 
+    /**
      * \brief Copies data from RAM to OpenCL.
-     * 
+     *
      * @param const void * data Pointer to data
      * @param size_t size Size in bytes to copy
      */
     void upload(const void* data, size_t size);
-    /** 
+    /**
      * \brief Copies the entire buffer to RAM memory.
      *
      * Copies getSize()*getSizeOfElement() bytes into data.
      * Pointer needs to be allocated beforehand.
-     * 
+     *
      * @param void * data Pointer to data
      */
     void download(void* data) const;
 
 protected:
-
-    /**
-     * Create and optionally transfer data to device.
-     *
-     * @param data Data to transfer. Does not transfer data if data is nullptr.
-     */
-    void initialize(const void* data);
-
     cl_mem_flags readWriteFlag_;
+    size_t size_;
 };
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -110,6 +102,6 @@ IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferC
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::Buffer& value);
 
-} // namespace cl
+}  // namespace cl
 
-#endif // IVW_BUFFERCL_H
+#endif  // IVW_BUFFERCL_H

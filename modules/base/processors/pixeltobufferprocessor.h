@@ -32,6 +32,7 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/bufferport.h>
@@ -73,7 +74,7 @@ private:
     ButtonProperty clearValues_;
     BoolProperty handleInteractionEvents_; ///< Enable or disable pixel picking
 
-    Buffer_FLOAT64 values_;
+    BufferPrecision<double, POSITION_ATTRIB> values_;
 };
 
 } // namespace

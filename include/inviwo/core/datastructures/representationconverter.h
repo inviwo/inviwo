@@ -120,6 +120,13 @@ private:
     std::vector<RepresentationConverter*>* converters_;
 };
 
+class IVW_CORE_API ConverterException : public Exception {
+public:
+    ConverterException(const std::string& message = "") : Exception(message) {}
+    virtual ~ConverterException() throw() {}
+};
+
+
 } // namespace
 
 #endif // IVW_REPRESENTATIONCONVERTER_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ELEMENT_BUFFER_OBJECT_H
@@ -36,22 +36,18 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API ElementBufferObject: public BufferObject  {
-
+class IVW_MODULE_OPENGL_API ElementBufferObject : public BufferObject {
 public:
-    ElementBufferObject(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage);
+    ElementBufferObject(size_t size, const DataFormatBase* format, BufferType type,
+                        BufferUsage usage);
     virtual ~ElementBufferObject();
 
     virtual ElementBufferObject* clone() const;
 
     virtual void enable() const;
     virtual void disable() const;
-
-
-
 };
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_ELEMENT_BUFFER_OBJECT_H
+#endif  // IVW_ELEMENT_BUFFER_OBJECT_H

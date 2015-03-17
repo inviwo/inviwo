@@ -74,10 +74,12 @@ void PixelToBufferProcessor::inportChanged() {
 }
 
 void PixelToBufferProcessor::process() {
-    
-    double value = inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getValueAsVec4Double(fromPixel_.get())[channel_.get()];
+    double value =
+        inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getValueAsVec4Double(
+            fromPixel_.get())[channel_.get()];
 
-    BufferRAM_FLOAT64* values = values_.getEditableRepresentation<BufferRAM_FLOAT64>();
+    BufferRAMPrecision<double>* values =
+        values_.getEditableRepresentation<BufferRAMPrecision<double>>();
     values->add(value);
 }
 
@@ -86,7 +88,7 @@ void PixelToBufferProcessor::setPixelToCollectFrom(const ivec2& xy) {
 }
 
 void PixelToBufferProcessor::clearOutput() {
-    values_.getEditableRepresentation<BufferRAM_FLOAT64>()->setSize(0);
+    values_.getEditableRepresentation<BufferRAMPrecision<double> >()->setSize(0);
     invalidate(INVALID_OUTPUT);
 }
 

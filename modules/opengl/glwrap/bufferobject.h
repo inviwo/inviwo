@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFER_OBJECT_H
@@ -36,19 +36,16 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/util/referencecounter.h>
 
-
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API BufferObject: public Observable<BufferObjectObserver>, public ReferenceCounter  {
-
+class IVW_MODULE_OPENGL_API BufferObject : public Observable<BufferObjectObserver>,
+                                           public ReferenceCounter {
 public:
-    BufferObject(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, GLenum target = GL_ARRAY_BUFFER);
+    BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferType type,
+                 BufferUsage usage, GLenum target = GL_ARRAY_BUFFER);
     BufferObject(const BufferObject& rhs);
     virtual ~BufferObject();
     virtual BufferObject* clone() const;
-
-    void initialize();
-    void deinitialize();
 
     const Buffer* getAttribute() const;
     GLenum getFormatType() const;
@@ -61,17 +58,19 @@ public:
     void unbind() const;
 
     /**
-     * Set the size of the buffer in bytes. 
+     * Set the size of the buffer in bytes.
      * Convenience function for calling initialize(nullptr, sizeInBytes)
      * @param GLsizeiptr sizeInBytes
      */
     void setSize(GLsizeiptr sizeInBytes) { initialize(nullptr, sizeInBytes); }
-    void initialize(const void* data, GLsizeiptr sizeInBytes);
+
     void upload(const void* data, GLsizeiptr sizeInBytes);
 
     void download(void* data) const;
 
 private:
+    void initialize(const void* data, GLsizeiptr sizeInBytes);
+
     GLuint id_;
     GLenum usageGL_;
     GLenum target_;
@@ -80,7 +79,6 @@ private:
     GLsizeiptr sizeInBytes_;
 };
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_BUFFER_OBJECT_H
+#endif  // IVW_BUFFER_OBJECT_H

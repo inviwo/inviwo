@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
@@ -34,16 +34,10 @@
 
 namespace inviwo {
 
-
-Buffer::Buffer(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage):
-    Data(format), size_(size), type_(type), usage_(usage) {
-}
+Buffer::Buffer(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage)
+    : Data(format), size_(size), type_(type), usage_(usage) {}
 Buffer::Buffer(const Buffer& rhs)
-    : Data(rhs)
-    , size_(rhs.size_)
-    , type_(rhs.type_)
-    , usage_(rhs.usage_) {
-}
+    : Data(rhs), size_(rhs.size_), type_(rhs.type_), usage_(rhs.usage_) {}
 
 Buffer& Buffer::operator=(const Buffer& that) {
     if (this != &that) {
@@ -52,20 +46,14 @@ Buffer& Buffer::operator=(const Buffer& that) {
         type_ = that.type_;
         usage_ = that.usage_;
     }
-
     return *this;
 }
 
-Buffer* Buffer::clone() const {
-    return new Buffer(*this);
-}
+Buffer* Buffer::clone() const { return new Buffer(*this); }
 
-Buffer::~Buffer() {
-}
+Buffer::~Buffer() {}
 
-size_t Buffer::getSizeInBytes() {
-    return size_ * dataFormatBase_->getSize();
-}
+size_t Buffer::getSizeInBytes() { return size_ * dataFormatBase_->getSize(); }
 
 void Buffer::setSize(size_t size) {
     if (size != size_) {
@@ -74,7 +62,8 @@ void Buffer::setSize(size_t size) {
         if (lastValidRepresentation_) {
             // Resize last valid representation and remove the other ones
             static_cast<BufferRepresentation*>(lastValidRepresentation_)->setSize(size);
-            std::vector<DataRepresentation*>::iterator it = std::find(representations_.begin(), representations_.end(), lastValidRepresentation_);
+            std::vector<DataRepresentation*>::iterator it = std::find(
+                representations_.begin(), representations_.end(), lastValidRepresentation_);
 
             // First delete the representations before erasing them from the vector
             for (auto& elem : representations_) {
@@ -98,8 +87,6 @@ void Buffer::setSize(size_t size) {
     }
 }
 
-
-
 DataRepresentation* Buffer::createDefaultRepresentation() {
     return createBufferRAM(getSize(), dataFormatBase_, type_, usage_);
 }
@@ -107,10 +94,9 @@ DataRepresentation* Buffer::createDefaultRepresentation() {
 size_t Buffer::getSize() const {
     // We need to update the size if a representation has changed size
     if (lastValidRepresentation_)
-        const_cast<Buffer*>(this)->size_ = static_cast<const BufferRepresentation*>(lastValidRepresentation_)->getSize();
+        const_cast<Buffer*>(this)->size_ =
+            static_cast<const BufferRepresentation*>(lastValidRepresentation_)->getSize();
 
     return size_;
 }
-
 }
-

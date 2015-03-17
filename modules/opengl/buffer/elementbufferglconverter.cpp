@@ -24,65 +24,61 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/buffer/elementbufferglconverter.h>
 
 namespace inviwo {
 
-ElementBufferRAM2GLConverter::ElementBufferRAM2GLConverter(): RepresentationConverterType<ElementBufferGL>() {}
+ElementBufferRAM2GLConverter::ElementBufferRAM2GLConverter()
+    : RepresentationConverterType<ElementBufferGL>() {}
 
 ElementBufferRAM2GLConverter::~ElementBufferRAM2GLConverter() {}
 
 DataRepresentation* ElementBufferRAM2GLConverter::createFrom(const DataRepresentation* source) {
     const BufferRAM* bufferRAM = static_cast<const BufferRAM*>(source);
-    ElementBufferGL* bufferGL = new ElementBufferGL(bufferRAM->getSize(),
-                                                    bufferRAM->getDataFormat(),
-                                                    bufferRAM->getBufferType(),
-                                                    bufferRAM->getBufferUsage());
-    bufferGL->initialize(bufferRAM->getData(),
-                         bufferRAM->getSize()*bufferRAM->getSizeOfElement());
+    ElementBufferGL* bufferGL =
+        new ElementBufferGL(bufferRAM->getSize(), bufferRAM->getDataFormat(),
+                            bufferRAM->getBufferType(), bufferRAM->getBufferUsage());
+    bufferGL->upload(bufferRAM->getData(), bufferRAM->getSize() * bufferRAM->getSizeOfElement());
     return bufferGL;
 }
+
 void ElementBufferRAM2GLConverter::update(const DataRepresentation* source,
                                           DataRepresentation* destination) {
     const BufferRAM* src = static_cast<const BufferRAM*>(source);
     ElementBufferGL* dst = static_cast<ElementBufferGL*>(destination);
-    if (src->getSize() != dst->getSize()) 
-        dst->initialize(src->getData(), src->getSize()*src->getSizeOfElement());
-    else
-        dst->upload(src->getData(), src->getSize()*src->getSizeOfElement());
+
+    dst->setSize(src->getSize());
+    dst->upload(src->getData(), src->getSize() * src->getSizeOfElement());
 }
 
-
-ElementBufferGL2RAMConverter::ElementBufferGL2RAMConverter(): RepresentationConverterType<BufferRAM>() {}
+ElementBufferGL2RAMConverter::ElementBufferGL2RAMConverter()
+    : RepresentationConverterType<BufferRAM>() {}
 
 ElementBufferGL2RAMConverter::~ElementBufferGL2RAMConverter() {}
 
 DataRepresentation* ElementBufferGL2RAMConverter::createFrom(const DataRepresentation* source) {
     const ElementBufferGL* src = static_cast<const ElementBufferGL*>(source);
-    BufferRAM* dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferType(), src->getBufferUsage());
+    BufferRAM* dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferType(),
+                                     src->getBufferUsage());
 
-    if (dst) {
-        src->download(dst->getData());
-        return dst;
-    } else {
-        LogError("Cannot convert format from GL to RAM:" << src->getDataFormat()->getString());
-    }
+    if (!dst)
+        throw ConverterException(std::string("Cannot convert format from GL to RAM: ") +
+                                 src->getDataFormat()->getString());
 
-    return nullptr;
+    src->download(dst->getData());
+    return dst;
 }
 
-void ElementBufferGL2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void ElementBufferGL2RAMConverter::update(const DataRepresentation* source,
+                                          DataRepresentation* destination) {
     const ElementBufferGL* src = static_cast<const ElementBufferGL*>(source);
     BufferRAM* dst = static_cast<BufferRAM*>(destination);
 
-    if (src->getSize() != dst->getSize()) {
-        dst->setSize(src->getSize());
-    }
-
+    dst->setSize(src->getSize());
     src->download(dst->getData());
 }
 
-} // namespace
+}  // namespace

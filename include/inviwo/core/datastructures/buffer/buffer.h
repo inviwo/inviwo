@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFER_H
@@ -32,7 +32,6 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/data.h>
-
 
 namespace inviwo {
 
@@ -46,15 +45,12 @@ enum BufferType {
     NUMBER_OF_BUFFER_TYPES
 };
 
-enum BufferUsage {
-    STATIC,
-    DYNAMIC
-};
+enum BufferUsage { STATIC, DYNAMIC };
 
 class IVW_CORE_API Buffer : public Data {
-
 public:
-    Buffer(size_t size,  const DataFormatBase* format = DataFormatBase::get(), BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
+    Buffer(size_t size, const DataFormatBase* format = DataFormatBase::get(),
+           BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
     Buffer(const Buffer& rhs);
     Buffer& operator=(const Buffer& that);
     virtual Buffer* clone() const;
@@ -70,60 +66,43 @@ public:
 
 protected:
     virtual DataRepresentation* createDefaultRepresentation();
+
 private:
     size_t size_;
     BufferType type_;
     BufferUsage usage_;
 };
 
-template<typename T, BufferType A>
+template <typename T, BufferType A>
 class BufferPrecision : public Buffer {
-
 public:
     BufferPrecision(size_t size = 0, BufferUsage usage = STATIC)
-        : Buffer(size, DataFormat<T>::get(), A, usage) {
-    }
-    BufferPrecision(BufferUsage usage)
-        : Buffer(0, DataFormat<T>::get(), A, usage) {
-    }
-    BufferPrecision(const BufferPrecision& rhs)
-        : Buffer(rhs) {
-    }
+        : Buffer(size, DataFormat<T>::get(), A, usage) {}
+    BufferPrecision(BufferUsage usage) : Buffer(0, DataFormat<T>::get(), A, usage) {}
+    BufferPrecision(const BufferPrecision& rhs) : Buffer(rhs) {}
     BufferPrecision& operator=(const BufferPrecision& that) {
         if (this != &that) {
             Buffer::operator=(that);
         }
-
         return *this;
     }
-    virtual BufferPrecision<T, A>* clone() const {
-        return new BufferPrecision<T, A>(*this);
-    }
+    virtual BufferPrecision<T, A>* clone() const { return new BufferPrecision<T, A>(*this); }
 
-    virtual ~BufferPrecision() { }
+    virtual ~BufferPrecision() {}
 
 private:
-    static const DataFormatBase* defaultformat() {
-        return  DataFormat<T>::get();
-    }
-
+    static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
 };
 
-#define DataFormatBuffers(D, BUFFER_TYPE) BufferPrecision<D::type, BUFFER_TYPE>
+typedef BufferPrecision<vec2, POSITION_ATTRIB> Position2dBuffer;
+typedef BufferPrecision<vec2, TEXCOORD_ATTRIB> TexCoord2dBuffer;
+typedef BufferPrecision<vec3, POSITION_ATTRIB> Position3dBuffer;
+typedef BufferPrecision<vec4, COLOR_ATTRIB> ColorBuffer;
+typedef BufferPrecision<vec3, NORMAL_ATTRIB> NormalBuffer;
+typedef BufferPrecision<vec3, TEXCOORD_ATTRIB> TexCoord3dBuffer;
+typedef BufferPrecision<float, CURVATURE_ATTRIB> CurvatureBuffer;
+typedef BufferPrecision<std::uint32_t, INDEX_ATTRIB> IndexBuffer;
 
-typedef DataFormatBuffers(DataVec2FLOAT32, POSITION_ATTRIB) Position2dBuffer;
-typedef DataFormatBuffers(DataVec2FLOAT32, TEXCOORD_ATTRIB) TexCoord2dBuffer;
-typedef DataFormatBuffers(DataVec3FLOAT32, POSITION_ATTRIB) Position3dBuffer;
-typedef DataFormatBuffers(DataVec4FLOAT32, COLOR_ATTRIB) ColorBuffer;
-typedef DataFormatBuffers(DataVec3FLOAT32, NORMAL_ATTRIB) NormalBuffer;
-typedef DataFormatBuffers(DataVec3FLOAT32, TEXCOORD_ATTRIB) TexCoord3dBuffer;
-typedef DataFormatBuffers(DataFLOAT32, CURVATURE_ATTRIB) CurvatureBuffer;
-typedef DataFormatBuffers(DataUINT32, INDEX_ATTRIB) IndexBuffer;
+}  // namespace
 
-#define DataFormatIdMacro(i) typedef BufferPrecision<Data##i::type, POSITION_ATTRIB> Buffer_##i;
-#include <inviwo/core/util/formatsdefinefunc.h>
-
-
-} // namespace
-
-#endif // IVW_BUFFER_H
+#endif  // IVW_BUFFER_H

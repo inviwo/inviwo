@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFERCLGL_H
@@ -41,20 +41,19 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENCL_API BufferCLGL : public BufferCLBase, public BufferRepresentation, public BufferObjectObserver {
-
+class IVW_MODULE_OPENCL_API BufferCLGL : public BufferCLBase,
+                                         public BufferRepresentation,
+                                         public BufferObjectObserver {
 public:
-    BufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, BufferObject* data = nullptr,
+    BufferCLGL(size_t size, const DataFormatBase* format, BufferType type,
+               BufferUsage usage = STATIC, BufferObject* data = nullptr,
                cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     BufferCLGL(const BufferCLGL& rhs);
     virtual ~BufferCLGL();
-    virtual void initialize() {};
-    virtual void deinitialize();
     virtual BufferCLGL* clone() const;
 
-    virtual void setSize(size_t size);
-
-    void initialize(BufferObject* data);
+    virtual size_t getSize() const override;
+    virtual void setSize(size_t size) override;
 
     const cl::Buffer& getBuffer() const { return *(clBuffer_); }
     BufferObject* getBufferGL() const { return bufferObject_; }
@@ -64,7 +63,8 @@ public:
         OpenCL::getPtr()->getQueue().enqueueAcquireGLObjects(&syncBuffers, syncEvents);
     }
 
-    void releaseGLObject(std::vector<cl::Event>* syncEvents = nullptr, cl::Event* event= nullptr) const {
+    void releaseGLObject(std::vector<cl::Event>* syncEvents = nullptr,
+                         cl::Event* event = nullptr) const {
         std::vector<cl::Memory> syncBuffers(1, *clBuffer_);
         OpenCL::getPtr()->getQueue().enqueueReleaseGLObjects(&syncBuffers, syncEvents, event);
     }
@@ -81,9 +81,10 @@ public:
 protected:
     BufferObject* bufferObject_;
     cl_mem_flags readWriteFlag_;
+    size_t size_;
 };
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -92,8 +93,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferCLGL& value);
 
-} // namespace cl
+}  // namespace cl
 
-
-
-#endif // IVW_BUFFERCLGL_H
+#endif  // IVW_BUFFERCLGL_H

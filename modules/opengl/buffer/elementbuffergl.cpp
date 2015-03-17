@@ -34,13 +34,12 @@ namespace inviwo {
 ElementBufferGL::ElementBufferGL(size_t size, const DataFormatBase* format, BufferType type,
                                  BufferUsage usage, ElementBufferObject* data)
     : BufferGL(size, format, type, usage,
-               data != nullptr ? data : new ElementBufferObject(size, format, type, usage)) {}
+               data != nullptr ? data : new ElementBufferObject(size * format->getSize(), format,
+                                                                type, usage)) {}
 
-ElementBufferGL::~ElementBufferGL() {
-}
-ElementBufferGL* ElementBufferGL::clone() const {
-    return new ElementBufferGL(*this);
-}
+ElementBufferGL::~ElementBufferGL() {}
+
+ElementBufferGL* ElementBufferGL::clone() const { return new ElementBufferGL(*this); }
 
 
 } // namespace

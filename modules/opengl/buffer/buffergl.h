@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFERGL_H
@@ -39,18 +39,16 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API BufferGL: public BufferRepresentation {
-
+class IVW_MODULE_OPENGL_API BufferGL : public BufferRepresentation {
 public:
-    BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, BufferObject* data = nullptr);
+    BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage,
+             BufferObject* data = nullptr);
     BufferGL(const BufferGL& rhs);
     virtual ~BufferGL();
     virtual BufferGL* clone() const;
-    
-    virtual void initialize();
-    virtual void deinitialize();
 
-    virtual void setSize(size_t size);
+    virtual void setSize(size_t size) override;
+    virtual size_t getSize() const override;
 
     GLenum getFormatType() const;
     GLuint getId() const;
@@ -60,7 +58,6 @@ public:
 
     void bind() const;
 
-    void initialize(const void* data, GLsizeiptr sizeInBytes);
     void upload(const void* data, GLsizeiptr sizeInBytes);
 
     void download(void* data) const;
@@ -71,9 +68,9 @@ public:
 private:
     BufferObject* buffer_;
     mutable BufferObjectArray* bufferArray_;
+    size_t size_;
 };
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_BUFFERGL_H
+#endif  // IVW_BUFFERGL_H
