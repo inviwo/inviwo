@@ -49,7 +49,7 @@ class Polygon  {
 
 public:
     Polygon(size_t size) : size_(size) {
-        list_ = new T[size_];
+        list_ = new T[size_]();
     }
 
     Polygon(const Polygon& rhs) : size_(rhs.size()) {
