@@ -75,6 +75,7 @@ public:
     void samplingRate(float samplingRate);
     float samplingRate() const { return samplingRate_; }
 
+	const CameraProperty*  getCamera() const { return camera_; }
     void setCamera(CameraProperty* camera) { camera_ = camera; }
     void setLightingProperties(const SimpleLightingProperty& light);
     void setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent);

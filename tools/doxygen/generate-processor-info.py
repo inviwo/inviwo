@@ -1,7 +1,7 @@
 #*********************************************************************************
 #
 # Inviwo - Interactive Visualization Workshop
- *
+#
 # Copyright (c) 2013-2015 Inviwo Foundation
 # All rights reserved.
 #
