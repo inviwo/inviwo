@@ -126,8 +126,8 @@ void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {
 
 void ImageInport::propagateResizeToPredecessor(ResizeEvent* resizeEvent) {
     ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(getConnectedOutport());
-    if (imageOutport && !isOutportDeterminingSize()) {
-        imageOutport->changeDataDimensions(resizeEvent);
+    if (imageOutport) {
+       imageOutport->changeDataDimensions(resizeEvent);
     }
 }
 
@@ -330,7 +330,7 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     //      Resize map data to required dimensions
     //  Else
     //      Clone the current data, resize it and make new entry in map
-    Image* resultImage = 0;
+    Image* resultImage = nullptr;
 
     if (imageDataMap_.find(reqDimensionString) != imageDataMap_.end())
         resultImage = imageDataMap_[reqDimensionString];
@@ -384,6 +384,8 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
 
             //Make sure you don't delete data_
             if (invalidImage != data_) {
+                if (invalidImage == resultImage)
+                    resultImage = nullptr;
                 delete invalidImage;
                 imageDataMap_.erase(invalidImageDataString);
             }
@@ -480,7 +482,7 @@ Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
 
 void ImageOutport::setLargestImageData(ResizeEvent* resizeEvent) {
     uvec2 maxDimensions(0);
-    Image* largestImage = 0;
+    Image* largestImage = nullptr;
 
     for (auto& elem : imageDataMap_) {
         uvec2 mapDataDimensions = elem.second->getDimensions();
