@@ -110,13 +110,13 @@ LayerRAMPrecision<T>::~LayerRAMPrecision() {
 
 template<typename T>
 void LayerRAMPrecision<T>::initialize() {
-    data_ = new T[dimensions_.x*dimensions_.y];
+    data_ = new T[dimensions_.x*dimensions_.y]();
 }
 
 template<typename T>
 void LayerRAMPrecision<T>::initialize(void* data) {
     if (data == nullptr)
-        data_ = new T[dimensions_.x*dimensions_.y];
+        data_ = new T[dimensions_.x*dimensions_.y]();
     else
         data_ = data;
 }

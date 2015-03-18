@@ -99,14 +99,14 @@ VolumeRAMPrecision<T>::VolumeRAMPrecision(uvec3 dimensions, const DataFormatBase
     : VolumeRAM(format)
     , dimensions_(dimensions)
     , ownsDataPtr_(true)
-    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z]) {}
+    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z]()) {}
 
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, uvec3 dimensions, const DataFormatBase* format)
     : VolumeRAM(format)
     , dimensions_(dimensions)
     , ownsDataPtr_(true)
-    , data_(data ? data : new T[dimensions_.x * dimensions_.y * dimensions_.z]) {}
+    , data_(data ? data : new T[dimensions_.x * dimensions_.y * dimensions_.z]()) {}
 
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs)
