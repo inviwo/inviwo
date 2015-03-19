@@ -116,8 +116,8 @@ public:
     virtual void setReadOnly(const bool& value);
     virtual bool getReadOnly() const;
 
-    void setInvalidationLevel(InvalidationLevel invalidationLevel);
-    InvalidationLevel getInvalidationLevel() const;
+    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel);
+    virtual InvalidationLevel getInvalidationLevel() const;
    
     virtual void setOwner(PropertyOwner* owner);
     PropertyOwner* getOwner();

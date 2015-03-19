@@ -40,7 +40,8 @@ CompositeProperty::CompositeProperty(std::string identifier, std::string display
                                      PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics)
     , PropertyOwner()
-    , collapsed_(false) {}
+    , collapsed_(false)
+    , subPropertyInvalidationLevel_(VALID) {}
 
 CompositeProperty::CompositeProperty(const CompositeProperty& rhs)
     : Property(rhs), PropertyOwner(rhs), collapsed_(rhs.collapsed_) {}
@@ -50,6 +51,7 @@ CompositeProperty& CompositeProperty::operator=(const CompositeProperty& that) {
         Property::operator=(that);
         PropertyOwner::operator=(that);
         collapsed_ = that.collapsed_;
+        subPropertyInvalidationLevel_ = that.subPropertyInvalidationLevel_;
     }
     return *this;
 }
@@ -136,11 +138,20 @@ void CompositeProperty::set(const Property* srcProperty) {
     InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 }
 
+inviwo::InvalidationLevel CompositeProperty::getInvalidationLevel() const  {
+    return std::min(subPropertyInvalidationLevel_, Property::getInvalidationLevel());
+}
+
 void CompositeProperty::invalidate(InvalidationLevel invalidationLevel,
                                    Property* modifiedProperty) {
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
-    Property::setInvalidationLevel(invalidationLevel);
+    subPropertyInvalidationLevel_ = invalidationLevel;
     Property::propertyModified();
+}
+
+void CompositeProperty::setValid() {
+    PropertyOwner::setValid();
+    subPropertyInvalidationLevel_ = VALID;
 }
 
 void CompositeProperty::setCurrentStateAsDefault() {

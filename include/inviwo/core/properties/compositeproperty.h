@@ -43,7 +43,7 @@ public:
     InviwoPropertyInfo();
 
     CompositeProperty(std::string identifier, std::string displayName,
-                      InvalidationLevel invalidationLevel=INVALID_OUTPUT,
+                      InvalidationLevel invalidationLevel = INVALID_RESOURCES,
                       PropertySemantics semantics = PropertySemantics::Default);
     
     CompositeProperty(const CompositeProperty& rhs);
@@ -63,6 +63,7 @@ public:
     virtual void set(const Property* src) override;
     virtual void setPropertyModified(bool modified) override;
     virtual bool isPropertyModified() const override;
+    virtual InvalidationLevel getInvalidationLevel() const override;
 
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
@@ -77,6 +78,7 @@ public:
     // Override from the PropertyOwner
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty = 0) override;
+    void setValid() override; 
     virtual Processor* getProcessor() override;
     virtual const Processor* getProcessor() const override;
     virtual std::vector<std::string> getPath() const override;
@@ -85,6 +87,7 @@ public:
     virtual void deserialize(IvwDeserializer& d) override;
     
 private:
+    InvalidationLevel subPropertyInvalidationLevel_;
     bool collapsed_;
 };
 

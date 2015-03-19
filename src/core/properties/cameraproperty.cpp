@@ -215,12 +215,7 @@ void CameraProperty::updateViewMatrix() {
 }
 
 void CameraProperty::invalidate() {
-    if (!isInvalidationLocked()) Property::propertyModified();
-}
-
-void CameraProperty::invalidate(InvalidationLevel invalidationLevel,
-                                Property* modifiedProperty) {
-    CompositeProperty::invalidate(invalidationLevel, modifiedProperty);
+    if (!isInvalidationLocked()) CompositeProperty::invalidate(INVALID_OUTPUT, this);
 }
 
 void CameraProperty::invokeEvent(Event* event) {

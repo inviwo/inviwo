@@ -106,10 +106,6 @@ public:
 
     void invokeEvent(Event* event);
 
-
-    virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = 0);
-
     // Local camera invalidation
     // Use lock and unlock to set several camera properties without casing evaluation,
     // then call invalidate().
