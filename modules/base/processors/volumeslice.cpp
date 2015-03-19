@@ -43,7 +43,7 @@ ProcessorCodeState(VolumeSlice, CODE_STATE_STABLE);
 VolumeSlice::VolumeSlice()
     : Processor()
     , inport_("volume.inport")
-    , outport_("image.outport", false)
+    , outport_("image.outport")
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
     , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true, VALID)
@@ -65,6 +65,7 @@ VolumeSlice::VolumeSlice()
                          new Action(this, &VolumeSlice::eventGestureShiftSlice)) {
     addPort(inport_);
     addPort(outport_);
+    outport_.setHandleResizeEvents(false);
     sliceAlongAxis_.addOption("x", "X axis", CoordinateEnums::X);
     sliceAlongAxis_.addOption("y", "Y axis", CoordinateEnums::Y);
     sliceAlongAxis_.addOption("z", "Z axis", CoordinateEnums::Z);

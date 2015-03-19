@@ -140,12 +140,6 @@ Image* VolumeSlice::VolumeSliceDispatcher::dispatch(const Volume* vol,
         image = new Image(dim, format);
     }
 
-    // Check the dimension is right
-    //if (dim != image->getDimensions()) {
-        //image = new Image(dim, format);
-        //image->resize(dim);
-    //}
-
     // Make sure there is a ImageRAM in image, and get LayerRAM
     LayerRAMPrecision<D>* layer = dynamic_cast<LayerRAMPrecision<D>*>(
         image->getEditableRepresentation<ImageRAM>()->getColorLayerRAM());
