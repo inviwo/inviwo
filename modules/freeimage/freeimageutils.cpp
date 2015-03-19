@@ -402,8 +402,17 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const T* data, FREE_IMAGE_TYPE ty
 
         FIBITMAP* dibConvert = FreeImage_ConvertToStandardType(dib);
         return dibConvert;
-    } else
-        memcpy(bits, data, dim.x * dim.y * bytespp);
+    }
+    else{
+        //If with dimensions NOT being a multiple of 4
+        if (channels != 4){
+            for (int rows = 0; rows < dim.y; rows++)
+                std::memcpy(FreeImage_GetScanLine(dib, rows), data + rows*dim.x, dim.x*bytespp);
+        }
+        else{
+            std::memcpy(bits, data, dim.x*dim.y*bytespp);
+        }
+    }
 
     return dib;
 }
@@ -479,7 +488,7 @@ void* FreeImageUtils::fiBitmapToDataArray(void* dst, FIBITMAP* bitmap, size_t bi
         dst = static_cast<void*>(dstAlloc);
     }
 
-    memcpy(dst, pixelValues, dim.x * dim.y * sizeof(T));
+    std::memcpy(dst, pixelValues, dim.x * dim.y * sizeof(T));
     FreeImage_Unload(bitmapNEW);
     return dst;
 }
@@ -531,7 +540,7 @@ void* FreeImageUtils::fiBitmapToDataArrayAndRescale(void* dst, FIBITMAP* bitmap,
         dst = static_cast<void*>(dstAlloc);
     }
 
-    memcpy(dst, pixelValues, dst_dim.x * dst_dim.y * sizeof(T));
+    std::memcpy(dst, pixelValues, dst_dim.x * dst_dim.y * sizeof(T));
     FreeImage_Unload(bitmapRescaled);
     return dst;
 }
