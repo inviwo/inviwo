@@ -43,7 +43,7 @@ ProcessorCodeState(VolumeSlice, CODE_STATE_STABLE);
 VolumeSlice::VolumeSlice()
     : Processor()
     , inport_("volume.inport")
-    , outport_("image.outport")
+    , outport_("image.outport", false)
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
     , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true, VALID)
@@ -88,10 +88,6 @@ VolumeSlice::VolumeSlice()
 }
 
 VolumeSlice::~VolumeSlice() {}
-
-void VolumeSlice::initialize() { Processor::initialize(); }
-
-void VolumeSlice::deinitialize() { Processor::deinitialize(); }
 
 void VolumeSlice::invokeInteractionEvent(Event* event) {
     if (!handleInteractionEvents_) return;

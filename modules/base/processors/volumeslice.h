@@ -71,9 +71,6 @@ public:
 
     InviwoProcessorInfo();
 
-    void initialize();
-    void deinitialize();
-
     virtual void invokeInteractionEvent(Event* event);
 
 protected:
@@ -137,16 +134,17 @@ Image* VolumeSlice::VolumeSliceDispatcher::dispatch(const Volume* vol,
     }
 
     // Check that the format is right
-    if (format == img->getDataFormat()) {
+    if (format == img->getDataFormat() && dim == img->getDimensions()) {
         image = img;
     } else {
         image = new Image(dim, format);
     }
 
     // Check the dimension is right
-    if (dim != image->getDimensions()) {
-        image->resize(dim);
-    }
+    //if (dim != image->getDimensions()) {
+        //image = new Image(dim, format);
+        //image->resize(dim);
+    //}
 
     // Make sure there is a ImageRAM in image, and get LayerRAM
     LayerRAMPrecision<D>* layer = dynamic_cast<LayerRAMPrecision<D>*>(
