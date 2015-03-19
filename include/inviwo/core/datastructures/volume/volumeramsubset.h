@@ -138,7 +138,7 @@ void VolumeRAMSubSet::evaluate() {
             size_t subVolumePos = ((j + trueBorder.llf.y) * dimsWithBorder.x) +
                                   ((i + trueBorder.llf.z) * dimsWithBorder.x * dimsWithBorder.y) +
                                   trueBorder.llf.x;
-            memcpy(dst + subVolumePos, (src + volumePos + initialStartPos), dataSize);
+            std::memcpy(dst + subVolumePos, (src + volumePos + initialStartPos), dataSize);
         }
     }
 

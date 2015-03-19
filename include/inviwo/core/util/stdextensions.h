@@ -46,7 +46,7 @@ template <class T>
 typename std::enable_if<std::is_array<T>::value, std::unique_ptr<T> >::type make_unique(
     std::size_t n) {
     typedef typename std::remove_extent<T>::type RT;
-    return std::unique_ptr<T>(new RT[n]);
+    return std::unique_ptr<T>(new RT[n]());
 }
 
 }
