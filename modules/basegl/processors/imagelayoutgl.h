@@ -71,10 +71,6 @@ public:
     const std::vector<Inport*>& getInports(Event*) const;
     const std::vector<uvec4>& getViewCoords();
 
-	bool isReady() const override {
-		return true;
-	}
-
 protected:
     void process();
 
