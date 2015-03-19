@@ -120,8 +120,6 @@ void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {
     
     resizeEvent->setSize(dimensions_);
     propagateResizeToPredecessor(resizeEvent);
-    
-    invalidate(INVALID_OUTPUT);
 }
 
 void ImageInport::propagateResizeToPredecessor(ResizeEvent* resizeEvent) {
@@ -462,14 +460,9 @@ Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
 
         mapDataInvalid_ = false;
     }
-
-    for (auto& elem : imageDataMap_) {
-        if (elem.second->getDimensions() == requiredDimensions) {
-            return elem.second;
-        } else if (elem.first == glm::to_string(requiredDimensions)) {
-            elem.second->resize(requiredDimensions);
-            return elem.second;
-        }
+    auto it = imageDataMap_.find(glm::to_string(requiredDimensions));
+    if (it != imageDataMap_.end()){
+        return it->second;
     }
 
     Image* resultImage = data_->clone();
