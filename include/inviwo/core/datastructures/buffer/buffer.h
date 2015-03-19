@@ -73,7 +73,7 @@ private:
     BufferUsage usage_;
 };
 
-template <typename T, BufferType A>
+template <typename T, BufferType A = POSITION_ATTRIB>
 class BufferPrecision : public Buffer {
 public:
     BufferPrecision(size_t size = 0, BufferUsage usage = STATIC)

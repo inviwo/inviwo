@@ -68,8 +68,6 @@ public:
     void set(size_t index, const T& item);
     T get(size_t index) const;
 
-    size_t size() const;
-
     void clear();
 
 private:
@@ -135,62 +133,42 @@ const std::vector<T>* BufferRAMPrecision<T>::getDataContainer() const { return d
 
 template<typename T>
 void BufferRAMPrecision<T>::setValueFromSingleDouble(size_t index, double val) {
-    T* data = static_cast<T*>(&data_->front());
-    getDataFormat()->doubleToValue(val, &(data[index]));
+    (*data_)[index] = util::glm_convert<T>(val);
 }
 
 template<typename T>
 void BufferRAMPrecision<T>::setValueFromVec2Double(size_t index, dvec2 val) {
-    T* data = static_cast<T*>(&data_->front());
-    getDataFormat()->vec2DoubleToValue(val, &(data[index]));
+    (*data_)[index] = util::glm_convert<T>(val);
 }
 
 template<typename T>
 void BufferRAMPrecision<T>::setValueFromVec3Double(size_t index, dvec3 val) {
-    T* data = static_cast<T*>(&data_->front());
-    getDataFormat()->vec3DoubleToValue(val, &(data[index]));
+    (*data_)[index] = util::glm_convert<T>(val);
 }
 
 template<typename T>
 void BufferRAMPrecision<T>::setValueFromVec4Double(size_t index, dvec4 val) {
-    T* data = static_cast<T*>(&data_->front());
-    getDataFormat()->vec4DoubleToValue(val, &(data[index]));
+    (*data_)[index] = util::glm_convert<T>(val);
 }
 
 template<typename T>
 double BufferRAMPrecision<T>::getValueAsSingleDouble(size_t index) const {
-    double result;
-    T* data = static_cast<T*>(&data_->front());
-    T val = data[index];
-    result = getDataFormat()->valueToNormalizedDouble(&val);
-    return result;
+    return util::glm_convert_normalized<double>((*data_)[index]);
 }
 
 template<typename T>
 dvec2 BufferRAMPrecision<T>::getValueAsVec2Double(size_t index) const {
-    dvec2 result;
-    T* data = static_cast<T*>(&data_->front());
-    T val = data[index];
-    result = getDataFormat()->valueToNormalizedVec2Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec2>((*data_)[index]);
 }
 
 template<typename T>
 dvec3 BufferRAMPrecision<T>::getValueAsVec3Double(size_t index) const {
-    dvec3 result;
-    T* data = static_cast<T*>(&data_->front());
-    T val = data[index];
-    result = getDataFormat()->valueToNormalizedVec3Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec3>((*data_)[index]);
 }
 
 template<typename T>
 dvec4 BufferRAMPrecision<T>::getValueAsVec4Double(size_t index) const {
-    dvec4 result;
-    T* data = static_cast<T*>(&data_->front());
-    T val = data[index];
-    result = getDataFormat()->valueToNormalizedVec4Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec4>((*data_)[index]);
 }
 
 template<typename T>
