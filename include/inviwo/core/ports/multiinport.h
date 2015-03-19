@@ -74,7 +74,7 @@ protected:
 
     /**
      * Derived classes of Port will not have access to Port::setProcessor.
-     * To make it simeple and avoid template nightmares
+     * To make it simple and avoid template nightmares
      * this class is instead friend of Port. This method
      * allows MultiDataInport<T,U> classes
      * to call setProcessor on a port through this helper function.

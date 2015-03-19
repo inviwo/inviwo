@@ -46,9 +46,6 @@ public:
     DataInport(std::string identifier, InvalidationLevel invalidationLevel=INVALID_OUTPUT);
     virtual ~DataInport();
 
-    void initialize();
-    void deinitialize();
-
     virtual bool canConnectTo(Port* port) const;
     virtual void connectTo(Outport* port);
 
@@ -63,18 +60,11 @@ public:
 
 template <typename T>
 DataInport<T>::DataInport(std::string identifier, InvalidationLevel invalidationLevel)
-    : SingleInport(identifier, invalidationLevel)
-{
+    : SingleInport(identifier, invalidationLevel) {
 }
 
 template <typename T>
 DataInport<T>::~DataInport() {}
-
-template <typename T>
-void DataInport<T>::initialize() {}
-
-template <typename T>
-void DataInport<T>::deinitialize() {}
 
 template <typename T>
 bool DataInport<T>::canConnectTo(Port* port) const {

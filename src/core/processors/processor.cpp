@@ -189,18 +189,10 @@ bool Processor::allInportsAreReady() const {
 }
 
 void Processor::initialize() {
-    for (auto& elem : inports_) (elem)->initialize();
-
-    for (auto& elem : outports_) (elem)->initialize();
-
     initialized_ = true;
 }
 
 void Processor::deinitialize() {
-    for (auto& elem : inports_) (elem)->deinitialize();
-
-    for (auto& elem : outports_) (elem)->deinitialize();
-
     initialized_ = false;
 }
 

@@ -45,9 +45,6 @@ public:
         InvalidationLevel invalidationLevel=INVALID_OUTPUT);
     virtual ~BufferInport();
 
-    void initialize();
-    void deinitialize();
-
     uvec3 getColorCode() const;
     static uvec3 colorCode;
     virtual std::string getClassIdentifier() const {return "org.inviwo.BufferInport";}
@@ -60,9 +57,6 @@ public:
     BufferOutport(std::string identifier, size_t size, const DataFormatBase* format = DataFLOAT32::get(),
         InvalidationLevel invalidationLevel=INVALID_OUTPUT);
     virtual ~BufferOutport();
-
-    void initialize();
-    void deinitialize();
 
     uvec3 getColorCode() const;
     virtual std::string getClassIdentifier() const {return "org.inviwo.BufferOutport";}

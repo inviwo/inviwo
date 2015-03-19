@@ -24,47 +24,29 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/ports/volumeport.h>
 
-
 namespace inviwo {
 
-uvec3 VolumeInport::colorCode = uvec3(188,101,101);
+uvec3 VolumeInport::colorCode = uvec3(188, 101, 101);
 
 // Volume Inport
 VolumeInport::VolumeInport(std::string identifier, InvalidationLevel invalidationLevel)
-    : DataInport<Volume>(identifier, invalidationLevel)
-{}
+    : DataInport<Volume>(identifier, invalidationLevel) {}
 
-VolumeInport::~VolumeInport() {
-}
+VolumeInport::~VolumeInport() {}
 
-void VolumeInport::initialize() {}
-
-void VolumeInport::deinitialize() {}
-
-
-uvec3 VolumeInport::getColorCode() const {
-    return VolumeInport::colorCode;
-}
+uvec3 VolumeInport::getColorCode() const { return VolumeInport::colorCode; }
 
 // Volume Outport
 VolumeOutport::VolumeOutport(std::string identifier, InvalidationLevel invalidationLevel)
-    : DataOutport<Volume>(identifier, invalidationLevel)
-{
-}
+    : DataOutport<Volume>(identifier, invalidationLevel) {}
 
 VolumeOutport::~VolumeOutport() {}
 
-void VolumeOutport::initialize() {}
+uvec3 VolumeOutport::getColorCode() const { return VolumeInport::colorCode; }
 
-void VolumeOutport::deinitialize() {}
-
-uvec3 VolumeOutport::getColorCode() const {
-    return VolumeInport::colorCode;
-}
-
-} // namespace
+}  // namespace

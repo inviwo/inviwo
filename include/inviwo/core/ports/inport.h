@@ -50,10 +50,6 @@ public:
     Inport(std::string identifier = "");
     virtual ~Inport();
 
-    //FIXME: Temporary fix. Remove this to make Inport abstract class
-    virtual void initialize() {}
-    virtual void deinitialize() {}
-
     virtual bool isConnected() const;
     virtual bool isReady() const;
 

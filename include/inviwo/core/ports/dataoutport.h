@@ -50,9 +50,6 @@ public:
     DataOutport(std::string identifier, InvalidationLevel invalidationLevel=INVALID_OUTPUT);
     virtual ~DataOutport();
 
-    void initialize();
-    void deinitialize();
-
     virtual T* getData();
     virtual DataSequence<T>* getDataSequence();
 
@@ -90,12 +87,6 @@ DataOutport<T>::~DataOutport() {
     if (ownsData_ && data_)
         delete data_;
 }
-
-template <typename T>
-void DataOutport<T>::initialize() {}
-
-template <typename T>
-void DataOutport<T>::deinitialize() {}
 
 template <typename T>
 T* DataOutport<T>::getData() {
@@ -139,37 +130,28 @@ const DataSequence<T>* DataOutport<T>::getConstDataSequence() const {
 
 template <typename T>
 void DataOutport<T>::setData(T* data, bool ownsData) {
-    if (ownsData_ && data_) {
-        if (data != data_) {
-            //Delete old data
-            delete data_;
-        }
+    if (ownsData_ && data_ && data_ != data) {
+        delete data_; //Delete old data
     }
 
     isSequence_ = (dynamic_cast<DataSequence<T>*>(data) != nullptr);
-
     ownsData_ = ownsData;
-    //Add reference to new data
-    data_ = data;
+    
+    data_ = data; //Add reference to new data
 
     dataChanged();
 }
 
 template <typename T>
 void DataOutport<T>::setConstData(const T* data) {
-    if (ownsData_ && data_) {
-        if (data != data_) {
-            //Delete old data
-            delete data_;
-        }
+    if (ownsData_ && data_ && data_ != data) {
+        delete data_; //Delete old data
     }
 
     ownsData_ = false;
-
     isSequence_ = (dynamic_cast<const DataSequence<T>*>(data) != nullptr);
-
-    //Add reference to new data
-    data_ = const_cast<T*>(data);
+   
+    data_ = const_cast<T*>(data); //Add reference to new data
 
     dataChanged();
 }
