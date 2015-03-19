@@ -232,7 +232,7 @@ void VolumeRaycasterCL::setDefaultBackgroundColor(const vec4 color) {
         defaultBackground_.getEditableRepresentation<LayerRAM_Vec4UINT8>();
 	unsigned char* data = static_cast<unsigned char*>(defaultBGRAM->getData());
 	for (int i = 0; i < 4; ++i) {
-		data[i] = static_cast<unsigned char>(glm::floor((color[i] + 0.5f) * 255.f));
+		data[i] = static_cast<unsigned char>(glm::floor(color[i] * 255.f + 0.5f));
 	}
 }
 
