@@ -100,7 +100,7 @@ BufferRAMPrecision<T>& inviwo::BufferRAMPrecision<T>::operator=(const BufferRAMP
     if (this != &that) {
         size_ = that.getSize();
         initialize();
-        memcpy(data_, that.getData(), size_*sizeof(T));
+        std::memcpy(data_, that.getData(), size_*sizeof(T));
     }
     return *this;
 }

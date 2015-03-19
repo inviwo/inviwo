@@ -232,13 +232,15 @@ void VolumeRAMPrecision<T>::setValuesFromVolume(const VolumeRAM* src, const uvec
 
     size_t volumePos;
     size_t subVolumePos;
-    for (size_t i = 0; i < subSize.z; i++) {
-        for (size_t j = 0; j < subSize.y; j++) {
-            volumePos = (j * dimensions_.x) + (i * dimensions_.x * dimensions_.y);
-            subVolumePos = ((j + subOffset.y) * srcDims.x) +
-                           ((i + subOffset.z) * srcDims.x * srcDims.y) + subOffset.x;
-            memcpy((data_.get() + volumePos + initialStartPos), (srcData + subVolumePos), dataSize);
-        }
+    ivec3 subSizeI = ivec3(subSize);
+#pragma omp parallel for
+    for (int zy = 0; zy < subSizeI.z*subSizeI.y; ++zy) {
+        int z = zy / subSizeI.y;
+        int y = zy % subSizeI.y;
+        volumePos = (y * dimensions_.x) + (z * dimensions_.x * dimensions_.y);
+        subVolumePos = ((y + subOffset.y) * srcDims.x) +
+            ((z + subOffset.z) * srcDims.x * srcDims.y) + subOffset.x;
+        std::memcpy((data_.get() + volumePos + initialStartPos), (srcData + subVolumePos), dataSize);
     }
 }
 

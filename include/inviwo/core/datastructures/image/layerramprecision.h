@@ -83,7 +83,7 @@ template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
     : LayerRAM(rhs) {
     initialize();
-    memcpy(data_, rhs.getData(), dimensions_.x * dimensions_.y * sizeof(T));
+    std::memcpy(data_, rhs.getData(), dimensions_.x * dimensions_.y * sizeof(T));
 }
 
 template <typename T>
@@ -92,7 +92,7 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         LayerRAM::operator=(that);
         delete[] data_;
         initialize();
-        memcpy(data_, that.getData(), dimensions_.x*dimensions_.y*sizeof(T));
+        std::memcpy(data_, that.getData(), dimensions_.x*dimensions_.y*sizeof(T));
     }
 
     return *this;
