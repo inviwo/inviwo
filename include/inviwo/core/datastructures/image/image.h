@@ -42,7 +42,7 @@ class ImageInport;
 
 class IVW_CORE_API Image : public DataGroup {
 public:
-    Image(uvec2 dimensions = uvec2(32, 32), const DataFormatBase* format = DataVec4UINT8::get());
+    Image(uvec2 dimensions = uvec2(8, 8), const DataFormatBase* format = DataVec4UINT8::get());
     Image(Layer* colorLayer);
     Image(const Image&);
     Image& operator=(const Image& that);
@@ -51,7 +51,7 @@ public:
     virtual std::string getDataInfo() const;
 
     void deinitialize();
-    void initialize(Layer* colorLayer = nullptr, uvec2 dimensions = uvec2(32, 32),
+    void initialize(Layer* colorLayer = nullptr, uvec2 dimensions = uvec2(8, 8),
                     const DataFormatBase* format = DataVec4UINT8::get());
 
     uvec2 getDimensions() const;

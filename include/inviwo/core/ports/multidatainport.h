@@ -111,6 +111,8 @@ void MultiDataInport<T, U>::connectTo(Outport* outport) {
     }
     setProcessorHelper(inport, getProcessor());
     inport->connectTo(outport);
+    inport->setChanged(true);
+    invalidate(INVALID_OUTPUT);
 }
 
 template < typename T, typename U /*= DataInport<T> */>

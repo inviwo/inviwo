@@ -40,7 +40,7 @@ uvec3 ImageInport::colorCode = uvec3(90, 127, 183);
 ImageInport::ImageInport(std::string identifier, bool outportDeterminesSize,
                          InvalidationLevel invalidationLevel)
     : DataInport<Image>(identifier, invalidationLevel)
-    , dimensions_(uvec2(32, 32))
+    , dimensions_(uvec2(8, 8))
     , resizeScale_(vec2(1.f, 1.f))
     , outportDeterminesSize_(outportDeterminesSize) {}
 
@@ -140,7 +140,7 @@ uvec2 ImageInport::getDimensions() const {
 const Image* ImageInport::getData() const {
     if (isConnected()) {
         ImageOutport* outport = dynamic_cast<ImageOutport*>(getConnectedOutport());
-        if (isOutportDeterminingSize()) {
+        if (isOutportDeterminingSize() || dimensions_ == uvec2(8, 8)) {
             return outport->getConstData();
         } else {
             return const_cast<const Image*>(outport->getResizedImageData(dimensions_));
@@ -179,7 +179,7 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            InvalidationLevel invalidationLevel,
                            bool handleResizeEvents)
     : DataOutport<Image>(identifier, invalidationLevel)
-    , dimensions_(uvec2(32, 32))
+    , dimensions_(uvec2(8, 8))
     , mapDataInvalid_(true)
     , handleResizeEvents_(handleResizeEvents) {
     
@@ -279,6 +279,11 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     // and checking registeredDimensions.
     // Allocates space holder, sets largest data, cleans up un-used data
     uvec2 requiredDimensions = resizeEvent->size();
+
+    // Avoid unwanted propagation
+    if (requiredDimensions == uvec2(8, 8))
+        return;
+
     uvec2 previousDimensions = resizeEvent->previousSize();
     std::string prevDimensionString = glm::to_string(previousDimensions);
     std::string reqDimensionString = glm::to_string(requiredDimensions);
@@ -393,7 +398,7 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     uvec2 outDim;
 
     //Don't continue is outport determine output size
-    if (isHandlingResizeEvents()) {
+    if (isHandlingResizeEvents() || dimensions_ == uvec2(8, 8)) {
         outDim = getDimensions();
         // Set largest data
         setLargestImageData(resizeEvent);
@@ -451,12 +456,19 @@ Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
         }
 
         // Resize all map data once
+        bool delete88 = false;
         for (auto& elem : imageDataMap_) {
             if (elem.second != data_) {
                 uvec2 mapDataDimensions = elem.second->getDimensions();
-                data_->resizeRepresentations(elem.second, mapDataDimensions);
+                if (elem.second != data_ && mapDataDimensions == uvec2(8, 8)){
+                    delete elem.second;
+                    delete88 = true;
+                }
+                else
+                    data_->resizeRepresentations(elem.second, mapDataDimensions);
             }
         }
+        if (delete88) imageDataMap_.erase(glm::to_string(uvec2(8, 8)));
 
         mapDataInvalid_ = false;
     }

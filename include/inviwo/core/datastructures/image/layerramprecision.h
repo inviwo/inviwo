@@ -37,9 +37,9 @@ namespace inviwo {
 template <typename T>
 class LayerRAMPrecision : public LayerRAM {
 public:
-    LayerRAMPrecision(uvec2 dimensions = uvec2(32, 32), LayerType type = COLOR_LAYER,
+    LayerRAMPrecision(uvec2 dimensions = uvec2(8, 8), LayerType type = COLOR_LAYER,
                       const DataFormatBase* format = defaultformat());
-    LayerRAMPrecision(T* data, uvec2 dimensions = uvec2(32, 32), LayerType type = COLOR_LAYER,
+    LayerRAMPrecision(T* data, uvec2 dimensions = uvec2(8, 8), LayerType type = COLOR_LAYER,
                       const DataFormatBase* format = defaultformat());
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);

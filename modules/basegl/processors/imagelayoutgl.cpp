@@ -69,7 +69,7 @@ ImageLayoutGL::ImageLayoutGL()
     layout_.setCurrentStateAsDefault();
     addProperty(layout_);
     horizontalSplitter_.setVisible(false);
-	horizontalSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
+    horizontalSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
     addProperty(horizontalSplitter_);
     verticalSplitter_.setVisible(false);
     addProperty(verticalSplitter_);
@@ -137,37 +137,39 @@ void ImageLayoutGL::multiInportChanged() {
         uvec2 outDimU = outport_.getData()->getDimensions();
         vec2 outDim = vec2(outDimU.x, outDimU.y);
         for (size_t i = 0; i < minNum; ++i) {
-            ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
-            if (imageInport) {
-                imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);               
+            ImageInport* imageInport = static_cast<ImageInport*>(inports[i]);
+            imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);   
+            uvec2 inDimU = imageInport->getDimensions();
+            if (inDimU == uvec2(8, 8)){
+                uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
+                ResizeEvent e(inDimNewU);
+                e.setPreviousSize(inDimU);
+                imageInport->changeDataDimensions(&e);
             }
         }
     }
 }
 
 void ImageLayoutGL::onStatusChange() { 
-	if (layout_.getSelectedValue() == ImageLayoutTypes::HorizontalSplit) {
-		horizontalSplitter_.setVisible(true);
-	} else {
-		horizontalSplitter_.setVisible(false);
-	}
+    if (layout_.getSelectedValue() == ImageLayoutTypes::HorizontalSplit) {
+        horizontalSplitter_.setVisible(true);
+    } else {
+        horizontalSplitter_.setVisible(false);
+    }
     updateViewports(true);
     std::vector<Inport*> inports = multiinport_.getInports();
     size_t minNum = std::min(inports.size(), viewCoords_.size());
     uvec2 outDimU = outport_.getData()->getDimensions();
     vec2 outDim = vec2(outDimU.x, outDimU.y);
     for (size_t i = 0; i < minNum; ++i) {
-        ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
-        if (imageInport) {
-            uvec2 inDimU = imageInport->getDimensions();
-            imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);
-            uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
-            if (inDimNewU != inDimU){
-                ResizeEvent e(inDimNewU);
-                e.setPreviousSize(inDimU);
-                imageInport->changeDataDimensions(&e);
-            }
-
+        ImageInport* imageInport = static_cast<ImageInport*>(inports[i]);
+        uvec2 inDimU = imageInport->getDimensions();
+        imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);
+        uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
+        if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0){
+            ResizeEvent e(inDimNewU);
+            e.setPreviousSize(inDimU);
+            imageInport->changeDataDimensions(&e);
         }
     }
 }
@@ -214,8 +216,8 @@ void ImageLayoutGL::updateViewports(bool force) {
     unsigned int smallWindowDim = dim.y / 3;
     switch (layout_.getSelectedValue()) {
         case ImageLayoutTypes::HorizontalSplit:
-			viewCoords_.push_back(uvec4(0, horizontalSplitter_.get() * dim.y, dim.x, (1.f - horizontalSplitter_.get()) * dim.y));
-			viewCoords_.push_back(uvec4(0, 0, dim.x, horizontalSplitter_.get() * dim.y));
+            viewCoords_.push_back(uvec4(0, horizontalSplitter_.get() * dim.y, dim.x, (1.f - horizontalSplitter_.get()) * dim.y));
+            viewCoords_.push_back(uvec4(0, 0, dim.x, horizontalSplitter_.get() * dim.y));
             break;
         case ImageLayoutTypes::VerticalSplit:
             viewCoords_.push_back(uvec4(0, 0, dim.x / 2, dim.y));
@@ -273,12 +275,12 @@ void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
 
         ivec2 mPos = mouseEvent->pos();
         uvec2 cSize = mouseEvent->canvasSize();
-		// Flip y-coordinate to bottom->up
-		vec2 activePosition(activePosition_.x, cSize.y - activePosition_.y);
+        // Flip y-coordinate to bottom->up
+        vec2 activePosition(activePosition_.x, cSize.y - activePosition_.y);
         for (size_t i = 0; i < viewCoords.size(); ++i) {
-			if (activePosition.x >= viewCoords[i].x && activePosition.x < viewCoords[i].x + viewCoords[i].z
-				&& activePosition.y >= viewCoords[i].y && activePosition.y < viewCoords[i].y + viewCoords[i].w){
-				ivec2 vc = ivec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
+            if (activePosition.x >= viewCoords[i].x && activePosition.x < viewCoords[i].x + viewCoords[i].z
+                && activePosition.y >= viewCoords[i].y && activePosition.y < viewCoords[i].y + viewCoords[i].w){
+                ivec2 vc = ivec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
                     mouseEvent->modify(mPos-vc, uvec2(viewCoords[i].z, viewCoords[i].w));
                     break;
             }
@@ -292,12 +294,12 @@ void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
         vec2 mPosNorm = gestureEvent->screenPosNormalized();
         vec2 cSize = gestureEvent->canvasSize();
         vec2 mPos = mPosNorm * cSize;
-		vec2 activePosition(mPos.x, cSize.y - mPos.y);
+        vec2 activePosition(mPos.x, cSize.y - mPos.y);
         for (size_t i = 0; i < viewCoords.size(); ++i) {
-			if (activePosition.x >= viewCoords[i].x && activePosition.x < viewCoords[i].x + viewCoords[i].z
-				&& activePosition.y >= viewCoords[i].y && activePosition.y < viewCoords[i].y + viewCoords[i].w){
-				vec2 vc = vec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
-				gestureEvent->modify((mPos - vc) / vec2(viewCoords[i].zw()));
+            if (activePosition.x >= viewCoords[i].x && activePosition.x < viewCoords[i].x + viewCoords[i].z
+                && activePosition.y >= viewCoords[i].y && activePosition.y < viewCoords[i].y + viewCoords[i].w){
+                vec2 vc = vec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
+                gestureEvent->modify((mPos - vc) / vec2(viewCoords[i].zw()));
                     break;
             }
         }
