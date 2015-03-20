@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGELAYOUTGL_H
@@ -44,8 +44,12 @@
 
 namespace inviwo {
 
-namespace ImageLayoutTypes {
-    enum Layout {
+class Shader;
+
+// Right mouse click activates the area for mouse/key interactions.
+class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
+public:
+    enum class Layout {
         Single,
         HorizontalSplit,
         VerticalSplit,
@@ -53,70 +57,63 @@ namespace ImageLayoutTypes {
         ThreeLeftOneRight,
         ThreeRightOneLeft,
     };
-}
 
-class Shader;
-
-//Right mouse click activates the area for mouse/key interactions.
-class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
-public:
     ImageLayoutGL();
     ~ImageLayoutGL();
 
     InviwoProcessorInfo();
 
-    void initialize();
-    void deinitialize();
+    virtual void initialize() override;
+    virtual void deinitialize() override;
 
     const std::vector<Inport*>& getInports(Event*) const;
-    const std::vector<uvec4>& getViewCoords();
+    const std::vector<ivec4>& getViewCoords() const;
 
 protected:
-    void process();
+    virtual void process() override;
 
     void multiInportChanged();
-    void updateViewports(bool force=false);
+    void updateViewports(bool force = false);
     void onStatusChange();
 
     class ImageLayoutGLInteractionHandler : public InteractionHandler {
-
     public:
         ImageLayoutGLInteractionHandler(ImageLayoutGL*);
         ~ImageLayoutGLInteractionHandler(){};
 
         void invokeEvent(Event* event);
-
-        ivec2 getActivePosition() { return activePosition_; }
+        ivec2 getActivePosition() const { return activePosition_; }
 
     private:
         ImageLayoutGL* src_;
-
         MouseEvent activePositionChangeEvent_;
-
         bool viewportActive_;
         ivec2 activePosition_;
     };
 
 private:
+    static bool inView(const ivec4& view, const ivec2& pos);
     MultiDataInport<Image, ImageInport> multiinport_;
     ImageOutport outport_;
-
-    OptionPropertyInt layout_;
+    
+    TemplateOptionProperty<Layout> layout_;
     FloatProperty horizontalSplitter_;
     FloatProperty verticalSplitter_;
+    FloatProperty vertical3Left1RightSplitter_;
+    FloatProperty vertical3Right1LeftSplitter_;
 
     Shader* shader_;
 
-    ImageLayoutGLInteractionHandler* layoutHandler_;
+    ImageLayoutGLInteractionHandler layoutHandler_;
 
-    ImageLayoutTypes::Layout currentLayout_;
-    uvec2 currentDim_;
+    Layout currentLayout_;
+    ivec2 currentDim_;
 
-    std::vector<uvec4> viewCoords_;
+    std::vector<ivec4> viewCoords_;
 
     mutable std::vector<Inport*> currentInteractionInport_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_IMAGELAYOUTGL_H
+#endif  // IVW_IMAGELAYOUTGL_H
