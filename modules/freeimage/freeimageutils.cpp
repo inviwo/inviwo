@@ -481,14 +481,22 @@ void* FreeImageUtils::fiBitmapToDataArray(void* dst, FIBITMAP* bitmap, size_t bi
     if (!bitmapNEW) return nullptr;
     FreeImage_Paste(bitmapNEW, bitmap, 0, 0, 256);
     switchChannels(bitmapNEW, dim, channels);
-    void* pixelValues = static_cast<void*>(FreeImage_GetBits(bitmapNEW));
 
     if (!dst) {
         T* dstAlloc = new T[dim.x * dim.y];
         dst = static_cast<void*>(dstAlloc);
     }
 
-    std::memcpy(dst, pixelValues, dim.x * dim.y * sizeof(T));
+    unsigned int bytespp = FreeImage_GetLine(bitmapNEW) / FreeImage_GetWidth(bitmapNEW);
+    //If with dimensions NOT being a multiple of 4
+    if (channels != 4){
+        for (int rows = 0; rows < dim.y; rows++)
+            std::memcpy(static_cast<T*>(dst)+rows*dim.x, FreeImage_GetScanLine(bitmapNEW, rows), dim.x*bytespp);
+    }
+    else{
+        void* pixelValues = static_cast<void*>(FreeImage_GetBits(bitmapNEW));
+        std::memcpy(static_cast<T*>(dst), pixelValues, dim.x * dim.y * bytespp);
+    }
     FreeImage_Unload(bitmapNEW);
     return dst;
 }
@@ -533,14 +541,22 @@ void* FreeImageUtils::fiBitmapToDataArrayAndRescale(void* dst, FIBITMAP* bitmap,
                                                  static_cast<int>(dst_dim.y), FILTER_BILINEAR);
     FreeImage_Unload(bitmapTmp);
     switchChannels(bitmapRescaled, dst_dim, channels);
-    unsigned char* pixelValues = static_cast<unsigned char*>(FreeImage_GetBits(bitmapRescaled));
 
     if (!dst) {
         T* dstAlloc = new T[dst_dim.x * dst_dim.y];
         dst = static_cast<void*>(dstAlloc);
     }
 
-    std::memcpy(dst, pixelValues, dst_dim.x * dst_dim.y * sizeof(T));
+    unsigned int bytespp = FreeImage_GetLine(bitmapRescaled) / FreeImage_GetWidth(bitmapRescaled);
+    //If with dimensions NOT being a multiple of 4
+    if (channels != 4){
+        for (int rows = 0; rows < dst_dim.y; rows++)
+            std::memcpy(static_cast<T*>(dst)+rows*dst_dim.x, FreeImage_GetScanLine(bitmapRescaled, rows), FreeImage_GetLine(bitmapRescaled));
+    }
+    else{
+        unsigned char* pixelValues = static_cast<unsigned char*>(FreeImage_GetBits(bitmapRescaled));
+        std::memcpy(static_cast<T*>(dst), pixelValues, dst_dim.x * dst_dim.y * sizeof(T));
+    }
     FreeImage_Unload(bitmapRescaled);
     return dst;
 }
