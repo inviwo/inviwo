@@ -121,7 +121,6 @@ const std::vector<Inport*>& ImageLayoutGL::getInports(Event* e) const {
             pos.y = dim.y - pos.y;
 
             for (size_t i = 0; i < minNum; ++i) {
-                const ivec4& view = viewCoords_[i];
                 if (inView(viewCoords_[i], pos)) {
                     currentInteractionInport_.push_back(inports[i]);
                 }

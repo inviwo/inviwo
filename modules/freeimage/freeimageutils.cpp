@@ -547,7 +547,6 @@ void* FreeImageUtils::fiBitmapToDataArrayAndRescale(void* dst, FIBITMAP* bitmap,
         dst = static_cast<void*>(dstAlloc);
     }
 
-    unsigned int bytespp = FreeImage_GetLine(bitmapRescaled) / FreeImage_GetWidth(bitmapRescaled);
     //If with dimensions NOT being a multiple of 4
     if (channels != 4){
         for (int rows = 0; rows < dst_dim.y; rows++)
