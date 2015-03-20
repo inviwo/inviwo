@@ -65,6 +65,8 @@ public:
     virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p);
     const QPointF& getCurrentPos() const;
     void setPos(const QPointF & pos);
+
+    void setSize(float s) { size_ = s; }
     
     friend IVW_QTWIDGETS_API bool operator==(const TransferFunctionEditorControlPoint& lhs,
                            const TransferFunctionEditorControlPoint& rhs);
