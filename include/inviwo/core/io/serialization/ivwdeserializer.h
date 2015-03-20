@@ -37,6 +37,7 @@
 #include <inviwo/core/io/serialization/deserializationerrorhandler.h>
 #include <inviwo/core/io/serialization/nodedebugger.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -187,6 +188,11 @@ public:
     void deserialize(const std::string& key, long& data);
     void deserialize(const std::string& key, long long& data);
     void deserialize(const std::string& key, unsigned long long& data);
+
+
+    // Enum types
+    template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+    void deserialize(const std::string& key, T& data);
 
     // glm vector types
     template<class T>
@@ -573,6 +579,13 @@ inline void IvwDeserializer::deserializeVector(const std::string& key, T& vector
     }
 }
 
+template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
+void IvwDeserializer::deserialize(const std::string& key, T& data) {
+    using ET = typename std::underlying_type<T>::type;
+    ET tmpdata {static_cast<ET>(data)};
+    deserialize(key, tmpdata);
+    data = static_cast<T>(tmpdata);
+}
 
 
 } //namespace

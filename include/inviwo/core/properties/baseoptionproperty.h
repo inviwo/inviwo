@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -239,9 +240,23 @@ public:
     TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that);
 //    virtual TemplateOptionProperty<T>* clone() const;
     virtual ~TemplateOptionProperty();
+    
 };
 
-template <typename T> PropertyClassIdentifier(TemplateOptionProperty<T>, "org.inviwo.OptionProperty" + Defaultvalues<T>::getName());
+namespace utils {
+template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
+std::string getOptionPropertyClassIdentifier() {
+    return "org.inviwo.OptionProperty" + Defaultvalues<T>::getName();
+}
+template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+std::string getOptionPropertyClassIdentifier() {
+    using ET = typename std::underlying_type<T>::type;
+    return "org.inviwo.OptionProperty" + Defaultvalues<ET>::getName();
+}
+}
+
+template <typename T> PropertyClassIdentifier(TemplateOptionProperty<T>, utils::getOptionPropertyClassIdentifier<T>());
+
 
 // Specialization for strings.
 class IVW_CORE_API OptionPropertyString : public TemplateOptionProperty<std::string> {

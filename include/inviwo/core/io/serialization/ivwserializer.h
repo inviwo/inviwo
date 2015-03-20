@@ -33,6 +33,7 @@
 #include <inviwo/core/io/serialization/ivwserializebase.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
+#include <type_traits>
 namespace inviwo {
 
 class IvwSerializable;
@@ -101,6 +102,12 @@ public:
     void serialize(const std::string& key, const long& data);
     void serialize(const std::string& key, const long long& data);
     void serialize(const std::string& key, const unsigned long long& data);
+
+
+    // Enum types
+    template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+    void serialize(const std::string& key, const T& data);
+
 
     // glm vector types
     template<class T>
@@ -208,6 +215,13 @@ inline void IvwSerializer::serializePrimitives(const std::string& key, const T& 
     rootElement_->LinkEndChild(node);
     node->SetAttribute(IvwSerializeConstants::CONTENT_ATTRIBUTE, data);
     delete node;
+}
+
+template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
+void IvwSerializer::serialize(const std::string& key, const T& data) {
+    using ET = typename std::underlying_type<T>::type;
+    const ET tmpdata {static_cast<const ET>(data)};
+    serialize(key, tmpdata);
 }
 
 template<class T>
