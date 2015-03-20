@@ -108,8 +108,8 @@ public:
 
     // Local camera invalidation
     // Use lock and unlock to set several camera properties without casing evaluation,
-    // then call invalidate().
-    void invalidate();
+    // then call invalidateCamera().
+    void invalidateCamera();
     void lockInvalidation();
     void unlockInvalidation();
     bool isInvalidationLocked();

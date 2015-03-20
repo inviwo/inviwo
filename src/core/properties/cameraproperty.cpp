@@ -146,7 +146,7 @@ void CameraProperty::resetCamera() {
 
     if (!lock) unlockInvalidation();
 
-    invalidate();
+    invalidateCamera();
 }
 
 void CameraProperty::setCamera(const CameraProperty* cam){
@@ -173,7 +173,7 @@ void CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
 
     if (!lock) unlockInvalidation();
 
-    invalidate();
+    invalidateCamera();
 }
 
 float CameraProperty::getNearPlaneDist() const { return nearPlane_.get(); }
@@ -204,17 +204,17 @@ void CameraProperty::updateProjectionMatrix() {
     projectionMatrix_ = glm::perspective(glm::radians(fovy_.get()), aspectRatio_.get(),
                                          nearPlane_.get(), farPlane_.get());
     inverseProjectionMatrix_ = glm::inverse(projectionMatrix_);
-    invalidate();
+    invalidateCamera();
 }
 
 void CameraProperty::updateViewMatrix() {
     lookRight_ = glm::normalize(glm::cross(lookTo_.get() - lookFrom_.get(), lookUp_.get()));
     viewMatrix_ = glm::lookAt(lookFrom_.get(), lookTo_.get(), lookUp_.get());
     inverseViewMatrix_ = glm::inverse(viewMatrix_);
-    invalidate();
+    invalidateCamera();
 }
 
-void CameraProperty::invalidate() {
+void CameraProperty::invalidateCamera() {
     if (!isInvalidationLocked()) CompositeProperty::invalidate(INVALID_OUTPUT, this);
 }
 

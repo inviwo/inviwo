@@ -87,8 +87,8 @@ public:
     virtual void deserialize(IvwDeserializer& d) override;
     
 private:
-    InvalidationLevel subPropertyInvalidationLevel_;
     bool collapsed_;
+    InvalidationLevel subPropertyInvalidationLevel_;
 };
 
 } // namespace
