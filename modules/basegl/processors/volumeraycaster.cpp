@@ -123,10 +123,11 @@ void VolumeRaycaster::onVolumeChange() {
 }
 
 void VolumeRaycaster::process() {
-    auto tfUnit = utilgl::bindTexture(transferFunction_);
-    auto entryUnit = utilgl::bindColorDepthTextures(entryPort_);
-    auto exitUnit = utilgl::bindColorDepthTextures(exitPort_);
-    auto volUnit = utilgl::bindTexture(volumePort_);
+    TextureUnit tfUnit, entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit, volUnit;
+    utilgl::bindTexture(transferFunction_, tfUnit);
+    utilgl::bindTextures(entryPort_, entryColorUnit, entryDepthUnit);
+    utilgl::bindTextures(exitPort_, exitColorUnit, exitDepthUnit);
+    utilgl::bindTexture(volumePort_, volUnit);
 
     utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
     utilgl::clearCurrentTarget();
@@ -134,11 +135,11 @@ void VolumeRaycaster::process() {
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
     shader_->setUniform("transferFunc_", tfUnit.getUnitNumber());
-    shader_->setUniform("entryColorTex_", std::get<0>(entryUnit).getUnitNumber());
-    shader_->setUniform("entryDepthTex_", std::get<1>(entryUnit).getUnitNumber());
+    shader_->setUniform("entryColorTex_", entryColorUnit.getUnitNumber());
+    shader_->setUniform("entryDepthTex_", entryDepthUnit.getUnitNumber());   
     utilgl::setShaderUniforms(shader_, entryPort_, "entryParameters_");
-    shader_->setUniform("exitColorTex_", std::get<0>(exitUnit).getUnitNumber());
-    shader_->setUniform("exitDepthTex_", std::get<1>(exitUnit).getUnitNumber());
+    shader_->setUniform("exitColorTex_", exitColorUnit.getUnitNumber());
+    shader_->setUniform("exitDepthTex_", exitDepthUnit.getUnitNumber());
     utilgl::setShaderUniforms(shader_, exitPort_, "exitParameters_");     
     shader_->setUniform("channel_", channel_.getSelectedValue());
     shader_->setUniform("volume_", volUnit.getUnitNumber());    

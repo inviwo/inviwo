@@ -166,82 +166,6 @@ void bindPickingTexture(const ImageOutport& outport, const TextureUnit& texUnit)
     bindTextures(outport.getConstData(), false, false, true, 0, 0, texUnit.getEnum());
 }
 
-TextureUnit bindColorTexture(const ImageInport& inport) {
-    TextureUnit unit;
-    bindColorTexture(inport, unit);
-    return unit;
-}
-TextureUnit bindColorTexture(const ImageOutport& outport) {
-    TextureUnit unit;
-    bindColorTexture(outport, unit);
-    return unit;
-}
-TextureUnit bindDepthTexture(const ImageInport& inport) {
-    TextureUnit unit;
-    bindDepthTexture(inport, unit);
-    return unit;
-}
-TextureUnit bindDepthTexture(const ImageOutport& outport) {
-    TextureUnit unit;
-    bindDepthTexture(outport, unit);
-    return unit;
-}
-TextureUnit bindPickingTexture(const ImageInport& inport) {
-    TextureUnit unit;
-    bindPickingTexture(inport, unit);
-    return unit;
-}
-TextureUnit bindPickingTexture(const ImageOutport& outport) {
-    TextureUnit unit;
-    bindPickingTexture(outport, unit);
-    return unit;
-}
-
-std::tuple<TextureUnit,TextureUnit> bindColorDepthTextures(const Image* image) {
-    TextureUnit color;
-    TextureUnit depth;
-    bindTextures(image, color, depth);
-    return std::make_tuple(std::move(color), std::move(depth));
-}
-std::tuple<TextureUnit,TextureUnit> bindColorDepthTextures(const ImageInport& image) {
-    TextureUnit color;
-    TextureUnit depth;
-    bindTextures(image, color, depth);
-    return std::make_tuple(std::move(color), std::move(depth));
-}
-std::tuple<TextureUnit,TextureUnit> bindColorDepthTextures(const ImageOutport& image) {
-    TextureUnit color;
-    TextureUnit depth;
-    bindTextures(image, color, depth);
-    return std::make_tuple(std::move(color), std::move(depth));
-}
-
-std::tuple<TextureUnit, TextureUnit, TextureUnit> bindColorDepthPickingTextures(
-    const Image* image) {
-    TextureUnit color;
-    TextureUnit depth;
-    TextureUnit picking;
-    bindTextures(image, color, depth, picking);
-    return std::make_tuple(std::move(color), std::move(depth), std::move(picking));
-}
-std::tuple<TextureUnit, TextureUnit, TextureUnit> bindColorDepthPickingTextures(
-    const ImageInport& image) {
-    TextureUnit color;
-    TextureUnit depth;
-    TextureUnit picking;
-    bindTextures(image, color, depth, picking);
-    return std::make_tuple(std::move(color), std::move(depth), std::move(picking));
-}
-std::tuple<TextureUnit, TextureUnit, TextureUnit> bindColorDepthPickingTextures(
-    const ImageOutport& image) {
-    TextureUnit color;
-    TextureUnit depth;
-    TextureUnit picking;
-
-    bindTextures(image, color, depth, picking);
-    return std::make_tuple(std::move(color), std::move(depth), std::move(picking));
-}
-
 void bindTextures(const Image* image, const TextureUnit& colorTexUnit,
                     const TextureUnit& depthTexUnit) {
     bindTextures(image, true, true, false, colorTexUnit.getEnum(), depthTexUnit.getEnum(), 0);
@@ -401,12 +325,6 @@ void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit
     }
 }
 
-TextureUnit bindTexture(const TransferFunctionProperty& tf) {
-    TextureUnit unit;
-    bindTexture(tf, unit);
-    return unit;
-}
-
 void bindTexture(const Volume* volume, const TextureUnit& texUnit) {
     const VolumeGL* volumeGL = volume->getRepresentation<VolumeGL>();
     if (volumeGL) {
@@ -419,17 +337,6 @@ void bindTexture(const Volume* volume, const TextureUnit& texUnit) {
 void bindTexture(const VolumeInport& inport, const TextureUnit& texUnit) {
     bindTexture(inport.getData(), texUnit);
 }
-
-TextureUnit bindTexture(const Volume* volume) {
-    TextureUnit unit;
-    bindTexture(volume, unit);
-    return unit;
-}
-
-TextureUnit bindTexture(const VolumeInport& inport) {
-    return bindTexture(inport.getData());
-}
-
 }
 
 }  // namespace
