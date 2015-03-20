@@ -31,9 +31,7 @@
 #define IVW_TEXTUREUNIT_H
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/util/capabilities.h>
 
 namespace inviwo {
 
@@ -41,7 +39,13 @@ class IVW_MODULE_OPENGL_API TextureUnit {
 public:
     TextureUnit();
     virtual ~TextureUnit();
-
+    
+    TextureUnit(TextureUnit& rhs) = delete;
+    TextureUnit& operator=(const TextureUnit& that) = delete;
+    
+    TextureUnit(TextureUnit&& rhs);
+    TextureUnit& operator=(TextureUnit&& that);
+    
     static void initialize(int numUnits);
     static void deinitialize();
 
@@ -52,7 +56,7 @@ public:
     inline static void setZeroUnit() { glActiveTexture(GL_TEXTURE0); }
 
 private:
-    static std::vector<bool>* textureUnits_;
+    static std::vector<bool> textureUnits_;
 
     GLint unitEnum_;
     GLint unitNumber_;
