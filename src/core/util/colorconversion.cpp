@@ -105,7 +105,7 @@ IVW_CORE_API vec3 rgb2hsv(vec3 rgb) {
     if (maximum != 0.f)
         sat = range/maximum;
 
-    if (sat != 0.f) {
+    if (sat > 1e-7f) {
         float h;
 
         if (x == maximum)
