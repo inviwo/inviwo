@@ -49,8 +49,23 @@ SettingsWidget::SettingsWidget(QWidget* parent) : InviwoDockWidget(tr("Settings"
 void SettingsWidget::generateWidget() {
     setObjectName("SettingsWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    tabWidget_ = new QTabWidget(this);
-    setWidget(tabWidget_);
+    
+    scrollArea_ = new QScrollArea();
+    scrollArea_->setWidgetResizable(true);
+    scrollArea_->setMinimumWidth(300);
+    scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea_->setFrameShape(QFrame::NoFrame);
+    scrollArea_->setContentsMargins(0, 0, 0, 0);
+
+    mainWidget_ = new QWidget();
+    layout_ = new QVBoxLayout(mainWidget_);
+    layout_->setAlignment(Qt::AlignTop);
+    layout_->setContentsMargins(7, 7, 7, 7);
+    layout_->setSpacing(7);
+    scrollArea_->setWidget(mainWidget_);
+
+    setWidget(scrollArea_);
+
 }
 
 SettingsWidget::~SettingsWidget() {}
@@ -59,42 +74,25 @@ void SettingsWidget::updateSettingsWidget() {
     std::vector<Settings*> settings = InviwoApplication::getPtr()->getModuleSettings();
 
     for (auto& setting : settings) {
-        // Scroll widget
-        QScrollArea* scrollAreaTab = new QScrollArea(tabWidget_);
-        scrollAreaTab->setWidgetResizable(true);
-        scrollAreaTab->setMinimumWidth(320);
-        scrollAreaTab->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        scrollAreaTab->setFrameShape(QFrame::NoFrame);
-
-        // Holder widget
-        QWidget* listWidget = new PropertyListFrame(tabWidget_);
-        QVBoxLayout* listLayout = new QVBoxLayout();
-        listLayout->setSpacing(7);
-        listLayout->setContentsMargins(7, 7, 7, 7);
-        listLayout->setAlignment(Qt::AlignTop);
-        listLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-        listWidget->setLayout(listLayout);
-        scrollAreaTab->setWidget(listWidget);
+        CollapsibleGroupBoxWidgetQt* settingsGroup = new CollapsibleGroupBoxWidgetQt(setting->getIdentifier());
 
         std::vector<Property*> props = setting->getProperties();
 
         for (auto& prop : props) {
-            PropertyWidgetQt* propertyWidget =
-                static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
-
-            if (propertyWidget) {
-                listLayout->addWidget(propertyWidget);
-                prop->registerWidget(propertyWidget);
-                propertyWidget->showWidget();
-                connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
-                        SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
-            } else {
-                LogWarn("Could not find a widget for property: " << prop->getClassIdentifier());
+            settingsGroup->addProperty(prop);
+            for (auto p : prop->getWidgets()){
+                connect(static_cast<PropertyWidgetQt*>(p), SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
+                    SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
             }
         }
 
-        tabWidget_->addTab(scrollAreaTab, tr(setting->getIdentifier().c_str()));
+        layout_->addWidget(settingsGroup);
+        if (!settingsGroup->isCollapsed()){
+            settingsGroup->toggleCollapsed();
+        }
+        settingsGroup->updateVisibility();
     }
+    layout_->addStretch();
 }
 
 void SettingsWidget::saveSettings() {

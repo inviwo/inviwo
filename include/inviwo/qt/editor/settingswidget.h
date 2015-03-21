@@ -53,8 +53,9 @@ public slots:
     void updatePropertyWidgetSemantics(PropertyWidgetQt*);
 
 protected:
-    QVBoxLayout* vLayout_;
-    QTabWidget* tabWidget_;
+    QVBoxLayout* layout_;
+    QWidget* mainWidget_;
+    QScrollArea* scrollArea_;
 };
 
 } // namespace
