@@ -46,6 +46,11 @@ public:
     virtual ~BasicMesh();
     
     void addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
+    void setVertex(size_t index, vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
+    void setVertexPosition(size_t index, vec3 pos);
+    void setVertexNormal(size_t index, vec3 normal);
+    void setVertexTexCoord(size_t index, vec3 texCoord);
+    void setVertexColor(size_t index, vec4 color);
     IndexBufferRAM* addIndexBuffer(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
 
     virtual std::string getDataInfo() const;
@@ -54,12 +59,7 @@ public:
     const TexCoord3dBuffer* getTexCoords() const;
     const ColorBuffer* getColors() const;
     const NormalBuffer* getNormals() const;
-
-    Position3dBuffer* getVertices();
-    TexCoord3dBuffer* getTexCoords();
-    ColorBuffer* getColors();
-    NormalBuffer* getNormals();
-    
+  
     void append(const BasicMesh* mesh);
     
 

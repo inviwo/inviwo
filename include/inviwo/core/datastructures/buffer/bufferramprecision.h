@@ -67,6 +67,7 @@ public:
 
     void set(size_t index, const T& item);
     T get(size_t index) const;
+    T& get(size_t index);
 
     void clear();
 
@@ -188,6 +189,11 @@ void BufferRAMPrecision<T>::set(size_t index, const T& item) {
 
 template<typename T>
 T BufferRAMPrecision<T>::get(size_t index) const {
+    return data_->at(index);
+}
+
+template<typename T>
+T& BufferRAMPrecision<T>::get(size_t index) {
     return data_->at(index);
 }
 
