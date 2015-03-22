@@ -49,6 +49,7 @@ ProcessorCodeState(VolumeRaycaster, CODE_STATE_STABLE);
 
 VolumeRaycaster::VolumeRaycaster()
     : Processor()
+    , shader_("raycasting.frag", false)
     , volumePort_("volume")
     , entryPort_("entry")
     , exitPort_("exit")
@@ -82,42 +83,27 @@ VolumeRaycaster::VolumeRaycaster()
     addProperty(toggleShading_);
 }
 
-VolumeRaycaster::~VolumeRaycaster() {
-}
-
-void VolumeRaycaster::initialize() {
-    Processor::initialize();
-    shader_ = new Shader("raycasting.frag", false);
-    initializeResources();
-}
-
-void VolumeRaycaster::deinitialize() {
-    delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
-}
+VolumeRaycaster::~VolumeRaycaster() {}
 
 void VolumeRaycaster::initializeResources() {
-    utilgl::addShaderDefines(shader_, raycasting_);
-    utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_);
-    utilgl::addShaderDefines(shader_, positionIndicator_);
-    shader_->build();
+    utilgl::addShaderDefines(&shader_, raycasting_);
+    utilgl::addShaderDefines(&shader_, camera_);
+    utilgl::addShaderDefines(&shader_, lighting_);
+    utilgl::addShaderDefines(&shader_, positionIndicator_);
+    shader_.build();
 }
 
 void VolumeRaycaster::onVolumeChange() {
     if (volumePort_.hasData()){
-        int channels = volumePort_.getData()->getDataFormat()->getComponents();
+        size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
 
-        if(channels == static_cast<int>(channel_.size()))
-            return;
+        if (channels == channel_.size()) return;
         
-        channel_.clearOptions();
-        for (int i = 0; i < channels; i++) {
-            std::stringstream ss;
-            ss << "Channel " << i;
-            channel_.addOption(ss.str() , ss.str(), i);
+        std::vector<OptionPropertyIntOption> channelOptions;
+        for (size_t i = 0; i < channels; i++) {
+            channelOptions.emplace_back("Channel " + toString(i), "Channel " + toString(i), i);
         }
+        channel_.replaceOptions(channelOptions);
         channel_.setCurrentStateAsDefault();
     }
 }
@@ -125,24 +111,18 @@ void VolumeRaycaster::onVolumeChange() {
 void VolumeRaycaster::process() {
     utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
     utilgl::clearCurrentTarget();
-    shader_->activate();
+    shader_.activate();
 
-    auto vol = utilgl::bindAndSetUniforms(shader_, volumePort_);
-    auto tf = utilgl::bindAndSetUniforms(shader_, transferFunction_);
-    auto entry = utilgl::bindAndSetUniforms(shader_, entryPort_, COLOR_DEPTH);
-    auto exit = utilgl::bindAndSetUniforms(shader_, exitPort_, COLOR_DEPTH);
-
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters");
-
-    shader_->setUniform("channel_", channel_.getSelectedValue());
-    utilgl::setShaderUniforms(shader_, raycasting_);
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-    utilgl::setShaderUniforms(shader_, lighting_, "light_");
-    utilgl::setShaderUniforms(shader_, positionIndicator_, "positionIndicator_");
+    auto vol = utilgl::bindAndSetUniforms(&shader_, volumePort_);
+    auto tf = utilgl::bindAndSetUniforms(&shader_, transferFunction_);
+    auto entry = utilgl::bindAndSetUniforms(&shader_, entryPort_, COLOR_DEPTH);
+    auto exit = utilgl::bindAndSetUniforms(&shader_, exitPort_, COLOR_DEPTH);
+    utilgl::setUniforms(&shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
+                        channel_);
 
     utilgl::singleDrawImagePlaneRect();
 
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 

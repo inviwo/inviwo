@@ -379,14 +379,14 @@ void setShaderUniforms(Shader* shader, const Image* image, const std::string sam
     shader->setUniform(samplerID + ".reciprocalDimensions", vec2(1.0f) / dimensions);
 }
 
-void setShaderUniforms(Shader* shader, const ImageInport& inport,
-                            const std::string samplerID) {
-    setShaderUniforms(shader, inport.getData(),  samplerID);
+void setShaderUniforms(Shader* shader, const ImageInport& inport, const std::string samplerID) {
+    setShaderUniforms(shader, inport.getData(),
+                      samplerID.empty() ? inport.getIdentifier() + "Parameters" : samplerID);
 }
 
-void setShaderUniforms(Shader* shader, const ImageOutport& outport,
-                            const std::string samplerID) {
-    setShaderUniforms(shader, outport.getConstData(), samplerID);
+void setShaderUniforms(Shader* shader, const ImageOutport& outport, const std::string samplerID) {
+    setShaderUniforms(shader, outport.getConstData(),
+                      samplerID.empty() ? outport.getIdentifier() + "Parameters" : samplerID);
 }
 
 BufferObjectArray* enableImagePlaneRect() {

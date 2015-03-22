@@ -112,6 +112,11 @@ struct LightParameters {
     float specularExponent;
 };
 
+struct RaycastingParameters {
+    float samplingRate;
+    float isoValue;
+};
+
 struct PlaneParameters {
     vec3 position;
     vec3 normal;

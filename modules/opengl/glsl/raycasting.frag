@@ -54,13 +54,12 @@ uniform sampler2D exitDepth;
 
 uniform ImageParameters outportParameters;
 
-uniform LightParameters light_;
-uniform CameraParameters camera_;
-uniform VolumeIndicatorParameters positionIndicator_;
-uniform int channel_;
+uniform LightParameters lighting;
+uniform CameraParameters camera;
+uniform VolumeIndicatorParameters positionindicator;
+uniform RaycastingParameters raycaster;
 
-uniform float samplingRate_;
-uniform float isoValue_;
+uniform int channel;
 
 #define ERT_THRESHOLD 0.99 // threshold for early ray termination
 
@@ -69,7 +68,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
     float tIncr =
-        min(tEnd, tEnd / (samplingRate_ * length(rayDirection * volumeParameters.dimensions)));
+        min(tEnd, tEnd / (raycaster.samplingRate * length(rayDirection * volumeParameters.dimensions)));
     float samples = ceil(tEnd / tIncr);
     tIncr = tEnd / samples;
     float t = 0.5f * tIncr;
@@ -78,26 +77,26 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec4 color;
     vec4 voxel;
     vec3 samplePos;
-    vec3 toCameraDir = normalize(camera_.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
+    vec3 toCameraDir = normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
         color = APPLY_CLASSIFICATION(transferFunction, voxel);
         if (color.a > 0) {
-            vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel_);
+            vec3 gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
             gradient = normalize(gradient);
 
             // World space position
             vec3 worldSpacePosition = (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz;
             // Note that the gradient is reversed since we define the normal of a surface as
             // the direction towards a lower intensity medium (gradient points in the inreasing direction)
-            color.rgb = APPLY_LIGHTING(light_, color.rgb, color.rgb, vec3(1.0), worldSpacePosition, -gradient, toCameraDir);
+            color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0), worldSpacePosition, -gradient, toCameraDir);
 
-            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionIndicator_);
-            result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera_, isoValue_,
+            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
+            result = APPLY_COMPOSITING(result, color, samplePos, voxel, gradient, camera, raycaster.isoValue,
                 t, tDepth, tIncr);
         } else {
-            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionIndicator_);
+            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
         }
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
@@ -108,7 +107,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     }
 
     if (tDepth != -1.0) {
-        tDepth = calculateDepthValue(camera_, tDepth, texture(entryDepth, texCoords).x,
+        tDepth = calculateDepthValue(camera, tDepth, texture(entryDepth, texCoords).x,
                                      texture(exitDepth, texCoords).x);
     } else {
         tDepth = 1.0;

@@ -43,11 +43,10 @@
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <modules/opengl/glwrap/shader.h>
 
 
 namespace inviwo {
-
-class Shader;
 
 class IVW_MODULE_BASEGL_API VolumeRaycaster : public Processor {
 public:
@@ -56,13 +55,11 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initialize();
-    virtual void deinitialize();
     virtual void initializeResources();
 
 protected:
     virtual void process();
-    Shader* shader_;
+    Shader shader_;
 
 private:
     void onVolumeChange();

@@ -180,9 +180,9 @@ IVW_MODULE_OPENGL_API void bindTexture(const VolumeInport& inport, const Texture
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const Image* image,
                                                const std::string samplerID);
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const ImageInport& inport,
-                                               const std::string samplerID);
+                                               const std::string samplerID = "");
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const ImageOutport& outport,
-                                               const std::string samplerID);
+                                               const std::string samplerID = "");
 
 // Draw image plane.
 IVW_MODULE_OPENGL_API BufferObjectArray* enableImagePlaneRect();
