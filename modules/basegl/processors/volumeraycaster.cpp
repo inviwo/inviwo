@@ -50,8 +50,8 @@ ProcessorCodeState(VolumeRaycaster, CODE_STATE_STABLE);
 VolumeRaycaster::VolumeRaycaster()
     : Processor()
     , volumePort_("volume")
-    , entryPort_("entry-points")
-    , exitPort_("exit-points")
+    , entryPort_("entry")
+    , exitPort_("exit")
     , outport_("outport")
     , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &volumePort_)
     , channel_("channel", "Render Channel")
@@ -123,26 +123,18 @@ void VolumeRaycaster::onVolumeChange() {
 }
 
 void VolumeRaycaster::process() {
-    auto tfUnit = utilgl::bindTexture(transferFunction_);
-    auto entryUnit = utilgl::bindColorDepthTextures(entryPort_);
-    auto exitUnit = utilgl::bindColorDepthTextures(exitPort_);
-    auto volUnit = utilgl::bindTexture(volumePort_);
-
     utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
     utilgl::clearCurrentTarget();
     shader_->activate();
 
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-    shader_->setUniform("transferFunc_", tfUnit.getUnitNumber());
-    shader_->setUniform("entryColorTex_", std::get<0>(entryUnit).getUnitNumber());
-    shader_->setUniform("entryDepthTex_", std::get<1>(entryUnit).getUnitNumber());
-    utilgl::setShaderUniforms(shader_, entryPort_, "entryParameters_");
-    shader_->setUniform("exitColorTex_", std::get<0>(exitUnit).getUnitNumber());
-    shader_->setUniform("exitDepthTex_", std::get<1>(exitUnit).getUnitNumber());
-    utilgl::setShaderUniforms(shader_, exitPort_, "exitParameters_");     
+    auto vol = utilgl::bindAndSetUniforms(shader_, volumePort_);
+    auto tf = utilgl::bindAndSetUniforms(shader_, transferFunction_);
+    auto entry = utilgl::bindAndSetUniforms(shader_, entryPort_, COLOR_DEPTH);
+    auto exit = utilgl::bindAndSetUniforms(shader_, exitPort_, COLOR_DEPTH);
+
+    utilgl::setShaderUniforms(shader_, outport_, "outportParameters");
+
     shader_->setUniform("channel_", channel_.getSelectedValue());
-    shader_->setUniform("volume_", volUnit.getUnitNumber());    
-    utilgl::setShaderUniforms(shader_, volumePort_, "volumeParameters_");
     utilgl::setShaderUniforms(shader_, raycasting_);
     utilgl::setShaderUniforms(shader_, camera_, "camera_");
     utilgl::setShaderUniforms(shader_, lighting_, "light_");

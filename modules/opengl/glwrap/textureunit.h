@@ -38,7 +38,7 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API TextureUnit {
 public:
     TextureUnit();
-    virtual ~TextureUnit();
+    ~TextureUnit();
     
     TextureUnit(TextureUnit& rhs) = delete;
     TextureUnit& operator=(const TextureUnit& that) = delete;
@@ -61,6 +61,25 @@ private:
     GLint unitEnum_;
     GLint unitNumber_;
 };
+
+class IVW_MODULE_OPENGL_API TextureUnitContainer {
+public:
+    TextureUnitContainer(size_t i = 0);
+    TextureUnitContainer(const TextureUnitContainer&) = delete;
+    TextureUnitContainer& operator=(const TextureUnitContainer&) = delete;
+    TextureUnitContainer(TextureUnitContainer&& rhs) = default;
+    TextureUnitContainer& operator=(TextureUnitContainer&& that) = default;
+    ~TextureUnitContainer() = default;
+    
+    void push_back(TextureUnit&& unit);
+    
+    TextureUnit& operator[](size_t i);
+    size_t size() const;
+    
+private:
+    std::vector<TextureUnit> units_;
+};
+
 
 } // namespace
 

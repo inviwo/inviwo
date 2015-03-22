@@ -80,4 +80,13 @@ void TextureUnit::initialize(int numUnits) { textureUnits_.resize(numUnits, fals
 
 void TextureUnit::deinitialize() { textureUnits_.clear(); }
 
+TextureUnitContainer::TextureUnitContainer(size_t i) : units_(i) {};
+    
+void TextureUnitContainer::push_back(TextureUnit&& unit) {
+    units_.push_back(std::move(unit));
+}
+    
+TextureUnit& TextureUnitContainer::operator[](size_t i) {return units_[i]; }
+size_t TextureUnitContainer::size() const { return units_.size(); }
+
 }  // namespace

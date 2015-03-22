@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/textureutils.h>
 
 namespace inviwo {
 
@@ -117,6 +118,13 @@ void setShaderUniforms(Shader* shader, const Volume* volume, const std::string& 
 
 void setShaderUniforms(Shader* shader, const VolumeInport& port, const std::string& samplerID) {
     setShaderUniforms(shader, port.getData(), samplerID);
+}
+
+TextureUnit bindAndSetUniforms(Shader* shader, VolumeInport& volumePort) {
+    auto volUnit = utilgl::bindTexture(volumePort);
+    shader->setUniform(volumePort.getIdentifier(), volUnit.getUnitNumber());
+    utilgl::setShaderUniforms(shader, volumePort, volumePort.getIdentifier() + "Parameters");
+    return volUnit;
 }
 
 }

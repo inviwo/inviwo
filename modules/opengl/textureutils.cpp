@@ -90,6 +90,10 @@ void bindTextures(const Image* image, bool color, bool depth, bool picking, GLen
     }
 }
 
+
+void bindColorTexture(const Image* image, GLenum texUnit) {
+    bindTextures(image, true, false, false, texUnit, 0, 0);
+}
 void bindColorTexture(const ImageInport& inport, GLenum texUnit) {
     bindTextures(inport.getData(), true, false, false, texUnit, 0, 0);
 }
@@ -98,18 +102,24 @@ void bindColorTexture(const ImageOutport& outport, GLenum texUnit) {
     bindTextures(outport.getConstData(), true, false, false, texUnit, 0, 0);
 }
 
+
+void bindDepthTexture(const Image* image, GLenum texUnit) {
+    bindTextures(image, false, true, false, 0, texUnit, 0);
+}
 void bindDepthTexture(const ImageInport& inport, GLenum texUnit) {
     bindTextures(inport.getData(), false, true, false, 0, texUnit, 0);
 }
-
 void bindDepthTexture(const ImageOutport& outport, GLenum texUnit) {
     bindTextures(outport.getConstData(), false, true, false, 0, texUnit, 0);
 }
 
+
+void bindPickingTexture(const Image* image, GLenum texUnit) {
+    bindTextures(image, false, false, true, 0, 0, texUnit);
+}
 void bindPickingTexture(const ImageInport& inport, GLenum texUnit) {
     bindTextures(inport.getData(), false, false, true, 0, 0, texUnit);
 }
-
 void bindPickingTexture(const ImageOutport& outport, GLenum texUnit) {
     bindTextures(outport.getConstData(), false, false, true, 0, 0, texUnit);
 }
@@ -142,30 +152,43 @@ void bindTextures(const ImageOutport& outport, GLenum colorTexUnit, GLenum depth
                    pickingTexUnit);
 }
 
+
+void bindColorTexture(const Image* image, const TextureUnit& texUnit) {
+    bindTextures(image, true, false, false, texUnit.getEnum(), 0, 0);
+}
 void bindColorTexture(const ImageInport& inport, const TextureUnit& texUnit) {
     bindTextures(inport.getData(), true, false, false, texUnit.getEnum(), 0, 0);
 }
-
 void bindColorTexture(const ImageOutport& outport, const TextureUnit& texUnit) {
     bindTextures(outport.getConstData(), true, false, false, texUnit.getEnum(), 0, 0);
 }
 
+void bindDepthTexture(const Image* image, const TextureUnit& texUnit) {
+    bindTextures(image, false, true, false, 0, texUnit.getEnum(), 0);
+}
 void bindDepthTexture(const ImageInport& inport, const TextureUnit& texUnit) {
     bindTextures(inport.getData(), false, true, false, 0, texUnit.getEnum(), 0);
 }
-
 void bindDepthTexture(const ImageOutport& outport, const TextureUnit& texUnit) {
     bindTextures(outport.getConstData(), false, true, false, 0, texUnit.getEnum(), 0);
 }
 
+
+void bindPickingTexture(const Image* image, const TextureUnit& texUnit) {
+    bindTextures(image, false, false, true, 0, 0, texUnit.getEnum());
+}
 void bindPickingTexture(const ImageInport& inport, const TextureUnit& texUnit) {
     bindTextures(inport.getData(), false, false, true, 0, 0, texUnit.getEnum());
 }
-
 void bindPickingTexture(const ImageOutport& outport, const TextureUnit& texUnit) {
     bindTextures(outport.getConstData(), false, false, true, 0, 0, texUnit.getEnum());
 }
 
+TextureUnit bindColorTexture(const Image* image) {
+    TextureUnit unit;
+    bindColorTexture(image, unit);
+    return unit;
+}
 TextureUnit bindColorTexture(const ImageInport& inport) {
     TextureUnit unit;
     bindColorTexture(inport, unit);
@@ -176,6 +199,12 @@ TextureUnit bindColorTexture(const ImageOutport& outport) {
     bindColorTexture(outport, unit);
     return unit;
 }
+
+TextureUnit bindDepthTexture(const Image* image) {
+    TextureUnit unit;
+    bindDepthTexture(image, unit);
+    return unit;
+}
 TextureUnit bindDepthTexture(const ImageInport& inport) {
     TextureUnit unit;
     bindDepthTexture(inport, unit);
@@ -184,6 +213,12 @@ TextureUnit bindDepthTexture(const ImageInport& inport) {
 TextureUnit bindDepthTexture(const ImageOutport& outport) {
     TextureUnit unit;
     bindDepthTexture(outport, unit);
+    return unit;
+}
+
+TextureUnit bindPickingTexture(const Image* image) {
+    TextureUnit unit;
+    bindPickingTexture(image, unit);
     return unit;
 }
 TextureUnit bindPickingTexture(const ImageInport& inport) {
@@ -197,49 +232,36 @@ TextureUnit bindPickingTexture(const ImageOutport& outport) {
     return unit;
 }
 
-std::tuple<TextureUnit,TextureUnit> bindColorDepthTextures(const Image* image) {
-    TextureUnit color;
-    TextureUnit depth;
-    bindTextures(image, color, depth);
-    return std::make_tuple(std::move(color), std::move(depth));
+TextureUnitContainer bindColorDepthTextures(const Image* image) {
+    TextureUnitContainer cont(2);
+    bindTextures(image, cont[0], cont[1]);
+    return cont;
 }
-std::tuple<TextureUnit,TextureUnit> bindColorDepthTextures(const ImageInport& image) {
-    TextureUnit color;
-    TextureUnit depth;
-    bindTextures(image, color, depth);
-    return std::make_tuple(std::move(color), std::move(depth));
+TextureUnitContainer bindColorDepthTextures(const ImageInport& image) {
+    TextureUnitContainer cont(2);
+    bindTextures(image, cont[0], cont[1]);
+    return cont;
 }
-std::tuple<TextureUnit,TextureUnit> bindColorDepthTextures(const ImageOutport& image) {
-    TextureUnit color;
-    TextureUnit depth;
-    bindTextures(image, color, depth);
-    return std::make_tuple(std::move(color), std::move(depth));
+TextureUnitContainer bindColorDepthTextures(const ImageOutport& image) {
+    TextureUnitContainer cont(2);
+    bindTextures(image, cont[0], cont[1]);
+    return cont;
 }
 
-std::tuple<TextureUnit, TextureUnit, TextureUnit> bindColorDepthPickingTextures(
-    const Image* image) {
-    TextureUnit color;
-    TextureUnit depth;
-    TextureUnit picking;
-    bindTextures(image, color, depth, picking);
-    return std::make_tuple(std::move(color), std::move(depth), std::move(picking));
+TextureUnitContainer bindColorDepthPickingTextures(const Image* image) {
+    TextureUnitContainer cont(2);
+    bindTextures(image, cont[0], cont[1], cont[2]);
+    return cont;
 }
-std::tuple<TextureUnit, TextureUnit, TextureUnit> bindColorDepthPickingTextures(
-    const ImageInport& image) {
-    TextureUnit color;
-    TextureUnit depth;
-    TextureUnit picking;
-    bindTextures(image, color, depth, picking);
-    return std::make_tuple(std::move(color), std::move(depth), std::move(picking));
+TextureUnitContainer bindColorDepthPickingTextures(const ImageInport& image) {
+    TextureUnitContainer cont(2);
+    bindTextures(image, cont[0], cont[1], cont[2]);
+    return cont;
 }
-std::tuple<TextureUnit, TextureUnit, TextureUnit> bindColorDepthPickingTextures(
-    const ImageOutport& image) {
-    TextureUnit color;
-    TextureUnit depth;
-    TextureUnit picking;
-
-    bindTextures(image, color, depth, picking);
-    return std::make_tuple(std::move(color), std::move(depth), std::move(picking));
+TextureUnitContainer bindColorDepthPickingTextures(const ImageOutport& image) {
+    TextureUnitContainer cont(2);
+    bindTextures(image, cont[0], cont[1], cont[2]);
+    return cont;
 }
 
 void bindTextures(const Image* image, const TextureUnit& colorTexUnit,
@@ -407,6 +429,12 @@ TextureUnit bindTexture(const TransferFunctionProperty& tf) {
     return unit;
 }
 
+TextureUnit bindAndSetUniforms(Shader* shader, const TransferFunctionProperty& tf) {
+    auto unit = bindTexture(tf);
+    shader->setUniform(tf.getIdentifier(), unit.getUnitNumber());
+    return unit;
+}
+
 void bindTexture(const Volume* volume, const TextureUnit& texUnit) {
     const VolumeGL* volumeGL = volume->getRepresentation<VolumeGL>();
     if (volumeGL) {
@@ -429,6 +457,53 @@ TextureUnit bindTexture(const Volume* volume) {
 TextureUnit bindTexture(const VolumeInport& inport) {
     return bindTexture(inport.getData());
 }
+
+TextureUnitContainer bindAndSetUniforms(Shader* shader, const Image* image, const std::string& id,
+                                        ImageType type) {
+    switch (type) {
+        case COLOR_ONLY: {
+            TextureUnitContainer cont(1);
+            bindColorTexture(image, cont[0]);
+            utilgl::setShaderUniforms(shader, image, id + "Parameters");
+            shader->setUniform(id + "Color", cont[0].getUnitNumber());
+            return cont;
+        }
+        case COLOR_DEPTH: {
+            TextureUnitContainer cont = bindColorDepthTextures(image);
+            utilgl::setShaderUniforms(shader, image, id + "Parameters");
+            shader->setUniform(id + "Color", cont[0].getUnitNumber());
+            shader->setUniform(id + "Depth", cont[1].getUnitNumber());
+            return cont;
+        }
+        case COLOR_PICKING: {
+            TextureUnitContainer cont(2);
+            bindColorTexture(image, cont[0]);
+            bindPickingTexture(image, cont[1]);
+            utilgl::setShaderUniforms(shader, image, id + "Parameters");
+            shader->setUniform(id + "Color", cont[0].getUnitNumber());
+            shader->setUniform(id + "Picking", cont[1].getUnitNumber());
+            return cont;
+        }
+        case COLOR_DEPTH_PICKING: {
+            TextureUnitContainer cont = bindColorDepthPickingTextures(image);
+            utilgl::setShaderUniforms(shader, image, id + "Parameters");
+            shader->setUniform(id + "Color", cont[0].getUnitNumber());
+            shader->setUniform(id + "Depth", cont[1].getUnitNumber());
+            shader->setUniform(id + "Picking", cont[2].getUnitNumber());
+            return cont;
+        }
+    }
+}
+    
+
+TextureUnitContainer bindAndSetUniforms(Shader* shader, ImageInport& port, ImageType type) {
+    return bindAndSetUniforms(shader, port.getData(), port.getIdentifier(), type);
+}
+
+TextureUnitContainer bindAndSetUniforms(Shader* shader, ImageOutport& port, ImageType type) {
+    return bindAndSetUniforms(shader, port.getData(), port.getIdentifier(), type);
+}
+
 
 }
 

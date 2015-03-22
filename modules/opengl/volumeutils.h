@@ -32,6 +32,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/opengl/glwrap/textureunit.h>
 
 namespace inviwo {
 
@@ -46,6 +47,9 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const Volume* volum
 
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const VolumeInport& port,
                                                const std::string& samplerID);
+
+
+IVW_MODULE_OPENGL_API TextureUnit bindAndSetUniforms(Shader* shader, VolumeInport& volume);
 
 }
 
