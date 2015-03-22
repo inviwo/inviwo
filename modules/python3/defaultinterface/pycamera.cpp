@@ -131,6 +131,7 @@ PyObject* py_setCameraPos(PyObject* /*self*/, PyObject* args) {
         return nullptr;
     }
 
+
     CameraProperty* cam = dynamic_cast<CameraProperty*>(theProperty);
     if (cam) {
         vec3 from;
@@ -146,13 +147,7 @@ PyObject* py_setCameraPos(PyObject* /*self*/, PyObject* args) {
             return nullptr;
         }
 
-       vec3 polFrom = vec3(from[0] * std::sin(static_cast<double>(from[1])) * std::cos(static_cast<double>(from[2])),
-            from[0] * std::sin(static_cast<double>(from[1])) * std::sin(static_cast<double>(from[2])),
-            from[0] * std::cos(static_cast<double>(from[1])));
-
-       polFrom.y = cam->getLookFrom().y;
-
-        cam->setLookFrom(polFrom);
+       cam->setLookFrom(from);
         Py_RETURN_NONE;
     } else {
         std::string msg = std::string("setCameraPosition() not a camera property: ") + theProperty->getClassIdentifier();
