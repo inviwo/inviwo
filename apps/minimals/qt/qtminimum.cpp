@@ -34,15 +34,11 @@
 #include <QApplication>
 #include <QMainWindow>
 
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/openglqt/canvasprocessorwidgetqt.h>
-#include <modules/openglqt/canvasqt.h>
-
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
@@ -68,14 +64,16 @@ int main(int argc, char** argv) {
     inviwoApp.initialize(&inviwo::registerAllModules);
 
     // Continue initialization of default context
-    CanvasQt* sharedCanvas = static_cast<CanvasQt*>(RenderContext::getPtr()->getDefaultRenderContext());
-    sharedCanvas->initialize();
-    sharedCanvas->activate();
+    Canvas* sharedCanvas = RenderContext::getPtr()->getDefaultRenderContext();
+    if (sharedCanvas) {
+        sharedCanvas->initialize();
+        sharedCanvas->activate();
+    }
 
     // Set canvas as central widget
     QMainWindow mainWin;
 
-    // Load simpleraycaster scene
+    // Load workspace
     inviwoApp.getProcessorNetwork()->lock();
     const CommandLineParser* cmdparser = inviwoApp.getCommandLineParser();
     std::string workspace;
@@ -83,26 +81,32 @@ int main(int argc, char** argv) {
     if (cmdparser->getLoadWorkspaceFromArg())
         workspace = cmdparser->getWorkspacePath();
     else
+#ifdef REG_INVIWOBASEGLMODULE
         workspace =
-            inviwoApp.getPath(InviwoApplication::PATH_WORKSPACES, "boron.inv");
+        inviwoApp.getPath(InviwoApplication::PATH_WORKSPACES, "boron.inv");
+#else
+        workspace = "";
+#endif
 
-    IvwDeserializer xmlDeserializer(workspace);
-    inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
-    std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
+    if (!workspace.empty()){
+        IvwDeserializer xmlDeserializer(workspace);
+        inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
+        std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
 
-    for (std::vector<Processor*>::iterator it = processors.begin(); it != processors.end(); ++it) {
-        Processor* processor = *it;
-        processor->invalidate(INVALID_RESOURCES);
+        for (std::vector<Processor*>::iterator it = processors.begin(); it != processors.end(); ++it) {
+            Processor* processor = *it;
+            processor->invalidate(INVALID_RESOURCES);
 
-        ProcessorWidget* processorWidget = ProcessorWidgetFactory::getPtr()->create(processor);
-        if (processorWidget) {
-            processorWidget->setProcessor(processor);
-            processorWidget->initialize();
-            processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
-            processor->setProcessorWidget(processorWidget);
+            ProcessorWidget* processorWidget = ProcessorWidgetFactory::getPtr()->create(processor);
+            if (processorWidget) {
+                processorWidget->setProcessor(processor);
+                processorWidget->initialize();
+                processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
+                processor->setProcessorWidget(processorWidget);
 
-            if (!mainWin.centralWidget()) { 
-                mainWin.setCentralWidget(dynamic_cast<QWidget*>(processorWidget));
+                if (!mainWin.centralWidget()) {
+                    mainWin.setCentralWidget(dynamic_cast<QWidget*>(processorWidget));
+                }
             }
         }
     }
@@ -119,7 +123,9 @@ int main(int argc, char** argv) {
             path, cmdparser->getSnapshotName());
     }
 
-    mainWin.resize(sharedCanvas->getScreenDimensions().x, sharedCanvas->getScreenDimensions().y);
+    if (sharedCanvas)
+        mainWin.resize(sharedCanvas->getScreenDimensions().x, sharedCanvas->getScreenDimensions().y);
+    
     mainWin.show();
 
     if (cmdparser->getQuitApplicationAfterStartup()) {
