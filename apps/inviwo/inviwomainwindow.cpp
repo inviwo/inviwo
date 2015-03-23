@@ -39,8 +39,9 @@
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
-
 #include <inviwo/qt/widgets/inviwofiledialog.h>
+
+#include <modules/opengl/glwrap/shadermanager.h>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QStandardPaths>
@@ -56,6 +57,8 @@
 #include <QSettings>
 #include <QUrl>
 #include <QVariant>
+#include <QTextBrowser>
+#include <QDialog>
 
 #ifdef IVW_PYTHON2_QT
 #define IVW_PYTHON_QT
@@ -259,8 +262,14 @@ void InviwoMainWindow::addMenus() {
 
     fileMenuItem_ = new QMenu(tr("&File"), menuBar_);
     viewMenuItem_ = new QMenu(tr("&View"), menuBar_);
+    shadersItem_ = new QMenu(tr("&Shaders"), menuBar_);
+    shaderMapper_ = new QSignalMapper(this);
+    connect(shaderMapper_, SIGNAL(mapped(QObject*)), this, SLOT(shaderMenuCallback(QObject*)));
+
     menuBar_->insertMenu(first, fileMenuItem_);
     menuBar_->insertMenu(first, viewMenuItem_);
+    menuBar_->insertMenu(first, shadersItem_);
+
     helpMenuItem_ = menuBar_->addMenu(tr("&Help"));
 }
 
@@ -323,8 +332,8 @@ void InviwoMainWindow::addMenuActions() {
     visibilityModeAction_->setChecked(false);
 
     QIcon visibilityModeIcon;
-    visibilityModeIcon.addFile(":/icons/view-developer.png", QSize(), QIcon::Active, QIcon::Off);
-    visibilityModeIcon.addFile(":/icons/view-application.png", QSize(), QIcon::Active, QIcon::On);
+    visibilityModeIcon.addFile(":/icons/view-developer.png", QSize(), QIcon::Normal, QIcon::Off);
+    visibilityModeIcon.addFile(":/icons/view-application.png", QSize(), QIcon::Normal, QIcon::On);
     visibilityModeAction_->setIcon(visibilityModeIcon);
     viewMenuItem_->addAction(visibilityModeAction_);
 
@@ -336,7 +345,11 @@ void InviwoMainWindow::addMenuActions() {
     connect(visibilityModeAction_, SIGNAL(triggered(bool)), this, SLOT(setVisibilityMode(bool)));
 
     visibilityModeChangedInSettings();
-
+    
+    QAction* reloadShaders = new QAction("Reload All", this);
+    connect(reloadShaders, SIGNAL(tiggered()), this, SLOT(shadersReload()));
+    shadersItem_->addAction(reloadShaders);
+    
     enableDisableEvaluationButton_ = new QToolButton(this);
     enableDisableEvaluationButton_->setToolTip(tr("Enable/Disable Evaluation"));
     enableDisableEvaluationButton_->setCheckable(true);
@@ -710,6 +723,110 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     }
 
     return continueOperation;
+}
+
+void InviwoMainWindow::updateShadersMenu() {
+    const std::vector<Shader*> shaders{ShaderManager::getPtr()->getShaders()};
+
+    for (Shader* shader : shaders) {
+        QMenu*& shaderSubMenu = shadersItems_[shader->getID()];
+
+        if (!shaderSubMenu) {
+            shaderSubMenu =
+                new QMenu(QString::fromStdString("Shader " + toString(shader->getID())), this);
+            shadersItem_->addMenu(shaderSubMenu);
+
+            ShaderObject* obj;
+            if ((obj = shader->getVertexShaderObject()) != nullptr) {
+                QAction* action = new QAction(QString::fromStdString(obj->getFileName()), this);
+                action->setData(QSize(shader->getID(), 1));
+                connect(action, SIGNAL(triggered()), shaderMapper_, SLOT(map()));
+                shaderMapper_->setMapping(action, action);
+                shaderSubMenu->addAction(action);
+            }
+            if ((obj = shader->getGeometryShaderObject()) != nullptr) {
+                QAction* action = new QAction(QString::fromStdString(obj->getFileName()), this);
+                action->setData(QSize(shader->getID(), 2));
+                connect(action, SIGNAL(triggered()), shaderMapper_, SLOT(map()));
+                shaderMapper_->setMapping(action, action);
+                shaderSubMenu->addAction(action);
+            }
+            if ((obj = shader->getFragmentShaderObject()) != nullptr) {
+                QAction* action = new QAction(QString::fromStdString(obj->getFileName()), this);
+                action->setData(QSize(shader->getID(), 3));
+                connect(action, SIGNAL(triggered()), shaderMapper_, SLOT(map()));
+                shaderMapper_->setMapping(action, action);
+                shaderSubMenu->addAction(action);;
+            }
+        }
+    }
+
+    auto it = shadersItems_.begin();
+    while (it != shadersItems_.end()) {
+        auto sit = std::find_if(shaders.begin(), shaders.end(), [&it](Shader* shader) -> bool {
+            return shader->getID() == it->first;
+        });
+        if (sit == shaders.end()) {
+            delete it->second;
+            it = shadersItems_.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+void InviwoMainWindow::shaderMenuCallback(QObject* obj) {
+    QSize id = qobject_cast<QAction*>(obj)->data().toSize();
+    int shaderId = id.width();
+    int type = id.height();
+    
+    const std::vector<Shader*> shaders{ShaderManager::getPtr()->getShaders()};
+    auto it = std::find_if(shaders.begin(), shaders.end(), [shaderId](Shader* shader) -> bool {
+            return shader->getID() == shaderId;
+        });
+    
+    if (it != shaders.end()) {
+        ShaderObject* obj;
+        switch (type) {
+            case 1:
+                obj = (*it)->getVertexShaderObject();
+                break;
+            case 2:
+                obj = (*it)->getGeometryShaderObject();
+                break;
+            case 3:
+                obj = (*it)->getFragmentShaderObject();
+                break;
+            default:
+                return;
+        }
+        
+        QTextBrowser* shadercode = new QTextBrowser(this);
+        shadercode->setText( obj->print(true).c_str() );
+        shadercode->setStyleSheet("font: 12pt \"Courier\";");
+
+        QDialog* dialog = new QDialog(this);
+        QGridLayout* layout = new QGridLayout(dialog);
+        layout->setContentsMargins(0,0,0,0);
+        layout->setSpacing(0);
+        layout->addWidget(shadercode);
+        dialog->setLayout(layout);
+        dialog->resize(600, 800);
+        dialog->exec();
+        
+        delete dialog;
+    }
+}
+
+void InviwoMainWindow::shadersReload() {
+    ShaderManager::getPtr()->rebuildAllShaders();
+}
+
+void InviwoMainWindow::onProcessorNetworkDidAddProcessor(Processor* processor) {
+    updateShadersMenu();
+}
+void InviwoMainWindow::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
+    updateShadersMenu();
 }
 
 }  // namespace

@@ -41,8 +41,8 @@ namespace inviwo {
 
 ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compileShader) :
     shaderType_(shaderType),
-    fileName_(fileName)
-{
+    fileName_(fileName) {
+    
     initialize(compileShader);
 }
 
@@ -378,6 +378,29 @@ void ShaderObject::addOutDeclaration(std::string name) {
         outDeclarations_.push_back(name);
 }
 
+std::string ShaderObject::print(bool showSource) const {
+    if (showSource) {
+        std::string::size_type width = 0;
+        for (auto l : lineNumberResolver_) {
+            std::string file = splitString(l.first,'/').back();
+            width = std::max(width, file.length());
+        }
+        
+        size_t i = 0;
+        std::string line;
+        std::stringstream out;
+        std::istringstream in(sourceProcessed_);
+        while (std::getline(in, line)) {
+            std::string file = splitString(lineNumberResolver_[i].first,'/').back();
+            out << std::left << std::setw(width+1) << file << std::right << std::setw(4)
+                << lineNumberResolver_[i].second << ": " << std::left << line << "\n";
+            ++i;
+        }
+        return out.str();
+    } else {
+        return sourceProcessed_;
+    }
+}
 
 
 } // namespace

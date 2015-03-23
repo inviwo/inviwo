@@ -69,6 +69,8 @@ public:
 
     void addOutDeclaration(std::string name);
 
+    std::string print(bool showSource = false) const;
+
 private:
 
     bool initialize(bool compileShader);
