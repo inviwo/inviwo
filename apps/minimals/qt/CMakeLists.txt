@@ -23,19 +23,6 @@ ivw_retrieve_all_modules(package_list)
 list(APPEND package_list InviwoCore)
 
 #--------------------------------------------------------------------
-# Remove Qt stuff from list
-foreach(module ${package_list})
-    string(TOUPPER ${module} u_module)
-    if(u_module MATCHES "QT+")
-        list(REMOVE_ITEM package_list ${module})
-    endif()
-endforeach()
-
-#--------------------------------------------------------------------
-# Add Inviwo OpenGL Qt
-list(APPEND package_list InviwoOpenGLQtModule)
-
-#--------------------------------------------------------------------
 # Only include one OpenGL context creation module
 list(REMOVE_ITEM package_list InviwoGLFWModule)
 list(REMOVE_ITEM package_list InviwoGLUTModule)
@@ -43,7 +30,7 @@ list(REMOVE_ITEM package_list InviwoSDLModule)
 
 #--------------------------------------------------------------------
 # Remove modules not used by this app
-list(REMOVE_ITEM package_list InviwoPythonModule)
+list(REMOVE_ITEM package_list InviwoPython3QtModule)
 list(REMOVE_ITEM package_list InviwoUnitTestsModule)
 
 #--------------------------------------------------------------------
@@ -57,6 +44,14 @@ ivw_add_dependency_directories(${package_list})
 #--------------------------------------------------------------------
 # Create application
 add_executable(inviwo_qtminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
+
+#--------------------------------------------------------------------
+# Add qt dependencies to this list
+if(DESIRED_QT_VERSION MATCHES 5)
+    ivw_add_dependencies(Qt5Core Qt5Gui Qt5Widgets)    
+else()
+    ivw_add_dependencies(Qt)
+endif()
 
 #--------------------------------------------------------------------
 # Define standard properties
