@@ -131,13 +131,17 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
         throw DataReaderException("Error: Unable to find dimensions in .pvm file: " + filePath);
     }
 
+    Volume* volume = new Volume();
+
     if (format == DataUINT16::get()) {
         size_t bytes = format->getSize();
         size_t size = dim.x * dim.y * dim.z * bytes;
         swapbytes(data, static_cast<unsigned int>(size));
+        // This format does not contain information about data range
+        // so we need to compute it for correct results
+        auto minmax = std::minmax_element(reinterpret_cast<DataUINT16::type*>(data), reinterpret_cast<DataUINT16::type*>(data + size));
+        volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
     }
-
-    Volume* volume = new Volume();
 
     // Additional information
     std::stringstream ss;
