@@ -39,6 +39,7 @@ namespace inviwo {
     PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_prompt(PyObject* /*self*/, PyObject* /*args*/);
+    PyObject* py_showTransferFunctionEditor(PyObject* /*self*/, PyObject* /*args*/);
 
     class IVW_MODULE_PYTHON3QT_API PyLoadNetworkMethod : public PyMethod {
     public:
@@ -66,9 +67,9 @@ public:
 class IVW_MODULE_PYTHON3QT_API PyPromptMethod : public PyMethod {
 public:
     PyPromptMethod()
-       : title_("title") 
-       , message_("message") 
-       , default_("default",true)
+        : title_("title")
+        , message_("message")
+        , default_("default", true)
     {
         addParam(&title_);
         addParam(&message_);
@@ -83,6 +84,24 @@ protected:
     PyParamString title_;
     PyParamString message_;
     PyParamString default_;
+};
+
+
+
+class IVW_MODULE_PYTHON3QT_API PyShowPropertyWidgetMethod: public PyMethod {
+public:
+    PyShowPropertyWidgetMethod()
+        : path_("path")
+    {
+        addParam(&path_);
+    }
+
+    virtual std::string getName() const { return "showTransferFunctionEditor"; }
+    virtual std::string getDesc() const { return "Show the transfer function editor for given transfer function property."; }
+    virtual PyCFunction getFunc() { return py_showTransferFunctionEditor; }
+
+protected:
+    PyParamString path_;
 };
 
 

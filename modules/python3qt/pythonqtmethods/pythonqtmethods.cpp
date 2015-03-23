@@ -33,8 +33,11 @@
 #include <modules/python3/pythoninterface/pyvalueparser.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
 
 #include <QInputDialog>
 #include <QDir>
@@ -126,4 +129,38 @@ PyObject* py_prompt(PyObject* /*self*/, PyObject* args) {
     }
     Py_RETURN_NONE;
 }
+
+
+PyObject* py_showTransferFunctionEditor(PyObject* /*self*/, PyObject* args) {
+    PyShowPropertyWidgetMethod p;
+    if (!p.testParams(args)) {
+        return nullptr;
+    }
+    std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
+    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+
+    if (!theProperty) {
+        std::string msg = std::string("showTransferFunctionEditor() no property with path: ") + path;
+        PyErr_SetString(PyExc_TypeError, msg.c_str());
+        return nullptr;
+    }
+
+    if (!dynamic_cast<TransferFunctionProperty*>(theProperty)){
+        std::string msg = std::string("showTransferFunctionEditor() not a transfer function property: ") + theProperty->getClassIdentifier();
+        PyErr_SetString(PyExc_TypeError, msg.c_str());
+        return nullptr;
+
+    }
+
+
+    for (auto w : theProperty->getWidgets()){
+        auto tfw = dynamic_cast<TransferFunctionPropertyWidgetQt*>(w);
+        if (tfw){
+            tfw->openTransferFunctionDialog();
+        }
+        w->showWidget();
+    }
+    Py_RETURN_NONE;
+}
+
 }
