@@ -64,6 +64,7 @@ void Python3QtModule::initPyQtModule() {
     inviwoPyQtModule_->addMethod(new PySaveNetworkMethod());
     inviwoPyQtModule_->addMethod(new PyQuitInviwoMethod());
     inviwoPyQtModule_->addMethod(new PyPromptMethod());
+    inviwoPyQtModule_->addMethod(new PyShowPropertyWidgetMethod());
     PyInviwo::getPtr()->registerPyModule(inviwoPyQtModule_);
 }
 
