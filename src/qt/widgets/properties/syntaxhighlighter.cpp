@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
@@ -34,16 +34,11 @@
 #include <QTextDocument>
 #include <QTextBlock>
 
-
-
 namespace inviwo {
 
-SyntaxHighligther::SyntaxHighligther(QTextDocument* parent):QSyntaxHighlighter(parent) {
-}
+SyntaxHighligther::SyntaxHighligther(QTextDocument* parent) : QSyntaxHighlighter(parent) {}
 
-SyntaxHighligther::~SyntaxHighligther() {
-    clearFormaters();
-}
+SyntaxHighligther::~SyntaxHighligther() { clearFormaters(); }
 
 void SyntaxHighligther::clearFormaters() {
     while (!formaters_.empty()) {
@@ -53,20 +48,20 @@ void SyntaxHighligther::clearFormaters() {
 }
 
 void SyntaxHighligther::highlightBlock(const QString& text) {
-    setFormat(0,text.size(),defaultFormat_);
+    setFormat(0, text.size(), defaultFormat_);
     std::vector<SyntaxFormater*>::iterator it;
 
     for (it = formaters_.begin(); it != formaters_.end(); ++it) {
-        SyntaxFormater::Result res = (*it)->eval(text,previousBlockState());
+        SyntaxFormater::Result res = (*it)->eval(text, previousBlockState());
 
-        for (size_t i = 0; i<res.start.size(); i++) {
-            setFormat(res.start[i],res.length[i],*res.format);
+        for (size_t i = 0; i < res.start.size(); i++) {
+            setFormat(res.start[i], res.length[i], *res.format);
             setCurrentBlockState(res.outgoingState);
         }
     }
 }
 
-template<>
+template <>
 void SyntaxHighligther::loadConfig<None>() {
     QColor textColor;
     QColor bgColor;
@@ -76,8 +71,4 @@ void SyntaxHighligther::loadConfig<None>() {
     defaultFormat_.setForeground(textColor);
 }
 
-
-
-} // namespace
-
-
+}  // namespace
