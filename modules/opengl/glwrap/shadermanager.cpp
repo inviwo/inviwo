@@ -227,4 +227,8 @@ bool ShaderManager::addShaderSearchPathImpl(const std::string &shaderSearchPath)
     return false;
 }
 
+const std::vector<Shader*> ShaderManager::getShaders() const {
+    return shaders_;
+}
+
 } // namespace
