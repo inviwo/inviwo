@@ -131,7 +131,7 @@ public:
 
 protected:
     Image* getResizedImageData(uvec2 dimensions);
-    void setLargestImageData(ResizeEvent* resizeEvent);
+    void setLargestImageData();
     /**
      * \brief Propagates resize event to this processor's inports within the same dependency set
      *(group)
