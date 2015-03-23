@@ -110,6 +110,12 @@ std::string ShaderObject::embeddDefines(std::string source) {
         ++it;
     }
 
+    std::ostringstream defines;
+    for (ShaderDefineContainer::const_iterator it=shaderDefines_.begin(), itEnd = shaderDefines_.end(); it!=itEnd; ++it) {
+        defines << "#define " << (*it).first << " " << (*it).second << "\n";
+        lineNumberResolver_.push_back(std::pair<std::string, unsigned int>("Defines", 0));
+    }
+
     std::string globalDefines;
     if (shaderType_ == GL_VERTEX_SHADER)
         globalDefines += ShaderManager::getPtr()->getGlobalGLSLVertexDefines();
@@ -118,12 +124,6 @@ std::string ShaderObject::embeddDefines(std::string source) {
     std::istringstream globalGLSLDefinesStream(globalDefines);
     while (std::getline(globalGLSLDefinesStream, curLine))
         lineNumberResolver_.push_back(std::pair<std::string, unsigned int>("GlobalGLSLSDefines", 0));
-
-    std::ostringstream defines;
-    for (ShaderDefineContainer::const_iterator it=shaderDefines_.begin(), itEnd = shaderDefines_.end(); it!=itEnd; ++it) {
-        defines << "#define " << (*it).first << " " << (*it).second << "\n";
-        lineNumberResolver_.push_back(std::pair<std::string, unsigned int>("Define", 0));
-    }
 
     return globalGLSLHeader + extensions.str() + defines.str() + globalDefines;
 }
@@ -209,7 +209,8 @@ bool ShaderObject::loadSource(std::string fileName) {
             exists = true;
         } else {
             // Search in include directories added by modules
-            std::vector<std::string> shaderSearchPaths = ShaderManager::getPtr()->getShaderSearchPaths();
+            std::vector<std::string> shaderSearchPaths =
+                ShaderManager::getPtr()->getShaderSearchPaths();
 
             for (auto& shaderSearchPath : shaderSearchPaths) {
                 if (filesystem::fileExists(shaderSearchPath + "/" + fileName)) {
@@ -220,7 +221,7 @@ bool ShaderObject::loadSource(std::string fileName) {
             }
         }
 
-        if(!exists){
+        if (!exists) {
             std::string fileresourcekey = fileName;
             std::replace(fileresourcekey.begin(), fileresourcekey.end(), '/', '_');
             std::replace(fileresourcekey.begin(), fileresourcekey.end(), '.', '_');
@@ -228,20 +229,17 @@ bool ShaderObject::loadSource(std::string fileName) {
             return (!source_.empty());
         }
 
-        std::ifstream fileStream(absoluteFileName_.c_str());
         TextFileReader fileReader(absoluteFileName_);
-
-        try
-        {
+        try {
             source_ = fileReader.read();
-        }
-        catch (std::ifstream::failure&)
-        {
+        } catch (std::ifstream::failure&) {
             return false;
         }
 
         return true;
-    } else return false;
+    } else {
+        return false;
+    }
 }
 
 void ShaderObject::upload() {

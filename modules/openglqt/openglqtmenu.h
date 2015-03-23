@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,39 +24,43 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_OPENGLQT_MODULE_H
-#define IVW_OPENGLQT_MODULE_H
+#ifndef IVW_OPENGLQTMENU_H
+#define IVW_OPENGLQTMENU_H
 
 #include <modules/openglqt/openglqtmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <modules/openglqt/canvasqt.h>
-#include <modules/openglqt/openglqtmenu.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/network/processornetworkobserver.h>
+
+#include <QObject>
+#include <QMenu>
+#include <QSignalMapper>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGLQT_API OpenGLQtModule : public InviwoModule {
-
+class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QObject, public ProcessorNetworkObserver {
+    Q_OBJECT
 public:
-    OpenGLQtModule();
-    virtual ~OpenGLQtModule();
+    OpenGLQtMenu();
+    virtual ~OpenGLQtMenu() {}
 
-protected:
-    template <typename T>
-    void registerProcessorWidgetAndAssociate(ProcessorWidget* processorWidget) {
-        registerProcessorWidget(T::CLASS_IDENTIFIER, processorWidget);
-    }
+    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
+    virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
 
-    virtual void deinitialize();
+public slots:
+    void shaderMenuCallback(QObject* obj);
+    void shadersReload();
 
 private:
-    CanvasQt* qtGLSharedCanvas_;
-    
-    OpenGLQtMenu* menu_;
+    void updateShadersMenu();
+
+    QMenu* shadersItem_;
+    std::map<unsigned int, QMenu*> shadersItems_;
+    QSignalMapper* shaderMapper_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_OPENGLQT_MODULE_H
+#endif  // IVW_OPENGLQTMENU_H
