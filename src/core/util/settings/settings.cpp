@@ -43,7 +43,7 @@ void Settings::addProperty(Property* property){
 }
 
 void Settings::addProperty(Property& property){
-    PropertyOwner::addProperty(property);
+    PropertyOwner::addProperty(&property);
     property.onChange(this,&Settings::saveToDisk);
 }
 
