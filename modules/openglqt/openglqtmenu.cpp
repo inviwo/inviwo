@@ -40,21 +40,26 @@
 
 namespace inviwo {
 
-OpenGLQtMenu::OpenGLQtMenu() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->addObserver(this);
-
+OpenGLQtMenu::OpenGLQtMenu() : shadersItem_(nullptr), shaderMapper_(nullptr) {
     QMainWindow* win =
         static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
-    shadersItem_ = win->menuBar()->addMenu(tr("&Shaders"));
 
-    shaderMapper_ = new QSignalMapper(this);
-    connect(shaderMapper_, SIGNAL(mapped(QObject*)), this, SLOT(shaderMenuCallback(QObject*)));
+    if (win) {
+        InviwoApplication::getPtr()->getProcessorNetwork()->addObserver(this);
 
-    QAction* reloadShaders = shadersItem_->addAction("Reload All");
-    connect(reloadShaders, SIGNAL(tiggered()), this, SLOT(shadersReload()));
+        shadersItem_ = win->menuBar()->addMenu(tr("&Shaders"));
+
+        shaderMapper_ = new QSignalMapper(this);
+        connect(shaderMapper_, SIGNAL(mapped(QObject*)), this, SLOT(shaderMenuCallback(QObject*)));
+
+        QAction* reloadShaders = shadersItem_->addAction("Reload All");
+        connect(reloadShaders, SIGNAL(tiggered()), this, SLOT(shadersReload()));
+    }
 }
 
 void OpenGLQtMenu::updateShadersMenu() {
+    if (!shadersItem_) return;
+
     const std::vector<Shader*> shaders{ShaderManager::getPtr()->getShaders()};
 
     for (Shader* shader : shaders) {

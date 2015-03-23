@@ -40,14 +40,18 @@
 namespace inviwo {
 
 PythonMenu::PythonMenu() {
-    QMainWindow* win = static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
-    QMenu* menu = win->menuBar()->addMenu("Python");
-    QAction* pythonEditorOpen = menu->addAction(QIcon(":/icons/python.png"),"&Python Editor");
-    QAction* infoAction = menu->addAction("API Documentation");
-    infoWidget_ = new PythonInfoWidget(win);
-    PythonEditorWidget::init( new PythonEditorWidget(win));
-    win->connect(pythonEditorOpen,SIGNAL(triggered(bool)),PythonEditorWidget::getPtr(),SLOT(show(void)));
-    win->connect(infoAction,SIGNAL(triggered(bool)),infoWidget_,SLOT(show(void)));
+    QMainWindow* win =
+        static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
+    if (win) {
+        QMenu* menu = win->menuBar()->addMenu("Python");
+        QAction* pythonEditorOpen = menu->addAction(QIcon(":/icons/python.png"), "&Python Editor");
+        QAction* infoAction = menu->addAction("API Documentation");
+        infoWidget_ = new PythonInfoWidget(win);
+        PythonEditorWidget::init(new PythonEditorWidget(win));
+        win->connect(pythonEditorOpen, SIGNAL(triggered(bool)), PythonEditorWidget::getPtr(),
+                     SLOT(show(void)));
+        win->connect(infoAction, SIGNAL(triggered(bool)), infoWidget_, SLOT(show(void)));
+    }
 }
 
 PythonMenu::~PythonMenu() {
