@@ -401,14 +401,18 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     if (isHandlingResizeEvents() || dimensions_ == uvec2(8, 8)) {
         outDim = getDimensions();
         // Set largest data
-        setLargestImageData(resizeEvent);
-    } else {
-        // Send update to listeners
-        if (data_->getDimensions() != dimensions_) broadcast(resizeEvent);
-
-        dimensions_ = data_->getDimensions();
+        setLargestImageData();
+    } else {       
         outDim = dimensions_;
     }
+
+    //Send update to listeners
+    if (data_->getDimensions() != dimensions_){
+        dimensions_ = data_->getDimensions();
+        broadcast(resizeEvent);
+    }
+    else
+        dimensions_ = data_->getDimensions();
 
     // Make sure that all ImageOutports in the same group (dependency set) that has the same size.
     std::vector<Port*> portSet = getProcessor()->getPortsByDependencySet(getProcessor()->getPortDependencySet(this));
@@ -485,7 +489,7 @@ Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
     return resultImage;
 }
 
-void ImageOutport::setLargestImageData(ResizeEvent* resizeEvent) {
+void ImageOutport::setLargestImageData() {
     uvec2 maxDimensions(0);
     Image* largestImage = nullptr;
 
@@ -503,11 +507,6 @@ void ImageOutport::setLargestImageData(ResizeEvent* resizeEvent) {
         data_ = largestImage;
         mapDataInvalid_ = true;
     }
-
-    // Send update to listeners
-    if (data_->getDimensions() != dimensions_) broadcast(resizeEvent);
-
-    dimensions_ = data_->getDimensions();
 }
 
 uvec3 ImageOutport::getColorCode() const { return ImageInport::colorCode; }
