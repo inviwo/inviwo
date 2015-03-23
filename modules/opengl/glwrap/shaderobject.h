@@ -40,6 +40,9 @@ class IVW_MODULE_OPENGL_API ShaderObject {
 
 public:
     ShaderObject(GLenum shaderType, std::string fileName, bool compileShader=true);
+    ShaderObject(const ShaderObject& rhs);
+    ShaderObject& operator=(const ShaderObject& that);
+    
     ~ShaderObject();
 
     GLuint getID() { return id_; }

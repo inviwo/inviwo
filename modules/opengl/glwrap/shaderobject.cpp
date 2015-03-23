@@ -35,7 +35,7 @@
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/opengl/glwrap/shadermanager.h>
-
+#include <modules/opengl/openglexception.h>
 
 namespace inviwo {
 
@@ -45,6 +45,22 @@ ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compile
     
     initialize(compileShader);
 }
+
+ShaderObject::ShaderObject(const ShaderObject& rhs)
+    : shaderType_(rhs.shaderType_), fileName_(rhs.fileName_) {
+    initialize(true);
+}
+
+ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
+    if (this != &that) {
+        glDeleteShader(id_);
+        shaderType_ = that.shaderType_;
+        fileName_ = that.fileName_;
+        initialize(true);
+    }
+    return *this;
+}
+
 
 ShaderObject::~ShaderObject() {
     glDeleteShader(id_);
@@ -163,7 +179,7 @@ std::string ShaderObject::embeddIncludes(std::string source, std::string fileNam
                     includeFileName = shaderSearchPath + "/" + includeFileName;
                     auto it = std::find(includeFileNames_.begin(), includeFileNames_.end(),
                                         includeFileName);
-                    if (it == includeFileNames_.end()) { // Only include files once.
+                    if (it == includeFileNames_.end()) {  // Only include files once.
                         includeFileNames_.push_back(includeFileName);
                         std::ifstream includeFileStream(includeFileName.c_str());
                         std::stringstream buffer;
@@ -191,7 +207,8 @@ std::string ShaderObject::embeddIncludes(std::string source, std::string fileNam
             }
 
             if (!includeFileFound) {
-                LogWarn("Include file " << includeFileName << " not found in shader search paths.");
+                throw OpenGLException("Include file " + includeFileName +
+                                      " not found in shader search paths.");
             }
 
         } else {
