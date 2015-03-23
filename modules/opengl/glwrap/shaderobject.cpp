@@ -39,15 +39,16 @@
 
 namespace inviwo {
 
-ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compileShader) :
-    shaderType_(shaderType),
-    fileName_(fileName) {
-    
+ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compileShader)
+    : id_(glCreateShader(shaderType))
+    , shaderType_(shaderType)
+    , fileName_(fileName) {
+
     initialize(compileShader);
 }
 
 ShaderObject::ShaderObject(const ShaderObject& rhs)
-    : shaderType_(rhs.shaderType_), fileName_(rhs.fileName_) {
+    : id_(glCreateShader(rhs.shaderType_)), shaderType_(rhs.shaderType_), fileName_(rhs.fileName_) {
     initialize(true);
 }
 
@@ -56,6 +57,7 @@ ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
         glDeleteShader(id_);
         shaderType_ = that.shaderType_;
         fileName_ = that.fileName_;
+        id_ = glCreateShader(shaderType_);
         initialize(true);
     }
     return *this;
@@ -66,40 +68,33 @@ ShaderObject::~ShaderObject() {
     glDeleteShader(id_);
 }
 
-bool ShaderObject::initialize(bool compileShader) {
+void ShaderObject::initialize(bool compileShader) {
     // Help developer to spot errors
     std::string fileExtension = filesystem::getFileExtension(fileName_);
-
     if ((fileExtension == "vert" && shaderType_ != GL_VERTEX_SHADER)
         || (fileExtension == "geom" && shaderType_ != GL_GEOMETRY_SHADER)
         || (fileExtension == "frag" && shaderType_ != GL_FRAGMENT_SHADER)) {
         LogWarn("File extension does not match shader type: " << fileName_);
     }
-
-    id_ = glCreateShader(shaderType_);
-    LGL_ERROR;
+    
     loadSource(fileName_);
     preprocess();
     upload();
-    bool result = true;
 
-    if (compileShader) result = compile();
-
-    return result;
+    if (compileShader) {
+        compile();
+    }
 }
 
-bool ShaderObject::build() {
+void ShaderObject::build() {
     preprocess();
     upload();
-    return compile();
+    compile();
 }
 
-bool ShaderObject::rebuild() {
-    if (loadSource(fileName_)) {
-        preprocess();
-        upload();
-        return compile();
-    } else return false;
+void ShaderObject::rebuild() {
+    loadSource(fileName_);
+    build();
 }
 
 void ShaderObject::preprocess() {
@@ -223,16 +218,14 @@ std::string ShaderObject::embeddIncludes(std::string source, std::string fileNam
     return result.str();
 }
 
-bool ShaderObject::loadSource(std::string fileName) {
+void ShaderObject::loadSource(std::string fileName) {
     source_ = "";
 
-    if (fileName.length() > 0) {
-        absoluteFileName_ = fileName;
-        bool exists = false;
-        if (filesystem::fileExists(fileName)) {
-            // Absolute path was given
+    if (!fileName.empty()) {
+        absoluteFileName_ = "";
+
+        if (filesystem::fileExists(fileName)) {  // Absolute path was given
             absoluteFileName_ = fileName;
-            exists = true;
         } else {
             // Search in include directories added by modules
             std::vector<std::string> shaderSearchPaths =
@@ -240,31 +233,27 @@ bool ShaderObject::loadSource(std::string fileName) {
 
             for (auto& shaderSearchPath : shaderSearchPaths) {
                 if (filesystem::fileExists(shaderSearchPath + "/" + fileName)) {
-                    exists = true;
                     absoluteFileName_ = shaderSearchPath + "/" + fileName;
                     break;
                 }
             }
         }
 
-        if (!exists) {
+        if (!absoluteFileName_.empty()) { // Load file
+            try {
+                TextFileReader fileReader(absoluteFileName_);
+                source_ = fileReader.read();
+            } catch (std::ifstream::failure&) {
+                throw OpenGLException("Cound not read shader file: " + fileName);
+            }
+        } else { // try finding a Shader Resource
             std::string fileresourcekey = fileName;
             std::replace(fileresourcekey.begin(), fileresourcekey.end(), '/', '_');
             std::replace(fileresourcekey.begin(), fileresourcekey.end(), '.', '_');
             source_ = ShaderManager::getPtr()->getShaderResource(fileresourcekey);
-            return (!source_.empty());
         }
-
-        TextFileReader fileReader(absoluteFileName_);
-        try {
-            source_ = fileReader.read();
-        } catch (std::ifstream::failure&) {
-            return false;
-        }
-
-        return true;
     } else {
-        return false;
+        throw OpenGLException("Shader file: " + fileName + " not found in shader search paths.");
     }
 }
 
@@ -291,7 +280,6 @@ std::string ShaderObject::getShaderInfoLog() {
 }
 
 int ShaderObject::getLogLineNumber(const std::string& compileLogLine) {
-    // TODO: adapt to ATI compile log syntax
     int result = -1;
     std::istringstream input(compileLogLine);
     int num;
@@ -325,19 +313,18 @@ int ShaderObject::getLogLineNumber(const std::string& compileLogLine) {
 }
 
 std::string ShaderObject::reformatShaderInfoLog(const std::string shaderInfoLog) {
-    
     std::ostringstream result;
     std::string curLine;
     std::istringstream origShaderInfoLog(shaderInfoLog);
 
     while (std::getline(origShaderInfoLog, curLine)) {
-        if(!curLine.empty()){
+        if (!curLine.empty()) {
             int origLineNumber = getLogLineNumber(curLine);
-            if(origLineNumber>0){
-                unsigned int lineNumber = lineNumberResolver_[origLineNumber-1].second;
-                std::string fileName = lineNumberResolver_[origLineNumber-1].first;
-                // TODO: adapt substr call to ATI compile log syntax
-                result << "\n" << fileName << " (" << lineNumber << "): " << curLine.substr(curLine.find(":")+1);
+            if (origLineNumber > 0) {
+                unsigned int lineNumber = lineNumberResolver_[origLineNumber - 1].second;
+                std::string fileName = lineNumberResolver_[origLineNumber - 1].first;
+                result << "\n" << fileName << " (" << lineNumber
+                       << "): " << curLine.substr(curLine.find(":") + 1);
             }
         }
     }
@@ -345,7 +332,7 @@ std::string ShaderObject::reformatShaderInfoLog(const std::string shaderInfoLog)
     return result.str();
 }
 
-bool ShaderObject::compile() {
+void ShaderObject::compile() {
     glCompileShader(id_);
     GLint compiledOk = 0;
     glGetShaderiv(id_, GL_COMPILE_STATUS, &compiledOk);
@@ -353,11 +340,8 @@ bool ShaderObject::compile() {
     if (!compiledOk) {
         std::string compilerLog = getShaderInfoLog();
         compilerLog = reformatShaderInfoLog(compilerLog);
-        LogError(compilerLog);
-        return false;
+        throw OpenGLException(compilerLog);
     }
-
-    return true;
 }
 
 void ShaderObject::addShaderDefine(std::string name, std::string value) {
