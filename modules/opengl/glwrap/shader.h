@@ -51,6 +51,9 @@ public:
     Shader(const char *vertexFilename, const char *geometryFilename, const char *fragmentFilename,
            bool linkShader = true);
 
+    Shader(const Shader& rhs);
+    Shader& operator=(const Shader& that);
+
     // Takes ownership of shader objects in vector
     Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader = true);
 
@@ -61,7 +64,7 @@ public:
     void rebuild();
 
     unsigned int getID() const { return id_; }
-    const ShaderObjectMap *getShaderObjects() { return shaderObjects_; }
+    const ShaderObjectMap *getShaderObjects() { return &shaderObjects_; }
 
     ShaderObject *getVertexShaderObject() const;
     ShaderObject *getGeometryShaderObject() const;
@@ -86,7 +89,7 @@ public:
 private:
     unsigned int id_;
 
-    ShaderObjectMap *shaderObjects_;
+    ShaderObjectMap shaderObjects_;
 
     void initialize();
     void linkAndRegister(bool linkShader);

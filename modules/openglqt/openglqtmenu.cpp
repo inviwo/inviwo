@@ -53,7 +53,7 @@ OpenGLQtMenu::OpenGLQtMenu() : shadersItem_(nullptr), shaderMapper_(nullptr) {
         connect(shaderMapper_, SIGNAL(mapped(QObject*)), this, SLOT(shaderMenuCallback(QObject*)));
 
         QAction* reloadShaders = shadersItem_->addAction("Reload All");
-        connect(reloadShaders, SIGNAL(tiggered()), this, SLOT(shadersReload()));
+        connect(reloadShaders, SIGNAL(triggered()), this, SLOT(shadersReload()));
     }
 }
 
