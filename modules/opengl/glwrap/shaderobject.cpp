@@ -149,46 +149,55 @@ std::string ShaderObject::embeddIncludes(std::string source, std::string fileNam
         std::string::size_type posInclude = curLine.find("#include");
         std::string::size_type posComment = curLine.find("//");
 
-        if (posInclude!=std::string::npos && (posComment==std::string::npos || posComment>posInclude)) {
-            std::string::size_type pathBegin = curLine.find("\"", posInclude+1);
-            std::string::size_type pathEnd = curLine.find("\"", pathBegin+1);
-            std::string includeFileName(curLine, pathBegin+1, pathEnd-pathBegin-1);
+        if (posInclude != std::string::npos &&
+            (posComment == std::string::npos || posComment > posInclude)) {
+            std::string::size_type pathBegin = curLine.find("\"", posInclude + 1);
+            std::string::size_type pathEnd = curLine.find("\"", pathBegin + 1);
+            std::string includeFileName(curLine, pathBegin + 1, pathEnd - pathBegin - 1);
             bool includeFileFound = false;
-            std::vector<std::string> shaderSearchPaths = ShaderManager::getPtr()->getShaderSearchPaths();
+            std::vector<std::string> shaderSearchPaths =
+                ShaderManager::getPtr()->getShaderSearchPaths();
 
             for (auto& shaderSearchPath : shaderSearchPaths) {
                 if (filesystem::fileExists(shaderSearchPath + "/" + includeFileName)) {
                     includeFileName = shaderSearchPath + "/" + includeFileName;
-                    includeFileNames_.push_back(includeFileName);
-                    std::ifstream includeFileStream(includeFileName.c_str());
-                    std::stringstream buffer;
-                    buffer << includeFileStream.rdbuf();
-                    std::string includeSource = buffer.str();
+                    auto it = std::find(includeFileNames_.begin(), includeFileNames_.end(),
+                                        includeFileName);
+                    if (it == includeFileNames_.end()) { // Only include files once.
+                        includeFileNames_.push_back(includeFileName);
+                        std::ifstream includeFileStream(includeFileName.c_str());
+                        std::stringstream buffer;
+                        buffer << includeFileStream.rdbuf();
+                        std::string includeSource = buffer.str();
 
-                    if (!includeSource.empty())
-                        result << embeddIncludes(includeSource, includeFileName);
-
+                        if (!includeSource.empty())
+                            result << embeddIncludes(includeSource, includeFileName);
+                    }
                     includeFileFound = true;
                     break;
                 }
             }
 
-            if(!includeFileFound){
+            if (!includeFileFound) {
                 std::string fileresourcekey = includeFileName;
                 std::replace(fileresourcekey.begin(), fileresourcekey.end(), '/', '_');
                 std::replace(fileresourcekey.begin(), fileresourcekey.end(), '.', '_');
-                std::string includeSource = ShaderManager::getPtr()->getShaderResource(fileresourcekey);
-                if (!includeSource.empty()){
+                std::string includeSource =
+                    ShaderManager::getPtr()->getShaderResource(fileresourcekey);
+                if (!includeSource.empty()) {
                     result << embeddIncludes(includeSource, includeFileName);
                     includeFileFound = true;
                 }
             }
 
-            if (!includeFileFound)
+            if (!includeFileFound) {
                 LogWarn("Include file " << includeFileName << " not found in shader search paths.");
+            }
+
         } else {
             result << curLine << "\n";
-            lineNumberResolver_.push_back(std::pair<std::string, unsigned int>(fileName, localLineNumber));
+            lineNumberResolver_.push_back(
+                std::pair<std::string, unsigned int>(fileName, localLineNumber));
         }
 
         localLineNumber++;
