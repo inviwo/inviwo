@@ -47,9 +47,13 @@ OpenGLQtModule::OpenGLQtModule() : InviwoModule() {
 
     registerProcessorWidgetAndAssociate<CanvasProcessorGL>(new CanvasProcessorWidgetQt());
     registerCapabilities(new OpenGLQtCapabilities());
+    
+    menu_ = new OpenGLQtMenu();
 }
 
-OpenGLQtModule::~OpenGLQtModule() {}
+OpenGLQtModule::~OpenGLQtModule() {
+    delete menu_;
+}
 
 void OpenGLQtModule::deinitialize() {
     if (qtGLSharedCanvas_ == RenderContext::getPtr()->getDefaultRenderContext()) {

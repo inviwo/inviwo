@@ -14,6 +14,7 @@ ivw_module(OpenGLQt)
 set(MOC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetqt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmenu.h
 )
 
 #--------------------------------------------------------------------
@@ -32,10 +33,11 @@ source_group("MOC Files" FILES ${MOC_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasqt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtcapabilities.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmenu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmodule.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetqt.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

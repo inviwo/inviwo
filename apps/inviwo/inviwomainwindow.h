@@ -38,7 +38,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
-#include <QSignalMapper>
+
 #include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/qt/editor/networkeditor.h>
 
@@ -75,8 +75,6 @@ public:
     bool processCommandLineArgs();
 
     virtual void onProcessorNetworkChange() override;
-    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
-    virtual void onProcessorNetworkDidRemoveProcessor(Processor* processor) override;
     virtual void onNetworkEditorFileChanged(const std::string& filename);
     virtual void onModifiedStatusChanged(const bool &newStatus);
 
@@ -100,8 +98,6 @@ public slots:
     void disableEvaluation(bool);
     void showAboutBox();
     void setVisibilityMode(bool value); // True = Application, False = Developer
-    void shaderMenuCallback(QObject* obj);
-    void shadersReload();
 
 private:
     void addMenus();
@@ -119,10 +115,6 @@ private:
     void setCurrentWorkspace(QString workspaceFileName);
 
     void updateWindowTitle();
-    void updateShadersMenu();
-    
-    
-    
 
     NetworkEditor* networkEditor_;
     NetworkEditorView* networkEditorView_;
@@ -144,11 +136,6 @@ private:
     QMenu* fileMenuItem_;
     QMenu* viewMenuItem_;
     QMenu* helpMenuItem_;
-
-    QMenu* shadersItem_;
-    std::map<unsigned int, QMenu*> shadersItems_;
-    QSignalMapper* shaderMapper_;
-    
 
     // mainwindow menuactions
     QAction* workspaceActionNew_;
