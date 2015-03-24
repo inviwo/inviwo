@@ -56,7 +56,7 @@ CubeProxyGeometry::CubeProxyGeometry()
     dims_ = uvec3(1,1,1);
 
     // Since the clips depend on the input volume dimensions, we make sure to always
-    // serialize them so we can do a proper renomalization when we load new data.
+    // serialize them so we can do a proper renormalization when we load new data.
     clipX_.setSerializationMode(ALL);
     clipY_.setSerializationMode(ALL);
     clipZ_.setSerializationMode(ALL);
@@ -113,31 +113,14 @@ void CubeProxyGeometry::process() {
 }
 
 void CubeProxyGeometry::onVolumeChange() {
-    vec2 x,y,z;
-
-    x = clipX_.get();
-    y = clipY_.get();
-    z = clipZ_.get();
- 
-    // Normalize x,y,z to 0 to 1 with respect to the current max.
-    x /= static_cast<float>(clipX_.getRangeMax());
-    y /= static_cast<float>(clipY_.getRangeMax());
-    z /= static_cast<float>(clipZ_.getRangeMax());
-
+    disableInvalidation();
 
     // Update to the new dimensions.
     dims_ = inport_.getData()->getDimensions();
-    
-    disableInvalidation();
 
-    clipX_.setRangeMax(dims_.x);
-    clipY_.setRangeMax(dims_.y);
-    clipZ_.setRangeMax(dims_.z);
-
-    // Keep the relative positions of the clipping.
-    clipX_.set(x * static_cast<float>(dims_.x));
-    clipY_.set(y * static_cast<float>(dims_.y));
-    clipZ_.set(z * static_cast<float>(dims_.z));
+    clipX_.setRangeNormalized(ivec2(0, dims_.x));
+    clipY_.setRangeNormalized(ivec2(0, dims_.y));
+    clipZ_.setRangeNormalized(ivec2(0, dims_.z));
 
     // set the new dimensions to default if we were to press reset
     clipX_.setCurrentStateAsDefault();
