@@ -39,7 +39,7 @@ namespace inviwo {
 template <typename T>
 class TemplateProperty : public Property {
 public:
-    typedef T valueType;
+    typedef T value_type;
 
     TemplateProperty(
         const std::string& identifier, const std::string& displayName, const T& value = T(),
