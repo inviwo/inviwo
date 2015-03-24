@@ -325,6 +325,9 @@ private:
         void handleLinkError(SerializationException& error) {
             messages.push_back(error.getMessage());
         }
+        void handlePortError(SerializationException& error) {
+            messages.push_back(error.getMessage());
+        }
   
         std::vector<std::string> messages;
         const InviwoSetupInfo& info_;
