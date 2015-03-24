@@ -45,23 +45,37 @@ PropertyOwner::PropertyOwner()
 PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
     : PropertyOwnerObservable()
     , invalidationLevel_(rhs.invalidationLevel_) {
+
+    for(Property* p : rhs.ownedProperties_) {
+        addProperty(p->clone());   
+    }
 }
 
 PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
     if (this != &that) {
         invalidationLevel_ = that.invalidationLevel_;
         properties_.clear();
+
+        for (Property* p : ownedProperties_) {
+            delete p;
+        }
+        ownedProperties_.clear();
+
+        for (Property* p : that.ownedProperties_) {
+            addProperty(p->clone());
+        }
     }
     return *this;
 }
 
 PropertyOwner::~PropertyOwner() {
-    properties_.clear();
+    for (Property* p : ownedProperties_) delete p;
 }
 
-void PropertyOwner::addProperty(Property* property) {
+void PropertyOwner::addProperty(Property* property, bool owner) {
     ivwAssert(getPropertyByIdentifier(property->getIdentifier()) == nullptr,
               "Property already exist");
+
     notifyObserversWillAddProperty(property, properties_.size());
     properties_.push_back(property);
     property->setOwner(this);
@@ -71,11 +85,15 @@ void PropertyOwner::addProperty(Property* property) {
     if (dynamic_cast<CompositeProperty*>(property)) {
         compositeProperties_.push_back(static_cast<CompositeProperty*>(property));
     }
+
+    if (owner) { // Assume ownership of property;
+        ownedProperties_.push_back(property);
+    }
     notifyObserversDidAddProperty(property, properties_.size()-1);
 }
 
 void PropertyOwner::addProperty(Property& property) {
-    addProperty(&property);
+    addProperty(&property, false);
 }
 
 Property* PropertyOwner::removeProperty(const std::string& identifier) {
@@ -101,13 +119,13 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
         size_t index = std::distance(properties_.begin(), it);
         notifyObserversWillRemoveProperty(prop, index);
 
-        std::vector<EventProperty*>::iterator 
-            eit = std::find(eventProperties_.begin(),eventProperties_.end(), *it);
-        if (eit != eventProperties_.end()) eventProperties_.erase(eit);
-        
-        std::vector<CompositeProperty*>::iterator
-            cit = std::find(compositeProperties_.begin(),compositeProperties_.end(), *it);
-        if (cit != compositeProperties_.end()) compositeProperties_.erase(cit);
+        ownedProperties_.erase(std::remove(ownedProperties_.begin(), ownedProperties_.end(), *it),
+                               ownedProperties_.end());
+        eventProperties_.erase(std::remove(eventProperties_.begin(), eventProperties_.end(), *it),
+                               eventProperties_.end());
+        compositeProperties_.erase(
+            std::remove(compositeProperties_.begin(), compositeProperties_.end(), *it),
+            compositeProperties_.end());
 
         prop->setOwner(nullptr);
         properties_.erase(it);
@@ -185,8 +203,32 @@ void PropertyOwner::deserialize(IvwDeserializer& d) {
     NodeVersionConverter<PropertyOwner> tvc(this, &PropertyOwner::findPropsForComposites);
     d.convertVersion(&tvc);
 
+    std::vector<std::string> identifers;
+    for (Property* p : properties_) identifers.push_back(p->getIdentifier());
+
     StandardIdentifier<Property> propertyIdentifier;
     d.deserialize("Properties", properties_, "Property", propertyIdentifier);
+
+    for (size_t i = 0; i < properties_.size(); ++i) {
+        Property* p = properties_[i];
+        auto it =
+            std::find_if(identifers.begin(), identifers.end(),
+                         [&p](const std::string& id) -> bool { return id == p->getIdentifier(); });
+
+        // Property is created in the de-serialization, assume ownership
+        if (it == identifers.end()) {
+            notifyObserversWillAddProperty(p, i);
+            p->setOwner(this);
+            if (dynamic_cast<EventProperty*>(p)) {
+                eventProperties_.push_back(static_cast<EventProperty*>(p));
+            }
+            if (dynamic_cast<CompositeProperty*>(p)) {
+                compositeProperties_.push_back(static_cast<CompositeProperty*>(p));
+            }
+            ownedProperties_.push_back(p);
+            notifyObserversDidAddProperty(p, i);
+        }
+    }
 }
 
 bool PropertyOwner::findPropsForComposites(TxElement* node) {

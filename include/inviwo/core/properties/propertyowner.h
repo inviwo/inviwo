@@ -49,7 +49,7 @@ public:
     PropertyOwner& operator=(const PropertyOwner& that);
     virtual ~PropertyOwner();
 
-    virtual void addProperty(Property* property);
+    virtual void addProperty(Property* property, bool owner = true);
     virtual void addProperty(Property& property);
        
     virtual Property* removeProperty(const std::string& identifier);
@@ -88,8 +88,9 @@ public:
 
 protected:
     std::vector<Property*> properties_; //< non-owning references.
-    
-    // Chached lists of certain propertytypes
+    std::vector<Property*> ownedProperties_; // owning pointers, also in properties.
+
+    // Cached lists of certain property types
     std::vector<EventProperty*> eventProperties_; //< non-owning references.
     std::vector<CompositeProperty*> compositeProperties_; //< non-owning references.
 
@@ -103,8 +104,7 @@ private:
         bool operator () (const Property* p);
     private:
         std::string id_;
-    };
-    
+    }; 
 };
 
 template <class T>
