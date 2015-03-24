@@ -24,13 +24,12 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/properties/propertyfactory.h>
-
 
 namespace inviwo {
 
@@ -38,8 +37,7 @@ PropertyFactory::PropertyFactory() {}
 
 PropertyFactory::~PropertyFactory() {}
 
-
-void PropertyFactory::registeryObject(PropertyFactoryObject* property) {
+void PropertyFactory::registeryObject(PropertyFactoryObject *property) {
     std::string className = property->getClassIdentifier();
     PropertyClassMap::const_iterator it = propertyClassMap_.find(className);
 
@@ -47,10 +45,11 @@ void PropertyFactory::registeryObject(PropertyFactoryObject* property) {
         propertyClassMap_.insert(std::make_pair(className, property));
     else
         LogWarn("Property with class name: " << className << " already registed");
-        
 }
 
-IvwSerializable *PropertyFactory::create(const std::string &className) const { return nullptr; }
+IvwSerializable *PropertyFactory::create(const std::string &className) const {
+    return getProperty(className, "", "");
+}
 
 bool PropertyFactory::isValidType(const std::string &className) const {
     PropertyClassMap::const_iterator it = propertyClassMap_.find(className);
@@ -61,7 +60,8 @@ bool PropertyFactory::isValidType(const std::string &className) const {
         return false;
 }
 
-Property* PropertyFactory::getProperty(const std::string &className, const std::string &identifier, const std::string &displayName) {
+Property *PropertyFactory::getProperty(const std::string &className, const std::string &identifier,
+                                       const std::string &displayName) const {
     PropertyClassMap::const_iterator it = propertyClassMap_.find(className);
 
     if (it != propertyClassMap_.end())
@@ -70,7 +70,7 @@ Property* PropertyFactory::getProperty(const std::string &className, const std::
         return nullptr;
 }
 
-std::vector<std::string> PropertyFactory::getRegistedPropertyClassNames() {
+std::vector<std::string> PropertyFactory::getRegistedPropertyClassNames() const {
     std::vector<std::string> classNames;
 
     for (auto &elem : propertyClassMap_) classNames.push_back(elem.first);
@@ -78,4 +78,4 @@ std::vector<std::string> PropertyFactory::getRegistedPropertyClassNames() {
     return classNames;
 }
 
-} // namespace
+}  // namespace
