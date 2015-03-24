@@ -67,8 +67,8 @@ public:
     TextureUnitContainer(size_t i = 0);
     TextureUnitContainer(const TextureUnitContainer&) = delete;
     TextureUnitContainer& operator=(const TextureUnitContainer&) = delete;
-    TextureUnitContainer(TextureUnitContainer&& rhs) = default;
-    TextureUnitContainer& operator=(TextureUnitContainer&& that) = default;
+    TextureUnitContainer(TextureUnitContainer&& rhs);
+    TextureUnitContainer& operator=(TextureUnitContainer&& that);
     ~TextureUnitContainer() = default;
     
     void push_back(TextureUnit&& unit);

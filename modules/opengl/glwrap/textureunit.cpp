@@ -81,7 +81,16 @@ void TextureUnit::initialize(int numUnits) { textureUnits_.resize(numUnits, fals
 void TextureUnit::deinitialize() { textureUnits_.clear(); }
 
 TextureUnitContainer::TextureUnitContainer(size_t i) : units_(i) {};
-    
+
+TextureUnitContainer::TextureUnitContainer(TextureUnitContainer&& rhs)
+    : units_(std::move(rhs.units_)) {}
+TextureUnitContainer& TextureUnitContainer::operator=(TextureUnitContainer&& that) {
+    if (this != &that) {
+        units_ = std::move(that.units_);
+    }
+    return *this;
+}
+
 void TextureUnitContainer::push_back(TextureUnit&& unit) {
     units_.push_back(std::move(unit));
 }

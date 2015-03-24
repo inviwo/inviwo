@@ -187,81 +187,81 @@ void bindPickingTexture(const ImageOutport& outport, const TextureUnit& texUnit)
 TextureUnit bindColorTexture(const Image* image) {
     TextureUnit unit;
     bindColorTexture(image, unit);
-    return unit;
+    return std::move(unit);
 }
 TextureUnit bindColorTexture(const ImageInport& inport) {
     TextureUnit unit;
     bindColorTexture(inport, unit);
-    return unit;
+    return std::move(unit);
 }
 TextureUnit bindColorTexture(const ImageOutport& outport) {
     TextureUnit unit;
     bindColorTexture(outport, unit);
-    return unit;
+    return std::move(unit);
 }
 
 TextureUnit bindDepthTexture(const Image* image) {
     TextureUnit unit;
     bindDepthTexture(image, unit);
-    return unit;
+    return std::move(unit);
 }
 TextureUnit bindDepthTexture(const ImageInport& inport) {
     TextureUnit unit;
     bindDepthTexture(inport, unit);
-    return unit;
+    return std::move(unit);
 }
 TextureUnit bindDepthTexture(const ImageOutport& outport) {
     TextureUnit unit;
     bindDepthTexture(outport, unit);
-    return unit;
+    return std::move(unit);
 }
 
 TextureUnit bindPickingTexture(const Image* image) {
     TextureUnit unit;
     bindPickingTexture(image, unit);
-    return unit;
+    return std::move(unit);
 }
 TextureUnit bindPickingTexture(const ImageInport& inport) {
     TextureUnit unit;
     bindPickingTexture(inport, unit);
-    return unit;
+    return std::move(unit);
 }
 TextureUnit bindPickingTexture(const ImageOutport& outport) {
     TextureUnit unit;
     bindPickingTexture(outport, unit);
-    return unit;
+    return std::move(unit);
 }
 
 TextureUnitContainer bindColorDepthTextures(const Image* image) {
     TextureUnitContainer cont(2);
     bindTextures(image, cont[0], cont[1]);
-    return cont;
+    return std::move(cont);
 }
 TextureUnitContainer bindColorDepthTextures(const ImageInport& image) {
     TextureUnitContainer cont(2);
     bindTextures(image, cont[0], cont[1]);
-    return cont;
+    return std::move(cont);
 }
 TextureUnitContainer bindColorDepthTextures(const ImageOutport& image) {
     TextureUnitContainer cont(2);
     bindTextures(image, cont[0], cont[1]);
-    return cont;
+    return std::move(cont);
 }
 
 TextureUnitContainer bindColorDepthPickingTextures(const Image* image) {
     TextureUnitContainer cont(2);
     bindTextures(image, cont[0], cont[1], cont[2]);
-    return cont;
+    return std::move(cont);
 }
 TextureUnitContainer bindColorDepthPickingTextures(const ImageInport& image) {
     TextureUnitContainer cont(2);
     bindTextures(image, cont[0], cont[1], cont[2]);
-    return cont;
+    return std::move(cont);
 }
 TextureUnitContainer bindColorDepthPickingTextures(const ImageOutport& image) {
     TextureUnitContainer cont(2);
     bindTextures(image, cont[0], cont[1], cont[2]);
-    return cont;
+    return std::move(cont);
 }
 
 void bindTextures(const Image* image, const TextureUnit& colorTexUnit,
@@ -426,13 +426,13 @@ void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit
 TextureUnit bindTexture(const TransferFunctionProperty& tf) {
     TextureUnit unit;
     bindTexture(tf, unit);
-    return unit;
+    return std::move(unit);
 }
 
 TextureUnit bindAndSetUniforms(Shader* shader, const TransferFunctionProperty& tf) {
     auto unit = bindTexture(tf);
     shader->setUniform(tf.getIdentifier(), unit.getUnitNumber());
-    return unit;
+    return std::move(unit);
 }
 
 void bindTexture(const Volume* volume, const TextureUnit& texUnit) {
@@ -451,7 +451,7 @@ void bindTexture(const VolumeInport& inport, const TextureUnit& texUnit) {
 TextureUnit bindTexture(const Volume* volume) {
     TextureUnit unit;
     bindTexture(volume, unit);
-    return unit;
+    return std::move(unit);
 }
 
 TextureUnit bindTexture(const VolumeInport& inport) {

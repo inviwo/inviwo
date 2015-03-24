@@ -124,7 +124,7 @@ TextureUnit bindAndSetUniforms(Shader* shader, VolumeInport& volumePort) {
     auto volUnit = utilgl::bindTexture(volumePort);
     shader->setUniform(volumePort.getIdentifier(), volUnit.getUnitNumber());
     utilgl::setShaderUniforms(shader, volumePort, volumePort.getIdentifier() + "Parameters");
-    return volUnit;
+    return std::move(volUnit);
 }
 
 }
