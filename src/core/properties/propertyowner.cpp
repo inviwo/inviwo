@@ -178,38 +178,15 @@ void PropertyOwner::invalidate(InvalidationLevel invalidationLevel,
 }
 
 void PropertyOwner::serialize(IvwSerializer& s) const {
-    std::map<std::string, Property*> propertyMap;
-
-    for (const auto& elem : properties_) propertyMap[(elem)->getIdentifier()] = elem;
-
-    s.serialize("Properties", propertyMap, "Property");
+    s.serialize("Properties", properties_, "Property");
 }
 
 void PropertyOwner::deserialize(IvwDeserializer& d) {
-    /* 1) Vector deserialization does not allow
-    *     specification of comparison attribute string.
-    *  2) But Map deserialization does allow
-    *     specification of comparision attribute string.
-    *     (eg. "identifier" in this case).
-    *  3) Hence map deserialization is preferred here.
-    *  4) TODO: Vector can be made to behave like Map.
-    *           But then it necessitates passing of two extra arguments.
-    *           And they are list of attribute values, comparison attribute string.
-    *           eg., list of identifier for each property and "identifier"
-    *
-    */
-
-
     NodeVersionConverter<PropertyOwner> tvc(this, &PropertyOwner::findPropsForComposites);
     d.convertVersion(&tvc);
 
-
-    std::map<std::string, Property*> propertyMap;
-
-    for (std::vector<Property*>::const_iterator it = properties_.begin(); it != properties_.end(); ++it)
-        propertyMap[(*it)->getIdentifier()] = *it;
-
-    d.deserialize("Properties", propertyMap, "Property", "identifier");
+    StandardIdentifier<Property> propertyIdentifier;
+    d.deserialize("Properties", properties_, "Property", propertyIdentifier);
 }
 
 bool PropertyOwner::findPropsForComposites(TxElement* node) {
