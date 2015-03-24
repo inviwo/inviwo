@@ -44,27 +44,21 @@ private:
     const T* p;
 };
 
-template<class T, class U>
+template <class T, class U>
 T* getTypeFromVector(std::vector<U> vec) {
-    if (vec.size() > 0) {
-        for (size_t i=0; i<vec.size(); i++) {
-            T* item = dynamic_cast<T*>(vec[i]);
-
-            if (item)
-                return item;
-        }
+    for (size_t i = 0; i < vec.size(); i++) {
+        T* item = dynamic_cast<T*>(vec[i]);
+        if (item) return item;
     }
 
     return nullptr;
 }
 
-template<class T, class U>
+template <class T, class U>
 bool hasTypeInVector(const std::vector<U> vec) {
-    for (size_t i=0; i<vec.size(); i++) {
+    for (size_t i = 0; i < vec.size(); i++) {
         T* item = dynamic_cast<T*>(vec[i]);
-
-        if (item)
-            return true;
+        if (item) return true;
     }
 
     return false;

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/assertion.h>
@@ -34,8 +34,10 @@
 
 #if defined(IVW_DEBUG)
 
-void ivwAssertion(const char* fileName, const char* functionName, long lineNumber, std::string message) {
-    std::cout << "Assertion in (" << fileName << ", " << functionName << ", Ln " << lineNumber << "): ";
+void ivwAssertion(const char* fileName, const char* functionName, long lineNumber,
+                  std::string message) {
+    std::cout << "Assertion in (" << fileName << ", " << functionName << ", Ln " << lineNumber
+              << "): ";
     std::cout << message << std::endl;
     std::cout << "(choose to ";
 #if defined(IVW_DEBUG) && defined(WIN32)
@@ -48,19 +50,14 @@ void ivwAssertion(const char* fileName, const char* functionName, long lineNumbe
         std::cin >> keyboardInput;
 
         switch (keyboardInput[0]) {
+
 #if defined(IVW_DEBUG) && defined(WIN32)
-
-            case 'b':
-                __debugbreak();
+            case 'b': __debugbreak();
 #endif
-
-            case 'i':
-                return;
-
-            case 'e':
-                exit(0);
+            case 'i': return;
+            case 'e': exit(0);
         }
     }
 }
 
-#endif // _DEBUG
+#endif  // _DEBUG
