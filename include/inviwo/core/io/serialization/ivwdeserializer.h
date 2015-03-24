@@ -399,25 +399,30 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
 
+        typename std::vector<T*>::iterator lastInsertion = vector.begin();
+
         TxEIt child(itemKey);
         for (child = child.begin(rootElement_); child != child.end(); ++child) {
             identifier.setKey(child.Get());
             typename std::vector<T*>::iterator it =
                 std::find_if(vector.begin(), vector.end(), identifier);
 
-            if (it != vector.end()) {
+            if (it != vector.end()) { // There is a item in vector with same identifier as on disk
                 NodeSwitch elementNodeSwitch(*this, &(*child), false);
                 try {
                     deserialize(itemKey, *it);
+                    lastInsertion = it;
                 } catch (SerializationException& e) {
                     handleError(e);
                 }
-            } else {
+            } else { // No item in vector matches item on disk, create a new one.
                 T* item = nullptr;
                 NodeSwitch elementNodeSwitch(*this, &(*child), false);
                 try {
                     deserialize(itemKey, item);
-                    vector.push_back(item);
+                    // Insert new item after the previous item deserialized
+                    lastInsertion = lastInsertion==vector.end() ? lastInsertion: ++lastInsertion;
+                    lastInsertion = vector.insert(lastInsertion, item);
                 } catch (SerializationException& e) {
                     delete item;
                     handleError(e);
