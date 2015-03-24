@@ -242,7 +242,7 @@ void MinMaxProperty<T>::setRange(const range_type& value) {
 
 template <typename T>
 void inviwo::MinMaxProperty<T>::setRangeNormalized(const range_type& newRange) {
-    dvec2 val = get();
+    dvec2 val = this->get();
 
     val = (val - static_cast<double>(range_.value.x)) /
           (static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x));
@@ -252,7 +252,7 @@ void inviwo::MinMaxProperty<T>::setRangeNormalized(const range_type& newRange) {
         val * (static_cast<double>(range_.value.y) - static_cast<double>(range_.value.x)) +
         static_cast<double>(range_.value.x);
 
-    set(newVal);
+    this->set(newVal);
 }
 
 template <typename T>
