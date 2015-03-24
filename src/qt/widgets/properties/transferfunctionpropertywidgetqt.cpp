@@ -153,7 +153,7 @@ void TransferFunctionPropertyWidgetQt::setPropertyDisplayName() {
     property_->setDisplayName(label_->getText());
 }
 
-// Needed to resize the graident preview.
+// Needed to resize the gradient preview.
 void TransferFunctionPropertyWidgetQt::resizeEvent(QResizeEvent* event) {
     updateFromProperty();
     PropertyWidgetQt::resizeEvent(event);
