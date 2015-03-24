@@ -103,9 +103,9 @@ void setUniforms(Shader* shader, const T& port) {
     setShaderUniforms(shader, port, port.getIdentifier() + "Parameters");
 }
 template <typename T, typename... Ts>
-void setUniforms(Shader* shader, const T& property, const Ts&... properties) {
-    setUniforms(shader, property);
-    setUniforms(shader, properties...);
+void setUniforms(Shader* shader, const T& elem, const Ts&... elements) {
+    setUniforms(shader, elem);
+    setUniforms(shader, elements...);
 }
 
 
