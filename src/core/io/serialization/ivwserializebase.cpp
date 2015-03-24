@@ -30,6 +30,7 @@
 #include <inviwo/core/io/serialization/ivwserializebase.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
+#include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/io/serialization/ivwserializable.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
@@ -189,6 +190,7 @@ void IvwSerializeBase::registerFactories(void) {
     registeredFactories_.clear();
     registeredFactories_.push_back(ProcessorFactory::getPtr());
     registeredFactories_.push_back(MetaDataFactory::getPtr());
+    registeredFactories_.push_back(PropertyFactory::getPtr());
 }
 
 std::string IvwSerializeBase::getFileName() {
