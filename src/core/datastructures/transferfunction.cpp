@@ -65,8 +65,10 @@ TransferFunction::TransferFunction(const TransferFunction& rhs)
 
 TransferFunction& TransferFunction::operator=(const TransferFunction& rhs) {
     if (this != &rhs) {
-        delete data_;
-        data_ = new Layer(*rhs.data_);
+        if (rhs.getData()->getDimensions() != data_->getDimensions()) {
+            delete data_;
+            data_ = new Layer(*rhs.data_);
+        }
         clearPoints();
         textureSize_ = rhs.textureSize_;
         maskMin_ = rhs.maskMin_;
