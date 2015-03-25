@@ -389,13 +389,19 @@ void ProcessorNetworkEvaluator::evaluate() {
     for (auto processor : processorsSorted_) {
         if (!processor->isValid()) {
             if (processor->isReady()) {
-                // re-initialize resources (e.g., shaders) if necessary
-                if (processor->getInvalidationLevel() >= INVALID_RESOURCES)
-                    processor->initializeResources();
-
-                // call onChange for all invalid inports
-                for (auto inport : processor->getInports()) {
-                    inport->callOnChangeIfChanged();
+                try {
+                    // re-initialize resources (e.g., shaders) if necessary
+                    if (processor->getInvalidationLevel() >= INVALID_RESOURCES) {
+                        processor->initializeResources();
+                    }
+                    // call onChange for all invalid inports
+                    for (auto inport : processor->getInports()) {
+                        inport->callOnChangeIfChanged();
+                    }
+                } catch (Exception& e) {
+                    LogError(e.getMessage());
+                    processor->setValid();
+                    continue;
                 }
 
                 #if IVW_PROFILING
