@@ -40,20 +40,23 @@
 
 namespace inviwo {
 
-OpenGLQtMenu::OpenGLQtMenu() : shadersItem_(nullptr), shaderMapper_(nullptr) {
-    QMainWindow* win =
-        static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
+ OpenGLQtMenu::OpenGLQtMenu() : shadersItem_(nullptr), shaderMapper_(nullptr) {
+    InviwoApplicationQt* qtApp = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
 
-    if (win) {
-        InviwoApplication::getPtr()->getProcessorNetwork()->addObserver(this);
+    if (qtApp) {
+        QMainWindow* win = qtApp->getMainWindow();
 
-        shadersItem_ = win->menuBar()->addMenu(tr("&Shaders"));
+        if (win) {
+            InviwoApplication::getPtr()->getProcessorNetwork()->addObserver(this);
 
-        shaderMapper_ = new QSignalMapper(this);
-        connect(shaderMapper_, SIGNAL(mapped(QObject*)), this, SLOT(shaderMenuCallback(QObject*)));
+            shadersItem_ = win->menuBar()->addMenu(tr("&Shaders"));
 
-        QAction* reloadShaders = shadersItem_->addAction("Reload All");
-        connect(reloadShaders, SIGNAL(triggered()), this, SLOT(shadersReload()));
+            shaderMapper_ = new QSignalMapper(this);
+            connect(shaderMapper_, SIGNAL(mapped(QObject*)), this, SLOT(shaderMenuCallback(QObject*)));
+
+            QAction* reloadShaders = shadersItem_->addAction("Reload All");
+            connect(reloadShaders, SIGNAL(triggered()), this, SLOT(shadersReload()));
+        }
     }
 }
 
