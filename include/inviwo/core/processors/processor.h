@@ -65,6 +65,9 @@ class ProcessorWidget;
 #define ProcessorCategory(T, category) const std::string T::CATEGORY = category;
 #define ProcessorCodeState(T, codeState) const CodeState T::CODE_STATE = codeState;
 
+#define InviwoProcessorVersion() static const std::size_t CLASS_VERSION;
+#define ProcessorClassVersion(T, version) const std::size_t T::CLASS_VERSION = version;
+
 /**
  * \class Processor
  *
