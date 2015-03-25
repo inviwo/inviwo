@@ -50,7 +50,8 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string ba
                                          char** argv)
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName, basePath)
-    , windowDecorationOffset_(0, 0) {
+    , windowDecorationOffset_(0, 0)
+    , mainWindow_(nullptr) {
     QCoreApplication::setOrganizationName("Inviwo Foundation");
     QCoreApplication::setOrganizationDomain("inviwo.org");
     QCoreApplication::setApplicationName(displayName.c_str());
