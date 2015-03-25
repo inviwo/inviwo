@@ -13,20 +13,7 @@ set(HEADER_FILES
     ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
-
-#--------------------------------------------------------------------
-# Add header files
-set(MOC_FILES
-     ${IVW_APPLICATION_DIR}/inviwo/inviwomainwindow.h
-     ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h
-)
-
-if(DESIRED_QT_VERSION MATCHES 5)
-    qt5_wrap_cpp(MOC_FILES ${MOC_FILES})    
-else()
-    qt4_wrap_cpp(MOC_FILES ${MOC_FILES})
-endif()
-
+ivw_qt_wrap_cpp(MOC_FILES ${HEADER_FILES})
 source_group("MOC Files" FILES ${MOC_FILES})
 
 #--------------------------------------------------------------------
