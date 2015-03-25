@@ -86,7 +86,7 @@
 #include <fstream>
 #include <stdio.h>
 
-#include <inviwo/core/common/inviwocommondefines.h>
+#include <inviwocommondefines.h>
 
 // include glm
 #include <inviwo/core/util/glm.h>
