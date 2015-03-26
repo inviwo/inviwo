@@ -113,6 +113,11 @@ public:
     void deserialize(const std::string& key,
                      std::vector<T>& sVector,
                      const std::string& itemKey);
+
+    template <typename T>
+    void deserialize(const std::string& key,
+        std::list<T>& sContainer,
+        const std::string& itemKeyr);
     /**
      * \brief  Deserialize a map
      *
@@ -453,6 +458,35 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T>& vector
                     vector.push_back(item);
                 } else {
                     deserialize(itemKey, vector[i]);
+                }
+            } catch (SerializationException& e) {
+                handleError(e);
+            }
+            i++;
+        }
+    } catch (TxException&) {}
+}
+
+template <typename T>
+void IvwDeserializer::deserialize(const std::string& key, std::list<T>& container,
+    const std::string& itemKey) {
+    try {
+        NodeSwitch vectorNodeSwitch(*this, key);
+        unsigned int i = 0;
+        TxEIt child(itemKey);
+
+        for (child = child.begin(rootElement_); child != child.end(); ++child) {
+            // In the next deserialization call do net fetch the "child" since we are looping...
+            // hence the "false" as the last arg.
+            NodeSwitch elementNodeSwitch(*this, &(*child), false);
+
+            try {
+                if (container.size() <= i) {
+                    T item;
+                    deserialize(itemKey, item);
+                    container.push_back(item);
+                } else {
+                    deserialize(itemKey, *std::next(container.begin(),  i));
                 }
             } catch (SerializationException& e) {
                 handleError(e);
