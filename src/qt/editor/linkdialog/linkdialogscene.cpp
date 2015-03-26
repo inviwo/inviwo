@@ -334,7 +334,7 @@ void LinkDialogGraphicsScene::executeTimeLine(qreal x) {
 }
 
 void LinkDialogGraphicsScene::terminateTimeLine() {
-    sender()->~QObject();
+    delete sender();
 }
 
 
