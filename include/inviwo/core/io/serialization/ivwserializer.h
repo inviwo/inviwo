@@ -34,6 +34,7 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
 #include <type_traits>
+#include <list>
 namespace inviwo {
 
 class IvwSerializable;
@@ -81,6 +82,11 @@ public:
     void serialize(const std::string& key,
                    const std::vector<T>& sVector,
                    const std::string& itemKey);
+
+    template <typename T>
+    void serialize(const std::string& key,
+        const std::list<T>& container,
+        const std::string& itemKey);
 
     template <typename K, typename V, typename C, typename A>
     void serialize(const std::string& key,
@@ -164,6 +170,24 @@ void IvwSerializer::serialize(const std::string& key,
 
     for (typename std::vector<T>::const_iterator it = vector.begin();
          it != vector.end(); ++it)
+        serialize(itemKey, (*it));
+
+    delete newNode;
+}
+
+template <typename T>
+void IvwSerializer::serialize(const std::string& key,
+    const std::list<T>& container,
+    const std::string& itemKey) {
+
+    if (container.empty()) return;
+
+    TxElement* newNode = new TxElement(key);
+    rootElement_->LinkEndChild(newNode);
+    NodeSwitch tempNodeSwitch(*this, newNode);
+
+    for (typename std::list<T>::const_iterator it = container.begin();
+        it != container.end(); ++it)
         serialize(itemKey, (*it));
 
     delete newNode;
