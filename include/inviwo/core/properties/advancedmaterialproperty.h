@@ -61,7 +61,7 @@ class IVW_CORE_API AdvancedMaterialProperty: public CompositeProperty {
 public:
     InviwoPropertyInfo();
     AdvancedMaterialProperty(std::string identifier, std::string displayName,
-                             InvalidationLevel=INVALID_OUTPUT,
+                             InvalidationLevel=INVALID_RESOURCES,
                              PropertySemantics semantics = PropertySemantics::Default);
     
     AdvancedMaterialProperty(const AdvancedMaterialProperty& rhs);
