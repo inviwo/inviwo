@@ -202,7 +202,7 @@ void LinkDialogProcessorGraphicsItem::updateAll() {
 
 void LinkDialogProcessorGraphicsItem::animationEnd() {
     animateExpansion_ = 1.0f;
-    sender()->~QObject();
+    delete sender();
     updateAll();
     for (auto& elem : propertyGraphicsItems_) elem->setAnimate(false);
 }
