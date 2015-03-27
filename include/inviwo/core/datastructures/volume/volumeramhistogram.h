@@ -52,6 +52,11 @@ HistogramContainer calculateVolumeHistogram(const T* data, uvec3 dimensions,
     
     const size_t extent = util::rank<T>::value > 0 ? util::extent<T>::value : 1;
     
+    // check whether number of bins exceeds the data range only if it is an integral type
+    if (!util::is_floating_point<T>::value) {
+        bins = std::min(bins, static_cast<std::size_t>(dataRange.y - dataRange.x + 1));
+    }
+
     HistogramContainer histograms;
     for (size_t i = 0; i < extent; ++i) {
         histograms.add(new NormalizedHistogram(bins));
