@@ -444,6 +444,23 @@ using Matrix = typename util::glmtype<Type, Dim, Dim>::type;
 template <unsigned int Dim, typename Type>
 using Vector = typename util::glmtype<Type, Dim, 1>::type;
 
+template <unsigned int N, typename T>
+Matrix<N, T> MatrixInvert(const Matrix<N, T>& m) {
+    return glm::inverse(m);
+}
+template <typename T>
+Matrix<4, T> MatrixInvert(const glm::detail::tmat4x4<T, glm::defaultp>& m) {
+    return glm::inverse(m);
+}
+template <typename T>
+Matrix<3, T> MatrixInvert(const glm::detail::tmat3x3<T, glm::defaultp>& m) {
+    return glm::inverse(m);
+}
+template <typename T>
+Matrix<2, T> MatrixInvert(const glm::detail::tmat2x2<T, glm::defaultp>& m) {
+    return glm::inverse(m);
+}
+
 
 } // namespace
 
