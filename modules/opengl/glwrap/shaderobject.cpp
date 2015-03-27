@@ -40,15 +40,15 @@
 namespace inviwo {
 
 ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compileShader)
-    : id_(glCreateShader(shaderType))
-    , shaderType_(shaderType)
-    , fileName_(fileName) {
+    : shaderType_(shaderType)
+    , fileName_(fileName)
+    , id_(glCreateShader(shaderType)) {
 
     initialize(compileShader);
 }
 
 ShaderObject::ShaderObject(const ShaderObject& rhs)
-    : id_(glCreateShader(rhs.shaderType_)), shaderType_(rhs.shaderType_), fileName_(rhs.fileName_) {
+    : shaderType_(rhs.shaderType_), fileName_(rhs.fileName_), id_(glCreateShader(rhs.shaderType_)) {
     initialize(true);
 }
 
