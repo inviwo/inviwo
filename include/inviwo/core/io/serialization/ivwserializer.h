@@ -104,14 +104,12 @@ public:
     void serialize(const std::string& key, const T& data, const bool asAttribute = false);
 
     // glm vector types
-    template <typename U, glm::precision P, template <typename, glm::precision> class vecType,
-              typename std::enable_if<util::rank<vecType<U, P>>::value == 1, int>::type = 0>
-    void serialize(const std::string& key, const vecType<U, P>& data);
+    template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type = 0>
+    void serialize(const std::string& key, const Vec& data);
 
     // glm matrix types
-    template <typename U, glm::precision P, template <typename, glm::precision> class vecType,
-              typename std::enable_if<util::rank<vecType<U, P>>::value == 2, int>::type = 0>
-    void serialize(const std::string& key, const vecType<U, P>& data);
+    template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type = 0>
+    void serialize(const std::string& key, const Mat& data);
 
     // serializable classes
     void serialize(const std::string& key, const IvwSerializable& sObj);
@@ -140,14 +138,12 @@ void IvwSerializer::serialize(const std::string& key, const std::vector<T>& vect
                               const std::string& itemKey) {
     if (vector.empty()) return;
 
-    TxElement* newNode = new TxElement(key);
-    rootElement_->LinkEndChild(newNode);
-    NodeSwitch tempNodeSwitch(*this, newNode);
+    auto node = util::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
+    NodeSwitch nodeSwitch(*this, node.get());
 
     for (typename std::vector<T>::const_iterator it = vector.begin(); it != vector.end(); ++it)
         serialize(itemKey, (*it));
-
-    delete newNode;
 }
 
 template <typename T>
@@ -155,14 +151,12 @@ void IvwSerializer::serialize(const std::string& key, const std::list<T>& contai
                               const std::string& itemKey) {
     if (container.empty()) return;
 
-    TxElement* newNode = new TxElement(key);
-    rootElement_->LinkEndChild(newNode);
-    NodeSwitch tempNodeSwitch(*this, newNode);
+    auto node = util::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
 
+    NodeSwitch nodeSwitch(*this, node.get());
     for (typename std::list<T>::const_iterator it = container.begin(); it != container.end(); ++it)
         serialize(itemKey, (*it));
-
-    delete newNode;
 }
 
 template <typename K, typename V, typename C, typename A>
@@ -173,17 +167,15 @@ void IvwSerializer::serialize(const std::string& key, const std::map<K, V, C, A>
 
     if (map.empty()) return;
 
-    TxElement* newNode = new TxElement(key);
-    rootElement_->LinkEndChild(newNode);
-    NodeSwitch tempNodeSwitch(*this, newNode);
+    auto node = util::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
+    NodeSwitch nodeSwitch(*this, node.get());
 
     for (typename std::map<K, V, C, A>::const_iterator it = map.begin(); it != map.end(); ++it) {
         serialize(itemKey, it->second);
         rootElement_->LastChild()->ToElement()->SetAttribute(IvwSerializeConstants::KEY_ATTRIBUTE,
                                                              it->first);
     }
-
-    delete newNode;
 }
 
 template <class T>
@@ -212,10 +204,9 @@ void IvwSerializer::serialize(const std::string& key, const T& data, const bool 
     if (asAttribute) {
         rootElement_->SetAttribute(key, data);
     } else {
-        TxElement* node = new TxElement(key);
-        rootElement_->LinkEndChild(node);
+        auto node = util::make_unique<TxElement>(key);
+        rootElement_->LinkEndChild(node.get());
         node->SetAttribute(IvwSerializeConstants::CONTENT_ATTRIBUTE, data);
-        delete node;
     }
 }
 
@@ -229,32 +220,25 @@ void IvwSerializer::serialize(const std::string& key, const T& data, const bool 
 
 
 // glm vector types
-template <typename U, glm::precision P, template <typename, glm::precision> class vecType,
-          typename std::enable_if<util::rank<vecType<U, P>>::value == 1, int>::type>
-void IvwSerializer::serialize(const std::string& key, const vecType<U, P>& data) {
-    TxElement* newNode = new TxElement(key);
-    rootElement_->LinkEndChild(newNode);
-
-    for (size_t i = 0; i < util::extent<vecType<U, P>, 0>::value; ++i) {
-        newNode->SetAttribute(IvwSerializeConstants::VECTOR_ATTRIBUTES[i], data[i]);
+template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
+void IvwSerializer::serialize(const std::string& key, const Vec& data) {
+    auto node = util::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
+    for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
+        node->SetAttribute(IvwSerializeConstants::VECTOR_ATTRIBUTES[i], data[i]);
     }
-    
-    delete newNode;
 }
 
 // glm matrix types
-template <typename U, glm::precision P, template <typename, glm::precision> class vecType,
-          typename std::enable_if<util::rank<vecType<U, P>>::value == 2, int>::type>
-void IvwSerializer::serialize(const std::string& key, const vecType<U, P>& data) {
-    TxElement* newNode = new TxElement(key);
-    rootElement_->LinkEndChild(newNode);
+template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type>
+void IvwSerializer::serialize(const std::string& key, const Mat& data) {
+    auto node = util::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(node.get());
 
-    NodeSwitch tempNodeSwitch(*this, newNode);
-    for (size_t i = 0; i < util::extent<vecType<U, P>, 0>::value; ++i) {
+    NodeSwitch nodeSwitch(*this, node.get());
+    for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
         serialize("row" + toString(i), data[i]);
     }
-
-    delete newNode;
 }
 
 }  // namespace

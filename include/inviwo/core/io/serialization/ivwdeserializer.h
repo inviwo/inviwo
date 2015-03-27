@@ -24,13 +24,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DESERIALIZER_H
 #define IVW_DESERIALIZER_H
 
-#pragma warning(disable: 4290)
+#pragma warning(disable : 4290)
 
 #include <inviwo/core/io/serialization/ivwserializebase.h>
 #include <inviwo/core/util/exception.h>
@@ -46,8 +46,7 @@ namespace inviwo {
 class IvwSerializable;
 class VersionConverter;
 
-
-class IVW_CORE_API IvwDeserializer : public  IvwSerializeBase {
+class IVW_CORE_API IvwDeserializer : public IvwSerializeBase {
 public:
     /**
      * \brief Deserializer constructor
@@ -55,22 +54,23 @@ public:
      * @param IvwDeserializer & s optional reference to existing deserializer.
      * @param bool allowReference flag to manage references to avoid multiple object creation.
      */
-    IvwDeserializer(IvwDeserializer& s, bool allowReference=true);
+    IvwDeserializer(IvwDeserializer& s, bool allowReference = true);
     /**
      * \brief Deserializer constructor
      *
      * @param std::string fileName path to file that is to be deserialized.
      * @param bool allowReference flag to manage references to avoid multiple object creation.
      */
-    IvwDeserializer(std::string fileName, bool allowReference=true);
+    IvwDeserializer(std::string fileName, bool allowReference = true);
     /**
      * \brief Deserializes content from the stream using path to calculate relative paths to data.
      *
      * @param std::iostream& stream Stream with content that is to be deserialized.
-     * @param std::string path A path that will be used to decode the location of data during deserialization.
+     * @param std::string path A path that will be used to decode the location of data during
+     *deserialization.
      * @param bool allowReference flag to manage references to avoid multiple object creation.
      */
-    IvwDeserializer(std::istream& stream, const std::string& path, bool allowReference=true);
+    IvwDeserializer(std::istream& stream, const std::string& path, bool allowReference = true);
 
     void pushErrorHandler(BaseDeserializationErrorHandler*);
     BaseDeserializationErrorHandler* popErrorHandler();
@@ -100,26 +100,17 @@ public:
      * @param const std::string & itemKey vector item key
      */
     template <typename T>
-    void deserialize(const std::string& key,
-                     std::vector<T*>& sVector,
-                     const std::string& itemKey);
+    void deserialize(const std::string& key, std::vector<T*>& sVector, const std::string& itemKey);
 
     template <typename T, typename C>
-    void deserialize(const std::string& key,
-                     std::vector<T*>& sVector,
-                     const std::string& itemKey,
+    void deserialize(const std::string& key, std::vector<T*>& sVector, const std::string& itemKey,
                      C identifier);
 
+    template <typename T>
+    void deserialize(const std::string& key, std::vector<T>& sVector, const std::string& itemKey);
 
     template <typename T>
-    void deserialize(const std::string& key,
-                     std::vector<T>& sVector,
-                     const std::string& itemKey);
-
-    template <typename T>
-    void deserialize(const std::string& key,
-                     std::list<T>& sContainer,
-                     const std::string& itemKeyr);
+    void deserialize(const std::string& key, std::list<T>& sContainer, const std::string& itemKeyr);
     /**
      * \brief  Deserialize a map
      *
@@ -152,7 +143,8 @@ public:
      *         address of a property is a value
      *
      * Note: If children has attribute "type", then comparisionAttribute becomes meaningless.
-     *       Because deserializer always allocates a new instance of type using registered factories.
+     *       Because deserializer always allocates a new instance of type using registered
+     *factories.
      *
      *       eg., <Processor type="EntryExitPoints" identifier="EntryExitPoints" reference="ref2" />
      *
@@ -164,12 +156,10 @@ public:
      * @param const std::string & comparisionAttribute  - forced comparison attribute.
      */
     template <typename K, typename V, typename C, typename A>
-    void deserialize(const std::string& key,
-                     std::map<K,V,C,A>& sMap,
-                     const std::string& itemKey,
-                     const std::string& comparisionAttribute = IvwSerializeConstants::KEY_ATTRIBUTE);
+    void deserialize(
+        const std::string& key, std::map<K, V, C, A>& sMap, const std::string& itemKey,
+        const std::string& comparisionAttribute = IvwSerializeConstants::KEY_ATTRIBUTE);
 
-    
     // integers, reals, strings
     template <typename T, typename std::enable_if<std::is_integral<T>::value ||
                                                       std::is_floating_point<T>::value ||
@@ -177,21 +167,17 @@ public:
                                                   int>::type = 0>
     void deserialize(const std::string& key, T& data, const bool asAttribute = false);
 
-
     // Enum types
     template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
     void deserialize(const std::string& key, T& data, const bool asAttribute = false);
 
     // glm vector types
-    template <typename U, glm::precision P, template <typename, glm::precision> class vecType,
-              typename std::enable_if<util::rank<vecType<U, P>>::value == 1, int>::type = 0>
-    void deserialize(const std::string& key, vecType<U, P>& data);
+    template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type = 0>
+    void deserialize(const std::string& key, Vec& data);
 
     // glm matrix types
-    template <typename U, glm::precision P, template <typename, glm::precision> class vecType,
-              typename std::enable_if<util::rank<vecType<U, P>>::value == 2, int>::type = 0>
-    void deserialize(const std::string& key, vecType<U, P>& data);
-
+    template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type = 0>
+    void deserialize(const std::string& key, Mat& data);
 
     /**
      * \brief  Deserialize any Serializable object
@@ -242,7 +228,6 @@ inviwo::DeserializationErrorHandle<T>::~DeserializationErrorHandle() {
     delete d_.popErrorHandler();
 }
 
-
 // integers, reals, strings
 template <typename T,
           typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value ||
@@ -252,7 +237,8 @@ void IvwDeserializer::deserialize(const std::string& key, T& data, const bool as
     if (asAttribute) {
         try {
             rootElement_->GetAttribute(key, &data);
-        } catch (TxException&) {}
+        } catch (TxException&) {
+        }
     } else {
         try {
             NodeSwitch ns(*this, key);
@@ -261,7 +247,8 @@ void IvwDeserializer::deserialize(const std::string& key, T& data, const bool as
             try {
                 NodeSwitch ns(*this, key, true);
                 rootElement_->GetAttribute(IvwSerializeConstants::CONTENT_ATTRIBUTE, &data);
-            } catch (TxException&) {}
+            } catch (TxException&) {
+            }
         }
     }
 }
@@ -270,34 +257,33 @@ void IvwDeserializer::deserialize(const std::string& key, T& data, const bool as
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
 void IvwDeserializer::deserialize(const std::string& key, T& data, const bool asAttribute) {
     using ET = typename std::underlying_type<T>::type;
-    ET tmpdata {static_cast<ET>(data)};
+    ET tmpdata{static_cast<ET>(data)};
     deserialize(key, tmpdata, asAttribute);
     data = static_cast<T>(tmpdata);
 }
 
-
 // glm vector types
-template <typename U, glm::precision P, template <typename, glm::precision> class vecType,
-          typename std::enable_if<util::rank<vecType<U, P>>::value == 1, int>::type>
-void IvwDeserializer::deserialize(const std::string& key, vecType<U, P>& data) {
+template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
+void IvwDeserializer::deserialize(const std::string& key, Vec& data) {
     try {
         NodeSwitch ns(*this, key);
-        for (size_t i = 0; i < util::extent<vecType<U, P>, 0>::value; ++i) {
+        for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
             rootElement_->GetAttribute(IvwSerializeConstants::VECTOR_ATTRIBUTES[i], &data[i]);
         }
-    } catch (TxException&) {}
+    } catch (TxException&) {
+    }
 }
 
 // glm matrix types
-template <typename U, glm::precision P, template <typename, glm::precision> class vecType,
-          typename std::enable_if<util::rank<vecType<U, P>>::value == 2, int>::type>
-void IvwDeserializer::deserialize(const std::string& key, vecType<U, P>& data) {
+template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type>
+void IvwDeserializer::deserialize(const std::string& key, Mat& data) {
     try {
         NodeSwitch ns(*this, key);
-        for (size_t i = 0; i < util::extent<vecType<U, P>, 0>::value; ++i) {
+        for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
             deserialize("row" + toString(i), data[i]);
         }
-    } catch (TxException&) {}
+    } catch (TxException&) {
+    }
 }
 
 template <typename T>
@@ -331,7 +317,8 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
             }
             i++;
         }
-    } catch (TxException&) {}
+    } catch (TxException&) {
+    }
 }
 
 template <typename T, typename C>
@@ -348,7 +335,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
             typename std::vector<T*>::iterator it =
                 std::find_if(vector.begin(), vector.end(), identifier);
 
-            if (it != vector.end()) { // There is a item in vector with same identifier as on disk
+            if (it != vector.end()) {  // There is a item in vector with same identifier as on disk
                 NodeSwitch elementNodeSwitch(*this, &(*child), false);
                 try {
                     deserialize(itemKey, *it);
@@ -356,13 +343,13 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
                 } catch (SerializationException& e) {
                     handleError(e);
                 }
-            } else { // No item in vector matches item on disk, create a new one.
+            } else {  // No item in vector matches item on disk, create a new one.
                 T* item = nullptr;
                 NodeSwitch elementNodeSwitch(*this, &(*child), false);
                 try {
                     deserialize(itemKey, item);
                     // Insert new item after the previous item deserialized
-                    lastInsertion = lastInsertion==vector.end() ? lastInsertion: ++lastInsertion;
+                    lastInsertion = lastInsertion == vector.end() ? lastInsertion : ++lastInsertion;
                     lastInsertion = vector.insert(lastInsertion, item);
                 } catch (SerializationException& e) {
                     delete item;
@@ -400,12 +387,13 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T>& vector
             }
             i++;
         }
-    } catch (TxException&) {}
+    } catch (TxException&) {
+    }
 }
 
 template <typename T>
 void IvwDeserializer::deserialize(const std::string& key, std::list<T>& container,
-    const std::string& itemKey) {
+                                  const std::string& itemKey) {
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
         unsigned int i = 0;
@@ -422,14 +410,15 @@ void IvwDeserializer::deserialize(const std::string& key, std::list<T>& containe
                     deserialize(itemKey, item);
                     container.push_back(item);
                 } else {
-                    deserialize(itemKey, *std::next(container.begin(),  i));
+                    deserialize(itemKey, *std::next(container.begin(), i));
                 }
             } catch (SerializationException& e) {
                 handleError(e);
             }
             i++;
         }
-    } catch (TxException&) {}
+    } catch (TxException&) {
+    }
 }
 
 template <typename K, typename V, typename C, typename A>
@@ -449,10 +438,10 @@ void IvwDeserializer::deserialize(const std::string& key, std::map<K, V, C, A>& 
             NodeSwitch elementNodeSwitch(*this, &(*child), false);
             K key;
             child->GetAttribute(comparisionAttribute, &key);
-            
+
             typename std::map<K, V, C, A>::iterator it = map.find(key);
             V value = (it != map.end() ? it->second : nullptr);
- 
+
             try {
                 deserialize(itemKey, value);
                 map[key] = value;
@@ -460,14 +449,16 @@ void IvwDeserializer::deserialize(const std::string& key, std::map<K, V, C, A>& 
                 handleError(e);
             }
         }
-    } catch (TxException&) {}
+    } catch (TxException&) {
+    }
 }
 
 template <class T>
 inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
-    TxElement* keyNode = retrieveChild_?rootElement_->FirstChildElement(key,false):rootElement_;
-    if(!keyNode)return;
-        
+    TxElement* keyNode =
+        retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
+    if (!keyNode) return;
+
     const std::string type_attr(keyNode->GetAttribute(IvwSerializeConstants::TYPE_ATTRIBUTE));
     const std::string ref_attr(keyNode->GetAttribute(IvwSerializeConstants::REF_ATTRIBUTE));
     const std::string id_attr(keyNode->GetAttribute(IvwSerializeConstants::ID_ATTRIBUTE));
@@ -492,7 +483,7 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
                 }
             }
             return;
-            
+
         } else if (!type_attr.empty()) {
             data = IvwSerializeBase::getRegisteredType<T>(type_attr);
             if (!data) {
@@ -521,5 +512,5 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
     }
 }
 
-} //namespace
+}  // namespace
 #endif
