@@ -38,6 +38,7 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
 #--------------------------------------------------------------------
 # Only output error messages
 function(message)
+if( GET )
   list(GET ARGV 0 MessageType)
   if(MessageType STREQUAL FATAL_ERROR OR
      MessageType STREQUAL SEND_ERROR OR
@@ -46,6 +47,7 @@ function(message)
     list(REMOVE_AT ARGV 0)
     _message(STATUS "${ARGV}")
   endif()
+endif()
 endfunction()
 function(ivw_message)
     _message(${ARGV})
