@@ -38,6 +38,7 @@
 #include <inviwo/core/io/serialization/nodedebugger.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <type_traits>
+#include <list>
 
 namespace inviwo {
 
