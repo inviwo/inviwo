@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/serialization/ivwserializer.h>
@@ -45,36 +45,30 @@ IvwSerializer::IvwSerializer(const std::string& fileName, bool allowReference)
     initialize();
 }
 
-
-IvwSerializer::~IvwSerializer() {
-    delete rootElement_;
-}
+IvwSerializer::~IvwSerializer() { delete rootElement_; }
 
 void IvwSerializer::initialize() {
     try {
-        TxComment* comment;
-        TxDeclaration* decl = new TxDeclaration(IvwSerializeConstants::XML_VERSION, "", "");
-        doc_.LinkEndChild(decl);
+        auto decl = util::make_unique<TxDeclaration>(IvwSerializeConstants::XML_VERSION, "", "");
+        doc_.LinkEndChild(decl.get());
         rootElement_ = new TxElement(IvwSerializeConstants::INVIWO_TREEDATA);
         rootElement_->SetAttribute(IvwSerializeConstants::VERSION_ATTRIBUTE,
                                    IvwSerializeConstants::INVIWO_VERSION);
         doc_.LinkEndChild(rootElement_);
-        comment = new TxComment();
+        auto comment = util::make_unique<TxComment>();
         comment->SetValue(IvwSerializeConstants::EDIT_COMMENT.c_str());
-        rootElement_->LinkEndChild(comment);
-        delete comment;
-        delete decl;
+        rootElement_->LinkEndChild(comment.get());
+
     } catch (TxException& e) {
         throw SerializationException(e.what());
     }
 }
 
 void IvwSerializer::serialize(const std::string& key, const IvwSerializable& sObj) {
-    TxElement* newNode = new TxElement(key);
-    rootElement_->LinkEndChild(newNode);
-    NodeSwitch tempNodeSwitch(*this, newNode);
+    auto newNode = util::make_unique<TxElement>(key);
+    rootElement_->LinkEndChild(newNode.get());
+    NodeSwitch nodeSwitch(*this, newNode.get());
     sObj.serialize(*this);
-    delete newNode;
 }
 
 void IvwSerializer::writeFile() {
@@ -95,5 +89,4 @@ void IvwSerializer::writeFile(std::ostream& stream) {
     }
 }
 
-
-} //namespace
+}  // namespace
