@@ -49,6 +49,29 @@ typename std::enable_if<std::is_array<T>::value, std::unique_ptr<T> >::type make
     return std::unique_ptr<T>(new RT[n]());
 }
 
+
+
+// type trait to check if T is derived from std::basic_string
+namespace detail {
+template <typename T, class Enable = void>
+struct is_string : std::false_type {};
+
+template <typename... T>
+struct void_helper {
+    typedef void type;
+};
+
+template <typename T>
+struct is_string<T, typename void_helper<typename T::value_type, typename T::traits_type,
+                                         typename T::allocator_type>::type>
+    : std::is_base_of<std::basic_string<typename T::value_type, typename T::traits_type,
+                                        typename T::allocator_type>,
+                      T> {};
+}
+template <typename T>
+struct is_string : detail::is_string<T> {};
+
+
 }
 }  // namespace
 
