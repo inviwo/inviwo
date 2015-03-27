@@ -225,7 +225,7 @@ void Property::serialize(IvwSerializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("identifier", identifier_, true);
     if (serializationMode_ == ALL || !displayName_.isDefault()) {
-        s.serialize(displayName_.name, displayName_, true);
+        s.serialize(displayName_.name, displayName_.value, true);
     }
     semantics_.serialize(s, serializationMode_);
     usageMode_.serialize(s, serializationMode_);
