@@ -43,14 +43,9 @@ const std::string IvwSerializeConstants::VERSION_ATTRIBUTE="version";
 const std::string IvwSerializeConstants::CONTENT_ATTRIBUTE="content";
 const std::string IvwSerializeConstants::TYPE_ATTRIBUTE="type";
 const std::string IvwSerializeConstants::KEY_ATTRIBUTE="key";
-const std::string IvwSerializeConstants::COLOR_R_ATTRIBUTE="r";
-const std::string IvwSerializeConstants::COLOR_G_ATTRIBUTE="g";
-const std::string IvwSerializeConstants::COLOR_B_ATTRIBUTE="b";
-const std::string IvwSerializeConstants::COLOR_A_ATTRIBUTE="a";
-const std::string IvwSerializeConstants::VECTOR_X_ATTRIBUTE="x";
-const std::string IvwSerializeConstants::VECTOR_Y_ATTRIBUTE="y";
-const std::string IvwSerializeConstants::VECTOR_Z_ATTRIBUTE="z";
-const std::string IvwSerializeConstants::VECTOR_W_ATTRIBUTE="w";
+
+const std::string IvwSerializeConstants::VECTOR_ATTRIBUTES[] = {"x", "y", "z", "w"};
+
 const unsigned int IvwSerializeConstants::STRINGSTREAM_PRECISION=8;
 
 const std::string IvwSerializeConstants::PROPERTY_ATTRIBUTE_1="identifier";

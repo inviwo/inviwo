@@ -77,44 +77,6 @@ void IvwSerializer::serialize(const std::string& key, const IvwSerializable& sOb
     delete newNode;
 }
 
-void IvwSerializer::serialize(const std::string& key,
-                              const std::string& data,
-                              const bool asAttribute) {
-    if (asAttribute)
-        rootElement_->SetAttribute(key, data);
-    else
-        serializePrimitives<std::string>(key, data);
-}
-
-void IvwSerializer::serialize(const std::string& key, const bool& data) {
-    serializePrimitives<bool>(key, data);
-}
-void IvwSerializer::serialize(const std::string& key, const float& data) {
-    serializePrimitives<float>(key, data);
-}
-void IvwSerializer::serialize(const std::string& key, const double& data) {
-    serializePrimitives<double>(key, data);
-}
-void IvwSerializer::serialize(const std::string& key, const int& data) {
-    serializePrimitives<int>(key, data);
-}
-
-void IvwSerializer::serialize(const std::string& key, const unsigned int& data) {
-    serializePrimitives<unsigned int>(key, data);
-}
-
-void IvwSerializer::serialize(const std::string& key, const long& data) {
-    serializePrimitives<long>(key, data);
-}
-
-void IvwSerializer::serialize(const std::string& key, const long long& data) {
-    serializePrimitives<long long>(key, data);
-}
-void IvwSerializer::serialize(const std::string& key, const unsigned long long& data) {
-    serializePrimitives<unsigned long long>(key, data);
-}
-
-
 void IvwSerializer::writeFile() {
     try {
         refDataContainer_.setReferenceAttributes();
