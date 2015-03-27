@@ -753,7 +753,7 @@ const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getDataToWorldMatr
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
-    return MatrixInvert(getModelMatrix());
+    return glm::inverse(getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
@@ -761,11 +761,11 @@ const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getModelToWorldMat
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
-    return MatrixInvert(getWorldMatrix());
+    return glm::inverse(getWorldMatrix());
 }
 
 /*********************************************************************************
@@ -829,31 +829,31 @@ const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getDataToWorldM
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToDataMatrix() const {
-    return MatrixInvert(getIndexMatrix());
+    return glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToModelMatrix() const {
-    return getModelMatrix()*MatrixInvert(getIndexMatrix());
+    return getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToTextureMatrix() const {
-    return MatrixInvert(getIndexMatrix());
+    return glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getIndexToWorldMatrix() const {
-    return getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix());
+    return getWorldMatrix()*getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
-    return MatrixInvert(getModelMatrix());
+    return glm::inverse(getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getModelMatrix());
+    return getIndexMatrix()*glm::inverse(getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToTextureMatrix() const {
-    return MatrixInvert(getModelMatrix());
+    return glm::inverse(getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getModelToWorldMatrix() const {
@@ -873,19 +873,19 @@ const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getTextureToWor
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getWorldMatrix()*getModelMatrix());
+    return getIndexMatrix()*glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
-    return MatrixInvert(getWorldMatrix());
+    return glm::inverse(getWorldMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToTextureMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 
 /*********************************************************************************
@@ -948,19 +948,19 @@ void SpatialCameraCoordinateTransformerImpl<N>::setCamera(Camera<N> camera) {
 
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToDataMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToModelMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix());
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToViewMatrix() const {
-    return MatrixInvert(getProjectionMatrix());
+    return glm::inverse(getProjectionMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getClipToWorldMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix());
+    return glm::inverse(getProjectionMatrix()*getViewMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getDataToClipMatrix() const {
@@ -984,7 +984,7 @@ const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToCl
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
-    return MatrixInvert(getModelMatrix());
+    return glm::inverse(getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getModelToViewMatrix() const {
@@ -1000,15 +1000,15 @@ const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToCli
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToDataMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToModelMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix());
+    return glm::inverse(getViewMatrix()*getWorldMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewToWorldMatrix() const {
-    return MatrixInvert(getViewMatrix());
+    return glm::inverse(getViewMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToClipMatrix() const {
@@ -1016,11 +1016,11 @@ const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToCl
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
-    return MatrixInvert(getWorldMatrix());
+    return glm::inverse(getWorldMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToViewMatrix() const {
@@ -1091,27 +1091,27 @@ void StructuredCameraCoordinateTransformerImpl<N>::setCamera(Camera<N> camera) {
 
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToDataMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
+    return getIndexMatrix()*glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToModelMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix());
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToTextureMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToViewMatrix() const {
-    return MatrixInvert(getProjectionMatrix());
+    return glm::inverse(getProjectionMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getClipToWorldMatrix() const {
-    return MatrixInvert(getProjectionMatrix()*getViewMatrix());
+    return glm::inverse(getProjectionMatrix()*getViewMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataToClipMatrix() const {
@@ -1135,27 +1135,27 @@ const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getDataTo
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToClipMatrix() const {
-    return getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix());
+    return getProjectionMatrix()*getViewMatrix()*getWorldMatrix()*getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToDataMatrix() const {
-    return MatrixInvert(getIndexMatrix());
+    return glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToModelMatrix() const {
-    return getModelMatrix()*MatrixInvert(getIndexMatrix());
+    return getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToTextureMatrix() const {
-    return MatrixInvert(getIndexMatrix());
+    return glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToViewMatrix() const {
-    return getViewMatrix()*getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix());
+    return getViewMatrix()*getWorldMatrix()*getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getIndexToWorldMatrix() const {
-    return getWorldMatrix()*getModelMatrix()*MatrixInvert(getIndexMatrix());
+    return getWorldMatrix()*getModelMatrix()*glm::inverse(getIndexMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToClipMatrix() const {
@@ -1163,15 +1163,15 @@ const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelT
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToDataMatrix() const {
-    return MatrixInvert(getModelMatrix());
+    return glm::inverse(getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getModelMatrix());
+    return getIndexMatrix()*glm::inverse(getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToTextureMatrix() const {
-    return MatrixInvert(getModelMatrix());
+    return glm::inverse(getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getModelToViewMatrix() const {
@@ -1207,23 +1207,23 @@ const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewTo
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToDataMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix());
+    return getIndexMatrix()*glm::inverse(getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToModelMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix());
+    return glm::inverse(getViewMatrix()*getWorldMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToTextureMatrix() const {
-    return MatrixInvert(getViewMatrix()*getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getViewMatrix()*getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewToWorldMatrix() const {
-    return MatrixInvert(getViewMatrix());
+    return glm::inverse(getViewMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToClipMatrix() const {
@@ -1231,19 +1231,19 @@ const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldT
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToDataMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToIndexMatrix() const {
-    return getIndexMatrix()*MatrixInvert(getWorldMatrix()*getModelMatrix());
+    return getIndexMatrix()*glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToModelMatrix() const {
-    return MatrixInvert(getWorldMatrix());
+    return glm::inverse(getWorldMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToTextureMatrix() const {
-    return MatrixInvert(getWorldMatrix()*getModelMatrix());
+    return glm::inverse(getWorldMatrix()*getModelMatrix());
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldToViewMatrix() const {

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYSETTINGSWIDGETQT_H
@@ -47,7 +47,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/qt/widgets/qtwidgetmodule.h>
 
-
 namespace inviwo {
 
 struct SinglePropertySetting {
@@ -68,20 +67,20 @@ struct SinglePropertySetting {
     QLineEdit* val_;
     QLineEdit* max_;
     QLineEdit* inc_;
-    
-    double getMinAsDouble() const  {
+
+    double getMinAsDouble() const {
         QLocale locale = min_->locale();
         return locale.toDouble(min_->text().remove(QChar(' ')));
     }
-    double getValAsDouble() const  {
+    double getValAsDouble() const {
         QLocale locale = val_->locale();
         return locale.toDouble(val_->text().remove(QChar(' ')));
     }
-    double getMaxAsDouble() const  {
+    double getMaxAsDouble() const {
         QLocale locale = max_->locale();
         return locale.toDouble(max_->text().remove(QChar(' ')));
     }
-    double getIncAsDouble() const  {
+    double getIncAsDouble() const {
         QLocale locale = inc_->locale();
         return locale.toDouble(inc_->text().remove(QChar(' ')));
     }
@@ -97,13 +96,9 @@ public:
     virtual void showWidget() { QWidget::setVisible(true); }
     virtual void hideWidget() { QWidget::setVisible(false); }
 
-    virtual UsageMode getUsageMode() const {
-        return property_->getUsageMode();
-    };
+    virtual UsageMode getUsageMode() const { return property_->getUsageMode(); };
 
-    virtual bool getVisible() const {
-        return isVisible();
-    };
+    virtual bool getVisible() const { return isVisible(); };
 public slots:
     virtual void apply() = 0;
     virtual void save() = 0;
@@ -119,9 +114,8 @@ protected:
     QPushButton btnCancel_;
     std::vector<SinglePropertySetting*> settings_;
 
-    void keyPressEvent(QKeyEvent * event);
-    virtual void initializeEditorWidgetsMetaData() {};
-
+    void keyPressEvent(QKeyEvent* event);
+    virtual void initializeEditorWidgetsMetaData(){};
 };
 
 template <typename BT, typename T>
@@ -204,14 +198,10 @@ public:
 
         for (size_t i = 0; i < components.x; i++) {
             for (size_t j = 0; j < components.y; j++) {
-                min = glmwrapper<BT, T>::setval(
-                    min, count, static_cast<BT>(settings_[count]->getMinAsDouble()));
-                val = glmwrapper<BT, T>::setval(
-                    val, count, static_cast<BT>(settings_[count]->getValAsDouble()));
-                max = glmwrapper<BT, T>::setval(
-                    max, count, static_cast<BT>(settings_[count]->getMaxAsDouble()));
-                inc = glmwrapper<BT, T>::setval(
-                    inc, count, static_cast<BT>(settings_[count]->getIncAsDouble()));
+                util::glmcomp(min, count) = static_cast<BT>(settings_[count]->getMinAsDouble());
+                util::glmcomp(val, count) = static_cast<BT>(settings_[count]->getValAsDouble());
+                util::glmcomp(max, count) = static_cast<BT>(settings_[count]->getMaxAsDouble());
+                util::glmcomp(inc, count) = static_cast<BT>(settings_[count]->getIncAsDouble());
                 count++;
             }
         }
@@ -237,10 +227,14 @@ public:
 
         for (size_t i = 0; i < components.x; i++) {
             for (size_t j = 0; j < components.y; j++) {
-                settings_[count]->min_->setText( QStringHelper<BT>::toLocaleString(locale,glmwrapper<BT, T>::getval(min, count)));
-                settings_[count]->val_->setText( QStringHelper<BT>::toLocaleString(locale,glmwrapper<BT, T>::getval(val, count)));
-                settings_[count]->max_->setText( QStringHelper<BT>::toLocaleString(locale,glmwrapper<BT, T>::getval(max, count)));
-                settings_[count]->inc_->setText( QStringHelper<BT>::toLocaleString(locale,glmwrapper<BT, T>::getval(inc, count)));
+                settings_[count]->min_->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(min, count)));
+                settings_[count]->val_->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(val, count)));
+                settings_[count]->max_->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(max, count)));
+                settings_[count]->inc_->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(inc, count)));
                 count++;
             }
         }
