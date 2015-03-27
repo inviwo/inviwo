@@ -438,11 +438,11 @@ auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type&{
 
 } // namespace util
 
-template <unsigned int N, typename T>
-using Matrix = typename util::glmtype<T, N, N>::type;
+template <unsigned int Dim, typename Type>
+using Matrix = typename util::glmtype<Type, Dim, Dim>::type;
 
-template <unsigned int N, typename T>
-using Vector = typename util::glmtype<T, N, 1>::type;
+template <unsigned int Dim, typename Type>
+using Vector = typename util::glmtype<Type, Dim, 1>::type;
 
 
 } // namespace
