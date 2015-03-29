@@ -27,46 +27,47 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEINDICATORPROPERTY_H
-#define IVW_VOLUMEINDICATORPROPERTY_H
+#ifndef IVW_PLANEPROPERTY_H
+#define IVW_PLANEPROPERTY_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
-#include <inviwo/core/properties/planeproperty.h>
 
 namespace inviwo {
 
 /**
- * \class VolumeIndicatorProperty
+ * \class PlaneProperty
  *
- * \brief A property for highlighting a plane, line of point in 3D
+ * \brief A Property that represents a plane
  *
- * The property is used to represent an indicator in a 3D volume the indicator
- * can be a set of planes, a set of lines, or some other.
+ * A Plane is represented by a plane normal and a point that is in the plane.
+ * The property also holds a color for drawing the plane. A bool for turning it on an and off.
+ * And a mode for various ways of rendering the plane.
  */
-class IVW_CORE_API VolumeIndicatorProperty : public CompositeProperty { 
+class IVW_CORE_API PlaneProperty : public CompositeProperty { 
 public:
     InviwoPropertyInfo();
 
-    VolumeIndicatorProperty(std::string identifier, std::string displayName,
-                            InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+    PlaneProperty(std::string identifier, std::string displayName,
+                            InvalidationLevel invalidationLevel = INVALID_RESOURCES,
                             PropertySemantics semantics = PropertySemantics::Default);
 
-    VolumeIndicatorProperty(const VolumeIndicatorProperty& rhs);
-    VolumeIndicatorProperty& operator=(const VolumeIndicatorProperty& that);
-    virtual VolumeIndicatorProperty* clone() const;
-    virtual ~VolumeIndicatorProperty();
+    PlaneProperty(const PlaneProperty& rhs);
+    PlaneProperty& operator=(const PlaneProperty& that);
+    virtual PlaneProperty* clone() const;
+    virtual ~PlaneProperty();
     virtual std::string getClassIdentifierForWidget() const;
 
     BoolProperty enable_;
-
     OptionPropertyInt mode_;
-
-    PlaneProperty plane1_;
-    PlaneProperty plane2_;
-    PlaneProperty plane3_;
+    FloatVec3Property position_;
+    FloatVec3Property normal_;
+    FloatVec4Property color_;
 
 private:
     void onModeChange();
@@ -74,5 +75,5 @@ private:
 
 } // namespace
 
-#endif // IVW_VOLUMEINDICATORPROPERTY_H
+#endif // IVW_PLANEPROPERTY_H
 

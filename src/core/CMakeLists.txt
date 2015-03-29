@@ -174,6 +174,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/planeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/property.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconvertermanager.h
@@ -375,7 +376,8 @@ set(SOURCE_FILES
     properties/directoryproperty.cpp    
     properties/eventproperty.cpp
     properties/fileproperty.cpp
-    properties/imageeditorproperty.cpp   
+    properties/imageeditorproperty.cpp
+    properties/planeproperty.cpp
     properties/property.cpp
     properties/propertyconverter.cpp
     properties/propertyconvertermanager.cpp
