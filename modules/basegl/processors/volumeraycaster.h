@@ -32,6 +32,7 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -57,11 +58,15 @@ public:
 
     virtual void initializeResources();
 
+    // override to do member renaming.
+    virtual void deserialize(IvwDeserializer& d) override;
+
 protected:
     virtual void process();
     Shader shader_;
 
 private:
+    bool updateNetwork(TxElement* node);
     void onVolumeChange();
     void toggleShading(Event*);
     
