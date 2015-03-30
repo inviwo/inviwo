@@ -411,7 +411,7 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, 
 
         network->unlock();
 
-        data = canvasProcessor->getImageLayerAsCodedBuffer(type);
+        data = canvasProcessor->getVisibleLayerAsCodedBuffer(type);
 
         // remove the network...
         network->lock();
