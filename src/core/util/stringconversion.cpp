@@ -29,6 +29,8 @@
 
 #include <inviwo/core/util/stringconversion.h>
 
+#include <random>
+
 #if defined(__clang__) || defined(__GNUC__)
 #include <cstdlib>
 #include <memory>
@@ -134,7 +136,11 @@ static const std::string possibleValues =
 std::string randomString(unsigned int length) {
     std::string s;
 
-    while (s.size() < length) s += possibleValues[rand() % possibleValues.size()];
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, possibleValues.size() - 1);
+
+    while (s.size() < length) s += possibleValues[dis(gen)];
 
     return s;
 }
