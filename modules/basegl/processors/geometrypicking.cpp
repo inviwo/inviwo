@@ -38,7 +38,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(GeometryPicking, "org.inviwo.GeometryPicking");
-ProcessorClassVersion(GeometryPicking, 0);
 ProcessorDisplayName(GeometryPicking, "Geometry Picking");
 ProcessorTags(GeometryPicking, Tags::GL);
 ProcessorCategory(GeometryPicking, "Geometry Rendering");

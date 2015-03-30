@@ -37,7 +37,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(DrawPoints, "org.inviwo.DrawPoints");
-ProcessorClassVersion(DrawPoints, 0);
 ProcessorDisplayName(DrawPoints,  "Draw Points");
 ProcessorTags(DrawPoints, Tags::GL);
 ProcessorCategory(DrawPoints, "Drawing");

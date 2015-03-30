@@ -37,7 +37,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(EntryExitPointsCLProcessor, "org.inviwo.EntryExitPointsCL");
-ProcessorClassVersion(EntryExitPointsCLProcessor, 0);
 ProcessorDisplayName(EntryExitPointsCLProcessor, "Entry Exit Points");
 ProcessorTags(EntryExitPointsCLProcessor, Tags::CL);
 ProcessorCategory(EntryExitPointsCLProcessor, "Geometry Rendering");

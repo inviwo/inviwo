@@ -59,10 +59,8 @@ namespace inviwo {
 typedef BasisTransform<GeometryInport, GeometryOutport> BasisTransformGeometry;
 typedef BasisTransform<VolumeInport, VolumeOutport> BasisTransformVolume;
 template <> ProcessorClassIdentifier(BasisTransformGeometry, "org.inviwo.BasisTransformGeometry");
-template <> ProcessorClassVersion(BasisTransformGeometry, 0);
 template <> ProcessorDisplayName(BasisTransformGeometry, "Basis Transform Geometry");
 template <> ProcessorClassIdentifier(BasisTransformVolume, "org.inviwo.BasisTransformVolume");
-template <> ProcessorClassVersion(BasisTransformVolume, 0);
 template <> ProcessorDisplayName(BasisTransformVolume, "Basis Transform Volume");
 
 BaseModule::BaseModule() : InviwoModule() {

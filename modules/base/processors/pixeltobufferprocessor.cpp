@@ -36,7 +36,6 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 ProcessorClassIdentifier(PixelToBufferProcessor,  "org.inviwo.PixelToBufferProcessor")
-ProcessorClassVersion(PixelToBufferProcessor, 0);
 ProcessorDisplayName(PixelToBufferProcessor,  "Pixel to buffer")
 ProcessorTags(PixelToBufferProcessor, Tags::CPU);
 ProcessorCategory(PixelToBufferProcessor, "Image");

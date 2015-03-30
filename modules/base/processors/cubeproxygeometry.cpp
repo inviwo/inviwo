@@ -33,7 +33,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(CubeProxyGeometry, "org.inviwo.CubeProxyGeometry");
-ProcessorClassVersion(CubeProxyGeometry, 0);
 ProcessorDisplayName(CubeProxyGeometry,  "Cube Proxy Geometry");
 ProcessorTags(CubeProxyGeometry, Tags::CPU);
 ProcessorCategory(CubeProxyGeometry, "Geometry Creation");

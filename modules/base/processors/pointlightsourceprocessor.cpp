@@ -36,7 +36,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(PointLightSourceProcessor, "org.inviwo.Point light source");
-ProcessorClassVersion(PointLightSourceProcessor, 0);
 ProcessorDisplayName(PointLightSourceProcessor,  "Point light source");
 ProcessorTags(PointLightSourceProcessor, Tags::CPU);
 ProcessorCategory(PointLightSourceProcessor, "Light source");

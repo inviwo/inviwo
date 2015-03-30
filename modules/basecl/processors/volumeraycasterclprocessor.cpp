@@ -42,7 +42,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(VolumeRaycasterCLProcessor, "org.inviwo.VolumeRaycasterCL");
-ProcessorClassVersion(VolumeRaycasterCLProcessor, 0);
 ProcessorDisplayName(VolumeRaycasterCLProcessor,  "Volume Raycaster");
 ProcessorTags(VolumeRaycasterCLProcessor, Tags::CL);
 ProcessorCategory(VolumeRaycasterCLProcessor, "Volume Rendering");

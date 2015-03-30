@@ -33,7 +33,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(ImageGamma, "org.inviwo.ImageGamma");
-ProcessorClassVersion(ImageGamma, 0);
 ProcessorDisplayName(ImageGamma, "Image Gamma");
 ProcessorTags(ImageGamma, Tags::GL);
 ProcessorCategory(ImageGamma, "Image Operation");

@@ -33,7 +33,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(ImageResample, "org.inviwo.ImageResample");
-ProcessorClassVersion(ImageResample, 0);
 ProcessorDisplayName(ImageResample, "Image Resample");
 ProcessorTags(ImageResample, Tags::GL);
 ProcessorCategory(ImageResample, "Image Operation");

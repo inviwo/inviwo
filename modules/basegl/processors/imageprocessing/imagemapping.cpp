@@ -36,7 +36,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(ImageMapping, "org.inviwo.ImageMapping");
-ProcessorClassVersion(ImageMapping, 0);
 ProcessorDisplayName(ImageMapping, "Image Mapping");
 ProcessorTags(ImageMapping, Tags::GL);
 ProcessorCategory(ImageMapping, "Image Operation");

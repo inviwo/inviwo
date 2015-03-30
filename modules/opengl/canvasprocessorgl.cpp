@@ -34,7 +34,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(CanvasProcessorGL, "org.inviwo.CanvasGL");
-ProcessorClassVersion(CanvasProcessorGL, 0);
 ProcessorDisplayName(CanvasProcessorGL,  "Canvas");
 ProcessorTags(CanvasProcessorGL, Tags::GL);
 ProcessorCategory(CanvasProcessorGL, "Data Output");

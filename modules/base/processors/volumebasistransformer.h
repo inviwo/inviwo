@@ -61,7 +61,6 @@ private:
 };
 
 //ProcessorClassIdentifier(VolumeBasisTransformer, "org.inviwo.BasisTransformer");
-//ProcessorClassVersion(VolumeBasisTransformer, 0);
 //ProcessorDisplayName(VolumeBasisTransformer, "Basis Transformer");
 template <typename InportType, typename OutportType> 
 const Tags BasisTransform<InportType, OutportType>::TAGS = Tags::CPU;

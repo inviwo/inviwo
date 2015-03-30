@@ -38,7 +38,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(ImageSource, "org.inviwo.ImageSource");
-ProcessorClassVersion(ImageSource, 0);
 ProcessorDisplayName(ImageSource, "Image Source");
 ProcessorTags(ImageSource, Tags::CPU);
 ProcessorCategory(ImageSource, "Data Input");

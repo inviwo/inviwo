@@ -38,7 +38,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(VolumeExport, "org.inviwo.VolumeExport");
-ProcessorClassVersion(VolumeExport, 0);
 ProcessorDisplayName(VolumeExport,  "Volume Export");
 ProcessorTags(VolumeExport, Tags::CPU);
 ProcessorCategory(VolumeExport, "Data Output");

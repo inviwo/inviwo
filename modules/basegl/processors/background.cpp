@@ -35,7 +35,6 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(Background, "org.inviwo.Background");
-ProcessorClassVersion(Background, 0);
 ProcessorDisplayName(Background,  "Background");
 ProcessorTags(Background, Tags::GL);
 ProcessorCategory(Background, "Image Operation");
