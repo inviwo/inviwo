@@ -48,13 +48,11 @@ class ProcessorWidget;
 
 #define InviwoProcessorInfo()                                                   \
     virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; } \
-    virtual std::size_t getClassVersion() const { return CLASS_VERSION; }       \
     virtual std::string getDisplayName() const { return DISPLAY_NAME; }         \
     virtual std::string getCategory() const { return CATEGORY; }                \
     virtual CodeState getCodeState() const { return CODE_STATE; }               \
     virtual Tags getTags() const { return TAGS; }                               \
     static const std::string CLASS_IDENTIFIER;                                  \
-    static const std::size_t CLASS_VERSION;                                     \
     static const std::string CATEGORY;                                          \
     static const std::string DISPLAY_NAME;                                      \
     static const CodeState CODE_STATE;                                          \
@@ -62,7 +60,6 @@ class ProcessorWidget;
 
 #define ProcessorClassIdentifier(T, classIdentifier) \
     const std::string T::CLASS_IDENTIFIER = classIdentifier;
-#define ProcessorClassVersion(T, version) const std::size_t T::CLASS_VERSION = version;
 #define ProcessorDisplayName(T, displayName) const std::string T::DISPLAY_NAME = displayName;
 #define ProcessorTags(T, tags) const Tags T::TAGS = tags;
 #define ProcessorCategory(T, category) const std::string T::CATEGORY = category;
