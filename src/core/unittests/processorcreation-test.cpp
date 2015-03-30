@@ -24,11 +24,10 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <gtest/gtest.h>
-
 
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processorfactory.h>
@@ -37,47 +36,46 @@
 #include "inviwo/core/properties/transferfunctionproperty.h"
 #include <inviwo/core/common/inviwoapplication.h>
 
-namespace inviwo{
+namespace inviwo {
 
 class ProcessorCreationTests : public ::testing::TestWithParam<std::string> {
 protected:
-    ProcessorCreationTests() : p(0) {}
+    ProcessorCreationTests() : p(nullptr) {}
 
-    virtual ~ProcessorCreationTests() {
-        EXPECT_TRUE(p==0);
-    }
+    virtual ~ProcessorCreationTests() { EXPECT_TRUE(p == nullptr); }
 
     virtual void SetUp() {
-        size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
-        size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
-
-        IvwSerializable *s = ProcessorFactory::getPtr()->create(GetParam());
-        ASSERT_TRUE(s != nullptr);
-
-        p = static_cast<Processor *>(s);
-        ASSERT_TRUE(p != nullptr);
-
-        EXPECT_EQ(warnCount, LogErrorCounter::getPtr()->getWarnCount());
-        EXPECT_EQ(errCount, LogErrorCounter::getPtr()->getErrorCount());
-
         isAdded_ = false;
     }
 
     virtual void TearDown() {
-        if(isAdded_){
+        if (isAdded_) {
             ProcessorNetwork *pn = InviwoApplication::getPtr()->getProcessorNetwork();
             size_t sizeBefore = pn->getProcessors().size();
 
             pn->removeAndDeleteProcessor(p);
 
             size_t sizeAfter = pn->getProcessors().size();
-            EXPECT_EQ(sizeBefore,sizeAfter+1);
-            p = 0;
-        }else{
+            EXPECT_EQ(sizeBefore, sizeAfter + 1);
+        } else if (p) {
             p->deinitialize();
             delete p;
-            p = 0;
         }
+        p = nullptr;
+    }
+
+    void create() {
+        size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
+        size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
+
+        IvwSerializable *s = ProcessorFactory::getPtr()->create(GetParam());
+        ASSERT_TRUE(s != nullptr);
+
+        p = dynamic_cast<Processor *>(s);
+        ASSERT_TRUE(p != nullptr);
+
+        EXPECT_EQ(warnCount, LogErrorCounter::getPtr()->getWarnCount());
+        EXPECT_EQ(errCount, LogErrorCounter::getPtr()->getErrorCount());
     }
 
     void initialize() {
@@ -112,45 +110,41 @@ protected:
     bool isAdded_;
 };
 
-std::vector<std::string> theVec;
-const std::vector<std::string> &getListOfProcessors(){
-    theVec.clear();
-    std::vector<InviwoModule*>::const_iterator it = InviwoApplication::getPtr()->getModules().begin();
-    std::vector<InviwoModule*>::const_iterator endIT = InviwoApplication::getPtr()->getModules().end();
-    for(;it != endIT; ++it){
-        std::vector<ProcessorFactoryObject*>::const_iterator processor = (*it)->getProcessors().begin();
-        std::vector<ProcessorFactoryObject*>::const_iterator processorEnd = (*it)->getProcessors().end();
-        for(;processor != processorEnd;++processor){
-            theVec.push_back((*processor)->getClassIdentifier());
+const std::vector<std::string> getListOfProcessors() {
+    std::vector<std::string> theVec;
+    for (const auto& module : InviwoApplication::getPtr()->getModules()) {
+        for (const auto& processor: module->getProcessors()) {
+            theVec.push_back(processor->getClassIdentifier());
         }
     }
     return theVec;
 }
 
 //
-//TEST_P(ProcessorCreationTests,ProcesorCreate){
+// TEST_P(ProcessorCreationTests,ProcesorCreate){
 //    initialize();
 //}
 //
-//TEST_P(ProcessorCreationTests,ProcesorCreateAndReset){ 
+// TEST_P(ProcessorCreationTests,ProcesorCreateAndReset){
 //    initialize();
 //    resetAllPoperties();
 //}
 //
 //
-//TEST_P(ProcessorCreationTests,ProcesorCreateAndAddToNetwork){ 
+// TEST_P(ProcessorCreationTests,ProcesorCreateAndAddToNetwork){
 //    initialize();
 //    addProcessor();
 //}
 
-// disabled the 3 test above since they are only needed when the following test fails 
+// disabled the 3 test above since they are only needed when the following test fails
 
-TEST_P(ProcessorCreationTests,ProcesorCreateAndResetAndAddToNetwork){
+TEST_P(ProcessorCreationTests, ProcesorCreateAndResetAndAddToNetwork) {
+    create();
     initialize();
     resetAllPoperties();
     addProcessor();
 }
 
-INSTANTIATE_TEST_CASE_P(RegisteredProcessors,ProcessorCreationTests,::testing::ValuesIn(getListOfProcessors()));
-
+INSTANTIATE_TEST_CASE_P(RegisteredProcessors, ProcessorCreationTests,
+                        ::testing::ValuesIn(getListOfProcessors()));
 }

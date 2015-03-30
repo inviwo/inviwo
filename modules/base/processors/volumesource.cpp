@@ -134,7 +134,9 @@ VolumeSource::VolumeSource()
     addProperty(volumeSequence_);
         
     sequenceTimer_ = InviwoApplication::getPtr()->createTimer();
-    sequenceTimer_->setElapsedTimeCallback(this, &VolumeSource::onSequenceTimerEvent);
+    if (sequenceTimer_) {
+        sequenceTimer_->setElapsedTimeCallback(this, &VolumeSource::onSequenceTimerEvent);
+    }
 }
 
 VolumeSource::~VolumeSource() {

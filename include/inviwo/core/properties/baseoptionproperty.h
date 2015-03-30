@@ -536,17 +536,17 @@ void BaseTemplateOptionProperty<T>::set(const Property* srcProperty) {
     BaseOptionProperty::set(srcProperty);
 }
 
-template<typename T>
+template <typename T>
 void inviwo::BaseTemplateOptionProperty<T>::resetToDefaultState() {
     options_ = defaultOptions_;
     selectedIndex_ = defaultSelectedIndex_;
-    
-    if(defaultOptions_.empty()){
-        LogWarn("Resetting to an empty option list. \
-                 Probably the default values have never been set, \
-                 Remember to call setCurrentStateAsDefault() after adding all the options.")
+
+    if (defaultOptions_.empty()) {
+        LogWarn("Resetting option property: " + this->getIdentifier() +
+                " to an empty option list. Probably the default values have never been set, " +
+                "Remember to call setCurrentStateAsDefault() after adding all the options.")
     }
-    
+
     Property::resetToDefaultState();
 }
 
@@ -557,13 +557,14 @@ void inviwo::BaseTemplateOptionProperty<T>::setCurrentStateAsDefault() {
     defaultOptions_ = options_;
 }
 
-template<typename T>
+template <typename T>
 void BaseTemplateOptionProperty<T>::serialize(IvwSerializer& s) const {
     BaseOptionProperty::serialize(s);
-    if ((this->serializationMode_==ALL || options_ != defaultOptions_ )&& options_.size() > 0) {
+    if ((this->serializationMode_ == ALL || options_ != defaultOptions_) && options_.size() > 0) {
         s.serialize("options", options_, "option");
     }
-    if ((this->serializationMode_==ALL || selectedIndex_ != defaultSelectedIndex_) && options_.size() > 0) {
+    if ((this->serializationMode_ == ALL || selectedIndex_ != defaultSelectedIndex_) &&
+        options_.size() > 0) {
         s.serialize("selectedIdentifier", getSelectedIdentifier());
     }
 }

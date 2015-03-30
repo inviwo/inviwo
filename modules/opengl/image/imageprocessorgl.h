@@ -44,18 +44,14 @@ class IVW_MODULE_OPENGL_API ImageProcessorGL : public Processor {
 public:
     ImageProcessorGL();
     ImageProcessorGL(std::string shaderFileName);
-
-    void initialize();
-    void deinitialize();
+    virtual ~ImageProcessorGL();
 
     // overloaded method called when INVALID_RESOURCE property is set
-    virtual void initializeResources();
+    virtual void initializeResources() override;
 
 protected:
     std::string shaderFileName_;
     Shader* shader_;
-
-    vec2 retrieveMinMaxDepth(ImageInport* inport);
 };
 
 } // namespace

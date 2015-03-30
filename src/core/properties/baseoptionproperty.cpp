@@ -48,8 +48,7 @@ OptionPropertyString::OptionPropertyString(
     : TemplateOptionProperty<std::string>(identifier, displayName, invalidationLevel, semantics) {}
 
 OptionPropertyString::OptionPropertyString(const OptionPropertyString& rhs)
-: TemplateOptionProperty<std::string>(rhs)    {
-}
+    : TemplateOptionProperty<std::string>(rhs) {}
 
 OptionPropertyString& OptionPropertyString::operator=(const OptionPropertyString& that) {
     if (this != &that) {
@@ -66,13 +65,11 @@ OptionPropertyString::~OptionPropertyString() {}
 
 BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) : Property(rhs) {}
 
-BaseOptionProperty::BaseOptionProperty(
-    std::string identifier, std::string displayName,
-    InvalidationLevel invalidationLevel /*=INVALID_OUTPUT*/,
-    PropertySemantics semantics /*=PropertySemantics::Default*/)
+BaseOptionProperty::BaseOptionProperty(std::string identifier, std::string displayName,
+                                       InvalidationLevel invalidationLevel /*=INVALID_OUTPUT*/,
+                                       PropertySemantics semantics /*=PropertySemantics::Default*/)
     : Property(identifier, displayName, invalidationLevel, semantics) {}
 
 BaseOptionProperty::~BaseOptionProperty() {}
-
 
 }  // namespace

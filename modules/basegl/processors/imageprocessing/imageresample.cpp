@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "imageresample.h"
@@ -38,23 +38,25 @@ ProcessorTags(ImageResample, Tags::GL);
 ProcessorCategory(ImageResample, "Image Operation");
 ProcessorCodeState(ImageResample, CODE_STATE_STABLE);
 
-ImageResample::ImageResample() 
+ImageResample::ImageResample()
     : ImageGLProcessor("img_resample.frag")
     , interpolationType_("interpolationType", "Interpolation Type")
     , dimensionSource_("dimensionSource", "Dimension Source")
-    , dimensions_("dimensions", "Outport dimensions", ivec2(256, 256), ivec2(128, 128), ivec2(4096, 4096),
-    ivec2(1, 1))
-{
+    , dimensions_("dimensions", "Outport dimensions", ivec2(256, 256), ivec2(128, 128),
+                  ivec2(4096, 4096), ivec2(1, 1)) {
+        
     interpolationType_.addOption("bilinear", "Bilinear", 0);
     interpolationType_.addOption("bicubic", "Bicubic", 1);
     interpolationType_.set(0);
     interpolationType_.onChange(this, &ImageResample::interpolationTypeChanged);
+    interpolationType_.setCurrentStateAsDefault();
     addProperty(interpolationType_);
 
     dimensionSource_.addOption("inportDimension", "Use Inport for Outport Dimensions", 0);
     dimensionSource_.addOption("resizeEvents", "Use Resize Events for Outport Dimensions", 1);
     dimensionSource_.addOption("custom", "Use Custom Dimension for Outport Dimensions", 2);
     dimensionSource_.set(0);
+    dimensionSource_.setCurrentStateAsDefault();
     dimensionSource_.onChange(this, &ImageResample::dimensionSourceChanged);
     addProperty(dimensionSource_);
 
@@ -66,53 +68,51 @@ ImageResample::~ImageResample() {}
 
 void ImageResample::initialize() {
     ImageGLProcessor::initialize();
-    
+
     interpolationTypeChanged();
     dimensionSourceChanged();
 }
 
-void ImageResample::interpolationTypeChanged(){
-    if (shader_){
-        switch (interpolationType_.get())
-        {
-        case 1:
-            shader_->getFragmentShaderObject()->addShaderDefine("BICUBIC_INTERPOLATION", "1");
-            break;
-        default:
-            shader_->getFragmentShaderObject()->removeShaderDefine("BICUBIC_INTERPOLATION");
+void ImageResample::interpolationTypeChanged() {
+    if (shader_) {
+        switch (interpolationType_.get()) {
+            case 1:
+                shader_->getFragmentShaderObject()->addShaderDefine("BICUBIC_INTERPOLATION", "1");
+                break;
+            default:
+                shader_->getFragmentShaderObject()->removeShaderDefine("BICUBIC_INTERPOLATION");
         }
         shader_->build();
     }
 }
 
-void ImageResample::dimensionChanged(){
-    if (dimensions_.get() != ivec2(outport_.getDimensions().x, outport_.getDimensions().y)){
+void ImageResample::dimensionChanged() {
+    if (dimensions_.get() != ivec2(outport_.getDimensions().x, outport_.getDimensions().y)) {
         outport_.setDimensions(dimensions_.get());
         internalInvalid_ = true;
     }
 }
 
-void ImageResample::dimensionSourceChanged(){
-    switch (dimensionSource_.get())
-    {
-    case 0: //inportDimension
-        inport_.setOutportDeterminesSize(true);
-        outport_.setHandleResizeEvents(false);
-        dimensions_.setVisible(false);
-        internalInvalid_ = true;
-        break;
-    case 1: //resizeEvents
-        inport_.setOutportDeterminesSize(false);
-        outport_.setHandleResizeEvents(true);
-        dimensions_.setVisible(false);
-        break;
-    case 2: //custom
-        inport_.setOutportDeterminesSize(false);
-        outport_.setHandleResizeEvents(false);
-        dimensions_.setVisible(true);
-        internalInvalid_ = true;
-        dimensions_.set(outport_.getDimensions());
-        break;
+void ImageResample::dimensionSourceChanged() {
+    switch (dimensionSource_.get()) {
+        case 0:  // inportDimension
+            inport_.setOutportDeterminesSize(true);
+            outport_.setHandleResizeEvents(false);
+            dimensions_.setVisible(false);
+            internalInvalid_ = true;
+            break;
+        case 1:  // resizeEvents
+            inport_.setOutportDeterminesSize(false);
+            outport_.setHandleResizeEvents(true);
+            dimensions_.setVisible(false);
+            break;
+        case 2:  // custom
+            inport_.setOutportDeterminesSize(false);
+            outport_.setHandleResizeEvents(false);
+            dimensions_.setVisible(true);
+            internalInvalid_ = true;
+            dimensions_.set(outport_.getDimensions());
+            break;
     }
 }
 
