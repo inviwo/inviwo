@@ -50,7 +50,6 @@ public:
     static const std::string TYPE_ATTRIBUTE;
     static const std::string KEY_ATTRIBUTE;
     static const std::string VECTOR_ATTRIBUTES[4];
-    static const unsigned int STRINGSTREAM_PRECISION;
 
     static const std::string PROPERTY_ATTRIBUTE_1;
     static const std::string PROPERTY_ATTRIBUTE_2;

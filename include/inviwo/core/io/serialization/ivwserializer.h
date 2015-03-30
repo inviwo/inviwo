@@ -92,6 +92,12 @@ public:
     void serialize(const std::string& key, const std::map<K, V, C, A>& sMap,
                    const std::string& itemKey);
 
+    // Specializations for chars
+    void serialize(const std::string& key, const signed char& data, const bool asAttribute = false);
+    void serialize(const std::string& key, const char& data, const bool asAttribute = false);
+    void serialize(const std::string& key, const unsigned char& data,
+                   const bool asAttribute = false);
+
     // integers, reals, strings
     template <typename T, typename std::enable_if<std::is_integral<T>::value ||
                                                       std::is_floating_point<T>::value ||
@@ -217,7 +223,6 @@ void IvwSerializer::serialize(const std::string& key, const T& data, const bool 
     const ET tmpdata{static_cast<const ET>(data)};
     serialize(key, tmpdata, asAttribute);
 }
-
 
 // glm vector types
 template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>

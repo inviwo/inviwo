@@ -63,7 +63,27 @@ void IvwDeserializer::deserialize(const std::string& key, IvwSerializable& sObj)
     try {
         NodeSwitch ns(*this, key);
         sObj.deserialize(*this);
-    } catch (TxException&) {}
+    } catch (TxException&) {
+    }
+}
+
+void IvwDeserializer::deserialize(const std::string& key, signed char& data,
+                                  const bool asAttribute) {
+    int val = data;
+    deserialize(key, val, asAttribute);
+    data = static_cast<char>(val);
+}
+void IvwDeserializer::deserialize(const std::string& key, char& data,
+                                  const bool asAttribute) {
+    int val = data;
+    deserialize(key, val, asAttribute);
+    data = static_cast<char>(val);
+}
+void IvwDeserializer::deserialize(const std::string& key, unsigned char& data,
+                                  const bool asAttribute) {
+    unsigned int val = data;
+    deserialize(key, val, asAttribute);
+    data = static_cast<unsigned char>(val);
 }
 
 void IvwDeserializer::convertVersion(VersionConverter* converter) {

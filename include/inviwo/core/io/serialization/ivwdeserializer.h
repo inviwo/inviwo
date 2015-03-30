@@ -160,6 +160,11 @@ public:
         const std::string& key, std::map<K, V, C, A>& sMap, const std::string& itemKey,
         const std::string& comparisionAttribute = IvwSerializeConstants::KEY_ATTRIBUTE);
 
+    // Specializations for chars
+    void deserialize(const std::string& key, signed char& data, const bool asAttribute = false);
+    void deserialize(const std::string& key, char& data, const bool asAttribute = false);
+    void deserialize(const std::string& key, unsigned char& data, const bool asAttribute = false);
+
     // integers, reals, strings
     template <typename T, typename std::enable_if<std::is_integral<T>::value ||
                                                       std::is_floating_point<T>::value ||

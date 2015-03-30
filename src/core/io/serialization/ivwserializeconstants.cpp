@@ -46,8 +46,6 @@ const std::string IvwSerializeConstants::KEY_ATTRIBUTE="key";
 
 const std::string IvwSerializeConstants::VECTOR_ATTRIBUTES[] = {"x", "y", "z", "w"};
 
-const unsigned int IvwSerializeConstants::STRINGSTREAM_PRECISION=8;
-
 const std::string IvwSerializeConstants::PROPERTY_ATTRIBUTE_1="identifier";
 const std::string IvwSerializeConstants::PROPERTY_ATTRIBUTE_2="displayName";
 const std::string IvwSerializeConstants::PROCESSOR_ATTRIBUTE_1="identifier";
