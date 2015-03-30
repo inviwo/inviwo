@@ -71,6 +71,18 @@ void IvwSerializer::serialize(const std::string& key, const IvwSerializable& sOb
     sObj.serialize(*this);
 }
 
+
+void IvwSerializer::serialize(const std::string& key, const signed char& data, const bool asAttribute) {
+    serialize(key, static_cast<int>(data), asAttribute);
+}
+void IvwSerializer::serialize(const std::string& key, const char& data, const bool asAttribute) {
+    serialize(key, static_cast<int>(data), asAttribute);
+}
+void IvwSerializer::serialize(const std::string& key, const unsigned char& data,
+                              const bool asAttribute) {
+    serialize(key, static_cast<unsigned int>(data), asAttribute);
+}
+
 void IvwSerializer::writeFile() {
     try {
         refDataContainer_.setReferenceAttributes();
