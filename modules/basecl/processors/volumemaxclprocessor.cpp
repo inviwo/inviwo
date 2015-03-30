@@ -38,6 +38,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(VolumeMaxCLProcessor, "org.inviwo.VolumeMaxCL");
+ProcessorClassVersion(VolumeMaxCLProcessor, 0);
 ProcessorDisplayName(VolumeMaxCLProcessor, "Volume Max");
 ProcessorTags(VolumeMaxCLProcessor, Tags::CL);
 ProcessorCategory(VolumeMaxCLProcessor, "Volume Operation");

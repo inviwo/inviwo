@@ -38,6 +38,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(VolumeFirstHitCLProcessor, "org.inviwo.VolumeFirstHitCL");
+ProcessorClassVersion(VolumeFirstHitCLProcessor, 0);
 ProcessorDisplayName(VolumeFirstHitCLProcessor,  "Volume First Hit");
 ProcessorTags(VolumeFirstHitCLProcessor, Tags::CL);
 ProcessorCategory(VolumeFirstHitCLProcessor, "Volume Rendering");

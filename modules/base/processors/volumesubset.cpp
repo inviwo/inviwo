@@ -34,6 +34,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(VolumeSubset, "org.inviwo.VolumeSubset");
+ProcessorClassVersion(VolumeSubset, 0);
 ProcessorDisplayName(VolumeSubset,  "Volume Subset");
 ProcessorTags(VolumeSubset, Tags::CPU);
 ProcessorCategory(VolumeSubset, "Volume Operation");

@@ -34,6 +34,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(FirstIvwProcessor, "org.inviwo.FirstIVWProcessor");
+ProcessorClassVersion(FirstIvwProcessor, 0);
 ProcessorDisplayName(FirstIvwProcessor,  "First Processor");
 ProcessorTags(FirstIvwProcessor, Tags::GL);
 ProcessorCategory(FirstIvwProcessor, "Various");

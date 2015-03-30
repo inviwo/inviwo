@@ -33,6 +33,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(DirectionalLightSourceProcessor, "org.inviwo.Directional light source");
+ProcessorClassVersion(DirectionalLightSourceProcessor, 0);
 ProcessorDisplayName(DirectionalLightSourceProcessor,  "Directional light source");
 ProcessorTags(DirectionalLightSourceProcessor, Tags::CPU);
 ProcessorCategory(DirectionalLightSourceProcessor, "Light source");

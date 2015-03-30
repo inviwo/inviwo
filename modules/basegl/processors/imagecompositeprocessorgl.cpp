@@ -34,6 +34,7 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 ProcessorClassIdentifier(ImageCompositeProcessorGL,  "org.inviwo.ImageCompositeProcessorGL")
+ProcessorClassVersion(ImageCompositeProcessorGL, 0);
 ProcessorDisplayName(ImageCompositeProcessorGL,  "Image Composite")
 ProcessorTags(ImageCompositeProcessorGL, Tags::GL);
 ProcessorCategory(ImageCompositeProcessorGL, "Image Operation");

@@ -40,6 +40,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(MultichannelRaycaster, "org.inviwo.MultichannelRaycaster");
+ProcessorClassVersion(MultichannelRaycaster, 0);
 ProcessorDisplayName(MultichannelRaycaster,  "Multichannel Raycaster");
 ProcessorTags(MultichannelRaycaster, Tags::GL);
 ProcessorCategory(MultichannelRaycaster, "Volume Rendering");

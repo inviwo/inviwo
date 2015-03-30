@@ -34,6 +34,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(ToneMappingCPUProcessor, "org.inviwo.ToneMappingCPU");
+ProcessorClassVersion(ToneMappingCPUProcessor, 0);
 ProcessorDisplayName(ToneMappingCPUProcessor,  "Tone Mapping");
 ProcessorTags(ToneMappingCPUProcessor, Tags::CPU);
 ProcessorCategory(ToneMappingCPUProcessor, "Image Processing");

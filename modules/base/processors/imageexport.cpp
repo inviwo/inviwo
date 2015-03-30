@@ -37,6 +37,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(ImageExport, "org.inviwo.ImageExport");
+ProcessorClassVersion(ImageExport, 0);
 ProcessorDisplayName(ImageExport,  "Image Export");
 ProcessorTags(ImageExport, Tags::CPU);
 ProcessorCategory(ImageExport, "Data Output");

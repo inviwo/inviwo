@@ -36,6 +36,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(ExampleProgressBar, "org.inviwo.ExampleProgressBar");
+ProcessorClassVersion(ExampleProgressBar, 0);
 ProcessorDisplayName(ExampleProgressBar,  "Example Progress Bar");
 ProcessorTags(ExampleProgressBar, Tags::None);
 ProcessorCategory(ExampleProgressBar, "Various");

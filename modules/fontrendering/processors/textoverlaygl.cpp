@@ -35,6 +35,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(TextOverlayGL, "org.inviwo.TextOverlayGL");
+ProcessorClassVersion(TextOverlayGL, 0);
 ProcessorDisplayName(TextOverlayGL, "Text Overlay");
 ProcessorTags(TextOverlayGL, Tags::GL);
 ProcessorCategory(TextOverlayGL, "Drawing");

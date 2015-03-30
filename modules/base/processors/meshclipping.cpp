@@ -38,6 +38,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(MeshClipping, "org.inviwo.MeshClipping");
+ProcessorClassVersion(MeshClipping, 0);
 ProcessorDisplayName(MeshClipping,  "Mesh Clipping");
 ProcessorTags(MeshClipping, Tags::CPU);
 ProcessorCategory(MeshClipping, "Geometry Creation");

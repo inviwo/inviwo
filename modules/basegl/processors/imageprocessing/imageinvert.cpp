@@ -31,6 +31,7 @@
 
 namespace inviwo {
 ProcessorClassIdentifier(ImageInvert, "org.inviwo.ImageInvert");
+ProcessorClassVersion(ImageInvert, 0);
 ProcessorDisplayName(ImageInvert, "Image Invert");
 ProcessorTags(ImageInvert, Tags::GL);
 ProcessorCategory(ImageInvert, "Image Operation");

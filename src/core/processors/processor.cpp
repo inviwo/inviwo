@@ -40,6 +40,7 @@ namespace inviwo {
 std::set<std::string> Processor::usedIdentifiers_;
 
 ProcessorClassIdentifier(Processor, "org.inviwo.Processor");
+ProcessorClassVersion(Processor, 0);
 ProcessorDisplayName(Processor,  "Processor");
 ProcessorTags(Processor, Tags::None);
 ProcessorCategory(Processor, "undefined");
