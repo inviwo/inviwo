@@ -24,51 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "imageprocessorgl.h"
 #include <modules/opengl/glwrap/shader.h>
 
-
 namespace inviwo {
 
 ImageProcessorGL::ImageProcessorGL()
-    : Processor(),
-      shaderFileName_("pipethrough.frag")
-{}
-
-ImageProcessorGL::ImageProcessorGL(std::string shaderFileName)
-    : Processor(),
-      shaderFileName_(shaderFileName)
-{}
-
-void ImageProcessorGL::initialize() {
-    Processor::initialize();
+    : Processor(), shaderFileName_("pipethrough.frag"), shader_(nullptr) {
     shader_ = new Shader(shaderFileName_);
 }
 
-void ImageProcessorGL::deinitialize() {
+ImageProcessorGL::ImageProcessorGL(std::string shaderFileName)
+    : Processor(), shaderFileName_(shaderFileName), shader_(nullptr) {
+    shader_ = new Shader(shaderFileName_);
+}
+
+ImageProcessorGL::~ImageProcessorGL() {
     delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
 }
 
-void ImageProcessorGL::initializeResources() {
-    shader_->rebuild();
-}
+void ImageProcessorGL::initializeResources() { shader_->rebuild(); }
 
-vec2 ImageProcessorGL::retrieveMinMaxDepth(ImageInport* inport) {
-    vec2 depthRange = vec2(1.0f, 0.0f);
-    /*const ImageRAM* imageRAM = (inport->getData())->getRepresentation<ImageRAM>();
-    for (unsigned int x=0; x<imageRAM->getDimensions().x; x++) {
-        for (unsigned int y=0; y<imageRAM->getDimensions().y; y++) {
-            float curDepth = imageRAM->getDepthValue(uvec2(x,y));
-            if (curDepth < depthRange.x) depthRange.x = curDepth;
-            if (curDepth > depthRange.y) depthRange.y = curDepth;
-        }
-    }*/
-    return depthRange;
-}
-
-} // namespace
+}  // namespace
