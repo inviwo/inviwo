@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <set>
+#include <functional>
 
 namespace inviwo {
 // Forward declaration
