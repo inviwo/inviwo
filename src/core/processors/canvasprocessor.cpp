@@ -230,10 +230,10 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
     }
 }
 
-std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType layerType, const std::string& type) {
+std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType layerType, const std::string& type, size_t idx) {
     if (!inport_.hasData()) return nullptr;
     const Image* image = inport_.getData();
-    const Layer* layer = image->getLayer(layerType);
+    const Layer* layer = image->getLayer(layerType, idx);
 
     if (layer){
         DataWriterType<Layer>* writer =
@@ -256,8 +256,8 @@ std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType lay
     return nullptr;
 }
 
-std::vector<unsigned char>* CanvasProcessor::getImageLayerAsCodedBuffer(const std::string& type) {
-    return getLayerAsCodedBuffer(LayerType::COLOR_LAYER, type);
+std::vector<unsigned char>* CanvasProcessor::getColorLayerAsCodedBuffer(const std::string& type, size_t idx) {
+    return getLayerAsCodedBuffer(LayerType::COLOR_LAYER, type, idx);
 }
 
 std::vector<unsigned char>* CanvasProcessor::getDepthLayerAsCodedBuffer(const std::string& type) {
