@@ -33,6 +33,12 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/filesystem.h>
 #include <modules/python3/python3module.h>
+#include <inviwo/core/util/clock.h>
+#include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
+
+#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <inviwo/core/util/settings/systemsettings.h>
+
 #include <QCommandLinkButton>
 #include <QSplitter>
 #include <QFileDialog>
@@ -43,10 +49,7 @@
 #include <QSpacerItem>
 #include <QHBoxLayout>
 #include <QFrame>
-#include <inviwo/core/util/clock.h>
-#include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
-
-#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <QPalette>
 
 namespace inviwo {
 
@@ -58,6 +61,7 @@ PythonEditorWidget* PythonEditorWidget::getPtr() {
     ivwAssert(instance_ != nullptr, "Singleton not yet created");
     return instance_;
 }
+
 
 PythonEditorWidget::PythonEditorWidget(QWidget* parent)
     : InviwoDockWidget(tr("Python Editor"), parent)
@@ -161,6 +165,24 @@ void PythonEditorWidget::buildWidget() {
     connect(saveButton, SIGNAL(clicked()), this, SLOT(save()));
     connect(saveAsButton, SIGNAL(clicked()), this, SLOT(saveAs()));
     connect(clearOutputButton, SIGNAL(clicked()), this, SLOT(clearOutput()));
+
+
+    updateStyle();
+    InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pythonSyntax_.onChange(this, &PythonEditorWidget::updateStyle);
+    InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pyFontSize_.onChange(this, &PythonEditorWidget::updateStyle);
+}
+
+
+void PythonEditorWidget::updateStyle()
+{
+    auto color = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pyBGColor_.get();
+    auto size = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pyFontSize_.get();
+    std::stringstream ss;
+    ss << "background-color: rgb(" << color.r << ", " << color.g << ", " << color.b << ");" << std::endl;
+    ss << "font-size: " << size << "px;";
+    pythonCode_->setStyleSheet(ss.str().c_str());
+    syntaxHighligther_->rehighlight();
+
 }
 
 PythonEditorWidget::~PythonEditorWidget() {}
@@ -328,7 +350,7 @@ void PythonEditorWidget::run() {
 }
 
 void PythonEditorWidget::show() {
-    // setFloating(true);
+    updateStyle();
     setVisible(true);
 }
 

@@ -77,6 +77,8 @@ public:
 
     static PythonEditorWidget* getPtr();
 
+    void updateStyle();
+
 private:
     void buildWidget();
 
