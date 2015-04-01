@@ -173,7 +173,6 @@ void PyInviwo::importModule(const std::string &moduleName){
         PyObject* pMod = PyImport_ImportModule(moduleName.c_str());
         if (nullptr != pMod) {
             PyDict_SetItemString(mainDict_, key, pMod);
-            LogInfo("Imported python module: " << moduleName);
         }
         else{
             LogWarn("Failed to import python module: " << moduleName);
