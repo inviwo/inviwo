@@ -75,6 +75,7 @@ SystemSettings::SystemSettings()
                              INVALID_OUTPUT, PropertySemantics::Color)
 
     , pythonSyntax_("pythonSyntax_", "Python Syntax Highlighting")
+    , pyFontSize_("pyFontSize_" , "Font Size" , 11 , 1, 72)
     , pyBGColor_("pyBGColor", "Background", ivec4(0x88, 0x88, 0x88, 255), ivec4(0, 0, 0, 1),
                  ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), INVALID_OUTPUT,
                  PropertySemantics::Color)
@@ -114,7 +115,8 @@ SystemSettings::SystemSettings()
     glslSyntax_.addProperty(glslGlslBuiltinsColor_);
     glslSyntax_.addProperty(glslPreProcessorColor_);
 
-    pythonSyntax_.addProperty(pyBGColor_);
+    pythonSyntax_.addProperty(pyFontSize_); 
+    pythonSyntax_.addProperty(pyBGColor_); 
     pythonSyntax_.addProperty(pyTextColor_);
     pythonSyntax_.addProperty(pyCommentsColor_);
     pythonSyntax_.addProperty(pyTypeColor_);

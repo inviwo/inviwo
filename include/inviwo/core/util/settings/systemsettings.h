@@ -71,6 +71,7 @@ public:
     IntVec4Property glslPreProcessorColor_;
 
     CompositeProperty pythonSyntax_;
+    IntProperty pyFontSize_;
     IntVec4Property pyBGColor_;
     IntVec4Property pyTextColor_;
     IntVec4Property pyTypeColor_;
