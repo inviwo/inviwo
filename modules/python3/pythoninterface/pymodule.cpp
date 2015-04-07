@@ -38,7 +38,7 @@ namespace inviwo {
 
 std::map<PyObject*,PyModule*> PyModule::instances_;
 
-PyModule::PyModule(std::string moduleName) : moduleName_(moduleName), embMethods_(nullptr) {
+PyModule::PyModule(std::string moduleName) : obj_(nullptr) , moduleName_(moduleName), embMethods_(nullptr){
     addMethod(new PyInfoMethod());
 }
 
@@ -90,9 +90,13 @@ PyModule* PyModule::getModuleByPyObject(PyObject* obj) {
     return instances_[obj];
 }
 
-void PyModule::setPyObject(PyObject* obj)
-{
+void PyModule::setPyObject(PyObject* obj) {
+    obj_ = obj;
     instances_[obj] = this;
+}
+
+PyObject* PyModule::getPyObject() {
+    return obj_;
 }
 
 
