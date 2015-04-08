@@ -199,6 +199,7 @@ void CanvasQt::initializeSquare() {
 }
 
 void CanvasQt::deinitialize() {
+    activate();
     CanvasGL::deinitialize();
 }
 
