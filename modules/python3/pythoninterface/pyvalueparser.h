@@ -32,6 +32,10 @@
 
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <Python.h>
+
 
 #ifndef PyObject_HEAD
 struct PyObject;
@@ -56,57 +60,20 @@ namespace inviwo {
 
     };
 
+    template <typename T> 
+    T PyValueParser::parse(PyObject* arg) {
+        return detail::parse<T>(arg);
+    }
 
-    template <> IVW_MODULE_PYTHON3_API bool        PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API double      PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API float       PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API char        PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API short       PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API int         PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API unsigned int PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API long        PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API unsigned long PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API unsigned long long PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API vec2        PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API vec3        PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API vec4        PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API ivec2       PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API ivec3       PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API ivec4       PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API uvec2       PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API uvec3       PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API uvec4       PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API mat2        PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API mat3        PyValueParser::parse(PyObject* args);
-    template <> IVW_MODULE_PYTHON3_API mat4        PyValueParser::parse(PyObject* args);
+    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::parse(PyObject* args);
     template <> IVW_MODULE_PYTHON3_API std::string PyValueParser::parse(PyObject* args);
 
+    template<typename T>
+    bool PyValueParser::is(PyObject* arg) {
+         return detail::test<T>(arg);
+    }
 
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<bool>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<double>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<float>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<char>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<short>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<int>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<unsigned int>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<long>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<unsigned long>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<unsigned long long>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<vec2>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<vec3>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<vec4>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<ivec2>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<ivec3>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<ivec4>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<uvec2>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<uvec3>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<uvec4>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<mat2>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<mat3>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<mat4>(PyObject* arg);
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::is<std::string>(PyObject* arg);
-
-    template <> IVW_MODULE_PYTHON3_API PyObject* PyValueParser::toPyObject<bool>(bool arg);
+    template <> IVW_MODULE_PYTHON3_API PyObject*  PyValueParser::toPyObject<bool>(bool arg);
     template <> IVW_MODULE_PYTHON3_API PyObject*  PyValueParser::toPyObject<double>(double arg);
     template <> IVW_MODULE_PYTHON3_API PyObject*  PyValueParser::toPyObject<float>(float arg);
     template <> IVW_MODULE_PYTHON3_API PyObject*  PyValueParser::toPyObject<char>(char arg);
@@ -131,6 +98,118 @@ namespace inviwo {
     template <> IVW_MODULE_PYTHON3_API PyObject*  PyValueParser::toPyObject<std::string>(std::string arg);
 
 
+
+namespace detail {
+    
+template <typename T>
+T parse(PyObject* args) {
+    T val{};
+    parseImpl<T, util::flat_extent<T>::value>(args, val);
+    return val;
+}
+
+template <typename T, int N, typename... Args>
+typename std::enable_if<0 < N, void>::type parseImpl(PyObject* arg, T& val, Args*... args) {
+    parseImpl<T, N - 1>(arg, val, &util::glmcomp(val, N-1), args...);
+}
+template <typename T, int N, typename... Args>
+typename std::enable_if<0 == N, void>::type parseImpl(PyObject* arg, T& val, Args*... args) {
+    std::string ts = typestring<T>();
+    PyArg_ParseTuple(arg, ts.c_str(), args...);
+}
+
+
+template <typename T, typename std::enable_if<util::rank<T>::value == 0, int>::type = 0>
+std::string typestring() {
+    return toString(typeToChar<T>::value);
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
+std::string typestring() {
+    using type = typename T::value_type;
+    std::stringstream ss;
+    for (int i = 0; i < util::extent<T, 0>::value; ++i) ss << typeToChar<type>::value;
+    return ss.str();
+}
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+std::string typestring() {
+    using type = typename T::col_type;
+    std::stringstream ss;
+    for (int i = 0; i < util::extent<T, 1>::value; ++i) {
+        ss << "(" << typestring<type>() << ")";
+    }
+    return ss.str();
+}
+
+
+template <typename T>
+struct typeToChar {};
+
+template <> struct typeToChar<unsigned char> : std::integral_constant<char, 'b'> {};
+template <> struct typeToChar<short> : std::integral_constant<char, 'h'> {};
+template <> struct typeToChar<unsigned short> : std::integral_constant<char, 'H'> {};
+template <> struct typeToChar<int> : std::integral_constant<char, 'i'> {};
+template <> struct typeToChar<unsigned int> : std::integral_constant<char, 'I'> {};
+template <> struct typeToChar<long int> : std::integral_constant<char, 'l'> {};
+template <> struct typeToChar<unsigned long> : std::integral_constant<char, 'k'> {};
+template <> struct typeToChar<long long> : std::integral_constant<char, 'L'> {};
+template <> struct typeToChar<unsigned long long> : std::integral_constant<char, 'K'> {};
+template <> struct typeToChar<float> : std::integral_constant<char, 'f'> {};
+template <> struct typeToChar<double> : std::integral_constant<char, 'd'> {};
+
+
+
+template <typename T, typename std::enable_if<util::rank<T>::value == 0 &&
+                                                  std::is_same<std::string, typename std::remove_cv<T>::type >::value,
+                                              int>::type = 0>
+static bool test(PyObject* arg) {
+    return PyUnicode_Check(arg);
+}
+
+template <typename T, typename std::enable_if<util::rank<T>::value == 0 &&
+                                                  std::is_same<bool, typename std::remove_cv<T>::type >::value,
+                                              int>::type = 0>
+static bool test(PyObject* arg) {
+    return PyBool_Check(arg);
+}
+
+template <typename T, typename std::enable_if<util::rank<T>::value == 0 && std::is_integral<T>::value,
+                                              int>::type = 0>
+static bool test(PyObject* arg) {
+    return PyLong_Check(arg);
+}
+
+template <typename T, typename std::enable_if<
+                          util::rank<T>::value == 0 && util::is_floating_point<T>::value, int>::type = 0>
+static bool test(PyObject* arg) {
+    return PyFloat_Check(arg) || PyLong_Check(arg);
+}
+
+template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::type = 0>
+static bool test(PyObject* arg) {
+    if (!PyTuple_Check(arg)) return false;
+
+    if (PyTuple_Size(arg) != util::extent<T>::value) return false;
+
+    for (size_t i = 0; i < util::extent<T>::value; i++) {
+        if (!test<typename T::value_type>(PyTuple_GetItem(arg, i))) return false;
+    }
+    return true;
+}
+
+template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
+static bool test(PyObject* arg) {
+    if (!PyTuple_Check(arg)) return false;
+
+    if (PyTuple_Size(arg) != util::extent<T>::value) return false;
+
+    for (size_t i = 0; i < util::extent<T>::value; i++) {
+        if (!test<typename T::col_type>(PyTuple_GetItem(arg, i))) return false;
+    }
+    return true;
+}
+
+
+} // detail
 
 } // namespace
 

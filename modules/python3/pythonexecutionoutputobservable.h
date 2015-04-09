@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PYTHONEXECUTIONOUTPUTOBSERVABLE_H
@@ -37,28 +37,22 @@
 #include <inviwo/core/util/singleton.h>
 
 namespace inviwo {
-    enum IVW_MODULE_PYTHON3_API PythonExecutionOutputStream
-    {
-        sysstdout,
-        sysstderr
-    };
+enum IVW_MODULE_PYTHON3_API PythonExecutionOutputStream { sysstdout, sysstderr };
 
-    class IVW_MODULE_PYTHON3_API PythonExecutionOutputObeserver : public Observer {
-    public:
+class IVW_MODULE_PYTHON3_API PythonExecutionOutputObeserver : public Observer {
+public:
+    virtual void onPyhonExecutionOutput(const std::string &msg,
+                                        const PythonExecutionOutputStream &outputType) = 0;
+};
 
-        virtual void onPyhonExecutionOutput(const std::string &msg, const PythonExecutionOutputStream &outputType) = 0;
-    };
+class IVW_MODULE_PYTHON3_API PythonExecutionOutputObservable
+    : public Observable<PythonExecutionOutputObeserver>,
+      public Singleton<PythonExecutionOutputObservable> {
+public:
+    void pythonExecutionOutputEvent(const std::string &msg,
+                                    const PythonExecutionOutputStream &outputType);
+};
 
-    class IVW_MODULE_PYTHON3_API PythonExecutionOutputObservable
-        : public Observable<PythonExecutionOutputObeserver>
-        , public Singleton <PythonExecutionOutputObservable>
-    {
-    public:
-        void pythonExecutionOutputEvent(const std::string &msg, const PythonExecutionOutputStream &outputType);
-    };
+}  // namespace
 
-
-} // namespace
-
-#endif // IVW_PYTHONEXECUTIONOUTPUTOBSERVABLE_H
-
+#endif  // IVW_PYTHONEXECUTIONOUTPUTOBSERVABLE_H
