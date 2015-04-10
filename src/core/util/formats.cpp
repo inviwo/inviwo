@@ -35,7 +35,7 @@ DataFormatBase* DataFormatBase::instance_[] = {nullptr};
 
 DataFormatBase::DataFormatBase() : formatId_(id()), components_(components()), size_(size()), formatStr_("") {}
 
-DataFormatBase::DataFormatBase(DataFormatEnums::Id t, int c, size_t size, double max, double min,
+DataFormatBase::DataFormatBase(DataFormatEnums::Id t, size_t c, size_t size, double max, double min,
                                DataFormatEnums::NumericType nt, std::string s)
     : formatId_(t), components_(c), size_(size), numericType_(nt), max_(max), min_(min), formatStr_(s) {}
 
@@ -74,8 +74,8 @@ const DataFormatBase* DataFormatBase::get(std::string name) {
     else return DataFormatBase::get();
 }
 
-const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, int components,
-                                          int precision) {
+const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, size_t components,
+                                          size_t precision) {
     switch (type) {
         case DataFormatEnums::FLOAT_TYPE:
             switch (components) {
@@ -296,7 +296,7 @@ DataFormatEnums::NumericType DataFormatBase::getNumericType() const {
     return numericType_;
 }
 
-int DataFormatBase::getComponents() const {
+size_t DataFormatBase::getComponents() const {
     return components_;
 }
 
