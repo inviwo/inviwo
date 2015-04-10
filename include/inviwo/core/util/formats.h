@@ -115,20 +115,20 @@ enum NumericType {
 class IVW_CORE_API DataFormatBase {
 public:
     DataFormatBase();
-    DataFormatBase(DataFormatEnums::Id type, int components, size_t size, double max, double min,
+    DataFormatBase(DataFormatEnums::Id type, size_t components, size_t size, double max, double min,
                    DataFormatEnums::NumericType nt, std::string s);
     virtual ~DataFormatBase();
 
     static const DataFormatBase* get();
     static const DataFormatBase* get(DataFormatEnums::Id id);
     static const DataFormatBase* get(std::string name);
-    static const DataFormatBase* get(DataFormatEnums::NumericType type, int components,
-                                     int precision);
+    static const DataFormatBase* get(DataFormatEnums::NumericType type, size_t components,
+                                     size_t precision);
 
     static void cleanDataFormatBases();
 
     static size_t size() { return 0; }
-    static int components() { return 0; }
+    static size_t components() { return 0; }
     static DataFormatEnums::NumericType numericType() {
         return DataFormatEnums::NOT_SPECIALIZED_TYPE;
     }
@@ -136,7 +136,7 @@ public:
     static DataFormatEnums::Id id() { return DataFormatEnums::NOT_SPECIALIZED; }
 
     size_t getSize() const;
-    int getComponents() const;
+    size_t getComponents() const;
 
     DataFormatEnums::NumericType getNumericType() const;
     double getMax() const;
@@ -172,12 +172,16 @@ protected:
     static DataFormatBase* getNonConst(DataFormatEnums::Id id) { return instance_[id]; }
 
     DataFormatEnums::Id formatId_;
-    int components_;
+    size_t components_;
     size_t size_;
     DataFormatEnums::NumericType numericType_;
     double max_;
     double min_;
+
+    #pragma warning(push)
+    #pragma warning(disable: 4251)
     std::string formatStr_;
+    #pragma warning(pop)
 };
 
 template <typename T>
@@ -205,7 +209,7 @@ public:
     }
 
     static size_t size() { return typesize; }
-    static int components() { return comp; }
+    static size_t components() { return comp; }
     static DataFormatEnums::NumericType numericType() {
         return DataFormatEnums::NOT_SPECIALIZED_TYPE;
     }
@@ -284,7 +288,7 @@ public:
     }
 
     static size_t size() { return typesize; }
-    static int components() { return comp; }
+    static size_t components() { return comp; }
     static DataFormatEnums::NumericType numericType() { return DataFormat<T>::numericType(); }
 
     static type max() { return type(DataFormat<T>::max()); }
