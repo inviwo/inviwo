@@ -103,6 +103,7 @@ void PyInviwo::registerPyModule(PyModule* pyModule) {
             LogWarn("Failed to init python module '" << pyModule->getModuleName() << "' ");
         }
         PyDict_SetItemString(modulesDict_, pyModule->getModuleName(), obj);
+        PyDict_SetItemString(mainDict_, pyModule->getModuleName(), obj);
 
         pyModule->setPyObject(obj);
         registeredModules_.push_back(pyModule);
