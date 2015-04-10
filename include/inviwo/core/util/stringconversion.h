@@ -96,9 +96,9 @@ IVW_CORE_API std::string parseTypeIdName(std::string str);
 IVW_CORE_API std::string toUpper(std::string str);
 IVW_CORE_API std::string toLower(std::string str);
 
-IVW_CORE_API unsigned int countLines(std::string str);
+IVW_CORE_API size_t countLines(std::string str);
 
-IVW_CORE_API std::string randomString(unsigned int length = 10);
+IVW_CORE_API std::string randomString(size_t length = 10);
 
 // trim from start
 IVW_CORE_API std::string ltrim(std::string s);
