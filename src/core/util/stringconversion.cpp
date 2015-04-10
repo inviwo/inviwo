@@ -116,8 +116,8 @@ std::string toLower(std::string str) {
     return str;
 }
 
-unsigned int countLines(std::string str) {
-    unsigned int lineCount = 1;
+size_t countLines(std::string str) {
+    size_t lineCount = 1;
     size_t position = 0;
 
     while (position < str.length()) {
@@ -133,7 +133,7 @@ static const std::string possibleValues =
     "0123456789"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz";
-std::string randomString(unsigned int length) {
+std::string randomString(size_t length) {
     std::string s;
 
     std::random_device rd;
