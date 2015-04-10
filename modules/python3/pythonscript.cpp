@@ -27,22 +27,19 @@
  * 
  *********************************************************************************/
 
-#include <modules/python3/pythonincluder.h>
-
 #include "pythonscript.h"
-
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 
 #include <modules/python3/pythonexecutionoutputobservable.h>
-
 #include <modules/python3/pythoninterface/pyvalueparser.h>
+#include <modules/python3/pythoninterface/pymodule.h>
+#include <modules/python3/pyinviwo.h>
 
+#include <modules/python3/pythonincluder.h>
 #include <traceback.h>
 #include <frameobject.h>
-#include <modules/python3/pythoninterface/pymodule.h>
-#include "pyinviwo.h"
 
 #define BYTE_CODE static_cast<PyObject*>(byteCode_)
 

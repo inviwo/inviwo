@@ -33,7 +33,6 @@
 #include <modules/python3/python3moduledefine.h>
 
 #include <modules/python3/pythoninterface/pymethod.h>
-
 #include <modules/python3/defaultinterface/pyinfo.h>
 
 #include <vector>
@@ -70,8 +69,6 @@ private:
     std::vector<PyMethod*> methods_;
     PyMethodDef* embMethods_;
     static std::map<PyObject*,PyModule*> instances_;
-
-
 };
 
 

@@ -31,17 +31,10 @@
 #define IVW_PYVALUEPARSER_H
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/glm.h>
+#include <modules/python3/pythonincluder.h>
 #include <inviwo/core/util/stringconversion.h>
-#include <Python.h>
 
-
-#ifndef PyObject_HEAD
-struct PyObject;
-struct PyMethodDef;
-typedef PyObject *(*PyCFunction)(PyObject *, PyObject *);
-#endif
 
 namespace inviwo {
     class Property;
@@ -65,7 +58,7 @@ namespace inviwo {
         return detail::parse<T>(arg);
     }
 
-    template <> IVW_MODULE_PYTHON3_API bool PyValueParser::parse(PyObject* args);
+    template <> IVW_MODULE_PYTHON3_API bool        PyValueParser::parse(PyObject* args);
     template <> IVW_MODULE_PYTHON3_API std::string PyValueParser::parse(PyObject* args);
 
     template<typename T>
@@ -73,7 +66,7 @@ namespace inviwo {
          return detail::test<T>(arg);
     }
 
-    template <> IVW_MODULE_PYTHON3_API PyObject*  PyValueParser::toPyObject<bool>(bool arg);
+    template <> IVW_MODULE_PYTHON3_API PyObject* PyValueParser::toPyObject<bool>(bool arg);
     template <> IVW_MODULE_PYTHON3_API PyObject*  PyValueParser::toPyObject<double>(double arg);
     template <> IVW_MODULE_PYTHON3_API PyObject*  PyValueParser::toPyObject<float>(float arg);
     template <> IVW_MODULE_PYTHON3_API PyObject*  PyValueParser::toPyObject<char>(char arg);

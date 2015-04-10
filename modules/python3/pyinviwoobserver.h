@@ -24,28 +24,26 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PYINVIWOOBSERVER_H
 #define IVW_PYINVIWOOBSERVER_H
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
 #include <modules/python3/pythoninterface/pymodule.h>
 
 namespace inviwo {
 
-    class IVW_MODULE_PYTHON3_API PyInviwoObserver : public Observer {
-    public:
-        PyInviwoObserver();
-        virtual ~PyInviwoObserver();
+class IVW_MODULE_PYTHON3_API PyInviwoObserver : public Observer {
+public:
+    PyInviwoObserver();
+    virtual ~PyInviwoObserver();
 
-        virtual void onModuleRegistered(PyModule* module) = 0;
+    virtual void onModuleRegistered(PyModule* module) = 0;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PYINVIWOOBSERVER_H
-
+#endif  // IVW_PYINVIWOOBSERVER_H

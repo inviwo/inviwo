@@ -29,7 +29,7 @@
 
 #include <modules/python3/pythonincluder.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include "pyinviwo.h"
+#include <modules/python3/pyinviwo.h>
 
 #include <modules/python3/python3module.h>
 
@@ -40,12 +40,12 @@
 
 #include <modules/python3/pyinviwoobserver.h>
 
-#include "defaultinterface/pyproperties.h"
-#include "defaultinterface/pycamera.h"
-#include "defaultinterface/pycanvas.h"
-#include "defaultinterface/pylist.h"
-#include "defaultinterface/pyutil.h"
-#include "defaultinterface/pyvolume.h"
+#include <modules/python3/defaultinterface/pyproperties.h>
+#include <modules/python3/defaultinterface/pycamera.h>
+#include <modules/python3/defaultinterface/pycanvas.h>
+#include <modules/python3/defaultinterface/pylist.h>
+#include <modules/python3/defaultinterface/pyutil.h>
+#include <modules/python3/defaultinterface/pyvolume.h>
 
 namespace inviwo {
 static PyObject* py_stdout(PyObject* /*self*/, PyObject* args);

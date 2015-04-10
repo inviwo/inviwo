@@ -27,15 +27,15 @@
  * 
  *********************************************************************************/
 
-#include "pythonmenu.h"
+#include <modules/python3qt/pythonmenu.h>
+#include <modules/python3qt/pythoninfowidget.h>
+#include <modules/python3qt/pythoneditorwidget.h>
+
+#include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <QMenu>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QAction>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
-
-#include "pythoninfowidget.h"
-#include "pythoneditorwidget.h"
 
 namespace inviwo {
 
