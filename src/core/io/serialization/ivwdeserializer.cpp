@@ -27,6 +27,7 @@
  *
  *********************************************************************************/
 
+#pragma warning(disable: 4251)
 #include <inviwo/core/io/serialization/ivwdeserializer.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/processors/processorfactory.h>

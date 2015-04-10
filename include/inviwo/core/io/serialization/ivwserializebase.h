@@ -30,8 +30,11 @@
 #ifndef IVW_SERIALIZE_BASE_H
 #define IVW_SERIALIZE_BASE_H
 
-
+#pragma warning(push)
+#pragma warning(disable: 4263)
 #include <inviwo/core/io/serialization/ticpp.h>
+#pragma warning(pop)
+
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/ivwserializeconstants.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
@@ -50,6 +53,7 @@ namespace inviwo {
 
 template <typename T>
 struct ElementIdentifier {
+    virtual ~ElementIdentifier() = default;
     virtual void setKey(TxElement*) = 0;
     virtual bool operator()(const T* elem) const = 0;
 };
