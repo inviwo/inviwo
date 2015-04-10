@@ -30,8 +30,6 @@
 #ifndef IVW_SPATIALDATA_H
 #define IVW_SPATIALDATA_H
 
-#pragma warning(disable : 4355)
-
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
@@ -126,6 +124,9 @@ protected:
     Matrix<N + 1, float> modelMatrix_;
     Matrix<N + 1, float> worldMatrix_;
 };
+
+IVW_CORE_EXT template class IVW_CORE_API SpatialEntity<2>;
+IVW_CORE_EXT template class IVW_CORE_API SpatialEntity<3>;
 
 template <unsigned int N>
 class StructuredGridEntity : public SpatialEntity<N> {
@@ -383,4 +384,6 @@ const StructuredCameraCoordinateTransformer<N>& inviwo::StructuredGridEntity<N>:
 }
 
 }  // namespace
+
 #endif  // IVW_SPATIALDATA_H
+
