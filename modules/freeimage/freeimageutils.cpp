@@ -398,7 +398,7 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const T* data, FREE_IMAGE_TYPE ty
         T value;
         format->doubleToValue(255.0, &value);
 
-        for (unsigned int i = 0; i < dim.x * dim.y; i++) bits[i] = data[i] * value;
+        for (size_t i = 0; i < dim.x * dim.y; i++) bits[i] = data[i] * value;
 
         FIBITMAP* dibConvert = FreeImage_ConvertToStandardType(dib);
         return dibConvert;
@@ -406,7 +406,7 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const T* data, FREE_IMAGE_TYPE ty
     else{
         //If with dimensions NOT being a multiple of 4
         if (channels != 4){
-            for (int rows = 0; rows < dim.y; rows++)
+            for (size_t rows = 0; rows < dim.y; rows++)
                 std::memcpy(FreeImage_GetScanLine(dib, rows), data + rows*dim.x, dim.x*bytespp);
         }
         else{
@@ -490,7 +490,7 @@ void* FreeImageUtils::fiBitmapToDataArray(void* dst, FIBITMAP* bitmap, size_t bi
     unsigned int bytespp = FreeImage_GetLine(bitmapNEW) / FreeImage_GetWidth(bitmapNEW);
     //If with dimensions NOT being a multiple of 4
     if (channels != 4){
-        for (int rows = 0; rows < dim.y; rows++)
+        for (size_t rows = 0; rows < dim.y; rows++)
             std::memcpy(static_cast<T*>(dst)+rows*dim.x, FreeImage_GetScanLine(bitmapNEW, rows), dim.x*bytespp);
     }
     else{
@@ -549,7 +549,7 @@ void* FreeImageUtils::fiBitmapToDataArrayAndRescale(void* dst, FIBITMAP* bitmap,
 
     //If with dimensions NOT being a multiple of 4
     if (channels != 4){
-        for (int rows = 0; rows < dst_dim.y; rows++)
+        for (size_t rows = 0; rows < dst_dim.y; rows++)
             std::memcpy(static_cast<T*>(dst)+rows*dst_dim.x, FreeImage_GetScanLine(bitmapRescaled, rows), FreeImage_GetLine(bitmapRescaled));
     }
     else{
