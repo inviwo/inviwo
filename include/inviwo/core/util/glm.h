@@ -36,6 +36,10 @@
 #ifndef GLM_SWIZZLE
 #define GLM_SWIZZLE
 #endif
+#ifndef GLM_FORCE_SIZE_T_LENGTH
+#define GLM_FORCE_SIZE_T_LENGTH
+#endif
+
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/type_precision.hpp>
@@ -191,6 +195,11 @@ struct same_extent<G<T,P>, U> { typedef G<U,P> type; };
 
 
 // Type conversion
+
+
+// disable conversion warning
+#pragma warning(push)
+#pragma warning(disable: 4244)
 
 // Standard conversion simple casts
 
@@ -403,7 +412,7 @@ To glm_convert_normalized(From x) {
     }
     return res;
 }
-
+#pragma warning(pop)
 
 // GLM element access wrapper functions. 
 
