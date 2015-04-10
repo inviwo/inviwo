@@ -30,7 +30,7 @@
 #ifndef IVW_DESERIALIZER_H
 #define IVW_DESERIALIZER_H
 
-#pragma warning(disable : 4290)
+
 
 #include <inviwo/core/io/serialization/ivwserializebase.h>
 #include <inviwo/core/util/exception.h>

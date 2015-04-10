@@ -44,7 +44,10 @@ public:
     virtual const char* what() const throw() override;
 
 private:
+    #pragma warning(push)
+    #pragma warning(disable: 4251)
     std::string message_;
+    #pragma warning(pop)
 };
 
 class IVW_CORE_API IgnoreException : public Exception {

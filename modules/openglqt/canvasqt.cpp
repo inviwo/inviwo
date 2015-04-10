@@ -35,6 +35,8 @@
 #include <QtGui/QOpenGLContext>
 #endif
 
+#pragma warning(disable: 4061)
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #define USING_QT5
 #else

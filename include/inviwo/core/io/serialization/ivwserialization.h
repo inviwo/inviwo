@@ -30,10 +30,15 @@
 #ifndef IVW_SERIALIZATION_H
 #define IVW_SERIALIZATION_H
 
+#pragma warning(push)
+#pragma warning(disable: 4251) // 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
+
 #include <inviwo/core/io/serialization/ivwserializebase.h>
 #include <inviwo/core/io/serialization/ivwserializer.h>
 #include <inviwo/core/io/serialization/ivwserializable.h>
 #include <inviwo/core/io/serialization/ivwdeserializer.h>
 #include <inviwo/core/util/factory.h>
+
+#pragma warning(pop)
 
 #endif
