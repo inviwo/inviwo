@@ -31,13 +31,9 @@
 #define IVW_PYVALUEPARSER_H
 
 #include <modules/python3/python3moduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
+#include <modules/python3/pythonincluder.h>
 
-#ifndef PyObject_HEAD
-struct PyObject;
-struct PyMethodDef;
-typedef PyObject *(*PyCFunction)(PyObject *, PyObject *);
-#endif
 
 namespace inviwo {
     class Property;

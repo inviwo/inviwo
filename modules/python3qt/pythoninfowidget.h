@@ -31,9 +31,11 @@
 #define IVW_PYTHONINFOWIDGET_H
 
 #include <modules/python3qt/python3qtmoduledefine.h>
+#include <modules/python3/pythonincluder.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 #include <modules/python3/pyinviwoobserver.h>
+
 
 class QTabWidget;
 

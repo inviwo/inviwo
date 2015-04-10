@@ -31,7 +31,6 @@
 #define IVW_PYTHONMENU_H
 
 #include <modules/python3qt/python3qtmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 class PythonInfoWidget;

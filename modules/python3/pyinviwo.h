@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PYINVIWO_H
@@ -35,15 +35,16 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/observer.h>
+#include <modules/python3/pythonincluder.h>
 
-
-#ifndef PyObject_HEAD
-struct PyObject;
-#endif
+// #ifndef PyObject_HEAD
+// struct PyObject;
+// #endif
 
 namespace inviwo {
-    class PyModule;
-    class IVW_MODULE_PYTHON3_API PyInviwo : public Singleton<PyInviwo> , public Observable<PyInviwoObserver> {
+class PyModule;
+class IVW_MODULE_PYTHON3_API PyInviwo : public Singleton<PyInviwo>,
+                                        public Observable<PyInviwoObserver> {
 public:
     PyInviwo();
     virtual ~PyInviwo();
@@ -66,29 +67,29 @@ public:
     * @param PyMethodDef * module static array of registered classes in a module
     */
     void addModulePath(const std::string& path);
-    PyObject* getMainDictionary(){ return mainDict_; }
-    PyObject* getModulesDictionary(){ return modulesDict_; }
+    PyObject* getMainDictionary() { return mainDict_; }
+    PyObject* getModulesDictionary() { return modulesDict_; }
 
-    std::vector<PyModule*> getAllPythonModules(){ return registeredModules_; }
+    std::vector<PyModule*> getAllPythonModules() { return registeredModules_; }
 
+    void importModule(const std::string& moduleName);
 
-    void importModule(const std::string &moduleName);
 protected:
     void initPythonCInterface();
     void initDefaultInterfaces();
     void initOutputRedirector();
+
 private:
     bool isInit_;
     PyModule* inviwoPyModule_;
     PyModule* inviwoInternalPyModule_;
 
-    PyObject *mainDict_;
-    PyObject *modulesDict_;
+    PyObject* mainDict_;
+    PyObject* modulesDict_;
 
     std::vector<PyModule*> registeredModules_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PYINVIWO_H
-
+#endif  // IVW_PYINVIWO_H

@@ -30,9 +30,10 @@
 #include <modules/python3/pythonincluder.h>
 
 #include <modules/python3/pythoninterface/pymethod.h>
+#include <modules/python3/pythoninterface/pymodule.h>
+#include <inviwo/core/util/assertion.h>
+#include <sstream>
 
-
-#include "pymodule.h"
 
 namespace inviwo {
 
