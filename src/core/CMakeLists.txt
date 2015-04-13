@@ -285,6 +285,7 @@ set(SOURCE_FILES
     datastructures/light/baselightsource.cpp
     datastructures/representationconverter.cpp
     datastructures/representationconverterfactory.cpp
+    datastructures/spatialdata.cpp
     datastructures/transferfunction.cpp
     datastructures/transferfunctiondatapoint.cpp
     datastructures/volume/marchingtetrahedron.cpp
