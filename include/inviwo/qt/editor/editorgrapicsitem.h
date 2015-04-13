@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-IVW_QTEDITOR_API enum InviwoUserGraphicsItemType {
+enum IVW_QTEDITOR_API InviwoUserGraphicsItemType {
     ProcessorGraphicsType = Number_of_InviwoWidgetGraphicsItemTypes,
     CurveGraphicsType,
     ConnectionDragGraphicsType,
