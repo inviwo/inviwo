@@ -62,22 +62,6 @@ public:
     virtual ~Port();
 
     /**
-     * Initializes the port. Here we can for instance initialize data to be stored inside the port.
-     * As this method is pure virtual, it needs to be implemented within derived classes that should
-     * be instantiated.
-     * @see deinitialize()
-     */
-    virtual void initialize() = 0;
-
-    /**
-     * Deinitializes the port by reverting the initialization performed in initialize().
-     * As this method is pure virtual, it needs to be implemented within derived classes that should
-     * be instantiated.
-     * @see initialize()
-     */
-    virtual void deinitialize() = 0;
-
-    /**
      * Returns the RGB color code used to colorize all ports of this type. This color code is for
      * instance used in the NetworkEditor. To distinguish different port types through their color,
      * this method should be overloaded in derived classes.

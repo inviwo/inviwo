@@ -46,32 +46,30 @@ void BaseOrdinalMinMaxTextPropertyWidgetQt::generateWidget() {
     label_ = new EditableLabelQt(this, property_->getDisplayName());
     hLayout->addWidget(label_);
     
-    QHBoxLayout* hSliderLayout = new QHBoxLayout();
-    QWidget* sliderWidget = new QWidget();
-    sliderWidget->setLayout(hSliderLayout);
-    hSliderLayout->setContentsMargins(0,0,0,0);
+    QHBoxLayout* textLayout = new QHBoxLayout();
+    QWidget* textWidget = new QWidget();
+    textWidget->setLayout(textLayout);
+    textLayout->setContentsMargins(0,0,0,0);
     
     QSizePolicy sp = QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-    sp.setHorizontalStretch(1);
+    sp.setHorizontalStretch(3);
 
     QLabel* minLabel = new QLabel("Min:");
-    hSliderLayout->addWidget(minLabel);
-    hSliderLayout->addWidget(min_);
-    min_->setFixedWidth(50);
+    textLayout->addWidget(minLabel);
+    textLayout->addWidget(min_);
     min_->setSizePolicy(sp);
 
     QLabel* maxLabel = new QLabel("Max:");
-    hSliderLayout->addWidget(maxLabel);
-    hSliderLayout->addWidget(max_);
-    max_->setFixedWidth(50);
+    textLayout->addWidget(maxLabel);
+    textLayout->addWidget(max_);
     max_->setSizePolicy(sp);
     
-    hLayout->addWidget(sliderWidget);
+    hLayout->addWidget(textWidget);
     setLayout(hLayout);
     
-    QSizePolicy slidersPol = sliderWidget->sizePolicy();
-    slidersPol.setHorizontalStretch(3);
-    sliderWidget->setSizePolicy(slidersPol);
+    QSizePolicy textsp = textWidget->sizePolicy();
+    textsp.setHorizontalStretch(3);
+    textWidget->setSizePolicy(textsp);
     
     connect(label_, SIGNAL(textChanged()),this, SLOT(setPropertyDisplayName()));
     connect(min_, SIGNAL(valueChanged()), this, SLOT(updateFromMin()));

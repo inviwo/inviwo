@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/volume/volumecl.h>
@@ -33,20 +33,22 @@
 namespace inviwo {
 
 VolumeCL::VolumeCL(const DataFormatBase* format, const void* data)
-    : VolumeRepresentation(uvec3(128, 128, 128), format)
+    : VolumeRepresentation(format)
+    , dimensions_(uvec3(128, 128, 128))
     , imageFormat_(dataFormatToCLImageFormat(format->getId())) {
     initialize(data);
 }
 
 VolumeCL::VolumeCL(uvec3 dimensions, const DataFormatBase* format, const void* data)
-    : VolumeRepresentation(dimensions, format)
+    : VolumeRepresentation(format)
+    , dimensions_(dimensions)
     , imageFormat_(dataFormatToCLImageFormat(format->getId())) {
     initialize(data);
 }
 
 VolumeCL::VolumeCL(const VolumeCL& rhs)
-    : VolumeRepresentation(rhs), imageFormat_(rhs.imageFormat_) {
-    initialize(NULL);
+    : VolumeRepresentation(rhs), dimensions_(rhs.dimensions_), imageFormat_(rhs.imageFormat_) {
+    initialize(nullptr);
     OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::svec3(0),
                                                   glm::svec3(0), glm::svec3(dimensions_));
 }
@@ -57,7 +59,7 @@ void VolumeCL::initialize(const void* voxels) {
     clImage_ = new cl::Image3D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
                                dimensions_.x, dimensions_.y, dimensions_.z);
 
-    if (voxels != NULL) {
+    if (voxels) {
         OpenCL::getPtr()->getQueue().enqueueWriteImage(*clImage_, true, glm::svec3(0),
                                                        glm::svec3(dimensions_), 0, 0,
                                                        const_cast<void*>(voxels));
@@ -66,13 +68,17 @@ void VolumeCL::initialize(const void* voxels) {
     VolumeCL::initialize();
 }
 
-VolumeCL* VolumeCL::clone() const {
-    return new VolumeCL(*this);
+const uvec3& VolumeCL::getDimensions() const { return dimensions_; }
+
+void VolumeCL::setDimensions(uvec3 dimensions) {
+    dimensions_ = dimensions;
+    deinitialize();
+    initialize();
 }
 
-void VolumeCL::deinitialize() {
-    delete clImage_;
-}
+VolumeCL* VolumeCL::clone() const { return new VolumeCL(*this); }
+
+void VolumeCL::deinitialize() { delete clImage_; }
 
 void VolumeCL::upload(const void* data) {
     OpenCL::getPtr()->getQueue().enqueueWriteImage(
@@ -84,7 +90,15 @@ void VolumeCL::download(void* data) const {
                                                   glm::svec3(dimensions_), 0, 0, data);
 }
 
-} // namespace
+cl::ImageFormat VolumeCL::getFormat() const { return imageFormat_; }
+
+cl::Image3D& VolumeCL::getEditable() { return *static_cast<cl::Image3D*>(clImage_); }
+
+const cl::Image3D& VolumeCL::get() const {
+    return *const_cast<const cl::Image3D*>(static_cast<const cl::Image3D*>(clImage_));
+}
+
+}  // namespace
 
 namespace cl {
 
@@ -93,5 +107,4 @@ cl_int Kernel::setArg(cl_uint index, const inviwo::VolumeCL& value) {
     return setArg(index, value.get());
 }
 
-
-} // namespace cl
+}  // namespace cl

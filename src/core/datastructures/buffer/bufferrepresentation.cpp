@@ -24,25 +24,23 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 
 namespace inviwo {
 
-BufferRepresentation::BufferRepresentation(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage)
-    : DataRepresentation(format), size_(size), type_(type), usage_(usage) {
-}
+BufferRepresentation::BufferRepresentation(const DataFormatBase* format,
+                                           BufferType type, BufferUsage usage)
+    : DataRepresentation(format), type_(type), usage_(usage) {}
 
 BufferRepresentation::BufferRepresentation(const BufferRepresentation& rhs)
-    : DataRepresentation(rhs), size_(rhs.size_), type_(rhs.type_), usage_(rhs.usage_) {
-}
+    : DataRepresentation(rhs), type_(rhs.type_), usage_(rhs.usage_) {}
 
 BufferRepresentation& BufferRepresentation::operator=(const BufferRepresentation& that) {
     if (this != &that) {
         DataRepresentation::operator=(that);
-        size_ = that.size_;
         type_ = that.type_;
         usage_ = that.usage_;
     }
@@ -50,5 +48,4 @@ BufferRepresentation& BufferRepresentation::operator=(const BufferRepresentation
     return *this;
 }
 
-
-} //namespace
+}  // namespace

@@ -3,4 +3,4 @@ import inviwo
 import inviwoqt 
 
 inviwo.info() 
-inviwo.infoqt() 
+inviwoqt.info() 

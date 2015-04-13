@@ -107,7 +107,7 @@ public:
     uvec2 getDimensions() const;
 
     /**
-     * Set the dimensionsof this port without propagating the size
+     * Set the dimensions of this port without propagating the size
      * through the network. Will resize the image contained within the port.
      *
      * @param newDimension Dimension to be set
@@ -131,7 +131,7 @@ public:
 
 protected:
     Image* getResizedImageData(uvec2 dimensions);
-    void setLargestImageData(ResizeEvent* resizeEvent);
+    void setLargestImageData();
     /**
      * \brief Propagates resize event to this processor's inports within the same dependency set
      *(group)

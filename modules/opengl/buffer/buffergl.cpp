@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/buffer/buffergl.h>
@@ -33,85 +33,62 @@ namespace inviwo {
 
 BufferGL::BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage,
                    BufferObject* data)
-    : BufferRepresentation(size, format, type, usage), buffer_(data), bufferArray_(nullptr) {
-    initialize();
+    : BufferRepresentation(format, type, usage)
+    , buffer_(data ? data : new BufferObject(size * format->getSize(), format, type, usage))
+    , bufferArray_(nullptr)
+    , size_(size) {
     LGL_ERROR_SUPPRESS;
 }
 
-BufferGL::BufferGL(const BufferGL& rhs): BufferRepresentation(rhs) {
-    bufferArray_ = nullptr;
-    buffer_ = rhs.getBufferObject()->clone();
-}
+BufferGL::BufferGL(const BufferGL& rhs)
+    : BufferRepresentation(rhs)
+    , buffer_(rhs.buffer_->clone())
+    , bufferArray_(nullptr)
+    , size_(rhs.size_) {}
 
 BufferGL::~BufferGL() {
-    deinitialize();
+    if (buffer_ && buffer_->decreaseRefCount() <= 0) {
+        delete buffer_;
+    }
+    delete bufferArray_;
 }
 
-BufferGL* BufferGL::clone() const {
-    return new BufferGL(*this);
-}
+BufferGL* BufferGL::clone() const { return new BufferGL(*this); }
 
-void BufferGL::setSize( size_t size ) {
-    if (size == getSize()) {
+size_t BufferGL::getSize() const { return size_; }
+
+void BufferGL::setSize(size_t size) {
+    if (size == size_) {
         return;
     }
-    initialize(nullptr, size * getSizeOfElement());
-    BufferRepresentation::setSize(size);
+    size_ = size;
+    buffer_->setSize(size * getSizeOfElement());
 }
 
-GLuint BufferGL::getId() const {
-    return buffer_->getId();
-}
+GLuint BufferGL::getId() const { return buffer_->getId(); }
 
-GLenum BufferGL::getFormatType() const {
-    return buffer_->getFormatType();
-}
+GLenum BufferGL::getFormatType() const { return buffer_->getFormatType(); }
 
-void BufferGL::bind() const {
-    buffer_->bind();
-}
-
-void BufferGL::initialize(const void* data, GLsizeiptr sizeInBytes) {
-    BufferRepresentation::setSize(sizeInBytes/getSizeOfElement());
-    buffer_->initialize(data, sizeInBytes);
-}
+void BufferGL::bind() const { buffer_->bind(); }
 
 void BufferGL::upload(const void* data, GLsizeiptr sizeInBytes) {
     buffer_->upload(data, sizeInBytes);
 }
 
-void BufferGL::initialize() {
-    if (!buffer_) {
-        buffer_ = new BufferObject(getSize(), getDataFormat(), getBufferType(), getBufferUsage());
-    }
-}
-
-void BufferGL::deinitialize() {
-    if (buffer_ && buffer_->decreaseRefCount() <= 0) {
-        delete buffer_;
-    }
-    delete bufferArray_;
-    bufferArray_ = nullptr;
-}
-
-void BufferGL::download(void* data) const {
-    buffer_->download(data);
-}
+void BufferGL::download(void* data) const { buffer_->download(data); }
 
 void BufferGL::enable() const {
-    if(!bufferArray_){
+    if (!bufferArray_) {
         bufferArray_ = new BufferObjectArray();
         bufferArray_->bind();
         bufferArray_->attachBufferObject(buffer_, 0);
-    }
-    else
+    } else {
         bufferArray_->bind();
+    }
 }
 
 void BufferGL::disable() const {
-    if(bufferArray_)
-        bufferArray_->unbind();
+    if (bufferArray_) bufferArray_->unbind();
 }
 
-} // namespace
-
+}  // namespace

@@ -60,10 +60,10 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API ImageCompositeProcessorGL : public CompositeProcessorGL { 
 public:
-	InviwoProcessorInfo();
+    InviwoProcessorInfo();
     ImageCompositeProcessorGL();
     virtual ~ImageCompositeProcessorGL(){}
-	 
+     
 protected:
     virtual void process();
 

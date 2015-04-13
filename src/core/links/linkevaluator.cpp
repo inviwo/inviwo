@@ -41,7 +41,7 @@ void LinkEvaluator::evaluate(Property* src, Property* dst) {
     ivwAssert(dst != nullptr, "destination property expected");
 
     //TODO create a link evaluator for each link and cache the converter so that it does need to be looked up for each frame
-	PropertyConverter* convetrter = PropertyConverterManager::getPtr()->getConverter(src,dst);
+    PropertyConverter* convetrter = PropertyConverterManager::getPtr()->getConverter(src,dst);
     if (convetrter)
         convetrter->convert(src, dst);
 }

@@ -31,41 +31,25 @@
 #define IVW_VOLUMERAMOPERATIONEXECUTER_H
 
 #include <inviwo/core/datastructures/dataoperation.h>
-#include <inviwo/core/datastructures/volume/volumeramhistogram.h>
-#include <inviwo/core/datastructures/volume/volumeramslice.h>
 #include <inviwo/core/datastructures/volume/volumeramsubset.h>
 #include <inviwo/core/datastructures/volume/volumeramsubsample.h>
 
 namespace inviwo {
 
 //TODO: Make operation factory
-template<typename T, size_t B>
+template<typename T>
 void executeOperationOnVolumeRAMPrecision(DataOperation* dop) {
-    VolumeRAMNormalizedHistogram* volNormalizedHistogram = dynamic_cast<VolumeRAMNormalizedHistogram*>(dop);
-
-    if (volNormalizedHistogram) {
-        volNormalizedHistogram->evaluate<T, B>();
-        return;
-    }
-
     VolumeRAMSubSet* volSubSetDop = dynamic_cast<VolumeRAMSubSet*>(dop);
 
     if (volSubSetDop) {
-        volSubSetDop->evaluate<T, B>();
+        volSubSetDop->evaluate<T>();
         return;
     }
 
     VolumeRAMSubSample* volSubSampleDop = dynamic_cast<VolumeRAMSubSample*>(dop);
 
     if (volSubSampleDop) {
-        volSubSampleDop->evaluate<T, B>();
-        return;
-    }
-
-    VolumeRAMSlice* volSliceDop = dynamic_cast<VolumeRAMSlice*>(dop);
-
-    if (volSliceDop) {
-        volSliceDop->evaluate<T, B>();
+        volSubSampleDop->evaluate<T>();
         return;
     }
 };

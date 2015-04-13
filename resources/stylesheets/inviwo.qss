@@ -401,6 +401,11 @@ QSlider::handle:vertical:hover, QSlider::handle:horizontal:hover {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
                                 stop:0 #ccc, stop:1 #eee);
 }
+
+QSlider::handle:vertical[outOfBounds="true"], QSlider::handle:horizontal[outOfBounds="true"] { 
+	border: 1px solid rgb(255, 0, 0);
+}
+
 QSlider::groove:vertical, QSlider::add-page:vertical, QSlider::sub-page:vertical {
     border-radius: 4px;
     width: 10px;

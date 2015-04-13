@@ -30,8 +30,6 @@
 #ifndef IVW_PYTHONINCLUDER_H
 #define IVW_PYTHONINCLUDER_H
 
-#include <modules/python3/python3moduledefine.h>
-
 #pragma warning(push)
 #pragma warning(disable: 4273)
 #ifdef _DEBUG

@@ -43,7 +43,7 @@ VolumeSubset::VolumeSubset() : Processor()
       , inport_("volume.inport")
       , outport_("volume.outport")
       , enabled_("enabled", "Enable Operation", true)
-      , adjustBasisAndOffset_("adjustBasisAndOffset", "Adjust Basis and Offset", false)
+      , adjustBasisAndOffset_("adjustBasisAndOffset", "Adjust Basis and Offset", true)
       , rangeX_("rangeX", "X Slices", 0, 256, 0, 256, 1, 1)
       , rangeY_("rangeY", "Y Slices", 0, 256, 0, 256, 1, 1)
       , rangeZ_("rangeZ", "Z Slices", 0, 256, 0, 256, 1, 1)
@@ -56,31 +56,26 @@ VolumeSubset::VolumeSubset() : Processor()
     addProperty(rangeY_);
     addProperty(rangeZ_);
     dims_ = uvec3(1,1,1);
+
+    // Since the ranges depend on the input volume dimensions, we make sure to always
+    // serialize them so we can do a proper renormalization when we load new data.
+    rangeX_.setSerializationMode(ALL);
+    rangeY_.setSerializationMode(ALL);
+    rangeZ_.setSerializationMode(ALL);
+
+    inport_.onChange(this, &VolumeSubset::onVolumeChange);
 }
 
 VolumeSubset::~VolumeSubset() {}
 
-void VolumeSubset::initialize() {
-    Processor::initialize();
-}
-
-void VolumeSubset::deinitialize() {
-    Processor::deinitialize();
-}
-
 void VolumeSubset::process() {
-    if (dims_ != inport_.getData()->getDimensions()) {
-        dims_ = inport_.getData()->getDimensions();
-        rangeX_.setRangeMax(static_cast<int>(dims_.x));
-        rangeY_.setRangeMax(static_cast<int>(dims_.y));
-        rangeZ_.setRangeMax(static_cast<int>(dims_.z));
-    }
-
     if (enabled_.get()) {
         const VolumeRAM* vol = inport_.getData()->getRepresentation<VolumeRAM>();
-        uvec3 dim = uvec3(static_cast<unsigned int>(rangeX_.get().y), static_cast<unsigned int>(rangeY_.get().y),
+        uvec3 dim = uvec3(static_cast<unsigned int>(rangeX_.get().y),
+                          static_cast<unsigned int>(rangeY_.get().y),
                           static_cast<unsigned int>(rangeZ_.get().y));
-        uvec3 offset = uvec3(static_cast<unsigned int>(rangeX_.get().x), static_cast<unsigned int>(rangeY_.get().x),
+        uvec3 offset = uvec3(static_cast<unsigned int>(rangeX_.get().x),
+                             static_cast<unsigned int>(rangeY_.get().x),
                              static_cast<unsigned int>(rangeZ_.get().x));
         dim -= offset;
 
@@ -93,45 +88,48 @@ void VolumeSubset::process() {
             volume->dataMap_ = inport_.getData()->dataMap_;
 
             if (adjustBasisAndOffset_.get()) {
-                vec3 volOffset = inport_.getData()->getOffset() + vec3(offset) / vec3(dims_);
+                vec3 volOffset = inport_.getData()->getOffset();
                 mat3 volBasis = inport_.getData()->getBasis();
 
-                vec3 aVec(volBasis[0]);
-                vec3 bVec(volBasis[1]);
-                vec3 cVec(volBasis[2]);
+                const vec3 newOffset =
+                    volOffset + volBasis * (static_cast<vec3>(offset) / static_cast<vec3>(dims_));
 
-                float alpha = glm::angle(bVec, cVec);
-                float beta = glm::angle(cVec, aVec);
-                float gamma = glm::angle(aVec, bVec);
+                mat3 newBasis = volBasis;
+                vec3 dimRatio = (static_cast<vec3>(dim) / static_cast<vec3>(dims_));
+                newBasis[0] *= dimRatio[0];
+                newBasis[1] *= dimRatio[1];
+                newBasis[2] *= dimRatio[2];
 
-                vec3 volLength(glm::length(aVec), glm::length(bVec), glm::length(cVec));
-                // adjust volLength
-                volLength *= vec3(dim) / vec3(dims_);
+                volume->setBasis(newBasis);
+                volume->setOffset(newOffset);
 
-                float a = volLength.x;
-                float b = volLength.y;
-                float c = volLength.z;
-                
-                float v = std::sqrt(1 - std::cos(alpha)*std::cos(alpha) - std::cos(beta)*std::cos(beta) - std::cos(gamma)*std::cos(gamma)
-                    - 2 * std::cos(alpha)*std::cos(beta)*std::cos(gamma));
-                mat4 newBasisAndOffset(
-                    a, b*std::cos(gamma), c*std::cos(beta), volOffset[0],
-                    0.0f, b*std::sin(gamma), c*(std::cos(alpha) - std::cos(beta)*std::cos(gamma)) / std::sin(gamma), volOffset[1],
-                    0.0f, 0.0f, c*v / std::sin(gamma), volOffset[2],
-                    0.0f, 0.0f, 0.0f, 1.0f
-                    );
-                volume->setModelMatrix(glm::transpose(newBasisAndOffset));
-            }
-            else {
+            } else {
                 // copy basis and offset
                 volume->setModelMatrix(inport_.getData()->getModelMatrix());
             }
             outport_.setData(volume);
         }
-    }
-    else {
+    } else {
         outport_.setConstData(inport_.getData());
     }
+}
+
+void VolumeSubset::onVolumeChange() {
+    disableInvalidation();
+
+    // Update to the new dimensions.
+    dims_ = inport_.getData()->getDimensions();
+
+    rangeX_.setRangeNormalized(ivec2(0, dims_.x));
+    rangeY_.setRangeNormalized(ivec2(0, dims_.y));
+    rangeZ_.setRangeNormalized(ivec2(0, dims_.z));
+
+    // set the new dimensions to default if we were to press reset
+    rangeX_.setCurrentStateAsDefault();
+    rangeY_.setCurrentStateAsDefault();
+    rangeZ_.setCurrentStateAsDefault();
+
+    enableInvalidation();
 }
 
 } // inviwo namespace

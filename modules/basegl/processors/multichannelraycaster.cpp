@@ -58,13 +58,13 @@ MultichannelRaycaster::MultichannelRaycaster()
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting", &camera_) {
     transferFunctions_.addProperty(new TransferFunctionProperty(
-        "transferFunction1", "Channel 1", TransferFunction(), &volumePort_));
+        "transferFunction1", "Channel 1", TransferFunction(), &volumePort_), false);
     transferFunctions_.addProperty(new TransferFunctionProperty(
-        "transferFunction2", "Channel 2", TransferFunction(), &volumePort_));
+        "transferFunction2", "Channel 2", TransferFunction(), &volumePort_), false);
     transferFunctions_.addProperty(new TransferFunctionProperty(
-        "transferFunction3", "Channel 3", TransferFunction(), &volumePort_));
+        "transferFunction3", "Channel 3", TransferFunction(), &volumePort_), false);
     transferFunctions_.addProperty(new TransferFunctionProperty(
-        "transferFunction4", "Channel 4", TransferFunction(), &volumePort_));
+        "transferFunction4", "Channel 4", TransferFunction(), &volumePort_), false);
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");

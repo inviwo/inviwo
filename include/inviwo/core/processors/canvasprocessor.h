@@ -63,7 +63,11 @@ public:
 
     void saveImageLayer();
     void saveImageLayer(std::string filePath);
-    std::vector<unsigned char>* getImageLayerAsCodedBuffer(const std::string& type);
+    std::vector<unsigned char>* getLayerAsCodedBuffer(LayerType layerType, const std::string& type, size_t idx = 0);
+    std::vector<unsigned char>* getColorLayerAsCodedBuffer(const std::string& type, size_t idx = 0);
+    std::vector<unsigned char>* getDepthLayerAsCodedBuffer(const std::string& type);
+    std::vector<unsigned char>* getPickingLayerAsCodedBuffer(const std::string& type);
+    std::vector<unsigned char>* getVisibleLayerAsCodedBuffer(const std::string& type);
 
     void triggerQueuedEvaluation();
     virtual bool isReady() const;

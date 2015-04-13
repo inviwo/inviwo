@@ -170,7 +170,7 @@ PyObject* py_clearResourceManager(PyObject* /*self*/, PyObject* /*args*/) {
         Py_RETURN_NONE;
     }
     std::string msg =
-        std::string("clearResourceManager() failed . ResourceManager::getPtr() return NULL");
+        std::string("clearResourceManager() failed . ResourceManager::getPtr() return nullptr");
     PyErr_SetString(PyExc_TypeError, msg.c_str());
     return nullptr;
 }

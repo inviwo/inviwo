@@ -42,11 +42,6 @@ BufferInport::BufferInport(std::string identifier, InvalidationLevel invalidatio
 BufferInport::~BufferInport() {
 }
 
-void BufferInport::initialize() {}
-
-void BufferInport::deinitialize() {}
-
-
 uvec3 BufferInport::getColorCode() const {
     return BufferInport::colorCode;
 }
@@ -63,10 +58,6 @@ BufferOutport::BufferOutport(std::string identifier, size_t size, const DataForm
 }
 
 BufferOutport::~BufferOutport() {}
-
-void BufferOutport::initialize() {}
-
-void BufferOutport::deinitialize() {}
 
 uvec3 BufferOutport::getColorCode() const {
     return BufferInport::colorCode;

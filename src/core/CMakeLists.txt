@@ -11,13 +11,12 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwocoredefine.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwomodule.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/moduleaction.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h    
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/axisalignedboundingbox.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/baselightsource.h 
+    ${IVW_INCLUDE_DIR}/inviwo/core/common/modulecallback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/buffer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/buffer/bufferrepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/camera.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/coordinatetransformer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/data.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datagroup.h
@@ -26,7 +25,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/dataoperation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datarepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datasequence.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datatypeclassification.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/diskrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/basicmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/edge.h
@@ -55,7 +53,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerrepresentation.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h 
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/directionallight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/pointlight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/spotlight.h
@@ -74,11 +73,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramhistogram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramoperationexecuter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramprecision.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramslice.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramsubsample.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramsubset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumerepresentation.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumetypeclassification.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/action.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/cameratrackball.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/event.h
@@ -177,6 +174,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/invalidationlevel.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/minmaxproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/planeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/property.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconvertermanager.h
@@ -251,10 +249,10 @@ set(SOURCE_FILES
     common/inviwocore.cpp
     common/inviwomodule.cpp
     common/moduleaction.cpp
-    datastructures/baselightsource.cpp 
     datastructures/buffer/buffer.cpp
     datastructures/buffer/bufferram.cpp
     datastructures/buffer/bufferrepresentation.cpp
+    datastructures/camera.cpp
     datastructures/data.cpp
     datastructures/datagroup.cpp
     datastructures/datagrouprepresentation.cpp
@@ -284,8 +282,10 @@ set(SOURCE_FILES
     datastructures/image/layerram.cpp
     datastructures/image/layerramconverter.cpp
     datastructures/image/layerrepresentation.cpp
+    datastructures/light/baselightsource.cpp
     datastructures/representationconverter.cpp
     datastructures/representationconverterfactory.cpp
+    datastructures/spatialdata.cpp
     datastructures/transferfunction.cpp
     datastructures/transferfunctiondatapoint.cpp
     datastructures/volume/marchingtetrahedron.cpp
@@ -294,7 +294,6 @@ set(SOURCE_FILES
     datastructures/volume/volumeram.cpp
     datastructures/volume/volumeramconverter.cpp
     datastructures/volume/volumerepresentation.cpp
-    datastructures/volume/volumetypeclassification.cpp
     interaction/action.cpp
     interaction/cameratrackball.cpp
     interaction/events/event.cpp
@@ -378,7 +377,8 @@ set(SOURCE_FILES
     properties/directoryproperty.cpp    
     properties/eventproperty.cpp
     properties/fileproperty.cpp
-    properties/imageeditorproperty.cpp   
+    properties/imageeditorproperty.cpp
+    properties/planeproperty.cpp
     properties/property.cpp
     properties/propertyconverter.cpp
     properties/propertyconvertermanager.cpp

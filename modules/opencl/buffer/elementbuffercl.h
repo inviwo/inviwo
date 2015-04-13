@@ -53,10 +53,10 @@ public:
      * @param size
      * @param type
      * @param format
-     * @param data Data to transfer. Does not transfer data if data is NULL.
+     * @param data Data to transfer. Does not transfer data if data is nullptr.
      * @param readWriteFlag Determine how memory will be used by Kernels: CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
      */
-    ElementBufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, const void* data = NULL,
+    ElementBufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, const void* data = nullptr,
              cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     ElementBufferCL(const ElementBufferCL& rhs);
     virtual ~ElementBufferCL();

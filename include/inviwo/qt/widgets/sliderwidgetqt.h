@@ -98,7 +98,7 @@ private:
 template <typename T>
 class OrdinalBaseWidget {
 public:
-	virtual ~OrdinalBaseWidget() {}
+    virtual ~OrdinalBaseWidget() {}
 
     virtual T getValue() = 0;
     virtual void setValue(T value) = 0;
@@ -113,10 +113,10 @@ template <typename T>
 class TemplateSliderWidget : public BaseSliderWidgetQt, public OrdinalBaseWidget<T> {
 public:
     TemplateSliderWidget() : BaseSliderWidgetQt()
-		, value_(0)
-    	, minValue_(0)
-		, maxValue_(0)
-		, increment_(0) {}
+        , value_(0)
+        , minValue_(0)
+        , maxValue_(0)
+        , increment_(0) {}
     virtual ~TemplateSliderWidget() {}
 
     virtual T getValue();
@@ -261,8 +261,12 @@ int inviwo::TemplateSliderWidget<T>::transformIncrementToSpinnerDecimals() {
     double inc = reprToSpinner(increment_);
     std::ostringstream buff;
     buff << inc;
-    std::string str2 = buff.str().substr(buff.str().find(".") + 1, buff.str().length());
-    return (static_cast<int>(str2.length()));
+    const std::string str(buff.str());
+    auto periodPosition = str.find(".");
+    if (periodPosition == std::string::npos)
+        return 0;
+    else
+        return str.length() - periodPosition - 1;
 }
 
 template <typename T>

@@ -40,22 +40,25 @@ class IVW_MODULE_OPENGL_API ShaderObject {
 
 public:
     ShaderObject(GLenum shaderType, std::string fileName, bool compileShader=true);
+    ShaderObject(const ShaderObject& rhs);
+    ShaderObject& operator=(const ShaderObject& that);
+    
     ~ShaderObject();
 
     GLuint getID() { return id_; }
     std::string getFileName() { return fileName_; }
     std::string getAbsoluteFileName() { return absoluteFileName_; }
-    std::vector<std::string> getIncludeFileNames() { return includeFileNames_; }
+    std::vector<std::string>& getIncludeFileNames() { return includeFileNames_; }
     GLenum getShaderType() { return shaderType_; }
 
-    bool loadSource(std::string fileName);
+    void loadSource(std::string fileName);
     void preprocess();
     void upload();
-    bool compile();
+    void compile();
     std::string getShaderInfoLog();
 
-    bool build();
-    bool rebuild();
+    void build();
+    void rebuild();
 
     void addShaderDefine(std::string name, std::string value="");
     void removeShaderDefine(std::string name);
@@ -69,9 +72,11 @@ public:
 
     void addOutDeclaration(std::string name);
 
+    std::string print(bool showSource = false) const;
+
 private:
 
-    bool initialize(bool compileShader);
+    void initialize(bool compileShader);
     void deinitialize();
 
     std::string embeddDefines(std::string source);

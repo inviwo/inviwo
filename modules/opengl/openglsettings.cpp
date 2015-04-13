@@ -51,9 +51,9 @@ OpenGLSettings::OpenGLSettings(OpenGLCapabilities* openglInfo)
 
     contextMode_ = OpenGLCapabilities::getPreferredProfile();
 
-    addProperty(&shaderReloadingProperty_);
-    addProperty(&btnOpenGLInfo_);
-    addProperty(&selectedOpenGLProfile_);
+    addProperty(shaderReloadingProperty_);
+    addProperty(btnOpenGLInfo_);
+    addProperty(selectedOpenGLProfile_);
     selectedOpenGLProfile_.onChange(this, &OpenGLSettings::updateProfile);
 
     if (openGlCap_) {

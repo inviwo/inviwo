@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "volumegl.h"
@@ -35,35 +35,34 @@
 namespace inviwo {
 
 VolumeGL::VolumeGL(uvec3 dimensions, const DataFormatBase* format, bool initializeTexture)
-    : VolumeRepresentation(dimensions, format), volumeTexture_(nullptr) {
+    : VolumeRepresentation(format), dimensions_(dimensions), volumeTexture_(nullptr) {
     GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
     volumeTexture_ = new Texture3D(dimensions_, glFormat, GL_LINEAR);
-    if(initializeTexture){
+    if (initializeTexture) {
         volumeTexture_->initialize(nullptr);
     }
 }
 
 VolumeGL::VolumeGL(Texture3D* tex, const DataFormatBase* format)
-    : VolumeRepresentation(tex->getDimensions(), format), volumeTexture_(tex) {
-}
+    : VolumeRepresentation(format), dimensions_(tex->getDimensions()), volumeTexture_(tex) {}
 
-VolumeGL::VolumeGL(const VolumeGL& rhs) : VolumeRepresentation(rhs) {
-    volumeTexture_ = rhs.volumeTexture_->clone();
-}
+VolumeGL::VolumeGL(const VolumeGL& rhs)
+    : VolumeRepresentation(rhs)
+    , dimensions_(rhs.dimensions_)
+    , volumeTexture_(rhs.volumeTexture_->clone()) {}
 
 VolumeGL& VolumeGL::operator=(const VolumeGL& rhs) {
     if (this != &rhs) {
         VolumeRepresentation::operator=(rhs);
+        dimensions_ = rhs.dimensions_;
         volumeTexture_ = rhs.volumeTexture_->clone();
     }
-
     return *this;
 }
 
-VolumeGL::~VolumeGL() { 
+VolumeGL::~VolumeGL() {
     if (volumeTexture_ && volumeTexture_->decreaseRefCount() <= 0) {
         delete volumeTexture_;
-        volumeTexture_ = nullptr;
     }
 }
 
@@ -76,6 +75,8 @@ void VolumeGL::bindTexture(GLenum texUnit) const {
 }
 
 void VolumeGL::unbindTexture() const { volumeTexture_->unbind(); }
+
+const uvec3& VolumeGL::getDimensions() const { return dimensions_; }
 
 void VolumeGL::setDimensions(uvec3 dimensions) {
     dimensions_ = dimensions;

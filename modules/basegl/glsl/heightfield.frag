@@ -57,7 +57,7 @@ void main() {
     else if (terrainShadingMode_ == 2) { // heightfield texture
         fragColor = vec4(texture(inportHeightfield_, texCoord_.xy).rrr, 1.0);
     }
-/*	else {
+/*    else {
         if (height_ < 0.1) 
             fragColor = vec4(0.2, 0.2, 0.9, 1.0);
         else if (height_ < 0.2)

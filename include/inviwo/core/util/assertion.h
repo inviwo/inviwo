@@ -33,12 +33,16 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <iostream>
 
-IVW_CORE_API void ivwAssertion(const char* fileName, const char* functionName, long lineNumber, std::string message);
+IVW_CORE_API void ivwAssertion(const char* fileName, const char* functionName, long lineNumber,
+                               std::string message);
 
 #if defined(IVW_DEBUG)
-#define ivwAssert(condition, message) \
-    {   std::ostringstream stream__; stream__ << message; \
-        if (!(bool(condition))) ivwAssertion(__FILE__, __FUNCTION__, __LINE__, (stream__.str()));}
+#define ivwAssert(condition, message)                                                             \
+    {                                                                                             \
+        std::ostringstream stream__;                                                              \
+        stream__ << message;                                                                      \
+        if (!(bool(condition))) ivwAssertion(__FILE__, __FUNCTION__, __LINE__, (stream__.str())); \
+    }
 #else
 #define ivwAssert(condition, message)
 #endif

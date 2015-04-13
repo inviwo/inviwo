@@ -44,10 +44,10 @@ float WardIsotropicDistribution(const float3 wo, const float3 wi, const float3 w
 }
 
 float WardBRDF(const float3 wo, const float3 wi, const float f0, const float alphaX, const float alphaY) {
-	float3 wh = wo+wi;
-	//if (wh.z <= 0.f) return 0.f;
-	//float tmp = wi.z*wo.z;
-	//if (tmp <= 0.f) return 0.f;
+    float3 wh = wo+wi;
+    //if (wh.z <= 0.f) return 0.f;
+    //float tmp = wi.z*wo.z;
+    //if (tmp <= 0.f) return 0.f;
     Microfacet distribution;
     wh = normalize(wh);
     float NdotWh = absCosTheta(wh);
@@ -55,32 +55,32 @@ float WardBRDF(const float3 wo, const float3 wi, const float f0, const float alp
     distribution.G = CookTorranceGeometry(wo, wi, wh);
     distribution.F = fresnelSchlick(NdotWh, f0); 
     return microfacetBRDF(wo, wi, wh, &distribution);
-	
-	//return native_exp(-(pown(wh.x/alphaX, 2)+pown(wh.y/alphaY, 2))/(wh.z*wh.z)) / (4.f*M_PI*alphaX*alphaY*native_sqrt(wi.z*wo.z));
+    
+    //return native_exp(-(pown(wh.x/alphaX, 2)+pown(wh.y/alphaY, 2))/(wh.z*wh.z)) / (4.f*M_PI*alphaX*alphaY*native_sqrt(wi.z*wo.z));
     //return exp(-(pown(wh.x/alphaX, 2)+pown(wh.y/alphaY, 2))/(wh.z*wh.z)) / (4.f*M_PI*alphaX*alphaY*native_sqrt(wi.z*wo.z));
 }
 
 float3 WardSample(const float3 wo, const float3 N, const float alphaX, const float alphaY, const float2 rnd) {
     float2 invAlpha2 = (float2)(1.f/(alphaX*alphaX), 1.f/(alphaY*alphaY));
-	float phi = atan(alphaY*tan(2.f*M_PI*rnd.y)/alphaX);
-	float cosphi = native_cos(phi);
-	float sinphi = native_sqrt(1.f-cosphi*cosphi);
-	float theta = atan( native_sqrt(-log(rnd.x)/(cosphi*cosphi*invAlpha2.x + sinphi*sinphi*invAlpha2.y)));
-	float3 wh;
-	wh.z = native_cos(theta);
-	float cosTheta2 = wh.z*wh.z;
-	float sintheta = native_sqrt(1.f-cosTheta2);
-	float tanTheta2 = (1.f-cosTheta2)/cosTheta2;
-	wh.x = cosphi*sintheta;
-	wh.y = sinphi*sintheta;
-	if (!sameHemisphereN(wo, wh, N)) wh = -wh;
-	return -wo + 2.f*dot(wo, wh)*wh;
+    float phi = atan(alphaY*tan(2.f*M_PI*rnd.y)/alphaX);
+    float cosphi = native_cos(phi);
+    float sinphi = native_sqrt(1.f-cosphi*cosphi);
+    float theta = atan( native_sqrt(-log(rnd.x)/(cosphi*cosphi*invAlpha2.x + sinphi*sinphi*invAlpha2.y)));
+    float3 wh;
+    wh.z = native_cos(theta);
+    float cosTheta2 = wh.z*wh.z;
+    float sintheta = native_sqrt(1.f-cosTheta2);
+    float tanTheta2 = (1.f-cosTheta2)/cosTheta2;
+    wh.x = cosphi*sintheta;
+    wh.y = sinphi*sintheta;
+    if (!sameHemisphereN(wo, wh, N)) wh = -wh;
+    return -wo + 2.f*dot(wo, wh)*wh;
 }
 
 
 float WardPdf(const float3 wo, const float3 wi, const float3 N, const float alphaX, const float alphaY) {
     if ( !sameHemisphere(wo, wi) ) return 0.f; 
-	    
+        
     float2 invAlpha2 = (float2)(1.f/(alphaX*alphaX), 1.f/(alphaY*alphaY));
     float3 wh = normalize(wi+wo);
     float cosTheta2 = wh.z*wh.z;

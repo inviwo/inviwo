@@ -80,8 +80,8 @@ private:
     struct VecProp : public BaseProp {
         VecProp(std::string classname, std::string displayName)
         : BaseProp(classname, displayName)
-        , prop_(NULL)
-        , delta_(NULL) {
+        , prop_(nullptr)
+        , delta_(nullptr) {
 
             prop_ = dynamic_cast<OrdinalProperty<T>*>(
                 PropertyFactory::getPtr()->getProperty(classname, classname, displayName));
@@ -159,8 +159,8 @@ private:
     struct PrimProp : public BaseProp {
         PrimProp(std::string classname, std::string displayName)
         : BaseProp(classname, displayName)
-        , prop_(NULL)
-        , delta_(NULL) {
+        , prop_(nullptr)
+        , delta_(nullptr) {
 
             prop_ = dynamic_cast<OrdinalProperty<T>*>(
                 PropertyFactory::getPtr()->getProperty(classname, classname, displayName));

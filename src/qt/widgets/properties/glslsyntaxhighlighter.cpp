@@ -30,6 +30,8 @@
 #include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <QTextDocument>
 #include <QTextBlock>
@@ -227,30 +229,42 @@ private:
 
 };
 
-
-
+static inline QColor ivec4toQtColor(const ivec4 &i){
+    return QColor(i.r, i.g, i.b, i.a);
+}
 
 template<>
 void SyntaxHighligther::loadConfig<GLSL>() {
-    QColor textColor;
-    QColor bgColor;
-    textColor.setNamedColor("#aaaaaa");
-    bgColor.setNamedColor("#4d4d4d");
+    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    
+    QColor textColor = ivec4toQtColor(sysSettings->glslTextColor_.get());
+    QColor bgColor = ivec4toQtColor(sysSettings->glslBackgroundColor_.get());
+
     defaultFormat_.setBackground(bgColor);
     defaultFormat_.setForeground(textColor);
     QTextCharFormat typeformat,qualifiersformat,builtins_varformat,glsl_builtins_funcformat,commentformat,preprocessorformat;
     typeformat.setBackground(bgColor);
-    typeformat.setForeground(QColor("#569CD6"));
+    typeformat.setForeground(ivec4toQtColor(sysSettings->glslTypeColor_.get()));
     qualifiersformat.setBackground(bgColor);
-    qualifiersformat.setForeground(QColor("#7DB4DF"));
+    qualifiersformat.setForeground(ivec4toQtColor(sysSettings->glslQualifierColor_.get()));
     builtins_varformat.setBackground(bgColor);
-    builtins_varformat.setForeground(QColor("#1FF07F"));
+    builtins_varformat.setForeground(ivec4toQtColor(sysSettings->glslBuiltinsColor_.get()));
     glsl_builtins_funcformat.setBackground(bgColor);
-    glsl_builtins_funcformat.setForeground(QColor("#FF8000"));
+    glsl_builtins_funcformat.setForeground(ivec4toQtColor(sysSettings->glslGlslBuiltinsColor_.get()));
     commentformat.setBackground(bgColor);
-    commentformat.setForeground(QColor("#608B4E"));
+    commentformat.setForeground(ivec4toQtColor(sysSettings->glslCommentColor_.get()));
     preprocessorformat.setBackground(bgColor);
-    preprocessorformat.setForeground(QColor("#9B9B9B"));
+    preprocessorformat.setForeground(ivec4toQtColor(sysSettings->glslPreProcessorColor_.get()));
+
+    if (formaters_.empty())
+        sysSettings->glslSyntax_.onChange(this, &SyntaxHighligther::loadConfig<GLSL>);
+    else{
+        while (!formaters_.empty()) {
+            delete formaters_.back();
+            formaters_.pop_back();
+        }
+    }
+
     formaters_.push_back(new GLSLKeywordFormater(typeformat,glsl_types));
     formaters_.push_back(new GLSLKeywordFormater(qualifiersformat,glsl_qualifiers));
     formaters_.push_back(new GLSLKeywordFormater(builtins_varformat,glsl_builtins_var));

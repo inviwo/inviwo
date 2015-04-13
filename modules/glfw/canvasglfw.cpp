@@ -33,14 +33,14 @@
 
 namespace inviwo {
 
-GLFWwindow* CanvasGLFW::sharedContext_ = NULL;
+GLFWwindow* CanvasGLFW::sharedContext_ = nullptr;
 int CanvasGLFW::glfwWindowCount_ = 0;
 bool CanvasGLFW::alwaysOnTop_ = true;
 
 CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     : CanvasGL(dimensions)
     , windowTitle_(windowTitle)
-    , glWindow_(NULL)
+    , glWindow_(nullptr)
     , mouseButton_(MouseEvent::MOUSE_BUTTON_NONE)
     , mouseState_(MouseEvent::MOUSE_STATE_NONE)
     , mouseModifiers_(InteractionEvent::MODIFIER_NONE)
@@ -55,7 +55,7 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
 }
 
 CanvasGLFW::~CanvasGLFW() {
-    glWindow_ = NULL;
+    glWindow_ = nullptr;
 }
 
 void CanvasGLFW::initialize() {
@@ -75,7 +75,7 @@ void CanvasGLFW::initializeGL() {
 #endif
     }
 
-    glWindow_ = glfwCreateWindow(getScreenDimensions().x, getScreenDimensions().y, windowTitle_.c_str(), NULL, sharedContext_);
+    glWindow_ = glfwCreateWindow(getScreenDimensions().x, getScreenDimensions().y, windowTitle_.c_str(), nullptr, sharedContext_);
 
     if (!glWindow_) {
         glfwTerminate();
@@ -161,7 +161,7 @@ CanvasGLFW* CanvasGLFW::getSharedContext(){
     if(sharedContext_)
         return getCanvasGLFW(sharedContext_);
     else
-        return NULL;
+        return nullptr;
 }
 
 void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){

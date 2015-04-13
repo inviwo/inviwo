@@ -50,17 +50,17 @@ public:
 template<typename T>
 class IVW_QTWIDGETS_API QStringHelper{
 public:
-	static QString toLocaleString(QLocale locale,T value){
-		return locale.toString(value);
-	}
+    static QString toLocaleString(QLocale locale,T value){
+        return locale.toString(value);
+    }
 };
 
 template<>
 class IVW_QTWIDGETS_API QStringHelper<long int>{
 public:
-	static QString toLocaleString(QLocale locale,long int value){
-		return locale.toString(static_cast<long long>(value));
-	}
+    static QString toLocaleString(QLocale locale,long int value){
+        return locale.toString(static_cast<long long>(value));
+    }
 };
 
 

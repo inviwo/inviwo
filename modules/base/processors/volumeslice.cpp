@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include "volumeslice.h"
-#include <inviwo/core/datastructures/volume/volumeramslice.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
@@ -46,24 +45,27 @@ VolumeSlice::VolumeSlice()
     , inport_("volume.inport")
     , outport_("image.outport")
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
-    , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8) 
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
-    VALID)
-    , mouseShiftSlice_("mouseShiftSlice", "Mouse Slice Shift",
-    new MouseEvent(MouseEvent::MOUSE_BUTTON_NONE, InteractionEvent::MODIFIER_NONE,
-    MouseEvent::MOUSE_STATE_WHEEL),
-    new Action(this, &VolumeSlice::eventShiftSlice))
-    , stepSliceUp_("stepSliceUp", "Key Slice Up", 
-    new KeyboardEvent('W', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &VolumeSlice::eventStepSliceUp))
-    , stepSliceDown_("stepSliceDown", "Key Slice Down", 
-    new KeyboardEvent('S', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &VolumeSlice::eventStepSliceDown))
+    , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
+    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, VALID)
+    , mouseShiftSlice_(
+          "mouseShiftSlice", "Mouse Slice Shift",
+          new MouseEvent(MouseEvent::MOUSE_BUTTON_NONE, InteractionEvent::MODIFIER_NONE,
+                         MouseEvent::MOUSE_STATE_WHEEL, MouseEvent::MOUSE_WHEEL_ANY),
+          new Action(this, &VolumeSlice::eventShiftSlice))
+    , stepSliceUp_(
+          "stepSliceUp", "Key Slice Up",
+          new KeyboardEvent('W', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &VolumeSlice::eventStepSliceUp))
+    , stepSliceDown_(
+          "stepSliceDown", "Key Slice Down",
+          new KeyboardEvent('S', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &VolumeSlice::eventStepSliceDown))
     , gestureShiftSlice_("gestureShiftSlice", "Gesture Slice Shift",
-    new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
-    new Action(this, &VolumeSlice::eventGestureShiftSlice)) {
+                         new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
+                         new Action(this, &VolumeSlice::eventGestureShiftSlice)) {
     addPort(inport_);
     addPort(outport_);
+    outport_.setHandleResizeEvents(false);
     sliceAlongAxis_.addOption("x", "X axis", CoordinateEnums::X);
     sliceAlongAxis_.addOption("y", "Y axis", CoordinateEnums::Y);
     sliceAlongAxis_.addOption("z", "Z axis", CoordinateEnums::Z);
@@ -88,10 +90,6 @@ VolumeSlice::VolumeSlice()
 
 VolumeSlice::~VolumeSlice() {}
 
-void VolumeSlice::initialize() { Processor::initialize(); }
-
-void VolumeSlice::deinitialize() { Processor::deinitialize(); }
-
 void VolumeSlice::invokeInteractionEvent(Event* event) {
     if (!handleInteractionEvents_) return;
     Processor::invokeInteractionEvent(event);
@@ -104,7 +102,7 @@ void VolumeSlice::shiftSlice(int shift) {
 }
 
 void VolumeSlice::process() {
-    const VolumeRAM* vol = inport_.getData()->getRepresentation<VolumeRAM>();
+    const Volume* vol = inport_.getData();
 
     const ivec3 dims(vol->getDimensions());
 
@@ -113,6 +111,7 @@ void VolumeSlice::process() {
             if (dims.x != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.x);
                 sliceNumber_.set(dims.x / 2);
+                sliceNumber_.setCurrentStateAsDefault();
             }
             break;
         case CoordinateEnums::Y:
@@ -129,38 +128,30 @@ void VolumeSlice::process() {
             break;
     }
 
-    LayerRAM* sliceImage = VolumeRAMSlice::apply(
-        vol, static_cast<CoordinateEnums::CartesianCoordinateAxis>(sliceAlongAxis_.get()),
-        static_cast<unsigned int>(sliceNumber_.get() - 1));
+    VolumeSliceDispatcher disp;
+    Image* newimg = vol->getDataFormat()->dispatch(
+        disp, vol, static_cast<CoordinateEnums::CartesianCoordinateAxis>(sliceAlongAxis_.get()),
+        static_cast<size_t>(sliceNumber_.get() - 1), outport_.getData());
 
-    Image* outImage =
-        new Image(sliceImage->getDimensions(), sliceImage->getDataFormat());
-    outImage->getColorLayer()->addRepresentation(sliceImage);
-
-    outport_.setData(outImage);
+    outport_.setData(newimg);
 }
 
-void VolumeSlice::eventShiftSlice(Event* event){
+void VolumeSlice::eventShiftSlice(Event* event) {
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
     int steps = mouseEvent->wheelSteps();
     shiftSlice(steps);
 }
 
-void VolumeSlice::eventStepSliceUp(Event*){
-    shiftSlice(1);
-}
+void VolumeSlice::eventStepSliceUp(Event*) { shiftSlice(1); }
 
-void VolumeSlice::eventStepSliceDown(Event*){
-    shiftSlice(-1);
-}
+void VolumeSlice::eventStepSliceDown(Event*) { shiftSlice(-1); }
 
-void VolumeSlice::eventGestureShiftSlice(Event* event){
+void VolumeSlice::eventGestureShiftSlice(Event* event) {
     GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
     if (gestureEvent->deltaPos().y < 0)
         shiftSlice(1);
     else if (gestureEvent->deltaPos().y > 0)
         shiftSlice(-1);
 }
-
 
 }  // inviwo namespace

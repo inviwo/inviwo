@@ -46,7 +46,7 @@ public:
     virtual ~VolumeRAM2CLConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeRAM*>(source) != NULL;
+        return dynamic_cast<const VolumeRAM*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
@@ -69,7 +69,7 @@ public:
     virtual ~VolumeCL2RAMConverter() {};
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeCL*>(source) != NULL;
+        return dynamic_cast<const VolumeCL*>(source) != nullptr;
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);

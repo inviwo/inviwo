@@ -189,7 +189,7 @@ void ConsoleWidget::logNetwork(LogLevel level, LogAudience audience,
 
 
 void ConsoleWidget::keyPressEvent(QKeyEvent* keyEvent) {
-	if (keyEvent->key() == Qt::Key_E && keyEvent->modifiers() == Qt::ControlModifier){
+    if (keyEvent->key() == Qt::Key_E && keyEvent->modifiers() == Qt::ControlModifier){
         textField_->clear();
         errorsLabel_->setText("0");
         warningsLabel_->setText("0");

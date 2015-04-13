@@ -53,12 +53,14 @@ public:
     void bindTexture(GLenum texUnit) const;
     void unbindTexture() const;
 
-    void setDimensions(uvec3 dimensions);
+    virtual const uvec3& getDimensions() const override;
+    virtual void setDimensions(uvec3 dimensions) override;
 
     Texture3D* getTexture();
     const Texture3D* getTexture() const;
 
 private:
+    uvec3 dimensions_;
     Texture3D* volumeTexture_;
 };
 

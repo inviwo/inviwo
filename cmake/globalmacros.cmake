@@ -295,14 +295,12 @@ macro(generate_external_module_header)
         list(LENGTH IVW_EXTERNAL_MODULES modlen)
         if(NOT ${modlen} EQUAL 0)
             set(paths "const std::string externalModulePaths_[] = {:")
-            set(first "0")
-            set(count 0)
+            set(first "1")
+            list(APPEND paths "\"${IVW_ROOT_DIR}/modules\":")
+            set(count 1)
             foreach(dir ${IVW_EXTERNAL_MODULES})
                 if(IS_DIRECTORY ${dir})
-                    if(NOT ${first} EQUAL "0")
-                        list(APPEND paths ", :")
-                    endif()
-                    set(first "1")
+                    list(APPEND paths ", :")
                     list(APPEND paths "\"${dir}\":")
                     MATH(EXPR count "${count}+1")
                 else()
@@ -672,28 +670,29 @@ endmacro()
 macro(ivw_define_standard_definitions project_name)
     #--------------------------------------------------------------------
     # Set the compiler flags
-   string(TOUPPER ${project_name} u_project_name)
-    if(WIN32)
-      add_definitions(-D${u_project_name}_EXPORTS)
-	  add_definitions(-DGLM_EXPORTS)
-          
-    #--------------------------------------------------------------------          
-    # Large memory support
-    if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
-        if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-          set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE ")
-        endif()
-        if(NOT CMAKE_SHARED_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-          set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
-        endif()
-        if(NOT CMAKE_MODULE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-          set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-        endif()
-    endif()
+    string(TOUPPER ${project_name} u_project_name)
+    add_definitions(-D${u_project_name}_EXPORTS)
+    add_definitions(-DGLM_EXPORTS)
+
+    if(WIN32)          
+	    #--------------------------------------------------------------------          
+	    # Large memory support
+	    if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
+	        if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
+	          set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE ")
+	        endif()
+	        if(NOT CMAKE_SHARED_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
+	          set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
+	        endif()
+	        if(NOT CMAKE_MODULE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
+	          set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+	        endif()
+	    endif()
 
     else(WIN32)
-      add_definitions(-DHAVE_CONFIG_H)
+    	add_definitions(-DHAVE_CONFIG_H)
     endif(WIN32)
+    
     add_definitions(-DUNICODE)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
     
@@ -704,7 +703,7 @@ endmacro()
 # Define QT defintions
 macro(ivw_define_qt_definitions)
 	add_definitions(-DQT_CORE_LIB
-                      -DQT_GUI_LIB)
+                    -DQT_GUI_LIB)
 endmacro()
 
 #--------------------------------------------------------------------

@@ -40,7 +40,7 @@ uvec3 ImageInport::colorCode = uvec3(90, 127, 183);
 ImageInport::ImageInport(std::string identifier, bool outportDeterminesSize,
                          InvalidationLevel invalidationLevel)
     : DataInport<Image>(identifier, invalidationLevel)
-    , dimensions_(uvec2(32, 32))
+    , dimensions_(uvec2(8, 8))
     , resizeScale_(vec2(1.f, 1.f))
     , outportDeterminesSize_(outportDeterminesSize) {}
 
@@ -50,19 +50,30 @@ void ImageInport::connectTo(Outport* outport) {
     connectedOutport_ = outport;
     outport->connectTo(this);
 
-    if (getProcessor()->isEndProcessor()) {
-        // Resize outport if no outports exist (Canvas)
-        ResizeEvent resizeEvent(getDimensions());
-        ImageOutport* connectedImageOutport = dynamic_cast<ImageOutport*>(outport);
+    ImageOutport* connectedImageOutport = dynamic_cast<ImageOutport*>(outport);
+    uvec2 dim;
+    if (isOutportDeterminingSize() && isConnected()) {
+        dim = connectedImageOutport->getDimensions();
+    }
+    else {
+        dim = dimensions_;
+    }
+
+    if (getProcessor()->isEndProcessor() || isOutportDeterminingSize()) {
+        ResizeEvent resizeEvent(dim);
+        if (connectedImageOutport->isHandlingResizeEvents())
+            resizeEvent.setSize(dimensions_);
+        else
+            dimensions_ = dim;
         connectedImageOutport->changeDataDimensions(&resizeEvent);
-    } else if (!isOutportDeterminingSize()) {
+    } else {
         // Resize outport if any outport within the same port dependency set is connected
         std::vector<Port*> portSet =
             getProcessor()->getPortsByDependencySet(getProcessor()->getPortDependencySet(this));
         for (size_t j = 0; j < portSet.size(); j++) {
             ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(portSet[j]);
             if (imageOutport && imageOutport->isConnected()) {
-                ResizeEvent resizeEvent(getDimensions());
+                ResizeEvent resizeEvent(dim);
                 ImageOutport* connectedImageOutport = dynamic_cast<ImageOutport*>(outport);
                 connectedImageOutport->changeDataDimensions(&resizeEvent);
             }
@@ -77,7 +88,7 @@ void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {
     // set dimensionsbased on port groups
     std::vector<std::string> portDependencySets = getProcessor()->getPortDependencySets();
     std::vector<Port*> portSet;
-    uvec2 dimMax(0);
+    uvec2 dimMax(resizeEvent->size());
     bool hasImageOutport = false;
 
     for (size_t i = 0; i < portDependencySets.size(); i++) {
@@ -109,14 +120,12 @@ void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {
     
     resizeEvent->setSize(dimensions_);
     propagateResizeToPredecessor(resizeEvent);
-    
-    invalidate(INVALID_OUTPUT);
 }
 
 void ImageInport::propagateResizeToPredecessor(ResizeEvent* resizeEvent) {
     ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(getConnectedOutport());
-    if (imageOutport && !isOutportDeterminingSize()) {
-        imageOutport->changeDataDimensions(resizeEvent);
+    if (imageOutport) {
+       imageOutport->changeDataDimensions(resizeEvent);
     }
 }
 
@@ -125,24 +134,19 @@ void ImageInport::setResizeScale(vec2 scaling) { resizeScale_ = scaling; }
 vec2 ImageInport::getResizeScale() { return resizeScale_; }
 
 uvec2 ImageInport::getDimensions() const {
-    if (isOutportDeterminingSize() && isConnected()) {
-        ImageOutport* outport = dynamic_cast<ImageOutport*>(getConnectedOutport());
-        return outport->getDimensions();
-    } else {
-        return dimensions_;
-    }
+    return dimensions_;
 }
 
 const Image* ImageInport::getData() const {
     if (isConnected()) {
         ImageOutport* outport = dynamic_cast<ImageOutport*>(getConnectedOutport());
-        if (isOutportDeterminingSize()) {
+        if (isOutportDeterminingSize() || dimensions_ == uvec2(8, 8)) {
             return outport->getConstData();
         } else {
             return const_cast<const Image*>(outport->getResizedImageData(dimensions_));
         }
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 
@@ -175,7 +179,7 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            InvalidationLevel invalidationLevel,
                            bool handleResizeEvents)
     : DataOutport<Image>(identifier, invalidationLevel)
-    , dimensions_(uvec2(32, 32))
+    , dimensions_(uvec2(8, 8))
     , mapDataInvalid_(true)
     , handleResizeEvents_(handleResizeEvents) {
     
@@ -185,11 +189,14 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
 
 ImageOutport::~ImageOutport() {
     for (auto& elem : imageDataMap_) {
-        if (isDataOwner() && elem.second != data_) {
+        if (elem.second != data_) {
             delete elem.second;
         }
     }
-    data_ = NULL;  // As data_ is referenced in imageDataMap_.
+    if (isDataOwner()){
+        delete data_;
+        data_ = nullptr;
+    }
 }
 
 bool ImageOutport::propagateResizeEventToPredecessor(ResizeEvent* resizeEvent) {
@@ -272,6 +279,11 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     // and checking registeredDimensions.
     // Allocates space holder, sets largest data, cleans up un-used data
     uvec2 requiredDimensions = resizeEvent->size();
+
+    // Avoid unwanted propagation
+    if (requiredDimensions == uvec2(8, 8))
+        return;
+
     uvec2 previousDimensions = resizeEvent->previousSize();
     std::string prevDimensionString = glm::to_string(previousDimensions);
     std::string reqDimensionString = glm::to_string(requiredDimensions);
@@ -300,11 +312,13 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
 
     for (auto& inport : inports) {
         ImageInport* imageInport = dynamic_cast<ImageInport*>(inport);
-        if (imageInport)
+        if (imageInport && !imageInport->isOutportDeterminingSize())
             registeredDimensions.push_back(imageInport->getDimensions());
     }
 
-    if (registeredDimensions.empty()) return;
+    if (registeredDimensions.empty()){
+        registeredDimensions.push_back(resizeEvent->size());
+    }
 
     std::vector<std::string> registeredDimensionsStrings;
 
@@ -319,7 +333,7 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     //      Resize map data to required dimensions
     //  Else
     //      Clone the current data, resize it and make new entry in map
-    Image* resultImage = 0;
+    Image* resultImage = nullptr;
 
     if (imageDataMap_.find(reqDimensionString) != imageDataMap_.end())
         resultImage = imageDataMap_[reqDimensionString];
@@ -371,29 +385,34 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
         for (auto& invalidImageDataString : invalidImageDataStrings) {
             Image* invalidImage = imageDataMap_[invalidImageDataString];
 
-            //Make sure you don't delete data thats not owned
-            if (isDataOwner() && invalidImage != data_) {
+            //Make sure you don't delete data_
+            if (invalidImage != data_) {
+                if (invalidImage == resultImage)
+                    resultImage = nullptr;
                 delete invalidImage;
+                imageDataMap_.erase(invalidImageDataString);
             }
-
-            imageDataMap_.erase(invalidImageDataString);
         }
     }
 
     uvec2 outDim;
 
     //Don't continue is outport determine output size
-    if (isHandlingResizeEvents()) {
+    if (isHandlingResizeEvents() || dimensions_ == uvec2(8, 8)) {
         outDim = getDimensions();
         // Set largest data
-        setLargestImageData(resizeEvent);
-    } else {
-        // Send update to listeners
-        if (data_->getDimensions() != dimensions_) broadcast(resizeEvent);
-
-        dimensions_ = data_->getDimensions();
+        setLargestImageData();
+    } else {       
         outDim = dimensions_;
     }
+
+    //Send update to listeners
+    if (data_->getDimensions() != dimensions_){
+        dimensions_ = data_->getDimensions();
+        broadcast(resizeEvent);
+    }
+    else
+        dimensions_ = data_->getDimensions();
 
     // Make sure that all ImageOutports in the same group (dependency set) that has the same size.
     std::vector<Port*> portSet = getProcessor()->getPortsByDependencySet(getProcessor()->getPortDependencySet(this));
@@ -441,23 +460,25 @@ Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
         }
 
         // Resize all map data once
+        bool delete88 = false;
         for (auto& elem : imageDataMap_) {
             if (elem.second != data_) {
                 uvec2 mapDataDimensions = elem.second->getDimensions();
-                data_->resizeRepresentations(elem.second, mapDataDimensions);
+                if (elem.second != data_ && mapDataDimensions == uvec2(8, 8)){
+                    delete elem.second;
+                    delete88 = true;
+                }
+                else
+                    data_->resizeRepresentations(elem.second, mapDataDimensions);
             }
         }
+        if (delete88) imageDataMap_.erase(glm::to_string(uvec2(8, 8)));
 
         mapDataInvalid_ = false;
     }
-
-    for (auto& elem : imageDataMap_) {
-        if (elem.second->getDimensions() == requiredDimensions) {
-            return elem.second;
-        } else if (elem.first == glm::to_string(requiredDimensions)) {
-            elem.second->resize(requiredDimensions);
-            return elem.second;
-        }
+    auto it = imageDataMap_.find(glm::to_string(requiredDimensions));
+    if (it != imageDataMap_.end()){
+        return it->second;
     }
 
     Image* resultImage = data_->clone();
@@ -468,9 +489,9 @@ Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
     return resultImage;
 }
 
-void ImageOutport::setLargestImageData(ResizeEvent* resizeEvent) {
+void ImageOutport::setLargestImageData() {
     uvec2 maxDimensions(0);
-    Image* largestImage = 0;
+    Image* largestImage = nullptr;
 
     for (auto& elem : imageDataMap_) {
         uvec2 mapDataDimensions = elem.second->getDimensions();
@@ -486,11 +507,6 @@ void ImageOutport::setLargestImageData(ResizeEvent* resizeEvent) {
         data_ = largestImage;
         mapDataInvalid_ = true;
     }
-
-    // Send update to listeners
-    if (data_->getDimensions() != dimensions_) broadcast(resizeEvent);
-
-    dimensions_ = data_->getDimensions();
 }
 
 uvec3 ImageOutport::getColorCode() const { return ImageInport::colorCode; }

@@ -31,6 +31,7 @@
 #define IVW_BUFFERRAMPRECISION_H
 
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -39,132 +40,68 @@ class BufferRAMPrecision : public BufferRAM {
 public:
     BufferRAMPrecision(size_t size = 0, const DataFormatBase* format = DataFormatBase::get(),
                        BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
-    BufferRAMPrecision(T* data, size_t size, const DataFormatBase* format = DataFormatBase::get(),
-                       BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
     BufferRAMPrecision(const BufferRAMPrecision<T>& rhs);
     BufferRAMPrecision<T>& operator=(const BufferRAMPrecision<T>& that);
     virtual ~BufferRAMPrecision();
-    virtual void initialize();
-    virtual void initialize(void*);
-    virtual void deinitialize();
-    virtual BufferRAMPrecision<T>* clone() const;
+    virtual BufferRAMPrecision<T>* clone() const override;
 
-    virtual void* getData() { return (data_->empty() ? NULL : &data_->front()); }
-    virtual const void* getData() const { return (data_->empty() ? NULL : &data_->front()); }
+    virtual void setSize(size_t size) override;
+    virtual size_t getSize() const override;
 
-    const std::vector<T>* getDataContainer() const { return data_; }
+    virtual void* getData() override;
+    virtual const void* getData() const override;
+    const std::vector<T>* getDataContainer() const;
 
-    void setValueFromSingleDouble(size_t index, double val);
-    void setValueFromVec2Double(size_t index, dvec2 val);
-    void setValueFromVec3Double(size_t index, dvec3 val);
-    void setValueFromVec4Double(size_t index, dvec4 val);
+    virtual void setValueFromSingleDouble(size_t index, double val) override;
+    virtual void setValueFromVec2Double(size_t index, dvec2 val) override;
+    virtual void setValueFromVec3Double(size_t index, dvec3 val) override;
+    virtual void setValueFromVec4Double(size_t index, dvec4 val) override;
 
-    double getValueAsSingleDouble(size_t index) const;
-    dvec2 getValueAsVec2Double(size_t index) const;
-    dvec3 getValueAsVec3Double(size_t index) const;
-    dvec4 getValueAsVec4Double(size_t index) const;
+    virtual double getValueAsSingleDouble(size_t index) const override;
+    virtual dvec2 getValueAsVec2Double(size_t index) const override;
+    virtual dvec3 getValueAsVec3Double(size_t index) const override;
+    virtual dvec4 getValueAsVec4Double(size_t index) const override;
 
     void add(const T& item);
     void append(const std::vector<T>* data);
 
     void set(size_t index, const T& item);
     T get(size_t index) const;
-
-    size_t size() const;
+    T& get(size_t index);
 
     void clear();
 
 private:
-    static const DataFormatBase* defaultformat() { return GenericDataFormat(T)::get(); }
-    std::vector<T>* data_;
+    static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
+    std::unique_ptr<std::vector<T>> data_;
 };
 
-template <typename T, size_t B>
-class BufferRAMCustomPrecision : public BufferRAMPrecision<T> {
-public:
-    BufferRAMCustomPrecision(size_t size = 0,
-                             const DataFormatBase* format = DataFormat<T, B>::get(),
-                             BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC)
-        : BufferRAMPrecision<T>(size, format, type, usage) {}
-    virtual ~BufferRAMCustomPrecision(){};
 
-    BufferRAMCustomPrecision(const BufferRAMCustomPrecision<T, B>& rhs);
-
-    BufferRAMCustomPrecision<T, B>& operator=(const BufferRAMCustomPrecision<T, B>& rhs) {
-        if (this != &rhs) {
-            BufferRAMPrecision<T>::operator=(rhs);
-        }
-        return *this;
-    };
-
-    virtual BufferRAMCustomPrecision<T, B>* clone() const;
-
-private:
-    static const DataFormatBase* defaultformat() { return DataFormat<T, B>::get(); }
-};
-
-template<typename T, size_t B>
-inviwo::BufferRAMCustomPrecision<T, B>::BufferRAMCustomPrecision(const BufferRAMCustomPrecision<T, B>& rhs)
-    : BufferRAMPrecision<T>(rhs) {}
-
-template<typename T, size_t B>
-BufferRAMCustomPrecision<T, B>* inviwo::BufferRAMCustomPrecision<T, B>::clone() const {
-    return new BufferRAMCustomPrecision<T,B>(*this);
-}
+template <typename T>
+BufferRAMPrecision<T>::BufferRAMPrecision(size_t size, const DataFormatBase* format,
+                                          BufferType type, BufferUsage usage)
+    : BufferRAM(format, type, usage), data_(new std::vector<T>(size)) {}
 
 template<typename T>
-BufferRAMPrecision<T>::BufferRAMPrecision(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage) :
-    BufferRAM(size, format, type, usage)
-    ,data_(0) {
-    initialize();
-}
-
-template<typename T>
-BufferRAMPrecision<T>::BufferRAMPrecision(const BufferRAMPrecision<T>& rhs) :
-    BufferRAM(rhs)
-    ,data_(0) {
-    initialize();
+BufferRAMPrecision<T>::BufferRAMPrecision(const BufferRAMPrecision<T>& rhs)
+    : BufferRAM(rhs)
+    , data_(new std::vector<T>(rhs.data_->size())) {
     *data_ = *(rhs.data_);
 }
 
 template<typename T>
 BufferRAMPrecision<T>& inviwo::BufferRAMPrecision<T>::operator=(const BufferRAMPrecision<T>& that) {
     if (this != &that) {
-        size_ = that.getSize();
-        initialize();
-        memcpy(data_, that.getData(), size_*sizeof(T));
+        BufferRAM::operator=(that);
+        auto data = util::make_unique<std::vector<T>>(that.data_->size());
+        *data = *(that.data_);
+        std::swap(data, data_);
     }
     return *this;
 }
 
 template <typename T>
-inviwo::BufferRAMPrecision<T>::~BufferRAMPrecision() {
-    deinitialize();
-}
-
-template<typename T>
-void BufferRAMPrecision<T>::initialize() {
-    initialize(NULL);
-}
-
-template<typename T>
-void BufferRAMPrecision<T>::initialize(void* data) {
-    if (data_!=0)
-        delete data_;
-
-    if (data == NULL)
-        data_ = new std::vector<T>(size_);
-    else
-        data_ = new std::vector<T>(static_cast<T*>(data), static_cast<T*>(data)+size_);
-}
-
-template<typename T>
-void inviwo::BufferRAMPrecision<T>::deinitialize() {
-    if (data_) {
-        delete data_;
-        data_ = NULL;
-    }
-}
+inviwo::BufferRAMPrecision<T>::~BufferRAMPrecision() {}
 
 template<typename T>
 BufferRAMPrecision<T>* BufferRAMPrecision<T>::clone() const {
@@ -172,75 +109,77 @@ BufferRAMPrecision<T>* BufferRAMPrecision<T>::clone() const {
 }
 
 template<typename T>
+void BufferRAMPrecision<T>::setSize(size_t size) {
+    return data_->resize(size);
+}
+
+template<typename T>
+size_t BufferRAMPrecision<T>::getSize() const {
+    return data_->size();
+}
+
+template<typename T>
+void* BufferRAMPrecision<T>::getData() {
+    return (data_->empty() ? nullptr : data_->data());
+}
+
+template<typename T>
+const void* BufferRAMPrecision<T>::getData() const {
+    return (data_->empty() ? nullptr : data_->data());
+}
+
+template<typename T>
+const std::vector<T>* BufferRAMPrecision<T>::getDataContainer() const { return data_.get(); }
+
+
+template<typename T>
 void BufferRAMPrecision<T>::setValueFromSingleDouble(size_t index, double val) {
-    T* data = static_cast<T*>(&data_->front());
-    getDataFormat()->doubleToValue(val, &(data[index]));
+    (*data_)[index] = util::glm_convert<T>(val);
 }
 
 template<typename T>
 void BufferRAMPrecision<T>::setValueFromVec2Double(size_t index, dvec2 val) {
-    T* data = static_cast<T*>(&data_->front());
-    getDataFormat()->vec2DoubleToValue(val, &(data[index]));
+    (*data_)[index] = util::glm_convert<T>(val);
 }
 
 template<typename T>
 void BufferRAMPrecision<T>::setValueFromVec3Double(size_t index, dvec3 val) {
-    T* data = static_cast<T*>(&data_->front());
-    getDataFormat()->vec3DoubleToValue(val, &(data[index]));
+    (*data_)[index] = util::glm_convert<T>(val);
 }
 
 template<typename T>
 void BufferRAMPrecision<T>::setValueFromVec4Double(size_t index, dvec4 val) {
-    T* data = static_cast<T*>(&data_->front());
-    getDataFormat()->vec4DoubleToValue(val, &(data[index]));
+    (*data_)[index] = util::glm_convert<T>(val);
 }
 
 template<typename T>
 double BufferRAMPrecision<T>::getValueAsSingleDouble(size_t index) const {
-    double result;
-    T* data = static_cast<T*>(&data_->front());
-    T val = data[index];
-    result = getDataFormat()->valueToNormalizedDouble(&val);
-    return result;
+    return util::glm_convert_normalized<double>((*data_)[index]);
 }
 
 template<typename T>
 dvec2 BufferRAMPrecision<T>::getValueAsVec2Double(size_t index) const {
-    dvec2 result;
-    T* data = static_cast<T*>(&data_->front());
-    T val = data[index];
-    result = getDataFormat()->valueToNormalizedVec2Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec2>((*data_)[index]);
 }
 
 template<typename T>
 dvec3 BufferRAMPrecision<T>::getValueAsVec3Double(size_t index) const {
-    dvec3 result;
-    T* data = static_cast<T*>(&data_->front());
-    T val = data[index];
-    result = getDataFormat()->valueToNormalizedVec3Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec3>((*data_)[index]);
 }
 
 template<typename T>
 dvec4 BufferRAMPrecision<T>::getValueAsVec4Double(size_t index) const {
-    dvec4 result;
-    T* data = static_cast<T*>(&data_->front());
-    T val = data[index];
-    result = getDataFormat()->valueToNormalizedVec4Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec4>((*data_)[index]);
 }
 
 template<typename T>
 void BufferRAMPrecision<T>::add(const T& item) {
     data_->push_back(item);
-    size_ = data_->size();
 }
 
-template<typename T>
+template <typename T>
 void BufferRAMPrecision<T>::append(const std::vector<T>* data) {
-    data_->insert(data_->end(), data->begin(),data->end());
-    size_ = data_->size();
+    data_->insert(data_->end(), data->begin(), data->end());
 }
     
 template<typename T>
@@ -254,28 +193,23 @@ T BufferRAMPrecision<T>::get(size_t index) const {
 }
 
 template<typename T>
-size_t BufferRAMPrecision<T>::size() const {
-    return data_->size();
+T& BufferRAMPrecision<T>::get(size_t index) {
+    return data_->at(index);
 }
 
 template<typename T>
 void BufferRAMPrecision<T>::clear() {
     data_->clear();
-    size_ = 0;
 }
 
-#define DataFormatIdMacro(i) typedef BufferRAMCustomPrecision<Data##i::type, Data##i::bits> BufferRAM_##i;
-#include <inviwo/core/util/formatsdefinefunc.h>
-#undef DataFormatIdMacro
-
-typedef BufferRAM_Vec4FLOAT32 ColorBufferRAM;
-typedef BufferRAM_FLOAT32 CurvatureBufferRAM;
-typedef BufferRAM_UINT32 IndexBufferRAM;
-typedef BufferRAM_Vec2FLOAT32 Position2dBufferRAM;
-typedef BufferRAM_Vec2FLOAT32 TexCoord2dBufferRAM;
-typedef BufferRAM_Vec3FLOAT32 Position3dBufferRAM;
-typedef BufferRAM_Vec3FLOAT32 TexCoord3dBufferRAM;
-typedef BufferRAM_Vec3FLOAT32 NormalBufferRAM;
+typedef BufferRAMPrecision<vec4> ColorBufferRAM;
+typedef BufferRAMPrecision<float> CurvatureBufferRAM;
+typedef BufferRAMPrecision<std::uint32_t> IndexBufferRAM;
+typedef BufferRAMPrecision<vec2> Position2dBufferRAM;
+typedef BufferRAMPrecision<vec2> TexCoord2dBufferRAM;
+typedef BufferRAMPrecision<vec3> Position3dBufferRAM;
+typedef BufferRAMPrecision<vec3> TexCoord3dBufferRAM;
+typedef BufferRAMPrecision<vec3> NormalBufferRAM;
 
 } // namespace
 

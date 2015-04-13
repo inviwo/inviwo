@@ -37,9 +37,9 @@ namespace inviwo {
 template <typename T>
 class LayerRAMPrecision : public LayerRAM {
 public:
-    LayerRAMPrecision(uvec2 dimensions = uvec2(32, 32), LayerType type = COLOR_LAYER,
+    LayerRAMPrecision(uvec2 dimensions = uvec2(8, 8), LayerType type = COLOR_LAYER,
                       const DataFormatBase* format = defaultformat());
-    LayerRAMPrecision(T* data, uvec2 dimensions = uvec2(32, 32), LayerType type = COLOR_LAYER,
+    LayerRAMPrecision(T* data, uvec2 dimensions = uvec2(8, 8), LayerType type = COLOR_LAYER,
                       const DataFormatBase* format = defaultformat());
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
@@ -62,42 +62,9 @@ public:
     dvec4 getValueAsVec4Double(const uvec2& pos) const;
 
 private:
-    static const DataFormatBase* defaultformat() { return GenericDataFormat(T)::get(); }
+    static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
 };
 
-template<typename T, size_t B>
-class LayerRAMCustomPrecision : public LayerRAMPrecision<T> {
-public:
-    LayerRAMCustomPrecision(uvec2 dimensions = uvec2(32,32),
-                            LayerType type = COLOR_LAYER,
-                            const DataFormatBase* format = defaultformat())
-        : LayerRAMPrecision<T>(dimensions, type, format) {
-    }
-    LayerRAMCustomPrecision(T* data, uvec2 dimensions = uvec2(32,32),
-                            LayerType type = COLOR_LAYER,
-                            const DataFormatBase* format = defaultformat())
-        : LayerRAMPrecision<T>(data, dimensions, type, format) {
-    }
-
-    LayerRAMCustomPrecision(const LayerRAMCustomPrecision<T,B>& rhs)
-        : LayerRAMPrecision<T>(rhs) {}
-    LayerRAMCustomPrecision<T,B>& operator=(const LayerRAMCustomPrecision<T,B>& that) {
-        if (this != &that) {
-            LayerRAMPrecision<T>::operator=(that);
-        }
-        return *this;
-    }
-    virtual LayerRAMCustomPrecision<T,B>* clone() const {
-        return new LayerRAMCustomPrecision<T,B>(*this);   
-    }
-
-    virtual ~LayerRAMCustomPrecision() {}
-
-private:
-    static const DataFormatBase* defaultformat() {
-        return  DataFormat<T, B>::get();
-    }
-};
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(uvec2 dimensions, LayerType type,
@@ -116,7 +83,7 @@ template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
     : LayerRAM(rhs) {
     initialize();
-    memcpy(data_, rhs.getData(), dimensions_.x * dimensions_.y * sizeof(T));
+    std::memcpy(data_, rhs.getData(), dimensions_.x * dimensions_.y * sizeof(T));
 }
 
 template <typename T>
@@ -125,7 +92,7 @@ LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>
         LayerRAM::operator=(that);
         delete[] data_;
         initialize();
-        memcpy(data_, that.getData(), dimensions_.x*dimensions_.y*sizeof(T));
+        std::memcpy(data_, that.getData(), dimensions_.x*dimensions_.y*sizeof(T));
     }
 
     return *this;
@@ -143,13 +110,13 @@ LayerRAMPrecision<T>::~LayerRAMPrecision() {
 
 template<typename T>
 void LayerRAMPrecision<T>::initialize() {
-    data_ = new T[dimensions_.x*dimensions_.y];
+    data_ = new T[dimensions_.x*dimensions_.y]();
 }
 
 template<typename T>
 void LayerRAMPrecision<T>::initialize(void* data) {
-    if (data == NULL)
-        data_ = new T[dimensions_.x*dimensions_.y];
+    if (data == nullptr)
+        data_ = new T[dimensions_.x*dimensions_.y]();
     else
         data_ = data;
 }
@@ -158,7 +125,7 @@ template<typename T>
 void LayerRAMPrecision<T>::deinitialize() {
     if (data_) {
         delete[] static_cast<T*>(data_);
-        data_ = NULL;
+        data_ = nullptr;
     }
 }
 
@@ -230,7 +197,7 @@ dvec4 LayerRAMPrecision<T>::getValueAsVec4Double(const uvec2& pos) const {
     return result;
 }
 
-#define DataFormatIdMacro(i) typedef LayerRAMCustomPrecision<Data##i::type, Data##i::bits> LayerRAM_##i;
+#define DataFormatIdMacro(i) typedef LayerRAMPrecision<Data##i::type> LayerRAM_##i;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
 } // namespace

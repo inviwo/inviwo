@@ -37,13 +37,13 @@ Settings::Settings(const std::string &id) : identifier_(id), isDeserializing_(fa
 
 Settings::~Settings() {}
 
-void Settings::addProperty(Property* property){
-    PropertyOwner::addProperty(property);
+void Settings::addProperty(Property* property, bool owner){
+    PropertyOwner::addProperty(property, owner);
     property->onChange(this,&Settings::saveToDisk);
 }
 
 void Settings::addProperty(Property& property){
-    PropertyOwner::addProperty(property);
+    PropertyOwner::addProperty(&property, false);
     property.onChange(this,&Settings::saveToDisk);
 }
 

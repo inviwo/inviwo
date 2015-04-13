@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/buffer/elementbufferclconverter.h>
@@ -32,18 +32,19 @@
 namespace inviwo {
 
 ElementBufferRAM2CLConverter::ElementBufferRAM2CLConverter()
-    : RepresentationConverterType<ElementBufferCL>() {
-}
+    : RepresentationConverterType<ElementBufferCL>() {}
 
 ElementBufferRAM2CLConverter::~ElementBufferRAM2CLConverter() {}
 
 DataRepresentation* ElementBufferRAM2CLConverter::createFrom(const DataRepresentation* source) {
     const BufferRAM* bufferRAM = static_cast<const BufferRAM*>(source);
-    ElementBufferCL* bufferCL = new ElementBufferCL(bufferRAM->getSize(), bufferRAM->getDataFormat(), bufferRAM->getBufferType(), bufferRAM->getBufferUsage(),
-                                      bufferRAM->getData());
+    ElementBufferCL* bufferCL = new ElementBufferCL(
+        bufferRAM->getSize(), bufferRAM->getDataFormat(), bufferRAM->getBufferType(),
+        bufferRAM->getBufferUsage(), bufferRAM->getData());
     return bufferCL;
 }
-void ElementBufferRAM2CLConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void ElementBufferRAM2CLConverter::update(const DataRepresentation* source,
+                                          DataRepresentation* destination) {
     const BufferRAM* src = static_cast<const BufferRAM*>(source);
     ElementBufferCL* dst = static_cast<ElementBufferCL*>(destination);
 
@@ -51,28 +52,27 @@ void ElementBufferRAM2CLConverter::update(const DataRepresentation* source, Data
         dst->setSize(src->getSize());
     }
 
-    dst->upload(src->getData(), src->getSize()*src->getSizeOfElement());
+    dst->upload(src->getData(), src->getSize() * src->getSizeOfElement());
 }
-
-
 
 ElementBufferCL2RAMConverter::ElementBufferCL2RAMConverter()
-    : RepresentationConverterType<BufferRAM>() {
-}
+    : RepresentationConverterType<BufferRAM>() {}
 
 ElementBufferCL2RAMConverter::~ElementBufferCL2RAMConverter() {}
 
 DataRepresentation* ElementBufferCL2RAMConverter::createFrom(const DataRepresentation* source) {
     const ElementBufferCL* src = static_cast<const ElementBufferCL*>(source);
-    BufferRAM* dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferType(), src->getBufferUsage());
+    BufferRAM* dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferType(),
+                                     src->getBufferUsage());
     src->download(dst->getData());
     return dst;
 }
 
-void ElementBufferCL2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void ElementBufferCL2RAMConverter::update(const DataRepresentation* source,
+                                          DataRepresentation* destination) {
     const ElementBufferCL* src = static_cast<const ElementBufferCL*>(source);
     BufferRAM* dst = static_cast<BufferRAM*>(destination);
-    
+
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }
@@ -80,4 +80,4 @@ void ElementBufferCL2RAMConverter::update(const DataRepresentation* source, Data
     src->download(dst->getData());
 }
 
-} // end namespace
+}  // end namespace

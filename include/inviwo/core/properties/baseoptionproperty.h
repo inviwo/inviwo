@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -94,6 +95,7 @@ public:
  */
 template<typename T>
 class BaseTemplateOptionProperty : public BaseOptionProperty {
+public:
     
     template <typename U>
     struct Option : public IvwSerializable {
@@ -124,7 +126,7 @@ class BaseTemplateOptionProperty : public BaseOptionProperty {
         }
     };
 
-
+private:
     template <typename U>
     struct MatchId {
         MatchId(const std::string& s) : s_(s) {}
@@ -153,7 +155,7 @@ class BaseTemplateOptionProperty : public BaseOptionProperty {
         const U& s_;
     };
 
-public:
+public: 
     typedef T valueType;
 
     BaseTemplateOptionProperty(std::string identifier, 
@@ -193,6 +195,7 @@ public:
     virtual bool setSelectedDisplayName(std::string name);
     virtual bool setSelectedValue(T val);
     virtual void replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames, std::vector<T> values);
+    virtual void replaceOptions(std::vector<Option<T>> options);
     
     virtual bool isSelectedIndex(size_t index) const;
     virtual bool isSelectedIdentifier(std::string identifier) const;
@@ -237,9 +240,23 @@ public:
     TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that);
 //    virtual TemplateOptionProperty<T>* clone() const;
     virtual ~TemplateOptionProperty();
+    
 };
 
-template <typename T> PropertyClassIdentifier(TemplateOptionProperty<T>, "org.inviwo.OptionProperty" + Defaultvalues<T>::getName());
+namespace utils {
+template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
+std::string getOptionPropertyClassIdentifier() {
+    return "org.inviwo.OptionProperty" + Defaultvalues<T>::getName();
+}
+template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+std::string getOptionPropertyClassIdentifier() {
+    using ET = typename std::underlying_type<T>::type;
+    return "org.inviwo.OptionProperty" + Defaultvalues<ET>::getName();
+}
+}
+
+template <typename T> PropertyClassIdentifier(TemplateOptionProperty<T>, utils::getOptionPropertyClassIdentifier<T>());
+
 
 // Specialization for strings.
 class IVW_CORE_API OptionPropertyString : public TemplateOptionProperty<std::string> {
@@ -263,6 +280,10 @@ typedef TemplateOptionProperty<int> OptionPropertyInt;
 typedef TemplateOptionProperty<float> OptionPropertyFloat;
 typedef TemplateOptionProperty<double> OptionPropertyDouble;
 
+typedef TemplateOptionProperty<int>::Option<int> OptionPropertyIntOption;
+typedef TemplateOptionProperty<float>::Option<float> OptionPropertyFloatOption;
+typedef TemplateOptionProperty<double>::Option<double> OptionPropertyDoubleOption;
+typedef OptionPropertyString::Option<std::string> OptionPropertyStringOption;
 
 template <typename T>
 BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(std::string identifier,
@@ -445,13 +466,31 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedValue(T val) {
 
 template<typename T>
 void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames, std::vector<T> values) {
-    std::string selectId = getSelectedIdentifier();
+    std::string selectId{};
+    if (!options_.empty()) selectId = getSelectedIdentifier();
 
     options_.clear();
     for (size_t i=0; i<ids.size(); i++)
-        options_.push_back(Option<T>(ids[i], displayNames[i], values[i]));
+        options_.emplace_back(ids[i], displayNames[i], values[i]);
     
-    typename std::vector<Option<T> >::iterator it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
+    auto it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
+    if (it != options_.end())
+        selectedIndex_ = std::distance(options_.begin(), it);
+    else
+        selectedIndex_ = 0;
+
+    propertyModified();
+}
+
+template<typename T>
+void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<Option<T>> options) {
+    std::string selectId{};
+    if (!options_.empty()) selectId = getSelectedIdentifier();
+    
+    options_.clear();
+    std::copy(options.begin(), options.end(), std::back_inserter(options_));
+
+    auto it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
     if (it != options_.end())
         selectedIndex_ = std::distance(options_.begin(), it);
     else
@@ -497,17 +536,17 @@ void BaseTemplateOptionProperty<T>::set(const Property* srcProperty) {
     BaseOptionProperty::set(srcProperty);
 }
 
-template<typename T>
+template <typename T>
 void inviwo::BaseTemplateOptionProperty<T>::resetToDefaultState() {
     options_ = defaultOptions_;
     selectedIndex_ = defaultSelectedIndex_;
-    
-    if(defaultOptions_.empty()){
-        LogWarn("Resetting to an empty option list. \
-                 Probably the default values have never been set, \
-                 Remember to call setCurrentStateAsDefault() after adding all the options.")
+
+    if (defaultOptions_.empty()) {
+        LogWarn("Resetting option property: " + this->getIdentifier() +
+                " to an empty option list. Probably the default values have never been set, " +
+                "Remember to call setCurrentStateAsDefault() after adding all the options.")
     }
-    
+
     Property::resetToDefaultState();
 }
 
@@ -518,13 +557,14 @@ void inviwo::BaseTemplateOptionProperty<T>::setCurrentStateAsDefault() {
     defaultOptions_ = options_;
 }
 
-template<typename T>
+template <typename T>
 void BaseTemplateOptionProperty<T>::serialize(IvwSerializer& s) const {
     BaseOptionProperty::serialize(s);
-    if ((this->serializationMode_==ALL || options_ != defaultOptions_ )&& options_.size() > 0) {
+    if ((this->serializationMode_ == ALL || options_ != defaultOptions_) && options_.size() > 0) {
         s.serialize("options", options_, "option");
     }
-    if ((this->serializationMode_==ALL || selectedIndex_ != defaultSelectedIndex_) && options_.size() > 0) {
+    if ((this->serializationMode_ == ALL || selectedIndex_ != defaultSelectedIndex_) &&
+        options_.size() > 0) {
         s.serialize("selectedIdentifier", getSelectedIdentifier());
     }
 }

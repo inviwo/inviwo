@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,47 +24,23 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_DATA_TYPE_CLASSIFICATION_H
-#define IVW_DATA_TYPE_CLASSIFICATION_H
+#ifndef IVW_OPENGLEXCEPTION_H
+#define IVW_OPENGLEXCEPTION_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/data.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <modules/opengl/openglmoduledefine.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-template <unsigned int N, typename U>
-class IVW_CORE_API RectiLinearData : public U {
+class IVW_MODULE_OPENGL_API OpenGLException : public Exception {
 public:
-    RectiLinearData() {}
-    virtual ~RectiLinearData() {}
+    OpenGLException(const std::string& message = "");
+    virtual ~OpenGLException() throw() {}
 };
 
-template <unsigned int N, typename U>
-class IVW_CORE_API CurviLinearData : public U {
-public:
-    CurviLinearData() {}
-    virtual ~CurviLinearData() {}
-};
+}  // namespace
 
-template <unsigned int N, typename U>
-class IVW_CORE_API UniformData : public U {
-public:
-    UniformData() {}
-    virtual ~UniformData() {}
-};
-
-template <unsigned int N, typename U>
-class IVW_CORE_API NonUniformData : public U {
-public:
-    NonUniformData() {}
-    virtual ~NonUniformData() {}
-};
-
-} // namespace
-
-#endif // IVW_DATA_TYPE_CLASSIFICATION_H
+#endif  // IVW_OPENGLEXCEPTION_H

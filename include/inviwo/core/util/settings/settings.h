@@ -47,11 +47,8 @@ public:
     virtual void initialize(){};
     virtual void deinitialize(){};
 
-    virtual bool isValid() { return PropertyOwner::isValid(); }
-    virtual void setValid() { PropertyOwner::setValid(); }
-
-    virtual void addProperty(Property* property);
-    virtual void addProperty(Property& property);
+    virtual void addProperty(Property* property, bool owner = true) override;
+    virtual void addProperty(Property& property) override;
 
     void loadFromDisk();
     void saveToDisk();

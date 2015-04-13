@@ -103,14 +103,14 @@ cl::Kernel* KernelManager::getKernel(cl::Program* program, const std::string& ke
         kernelIt->second->getInfo(CL_KERNEL_FUNCTION_NAME, &thisKernelName);
 
         if (thisKernelName == kernelName) {
-            // Add KernelOwner and Kernel pair to map if owner is not NULL
-            if (owner != NULL)
+            // Add KernelOwner and Kernel pair to map if owner is not nullptr
+            if (owner != nullptr)
                 kernelOwners_.insert(std::pair<cl::Kernel*, KernelOwner*>(kernelIt->second, owner));
             return kernelIt->second;
         }
     }
     LogError("Failed to find kernel:" << kernelName << std::endl);
-    return NULL;
+    return nullptr;
 }
 
 void KernelManager::fileChanged(std::string fileName) {
@@ -193,12 +193,12 @@ void KernelManager::clear() {
 
     for (KernelMap::iterator kernelIt = kernels_.begin(); kernelIt != kernels_.end(); ++kernelIt) {
         delete kernelIt->second;
-        kernelIt->second = NULL;
+        kernelIt->second = nullptr;
     }
 
     for (ProgramMap::iterator programIt = programs_.begin(); programIt != programs_.end(); ++programIt) {
         delete programIt->second.program;
-        programIt->second.program = NULL;
+        programIt->second.program = nullptr;
     }
     kernelOwners_.clear();
 }

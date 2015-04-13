@@ -24,113 +24,130 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CALLBACK_H
 #define IVW_CALLBACK_H
 
 #include <inviwo/core/common/inviwo.h>
+#include <functional>
 
 namespace inviwo {
 
 class BaseCallBack {
 public:
-    BaseCallBack() {};
-    virtual ~BaseCallBack() {};
-    virtual void invoke() const=0;
+    BaseCallBack(){};
+    virtual ~BaseCallBack(){};
+    virtual void invoke() const = 0;
+    virtual bool involvesObject(void*) const { return false; }
 };
 
 template <typename T>
 class MemberFunctionCallBack : public BaseCallBack {
 public:
     typedef void (T::*fPointerType)();
-    virtual ~MemberFunctionCallBack() {}
-    MemberFunctionCallBack(T* obj, fPointerType functionPtr)
-        : functionPtr_(functionPtr)
-        , obj_(obj) {}
 
+    MemberFunctionCallBack(T* obj, fPointerType func) : func_(func), obj_(obj) {}
+    virtual ~MemberFunctionCallBack() {}
     virtual void invoke() const {
-        if (functionPtr_)(*obj_.*functionPtr_)();
+        if (func_) (*obj_.*func_)();
     }
 
+    bool involvesObject(void* ptr) const override { return static_cast<void*>(obj_) == ptr; }
+
 private:
-    fPointerType functionPtr_;
+    fPointerType func_;
     T* obj_;
 };
 
+class LambdaCallBack : public BaseCallBack {
+public:
+    LambdaCallBack(std::function<void()> func) : func_{func} {}
+    virtual ~LambdaCallBack(){};
+    virtual void invoke() const {
+        if (func_) func_();
+    }
+
+private:
+    std::function<void()> func_;
+};
 
 // Example usage
-// CallBackList cbList;
-// cbList.addMemberFunction(&myClassObject, &MYClassObject::myFunction);
+// CallBackList list;
+// list.addMemberFunction(&myClassObject, &MYClassObject::myFunction);
+
 class CallBackList {
 public:
     CallBackList() {}
     virtual ~CallBackList() {
-        std::map<void*, BaseCallBack*>::iterator it;
-
-        for (it = callBackList_.begin(); it != callBackList_.end(); ++it) delete it->second;
-
-        callBackList_.clear();
+        clear();
     }
 
     void invokeAll() const {
-        std::map<void*, BaseCallBack*>::const_iterator it;
-        for (it = callBackList_.begin(); it != callBackList_.end(); ++it) it->second->invoke();
+        for (BaseCallBack* cb : callBackList_) cb->invoke();
     }
 
     template <typename T>
-    void addMemberFunction(T* o, void (T::*m)()) {
-        std::map<void*, BaseCallBack*>::iterator it = callBackList_.find(o);
-
-        if (it != callBackList_.end()) {
-            delete it->second;
-            it->second = new MemberFunctionCallBack<T>(o, m);
-        } else {
-            callBackList_[o] = new MemberFunctionCallBack<T>(o, m);
-        }
+    const BaseCallBack* addMemberFunction(T* o, void (T::*m)()) {
+        MemberFunctionCallBack<T>* callBack = new MemberFunctionCallBack<T>(o, m);
+        callBackList_.push_back(callBack);
+        return callBack;
+    }
+    const BaseCallBack* addLambdaCallback(std::function<void()> lambda) {
+        LambdaCallBack* callBack = new LambdaCallBack(lambda);
+        callBackList_.push_back(callBack);
+        return callBack;
     }
 
+    /** 
+     * \brief Deletes and removes callback if the callback was added before.
+     * 
+     * @note Callback pointer is invalid after calling remove if true is returned.
+     * @param callback Callback to be removed.
+     * @return bool True if removed, false otherwise.
+     */
+    bool remove(const BaseCallBack* callback) {
+        auto it = std::find(callBackList_.begin(), callBackList_.end(), callback);
+        if (it != callBackList_.end()) {
+            delete *it;
+            callBackList_.erase(it);
+            return true;
+        }
+        return false;
+    }
+    /** 
+     * \brief Deletes and removes all added callbacks.
+     */
+    void clear() {
+        for (BaseCallBack* cb : callBackList_) delete cb;
+        callBackList_.clear();
+    }
+
+    /** 
+     * \brief Delete and remove all callbacks associated with the object.
+     * 
+     */
     template <typename T>
     void removeMemberFunction(T* o) {
-        std::map<void*, BaseCallBack*>::iterator it = callBackList_.find(o);
-
-        if (it != callBackList_.end()) {
-            delete it->second;
-            callBackList_.erase(it);
-        }
+        callBackList_.erase(std::remove_if(callBackList_.begin(), callBackList_.end(),
+                                           [o](BaseCallBack* cb) -> bool {
+                                if (cb->involvesObject(o)) {
+                                    delete cb;
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            }),
+                            callBackList_.end());
     }
 
 private:
-    std::map<void*, BaseCallBack*> callBackList_;
+    std::vector<BaseCallBack*> callBackList_;
 };
 
-class SingleCallBack {
-public:
-    SingleCallBack() : callBack_(0) {}
+// SingleCallBack removed use std::function instead.
 
-    virtual ~SingleCallBack() {
-        delete callBack_;
-    }
+}  // namespace
 
-    void invoke() const {
-        if (callBack_)
-            callBack_->invoke();
-    }
-
-    template <typename T>
-    void addMemberFunction(T* o, void (T::*m)()) {
-        if (callBack_)
-            delete callBack_;
-
-        callBack_ = new MemberFunctionCallBack<T>(o,m);
-    }
-
-private:
-    BaseCallBack* callBack_;
-};
-
-
-} // namespace
-
-#endif // IVW_CALLBACK_H
+#endif  // IVW_CALLBACK_H

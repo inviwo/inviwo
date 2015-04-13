@@ -45,12 +45,12 @@ namespace inviwo {
  * Scoped timer for OpenCL that prints elapsed time in destructor. 
  * Usage is simplified by the macros (does nothing unless IVW_PROFILING is defined)
  * IVW_OPENCL_PROFILING(profilingEvent, "My message")
- * OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel, cl::NullRange, globalWorkSize, workGroupSize, NULL, profilingEvent);
+ * OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel, cl::NullRange, globalWorkSize, workGroupSize, nullptr, profilingEvent);
  *
  */
 class IVW_MODULE_OPENCL_API ScopedClockCL {
 public:
-    ScopedClockCL(cl::Event* profilingEvent, const std::string& logSource, const std::string& message): profilingEvent_(profilingEvent), logSource_(logSource), logMessage_(message) { ivwAssert(profilingEvent != NULL, "Cannot initialize ScopedClockCL with NULL OpenCL event"); }
+    ScopedClockCL(cl::Event* profilingEvent, const std::string& logSource, const std::string& message): profilingEvent_(profilingEvent), logSource_(logSource), logMessage_(message) { ivwAssert(profilingEvent != nullptr, "Cannot initialize ScopedClockCL with nullptr OpenCL event"); }
     virtual ~ScopedClockCL(); 
 
 private:
@@ -67,7 +67,7 @@ private:
     cl::Event* var = new cl::Event(); \
     ScopedClockCL ADDLINE(__clock)(var, parseTypeIdName(std::string(typeid(this).name())), ADDLINE(__stream).str());
 #else
-#define IVW_OPENCL_PROFILING(var,message) cl::Event* var = NULL;
+#define IVW_OPENCL_PROFILING(var,message) cl::Event* var = nullptr;
 #endif
 } // namespace
 

@@ -49,7 +49,7 @@ public:
     PropertyOwner& operator=(const PropertyOwner& that);
     virtual ~PropertyOwner();
 
-    virtual void addProperty(Property* property);
+    virtual void addProperty(Property* property, bool owner = true);
     virtual void addProperty(Property& property);
        
     virtual Property* removeProperty(const std::string& identifier);
@@ -58,7 +58,7 @@ public:
 
     virtual std::vector<std::string> getPath() const;
 
-    std::vector<Property*> getProperties() const { return properties_; }
+    std::vector<Property*> getProperties(bool recursive = false) const;
     Property* getPropertyByIdentifier(const std::string& identifier, bool recursiveSearch = false) const;
     Property* getPropertyByPath(const std::vector<std::string>& path) const;
     template <class T>
@@ -68,13 +68,13 @@ public:
     virtual void setValid();
     InvalidationLevel getInvalidationLevel() const { return invalidationLevel_; }
     virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = NULL);
+                            Property* modifiedProperty = nullptr);
 
     // Should return the processor that the owner belongs or is.
     // This should be overridden by all subclasses.
     // It is used by the linking.
-    virtual Processor* getProcessor() { return NULL; }
-    virtual const Processor* getProcessor() const { return NULL; }
+    virtual Processor* getProcessor() { return nullptr; }
+    virtual const Processor* getProcessor() const { return nullptr; }
 
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
@@ -88,8 +88,9 @@ public:
 
 protected:
     std::vector<Property*> properties_; //< non-owning references.
-    
-    // Chached lists of certain propertytypes
+    std::vector<Property*> ownedProperties_; // owning pointers, also in properties.
+
+    // Cached lists of certain property types
     std::vector<EventProperty*> eventProperties_; //< non-owning references.
     std::vector<CompositeProperty*> compositeProperties_; //< non-owning references.
 
@@ -103,8 +104,7 @@ private:
         bool operator () (const Property* p);
     private:
         std::string id_;
-    };
-    
+    }; 
 };
 
 template <class T>
@@ -114,7 +114,6 @@ std::vector<T*> PropertyOwner::getPropertiesByType(bool recursiveSearch /* = fal
         if (dynamic_cast<T*>(properties_[i])) {
             foundProperties.push_back(static_cast<T*>(properties_[i]));
         }
-// TODO fix, Did not get this to compile //Peter
         else if (recursiveSearch && dynamic_cast<PropertyOwner*>(properties_[i])) {
             std::vector<T*> subProperties =
                 dynamic_cast<PropertyOwner*>(properties_[i])->getPropertiesByType<T>(true);

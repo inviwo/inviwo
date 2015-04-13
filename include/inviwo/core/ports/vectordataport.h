@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VECTORDATA_PORT_H
@@ -34,7 +34,6 @@
 #include <inviwo/core/ports/dataoutport.h>
 #include <vector>
 #include <typeinfo>
-
 
 namespace inviwo {
 
@@ -61,10 +60,15 @@ public:
 
     std::string getDataInfo() const {
         std::ostringstream stream;
-        stream << "<table border='0' cellspacing='0' cellpadding='0' style='border-color:white;white-space:pre;'>\n"
-               << "<tr><td style='color:#bbb;padding-right:8px;'>Type:</td><td><nobr>vector</nobr></td></tr>\n"
-               << "<tr><td style='color:#bbb;padding-right:8px;'>Format:</td><td><nobr>" << typeid(T).name() << "</nobr></td></tr>\n"
-               << "<tr><td style='color:#bbb;padding-right:8px;'>Length:</td><td><nobr>" << vector.size() << "</nobr></td></tr>\n"
+        stream << "<table border='0' cellspacing='0' cellpadding='0' "
+                  "style='border-color:white;white-space:pre;'>\n"
+               << "<tr><td "
+                  "style='color:#bbb;padding-right:8px;'>Type:</td><td><nobr>vector</nobr></td></"
+                  "tr>\n"
+               << "<tr><td style='color:#bbb;padding-right:8px;'>Format:</td><td><nobr>"
+               << typeid(T).name() << "</nobr></td></tr>\n"
+               << "<tr><td style='color:#bbb;padding-right:8px;'>Length:</td><td><nobr>"
+               << vector.size() << "</nobr></td></tr>\n"
                << "</tr></table>\n";
         return stream.str();
     }
@@ -73,13 +77,9 @@ public:
 template <typename Type>
 class VectorDataInport : public DataInport<VectorData<Type> > {
 public:
-    VectorDataInport(std::string identifier, InvalidationLevel invalidationLevel =
-                                                 INVALID_OUTPUT)
+    VectorDataInport(std::string identifier, InvalidationLevel invalidationLevel = INVALID_OUTPUT)
         : DataInport<VectorData<Type> >(identifier, invalidationLevel) {}
     virtual ~VectorDataInport() {}
-
-    void initialize() {}
-    void deinitialize() {}
 
     uvec3 getColorCode() const { return VectorDataPortColor::colorCode; }
     virtual std::string getClassIdentifier() const { return "org.inviwo.VectorDataInport"; }
@@ -88,20 +88,16 @@ public:
 template <typename Type>
 class VectorDataOutport : public DataOutport<VectorData<Type> > {
 public:
-    VectorDataOutport(std::string identifier, InvalidationLevel invalidationLevel =
-                                                  INVALID_OUTPUT)
+    VectorDataOutport(std::string identifier, InvalidationLevel invalidationLevel = INVALID_OUTPUT)
         : DataOutport<VectorData<Type> >(identifier, invalidationLevel) {
         this->setData(new VectorData<Type>, true);
     }
     virtual ~VectorDataOutport() {}
 
-    void initialize() {}
-    void deinitialize() {}
-
     uvec3 getColorCode() const { return VectorDataPortColor::colorCode; }
     virtual std::string getClassIdentifier() const { return "org.inviwo.VectorDataOutport"; }
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VECTORDATA_PORT_H
+#endif  // IVW_VECTORDATA_PORT_H

@@ -42,18 +42,23 @@ StringPropertyWidgetQt::StringPropertyWidgetQt(StringProperty* property)
 
 void StringPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
+    setSpacingAndMargins(hLayout);
+    setLayout(hLayout);
+
+    label_ = new EditableLabelQt(this, property_->getDisplayName());
+    hLayout->addWidget(label_);
+
     lineEdit_ = new QLineEdit;
     if(property_->getSemantics().getString() == "Password"){
         lineEdit_->setEchoMode(QLineEdit::PasswordEchoOnEdit);
     }
-    label_ = new EditableLabelQt(this,property_->getDisplayName());
 
-    hLayout->addWidget(label_);
+    QSizePolicy sp = lineEdit_->sizePolicy();
+    sp.setHorizontalStretch(3);
+    lineEdit_->setSizePolicy(sp);
+    
     hLayout->addWidget(lineEdit_);
-    hLayout->setContentsMargins(0, 0, 0, 0);
-    hLayout->setSpacing(0);
-    hLayout->setStretch(1,1);
-    setLayout(hLayout);
+    
     connect(lineEdit_, SIGNAL(editingFinished()), this, SLOT(setPropertyValue()));
     connect(label_, SIGNAL(textChanged()),this, SLOT(setPropertyDisplayName()));
 }

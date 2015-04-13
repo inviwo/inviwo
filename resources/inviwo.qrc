@@ -11,7 +11,7 @@
     <file>icons/html.png</file>
     <file>icons/inviwo_light.png</file>
     <file>icons/inviwo_dark.png</file>
-	<file>icons/edit-undo-icon.png</file>
+    <file>icons/edit-undo-icon.png</file>
     <file>icons/inviwo_tmp.png</file>
     <file>icons/linkarrow_left.png</file>
     <file>icons/linkarrow_right.png</file>
@@ -28,7 +28,7 @@
     <file>icons/python.png</file>
     <file>icons/save.png</file>
     <file>icons/saveas.png</file>
-	<file>icons/stopwatch.png</file>
+    <file>icons/stopwatch.png</file>
     <file>icons/view-application.png</file>
     <file>icons/view-developer.png</file>
     <file>icons/view_choose.png</file>

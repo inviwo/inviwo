@@ -60,6 +60,23 @@ public:
     ButtonProperty btnAllocTestProperty_;
     ButtonProperty btnSysInfoProperty_;
 
+    CompositeProperty glslSyntax_;
+    IntVec4Property glslTextColor_;
+    IntVec4Property glslBackgroundColor_;
+    IntVec4Property glslQualifierColor_;
+    IntVec4Property glslBuiltinsColor_;
+    IntVec4Property glslTypeColor_;
+    IntVec4Property glslGlslBuiltinsColor_;
+    IntVec4Property glslCommentColor_;
+    IntVec4Property glslPreProcessorColor_;
+
+    CompositeProperty pythonSyntax_;
+    IntProperty pyFontSize_;
+    IntVec4Property pyBGColor_;
+    IntVec4Property pyTextColor_;
+    IntVec4Property pyTypeColor_;
+    IntVec4Property pyCommentsColor_;
+
 protected:
     void logStacktraceCallback();
     void allocationTest();

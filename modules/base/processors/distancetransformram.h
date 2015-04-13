@@ -69,7 +69,7 @@ private:
     void updateOutport();
     void paramChanged();
 
-    template <typename T, size_t B>
+    template <typename T>
     void computeDistanceTransform(); 
 
     VolumeInport volumePort_;
@@ -92,7 +92,7 @@ private:
 template <typename Type>
 Type Square(Type a) { return (a * a); }
 
-template <typename T, size_t B>
+template <typename T>
 void DistanceTransformRAM::computeDistanceTransform() {
     const VolumeRAM *srcVol = volumePort_.getData()->getRepresentation<VolumeRAM>();
     VolumeRAM *vol = outport_.getData()->getEditableRepresentation<VolumeRAM>();
@@ -112,7 +112,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
     // implementation of Euclidean Distance Transform according to Saito's algorithm
     //  T. Saito and J.I. Toriwaki. New algorithms for Euclidean distance transformations 
     //    of an n-dimensional digitized picture with applications. Pattern Recognition, 27(11). 
-    //    pp. 1551–1565, 1994.
+    //    pp. 1551-1565, 1994.
 
     double totalTime = 0.0;
 

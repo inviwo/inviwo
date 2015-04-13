@@ -40,15 +40,15 @@
 // Transform coordinate to local shading space
 inline float3 worldToShading(const float3 Nu, const float3 Nv, const float3 Nn, const float3 W)
 {
-	return (float3)(dot(W, Nu), dot(W, Nv), dot(W, Nn));
+    return (float3)(dot(W, Nu), dot(W, Nv), dot(W, Nn));
 }
 // Transform coordinate from local shading space
 inline float3 shadingToWorld(const float3 Nu, const float3 Nv, const float3 Nn, const float3 W)
 {
     return Nu * W.x + Nv * W.y + Nn * W.z;
-	//return (float3)(Nu.x * W.x + Nv.x * W.y + Nn.x * W.z,
-	//				Nu.y * W.x + Nv.y * W.y + Nn.y * W.z,
-	//				Nu.z * W.x + Nv.z * W.y + Nn.z * W.z);
+    //return (float3)(Nu.x * W.x + Nv.x * W.y + Nn.x * W.z,
+    //                Nu.y * W.x + Nv.y * W.y + Nn.y * W.z,
+    //                Nu.z * W.x + Nv.z * W.y + Nn.z * W.z);
 }
 // Create Ortho-Normal basis
 //inline float3 createONBasis(float3 *Nu, float3 *Nv, float3 *Nn, const float3 gradient, const float3 direction)

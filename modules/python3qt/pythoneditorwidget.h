@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PYTHONEDITORYWIDGET_H
@@ -47,20 +47,19 @@ class QPlainTextEdit;
 
 namespace inviwo {
 
+class IVW_MODULE_PYTHON3QT_API PythonTextEditor : public QPlainTextEdit {
+public:
+    PythonTextEditor(QWidget* parent) : QPlainTextEdit(parent) {}
+    virtual ~PythonTextEditor() {}
 
-    class IVW_MODULE_PYTHON3QT_API PythonTextEditor : public QPlainTextEdit{
-    public:
-        PythonTextEditor(QWidget* parent) : QPlainTextEdit(parent) {}
-        virtual ~PythonTextEditor(){}
+    virtual void keyPressEvent(QKeyEvent* keyEvent);
+};
 
-        virtual void keyPressEvent(QKeyEvent* keyEvent);
-    };
-    
 class SyntaxHighligther;
 class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
-                                                   public FileObserver,
-                                                   public PythonExecutionOutputObeserver,
-                                                   public Singleton<PythonEditorWidget> {
+                                                    public FileObserver,
+                                                    public PythonExecutionOutputObeserver,
+                                                    public Singleton<PythonEditorWidget> {
     Q_OBJECT
 
 public:
@@ -71,12 +70,14 @@ public:
     virtual void fileChanged(std::string fileName);
     void loadFile(std::string fileName, bool askForSave = true);
 
-    virtual void onPyhonExecutionOutput(const std::string &msg,const PythonExecutionOutputStream &outputType);
+    virtual void onPyhonExecutionOutput(const std::string& msg,
+                                        const PythonExecutionOutputStream& outputType);
 
     bool hasFocus() const;
 
-
     static PythonEditorWidget* getPtr();
+
+    void updateStyle();
 
 private:
     void buildWidget();
@@ -108,7 +109,6 @@ public slots:
     void clearOutput();
     void onTextChange();
 };
-
 
 }  // namespace
 

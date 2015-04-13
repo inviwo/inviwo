@@ -24,14 +24,17 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMERAMPRECISION_H
 #define IVW_VOLUMERAMPRECISION_H
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramhistogram.h>
 #include <inviwo/core/datastructures/volume/volumeramoperationexecuter.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -39,25 +42,35 @@ template <typename T>
 class VolumeRAMPrecision : public VolumeRAM {
 public:
     VolumeRAMPrecision(uvec3 dimensions = uvec3(128, 128, 128),
-                       const DataFormatBase* format = defaultformat());
+                       const DataFormatBase* format = DataFormat<T>::get());
     VolumeRAMPrecision(T* data, uvec3 dimensions = uvec3(128, 128, 128),
-                       const DataFormatBase* format = defaultformat());
+                       const DataFormatBase* format = DataFormat<T>::get());
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
-    virtual VolumeRAMPrecision<T>* clone() const;
+    virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
 
-    virtual void performOperation(DataOperation* dop) const;
+    virtual void performOperation(DataOperation* dop) const override;
 
-    virtual void initialize();
-    virtual void initialize(void*);
-    virtual void deinitialize();
+    virtual void* getData() override;
+    virtual const void* getData() const override;
 
-    using VolumeRAM::getData;
-    void* getData(size_t);
-    const void* getData(size_t) const;
+    virtual void* getData(size_t) override;
+    virtual const void* getData(size_t) const override;
 
-    void setDimensions(uvec3 dimensions);
+    virtual void setData(void* data) override;
+
+    virtual void removeDataOwnership() override;
+
+    virtual const uvec3& getDimensions() const override;
+    virtual void setDimensions(uvec3 dimensions) override;
+
+    virtual bool hasHistograms() const override;
+    virtual HistogramContainer* getHistograms(size_t bins = 2048u,
+                                              uvec3 sampleRate = uvec3(1)) override;
+    virtual const HistogramContainer* getHistograms(size_t bins = 2048u,
+                                                    uvec3 sampleRate = uvec3(1)) const override;
+    virtual void calculateHistograms(size_t bins, uvec3 sampleRate, const bool& stop) const override;
 
     virtual void setValueFromSingleDouble(const uvec3& pos, double val) override;
     virtual void setValueFromVec2Double(const uvec3& pos, dvec2 val) override;
@@ -72,213 +85,224 @@ public:
     virtual dvec3 getValueAsVec3Double(const uvec3& pos) const override;
     virtual dvec4 getValueAsVec4Double(const uvec3& pos) const override;
 
-private:
-    static const DataFormatBase* defaultformat() { return GenericDataFormat(T)::get(); }
-};
-
-template <typename T, size_t B>
-class VolumeRAMCustomPrecision : public VolumeRAMPrecision<T> {
-public:
-    VolumeRAMCustomPrecision(uvec3 dimensions = uvec3(128, 128, 128),
-                             const DataFormatBase* format = defaultformat())
-        : VolumeRAMPrecision<T>(dimensions, format) {}
-    VolumeRAMCustomPrecision(T* data, uvec3 dimensions = uvec3(128, 128, 128),
-                             const DataFormatBase* format = defaultformat())
-        : VolumeRAMPrecision<T>(data, dimensions, format) {}
-
-    VolumeRAMCustomPrecision(const VolumeRAMCustomPrecision<T, B>& rhs)
-        : VolumeRAMPrecision<T>(rhs) {}
-    VolumeRAMCustomPrecision<T, B>& operator=(const VolumeRAMCustomPrecision<T, B>& that) {
-        if (this != &that) {
-            VolumeRAMPrecision<T>::operator=(that); 
-        }
-        return *this;
-    }
-    virtual VolumeRAMCustomPrecision<T, B>* clone() const {
-        return new VolumeRAMCustomPrecision<T, B>(*this);
-    }
-
-    virtual ~VolumeRAMCustomPrecision() {};
-    void performOperation(DataOperation*) const;
+    virtual size_t getNumberOfBytes() const override;
 
 private:
-    static const DataFormatBase* defaultformat() { return DataFormat<T, B>::get(); }
+    uvec3 dimensions_;
+    bool ownsDataPtr_;
+    std::unique_ptr<T[]> data_;
+    mutable HistogramContainer histCont_;
 };
 
-template<typename T>
-VolumeRAMPrecision<T>::VolumeRAMPrecision(uvec3 dimensions, const DataFormatBase* format) 
-    : VolumeRAM(dimensions, format) {
-    initialize();
-}
+template <typename T>
+VolumeRAMPrecision<T>::VolumeRAMPrecision(uvec3 dimensions, const DataFormatBase* format)
+    : VolumeRAM(format)
+    , dimensions_(dimensions)
+    , ownsDataPtr_(true)
+    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z]()) {}
 
-template<typename T>
-VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, uvec3 dimensions, const DataFormatBase* format) 
-    : VolumeRAM(dimensions, format) {
-    initialize(data);
-}
+template <typename T>
+VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, uvec3 dimensions, const DataFormatBase* format)
+    : VolumeRAM(format)
+    , dimensions_(dimensions)
+    , ownsDataPtr_(true)
+    , data_(data ? data : new T[dimensions_.x * dimensions_.y * dimensions_.z]()) {}
 
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs)
-    : VolumeRAM(rhs) {
-    initialize();
-    memcpy(data_, rhs.getData(), dimensions_.x * dimensions_.y * dimensions_.z * sizeof(T));
+    : VolumeRAM(rhs)
+    , dimensions_(rhs.dimensions_)
+    , ownsDataPtr_(true)
+    , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z]) {
+    std::memcpy(data_.get(), rhs.data_.get(),
+                dimensions_.x * dimensions_.y * dimensions_.z * sizeof(T));
 }
 
 template <typename T>
 VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision<T>& that) {
     if (this != &that) {
         VolumeRAM::operator=(that);
-        delete[] data_;
-        dimensions_ = that.getDimensions();
-        initialize();
-        memcpy(data_, that.getData(), dimensions_.x*dimensions_.y*dimensions_.z*sizeof(T));
+        dimensions_ = that.dimensions_;
+        auto data = util::make_unique<T[]>(dimensions_.x * dimensions_.y * dimensions_.z);
+        std::memcpy(data.get(), that.data_.get(),
+                    dimensions_.x * dimensions_.y * dimensions_.z * sizeof(T));
+        data_.swap(data);
+        ownsDataPtr_ = true;
     }
     return *this;
 };
 
 template <typename T>
 VolumeRAMPrecision<T>::~VolumeRAMPrecision() {
-    deinitialize();
+    if (!ownsDataPtr_) data_.release();
 };
 
-template<typename T>
-void VolumeRAMPrecision<T>::initialize() {
-    data_ = new T[dimensions_.x*dimensions_.y*dimensions_.z];
-}
-
-template<typename T>
-void VolumeRAMPrecision<T>::initialize(void* data) {
-    if (!data)
-        data_ = new T[dimensions_.x*dimensions_.y*dimensions_.z];
-    else
-        data_ = data;
-}
-
-template<typename T>
-void inviwo::VolumeRAMPrecision<T>::deinitialize() {
-    if (data_ && ownsDataPtr_) {
-        delete[] static_cast<T*>(data_);
-        data_ = NULL;
-    }
-}
-
-template<typename T>
+template <typename T>
 VolumeRAMPrecision<T>* VolumeRAMPrecision<T>::clone() const {
     return new VolumeRAMPrecision<T>(*this);
 }
 
-template<typename T>
+template <typename T>
 void VolumeRAMPrecision<T>::performOperation(DataOperation* dop) const {
-    executeOperationOnVolumeRAMPrecision<T, GenericDataBits(T)>(dop);
+    executeOperationOnVolumeRAMPrecision<T>(dop);
 }
 
-template<typename T, size_t B>
-void VolumeRAMCustomPrecision<T,B>::performOperation(DataOperation* dop) const {
-    executeOperationOnVolumeRAMPrecision<T, B>(dop);
+template <typename T>
+void* VolumeRAMPrecision<T>::getData() {
+    return data_.get();
+}
+template <typename T>
+const void* VolumeRAMPrecision<T>::getData() const {
+    return const_cast<const T*>(data_.get());
 }
 
-template<typename T>
-void* VolumeRAMPrecision<T>::getData(size_t pos){
-    return static_cast<T*>(data_)+pos;
+template <typename T>
+void* VolumeRAMPrecision<T>::getData(size_t pos) {
+    return data_.get() + pos;
 }
 
-template<typename T>
-const void* VolumeRAMPrecision<T>::getData(size_t pos) const{
-    return const_cast<const T*>(static_cast<T*>(data_))+pos;
+template <typename T>
+const void* VolumeRAMPrecision<T>::getData(size_t pos) const {
+    return const_cast<const T*>(data_.get()) + pos;
 }
 
-template<typename T>
-void VolumeRAMPrecision<T>::setDimensions(uvec3 dimensions) { 
-    dimensions_ = dimensions; 
-    deinitialize(); 
-    initialize(); 
+template <typename T>
+void inviwo::VolumeRAMPrecision<T>::setData(void* d) {
+    std::unique_ptr<T[]> data(static_cast<T*>(d));
+    data_.swap(data);
+
+    if (!ownsDataPtr_) data.release();
+    ownsDataPtr_ = true;
 }
 
-template<typename T>
+template <typename T>
+void inviwo::VolumeRAMPrecision<T>::removeDataOwnership() {
+    ownsDataPtr_ = false;
+}
+
+template <typename T>
+const uvec3& inviwo::VolumeRAMPrecision<T>::getDimensions() const {
+    return dimensions_;
+}
+
+template <typename T>
+size_t VolumeRAMPrecision<T>::getNumberOfBytes() const {
+    return dimensions_.x * dimensions_.y * dimensions_.z * sizeof(T);
+}
+
+template <typename T>
+void VolumeRAMPrecision<T>::setDimensions(uvec3 dimensions) {
+    auto data = util::make_unique<T[]>(dimensions.x * dimensions.y * dimensions.z);
+    data_.swap(data);
+    dimensions_ = dimensions;
+    if (!ownsDataPtr_) data.release();
+    ownsDataPtr_ = true;
+}
+
+template <typename T>
 void VolumeRAMPrecision<T>::setValueFromSingleDouble(const uvec3& pos, double val) {
-    T* data = static_cast<T*>(data_);
-    getDataFormat()->doubleToValue(val, &(data[posToIndex(pos, dimensions_)]));
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
-template<typename T>
+template <typename T>
 void VolumeRAMPrecision<T>::setValueFromVec2Double(const uvec3& pos, dvec2 val) {
-    T* data = static_cast<T*>(data_);
-    getDataFormat()->vec2DoubleToValue(val, &(data[posToIndex(pos, dimensions_)]));
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
-template<typename T>
+template <typename T>
 void VolumeRAMPrecision<T>::setValueFromVec3Double(const uvec3& pos, dvec3 val) {
-    T* data = static_cast<T*>(data_);
-    getDataFormat()->vec3DoubleToValue(val, &(data[posToIndex(pos, dimensions_)]));
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
-template<typename T>
+template <typename T>
 void VolumeRAMPrecision<T>::setValueFromVec4Double(const uvec3& pos, dvec4 val) {
-    T* data = static_cast<T*>(data_);
-    getDataFormat()->vec4DoubleToValue(val, &(data[posToIndex(pos, dimensions_)]));
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
-template<typename T>
-void VolumeRAMPrecision<T>::setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset, const uvec3& subSize, const uvec3& subOffset) {
+template <typename T>
+void VolumeRAMPrecision<T>::setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset,
+                                                const uvec3& subSize, const uvec3& subOffset) {
     const T* srcData = reinterpret_cast<const T*>(src->getData());
-    T* dstData = static_cast<T*>(data_);
 
-    uvec3 dataDims = getDimensions();
-    size_t initialStartPos = (dstOffset.z * (dataDims.x*dataDims.y))+(dstOffset.y * dataDims.x) + dstOffset.x;
+    size_t initialStartPos = (dstOffset.z * (dimensions_.x * dimensions_.y)) +
+                             (dstOffset.y * dimensions_.x) + dstOffset.x;
 
     uvec3 srcDims = src->getDimensions();
-    size_t dataSize = subSize.x*getDataFormat()->getBytesAllocated();
+    size_t dataSize = subSize.x * getDataFormat()->getSize();
 
     size_t volumePos;
     size_t subVolumePos;
-    for (size_t i=0; i < subSize.z; i++) {
-        for (size_t j=0; j < subSize.y; j++) {
-            volumePos =  (j*dataDims.x) + (i*dataDims.x*dataDims.y);
-            subVolumePos = ((j+subOffset.y)*srcDims.x) + ((i+subOffset.z)*srcDims.x*srcDims.y) + subOffset.x;
-            memcpy((dstData + volumePos + initialStartPos), (srcData + subVolumePos), dataSize);
-        }
+    ivec3 subSizeI = ivec3(subSize);
+#pragma omp parallel for
+    for (int zy = 0; zy < subSizeI.z*subSizeI.y; ++zy) {
+        int z = zy / subSizeI.y;
+        int y = zy % subSizeI.y;
+        volumePos = (y * dimensions_.x) + (z * dimensions_.x * dimensions_.y);
+        subVolumePos = ((y + subOffset.y) * srcDims.x) +
+            ((z + subOffset.z) * srcDims.x * srcDims.y) + subOffset.x;
+        std::memcpy((data_.get() + volumePos + initialStartPos), (srcData + subVolumePos), dataSize);
     }
 }
 
-template<typename T>
+template <typename T>
 double VolumeRAMPrecision<T>::getValueAsSingleDouble(const uvec3& pos) const {
-    double result;
-    T* data = static_cast<T*>(data_);
-    T val = data[posToIndex(pos, dimensions_)];
-    result = getDataFormat()->valueToNormalizedDouble(&val);
-    return result;
+    return util::glm_convert_normalized<double>(data_[posToIndex(pos, dimensions_)]);
 }
 
-template<typename T>
+template <typename T>
 dvec2 VolumeRAMPrecision<T>::getValueAsVec2Double(const uvec3& pos) const {
-    dvec2 result;
-    T* data = static_cast<T*>(data_);
-    T val = data[posToIndex(pos, dimensions_)];
-    result = getDataFormat()->valueToNormalizedVec2Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec2>(data_[posToIndex(pos, dimensions_)]);
 }
 
-template<typename T>
+template <typename T>
 dvec3 VolumeRAMPrecision<T>::getValueAsVec3Double(const uvec3& pos) const {
-    dvec3 result;
-    T* data = static_cast<T*>(data_);
-    T val = data[posToIndex(pos, dimensions_)];
-    result = getDataFormat()->valueToNormalizedVec3Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec3>(data_[posToIndex(pos, dimensions_)]);
 }
 
-template<typename T>
+template <typename T>
 dvec4 VolumeRAMPrecision<T>::getValueAsVec4Double(const uvec3& pos) const {
-    dvec4 result;
-    T* data = static_cast<T*>(data_);
-    T val = data[posToIndex(pos, dimensions_)];
-    result = getDataFormat()->valueToNormalizedVec4Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec4>(data_[posToIndex(pos, dimensions_)]);
 }
 
-#define DataFormatIdMacro(i) typedef VolumeRAMCustomPrecision<Data##i::type, Data##i::bits> VolumeRAM_##i;
-#include <inviwo/core/util/formatsdefinefunc.h>
+template <typename T>
+const HistogramContainer* inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
+                                                                       uvec3 sampleRate) const {
+    if (!hasHistograms()) {
+        bool stop = false;
+        calculateHistograms(bins, sampleRate, stop);
+    }
 
-} // namespace
+    return &histCont_;
+}
 
-#endif // IVW_VOLUMERAMPRECISION_H
+template <typename T>
+HistogramContainer* inviwo::VolumeRAMPrecision<T>::getHistograms(size_t bins,
+                                                                 uvec3 sampleRate) {
+    if (!hasHistograms()) {
+        bool stop = false;
+        calculateHistograms(bins, sampleRate, stop);
+    }
+
+    return &histCont_;
+
+}
+
+template <typename T>
+void inviwo::VolumeRAMPrecision<T>::calculateHistograms(size_t bins, uvec3 sampleRate,
+                                                        const bool& stop) const {
+    const Volume* volume = dynamic_cast<const Volume*>(getOwner());
+    if (volume) {
+        dvec2 dataRange = volume->dataMap_.dataRange;
+        histCont_ = util::calculateVolumeHistogram(data_.get(), dimensions_, dataRange, stop, bins,
+                                                   sampleRate);
+    }
+}
+
+template <typename T>
+bool inviwo::VolumeRAMPrecision<T>::hasHistograms() const {
+    return !histCont_.empty() && histCont_.isValid();
+}
+
+}  // namespace
+
+#endif  // IVW_VOLUMERAMPRECISION_H

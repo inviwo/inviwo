@@ -35,7 +35,7 @@ MultiInport::MultiInport(std::string identifier)
     : Inport(identifier)
     , inports_(new InportVec())
     , vectorInports_(new InportVec())
-	, numConnections_(0) {
+    , numConnections_(0) {
 }
 
 void MultiInport::setProcessorHelper(Port* port, Processor* processor) {
@@ -100,19 +100,19 @@ void MultiInport::setChanged(bool changed /*= true*/) {
     for (; it != endIt; ++it)
         (*it)->setChanged(changed);
 
-	if (changed == false) {
-		size_t totalInports = inports_->size() + vectorInports_->size();
-		numConnections_ = totalInports;
-	}
+    if (changed == false) {
+        size_t totalInports = inports_->size() + vectorInports_->size();
+        numConnections_ = totalInports;
+    }
 }
 
 bool MultiInport::isChanged() {
     InportVec::const_iterator it = inports_->begin();
     InportVec::const_iterator endIt = inports_->end();
 
-	size_t totalInports = inports_->size() + vectorInports_->size();
-	if (totalInports < numConnections_)
-		return true;
+    size_t totalInports = inports_->size() + vectorInports_->size();
+    if (totalInports < numConnections_)
+        return true;
 
     for (; it != endIt; ++it)
         if((*it)->isChanged())

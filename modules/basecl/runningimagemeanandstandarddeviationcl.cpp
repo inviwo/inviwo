@@ -37,7 +37,7 @@ namespace inviwo {
 RunningImageMeanAndStandardDeviationCL::RunningImageMeanAndStandardDeviationCL(const uvec2& layerDimension, const svec2& workgroupSize)
     : pingPongIndex_(0)
     , workGroupSize_(workgroupSize)
-    , kernel_(NULL) {
+    , kernel_(nullptr) {
     standardDeviation_[0] = Layer(layerDimension, DataVec4FLOAT32::get());
     standardDeviation_[1] = Layer(layerDimension, DataVec4FLOAT32::get());
     mean_[0] = Layer(layerDimension, DataVec4FLOAT32::get());
@@ -46,7 +46,7 @@ RunningImageMeanAndStandardDeviationCL::RunningImageMeanAndStandardDeviationCL(c
 }
 
 bool RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(const Layer* newSamples, int iteration, Layer*& outMean, Layer*& outStandardDeviation, bool useGLSharing, const VECTOR_CLASS<cl::Event> *waitForEvents, cl::Event *event) {
-    if (kernel_ == NULL) {
+    if (kernel_ == nullptr) {
         return false;
     }
     if (glm::any(glm::notEqual(newSamples->getDimensions(), standardDeviation_[0].getDimensions()))) {

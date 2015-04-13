@@ -33,14 +33,17 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <QSplitter>
 #include <QResizeEvent>
+#include <QFrame>
 
 namespace inviwo {
+
+    class RangeSliderMiddle;
 
 class IVW_QTWIDGETS_API RangeSliderQt : public QSplitter {
     Q_OBJECT
 
 public:
-    RangeSliderQt(Qt::Orientation orientation=Qt::Horizontal, QWidget* parent=NULL);
+    RangeSliderQt(Qt::Orientation orientation=Qt::Horizontal, QWidget* parent=nullptr);
     virtual ~RangeSliderQt();
 
 public slots:
@@ -66,19 +69,39 @@ signals:
 protected:
     void resizeEvent(QResizeEvent* event);
 
-    void updateStateFromSiders();
+    void updateStateFromSliders();
     void updateSlidersFromState();
 
 
 protected slots:
     void updateSplitterPosition(int pos, int idx);
+    void middleMoved(int delta);
 
 private:
     int range_[2];
     int value_[2];
-    QFrame* middle_;
+    RangeSliderMiddle* middle_;
     int minSeperation_;
 };
+
+class IVW_QTWIDGETS_API RangeSliderMiddle : public QFrame {
+    Q_OBJECT
+public:
+    RangeSliderMiddle(QWidget* parent = nullptr);
+    virtual ~RangeSliderMiddle();
+
+signals:
+    void middleMoved(int delta);
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+
+private:
+    int lastMouseX_;
+    bool drag_;
+};
+
 
 }//namespace
 

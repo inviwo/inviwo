@@ -46,6 +46,11 @@ public:
     virtual ~BasicMesh();
     
     void addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
+    void setVertex(size_t index, vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
+    void setVertexPosition(size_t index, vec3 pos);
+    void setVertexNormal(size_t index, vec3 normal);
+    void setVertexTexCoord(size_t index, vec3 texCoord);
+    void setVertexColor(size_t index, vec4 color);
     IndexBufferRAM* addIndexBuffer(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
 
     virtual std::string getDataInfo() const;
@@ -54,7 +59,7 @@ public:
     const TexCoord3dBuffer* getTexCoords() const;
     const ColorBuffer* getColors() const;
     const NormalBuffer* getNormals() const;
-    
+  
     void append(const BasicMesh* mesh);
     
 
@@ -73,6 +78,12 @@ public:
                                const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
                                const float& radius = 1.0f,
                                const size_t& segments=16);
+    static BasicMesh* line(const vec3& start,
+                            const vec3& stop, 
+                            const vec3& normal,
+                            const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                            const float&width = 1.0f,
+                            const ivec2& res = ivec2(1));
     static BasicMesh* arrow(const vec3& start,
                             const vec3& stop,
                             const vec4& color = vec4(1.0f, 0.0f, 0.0f, 1.0f),

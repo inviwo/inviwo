@@ -31,7 +31,6 @@
 #include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/volume/volumetypeclassification.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -84,7 +83,7 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
     std::istream* f = new std::ifstream(filePath.c_str());
     std::string textLine;
     std::string formatFlag = "";
-    Volume* volume = new UniformRectiLinearVolume();
+    Volume* volume = new Volume();
     glm::mat3 basis(2.0f);
     glm::vec3 offset(0.0f);
     bool hasOffset = false;
@@ -187,7 +186,16 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
             ss >> wtm[3][3];
         } else if (key == "format") {
             ss >> formatFlag;
-            format_ = DataFormatBase::get(formatFlag);
+            // Backward support for USHORT_12 key
+			if (formatFlag == "USHORT_12") {
+				format_ = DataUINT16::get();
+				// Check so that data range has not been set before
+				if (glm::all(glm::equal(datarange, dvec2(0)))) {
+					datarange.y = 4095;
+				}
+			} else {
+				format_ = DataFormatBase::get(formatFlag);
+			}
         } else if (key == "datarange") {
             ss >> datarange.x;
             ss >> datarange.y;
@@ -255,7 +263,7 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
 
     volume->setDataFormat(format_);
 
-    size_t bytes = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getBytesAllocated());
+    size_t bytes = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
 
     if(sequences > 1){
         DataSequence<Volume>* volumeSequence = new DataSequence<Volume>(*volume);
@@ -296,12 +304,12 @@ void DatVolumeReader::readDataInto(void* destination) const {
     std::fstream fin(rawFile_.c_str(), std::ios::in | std::ios::binary);
 
     if (fin.good()) {
-        std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getBytesAllocated());
+        std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
         fin.seekg(filePos_);
         fin.read(static_cast<char*>(destination), size);
 
-        if (!littleEndian_ && format_->getBytesAllocated() > 1) {
-            std::size_t bytes = format_->getBytesAllocated();
+        if (!littleEndian_ && format_->getSize() > 1) {
+            std::size_t bytes = format_->getSize();
             char* temp = new char[bytes];
 
             for (std::size_t i = 0; i < size; i += bytes) {
@@ -321,7 +329,7 @@ void DatVolumeReader::readDataInto(void* destination) const {
 }
 
 void* DatVolumeReader::readData() const {
-    std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getBytesAllocated());
+    std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
     char* data = new char[size];
 
     if (data) {

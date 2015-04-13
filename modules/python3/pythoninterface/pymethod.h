@@ -31,11 +31,10 @@
 #define IVW_PYMEHTODINVIWO_H
 
 #include <modules/python3/python3moduledefine.h>
+#include <modules/python3/pythoninterface/pyvalueparser.h>
 
 #include <vector>
 #include <string>
-#include "pyvalueparser.h"
-
 
 namespace inviwo {
 class IVW_MODULE_PYTHON3_API PyParamBase {

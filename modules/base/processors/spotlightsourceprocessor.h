@@ -32,7 +32,7 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/baselightsource.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/properties/ordinalproperty.h>

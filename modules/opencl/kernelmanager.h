@@ -91,7 +91,7 @@ public:
      * @see cl::Program, cl::Kernel
      * @param program The program containing the Kernel
      * @param kernelName Name of kernel
-     * @return (cl::Kernel*) Pointer to cl::Kernel, NULL if not found. KernelManager manages memory of Kernel, do not delete it.
+     * @return (cl::Kernel*) Pointer to cl::Kernel, nullptr if not found. KernelManager manages memory of Kernel, do not delete it.
      */
     cl::Kernel* getKernel(cl::Program* program, const std::string& kernelName, KernelOwner* owner);
 

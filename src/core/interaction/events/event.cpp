@@ -34,7 +34,7 @@ namespace inviwo {
 Event::Event() : IvwSerializable(), used_(false) {}
 
 Event::Event(const Event& rhs)
-    : used_(rhs.used_)	{
+    : used_(rhs.used_)    {
 }
 
 Event& Event::operator=(const Event& that) {

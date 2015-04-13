@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_POINT_LIGHT_H
@@ -32,24 +32,23 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/baselightsource.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
 
 namespace inviwo {
 
-class PointLight: public LightSource {
+class PointLight : public LightSource {
 public:
-    PointLight(): LightSource() { setFieldOfView(static_cast<float>(2.*M_PI)); }
-    virtual ~PointLight() {};
+    PointLight() : LightSource() { setFieldOfView(static_cast<float>(2. * M_PI)); }
+    virtual ~PointLight(){};
     virtual PointLight* clone() const { return new PointLight(*this); }
 
-    virtual float getArea() const { return 4.f*static_cast<float>(M_PI)*size_.x*size_.y; }
+    virtual float getArea() const { return 4.f * static_cast<float>(M_PI) * size_.x * size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const { return getIntensity()*getArea(); }
-
+    virtual vec3 getPower() const { return getIntensity() * getArea(); }
 
     LightSourceType::Enum getLightSourceType() const { return LightSourceType::LIGHT_POINT; }
 
@@ -69,9 +68,8 @@ public:
 
 protected:
     vec3 position_;
-
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_POINT_LIGHT_H
+#endif  // IVW_POINT_LIGHT_H

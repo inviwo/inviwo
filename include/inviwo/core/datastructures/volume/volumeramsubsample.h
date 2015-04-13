@@ -37,8 +37,6 @@ namespace inviwo {
 
 class IVW_CORE_API VolumeRAMSubSample : public VolumeOperation {
 
-//friend class VolumeHalfSampleCalculator;
-
 public:
     enum FACTOR{
         HALF=2
@@ -47,7 +45,7 @@ public:
     VolumeRAMSubSample(const VolumeRepresentation* in, FACTOR factor) : VolumeOperation(in), factor_(factor) {}
     virtual ~VolumeRAMSubSample() {}
 
-    template<typename T, size_t B>
+    template<typename T>
     void evaluate();
 
     static inline VolumeRAM* apply(const VolumeRepresentation* in, FACTOR factor) {
@@ -67,47 +65,12 @@ private:
 template<typename T>
 class VolumeRAMPrecision;
 
-template<typename T, size_t B>
-class VolumeRAMCustomPrecision;
-
-/*template<typename T>
-class VolumeHalfSampleCalculator {
-public:
-    static void calculate(VolumeRAMSubSample* op, T* dst, const T* src, uvec3 dstDims, uvec3 srcDims){
-        op->halfsample<T, DataFLOAT64::type>(dst, src, dstDims, srcDims);
-    };
-};
-
 template<typename T>
-class VolumeHalfSampleCalculator<glm::detail::tvec2<T, glm::defaultp> > {
-public:
-    static void calculate(VolumeRAMSubSample* op, T* dst, const T* src, uvec3 dstDims, uvec3 srcDims){
-        op->halfsample<T, DataVec2FLOAT64::type>(dst, src, dstDims, srcDims);
-    };
-};
-
-template<typename T>
-class VolumeHalfSampleCalculator<glm::detail::tvec3<T, glm::defaultp> > {
-public:
-    static void calculate(VolumeRAMSubSample* op, T* dst, const T* src, uvec3 dstDims, uvec3 srcDims){
-        op->halfsample<T, DataVec3FLOAT64::type>(dst, src, dstDims, srcDims);
-    };
-};
-
-template<typename T>
-class VolumeHalfSampleCalculator<glm::detail::tvec4<T, glm::defaultp> > {
-public:
-    static void calculate(VolumeRAMSubSample* op, T* dst, const T* src, uvec3 dstDims, uvec3 srcDims){
-        op->halfsample<T, DataVec4FLOAT64::type>(dst, src, dstDims, srcDims);
-    };
-};*/
-
-template<typename T, size_t B>
 void VolumeRAMSubSample::evaluate() {
     const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(getInputVolume());
 
     if (!volume) {
-        setOutput(NULL);
+        setOutput(nullptr);
         return;
     }
 
@@ -121,7 +84,7 @@ void VolumeRAMSubSample::evaluate() {
     size_t dX = static_cast<size_t>(newDims.x);
 
     //allocate space
-    VolumeRAMPrecision<T>* newVolume = new VolumeRAMCustomPrecision<T, B>(newDims);
+    VolumeRAMPrecision<T>* newVolume = new VolumeRAMPrecision<T>(newDims);
 
     //get data pointers
     const T* src = reinterpret_cast<const T*>(volume->getData());

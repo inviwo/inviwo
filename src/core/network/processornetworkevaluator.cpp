@@ -129,7 +129,7 @@ ProcessorNetworkEvaluator::getStoredPredecessors(Processor* processor) const {
     }
     else {
         // processor not found, return reference to empty list of dummy element
-        return processorStates_.find(NULL)->second.pred;
+        return processorStates_.find(nullptr)->second.pred;
     }
 }
 
@@ -191,7 +191,7 @@ void ProcessorNetworkEvaluator::updateProcessorStates() {
     processorStates_.clear();
     // insert dummy processor to be able to return a reference to an 
     // empty predecessor list, if a processor does not exist (getStoredPredecessors())
-    processorStates_.insert(ProcMapPair(NULL, ProcessorState()));
+    processorStates_.insert(ProcMapPair(nullptr, ProcessorState()));
 
     // update all processor states, i.e. collecting predecessors
     std::vector<Processor*>::const_iterator it = processors.begin();
@@ -369,7 +369,6 @@ void ProcessorNetworkEvaluator::requestEvaluate() {
     evaluate();
 }
 
-
 void ProcessorNetworkEvaluator::evaluate() {
     // lock processor network to avoid concurrent evaluation
     processorNetwork_->lock();
@@ -387,39 +386,44 @@ void ProcessorNetworkEvaluator::evaluate() {
         updateProcessorStates();
     }
 
-    std::vector<Processor *>::iterator it = processorsSorted_.begin();
-    while (it != processorsSorted_.end()) {
-        if (!(*it)->isValid()) {
-            if ((*it)->isReady()) {
-                // re-initialize resources (e.g., shaders) if necessary
-                if ((*it)->getInvalidationLevel() >= INVALID_RESOURCES)
-                    (*it)->initializeResources();
-
-                // call onChange for all invalid inports
-                const std::vector<Inport *>& inports = (*it)->getInports();
-                std::vector<Inport *>::const_iterator inport_it = inports.begin();
-                while (inport_it != inports.end()) {
-                    (*inport_it)->callOnChangeIfChanged();
-                     ++inport_it;
+    for (auto processor : processorsSorted_) {
+        if (!processor->isValid()) {
+            if (processor->isReady()) {
+                try {
+                    // re-initialize resources (e.g., shaders) if necessary
+                    if (processor->getInvalidationLevel() >= INVALID_RESOURCES) {
+                        processor->initializeResources();
+                    }
+                    // call onChange for all invalid inports
+                    for (auto inport : processor->getInports()) {
+                        inport->callOnChangeIfChanged();
+                    }
+                } catch (Exception& e) {
+                    LogError(e.getMessage());
+                    processor->setValid();
+                    continue;
                 }
 
-                // do the actual processing
-                #if IVW_PROFILING 
-                (*it)->notifyObserversAboutToProcess(*it);
-                #endif
-                (*it)->process();
-                #if IVW_PROFILING 
-                (*it)->notifyObserversFinishedProcess(*it);
+                #if IVW_PROFILING
+                processor->notifyObserversAboutToProcess(processor);
                 #endif
 
+                try {
+                    // do the actual processing
+                    processor->process();
+                } catch (Exception& e) {
+                    LogError(e.getMessage());
+                }
                 // set processor as valid
-                (*it)->setValid();
-            }
-            else{
-                (*it)->doIfNotReady();
+                processor->setValid();
+
+                #if IVW_PROFILING
+                processor->notifyObserversFinishedProcess(processor);
+                #endif
+            } else {
+                processor->doIfNotReady();
             }
         }
-        ++it;
     }
     resetProcessorVisitedStates();
 

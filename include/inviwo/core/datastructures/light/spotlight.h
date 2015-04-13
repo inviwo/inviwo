@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SPOT_LIGHT_H
@@ -32,24 +32,28 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/baselightsource.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
 
 namespace inviwo {
 
-class SpotLight: public LightSource {
+class SpotLight : public LightSource {
 public:
-    SpotLight(): LightSource() {}
-    virtual ~SpotLight() {};
+    SpotLight() : LightSource() {}
+    virtual ~SpotLight(){};
     virtual SpotLight* clone() const { return new SpotLight(*this); }
 
-    virtual float getArea() const { return size_.x*size_.y; }
+    virtual float getArea() const { return size_.x * size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const { return getIntensity()*2.f*static_cast<float>(M_PI)*(1.f - 5.f*(glm::cos<float>(glm::radians(coneRadiusAngle_))+glm::cos<float>(glm::radians(coneFallOffAngle_)))); }
-
+    virtual vec3 getPower() const {
+        return getIntensity() * 2.f * static_cast<float>(M_PI) *
+               (1.f -
+                5.f * (glm::cos<float>(glm::radians(coneRadiusAngle_)) +
+                       glm::cos<float>(glm::radians(coneFallOffAngle_))));
+    }
 
     LightSourceType::Enum getLightSourceType() const { return LightSourceType::LIGHT_CONE; }
 
@@ -117,20 +121,23 @@ public:
     float getFullVisbilityValue() const { return glm::cos<float>(glm::radians(coneRadiusAngle_)); }
 
     /**
-     * Get value for checking partial visibility (inside cone + falloff angle) against the light source.
+     * Get value for checking partial visibility (inside cone + falloff angle) against the light
+     *source.
      *
-     * @return Value for checking partial visibility (inside cone + falloff angle) against the light source.
+     * @return Value for checking partial visibility (inside cone + falloff angle) against the light
+     *source.
      */
-    float getPartialVisbilityValue() const { return glm::cos<float>(glm::radians(coneRadiusAngle_+coneFallOffAngle_)); }
+    float getPartialVisbilityValue() const {
+        return glm::cos<float>(glm::radians(coneRadiusAngle_ + coneFallOffAngle_));
+    }
 
 protected:
     vec3 position_;
     vec3 direction_;
     float coneRadiusAngle_;
     float coneFallOffAngle_;
-
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_SPOT_LIGHT_H
+#endif  // IVW_SPOT_LIGHT_H

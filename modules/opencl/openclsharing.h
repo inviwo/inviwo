@@ -52,7 +52,7 @@ class IVW_MODULE_OPENCL_API OpenCLImageSharing: public ReferenceCounter {
     friend class LayerCLGL;
     friend class VolumeCLGL;
 public:
-    OpenCLImageSharing(cl::Image* sharedMemory = NULL): ReferenceCounter(), sharedMemory_(sharedMemory) {}
+    OpenCLImageSharing(cl::Image* sharedMemory = nullptr): ReferenceCounter(), sharedMemory_(sharedMemory) {}
 
     cl::Image* sharedMemory_;
 private:
@@ -67,7 +67,7 @@ typedef std::map<BufferObject*, OpenCLBufferSharing*> CLBufferSharingMap;
 class IVW_MODULE_OPENCL_API OpenCLBufferSharing: public ReferenceCounter {
     friend class BufferCLGL;
 public:
-    OpenCLBufferSharing(cl::Buffer* sharedMemory = NULL): ReferenceCounter(), sharedMemory_(sharedMemory) {}
+    OpenCLBufferSharing(cl::Buffer* sharedMemory = nullptr): ReferenceCounter(), sharedMemory_(sharedMemory) {}
 
     cl::Buffer* sharedMemory_;
 private:

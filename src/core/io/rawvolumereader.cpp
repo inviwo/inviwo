@@ -31,7 +31,6 @@
 #include <inviwo/core/io/rawvolumereader.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/datastructures/volume/volumetypeclassification.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 
@@ -122,7 +121,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
         // Center the data around origo.
         glm::vec3 offset(-0.5f*(basis[0]+basis[1]+basis[2]));
 
-        Volume* volume = new UniformRectiLinearVolume();
+        Volume* volume = new Volume();
         volume->setBasis(basis);
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);
@@ -132,7 +131,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
         vd->setDataReader(this->clone());
         volume->addRepresentation(vd);
         std::string size = formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *
-                                               (format_->getBytesStored()));
+                                               (format_->getSize()));
         LogInfo("Loaded volume: " << filePath << " size: " << size);
         return volume;
     } else {
@@ -144,11 +143,11 @@ void RawVolumeReader::readDataInto(void* destination) const {
     std::fstream fin(rawFile_.c_str(), std::ios::in | std::ios::binary);
 
     if (fin.good()) {
-        std::size_t size = dimensions_.x*dimensions_.y*dimensions_.z*(format_->getBytesStored());
+        std::size_t size = dimensions_.x*dimensions_.y*dimensions_.z*(format_->getSize());
         fin.read(static_cast<char*>(destination), size);
 
-        if (!littleEndian_ && format_->getBytesStored() > 1) {
-            std::size_t bytes = format_->getBytesStored();
+        if (!littleEndian_ && format_->getSize() > 1) {
+            std::size_t bytes = format_->getSize();
             char* temp = new char[bytes];
 
             for (std::size_t i = 0; i < size; i += bytes) {
@@ -168,7 +167,7 @@ void RawVolumeReader::readDataInto(void* destination) const {
 }
 
 void* RawVolumeReader::readData() const {
-    std::size_t size = dimensions_.x*dimensions_.y*dimensions_.z*(format_->getBytesStored());
+    std::size_t size = dimensions_.x*dimensions_.y*dimensions_.z*(format_->getSize());
     char* data = new char[size];
 
     if (data)

@@ -69,7 +69,6 @@ Canvas::Canvas(uvec2 dimensions)
         texCoordsBufferRAM->add(vec2(1.0f, 1.0f));
 
         IndexBuffer* indices_ = new IndexBuffer();
-        Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP);
         IndexBufferRAM* indexBufferRAM = indices_->getEditableRepresentation<IndexBufferRAM>();
         indexBufferRAM->add(0);
         indexBufferRAM->add(1);

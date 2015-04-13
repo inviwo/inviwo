@@ -44,9 +44,6 @@ public:
                  InvalidationLevel invalidationLevel=INVALID_OUTPUT);
     virtual ~VolumeInport();
 
-    void initialize();
-    void deinitialize();
-
     uvec3 getColorCode() const;
     static uvec3 colorCode;
     virtual std::string getClassIdentifier() const {return "org.inviwo.VolumeInport";}
@@ -58,9 +55,6 @@ public:
     VolumeOutport(std::string identifier,
                   InvalidationLevel invalidationLevel=INVALID_OUTPUT);
     virtual ~VolumeOutport();
-
-    void initialize();
-    void deinitialize();
 
     uvec3 getColorCode() const;
     virtual std::string getClassIdentifier() const {return "org.inviwo.VolumeOutport";}

@@ -28,8 +28,11 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 #include <QTextDocument>
 #include <QTextBlock>
@@ -99,19 +102,32 @@ private:
     std::vector<QRegExp> regexps_;
 };
 
+
+static inline QColor ivec4toQtColor(const ivec4 &i){
+    return QColor(i.r, i.g, i.b, i.a);
+}
+
 template<>
 void SyntaxHighligther::loadConfig<Python>() {
-    QColor textColor;
-    QColor bgColor;
-    textColor.setNamedColor("#111111");
-    bgColor.setNamedColor("#888888");
+    auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    
+    QColor textColor = ivec4toQtColor(sysSettings->pyTextColor_.get());
+    QColor bgColor = ivec4toQtColor(sysSettings->pyBGColor_.get());
     defaultFormat_.setBackground(bgColor);
     defaultFormat_.setForeground(textColor);
     QTextCharFormat typeformat,commentformat;
     typeformat.setBackground(bgColor);
-    typeformat.setForeground(QColor("#143Ca6"));
+    typeformat.setForeground(ivec4toQtColor(sysSettings->pyTypeColor_.get()));
     commentformat.setBackground(bgColor);
-    commentformat.setForeground(QColor("#006600"));
+    commentformat.setForeground(ivec4toQtColor(sysSettings->pyCommentsColor_.get()));
+    if (formaters_.empty())
+        sysSettings->pythonSyntax_.onChange(this, &SyntaxHighligther::loadConfig<Python>);
+    else{
+        while (!formaters_.empty()) {
+            delete formaters_.back();
+            formaters_.pop_back();
+        }
+    }
     formaters_.push_back(new PythonKeywordFormater(typeformat,python_keywords));
     formaters_.push_back(new PythonCommentFormater(commentformat));
 }

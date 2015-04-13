@@ -54,7 +54,7 @@ out vec4 permutedPosInvSec_;
 void main() {
     int i;
     texCoord_.z = (instanceID_[0] * lightVolumeParameters_.reciprocalDimensions.z) 
-					+ (0.5 * lightVolumeParameters_.reciprocalDimensions.z);
+                    + (0.5 * lightVolumeParameters_.reciprocalDimensions.z);
     texCoord_.w = 1.f;
     gl_Layer = instanceID_[0];
 

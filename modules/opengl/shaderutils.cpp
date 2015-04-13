@@ -35,37 +35,41 @@ namespace inviwo {
 namespace utilgl {
 
 void addShaderDefines(Shader* shader, const SimpleLightingProperty& property) {
+    addShaderDefines(shader, ShadingMode::Modes(property.shadingMode_.get()));
+}
+
+void addShaderDefines(Shader* shader, const ShadingMode::Modes& mode) {
     // implementations in  modules/opengl/glsl/utils/shading.glsl
     std::string shadingKey =
         "APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, "
         "materialSpecularColor, position, normal, toCameraDir)";
     std::string shadingValue = "";
 
-    switch (property.shadingMode_.get()) {
-        case ShadingMode::Ambient:
-            shadingValue = "shadeAmbient(lighting, materialAmbientColor);";
-            break;
-        case ShadingMode::Diffuse:
-            shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal);";
-            break;
-        case ShadingMode::Specular:
-            shadingValue =
-                "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir);";
-            break;
-        case ShadingMode::BlinnPhong:
-            shadingValue =
-                "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir);";
-            break;
-        case ShadingMode::Phong:
-            shadingValue =
-                "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
-                "materialSpecularColor, position, normal, toCameraDir);";
-            break;
-        case ShadingMode::None:
-        default:
-            shadingValue = "materialAmbientColor;";
-            break;
+    switch (mode) {
+    case ShadingMode::Ambient:
+        shadingValue = "shadeAmbient(lighting, materialAmbientColor);";
+        break;
+    case ShadingMode::Diffuse:
+        shadingValue = "shadeDiffuse(lighting, materialDiffuseColor, position, normal);";
+        break;
+    case ShadingMode::Specular:
+        shadingValue =
+            "shadeSpecular(lighting, materialSpecularColor, position, normal, toCameraDir);";
+        break;
+    case ShadingMode::BlinnPhong:
+        shadingValue =
+            "shadeBlinnPhong(lighting, materialAmbientColor, materialDiffuseColor, "
+            "materialSpecularColor, position, normal, toCameraDir);";
+        break;
+    case ShadingMode::Phong:
+        shadingValue =
+            "shadePhong(lighting, materialAmbientColor, materialDiffuseColor, "
+            "materialSpecularColor, position, normal, toCameraDir);";
+        break;
+    case ShadingMode::None:
+    default:
+        shadingValue = "materialAmbientColor;";
+        break;
     }
 
     shader->getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
@@ -87,6 +91,17 @@ void setShaderUniforms(Shader* shader, const CameraProperty& property, std::stri
     shader->setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());
     shader->setUniform(name + ".clipToWorld",
                        property.inverseViewMatrix() * property.inverseProjectionMatrix());
+    shader->setUniform(name + ".position", property.getLookFrom());
+    shader->setUniform(name + ".nearPlane", property.getNearPlaneDist());
+    shader->setUniform(name + ".farPlane", property.getFarPlaneDist());
+}
+
+void setShaderUniforms(Shader* shader, const CameraBase& property, std::string name) {
+    shader->setUniform(name + ".worldToView", property.viewMatrix());
+    shader->setUniform(name + ".viewToWorld", property.inverseViewMatrix());
+    shader->setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());
+    shader->setUniform(name + ".clipToWorld",
+        property.inverseViewMatrix() * property.inverseProjectionMatrix());
     shader->setUniform(name + ".position", property.getLookFrom());
     shader->setUniform(name + ".nearPlane", property.getNearPlaneDist());
     shader->setUniform(name + ".farPlane", property.getFarPlaneDist());
@@ -217,6 +232,12 @@ void addShaderDefines(Shader* shader, const SimpleRaycastingProperty& property) 
 void setShaderUniforms(Shader* shader, const SimpleRaycastingProperty& property) {
     shader->setUniform("samplingRate_", property.samplingRate_.get());
     shader->setUniform("isoValue_", property.isoValue_.get());
+}
+
+void setShaderUniforms(Shader* shader, const SimpleRaycastingProperty& property,
+                       std::string name) {
+    shader->setUniform(name + ".samplingRate", property.samplingRate_.get());
+    shader->setUniform(name + ".isoValue", property.isoValue_.get());
 }
 
 void addShaderDefines(Shader* shader, const VolumeIndicatorProperty& property) {

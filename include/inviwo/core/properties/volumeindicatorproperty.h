@@ -32,50 +32,11 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/templateproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/planeproperty.h>
 
 namespace inviwo {
-
-/**
- * \class PlaneProperty
- *
- * \brief A Property that represents a plane
- *
- * A Plane is represented by a plane normal and a point that is in the plane.
- * The property also holds a color for drawing the plane. A bool for turning it on an and off.
- * And a mode for various ways of rendring the plane.
- */
-class IVW_CORE_API PlaneProperty : public CompositeProperty { 
-public:
-    InviwoPropertyInfo();
-
-    PlaneProperty(std::string identifier, std::string displayName,
-                            InvalidationLevel invalidationLevel = INVALID_OUTPUT,
-                            PropertySemantics semantics = PropertySemantics::Default);
-
-    PlaneProperty(const PlaneProperty& rhs);
-    PlaneProperty& operator=(const PlaneProperty& that);
-    virtual PlaneProperty* clone() const;
-    virtual ~PlaneProperty();
-    virtual std::string getClassIdentifierForWidget() const;
-
-    BoolProperty enable_;
-    OptionPropertyInt mode_;
-    FloatVec3Property position_;
-    FloatVec3Property normal_;
-    FloatVec4Property color_;
-
-private:
-    void onModeChange();
-};
-
-
-
-
 
 /**
  * \class VolumeIndicatorProperty

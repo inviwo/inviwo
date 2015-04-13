@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DIFFUSE_LIGHT_H
@@ -32,24 +32,23 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/baselightsource.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
 
 namespace inviwo {
 
-class DiffuseLight: public LightSource {
+class DiffuseLight : public LightSource {
 public:
-    DiffuseLight(): LightSource() {}
-    virtual ~DiffuseLight() {};
+    DiffuseLight() : LightSource() {}
+    virtual ~DiffuseLight(){};
     virtual DiffuseLight* clone() const { return new DiffuseLight(*this); }
 
-    virtual float getArea() const { return size_.x*size_.y; }
+    virtual float getArea() const { return size_.x * size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const { return getIntensity()*getArea()*static_cast<float>(M_PI); }
-
+    virtual vec3 getPower() const { return getIntensity() * getArea() * static_cast<float>(M_PI); }
 
     LightSourceType::Enum getLightSourceType() const { return LightSourceType::LIGHT_AREA; }
 
@@ -69,9 +68,8 @@ public:
 
 protected:
     vec3 normal_;
-
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_DIFFUSE_LIGHT_H
+#endif  // IVW_DIFFUSE_LIGHT_H

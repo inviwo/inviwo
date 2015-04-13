@@ -30,8 +30,6 @@
 #ifndef IVW_SPATIALDATA_H
 #define IVW_SPATIALDATA_H
 
-#pragma warning(disable : 4355)
-
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
@@ -127,6 +125,9 @@ protected:
     Matrix<N + 1, float> worldMatrix_;
 };
 
+extern template class IVW_CORE_API SpatialEntity<2>;
+extern template class IVW_CORE_API SpatialEntity<3>;
+
 template <unsigned int N>
 class StructuredGridEntity : public SpatialEntity<N> {
 public:
@@ -174,30 +175,30 @@ protected:
 
 template <unsigned int N>
 SpatialEntity<N>::SpatialEntity()
-    : transformer_(NULL)
-    , cameraTransformer_(NULL)
+    : transformer_(nullptr)
+    , cameraTransformer_(nullptr)
     , modelMatrix_(1.0f)
     , worldMatrix_(1.0f) {}
 
 template <unsigned int N>
 SpatialEntity<N>::SpatialEntity(const SpatialEntity<N>& rhs)
-    : transformer_(NULL)
-    , cameraTransformer_(NULL)
+    : transformer_(nullptr)
+    , cameraTransformer_(nullptr)
     , modelMatrix_(rhs.modelMatrix_)
     , worldMatrix_(rhs.worldMatrix_) {}
 
 template <unsigned int N>
 SpatialEntity<N>::SpatialEntity(const Matrix<N + 1, float>& modelMatrix)
-    : transformer_(NULL)
-    , cameraTransformer_(NULL)
+    : transformer_(nullptr)
+    , cameraTransformer_(nullptr)
     , modelMatrix_(modelMatrix)
     , worldMatrix_(1.0f) {}
 
 template <unsigned int N>
 SpatialEntity<N>::SpatialEntity(const Matrix<N + 1, float>& modelMatrix,
                                 const Matrix<N + 1, float>& worldMatrix)
-    : transformer_(NULL)
-    , cameraTransformer_(NULL)
+    : transformer_(nullptr)
+    , cameraTransformer_(nullptr)
     , modelMatrix_(modelMatrix)
     , worldMatrix_(worldMatrix) {}
 
@@ -212,8 +213,8 @@ SpatialEntity<N>& SpatialEntity<N>::operator=(const SpatialEntity<N>& that) {
 
 template <unsigned int N>
 SpatialEntity<N>::~SpatialEntity() {
-    if (transformer_) delete transformer_;
-    if (cameraTransformer_) delete cameraTransformer_;
+    delete transformer_;
+    delete cameraTransformer_;
 }
 
 template <unsigned int N>
@@ -383,4 +384,6 @@ const StructuredCameraCoordinateTransformer<N>& inviwo::StructuredGridEntity<N>:
 }
 
 }  // namespace
+
 #endif  // IVW_SPATIALDATA_H
+

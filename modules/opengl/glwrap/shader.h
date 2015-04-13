@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SHADER_H
@@ -39,19 +39,23 @@
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Shader {
-
 public:
-    typedef std::map<GLenum, ShaderObject*> ShaderObjectMap;
+    typedef std::map<GLenum, ShaderObject *> ShaderObjectMap;
 
     Shader(std::string fragmentFilename, bool linkShader = true);
     Shader(std::string vertexFilename, std::string fragmentFilename, bool linkShader = true);
-    Shader(std::string vertexFilename, std::string geometryFilename, std::string fragmentFilename, bool linkShader = true);
-    Shader(const char* fragmentFilename, bool linkShader = true);
-    Shader(const char* vertexFilename,const char* fragmentFilename, bool linkShader = true);
-    Shader(const char* vertexFilename,const char* geometryFilename,const char* fragmentFilename, bool linkShader = true);
+    Shader(std::string vertexFilename, std::string geometryFilename, std::string fragmentFilename,
+           bool linkShader = true);
+    Shader(const char *fragmentFilename, bool linkShader = true);
+    Shader(const char *vertexFilename, const char *fragmentFilename, bool linkShader = true);
+    Shader(const char *vertexFilename, const char *geometryFilename, const char *fragmentFilename,
+           bool linkShader = true);
 
-    //Takes ownership of shader objects in vector
-    Shader(std::vector<ShaderObject*>& shaderObjects, bool linkShader=true);
+    Shader(const Shader& rhs);
+    Shader& operator=(const Shader& that);
+
+    // Takes ownership of shader objects in vector
+    Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader = true);
 
     virtual ~Shader();
 
@@ -60,32 +64,32 @@ public:
     void rebuild();
 
     unsigned int getID() const { return id_; }
-    const ShaderObjectMap* getShaderObjects() { return shaderObjects_; }
+    const ShaderObjectMap *getShaderObjects() { return &shaderObjects_; }
 
-    ShaderObject* getVertexShaderObject() const;
-    ShaderObject* getGeometryShaderObject() const;
-    ShaderObject* getFragmentShaderObject() const;
+    ShaderObject *getVertexShaderObject() const;
+    ShaderObject *getGeometryShaderObject() const;
+    ShaderObject *getFragmentShaderObject() const;
 
     void activate();
     void deactivate();
 
-    void setUniform(const std::string &name, const GLint &value)const;
-    void setUniform(const std::string &name, const GLint* value, int count)const;
-    void setUniform(const std::string &name, const GLfloat &value)const;
-    void setUniform(const std::string &name, const GLfloat* value, int count)const;
-    void setUniform(const std::string &name, const vec2 &value)const;
-    void setUniform(const std::string &name, const vec3 &value)const;
-    void setUniform(const std::string &name, const vec4 &value)const;
-    void setUniform(const std::string &name, const ivec2 &value)const;
-    void setUniform(const std::string &name, const ivec3 &value)const;
-    void setUniform(const std::string &name, const ivec4 &value)const;
-    void setUniform(const std::string &name, const mat3 &value)const;
-    void setUniform(const std::string &name, const mat4 &value)const;
+    void setUniform(const std::string &name, const GLint &value) const;
+    void setUniform(const std::string &name, const GLint *value, int count) const;
+    void setUniform(const std::string &name, const GLfloat &value) const;
+    void setUniform(const std::string &name, const GLfloat *value, int count) const;
+    void setUniform(const std::string &name, const vec2 &value) const;
+    void setUniform(const std::string &name, const vec3 &value) const;
+    void setUniform(const std::string &name, const vec4 &value) const;
+    void setUniform(const std::string &name, const ivec2 &value) const;
+    void setUniform(const std::string &name, const ivec3 &value) const;
+    void setUniform(const std::string &name, const ivec4 &value) const;
+    void setUniform(const std::string &name, const mat3 &value) const;
+    void setUniform(const std::string &name, const mat4 &value) const;
 
 private:
     unsigned int id_;
 
-    ShaderObjectMap* shaderObjects_;
+    ShaderObjectMap shaderObjects_;
 
     void initialize();
     void linkAndRegister(bool linkShader);
@@ -93,13 +97,13 @@ private:
 
     void createAndAddShader(GLenum, std::string, bool);
 
-    void attachShaderObject(ShaderObject* shaderObject);
-    void detachShaderObject(ShaderObject* shaderObject);
+    void attachShaderObject(ShaderObject *shaderObject);
+    void detachShaderObject(ShaderObject *shaderObject);
 
     void attachAllShaderObjects();
     void detachAllShaderObject();
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_SHADER_H
+#endif  // IVW_SHADER_H

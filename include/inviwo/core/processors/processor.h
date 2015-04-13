@@ -96,7 +96,19 @@ public:
     ProcessorWidget* getProcessorWidget() const;
     bool hasProcessorWidget() const;
 
+
+    /**
+     * Initialize is called once before the first time the process function of the processor
+     * is called. It is called by the processor network evaluator. Override to add resource
+     * allocation in your processor. Make sure to call the base class initialize first.
+     */
     virtual void initialize();
+
+    /*
+     *	Deinitialize is called once before the processor is deleted by the processor network
+     *	Override to delete resources allocated in initialize. Make sure to call the base class 
+     *	deinitialize last.
+     */  
     virtual void deinitialize();
     bool isInitialized() const;
 
@@ -128,14 +140,14 @@ public:
     // Proccessor::invalidate()
     // in your reimplemented invalidation function.
     virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = 0);
+                            Property* modifiedProperty = nullptr);
 
-    // Triggers invalidation of succesors.
+    // Triggers invalidation of successors.
     // Perform only full reimplementation of this function, meaning never call
     // Proccessor::invalidateSuccesors()
     // in your reimplemented invalidation function.
     virtual void invalidateSuccesors(InvalidationLevel invalidationLevel,
-                                     Property* modifiedProperty = 0);
+                                     Property* modifiedProperty = nullptr);
 
     virtual void setValid();
     virtual void initializeResources() {}  // reload shaders etc. here

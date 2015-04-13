@@ -30,16 +30,18 @@
 #ifndef IVW_INVIWO_H
 #define IVW_INVIWO_H
 
-#pragma warning(disable: 4290)
+//#pragma warning(3: 4290) // ignore that throw(*) is ignored
 
-//#pragma warning(default: 4640) // non thread safe construction of object
-#pragma warning(default: 4514) // never used function
-#pragma warning(default: 4296) // expression is always false
-#pragma warning(default: 4061) // enum
-#pragma warning(default: 4062) // enum
-#pragma warning(default: 4266) // warn if no overide of function in baseclass
-#pragma warning(default: 4265) // warn if non-virtual destructor
-#pragma warning(default: 4263) // warn for virtual functions that do not overide something in baseclass
+//#pragma warning(3: 4640) // non thread safe construction of object
+//#pragma warning(3: 4514) // The optimizer removed an inline function that is not called.
+#pragma warning(3: 4296) // expression is always false
+#pragma warning(3: 4061) // enum
+#pragma warning(3: 4062) // enum
+#pragma warning(3: 4266) // warn if no overide of function in baseclass
+#pragma warning(3: 4265) // warn if non-virtual destructor
+#pragma warning(3: 4263) // warn for virtual functions that do not overide something in baseclass
+
+#pragma warning(disable: 4251) // 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
 
 #define NOMINMAX
 
@@ -86,7 +88,7 @@
 #include <fstream>
 #include <stdio.h>
 
-#include <inviwo/core/common/inviwocommondefines.h>
+#include <inviwocommondefines.h>
 
 // include glm
 #include <inviwo/core/util/glm.h>

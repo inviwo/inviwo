@@ -161,6 +161,15 @@ void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
 
         // TODO: Desktop screen info should be added to system capabilities
         ivec2 pos = getEditorWidget()->getEditorPositionMetaData();
+
+#ifdef WIN32
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        QPoint decorationOffset(static_cast<InviwoApplicationQt*>(InviwoApplicationQt::getPtr())->getWindowDecorationOffset());
+        pos.x -= decorationOffset.x();
+        pos.y -= decorationOffset.y();
+#endif
+#endif
+
         QDesktopWidget* desktop = QApplication::desktop();
         int primaryScreenIndex = desktop->primaryScreen();
         QRect wholeScreenGeometry = desktop->screenGeometry(primaryScreenIndex);
@@ -174,7 +183,9 @@ void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
         wholeScreenGeometry.setRect(wholeScreenGeometry.x() - 10, wholeScreenGeometry.y() - 10,
                                     wholeScreenGeometry.width() + 20,
                                     wholeScreenGeometry.height() + 20);
-        QPoint bottomRight = QPoint(pos.x + this->width(), pos.y + this->height());
+        // Because the widget is hidden, this->width() and this->height() do not 
+        // contain the updated values!
+        QPoint bottomRight = QPoint(pos.x + widgetDimension.x, pos.y + widgetDimension.y);
 
         QPoint appPos = app->getMainWindow()->pos();
 

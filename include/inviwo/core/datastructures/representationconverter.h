@@ -64,7 +64,7 @@ public:
     virtual ~RepresentationConverterType() {};
 
     bool canConvertTo(const DataRepresentation* destination) const {
-        return dynamic_cast<const TO*>(destination) != NULL;
+        return dynamic_cast<const TO*>(destination) != nullptr;
     }
 };
 
@@ -103,7 +103,7 @@ public:
                 return (*it)->createFrom(source);
         }
 
-        return NULL;
+        return nullptr;
     }
     virtual void update(const DataRepresentation* source, DataRepresentation* destination) {
         for (std::vector<RepresentationConverter*>::iterator it = converters_->begin() ; it != converters_->end(); ++it) {
@@ -119,6 +119,13 @@ public:
 private:
     std::vector<RepresentationConverter*>* converters_;
 };
+
+class IVW_CORE_API ConverterException : public Exception {
+public:
+    ConverterException(const std::string& message = "") : Exception(message) {}
+    virtual ~ConverterException() throw() {}
+};
+
 
 } // namespace
 

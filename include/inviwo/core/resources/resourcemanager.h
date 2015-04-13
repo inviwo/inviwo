@@ -84,7 +84,7 @@ public:
      * Get Resource using identifier.
      *
      * @param identifier Resource identifier.
-     * @return NULL if the resource was not found, otherwise pointer to resource.
+     * @return nullptr if the resource was not found, otherwise pointer to resource.
      */
     Resource* getResource(const std::string& identifier);
 
@@ -92,7 +92,7 @@ public:
      * Get Resource using identifier and cast it to type.
      *
      * @param identifier Resource identifier.
-     * @return NULL if the resource was not found or dymanic cast failed, otherwise pointer to resource.
+     * @return nullptr if the resource was not found or dymanic cast failed, otherwise pointer to resource.
      */
     template<typename T> T* getResourceAs(const std::string& identifier);
 
@@ -102,7 +102,7 @@ public:
      * @param identifier Resource identifier.
      * @return True if it exists, false otherwise.
      */
-    bool hasResource(const std::string& identifier) { return getResource(identifier) != NULL; };
+    bool hasResource(const std::string& identifier) { return getResource(identifier) != nullptr; };
     /**
      * Returns a vector of Resources which are of type T. In case no Resources match T
      * an empty vector is returned.

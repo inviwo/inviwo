@@ -24,22 +24,21 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/glwrap/bufferobject.h>
 
 namespace inviwo {
 
-BufferObject::BufferObject(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage,
-                           GLenum target /*= GL_ARRAY_BUFFER*/)
-    : Observable<BufferObjectObserver>(), ReferenceCounter()
+BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferType type,
+                           BufferUsage usage, GLenum target /*= GL_ARRAY_BUFFER*/)
+    : Observable<BufferObjectObserver>()
+    , ReferenceCounter()
     , target_(target)
     , glFormat_(getGLFormats()->getGLFormat(format->getId()))
     , type_(type) {
-    
-    switch (usage)
-    {
+    switch (usage) {
         case DYNAMIC:
             usageGL_ = GL_DYNAMIC_DRAW;
             break;
@@ -49,78 +48,57 @@ BufferObject::BufferObject(size_t size, const DataFormatBase* format, BufferType
             break;
     }
 
-    initialize();
+    glGenBuffers(1, &id_);
+
+    initialize(nullptr, sizeInBytes);
+
     LGL_ERROR_SUPPRESS;
 }
 
 BufferObject::BufferObject(const BufferObject& rhs)
-    : Observable<BufferObjectObserver>(), ReferenceCounter()
+    : Observable<BufferObjectObserver>()
+    , ReferenceCounter()
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
     , type_(rhs.type_) {
-    
-    initialize();
+    glGenBuffers(1, &id_);
+
     // TODO: Verify that data copying works. What about backwards compability?
     // Initialize size of buffer
     initialize(nullptr, rhs.sizeInBytes_);
-    // Now bind the second buffer, this buffer is already bound 
+    // Now bind the second buffer, this buffer is already bound
     glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
     // Copy data (OpenGL 3.1 functionality...)
     glCopyBufferSubData(GL_COPY_READ_BUFFER, target_, 0, 0, sizeInBytes_);
 }
 
-BufferObject::~BufferObject() {
-    deinitialize();
-}
+BufferObject::~BufferObject() { glDeleteBuffers(1, &id_); }
 
-BufferObject* BufferObject::clone() const {
-    return new BufferObject(*this);
-}
+BufferObject* BufferObject::clone() const { return new BufferObject(*this); }
 
-void BufferObject::initialize() {
-    // Generate a new buffer
-    glGenBuffers(1, &id_);
-}
+GLenum BufferObject::getFormatType() const { return glFormat_.type; }
 
-void BufferObject::deinitialize() {
-    glDeleteBuffers(1, &id_);
-}
+GLuint BufferObject::getId() const { return id_; }
 
-GLenum BufferObject::getFormatType() const {
-    return glFormat_.type;
-}
+void BufferObject::bind() const { glBindBuffer(target_, id_); }
 
-GLuint BufferObject::getId() const {
-    return id_;
-}
-
-void BufferObject::bind() const {
-    glBindBuffer(target_, id_);
-}
-
-void BufferObject::unbind() const {
-    glBindBuffer(target_, 0);
-}
+void BufferObject::unbind() const { glBindBuffer(target_, 0); }
 
 void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     sizeInBytes_ = sizeInBytes;
 
     // Notify observers
-    ObserverSet::iterator endIt = observers_->end();
-
-    for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-        // static_cast can be used since only template class objects can be added
-        static_cast<BufferObjectObserver*>(*it)->onBeforeBufferInitialization();
+    for (auto observer : *observers_) {
+        static_cast<BufferObjectObserver*>(observer)->onBeforeBufferInitialization();
     }
 
     bind();
     // Allocate and transfer possible data
     glBufferData(target_, sizeInBytes, data, usageGL_);
 
-    for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-        // static_cast can be used since only template class objects can be added
-        static_cast<BufferObjectObserver*>(*it)->onAfterBufferInitialization();
+    for (auto observer : *observers_) {
+        static_cast<BufferObjectObserver*>(observer)->onAfterBufferInitialization();
     }
 }
 
@@ -135,8 +113,7 @@ void BufferObject::download(void* data) const {
     void* gldata = glMapBuffer(target_, GL_READ_ONLY);
 
     // Copy data if valid pointer
-    if (gldata)
-    {
+    if (gldata) {
         memcpy(data, gldata, sizeInBytes_);
         // Unmap buffer after using it
         glUnmapBufferARB(target_);
@@ -145,5 +122,4 @@ void BufferObject::download(void* data) const {
     }
 }
 
-} // namespace
-
+}  // namespace

@@ -334,14 +334,21 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
 }
 
 void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index) {
-    properties_.insert(properties_.begin()+index, prop);
+    std::vector<Property*>::iterator insertPoint = properties_.begin() + index;
+    if (insertPoint!=properties_.end()) ++insertPoint;
+    
+    properties_.insert(insertPoint, prop);
 
     PropertyWidgetQt* propertyWidget =
         static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
 
     if (propertyWidget) {
-        propertyWidgetGroupLayout_->insertWidget(static_cast<int>(index), propertyWidget);
-        propertyWidgets_.insert(propertyWidgets_.begin()+index, propertyWidget);
+        propertyWidgetGroupLayout_->insertWidget(static_cast<int>(index + 1), propertyWidget);
+
+        auto widgetInsertPoint = propertyWidgets_.begin()+index;
+        if (widgetInsertPoint != propertyWidgets_.end()) ++widgetInsertPoint;
+
+        propertyWidgets_.insert(widgetInsertPoint, propertyWidget);
         prop->registerWidget(propertyWidget);
         connect(propertyWidget, SIGNAL(usageModeChanged()), this, SLOT(updateContextMenu()));
         connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)),

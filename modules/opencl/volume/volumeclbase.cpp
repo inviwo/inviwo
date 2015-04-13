@@ -35,7 +35,7 @@
 namespace inviwo {
 
 VolumeCLBase::VolumeCLBase()
-    : clImage_(NULL), volumeStruct_(sizeof(VolumeParameters), DataUINT8::get())
+    : clImage_(nullptr), volumeStruct_(sizeof(VolumeParameters), DataUINT8::get())
 {
     volumeStruct_.addRepresentation(new BufferRAMPrecision<glm::u8>(sizeof(VolumeParameters), DataUINT8::get()));
     ivwAssert(volumeStruct_.getSize() == 512, "VolumeParameters must have a size that is power of two, currently " << volumeStruct_.getSize())

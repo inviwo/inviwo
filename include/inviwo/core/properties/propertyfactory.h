@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYFACTORY_H
@@ -38,30 +38,28 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PropertyFactory : public Factory,
-    public Singleton<PropertyFactory> {
-
+class IVW_CORE_API PropertyFactory : public Factory, public Singleton<PropertyFactory> {
 public:
     PropertyFactory();
     ~PropertyFactory();
 
-    void registeryObject(PropertyFactoryObject* property);
+    void registeryObject(PropertyFactoryObject *property);
 
-    virtual IvwSerializable* create(const std::string &className) const;
+    virtual IvwSerializable *create(const std::string &className) const;
 
     virtual Property *getProperty(const std::string &className, const std::string &identifier,
-        const std::string &displayName);
+                                  const std::string &displayName) const;
 
     virtual bool isValidType(const std::string &className) const;
 
-    std::vector<std::string> getRegistedPropertyClassNames();
+    std::vector<std::string> getRegistedPropertyClassNames() const;
 
-    typedef std::map<std::string, PropertyFactoryObject*> PropertyClassMap;
+    typedef std::map<std::string, PropertyFactoryObject *> PropertyClassMap;
 
 private:
     mutable PropertyClassMap propertyClassMap_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROPERTYFACTORY_H
+#endif  // IVW_PROPERTYFACTORY_H

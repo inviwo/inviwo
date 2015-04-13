@@ -54,8 +54,8 @@ public:
                    vec3 eye = vec3(0.0f, 0.0f, -2.0f),
                    vec3 center = vec3(0.0f),
                    vec3 lookUp = vec3(0.0f, 1.0f, 0.0f),
-                   Inport* inport = NULL,
-                   InvalidationLevel=INVALID_OUTPUT,
+                   Inport* inport = nullptr,
+                   InvalidationLevel=INVALID_RESOURCES,
                    PropertySemantics semantics = PropertySemantics::Default);
     
     CameraProperty(const CameraProperty& rhs);
@@ -106,14 +106,10 @@ public:
 
     void invokeEvent(Event* event);
 
-
-    virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = 0);
-
     // Local camera invalidation
     // Use lock and unlock to set several camera properties without casing evaluation,
-    // then call invalidate().
-    void invalidate();
+    // then call invalidateCamera().
+    void invalidateCamera();
     void lockInvalidation();
     void unlockInvalidation();
     bool isInvalidationLocked();

@@ -86,18 +86,18 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume_, volumeParameters_, samplePos);
         
-		gradients = COMPUTE_ALL_GRADIENTS(voxel, volume_, volumeParameters_, samplePos);
+        gradients = COMPUTE_ALL_GRADIENTS(voxel, volume_, volumeParameters_, samplePos);
         // World space position
         vec3 worldSpacePosition = (volumeParameters_.textureToWorld * vec4(samplePos, 1.0)).xyz;
         // macro defined in MultichannelRaycaster::initializeResources()            
-		SAMPLE_CHANNELS
+        SAMPLE_CHANNELS
 
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
             t = tEnd;
         } else {
             t += tIncr;
-		}
+        }
     }
 
     if (tDepth != -1.0) {
@@ -105,7 +105,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
                                      texture(exitDepthTex_, texCoords).z);
     } else {
         tDepth = 1.0;
-	}
+    }
 
     gl_FragDepth = tDepth;
     return result;

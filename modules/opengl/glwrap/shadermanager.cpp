@@ -70,45 +70,44 @@ void ShaderManager::unregisterShader(Shader* shader) {
 }
 
 void ShaderManager::fileChanged(std::string shaderFilename) {
-    Property* prop = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>()->getPropertyByIdentifier("shaderReloading");
-    if (prop){
-        BoolProperty* shaderReloadProp = dynamic_cast<BoolProperty*>(prop);
-        if (shaderReloadProp && shaderReloadProp->get()) {
-            if (isObserved(shaderFilename)) {
-                bool successfulReload = false;
+    BoolProperty& shaderReloadProp =
+        InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>()->shaderReloadingProperty_;
 
+    if (shaderReloadProp) {
+        if (isObserved(shaderFilename)) {
+            try {
                 for (auto& elem : shaders_) {
                     bool relink = false;
                     const Shader::ShaderObjectMap* shaderObjects = elem->getShaderObjects();
 
                     for (const auto& shaderObject : *shaderObjects) {
-                        std::vector<std::string> shaderIncludes =
-                            shaderObject.second->getIncludeFileNames();
+                        std::vector<std::string>& shaderIncludes = shaderObject.second->getIncludeFileNames();
 
                         if (shaderObject.second->getAbsoluteFileName() == shaderFilename ||
                             std::find(shaderIncludes.begin(), shaderIncludes.end(),
                                       shaderFilename) != shaderIncludes.end()) {
-                            successfulReload = shaderObject.second->rebuild();
+                            shaderObject.second->rebuild();
                             relink = true;
                         }
                     }
-
                     if (relink) elem->link();
                 }
 
-                if (successfulReload) {
-                    LogInfo(shaderFilename + " successfuly reloaded");
-                    InviwoApplication::getPtr()->playSound(InviwoApplication::IVW_OK);
-                    //TODO: Don't invalidate all processors when shader change, invalidate only owners if shader has one.
-                    std::vector<Processor*> processors = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
-
-                    for (auto& processor : processors) {
-                        std::string tags = processor->getTags().getString();
-                        if (tags.find_first_of(Tags::GL.getString()) != std::string::npos)
-                            processor->invalidate(INVALID_RESOURCES);
-                    }
+                LogInfo(shaderFilename + " successfuly reloaded");
+                InviwoApplication::getPtr()->playSound(InviwoApplication::IVW_OK);
+                // TODO: Don't invalidate all processors when shader change, invalidate only
+                // owners if shader has one.
+                std::vector<Processor*> processors =
+                    InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
+                for (auto& processor : processors) {
+                    std::string tags = processor->getTags().getString();
+                    if (tags.find_first_of(Tags::GL.getString()) != std::string::npos)
+                        processor->invalidate(INVALID_RESOURCES);
                 }
-                else InviwoApplication::getPtr()->playSound(InviwoApplication::IVW_ERROR);
+
+            } catch (OpenGLException& e) {
+                LogInfo(e.getMessage());
+                InviwoApplication::getPtr()->playSound(InviwoApplication::IVW_ERROR);
             }
         }
     }
@@ -225,6 +224,10 @@ bool ShaderManager::addShaderSearchPathImpl(const std::string &shaderSearchPath)
         return true;
     }
     return false;
+}
+
+const std::vector<Shader*> ShaderManager::getShaders() const {
+    return shaders_;
 }
 
 } // namespace

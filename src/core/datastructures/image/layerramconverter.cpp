@@ -44,7 +44,7 @@ LayerDisk2RAMConverter::~LayerDisk2RAMConverter() {}
  * used in data.h.
  *
  * @param source is the input representation that is to be converted.
- * @return the imageRAM representation of the file. Returns NULL if source is not a
+ * @return the imageRAM representation of the file. Returns nullptr if source is not a
  * LayerDisk object.
  **/
 DataRepresentation* LayerDisk2RAMConverter::createFrom(const DataRepresentation* source) {

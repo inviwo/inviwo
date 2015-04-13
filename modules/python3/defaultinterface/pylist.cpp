@@ -35,7 +35,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
-
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -67,13 +67,26 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
         errStr << "listProperties(): no processor with name " << processorName << " could be found";
         PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
     } else {
-        std::vector<Property*> props = processor->getProperties();
+        std::vector<Property*> props = processor->getProperties(true);
 
+        PyObject *lst = PyList_New(props.size());
+        if (!lst) Py_RETURN_NONE;
+
+        int i = 0;
         for(auto prop : props) {
-            std::string name = prop->getIdentifier();
+            std::string name = joinString(prop->getPath(), ".");
             std::string type  = prop->getClassIdentifier();
-            PyRun_SimpleString(("print(\""+ name + " : "+ type + "\")").c_str());
+            PyObject *pair = Py_BuildValue("(s#s#)", name.c_str(), name.size(), type.c_str(),type.size());
+            if(!pair) {
+                Py_DECREF(lst);
+                Py_RETURN_NONE;
+            }
+            
+            PyList_SET_ITEM(lst, i, pair);
+            ++i;
         }
+
+        return lst;
     }
 
     Py_RETURN_NONE;
@@ -85,11 +98,24 @@ PyObject* py_listProcesoors(PyObject* /*self*/, PyObject* /*args*/) {
     if (InviwoApplication::getPtr() && InviwoApplication::getPtr()->getProcessorNetwork()) {
         std::vector<Processor*> processors  = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
 
-        for (std::vector<Processor*>::const_iterator processor = processors.begin(); processor!=processors.end(); ++processor) {
-            std::string name = (*processor)->getIdentifier();
-            std::string type = (*processor)->getClassIdentifier();
-            PyRun_SimpleString(("print(\""+ name + " : "+ type + "\")").c_str());
+        PyObject *lst = PyList_New(processors.size());
+        if (!lst) Py_RETURN_NONE;
+
+        int i = 0;
+        for (auto processor : processors) {
+            std::string name = processor->getIdentifier();
+            std::string type = processor->getClassIdentifier();
+
+            PyObject *pair = Py_BuildValue("(s#s#)", name.c_str(), name.size(), type.c_str(),type.size());
+            if(!pair) {
+                Py_DECREF(lst);
+                Py_RETURN_NONE;
+            }
+
+            PyList_SET_ITEM(lst, i, pair);
+            ++i;
         }
+        return lst;
     }
 
     Py_RETURN_NONE;

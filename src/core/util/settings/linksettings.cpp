@@ -56,7 +56,7 @@ void LinkSettings::initialize() {
         BoolProperty* linkPropery =
             new BoolProperty("link-" + propertie, propertie,
                              (propertie == cam.getClassIdentifier()) != 0 ? true : false);
-        linkProperties_.addProperty(linkPropery);
+        linkProperties_.addProperty(linkPropery, false);
     }
 }
 

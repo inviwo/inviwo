@@ -40,7 +40,7 @@ namespace inviwo {
 class IVW_QTEDITOR_API NetworkEditorView : public QGraphicsView, public NetworkEditorObserver {
 
 public:
-    NetworkEditorView(NetworkEditor* networkEditor, QWidget* parent = NULL);
+    NetworkEditorView(NetworkEditor* networkEditor, QWidget* parent = nullptr);
     ~NetworkEditorView();
 
     void hideNetwork(bool);

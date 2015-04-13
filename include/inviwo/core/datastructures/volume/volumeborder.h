@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEBORDER_H
@@ -36,14 +36,14 @@
 namespace inviwo {
 
 class IVW_CORE_API VolumeBorders {
-
 public:
-    VolumeBorders() : llf(uvec3(0,0,0)), urb(uvec3(0,0,0)), numVoxels(0), hasBorder(false) {}
-    VolumeBorders(size_t front, size_t back, size_t left, size_t right, size_t lower, size_t upper) : llf(uvec3(front, left, lower)),
-        urb(uvec3(back, right, upper)) {}
-    VolumeBorders(const uvec3& llfBorder, const uvec3& urbBorder) : llf(llfBorder), urb(urbBorder) {}
-    bool operator== (const VolumeBorders& vb) const { return (llf == vb.llf && urb == vb.urb);}
-    bool operator!= (const VolumeBorders& vb) const { return (llf != vb.llf || urb != vb.urb);}
+    VolumeBorders() : llf(uvec3(0, 0, 0)), urb(uvec3(0, 0, 0)), numVoxels(0), hasBorder(false) {}
+    VolumeBorders(size_t front, size_t back, size_t left, size_t right, size_t lower, size_t upper)
+        : llf(uvec3(front, left, lower)), urb(uvec3(back, right, upper)) {}
+    VolumeBorders(const uvec3& llfBorder, const uvec3& urbBorder)
+        : llf(llfBorder), urb(urbBorder) {}
+    bool operator==(const VolumeBorders& vb) const { return (llf == vb.llf && urb == vb.urb); }
+    bool operator!=(const VolumeBorders& vb) const { return (llf != vb.llf || urb != vb.urb); }
 
     uvec3 llf;
     uvec3 urb;
@@ -51,6 +51,6 @@ public:
     bool hasBorder;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VOLUMEBORDER_H
+#endif  // IVW_VOLUMEBORDER_H

@@ -51,7 +51,8 @@ ImageCompositeProcessorGL::ImageCompositeProcessorGL()
 }
     
 void ImageCompositeProcessorGL::process() {
-    ImageGL* outImageGL = outport_.getData()->getEditableRepresentation<ImageGL>();
+    // Make sure there is a GL representation.
+    outport_.getData()->getEditableRepresentation<ImageGL>();
     imageInport1_.passOnDataToOutport(&outport_);
     compositePortsToOutport(outport_, COLOR_DEPTH, imageInport2_);
 }

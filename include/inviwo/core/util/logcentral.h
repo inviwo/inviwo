@@ -42,8 +42,8 @@
 
 namespace inviwo {
 
-IVW_CORE_API enum class LogLevel : int { Info, Warn, Error };
-IVW_CORE_API enum class LogAudience : int { User, Developer };
+enum class IVW_CORE_API LogLevel : int { Info, Warn, Error };
+enum class IVW_CORE_API LogAudience : int { User, Developer };
 
 #define LogInfo(message)                                                                          \
     {                                                                                             \
@@ -221,7 +221,10 @@ public:
 
 private:
     LogLevel logLevel_;
+    #pragma warning(push)
+    #pragma warning(disable: 4251)
     std::vector<Logger*> loggers_;
+    #pragma warning(pop)
     bool logStacktrace_;
 };
 

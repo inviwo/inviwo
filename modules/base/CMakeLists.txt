@@ -11,7 +11,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/distancetransformram.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/geometrysource.h
-	${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldmapper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldmapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.h
@@ -39,7 +39,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/distancetransformram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/geometrysource.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldmapper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldmapper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.cpp

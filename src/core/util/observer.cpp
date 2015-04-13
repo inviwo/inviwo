@@ -77,7 +77,7 @@ void Observer::removeObservations() {
 }
 
 void Observer::addObservation(ObservableInterface* observed) {
-    ivwAssert(observed!=NULL, "Tried to add null Observable");
+    ivwAssert(observed!=nullptr, "Tried to add null Observable");
     std::pair<ObservableSet::iterator, bool> inserted = observables_->insert(observed);
 
     if (inserted.second)
@@ -110,7 +110,7 @@ ObservableInterface::~ObservableInterface() {
     delete observers_;
 }
 void ObservableInterface::addObserver(Observer* observer) {
-    ivwAssert(observer!=NULL, "Tried to add null Observer");
+    ivwAssert(observer!=nullptr, "Tried to add null Observer");
     std::pair<ObserverSet::iterator, bool> inserted = observers_->insert(observer);
 
     if (inserted.second)

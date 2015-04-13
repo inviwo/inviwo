@@ -39,7 +39,6 @@
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/settingswidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
-
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -57,6 +56,7 @@
 #include <QUrl>
 #include <QVariant>
 
+
 #ifdef IVW_PYTHON2_QT
 #define IVW_PYTHON_QT
 //#include <modules/python2qt/pythoneditorwidget.h>
@@ -71,7 +71,7 @@ namespace inviwo {
 InviwoMainWindow::InviwoMainWindow()
     : QMainWindow()
     , ProcessorNetworkObserver()
-    , visibilityModeProperty_(NULL) {
+    , visibilityModeProperty_(nullptr) {
     NetworkEditor::init();
     networkEditor_ = NetworkEditor::getPtr();
     // initialize console widget first to receive log messages
@@ -259,8 +259,11 @@ void InviwoMainWindow::addMenus() {
 
     fileMenuItem_ = new QMenu(tr("&File"), menuBar_);
     viewMenuItem_ = new QMenu(tr("&View"), menuBar_);
+
     menuBar_->insertMenu(first, fileMenuItem_);
     menuBar_->insertMenu(first, viewMenuItem_);
+
+
     helpMenuItem_ = menuBar_->addMenu(tr("&Help"));
 }
 
@@ -323,8 +326,8 @@ void InviwoMainWindow::addMenuActions() {
     visibilityModeAction_->setChecked(false);
 
     QIcon visibilityModeIcon;
-    visibilityModeIcon.addFile(":/icons/view-developer.png", QSize(), QIcon::Active, QIcon::Off);
-    visibilityModeIcon.addFile(":/icons/view-application.png", QSize(), QIcon::Active, QIcon::On);
+    visibilityModeIcon.addFile(":/icons/view-developer.png", QSize(), QIcon::Normal, QIcon::Off);
+    visibilityModeIcon.addFile(":/icons/view-application.png", QSize(), QIcon::Normal, QIcon::On);
     visibilityModeAction_->setIcon(visibilityModeIcon);
     viewMenuItem_->addAction(visibilityModeAction_);
 
@@ -336,7 +339,7 @@ void InviwoMainWindow::addMenuActions() {
     connect(visibilityModeAction_, SIGNAL(triggered(bool)), this, SLOT(setVisibilityMode(bool)));
 
     visibilityModeChangedInSettings();
-
+    
     enableDisableEvaluationButton_ = new QToolButton(this);
     enableDisableEvaluationButton_->setToolTip(tr("Enable/Disable Evaluation"));
     enableDisableEvaluationButton_->setCheckable(true);
@@ -711,5 +714,7 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
 
     return continueOperation;
 }
+
+
 
 }  // namespace

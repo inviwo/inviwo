@@ -77,7 +77,7 @@ public:
      * @param event                     Event that will be signaled on completion.
      * @return bool                     True if successful, false otherwise.
      */
-    bool computeMeanAndStandardDeviation(const Layer* newSamples, int iteration, Layer*& outMean, Layer*& outStandardDeviation, bool useGLSharing, const VECTOR_CLASS<cl::Event> *waitForEvents = NULL, cl::Event *event = NULL);
+    bool computeMeanAndStandardDeviation(const Layer* newSamples, int iteration, Layer*& outMean, Layer*& outStandardDeviation, bool useGLSharing, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
 
     /** 
      * \brief Computes mean and standard deviation of given new values and iteration number without managing the data 
@@ -98,7 +98,7 @@ public:
      * @param event                     Event that will be signaled on completion.
      * @return void 
      */
-    void computeMeanAndStandardDeviation(const uvec2& nSamples, const LayerCLBase* newSamples, int iteration, const LayerCLBase* prevMean, LayerCLBase* nextMean, const LayerCLBase* prevStandardDeviation, LayerCLBase* nextStandardDeviation, const svec2& workGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = NULL, cl::Event *event = NULL);
+    void computeMeanAndStandardDeviation(const uvec2& nSamples, const LayerCLBase* newSamples, int iteration, const LayerCLBase* prevMean, LayerCLBase* nextMean, const LayerCLBase* prevStandardDeviation, LayerCLBase* nextStandardDeviation, const svec2& workGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
 
     svec2 WorkGroupSize() const { return workGroupSize_; }
     void WorkGroupSize(svec2 val) { workGroupSize_ = val; }

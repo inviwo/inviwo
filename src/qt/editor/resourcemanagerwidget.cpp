@@ -73,7 +73,7 @@ void ResourceManagerWidget::resourceRemoved(const Resource* resource)
 
 void ResourceManagerWidget::keyPressEvent(QKeyEvent* keyEvent)
 {
-	if (keyEvent->key() == Qt::Key_Delete)
+    if (keyEvent->key() == Qt::Key_Delete)
         removeSelectedItems();
 }
 

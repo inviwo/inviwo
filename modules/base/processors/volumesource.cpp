@@ -122,7 +122,7 @@ VolumeSource::VolumeSource()
     basis_.addProperty(overrideB_);
     basis_.addProperty(overrideC_);
     basis_.addProperty(overrideOffset_);
-	addProperty(basis_);
+    addProperty(basis_);
         
     playSequence_.onChange(this, &VolumeSource::onPlaySequenceToggled);
     selectedSequenceIndex_.onChange(this, &VolumeSource::onSequenceIndexChanged);
@@ -134,7 +134,9 @@ VolumeSource::VolumeSource()
     addProperty(volumeSequence_);
         
     sequenceTimer_ = InviwoApplication::getPtr()->createTimer();
-    sequenceTimer_->setElapsedTimeCallback(this, &VolumeSource::onSequenceTimerEvent);
+    if (sequenceTimer_) {
+        sequenceTimer_->setElapsedTimeCallback(this, &VolumeSource::onSequenceTimerEvent);
+    }
 }
 
 VolumeSource::~VolumeSource() {
@@ -326,8 +328,8 @@ void VolumeSource::process() {
         if (loadedData_->dataMap_.dataRange != dataRange_.get() &&
             loadedData_->hasRepresentation<VolumeRAM>()) {
             VolumeRAM* volumeRAM = loadedData_->getEditableRepresentation<VolumeRAM>();
-            if (volumeRAM->hasNormalizedHistogram()) {
-                volumeRAM->getNormalizedHistogram()->setValid(false);
+            if (volumeRAM->hasHistograms()) {
+                volumeRAM->getHistograms()->setValid(false);
             }
         }
 

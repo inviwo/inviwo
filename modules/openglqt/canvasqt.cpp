@@ -35,6 +35,8 @@
 #include <QtGui/QOpenGLContext>
 #endif
 
+#pragma warning(disable: 4061)
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #define USING_QT5
 #else
@@ -60,7 +62,7 @@ QGLContextFormat CanvasQt::sharedFormat_ = GetQGLFormat();
 CanvasQt* CanvasQt::sharedCanvas_ = nullptr;
 
 #if defined(USE_NEW_OPENGLWIDGET)
-QGLWindow* CanvasQt::sharedGLContext_ = NULL;
+QGLWindow* CanvasQt::sharedGLContext_ = nullptr;
 
 CanvasQt::CanvasQt(QGLParent* parent, uvec2 dim)
     : QGLWindow(parent)
@@ -94,12 +96,12 @@ CanvasQt::CanvasQt(QGLParent* parent, uvec2 dim)
     }
 }
 #elif defined(USE_QWINDOW)
-QOpenGLContext* CanvasQt::sharedGLContext_ = NULL;
+QOpenGLContext* CanvasQt::sharedGLContext_ = nullptr;
 
 CanvasQt::CanvasQt(QGLParent* parent, uvec2 dim)
     : QGLWindow(parent)
     , CanvasGL(dim)
-    , thisGLContext_(NULL)
+    , thisGLContext_(nullptr)
     , swapBuffersAllowed_(false)
 #ifndef QT_NO_GESTURES
     , gestureMode_(false)
@@ -138,7 +140,7 @@ CanvasQt::CanvasQt(QGLParent* parent, uvec2 dim)
         std::cout << "GL Version: " << major << "." << minor << std::endl;
         std::cout << "GL Profile: " << (sharedFormat_.profile() == QSurfaceFormat::CoreProfile ? "Core" : "CompatibilityProfile") << std::endl;
         const GLubyte* vendor = glGetString(GL_VENDOR);
-        std::string vendorStr = std::string((vendor!=NULL ? reinterpret_cast<const char*>(vendor) : "INVALID"));
+        std::string vendorStr = std::string((vendor!=nullptr ? reinterpret_cast<const char*>(vendor) : "INVALID"));
         std::cout << "GL Vendor: " << vendorStr << std::endl;
     }
 }
@@ -199,6 +201,7 @@ void CanvasQt::initializeSquare() {
 }
 
 void CanvasQt::deinitialize() {
+    activate();
     CanvasGL::deinitialize();
 }
 
@@ -315,7 +318,7 @@ void CanvasQt::mouseReleaseEvent(QMouseEvent* e) {
 #endif
 
     MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()),
-                          EventConverterQt::getMouseButton(e),MouseEvent::MOUSE_STATE_RELEASE,
+        EventConverterQt::getMouseButtonCausingEvent(e), MouseEvent::MOUSE_STATE_RELEASE,
                           EventConverterQt::getModifier(e), getScreenDimensions());
     e->accept();
     Canvas::mouseReleaseEvent(&mouseEvent);
@@ -438,7 +441,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     // https://bugreports.qt.io/browse/QTBUG-40038
 #if defined(USING_QT5) && (QT_VERSION < QT_VERSION_CHECK(5, 3, 0))
     if(touch->touchPoints().size() == 1 && lastNumFingers_ < 2){
-        MouseEvent* mouseEvent = NULL;
+        MouseEvent* mouseEvent = nullptr;
         switch (touchState)
         {
         case TouchEvent::TOUCH_STATE_STARTED:

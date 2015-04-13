@@ -75,6 +75,41 @@ void BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
         normal);
 }
 
+void BasicMesh::setVertex(size_t index, vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
+    static_cast<Position3dBuffer*>(attributes_[0])
+        ->getEditableRepresentation<Position3dBufferRAM>()
+        ->set(index, pos);
+    static_cast<TexCoord3dBuffer*>(attributes_[1])
+        ->getEditableRepresentation<TexCoord3dBufferRAM>()
+        ->set(index, texCoord);
+    static_cast<ColorBuffer*>(attributes_[2])->getEditableRepresentation<ColorBufferRAM>()->set(index,
+        color);
+    static_cast<NormalBuffer*>(attributes_[3])->getEditableRepresentation<NormalBufferRAM>()->set(index,
+        normal);
+}
+
+void BasicMesh::setVertexPosition(size_t index, vec3 pos) {
+    static_cast<Position3dBuffer*>(attributes_[0])
+        ->getEditableRepresentation<Position3dBufferRAM>()
+        ->set(index, pos);
+}
+
+void BasicMesh::setVertexNormal(size_t index, vec3 normal) {
+    static_cast<NormalBuffer*>(attributes_[3])->getEditableRepresentation<NormalBufferRAM>()->set(index,
+        normal);
+}
+
+void BasicMesh::setVertexTexCoord(size_t index, vec3 texCoord) {
+    static_cast<TexCoord3dBuffer*>(attributes_[1])
+        ->getEditableRepresentation<TexCoord3dBufferRAM>()
+        ->set(index, texCoord);
+}
+
+void BasicMesh::setVertexColor(size_t index, vec4 color) {
+    static_cast<ColorBuffer*>(attributes_[2])->getEditableRepresentation<ColorBufferRAM>()->set(index,
+        color);
+}
+
 IndexBufferRAM* BasicMesh::addIndexBuffer(GeometryEnums::DrawType dt,
                                           GeometryEnums::ConnectivityType ct) {
     IndexBuffer* indices_ = new IndexBuffer();
@@ -131,16 +166,18 @@ void BasicMesh::append(const BasicMesh* mesh) {
 const Position3dBuffer* BasicMesh::getVertices() const {
     return static_cast<Position3dBuffer*>(attributes_[0]);
 }
+
 const TexCoord3dBuffer* BasicMesh::getTexCoords() const {
     return static_cast<TexCoord3dBuffer*>(attributes_[1]);
 }
+
 const ColorBuffer* BasicMesh::getColors() const {
     return static_cast<ColorBuffer*>(attributes_[2]);
 }
+
 const NormalBuffer* BasicMesh::getNormals() const {
     return static_cast<NormalBuffer*>(attributes_[3]);
-}
-    
+}  
     
 vec3 BasicMesh::orthvec(const vec3& vec){
     vec3 u(1.0f, 0.0f, 0.0f);
@@ -276,6 +313,42 @@ BasicMesh* BasicMesh::cylinder(const vec3& start,
 }
 
     
+BasicMesh* BasicMesh::line(const vec3& start, const vec3& stop, const vec3& normal, const vec4& color /*= vec4(1.0f, 0.0f, 0.0f, 1.0f)*/, const float&width /*= 1.0f*/, const ivec2& inres /*= ivec2(1)*/) {
+    BasicMesh* mesh = new BasicMesh();
+    mesh->setModelMatrix(mat4(1.f));
+    IndexBufferRAM* inds = mesh->addIndexBuffer(GeometryEnums::TRIANGLES, GeometryEnums::NONE);
+
+    vec3 right = orthvec(normal);
+    vec3 up = glm::cross(right, normal);
+    vec3 direction = stop - start;
+
+    vec3 startCornerPoint = start - 0.5f * width * up;
+    ivec2 res = inres + ivec2(1);
+
+    for (int j = 0; j < res.y; j++) {
+        for (int i = 0; i < res.x; i++) {
+            mesh->addVertex(
+                startCornerPoint + static_cast<float>(i) / static_cast<float>(inres.x) * direction +
+                static_cast<float>(j) / static_cast<float>(inres.y) * width * up,
+                normal, vec3(static_cast<float>(i) / static_cast<float>(inres.x),
+                static_cast<float>(j) / static_cast<float>(inres.y), 0.0f),
+                color);
+
+            if (i != inres.x && j != inres.y) {
+                inds->add(i + res.x * j);
+                inds->add(i + 1 + res.x * j);
+                inds->add(i + res.x * (j + 1));
+
+                inds->add(i + 1 + res.x * j);
+                inds->add(i + 1 + res.x * (j + 1));
+                inds->add(i + res.x * (j + 1));
+            }
+        }
+    }
+
+    return mesh;
+}
+
 BasicMesh* BasicMesh::arrow(const vec3& start,
                             const vec3& stop,
                             const vec4& color,

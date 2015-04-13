@@ -89,10 +89,31 @@ Shader::Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader) {
     initialize();
 
     for (auto &shaderObject : shaderObjects)
-        (*shaderObjects_)[shaderObject->getShaderType()] = shaderObject;
+        shaderObjects_[shaderObject->getShaderType()] = shaderObject;
 
     attachAllShaderObjects();
     linkAndRegister(linkShader);
+}
+
+Shader::Shader(const Shader& rhs) {
+    initialize();
+
+    shaderObjects_ = rhs.shaderObjects_;
+    
+    attachAllShaderObjects();
+    linkAndRegister(true);
+}
+Shader& Shader::operator=(const Shader& that) {
+    if (this != &that) {
+        deinitialize();
+        initialize();
+        
+        shaderObjects_ = that.shaderObjects_;
+    
+        attachAllShaderObjects();
+        linkAndRegister(true);
+    }
+    return *this;
 }
 
 Shader::~Shader() { deinitialize(); }
@@ -100,7 +121,6 @@ Shader::~Shader() { deinitialize(); }
 void Shader::initialize() {
     id_ = glCreateProgram();
     LGL_ERROR;
-    shaderObjects_ = new ShaderObjectMap();
 }
 
 void Shader::linkAndRegister(bool linkShader) {
@@ -112,18 +132,17 @@ void Shader::linkAndRegister(bool linkShader) {
 void Shader::deinitialize() {
     ShaderManager::getPtr()->unregisterShader(this);
 
-    for (auto &elem : *shaderObjects_) {
+    for (auto &elem : shaderObjects_) {
         detachShaderObject(elem.second);
         delete elem.second;
     }
-
-    delete shaderObjects_;
+    
     glDeleteProgram(id_);
     LGL_ERROR;
 }
 
 void Shader::createAndAddShader(GLenum shaderType, std::string fileName, bool linkShader) {
-    (*shaderObjects_)[shaderType] = new ShaderObject(shaderType, fileName, linkShader);
+    shaderObjects_[shaderType] = new ShaderObject(shaderType, fileName, linkShader);
 }
 
 void Shader::link() {
@@ -134,18 +153,12 @@ void Shader::link() {
 }
 
 void Shader::build() {
-    for (auto &elem : *shaderObjects_) {
-        elem.second->build();
-    }
-
+    for (auto &elem : shaderObjects_) elem.second->build();
     link();
 }
 
 void Shader::rebuild() {
-    for (auto &elem : *shaderObjects_) {
-        elem.second->rebuild();
-    }
-
+    for (auto &elem : shaderObjects_) elem.second->rebuild();
     link();
 }
 
@@ -170,13 +183,13 @@ void Shader::detachShaderObject(ShaderObject *shaderObject) {
 }
 
 void Shader::attachAllShaderObjects() {
-    for (auto &elem : *shaderObjects_) {
+    for (auto &elem : shaderObjects_) {
         attachShaderObject(elem.second);
     }
 }
 
 void Shader::detachAllShaderObject() {
-    for (auto &elem : *shaderObjects_) {
+    for (auto &elem : shaderObjects_) {
         detachShaderObject(elem.second);
     }
 }
@@ -276,8 +289,8 @@ void Shader::setUniform(const std::string &name, const mat4 &value) const {
 }
 
 ShaderObject* Shader::getFragmentShaderObject() const {
-    ShaderObjectMap::iterator it = shaderObjects_->find(GL_FRAGMENT_SHADER);
-    if (it != shaderObjects_->end()) {
+    auto it = shaderObjects_.find(GL_FRAGMENT_SHADER);
+    if (it != shaderObjects_.end()) {
         return it->second;
     } else {
         return nullptr;
@@ -285,8 +298,8 @@ ShaderObject* Shader::getFragmentShaderObject() const {
 }
 
 ShaderObject* Shader::getGeometryShaderObject() const {
-    ShaderObjectMap::iterator it = shaderObjects_->find(GL_GEOMETRY_SHADER);
-    if (it != shaderObjects_->end()) {
+    auto it = shaderObjects_.find(GL_GEOMETRY_SHADER);
+    if (it != shaderObjects_.end()) {
         return it->second;
     } else {
         return nullptr;
@@ -294,8 +307,8 @@ ShaderObject* Shader::getGeometryShaderObject() const {
 }
 
 ShaderObject* Shader::getVertexShaderObject() const {
-    ShaderObjectMap::iterator it = shaderObjects_->find(GL_VERTEX_SHADER);
-    if (it != shaderObjects_->end()) {
+    auto it = shaderObjects_.find(GL_VERTEX_SHADER);
+    if (it != shaderObjects_.end()) {
         return it->second;
     } else {
         return nullptr;

@@ -38,6 +38,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
+
 #include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/qt/editor/networkeditor.h>
 
@@ -73,7 +74,7 @@ public:
 
     bool processCommandLineArgs();
 
-    virtual void onProcessorNetworkChange();
+    virtual void onProcessorNetworkChange() override;
     virtual void onNetworkEditorFileChanged(const std::string& filename);
     virtual void onModifiedStatusChanged(const bool &newStatus);
 
@@ -134,7 +135,6 @@ private:
     QMenuBar* menuBar_;
     QMenu* fileMenuItem_;
     QMenu* viewMenuItem_;
-    QMenu* viewModeItem_;
     QMenu* helpMenuItem_;
 
     // mainwindow menuactions

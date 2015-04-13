@@ -38,7 +38,7 @@ void CALLBACK TimerCallback(void* param, bool timerOrWaitFired) {
     timer->onIntervalEvent();
 }
 
-WindowsTimer::WindowsTimer() :Timer(), timer_(NULL) {
+WindowsTimer::WindowsTimer() :Timer(), timer_(nullptr) {
 }
 
 WindowsTimer::~WindowsTimer() {
@@ -50,7 +50,7 @@ void WindowsTimer::start(unsigned int intervalInMilliseconds, bool once /*= fals
         return;
 
     CreateTimerQueueTimer(&timer_,
-                          NULL,
+                          nullptr,
                           (WAITORTIMERCALLBACK)TimerCallback,
                           this,
                           0,
@@ -59,8 +59,8 @@ void WindowsTimer::start(unsigned int intervalInMilliseconds, bool once /*= fals
 }
 
 void WindowsTimer::stop() {
-    DeleteTimerQueueTimer(NULL, timer_, NULL);
-    timer_ = NULL ;
+    DeleteTimerQueueTimer(nullptr, timer_, nullptr);
+    timer_ = nullptr ;
 }
 
 #endif // WIN32

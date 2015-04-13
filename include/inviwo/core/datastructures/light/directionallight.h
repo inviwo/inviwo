@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DIRECTIONAL_LIGHT_H
@@ -32,24 +32,23 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/baselightsource.h>
+#include <inviwo/core/datastructures/light/baselightsource.h>
 
 namespace inviwo {
 
-class DirectionalLight: public LightSource {
+class DirectionalLight : public LightSource {
 public:
-    DirectionalLight(): LightSource() {}
-    virtual ~DirectionalLight() {};
+    DirectionalLight() : LightSource() {}
+    virtual ~DirectionalLight(){};
     virtual DirectionalLight* clone() const { return new DirectionalLight(*this); }
 
-    virtual float getArea() const { return size_.x*size_.y; }
+    virtual float getArea() const { return size_.x * size_.y; }
     /**
      * Get radiant flux (color) of light source.
      * @see setPower
      * @return Radiant flux in watt.
      */
-    virtual vec3 getPower() const { return getIntensity()*getArea()*static_cast<float>(M_PI); }
-
+    virtual vec3 getPower() const { return getIntensity() * getArea() * static_cast<float>(M_PI); }
 
     LightSourceType::Enum getLightSourceType() const { return LightSourceType::LIGHT_DIRECTIONAL; }
 
@@ -69,9 +68,8 @@ public:
 
 protected:
     vec3 direction_;
-
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_DIRECTIONAL_LIGHT_H
+#endif  // IVW_DIRECTIONAL_LIGHT_H

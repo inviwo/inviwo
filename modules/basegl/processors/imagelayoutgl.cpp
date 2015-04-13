@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "imagelayoutgl.h"
@@ -48,50 +48,57 @@ ImageLayoutGL::ImageLayoutGL()
     , multiinport_("multiinport")
     , outport_("outport")
     , layout_("layout", "Layout")
-    , resizeContent_("resizeContent", "Resize Content", false)
-    , horizontalSplitter_("horizontalSplitter", "Horizontal Splitter", 0.5f, 0.f, 1.f)
-    , verticalSplitter_("verticalSplitter", "Vertical Splitter", 0.5f, 0.f, 1.f)
+    , horizontalSplitter_("horizontalSplitter", "Horizontal Split", 0.5f, 0.f, 1.f)
+    , verticalSplitter_("verticalSplitter", "Vertical Split", 0.5f, 0.f, 1.f)
+    , vertical3Left1RightSplitter_("vertical3Left1RightSplitter", "Split Position", 1.0f / 3.0f,
+                                   0.f, 1.f)
+    , vertical3Right1LeftSplitter_("vertical3Right1LeftSplitter", "Split Position", 2.0f / 3.0f,
+                                   0.f, 1.f)
     , shader_(nullptr)
-    , layoutHandler_(nullptr)
-    , currentLayout_(ImageLayoutTypes::CrossSplit)
-    , currentDim_(0u, 0u)
-    , resizeEnabled_(false) {
+    , layoutHandler_(this)
+    , currentLayout_(Layout::CrossSplit)
+    , currentDim_(0u, 0u) {
     addPort(multiinport_);
     multiinport_.onChange(this, &ImageLayoutGL::multiInportChanged);
     addPort(outport_);
-    layout_.addOption("single", "Single Only", ImageLayoutTypes::Single);
-    layout_.addOption("horizontalSplit", "Horizontal Split", ImageLayoutTypes::HorizontalSplit);
-    layout_.addOption("verticalSplit", "Vertical Split", ImageLayoutTypes::VerticalSplit);
-    layout_.addOption("crossSplit", "Cross Split", ImageLayoutTypes::CrossSplit);
-    layout_.addOption("threeRightOneLeftSplit", "Three Left, One Right",
-                      ImageLayoutTypes::ThreeLeftOneRight);
-    layout_.addOption("threeLeftOneRightSplit", "Three Right, One Left",
-                      ImageLayoutTypes::ThreeRightOneLeft);
-    layout_.setSelectedValue(ImageLayoutTypes::CrossSplit);
+    layout_.addOption("single", "Single Only", Layout::Single);
+    layout_.addOption("horizontalSplit", "Horizontal Split", Layout::HorizontalSplit);
+    layout_.addOption("verticalSplit", "Vertical Split", Layout::VerticalSplit);
+    layout_.addOption("crossSplit", "Cross Split", Layout::CrossSplit);
+    layout_.addOption("threeRightOneLeftSplit", "Three Left, One Right", Layout::ThreeLeftOneRight);
+    layout_.addOption("threeLeftOneRightSplit", "Three Right, One Left", Layout::ThreeRightOneLeft);
+    layout_.setSelectedValue(Layout::CrossSplit);
     layout_.setCurrentStateAsDefault();
+
     addProperty(layout_);
-    addProperty(resizeContent_);
+
     horizontalSplitter_.setVisible(false);
+    horizontalSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
     addProperty(horizontalSplitter_);
+
     verticalSplitter_.setVisible(false);
+    verticalSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
     addProperty(verticalSplitter_);
 
+    vertical3Left1RightSplitter_.setVisible(false);
+    vertical3Left1RightSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
+    addProperty(vertical3Left1RightSplitter_);
+
+    vertical3Right1LeftSplitter_.setVisible(false);
+    vertical3Right1LeftSplitter_.onChange(this, &ImageLayoutGL::onStatusChange);
+    addProperty(vertical3Right1LeftSplitter_);
+
     layout_.onChange(this, &ImageLayoutGL::onStatusChange);
-    resizeContent_.onChange(this, &ImageLayoutGL::onStatusChange);
 
-    layoutHandler_ = new ImageLayoutGLInteractionHandler(this);
-    addInteractionHandler(layoutHandler_);
-    setAllPropertiesCurrentStateAsDefault();
+    addInteractionHandler(&layoutHandler_);
 }
 
-ImageLayoutGL::~ImageLayoutGL() {
-    removeInteractionHandler(layoutHandler_);
-    delete layoutHandler_;
-}
+ImageLayoutGL::~ImageLayoutGL() {}
 
 void ImageLayoutGL::initialize() {
     Processor::initialize();
     shader_ = new Shader("img_texturequad.vert", "img_copy.frag");
+    onStatusChange();
 }
 
 void ImageLayoutGL::deinitialize() {
@@ -109,17 +116,14 @@ const std::vector<Inport*>& ImageLayoutGL::getInports(Event* e) const {
         if (multiinport_.isConnected()) {
             std::vector<Inport*> inports = multiinport_.getInports();
             size_t minNum = std::min(inports.size(), viewCoords_.size());
-            ivec2 activePos = layoutHandler_->getActivePosition();
-            uvec2 dim = outport_.getConstData()->getDimensions();
-            activePos.y = static_cast<int>(dim.y) - activePos.y;
+            ivec2 pos = layoutHandler_.getActivePosition();
+            ivec2 dim = outport_.getConstData()->getDimensions();
+            pos.y = dim.y - pos.y;
+
             for (size_t i = 0; i < minNum; ++i) {
-                if (static_cast<int>(viewCoords_[i].x) <= activePos.x &&
-                    (static_cast<int>(viewCoords_[i].x) + static_cast<int>(viewCoords_[i].z)) >=
-                        activePos.x)
-                    if (static_cast<int>(viewCoords_[i].y) <= activePos.y &&
-                        (static_cast<int>(viewCoords_[i].y) + static_cast<int>(viewCoords_[i].w)) >=
-                            activePos.y)
-                        currentInteractionInport_.push_back(inports[i]);
+                if (inView(viewCoords_[i], pos)) {
+                    currentInteractionInport_.push_back(inports[i]);
+                }
             }
         }
         return currentInteractionInport_;
@@ -127,17 +131,71 @@ const std::vector<Inport*>& ImageLayoutGL::getInports(Event* e) const {
     return Processor::getInports();
 }
 
+const std::vector<ivec4>& ImageLayoutGL::getViewCoords() const { return viewCoords_; }
+
 void ImageLayoutGL::multiInportChanged() {
     if (multiinport_.isConnected()) {
         updateViewports(true);
         std::vector<Inport*> inports = multiinport_.getInports();
         size_t minNum = std::min(inports.size(), viewCoords_.size());
+        uvec2 outDimU = outport_.getData()->getDimensions();
+        vec2 outDim = vec2(outDimU.x, outDimU.y);
         for (size_t i = 0; i < minNum; ++i) {
-            ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
-            if (imageInport) {
-                // TODO: use scale depending on viewport and output dimension
-                imageInport->setResizeScale(vec2(0.25f, 0.25f));
+            ImageInport* imageInport = static_cast<ImageInport*>(inports[i]);
+            imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);
+            uvec2 inDimU = imageInport->getDimensions();
+            if (inDimU == uvec2(8, 8)) {
+                uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
+                ResizeEvent e(inDimNewU);
+                e.setPreviousSize(inDimU);
+                imageInport->changeDataDimensions(&e);
             }
+        }
+    }
+}
+
+void ImageLayoutGL::onStatusChange() {
+    horizontalSplitter_.setVisible(false);
+    verticalSplitter_.setVisible(false);
+    vertical3Left1RightSplitter_.setVisible(false);
+    vertical3Right1LeftSplitter_.setVisible(false);
+
+    switch (layout_.getSelectedValue()) {
+        case Layout::HorizontalSplit:
+            horizontalSplitter_.setVisible(true);
+            break;
+        case Layout::VerticalSplit:
+            verticalSplitter_.setVisible(true);
+            break;
+        case Layout::CrossSplit:
+            horizontalSplitter_.setVisible(true);
+            verticalSplitter_.setVisible(true);
+            break;
+        case Layout::ThreeLeftOneRight:
+            vertical3Left1RightSplitter_.setVisible(true);
+            break;
+        case Layout::ThreeRightOneLeft:
+            vertical3Right1LeftSplitter_.setVisible(true);
+            break;
+        case Layout::Single:
+        default:
+            break;
+    }
+
+    updateViewports(true);
+    std::vector<Inport*> inports = multiinport_.getInports();
+    size_t minNum = std::min(inports.size(), viewCoords_.size());
+    uvec2 outDimU = outport_.getData()->getDimensions();
+    vec2 outDim = vec2(outDimU.x, outDimU.y);
+    for (size_t i = 0; i < minNum; ++i) {
+        ImageInport* imageInport = static_cast<ImageInport*>(inports[i]);
+        uvec2 inDimU = imageInport->getDimensions();
+        imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);
+        uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
+        if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
+            ResizeEvent e(inDimNewU);
+            e.setPreviousSize(inDimU);
+            imageInport->changeDataDimensions(&e);
         }
     }
 }
@@ -145,98 +203,140 @@ void ImageLayoutGL::multiInportChanged() {
 void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
     std::vector<const Image*> images = multiinport_.getData();
-    vec2 dim = outport_.getData()->getDimensions();
 
-    // updateViewports();
     TextureUnit colorUnit, depthUnit, pickingUnit;
 
     utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
 
     shader_->activate();
-    shader_->setUniform("screenDim_", dim);
-    shader_->setUniform("screenDimRCP_", vec2(1.0f,1.0f)/dim);
     shader_->setUniform("color_", colorUnit.getUnitNumber());
     shader_->setUniform("depth_", depthUnit.getUnitNumber());
     shader_->setUniform("picking_", pickingUnit.getUnitNumber());
 
     size_t minNum = std::min(images.size(), viewCoords_.size());
     for (size_t i = 0; i < minNum; ++i) {
-        utilgl::bindTextures(images[i], colorUnit.getEnum(), depthUnit.getEnum(), pickingUnit.getEnum());
-        glViewport(static_cast<int>(viewCoords_[i].x), static_cast<int>(viewCoords_[i].y),
-                   viewCoords_[i].z, viewCoords_[i].w);
+        utilgl::bindTextures(images[i], colorUnit.getEnum(), depthUnit.getEnum(),
+                             pickingUnit.getEnum());
+        glViewport(viewCoords_[i].x, viewCoords_[i].y, viewCoords_[i].z, viewCoords_[i].w);
         utilgl::singleDrawImagePlaneRect();
     }
 
+    ivec2 dim = outport_.getData()->getDimensions();
     glViewport(0, 0, dim.x, dim.y);
+
     shader_->deactivate();
     utilgl::deactivateCurrentTarget();
     TextureUnit::setZeroUnit();
 }
 
 void ImageLayoutGL::updateViewports(bool force) {
-    uvec2 dim(256u, 256u);
+    ivec2 dim(256, 256);
     if (outport_.isConnected()) dim = outport_.getData()->getDimensions();
 
-    if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get()) &&
-        (resizeEnabled_ == resizeContent_.get()))
-        return;  // no changes
+    if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get())) return;  // no changes
 
     viewCoords_.clear();
-    unsigned int smallWindowDim = dim.y / 3;
+    int smallWindowDim = dim.y / 3;
     switch (layout_.getSelectedValue()) {
-        case ImageLayoutTypes::HorizontalSplit:
-            viewCoords_.push_back(uvec4(0, dim.y / 2, dim.x, dim.y / 2));
-            viewCoords_.push_back(uvec4(0, 0, dim.x, dim.y / 2));
-            break;
-        case ImageLayoutTypes::VerticalSplit:
-            viewCoords_.push_back(uvec4(0, 0, dim.x / 2, dim.y));
-            viewCoords_.push_back(uvec4(dim.x / 2, 0, dim.x / 2, dim.y));
-            break;
-        case ImageLayoutTypes::CrossSplit:
-            viewCoords_.push_back(uvec4(0, dim.y / 2, dim.x / 2, dim.y / 2));
-            viewCoords_.push_back(uvec4(dim.x / 2, dim.y / 2, dim.x / 2, dim.y / 2));
-            viewCoords_.push_back(uvec4(0, 0, dim.x / 2, dim.y / 2));
-            viewCoords_.push_back(uvec4(dim.x / 2, 0, dim.x / 2, dim.y / 2));
-            break;
-        case ImageLayoutTypes::ThreeLeftOneRight:
-            viewCoords_.push_back(uvec4(0, 2 * smallWindowDim, smallWindowDim, smallWindowDim));
-            viewCoords_.push_back(uvec4(0, smallWindowDim, smallWindowDim, smallWindowDim));
-            viewCoords_.push_back(uvec4(0, 0, smallWindowDim, smallWindowDim));
-            viewCoords_.push_back(uvec4(smallWindowDim, 0, dim.x - smallWindowDim, dim.y));
-            break;
-        case ImageLayoutTypes::ThreeRightOneLeft:
+        case Layout::HorizontalSplit:
+
+            // #########
+            // #   1   #
+            // #-------#
+            // #   2   #
+            // #########
+            // X, Y, W, H
+
             viewCoords_.push_back(
-                uvec4(dim.x - smallWindowDim, 2 * smallWindowDim, smallWindowDim, smallWindowDim));
-            viewCoords_.push_back(
-                uvec4(dim.x - smallWindowDim, smallWindowDim, smallWindowDim, smallWindowDim));
-            viewCoords_.push_back(uvec4(dim.x - smallWindowDim, 0, smallWindowDim, smallWindowDim));
-            viewCoords_.push_back(uvec4(0, 0, dim.x - smallWindowDim, dim.y));
+                ivec4(0, horizontalSplitter_ * dim.y, dim.x, (1.f - horizontalSplitter_) * dim.y));
+            viewCoords_.push_back(ivec4(0, 0, dim.x, horizontalSplitter_ * dim.y));
             break;
-        case ImageLayoutTypes::Single:
+        case Layout::VerticalSplit:
+
+            // #########
+            // #   |   #
+            // # 1 | 2 #
+            // #   |   #
+            // #########
+            // X, Y, W, H
+
+            viewCoords_.push_back(ivec4(0, 0, verticalSplitter_ * dim.x, dim.y));
+            viewCoords_.push_back(
+                ivec4(verticalSplitter_ * dim.x, 0, (1.0f - verticalSplitter_) * dim.x, dim.y));
+            break;
+        case Layout::CrossSplit:
+
+            // #########
+            // # 1 | 2 #
+            // #-------#
+            // # 3 | 4 #
+            // #########
+            // X, Y, W, H
+
+            viewCoords_.push_back(ivec4(0, horizontalSplitter_ * dim.y, verticalSplitter_ * dim.x,
+                                        (1.0f - horizontalSplitter_) * dim.y));
+
+            viewCoords_.push_back(ivec4(verticalSplitter_ * dim.x, horizontalSplitter_ * dim.y,
+                                        (1.0f - verticalSplitter_) * dim.x,
+                                        (1.0f - horizontalSplitter_) * dim.y));
+
+            viewCoords_.push_back(
+                ivec4(0, 0, verticalSplitter_ * dim.x, horizontalSplitter_ * dim.y));
+
+            viewCoords_.push_back(ivec4(verticalSplitter_ * dim.x, 0,
+                                        (1.0f - verticalSplitter_) * dim.x,
+                                        horizontalSplitter_ * dim.y));
+            break;
+        case Layout::ThreeLeftOneRight:
+
+            // #############
+            // # 1 |       #
+            // #---|       #
+            // # 2 |   4   #
+            // #---|       #
+            // # 3 |       #
+            // #############
+            // X, Y, W, H
+
+            viewCoords_.push_back(
+                ivec4(0, 2 * smallWindowDim, vertical3Left1RightSplitter_ * dim.x, smallWindowDim));
+            viewCoords_.push_back(
+                ivec4(0, smallWindowDim, vertical3Left1RightSplitter_ * dim.x, smallWindowDim));
+            viewCoords_.push_back(
+                ivec4(0, 0, vertical3Left1RightSplitter_ * dim.x, smallWindowDim));
+            viewCoords_.push_back(ivec4(vertical3Left1RightSplitter_ * dim.x, 0,
+                                        (1.f - vertical3Left1RightSplitter_) * dim.x, dim.y));
+            break;
+        case Layout::ThreeRightOneLeft:
+
+            // #############
+            // #       | 1 #
+            // #       |---#
+            // #   4   | 2 #
+            // #       |---#
+            // #       | 3 #
+            // #############
+            // X, Y, W, H
+
+            viewCoords_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, 2 * smallWindowDim,
+                                        (1.f - vertical3Right1LeftSplitter_) * dim.x,
+                                        smallWindowDim));
+            viewCoords_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, smallWindowDim,
+                                        (1.f - vertical3Right1LeftSplitter_) * dim.x,
+                                        smallWindowDim));
+            viewCoords_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, 0,
+                                        (1.f - vertical3Right1LeftSplitter_) * dim.x,
+                                        smallWindowDim));
+            viewCoords_.push_back(ivec4(0, 0, vertical3Right1LeftSplitter_ * dim.x, dim.y));
+            break;
+        case Layout::Single:
         default:
-            viewCoords_.push_back(uvec4(0, 0, dim.x, dim.y));
+            viewCoords_.push_back(ivec4(0, 0, dim.x, dim.y));
     }
 
     currentDim_ = dim;
-    currentLayout_ = static_cast<ImageLayoutTypes::Layout>(layout_.get());
-    resizeEnabled_ = resizeContent_.get();
-
-    // propagate viewport size to connected inports
-    if (resizeEnabled_) {
-        std::vector<Inport*> inports = multiinport_.getInports();
-        size_t minNum = std::min(inports.size(), viewCoords_.size());
-        for (std::size_t i = 0; i < minNum; ++i) {
-            ImageInport* imageInport = dynamic_cast<ImageInport*>(inports[i]);
-            if (imageInport) {
-                uvec2 viewportDim(viewCoords_[i].z, viewCoords_[i].w);
-                ResizeEvent e(viewportDim);
-                imageInport->changeDataDimensions(&e);
-            }
-        }
-    }
+    currentLayout_ = layout_.get();
 }
-
-void ImageLayoutGL::onStatusChange() { updateViewports(); }
 
 ImageLayoutGL::ImageLayoutGLInteractionHandler::ImageLayoutGLInteractionHandler(ImageLayoutGL* src)
     : InteractionHandler()
@@ -248,6 +348,8 @@ ImageLayoutGL::ImageLayoutGLInteractionHandler::ImageLayoutGLInteractionHandler(
     , activePosition_(ivec2(0)) {}
 
 void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
+    const std::vector<ivec4>& viewCoords = src_->getViewCoords();
+
     MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event);
     if (mouseEvent) {
         if (!viewportActive_ && mouseEvent->state() == activePositionChangeEvent_.state()) {
@@ -255,46 +357,18 @@ void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
             activePosition_ = mouseEvent->pos();
         } else if (viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_RELEASE) {
             viewportActive_ = false;
-            return;
         }
 
         ivec2 mPos = mouseEvent->pos();
-        uvec2 cSize = mouseEvent->canvasSize();
-
-        switch (src_->layout_.getSelectedValue()) {
-            case ImageLayoutTypes::HorizontalSplit:
-                cSize.y /= 2;
-                if (activePosition_.y > static_cast<int>(cSize.y)) {
-                    mPos.y -= cSize.y;
-                }
-                mouseEvent->modify(mPos, cSize);
+        ivec2 cSize = mouseEvent->canvasSize();
+        // Flip y-coordinate to bottom->up
+        ivec2 activePosition(activePosition_.x, cSize.y - activePosition_.y);
+        for (size_t i = 0; i < viewCoords.size(); ++i) {
+            if (inView(viewCoords[i], activePosition)) {
+                ivec2 vc = ivec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
+                mouseEvent->modify(mPos - vc, uvec2(viewCoords[i].z, viewCoords[i].w));
                 break;
-            case ImageLayoutTypes::VerticalSplit:
-                cSize.x /= 2;
-                if (activePosition_.x > static_cast<int>(cSize.x)) {
-                    mPos.x -= cSize.x;
-                }
-                mouseEvent->modify(mPos, cSize);
-                break;
-            case ImageLayoutTypes::CrossSplit:
-                cSize /= 2;
-                if (activePosition_.x > static_cast<int>(cSize.x)) {
-                    mPos.x -= cSize.x;
-                }
-                if (activePosition_.y > static_cast<int>(cSize.y)) {
-                    mPos.y -= cSize.y;
-                }
-                mouseEvent->modify(mPos, cSize);
-                break;
-            case ImageLayoutTypes::ThreeLeftOneRight:
-                // TODO: Implement this coordinate transformation
-                break;
-            case ImageLayoutTypes::ThreeRightOneLeft:
-                // TODO: Implement this coordinate transformation
-                break;
-            case ImageLayoutTypes::Single:
-            default:
-                break;
+            }
         }
 
         return;
@@ -303,38 +377,15 @@ void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
     GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
     if (gestureEvent) {
         vec2 mPosNorm = gestureEvent->screenPosNormalized();
-
-        switch (src_->layout_.getSelectedValue()) {
-            case ImageLayoutTypes::HorizontalSplit:
-                if (mPosNorm.y > 0.5f) {
-                    mPosNorm.y -= 0.5f;
-                }
-                gestureEvent->modify(mPosNorm);
+        vec2 cSize = gestureEvent->canvasSize();
+        vec2 mPos = mPosNorm * cSize;
+        vec2 activePosition(mPos.x, cSize.y - mPos.y);
+        for (size_t i = 0; i < viewCoords.size(); ++i) {
+            if (inView(viewCoords[i], activePosition)) {
+                vec2 vc = vec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
+                gestureEvent->modify((mPos - vc) / vec2(viewCoords[i].zw()));
                 break;
-            case ImageLayoutTypes::VerticalSplit:
-                if (mPosNorm.x > 0.5f) {
-                    mPosNorm.x -= 0.5f;
-                }
-                gestureEvent->modify(mPosNorm);
-                break;
-            case ImageLayoutTypes::CrossSplit:
-                if (mPosNorm.x > 0.5f) {
-                    mPosNorm.x -= 0.5f;
-                }
-                if (mPosNorm.y > 0.5f) {
-                    mPosNorm.y -= 0.5f;
-                }
-                gestureEvent->modify(mPosNorm);
-                break;
-            case ImageLayoutTypes::ThreeLeftOneRight:
-                // TODO: Implement this coordinate transformation
-                break;
-            case ImageLayoutTypes::ThreeRightOneLeft:
-                // TODO: Implement this coordinate transformation
-                break;
-            case ImageLayoutTypes::Single:
-            default:
-                break;
+            }
         }
 
         return;
@@ -350,6 +401,10 @@ void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
         }
         return;
     }
+}
+
+bool ImageLayoutGL::inView(const ivec4& view, const ivec2& pos) {
+    return view.x < pos.x && pos.x < view.x + view.z && view.y < pos.y && pos.y < view.y + view.w;
 }
 
 }  // namespace

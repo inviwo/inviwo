@@ -32,6 +32,7 @@
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
@@ -43,11 +44,10 @@
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <modules/opengl/glwrap/shader.h>
 
 
 namespace inviwo {
-
-class Shader;
 
 class IVW_MODULE_BASEGL_API VolumeRaycaster : public Processor {
 public:
@@ -56,15 +56,17 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initialize();
-    virtual void deinitialize();
     virtual void initializeResources();
+
+    // override to do member renaming.
+    virtual void deserialize(IvwDeserializer& d) override;
 
 protected:
     virtual void process();
-    Shader* shader_;
+    Shader shader_;
 
 private:
+    bool updateNetwork(TxElement* node);
     void onVolumeChange();
     void toggleShading(Event*);
     

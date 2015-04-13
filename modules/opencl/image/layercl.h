@@ -42,7 +42,7 @@ class IVW_MODULE_OPENCL_API LayerCL : public LayerCLBase, public LayerRepresenta
 
 public:
     LayerCL(uvec2 dimensions = uvec2(128,128), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataFormatBase::get(),
-            const void* data = NULL);
+            const void* data = nullptr);
     LayerCL(const LayerCL& other);
     virtual ~LayerCL();
     virtual void initialize() {};

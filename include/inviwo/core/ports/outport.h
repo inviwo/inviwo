@@ -55,10 +55,6 @@ public:
             InvalidationLevel invalidationLevel=INVALID_OUTPUT);
     virtual ~Outport();
 
-    //TODO: Temporary fix to enable Deserialization. Remove this to make Outport abstract class
-    virtual void initialize() {}
-    virtual void deinitialize() {}
-
     virtual bool isConnected() const;
     bool isConnectedTo(Inport* port) const;
 

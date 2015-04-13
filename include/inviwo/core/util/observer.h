@@ -32,6 +32,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <set>
+#include <functional>
+#include <algorithm>
 
 namespace inviwo {
 // Forward declaration
@@ -197,6 +199,16 @@ public:
      */
     virtual void removeObserver(T* observer) {
         ObservableInterface::removeObserver(observer);
+    }
+
+    /**
+    * Calls the lambda function func on all registered observers.
+    *
+    * @param func the lambda function that will be called.
+    */
+    virtual void forEach(std::function<void(T*)> func) {
+        std::for_each(observers_->begin(), observers_->end(),
+            [&](Observer* o) { func(dynamic_cast<T*>(o)); });
     }
 };
 

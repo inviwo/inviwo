@@ -30,8 +30,11 @@
 #ifndef IVW_SERIALIZE_BASE_H
 #define IVW_SERIALIZE_BASE_H
 
-
+#pragma warning(push)
+#pragma warning(disable: 4263)
 #include <inviwo/core/io/serialization/ticpp.h>
+#pragma warning(pop)
+
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/ivwserializeconstants.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
@@ -50,6 +53,7 @@ namespace inviwo {
 
 template <typename T>
 struct ElementIdentifier {
+    virtual ~ElementIdentifier() = default;
     virtual void setKey(TxElement*) = 0;
     virtual bool operator()(const T* elem) const = 0;
 };
@@ -69,6 +73,32 @@ private:
     std::string key_;
     std::string identifier_;
 };
+
+namespace util {
+
+template <class T>
+class has_class_version {
+    template <class U, class = typename std::enable_if<
+                           !std::is_member_pointer<decltype(&U::CLASS_VERSION)>::value>::type>
+    static std::true_type check(int);
+    template <class>
+    static std::false_type check(...);
+
+public:
+    static const bool value = decltype(check<T>(0))::value;
+};
+
+template <typename T,
+          typename std::enable_if<util::has_class_version<T>::value, std::size_t>::type = 0>
+std::size_t class_version() {
+    return T::CLASS_VERSION;
+}
+template <typename T,
+          typename std::enable_if<!util::has_class_version<T>::value, std::size_t>::type = 0>
+std::size_t class_version() {
+    return 0;
+}
+}
 
 class IvwSerializable;
 
@@ -120,12 +150,12 @@ public:
      */
     IvwSerializeBase(std::istream& stream, const std::string& path, bool allowReference=true);
     
-	/**
+    /**
      * \brief Destructor
      */
     virtual ~IvwSerializeBase();
     
-	/**
+    /**
      * \brief gets the xml file name.
      */
     virtual std::string getFileName();
@@ -141,7 +171,7 @@ public:
      */
     bool isPrimitiveType(const std::type_info& type) const;
 
-	/**
+    /**
      * \brief Registers all factories from all modules.
      */
     virtual void registerFactories(void);
@@ -150,7 +180,7 @@ public:
      * \brief For allocating objects such as processors, properties.. using registered factories.
      *
      * @param const std::string & className is used by registered factories to allocate the required object.
-     * @return T* NULL if allocation fails or className does not exist in any factories.
+     * @return T* nullptr if allocation fails or className does not exist in any factories.
      */
     template <typename T>
     T* getRegisteredType(const std::string& className);
@@ -238,7 +268,7 @@ protected:
 
 template <typename T>
 T* IvwSerializeBase::getRegisteredType(const std::string& className) {
-    T* data = NULL;
+    T* data = nullptr;
     std::vector<Factory*>::iterator it;
 
     for (it = registeredFactories_.begin(); it != registeredFactories_.end(); it++) {

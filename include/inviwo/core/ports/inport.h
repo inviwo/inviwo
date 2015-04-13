@@ -50,10 +50,6 @@ public:
     Inport(std::string identifier = "");
     virtual ~Inport();
 
-    //FIXME: Temporary fix. Remove this to make Inport abstract class
-    virtual void initialize() {}
-    virtual void deinitialize() {}
-
     virtual bool isConnected() const;
     virtual bool isReady() const;
 
@@ -66,7 +62,7 @@ public:
 
     virtual bool isConnectedTo(Outport* outport) const { return false; }
 
-    virtual Outport* getConnectedOutport() const { return NULL; }
+    virtual Outport* getConnectedOutport() const { return nullptr; }
     virtual std::vector<Outport*> getConnectedOutports() const { return std::vector<Outport*>(); }
 
     std::vector<Processor*> getPredecessors();

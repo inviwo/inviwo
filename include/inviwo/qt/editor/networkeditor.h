@@ -267,7 +267,7 @@ T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {
 
         if (item) return item;
     }
-    return NULL;
+    return nullptr;
 }
 
 class IVW_QTEDITOR_API PortInspectorObserver : public ProcessorWidgetObserver {
@@ -300,7 +300,7 @@ private:
 class SignalMapperObject : public QObject {
     Q_OBJECT
 public:
-    SignalMapperObject() : QObject(), item_(NULL) {}
+    SignalMapperObject() : QObject(), item_(nullptr) {}
 
 public slots:
     void tiggerAction() { emit(triggered(item_)); }

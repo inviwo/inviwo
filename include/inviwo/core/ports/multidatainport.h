@@ -79,6 +79,8 @@ public:
 
     std::vector<const T*> getData() const;
 
+    std::vector<const T*> getDataFromPort(Inport*) const;
+
     bool hasData() const;
 
 };
@@ -95,11 +97,11 @@ MultiDataInport<T, U>::~MultiDataInport() {
 
 template <typename T, typename U>
 void MultiDataInport<T, U>::connectTo(Outport* outport) {
-    ivwAssert(dynamic_cast<DataOutport<T>*>(outport)!=NULL
-              || dynamic_cast<VectorDataOutport<T*>*>(outport) != NULL
+    ivwAssert(dynamic_cast<DataOutport<T>*>(outport)!=nullptr
+              || dynamic_cast<VectorDataOutport<T*>*>(outport) != nullptr
               , "Trying to connect incompatible ports.")
     // U is a Port class
-    Inport* inport = NULL;
+    Inport* inport = nullptr;
     if (dynamic_cast<DataOutport<T>*>(outport)) {
         inport = new U(getIdentifier());
         inports_->push_back(inport);
@@ -109,6 +111,8 @@ void MultiDataInport<T, U>::connectTo(Outport* outport) {
     }
     setProcessorHelper(inport, getProcessor());
     inport->connectTo(outport);
+    inport->setChanged(true);
+    invalidate(INVALID_OUTPUT);
 }
 
 template < typename T, typename U /*= DataInport<T> */>
@@ -128,6 +132,31 @@ std::vector<const T*> inviwo::MultiDataInport<T, U>::getData() const {
         data.insert(data.end(), vecdata->vector.begin(), vecdata->vector.end());
     }
 
+    return data;
+}
+
+template < typename T, typename U /*= DataInport<T> */>
+std::vector<const T*> inviwo::MultiDataInport<T, U>::getDataFromPort(Inport* port) const {
+    std::vector<const T*> data;
+    InportVec::const_iterator it = inports_->begin();
+    InportVec::const_iterator endIt = inports_->end();
+
+    for (; it != endIt; ++it) {
+        if ((*it) == port){
+            data.push_back(static_cast<U*>(*it)->getData());
+            return data;
+        }
+    }
+
+    it = vectorInports_->begin();
+    endIt = vectorInports_->end();
+    for (; it != endIt; ++it) {
+        if ((*it) == port){
+            const VectorData<T*>* vecdata = static_cast<VectorDataInport<T*>*>(*it)->getData();
+            data.insert(data.end(), vecdata->vector.begin(), vecdata->vector.end());
+            return data;
+        }
+    }
 
     return data;
 }

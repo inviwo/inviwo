@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "volumeraycaster.h"
@@ -41,17 +41,18 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeRaycaster,  "org.inviwo.VolumeRaycaster");
-ProcessorDisplayName(VolumeRaycaster,  "Volume Raycaster");
+ProcessorClassIdentifier(VolumeRaycaster, "org.inviwo.VolumeRaycaster");
+ProcessorDisplayName(VolumeRaycaster, "Volume Raycaster");
 ProcessorTags(VolumeRaycaster, Tags::GL);
 ProcessorCategory(VolumeRaycaster, "Volume Rendering");
 ProcessorCodeState(VolumeRaycaster, CODE_STATE_STABLE);
 
 VolumeRaycaster::VolumeRaycaster()
     : Processor()
+    , shader_("raycasting.frag", false)
     , volumePort_("volume")
-    , entryPort_("entry-points")
-    , exitPort_("exit-points")
+    , entryPort_("entry")
+    , exitPort_("exit")
     , outport_("outport")
     , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &volumePort_)
     , channel_("channel", "Render Channel")
@@ -59,18 +60,17 @@ VolumeRaycaster::VolumeRaycaster()
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting", &camera_)
     , positionIndicator_("positionindicator", "Position Indicator")
-    , toggleShading_("toggleShading", "Toggle Shading",
-        new KeyboardEvent('L'), 
-        new Action(this, &VolumeRaycaster::toggleShading)) {
-    
+    , toggleShading_("toggleShading", "Toggle Shading", new KeyboardEvent('L'),
+                     new Action(this, &VolumeRaycaster::toggleShading)) {
+        
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
-    
+
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();
-    
+
     volumePort_.onChange(this, &VolumeRaycaster::onVolumeChange);
 
     addProperty(channel_);
@@ -82,85 +82,74 @@ VolumeRaycaster::VolumeRaycaster()
     addProperty(toggleShading_);
 }
 
-VolumeRaycaster::~VolumeRaycaster() {
-}
-
-void VolumeRaycaster::initialize() {
-    Processor::initialize();
-    shader_ = new Shader("raycasting.frag", false);
-    initializeResources();
-}
-
-void VolumeRaycaster::deinitialize() {
-    delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
-}
+VolumeRaycaster::~VolumeRaycaster() {}
 
 void VolumeRaycaster::initializeResources() {
-    utilgl::addShaderDefines(shader_, raycasting_);
-    utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_);
-    utilgl::addShaderDefines(shader_, positionIndicator_);
-    shader_->build();
+    utilgl::addShaderDefines(&shader_, raycasting_);
+    utilgl::addShaderDefines(&shader_, camera_);
+    utilgl::addShaderDefines(&shader_, lighting_);
+    utilgl::addShaderDefines(&shader_, positionIndicator_);
+    shader_.build();
 }
 
 void VolumeRaycaster::onVolumeChange() {
-    if (volumePort_.hasData()){
-        int channels = volumePort_.getData()->getDataFormat()->getComponents();
+    if (volumePort_.hasData()) {
+        size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
 
-        if(channels == static_cast<int>(channel_.size()))
-            return;
-        
-        channel_.clearOptions();
-        for (int i = 0; i < channels; i++) {
-            std::stringstream ss;
-            ss << "Channel " << i;
-            channel_.addOption(ss.str() , ss.str(), i);
+        if (channels == channel_.size()) return;
+
+        std::vector<OptionPropertyIntOption> channelOptions;
+        for (size_t i = 0; i < channels; i++) {
+            channelOptions.emplace_back("Channel " + toString(i), "Channel " + toString(i), i);
         }
+        channel_.replaceOptions(channelOptions);
         channel_.setCurrentStateAsDefault();
     }
 }
 
 void VolumeRaycaster::process() {
-    TextureUnit tfUnit, entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit, volUnit;
-    utilgl::bindTexture(transferFunction_, tfUnit);
-    utilgl::bindTextures(entryPort_, entryColorUnit, entryDepthUnit);
-    utilgl::bindTextures(exitPort_, exitColorUnit, exitDepthUnit);
-    utilgl::bindTexture(volumePort_, volUnit);
-
     utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
     utilgl::clearCurrentTarget();
-    shader_->activate();
-
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-    shader_->setUniform("transferFunc_", tfUnit.getUnitNumber());
-    shader_->setUniform("entryColorTex_", entryColorUnit.getUnitNumber());
-    shader_->setUniform("entryDepthTex_", entryDepthUnit.getUnitNumber());   
-    utilgl::setShaderUniforms(shader_, entryPort_, "entryParameters_");
-    shader_->setUniform("exitColorTex_", exitColorUnit.getUnitNumber());
-    shader_->setUniform("exitDepthTex_", exitDepthUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, exitPort_, "exitParameters_");     
-    shader_->setUniform("channel_", channel_.getSelectedValue());
-    shader_->setUniform("volume_", volUnit.getUnitNumber());    
-    utilgl::setShaderUniforms(shader_, volumePort_, "volumeParameters_");
-    utilgl::setShaderUniforms(shader_, raycasting_);
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-    utilgl::setShaderUniforms(shader_, lighting_, "light_");
-    utilgl::setShaderUniforms(shader_, positionIndicator_, "positionIndicator_");
+    shader_.activate();
+    
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(&shader_, units, volumePort_);
+    utilgl::bindAndSetUniforms(&shader_, units, transferFunction_);
+    utilgl::bindAndSetUniforms(&shader_, units, entryPort_, COLOR_DEPTH);
+    utilgl::bindAndSetUniforms(&shader_, units, exitPort_, COLOR_DEPTH);
+    utilgl::setUniforms(&shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
+                        channel_);
 
     utilgl::singleDrawImagePlaneRect();
 
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
 void VolumeRaycaster::toggleShading(Event*) {
-    if (lighting_.shadingMode_.get() ==  ShadingMode::None) {
+    if (lighting_.shadingMode_.get() == ShadingMode::None) {
         lighting_.shadingMode_.set(ShadingMode::Phong);
     } else {
         lighting_.shadingMode_.set(ShadingMode::None);
     }
 }
+
+// override to do member renaming.
+void VolumeRaycaster::deserialize(IvwDeserializer& d) {
+    NodeVersionConverter<VolumeRaycaster> vc(this, &VolumeRaycaster::updateNetwork);
+    d.convertVersion(&vc);
+    Processor::deserialize(d);
+}
+bool VolumeRaycaster::updateNetwork(TxElement* node) {
+    TxElement* p1 = util::xmlGetElement(
+        node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=entry-points");
+    if (p1) p1->SetAttribute("identifier", "entry");
+    TxElement* p2 = util::xmlGetElement(
+        node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=exit-points");
+    if (p2) p2->SetAttribute("identifier", "exit");
+    return true;
+}
+
+
 
 } // namespace

@@ -66,7 +66,7 @@ public:
     void addShaderResource(std::string, std::string);
 
     std::string getShaderResource(std::string);
-
+    const std::vector<Shader*> getShaders() const;
     void rebuildAllShaders();
 
 protected:

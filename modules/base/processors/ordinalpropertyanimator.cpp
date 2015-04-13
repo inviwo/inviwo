@@ -29,6 +29,7 @@
 
 #include "ordinalpropertyanimator.h"
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
@@ -49,9 +50,8 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     
     timer_ = InviwoApplication::getPtr()->createTimer();
     if (timer_ == nullptr) {
-        LogWarn("Failed to create timer");
-    }
-    else{
+        throw Exception("Failed to create timer");
+    } else{
         timer_->setElapsedTimeCallback(this, &OrdinalPropertyAnimator::timerEvent);
     }
     

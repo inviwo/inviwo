@@ -39,14 +39,14 @@ if(POLICY CMP0046)
 endif()
 
 if(CMAKE_VERSION VERSION_GREATER "3.0.0")
-	cmake_policy(SET CMP0042 OLD) # MacOSX rpath policy.
+    cmake_policy(SET CMP0042 OLD) # MacOSX rpath policy.
 endif()
 
 if (NOT CMAKE_VERSION VERSION_LESS "3.1.0")
-	# include TARGET_OBJECTS expressions in a target's SOURCES property
-	cmake_policy(SET CMP0051 NEW)
-	# only interpret if() arguments as variables or keywords when unquoted
-	cmake_policy(SET CMP0054 NEW)
+    # include TARGET_OBJECTS expressions in a target's SOURCES property
+    cmake_policy(SET CMP0051 NEW)
+    # only interpret if() arguments as variables or keywords when unquoted
+    cmake_policy(SET CMP0054 NEW)
 endif()
 
 project(inviwo-projects)

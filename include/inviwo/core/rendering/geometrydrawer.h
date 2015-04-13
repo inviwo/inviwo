@@ -57,7 +57,7 @@ class GeometryDrawerFactory;
  *        virtual const Geometry* getGeometry() const { return geomToRender_; }
  *    protected:
  *        virtual DerivedDrawer* create(const Geometry* geom) const { return new DerivedDrawer(static_cast<const DerivedGeometry*>(geom)); }
- *        virtual bool canRender(const Geometry* geom) const { return dynamic_cast<const DerivedGeometry*>(geom) != NULL; }
+ *        virtual bool canRender(const Geometry* geom) const { return dynamic_cast<const DerivedGeometry*>(geom) != nullptr; }
  *    private:
  *        const DerivedGeometry* geomToRender_;
  *    };

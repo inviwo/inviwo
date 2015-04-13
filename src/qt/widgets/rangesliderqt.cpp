@@ -28,20 +28,22 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/rangesliderqt.h>
-#include <QFrame>
 
 namespace inviwo {
+
 
 RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent) 
     : QSplitter(orientation, parent)
     , minSeperation_(0) {
 
     QFrame* left = new QFrame(this);
-    middle_ = new QFrame(this);
+    middle_ = new RangeSliderMiddle(this);
     QFrame* right = new QFrame(this);
     addWidget(left);
     addWidget(middle_);
     addWidget(right);
+
+    QObject::connect(middle_, SIGNAL(middleMoved(int)), this, SLOT(middleMoved(int)));
 
     this->setProperty("Vertical", orientation == Qt::Vertical);
     left->setProperty("LeftPart", true);
@@ -169,7 +171,7 @@ void RangeSliderQt::resizeEvent(QResizeEvent* event) {
     setMinSeparation(minSeperation_);
 }
 
-void RangeSliderQt::updateStateFromSiders() {
+void RangeSliderQt::updateStateFromSliders() {
     QList<int> sizes = QSplitter::sizes();
     int range = sizes[0] + sizes[1] + sizes[2];
 
@@ -201,12 +203,72 @@ void RangeSliderQt::updateSlidersFromState() {
 
 //Index 1 = Min, Index 2 = Max
 void RangeSliderQt::updateSplitterPosition(int pos, int idx) {
-    updateStateFromSiders();
+    updateStateFromSliders();
 
     //Emit
     emit valuesChanged(value_[0], value_[1]);
 }
 
+void RangeSliderQt::middleMoved(int delta) {
+    QList<int> sizes = QSplitter::sizes();
+    // ensure not to move middle part further than min/max values
+    if (delta > 0) {
+        delta = std::min(delta, sizes[2]);
+    }
+    else {
+        delta = -std::min(-delta, sizes[0]);
+    }
+    if (delta == 0) {
+        return;
+    }
+    // adjust sizes and modify splitter positions
+    sizes[0] += delta;
+    sizes[2] -= delta;
+    QSplitter::blockSignals(true);
+    QSplitter::setSizes(sizes);
+    QSplitter::blockSignals(false);
 
+    // update internal state
+    this->updateSplitterPosition(0, 0);
+}
+
+
+
+RangeSliderMiddle::RangeSliderMiddle(QWidget *parent) 
+    : QFrame(parent)
+    , lastMouseX_(0)
+    , drag_(false)
+{
+}
+
+RangeSliderMiddle::~RangeSliderMiddle() {
+}
+
+void RangeSliderMiddle::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        // map to global position since the widget will move
+        lastMouseX_ = this->mapToGlobal(event->pos()).x();
+        drag_ = true;
+    }
+}
+
+void RangeSliderMiddle::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        drag_ = false;
+    }
+}
+
+
+void RangeSliderMiddle::mouseMoveEvent(QMouseEvent *event) {
+    if (drag_) {
+        // map to global position since the widget is about to be moved
+        int newX = this->mapToGlobal(event->pos()).x();
+        int delta = newX - lastMouseX_;
+        lastMouseX_ = newX;
+        if (delta != 0) {
+            emit middleMoved(delta);
+        }
+    }
+}
 
 } // namespace inviwo

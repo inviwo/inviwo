@@ -24,9 +24,10 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
+#pragma warning(disable: 4251)
 #include <inviwo/core/io/serialization/ivwdeserializer.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/processors/processorfactory.h>
@@ -34,12 +35,10 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 
-
 namespace inviwo {
 
 IvwDeserializer::IvwDeserializer(IvwDeserializer& s, bool allowReference)
     : IvwSerializeBase(s.getFileName(), allowReference) {
-
     doc_.LoadFile();
     rootElement_ = doc_.FirstChildElement();
     storeReferences(rootElement_);
@@ -47,7 +46,6 @@ IvwDeserializer::IvwDeserializer(IvwDeserializer& s, bool allowReference)
 
 IvwDeserializer::IvwDeserializer(std::string fileName, bool allowReference)
     : IvwSerializeBase(fileName, allowReference) {
-
     doc_.LoadFile();
     rootElement_ = doc_.FirstChildElement();
     storeReferences(rootElement_);
@@ -60,9 +58,7 @@ IvwDeserializer::IvwDeserializer(std::istream& stream, const std::string& path, 
     storeReferences(rootElement_);
 }
 
-
-IvwDeserializer::~IvwDeserializer() {
-}
+IvwDeserializer::~IvwDeserializer() {}
 
 void IvwDeserializer::deserialize(const std::string& key, IvwSerializable& sObj) {
     try {
@@ -72,72 +68,23 @@ void IvwDeserializer::deserialize(const std::string& key, IvwSerializable& sObj)
     }
 }
 
-void IvwDeserializer::deserializeAttributes(const std::string& key, std::string& data) {
-    try {
-        rootElement_->GetAttribute(key, &data);
-    } catch (TxException&) {}
-}
-
-void IvwDeserializer::deserializePrimitive(const std::string& key, std::string& data) {
-    NodeSwitch ns(*this, key);
-    rootElement_->GetAttribute(IvwSerializeConstants::CONTENT_ATTRIBUTE, &data);
-}
-
-void IvwDeserializer::deserialize(const std::string& key, std::string& data,
+void IvwDeserializer::deserialize(const std::string& key, signed char& data,
                                   const bool asAttribute) {
-    if (asAttribute)
-        deserializeAttributes(key, data);
-    else {
-        try {
-            deserializePrimitive(key, data);
-        } catch (TxException&) {
-            // Try one more time to deserialize as string attribute (content attribute)
-            try {
-                deserializeAttributes(IvwSerializeConstants::CONTENT_ATTRIBUTE, data);
-            } catch (TxException&) {
-            }
-        }
-    }
+    int val = data;
+    deserialize(key, val, asAttribute);
+    data = static_cast<char>(val);
 }
-
-void IvwDeserializer::deserialize(const std::string& key, bool& data) {
-    deserializePrimitive<bool>(key, data);
+void IvwDeserializer::deserialize(const std::string& key, char& data,
+                                  const bool asAttribute) {
+    int val = data;
+    deserialize(key, val, asAttribute);
+    data = static_cast<char>(val);
 }
-void IvwDeserializer::deserialize(const std::string& key, float& data) {
-    deserializePrimitive<float>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, double& data) {
-    deserializePrimitive<double>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, signed char& data) {
-    deserializePrimitive<signed char>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, unsigned char& data) {
-    deserializePrimitive<unsigned char>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, char& data) {
-    deserializePrimitive<char>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, short& data) {
-    deserializePrimitive<short>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, unsigned short& data) {
-    deserializePrimitive<unsigned short>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, int& data) {
-    deserializePrimitive<int>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, unsigned int& data) {
-    deserializePrimitive<unsigned int>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, long& data) {
-    deserializePrimitive<long>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, long long& data) {
-    deserializePrimitive<long long>(key, data);
-}
-void IvwDeserializer::deserialize(const std::string& key, unsigned long long& data) {
-    deserializePrimitive<unsigned long long>(key, data);
+void IvwDeserializer::deserialize(const std::string& key, unsigned char& data,
+                                  const bool asAttribute) {
+    unsigned int val = data;
+    deserialize(key, val, asAttribute);
+    data = static_cast<unsigned char>(val);
 }
 
 void IvwDeserializer::convertVersion(VersionConverter* converter) {
@@ -158,12 +105,13 @@ BaseDeserializationErrorHandler* IvwDeserializer::popErrorHandler() {
 }
 
 void IvwDeserializer::handleError(SerializationException& e) {
-  for (auto it = errorHandlers_.rbegin(); it != errorHandlers_.rend(); ++it) {
+    for (auto it = errorHandlers_.rbegin(); it != errorHandlers_.rend(); ++it) {
         if ((*it)->getKey() == e.getKey()) {
             (*it)->handleError(e);
             return;
         }
     }
+    // If no error handler found:
     LogWarn(e.getMessage());
 }
 
@@ -171,11 +119,11 @@ void IvwDeserializer::storeReferences(TxElement* node) {
     std::string id = node->GetAttributeOrDefault("id", "");
     if (id != "") {
         referenceLookup_[id] = node;
-    } 
+    }
     ticpp::Iterator<ticpp::Element> child;
     for (child = child.begin(node); child != child.end(); child++) {
         storeReferences(child.Get());
     }
 }
 
-} //namespace
+}  // namespace

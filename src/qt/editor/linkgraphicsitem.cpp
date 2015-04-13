@@ -136,8 +136,8 @@ void LinkGraphicsItem::updateShape() {
     QPointF topLeft =
         QPointF(std::min(startPoint_.x(), endPoint_.x()), std::min(startPoint_.y(), endPoint_.y()));
     rect_ =  QRectF(topLeft.x() - 40.0, topLeft.y() - 10.0,
-                  abs(startPoint_.x() - endPoint_.x()) + 80.0,
-                  abs(startPoint_.y() - endPoint_.y()) + 20.0);
+                  std::abs(startPoint_.x() - endPoint_.x()) + 80.0,
+                  std::abs(startPoint_.y() - endPoint_.y()) + 20.0);
 
     path_ = obtainCurvePath();
 }

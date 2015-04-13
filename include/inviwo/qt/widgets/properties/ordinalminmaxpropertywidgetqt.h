@@ -58,11 +58,9 @@ public:
     static T spinboxToValue(MinMaxProperty<T>* p, double val){
         return static_cast<T>(val);
     };
-
     static double valueToSpinbox(MinMaxProperty<T>* p, T val){
         return static_cast<double>(val);
     }
-    
 };
 
 template<>
@@ -171,6 +169,17 @@ public:
     typedef glm::detail::tvec2<T, glm::defaultp> V;
     
 protected:
+    virtual int transformIncrementToSpinnerDecimals() {
+        double inc = Transformer<T>::valueToSpinbox(minMaxProperty_, minMaxProperty_->getIncrement());
+        std::ostringstream buff;
+        buff << inc;
+        const std::string str(buff.str());
+        auto periodPosition = str.find(".");
+        if (periodPosition == std::string::npos) 
+            return 0;
+        else
+            return str.length() - periodPosition - 1;
+    }
     virtual std::string getToolTipText();
     
     MinMaxProperty<T>* minMaxProperty_;
@@ -179,7 +188,6 @@ protected:
 typedef OrdinalMinMaxPropertyWidgetQt<double> DoubleMinMaxPropertyWidgetQt;
 typedef OrdinalMinMaxPropertyWidgetQt<float> FloatMinMaxPropertyWidgetQt;
 typedef OrdinalMinMaxPropertyWidgetQt<int> IntMinMaxPropertyWidgetQt;
-
 
 
 template<typename T>
@@ -232,6 +240,9 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromProperty() {
         Transformer<T>::valueToSpinbox(minMaxProperty_, inc)
     );
     
+    this->spinBoxMax_->setDecimals(transformIncrementToSpinnerDecimals());
+    this->spinBoxMin_->setDecimals(transformIncrementToSpinnerDecimals());
+
     this->spinBoxMax_->setValue(
         Transformer<T>::valueToSpinbox(minMaxProperty_, val.y)
     );

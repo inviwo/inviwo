@@ -33,6 +33,7 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <modules/openglqt/canvasqt.h>
+#include <modules/openglqt/openglqtmenu.h>
 
 namespace inviwo {
 
@@ -52,6 +53,8 @@ protected:
 
 private:
     CanvasQt* qtGLSharedCanvas_;
+    
+    OpenGLQtMenu* menu_;
 };
 
 } // namespace

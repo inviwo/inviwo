@@ -61,20 +61,21 @@ public:
      * \brief Perform volume rendering on the input volume. 
      * 
      * @param const Volume * volume 
-     * @param const Image * entryPoints Start point of ray in texture space.
-     * @param const Image * exitPoints End point of ray in texture space.
+     * @param const Layer * entryPoints Start point of ray in texture space.
+     * @param const Layer * exitPoints End point of ray in texture space.
      * @param const Layer * transferFunction Transfer function, mapping value to color and opacity.
-     * @param Image * outImage Output image 
+     * @param Layer * outImage Output image 
      * @param const VECTOR_CLASS<cl::Event> * waitForEvents 
      * @param cl::Event * event 
      */
-    void volumeRaycast(const Volume* volume, const Image* entryPoints, const Image* exitPoints, const Layer* transferFunction, Image* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
+    void volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints, const Layer* transferFunction, Layer* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
     
     void volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL, const LayerCLBase* background, const LayerCLBase* entryCL, const LayerCLBase* exitCL, const LayerCLBase* transferFunctionCL, LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
     
     void samplingRate(float samplingRate);
     float samplingRate() const { return samplingRate_; }
 
+	const CameraProperty*  getCamera() const { return camera_; }
     void setCamera(CameraProperty* camera) { camera_ = camera; }
     void setLightingProperties(const SimpleLightingProperty& light);
     void setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent);
@@ -90,6 +91,13 @@ public:
      * @param Layer * val Layer to use as background. Will not take ownership.
      */
     void setBackground(const Layer* val) { background_ = val; }
+    /**
+    * \brief Set the default background color to use in the rendering.
+    * Will only be used if background layer is set to nullptr.
+    *
+    * @param RGBA color in [0 1]^4
+    */
+    void setDefaultBackgroundColor(const vec4 color);
 
     svec2 workGroupSize() const { return workGroupSize_; }
     void workGroupSize(const svec2& val) { workGroupSize_ = val; }

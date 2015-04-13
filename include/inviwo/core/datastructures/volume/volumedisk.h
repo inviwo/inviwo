@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEDISK_H
@@ -37,19 +37,22 @@
 namespace inviwo {
 
 class IVW_CORE_API VolumeDisk : public VolumeRepresentation, public DiskRepresentation {
-
 public:
-    VolumeDisk(uvec3 dimensions = uvec3(128,128,128), const DataFormatBase* format = DataUINT8::get());
-    VolumeDisk(std::string url, uvec3 dimensions = uvec3(128,128,128), const DataFormatBase* format = DataUINT8::get());
+    VolumeDisk(uvec3 dimensions = uvec3(128, 128, 128),
+               const DataFormatBase* format = DataUINT8::get());
+    VolumeDisk(std::string url, uvec3 dimensions = uvec3(128, 128, 128),
+               const DataFormatBase* format = DataUINT8::get());
     VolumeDisk(const VolumeDisk& rhs);
     VolumeDisk& operator=(const VolumeDisk& that);
     virtual VolumeDisk* clone() const;
     virtual ~VolumeDisk();
 
-    virtual void initialize();
-    virtual void deinitialize();
+    virtual void setDimensions(uvec3 dimensions);
+    virtual const uvec3& getDimensions() const;
+private:
+    uvec3 dimensions_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VOLUMEDISK_H
+#endif  // IVW_VOLUMEDISK_H

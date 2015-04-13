@@ -30,69 +30,6 @@
 
 namespace inviwo {
 
-PlaneProperty::PlaneProperty(std::string identifier, std::string displayName,
-                             InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , enable_("enable", "Enable", true, INVALID_RESOURCES)
-    , mode_("mode", "Mode", INVALID_RESOURCES)
-    , position_("position", "Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
-    , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f))
-    , color_("color", "Color", vec4(1.0f, 1.0f, 1.0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-             INVALID_OUTPUT, PropertySemantics::Color) {
-    addProperty(enable_);
-    addProperty(mode_);
-    addProperty(position_);
-    addProperty(normal_);
-    addProperty(color_);
-
-    mode_.onChange(this, &PlaneProperty::onModeChange);
-    mode_.addOption("plane", "Plane", 0);
-
-    setAllPropertiesCurrentStateAsDefault();
-}
-
-PropertyClassIdentifier(PlaneProperty, "org.inviwo.PlaneProperty");
-
-PlaneProperty::PlaneProperty(const PlaneProperty& rhs)
-    : CompositeProperty(rhs)
-    , enable_(rhs.enable_)
-    , mode_(rhs.mode_)
-    , position_(rhs.position_)
-    , normal_(rhs.normal_)
-    , color_(rhs.color_) {
-
-    addProperty(enable_);
-    addProperty(mode_);
-    addProperty(position_);
-    addProperty(normal_);
-    addProperty(color_);
-
-    mode_.onChange(this, &PlaneProperty::onModeChange);
-    setAllPropertiesCurrentStateAsDefault();
-}
-
-PlaneProperty& PlaneProperty::operator=(const PlaneProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        enable_ = that.enable_;
-        mode_ = that.mode_;
-        position_ = that.position_;
-        normal_ = that.normal_;
-        color_ = that.color_;
-    }
-    return *this;
-}
-
-PlaneProperty* PlaneProperty::clone() const { return new PlaneProperty(*this); }
-
-PlaneProperty::~PlaneProperty() {}
-
-void PlaneProperty::onModeChange() {}
-
-std::string PlaneProperty::getClassIdentifierForWidget() const {
-    return CompositeProperty::CLASS_IDENTIFIER;
-}
-
 PropertyClassIdentifier(VolumeIndicatorProperty, "org.inviwo.VolumeIndicatorProperty");
 
 VolumeIndicatorProperty::VolumeIndicatorProperty(std::string identifier, std::string displayName,

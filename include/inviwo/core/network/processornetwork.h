@@ -154,7 +154,7 @@ public:
     *
     * @param[in] sourcePort The outport.
     * @param[in] destPort The inport.
-    * @return The newly created connection. NULL if a connection could not be made.
+    * @return The newly created connection. nullptr if a connection could not be made.
     * @see removeConnection()
     */
     PortConnection* addConnection(Outport* sourcePort, Inport* destPort);
@@ -185,7 +185,7 @@ public:
     *
     * @param[in] sourcePort The outport.
     * @param[in] destPort The inport.
-    * @return The PortConnection between the ports or NULL if there is none.
+    * @return The PortConnection between the ports or nullptr if there is none.
     * @see addConnection()
     */
     PortConnection* getConnection(Outport* sourcePort, Inport* destPort);
@@ -235,7 +235,7 @@ public:
      * 
      * @param[in] sourceProperty Property at which link starts
      * @param[in] destinationProperty Property at which link ends
-     * @return PropertyLink* returns pointer to link if it exists otherwise returns NULL
+     * @return PropertyLink* returns pointer to link if it exists otherwise returns nullptr
      */
     PropertyLink* getLink(Property* sourceProperty, Property* destinationProperty) const;
     /** 
@@ -283,7 +283,7 @@ public:
     virtual void onAboutPropertyChange(Property*);
     virtual void onProcessorInvalidationBegin(Processor*);
     virtual void onProcessorInvalidationEnd(Processor*);
-    virtual void onProcessorRequestEvaluate(Processor* p = NULL);
+    virtual void onProcessorRequestEvaluate(Processor* p = nullptr);
     virtual void onProcessorIdentifierChange(Processor*);
     
     Processor* getInvalidationInitiator();
@@ -295,7 +295,7 @@ public:
     inline bool islocked() const { return (locked_!=0); }
 
     virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d) throw (Exception);
+    virtual void deserialize(IvwDeserializer& d);
 
     bool isDeserializing()const;
     void updatePropertyLinkCaches();
@@ -323,6 +323,9 @@ private:
             messages.push_back(error.getMessage());
         }
         void handleLinkError(SerializationException& error) {
+            messages.push_back(error.getMessage());
+        }
+        void handlePortError(SerializationException& error) {
             messages.push_back(error.getMessage());
         }
   

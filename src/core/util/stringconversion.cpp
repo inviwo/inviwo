@@ -29,6 +29,8 @@
 
 #include <inviwo/core/util/stringconversion.h>
 
+#include <random>
+
 #if defined(__clang__) || defined(__GNUC__)
 #include <cstdlib>
 #include <memory>
@@ -110,12 +112,12 @@ std::string toUpper(std::string str) {
 }
 
 std::string toLower(std::string str) {
-    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+    std::transform(str.begin(), str.end(), str.begin(), (int(*)(int))std::tolower);
     return str;
 }
 
-unsigned int countLines(std::string str) {
-    unsigned int lineCount = 1;
+size_t countLines(std::string str) {
+    size_t lineCount = 1;
     size_t position = 0;
 
     while (position < str.length()) {
@@ -131,10 +133,14 @@ static const std::string possibleValues =
     "0123456789"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz";
-std::string randomString(unsigned int length) {
+std::string randomString(size_t length) {
     std::string s;
 
-    while (s.size() < length) s += possibleValues[rand() % possibleValues.size()];
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, possibleValues.size() - 1);
+
+    while (s.size() < length) s += possibleValues[dis(gen)];
 
     return s;
 }

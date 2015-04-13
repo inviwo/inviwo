@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFERCL_BASE_H
@@ -34,10 +34,11 @@
 #include <modules/opencl/openclmoduledefine.h>
 
 namespace inviwo {
-// Parent classes are responsible for creating the appropriate cl::Buffer type (Buffer/BufferGL and so forth)
-// This class enables inviwo to use cl::Buffer(s) in a generic way (i.e. not caring if it is an Buffer or BufferGL).
+// Parent classes are responsible for creating the appropriate cl::Buffer type (Buffer/BufferGL and
+// so forth)
+// This class enables inviwo to use cl::Buffer(s) in a generic way (i.e. not caring if it is an
+// Buffer or BufferGL).
 class IVW_MODULE_OPENCL_API BufferCLBase {
-
 public:
     BufferCLBase();
     BufferCLBase(const BufferCLBase& other);
@@ -47,10 +48,10 @@ public:
     virtual const cl::Buffer& get() const { return *const_cast<const cl::Buffer*>(clBuffer_); }
 
 protected:
-    cl::Buffer* clBuffer_; // Derived class is responsible for allocating and deallocating this
+    cl::Buffer* clBuffer_;  // Derived class is responsible for allocating and deallocating this
 };
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -59,8 +60,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferCLBase& value);
 
-} // namespace cl
+}  // namespace cl
 
-
-
-#endif // IVW_BUFFERCL_BASE_H
+#endif  // IVW_BUFFERCL_BASE_H
