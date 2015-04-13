@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEUTILS_H
@@ -43,14 +43,13 @@ class VolumeInport;
 namespace utilgl {
 
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const Volume* volume,
-                                               const std::string& samplerID);
+                                             const std::string& samplerID);
 
 IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const VolumeInport& port,
-                                               const std::string& samplerID);
+                                             const std::string& samplerID);
 
-
-IVW_MODULE_OPENGL_API TextureUnit bindAndSetUniforms(Shader* shader, VolumeInport& volume);
-
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
+                                              VolumeInport& volume);
 }
 
 }  // namespace

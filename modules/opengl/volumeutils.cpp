@@ -120,11 +120,12 @@ void setShaderUniforms(Shader* shader, const VolumeInport& port, const std::stri
     setShaderUniforms(shader, port.getData(), samplerID);
 }
 
-TextureUnit bindAndSetUniforms(Shader* shader, VolumeInport& volumePort) {
-    auto volUnit = utilgl::bindTexture(volumePort);
-    shader->setUniform(volumePort.getIdentifier(), volUnit.getUnitNumber());
+void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont, VolumeInport& volumePort) {
+    TextureUnit unit;
+    utilgl::bindTexture(volumePort, unit);
+    shader->setUniform(volumePort.getIdentifier(), unit.getUnitNumber());
     utilgl::setShaderUniforms(shader, volumePort, volumePort.getIdentifier() + "Parameters");
-    return std::move(volUnit);
+    cont.push_back(std::move(unit));
 }
 
 }

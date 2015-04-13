@@ -111,11 +111,12 @@ void VolumeRaycaster::process() {
     utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
     utilgl::clearCurrentTarget();
     shader_.activate();
-
-    auto vol = utilgl::bindAndSetUniforms(&shader_, volumePort_);
-    auto tf = utilgl::bindAndSetUniforms(&shader_, transferFunction_);
-    auto entry = utilgl::bindAndSetUniforms(&shader_, entryPort_, COLOR_DEPTH);
-    auto exit = utilgl::bindAndSetUniforms(&shader_, exitPort_, COLOR_DEPTH);
+    
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(&shader_, units, volumePort_);
+    utilgl::bindAndSetUniforms(&shader_, units, transferFunction_);
+    utilgl::bindAndSetUniforms(&shader_, units, entryPort_, COLOR_DEPTH);
+    utilgl::bindAndSetUniforms(&shader_, units, exitPort_, COLOR_DEPTH);
     utilgl::setUniforms(&shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
                         channel_);
 
