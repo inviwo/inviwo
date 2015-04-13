@@ -42,8 +42,8 @@
 
 namespace inviwo {
 
-IVW_CORE_API enum class LogLevel : int { Info, Warn, Error };
-IVW_CORE_API enum class LogAudience : int { User, Developer };
+enum class IVW_CORE_API LogLevel : int { Info, Warn, Error };
+enum class IVW_CORE_API LogAudience : int { User, Developer };
 
 #define LogInfo(message)                                                                          \
     {                                                                                             \

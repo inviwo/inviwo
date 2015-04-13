@@ -45,7 +45,7 @@
 
 namespace inviwo {
 
-IVW_QTWIDGETS_API enum InviwoWidgetGraphicsItemType {
+enum IVW_QTWIDGETS_API InviwoWidgetGraphicsItemType {
     TransferFunctionEditorControlPointType = 1,
     TransferFunctionControlPointConnectionType,
     Number_of_InviwoWidgetGraphicsItemTypes

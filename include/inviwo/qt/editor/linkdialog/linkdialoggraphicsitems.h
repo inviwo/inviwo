@@ -80,7 +80,7 @@ static const int arrowDimensionHeight = arrowDimensionWidth/2;
 
 namespace inviwo {
 
-IVW_QTEDITOR_API enum InviwoLinkUserGraphicsItemType {
+enum IVW_QTEDITOR_API InviwoLinkUserGraphicsItemType {
     LinkDialogProcessorGraphicsItemType = 4,
     LinkDialogPropertyGraphicsItemType = 5,
     LinkDialogCurveGraphicsItemType = 6
