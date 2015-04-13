@@ -31,17 +31,21 @@
 #define IVW_TEXTUREUNIT_H
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/util/capabilities.h>
 
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API TextureUnit {
 public:
     TextureUnit();
-    virtual ~TextureUnit();
-
+    ~TextureUnit();
+    
+    TextureUnit(TextureUnit& rhs) = delete;
+    TextureUnit& operator=(const TextureUnit& that) = delete;
+    
+    TextureUnit(TextureUnit&& rhs);
+    TextureUnit& operator=(TextureUnit&& that);
+    
     static void initialize(int numUnits);
     static void deinitialize();
 
@@ -52,11 +56,30 @@ public:
     inline static void setZeroUnit() { glActiveTexture(GL_TEXTURE0); }
 
 private:
-    static std::vector<bool>* textureUnits_;
+    static std::vector<bool> textureUnits_;
 
     GLint unitEnum_;
     GLint unitNumber_;
 };
+
+class IVW_MODULE_OPENGL_API TextureUnitContainer {
+public:
+    TextureUnitContainer(size_t i = 0);
+    TextureUnitContainer(const TextureUnitContainer&) = delete;
+    TextureUnitContainer& operator=(const TextureUnitContainer&) = delete;
+    TextureUnitContainer(TextureUnitContainer&& rhs);
+    TextureUnitContainer& operator=(TextureUnitContainer&& that);
+    ~TextureUnitContainer() = default;
+    
+    void push_back(TextureUnit&& unit);
+    
+    TextureUnit& operator[](size_t i);
+    size_t size() const;
+    
+private:
+    std::vector<TextureUnit> units_;
+};
+
 
 } // namespace
 

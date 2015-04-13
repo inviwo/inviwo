@@ -234,6 +234,12 @@ void setShaderUniforms(Shader* shader, const SimpleRaycastingProperty& property)
     shader->setUniform("isoValue_", property.isoValue_.get());
 }
 
+void setShaderUniforms(Shader* shader, const SimpleRaycastingProperty& property,
+                       std::string name) {
+    shader->setUniform(name + ".samplingRate", property.samplingRate_.get());
+    shader->setUniform(name + ".isoValue", property.isoValue_.get());
+}
+
 void addShaderDefines(Shader* shader, const VolumeIndicatorProperty& property) {
     // compositing defines
     std::string key = "DRAW_PLANES(result, samplePosition, rayDirection, increment, params)";

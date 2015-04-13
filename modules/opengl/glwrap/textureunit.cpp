@@ -24,52 +24,78 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "textureunit.h"
+#include <modules/opengl/openglexception.h>
 
 namespace inviwo {
 
-std::vector<bool>* TextureUnit::textureUnits_ = nullptr;
+std::vector<bool> TextureUnit::textureUnits_{};
 
-TextureUnit::TextureUnit()
-    : unitEnum_(0)
-    , unitNumber_(0)
-{
-    ivwAssert(textureUnits_ != nullptr, "Texture unit handler not initialized.");
+TextureUnit::TextureUnit() : unitEnum_(0), unitNumber_(0) {
+    ivwAssert(!textureUnits_.empty(), "Texture unit handler not initialized.");
 
     // check which texture unit is available
-    for (size_t i=1; i<textureUnits_->size(); i++) {
-        if (textureUnits_->at(i) == false) {
+    for (size_t i = 1; i < textureUnits_.size(); i++) {
+        if (textureUnits_[i] == false) {
             // unit previously unused, mark as used now
-            textureUnits_->at(i) = true;
+            textureUnits_[i] = true;
             unitNumber_ = (GLint)i;
             unitEnum_ = GL_TEXTURE0 + unitNumber_;
             return;
         }
     }
 
-    LogWarn("Exceeding number of available texture units.");
+    throw OpenGLException("Exceeding number of available texture units.");
+}
+
+TextureUnit::TextureUnit(TextureUnit&& rhs)
+    : unitEnum_(rhs.unitEnum_), unitNumber_(rhs.unitNumber_) {
+    rhs.unitEnum_ = 0;
+    rhs.unitNumber_ = 0;
+}
+
+TextureUnit& TextureUnit::operator=(TextureUnit&& that) {
+    if (this != &that) {
+        if (textureUnits_.size() > static_cast<size_t>(unitNumber_)) {
+            textureUnits_[static_cast<size_t>(unitNumber_)] = false;
+        }
+        unitEnum_ = 0;
+        unitNumber_ = 0;
+        std::swap(unitEnum_, that.unitEnum_);
+        std::swap(unitNumber_, that.unitNumber_);
+    }
+    return *this;
 }
 
 TextureUnit::~TextureUnit() {
-    if (textureUnits_ && static_cast<int>(textureUnits_->size()) > static_cast<int>(unitNumber_)) {
-        textureUnits_->at(static_cast<int>(unitNumber_)) = false;
+    if (textureUnits_.size() > static_cast<size_t>(unitNumber_)) {
+        textureUnits_[static_cast<size_t>(unitNumber_)] = false;
     }
 }
 
-void TextureUnit::initialize(int numUnits) {
-    if (!textureUnits_) {
-        textureUnits_ = new std::vector<bool>(numUnits);
+void TextureUnit::initialize(int numUnits) { textureUnits_.resize(numUnits, false); }
+
+void TextureUnit::deinitialize() { textureUnits_.clear(); }
+
+TextureUnitContainer::TextureUnitContainer(size_t i) : units_(i) {};
+
+TextureUnitContainer::TextureUnitContainer(TextureUnitContainer&& rhs)
+    : units_(std::move(rhs.units_)) {}
+TextureUnitContainer& TextureUnitContainer::operator=(TextureUnitContainer&& that) {
+    if (this != &that) {
+        units_ = std::move(that.units_);
     }
+    return *this;
 }
 
-void TextureUnit::deinitialize() {
-    if (textureUnits_) {
-        delete textureUnits_;
-        textureUnits_ = nullptr;
-    }
+void TextureUnitContainer::push_back(TextureUnit&& unit) {
+    units_.push_back(std::move(unit));
 }
+    
+TextureUnit& TextureUnitContainer::operator[](size_t i) {return units_[i]; }
+size_t TextureUnitContainer::size() const { return units_.size(); }
 
-} // namespace
+}  // namespace

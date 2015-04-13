@@ -50,7 +50,7 @@ def find_matches(files, expr):
 					matched = r.sub(colorama.Fore.YELLOW+ r"\1"+ colorama.Style.RESET_ALL, line.rstrip())
 					print("{0:5d} {1:s}".format(i,matched))
 
-def replace_matches(files, expr, repl):
+def replace_matches(files, expr, repl, dummy=False):
 	r = re.compile(r"(" + expr +")")
 	for file in files:
 		match_in_file = False
@@ -58,7 +58,21 @@ def replace_matches(files, expr, repl):
 		with open(file, "r") as f:
 			lines = f.readlines()
 		
-		with open(file, "w") as f:
+		if not dummy:
+			with open(file, "w") as f:
+				for (i,line) in enumerate(lines):
+					if r.search(line):
+						if not match_in_file: 
+							print_warn("Match in: " + file)
+							match_in_file = True
+						matched = r.sub(colorama.Fore.YELLOW+ r"\1"+ colorama.Style.RESET_ALL, line.rstrip())
+						replaced = r.sub(colorama.Fore.RED + repl + colorama.Style.RESET_ALL, line.rstrip())
+						f.write(r.sub(repl, line))
+						print("- {0:5d} {1:s}".format(i,matched))
+						print("+ {0:5d} {1:s}".format(i,replaced))
+					else:
+						f.write(line)
+		else: 
 			for (i,line) in enumerate(lines):
 				if r.search(line):
 					if not match_in_file: 
@@ -66,11 +80,8 @@ def replace_matches(files, expr, repl):
 						match_in_file = True
 					matched = r.sub(colorama.Fore.YELLOW+ r"\1"+ colorama.Style.RESET_ALL, line.rstrip())
 					replaced = r.sub(colorama.Fore.RED + repl + colorama.Style.RESET_ALL, line.rstrip())
-					f.write(r.sub(repl, line))
 					print("- {0:5d} {1:s}".format(i,matched))
 					print("+ {0:5d} {1:s}".format(i,replaced))
-				else:
-					f.write(line)
 
 
 def check_file_type(files, enc):
@@ -96,6 +107,11 @@ def convert_file(file, enc):
 
 source_extensions = ('*.cpp', '*.h')
 
+# examples
+# in ipython "run tools/replace-in-files.py"
 # n = find_files(["."], source_extensions, excludes=["*ext*"])
-# run tools/replace-in-files.py
+# n = find_files(["inviwo-dev", "inviwo-research"], source_extensions, excludes=["*ext*", "*moc*", "*cmake*"])
+# n = find_files(["inviwo-dev", "inviwo-research"], source_extensions, excludes=["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*"])
+# replace_matches(n, r"^(.*)ProcessorClassIdentifier\((\S+)\s*,\s*(.+)\);?\W*$", r"\1\2ProcessorClassVersion(\3, 0);\n")
+
 

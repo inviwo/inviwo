@@ -136,6 +136,16 @@ struct extent<glm::detail::tmat3x3<T, P>, 1> : public std::integral_constant<std
 template <typename T, glm::precision P>
 struct extent<glm::detail::tmat4x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
 
+template <typename T, int N>
+struct flat_extent_impl
+    : public std::integral_constant<
+          std::size_t, util::extent<T, N-1>::value * flat_extent_impl<T, N - 1>::value> {};
+
+template <typename T>
+struct flat_extent_impl<T, 0> : public std::integral_constant<std::size_t, 1> {};
+
+template <typename T>
+struct flat_extent : flat_extent_impl<T, util::rank<T>::value> {};
 
 template<class U, class T, class BinaryOperation>
 U accumulate(T x, U init, BinaryOperation op) {
