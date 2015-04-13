@@ -671,7 +671,7 @@ void ProcessorNetwork::serialize(IvwSerializer& s) const {
     s.serialize("InviwoSetup", info);
 }
 
-void ProcessorNetwork::deserialize(IvwDeserializer& d) throw(Exception) {
+void ProcessorNetwork::deserialize(IvwDeserializer& d) {
     // This will set deserializing_ to true while keepTrueWillAlive is in scope
     // and set it to false no matter how we leave the scope
     KeepTrueWhileInScope keepTrueWillAlive(&deserializing_);
