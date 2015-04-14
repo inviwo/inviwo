@@ -57,6 +57,7 @@ public:
     std::vector<PyMethod*> getPyMethods();
 
     void setPyObject(PyObject* obj);
+    PyObject* getPyObject();
 
     static PyModule* getModuleByPyObject(PyObject* obj);
 
@@ -65,6 +66,7 @@ public:
 
 
 private:
+    PyObject* obj_;
     std::string moduleName_;
     std::vector<PyMethod*> methods_;
     PyMethodDef* embMethods_;

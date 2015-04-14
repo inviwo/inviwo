@@ -81,10 +81,11 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         if (outputInfo)
             LogInfo("Running compiled script ...");
 
-        PyObject* ret = PyEval_EvalCode(BYTE_CODE, glb, glb);
+        PyObject* loc = PyDict_New();
+        PyObject* ret = PyEval_EvalCode(BYTE_CODE, glb, loc);
         bool success = checkRuntimeError();
         Py_XDECREF(ret);
-  //      Py_XDECREF(glb);
+        Py_XDECREF(loc);
         return success;
     }
 
