@@ -1,12 +1,12 @@
 #--------------------------------------------------------------------
 # Inviwo Python3 Module
-ivw_module(Python3)
+ivw_module(Python3) 
 
 set(Python_ADDITIONAL_VERSIONS 3.5)
 find_package(PythonLibs 3)
 
 ivw_include_directories(${PYTHON_INCLUDE_DIRS})
-get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARY} DIRECTORY)
+get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARY} PATH)
 ivw_link_directories(${PYTHON_LIBRARY_DIR})
 add_dependency_libs_to_module(${PYTHON_LIBRARY})
 
