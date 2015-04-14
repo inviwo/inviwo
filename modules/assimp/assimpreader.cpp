@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,49 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ASSIMPMODULE_H
-#define IVW_ASSIMPMODULE_H
+#include "assimpreader.h"
 
-#include <modules/assimp/assimpmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/stringconversion.h>
+
+#include <assimp/Importer.hpp>   // C++ importer interface
+#include <assimp/scene.h>        // Output data structure
+#include <assimp/postprocess.h>  // Post processing flags
+#include <assimp/types.h>
 
 namespace inviwo {
 
-class IVW_MODULE_ASSIMP_API AssimpModule : public InviwoModule {
+AssimpReader::AssimpReader() {
+    aiString str {};
+    Assimp::Importer importer;
+    importer.GetExtensionList(str);
+    
+    std::string ext(str.C_Str());
+    
+    for (auto e : splitString(ext, ';')) {
+        addExtension(FileExtension(e, "Assimp"));
+    }
+    
+//    size_t readers = importer.GetImporterCount();
+//    for (size_t i = 0; i < readers; ++i) {
+//        importer.GetImporterInfo(i)
+//    }
+    
+    
+}
 
-public:
-    AssimpModule();
+Geometry* AssimpReader::readMetaData(const std::string filePath) {
+    Assimp::Importer importer;
 
-};
+    // And have it read the given file with some example postprocessing
+    // Usually - if speed is not the most important aspect for you - you'll
+    // propably to request more postprocessing than we do in this example.
+    const aiScene* scene =
+        importer.ReadFile(filePath, aiProcess_CalcTangentSpace | aiProcess_Triangulate |
+                                     aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
 
-} // namespace
+    return nullptr;
+}
+void* AssimpReader::readData() const { return nullptr; }
+void AssimpReader::readDataInto(void* dest) const {}
 
-#endif // IVW_ASSIMPMODULE_H
+}  // namespace

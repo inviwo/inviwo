@@ -29,9 +29,11 @@
 
 #include <modules/assimp/assimpmodule.h>
 
+#include <modules/assimp/assimpreader.h>
+
 namespace inviwo {
 
-assimpModule::assimpModule() : InviwoModule() {
+AssimpModule::AssimpModule() : InviwoModule() {
     setIdentifier("assimp");
 	
 	// Add a directory to the search path of the Shadermanager
@@ -46,7 +48,7 @@ assimpModule::assimpModule() : InviwoModule() {
 	// registerProperty(assimpProperty);
 	
 	// Readers and writes
-	// registerDataReader(new assimpReader());
+    registerDataReader(new AssimpReader());
 	// registerDataWriter(new assimpWriter());
 	
 	// Data converters

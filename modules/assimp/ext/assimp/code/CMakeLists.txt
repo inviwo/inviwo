@@ -740,3 +740,5 @@ if(MSVC AND ASSIMP_INSTALL_PDB)
 		CONFIGURATIONS RelWithDebInfo
 	)
 endif ()
+
+ivw_make_package(Assimp assimp)

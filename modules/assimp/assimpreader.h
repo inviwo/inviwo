@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,27 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_ASSIMPMODULE_H
-#define IVW_ASSIMPMODULE_H
+#ifndef IVW_ASSIMPREADER_H
+#define IVW_ASSIMPREADER_H
 
 #include <modules/assimp/assimpmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/core/datastructures/geometry/geometry.h>
 namespace inviwo {
 
-class IVW_MODULE_ASSIMP_API AssimpModule : public InviwoModule {
-
+class IVW_MODULE_ASSIMP_API AssimpReader : public DataReaderType<Geometry>{
 public:
-    AssimpModule();
-
+    AssimpReader();
+    virtual ~AssimpReader(){}
+    virtual AssimpReader* clone() const {return nullptr; }
+    
+    virtual Geometry* readMetaData(const std::string filePath);
+    virtual void* readData() const;
+    virtual void readDataInto(void* dest) const;
 };
 
 } // namespace
 
-#endif // IVW_ASSIMPMODULE_H
+#endif // IVW_ASSIMPREADER_H
+
