@@ -39,8 +39,10 @@ namespace inviwo {
 class IVW_MODULE_ASSIMP_API AssimpReader : public DataReaderType<Geometry>{
 public:
     AssimpReader();
+    AssimpReader(const AssimpReader& rhs);
+    AssimpReader& operator=(const AssimpReader& that);
+    virtual AssimpReader* clone() const;
     virtual ~AssimpReader(){}
-    virtual AssimpReader* clone() const {return nullptr; }
     
     virtual Geometry* readMetaData(const std::string filePath);
     virtual void* readData() const;
