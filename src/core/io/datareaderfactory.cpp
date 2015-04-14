@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/datareaderfactory.h>
@@ -32,18 +32,15 @@
 
 namespace inviwo {
 
-DataReaderFactory::DataReaderFactory() {
-}
-
+DataReaderFactory::DataReaderFactory() {}
 
 void DataReaderFactory::registerObject(DataReader* reader) {
-  for (auto it = reader->getExtensions().begin();
-       it != reader->getExtensions().end(); ++it) {
-        if (readerForExtension_.find(it->extension_) == readerForExtension_.end())
-            readerForExtension_.insert(std::make_pair(it->extension_, reader));
+    readers_.push_back(reader);
+
+    for (const auto& ext : reader->getExtensions()) {
+        if (readerForExtension_.find(toLower(ext.extension_)) == readerForExtension_.end())
+            readerForExtension_.insert(std::make_pair(toLower(ext.extension_), reader));
     }
 }
 
-
-} // namespace
-
+}  // namespace

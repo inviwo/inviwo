@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAREADERFACTORY_H
@@ -45,52 +45,51 @@ public:
     DataReaderFactory();
     virtual ~DataReaderFactory() {}
 
-
-
     void registerObject(DataReader* reader);
 
     template <typename T>
-    std::vector<FileExtension> getExtensionsForType() {
-        std::vector<FileExtension> ext;
-
-        for (ExtensionMap::const_iterator it = readerForExtension_.begin();
-             it != readerForExtension_.end(); ++it) {
-            DataReaderType<T>* r = dynamic_cast<DataReaderType<T>* >(it->second);
-
-            if (r) {
-                std::vector<FileExtension> readerExt = r->getExtensions();
-
-                for (std::vector<FileExtension>::const_iterator e = readerExt.begin();
-                     e != readerExt.end(); ++e)
-                    ext.push_back(*e);
-            }
-        }
-
-        return ext;
-    }
+    std::vector<FileExtension> getExtensionsForType();
 
     template <typename T>
-    DataReaderType<T>* getReaderForTypeAndExtension(const std::string &ext) {
-        ExtensionMap::iterator it = readerForExtension_.find(toLower(ext));
-
-        if (it != readerForExtension_.end()) {
-            DataReaderType<T>* r = dynamic_cast<DataReaderType<T>* >(it->second);
-
-            if (r)
-                return r->clone();
-        }
-
-        return nullptr;
-    }
+    DataReaderType<T>* getReaderForTypeAndExtension(const std::string& ext);
 
     typedef std::map<std::string, DataReader*> ExtensionMap;
 
 private:
+    std::vector<DataReader*> readers_;
     ExtensionMap readerForExtension_;
-
 };
 
-} // namespace
 
-#endif // IVW_DATAREADERFACTORY_H
+template <typename T>
+std::vector<FileExtension>
+DataReaderFactory::getExtensionsForType() {
+    std::vector<FileExtension> ext;
 
+    for (auto reader : readers_) {
+        DataReaderType<T>* r = dynamic_cast<DataReaderType<T>*>(reader);
+        if (r) {
+            auto rext = r->getExtensions();
+            ext.insert(ext.end(), rext.begin(), rext.end());
+        }
+    }
+    return ext;
+}
+
+template <typename T>
+DataReaderType<T>
+* DataReaderFactory::getReaderForTypeAndExtension(const std::string& ext) {
+    ExtensionMap::iterator it = readerForExtension_.find(toLower(ext));
+
+    if (it != readerForExtension_.end()) {
+        DataReaderType<T>* r = dynamic_cast<DataReaderType<T>*>(it->second);
+        if (r) return r->clone();
+    }
+    return nullptr;
+}
+
+
+
+}  // namespace
+
+#endif  // IVW_DATAREADERFACTORY_H
