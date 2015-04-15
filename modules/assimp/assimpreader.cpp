@@ -76,7 +76,7 @@ Geometry* AssimpReader::readMetaData(const std::string filePath) {
                       aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
 
     if (!scene) {
-        throw DataReaderException(importer.GetErrorString());
+        throw DataReaderException(importer.GetErrorString(), IvwContext);
     }
 
     Mesh* mesh = new Mesh();

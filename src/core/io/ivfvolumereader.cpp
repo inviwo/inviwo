@@ -73,7 +73,7 @@ Volume* IvfVolumeReader::readMetaData(std::string filePath)  {
         if (filesystem::fileExists(newPath)) {
             filePath = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath);
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
         }
     }
 
@@ -130,7 +130,7 @@ void IvfVolumeReader::readDataInto(void* destination) const {
             delete[] temp;
         }
     } else
-        throw DataReaderException("Error: Could not read from raw file: " + rawFile_);
+        throw DataReaderException("Error: Could not read from raw file: " + rawFile_, IvwContext);
 
     fin.close();
 }
@@ -143,7 +143,7 @@ void* IvfVolumeReader::readData() const {
         readDataInto(data);
     } else {
         throw DataReaderException("Error: Could not allocate memory for loading raw file: " +
-                                  rawFile_);
+                                  rawFile_, IvwContext);
     }
     return data;
 }

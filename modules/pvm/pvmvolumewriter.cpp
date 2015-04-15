@@ -54,7 +54,7 @@ PVMVolumeWriter* PVMVolumeWriter::clone() const {
 
 void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) const {
     if (filesystem::fileExists(filePath)  && !overwrite_)
-        throw DataWriterException("Error: Output file: " + filePath + " already exists");
+        throw DataWriterException("Error: Output file: " + filePath + " already exists", IvwContext);
 
     const DataFormatBase* format = data->getDataFormat();
     int components = 0;
@@ -71,7 +71,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     }
 
     if (components == 0)
-        throw DataWriterException("Error: Output format " + std::string(format->getString()) + " not support by PVM writer");
+        throw DataWriterException("Error: Output format " + std::string(format->getString()) + " not support by PVM writer", IvwContext);
 
     const VolumeRAM* vr = data->getRepresentation<VolumeRAM>();
     const unsigned char *dataPtr = (const unsigned char *)vr->getData();

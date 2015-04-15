@@ -67,7 +67,7 @@ Layer* FreeImageReader::readMetaData(std::string filePath) {
         if (filesystem::fileExists(newPath)) {
             filePath = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath);
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
         }
     }
 

@@ -43,6 +43,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 #include <limits>
 
 namespace inviwo {

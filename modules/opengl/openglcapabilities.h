@@ -103,8 +103,8 @@ public:
     std::string getCurrentGlobalGLSLVertexDefines();
     std::string getCurrentGlobalGLSLFragmentDefines();
 
-    glm::u64 getCurrentAvailableTextureMem() throw (Exception);
-    glm::u64 getTotalAvailableTextureMem() throw (Exception);
+    glm::u64 getCurrentAvailableTextureMem();
+    glm::u64 getTotalAvailableTextureMem();
 
     int getMaxProgramLoopCount();
     int getMaxTexSize();

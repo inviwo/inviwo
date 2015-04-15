@@ -307,7 +307,7 @@ std::string OpenGLCapabilities::getCurrentGlobalGLSLFragmentDefines() {
     return currentGlobalGLSLFragmentDefines_;
 }
 
-glm::u64 OpenGLCapabilities::getCurrentAvailableTextureMem() throw (Exception) {
+glm::u64 OpenGLCapabilities::getCurrentAvailableTextureMem() {
     glm::u64 currentAvailableTexMeminBytes = 0;
 
     if(!OpenGLCapabilities::hasOpenGLVersion()) 
@@ -336,7 +336,7 @@ glm::u64 OpenGLCapabilities::getCurrentAvailableTextureMem() throw (Exception) {
     return currentAvailableTexMeminBytes;
 }
 
-glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() throw (Exception) {
+glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() {
     glm::u64 totalAvailableTexMemInBytes = 0;
 
     try {

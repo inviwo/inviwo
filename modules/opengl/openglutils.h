@@ -45,7 +45,7 @@ struct TexParameter {
     TexParameter(TexParameter const&) = delete;
     TexParameter& operator=(TexParameter const& that) = delete;
 
-    TexParameter(TextureUnit& unit, GLenum target, GLenum name, GLint value)
+    TexParameter(const TextureUnit& unit, GLenum target, GLenum name, GLint value)
         : unit_(unit.getEnum()), target_(target), name_(name), oldValue_{} {
         glActiveTexture(unit_);
         glGetTexParameteriv(target_, name_, &oldValue_);

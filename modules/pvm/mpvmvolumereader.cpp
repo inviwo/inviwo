@@ -60,7 +60,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
         if (filesystem::fileExists(newPath)) {
             filePath = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath);
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
         }
     }
 
@@ -79,10 +79,10 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
 
     delete f;
 
-    if (files.empty()) throw DataReaderException("Error: No PVM files found in " + filePath);
+    if (files.empty()) throw DataReaderException("Error: No PVM files found in " + filePath, IvwContext);
 
     if (files.size() > 4)
-        throw DataReaderException("Error: Maximum 4 pvm files are supported, file: " + filePath);
+        throw DataReaderException("Error: Maximum 4 pvm files are supported, file: " + filePath, IvwContext);
 
     // Read all pvm volumes
     std::vector<Volume*> volumes;
@@ -95,7 +95,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     }
 
     if (volumes.empty())
-        throw DataReaderException("No PVM volumes could be read from file: " + filePath);
+        throw DataReaderException("No PVM volumes could be read from file: " + filePath, IvwContext);
 
     if (volumes.size() == 1) {
         printPVMMeta(volumes[0], fileDirectory + files[0]);

@@ -91,7 +91,7 @@ void VolumeExport::exportVolume() {
                 writer->writeData(volume, volumeFile_.get());
                 LogInfo("Volume exported to disk: " << volumeFile_.get());
             } catch (DataWriterException const& e) {
-                LogError(e.getMessage());
+                util::log(e.getContext(), e.getMessage(), LogLevel::Error);
             }
         } else {
             LogError("Error: Cound not find a writer for the specified extension and data type");

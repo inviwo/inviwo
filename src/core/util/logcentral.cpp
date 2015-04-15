@@ -171,4 +171,10 @@ void LogCentral::setLogStacktrace(const bool& logStacktrace) { logStacktrace_ = 
 
 bool LogCentral::getLogStacktrace() const { return logStacktrace_; }
 
+void util::log(ExceptionContext context, std::string message, LogLevel level,
+               LogAudience audience) {
+    LogCentral::getPtr()->log(context.caller_, level, audience, context.file_.c_str(),
+                              context.function_.c_str(), context.line_, message);
+}
+
 }  // namespace

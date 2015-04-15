@@ -48,7 +48,6 @@ in vec3 texCoord_;
 void main() {
     // Rotate around center and translate back to origin
     vec3 samplePos = (sliceRotation * vec4(texCoord_.x, texCoord_.y, slice, 1.0)).xyz;
-
 #ifdef COLOR_FILL_ENABLED
     if ((samplePos.x < 0 || samplePos.x >= 1) || (samplePos.y < 0 || samplePos.y >= 1) || (samplePos.z < 0 || samplePos.z >= 1)) {
        FragData0 = fillColor;

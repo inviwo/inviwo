@@ -161,7 +161,7 @@ void ImageSourceSeries::process() {
 
             }
             catch (DataReaderException const& e) {
-                LogError("Could not load data: " << currentFileName << ", " << e.getMessage());
+                util::log(e.getContext(), "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(), LogLevel::Error);
             }
             delete reader;
         }

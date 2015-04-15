@@ -28,18 +28,36 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
-Exception::Exception(const std::string& message) : std::exception(), message_(message) {}
+Exception::Exception(const std::string& message, ExceptionContext context)
+    : std::exception(), message_(message), context_(context) {}
 
 Exception::~Exception() throw() {}
 
 std::string Exception::getMessage() const throw() { return message_; };
 const char* Exception::what() const throw() { return message_.c_str(); }
 
-IgnoreException::IgnoreException(const std::string& message) : Exception(message) {}
+const ExceptionContext& Exception::getContext() const { return context_; }
 
-AbortException::AbortException(const std::string& message) : Exception(message) {}
+IgnoreException::IgnoreException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
+
+AbortException::AbortException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
+
+void StandardExceptionHandler::operator()(ExceptionContext context) {
+    try {
+        throw;
+    } catch (Exception& e) {
+        util::log(e.getContext(), e.getMessage(), LogLevel::Error);
+    } catch (std::exception& e) {
+        util::log(context, std::string(e.what()), LogLevel::Error);
+    } catch (...) {
+        util::log(context, "Unknown error", LogLevel::Error);
+    }
+}
 
 }  // namespace

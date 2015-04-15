@@ -82,7 +82,8 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
         if (filesystem::fileExists(newPath)) {
             filePath = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath);
+            throw DataReaderException("Error could not find input file: " + filePath,
+                                      IvwContextCustom("PVMVolumeReader"));
         }
     }
 
@@ -107,7 +108,8 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
     }
 
     if (data == nullptr) {
-        throw DataReaderException("Error: Could not read data in PVM file: " + filePath);
+        throw DataReaderException("Error: Could not read data in PVM file: " + filePath,
+                                  IvwContextCustom("PVMVolumeReader"));
     }
 
     const DataFormatBase* format = nullptr;
@@ -123,12 +125,14 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
             format = DataVec3UINT8::get();
             break;
         default:
-            throw DataReaderException("Error: Unsupported format (bytes per voxel) in .pvm file: " +
-                                      filePath);
+            throw DataReaderException(
+                "Error: Unsupported format (bytes per voxel) in .pvm file: " + filePath,
+                IvwContextCustom("PVMVolumeReader"));
     }
 
     if (dim == uvec3(0)) {
-        throw DataReaderException("Error: Unable to find dimensions in .pvm file: " + filePath);
+        throw DataReaderException("Error: Unable to find dimensions in .pvm file: " + filePath,
+                                  IvwContextCustom("PVMVolumeReader"));
     }
 
     Volume* volume = new Volume();
@@ -139,7 +143,8 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
         swapbytes(data, static_cast<unsigned int>(size));
         // This format does not contain information about data range
         // so we need to compute it for correct results
-        auto minmax = std::minmax_element(reinterpret_cast<DataUINT16::type*>(data), reinterpret_cast<DataUINT16::type*>(data + size));
+        auto minmax = std::minmax_element(reinterpret_cast<DataUINT16::type*>(data),
+                                          reinterpret_cast<DataUINT16::type*>(data + size));
         volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
     }
 

@@ -66,7 +66,7 @@ DataRepresentation* ElementBufferGL2RAMConverter::createFrom(const DataRepresent
 
     if (!dst)
         throw ConverterException(std::string("Cannot convert format from GL to RAM: ") +
-                                 src->getDataFormat()->getString());
+                                 src->getDataFormat()->getString(), IvwContext);
 
     src->download(dst->getData());
     return dst;

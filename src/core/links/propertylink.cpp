@@ -68,18 +68,18 @@ void PropertyLink::deserialize(IvwDeserializer& d) {
     if (src.error && dest.error) {
         throw SerializationException(
             "Could not create Property Link from " + src.data.nd.getDescription() + " to " +
-                dest.data.nd.getDescription() + ". Source and destination properties not found.",
+                dest.data.nd.getDescription() + ". Source and destination properties not found.", IvwContext,
             "PropertyLink");
 
     } else if (src.error) {
         throw SerializationException(
             "Could not create Property Link from " + src.data.nd.getDescription() + " to " +
-                joinString(dstProperty_->getPath(), ".") + "\". Source property not found.",
+                joinString(dstProperty_->getPath(), ".") + "\". Source property not found.", IvwContext,
             "PropertyLink");
     } else if (dest.error) {
         throw SerializationException(
             "Could not create Property Link from \"" + joinString(srcProperty_->getPath(), ".") +
-                "\" to " + dest.data.nd.getDescription() + ". Destination property not found.",
+                "\" to " + dest.data.nd.getDescription() + ". Destination property not found.", IvwContext,
             "PropertyLink");
     }
 }

@@ -122,10 +122,11 @@ private:
 
 class IVW_CORE_API ConverterException : public Exception {
 public:
-    ConverterException(const std::string& message = "") : Exception(message) {}
+    ConverterException(const std::string& message = "",
+                       ExceptionContext context = ExceptionContext())
+        : Exception(message, context) {}
     virtual ~ConverterException() throw() {}
 };
-
 
 } // namespace
 

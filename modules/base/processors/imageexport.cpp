@@ -107,7 +107,7 @@ void ImageExport::processExport(){
                     writer->writeData(layer, imageFile_.get());
                     LogInfo("Image color layer exported to disk: " << imageFile_.get());
                 } catch (DataWriterException const& e) {
-                    LogError(e.getMessage());
+                    util::log(e.getContext(), e.getMessage(), LogLevel::Error);
                 }
                 delete writer;
             } else {

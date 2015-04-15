@@ -203,7 +203,7 @@ std::string ShaderObject::embeddIncludes(std::string source, std::string fileNam
 
             if (!includeFileFound) {
                 throw OpenGLException("Include file " + includeFileName +
-                                      " not found in shader search paths.");
+                                      " not found in shader search paths.", IvwContext);
             }
 
         } else {
@@ -244,7 +244,7 @@ void ShaderObject::loadSource(std::string fileName) {
                 TextFileReader fileReader(absoluteFileName_);
                 source_ = fileReader.read();
             } catch (std::ifstream::failure&) {
-                throw OpenGLException("Cound not read shader file: " + fileName);
+                throw OpenGLException("Cound not read shader file: " + fileName, IvwContext);
             }
         } else { // try finding a Shader Resource
             std::string fileresourcekey = fileName;
@@ -253,7 +253,7 @@ void ShaderObject::loadSource(std::string fileName) {
             source_ = ShaderManager::getPtr()->getShaderResource(fileresourcekey);
         }
     } else {
-        throw OpenGLException("Shader file: " + fileName + " not found in shader search paths.");
+        throw OpenGLException("Shader file: " + fileName + " not found in shader search paths.", IvwContext);
     }
 }
 
@@ -340,7 +340,7 @@ void ShaderObject::compile() {
     if (!compiledOk) {
         std::string compilerLog = getShaderInfoLog();
         compilerLog = reformatShaderInfoLog(compilerLog);
-        throw OpenGLException(compilerLog);
+        throw OpenGLException(compilerLog, IvwContext);
     }
 }
 

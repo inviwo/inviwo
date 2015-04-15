@@ -214,19 +214,19 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
                     if(deleteWriter)
                         delete writer;
                 } catch (DataWriterException const& e) {
-                    LogError(e.getMessage());
+                    LogProcessorError(e.getMessage());
                 }
             } else {
-                LogError("Error: Cound not find a writer for the specified extension and data type");
+                LogProcessorError("Error: Cound not find a writer for the specified extension and data type");
             }
         }
         else {
-            LogError("Error: Cound not find color layer to write out");
+            LogProcessorError("Error: Cound not find color layer to write out");
         }
     } else if (snapshotPath.empty()) {
-        LogWarn("Error: Please specify a file to write to");
+        LogProcessorError("Error: Please specify a file to write to");
     } else if (!image) {
-        LogWarn("Error: Please connect an image to export");
+        LogProcessorError("Error: Please connect an image to export");
     }
 }
 
@@ -243,14 +243,14 @@ std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType lay
             try {
                 return writer->writeDataToBuffer(layer, type);
             } catch (DataWriterException const& e) {
-                LogError(e.getMessage());
+                LogProcessorError(e.getMessage());
             }
         } else {
-            LogError("Error: Cound not find a writer for the specified data type");
+            LogProcessorError("Error: Cound not find a writer for the specified data type");
         }
     }
     else {
-        LogError("Error: Cound not find layer to write");
+        LogProcessorError("Error: Cound not find layer to write");
     }
 
     return nullptr;

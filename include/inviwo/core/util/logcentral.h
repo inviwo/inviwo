@@ -34,11 +34,14 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/singleton.h>
+#include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <typeinfo>
+#include <string>
+#include <vector>
 
 namespace inviwo {
 
@@ -221,12 +224,20 @@ public:
 
 private:
     LogLevel logLevel_;
-    #pragma warning(push)
-    #pragma warning(disable: 4251)
+#pragma warning(push)
+#pragma warning(disable : 4251)
     std::vector<Logger*> loggers_;
-    #pragma warning(pop)
+#pragma warning(pop)
     bool logStacktrace_;
 };
+
+namespace util {
+
+IVW_CORE_API void log(ExceptionContext context, std::string message,
+                      LogLevel level = LogLevel::Info,
+                      LogAudience audience = LogAudience::Developer);
+
+}  // namespace
 
 }  // namespace
 

@@ -169,7 +169,7 @@ template <typename K, typename V, typename C, typename A>
 void IvwSerializer::serialize(const std::string& key, const std::map<K, V, C, A>& map,
                               const std::string& itemKey) {
     if (!isPrimitiveType(typeid(K)))
-        throw SerializationException("Error: map key has to be a primitive type");
+        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
 
     if (map.empty()) return;
 

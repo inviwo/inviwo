@@ -118,7 +118,7 @@ public:
     GLFormat getGLFormat(DataFormatEnums::Id id) const {
         if (!glFormatArray_[static_cast<int>(id)].valid) {
             throw OpenGLException("Error no OpenGL format available for selected data format: " 
-                                  + std::string(DataFormatBase::get(id)->getString()));
+                                  + std::string(DataFormatBase::get(id)->getString()), IvwContext);
         }
         return glFormatArray_[static_cast<int>(id)];
     };

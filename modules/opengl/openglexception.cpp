@@ -31,6 +31,7 @@
 
 namespace inviwo {
 
-OpenGLException::OpenGLException(const std::string& message) : Exception(message) {}
+OpenGLException::OpenGLException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
 
 }  // namespace

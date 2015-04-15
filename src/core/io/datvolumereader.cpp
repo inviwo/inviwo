@@ -73,7 +73,7 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
         if (filesystem::fileExists(newPath)) {
             filePath = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath);
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
         }
     }
 
@@ -213,12 +213,12 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
 
     if (dimensions_ == uvec3(0))
         throw DataReaderException("Error: Unable to find \"Resolution\" tag in .dat file: " +
-                                  filePath);
+                                  filePath, IvwContext);
     else if (format_ == nullptr)
-        throw DataReaderException("Error: Unable to find \"Format\" tag in .dat file: " + filePath);
+        throw DataReaderException("Error: Unable to find \"Format\" tag in .dat file: " + filePath, IvwContext);
     else if (rawFile_ == "")
         throw DataReaderException("Error: Unable to find \"ObjectFilename\" tag in .dat file: " +
-                                  filePath);
+                                  filePath, IvwContext);
 
     if (spacing != vec3(0.0f)) {
         basis[0][0] = dimensions_.x * spacing.x;
@@ -323,7 +323,7 @@ void DatVolumeReader::readDataInto(void* destination) const {
             delete[] temp;
         }
     } else
-        throw DataReaderException("Error: Could not read from raw file: " + rawFile_);
+        throw DataReaderException("Error: Could not read from raw file: " + rawFile_, IvwContext);
 
     fin.close();
 }
@@ -336,7 +336,7 @@ void* DatVolumeReader::readData() const {
         readDataInto(data);
     } else {
         throw DataReaderException("Error: Could not allocate memory for loading raw file: " +
-                                  rawFile_);
+                                  rawFile_, IvwContext);
     }
 
     return data;

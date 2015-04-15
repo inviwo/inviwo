@@ -49,7 +49,7 @@ public:
         NodeDebugger nd;
     };
 
-    SerializationException(std::string message = "", std::string key = "", std::string type = "",
+    SerializationException(std::string message = "", ExceptionContext context = ExceptionContext(), std::string key = "", std::string type = "",
                            std::string id = "",  TxElement* n = nullptr);
     virtual ~SerializationException() throw() {}
 

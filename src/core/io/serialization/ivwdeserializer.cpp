@@ -112,7 +112,7 @@ void IvwDeserializer::handleError(SerializationException& e) {
         }
     }
     // If no error handler found:
-    LogWarn(e.getMessage());
+    util::log(e.getContext(), e.getMessage(), LogLevel::Warn);
 }
 
 void IvwDeserializer::storeReferences(TxElement* node) {

@@ -50,7 +50,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
     
     timer_ = InviwoApplication::getPtr()->createTimer();
     if (timer_ == nullptr) {
-        throw Exception("Failed to create timer");
+        throw Exception("Failed to create timer", IvwContext);
     } else{
         timer_->setElapsedTimeCallback(this, &OrdinalPropertyAnimator::timerEvent);
     }

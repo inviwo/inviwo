@@ -61,7 +61,7 @@ void IvwSerializer::initialize() {
         rootElement_->LinkEndChild(comment.get());
 
     } catch (TxException& e) {
-        throw SerializationException(e.what());
+        throw SerializationException(e.what(), IvwContext);
     }
 }
 
@@ -89,7 +89,7 @@ void IvwSerializer::writeFile() {
         refDataContainer_.setReferenceAttributes();
         doc_.SaveFile(getFileName());
     } catch (TxException& e) {
-        throw SerializationException(e.what());
+        throw SerializationException(e.what(), IvwContext);
     }
 }
 
@@ -98,7 +98,7 @@ void IvwSerializer::writeFile(std::ostream& stream) {
         refDataContainer_.setReferenceAttributes();
         stream << doc_;
     } catch (TxException& e) {
-        throw SerializationException(e.what());
+        throw SerializationException(e.what(), IvwContext);
     }
 }
 

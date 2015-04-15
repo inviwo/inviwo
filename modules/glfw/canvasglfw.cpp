@@ -79,7 +79,7 @@ void CanvasGLFW::initializeGL() {
 
     if (!glWindow_) {
         glfwTerminate();
-        throw Exception("Could not create GLFW window.");
+        throw Exception("Could not create GLFW window.", IvwContext);
     }
 
     if (!sharedContext_) {

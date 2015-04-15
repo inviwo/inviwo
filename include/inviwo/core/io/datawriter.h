@@ -38,13 +38,12 @@
 
 namespace inviwo {
 
-
 class IVW_CORE_API DataWriterException : public Exception {
 public:
-    DataWriterException(const std::string& message = "");
-    virtual ~DataWriterException() throw() {};
+    DataWriterException(const std::string& message = "",
+                        ExceptionContext context = ExceptionContext());
+    virtual ~DataWriterException() throw(){};
 };
-
 
 class IVW_CORE_API DataWriter {
 

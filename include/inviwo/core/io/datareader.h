@@ -41,7 +41,7 @@ namespace inviwo {
 
 class IVW_CORE_API DataReaderException : public Exception {
 public:
-    DataReaderException(const std::string& message = "");
+    DataReaderException(const std::string& message = "", ExceptionContext context = ExceptionContext());
     virtual ~DataReaderException() throw() {};
 };
 

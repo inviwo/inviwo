@@ -55,10 +55,10 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath
     std::string rawPath = filesystem::replaceFileExtension(filePath, "raw");
 
     if (filesystem::fileExists(filePath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + filePath + " already exists");
+        throw DataWriterException("Error: Output file: " + filePath + " already exists", IvwContext);
 
     if (filesystem::fileExists(rawPath) && !overwrite_)
-        throw DataWriterException("Error: Output file: " + rawPath + " already exists");
+        throw DataWriterException("Error: Output file: " + rawPath + " already exists", IvwContext);
 
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     const VolumeRAM* vr = volume->getRepresentation<VolumeRAM>();
@@ -81,7 +81,7 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath
                    vr->getDimensions().x*vr->getDimensions().x*vr->getDimensions().x
                    * vr->getDataFormat()->getSize());
     } else
-        throw DataWriterException("Error: Could not write to raw file: " + rawPath);
+        throw DataWriterException("Error: Could not write to raw file: " + rawPath, IvwContext);
 
     fout.close();
 }

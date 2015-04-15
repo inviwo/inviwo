@@ -106,7 +106,7 @@ void ShaderManager::fileChanged(std::string shaderFilename) {
                 }
 
             } catch (OpenGLException& e) {
-                LogInfo(e.getMessage());
+                util::log(e.getContext(), e.getMessage(), LogLevel::Error);
                 InviwoApplication::getPtr()->playSound(InviwoApplication::IVW_ERROR);
             }
         }

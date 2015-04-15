@@ -1212,7 +1212,9 @@ bool NetworkEditor::saveNetwork(std::string fileName) {
         filename_ = fileName;
         setModified(false);
     } catch (SerializationException& exception) {
-        LogInfo("Unable to save network " + fileName + " due to " + exception.getMessage());
+        util::log(exception.getContext(),
+                  "Unable to save network " + fileName + " due to " + exception.getMessage(),
+                  LogLevel::Error);
         return false;
     }
     return true;
@@ -1226,7 +1228,9 @@ bool NetworkEditor::saveNetwork(std::ostream stream) {
         xmlSerializer.writeFile(stream);
         setModified(false);
     } catch (SerializationException& exception) {
-        LogInfo("Unable to save network " + filename_ + " due to " + exception.getMessage());
+        util::log(exception.getContext(),
+                  "Unable to save network " + filename_ + " due to " + exception.getMessage(),
+                  LogLevel::Error);
         return false;
     }
     return true;
@@ -1261,17 +1265,21 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
         IvwDeserializer xmlDeserializer(stream, path);
         InviwoApplication::getPtr()->getProcessorNetwork()->deserialize(xmlDeserializer);
     } catch (const AbortException& exception) {
-        LogInfo("Unable to load network " + path + " due to " + exception.getMessage());
+        util::log(exception.getContext(),
+                  "Unable to load network " + path + " due to " + exception.getMessage(),
+                  LogLevel::Error);
         clearNetwork();
         InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
         return false;
     } catch (const IgnoreException& exception) {
-        LogInfo("Incomplete network loading " + path + " due to " + exception.getMessage());
+        util::log(exception.getContext(),
+                  "Incomplete network loading " + path + " due to " + exception.getMessage(),
+                  LogLevel::Error);
     }
 
     propertyListWidget_->setUsageMode(InviwoApplication::getPtr()
-                                      ->getSettingsByType<SystemSettings>()
-                                      ->getApplicationUsageMode());
+                                          ->getSettingsByType<SystemSettings>()
+                                          ->getApplicationUsageMode());
 
     InviwoApplication::getPtr()->getProcessorNetwork()->setModified(true);
 

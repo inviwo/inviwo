@@ -31,9 +31,9 @@
 
 namespace inviwo {
 
-SerializationException::SerializationException(std::string message, std::string key,
+SerializationException::SerializationException(std::string message, ExceptionContext context, std::string key,
                                                std::string type, std::string id, TxElement* node )
-    : Exception(message), data_(key, type, id, node) {}
+    : Exception(message, context), data_(key, type, id, node) {}
 
 const std::string& SerializationException::getKey() const throw() { return data_.key; }
 

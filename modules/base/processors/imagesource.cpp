@@ -95,7 +95,7 @@ void ImageSource::load() {
             imageDimension_.set(outLayer->getDimensions());
 
         } catch (DataReaderException const& e) {
-            LogError("Could not load data: " << imageFileName_.get() << ", " << e.getMessage());
+            util::log(e.getContext(), "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(), LogLevel::Error);
             imageFileName_.set("");
         }
         delete reader;

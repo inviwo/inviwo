@@ -30,8 +30,8 @@
 #include <inviwo/core/io/datareader.h>
 
 namespace inviwo {
-DataReaderException::DataReaderException(const std::string& message)
-    : Exception(message) {}
+DataReaderException::DataReaderException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
 
 
 DataReader::DataReader() : extensions_() {}

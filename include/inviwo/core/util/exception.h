@@ -36,31 +36,59 @@
 
 namespace inviwo {
 
+struct IVW_CORE_API ExceptionContext {
+    ExceptionContext(std::string caller = "", std::string file = "", std::string function = "",
+                     int line = 0)
+        : caller_(caller), file_(file), function_(function), line_(line) {}
+
+    std::string caller_;
+    std::string file_;
+    std::string function_;
+    int line_;
+};
+
+#define IvwContext                                                                             \
+    ExceptionContext(parseTypeIdName(std::string(typeid(this).name())), std::string(__FILE__), \
+                     std::string(__FUNCTION__), __LINE__)
+
+#define IvwContextCustom(source) \
+    ExceptionContext(source, std::string(__FILE__), std::string(__FUNCTION__), __LINE__)
+
+using ExceptionHandler = std::function<void(ExceptionContext)>;
+
 class IVW_CORE_API Exception : public std::exception {
 public:
-    Exception(const std::string& message = "");
+    Exception(const std::string& message = "", ExceptionContext context = ExceptionContext());
     virtual ~Exception() throw();
     virtual std::string getMessage() const throw();
     virtual const char* what() const throw() override;
+    virtual const ExceptionContext& getContext() const;
 
 private:
-    #pragma warning(push)
-    #pragma warning(disable: 4251)
+#pragma warning(push)
+#pragma warning(disable : 4251)
     std::string message_;
-    #pragma warning(pop)
+    ExceptionContext context_;
+#pragma warning(pop)
 };
 
 class IVW_CORE_API IgnoreException : public Exception {
 public:
-    IgnoreException(const std::string& message = "");
+    IgnoreException(const std::string& message = "", ExceptionContext context = ExceptionContext());
     virtual ~IgnoreException() throw() {}
 };
 
 class IVW_CORE_API AbortException : public Exception {
 public:
-    AbortException(const std::string& message = "");
+    AbortException(const std::string& message = "", ExceptionContext context = ExceptionContext());
     virtual ~AbortException() throw() {}
 };
+
+struct IVW_CORE_API StandardExceptionHandler {
+    void operator()(ExceptionContext);
+};
+
+
 
 }  // namespace
 

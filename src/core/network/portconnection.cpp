@@ -69,21 +69,21 @@ void PortConnection::deserialize(IvwDeserializer& d) {
         throw SerializationException("Could not create Connection from \"" +
                                      out.data.nd.getDescription() + " to " +
                                      in.data.nd.getDescription() +
-                                     ". Outport and Inport not found."
+                                     ". Outport and Inport not found.", IvwContext,
                                      "Connection");
     } else if (out.error) {
         std::string message = "Could not create Connection from \"" + out.data.nd.getDescription() +
                               " to port \"" + inport_->getIdentifier() + "\" in processor \"" +
                               inport_->getProcessor()->getIdentifier() + "\". Outport not found";
         delete outport_;
-        throw SerializationException(message, "Connection");
+        throw SerializationException(message, IvwContext, "Connection");
     } else if (in.error) {
         std::string message = "Could not create Connection from port \"" +
                               outport_->getIdentifier() + "\" in processor \"" +
                               outport_->getProcessor()->getIdentifier() + "\" to " +
                               in.data.nd.getDescription() + ". Inport not found";
         delete inport_;
-        throw SerializationException(message, "Connection");
+        throw SerializationException(message, IvwContext, "Connection");
     }
 }
 

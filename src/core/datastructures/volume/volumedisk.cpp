@@ -53,7 +53,7 @@ VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 VolumeDisk::~VolumeDisk() {}
 
 void VolumeDisk::setDimensions(uvec3 dimensions) {
-    throw Exception("Can not set dimension of a Volume Disk");
+    throw Exception("Can not set dimension of a Volume Disk", IvwContext);
 }
 
 const uvec3& VolumeDisk::getDimensions() const { return dimensions_; }

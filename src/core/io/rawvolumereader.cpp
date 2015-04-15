@@ -82,7 +82,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
         if (filesystem::fileExists(newPath)) {
             filePath = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + filePath);
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
         }
     }
 
@@ -95,7 +95,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
         DataReaderDialog* readerDialog =
             dynamic_cast<DataReaderDialog*>(DialogFactory::getPtr()->getDialog("RawVolumeReader"));
         if (!readerDialog) {
-            throw DataReaderException("No data reader dialog found.");
+            throw DataReaderException("No data reader dialog found.", IvwContext);
         }
         readerDialog->setFile(rawFile_);
         if (readerDialog->show()) {
@@ -106,7 +106,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
             delete readerDialog;
         } else {
             delete readerDialog;
-            throw DataReaderException("Raw data import terminated by user");
+            throw DataReaderException("Raw data import terminated by user", IvwContext);
         }
     }
 
@@ -135,7 +135,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
         LogInfo("Loaded volume: " << filePath << " size: " << size);
         return volume;
     } else {
-        throw DataReaderException("Raw data import could not determine format");
+        throw DataReaderException("Raw data import could not determine format", IvwContext);
     }
 }
 
@@ -161,7 +161,7 @@ void RawVolumeReader::readDataInto(void* destination) const {
             delete [] temp;
         }
     } else
-        throw DataReaderException("Error: Could not read from raw file: " + rawFile_);
+        throw DataReaderException("Error: Could not read from raw file: " + rawFile_, IvwContext);
 
     fin.close();
 }
@@ -173,7 +173,7 @@ void* RawVolumeReader::readData() const {
     if (data)
         readDataInto(data);
     else
-        throw DataReaderException("Error: Could not allocate memory for loading raw file: " + rawFile_);
+        throw DataReaderException("Error: Could not allocate memory for loading raw file: " + rawFile_, IvwContext);
 
     return data;
 }

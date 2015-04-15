@@ -431,7 +431,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::map<K, V, C, A>& 
                                   const std::string& itemKey,
                                   const std::string& comparisionAttribute) {
     if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
-        throw SerializationException("Error: map key has to be a primitive type");
+        throw SerializationException("Error: map key has to be a primitive type", IvwContext);
 
     try {
         NodeSwitch mapNodeSwitch(*this, key);
@@ -480,11 +480,11 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
                     throw SerializationException(
                         "Reference to " + error[0].key + " not instantiated: \"" +
                             error[0].identifier + "\" of class \"" + error[0].type + "\" at line " +
-                            toString(error[0].line),
+                            toString(error[0].line), IvwContext,
                         error[0].key, error[0].type, error[0].identifier, it->second);
                 } else {
                     throw SerializationException(
-                        "Could not find reference to " + key + ": " + type_attr, key, type_attr);
+                        "Could not find reference to " + key + ": " + type_attr, IvwContext, key, type_attr);
                 }
             }
             return;
@@ -496,7 +496,7 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
                 throw SerializationException(
                     "Could not create " + key + ": \"" + error[0].identifier + "\" of class \"" +
                         error[0].type + "\" at line: " + toString(error[0].line),
-                    key, type_attr, error[0].identifier, keyNode);
+                    IvwContext, key, type_attr, error[0].identifier, keyNode);
             }
 
         } else {
@@ -506,7 +506,7 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
                 throw SerializationException(
                     "Could not create " + key + ": \"" + error[0].identifier + "\" of class \"" +
                         error[0].type + "\" at line: " + toString(error[0].line),
-                    key, type_attr, error[0].identifier, keyNode);
+                    IvwContext, key, type_attr, error[0].identifier, keyNode);
             }
         }
     }

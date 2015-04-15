@@ -62,6 +62,8 @@ public:
 
     void propagateInteractionEvent(Processor* processor, InteractionEvent* event);
 
+    void setExceptionHandler(ExceptionHandler handler);
+
     void onProcessorInvalidationEnd(Processor*);
     void onProcessorNetworkEvaluateRequest();
     void onProcessorNetworkUnlocked();
@@ -133,6 +135,8 @@ private:
     bool processorStatesDirty_; // flag for lazy topology evaluation
 
     static std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*> processorNetworkEvaluators_;
+
+    ExceptionHandler exceptionHandler_;
 };
 
 } // namespace

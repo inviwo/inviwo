@@ -445,7 +445,7 @@ void TransferFunctionPropertyDialog::exportTransferFunction() {
                     writer->setOverwrite(true);
                     writer->writeData(&writeLayer, file);
                 } catch (DataWriterException const& e) {
-                    LogError(e.getMessage());
+                    util::log(e.getContext(), e.getMessage(), LogLevel::Error);
                 }
             } else {
                 LogError("Error: Cound not find a writer for the specified extension and data type");
