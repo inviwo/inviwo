@@ -40,6 +40,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglexception.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglmodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/openglutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshdrawer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/shaderutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/textureobserver.h
@@ -86,6 +87,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglexception.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglmodule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/openglutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshdrawer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/shaderutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/textureutils.cpp
