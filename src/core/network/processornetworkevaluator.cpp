@@ -69,9 +69,15 @@ void ProcessorNetworkEvaluator::initializeNetwork() {
     // initialize network
     std::vector<Processor*> processors = processorNetwork_->getProcessors();
 
-    for (size_t i=0; i<processors.size(); i++)
-        if (!processors[i]->isInitialized())
-            processors[i]->initialize();
+
+    for (size_t i=0; i<processors.size(); i++) {
+        try {
+            if (!processors[i]->isInitialized())
+                processors[i]->initialize();
+        } catch (Exception& e) {
+            LogError(e.getMessage());
+        }
+    }
 }
 
 void ProcessorNetworkEvaluator::saveSnapshotAllCanvases(std::string dir, std::string default_name, std::string ext) {
