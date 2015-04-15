@@ -648,19 +648,19 @@ void VolumeSliceGL::eventGestureShiftSlice(Event* event){
 
 void VolumeSliceGL::sliceChange() {
     if (!inport_.hasData() || updating_) return;
-    KeepTrueWhileInScope guard(&updating_);
+    util::KeepTrueWhileInScope guard(&updating_);
 
     const mat4 indexToTexture(
         inport_.getData()->getCoordinateTransformer().getIndexToTextureMatrix());
-    const ivec4 indexPos(sliceX_.get()-1, sliceY_.get()-1, sliceZ_.get()-1, 1.0);
+    const ivec4 indexPos(sliceX_.get() - 1, sliceY_.get() - 1, sliceZ_.get() - 1, 1.0);
     const vec3 texturePos(vec3(indexToTexture * vec4(indexPos)));
-    
+
     planePosition_.set(texturePos);
 }
 
 void VolumeSliceGL::positionChange() {
     if (!inport_.hasData() || updating_) return;
-    KeepTrueWhileInScope guard(&updating_);
+    util::KeepTrueWhileInScope guard(&updating_);
 
     const mat4 textureToIndex(
         inport_.getData()->getCoordinateTransformer().getTextureToIndexMatrix());

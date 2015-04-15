@@ -31,8 +31,11 @@
 #define IVW_RAIIUTILS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <functional>
 
 namespace inviwo {
+
+namespace util {
 
 class KeepTrueWhileInScope {
 public:
@@ -42,6 +45,49 @@ public:
 private:
     bool* variable_;
 };
+
+struct OnScopeExit {
+    typedef std::function<void(void)> ExitAction;
+
+    OnScopeExit() = delete;
+    OnScopeExit(OnScopeExit const&) = delete;
+    OnScopeExit& operator=(OnScopeExit const& that) = delete;
+
+    OnScopeExit(OnScopeExit&& rhs) : action_(std::move(rhs.action_)) { rhs.action_ = nullptr; };
+    OnScopeExit& operator=(OnScopeExit&& that) {
+        if (this != &that) {
+            action_ = nullptr;
+            std::swap(action_, that.action_);
+        }
+        return *this;
+    }
+
+    OnScopeExit(ExitAction action) try : action_(action) {
+    } catch (...) {
+        action();
+    }
+    ~OnScopeExit() {
+        if (action_) action_();
+    }
+
+    void setAction(ExitAction action = nullptr) { action_ = action; }
+    void release() { setAction(); }
+
+private:
+    ExitAction action_;
+};
+
+template <typename T>
+void SetValue(T& t, T value) {
+    t = value;
+}
+
+template <typename T>
+OnScopeExit::ExitAction RevertValue(T& t) {
+    return std::bind(SetValue<T>, std::ref(t), t);
+}
+
+}  // namespace
 
 }  // namespace
 
