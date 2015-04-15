@@ -72,8 +72,12 @@ Geometry* AssimpReader::readMetaData(const std::string filePath) {
     // Usually - if speed is not the most important aspect for you - you'll
     // probably to request more post processing than we do in this example.
     const aiScene* scene = importer.ReadFile(
-        filePath, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_GenNormals |
+        filePath, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_GenSmoothNormals |
                       aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
+
+    if (!scene) {
+        throw DataReaderException(importer.GetErrorString());
+    }
 
     Mesh* mesh = new Mesh();
 
