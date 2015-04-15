@@ -31,27 +31,37 @@
 #include "utils/sampler3d.glsl"
 #include "utils/classification.glsl"
 
-uniform sampler3D volume_;
-uniform VolumeParameters volumeParameters_;
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
 
-uniform sampler2D transferFunc_;
+uniform sampler2D transferFunction;
 
-uniform mat4 sliceRotation_; // Rotates around slice axis (offset to center point)
-uniform float slice_;
+uniform mat4 sliceRotation; // Rotates around slice axis (offset to center point)
+uniform float slice;
 
-uniform float alphaOffset_ = 0.0;
+uniform vec4 fillColor;
+
+uniform float alphaOffset = 0.0;
 
 in vec3 texCoord_;
 
 void main() {
     // Rotate around center and translate back to origin
-    vec3 samplePos = (sliceRotation_*vec4(texCoord_.x, texCoord_.y, slice_, 1.0)).xyz;
-    vec4 voxel = getNormalizedVoxel(volume_, volumeParameters_, samplePos);
+    vec3 samplePos = (sliceRotation * vec4(texCoord_.x, texCoord_.y, slice, 1.0)).xyz;
+
+#ifdef COLOR_FILL_ENABLED
+    if ((samplePos.x < 0 || samplePos.x >= 1) || (samplePos.y < 0 || samplePos.y >= 1) || (samplePos.z < 0 || samplePos.z >= 1)) {
+       FragData0 = fillColor;
+       return;
+    }
+#endif
+  
+    vec4 voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
 
 #ifdef TF_MAPPING_ENABLED
-    voxel = applyTF(transferFunc_, voxel);
-    voxel.a += alphaOffset_;
+    voxel = applyTF(transferFunction, voxel);
+    voxel.a += alphaOffset;
 #endif
-    FragData0 = voxel;
 
+    FragData0 = voxel;
 }

@@ -24,17 +24,18 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "volumeslicegl.h"
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/rendering/meshdrawer.h>
-#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/volumeutils.h>
+#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/openglutils.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/plane.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
@@ -54,8 +55,10 @@ ProcessorCodeState(VolumeSliceGL, CODE_STATE_STABLE);
 
 VolumeSliceGL::VolumeSliceGL()
     : Processor()
-    , inport_("volume.inport")
-    , outport_("image.outport")
+    , inport_("volume")
+    , outport_("outport")
+    , shader_("standard.vert", "volumeslice.frag", false)
+    , indicatorShader_("standard.vert", "standard.frag", true)
     , trafoGroup_("trafoGroup", "Transformations")
     , pickGroup_("pickGroup", "Position Selection")
     , tfGroup_("tfGroup", "Transfer Function")
@@ -71,9 +74,11 @@ VolumeSliceGL::VolumeSliceGL()
     , imageScale_("imageScale", "Scale", 1.0f, 0.1f, 10.0f)
     , rotationAroundAxis_("rotation", "Rotation (ccw)", VALID)
     , imageRotation_("imageRotation", "Angle", 0, 0, glm::radians(360.f))
-    , flipHorizontal_("flipHorizontal", "Flip Horizontal View", false)
-    , flipVertical_("flipVertical", "Flip Vertical View", false)
+    , flipHorizontal_("flipHorizontal", "Horizontal Flip", false)
+    , flipVertical_("flipVertical", "Vertical Flip", false)
     , volumeWrapping_("volumeWrapping", "Volume Texture Wrapping")
+    , fillColor_("fillColor", "Fill Color", vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f), vec4(1.0f),
+                 vec4(0.01f), INVALID_OUTPUT, PropertySemantics::Color)
     , posPicking_("posPicking", "Enable Picking", false)
     , showIndicator_("showIndicator", "Show Position Indicator", true)
     , indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
@@ -102,8 +107,6 @@ VolumeSliceGL::VolumeSliceGL()
     , gestureShiftSlice_("gestureShiftSlice", "Gesture Slice Shift",
                          new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
                          new Action(this, &VolumeSliceGL::eventGestureShiftSlice))
-    , shader_(nullptr)
-    , indicatorShader_(nullptr)
     , meshCrossHair_(nullptr)
     , meshBox_(nullptr)
     , meshDirty_(true)
@@ -136,11 +139,9 @@ VolumeSliceGL::VolumeSliceGL()
 
     addProperty(planeNormal_);
     addProperty(planePosition_);
-    
+
     planePosition_.onChange(this, &VolumeSliceGL::positionChange);
     planeNormal_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
-    
-
 
     // Transformations
     rotationAroundAxis_.addOption("0", "0 deg", 0);
@@ -150,15 +151,25 @@ VolumeSliceGL::VolumeSliceGL()
     rotationAroundAxis_.addOption("free", "Free rotation", 4);
     rotationAroundAxis_.set(0.f);
     rotationAroundAxis_.setCurrentStateAsDefault();
-    
-    volumeWrapping_.addOption("0", "Use incoming wrapping", 0);
-    volumeWrapping_.addOption("1", "Clamp", GL_CLAMP);
-    volumeWrapping_.addOption("2", "Clamp to invisible border", GL_CLAMP_TO_BORDER);
-    volumeWrapping_.addOption("3", "Clamp to edge", GL_CLAMP_TO_EDGE);
-    volumeWrapping_.addOption("4", "Mirrored repeat", GL_MIRRORED_REPEAT);
-    volumeWrapping_.addOption("5", "Repeat", GL_REPEAT);
-    volumeWrapping_.set(0);
+
+    volumeWrapping_.addOption("color", "Fill with color", GL_CLAMP_TO_EDGE);
+    volumeWrapping_.addOption("edge", "Fill with edge", GL_CLAMP_TO_EDGE);
+    volumeWrapping_.addOption("repeat", "Repeat", GL_REPEAT);
+    volumeWrapping_.addOption("m-repeat", "Mirrored repeat", GL_MIRRORED_REPEAT);
+    volumeWrapping_.setSelectedIndex(0);
     volumeWrapping_.setCurrentStateAsDefault();
+
+    volumeWrapping_.onChange([&]() {
+        if (volumeWrapping_.getSelectedIdentifier() == "color") {
+            shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
+            fillColor_.setVisible(true);
+        } else {
+            shader_.getFragmentShaderObject()->removeShaderDefine("COLOR_FILL_ENABLED");
+            fillColor_.setVisible(false);
+        }
+        shader_.build();
+    });
+    shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
 
     imageRotation_.setVisible(false);
 
@@ -168,10 +179,11 @@ VolumeSliceGL::VolumeSliceGL()
     trafoGroup_.addProperty(flipHorizontal_);
     trafoGroup_.addProperty(flipVertical_);
     trafoGroup_.addProperty(volumeWrapping_);
+    trafoGroup_.addProperty(fillColor_);
 
-    rotationAroundAxis_.onChange(this ,&VolumeSliceGL::rotationModeChange);
+    rotationAroundAxis_.onChange(this, &VolumeSliceGL::rotationModeChange);
     imageRotation_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
-    imageScale_.onChange(this, &VolumeSliceGL::planeSettingsChanged);    
+    imageScale_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
     flipHorizontal_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
     flipVertical_.onChange(this, &VolumeSliceGL::planeSettingsChanged);
 
@@ -218,36 +230,30 @@ VolumeSliceGL::VolumeSliceGL()
     addProperty(gestureShiftSlice_);
 }
 
-VolumeSliceGL::~VolumeSliceGL() {}
+VolumeSliceGL::~VolumeSliceGL() {
+    delete meshBox_;
+    delete meshCrossHair_;
+}
 
 void VolumeSliceGL::initialize() {
     Processor::initialize();
-    shader_ = new Shader("standard.vert", "volumeslice.frag", false);
-    indicatorShader_ = new Shader("standard.vert", "standard.frag", true);
+
     updateMaxSliceNumber();
     initializeResources();
 }
 
 void VolumeSliceGL::initializeResources() {
     if (tfMappingEnabled_.get()) {
-        shader_->getFragmentShaderObject()->addShaderDefine("TF_MAPPING_ENABLED");
+        shader_.getFragmentShaderObject()->addShaderDefine("TF_MAPPING_ENABLED");
         transferFunction_.setVisible(true);
         tfAlphaOffset_.setVisible(true);
     } else {
-        shader_->getFragmentShaderObject()->removeShaderDefine("TF_MAPPING_ENABLED");
+        shader_.getFragmentShaderObject()->removeShaderDefine("TF_MAPPING_ENABLED");
         transferFunction_.setVisible(false);
         tfAlphaOffset_.setVisible(false);
     }
-    shader_->build();
+    shader_.build();
     planeSettingsChanged();
-}
-
-void VolumeSliceGL::deinitialize() {
-    delete meshBox_;
-    delete meshCrossHair_;
-    delete shader_;
-    delete indicatorShader_;
-    Processor::deinitialize();
 }
 
 void VolumeSliceGL::invokeInteractionEvent(Event* event) {
@@ -280,7 +286,7 @@ void VolumeSliceGL::modeChange() {
             planeNormal_.set(vec3(0.0f, 0.0f, -1.0f));
             sliceChange();
             break;
-        case 3: // General plane
+        case 3:  // General plane
         default:
             planePosition_.setReadOnly(false);
             planeNormal_.setReadOnly(false);
@@ -304,9 +310,10 @@ void VolumeSliceGL::planeSettingsChanged() {
 
     // In worldSpace.
     const mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
-    const vec3 worldNormal(glm::normalize(vec3(glm::inverseTranspose(texToWorld) * vec4(normal, 0.0f))));
+    const vec3 worldNormal(
+        glm::normalize(vec3(glm::inverseTranspose(texToWorld) * vec4(normal, 0.0f))));
     const mat4 boxrotation(glm::toMat4(glm::rotation(worldNormal, vec3(0.0f, 0.0f, 1.0f))));
-    
+
     // Construct the edges of a unit box and intersect with the plane.
     std::vector<IntersectionResult> points;
     points.reserve(12);
@@ -333,7 +340,7 @@ void VolumeSliceGL::planeSettingsChanged() {
         if (point.intersects_) {
             vec4 corner = vec4(point.intersection_, 1.0f);
             corner = boxrotation * texToWorld * corner;
-            
+
             xrange[0] = std::min(xrange[0], corner.x);
             xrange[1] = std::max(xrange[1], corner.x);
             yrange[0] = std::min(yrange[0], corner.y);
@@ -351,19 +358,15 @@ void VolumeSliceGL::planeSettingsChanged() {
     const float targetRatio = targetDim.x / targetDim.y;
 
     const vec3 scaleSource(imageScale_ / (sourceRatio > 1.0f ? 1.0f : sourceRatio),
-                           imageScale_ * (sourceRatio > 1.0f ? sourceRatio : 1.0f),
-                           1.0f);
- 
-    const vec3 scaleTarget(1.0f * (targetRatio < 1.0f ? 1.0f : targetRatio),
-                           1.0f / (targetRatio < 1.0f ? targetRatio : 1.0f),
-                           1.0f);
+                           imageScale_ * (sourceRatio > 1.0f ? sourceRatio : 1.0f), 1.0f);
 
-    mat4 rotation(glm::translate(vec3(0.5f)) *
-                  glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal)) *
-                  glm::scale(scaleSource) *
-                  glm::rotate(imageRotation_.get(), vec3(0.0f, 0.0f, 1.0f)) *
-                  glm::scale(scaleTarget) *
-                  glm::translate(vec3(-0.5f)));
+    const vec3 scaleTarget(1.0f * (targetRatio < 1.0f ? 1.0f : targetRatio),
+                           1.0f / (targetRatio < 1.0f ? targetRatio : 1.0f), 1.0f);
+
+    mat4 rotation(
+        glm::translate(vec3(0.5f)) * glm::toMat4(glm::rotation(vec3(0.0f, 0.0f, 1.0f), normal)) *
+        glm::scale(scaleSource) * glm::rotate(imageRotation_.get(), vec3(0.0f, 0.0f, 1.0f)) *
+        glm::scale(scaleTarget) * glm::translate(vec3(-0.5f)));
 
     if (flipHorizontal_) rotation *= flipMatX;
     if (flipVertical_) rotation *= flipMatY;
@@ -371,14 +374,6 @@ void VolumeSliceGL::planeSettingsChanged() {
     // Save the inverse rotation.
     sliceRotation_ = rotation;
     inverseSliceRotation_ = glm::inverse(rotation);
-
-    // Set all the uniforms
-    if (shader_) {
-        shader_->activate();
-        shader_->setUniform("sliceRotation_", rotation);
-        shader_->setUniform("dataToClip_", mat4(1.0f));
-        shader_->deactivate();
-    }
 
     invalidateMesh();
     return;
@@ -389,60 +384,36 @@ void VolumeSliceGL::process() {
         volumeDimensions_ = inport_.getData()->getDimensions();
         updateMaxSliceNumber();
         modeChange();
-    } 
-    if (outportDimensions_ != outport_.getDimensions() || 
+    }
+    if (outportDimensions_ != outport_.getDimensions() ||
         texToWorld_ != inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
-
-        outportDimensions_ =  outport_.getDimensions();
+        outportDimensions_ = outport_.getDimensions();
         texToWorld_ = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
         planeSettingsChanged();
     }
-       
-    TextureUnit transFuncUnit, volUnit;
-    utilgl::bindTexture(transferFunction_, transFuncUnit);
-    utilgl::bindTexture(inport_, volUnit);
-
-    vec4 borderColor(0.0f, 0.0f, 0.0f, 0.0f);
-    GLint wrapS(0), wrapT(0), wrapR(0);
-    if (volumeWrapping_.get() > 0) {
-        glGetTexParameteriv(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, &wrapS);
-        glGetTexParameteriv(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, &wrapT);
-        glGetTexParameteriv(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, &wrapR);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, volumeWrapping_.get());
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, volumeWrapping_.get());
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, volumeWrapping_.get());
-        if (volumeWrapping_.get() == GL_CLAMP_TO_BORDER) {
-            glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(borderColor));
-        }
-    }
-    TextureUnit::setZeroUnit();
 
     utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
-    shader_->activate();
+    shader_.activate();
 
-    if (tfMappingEnabled_.get()) {
-        shader_->setUniform("transferFunc_", transFuncUnit.getUnitNumber());
-        shader_->setUniform("alphaOffset_", tfAlphaOffset_.get());
-    }
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(&shader_, units, inport_);
 
-    utilgl::setShaderUniforms(shader_, inport_, "volumeParameters_");
-    shader_->setUniform("volume_", volUnit.getUnitNumber());
-    shader_->setUniform("slice_", (inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f)).z);
-    
+    utilgl::TexParameter wraps(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, volumeWrapping_.get());
+    utilgl::TexParameter wrapt(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, volumeWrapping_.get());
+    utilgl::TexParameter wrapr(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, volumeWrapping_.get());
+
+    if (tfMappingEnabled_) utilgl::bindAndSetUniforms(&shader_, units, transferFunction_);
+
+    utilgl::setUniforms(&shader_, tfAlphaOffset_, fillColor_);
+    shader_.setUniform("sliceRotation", sliceRotation_);
+    shader_.setUniform("slice", (inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f)).z);
+    shader_.setUniform("dataToClip_", mat4(1.0f));
+
     utilgl::singleDrawImagePlaneRect();
-    shader_->deactivate();
+    shader_.deactivate();
 
     if (posPicking_.get() && showIndicator_.get()) renderPositionIndicator();
-    
     utilgl::deactivateCurrentTarget();
-
-    if (volumeWrapping_.get() > 0) {
-        volUnit.activate();
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, wrapS);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, wrapT);
-        glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, wrapR);
-        TextureUnit::setZeroUnit();
-    }
 }
 
 void VolumeSliceGL::renderPositionIndicator() {
@@ -466,8 +437,8 @@ void VolumeSliceGL::renderPositionIndicator() {
     width = std::min(width, s_sizes[1]);
     glLineWidth(width);
 
-    indicatorShader_->activate();
-    indicatorShader_->setUniform("dataToClip_", mat4(1.0f));
+    indicatorShader_.activate();
+    indicatorShader_.setUniform("dataToClip_", mat4(1.0f));
 
     glDepthFunc(GL_ALWAYS);
     drawer.draw();
@@ -475,7 +446,7 @@ void VolumeSliceGL::renderPositionIndicator() {
     glDepthFunc(GL_LESS);
     glDisable(GL_BLEND);
     glDisable(GL_LINE_SMOOTH);
-    indicatorShader_->deactivate();
+    indicatorShader_.deactivate();
 
     glLineWidth(1.0f);
 }
@@ -564,8 +535,7 @@ void VolumeSliceGL::shiftSlice(int shift) {
 void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
     if (!posPicking_.get()) return;  // position mode not enabled
 
-    pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) * 
-               glm::translate(vec3(-0.5f, -0.5f, 0.0f)) *
+    pos = vec2(glm::translate(vec3(0.5f, 0.5f, 0.0f)) * glm::translate(vec3(-0.5f, -0.5f, 0.0f)) *
                vec4(pos, 0.0f, 1.0f));
 
     if ((pos.x < 0.0f) || (pos.x > 1.0f) || (pos.y < 0.0f) || (pos.y > 1.0f)) {
@@ -607,38 +577,33 @@ void VolumeSliceGL::updateMaxSliceNumber() {
         sliceZ_.set(static_cast<int>(dims.z) / 2);
     }
 
-
     mat4 texToWorld(inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix());
 
-    vec3 max(texToWorld*vec4(1.0f));
-    vec3 min(texToWorld*vec4(0.0f,0.0f,0.0f,1.0f));
+    vec3 max(texToWorld * vec4(1.0f));
+    vec3 min(texToWorld * vec4(0.0f, 0.0f, 0.0f, 1.0f));
     worldPosition_.setMaxValue(max);
     worldPosition_.setMinValue(min);
 
     enableInvalidation();
 }
 
-void VolumeSliceGL::eventShiftSlice(Event* event){
+void VolumeSliceGL::eventShiftSlice(Event* event) {
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
     int steps = mouseEvent->wheelSteps();
     shiftSlice(steps);
 }
 
-void VolumeSliceGL::eventSetMarker(Event* event){
+void VolumeSliceGL::eventSetMarker(Event* event) {
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
     vec2 mousePos(mouseEvent->posNormalized());
     setVolPosFromScreenPos(vec2(mousePos.x, 1.0f - mousePos.y));
 }
 
-void VolumeSliceGL::eventStepSliceUp(Event*){
-    shiftSlice(1);
-}
+void VolumeSliceGL::eventStepSliceUp(Event*) { shiftSlice(1); }
 
-void VolumeSliceGL::eventStepSliceDown(Event*){
-    shiftSlice(-1);
-}
+void VolumeSliceGL::eventStepSliceDown(Event*) { shiftSlice(-1); }
 
-void VolumeSliceGL::eventGestureShiftSlice(Event* event){
+void VolumeSliceGL::eventGestureShiftSlice(Event* event) {
     GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
     if (gestureEvent->deltaPos().y < 0)
         shiftSlice(1);
@@ -698,8 +663,23 @@ void VolumeSliceGL::rotationModeChange() {
         default:
             imageRotation_.setVisible(true);
             break;
-        
     }
+}
+
+// override to do member renaming.
+void VolumeSliceGL::deserialize(IvwDeserializer& d) {
+    NodeVersionConverter<VolumeSliceGL> vc(this, &VolumeSliceGL::updateNetwork);
+    d.convertVersion(&vc);
+    Processor::deserialize(d);
+}
+bool VolumeSliceGL::updateNetwork(TxElement* node) {
+    TxElement* p1 = util::xmlGetElement(
+        node, "InPorts/InPort&type=org.inviwo.VolumeInport&identifier=volume.inport");
+    if (p1) p1->SetAttribute("identifier", "volume");
+    TxElement* p2 = util::xmlGetElement(
+        node, "OutPorts/OutPort&type=org.inviwo.ImageOutport&identifier=image.outport");
+    if (p2) p2->SetAttribute("identifier", "outport");
+    return true;
 }
 
 }  // inviwo namespace

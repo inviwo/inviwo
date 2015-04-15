@@ -43,11 +43,11 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
 
-class Shader;
 class Mesh;
 
 class IVW_MODULE_BASEGL_API VolumeSliceGL : public Processor {
@@ -58,13 +58,15 @@ public:
     InviwoProcessorInfo();
 
     virtual void initialize();
-    virtual void deinitialize();
     virtual void initializeResources();
 
     // Overridden to be able to turn off interaction events.
     virtual void invokeInteractionEvent(Event*);
 
     bool positionModeEnabled() const { return posPicking_.get(); }
+
+    // override to do member renaming.
+    virtual void deserialize(IvwDeserializer& d) override;
 
 protected:
     void process();
@@ -95,8 +97,12 @@ private:
     void eventStepSliceDown(Event*);
     void eventGestureShiftSlice(Event*);
 
+    bool updateNetwork(TxElement* node);
+
     VolumeInport inport_;
     ImageOutport outport_;
+    Shader shader_;
+    Shader indicatorShader_;
 
     CompositeProperty trafoGroup_;
     CompositeProperty pickGroup_;
@@ -117,6 +123,7 @@ private:
     BoolProperty flipHorizontal_;
     BoolProperty flipVertical_;
     OptionPropertyInt volumeWrapping_; 
+    FloatVec4Property fillColor_;
 
     BoolProperty posPicking_;
     BoolProperty showIndicator_;
@@ -136,8 +143,7 @@ private:
 
     EventProperty gestureShiftSlice_;
 
-    Shader* shader_;
-    Shader* indicatorShader_;
+
 
     Mesh* meshCrossHair_;
     Mesh* meshBox_;  // second mesh needed since Mesh does not support multiple connectivity types
