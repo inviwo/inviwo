@@ -87,6 +87,9 @@ public:
     float getNearPlaneDist() const;
     float getFarPlaneDist() const;
 
+    void setNearPlaneDist(float v);
+    void setFarPlaneDist(float v);
+
     /** 
      * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
      * 
