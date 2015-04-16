@@ -24,43 +24,26 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/ports/bufferport.h>
 
-
 namespace inviwo {
 
-uvec3 BufferInport::colorCode = uvec3(255,113,0);
-
 // Buffer Inport
-BufferInport::BufferInport(std::string identifier, InvalidationLevel invalidationLevel)
-    : DataInport<Buffer>(identifier, invalidationLevel)
-{}
+BufferInport::BufferInport(std::string identifier) : DataInport<Buffer>(identifier) {}
 
-BufferInport::~BufferInport() {
-}
-
-uvec3 BufferInport::getColorCode() const {
-    return BufferInport::colorCode;
-}
+BufferInport::~BufferInport() {}
 
 // Buffer Outport
-BufferOutport::BufferOutport(std::string identifier, InvalidationLevel invalidationLevel)
-    : DataOutport<Buffer>(identifier, invalidationLevel) {
+BufferOutport::BufferOutport(std::string identifier) : DataOutport<Buffer>(identifier) {}
 
-}
-
-BufferOutport::BufferOutport(std::string identifier, size_t size, const DataFormatBase* format, InvalidationLevel invalidationLevel)
-    : DataOutport<Buffer>(identifier, invalidationLevel) {
+BufferOutport::BufferOutport(std::string identifier, size_t size, const DataFormatBase* format)
+    : DataOutport<Buffer>(identifier) {
     setData(new Buffer(size, format), true);
 }
 
 BufferOutport::~BufferOutport() {}
 
-uvec3 BufferOutport::getColorCode() const {
-    return BufferInport::colorCode;
-}
-
-} // namespace
+}  // namespace

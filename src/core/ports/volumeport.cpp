@@ -31,22 +31,18 @@
 
 namespace inviwo {
 
-uvec3 VolumeInport::colorCode = uvec3(188, 101, 101);
-
 // Volume Inport
-VolumeInport::VolumeInport(std::string identifier, InvalidationLevel invalidationLevel)
-    : DataInport<Volume>(identifier, invalidationLevel) {}
+VolumeInport::VolumeInport(std::string identifier) : DataInport<Volume>(identifier) {}
 
 VolumeInport::~VolumeInport() {}
 
-uvec3 VolumeInport::getColorCode() const { return VolumeInport::colorCode; }
+std::string VolumeInport::getClassIdentifier() const { return "org.inviwo.VolumeInport"; }
 
 // Volume Outport
-VolumeOutport::VolumeOutport(std::string identifier, InvalidationLevel invalidationLevel)
-    : DataOutport<Volume>(identifier, invalidationLevel) {}
+VolumeOutport::VolumeOutport(std::string identifier) : DataOutport<Volume>(identifier) {}
 
 VolumeOutport::~VolumeOutport() {}
 
-uvec3 VolumeOutport::getColorCode() const { return VolumeInport::colorCode; }
+std::string VolumeOutport::getClassIdentifier() const { return "org.inviwo.VolumeOutport"; }
 
 }  // namespace

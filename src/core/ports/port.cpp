@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/ports/port.h>
@@ -32,46 +32,23 @@
 
 namespace inviwo {
 
-uvec3 Port::colorCode = uvec3(128,128,128);
-
 Port::Port(std::string identifier) : identifier_(identifier), processor_(nullptr) {}
 
 Port::~Port() {}
 
-uvec3 Port::getColorCode() const {
-    return Port::colorCode;
-}
+Processor* Port::getProcessor() const { return processor_; }
 
-Processor* Port::getProcessor() const {
-    return processor_;
-}
+std::string Port::getIdentifier() const { return identifier_; }
 
-std::string Port::getIdentifier() const {
-    return identifier_;
-}
+void Port::setIdentifier(const std::string& name) { identifier_ = name; }
 
-void Port::setIdentifier(const std::string& name) {
-    identifier_ = name;
-}
-
-void Port::setProcessor(Processor* processor) {
-    processor_ = processor;
-}
-
+void Port::setProcessor(Processor* processor) { processor_ = processor; }
 
 void Port::serialize(IvwSerializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("identifier", identifier_, true);
-//    s.serialize("Processor", processor_);
 }
 
-void Port::deserialize(IvwDeserializer& d) {
-    d.deserialize("identifier", identifier_, true);
-//    d.deserialize("Processor", processor_);
-}
+void Port::deserialize(IvwDeserializer& d) { d.deserialize("identifier", identifier_, true); }
 
-void Port::invalidate(InvalidationLevel invalidationLevel) {
-    processor_->invalidate(invalidationLevel);
-}
-
-} // namespace
+}  // namespace

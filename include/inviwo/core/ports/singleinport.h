@@ -50,8 +50,7 @@ public:
      * @param invalidationLevel Defines the level of invalidation used upon connection/deconnection.
      * @see Processor::addPort(), InvalidationLevel
      */
-    SingleInport(std::string identifier,
-                 InvalidationLevel invalidationLevel=INVALID_OUTPUT);
+    SingleInport(std::string identifier);
     virtual ~SingleInport();
 
     virtual InvalidationLevel getInvalidationLevel() const;

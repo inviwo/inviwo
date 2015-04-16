@@ -100,7 +100,8 @@ void VolumeRaycaster::onVolumeChange() {
 
         std::vector<OptionPropertyIntOption> channelOptions;
         for (size_t i = 0; i < channels; i++) {
-            channelOptions.emplace_back("Channel " + toString(i), "Channel " + toString(i), i);
+            channelOptions.emplace_back("Channel " + toString(i), "Channel " + toString(i),
+                                        static_cast<int>(i));
         }
         channel_.replaceOptions(channelOptions);
         channel_.setCurrentStateAsDefault();

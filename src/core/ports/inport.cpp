@@ -48,7 +48,7 @@ bool Inport::isReady() const {
 }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
-    Port::invalidate(invalidationLevel);
+    if(processor_) processor_->invalidate(invalidationLevel);
 }
 
 std::vector<Processor*> Inport::getPredecessors() {

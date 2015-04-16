@@ -33,8 +33,8 @@
 
 namespace inviwo {
 
-Outport::Outport(std::string identifier, InvalidationLevel invalidationLevel)
-    : Port(identifier), invalidationLevel_(invalidationLevel)
+Outport::Outport(std::string identifier)
+    : Port(identifier), invalidationLevel_(INVALID_OUTPUT)
 {}
 
 Outport::~Outport() {}

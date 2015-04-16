@@ -64,6 +64,7 @@ public:
     size_t getSizeInBytes();
     BufferType getBufferType() const { return type_; }
 
+    static uvec3 COLOR_CODE;
 protected:
     virtual DataRepresentation* createDefaultRepresentation();
 

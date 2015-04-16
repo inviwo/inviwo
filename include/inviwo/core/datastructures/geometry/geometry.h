@@ -50,6 +50,8 @@ public:
 
     virtual const SpatialCameraCoordinateTransformer<3>& getCoordinateTransformer(const CameraProperty* camera) const;
     using SpatialEntity<3>::getCoordinateTransformer;
+
+    static uvec3 COLOR_CODE;
 };
 
 } // namespace

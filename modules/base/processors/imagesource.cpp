@@ -45,7 +45,7 @@ ProcessorCodeState(ImageSource, CODE_STATE_STABLE);
 
 ImageSource::ImageSource()
     : Processor()
-    , outport_("image.outport", DataVec4UINT8::get(), INVALID_OUTPUT, false)
+    , outport_("image.outport", DataVec4UINT8::get(), false)
     , imageFileName_("imageFileName", "Image file name", "", "image")
     , imageDimension_("imageDimension_", "Image Dimension", ivec2(0), ivec2(0), ivec2(10000),
                       ivec2(1), VALID, PropertySemantics("Text"))

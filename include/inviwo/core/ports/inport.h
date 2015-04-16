@@ -55,6 +55,7 @@ public:
 
     virtual void invalidate(InvalidationLevel invalidationLevel);
     virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) {};
+    virtual InvalidationLevel getInvalidationLevel() const {return VALID;}
 
     virtual bool canConnectTo(Port* port) const { return false; }
     virtual void connectTo(Outport* outport) {};

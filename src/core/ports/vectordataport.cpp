@@ -30,8 +30,4 @@
 #include <inviwo/core/ports/vectordataport.h>
 
 
-namespace inviwo {
-
-uvec3 VectorDataPortColor::colorCode = uvec3(112,255,112);
-
-} // namespace
+namespace inviwo {} // namespace

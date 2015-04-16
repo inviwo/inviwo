@@ -79,4 +79,7 @@ mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
     mat4 transformationMatrix = glm::translate(pos) * glm::rotate(angle, rotationAxis);
     return transformationMatrix;
 }
+
+inviwo::uvec3 LightSource::COLOR_CODE = uvec3(128,64,196);
+
 }

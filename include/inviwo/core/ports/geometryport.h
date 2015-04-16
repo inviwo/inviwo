@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_GEOMETRYPORT_H
@@ -39,38 +39,29 @@
 namespace inviwo {
 
 class IVW_CORE_API GeometryInport : public DataInport<Geometry> {
-
 public:
-    GeometryInport(std::string identifier,
-                   InvalidationLevel invalidationLevel=INVALID_OUTPUT);
+    GeometryInport(std::string identifier);
     virtual ~GeometryInport();
 
-    uvec3 getColorCode() const;
-    static uvec3 colorCode;
-    virtual std::string getClassIdentifier() const {return "org.inviwo.GeometryInport";}
+    virtual std::string getClassIdentifier() const override;
 };
 
 class IVW_CORE_API GeometryMultiInport : public MultiDataInport<Geometry> {
-
 public:
     GeometryMultiInport(std::string identifier);
     virtual ~GeometryMultiInport();
 
-    uvec3 getColorCode() const;
-    virtual std::string getClassIdentifier() const {return "org.inviwo.GeometryMultiInport";}
+    virtual std::string getClassIdentifier() const override;
 };
 
 class IVW_CORE_API GeometryOutport : public DataOutport<Geometry> {
-
 public:
-    GeometryOutport(std::string identifier,
-                    InvalidationLevel invalidationLevel=INVALID_OUTPUT);
+    GeometryOutport(std::string identifier);
     virtual ~GeometryOutport();
 
-    uvec3 getColorCode() const;
-    virtual std::string getClassIdentifier() const {return "org.inviwo.GeometryOutport";}
+    virtual std::string getClassIdentifier() const override;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_GEOMETRYPORT_H
+#endif  // IVW_GEOMETRYPORT_H

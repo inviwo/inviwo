@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFER_PORT_H
@@ -35,33 +35,24 @@
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 
-
 namespace inviwo {
 
 class IVW_CORE_API BufferInport : public DataInport<Buffer> {
-
 public:
-    BufferInport(std::string identifier,
-        InvalidationLevel invalidationLevel=INVALID_OUTPUT);
+    BufferInport(std::string identifier);
     virtual ~BufferInport();
-
-    uvec3 getColorCode() const;
-    static uvec3 colorCode;
-    virtual std::string getClassIdentifier() const {return "org.inviwo.BufferInport";}
+    virtual std::string getClassIdentifier() const override { return "org.inviwo.BufferInport"; }
 };
 
 class IVW_CORE_API BufferOutport : public DataOutport<Buffer> {
-
 public:
-    BufferOutport(std::string identifier, InvalidationLevel invalidationLevel=INVALID_OUTPUT);
-    BufferOutport(std::string identifier, size_t size, const DataFormatBase* format = DataFLOAT32::get(),
-        InvalidationLevel invalidationLevel=INVALID_OUTPUT);
+    BufferOutport(std::string identifier);
+    BufferOutport(std::string identifier, size_t size,
+                  const DataFormatBase* format = DataFLOAT32::get());
     virtual ~BufferOutport();
-
-    uvec3 getColorCode() const;
-    virtual std::string getClassIdentifier() const {return "org.inviwo.BufferOutport";}
+    virtual std::string getClassIdentifier() const override { return "org.inviwo.BufferOutport"; }
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_BUFFER_PORT_H
+#endif  // IVW_BUFFER_PORT_H

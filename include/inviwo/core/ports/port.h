@@ -66,12 +66,7 @@ public:
      * instance used in the NetworkEditor. To distinguish different port types through their color,
      * this method should be overloaded in derived classes.
      */
-    virtual uvec3 getColorCode() const;
-    /**
-     * All instances have the same color.
-     * Derived should declare its own and return DerivedClass::colorCode in getColorCode
-     */
-    static uvec3 colorCode;
+    virtual uvec3 getColorCode() const  = 0;
 
     Processor* getProcessor() const;
     std::string getIdentifier() const;
@@ -82,22 +77,46 @@ public:
     virtual bool isConnected() const = 0;
     virtual bool isReady() const = 0;
 
-    virtual void invalidate(InvalidationLevel invalidationLevel);
-    virtual InvalidationLevel getInvalidationLevel() const { return INVALID_OUTPUT; }
+    virtual void invalidate(InvalidationLevel invalidationLevel) = 0;
+    virtual InvalidationLevel getInvalidationLevel() const = 0;
     virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) = 0;
 
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
 
 protected:
-    std::string identifier_;
-
     void setIdentifier(const std::string& name);
     void setProcessor(Processor* processor);
 
-private:
-    Processor* processor_;
+    std::string identifier_;
+    Processor* processor_; //< non-owning reference
 };
+
+namespace util {
+
+template <class T>
+class has_color_code {
+    template <class U, class = typename std::enable_if<
+                           !std::is_member_pointer<decltype(&U::COLOR_CODE)>::value>::type>
+    static std::true_type check(int);
+    template <class>
+    static std::false_type check(...);
+
+public:
+    static const bool value = decltype(check<T>(0))::value;
+};
+
+template <typename T,
+          typename std::enable_if<util::has_color_code<T>::value, std::size_t>::type = 0>
+uvec3 color_code() {
+    return T::COLOR_CODE;
+}
+template <typename T,
+          typename std::enable_if<!util::has_color_code<T>::value, std::size_t>::type = 0>
+uvec3 color_code() {
+    return uvec3(0);
+}
+}
 
 } // namespace
 

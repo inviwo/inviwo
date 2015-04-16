@@ -43,7 +43,7 @@ class DataOutport;
 template<typename T>
 class DataInport : public SingleInport {
 public:
-    DataInport(std::string identifier, InvalidationLevel invalidationLevel=INVALID_OUTPUT);
+    DataInport(std::string identifier);
     virtual ~DataInport();
 
     virtual bool canConnectTo(Port* port) const;
@@ -55,13 +55,16 @@ public:
     virtual std::string getContentInfo() const;
 
     virtual bool isReady() const { return SingleInport::isReady() && hasData(); }
+    virtual uvec3 getColorCode() const override;
 };
 
+template <typename T>
+DataInport<T>::DataInport(std::string identifier)
+    : SingleInport(identifier) {
+}
 
 template <typename T>
-DataInport<T>::DataInport(std::string identifier, InvalidationLevel invalidationLevel)
-    : SingleInport(identifier, invalidationLevel) {
-}
+uvec3 DataInport<T>::getColorCode() const { return util::color_code<T>(); }
 
 template <typename T>
 DataInport<T>::~DataInport() {}

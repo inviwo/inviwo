@@ -111,6 +111,8 @@ public:
 
     virtual std::string getDataInfo() const { return "LightSource"; }
 
+    static uvec3 COLOR_CODE;
+
 protected:
     vec3 intensity_;     // Color of light source, flux density per solid angle (given in watt per
                          // steradian W*s*r^-1)

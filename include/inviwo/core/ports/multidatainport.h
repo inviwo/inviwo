@@ -75,14 +75,13 @@ public:
     };
     virtual void connectTo(Outport* outport);
 
-    uvec3 getColorCode() const { return U::colorCode; }
+    virtual uvec3 getColorCode() const override { return util::color_code<T>(); }
 
     std::vector<const T*> getData() const;
 
     std::vector<const T*> getDataFromPort(Inport*) const;
 
     bool hasData() const;
-
 };
 
 

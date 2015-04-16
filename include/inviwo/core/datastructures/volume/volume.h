@@ -84,6 +84,7 @@ public:
     float getWorldSpaceGradientSpacing() const;
     DataMapper dataMap_;
 
+    static uvec3 COLOR_CODE;
 protected:
     virtual DataRepresentation* createDefaultRepresentation();
 };

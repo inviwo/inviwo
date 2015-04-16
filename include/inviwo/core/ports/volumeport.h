@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEPORT_H
@@ -38,28 +38,19 @@
 namespace inviwo {
 
 class IVW_CORE_API VolumeInport : public DataInport<Volume> {
-
 public:
-    VolumeInport(std::string identifier,
-                 InvalidationLevel invalidationLevel=INVALID_OUTPUT);
+    VolumeInport(std::string identifier);
     virtual ~VolumeInport();
-
-    uvec3 getColorCode() const;
-    static uvec3 colorCode;
-    virtual std::string getClassIdentifier() const {return "org.inviwo.VolumeInport";}
+    virtual std::string getClassIdentifier() const override;
 };
 
 class IVW_CORE_API VolumeOutport : public DataOutport<Volume> {
-
 public:
-    VolumeOutport(std::string identifier,
-                  InvalidationLevel invalidationLevel=INVALID_OUTPUT);
+    VolumeOutport(std::string identifier);
     virtual ~VolumeOutport();
-
-    uvec3 getColorCode() const;
-    virtual std::string getClassIdentifier() const {return "org.inviwo.VolumeOutport";}
+    virtual std::string getClassIdentifier() const override;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VOLUMEPORT_H
+#endif  // IVW_VOLUMEPORT_H

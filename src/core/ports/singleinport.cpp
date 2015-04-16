@@ -33,8 +33,8 @@
 
 namespace inviwo {
 
-SingleInport::SingleInport(std::string identifier, InvalidationLevel invalidationLevel)
-    : Inport(identifier), connectedOutport_(nullptr), invalidationLevel_(invalidationLevel) {}
+SingleInport::SingleInport(std::string identifier)
+    : Inport(identifier), connectedOutport_(nullptr), invalidationLevel_(INVALID_OUTPUT) {}
 
 SingleInport::~SingleInport() {}
 

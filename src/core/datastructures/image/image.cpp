@@ -272,6 +272,8 @@ const DataFormatBase* Image::getDataFormat() const {
     return getColorLayer()->getDataFormat();
 }
 
+inviwo::uvec3 Image::COLOR_CODE  = uvec3(90, 127, 183);
+
 std::string Image::getDataInfo() const{
     std::stringstream ss;
     ss << "<table border='0' cellspacing='0' cellpadding='0' style='border-color:white;white-space:pre;'>\n"

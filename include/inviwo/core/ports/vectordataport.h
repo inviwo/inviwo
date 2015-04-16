@@ -37,11 +37,6 @@
 
 namespace inviwo {
 
-class IVW_CORE_API VectorDataPortColor {
-public:
-    static uvec3 colorCode;
-};
-
 template <typename T>
 class VectorData : public BaseData {
 public:
@@ -75,26 +70,24 @@ public:
 };
 
 template <typename Type>
-class VectorDataInport : public DataInport<VectorData<Type> > {
+class VectorDataInport : public DataInport<VectorData<Type>> {
 public:
-    VectorDataInport(std::string identifier, InvalidationLevel invalidationLevel = INVALID_OUTPUT)
-        : DataInport<VectorData<Type> >(identifier, invalidationLevel) {}
+    VectorDataInport(std::string identifier) : DataInport<VectorData<Type>>(identifier) {}
     virtual ~VectorDataInport() {}
 
-    uvec3 getColorCode() const { return VectorDataPortColor::colorCode; }
+    uvec3 getColorCode() const { return uvec3(30,30,30) + util::color_code<Type>(); }
     virtual std::string getClassIdentifier() const { return "org.inviwo.VectorDataInport"; }
 };
 
 template <typename Type>
-class VectorDataOutport : public DataOutport<VectorData<Type> > {
+class VectorDataOutport : public DataOutport<VectorData<Type>> {
 public:
-    VectorDataOutport(std::string identifier, InvalidationLevel invalidationLevel = INVALID_OUTPUT)
-        : DataOutport<VectorData<Type> >(identifier, invalidationLevel) {
+    VectorDataOutport(std::string identifier) : DataOutport<VectorData<Type>>(identifier) {
         this->setData(new VectorData<Type>, true);
     }
     virtual ~VectorDataOutport() {}
 
-    uvec3 getColorCode() const { return VectorDataPortColor::colorCode; }
+    uvec3 getColorCode() const {  return uvec3(30,30,30) + util::color_code<Type>(); }
     virtual std::string getClassIdentifier() const { return "org.inviwo.VectorDataOutport"; }
 };
 

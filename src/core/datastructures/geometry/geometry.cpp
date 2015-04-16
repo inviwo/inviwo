@@ -55,4 +55,6 @@ const SpatialCameraCoordinateTransformer<3>& Geometry::getCoordinateTransformer(
     return SpatialEntity<3>::getCoordinateTransformer(Camera<3>(camera));
 }
 
+inviwo::uvec3 Geometry::COLOR_CODE = uvec3(188, 188, 101);
+
 }  // namespace

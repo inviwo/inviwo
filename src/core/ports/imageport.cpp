@@ -34,12 +34,9 @@
 
 namespace inviwo {
 
-uvec3 ImageInport::colorCode = uvec3(90, 127, 183);
-
 // Image Inport
-ImageInport::ImageInport(std::string identifier, bool outportDeterminesSize,
-                         InvalidationLevel invalidationLevel)
-    : DataInport<Image>(identifier, invalidationLevel)
+ImageInport::ImageInport(std::string identifier, bool outportDeterminesSize)
+    : DataInport<Image>(identifier)
     , dimensions_(uvec2(8, 8))
     , resizeScale_(vec2(1.f, 1.f))
     , outportDeterminesSize_(outportDeterminesSize) {}
@@ -150,8 +147,6 @@ const Image* ImageInport::getData() const {
     }
 }
 
-uvec3 ImageInport::getColorCode() const { return ImageInport::colorCode; }
-
 bool ImageInport::isOutportDeterminingSize() const { return outportDeterminesSize_; }
 
 void ImageInport::setOutportDeterminesSize(bool outportDeterminesSize) {
@@ -176,13 +171,11 @@ void ImageInport::passOnDataToOutport(ImageOutport* outport) const {
 ////////////////////////////// ImageOutport ////////////////////////////////////////////
 
 ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
-                           InvalidationLevel invalidationLevel,
                            bool handleResizeEvents)
-    : DataOutport<Image>(identifier, invalidationLevel)
+    : DataOutport<Image>(identifier)
     , dimensions_(uvec2(8, 8))
     , mapDataInvalid_(true)
     , handleResizeEvents_(handleResizeEvents) {
-    
     setData(new Image(dimensions_, format));
     dataChanged();
 }
@@ -508,8 +501,6 @@ void ImageOutport::setLargestImageData() {
         mapDataInvalid_ = true;
     }
 }
-
-uvec3 ImageOutport::getColorCode() const { return ImageInport::colorCode; }
 
 bool ImageOutport::addResizeEventListener(EventListener* el) { return addEventListener(el); }
 

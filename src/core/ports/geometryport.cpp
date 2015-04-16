@@ -32,29 +32,33 @@
 
 namespace inviwo {
 
-uvec3 GeometryInport::colorCode = uvec3(188, 188, 101);
-
 // Geometry Inport
-GeometryInport::GeometryInport(std::string identifier, InvalidationLevel invalidationLevel)
-    : DataInport<Geometry>(identifier, invalidationLevel) {}
+GeometryInport::GeometryInport(std::string identifier)
+    : DataInport<Geometry>(identifier) {}
 
 GeometryInport::~GeometryInport() {}
 
-uvec3 GeometryInport::getColorCode() const { return GeometryInport::colorCode; }
+std::string GeometryInport::getClassIdentifier() const  {
+    return "org.inviwo.GeometryInport";
+}
 
 GeometryMultiInport::GeometryMultiInport(std::string identifier)
     : MultiDataInport<Geometry>(identifier) {}
 
 GeometryMultiInport::~GeometryMultiInport() {}
 
-uvec3 GeometryMultiInport::getColorCode() const { return GeometryInport::colorCode; }
+std::string GeometryMultiInport::getClassIdentifier() const  {
+    return "org.inviwo.GeometryMultiInport";
+}
 
 // Geometry Outport
-GeometryOutport::GeometryOutport(std::string identifier, InvalidationLevel invalidationLevel)
-    : DataOutport<Geometry>(identifier, invalidationLevel) {}
+GeometryOutport::GeometryOutport(std::string identifier)
+    : DataOutport<Geometry>(identifier) {}
 
 GeometryOutport::~GeometryOutport() {}
 
-uvec3 GeometryOutport::getColorCode() const { return GeometryInport::colorCode; }
+std::string GeometryOutport::getClassIdentifier() const  {
+    return "org.inviwo.GeometryOutport";
+}
 
 }  // namespace
