@@ -55,6 +55,9 @@ public:
     virtual void initialize();
     virtual void deinitialize();
 
+    virtual void process() override;
+    virtual void doIfNotReady() override;
+
     void setCanvasSize(ivec2);
     ivec2 getCanvasSize() const;
 
@@ -76,9 +79,6 @@ public:
     virtual void propagateInteractionEvent(InteractionEvent*);
 
 protected:
-    virtual void process();
-    void doIfNotReady();
-
     void performEvaluationAtNextShow();
     void performEvaluateRequest();
 

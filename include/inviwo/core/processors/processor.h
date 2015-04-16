@@ -79,7 +79,6 @@ class IVW_CORE_API Processor : public PropertyOwner,
 public:
     Processor();
     virtual ~Processor();
-
     InviwoProcessorInfo();
 
     /**
@@ -112,13 +111,18 @@ public:
     virtual void deinitialize();
     bool isInitialized() const;
 
+    /**
+     * InitializeResources is called whenever a property with InvalidationLevel INVALID_RESOURCES
+     * is changes. 
+     */
+    virtual void initializeResources() {}
+
     Port* getPort(const std::string& identifier) const;
     Inport* getInport(const std::string& identifier) const;
     Outport* getOutport(const std::string& identifier) const;
 
     const std::vector<Inport*>& getInports() const;
     const std::vector<Outport*>& getOutports() const;
-
     virtual const std::vector<Inport*>& getInports(Event*) const;
 
     std::vector<std::string> getPortDependencySets() const;
@@ -131,26 +135,36 @@ public:
     virtual bool isEndProcessor() const;
     virtual bool isReady() const;
 
-    virtual void process();
+    /**
+     *	Called when the network is evaluated and the processor is ready and not valid.
+     *	The work of the processor should be done here.
+     */
+    virtual void process() {}
 
+    /**
+     *	Called when the network is evaluated and the processor is neither ready or valid.
+     */
     virtual void doIfNotReady() {}
 
-    // Triggers invalidation.
-    // Perform only full reimplementation of this function, meaning never call
-    // Proccessor::invalidate()
-    // in your reimplemented invalidation function.
+    /**
+     *	Called by the network after Processor::process has been called.
+     *	This will set the following to valid 
+     *	* The prcessos
+     *	* All properties
+     */
+    virtual void setValid();
+
+    /**
+     * Triggers invalidation.
+     * Perform only full reimplementation of this function, meaning never call
+     * Proccessor::invalidate()
+     * in your reimplemented invalidation function.
+     * The general scheme is that the processor will invalidate is self and it's outports
+     * the outports will in turn invalidate their connected inports, which will invalidate there 
+     * processors. Hence all processors that depend on this one in the network will be invalidated.
+     */
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty = nullptr);
-
-    // Triggers invalidation of successors.
-    // Perform only full reimplementation of this function, meaning never call
-    // Proccessor::invalidateSuccesors()
-    // in your reimplemented invalidation function.
-    virtual void invalidateSuccesors(InvalidationLevel invalidationLevel,
-                                     Property* modifiedProperty = nullptr);
-
-    virtual void setValid();
-    virtual void initializeResources() {}  // reload shaders etc. here
 
     /**
      * Adds the interaction handler such that it receives events propagated

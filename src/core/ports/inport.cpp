@@ -37,54 +37,26 @@ Inport::Inport(std::string identifier) : Port(identifier), changed_(false) {}
 
 Inport::~Inport() {}
 
-bool Inport::isConnected() const { return false; }
-
 bool Inport::isReady() const { return isConnected() && getConnectedOutport()->isValid(); }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
     if (processor_) processor_->invalidate(invalidationLevel);
 }
 
-std::vector<Processor*> Inport::getPredecessors() {
+std::vector<Processor*> Inport::getPredecessors() const {
     std::vector<Processor*> predecessorsProcessors;
     getPredecessorsUsingPortType<Inport>(predecessorsProcessors);
     return predecessorsProcessors;
 }
 
-template <typename T>
-void Inport::getPredecessorsUsingPortType(std::vector<Processor*>& predecessorsProcessors) {
-    if (isConnected()) {
-        std::vector<Outport*> connectedOutports = getConnectedOutports();
-        std::vector<Outport*>::const_iterator it = connectedOutports.begin();
-        std::vector<Outport*>::const_iterator endIt = connectedOutports.end();
-
-        for (; it != endIt; ++it) {
-            Processor* predecessorsProcessor = (*it)->getProcessor();
-
-            if (std::find(predecessorsProcessors.begin(), predecessorsProcessors.end(),
-                          predecessorsProcessor) == predecessorsProcessors.end())
-                predecessorsProcessors.push_back(predecessorsProcessor);
-
-            std::vector<Inport*> inports = predecessorsProcessor->getInports();
-
-            for (auto& inport : inports) {
-                T* inPort = dynamic_cast<T*>(inport);
-
-                if (inPort)
-                    inPort->template getPredecessorsUsingPortType<T>(predecessorsProcessors);
-            }
-        }
-    }
-}
-
 void Inport::setChanged(bool changed) { changed_ = changed; }
 
-void Inport::callOnChangeIfChanged() {
+void Inport::callOnChangeIfChanged() const {
     if (isChanged()) {
         onChangeCallback_.invokeAll();
     }
 }
 
-bool Inport::isChanged() { return changed_; }
+bool Inport::isChanged() const { return changed_; }
 
 }  // namespace

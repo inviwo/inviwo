@@ -185,13 +185,10 @@ Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path)
 
 void PropertyOwner::setValid() {
     for (auto& elem : properties_) elem->setPropertyModified(false);
-
     invalidationLevel_ = VALID;
 }
 
-void PropertyOwner::invalidate(InvalidationLevel invalidationLevel,
-                               Property* modifiedProperty) {
-    IVW_UNUSED_PARAM(modifiedProperty);
+void PropertyOwner::invalidate(InvalidationLevel invalidationLevel, Property*) {
     invalidationLevel_ = std::max(invalidationLevel_, invalidationLevel);
 }
 

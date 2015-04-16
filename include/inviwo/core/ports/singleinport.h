@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_SINGLE_INPORT_H
@@ -44,36 +44,30 @@ class Outport;
  * \brief The SingleInport can be connected to only one outport at a time.
  */
 class IVW_CORE_API SingleInport : public Inport {
-
 public:
     /**
-     * @param invalidationLevel Defines the level of invalidation used upon connection/deconnection.
+     * @param invalidationLevel Defines the level of invalidation used upon
+     * connection/disconnection.
      * @see Processor::addPort(), InvalidationLevel
      */
     SingleInport(std::string identifier);
     virtual ~SingleInport();
 
-    virtual InvalidationLevel getInvalidationLevel() const;
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel);
+    virtual void invalidate(InvalidationLevel invalidationLevel) override;
+    virtual InvalidationLevel getInvalidationLevel() const override;
+    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) override;
 
-    virtual void connectTo(Outport* outport);
-    virtual void disconnectFrom(Outport* outport);
+    virtual void connectTo(Outport* outport) override;
+    virtual void disconnectFrom(Outport* outport) override;
 
-    virtual bool isConnected() const;
-    bool isConnectedTo(Outport* outport) const;
+    virtual bool isConnected() const override;
+    bool isConnectedTo(Outport* outport) const override;
 
-    Outport* getConnectedOutport() const { return connectedOutport_; }
-    std::vector<Outport*> getConnectedOutports() const { return std::vector<Outport*>(1, connectedOutport_); }
-
-    virtual void invalidate(InvalidationLevel invalidationLevel);
+    Outport* getConnectedOutport() const override;
+    std::vector<Outport*> getConnectedOutports() const override;
 
     template <typename T>
-    void onInvalid(T* o, void (T::*m)(), bool add = true) {
-        if(add)
-            onInvalidCallback_.addMemberFunction(o,m);
-        else
-            onInvalidCallback_.removeMemberFunction(o);
-    }
+    void onInvalid(T* o, void (T::*m)(), bool add = true);
 
 protected:
     Outport* connectedOutport_;
@@ -82,8 +76,14 @@ protected:
     CallBackList onInvalidCallback_;
 };
 
+template <typename T>
+void SingleInport::onInvalid(T* o, void (T::*m)(), bool add /*= true*/) {
+    if (add)
+        onInvalidCallback_.addMemberFunction(o, m);
+    else
+        onInvalidCallback_.removeMemberFunction(o);
+}
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_SINGLE_INPORT_H
+#endif  // IVW_SINGLE_INPORT_H

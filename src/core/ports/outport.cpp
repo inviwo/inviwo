@@ -38,45 +38,36 @@ Outport::~Outport() {}
 
 bool Outport::isConnected() const { return !(connectedInports_.empty()); }
 
+bool Outport::isReady() const { return isConnected(); }
+
 bool Outport::isConnectedTo(Inport* port) const {
     return !(std::find(connectedInports_.begin(), connectedInports_.end(), port) ==
              connectedInports_.end());
 }
 
-void Outport::invalidate(InvalidationLevel invalidationLevel) {
-    invalidationLevel_ = invalidationLevel;
-    invalidateConnectedInports(invalidationLevel_);
+std::vector<Inport*> Outport::getConnectedInports() const {
+    return connectedInports_;
 }
 
-void Outport::invalidateConnectedInports(InvalidationLevel invalidationLevel) {
-    for (auto& elem : connectedInports_) elem->invalidate(invalidationLevel);
+void Outport::invalidate(InvalidationLevel invalidationLevel) {
+    invalidationLevel_ = invalidationLevel;
+    for (auto port : connectedInports_) port->invalidate(invalidationLevel);
+}
+
+inviwo::InvalidationLevel Outport::getInvalidationLevel() const {
+    return invalidationLevel_;
 }
 
 void Outport::setInvalidationLevel(InvalidationLevel invalidationLevel) {
     invalidationLevel_ = invalidationLevel;
-    for (auto& elem : connectedInports_) elem->setInvalidationLevel(invalidationLevel);
+    for (auto port : connectedInports_) port->setInvalidationLevel(invalidationLevel);
 }
 
-template <typename T>
-void Outport::getSuccessorsUsingPortType(std::vector<Processor*>& successorProcessors) {
-    for (auto& elem : connectedInports_) {
-        Processor* decendantProcessor = elem->getProcessor();
-
-        if (std::find(successorProcessors.begin(), successorProcessors.end(), decendantProcessor) ==
-            successorProcessors.end())
-            successorProcessors.push_back(elem->getProcessor());
-
-        std::vector<Outport*> outports = decendantProcessor->getOutports();
-
-        for (auto& outport : outports) {
-            T* outPort = dynamic_cast<T*>(outport);
-
-            if (outPort) outPort->template getSuccessorsUsingPortType<T>(successorProcessors);
-        }
-    }
+bool Outport::isValid() const {
+    return (getInvalidationLevel() == VALID);
 }
 
-std::vector<Processor*> Outport::getDirectSuccessors() {
+std::vector<Processor*> Outport::getDirectSuccessors() const {
     std::vector<Processor*> successorProcessors;
     getSuccessorsUsingPortType<Outport>(successorProcessors);
     return successorProcessors;

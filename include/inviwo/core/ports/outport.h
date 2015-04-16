@@ -55,30 +55,48 @@ public:
     virtual ~Outport();
 
     virtual bool isConnected() const override;
-    virtual bool isReady() const override { return isConnected(); }
+    virtual bool isReady() const override;
 
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
-    virtual InvalidationLevel getInvalidationLevel() const override { return invalidationLevel_; }
+    virtual InvalidationLevel getInvalidationLevel() const override;
     virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) override;
 
-    bool isValid() { return (getInvalidationLevel() == VALID); }
-    void invalidateConnectedInports(InvalidationLevel invalidationLevel);
-
+    bool isValid() const;
+    
     bool isConnectedTo(Inport* port) const;
-    std::vector<Inport*> getConnectedInports() const { return connectedInports_; }
-    std::vector<Processor*> getDirectSuccessors();
+    std::vector<Inport*> getConnectedInports() const;
+    std::vector<Processor*> getDirectSuccessors() const;
 
 protected:
     void connectTo(Inport* port);
     void disconnectFrom(Inport* port);
 
     template <typename T>
-    void getSuccessorsUsingPortType(std::vector<Processor*>&);
+    void getSuccessorsUsingPortType(std::vector<Processor*>&) const;
 
     InvalidationLevel invalidationLevel_;
 private:
     std::vector<Inport*> connectedInports_;
 };
+
+template <typename T>
+void Outport::getSuccessorsUsingPortType(std::vector<Processor*>& successorProcessors) const {
+    for (auto& elem : connectedInports_) {
+        Processor* decendantProcessor = elem->getProcessor();
+
+        if (std::find(successorProcessors.begin(), successorProcessors.end(), decendantProcessor) ==
+            successorProcessors.end())
+            successorProcessors.push_back(elem->getProcessor());
+
+        std::vector<Outport*> outports = decendantProcessor->getOutports();
+
+        for (auto& outport : outports) {
+            T* outPort = dynamic_cast<T*>(outport);
+
+            if (outPort) outPort->template getSuccessorsUsingPortType<T>(successorProcessors);
+        }
+    }
+}
 
 }  // namespace
 

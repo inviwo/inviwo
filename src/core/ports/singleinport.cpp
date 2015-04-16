@@ -62,13 +62,21 @@ bool SingleInport::isConnectedTo(Outport* outport) const {
     return connectedOutport_==outport;
 }
 
+Outport* SingleInport::getConnectedOutport() const  {
+    return connectedOutport_;
+}
+
+std::vector<Outport*> SingleInport::getConnectedOutports() const  {
+    return std::vector<Outport*>(1, connectedOutport_);
+}
+
 InvalidationLevel SingleInport::getInvalidationLevel() const{
     return invalidationLevel_;
 }
 
 void SingleInport::setInvalidationLevel(InvalidationLevel invalidationLevel){
     invalidationLevel_ = invalidationLevel;
-    setChanged();
+    setChanged(true);
 }
 
 void SingleInport::invalidate(InvalidationLevel invalidationLevel) {

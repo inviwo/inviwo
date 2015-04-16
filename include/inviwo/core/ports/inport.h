@@ -50,45 +50,74 @@ public:
     Inport(std::string identifier = "");
     virtual ~Inport();
 
-    virtual bool isConnected() const override;
+    virtual bool isConnected() const override = 0;
     virtual bool isReady() const override;
 
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) override {};
-    virtual InvalidationLevel getInvalidationLevel() const override {return VALID;}
+    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) override = 0;
+    virtual InvalidationLevel getInvalidationLevel() const override = 0;
 
-    virtual bool canConnectTo(Port* port) const { return false; }
-    virtual void connectTo(Outport* outport) {};
-    virtual void disconnectFrom(Outport* outport) {};
-
-    virtual bool isConnectedTo(Outport* outport) const { return false; }
-
-    virtual Outport* getConnectedOutport() const { return nullptr; }
-    virtual std::vector<Outport*> getConnectedOutports() const { return std::vector<Outport*>(); }
-    std::vector<Processor*> getPredecessors();
+    virtual bool canConnectTo(Port* port) const = 0;
+    virtual void connectTo(Outport* outport) = 0;
+    virtual void disconnectFrom(Outport* outport) = 0;
+    virtual bool isConnectedTo(Outport* outport) const = 0;
+    virtual Outport* getConnectedOutport() const = 0;
+    virtual std::vector<Outport*> getConnectedOutports() const = 0;
+    std::vector<Processor*> getPredecessors() const;
 
     template <typename T>
-    void onChange(T* o, void (T::*m)()) const {
-        onChangeCallback_.addMemberFunction(o,m);
-    }
-
+    void onChange(T* o, void (T::*m)()) const;
     template <typename T>
-    void removeOnChange(T* o) const {
-        onChangeCallback_.removeMemberFunction(o);
-    }
+    void removeOnChange(T* o) const;
 
-    void callOnChangeIfChanged();
-    virtual bool isChanged();
+    void callOnChangeIfChanged() const;
+
+    virtual bool isChanged() const;
     virtual void setChanged(bool changed = true);
 
 protected:
     template <typename T>
-    void getPredecessorsUsingPortType(std::vector<Processor*>&);
+    void getPredecessorsUsingPortType(std::vector<Processor*>&) const;
 
     mutable CallBackList onChangeCallback_;
     bool changed_;
-
 };
+
+template <typename T>
+void Inport::onChange(T* o, void (T::*m)()) const {
+    onChangeCallback_.addMemberFunction(o, m);
+}
+
+template <typename T>
+void Inport::removeOnChange(T* o) const {
+    onChangeCallback_.removeMemberFunction(o);
+}
+
+template <typename T>
+void Inport::getPredecessorsUsingPortType(std::vector<Processor*>& predecessorsProcessors) const {
+    if (isConnected()) {
+        std::vector<Outport*> connectedOutports = getConnectedOutports();
+        std::vector<Outport*>::const_iterator it = connectedOutports.begin();
+        std::vector<Outport*>::const_iterator endIt = connectedOutports.end();
+
+        for (; it != endIt; ++it) {
+            Processor* predecessorsProcessor = (*it)->getProcessor();
+
+            if (std::find(predecessorsProcessors.begin(), predecessorsProcessors.end(),
+                          predecessorsProcessor) == predecessorsProcessors.end())
+                predecessorsProcessors.push_back(predecessorsProcessor);
+
+            std::vector<Inport*> inports = predecessorsProcessor->getInports();
+
+            for (auto& inport : inports) {
+                T* inPort = dynamic_cast<T*>(inport);
+
+                if (inPort)
+                    inPort->template getPredecessorsUsingPortType<T>(predecessorsProcessors);
+            }
+        }
+    }
+}
 
 } // namespace
 

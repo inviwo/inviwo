@@ -50,15 +50,13 @@ public:
     virtual uvec3 getColorCode() const override;
     virtual std::string getClassIdentifier() const override;
 
-    virtual bool canConnectTo(Port* port) const;
-    virtual void connectTo(Outport* port);
+    virtual bool canConnectTo(Port* port) const override;
+    virtual void connectTo(Outport* port) override;
+    virtual bool isReady() const override;
 
     virtual const T* getData() const;
-
     bool hasData() const;
     virtual std::string getContentInfo() const;
-
-    virtual bool isReady() const { return SingleInport::isReady() && hasData(); }
 };
 
 template<typename T>
@@ -95,6 +93,8 @@ void DataInport<T>::connectTo(Outport* port) {
     else
         LogWarn("Trying to connect incompatible ports.");
 }
+template <typename T>
+bool DataInport<T>::isReady() const { return SingleInport::isReady() && hasData(); }
 
 template <typename T>
 const T* DataInport<T>::getData() const {
