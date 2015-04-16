@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/singleinport.h>
 #include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/util/introspection.h>
 
 namespace inviwo {
 
@@ -46,6 +47,9 @@ public:
     DataInport(std::string identifier);
     virtual ~DataInport();
 
+    virtual uvec3 getColorCode() const override;
+    virtual std::string getClassIdentifier() const override;
+
     virtual bool canConnectTo(Port* port) const;
     virtual void connectTo(Outport* port);
 
@@ -55,8 +59,12 @@ public:
     virtual std::string getContentInfo() const;
 
     virtual bool isReady() const { return SingleInport::isReady() && hasData(); }
-    virtual uvec3 getColorCode() const override;
 };
+
+template<typename T>
+std::string inviwo::DataInport<T>::getClassIdentifier() const  {
+    return util::class_identifier<T>() + "Inport";
+}
 
 template <typename T>
 DataInport<T>::DataInport(std::string identifier)

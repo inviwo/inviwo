@@ -33,12 +33,12 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/glwrap/textureunit.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
 class Shader;
-class Volume;
-class VolumeInport;
 
 namespace utilgl {
 

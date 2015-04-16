@@ -92,32 +92,6 @@ protected:
     Processor* processor_; //< non-owning reference
 };
 
-namespace util {
-
-template <class T>
-class has_color_code {
-    template <class U, class = typename std::enable_if<
-                           !std::is_member_pointer<decltype(&U::COLOR_CODE)>::value>::type>
-    static std::true_type check(int);
-    template <class>
-    static std::false_type check(...);
-
-public:
-    static const bool value = decltype(check<T>(0))::value;
-};
-
-template <typename T,
-          typename std::enable_if<util::has_color_code<T>::value, std::size_t>::type = 0>
-uvec3 color_code() {
-    return T::COLOR_CODE;
-}
-template <typename T,
-          typename std::enable_if<!util::has_color_code<T>::value, std::size_t>::type = 0>
-uvec3 color_code() {
-    return uvec3(0);
-}
-}
-
 } // namespace
 
 #endif // IVW_PORT_H

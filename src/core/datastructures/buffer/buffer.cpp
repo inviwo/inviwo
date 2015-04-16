@@ -57,6 +57,8 @@ size_t Buffer::getSizeInBytes() { return size_ * dataFormatBase_->getSize(); }
 
 inviwo::uvec3 Buffer::COLOR_CODE = uvec3(255, 113, 0);
 
+const std::string Buffer::CLASS_IDENTIFIER = "org.inviwo.Buffer";
+
 void Buffer::setSize(size_t size) {
     if (size != size_) {
         size_ = size;

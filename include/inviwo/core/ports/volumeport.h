@@ -37,19 +37,8 @@
 
 namespace inviwo {
 
-class IVW_CORE_API VolumeInport : public DataInport<Volume> {
-public:
-    VolumeInport(std::string identifier);
-    virtual ~VolumeInport();
-    virtual std::string getClassIdentifier() const override;
-};
-
-class IVW_CORE_API VolumeOutport : public DataOutport<Volume> {
-public:
-    VolumeOutport(std::string identifier);
-    virtual ~VolumeOutport();
-    virtual std::string getClassIdentifier() const override;
-};
+using VolumeInport = DataInport<Volume>;
+using VolumeOutport = DataOutport<Volume>;
 
 }  // namespace
 

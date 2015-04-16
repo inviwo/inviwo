@@ -30,19 +30,4 @@
 #include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
-
-// Volume Inport
-VolumeInport::VolumeInport(std::string identifier) : DataInport<Volume>(identifier) {}
-
-VolumeInport::~VolumeInport() {}
-
-std::string VolumeInport::getClassIdentifier() const { return "org.inviwo.VolumeInport"; }
-
-// Volume Outport
-VolumeOutport::VolumeOutport(std::string identifier) : DataOutport<Volume>(identifier) {}
-
-VolumeOutport::~VolumeOutport() {}
-
-std::string VolumeOutport::getClassIdentifier() const { return "org.inviwo.VolumeOutport"; }
-
 }  // namespace

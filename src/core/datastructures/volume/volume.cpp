@@ -161,6 +161,8 @@ float Volume::getWorldSpaceGradientSpacing() const {
 
 inviwo::uvec3 Volume::COLOR_CODE = uvec3(188, 101, 101);
 
+const std::string Volume::CLASS_IDENTIFIER = "org.inviwo.Volume";
+
 const StructuredCameraCoordinateTransformer<3>& Volume::getCoordinateTransformer(const CameraProperty* camera) const {
     return StructuredGridEntity<3>::getCoordinateTransformer(Camera<3>(camera));
 }

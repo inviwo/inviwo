@@ -37,21 +37,8 @@
 
 namespace inviwo {
 
-class IVW_CORE_API BufferInport : public DataInport<Buffer> {
-public:
-    BufferInport(std::string identifier);
-    virtual ~BufferInport();
-    virtual std::string getClassIdentifier() const override { return "org.inviwo.BufferInport"; }
-};
-
-class IVW_CORE_API BufferOutport : public DataOutport<Buffer> {
-public:
-    BufferOutport(std::string identifier);
-    BufferOutport(std::string identifier, size_t size,
-                  const DataFormatBase* format = DataFLOAT32::get());
-    virtual ~BufferOutport();
-    virtual std::string getClassIdentifier() const override { return "org.inviwo.BufferOutport"; }
-};
+using BufferInport = DataInport<Buffer>;
+using BufferOutport = DataOutport<Buffer>;
 
 }  // namespace
 

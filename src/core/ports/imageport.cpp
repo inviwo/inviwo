@@ -531,8 +531,4 @@ bool ImageOutport::isHandlingResizeEvents() const {
     return handleResizeEvents_;
 }
 
-std::string ImageOutport::getClassIdentifier() const {
-    return "org.inviwo.ImageOutport";
-}
-
 }  // namespace

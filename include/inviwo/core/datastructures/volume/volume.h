@@ -85,6 +85,8 @@ public:
     DataMapper dataMap_;
 
     static uvec3 COLOR_CODE;
+    static const std::string CLASS_IDENTIFIER; 
+
 protected:
     virtual DataRepresentation* createDefaultRepresentation();
 };

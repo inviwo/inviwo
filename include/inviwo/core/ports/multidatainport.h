@@ -35,6 +35,7 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/multiinport.h>
 #include <inviwo/core/ports/vectordataport.h>
+#include <inviwo/core/util/introspection.h>
 #include <set>
 
 namespace inviwo {
@@ -76,6 +77,7 @@ public:
     virtual void connectTo(Outport* outport);
 
     virtual uvec3 getColorCode() const override { return util::color_code<T>(); }
+    virtual std::string getClassIdentifier() const override;
 
     std::vector<const T*> getData() const;
 
@@ -84,6 +86,10 @@ public:
     bool hasData() const;
 };
 
+template < typename T, typename U /*= DataInport<T> */>
+std::string inviwo::MultiDataInport<T, U>::getClassIdentifier() const  {
+    return util::class_identifier<T>() + "MultiInport";
+}
 
 template<typename T, typename U>
 MultiDataInport<T, U>::MultiDataInport(std::string identifier)

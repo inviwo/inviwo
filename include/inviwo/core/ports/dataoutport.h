@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/ports/outport.h>
+#include <inviwo/core/util/introspection.h>
 
 namespace inviwo {
 
@@ -53,6 +54,7 @@ public:
     virtual ~DataOutport();
 
     virtual uvec3 getColorCode() const override;
+    virtual std::string getClassIdentifier() const override;
 
     virtual T* getData();
     virtual DataSequence<T>* getDataSequence();
@@ -78,6 +80,11 @@ protected:
     bool ownsData_;
     bool isSequence_;
 };
+
+template <typename T>
+std::string inviwo::DataOutport<T>::getClassIdentifier() const  {
+    return util::class_identifier<T>() + "Outport";
+}
 
 template <typename T>
 uvec3 inviwo::DataOutport<T>::getColorCode() const { return util::color_code<T>(); }

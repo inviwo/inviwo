@@ -30,8 +30,6 @@
 #include "volumeutils.h"
 #include "glformats.h"
 
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
 

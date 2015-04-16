@@ -28,37 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/core/ports/geometryport.h>
-#include <inviwo/core/datastructures/geometry/simplemesh.h>
 
 namespace inviwo {
-
-// Geometry Inport
-GeometryInport::GeometryInport(std::string identifier)
-    : DataInport<Geometry>(identifier) {}
-
-GeometryInport::~GeometryInport() {}
-
-std::string GeometryInport::getClassIdentifier() const  {
-    return "org.inviwo.GeometryInport";
-}
-
-GeometryMultiInport::GeometryMultiInport(std::string identifier)
-    : MultiDataInport<Geometry>(identifier) {}
-
-GeometryMultiInport::~GeometryMultiInport() {}
-
-std::string GeometryMultiInport::getClassIdentifier() const  {
-    return "org.inviwo.GeometryMultiInport";
-}
-
-// Geometry Outport
-GeometryOutport::GeometryOutport(std::string identifier)
-    : DataOutport<Geometry>(identifier) {}
-
-GeometryOutport::~GeometryOutport() {}
-
-std::string GeometryOutport::getClassIdentifier() const  {
-    return "org.inviwo.GeometryOutport";
-}
-
 }  // namespace

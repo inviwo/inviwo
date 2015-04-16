@@ -62,7 +62,6 @@ public:
     const Image* getData() const;
     void setOutportDeterminesSize(bool outportDeterminesSize);
     bool isOutportDeterminingSize() const;
-    virtual std::string getClassIdentifier() const { return "org.inviwo.ImageInport"; }
     virtual std::string getContentInfo() const;
 
     void setResizeScale(vec2);
@@ -109,7 +108,6 @@ public:
      * @param newDimension Dimension to be set
      */
     void setDimensions(const uvec2& newDimension);
-    virtual std::string getClassIdentifier() const;
 
     bool addResizeEventListener(EventListener*);
     bool removeResizeEventListener(EventListener*);

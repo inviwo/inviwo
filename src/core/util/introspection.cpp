@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,10 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYPORT_H
-#define IVW_GEOMETRYPORT_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/multidatainport.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
+#include <inviwo/core/util/introspection.h>
 
 namespace inviwo {
 
-using GeometryInport = DataInport<Geometry>;
-using GeometryMultiInport = MultiDataInport<Geometry>;
-using GeometryOutport =  DataOutport<Geometry>;
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_GEOMETRYPORT_H

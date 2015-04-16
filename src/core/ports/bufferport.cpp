@@ -30,20 +30,4 @@
 #include <inviwo/core/ports/bufferport.h>
 
 namespace inviwo {
-
-// Buffer Inport
-BufferInport::BufferInport(std::string identifier) : DataInport<Buffer>(identifier) {}
-
-BufferInport::~BufferInport() {}
-
-// Buffer Outport
-BufferOutport::BufferOutport(std::string identifier) : DataOutport<Buffer>(identifier) {}
-
-BufferOutport::BufferOutport(std::string identifier, size_t size, const DataFormatBase* format)
-    : DataOutport<Buffer>(identifier) {
-    setData(new Buffer(size, format), true);
-}
-
-BufferOutport::~BufferOutport() {}
-
 }  // namespace
