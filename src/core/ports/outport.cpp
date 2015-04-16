@@ -24,27 +24,23 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/ports/outport.h>
-
 #include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
-Outport::Outport(std::string identifier)
-    : Port(identifier), invalidationLevel_(INVALID_OUTPUT)
-{}
+Outport::Outport(std::string identifier) : Port(identifier), invalidationLevel_(INVALID_OUTPUT) {}
 
 Outport::~Outport() {}
 
-bool Outport::isConnected() const {
-    return !(connectedInports_.empty());
-}
+bool Outport::isConnected() const { return !(connectedInports_.empty()); }
 
 bool Outport::isConnectedTo(Inport* port) const {
-    return !(std::find(connectedInports_.begin(),connectedInports_.end(),port)==connectedInports_.end());
+    return !(std::find(connectedInports_.begin(), connectedInports_.end(), port) ==
+             connectedInports_.end());
 }
 
 void Outport::invalidate(InvalidationLevel invalidationLevel) {
@@ -52,11 +48,11 @@ void Outport::invalidate(InvalidationLevel invalidationLevel) {
     invalidateConnectedInports(invalidationLevel_);
 }
 
-void Outport::invalidateConnectedInports(InvalidationLevel invalidationLevel){
+void Outport::invalidateConnectedInports(InvalidationLevel invalidationLevel) {
     for (auto& elem : connectedInports_) elem->invalidate(invalidationLevel);
 }
 
-void Outport::setInvalidationLevel(InvalidationLevel invalidationLevel){
+void Outport::setInvalidationLevel(InvalidationLevel invalidationLevel) {
     invalidationLevel_ = invalidationLevel;
     for (auto& elem : connectedInports_) elem->setInvalidationLevel(invalidationLevel);
 }
@@ -66,7 +62,8 @@ void Outport::getSuccessorsUsingPortType(std::vector<Processor*>& successorProce
     for (auto& elem : connectedInports_) {
         Processor* decendantProcessor = elem->getProcessor();
 
-        if (std::find(successorProcessors.begin(), successorProcessors.end(), decendantProcessor)== successorProcessors.end())
+        if (std::find(successorProcessors.begin(), successorProcessors.end(), decendantProcessor) ==
+            successorProcessors.end())
             successorProcessors.push_back(elem->getProcessor());
 
         std::vector<Outport*> outports = decendantProcessor->getOutports();
@@ -74,8 +71,7 @@ void Outport::getSuccessorsUsingPortType(std::vector<Processor*>& successorProce
         for (auto& outport : outports) {
             T* outPort = dynamic_cast<T*>(outport);
 
-            if (outPort)
-                outPort->template getSuccessorsUsingPortType<T>(successorProcessors);
+            if (outPort) outPort->template getSuccessorsUsingPortType<T>(successorProcessors);
         }
     }
 }
@@ -86,20 +82,22 @@ std::vector<Processor*> Outport::getDirectSuccessors() {
     return successorProcessors;
 }
 
-//Is called exclusively by Inport, which means a connection has been made.
+// Is called exclusively by Inport, which means a connection has been made.
 void Outport::connectTo(Inport* inport) {
-    if (std::find(connectedInports_.begin(), connectedInports_.end(), inport) == connectedInports_.end()) {
+    if (std::find(connectedInports_.begin(), connectedInports_.end(), inport) ==
+        connectedInports_.end()) {
         connectedInports_.push_back(inport);
     }
 }
 
-//Is called exclusively by Inport, which means a connection has been removed.
+// Is called exclusively by Inport, which means a connection has been removed.
 void Outport::disconnectFrom(Inport* inport) {
-    if (std::find(connectedInports_.begin(), connectedInports_.end(), inport) != connectedInports_.end()) {
-        connectedInports_.erase(std::remove(connectedInports_.begin(), connectedInports_.end(), inport),
-                                connectedInports_.end());
+    if (std::find(connectedInports_.begin(), connectedInports_.end(), inport) !=
+        connectedInports_.end()) {
+        connectedInports_.erase(
+            std::remove(connectedInports_.begin(), connectedInports_.end(), inport),
+            connectedInports_.end());
     }
 }
 
-
-} // namespace
+}  // namespace

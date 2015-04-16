@@ -61,19 +61,18 @@ public:
     Port(std::string identifier = "");
     virtual ~Port();
 
+    std::string getIdentifier() const;
+    Processor* getProcessor() const;
+
     /**
      * Returns the RGB color code used to colorize all ports of this type. This color code is for
      * instance used in the NetworkEditor. To distinguish different port types through their color,
      * this method should be overloaded in derived classes.
      */
     virtual uvec3 getColorCode() const  = 0;
-
-    Processor* getProcessor() const;
-    std::string getIdentifier() const;
-
     virtual std::string getClassIdentifier() const = 0;
     virtual std::string getContentInfo() const = 0;
-
+    
     virtual bool isConnected() const = 0;
     virtual bool isReady() const = 0;
 

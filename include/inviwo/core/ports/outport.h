@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_OUTPORT_H
@@ -43,36 +43,30 @@ class Inport;
 /**
  * \class Outport
  *
- * \brief The Outport can be connected to an arbitary number of Inports.
+ * \brief The Outport can be connected to an arbitrary number of Inports.
  */
 class IVW_CORE_API Outport : public Port {
-
     friend class SingleInport;
     friend class MultiInport;
     friend class ImageInport;
+
 public:
     Outport(std::string identifier = "");
     virtual ~Outport();
 
-    virtual bool isConnected() const;
-    bool isConnectedTo(Inport* port) const;
+    virtual bool isConnected() const override;
+    virtual bool isReady() const override { return isConnected(); }
 
-    virtual bool isReady() const { return isConnected(); }
+    virtual void invalidate(InvalidationLevel invalidationLevel) override;
+    virtual InvalidationLevel getInvalidationLevel() const override { return invalidationLevel_; }
+    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) override;
 
     bool isValid() { return (getInvalidationLevel() == VALID); }
-
-    std::vector<Inport*> getConnectedInports() const { return connectedInports_; }
-
-    virtual void invalidate(InvalidationLevel invalidationLevel);
     void invalidateConnectedInports(InvalidationLevel invalidationLevel);
 
-    virtual InvalidationLevel getInvalidationLevel() const { return invalidationLevel_; }
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel);
-
+    bool isConnectedTo(Inport* port) const;
+    std::vector<Inport*> getConnectedInports() const { return connectedInports_; }
     std::vector<Processor*> getDirectSuccessors();
-
-    virtual std::string getClassIdentifier() const {return "org.inviwo.Outport";}
-    virtual std::string getContentInfo() const {return "";}
 
 protected:
     void connectTo(Inport* port);
@@ -86,6 +80,6 @@ private:
     std::vector<Inport*> connectedInports_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_OUTPORT_H
+#endif  // IVW_OUTPORT_H

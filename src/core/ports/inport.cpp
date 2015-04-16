@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/ports/inport.h>
@@ -33,22 +33,16 @@
 
 namespace inviwo {
 
-Inport::Inport(std::string identifier)
-    : Port(identifier), changed_(false)
-{}
+Inport::Inport(std::string identifier) : Port(identifier), changed_(false) {}
 
 Inport::~Inport() {}
 
-bool Inport::isConnected() const { 
-    return false; 
-}
+bool Inport::isConnected() const { return false; }
 
-bool Inport::isReady() const { 
-    return isConnected() && getConnectedOutport()->isValid(); 
-}
+bool Inport::isReady() const { return isConnected() && getConnectedOutport()->isValid(); }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
-    if(processor_) processor_->invalidate(invalidationLevel);
+    if (processor_) processor_->invalidate(invalidationLevel);
 }
 
 std::vector<Processor*> Inport::getPredecessors() {
@@ -67,7 +61,8 @@ void Inport::getPredecessorsUsingPortType(std::vector<Processor*>& predecessorsP
         for (; it != endIt; ++it) {
             Processor* predecessorsProcessor = (*it)->getProcessor();
 
-            if (std::find(predecessorsProcessors.begin(), predecessorsProcessors.end(), predecessorsProcessor)== predecessorsProcessors.end())
+            if (std::find(predecessorsProcessors.begin(), predecessorsProcessors.end(),
+                          predecessorsProcessor) == predecessorsProcessors.end())
                 predecessorsProcessors.push_back(predecessorsProcessor);
 
             std::vector<Inport*> inports = predecessorsProcessor->getInports();
@@ -82,18 +77,14 @@ void Inport::getPredecessorsUsingPortType(std::vector<Processor*>& predecessorsP
     }
 }
 
-void Inport::setChanged(bool changed) { 
-    changed_ = changed; 
-}
+void Inport::setChanged(bool changed) { changed_ = changed; }
 
 void Inport::callOnChangeIfChanged() {
-    if (isChanged()){
+    if (isChanged()) {
         onChangeCallback_.invokeAll();
     }
 }
 
-bool Inport::isChanged(){
-    return changed_;
-}
+bool Inport::isChanged() { return changed_; }
 
-} // namespace
+}  // namespace

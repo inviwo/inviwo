@@ -50,12 +50,12 @@ public:
     Inport(std::string identifier = "");
     virtual ~Inport();
 
-    virtual bool isConnected() const;
-    virtual bool isReady() const;
+    virtual bool isConnected() const override;
+    virtual bool isReady() const override;
 
-    virtual void invalidate(InvalidationLevel invalidationLevel);
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) {};
-    virtual InvalidationLevel getInvalidationLevel() const {return VALID;}
+    virtual void invalidate(InvalidationLevel invalidationLevel) override;
+    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) override {};
+    virtual InvalidationLevel getInvalidationLevel() const override {return VALID;}
 
     virtual bool canConnectTo(Port* port) const { return false; }
     virtual void connectTo(Outport* outport) {};
@@ -65,11 +65,7 @@ public:
 
     virtual Outport* getConnectedOutport() const { return nullptr; }
     virtual std::vector<Outport*> getConnectedOutports() const { return std::vector<Outport*>(); }
-
     std::vector<Processor*> getPredecessors();
-
-    virtual std::string getClassIdentifier() const {return "org.inviwo.Inport";}
-    virtual std::string getContentInfo() const {return "";}
 
     template <typename T>
     void onChange(T* o, void (T::*m)()) const {

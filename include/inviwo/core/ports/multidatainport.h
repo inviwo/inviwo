@@ -84,7 +84,13 @@ public:
     std::vector<const T*> getDataFromPort(Inport*) const;
 
     bool hasData() const;
+    virtual std::string getContentInfo() const;
 };
+
+template < typename T, typename U /*= DataInport<T> */>
+std::string inviwo::MultiDataInport<T, U>::getContentInfo() const {
+    return "";
+}
 
 template < typename T, typename U /*= DataInport<T> */>
 std::string inviwo::MultiDataInport<T, U>::getClassIdentifier() const  {
