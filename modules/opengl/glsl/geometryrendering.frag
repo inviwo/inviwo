@@ -34,6 +34,7 @@ uniform CameraParameters camera_;
 
 in vec4 worldPosition_;
 in vec3 normal_;
+in vec3 texCoord_;
 in vec4 color_;
 
 void main() {
@@ -41,6 +42,13 @@ void main() {
     vec3 toCameraDir_ = camera_.position - worldPosition_.xyz;
     fragColor.rgb = APPLY_LIGHTING(light_, color_.rgb, color_.rgb, vec3(1.0), worldPosition_.xyz,
                                    normalize(normal_), normalize(toCameraDir_));
-
+#ifdef COLOR_LAYER
     FragData0 = fragColor;
+#endif
+#ifdef TEXCOORD_LAYER
+    tex_coord_out = vec4(texCoord_,1.0f);
+#endif
+#ifdef NORMALS_LAYER
+    normals_out = vec4((normalize(normal_)+1.0)*0.5,1.0f);
+#endif
 }

@@ -61,6 +61,10 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     , renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
     , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
     , lightingProperty_("lighting", "Lighting", &camera_)
+    , layers_("layers", "Layers")
+    , colorLayer_("colorLayer", "Color", true, INVALID_RESOURCES)
+    , texCoordLayer_("texCoordLayer_", "Texture Coordinates", false, INVALID_RESOURCES)
+    , normalsLayer_("normalsLayer_", "Normals", false, INVALID_RESOURCES)
 {
     
     addPort(inport_);
@@ -107,6 +111,11 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     addProperty(lightingProperty_);
     addProperty(trackball_);
 
+    addProperty(layers_);
+    layers_.addProperty(colorLayer_);
+    layers_.addProperty(texCoordLayer_);
+    layers_.addProperty(normalsLayer_);
+
     setAllPropertiesCurrentStateAsDefault();
 }
 
@@ -132,6 +141,35 @@ void GeometryRenderProcessorGL::deinitialize() {
 void GeometryRenderProcessorGL::initializeResources() {
     // shading defines
     utilgl::addShaderDefines(shader_, lightingProperty_);
+    int layerID = 0;
+    if (colorLayer_.get()){
+        shader_->getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
+        layerID++;
+    }
+    else{
+        shader_->getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
+    }
+    if (texCoordLayer_.get()){
+        shader_->getFragmentShaderObject()->addShaderDefine("TEXCOORD_LAYER");
+        shader_->getFragmentShaderObject()->addOutDeclaration("tex_coord_out");
+        layerID++;
+    }
+    else{
+        shader_->getFragmentShaderObject()->removeShaderDefine("TEXCOORD_LAYER");
+    }
+    if (normalsLayer_.get()){
+        shader_->getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
+        shader_->getFragmentShaderObject()->addOutDeclaration("normals_out");
+        layerID++;
+    }
+    else{
+        shader_->getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
+    }
+
+    for (size_t i = outport_.getData()->getNumberOfColorLayers(); i < layerID; i++){
+        outport_.getData()->addColorLayer(outport_.getData()->getColorLayer(0)->clone());
+    }
+
     shader_->build();
 }
 

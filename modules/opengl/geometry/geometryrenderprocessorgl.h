@@ -87,6 +87,11 @@ protected:
     FloatProperty renderLineWidth_;
     SimpleLightingProperty lightingProperty_;
 
+    CompositeProperty layers_;
+    BoolProperty colorLayer_;
+    BoolProperty texCoordLayer_;
+    BoolProperty normalsLayer_;
+
     Shader* shader_;
 
     std::vector<GeometryDrawer*> drawers_;
