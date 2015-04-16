@@ -63,8 +63,9 @@ public:
     virtual void initializeResources();
 
 protected:
-    virtual void process();
+    virtual void process(); 
     void centerViewOnGeometry();
+    void setNearFarPlane();
     void resetViewParams();
     void changeRenderMode();
 
@@ -75,6 +76,7 @@ protected:
 
     CameraProperty camera_;
     ButtonProperty centerViewOnGeometry_;
+    ButtonProperty setNearFarPlane_;
     ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
     
