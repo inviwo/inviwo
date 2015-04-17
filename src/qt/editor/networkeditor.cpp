@@ -1175,29 +1175,15 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
 //   SERIALIZATION METHODS   //
 ///////////////////////////////
 void NetworkEditor::clearNetwork() {
-
-    //TODO move to ProecssorNetwork
     InviwoApplication::getPtr()->getProcessorNetwork()->lock();
 
     // We need to clear the portInspectors manually otherwise the pointers in the 
     // PortInspector networks won't be cleared
     PortInspectorMap portInspectors = portInspectors_;
-    for (auto& portInspector : portInspectors) {
-        removePortInspector(portInspector.first);
-    }
-
-    // Invalidate inports to alert processors that they should stop their calculations.
-    std::vector<Processor*> processors =
-        InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
-    for (auto processor : processors) {
-        for (auto& inport : processor->getInports()) inport->invalidate(INVALID_OUTPUT);
-    }
-
+    for (auto& portInspector : portInspectors)  removePortInspector(portInspector.first);
+    
+    InviwoApplication::getPtr()->getProcessorNetwork()->clear();
     ResourceManager::getPtr()->clearAllResources();
-
-    for (auto& processor : processors) {
-        InviwoApplication::getPtr()->getProcessorNetwork()->removeAndDeleteProcessor(processor);
-    }
 
     InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
     setModified(true);

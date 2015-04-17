@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INPORT_H
@@ -38,6 +38,8 @@
 namespace inviwo {
 
 class Outport;
+class ProcessorNetwork;
+class MultiInport;
 
 /**
  * \class Inport
@@ -45,17 +47,18 @@ class Outport;
  * The approved connection can be determined by the canConnectTo function.
  */
 class IVW_CORE_API Inport : public Port {
-
 public:
+    friend class Outport;
+    friend class ProcessorNetwork;
+    friend class MultiInport;
+
     Inport(std::string identifier = "");
     virtual ~Inport();
 
     virtual bool isConnected() const override = 0;
     virtual bool isReady() const override;
 
-    virtual void invalidate(InvalidationLevel invalidationLevel) override;
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) override = 0;
-    virtual InvalidationLevel getInvalidationLevel() const override = 0;
+    virtual InvalidationLevel getInvalidationLevel() const = 0;
 
     virtual bool canConnectTo(Port* port) const = 0;
     virtual void connectTo(Outport* outport) = 0;
@@ -65,17 +68,34 @@ public:
     virtual std::vector<Outport*> getConnectedOutports() const = 0;
     std::vector<Processor*> getPredecessors() const;
 
+    /**
+     * The on change call back is invoked before Processor::process after a port has be connected,
+     * disconnected, or has changed its validation level. Note it is only called if process is also
+     * going to be called.
+     */
     template <typename T>
     void onChange(T* o, void (T::*m)()) const;
     template <typename T>
     void removeOnChange(T* o) const;
 
+    // Called by the processor network.
     void callOnChangeIfChanged() const;
 
     virtual bool isChanged() const;
     virtual void setChanged(bool changed = true);
 
 protected:
+    /**
+     *	Called by Outport::invalidate on its connected inports, which is call by 
+     *	Processor::invalidate. Will by default invalidate its processor.
+     */
+    virtual void invalidate(InvalidationLevel invalidationLevel);
+    /**
+     *	Called by Outport::setValid, which is call by Processor::setValid, which is called after 
+     *	Processor:process
+     */
+    virtual void setValid() = 0;
+
     template <typename T>
     void getPredecessorsUsingPortType(std::vector<Processor*>&) const;
 
@@ -119,6 +139,6 @@ void Inport::getPredecessorsUsingPortType(std::vector<Processor*>& predecessorsP
     }
 }
 
-} // namespace
+}  // namespace
 
-#endif // IVW_INPORT_H
+#endif  // IVW_INPORT_H

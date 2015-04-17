@@ -74,9 +74,9 @@ InvalidationLevel SingleInport::getInvalidationLevel() const{
     return invalidationLevel_;
 }
 
-void SingleInport::setInvalidationLevel(InvalidationLevel invalidationLevel){
-    invalidationLevel_ = invalidationLevel;
-    setChanged(true);
+void SingleInport::setValid() {
+    invalidationLevel_ = VALID;
+    setChanged(true); 
 }
 
 void SingleInport::invalidate(InvalidationLevel invalidationLevel) {

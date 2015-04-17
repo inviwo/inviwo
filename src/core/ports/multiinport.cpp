@@ -78,16 +78,16 @@ InvalidationLevel MultiInport::getInvalidationLevel() const {
     return maxInvalidationLevel;
 }
 
-void MultiInport::setInvalidationLevel(InvalidationLevel invalidationLevel) {
+void MultiInport::setValid() {
     InportVec::iterator it = inports_->begin();
     InportVec::iterator endIt = inports_->end();
     for (; it != endIt; ++it)
-        (*it)->setInvalidationLevel(invalidationLevel);
+        (*it)->setValid();
 
     it = vectorInports_->begin();
     endIt = vectorInports_->end();
     for (; it != endIt; ++it)
-        (*it)->setInvalidationLevel(invalidationLevel);
+        (*it)->setValid();
 
     setChanged();
 }

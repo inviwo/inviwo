@@ -58,9 +58,9 @@ inviwo::InvalidationLevel Outport::getInvalidationLevel() const {
     return invalidationLevel_;
 }
 
-void Outport::setInvalidationLevel(InvalidationLevel invalidationLevel) {
-    invalidationLevel_ = invalidationLevel;
-    for (auto port : connectedInports_) port->setInvalidationLevel(invalidationLevel);
+void Outport::setValid() {
+    invalidationLevel_ = VALID;
+    for (auto port : connectedInports_) port->setValid();
 }
 
 bool Outport::isValid() const {

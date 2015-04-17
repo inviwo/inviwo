@@ -37,7 +37,8 @@
 namespace inviwo {
 
 class Outport;
-
+class ProcessorNetwork;
+class MultiInport;
 /**
  * \class SingleInport
  *
@@ -45,6 +46,10 @@ class Outport;
  */
 class IVW_CORE_API SingleInport : public Inport {
 public:
+    friend class Outport;
+    friend class ProcessorNetwork;
+    friend class MultiInport;
+
     /**
      * @param invalidationLevel Defines the level of invalidation used upon
      * connection/disconnection.
@@ -53,9 +58,7 @@ public:
     SingleInport(std::string identifier);
     virtual ~SingleInport();
 
-    virtual void invalidate(InvalidationLevel invalidationLevel) override;
     virtual InvalidationLevel getInvalidationLevel() const override;
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) override;
 
     virtual void connectTo(Outport* outport) override;
     virtual void disconnectFrom(Outport* outport) override;
@@ -70,6 +73,9 @@ public:
     void onInvalid(T* o, void (T::*m)(), bool add = true);
 
 protected:
+    virtual void invalidate(InvalidationLevel invalidationLevel) override;
+    virtual void setValid() override;
+
     Outport* connectedOutport_;
     InvalidationLevel invalidationLevel_;
 

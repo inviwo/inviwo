@@ -554,10 +554,10 @@ void ProcessorNetwork::clear() {
     //Invalidate inports to alert processors that they should stop their calculations.
     // TODO Check if needed? solve in a nicer way... /Peter
     for (auto processor : processors) {
-        for (auto& inport : processor->getInports()) inport->invalidate(INVALID_OUTPUT);
+        for (auto inport : processor->getInports()) inport->invalidate(INVALID_OUTPUT);
     }
 
-    for (auto& processor : processors) removeAndDeleteProcessor(processor);
+    for (auto processor : processors) removeAndDeleteProcessor(processor);
 
     locked_ = 0; // make sure we remove all locks.
     unlock();

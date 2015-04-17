@@ -149,8 +149,9 @@ public:
     /**
      *	Called by the network after Processor::process has been called.
      *	This will set the following to valid 
-     *	* The prcessos
+     *	* The processor
      *	* All properties
+     *	* All outports and their connected inports.
      */
     virtual void setValid();
 

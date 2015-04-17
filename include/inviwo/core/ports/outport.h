@@ -36,6 +36,7 @@
 
 namespace inviwo {
 
+class Processor;
 class SingleInport;
 class MultiInport;
 class Inport;
@@ -46,6 +47,7 @@ class Inport;
  * \brief The Outport can be connected to an arbitrary number of Inports.
  */
 class IVW_CORE_API Outport : public Port {
+    friend class Processor;
     friend class SingleInport;
     friend class MultiInport;
     friend class ImageInport;
@@ -57,9 +59,7 @@ public:
     virtual bool isConnected() const override;
     virtual bool isReady() const override;
 
-    virtual void invalidate(InvalidationLevel invalidationLevel) override;
-    virtual InvalidationLevel getInvalidationLevel() const override;
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) override;
+    virtual InvalidationLevel getInvalidationLevel() const;
 
     bool isValid() const;
     
@@ -68,6 +68,15 @@ public:
     std::vector<Processor*> getDirectSuccessors() const;
 
 protected:
+    /**
+     *	Called by Processor::invalidate, will invalidate its connected inports.
+     */
+    virtual void invalidate(InvalidationLevel invalidationLevel);
+     /**
+     *	Called by Processor::setValid, will call setValid its connected inports.
+     */
+    virtual void setValid();
+
     void connectTo(Inport* port);
     void disconnectFrom(Inport* port);
 

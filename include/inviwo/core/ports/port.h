@@ -76,10 +76,6 @@ public:
     virtual bool isConnected() const = 0;
     virtual bool isReady() const = 0;
 
-    virtual void invalidate(InvalidationLevel invalidationLevel) = 0;
-    virtual InvalidationLevel getInvalidationLevel() const = 0;
-    virtual void setInvalidationLevel(InvalidationLevel invalidationLevel) = 0;
-
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
 
