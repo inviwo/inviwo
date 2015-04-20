@@ -106,7 +106,7 @@ void MultiInport::setChanged(bool changed /*= true*/) {
     }
 }
 
-bool MultiInport::isChanged() {
+bool MultiInport::isChanged() const {
     InportVec::const_iterator it = inports_->begin();
     InportVec::const_iterator endIt = inports_->end();
 

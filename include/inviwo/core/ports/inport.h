@@ -69,7 +69,7 @@ public:
     std::vector<Processor*> getPredecessors() const;
 
     /**
-     * The on change call back is invoked before Processor::process after a port has be connected,
+     * The on change call back is invoked before Processor::process after a port has been connected,
      * disconnected, or has changed its validation level. Note it is only called if process is also
      * going to be called.
      */
@@ -96,8 +96,8 @@ protected:
      */
     virtual void setValid() = 0;
 
-    template <typename T>
-    void getPredecessorsUsingPortType(std::vector<Processor*>&) const;
+    // recursive implementation of std::vector<Processor*> Inport::getPredecessors() const
+    void getPredecessors(std::vector<Processor*>&) const;
 
     mutable CallBackList onChangeCallback_;
     bool changed_;
@@ -113,31 +113,6 @@ void Inport::removeOnChange(T* o) const {
     onChangeCallback_.removeMemberFunction(o);
 }
 
-template <typename T>
-void Inport::getPredecessorsUsingPortType(std::vector<Processor*>& predecessorsProcessors) const {
-    if (isConnected()) {
-        std::vector<Outport*> connectedOutports = getConnectedOutports();
-        std::vector<Outport*>::const_iterator it = connectedOutports.begin();
-        std::vector<Outport*>::const_iterator endIt = connectedOutports.end();
-
-        for (; it != endIt; ++it) {
-            Processor* predecessorsProcessor = (*it)->getProcessor();
-
-            if (std::find(predecessorsProcessors.begin(), predecessorsProcessors.end(),
-                          predecessorsProcessor) == predecessorsProcessors.end())
-                predecessorsProcessors.push_back(predecessorsProcessor);
-
-            std::vector<Inport*> inports = predecessorsProcessor->getInports();
-
-            for (auto& inport : inports) {
-                T* inPort = dynamic_cast<T*>(inport);
-
-                if (inPort)
-                    inPort->template getPredecessorsUsingPortType<T>(predecessorsProcessors);
-            }
-        }
-    }
-}
 
 }  // namespace
 

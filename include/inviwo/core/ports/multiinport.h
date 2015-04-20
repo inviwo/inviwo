@@ -51,16 +51,15 @@ public:
     MultiInport(std::string identifier);
     virtual ~MultiInport();
 
-    virtual void invalidate(InvalidationLevel invalidationLevel);
-
+    
     bool isConnected() const { return !inports_->empty() || !vectorInports_->empty(); }
 
     bool isConnectedTo(Outport* outport) const;
 
-    virtual InvalidationLevel getInvalidationLevel() const;
-    virtual void setValid() override;
-    virtual void setChanged(bool changed = true);
-    virtual bool isChanged();
+    virtual InvalidationLevel getInvalidationLevel() const override;
+
+    virtual void setChanged(bool changed = true) override;
+    virtual bool isChanged() const override;
 
     std::vector<Inport*> getInports() const;
 
@@ -72,6 +71,9 @@ public:
 
 protected:
 
+    virtual void invalidate(InvalidationLevel invalidationLevel) override;
+    virtual void setValid() override;
+ 
     /**
      * Derived classes of Port will not have access to Port::setProcessor.
      * To make it simple and avoid template nightmares

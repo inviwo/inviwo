@@ -68,9 +68,22 @@ bool Outport::isValid() const {
 }
 
 std::vector<Processor*> Outport::getDirectSuccessors() const {
-    std::vector<Processor*> successorProcessors;
-    getSuccessorsUsingPortType<Outport>(successorProcessors);
-    return successorProcessors;
+    std::vector<Processor*> successors;
+    getSuccessors(successors);
+    return successors;
+}
+
+void Outport::getSuccessors(std::vector<Processor*>& successors) const {
+    for (auto inport : connectedInports_) {
+        Processor* p = inport->getProcessor();
+
+        if (std::find(successors.begin(), successors.end(), p) == successors.end()) {
+            successors.push_back(p);
+            for (auto outport : p->getOutports()) {
+                outport->getSuccessors(successors);
+            }
+        }
+    }
 }
 
 // Is called exclusively by Inport, which means a connection has been made.

@@ -30,6 +30,7 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -44,9 +45,22 @@ void Inport::invalidate(InvalidationLevel invalidationLevel) {
 }
 
 std::vector<Processor*> Inport::getPredecessors() const {
-    std::vector<Processor*> predecessorsProcessors;
-    getPredecessorsUsingPortType<Inport>(predecessorsProcessors);
-    return predecessorsProcessors;
+    std::vector<Processor*> predecessors;
+    getPredecessors(predecessors);
+    return predecessors;
+}
+
+void Inport::getPredecessors(std::vector<Processor*>& predecessors) const {
+    for (auto outport : getConnectedOutports()) {
+        Processor* p = outport->getProcessor();
+
+        if (std::find(predecessors.begin(), predecessors.end(), p) == predecessors.end()) {
+            predecessors.push_back(p);
+            for (auto inport : p->getInports()) {
+                inport->getPredecessors(predecessors);
+            }
+        }
+    }
 }
 
 void Inport::setChanged(bool changed) { changed_ = changed; }

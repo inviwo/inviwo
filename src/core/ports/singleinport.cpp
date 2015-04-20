@@ -67,7 +67,10 @@ Outport* SingleInport::getConnectedOutport() const  {
 }
 
 std::vector<Outport*> SingleInport::getConnectedOutports() const  {
-    return std::vector<Outport*>(1, connectedOutport_);
+    if ( connectedOutport_ )
+        return std::vector<Outport*>(1, connectedOutport_);
+    else
+        return std::vector<Outport*>();
 }
 
 InvalidationLevel SingleInport::getInvalidationLevel() const{

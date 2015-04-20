@@ -34,12 +34,13 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/port.h>
 
+#include <inviwo/core/processors/processor.h>
+
 namespace inviwo {
 
-class Processor;
+class Inport;
 class SingleInport;
 class MultiInport;
-class Inport;
 
 /**
  * \class Outport
@@ -80,32 +81,14 @@ protected:
     void connectTo(Inport* port);
     void disconnectFrom(Inport* port);
 
-    template <typename T>
-    void getSuccessorsUsingPortType(std::vector<Processor*>&) const;
+    // recursive implementation of std::vector<Processor*> getDirectSuccessors() const;
+    void getSuccessors(std::vector<Processor*>&) const;
 
     InvalidationLevel invalidationLevel_;
 private:
     std::vector<Inport*> connectedInports_;
 };
 
-template <typename T>
-void Outport::getSuccessorsUsingPortType(std::vector<Processor*>& successorProcessors) const {
-    for (auto& elem : connectedInports_) {
-        Processor* decendantProcessor = elem->getProcessor();
-
-        if (std::find(successorProcessors.begin(), successorProcessors.end(), decendantProcessor) ==
-            successorProcessors.end())
-            successorProcessors.push_back(elem->getProcessor());
-
-        std::vector<Outport*> outports = decendantProcessor->getOutports();
-
-        for (auto& outport : outports) {
-            T* outPort = dynamic_cast<T*>(outport);
-
-            if (outPort) outPort->template getSuccessorsUsingPortType<T>(successorProcessors);
-        }
-    }
-}
 
 }  // namespace
 
