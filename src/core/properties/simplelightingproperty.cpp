@@ -41,15 +41,15 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , shadingMode_("shadingMode", "Shading", INVALID_RESOURCES)
     , referenceFrame_("referenceFrame", "Space")
-    , lightPosition_("lightPosition", "Position", vec3(0.0f, 0.7071f, 0.7071f), vec3(-10, -10, -10),
+    , lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10),
     vec3(10, 10, 10))
     , lightAttenuation_("lightAttenuation", "Attenuation", vec3(1.0f, 0.0f, 0.0f))
     , applyLightAttenuation_("applyLightAttenuation", "Enable Light Attenuation", false)
 
-    , ambientColor_("lightColorAmbient", "Ambient color", vec3(1.0f))
-    , diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(1.f))
-    , specularColor_("lightColorSpecular", "Specular color", vec3(1.f))
-    , specularExponent_("materialShininess", "Shininess", 110.0f, 1.0f, 180.0f)
+    , ambientColor_("lightColorAmbient", "Ambient color", vec3(0.15f))
+    , diffuseColor_("lightColorDiffuse", "Diffuse color", vec3(0.6f))
+    , specularColor_("lightColorSpecular", "Specular color", vec3(0.4f))
+    , specularExponent_("materialShininess", "Shininess", 60.0f, 1.0f, 180.0f)
     , camera_(camera) {
 
     shadingMode_.addOption("none", "No Shading", ShadingMode::None);
