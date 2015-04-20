@@ -136,6 +136,7 @@ void Shader::deinitialize() {
         detachShaderObject(elem.second);
         delete elem.second;
     }
+    shaderObjects_.clear();
     
     glDeleteProgram(id_);
     LGL_ERROR;
