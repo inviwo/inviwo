@@ -39,22 +39,22 @@ class EditableLabelQt;
 class TransferFunctionPropertyDialog;
 class TransferFunctionProperty;
 
+class TFPushButton;
+
 class IVW_QTWIDGETS_API TransferFunctionPropertyWidgetQt : public PropertyWidgetQt {
     Q_OBJECT
 
 public:
     TransferFunctionPropertyWidgetQt(TransferFunctionProperty* property);
-    ~TransferFunctionPropertyWidgetQt();
+    virtual ~TransferFunctionPropertyWidgetQt();
 
     void updateFromProperty();
 
 private:
     EditableLabelQt* label_;
-    IvwPushButton* btnOpenTF_;
+    TFPushButton* btnOpenTF_;
     TransferFunctionPropertyDialog* transferFunctionDialog_;
-
-    virtual void resizeEvent(QResizeEvent * event);
-
+    
     void generateWidget();
 
 public slots:
@@ -62,6 +62,25 @@ public slots:
     void openTransferFunctionDialog();
     void setPropertyDisplayName();
 };
+
+
+
+class IVW_QTWIDGETS_API TFPushButton : public IvwPushButton {
+    Q_OBJECT
+public:
+    TFPushButton(Property *property, TransferFunctionPropertyDialog *tfDialog, QWidget *parent=nullptr);
+    virtual ~TFPushButton() {}
+    void updateFromProperty();
+
+private:
+    void resizeEvent(QResizeEvent * event) override;
+
+    TransferFunctionProperty *tfProperty_;
+    TransferFunctionPropertyDialog *tfDialog_;
+};
+
+
+
 
 }//namespace
 
