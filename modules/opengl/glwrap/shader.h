@@ -51,13 +51,15 @@ public:
     Shader(const char *vertexFilename, const char *geometryFilename, const char *fragmentFilename,
            bool linkShader = true);
 
-    Shader(const Shader& rhs);
+    Shader(const Shader& rhs, bool linkShader = true);
     Shader& operator=(const Shader& that);
 
     // Takes ownership of shader objects in vector
     Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader = true);
 
     virtual ~Shader();
+
+    Shader* clone(bool linkShader = true);
 
     void link();
     void build();

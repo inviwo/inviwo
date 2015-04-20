@@ -47,9 +47,9 @@ ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compile
     initialize(compileShader);
 }
 
-ShaderObject::ShaderObject(const ShaderObject& rhs)
+ShaderObject::ShaderObject(const ShaderObject& rhs, bool compileShader)
     : shaderType_(rhs.shaderType_), fileName_(rhs.fileName_), id_(glCreateShader(rhs.shaderType_)) {
-    initialize(true);
+    initialize(compileShader);
 }
 
 ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
@@ -66,6 +66,10 @@ ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
 
 ShaderObject::~ShaderObject() {
     glDeleteShader(id_);
+}
+
+ShaderObject* ShaderObject::clone(bool compileShader) {
+    return new ShaderObject(*this, compileShader);
 }
 
 void ShaderObject::initialize(bool compileShader) {

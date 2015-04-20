@@ -40,10 +40,12 @@ class IVW_MODULE_OPENGL_API ShaderObject {
 
 public:
     ShaderObject(GLenum shaderType, std::string fileName, bool compileShader=true);
-    ShaderObject(const ShaderObject& rhs);
+    ShaderObject(const ShaderObject& rhs, bool compileShader=true);
     ShaderObject& operator=(const ShaderObject& that);
     
     ~ShaderObject();
+
+    ShaderObject* clone(bool compileShader=true);
 
     GLuint getID() { return id_; }
     std::string getFileName() { return fileName_; }

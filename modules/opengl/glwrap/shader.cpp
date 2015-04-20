@@ -95,20 +95,25 @@ Shader::Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader) {
     linkAndRegister(linkShader);
 }
 
-Shader::Shader(const Shader& rhs) {
+Shader::Shader(const Shader& rhs, bool linkShader) {
     initialize();
 
-    shaderObjects_ = rhs.shaderObjects_;
-    
+    for (auto &it : rhs.shaderObjects_) {
+        this->shaderObjects_[it.first] = it.second->clone(false);
+    }
+
     attachAllShaderObjects();
-    linkAndRegister(true);
+    linkAndRegister(linkShader);
 }
+
 Shader& Shader::operator=(const Shader& that) {
     if (this != &that) {
         deinitialize();
         initialize();
         
-        shaderObjects_ = that.shaderObjects_;
+        for (auto &it : that.shaderObjects_) {
+            this->shaderObjects_[it.first] = it.second->clone(false);
+        }
     
         attachAllShaderObjects();
         linkAndRegister(true);
@@ -117,6 +122,10 @@ Shader& Shader::operator=(const Shader& that) {
 }
 
 Shader::~Shader() { deinitialize(); }
+
+Shader* Shader::clone(bool linkShader) {
+    return new Shader(*this, linkShader);
+}
 
 void Shader::initialize() {
     id_ = glCreateProgram();
@@ -136,6 +145,7 @@ void Shader::deinitialize() {
         detachShaderObject(elem.second);
         delete elem.second;
     }
+    shaderObjects_.clear();
     
     glDeleteProgram(id_);
     LGL_ERROR;
