@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "imagemixer.h"
@@ -48,10 +48,11 @@ ImageMixer::ImageMixer()
     , blendingMode_("blendMode", "Blend Mode", INVALID_RESOURCES)
     , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
     , shader_(nullptr) {
+    
     addPort(inport0_);
     addPort(inport1_);
     addPort(outport_);
-    
+
     blendingMode_.addOption("mix", "Mix", BlendModes::Mix);
     blendingMode_.addOption("over", "Over", BlendModes::Over);
     blendingMode_.addOption("multiply", "Multiply", BlendModes::Multiply);
@@ -66,14 +67,12 @@ ImageMixer::ImageMixer()
     blendingMode_.addOption("brightenonly", "BrightenOnly", BlendModes::BrightenOnly);
     blendingMode_.setSelectedValue(BlendModes::Mix);
     blendingMode_.setCurrentStateAsDefault();
-    
+
     addProperty(blendingMode_);
     addProperty(weight_);
 }
 
-ImageMixer::~ImageMixer() {
-}
-
+ImageMixer::~ImageMixer() {}
 
 void ImageMixer::initialize() {
     Processor::initialize();
@@ -87,18 +86,18 @@ void ImageMixer::deinitialize() {
 }
 
 void ImageMixer::process() {
-    if (inport0_.getInvalidationLevel() >= INVALID_OUTPUT) {
+    if (inport0_.isChanged()) {
         const DataFormatBase* format = inport0_.getData()->getDataFormat();
         uvec2 dimensions = inport0_.getData()->getDimensions();
-        if (!outport_.hasData() || format != outport_.getData()->getDataFormat()
-            || dimensions != outport_.getData()->getDimensions()){
-            Image *img = new Image(dimensions, format);
+        if (!outport_.hasData() || format != outport_.getData()->getDataFormat() ||
+            dimensions != outport_.getData()->getDimensions()) {
+            Image* img = new Image(dimensions, format);
             img->copyMetaDataFrom(*inport0_.getData());
             outport_.setData(img);
         }
     }
 
-    TextureUnit imgUnit0, imgUnit1;    
+    TextureUnit imgUnit0, imgUnit1;
     utilgl::bindColorTexture(inport0_, imgUnit0);
     utilgl::bindColorTexture(inport1_, imgUnit1);
 
@@ -120,48 +119,48 @@ void ImageMixer::initializeResources() {
     std::string compositingKey = "COLOR_BLENDING(colorA, colorB)";
     std::string compositingValue = "";
 
-    switch(blendingMode_.get()) {
-    case BlendModes::Over: //<! f(a,b) = b, b over a, regular front-to-back blending
-        compositingValue = "over(colorA, colorB)";
-        break;
-    case BlendModes::Multiply: //!< f(a,b) = a * b
-        compositingValue = "multiply(colorA, colorB)";
-        break;
-    case BlendModes::Screen: //!< f(a,b) = 1 - (1 - a) * (1 - b)
-        compositingValue = "screen(colorA, colorB)";
-        break;
-    case BlendModes::Overlay: //!< f(a,b) = 2 * a *b, if a < 0.5,   f(a,b) = 1 - 2(1 - a)(1 - b), otherwise (combination of Multiply and Screen)
-        compositingValue = "overlay(colorA, colorB)";
-        break;
-    case BlendModes::HardLight: //!< Overlay where a and b are swapped
-        compositingValue = "overlay(colorB, colorA)";
-        break;
-    case BlendModes::Divide: //!< f(a,b) = a/b
-        compositingValue = "divide(colorA, colorB)";
-        break;
-    case BlendModes::Addition: //!< f(a,b) = a + b, clamped to [0,1]
-        compositingValue = "addition(colorA, colorB)";
-        break;
-    case BlendModes::Subtraction: //!< f(a,b) = a - b, clamped to [0,1]
-        compositingValue = "subtraction(colorA, colorB)";
-        break;
-    case BlendModes::Difference: //!< f(a,b) = |a - b|
-        compositingValue = "difference(colorA, colorB)";
-        break;
-    case BlendModes::DarkenOnly: //!< f(a,b) = min(a, b), per component
-        compositingValue = "darkenOnly(colorA, colorB)";
-        break;
-    case BlendModes::BrightenOnly: //!< f(a,b) = max(a, b), per component
-        compositingValue = "brightenOnly(colorA, colorB)";
-        break;
-    case BlendModes::Mix: //!< f(a,b) = a * (1 - alpha) + b * alpha
-    default:
-        compositingValue = "colorB";
-        break;
+    switch (blendingMode_.get()) {
+        case BlendModes::Over:  //<! f(a,b) = b, b over a, regular front-to-back blending
+            compositingValue = "over(colorA, colorB)";
+            break;
+        case BlendModes::Multiply:  //!< f(a,b) = a * b
+            compositingValue = "multiply(colorA, colorB)";
+            break;
+        case BlendModes::Screen:  //!< f(a,b) = 1 - (1 - a) * (1 - b)
+            compositingValue = "screen(colorA, colorB)";
+            break;
+        case BlendModes::Overlay:  //!< f(a,b) = 2 * a *b, if a < 0.5,   f(a,b) = 1 - 2(1 - a)(1 -
+                                   //b), otherwise (combination of Multiply and Screen)
+            compositingValue = "overlay(colorA, colorB)";
+            break;
+        case BlendModes::HardLight:  //!< Overlay where a and b are swapped
+            compositingValue = "overlay(colorB, colorA)";
+            break;
+        case BlendModes::Divide:  //!< f(a,b) = a/b
+            compositingValue = "divide(colorA, colorB)";
+            break;
+        case BlendModes::Addition:  //!< f(a,b) = a + b, clamped to [0,1]
+            compositingValue = "addition(colorA, colorB)";
+            break;
+        case BlendModes::Subtraction:  //!< f(a,b) = a - b, clamped to [0,1]
+            compositingValue = "subtraction(colorA, colorB)";
+            break;
+        case BlendModes::Difference:  //!< f(a,b) = |a - b|
+            compositingValue = "difference(colorA, colorB)";
+            break;
+        case BlendModes::DarkenOnly:  //!< f(a,b) = min(a, b), per component
+            compositingValue = "darkenOnly(colorA, colorB)";
+            break;
+        case BlendModes::BrightenOnly:  //!< f(a,b) = max(a, b), per component
+            compositingValue = "brightenOnly(colorA, colorB)";
+            break;
+        case BlendModes::Mix:  //!< f(a,b) = a * (1 - alpha) + b * alpha
+        default:
+            compositingValue = "colorB";
+            break;
     }
 
-    if (!shader_)
-        return;
+    if (!shader_) return;
 
     shader_->getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
     shader_->build();

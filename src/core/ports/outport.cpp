@@ -63,10 +63,6 @@ void Outport::setValid() {
     for (auto port : connectedInports_) port->setValid();
 }
 
-bool Outport::isValid() const {
-    return (getInvalidationLevel() == VALID);
-}
-
 std::vector<Processor*> Outport::getDirectSuccessors() const {
     std::vector<Processor*> successors;
     getSuccessors(successors);

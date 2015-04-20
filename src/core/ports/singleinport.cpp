@@ -73,17 +73,13 @@ std::vector<Outport*> SingleInport::getConnectedOutports() const  {
         return std::vector<Outport*>();
 }
 
-InvalidationLevel SingleInport::getInvalidationLevel() const{
-    return invalidationLevel_;
-}
-
 void SingleInport::setValid() {
     invalidationLevel_ = VALID;
     setChanged(true); 
 }
 
 void SingleInport::invalidate(InvalidationLevel invalidationLevel) {
-    if(getInvalidationLevel() == VALID && invalidationLevel >= INVALID_OUTPUT)
+    if(invalidationLevel_ == VALID && invalidationLevel >= INVALID_OUTPUT)
         onInvalidCallback_.invokeAll();
     invalidationLevel_ = std::max(invalidationLevel_, invalidationLevel);
     Inport::invalidate(invalidationLevel);

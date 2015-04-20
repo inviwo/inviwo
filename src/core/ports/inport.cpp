@@ -38,7 +38,9 @@ Inport::Inport(std::string identifier) : Port(identifier), changed_(false) {}
 
 Inport::~Inport() {}
 
-bool Inport::isReady() const { return isConnected() && getConnectedOutport()->isValid(); }
+bool Inport::isReady() const {
+    return isConnected() && getConnectedOutport()->getInvalidationLevel() == VALID;
+}
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
     if (processor_) processor_->invalidate(invalidationLevel);
@@ -69,6 +71,10 @@ void Inport::callOnChangeIfChanged() const {
     if (isChanged()) {
         onChangeCallback_.invokeAll();
     }
+}
+
+void Inport::onChange(std::function<void()> lambda) const {
+    onChangeCallback_.addLambdaCallback(lambda);
 }
 
 bool Inport::isChanged() const { return changed_; }

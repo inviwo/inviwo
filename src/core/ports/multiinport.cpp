@@ -62,22 +62,6 @@ MultiInport::~MultiInport() {
     vectorInports_ = nullptr;
 }
 
-InvalidationLevel MultiInport::getInvalidationLevel() const {
-    InportVec::const_iterator it = inports_->begin();
-    InportVec::const_iterator endIt = inports_->end();
-    InvalidationLevel maxInvalidationLevel(VALID);
-
-    for (; it != endIt; ++it)
-        maxInvalidationLevel = std::max(maxInvalidationLevel, (*it)->getInvalidationLevel());
-
-    it = vectorInports_->begin();
-    endIt = vectorInports_->end();
-    for (; it != endIt; ++it)
-        maxInvalidationLevel = std::max(maxInvalidationLevel, (*it)->getInvalidationLevel());
-
-    return maxInvalidationLevel;
-}
-
 void MultiInport::setValid() {
     InportVec::iterator it = inports_->begin();
     InportVec::iterator endIt = inports_->end();

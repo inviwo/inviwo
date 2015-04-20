@@ -57,12 +57,13 @@ public:
 
     virtual bool isConnected() const override = 0;
     virtual bool isReady() const override;
+    virtual bool isChanged() const;
 
-    virtual InvalidationLevel getInvalidationLevel() const = 0;
-
+    // Called from the processornetwork to create connections.
     virtual bool canConnectTo(Port* port) const = 0;
     virtual void connectTo(Outport* outport) = 0;
     virtual void disconnectFrom(Outport* outport) = 0;
+    
     virtual bool isConnectedTo(Outport* outport) const = 0;
     virtual Outport* getConnectedOutport() const = 0;
     virtual std::vector<Outport*> getConnectedOutports() const = 0;
@@ -75,24 +76,26 @@ public:
      */
     template <typename T>
     void onChange(T* o, void (T::*m)()) const;
+    void onChange(std::function<void()> lambda) const;
+    
     template <typename T>
     void removeOnChange(T* o) const;
 
     // Called by the processor network.
     void callOnChangeIfChanged() const;
 
-    virtual bool isChanged() const;
+    // Usually called by the processor.
     virtual void setChanged(bool changed = true);
 
 protected:
     /**
      *	Called by Outport::invalidate on its connected inports, which is call by 
-     *	Processor::invalidate. Will by default invalidate its processor.
+     *	Processor::invalidate. Will by default invalidate its processor. From above in the network.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
     /**
      *	Called by Outport::setValid, which is call by Processor::setValid, which is called after 
-     *	Processor:process
+     *	Processor:process. From above in the network.
      */
     virtual void setValid() = 0;
 

@@ -152,6 +152,7 @@ public:
      *	* The processor
      *	* All properties
      *	* All outports and their connected inports.
+     * It will also set is't inports "changed" to false.
      */
     virtual void setValid();
 

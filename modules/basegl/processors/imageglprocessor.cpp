@@ -65,7 +65,7 @@ void ImageGLProcessor::deinitialize() {
 }
 
 void ImageGLProcessor::process() {
-    if (internalInvalid_ || inport_.getInvalidationLevel() >= INVALID_OUTPUT) {
+    if (internalInvalid_) {
         internalInvalid_ = false;
         const DataFormatBase* format = inport_.getData()->getDataFormat();
         uvec2 dimensions;

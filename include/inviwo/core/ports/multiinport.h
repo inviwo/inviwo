@@ -56,8 +56,6 @@ public:
 
     bool isConnectedTo(Outport* outport) const;
 
-    virtual InvalidationLevel getInvalidationLevel() const override;
-
     virtual void setChanged(bool changed = true) override;
     virtual bool isChanged() const override;
 

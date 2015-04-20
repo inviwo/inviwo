@@ -61,10 +61,9 @@ public:
     virtual bool isReady() const override;
 
     virtual InvalidationLevel getInvalidationLevel() const;
-
-    bool isValid() const;
     
     bool isConnectedTo(Inport* port) const;
+    
     std::vector<Inport*> getConnectedInports() const;
     std::vector<Processor*> getDirectSuccessors() const;
 

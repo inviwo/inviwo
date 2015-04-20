@@ -50,16 +50,10 @@ public:
     friend class ProcessorNetwork;
     friend class MultiInport;
 
-    /**
-     * @param invalidationLevel Defines the level of invalidation used upon
-     * connection/disconnection.
-     * @see Processor::addPort(), InvalidationLevel
-     */
     SingleInport(std::string identifier);
     virtual ~SingleInport();
 
-    virtual InvalidationLevel getInvalidationLevel() const override;
-
+    // Called from the processornetwork to create connections.
     virtual void connectTo(Outport* outport) override;
     virtual void disconnectFrom(Outport* outport) override;
 
@@ -77,8 +71,9 @@ protected:
     virtual void setValid() override;
 
     Outport* connectedOutport_;
+    
+private:
     InvalidationLevel invalidationLevel_;
-
     CallBackList onInvalidCallback_;
 };
 
