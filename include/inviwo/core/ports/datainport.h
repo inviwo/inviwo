@@ -32,7 +32,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/ports/singleinport.h>
+#include <inviwo/core/ports/inport.h>
 #include <inviwo/core/datastructures/data.h>
 
 namespace inviwo {
@@ -41,7 +41,7 @@ template<typename T>
 class DataOutport;
 
 template<typename T>
-class DataInport : public SingleInport {
+class DataInport : public Inport {
 public:
     DataInport(std::string identifier);
     virtual ~DataInport();
@@ -65,7 +65,7 @@ std::string inviwo::DataInport<T>::getClassIdentifier() const  {
 
 template <typename T>
 DataInport<T>::DataInport(std::string identifier)
-    : SingleInport(identifier) {
+    : Inport(identifier) {
 }
 
 template <typename T>
@@ -88,18 +88,18 @@ void DataInport<T>::connectTo(Outport* port) {
     ivwAssert(dataPort!=nullptr, "Trying to connect incompatible ports.")
 
     if (dataPort != nullptr)
-        SingleInport::connectTo(port);
+        Inport::connectTo(port);
     else
         LogWarn("Trying to connect incompatible ports.");
 }
 template <typename T>
-bool DataInport<T>::isReady() const { return SingleInport::isReady() && hasData(); }
+bool DataInport<T>::isReady() const { return Inport::isReady() && hasData(); }
 
 template <typename T>
 const T* DataInport<T>::getData() const {
     if (isConnected()) {
         // Safe to static cast since we are unable to connect other outport types.
-        return static_cast< DataOutport<T>* >(connectedOutport_)->getConstData();
+        return static_cast< DataOutport<T>* >(getConnectedOutport())->getConstData();
     } else
         return nullptr;
 }
@@ -108,7 +108,7 @@ template <typename T>
 bool DataInport<T>::hasData() const {
     if (isConnected()) {
         // Safe to static cast since we are unable to connect other outport types.
-        return static_cast< DataOutport<T>* >(connectedOutport_)->hasData();
+        return static_cast< DataOutport<T>* >(getConnectedOutport())->hasData();
     } else {
         return false;
     }

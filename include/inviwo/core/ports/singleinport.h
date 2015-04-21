@@ -51,21 +51,7 @@ public:
     friend class MultiInport;
 
     SingleInport(std::string identifier);
-    virtual ~SingleInport();
-
-    // Called from the processor network to create connections.
-    virtual void connectTo(Outport* outport) override;
-    virtual void disconnectFrom(Outport* outport) override;
-
-    virtual bool isConnected() const override;
-    bool isConnectedTo(Outport* outport) const override;
-
-    Outport* getConnectedOutport() const override;
-    std::vector<Outport*> getConnectedOutports() const override;
-
-protected:
-    Outport* connectedOutport_;
-    
+    virtual ~SingleInport();    
 };
 
 }  // namespace

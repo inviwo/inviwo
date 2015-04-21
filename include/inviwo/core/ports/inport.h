@@ -55,18 +55,18 @@ public:
     Inport(std::string identifier = "");
     virtual ~Inport();
 
-    virtual bool isConnected() const override = 0;
+    virtual bool isConnected() const override;
     virtual bool isReady() const override;
     virtual bool isChanged() const;
 
     // Called from the processor network to create connections.
     virtual bool canConnectTo(Port* port) const = 0;
-    virtual void connectTo(Outport* outport) = 0;
-    virtual void disconnectFrom(Outport* outport) = 0;
+    virtual void connectTo(Outport* outport);
+    virtual void disconnectFrom(Outport* outport);
 
-    virtual bool isConnectedTo(Outport* outport) const = 0;
-    virtual Outport* getConnectedOutport() const = 0;
-    virtual std::vector<Outport*> getConnectedOutports() const = 0;
+    virtual bool isConnectedTo(Outport* outport) const;
+    virtual Outport* getConnectedOutport() const;
+    virtual std::vector<Outport*> getConnectedOutports() const;
     std::vector<Processor*> getPredecessors() const;
 
     /**
@@ -115,6 +115,7 @@ protected:
     // recursive implementation of std::vector<Processor*> Inport::getPredecessors() const
     void getPredecessors(std::vector<Processor*>&) const;
 
+    std::vector<Outport*> connectedOutports_;
     mutable CallBackList onChangeCallback_;
     mutable CallBackList onInvalidCallback_;
     InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.

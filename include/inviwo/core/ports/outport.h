@@ -49,6 +49,7 @@ class MultiInport;
  */
 class IVW_CORE_API Outport : public Port {
     friend class Processor;
+    friend class Inport;
     friend class SingleInport;
     friend class MultiInport;
     friend class ImageInport;

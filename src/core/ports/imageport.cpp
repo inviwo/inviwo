@@ -44,9 +44,6 @@ ImageInport::ImageInport(std::string identifier, bool outportDeterminesSize)
 ImageInport::~ImageInport() {}
 
 void ImageInport::connectTo(Outport* outport) {
-    connectedOutport_ = outport;
-    outport->connectTo(this);
-
     ImageOutport* connectedImageOutport = dynamic_cast<ImageOutport*>(outport);
     uvec2 dim;
     if (isOutportDeterminingSize() && isConnected()) {
@@ -77,7 +74,7 @@ void ImageInport::connectTo(Outport* outport) {
         }
     }
 
-    invalidate(INVALID_OUTPUT);
+    DataInport<Image>::connectTo(outport);
 }
 
 void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {

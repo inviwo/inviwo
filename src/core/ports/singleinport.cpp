@@ -34,42 +34,8 @@
 namespace inviwo {
 
 SingleInport::SingleInport(std::string identifier)
-    : Inport(identifier), connectedOutport_(nullptr) {}
+    : Inport(identifier) {}
 
 SingleInport::~SingleInport() {}
-
-//Inport should determine if we can connect to the outport
-void SingleInport::connectTo(Outport* outport) {
-    connectedOutport_ = outport;
-    outport->connectTo(this);
-    setChanged(true);
-    invalidate(INVALID_OUTPUT);
-}
-
-void SingleInport::disconnectFrom(Outport* outport) {
-    if (outport == connectedOutport_) {
-        connectedOutport_ = nullptr;
-        outport->disconnectFrom(this);
-        setChanged(true);
-        invalidate(INVALID_OUTPUT);
-    }
-}
-
-bool SingleInport::isConnected() const { return (connectedOutport_ != nullptr); }
-
-bool SingleInport::isConnectedTo(Outport* outport) const {
-    return connectedOutport_==outport;
-}
-
-Outport* SingleInport::getConnectedOutport() const  {
-    return connectedOutport_;
-}
-
-std::vector<Outport*> SingleInport::getConnectedOutports() const  {
-    if ( connectedOutport_ )
-        return std::vector<Outport*>(1, connectedOutport_);
-    else
-        return std::vector<Outport*>();
-}
 
 } // namespace
