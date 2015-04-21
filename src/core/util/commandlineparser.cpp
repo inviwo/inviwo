@@ -65,9 +65,9 @@ try : argc_(argc)
         "Pass this flag if you do not want to show a splash screen.")
 {
     cmd_.add(workspaceValueArg_);
-#if defined(IVW_PYTHON_AVAILABLE)
+//#if defined(IVW_PYTHON_AVAILABLE)
     cmd_.add(pythonScriptArg_);
-#endif
+//#endif
     cmd_.add(outputValueArg_);
     cmd_.add(snapshotArg_);
     cmd_.add(screenGrabArg_);
