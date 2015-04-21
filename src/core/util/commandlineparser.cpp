@@ -99,7 +99,9 @@ void CommandLineParser::initialize() {
         noSplashScreenArg_ = new TCLAP::SwitchArg("n", "nosplash",
                 "Pass this flag if you do not want to show a splash screen.");
         cmd_->add(*workspaceValueArg_);
+#if defined(IVW_PYTHON_AVAILABLE)
         cmd_->add(*pythonScriptArg_);
+#endif
         cmd_->add(*outputValueArg_);
         cmd_->add(*snapshotArg_);
         cmd_->add(*screenGrabArg_);
