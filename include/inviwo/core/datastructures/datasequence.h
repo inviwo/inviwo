@@ -64,22 +64,26 @@ protected:
 
 template <typename T>
 std::string inviwo::DataSequence<T>::getDataInfo() const {
-
     std::stringstream ss;
-    ss << "<table border='0' cellspacing='0' cellpadding='0' style='border-color:white;white-space:pre;'>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Type</td><td><nobr>Data Sequence</nobr></td></tr>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Size</td><td><nobr>" << sequenceContainer_.size() << "</nobr></td></tr>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Current</td><td><nobr>" << currentIdx_ << "</nobr></td></tr>\n"
-        << "</table>\n"
-        << "<br/>\n"
-        << "<b>Element</b>\n";
+    ss << "<table border='0' cellspacing='0' cellpadding='0' "
+          "style='border-color:white;white-space:pre;'>\n"
+       << "<tr><td style='color:#bbb;padding-right:8px;'>Type</td><td><nobr>Data "
+          "Sequence</nobr></td></tr>\n"
+       << "<tr><td style='color:#bbb;padding-right:8px;'>Size</td><td><nobr>"
+       << sequenceContainer_.size() << "</nobr></td></tr>\n"
+       << "<tr><td style='color:#bbb;padding-right:8px;'>Current</td><td><nobr>" << currentIdx_
+       << "</nobr></td></tr>\n"
+       << "</table>\n"
+       << "<br/>\n"
+       << "<b>Element</b>\n";
 
-    const BaseData* data = dynamic_cast<const BaseData*>(sequenceContainer_[currentIdx_]);
-    if (data) {
-        ss << data->getDataInfo();
+    std::string info = port_traits<T>::data_info(sequenceContainer_[currentIdx_]);
+    if (!info.empty()) {
+        ss << info;
     } else {
-        ss << "Not a BaseData Object";
+        ss << "No information available for: " + util::class_identifier<T>();
     }
+
     return ss.str();
 }
 

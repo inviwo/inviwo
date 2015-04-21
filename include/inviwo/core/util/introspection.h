@@ -90,6 +90,8 @@ class has_data_info {
     template <typename T>
     static auto check(int) ->
         typename std::is_same<decltype(std::declval<T>().getDataInfo()), std::string>::type;
+
+    template <typename T>
     static std::false_type check(...);
 public:
     static const bool value = decltype(check<C>(0))::value;
