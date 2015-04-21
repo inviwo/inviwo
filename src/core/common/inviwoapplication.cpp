@@ -73,7 +73,6 @@ InviwoApplication::InviwoApplication(int argc, char** argv,
     : displayName_(displayName)
     , basePath_(basePath) {
     commandLineParser_ = new CommandLineParser(argc, argv);
-    commandLineParser_->initialize();
     commandLineParser_->parse();
     if (commandLineParser_->getLogToFile()){
         LogCentral::getPtr()->registerLogger(new FileLogger(commandLineParser_->getLogToFileFileName()));

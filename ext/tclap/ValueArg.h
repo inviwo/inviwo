@@ -221,6 +221,7 @@ class ValueArg : public Arg
          * Returns the value of the argument.
          */
         T& getValue() ;
+        const T& getValue() const;
 
         /**
          * Specialization of shortID.
@@ -320,6 +321,11 @@ ValueArg<T>::ValueArg(const std::string& flag,
  */
 template<class T>
 T& ValueArg<T>::getValue() { return _value; }
+/**
+* Implementation of getValue() const.
+*/
+template<class T>
+const T& ValueArg<T>::getValue() const { return _value; }
 
 /**
  * Implementation of processArg().
