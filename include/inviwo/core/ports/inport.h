@@ -59,7 +59,7 @@ public:
     virtual bool isReady() const override;
     virtual bool isChanged() const;
 
-    // Called from the processornetwork to create connections.
+    // Called from the processor network to create connections.
     virtual bool canConnectTo(Port* port) const = 0;
     virtual void connectTo(Outport* outport) = 0;
     virtual void disconnectFrom(Outport* outport) = 0;
@@ -75,16 +75,17 @@ public:
      * going to be called.
      */
     template <typename T>
-    void onChange(T* o, void (T::*m)()) const;
-    void onChange(std::function<void()> lambda) const;
+    const BaseCallBack* onChange(T* o, void (T::*m)()) const;
+    const BaseCallBack* onChange(std::function<void()> lambda) const;
     
+    void removeOnChange(const BaseCallBack* callback);
     template <typename T>
     void removeOnChange(T* o) const;
 
     // Called by the processor network.
     void callOnChangeIfChanged() const;
 
-    // Usually called by the processor.
+    // Usually called with true by Processor::setValid after the Processor::process
     virtual void setChanged(bool changed = true);
 
 protected:
@@ -107,8 +108,8 @@ protected:
 };
 
 template <typename T>
-void Inport::onChange(T* o, void (T::*m)()) const {
-    onChangeCallback_.addMemberFunction(o, m);
+const BaseCallBack* Inport::onChange(T* o, void (T::*m)()) const {
+    return onChangeCallback_.addMemberFunction(o, m);
 }
 
 template <typename T>

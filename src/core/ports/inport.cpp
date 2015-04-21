@@ -67,14 +67,18 @@ void Inport::getPredecessors(std::vector<Processor*>& predecessors) const {
 
 void Inport::setChanged(bool changed) { changed_ = changed; }
 
+void Inport::removeOnChange(const BaseCallBack* callback) {
+    onChangeCallback_.remove(callback);
+}
+
 void Inport::callOnChangeIfChanged() const {
     if (isChanged()) {
         onChangeCallback_.invokeAll();
     }
 }
 
-void Inport::onChange(std::function<void()> lambda) const {
-    onChangeCallback_.addLambdaCallback(lambda);
+const BaseCallBack* Inport::onChange(std::function<void()> lambda) const {
+    return onChangeCallback_.addLambdaCallback(lambda);
 }
 
 bool Inport::isChanged() const { return changed_; }
