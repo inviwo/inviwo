@@ -5,6 +5,10 @@ ivw_module(Python3)
 set(Python_ADDITIONAL_VERSIONS 3.5)
 find_package(PythonLibs 3)
 
+if (PYTHONLIBS_FOUND)
+    ivw_add_definition(IVW_PYTHON_AVAILABLE)
+endif()
+
 ivw_include_directories(${PYTHON_INCLUDE_DIRS})
 get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARY} PATH)
 ivw_link_directories(${PYTHON_LIBRARY_DIR})
