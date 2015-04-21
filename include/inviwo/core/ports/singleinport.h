@@ -53,7 +53,7 @@ public:
     SingleInport(std::string identifier);
     virtual ~SingleInport();
 
-    // Called from the processornetwork to create connections.
+    // Called from the processor network to create connections.
     virtual void connectTo(Outport* outport) override;
     virtual void disconnectFrom(Outport* outport) override;
 
@@ -63,27 +63,10 @@ public:
     Outport* getConnectedOutport() const override;
     std::vector<Outport*> getConnectedOutports() const override;
 
-    template <typename T>
-    void onInvalid(T* o, void (T::*m)(), bool add = true);
-
 protected:
-    virtual void invalidate(InvalidationLevel invalidationLevel) override;
-    virtual void setValid() override;
-
     Outport* connectedOutport_;
     
-private:
-    InvalidationLevel invalidationLevel_;
-    CallBackList onInvalidCallback_;
 };
-
-template <typename T>
-void SingleInport::onInvalid(T* o, void (T::*m)(), bool add /*= true*/) {
-    if (add)
-        onInvalidCallback_.addMemberFunction(o, m);
-    else
-        onInvalidCallback_.removeMemberFunction(o);
-}
 
 }  // namespace
 

@@ -34,7 +34,8 @@
 
 namespace inviwo {
 
-Inport::Inport(std::string identifier) : Port(identifier), changed_(false) {}
+Inport::Inport(std::string identifier)
+    : Port(identifier), lastInvalidationLevel_(VALID), changed_(false) {}
 
 Inport::~Inport() {}
 
@@ -43,7 +44,16 @@ bool Inport::isReady() const {
 }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
+    if (lastInvalidationLevel_ == VALID && invalidationLevel >= INVALID_OUTPUT)
+        onInvalidCallback_.invokeAll();
+    lastInvalidationLevel_ = std::max(lastInvalidationLevel_, invalidationLevel);
+
     if (processor_) processor_->invalidate(invalidationLevel);
+}
+
+void Inport::setValid() {
+    lastInvalidationLevel_ = VALID;
+    setChanged(true); 
 }
 
 std::vector<Processor*> Inport::getPredecessors() const {
@@ -67,9 +77,7 @@ void Inport::getPredecessors(std::vector<Processor*>& predecessors) const {
 
 void Inport::setChanged(bool changed) { changed_ = changed; }
 
-void Inport::removeOnChange(const BaseCallBack* callback) {
-    onChangeCallback_.remove(callback);
-}
+bool Inport::isChanged() const { return changed_; }
 
 void Inport::callOnChangeIfChanged() const {
     if (isChanged()) {
@@ -81,6 +89,15 @@ const BaseCallBack* Inport::onChange(std::function<void()> lambda) const {
     return onChangeCallback_.addLambdaCallback(lambda);
 }
 
-bool Inport::isChanged() const { return changed_; }
+void Inport::removeOnChange(const BaseCallBack* callback) const {
+    onChangeCallback_.remove(callback);
+}
+
+const BaseCallBack* Inport::onInvalid(std::function<void()> lambda) const {
+    return onInvalidCallback_.addLambdaCallback(lambda);
+}
+void Inport::removeOnInvalid(const BaseCallBack* callback) const {
+    onInvalidCallback_.remove(callback);
+}
 
 }  // namespace

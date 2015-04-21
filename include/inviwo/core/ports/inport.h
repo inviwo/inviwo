@@ -63,7 +63,7 @@ public:
     virtual bool canConnectTo(Port* port) const = 0;
     virtual void connectTo(Outport* outport) = 0;
     virtual void disconnectFrom(Outport* outport) = 0;
-    
+
     virtual bool isConnectedTo(Outport* outport) const = 0;
     virtual Outport* getConnectedOutport() const = 0;
     virtual std::vector<Outport*> getConnectedOutports() const = 0;
@@ -77,10 +77,22 @@ public:
     template <typename T>
     const BaseCallBack* onChange(T* o, void (T::*m)()) const;
     const BaseCallBack* onChange(std::function<void()> lambda) const;
-    
-    void removeOnChange(const BaseCallBack* callback);
+
+    /**
+     *	the onInvalid callback is called directly after the port has been invalidated. It's only
+     *	called once for each transition from valid to invalid.
+     */
+    template <typename T>
+    const BaseCallBack* onInvalid(T* o, void (T::*m)()) const;
+    const BaseCallBack* onInvalid(std::function<void()> lambda) const;
+
+    void removeOnChange(const BaseCallBack* callback) const;
     template <typename T>
     void removeOnChange(T* o) const;
+
+    void removeOnInvalid(const BaseCallBack* callback) const;
+    template <typename T>
+    void removeOnInvalid(T* o) const;
 
     // Called by the processor network.
     void callOnChangeIfChanged() const;
@@ -90,20 +102,22 @@ public:
 
 protected:
     /**
-     *	Called by Outport::invalidate on its connected inports, which is call by 
+     *	Called by Outport::invalidate on its connected inports, which is call by
      *	Processor::invalidate. Will by default invalidate its processor. From above in the network.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
     /**
-     *	Called by Outport::setValid, which is call by Processor::setValid, which is called after 
+     *	Called by Outport::setValid, which is call by Processor::setValid, which is called after
      *	Processor:process. From above in the network.
      */
-    virtual void setValid() = 0;
+    virtual void setValid();
 
     // recursive implementation of std::vector<Processor*> Inport::getPredecessors() const
     void getPredecessors(std::vector<Processor*>&) const;
 
     mutable CallBackList onChangeCallback_;
+    mutable CallBackList onInvalidCallback_;
+    InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
     bool changed_;
 };
 
@@ -113,10 +127,19 @@ const BaseCallBack* Inport::onChange(T* o, void (T::*m)()) const {
 }
 
 template <typename T>
+const BaseCallBack* Inport::onInvalid(T* o, void (T::*m)()) const {
+    return onInvalidCallback_.addMemberFunction(o, m);
+}
+
+template <typename T>
 void Inport::removeOnChange(T* o) const {
     onChangeCallback_.removeMemberFunction(o);
 }
 
+template <typename T>
+void Inport::removeOnInvalid(T* o) const {
+    onInvalidCallback_.removeMemberFunction(o);
+}
 
 }  // namespace
 
