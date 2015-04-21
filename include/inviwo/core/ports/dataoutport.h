@@ -83,11 +83,11 @@ protected:
 
 template <typename T>
 std::string inviwo::DataOutport<T>::getClassIdentifier() const  {
-    return util::class_identifier<T>() + "Outport";
+    return port_traits<T>::class_identifier() + "Outport";
 }
 
 template <typename T>
-uvec3 inviwo::DataOutport<T>::getColorCode() const { return util::color_code<T>(); }
+uvec3 inviwo::DataOutport<T>::getColorCode() const { return port_traits<T>::color_code(); }
 
 template <typename T>
 DataOutport<T>::DataOutport(std::string identifier)
@@ -195,14 +195,14 @@ std::string DataOutport<T>::getContentInfo() const {
         const DataSequence<T>* seq = static_cast<const DataSequence<T>*>(data_);
         return seq->getDataInfo();
     } else if (hasData()) {
-        const BaseData* data = dynamic_cast<const BaseData*>(data_);
-        if (data) {
-            return data->getDataInfo();
+        std::string info = port_traits<T>::data_info(data_);
+        if (!info.empty()) {
+            return info;
         } else {
-            return "Not a BaseData Object";
+            return "No information available for: " + util::class_identifier<T>();
         }
     } else {
-        return getClassIdentifier() + " has no data.";
+        return "Port has no data";
     }
 }
 

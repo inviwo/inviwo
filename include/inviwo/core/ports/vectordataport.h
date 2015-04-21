@@ -75,9 +75,9 @@ public:
     VectorDataInport(std::string identifier) : DataInport<VectorData<Type>>(identifier) {}
     virtual ~VectorDataInport() {}
 
-    uvec3 getColorCode() const { return uvec3(30, 30, 30) + util::color_code<Type>(); }
+    uvec3 getColorCode() const { return uvec3(30, 30, 30) + port_traits<Type>::color_code(); }
     virtual std::string getClassIdentifier() const {
-        return util::class_identifier<Type>() + "VectorInport";
+        return port_traits<Type>::class_identifier() + "VectorInport";
     }
 };
 
@@ -89,9 +89,9 @@ public:
     }
     virtual ~VectorDataOutport() {}
 
-    uvec3 getColorCode() const { return uvec3(30, 30, 30) + util::color_code<Type>(); }
+    uvec3 getColorCode() const { return uvec3(30, 30, 30) + port_traits<Type>::color_code(); }
     virtual std::string getClassIdentifier() const {
-        return util::class_identifier<Type>() + "VectorOutport";
+        return port_traits<Type>::class_identifier() + "VectorOutport";
     }
 };
 

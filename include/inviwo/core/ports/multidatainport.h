@@ -76,7 +76,7 @@ public:
     };
     virtual void connectTo(Outport* outport);
 
-    virtual uvec3 getColorCode() const override { return util::color_code<T>(); }
+    virtual uvec3 getColorCode() const override { return port_traits<T>::color_code(); }
     virtual std::string getClassIdentifier() const override;
 
     std::vector<const T*> getData() const;
@@ -94,7 +94,7 @@ std::string inviwo::MultiDataInport<T, U>::getContentInfo() const {
 
 template < typename T, typename U /*= DataInport<T> */>
 std::string inviwo::MultiDataInport<T, U>::getClassIdentifier() const  {
-    return util::class_identifier<T>() + "MultiInport";
+    return port_traits<T>::class_identifier() + "MultiInport";
 }
 
 template<typename T, typename U>

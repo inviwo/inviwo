@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <iostream>
 #include <string>
+#include <functional>
 
 namespace inviwo {
 

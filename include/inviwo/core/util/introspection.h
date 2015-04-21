@@ -85,6 +85,28 @@ uvec3 color_code() {
     return uvec3(0);
 }
 
+template <typename C>
+class has_data_info {
+    template <typename T>
+    static auto check(int) ->
+        typename std::is_same<decltype(std::declval<T>().getDataInfo()), std::string>::type;
+    static std::false_type check(...);
+public:
+    static const bool value = decltype(check<C>(0))::value;
+};
+
+template <typename T,
+          typename std::enable_if<util::has_data_info<T>::value, std::size_t>::type = 0>
+std::string data_info(const T* data) {
+    return data->getDataInfo();
+}
+template <typename T,
+          typename std::enable_if<!util::has_data_info<T>::value, std::size_t>::type = 0>
+std::string data_info(const T*) {
+    return "";
+}
+
+
 } // namespace
 
 } // namespace

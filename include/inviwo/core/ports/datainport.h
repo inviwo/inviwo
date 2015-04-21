@@ -34,7 +34,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/singleinport.h>
 #include <inviwo/core/datastructures/data.h>
-#include <inviwo/core/util/introspection.h>
 
 namespace inviwo {
 
@@ -61,7 +60,7 @@ public:
 
 template<typename T>
 std::string inviwo::DataInport<T>::getClassIdentifier() const  {
-    return util::class_identifier<T>() + "Inport";
+    return port_traits<T>::class_identifier() + "Inport";
 }
 
 template <typename T>
@@ -70,7 +69,7 @@ DataInport<T>::DataInport(std::string identifier)
 }
 
 template <typename T>
-uvec3 DataInport<T>::getColorCode() const { return util::color_code<T>(); }
+uvec3 DataInport<T>::getColorCode() const { return port_traits<T>::color_code(); }
 
 template <typename T>
 DataInport<T>::~DataInport() {}
@@ -110,22 +109,22 @@ bool DataInport<T>::hasData() const {
     if (isConnected()) {
         // Safe to static cast since we are unable to connect other outport types.
         return static_cast< DataOutport<T>* >(connectedOutport_)->hasData();
-    } else
+    } else {
         return false;
+    }
 }
 
 template <typename T>
 std::string DataInport<T>::getContentInfo() const {
-    
     if (hasData()) {
-        const BaseData* data = dynamic_cast<const BaseData*>(getData());
-        if (data) {
-            return data->getDataInfo();
+        std::string info = port_traits<T>::data_info(getData());
+        if (!info.empty()) {
+            return info;
         } else {
-            return "Not a BaseData Object";
+            return "No information available for: " + util::class_identifier<T>();
         }
     } else {
-        return getClassIdentifier() + " has no data.";
+        return "Port has no data";
     }
 }
 
