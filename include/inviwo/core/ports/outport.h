@@ -61,17 +61,17 @@ public:
     virtual bool isReady() const override;
 
     virtual InvalidationLevel getInvalidationLevel() const;
-    
+    /**
+     *	Called by Processor::invalidate, will invalidate its connected inports.
+     */
+    virtual void invalidate(InvalidationLevel invalidationLevel);
+
     bool isConnectedTo(Inport* port) const;
     
     std::vector<Inport*> getConnectedInports() const;
     std::vector<Processor*> getDirectSuccessors() const;
 
 protected:
-    /**
-     *	Called by Processor::invalidate, will invalidate its connected inports.
-     */
-    virtual void invalidate(InvalidationLevel invalidationLevel);
      /**
      *	Called by Processor::setValid, will call setValid its connected inports.
      */
