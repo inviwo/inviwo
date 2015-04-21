@@ -60,6 +60,10 @@ void Inport::setValid() {
     setChanged(true);
 }
 
+size_t Inport::getNumberOfConnections() const {
+    return connectedOutports_.size();
+}
+
 std::vector<Processor*> Inport::getPredecessors() const {
     std::vector<Processor*> predecessors;
     getPredecessors(predecessors);

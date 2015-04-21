@@ -67,6 +67,8 @@ public:
     virtual bool isConnectedTo(Outport* outport) const;
     virtual Outport* getConnectedOutport() const;
     virtual std::vector<Outport*> getConnectedOutports() const;
+    virtual size_t getMaxNumberOfConnections() const = 0;
+    virtual size_t getNumberOfConnections() const;
     std::vector<Processor*> getPredecessors() const;
 
     /**

@@ -29,6 +29,8 @@
 
 #include <inviwo/core/ports/multiinport.h>
 
+#include <limits>
+
 namespace inviwo {
 
 MultiInport::MultiInport(std::string identifier)
@@ -164,8 +166,12 @@ std::vector<Outport*> MultiInport::getConnectedOutports() const {
     return allOutports;
 }
 
-size_t MultiInport::getNumConnectedOutports() const {
+size_t MultiInport::getNumberOfConnections() const {
     return getConnectedOutports().size();
+}
+
+size_t MultiInport::getMaxNumberOfConnections() const  {
+    return std::numeric_limits<size_t>::max();
 }
 
 void MultiInport::disconnectFrom(Outport* outport) {

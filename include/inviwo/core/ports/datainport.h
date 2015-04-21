@@ -56,7 +56,13 @@ public:
     virtual const T* getData() const;
     bool hasData() const;
     virtual std::string getContentInfo() const;
+    virtual size_t getMaxNumberOfConnections() const override;
 };
+
+template<typename T>
+size_t inviwo::DataInport<T>::getMaxNumberOfConnections() const  {
+    return 1;
+}
 
 template<typename T>
 std::string inviwo::DataInport<T>::getClassIdentifier() const  {

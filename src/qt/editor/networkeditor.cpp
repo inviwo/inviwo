@@ -638,11 +638,8 @@ void NetworkEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
         if (endItem && endItem->getPort()->canConnectTo(startPort)) {
             Inport* endPort = endItem->getPort();
 
-            if (endPort->isConnected()) {
-                SingleInport* singleInport = dynamic_cast<SingleInport*>(endPort);
-                if (singleInport) {
-                    network->removeConnection(singleInport->getConnectedOutport(), endPort);
-                }
+            if (endPort->getNumberOfConnections() >= endPort->getMaxNumberOfConnections()) {
+                network->removeConnection(endPort->getConnectedOutport(), endPort);
             }
             network->addConnection(startPort, endPort);
         }
