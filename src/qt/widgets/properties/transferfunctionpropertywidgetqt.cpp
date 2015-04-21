@@ -40,7 +40,6 @@ TransferFunctionPropertyWidgetQt::TransferFunctionPropertyWidgetQt(
     TransferFunctionProperty* property)
     : PropertyWidgetQt(property), transferFunctionDialog_(nullptr) {
     generateWidget();
-    updateFromProperty();
 }
 
 TransferFunctionPropertyWidgetQt::~TransferFunctionPropertyWidgetQt() {
@@ -63,7 +62,7 @@ void TransferFunctionPropertyWidgetQt::generateWidget() {
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
 
-    btnOpenTF_ = new IvwPushButton(this);
+    btnOpenTF_ = new TFPushButton(property_, transferFunctionDialog_, this);
 
     label_ = new EditableLabelQt(this, property_->getDisplayName());
     hLayout->addWidget(label_);
@@ -98,48 +97,7 @@ void TransferFunctionPropertyWidgetQt::generateWidget() {
 }
 
 void TransferFunctionPropertyWidgetQt::updateFromProperty() {
-    QSize gradientSize = btnOpenTF_->size() - QSize(2, 2);
-
-    QLinearGradient* gradient = transferFunctionDialog_->getTFGradient();
-    gradient->setFinalStop(gradientSize.width(), 0);
-    QPixmap tfPixmap(gradientSize);
-    QPainter tfPainter(&tfPixmap);
-    QPixmap checkerBoard(10, 10);
-    QPainter checkerBoardPainter(&checkerBoard);
-    checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
-    checkerBoardPainter.fillRect(5, 0, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(0, 5, 5, 5, Qt::darkGray);
-    checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
-    checkerBoardPainter.end();
-    tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), QBrush(checkerBoard));
-    tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), *gradient);
-    // Cast for convenience (safe to static cast since we know that property_ is a
-    // TransferFunctionProperty)
-    TransferFunctionProperty* tfProperty = static_cast<TransferFunctionProperty*>(property_);
-    // draw masking indicators
-    if (tfProperty->getMask().x > 0.0f) {
-        tfPainter.fillRect(0, 0, static_cast<int>(tfProperty->getMask().x * gradientSize.width()),
-                           btnOpenTF_->height(), QColor(25, 25, 25, 100));
-
-        tfPainter.drawLine(static_cast<int>(tfProperty->getMask().x * gradientSize.width()), 0,
-                           static_cast<int>(tfProperty->getMask().x * gradientSize.width()),
-                           btnOpenTF_->height());
-    }
-
-    if (tfProperty->getMask().y < 1.0f) {
-        tfPainter.fillRect(
-            static_cast<int>(tfProperty->getMask().y * gradientSize.width()), 0,
-            static_cast<int>((1.0f - tfProperty->getMask().y) * gradientSize.width()) + 1,
-            btnOpenTF_->height(), QColor(25, 25, 25, 150));
-
-        tfPainter.drawLine(static_cast<int>(tfProperty->getMask().y * gradientSize.width()), 0,
-                           static_cast<int>(tfProperty->getMask().y * gradientSize.width()),
-                           btnOpenTF_->height());
-    }
-
-    btnOpenTF_->setIcon(tfPixmap);
-    btnOpenTF_->setIconSize(gradientSize);
-
+    btnOpenTF_->updateFromProperty();
     this->setDisabled(property_->getReadOnly());
 }
 
@@ -153,10 +111,61 @@ void TransferFunctionPropertyWidgetQt::setPropertyDisplayName() {
     property_->setDisplayName(label_->getText());
 }
 
-// Needed to resize the gradient preview.
-void TransferFunctionPropertyWidgetQt::resizeEvent(QResizeEvent* event) {
-    updateFromProperty();
-    PropertyWidgetQt::resizeEvent(event);
+
+
+TFPushButton::TFPushButton(Property *property, TransferFunctionPropertyDialog *tfDialog, QWidget *parent)
+    : IvwPushButton(parent)
+    , tfProperty_(static_cast<TransferFunctionProperty*>(property))
+    , tfDialog_(tfDialog)
+{
 }
+
+void TFPushButton::updateFromProperty() {
+    QSize gradientSize = this->size() - QSize(2, 2);
+
+    QLinearGradient* gradient = tfDialog_->getTFGradient();
+    gradient->setFinalStop(gradientSize.width(), 0);
+    QPixmap tfPixmap(gradientSize);
+    QPainter tfPainter(&tfPixmap);
+    QPixmap checkerBoard(10, 10);
+    QPainter checkerBoardPainter(&checkerBoard);
+    checkerBoardPainter.fillRect(0, 0, 5, 5, Qt::lightGray);
+    checkerBoardPainter.fillRect(5, 0, 5, 5, Qt::darkGray);
+    checkerBoardPainter.fillRect(0, 5, 5, 5, Qt::darkGray);
+    checkerBoardPainter.fillRect(5, 5, 5, 5, Qt::lightGray);
+    checkerBoardPainter.end();
+    tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), QBrush(checkerBoard));
+    tfPainter.fillRect(0, 0, gradientSize.width(), gradientSize.height(), *gradient);
+    
+    // draw masking indicators
+    if (tfProperty_->getMask().x > 0.0f) {
+        tfPainter.fillRect(0, 0, static_cast<int>(tfProperty_->getMask().x * gradientSize.width()),
+            this->height(), QColor(25, 25, 25, 100));
+
+        tfPainter.drawLine(static_cast<int>(tfProperty_->getMask().x * gradientSize.width()), 0,
+            static_cast<int>(tfProperty_->getMask().x * gradientSize.width()),
+            this->height());
+    }
+
+    if (tfProperty_->getMask().y < 1.0f) {
+        tfPainter.fillRect(
+            static_cast<int>(tfProperty_->getMask().y * gradientSize.width()), 0,
+            static_cast<int>((1.0f - tfProperty_->getMask().y) * gradientSize.width()) + 1,
+            this->height(), QColor(25, 25, 25, 150));
+
+        tfPainter.drawLine(static_cast<int>(tfProperty_->getMask().y * gradientSize.width()), 0,
+            static_cast<int>(tfProperty_->getMask().y * gradientSize.width()),
+            this->height());
+    }
+
+    this->setIcon(tfPixmap);
+    this->setIconSize(gradientSize);
+}
+
+void TFPushButton::resizeEvent(QResizeEvent* event) {
+    updateFromProperty();
+    IvwPushButton::resizeEvent(event);
+}
+
 
 }//namespace
