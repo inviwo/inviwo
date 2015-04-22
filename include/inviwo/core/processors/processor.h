@@ -123,6 +123,10 @@ public:
 
     const std::vector<Inport*>& getInports() const;
     const std::vector<Outport*>& getOutports() const;
+    /**
+     * getInports(Event*) is used to determine the direct predecessors 
+     * of the processor during event propagation.
+     */
     virtual const std::vector<Inport*>& getInports(Event*) const;
 
     std::vector<std::string> getPortDependencySets() const;
