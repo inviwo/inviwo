@@ -139,52 +139,25 @@ void GeometryRenderProcessorGL::changeRenderMode() {
 }
 
 void GeometryRenderProcessorGL::process() {
-    if (!inport_.hasData()) {
-        return;
-    }
-
-    GLint prevPolygonMode[2];
-    glGetIntegerv(GL_POLYGON_MODE, prevPolygonMode);
-    glPolygonMode(GL_FRONT_AND_BACK, polygonMode_.get());
-
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    if (!inport_.hasData()) return;
 
     utilgl::activateAndClearTarget(outport_);
-
     shader_.activate();
+
     utilgl::setShaderUniforms(&shader_, camera_, "camera_");
     utilgl::setShaderUniforms(&shader_, lightingProperty_, "light_");
 
-    utilgl::GlBoolState culling(GL_CULL_FACE, cullFace_.get() != GL_NONE);
-    if (culling) {
-        glCullFace(cullFace_.get());
-    }
-
-    if (polygonMode_.get() == GL_LINE) {
-        // FIX: disabled line smoothing to avoid blending artifacts with background (issue #611)
-        // glEnable(GL_LINE_SMOOTH);
-        glLineWidth((GLfloat)renderLineWidth_.get());
-    } else if (polygonMode_.get() == GL_POINT) {
-        glPointSize((GLfloat)renderPointSize_.get());
-    }
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    utilgl::CullFaceState culling(cullFace_.get());
+    utilgl::PolygonModeState polygon(polygonMode_.get(), renderLineWidth_, renderPointSize_);
 
     for (auto& drawer : drawers_) {
         utilgl::setShaderUniforms(&shader_, *(drawer->getGeometry()), "geometry_");
         drawer->draw();
     }
 
-    if (polygonMode_.get() == GL_LINE) {
-        // FIX: disabled line smoothing to avoid blending artifacts with background (issue #611)
-        // glDisable(GL_LINE_SMOOTH);
-    }
-
     shader_.deactivate();
-
     utilgl::deactivateCurrentTarget();
-
-    // restore
-    glPointSize(1.f);
-    glPolygonMode(GL_FRONT_AND_BACK, prevPolygonMode[0]);
 }
 
 void GeometryRenderProcessorGL::centerViewOnGeometry() {

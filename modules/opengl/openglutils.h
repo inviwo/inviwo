@@ -70,12 +70,12 @@ struct TexParameter {
     }
 
     ~TexParameter() {
-        if(unit_ != 0 && target_ != 0) {
+        if (unit_ != 0 && target_ != 0) {
             glActiveTexture(unit_);
             glTexParameteri(target_, name_, oldValue_);
             TextureUnit::setZeroUnit();
         }
-    } 
+    }
 
 private:
     GLint unit_;
@@ -84,19 +84,18 @@ private:
     int oldValue_;
 };
 
-
 struct GlBoolState {
     GlBoolState() = delete;
     GlBoolState(GlBoolState const&) = delete;
     GlBoolState& operator=(GlBoolState const& that) = delete;
 
-    GlBoolState(GLenum target, bool state)
-        : target_(target), oldState_{}, state_(state) {
-       
+    GlBoolState(GLenum target, bool state) : target_(target), oldState_{}, state_(state) {
         oldState_ = glIsEnabled(target_);
         if (oldState_ != state_) {
-            if (state) glEnable(target_);
-            else glDisable(target_);
+            if (state)
+                glEnable(target_);
+            else
+                glDisable(target_);
         }
     }
 
@@ -117,20 +116,157 @@ struct GlBoolState {
 
     operator bool() { return state_; };
 
-    ~GlBoolState() {
-        if(oldState_ != state_) {
-            if (oldState_) glEnable(target_);
-            else glDisable(target_);
+    virtual ~GlBoolState() {
+        if (oldState_ != state_) {
+            if (oldState_)
+                glEnable(target_);
+            else
+                glDisable(target_);
         }
-    } 
+    }
 
-private:
+protected:
     GLenum target_;
     bool oldState_;
     bool state_;
 };
 
+struct CullFaceState : public GlBoolState {
+    CullFaceState() = delete;
+    CullFaceState(CullFaceState const&) = delete;
+    CullFaceState& operator=(CullFaceState const& that) = delete;
 
+    CullFaceState(GLint mode) : GlBoolState(GL_CULL_FACE, mode != GL_NONE), mode_(mode) {
+        if (state_) {
+            glGetIntegerv(GL_CULL_FACE_MODE, &oldMode_);
+            if (oldMode_ != mode) {
+                glCullFace(mode);
+            }
+        }
+    }
+
+    CullFaceState(CullFaceState&& rhs)
+        : GlBoolState(std::move(rhs)), mode_(rhs.mode_), oldMode_(rhs.oldMode_) {
+        rhs.mode_ = rhs.oldMode_;
+    }
+
+    CullFaceState& operator=(CullFaceState&& that) {
+        if (this != &that) {
+            GlBoolState::operator=(std::move(that));
+            mode_ = that.mode_;
+            oldMode_ = that.oldMode_;
+            that.mode_ = that.oldMode_;
+        }
+        return *this;
+    }
+
+    virtual ~CullFaceState() {
+        if (state_ && oldMode_ != mode_) {
+            glCullFace(oldMode_);
+        }
+    }
+
+    GLint getMode() { return mode_; }
+
+protected:
+    GLint mode_;
+    GLint oldMode_;
+};
+
+struct PolygonModeState {
+    PolygonModeState() = delete;
+    PolygonModeState(PolygonModeState const&) = delete;
+    PolygonModeState& operator=(PolygonModeState const& that) = delete;
+
+    PolygonModeState(GLenum mode, GLfloat lineWidth, GLfloat pointSize)
+        : mode_(mode)
+        , lineWidth_(lineWidth)
+        , pointSize_(pointSize)
+        , oldMode_(0)
+        , oldLineWidth_(0.0f)
+        , oldPointSize_(0.0f) {
+        // Only GL_FRONT_AND_BACK in core profile.
+        glGetIntegerv(GL_POLYGON_MODE, glm::value_ptr(oldMode_));
+
+        if (mode != oldMode_[0]) glPolygonMode(GL_FRONT_AND_BACK, mode);
+
+        switch (mode_) {
+            case GL_POINT: {
+                glGetFloatv(GL_POINT_SIZE, &oldPointSize_);
+                if (pointSize_ != oldPointSize_) {
+                    glPointSize(pointSize_);
+                }
+                break;
+            }
+            case GL_LINE: {
+                glGetFloatv(GL_LINE_WIDTH, &oldLineWidth_);
+                if (lineWidth_ != oldLineWidth_) {
+                    glLineWidth(lineWidth_);
+                }
+                break;
+            }
+            case GL_FILL:
+            default:
+                break;
+        }
+    }
+
+    PolygonModeState(PolygonModeState&& rhs)
+        : mode_(rhs.mode_)
+        , lineWidth_(rhs.lineWidth_)
+        , pointSize_(rhs.pointSize_)
+        , oldMode_(rhs.oldMode_)
+        , oldLineWidth_(rhs.oldLineWidth_)
+        , oldPointSize_(rhs.oldPointSize_) {
+        rhs.mode_ = GL_NONE;
+    }
+
+    PolygonModeState& operator=(PolygonModeState&& that) {
+        if (this != &that) {
+            mode_ = that.mode_;
+            lineWidth_ = that.lineWidth_;
+            pointSize_ = that.pointSize_;
+            oldMode_ = that.oldMode_;
+            oldLineWidth_ = that.oldLineWidth_;
+            oldPointSize_ = that.oldPointSize_;
+
+            that.mode_ = GL_NONE;
+        }
+        return *this;
+    }
+
+    virtual ~PolygonModeState() {
+        if (mode_ != GL_NONE) {
+            switch (mode_) {
+                case GL_POINT: {
+                    if (pointSize_ != oldPointSize_) {
+                        glPointSize(oldPointSize_);
+                    }
+                    break;
+                }
+                case GL_LINE: {
+                    if (lineWidth_ != oldLineWidth_) {
+                        glLineWidth(oldLineWidth_);
+                    }
+                    break;
+                }
+                case GL_FILL:
+                default:
+                    break;
+            }
+            if (mode_ != oldMode_[0]) glPolygonMode(GL_FRONT_AND_BACK, oldMode_[0]);
+        }
+    }
+
+protected:
+    GLint mode_;
+    GLfloat lineWidth_;
+    GLfloat pointSize_;
+
+    ivec2 oldMode_;
+    GLfloat oldLineWidth_;
+    GLfloat oldPointSize_;
+};
 
 }  // namespace
 
