@@ -255,8 +255,8 @@ void Processor::deserialize(IvwDeserializer& d) {
 
 void Processor::setValid() {
     PropertyOwner::setValid();
-    for (auto port : inports_) port->setChanged(false);
-    for (auto port : outports_) port->setValid();
+    for (auto inport : inports_) inport->setChanged(false);
+    for (auto outport : outports_) outport->setValid();
 }
 
 void Processor::enableInvalidation() {

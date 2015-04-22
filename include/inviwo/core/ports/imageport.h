@@ -87,11 +87,7 @@ public:
 
     virtual ~ImageOutport();
 
-    virtual void invalidate(InvalidationLevel invalidationLevel);
-
     Image* getData();
-
-    virtual void dataChanged();
 
     /**
      * Resize port and propagate the resizing to the canvas.
@@ -123,6 +119,9 @@ public:
     bool isHandlingResizeEvents() const;
 
 protected:
+    virtual void invalidate(InvalidationLevel invalidationLevel) override;
+    virtual void onSetData() override;
+
     Image* getResizedImageData(uvec2 dimensions);
     void setLargestImageData();
     /**

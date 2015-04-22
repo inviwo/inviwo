@@ -66,9 +66,14 @@ public:
     bool isDataOwner() const;
     virtual std::string getContentInfo() const;
 
-    virtual void dataChanged() {}
 
 protected:
+    /**
+     *	Override in derived ports to do stuff when there is new data in the port.
+     *	Called by base after setData and setConstData.
+     */
+    virtual void onSetData() {}
+
     T* data_;
     bool ownsData_;
     bool isSequence_;
@@ -140,7 +145,7 @@ void DataOutport<T>::setData(T* data, bool ownsData) {
 
     data_ = data;  // Add reference to new data
 
-    dataChanged();
+    onSetData();
 }
 
 template <typename T>
@@ -154,7 +159,7 @@ void DataOutport<T>::setConstData(const T* data) {
 
     data_ = const_cast<T*>(data);  // Add reference to new data
 
-    dataChanged();
+    onSetData();
 }
 
 template <typename T>

@@ -64,7 +64,6 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , shader_("geometryrendering.vert", "geometryrendering.frag", false) {
-
     addPort(inport_);
     addPort(outport_);
     addProperty(camera_);
@@ -152,8 +151,8 @@ void GeometryRenderProcessorGL::process() {
     utilgl::PolygonModeState polygon(polygonMode_.get(), renderLineWidth_, renderPointSize_);
 
     for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(&shader_, *(drawer->getGeometry()), "geometry_");
-        drawer->draw();
+        utilgl::setShaderUniforms(&shader_, *(drawer.second->getGeometry()), "geometry_");
+        drawer.second->draw();
     }
 
     shader_.deactivate();
@@ -197,71 +196,23 @@ void GeometryRenderProcessorGL::centerViewOnGeometry() {
 }
 
 void GeometryRenderProcessorGL::updateDrawers() {
-    drawers_.clear();
+    auto changed = inport_.getChangedOutports();
+    DrawerMap temp;
+    std::swap(temp, drawers_);
 
-    for (auto geom : inport_.getVectorData()) {
-        GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geom);
-        if (renderer) {
-            drawers_.push_back(std::unique_ptr<GeometryDrawer>(renderer));
+    for (auto& elem : inport_.getSourceVectorData()) {
+        
+        auto it = temp.find(elem.first);     
+
+        if (util::contains(changed, elem.first) || it == temp.end()) { // data is changed or new.
+            GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(elem.second);
+            if (renderer) {
+                drawers_[elem.first] = std::unique_ptr<GeometryDrawer>(renderer);
+            }
+        } else {                                                       // reuse the old data.
+             drawers_[elem.first] = std::move(it->second);
         }
     }
-
-
-//     std::vector<Inport*> inports = inport_.getInports();
-// 
-//     // Copy draw information vectors and clear them
-//     // , vectors should have the same size
-//     std::vector<GeometryDrawer*> ds = drawers_;
-//     drawers_.clear();
-//     std::vector<Inport*> dsPort = drawersPort_;
-//     drawersPort_.clear();
-// 
-//     // Loop over all inports and make sure all renderers are valid
-//     // Else create new ones
-//     // All geometries will be rendered in correct order based on port connection
-//     // and order inside port
-//     for (size_t i = 0; i < inports.size(); i++) {
-//         bool addNew = false;
-//         // If inport changed, delete all old drawers
-//         // associated with that inport and create new ones
-//         if (inports[i]->isChanged()) {
-//             for (size_t j = 0; j < dsPort.size(); j++) {
-//                 if (dsPort[j] == inports[i]) delete ds[j];
-//             }
-//             addNew = true;
-//         } else {
-//             // if the inport is not found in the vector
-//             // this port was just connected
-//             bool found = false;
-//             for (size_t j = 0; j < dsPort.size(); j++) {
-//                 if (dsPort[j] == inports[i]) {
-//                     found = true;
-//                     break;
-//                 }
-//             }
-//             if (!found) addNew = true;
-//         }
-// 
-//         if (addNew) {
-//             std::vector<const Geometry*> geometries = inport_.getDataFromPort(inports[i]);
-//             for (size_t j = 0; j < geometries.size();
-//                  ++j) {  // create new renderer for new geometries
-//                 GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geometries[j]);
-// 
-//                 if (renderer) {
-//                     drawers_.push_back(renderer);
-//                     drawersPort_.push_back(inports[i]);
-//                 }
-//             }
-//         } else {
-//             for (size_t j = 0; j < dsPort.size(); j++) {
-//                 if (dsPort[j] == inports[i]) {
-//                     drawers_.push_back(ds[j]);
-//                     drawersPort_.push_back(inports[i]);
-//                 }
-//             }
-//         }
-//     }
 }
 
 }  // namespace

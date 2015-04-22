@@ -56,7 +56,7 @@ public:
 
     bool isConnectedTo(Outport* outport) const;
 
-    virtual void setChanged(bool changed = true) override;
+    virtual void setChanged(bool changed = true, const Outport* = nullptr) override;
     virtual bool isChanged() const override;
 
     std::vector<Inport*> getInports() const;
@@ -71,7 +71,7 @@ public:
 protected:
 
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
-    virtual void setValid() override;
+    virtual void setValid(const Outport* source) override;
  
     /**
      * Derived classes of Port will not have access to Port::setProcessor.

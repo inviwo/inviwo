@@ -64,27 +64,27 @@ MultiInport::~MultiInport() {
     vectorInports_ = nullptr;
 }
 
-void MultiInport::setValid() {
+void MultiInport::setValid(const Outport* source) {
     InportVec::iterator it = inports_->begin();
     InportVec::iterator endIt = inports_->end();
     for (; it != endIt; ++it)
-        (*it)->setValid();
+        (*it)->setValid(source);
 
     it = vectorInports_->begin();
     endIt = vectorInports_->end();
     for (; it != endIt; ++it)
-        (*it)->setValid();
+        (*it)->setValid(source);
 
     setChanged();
 }
 
 
-void MultiInport::setChanged(bool changed /*= true*/) {
+void MultiInport::setChanged(bool changed /*= true*/, const Outport* source) {
     InportVec::const_iterator it = inports_->begin();
     InportVec::const_iterator endIt = inports_->end();
 
     for (; it != endIt; ++it)
-        (*it)->setChanged(changed);
+        (*it)->setChanged(changed, source);
 
     if (changed == false) {
         size_t totalInports = inports_->size() + vectorInports_->size();

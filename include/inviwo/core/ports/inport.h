@@ -38,8 +38,12 @@
 namespace inviwo {
 
 class Outport;
+class Processor;
 class ProcessorNetwork;
+class ProcessorNetworkEvaluator;
 class MultiInport;
+template <typename T, typename U>
+class MultiDataInport;
 
 /**
  * \class Inport
@@ -49,8 +53,13 @@ class MultiInport;
 class IVW_CORE_API Inport : public Port {
 public:
     friend class Outport;
+    friend class Processor;
     friend class ProcessorNetwork;
+    friend class ProcessorNetworkEvaluator;
     friend class MultiInport;
+
+    template <typename T, typename U>
+    friend class MultiDataInport;
 
     Inport(std::string identifier = "");
     virtual ~Inport();
@@ -70,7 +79,7 @@ public:
     virtual size_t getMaxNumberOfConnections() const = 0;
     virtual size_t getNumberOfConnections() const;
     std::vector<Processor*> getPredecessors() const;
-
+    virtual std::vector<const Outport*> getChangedOutports() const;
     /**
      * The on change call back is invoked before Processor::process after a port has been connected,
      * disconnected, or has changed its validation level. Note it is only called if process is also
@@ -96,12 +105,6 @@ public:
     template <typename T>
     void removeOnInvalid(T* o) const;
 
-    // Called by the processor network.
-    void callOnChangeIfChanged() const;
-
-    // Usually called with true by Processor::setValid after the Processor::process
-    virtual void setChanged(bool changed = true);
-
 protected:
     /**
      *	Called by Outport::invalidate on its connected inports, which is call by
@@ -112,7 +115,13 @@ protected:
      *	Called by Outport::setValid, which is call by Processor::setValid, which is called after
      *	Processor:process. From above in the network.
      */
-    virtual void setValid();
+    virtual void setValid(const Outport* source);
+    
+    // Usually called with false (reset) by Processor::setValid after the Processor::process
+    virtual void setChanged(bool changed = true, const Outport* source = nullptr);
+
+    // Called by the processor network.
+    void callOnChangeIfChanged() const;
 
     // recursive implementation of std::vector<Processor*> Inport::getPredecessors() const
     void getPredecessors(std::vector<Processor*>&) const;
@@ -121,7 +130,10 @@ protected:
     mutable CallBackList onChangeCallback_;
     mutable CallBackList onInvalidCallback_;
     InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
+
+private:
     bool changed_;
+    std::vector<const Outport*> changedSources_;
 };
 
 template <typename T>

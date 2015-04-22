@@ -173,8 +173,9 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
     , dimensions_(uvec2(8, 8))
     , mapDataInvalid_(true)
     , handleResizeEvents_(handleResizeEvents) {
+
     setData(new Image(dimensions_, format));
-    dataChanged();
+    onSetData();
 }
 
 ImageOutport::~ImageOutport() {
@@ -182,10 +183,6 @@ ImageOutport::~ImageOutport() {
         if (elem.second != data_) {
             delete elem.second;
         }
-    }
-    if (isDataOwner()){
-        delete data_;
-        data_ = nullptr;
     }
 }
 
@@ -234,7 +231,7 @@ Image* ImageOutport::getData() {
     return DataOutport<Image>::getData();
 }
 
-void ImageOutport::dataChanged() {
+void ImageOutport::onSetData() {
     std::string dimensionsString;
 
     // Remove data already deleted by base port class
@@ -506,7 +503,7 @@ bool ImageOutport::removeResizeEventListener(EventListener* el) { return removeE
 void ImageOutport::setDimensions(const uvec2& newDimension) {
     dimensions_ = newDimension;
     // Clear data
-    dataChanged();
+    onSetData();
     // Set new dimensions
     DataOutport<Image>::getData()->resize(newDimension);
 }

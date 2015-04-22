@@ -60,6 +60,7 @@ public:
 
     virtual const T* getData() const;
     virtual std::vector<const T*> getVectorData() const;
+    virtual std::vector<std::pair<const Outport*, const T*>> getSourceVectorData() const;
 
     bool hasData() const;
 };
@@ -143,6 +144,21 @@ std::vector<const T*> DataInport<T, N>::getVectorData() const {
 
     return res;
 }
+
+
+template <typename T, size_t N>
+std::vector<std::pair<const Outport*, const T*>> inviwo::DataInport<T, N>::getSourceVectorData() const {
+    std::vector<std::pair<const Outport*, const T*>> res(N);
+
+    for (auto outport : connectedOutports_) {
+        // Safe to static cast since we are unable to connect other outport types.
+        DataOutport<T>* dataport = static_cast<DataOutport<T>*>(outport);
+        if (dataport->hasData()) res.emplace_back(dataport, dataport->getConstData());
+    }
+
+    return res;
+}
+
 
 template <typename T, size_t N>
 bool DataInport<T, N>::hasData() const {

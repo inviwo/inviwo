@@ -32,7 +32,8 @@
 
 namespace inviwo {
 
-Outport::Outport(std::string identifier) : Port(identifier), invalidationLevel_(INVALID_OUTPUT) {}
+Outport::Outport(std::string identifier)
+    : Port(identifier), invalidationLevel_(VALID) {}
 
 Outport::~Outport() {}
 
@@ -45,22 +46,18 @@ bool Outport::isConnectedTo(Inport* port) const {
              connectedInports_.end());
 }
 
-std::vector<Inport*> Outport::getConnectedInports() const {
-    return connectedInports_;
-}
+std::vector<Inport*> Outport::getConnectedInports() const { return connectedInports_; }
 
 void Outport::invalidate(InvalidationLevel invalidationLevel) {
     invalidationLevel_ = invalidationLevel;
     for (auto port : connectedInports_) port->invalidate(invalidationLevel);
 }
 
-inviwo::InvalidationLevel Outport::getInvalidationLevel() const {
-    return invalidationLevel_;
-}
+inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }
 
 void Outport::setValid() {
     invalidationLevel_ = VALID;
-    for (auto port : connectedInports_) port->setValid();
+    for (auto port : connectedInports_) port->setValid(this);
 }
 
 std::vector<Processor*> Outport::getDirectSuccessors() const {
@@ -92,11 +89,9 @@ void Outport::connectTo(Inport* inport) {
 
 // Is called exclusively by Inport, which means a connection has been removed.
 void Outport::disconnectFrom(Inport* inport) {
-    if (std::find(connectedInports_.begin(), connectedInports_.end(), inport) !=
-        connectedInports_.end()) {
-        connectedInports_.erase(
-            std::remove(connectedInports_.begin(), connectedInports_.end(), inport),
-            connectedInports_.end());
+    auto it = std::find(connectedInports_.begin(), connectedInports_.end(), inport);
+    if ( it != connectedInports_.end()) {
+        connectedInports_.erase(it);
     }
 }
 

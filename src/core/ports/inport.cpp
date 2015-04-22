@@ -55,9 +55,9 @@ void Inport::invalidate(InvalidationLevel invalidationLevel) {
     if (processor_) processor_->invalidate(invalidationLevel);
 }
 
-void Inport::setValid() {
+void Inport::setValid(const Outport* source) {
     lastInvalidationLevel_ = VALID;
-    setChanged(true);
+    setChanged(true, source);
 }
 
 size_t Inport::getNumberOfConnections() const {
@@ -83,7 +83,23 @@ void Inport::getPredecessors(std::vector<Processor*>& predecessors) const {
     }
 }
 
-void Inport::setChanged(bool changed) { changed_ = changed; }
+std::vector<const Outport*> Inport::getChangedOutports() const {
+    return changedSources_;
+}
+
+void Inport::setChanged(bool changed, const Outport* source) {
+    changed_ = changed;
+
+    if (changed_ == false) {
+        if (source == nullptr) {
+            changedSources_.clear();
+        } else {
+            util::erase_remove(changedSources_, source);
+        }
+    } else if (source) {
+        util::push_back_unique(changedSources_, source);
+    }
+}
 
 bool Inport::isChanged() const { return changed_; }
 
@@ -91,7 +107,7 @@ void Inport::connectTo(Outport* outport) {
     if (!isConnectedTo(outport)) {
         connectedOutports_.push_back(outport);
         outport->connectTo(this);  // add this to the outport.
-        setChanged(true);          // mark that we should call onChange.
+        setChanged(true, outport); // mark that we should call onChange.
         invalidate(INVALID_OUTPUT);
     }
 }
@@ -101,7 +117,7 @@ void Inport::disconnectFrom(Outport* outport) {
     if (it != connectedOutports_.end()) {
         connectedOutports_.erase(it);
         outport->disconnectFrom(this);  // remove this from outport.
-        setChanged(true);               // mark that we should call onChange.
+        setChanged(true, outport);      // mark that we should call onChange.
         invalidate(INVALID_OUTPUT);
     }
 }
