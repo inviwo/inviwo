@@ -50,7 +50,7 @@ TextOverlayGL::TextOverlayGL()
                   INVALID_OUTPUT, PropertySemantics::Color)
     , fontSize_("Font size", "Font size")
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
-    , refPos_("Reference", "Reference", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
+    , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
     , textRenderer_(NULL) {
 
     addPort(inport_);
@@ -58,7 +58,7 @@ TextOverlayGL::TextOverlayGL()
     addProperty(text_);
     addProperty(color_);
     addProperty(fontPos_);
-    addProperty(refPos_);
+    addProperty(anchorPos_);
     addProperty(fontSize_);
     fontSize_.addOption("10", "10", 10);
     fontSize_.addOption("12", "12", 12);
@@ -102,7 +102,7 @@ void TextOverlayGL::process() {
     
 
     vec2 size = textRenderer_->computeTextSize(text_.get().c_str(), scale);
-    vec2 shift = 0.5f * size * (refPos_.get() + vec2(1.0f,1.0f));
+    vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f,1.0f));
     textRenderer_->render(text_.get().c_str(), -1 + xpos_*scale.x - shift.x, 1 - ypos_*scale.y + shift.y, scale, color_.get());
 
     glDisable(GL_BLEND);
