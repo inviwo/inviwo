@@ -117,5 +117,9 @@ add_subdirectory(apps)
 add_external_projects()
 
 #--------------------------------------------------------------------
+# Remove temporary files
+ivw_clean_tmp_files()
+
+#--------------------------------------------------------------------
 # Package creation
 include(cmake/packaging.cmake)

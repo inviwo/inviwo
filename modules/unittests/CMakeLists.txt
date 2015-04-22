@@ -61,23 +61,28 @@ set(HEADER_FILES
 
 ivw_group("Header Files" ${HEADER_FILES})
 
+
+## remove non-existing unit test files
+foreach (item ${unittest_files})
+    if (NOT EXISTS "${item}")
+        # unit test does no longer exist, remove from list
+        #ivw_message("  does not exist, removing ${item}")
+        list(REMOVE_ITEM unittest_files ${item})
+    endif()
+endforeach()
+## update cache internal variable
+set(unittest_files ${unittest_files} CACHE INTERNAL "Unit test files")
+
+
 #--------------------------------------------------------------------
 # Add source files
-
-
-FILE(READ "${CMAKE_BINARY_DIR}/modules/_generated/unittests_temp.h" contents)
-  STRING(REGEX REPLACE ";" "\\\\;" contents "${contents}")
-  STRING(REGEX REPLACE "\n" ";" contents "${contents}")
-  STRING(REGEX REPLACE "\"" "" contents "${contents}")
-
 set(SOURCE_FILES
-    ${contents}
+    ${unittest_files}
     ${CMAKE_CURRENT_SOURCE_DIR}/logerrorcounter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittestsmodule.cpp
 )
 
-file(REMOVE ${CMAKE_BINARY_DIR}/modules/_generated/unittests_temp.h)
-
+##ivw_add_tmp_file(${CMAKE_BINARY_DIR}/modules/_generated/unittests_temp.h)
 
 ivw_group("Source Files" ${SOURCE_FILES})
 
