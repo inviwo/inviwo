@@ -31,6 +31,7 @@
 #define IVW_DATASEQUENCE_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/ports/port.h>
 
 namespace inviwo {
 
