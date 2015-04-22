@@ -441,7 +441,6 @@ set(PCH_PATH_FILES
 ivw_add_pch_path(${PCH_PATH_FILES})
 
 
-if(IVW_UNIT_TEST_APPLICATION)
 set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/inviwoapplication-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/commandlineparser-test.cpp
@@ -455,7 +454,6 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/serializer-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
-endif()
 
 
 #--------------------------------------------------------------------

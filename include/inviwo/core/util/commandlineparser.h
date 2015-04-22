@@ -35,11 +35,18 @@
 #include <string>
 #include <vector>
 
-namespace TCLAP {
-class CmdLine;
-template <typename T> class ValueArg;
-class SwitchArg;
-}
+#if defined(HAVE_CONFIG_H)
+#  define HAVE_CONFIG_H_ENABLED
+#  undef HAVE_CONFIG_H
+#endif // HAVE_CONFIG_H
+
+#include <tclap/CmdLine.h>
+
+
+#if defined(HAVE_CONFIG_H_ENABLED)
+#  define HAVE_CONFIG_H
+#endif
+
 
 namespace inviwo {
 
@@ -58,9 +65,6 @@ public:
     CommandLineParser();
     CommandLineParser(int argc, char** argv);
     ~CommandLineParser();
-
-    void initialize();
-    void deinitialize();
 
     void parse(int argc, char** argv);
 
@@ -89,21 +93,20 @@ public:
 
     int getARGC()const {return argc_;}
     char** getARGV()const {return argv_;}
-
+    
 private:
     int argc_;
     char** argv_;
-    TCLAP::CmdLine* cmd_;
-    TCLAP::ValueArg<std::string>* workspaceValueArg_;
-    TCLAP::ValueArg<std::string>* outputValueArg_;
-    TCLAP::ValueArg<std::string>* snapshotArg_;
-    TCLAP::ValueArg<std::string>* screenGrabArg_;
-    TCLAP::ValueArg<std::string>* pythonScriptArg_;
-    TCLAP::ValueArg<std::string>* logToFileArg_;
-    TCLAP::SwitchArg* noSplashScreenArg_;
-    TCLAP::SwitchArg* quitArg_;
+    TCLAP::CmdLine cmd_;
+    TCLAP::ValueArg<std::string> workspaceValueArg_;
+    TCLAP::ValueArg<std::string> outputValueArg_;
+    TCLAP::ValueArg<std::string> snapshotArg_;
+    TCLAP::ValueArg<std::string> screenGrabArg_;
+    TCLAP::ValueArg<std::string> pythonScriptArg_;
+    TCLAP::ValueArg<std::string> logToFileArg_;
+    TCLAP::SwitchArg noSplashScreenArg_;
+    TCLAP::SwitchArg quitArg_;
     std::string workspaceName_;
-
 };
 
 } // namespace
