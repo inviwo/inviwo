@@ -75,29 +75,45 @@ struct is_string : detail::is_string<T> {};
 
 template <typename T>
 void erase_remove(T& cont, const typename T::value_type& elem) {
-    cont.erase(std::remove(cont.begin(), cont.end(), elem), cont.end());
+    using std::begin;
+    using std::end;
+    cont.erase(std::remove(begin(cont), end(cont), elem), cont.end());
 }
 
 template <typename T>
 void push_back_unique(T& cont, typename T::value_type elem) {
-    if (std::find(cont.begin(), cont.end(), elem) == cont.end()) {
+    using std::begin;
+    using std::end;
+    if (std::find(begin(cont), end(cont), elem) == cont.end()) {
         cont.push_back(elem);
     }
 }
 
+template <typename T>
+bool contains(T& cont, const typename T::value_type& elem) {
+    using std::begin;
+    using std::end;
+    return std::find(begin(cont), end(cont), elem) != end(cont);
+}
+
 template <typename T, typename UnaryPredicate>
 bool all_of(T& cont, UnaryPredicate pred) {
-    return std::all_of(cont.begin(), cont.end(), pred);
+    using std::begin;
+    using std::end;
+    return std::all_of(begin(cont), end(cont), pred);
 }
 template <typename T, typename UnaryPredicate>
 bool any_of(T& cont, UnaryPredicate pred) {
-    return std::any_of(cont.begin(), cont.end(), pred);
+    using std::begin;
+    using std::end;
+    return std::any_of(begin(cont), end(cont), pred);
 }
 template <typename T, typename UnaryPredicate>
 bool none_of(T& cont, UnaryPredicate pred) {
-    return std::none_of(cont.begin(), cont.end(), pred);
+    using std::begin;
+    using std::end;
+    return std::none_of(begin(cont), end(cont), pred);
 }
-
 
 }  // namespace
 }  // namespace
