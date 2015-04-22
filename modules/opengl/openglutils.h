@@ -185,10 +185,11 @@ struct PolygonModeState {
         , oldMode_(0)
         , oldLineWidth_(0.0f)
         , oldPointSize_(0.0f) {
-        // Only GL_FRONT_AND_BACK in core profile.
-        glGetIntegerv(GL_POLYGON_MODE, glm::value_ptr(oldMode_));
 
-        if (mode != oldMode_[0]) glPolygonMode(GL_FRONT_AND_BACK, mode);
+        // Only GL_FRONT_AND_BACK in core profile.
+        glGetIntegerv(GL_POLYGON_MODE, &oldMode_);
+
+        if (mode != oldMode_) glPolygonMode(GL_FRONT_AND_BACK, mode);
 
         switch (mode_) {
             case GL_POINT: {
@@ -254,7 +255,7 @@ struct PolygonModeState {
                 default:
                     break;
             }
-            if (mode_ != oldMode_[0]) glPolygonMode(GL_FRONT_AND_BACK, oldMode_[0]);
+            if (mode_ != oldMode_) glPolygonMode(GL_FRONT_AND_BACK, oldMode_);
         }
     }
 
@@ -263,7 +264,7 @@ protected:
     GLfloat lineWidth_;
     GLfloat pointSize_;
 
-    ivec2 oldMode_;
+    GLint oldMode_;
     GLfloat oldLineWidth_;
     GLfloat oldPointSize_;
 };
