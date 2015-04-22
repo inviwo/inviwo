@@ -203,7 +203,6 @@ bool InviwoMainWindow::processCommandLineArgs() {
 #ifdef IVW_PYTHON_QT
 
     if (cmdparser->getRunPythonScriptAfterStartup()) {
-        PythonEditorWidget::getPtr()->show();
         PythonEditorWidget::getPtr()->loadFile(cmdparser->getPythonScriptName(), false);
         PythonEditorWidget::getPtr()->run();
     }
