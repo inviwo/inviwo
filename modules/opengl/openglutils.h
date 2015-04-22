@@ -84,6 +84,54 @@ private:
     int oldValue_;
 };
 
+
+struct GlBoolState {
+    GlBoolState() = delete;
+    GlBoolState(GlBoolState const&) = delete;
+    GlBoolState& operator=(GlBoolState const& that) = delete;
+
+    GlBoolState(GLenum target, bool state)
+        : target_(target), oldState_{}, state_(state) {
+       
+        oldState_ = glIsEnabled(target_);
+        if (oldState_ != state_) {
+            if (state) glEnable(target_);
+            else glDisable(target_);
+        }
+    }
+
+    GlBoolState(GlBoolState&& rhs)
+        : target_(rhs.target_), oldState_(rhs.oldState_), state_(rhs.state_) {
+        rhs.state_ = rhs.oldState_;
+    }
+    GlBoolState& operator=(GlBoolState&& that) {
+        if (this != &that) {
+            target_ = 0;
+            std::swap(target_, that.target_);
+            state_ = that.oldState_;
+            std::swap(state_, that.state_);
+            oldState_ = that.oldState_;
+        }
+        return *this;
+    }
+
+    operator bool() { return state_; };
+
+    ~GlBoolState() {
+        if(oldState_ != state_) {
+            if (oldState_) glEnable(target_);
+            else glDisable(target_);
+        }
+    } 
+
+private:
+    GLenum target_;
+    bool oldState_;
+    bool state_;
+};
+
+
+
 }  // namespace
 
 }  // namespace
