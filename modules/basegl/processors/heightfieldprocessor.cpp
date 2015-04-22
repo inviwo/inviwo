@@ -49,6 +49,8 @@ HeightFieldProcessor::HeightFieldProcessor()
     , heightScale_("heightScale", "Height Scale", 1.0f, 0.0f, 10.0f)
     , terrainShadingMode_("terrainShadingMode", "Terrain Shading")
 {
+    shader_ = Shader("heightfield.vert", "heightfield.frag", false);
+
     inportHeightfield_.onChange(this, &HeightFieldProcessor::heightfieldChanged);
     addPort(inportHeightfield_);
     addPort(inportTexture_);
@@ -67,19 +69,10 @@ HeightFieldProcessor::HeightFieldProcessor()
 HeightFieldProcessor::~HeightFieldProcessor() {
 }
 
-void HeightFieldProcessor::initialize() {
-    Processor::initialize();
-
-    // initialize shader to offset vertices in the vertex shader
-    shader_ = new Shader("heightfield.vert", "heightfield.frag", false);
-
-    GeometryRenderProcessorGL::initializeResources();
-}
-
 void HeightFieldProcessor::process() {
     int terrainShadingMode = terrainShadingMode_.get();
 
-    shader_->activate();
+    shader_.activate();
 
     // bind input textures
     TextureUnit heightFieldUnit, colorTexUnit, normalTexUnit;
@@ -103,12 +96,12 @@ void HeightFieldProcessor::process() {
         utilgl::bindColorTexture(inportNormalMap_, normalTexUnit.getEnum());
     }
 
-    shader_->setUniform("inportHeightfield_", heightFieldUnit.getUnitNumber());
-    shader_->setUniform("inportTexture_", colorTexUnit.getUnitNumber());
-    shader_->setUniform("inportNormalMap_", normalTexUnit.getUnitNumber());
-    shader_->setUniform("terrainShadingMode_", terrainShadingMode);
-    shader_->setUniform("normalMapping_", (normalMapping ? 1 : 0));
-    shader_->setUniform("heightScale_", heightScale_.get());
+    shader_.setUniform("inportHeightfield_", heightFieldUnit.getUnitNumber());
+    shader_.setUniform("inportTexture_", colorTexUnit.getUnitNumber());
+    shader_.setUniform("inportNormalMap_", normalTexUnit.getUnitNumber());
+    shader_.setUniform("terrainShadingMode_", terrainShadingMode);
+    shader_.setUniform("normalMapping_", (normalMapping ? 1 : 0));
+    shader_.setUniform("heightScale_", heightScale_.get());
 
     // render mesh
     GeometryRenderProcessorGL::process();

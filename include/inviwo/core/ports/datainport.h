@@ -34,13 +34,15 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <limits>
 
 namespace inviwo {
 
 template<typename T>
 class DataOutport;
 
-template<typename T>
+template <typename T, size_t N = 1>
 class DataInport : public Inport {
 public:
     DataInport(std::string identifier);
@@ -48,80 +50,108 @@ public:
 
     virtual uvec3 getColorCode() const override;
     virtual std::string getClassIdentifier() const override;
+    virtual std::string getContentInfo() const override;
+    virtual size_t getMaxNumberOfConnections() const override;
 
     virtual bool canConnectTo(Port* port) const override;
     virtual void connectTo(Outport* port) override;
+    virtual bool isConnected() const override;
     virtual bool isReady() const override;
 
     virtual const T* getData() const;
+    virtual std::vector<const T*> getVectorData() const;
+
     bool hasData() const;
-    virtual std::string getContentInfo() const;
-    virtual size_t getMaxNumberOfConnections() const override;
 };
 
-template<typename T>
-size_t inviwo::DataInport<T>::getMaxNumberOfConnections() const  {
-    return 1;
-}
 
-template<typename T>
-std::string inviwo::DataInport<T>::getClassIdentifier() const  {
-    return port_traits<T>::class_identifier() + "Inport";
-}
-
-template <typename T>
-DataInport<T>::DataInport(std::string identifier)
+template <typename T, size_t N>
+DataInport<T, N>::DataInport(std::string identifier)
     : Inport(identifier) {
 }
 
-template <typename T>
-uvec3 DataInport<T>::getColorCode() const { return port_traits<T>::color_code(); }
+template <typename T, size_t N>
+DataInport<T, N>::~DataInport() {}
 
-template <typename T>
-DataInport<T>::~DataInport() {}
+template <typename T, size_t N>
+std::string inviwo::DataInport<T, N>::getClassIdentifier() const {
+    return port_traits<T>::class_identifier() + (N == 0 ? "Multi" : "") + "Inport";
+}
 
-template <typename T>
-bool DataInport<T>::canConnectTo(Port* port) const {
-    if ( dynamic_cast<DataOutport<T>*>(port) &&  port->getProcessor() != getProcessor())
+template <typename T, size_t N>
+uvec3 DataInport<T, N>::getColorCode() const { return port_traits<T>::color_code(); }
+
+template <typename T, size_t N>
+size_t inviwo::DataInport<T, N>::getMaxNumberOfConnections() const  {
+    if (N==0) return std::numeric_limits<size_t>::max();
+    else return N;
+}
+
+template <typename T, size_t N>
+bool DataInport<T, N>::canConnectTo(Port* port) const {
+    if (dynamic_cast<DataOutport<T>*>(port) && port->getProcessor() != getProcessor())
         return true;
     else
         return false;
 }
 
-template <typename T>
-void DataInport<T>::connectTo(Outport* port) {
+template <typename T, size_t N>
+void DataInport<T, N>::connectTo(Outport* port) {
+    if (!port) return;
+
     DataOutport<T>* dataPort = dynamic_cast<DataOutport<T>*>(port);
-    ivwAssert(dataPort!=nullptr, "Trying to connect incompatible ports.")
+    if (!dataPort) throw Exception("Trying to connect incompatible ports.", IvwContext);
 
-    if (dataPort != nullptr)
-        Inport::connectTo(port);
-    else
-        LogWarn("Trying to connect incompatible ports.");
-}
-template <typename T>
-bool DataInport<T>::isReady() const { return Inport::isReady() && hasData(); }
+    if (getNumberOfConnections() + 1 > getMaxNumberOfConnections()) 
+        throw Exception("Trying to connect to a full port.", IvwContext);
 
-template <typename T>
-const T* DataInport<T>::getData() const {
-    if (isConnected()) {
-        // Safe to static cast since we are unable to connect other outport types.
-        return static_cast< DataOutport<T>* >(getConnectedOutport())->getConstData();
-    } else
-        return nullptr;
+    Inport::connectTo(port);
 }
 
-template <typename T>
-bool DataInport<T>::hasData() const {
+template <typename T, size_t N>
+bool inviwo::DataInport<T, N>::isConnected() const  {
+    if(N==0) return !connectedOutports_.empty();
+    else return connectedOutports_.size() == N;
+}
+
+template <typename T, size_t N>
+bool DataInport<T, N>::isReady() const {
+    return isConnected() && hasData() && util::all_of(connectedOutports_, [](Outport* p) {
+                                             return p->getInvalidationLevel() == VALID;
+                                         });
+}
+
+template <typename T, size_t N>
+const T* DataInport<T, N>::getData() const {
     if (isConnected()) {
         // Safe to static cast since we are unable to connect other outport types.
-        return static_cast< DataOutport<T>* >(getConnectedOutport())->hasData();
+        return static_cast<DataOutport<T>*>(getConnectedOutport())->getConstData();
     } else {
-        return false;
+        return nullptr;
     }
 }
 
-template <typename T>
-std::string DataInport<T>::getContentInfo() const {
+template <typename T, size_t N>
+std::vector<const T*> DataInport<T, N>::getVectorData() const {
+    std::vector<const T*> res(N);
+
+    for (auto outport : connectedOutports_) {
+        // Safe to static cast since we are unable to connect other outport types.
+        DataOutport<T>* dataport = static_cast<DataOutport<T>*>(outport);
+        if (dataport->hasData()) res.push_back(dataport->getConstData());
+    }
+
+    return res;
+}
+
+template <typename T, size_t N>
+bool DataInport<T, N>::hasData() const {
+    return util::all_of(connectedOutports_,
+                        [](Outport* p) { return static_cast<DataOutport<T>*>(p)->hasData(); });
+}
+
+template <typename T, size_t N>
+std::string DataInport<T, N>::getContentInfo() const {
     if (hasData()) {
         std::string info = port_traits<T>::data_info(getData());
         if (!info.empty()) {

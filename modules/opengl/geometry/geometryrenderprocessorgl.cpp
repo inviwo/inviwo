@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "geometryrenderprocessorgl.h"
@@ -37,11 +37,14 @@
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/shaderutils.h>
+#include <modules/opengl/openglutils.h>
+
+#include <limits>
 
 namespace inviwo {
 
 ProcessorClassIdentifier(GeometryRenderProcessorGL, "org.inviwo.GeometryRenderGL");
-ProcessorDisplayName(GeometryRenderProcessorGL,  "Geometry Renderer");
+ProcessorDisplayName(GeometryRenderProcessorGL, "Geometry Renderer");
 ProcessorTags(GeometryRenderProcessorGL, Tags::GL);
 ProcessorCategory(GeometryRenderProcessorGL, "Geometry Rendering");
 ProcessorCodeState(GeometryRenderProcessorGL, CODE_STATE_STABLE);
@@ -60,14 +63,14 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     , renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
     , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
     , lightingProperty_("lighting", "Lighting", &camera_)
-{
-    
+    , shader_("geometryrendering.vert", "geometryrendering.frag", false) {
+
     addPort(inport_);
     addPort(outport_);
     addProperty(camera_);
     centerViewOnGeometry_.onChange(this, &GeometryRenderProcessorGL::centerViewOnGeometry);
     addProperty(centerViewOnGeometry_);
-    resetViewParams_.onChange(this, &GeometryRenderProcessorGL::resetViewParams);
+    resetViewParams_.onChange([this]() { camera_.resetCamera(); });
     addProperty(resetViewParams_);
     outport_.addResizeEventListener(&camera_);
     inport_.onChange(this, &GeometryRenderProcessorGL::updateDrawers);
@@ -96,7 +99,7 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     renderLineWidth_.setMinValue(lineWidthRange[0]);
     renderLineWidth_.setMaxValue(lineWidthRange[1]);
     renderLineWidth_.setIncrement(increment);
-    
+
     renderLineWidth_.setVisible(false);
     renderPointSize_.setVisible(false);
 
@@ -109,49 +112,31 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
 
 GeometryRenderProcessorGL::~GeometryRenderProcessorGL() {}
 
-void GeometryRenderProcessorGL::initialize() {
-    Processor::initialize();
-    shader_ = new Shader("geometryrendering.vert", "geometryrendering.frag", false);
-    initializeResources();
-}
-
-void GeometryRenderProcessorGL::deinitialize() {
-    // Delete all drawers
-    for (auto& elem : drawers_) {
-        delete elem;
-    }
-    if (shader_) 
-        delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
-}
-
 void GeometryRenderProcessorGL::initializeResources() {
     // shading defines
-    utilgl::addShaderDefines(shader_, lightingProperty_);
-    shader_->build();
+    utilgl::addShaderDefines(&shader_, lightingProperty_);
+    shader_.build();
 }
 
 void GeometryRenderProcessorGL::changeRenderMode() {
-    switch(polygonMode_.get()) {
-        case GL_FILL : {
+    switch (polygonMode_.get()) {
+        case GL_FILL: {
             renderLineWidth_.setVisible(false);
             renderPointSize_.setVisible(false);
             break;
         }
-        case GL_LINE : {
+        case GL_LINE: {
             renderLineWidth_.setVisible(true);
             renderPointSize_.setVisible(false);
             break;
         }
-        case GL_POINT : {
+        case GL_POINT: {
             renderLineWidth_.setVisible(false);
             renderPointSize_.setVisible(true);
             break;
         }
     }
 }
-
 
 void GeometryRenderProcessorGL::process() {
     if (!inport_.hasData()) {
@@ -161,169 +146,149 @@ void GeometryRenderProcessorGL::process() {
     GLint prevPolygonMode[2];
     glGetIntegerv(GL_POLYGON_MODE, prevPolygonMode);
     glPolygonMode(GL_FRONT_AND_BACK, polygonMode_.get());
-    GLboolean depthTest = glIsEnabled(GL_DEPTH_TEST);
-    if (!depthTest) {    
-        glEnable(GL_DEPTH_TEST);
-    }
+
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
 
     utilgl::activateAndClearTarget(outport_);
 
-    shader_->activate();
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-    utilgl::setShaderUniforms(shader_, lightingProperty_, "light_");
+    shader_.activate();
+    utilgl::setShaderUniforms(&shader_, camera_, "camera_");
+    utilgl::setShaderUniforms(&shader_, lightingProperty_, "light_");
 
-    bool culling = (cullFace_.get() != GL_NONE);
+    utilgl::GlBoolState culling(GL_CULL_FACE, cullFace_.get() != GL_NONE);
     if (culling) {
-        glEnable(GL_CULL_FACE); 
         glCullFace(cullFace_.get());
     }
 
-    if (polygonMode_.get()==GL_LINE) {
+    if (polygonMode_.get() == GL_LINE) {
         // FIX: disabled line smoothing to avoid blending artifacts with background (issue #611)
-        //glEnable(GL_LINE_SMOOTH);
+        // glEnable(GL_LINE_SMOOTH);
         glLineWidth((GLfloat)renderLineWidth_.get());
-    }
-    else if (polygonMode_.get()==GL_POINT)
+    } else if (polygonMode_.get() == GL_POINT) {
         glPointSize((GLfloat)renderPointSize_.get());
+    }
 
-    for (auto drawer : drawers_) {
-        utilgl::setShaderUniforms(shader_, *(drawer->getGeometry()), "geometry_");
+    for (auto& drawer : drawers_) {
+        utilgl::setShaderUniforms(&shader_, *(drawer->getGeometry()), "geometry_");
         drawer->draw();
     }
 
-    if (polygonMode_.get()==GL_LINE) {
+    if (polygonMode_.get() == GL_LINE) {
         // FIX: disabled line smoothing to avoid blending artifacts with background (issue #611)
-        //glDisable(GL_LINE_SMOOTH);
+        // glDisable(GL_LINE_SMOOTH);
     }
 
-    shader_->deactivate();
+    shader_.deactivate();
 
     utilgl::deactivateCurrentTarget();
 
-    if (culling) {
-        glDisable(GL_CULL_FACE);
-    }
-    if (!depthTest) {
-        glDisable(GL_DEPTH_TEST);
-    }
     // restore
     glPointSize(1.f);
     glPolygonMode(GL_FRONT_AND_BACK, prevPolygonMode[0]);
 }
 
 void GeometryRenderProcessorGL::centerViewOnGeometry() {
-    std::vector<const Geometry*> geometries = inport_.getData();
+    std::vector<const Geometry*> geometries = inport_.getVectorData();
     if (geometries.empty()) return;
 
-    const Mesh* geom = dynamic_cast<const Mesh*>(geometries[0]);
+    vec3 worldMin(std::numeric_limits<float>::max());
+    vec3 worldMax(std::numeric_limits<float>::lowest());
 
-    if (geom == nullptr) {
-        return;
+    for (auto geom : geometries) {
+        const Mesh* mesh = dynamic_cast<const Mesh*>(geom);
+        if (mesh) {
+            vec3 minPos(std::numeric_limits<float>::max());
+            vec3 maxPos(std::numeric_limits<float>::lowest());
+            for (auto buff : mesh->getBuffers()) {
+                if (buff->getBufferType() == POSITION_ATTRIB) {
+                    const Position3dBufferRAM* posbuff = dynamic_cast<const Position3dBufferRAM*>(
+                        buff->getRepresentation<BufferRAM>());
+
+                    if (posbuff) {
+                        const std::vector<vec3>* pos = posbuff->getDataContainer();
+                        for (const auto& p : *pos) {
+                            minPos = glm::min(minPos, p);
+                            maxPos = glm::max(maxPos, p);
+                        }
+                    }
+                }
+            }
+
+            mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
+
+            worldMin = glm::min(worldMin, (trans * vec4(minPos, 1.f)).xyz());
+            worldMax = glm::max(worldMax, (trans * vec4(maxPos, 1.f)).xyz());
+        }
     }
-
-    const Position3dBufferRAM* posBuffer = dynamic_cast<const Position3dBufferRAM*>(
-        geom->getAttributes(0)->getRepresentation<BufferRAM>());
-
-    if (posBuffer == nullptr) {
-        return;
-    }
-
-    const std::vector<vec3>* pos = posBuffer->getDataContainer();
-    vec3 maxPos, minPos;
-
-    if (pos->empty()) {
-        return;
-    }
-
-    maxPos = (*pos)[0];
-    minPos = maxPos;
-    for (auto& po : *pos) {
-        maxPos = glm::max(maxPos, po);
-        minPos = glm::min(minPos, po);
-    }
-
-    mat4 modelMatrix = geom->getModelMatrix();
-    mat4 worldMatrix = geom->getWorldMatrix();
-    vec3 centerPos = (worldMatrix * modelMatrix * vec4(0.5f * (maxPos + minPos), 1.f)).xyz();
-    vec3 lookFrom = camera_.getLookFrom();
-    vec3 dir = centerPos - lookFrom;
-
-    if (glm::length(dir) < glm::epsilon<float>()) {
-        dir = vec3(0.f, 0.f, -1.f);
-    }
-
-    camera_.setLook(lookFrom, centerPos, camera_.getLookUp());
-    return;
-
-    dir = glm::normalize(dir);
-    vec3 worldMin = (geom->getWorldMatrix() * geom->getModelMatrix() * vec4(minPos, 1.f)).xyz();
-    vec3 worldMax = (geom->getWorldMatrix() * geom->getModelMatrix() * vec4(maxPos, 1.f)).xyz();
-    vec3 newLookFrom = lookFrom - dir * glm::length(worldMax - worldMin);
-    camera_.setLook(newLookFrom, centerPos, camera_.getLookUp());
+    camera_.setLook(camera_.getLookFrom(), 0.5f * (worldMin + worldMax), camera_.getLookUp());
 }
 
 void GeometryRenderProcessorGL::updateDrawers() {
-    std::vector<Inport*> inports = inport_.getInports();
-
-    // Copy draw information vectors and clear them
-    // , vectors should have the same size
-    std::vector<GeometryDrawer*> ds = drawers_;
     drawers_.clear();
-    std::vector<Inport*> dsPort = drawersPort_;
-    drawersPort_.clear();
 
-    // Loop over all inports and make sure all renderers are valid
-    // Else create new ones
-    // All geometries will be rendered in correct order based on port connection
-    // and order inside port
-    for (size_t i = 0; i < inports.size(); i++) {
-        bool addNew = false;
-        // If inport changed, delete all old drawers 
-        // associated with that inport and create new ones
-        if (inports[i]->isChanged()){
-            for (size_t j = 0; j < dsPort.size(); j++) {
-                if (dsPort[j] == inports[i]) 
-                    delete ds[j];
-            }
-            addNew = true;
-        }
-        else {
-            // if the inport is not found in the vector
-            // this port was just connected
-            bool found = false;
-            for (size_t j = 0; j < dsPort.size(); j++) {
-                if (dsPort[j] == inports[i]){
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-                addNew = true;
-        }
-
-        if (addNew){
-            std::vector<const Geometry*> geometries = inport_.getDataFromPort(inports[i]);
-            for (size_t j = 0; j < geometries.size(); ++j) { //create new renderer for new geometries
-                GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geometries[j]);
-
-                if (renderer) {
-                    drawers_.push_back(renderer);
-                    drawersPort_.push_back(inports[i]);
-                }
-            }
-        }
-        else{
-            for (size_t j = 0; j < dsPort.size(); j++) {
-                if (dsPort[j] == inports[i]){
-                    drawers_.push_back(ds[j]);
-                    drawersPort_.push_back(inports[i]);
-                }
-            }
+    for (auto geom : inport_.getVectorData()) {
+        GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geom);
+        if (renderer) {
+            drawers_.push_back(std::unique_ptr<GeometryDrawer>(renderer));
         }
     }
+
+
+//     std::vector<Inport*> inports = inport_.getInports();
+// 
+//     // Copy draw information vectors and clear them
+//     // , vectors should have the same size
+//     std::vector<GeometryDrawer*> ds = drawers_;
+//     drawers_.clear();
+//     std::vector<Inport*> dsPort = drawersPort_;
+//     drawersPort_.clear();
+// 
+//     // Loop over all inports and make sure all renderers are valid
+//     // Else create new ones
+//     // All geometries will be rendered in correct order based on port connection
+//     // and order inside port
+//     for (size_t i = 0; i < inports.size(); i++) {
+//         bool addNew = false;
+//         // If inport changed, delete all old drawers
+//         // associated with that inport and create new ones
+//         if (inports[i]->isChanged()) {
+//             for (size_t j = 0; j < dsPort.size(); j++) {
+//                 if (dsPort[j] == inports[i]) delete ds[j];
+//             }
+//             addNew = true;
+//         } else {
+//             // if the inport is not found in the vector
+//             // this port was just connected
+//             bool found = false;
+//             for (size_t j = 0; j < dsPort.size(); j++) {
+//                 if (dsPort[j] == inports[i]) {
+//                     found = true;
+//                     break;
+//                 }
+//             }
+//             if (!found) addNew = true;
+//         }
+// 
+//         if (addNew) {
+//             std::vector<const Geometry*> geometries = inport_.getDataFromPort(inports[i]);
+//             for (size_t j = 0; j < geometries.size();
+//                  ++j) {  // create new renderer for new geometries
+//                 GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geometries[j]);
+// 
+//                 if (renderer) {
+//                     drawers_.push_back(renderer);
+//                     drawersPort_.push_back(inports[i]);
+//                 }
+//             }
+//         } else {
+//             for (size_t j = 0; j < dsPort.size(); j++) {
+//                 if (dsPort[j] == inports[i]) {
+//                     drawers_.push_back(ds[j]);
+//                     drawersPort_.push_back(inports[i]);
+//                 }
+//             }
+//         }
+//     }
 }
 
-void GeometryRenderProcessorGL::resetViewParams() {
-    camera_.resetCamera();
-}
-} // namespace
+}  // namespace

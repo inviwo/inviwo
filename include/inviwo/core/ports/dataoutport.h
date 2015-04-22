@@ -39,15 +39,8 @@
 
 namespace inviwo {
 
-template <typename T, typename U>
-class MultiDataInport;
-
-template <typename T>
-class DataInport;
-
 template <typename T>
 class DataOutport : public Outport {
-    friend class MultiDataInport<T, DataInport<T> >;
 
 public:
     DataOutport(std::string identifier);
