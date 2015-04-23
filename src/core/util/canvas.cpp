@@ -114,7 +114,7 @@ void Canvas::initialize() {
 
 void Canvas::deinitialize() { propagator_ = nullptr; }
 
-void Canvas::render(const Image* im, LayerType layerType/* = COLOR_LAYER*/) {}
+void Canvas::render(const Image* im, LayerType layerType, size_t idx) {}
 
 void Canvas::activate() {}
 

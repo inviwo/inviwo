@@ -75,6 +75,10 @@ public:
     void triggerQueuedEvaluation();
     virtual bool isReady() const;
 
+    void setMaxColorLayer();
+
+    virtual void propagateResizeEvent(ResizeEvent*);
+    virtual void propagateInteractionEvent(InteractionEvent*);
     virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
 protected:
@@ -89,6 +93,7 @@ protected:
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
     OptionPropertyInt visibleLayer_;
+    IntProperty colorLayer_;
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
     CompositeProperty inputSize_;
