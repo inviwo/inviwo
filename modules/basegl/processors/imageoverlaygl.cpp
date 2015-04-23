@@ -101,21 +101,11 @@ ImageOverlayGL::ImageOverlayGL()
     addProperty(overlayProperty_);
 
     overlayProperty_.onChange(this, &ImageOverlayGL::onStatusChange);
-    //overlayInteraction_.onChange(this, &ImageOverlayGL::onOverlayInteractionChange);
 
     addInteractionHandler(&overlayHandler_);
 }
 
 ImageOverlayGL::~ImageOverlayGL() {}
-
-void ImageOverlayGL::initialize() {
-    Processor::initialize();
-    onStatusChange();
-}
-
-void ImageOverlayGL::deinitialize() {
-    Processor::deinitialize();
-}
 
 const std::vector<Inport*>& ImageOverlayGL::getInports(Event* e) const {
     currentInteractionInport_.clear();
@@ -156,19 +146,13 @@ const std::vector<Inport*>& ImageOverlayGL::getInports(Event* e) const {
         return currentInteractionInport_;
     }
 
-    return Processor::getInports();
+    return Processor::getInports(e);
 }
 
 const std::vector<ivec4>& ImageOverlayGL::getViewCoords() const { return viewCoords_; }
 
 bool ImageOverlayGL::isReady() const {
-    if (overlayPort_.isConnected()) {
-        return Processor::isReady();
-    }
-    else {
-        // overlay is not connected
-        return inport_.isReady();
-    }
+    return inport_.isReady();
 }
 
 void ImageOverlayGL::overlayInportChanged() {
@@ -218,8 +202,7 @@ void ImageOverlayGL::process() {
         depthUnit.getEnum(), pickingUnit.getEnum());
     utilgl::singleDrawImagePlaneRect();
 
-    // TODO: why does it not work with .isReady()?
-    if (overlayPort_.isConnected()) {
+    if (overlayPort_.hasData()) {
         // draw overlay
         switch (overlayProperty_.blendMode_.get()) {
         case OverlayProperty::BlendMode::Over:
