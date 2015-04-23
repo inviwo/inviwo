@@ -125,7 +125,7 @@ void BaseOrdinalPropertyWidgetQt::generatesSettingsWidget() {
             this,
             SLOT(setAsMax()));
                
-    contextMenu_ = new QMenu();
+    contextMenu_ = new QMenu(this);
     contextMenu_->addActions(PropertyWidgetQt::getContextMenu()->actions());
     contextMenu_->addAction(settingsAction_);
     contextMenu_->addAction(minAction_);
