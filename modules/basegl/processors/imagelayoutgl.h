@@ -69,11 +69,13 @@ public:
     const std::vector<Inport*>& getInports(Event*) const;
     const std::vector<ivec4>& getViewCoords() const;
 
+    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
+
 protected:
     virtual void process() override;
 
     void multiInportChanged();
-    void updateViewports(bool force = false);
+    void updateViewports(ivec2 size, bool force = false);
     void onStatusChange();
 
     class ImageLayoutGLInteractionHandler : public InteractionHandler {

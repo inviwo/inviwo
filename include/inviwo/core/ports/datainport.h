@@ -159,11 +159,11 @@ std::vector<std::pair<const Outport*, const T*>> inviwo::DataInport<T, N>::getSo
     return res;
 }
 
-
 template <typename T, size_t N>
 bool DataInport<T, N>::hasData() const {
-    return util::all_of(connectedOutports_,
-                        [](Outport* p) { return static_cast<DataOutport<T>*>(p)->hasData(); });
+    return isConnected() && util::all_of(connectedOutports_, [](Outport* p) {
+                                return static_cast<DataOutport<T>*>(p)->hasData();
+                            });
 }
 
 template <typename T, size_t N>

@@ -133,25 +133,28 @@ const std::vector<Inport*>& ImageLayoutGL::getInports(Event* e) const {
 
 const std::vector<ivec4>& ImageLayoutGL::getViewCoords() const { return viewCoords_; }
 
-void ImageLayoutGL::multiInportChanged() {
-    if (multiinport_.isConnected()) {
-        updateViewports(true);
-        std::vector<Inport*> inports = multiinport_.getInports();
-        size_t minNum = std::min(inports.size(), viewCoords_.size());
-        uvec2 outDimU = outport_.getData()->getDimensions();
-        vec2 outDim = vec2(outDimU.x, outDimU.y);
-        for (size_t i = 0; i < minNum; ++i) {
-            ImageInport* imageInport = static_cast<ImageInport*>(inports[i]);
-            imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);
-            uvec2 inDimU = imageInport->getDimensions();
-            if (inDimU == uvec2(8, 8)) {
-                uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
-                ResizeEvent e(inDimNewU);
-                e.setPreviousSize(inDimU);
-                imageInport->changeDataDimensions(&e);
-            }
+bool ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    updateViewports(resizeEvent->size(), true);
+    auto inports = multiinport_.getInports();
+    size_t minNum = std::min(inports.size(), viewCoords_.size());
+
+    for (size_t i = 0; i < minNum; ++i) {
+        auto imageInport = static_cast<ImageInport*>(inports[i]);
+        uvec2 inDimU = imageInport->getDimensions();
+        uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
+        if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
+            ResizeEvent e(inDimNewU);
+            e.setPreviousSize(inDimU);
+            imageInport->changeDataDimensions(&e);
         }
     }
+
+    return false;
+}
+
+void ImageLayoutGL::multiInportChanged() {
+    ResizeEvent e(currentDim_);
+    propagateResizeEvent(&e, &outport_);
 }
 
 void ImageLayoutGL::onStatusChange() {
@@ -182,22 +185,8 @@ void ImageLayoutGL::onStatusChange() {
             break;
     }
 
-    updateViewports(true);
-    std::vector<Inport*> inports = multiinport_.getInports();
-    size_t minNum = std::min(inports.size(), viewCoords_.size());
-    uvec2 outDimU = outport_.getData()->getDimensions();
-    vec2 outDim = vec2(outDimU.x, outDimU.y);
-    for (size_t i = 0; i < minNum; ++i) {
-        ImageInport* imageInport = static_cast<ImageInport*>(inports[i]);
-        uvec2 inDimU = imageInport->getDimensions();
-        imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);
-        uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
-        if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
-            ResizeEvent e(inDimNewU);
-            e.setPreviousSize(inDimU);
-            imageInport->changeDataDimensions(&e);
-        }
-    }
+    ResizeEvent e(currentDim_);
+    propagateResizeEvent(&e, &outport_);
 }
 
 void ImageLayoutGL::process() {
@@ -229,10 +218,7 @@ void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
 }
 
-void ImageLayoutGL::updateViewports(bool force) {
-    ivec2 dim(256, 256);
-    if (outport_.isConnected()) dim = outport_.getData()->getDimensions();
-
+void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get())) return;  // no changes
 
     viewCoords_.clear();

@@ -155,34 +155,32 @@ bool ImageOverlayGL::isReady() const {
     return inport_.isReady();
 }
 
-void ImageOverlayGL::overlayInportChanged() {
-    if (overlayPort_.isConnected()) {
-        updateViewports(true);
-    }
+bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    updateViewports(resizeEvent->size(), true);
 
-    updateDimensions();
-}
-
-void ImageOverlayGL::onStatusChange() {
-    updateViewports(true);
-
-    updateDimensions();
-}
-
-void ImageOverlayGL::updateDimensions() {
-    uvec2 outDimU = outport_.getData()->getDimensions();
-    vec2 outDim = vec2(outDimU.x, outDimU.y);
     if (overlayPort_.isConnected()) {
         uvec2 inDimU = overlayPort_.getDimensions();
-        overlayPort_.setResizeScale(vec2(overlayProperty_.viewport_.z, overlayProperty_.viewport_.w) / outDim);
-        uvec2 inDimNewU = uvec2(overlayProperty_.viewport_.z, overlayProperty_.viewport_.w);
+        uvec2 inDimNewU = uvec2(viewCoords_[0].z, viewCoords_[0].w);
         if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
             ResizeEvent e(inDimNewU);
             e.setPreviousSize(inDimU);
             overlayPort_.changeDataDimensions(&e);
         }
     }
+
+    return false;
 }
+
+void ImageOverlayGL::overlayInportChanged() {
+    ResizeEvent e(currentDim_);
+    propagateResizeEvent(&e, &outport_);
+}
+
+void ImageOverlayGL::onStatusChange() {
+    ResizeEvent e(currentDim_);
+    propagateResizeEvent(&e, &outport_);
+}
+
 
 void ImageOverlayGL::process() {
     ivec2 dim = outport_.getData()->getDimensions();
@@ -233,10 +231,7 @@ void ImageOverlayGL::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void ImageOverlayGL::updateViewports(bool force) {
-    ivec2 dim(256, 256);
-    if (outport_.isConnected()) dim = outport_.getData()->getDimensions();
-
+void ImageOverlayGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim)) return;  // no changes
 
     overlayProperty_.updateViewport(dim);
