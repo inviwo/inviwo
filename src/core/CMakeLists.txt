@@ -220,6 +220,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/formatsdefinefunc.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/group.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/rayplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/introspection.h
@@ -408,6 +409,7 @@ set(SOURCE_FILES
     util/fileobserver.cpp
     util/filesystem.cpp
     util/formats.cpp
+    util/imagecache.cpp
     util/intersection/rayplaneintersection.cpp
     util/intersection/raysphereintersection.cpp
     util/introspection.cpp
