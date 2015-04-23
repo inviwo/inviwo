@@ -128,6 +128,8 @@ public:
     std::vector<std::string> getPortDependencySets() const;
     std::vector<Port*> getPortsByDependencySet(const std::string& portDependencySet) const;
     std::string getPortDependencySet(Port* port) const;
+    std::vector<Port*> getPortsInSameSet(Port* port) const;
+
 
     bool allInportsConnected() const;
     bool allInportsAreReady() const;

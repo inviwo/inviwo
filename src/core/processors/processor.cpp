@@ -159,6 +159,10 @@ std::string Processor::getPortDependencySet(Port* port) const {
     return portDependencySets_.getKey(port);
 }
 
+std::vector<Port*> Processor::getPortsInSameSet(Port* port) const {
+    return portDependencySets_.getGroupedData(portDependencySets_.getKey(port));
+}
+
 void Processor::initialize() { initialized_ = true; }
 
 void Processor::deinitialize() { initialized_ = false; }
