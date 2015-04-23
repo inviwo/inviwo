@@ -101,7 +101,7 @@ ImageOverlayGL::ImageOverlayGL()
     addProperty(overlayProperty_);
 
     overlayProperty_.onChange(this, &ImageOverlayGL::onStatusChange);
-    overlayInteraction_.onChange(this, &ImageOverlayGL::onOverlayInteractionChange);
+    //overlayInteraction_.onChange(this, &ImageOverlayGL::onOverlayInteractionChange);
 
     addInteractionHandler(&overlayHandler_);
 }

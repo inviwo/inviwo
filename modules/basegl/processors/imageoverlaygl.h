@@ -132,7 +132,7 @@ protected:
     void updateViewports(bool force = false);
     void updateDimensions();
     void onStatusChange();
-    void onOverlayInteractionChange();
+  //  void onOverlayInteractionChange();
 
     class ImageOverlayGLInteractionHandler : public InteractionHandler {
     public:
