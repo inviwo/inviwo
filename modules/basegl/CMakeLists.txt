@@ -17,6 +17,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageglprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagelayoutgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagemixer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageoverlaygl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
@@ -47,6 +48,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageglprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagelayoutgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagemixer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageoverlaygl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp

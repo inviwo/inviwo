@@ -65,16 +65,10 @@ public:
     bool isOutportDeterminingSize() const;
     void setOutportDeterminesSize(bool outportDeterminesSize);
     
-    vec2 getResizeScale();
-    void setResizeScale(vec2);
-
     void passOnDataToOutport(ImageOutport* outport) const;
 
-protected:
-    void propagateResizeToPredecessor(ResizeEvent* resizeEvent);
-
 private:
-    uvec2 dimensions_;
+    uvec2 requestedDimensions_;
     vec2 resizeScale_;
     bool outportDeterminesSize_;
 };
@@ -88,7 +82,6 @@ public:
 
     virtual ~ImageOutport();
 
-    virtual Image* getData() override;
     virtual void setData(Image* data, bool ownsData = true) override;
     virtual void setConstData(const Image* data) override;
 
@@ -118,31 +111,21 @@ public:
 protected:
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
-
     Image* getResizedImageData(uvec2 dimensions);
     void setLargestImageData();
-    /**
-     * \brief Propagates resize event to this processor's inports within the same dependency set
-     *(group)
-     *
-     * @param ResizeEvent * resizeEvent Event to be propagated
-     * @return bool * If propagation ended or not
-     */
-    bool propagateResizeEventToPredecessor(ResizeEvent* resizeEvent);
-    ResizeEvent* scaleResizeEvent(ImageInport*, ResizeEvent*);
 
 private:
     void onSetData();
     void updateImageFromInputSource();
 
     uvec2 dimensions_;
-    bool mapDataInvalid_;
+    bool cacheInvalid_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false
 
     // Image cache
     typedef std::map<std::string, Image*> ImagePortMap;
-    ImagePortMap imageDataMap_;
+    ImagePortMap imageCache_;
 };
 
 }  // namespace

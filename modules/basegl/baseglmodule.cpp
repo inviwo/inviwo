@@ -39,6 +39,7 @@
 #include <modules/basegl/processors/imagecompositeprocessorgl.h>
 #include <modules/basegl/processors/imagelayoutgl.h>
 #include <modules/basegl/processors/imagemixer.h>
+#include <modules/basegl/processors/imageoverlaygl.h>
 #include <modules/basegl/processors/lightingraycaster.h>
 #include <modules/basegl/processors/lightvolumegl.h>
 #include <modules/basegl/processors/multichannelraycaster.h>
@@ -78,6 +79,7 @@ BaseGLModule::BaseGLModule() : InviwoModule() {
     registerProcessor(ImageCompositeProcessorGL);
     registerProcessor(ImageLayoutGL);
     registerProcessor(ImageMixer);
+    registerProcessor(ImageOverlayGL);
     registerProcessor(LightingRaycaster);
     registerProcessor(LightVolumeGL);
     registerProcessor(MultichannelRaycaster);

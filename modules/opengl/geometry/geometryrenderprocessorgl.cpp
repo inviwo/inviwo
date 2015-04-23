@@ -55,6 +55,7 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     , outport_("image.outport")
     , camera_("camera", "Camera")
     , centerViewOnGeometry_("centerView", "Center view on geometry")
+    , setNearFarPlane_("setNearFarPlane","Calculate Near and Far Plane")
     , resetViewParams_("resetView", "Reset Camera")
     , trackball_(&camera_)
     , geomProperties_("geometry", "Geometry Rendering Properties")
@@ -63,14 +64,21 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     , renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
     , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
     , lightingProperty_("lighting", "Lighting", &camera_)
+    , layers_("layers", "Layers")
+    , colorLayer_("colorLayer", "Color", true, INVALID_RESOURCES)
+    , texCoordLayer_("texCoordLayer", "Texture Coordinates", false, INVALID_RESOURCES)
+    , normalsLayer_("normalsLayer", "Normals (World Space)", false, INVALID_RESOURCES)
+    , veiwNormalsLayer_("veiwNormalsLayer", "Normals (View space)", false, INVALID_RESOURCES)
     , shader_("geometryrendering.vert", "geometryrendering.frag", false) {
+
     addPort(inport_);
     addPort(outport_);
     addProperty(camera_);
     centerViewOnGeometry_.onChange(this, &GeometryRenderProcessorGL::centerViewOnGeometry);
     addProperty(centerViewOnGeometry_);
-    resetViewParams_.onChange([this]() { camera_.resetCamera(); });
-    addProperty(resetViewParams_);
+    setNearFarPlane_.onChange(this, &GeometryRenderProcessorGL::setNearFarPlane);
+    addProperty(setNearFarPlane_);
+    resetViewParams_.onChange([this]() { camera_.resetCamera(); });    addProperty(resetViewParams_);
     outport_.addResizeEventListener(&camera_);
     inport_.onChange(this, &GeometryRenderProcessorGL::updateDrawers);
 
@@ -106,6 +114,12 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     addProperty(lightingProperty_);
     addProperty(trackball_);
 
+    addProperty(layers_);
+    layers_.addProperty(colorLayer_);
+    layers_.addProperty(texCoordLayer_);
+    layers_.addProperty(normalsLayer_);
+    layers_.addProperty(veiwNormalsLayer_);
+
     setAllPropertiesCurrentStateAsDefault();
 }
 
@@ -114,6 +128,43 @@ GeometryRenderProcessorGL::~GeometryRenderProcessorGL() {}
 void GeometryRenderProcessorGL::initializeResources() {
     // shading defines
     utilgl::addShaderDefines(&shader_, lightingProperty_);
+    int layerID = 0;
+
+    if (colorLayer_.get()) {
+        shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
+        layerID++;
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
+    }
+
+    if (texCoordLayer_.get()) {
+        shader_.getFragmentShaderObject()->addShaderDefine("TEXCOORD_LAYER");
+        shader_.getFragmentShaderObject()->addOutDeclaration("tex_coord_out");
+        layerID++;
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("TEXCOORD_LAYER");
+    }
+
+    if (normalsLayer_.get()) {
+        shader_.getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
+        shader_.getFragmentShaderObject()->addOutDeclaration("normals_out");
+        layerID++;
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
+    }
+
+    if (veiwNormalsLayer_.get()) {
+        shader_.getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
+        shader_.getFragmentShaderObject()->addOutDeclaration("view_normals_out");
+        layerID++;
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
+    }
+
+    for (size_t i = outport_.getData()->getNumberOfColorLayers(); i < layerID; i++) {
+        outport_.getData()->addColorLayer(outport_.getData()->getColorLayer(0)->clone());
+    }
+
     shader_.build();
 }
 
@@ -193,6 +244,55 @@ void GeometryRenderProcessorGL::centerViewOnGeometry() {
         }
     }
     camera_.setLook(camera_.getLookFrom(), 0.5f * (worldMin + worldMax), camera_.getLookUp());
+}
+
+void GeometryRenderProcessorGL::setNearFarPlane() {
+    std::vector<const Geometry*> geometries = inport_.getVectorData();
+    if (geometries.empty()) return;
+
+    const Mesh* geom = dynamic_cast<const Mesh*>(geometries[0]);
+
+    if (geom == nullptr) {
+        return;
+    }
+
+    const Position3dBufferRAM* posBuffer = dynamic_cast<const Position3dBufferRAM*>(
+        geom->getAttributes(0)->getRepresentation<BufferRAM>());
+
+    if (posBuffer == nullptr) {
+        return;
+    }
+
+    const std::vector<vec3>* pos = posBuffer->getDataContainer();
+
+    if (pos->empty()) {
+        return;
+    }
+
+    float nearDist, farDist;
+    nearDist = std::numeric_limits<float>::infinity();
+    farDist = 0;
+    vec3 nearPos, farPos;
+    vec3 camPos = (geom->getCoordinateTransformer().getWorldToModelMatrix() * vec4(camera_.getLookFrom(), 1.0)).xyz();
+    for (auto& po : *pos) {
+        auto d = glm::distance2(po, camPos);
+        if (d < nearDist){
+            nearDist = d;
+            nearPos = po;
+        }
+        if (d > farDist){
+            farDist = d;
+            farPos = po;
+        }
+    }
+
+    mat4 m =  camera_.viewMatrix() * geom->getCoordinateTransformer().getModelToWorldMatrix();
+
+
+
+    camera_.setNearPlaneDist(std::max(0.0f, 0.99f*std::abs((m * vec4(nearPos, 1.0f)).z)));
+    camera_.setFarPlaneDist(std::max(0.0f, 1.01f*std::abs((m * vec4(farPos, 1.0f)).z)));
+    
 }
 
 void GeometryRenderProcessorGL::updateDrawers() {

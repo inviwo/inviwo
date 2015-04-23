@@ -140,21 +140,16 @@ ProcessorNetworkEvaluator::getStoredPredecessors(Processor* processor) const {
     }
 }
 
-ProcessorNetworkEvaluator::ProcessorList ProcessorNetworkEvaluator::getDirectPredecessors(Processor* processor, Event* event) const {
+ProcessorNetworkEvaluator::ProcessorList ProcessorNetworkEvaluator::getDirectPredecessors(
+    Processor* processor, Event* event) const {
     ProcessorList predecessors;
-    const std::vector<Inport*>& inports = processor->getInports(event);
 
-    for (std::vector<Inport*>::const_iterator portIt = inports.begin(), portItEnd = inports.end(); portIt!=portItEnd; ++portIt) {
-        if (!(*portIt)->isConnected())
-            continue;
+    for (auto port : processor->getInports(event)) {
+        if (!port->isConnected()) continue;
 
-        const std::vector<Outport*>& connectedOutPorts = (*portIt)->getConnectedOutports();
-
-        for (std::vector<Outport*>::const_iterator connectedPortIt = connectedOutPorts.begin(),
-             connectedPortItEnd = connectedOutPorts.end();
-             connectedPortIt!=connectedPortItEnd; ++connectedPortIt)
-            if(*connectedPortIt)
-                predecessors.insert((*connectedPortIt)->getProcessor());
+        for (auto connectedPort : port->getConnectedOutports()) {
+            if (connectedPort) predecessors.insert(connectedPort->getProcessor());
+        }
     }
 
     return predecessors;

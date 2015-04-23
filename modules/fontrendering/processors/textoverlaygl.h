@@ -65,7 +65,7 @@ private:
     FloatVec4Property color_;
     OptionPropertyInt fontSize_;
     FloatVec2Property fontPos_;
-    FloatVec2Property refPos_;
+    FloatVec2Property anchorPos_;
 
     TextRenderer* textRenderer_;
 

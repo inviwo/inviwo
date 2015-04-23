@@ -37,41 +37,23 @@ namespace inviwo {
 // Image Inport
 ImageInport::ImageInport(std::string identifier, bool outportDeterminesSize)
     : DataInport<Image>(identifier)
-    , dimensions_(8, 8)
+    , requestedDimensions_(8, 8)
     , resizeScale_(1.f, 1.f)
     , outportDeterminesSize_(outportDeterminesSize) {}
 
 ImageInport::~ImageInport() {}
 
 void ImageInport::connectTo(Outport* outport) {
-    ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(outport);
-
-    const uvec2 dim =
-        isOutportDeterminingSize() && isConnected() ? imageOutport->getDimensions() : dimensions_;
-
-    ResizeEvent resizeEvent(dim);
-    if (getProcessor()->isEndProcessor() || isOutportDeterminingSize()) {
-        if (imageOutport->isHandlingResizeEvents())
-            resizeEvent.setSize(dimensions_);
-        else
-            dimensions_ = dim;
-        imageOutport->changeDataDimensions(&resizeEvent);
-    } else {
-        // Resize outport if any outport within the same port dependency set is connected
-        for (auto port : getProcessor()->getPortsInSameSet(this)) {
-            ImageOutport* portSetImageOutport = dynamic_cast<ImageOutport*>(port);
-            if (portSetImageOutport && portSetImageOutport->isConnected()) {
-                imageOutport->changeDataDimensions(&resizeEvent);
-            }
-        }
-    }
-
     DataInport<Image>::connectTo(outport);
+
+    ResizeEvent resizeEvent(requestedDimensions_);
+    ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(outport);
+    imageOutport->changeDataDimensions(&resizeEvent);
 }
 
 // set dimensions based on port groups
 void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {
-    dimensions_ = resizeEvent->size();
+    requestedDimensions_ = resizeEvent->size();
 
     // Find the image port with largest dimensions
     for (auto port : getProcessor()->getPortsInSameSet(this)) {
@@ -81,36 +63,28 @@ void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {
             const uvec2 dim = imageOutport->getDimensions();
 
             // Largest outport dimensions
-            if (dimensions_.x * dimensions_.y < dim.x * dim.y) dimensions_ = dim;
+            if (requestedDimensions_.x * requestedDimensions_.y < dim.x * dim.y) requestedDimensions_ = dim;
         }
     }
 
-    resizeEvent->setSize(dimensions_);
-    propagateResizeToPredecessor(resizeEvent);
-}
+    resizeEvent->setSize(requestedDimensions_);
 
-void ImageInport::propagateResizeToPredecessor(ResizeEvent* resizeEvent) {
-    ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(getConnectedOutport());
-    if (imageOutport) {
+    if (auto imageOutport = static_cast<ImageOutport*>(getConnectedOutport())) {
        imageOutport->changeDataDimensions(resizeEvent);
     }
 }
 
-void ImageInport::setResizeScale(vec2 scaling) { resizeScale_ = scaling; }
-
-vec2 ImageInport::getResizeScale() { return resizeScale_; }
-
 uvec2 ImageInport::getDimensions() const {
-    return dimensions_;
+    return requestedDimensions_;
 }
 
 const Image* ImageInport::getData() const {
     if (isConnected()) {
         ImageOutport* outport = static_cast<ImageOutport*>(getConnectedOutport());
-        if (isOutportDeterminingSize() || dimensions_ == uvec2(8, 8)) {
+        if (isOutportDeterminingSize() || requestedDimensions_ == uvec2(8, 8)) {
             return outport->getConstData();
         } else {
-            return const_cast<const Image*>(outport->getResizedImageData(dimensions_));
+            return const_cast<const Image*>(outport->getResizedImageData(requestedDimensions_));
         }
     } else {
         return nullptr;
@@ -157,37 +131,6 @@ ImageOutport::~ImageOutport() {
             delete elem.second;
         }
     }
-}
-
-bool ImageOutport::propagateResizeEventToPredecessor(ResizeEvent* resizeEvent) {
-    // Only propagate resize event to inports within the same port dependency group
-
-    bool propagationEnded = true;
-    const uvec2 size {resizeEvent->size()};
-    const uvec2 prevSize {resizeEvent->previousSize()};
-
-    for (auto port : getProcessor()->getPortsInSameSet(this)) {
-        if (ImageInport* imageInport = dynamic_cast<ImageInport*>(port)) {
-            propagationEnded = false;
-            imageInport->changeDataDimensions(scaleResizeEvent(imageInport, resizeEvent));
-            // reset event
-            resizeEvent->setSize(size);
-            resizeEvent->setPreviousSize(prevSize);
-        } else if (MultiDataInport<Image, ImageInport>* multiImageInport =
-                       dynamic_cast<MultiDataInport<Image, ImageInport>*>(port)) {
-            propagationEnded = false;
-            for (auto inport : multiImageInport->getInports()) {
-                if (ImageInport* imageInport = dynamic_cast<ImageInport*>(inport)) {
-                    imageInport->changeDataDimensions(scaleResizeEvent(imageInport, resizeEvent));
-                    // reset event
-                    resizeEvent->setSize(size);
-                    resizeEvent->setPreviousSize(prevSize);
-                }
-            }
-        }
-    }
-
-    return propagationEnded;
 }
 
 void ImageOutport::invalidate(InvalidationLevel invalidationLevel) {
@@ -383,9 +326,11 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
         }
     }
     // Propagate the resize event
-    bool propagationEnded = propagateResizeEventToPredecessor(resizeEvent);
 
-    if (propagationEnded){
+
+    const bool propagationEnded { getProcessor()->propagateResizeEvent(resizeEvent, this) };
+
+    if (propagationEnded) {
         if (resultImage && resultImage != data_ && data_->getDimensions() != uvec2(0)) {
             data_->resizeRepresentations(resultImage, resultImage->getDimensions());
         }
@@ -399,7 +344,7 @@ uvec2 ImageOutport::getDimensions() const {
 
 Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
     if (cacheInvalid_) {
-        // If data_ dimensionsis zero, we need to update data_ first
+        // If data_ dimensions is zero, we need to update data_ first
         uvec2 zeroDim = uvec2(0);
         if (data_->getDimensions() == zeroDim) {
             data_->getRepresentation<ImageRAM>();
@@ -479,15 +424,6 @@ void ImageOutport::setDimensions(const uvec2& newDimension) {
     onSetData();
     // Set new dimensions
     DataOutport<Image>::getData()->resize(newDimension);
-}
-
-ResizeEvent* ImageOutport::scaleResizeEvent(ImageInport* imageInport, ResizeEvent* sizeEvent) {
-    vec2 scale = imageInport->getResizeScale();
-    sizeEvent->setPreviousSize(imageInport->getDimensions());
-    sizeEvent->setSize(
-        uvec2(static_cast<unsigned int>(static_cast<float>(sizeEvent->size().x * scale.x)),
-              static_cast<unsigned int>(static_cast<float>(sizeEvent->size().y * scale.y))));
-    return sizeEvent;
 }
 
 void ImageOutport::setHandleResizeEvents(bool handleResizeEvents) {

@@ -180,6 +180,11 @@ float CameraProperty::getNearPlaneDist() const { return nearPlane_.get(); }
 
 float CameraProperty::getFarPlaneDist() const { return farPlane_.get(); }
 
+void CameraProperty::setNearPlaneDist(float v) { nearPlane_.set(v); }
+
+void CameraProperty::setFarPlaneDist(float v) { farPlane_.set(v); }
+
+
 // XYZ between -1 -> 1
 vec3 CameraProperty::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     float clipW = projectionMatrix_[2][3] /
@@ -370,5 +375,6 @@ void CameraProperty::unlockInvalidation() {
 bool CameraProperty::isInvalidationLocked() {
     return lockInvalidation_;
 }
+
 
 }  // namespace

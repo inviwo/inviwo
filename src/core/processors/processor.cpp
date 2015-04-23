@@ -223,6 +223,26 @@ void Processor::invokeInteractionEvent(Event* event) {
     for (auto& elem : interactionHandlers_) elem->invokeEvent(event);
 }
 
+bool Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    bool propagationEnded = true;
+
+    for (auto port : getPortsInSameSet(source)) {
+        if (auto imageInport = dynamic_cast<ImageInport*>(port)) {
+            propagationEnded = false;
+            imageInport->changeDataDimensions(resizeEvent);
+        } else if (auto multiImageInport =
+                       dynamic_cast<MultiDataInport<Image, ImageInport>*>(port)) {
+            propagationEnded = false;
+            for (auto inport : multiImageInport->getInports()) {
+                if (ImageInport* imageInport = dynamic_cast<ImageInport*>(inport)) {
+                    imageInport->changeDataDimensions(resizeEvent);
+                }
+            }
+        }
+    }
+    return propagationEnded;
+}
+
 void Processor::serialize(IvwSerializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("identifier", identifier_, true);

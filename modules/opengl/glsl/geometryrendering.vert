@@ -35,6 +35,7 @@ uniform CameraParameters camera_;
 
 out vec4 worldPosition_;
 out vec3 normal_;
+out vec3 viewNormal_;
 out vec4 color_;
 out vec3 texCoord_;
  
@@ -43,5 +44,6 @@ void main() {
     texCoord_ = in_TexCoord;
     worldPosition_ = geometry_.dataToWorld * in_Vertex;
     normal_ = geometry_.dataToWorldNormalMatrix * in_Normal;
+    viewNormal_ = (camera_.worldToView * vec4(geometry_.dataToWorldNormalMatrix * in_Normal,0)).xyz;
     gl_Position = camera_.worldToClip * worldPosition_;
 }

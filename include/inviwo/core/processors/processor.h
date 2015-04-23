@@ -45,6 +45,7 @@ namespace inviwo {
 class Event;
 class InteractionHandler;
 class ProcessorWidget;
+class ResizeEvent;
 
 #define InviwoProcessorInfo()                                                   \
     virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; } \
@@ -123,6 +124,10 @@ public:
 
     const std::vector<Inport*>& getInports() const;
     const std::vector<Outport*>& getOutports() const;
+    /**
+     * getInports(Event*) is used to determine the direct predecessors 
+     * of the processor during event propagation.
+     */
     virtual const std::vector<Inport*>& getInports(Event*) const;
 
     std::vector<std::string> getPortDependencySets() const;
@@ -187,6 +192,9 @@ public:
     bool hasInteractionHandler() const;
     const std::vector<InteractionHandler*>& getInteractionHandlers() const;
     virtual void invokeInteractionEvent(Event* event);
+
+    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source);
+
 
     // Override from the property owner
     virtual Processor* getProcessor() { return this; }

@@ -312,7 +312,7 @@ bool CanvasProcessor::isReady() const {
 }
 
 void CanvasProcessor::propagateResizeEvent(ResizeEvent* event) {
-    // avoid continues evaluation when port dimensionschanges
+    // avoid continues evaluation when port dimensions changes
     InviwoApplication::getPtr()->getProcessorNetwork()->lock();
 
     dimensions_.set(event->size());
