@@ -128,7 +128,7 @@ const std::vector<Inport*>& ImageLayoutGL::getInports(Event* e) const {
         }
         return currentInteractionInport_;
     }
-    return Processor::getInports();
+    return Processor::getInports(e);
 }
 
 const std::vector<ivec4>& ImageLayoutGL::getViewCoords() const { return viewCoords_; }

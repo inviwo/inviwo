@@ -116,10 +116,7 @@ public:
     ~ImageOverlayGL();
 
     InviwoProcessorInfo();
-
-    virtual void initialize() override;
-    virtual void deinitialize() override;
-
+    
     const std::vector<Inport*>& getInports(Event*) const;
     const std::vector<ivec4>& getViewCoords() const;
 
@@ -132,7 +129,6 @@ protected:
     void updateViewports(bool force = false);
     void updateDimensions();
     void onStatusChange();
-  //  void onOverlayInteractionChange();
 
     class ImageOverlayGLInteractionHandler : public InteractionHandler {
     public:
