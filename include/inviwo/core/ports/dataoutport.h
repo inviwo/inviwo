@@ -55,8 +55,8 @@ public:
     virtual const T* getConstData() const;
     virtual const DataSequence<T>* getConstDataSequence() const;
 
-    void setData(T* data, bool ownsData = true);
-    void setConstData(const T* data);
+    virtual void setData(T* data, bool ownsData = true);
+    virtual void setConstData(const T* data);
 
     T* detachDataFromOutport();
 
@@ -68,12 +68,6 @@ public:
 
 
 protected:
-    /**
-     *	Override in derived ports to do stuff when there is new data in the port.
-     *	Called by base after setData and setConstData.
-     */
-    virtual void onSetData() {}
-
     T* data_;
     bool ownsData_;
     bool isSequence_;
@@ -144,8 +138,6 @@ void DataOutport<T>::setData(T* data, bool ownsData) {
     ownsData_ = ownsData;
 
     data_ = data;  // Add reference to new data
-
-    onSetData();
 }
 
 template <typename T>
@@ -158,8 +150,6 @@ void DataOutport<T>::setConstData(const T* data) {
     isSequence_ = (dynamic_cast<const DataSequence<T>*>(data) != nullptr);
 
     data_ = const_cast<T*>(data);  // Add reference to new data
-
-    onSetData();
 }
 
 template <typename T>

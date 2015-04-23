@@ -47,25 +47,26 @@ public:
     virtual ~ImageInport();
 
     /**
-     * Connects this inport to the outport. Propagates
-     * the inport size to the outport if the processor is
-     * an end processor (Canvas) or any of the
-     * dependent outports of this inport are connected.
+     * Connects this inport to the outport. Propagates the inport size to the outport if the
+     * processor is an end processor (Canvas) or any of the dependent outports of this inport are
+     * connected.
      *
      * @note Does not check if the outport is an ImageOutport
      * @param Outport * outport ImageOutport to connect
      */
-    virtual void connectTo(Outport* outport);
+    virtual void connectTo(Outport* outport) override;
+    const Image* getData() const override;
+    virtual std::string getContentInfo() const override;
 
-    void changeDataDimensions(ResizeEvent* resizeEvent);
+
     uvec2 getDimensions() const;
-    const Image* getData() const;
-    void setOutportDeterminesSize(bool outportDeterminesSize);
-    bool isOutportDeterminingSize() const;
-    virtual std::string getContentInfo() const;
+    void changeDataDimensions(ResizeEvent* resizeEvent);
 
-    void setResizeScale(vec2);
+    bool isOutportDeterminingSize() const;
+    void setOutportDeterminesSize(bool outportDeterminesSize);
+    
     vec2 getResizeScale();
+    void setResizeScale(vec2);
 
     void passOnDataToOutport(ImageOutport* outport) const;
 
@@ -87,21 +88,18 @@ public:
 
     virtual ~ImageOutport();
 
-    Image* getData();
+    virtual Image* getData() override;
+    virtual void setData(Image* data, bool ownsData = true) override;
+    virtual void setConstData(const Image* data) override;
 
     /**
      * Resize port and propagate the resizing to the canvas.
-     *
-     * @param resizeEvent
      */
     void changeDataDimensions(ResizeEvent* resizeEvent);
     uvec2 getDimensions() const;
-
     /**
      * Set the dimensions of this port without propagating the size
      * through the network. Will resize the image contained within the port.
-     *
-     * @param newDimension Dimension to be set
      */
     void setDimensions(const uvec2& newDimension);
 
@@ -109,8 +107,7 @@ public:
     bool removeResizeEventListener(EventListener*);
 
     /**
-     * Determine if the image data should be
-     * resized during a resize event.
+     * Determine if the image data should be resized during a resize event.
      * Also prevents resize events from being propagated further.
      * @param handleResizeEvents True if data should be resized during a resize propagation,
      * otherwise false
@@ -120,7 +117,7 @@ public:
 
 protected:
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
-    virtual void onSetData() override;
+
 
     Image* getResizedImageData(uvec2 dimensions);
     void setLargestImageData();
@@ -135,12 +132,15 @@ protected:
     ResizeEvent* scaleResizeEvent(ImageInport*, ResizeEvent*);
 
 private:
+    void onSetData();
     void updateImageFromInputSource();
 
     uvec2 dimensions_;
     bool mapDataInvalid_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false
+
+    // Image cache
     typedef std::map<std::string, Image*> ImagePortMap;
     ImagePortMap imageDataMap_;
 };
