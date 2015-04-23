@@ -63,8 +63,9 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     , lightingProperty_("lighting", "Lighting", &camera_)
     , layers_("layers", "Layers")
     , colorLayer_("colorLayer", "Color", true, INVALID_RESOURCES)
-    , texCoordLayer_("texCoordLayer_", "Texture Coordinates", false, INVALID_RESOURCES)
-    , normalsLayer_("normalsLayer_", "Normals", false, INVALID_RESOURCES)
+    , texCoordLayer_("texCoordLayer", "Texture Coordinates", false, INVALID_RESOURCES)
+    , normalsLayer_("normalsLayer", "Normals (World Space)", false, INVALID_RESOURCES)
+    , veiwNormalsLayer_("veiwNormalsLayer", "Normals (View space)", false, INVALID_RESOURCES)
 {
     
     addPort(inport_);
@@ -115,6 +116,7 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     layers_.addProperty(colorLayer_);
     layers_.addProperty(texCoordLayer_);
     layers_.addProperty(normalsLayer_);
+    layers_.addProperty(veiwNormalsLayer_);
 
     setAllPropertiesCurrentStateAsDefault();
 }
@@ -165,6 +167,16 @@ void GeometryRenderProcessorGL::initializeResources() {
     else{
         shader_->getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
     }
+
+    if (veiwNormalsLayer_.get()){
+        shader_->getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
+        shader_->getFragmentShaderObject()->addOutDeclaration("view_normals_out");
+        layerID++;
+    }
+    else{
+        shader_->getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
+    }
+
 
     for (size_t i = outport_.getData()->getNumberOfColorLayers(); i < layerID; i++){
         outport_.getData()->addColorLayer(outport_.getData()->getColorLayer(0)->clone());

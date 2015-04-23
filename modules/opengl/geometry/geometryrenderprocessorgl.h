@@ -91,6 +91,7 @@ protected:
     BoolProperty colorLayer_;
     BoolProperty texCoordLayer_;
     BoolProperty normalsLayer_;
+    BoolProperty veiwNormalsLayer_;
 
     Shader* shader_;
 
