@@ -102,11 +102,6 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
 OrdinalPropertyAnimator::~OrdinalPropertyAnimator() {
     timer_->stop();
     delete timer_;
-
-    for (std::vector<BaseProp*>::const_iterator it = properties_.begin(); it != properties_.end(); ++it) {
-        delete *it;
-    }
-    properties_.clear();
 }
 
 void OrdinalPropertyAnimator::initialize() {
