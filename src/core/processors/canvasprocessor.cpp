@@ -93,17 +93,20 @@ CanvasProcessor::CanvasProcessor()
     saveLayerButton_.onChange(this, &CanvasProcessor::saveImageLayer);
     addProperty(saveLayerButton_);
 
+    visibleLayer_.onChange([&](){
+        colorLayer_.setVisible(visibleLayer_.get() == COLOR_LAYER);
+    });
 
-    inport_.onChange(this, &CanvasProcessor::setMaxColorLayer);
+    inport_.onChange([&](){
+        colorLayer_.setMaxValue(inport_.getData()->getNumberOfColorLayers() - 1);
+    });
+
 
     setAllPropertiesCurrentStateAsDefault();
 }
 
 CanvasProcessor::~CanvasProcessor() {}
 
-void CanvasProcessor::setMaxColorLayer(){
-    colorLayer_.setMaxValue(inport_.getData()->getNumberOfColorLayers()-1);
-}
 
 void CanvasProcessor::initialize() {
     Processor::initialize();
