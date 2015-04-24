@@ -129,6 +129,9 @@ SystemSettings::SystemSettings()
 SystemSettings::~SystemSettings() {}
 
 void SystemSettings::initialize() {
+    pythonSyntax_.setVisible(false);
+    glslSyntax_.setVisible(false);
+
     InviwoCore* module = InviwoApplication::getPtr()->getModuleByType<InviwoCore>();
     if (module) {
         SystemCapabilities* sysInfo =
