@@ -33,6 +33,7 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <QDockWidget>
 
+
 class QKeyEvent;
 
 namespace inviwo {
