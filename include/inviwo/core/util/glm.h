@@ -480,8 +480,8 @@ Matrix<2, T> MatrixInvert(const glm::detail::tmat2x2<T, glm::defaultp>& m) {
     return glm::inverse(m);
 }
 
+} // namespace inviwo
 
-} // namespace
 
 namespace glm {
 

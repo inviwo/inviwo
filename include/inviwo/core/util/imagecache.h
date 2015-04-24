@@ -32,6 +32,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <unordered_map>
 
 namespace inviwo {
 
@@ -44,8 +46,36 @@ namespace inviwo {
  */
 class IVW_CORE_API ImageCache { 
 public:
-    ImageCache();
-    virtual ~ImageCache(){}
+    ImageCache(const Image* master = nullptr);
+    ~ImageCache(){};
+
+    ImageCache(const ImageCache&) = delete;
+    ImageCache& operator=(const ImageCache& that) = delete;
+
+    void setMaster(const Image* master);
+    const Image* getImage(const uvec2 dimensions);
+
+    /**
+     *	Remove all cached images except those in dimensions
+     */
+    void prune(std::vector<const uvec2> dimensions);
+    /**
+     *	Make sure there is a cached version for all images sizes in dimensions
+     */
+    void update(std::vector<const uvec2> dimensions);
+    void setInvalid();
+
+    bool hasImage(const uvec2 dimensions);
+    void addImage(Image* image);
+    Image* releaseImage(const uvec2 dimensions);
+    Image* getUnusedImage(std::vector<const uvec2> dimensions);
+
+private:
+    bool valid_;
+    const Image* master_; // non-owning reference.
+
+    using Cache = std::unordered_map<glm::uvec2, std::unique_ptr<Image>>;
+    Cache cache_;
 };
 
 } // namespace

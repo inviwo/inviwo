@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/resizeevent.h>
@@ -34,11 +34,11 @@ namespace inviwo {
 ResizeEvent::ResizeEvent(uvec2 canvasSize)
     : Event(), size_(canvasSize), previousSize_(canvasSize) {}
 
+ResizeEvent::ResizeEvent(uvec2 canvasSize, uvec2 previousSize)
+    : Event(), size_(canvasSize), previousSize_(previousSize) {}
+
 ResizeEvent::ResizeEvent(const ResizeEvent& rhs)
-    : Event(rhs)
-    , size_(rhs.size_)
-    , previousSize_(rhs.previousSize_) {
-}
+    : Event(rhs), size_(rhs.size_), previousSize_(rhs.previousSize_) {}
 
 ResizeEvent& ResizeEvent::operator=(const ResizeEvent& that) {
     if (this != &that) {
@@ -49,9 +49,7 @@ ResizeEvent& ResizeEvent::operator=(const ResizeEvent& that) {
     return *this;
 }
 
-ResizeEvent* ResizeEvent::clone() const {
-    return new ResizeEvent(*this);
-}
+ResizeEvent* ResizeEvent::clone() const { return new ResizeEvent(*this); }
 
 ResizeEvent::~ResizeEvent() {}
 

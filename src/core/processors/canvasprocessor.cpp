@@ -104,6 +104,7 @@ void CanvasProcessor::initialize() {
         canvasWidget_->getCanvas()->setEventPropagator(this);
     }
     evaluator_ = InviwoApplication::getPtr()->getProcessorNetworkEvaluator();
+    sizeChanged();
 }
 
 void CanvasProcessor::deinitialize() {

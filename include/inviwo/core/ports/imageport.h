@@ -36,6 +36,7 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/interaction/events/eventhandler.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/util/imagecache.h>
 
 namespace inviwo {
 
@@ -58,8 +59,12 @@ public:
     const Image* getData() const override;
     virtual std::string getContentInfo() const override;
 
-
+    // Actually returns the requested size... not size of the data.
     uvec2 getDimensions() const;
+
+    /**
+     * Handle resize event
+     */
     void changeDataDimensions(ResizeEvent* resizeEvent);
 
     bool isOutportDeterminingSize() const;
@@ -69,7 +74,6 @@ public:
 
 private:
     uvec2 requestedDimensions_;
-    vec2 resizeScale_;
     bool outportDeterminesSize_;
 };
 
@@ -82,11 +86,16 @@ public:
 
     virtual ~ImageOutport();
 
-    virtual void setData(Image* data, bool ownsData = true) override;
-    virtual void setConstData(const Image* data) override;
 
     /**
-     * Resize port and propagate the resizing to the canvas.
+     *	We will not handle resize event if we are not the data owner
+     */
+    virtual void setData(Image* data, bool ownsData = true) override;
+    virtual void setConstData(const Image* data) override;
+    const Image* getResizedImageData(uvec2 dimensions);
+    
+    /**
+     * Handle resize event
      */
     void changeDataDimensions(ResizeEvent* resizeEvent);
     uvec2 getDimensions() const;
@@ -101,7 +110,7 @@ public:
 
     /**
      * Determine if the image data should be resized during a resize event.
-     * Also prevents resize events from being propagated further.
+     * We will only resize if we own the data in the port.
      * @param handleResizeEvents True if data should be resized during a resize propagation,
      * otherwise false
      */
@@ -111,21 +120,14 @@ public:
 protected:
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
-    Image* getResizedImageData(uvec2 dimensions);
-    void setLargestImageData();
-
 private:
-    void onSetData();
     void updateImageFromInputSource();
 
     uvec2 dimensions_;
-    bool cacheInvalid_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false
 
-    // Image cache
-    typedef std::map<std::string, Image*> ImagePortMap;
-    ImagePortMap imageCache_;
+    ImageCache cache_;
 };
 
 }  // namespace

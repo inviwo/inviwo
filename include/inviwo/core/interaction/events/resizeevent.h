@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_RESIZEEVENT_H
@@ -39,6 +39,7 @@ namespace inviwo {
 class IVW_CORE_API ResizeEvent : public Event {
 public:
     ResizeEvent(uvec2 newSize);
+    ResizeEvent(uvec2 newSize, uvec2 previousSize);
     ResizeEvent(const ResizeEvent& rhs);
     ResizeEvent& operator=(const ResizeEvent& that);
     virtual ResizeEvent* clone() const;
@@ -54,6 +55,6 @@ private:
     uvec2 previousSize_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_RESIZEEVENT_H
+#endif  // IVW_RESIZEEVENT_H

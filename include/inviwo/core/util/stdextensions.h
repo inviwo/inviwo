@@ -34,6 +34,7 @@
 #include <memory>
 #include <string>
 #include <algorithm>
+#include <functional>
 
 namespace inviwo {
 
@@ -50,8 +51,6 @@ typename std::enable_if<std::is_array<T>::value, std::unique_ptr<T> >::type make
     typedef typename std::remove_extent<T>::type RT;
     return std::unique_ptr<T>(new RT[n]());
 }
-
-
 
 // type trait to check if T is derived from std::basic_string
 namespace detail {
@@ -78,6 +77,13 @@ void erase_remove(T& cont, const typename T::value_type& elem) {
     using std::begin;
     using std::end;
     cont.erase(std::remove(begin(cont), end(cont), elem), cont.end());
+}
+
+template <typename T, typename Pred>
+void erase_remove(T& cont, Pred pred) {
+    using std::begin;
+    using std::end;
+    cont.erase(std::remove(begin(cont), end(cont), pred), cont.end());
 }
 
 template <typename T>
@@ -115,7 +121,46 @@ bool none_of(T& cont, UnaryPredicate pred) {
     return std::none_of(begin(cont), end(cont), pred);
 }
 
-}  // namespace
-}  // namespace
+/**
+ *	Function to combine several hash values
+ *	http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
+ */
+template <class T>
+inline void hash_combine(std::size_t& seed, const T& v) {
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+}  // namespace util
+}  // namespace inviwo
+
+// namespace std {
+// template <typename T, glm::precision P, template<typename, glm::precision> class VecType>
+// struct hash<VecType<T, P>> {
+//     size_t operator()(const VecType<T, P>& v) const {
+//         size_t h = 0;
+//         for (size_t i = 0; i < inviwo::util::flat_extent<VecType<T, P>>::value; ++i) {
+//             T& val = inviwo::util::glmcomp<const VecType<T, P>&>(v, i);
+//             inviwo::util::hash_combine(h, val);
+//         }
+//         return h;
+//     }
+// };
+// 
+
+namespace std {
+template <typename T, glm::precision P>
+struct hash<glm::detail::tvec2<T, P>> {
+    size_t operator()(const glm::detail::tvec2<T, P>& v) const {
+        size_t h = 0;
+        for (size_t i = 0; i < inviwo::util::flat_extent<glm::detail::tvec2<T, P>>::value; ++i) {
+            //T& val = 0 //inviwo::util::glmcomp(v, i);
+            inviwo::util::hash_combine(h, v[i]);
+        }
+        return h;
+    }
+};
+
+}  // namespace std
 
 #endif  // IVW_STDEXTENSIONS_H
