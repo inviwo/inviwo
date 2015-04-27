@@ -135,7 +135,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
             }
         }
     }
-    clock.stop();
+    clock.tick();
     LogInfo("preparation done. " << clock.getElapsedMiliseconds() << " ms");
     totalTime += clock.getElapsedSeconds();
     
@@ -177,7 +177,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
             }
         }
     }
-    clock.stop();
+    clock.tick();
     updateProgress(progressBar_.getProgress() + 1.0f / 3.0f);
     LogInfo("x finished. " << clock.getElapsedSeconds() << " sec");
     totalTime += clock.getElapsedSeconds();
@@ -214,7 +214,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
             }
         }
     }
-    clock.stop();
+    clock.tick();
     updateProgress(progressBar_.getProgress() + 1.0f / 3.0f);
     LogInfo("y finished. " << clock.getElapsedSeconds() << " sec");
     totalTime += clock.getElapsedSeconds();
@@ -251,7 +251,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
             }
         }
     }
-    clock.stop();
+    clock.tick();
     updateProgress(progressBar_.getProgress() + 1.0f / 3.0f);
     LogInfo("z finished. " << clock.getElapsedSeconds() << " sec");
     totalTime += clock.getElapsedSeconds();
@@ -274,7 +274,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
                 data[i] = static_cast<T>(std::sqrt(static_cast<float>(data[i])) * scale);
             }
         }
-        clock.stop();
+        clock.tick();
         LogInfo("normalization done. " << clock.getElapsedSeconds() << " sec");
         totalTime += clock.getElapsedSeconds();
     }
