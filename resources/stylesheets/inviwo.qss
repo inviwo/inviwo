@@ -36,12 +36,36 @@ QWidget {
     background-color: #323235;
 }
 QMainWindow::separator {
-    background: #333;
+    background: #444;
     width: 2px;
     height: 2px;
     border-style: outset;
     border-width: 1px;
 }
+/*
+QWidget#CollapsibleGroupBoxWidgetQt QToolButton::hover { 
+    border: 1px solid #268bd2;
+}
+*/
+
+QWidget#CollapsibleGroupBoxWidgetQt {
+    border: 1px solid #4a4a4f;
+    /*border: 1px solid green;*/
+    background: #2b2b2d;
+}
+
+QWidget#CollapsibleGroupBoxWidgetQt QLabel {
+    border: none;
+    background: transparent;
+}
+
+/* this renders all backgrounds unusable (labels, lineedit, etc.) due to specialization */
+/*
+QWidget#CollapsibleGroupBoxWidgetQt QLabel, QWidget#CollapsibleGroupBoxWidgetQt QWidget {
+    border: none;
+    background: transparent;
+}
+*/
 
 
 /* QToolBar styles */
@@ -70,14 +94,22 @@ QToolBar > QToolButton {
     padding:2px;
 }
 QToolButton {
-    border: none;
+    border: 1px solid transparent;
+    background-color: transparent;
 }
 
+QToolButton#collapseButton {
+    image: url(:/stylesheets/images/arrow_lighter_down.png);
+}
 
+QToolButton#resetButton {
+    image: url(:/icons/edit-undo-icon.png);
+}
 
 /*QToolTop */
 QToolTip {
-    /*font-family: "Courier";*/
+    /*font-family: "Courier";*/    
+    color: #9d9995;
     background-color: #323235;  
     border-radius: 3px;
     border: 1px solid black;
@@ -94,8 +126,9 @@ QPushButton {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
 } 
-QPushButton:hover, QToolButton:hover {
-    border: 1px solid #268bd2;
+QPushButton:default {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);
 }
 QPushButton:pressed {
     padding-top: 1px;
@@ -142,14 +175,10 @@ QDockWidget::title, inviwo--InviwoDockWidgetTitleBar {
                                 stop:0 #555, stop:0.7 #333, stop:.9 #222, stop: 1 #4D4D4D);
 */
 }
-QToolButton#dockBtn {
-    background-color: "transparent";
-}
 QToolButton#dockBtn:hover {
-    background-color: "transparent";
     margin-left: 1px;
     margin-top: 1px;
-    border: 1px solid #acacac;
+    border: 1px solid #268bd2;
     border-radius: 3px;
 }
 QDockWidget {
@@ -189,7 +218,7 @@ QTabBar::tab {
                                 stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
 */
     min-width: 8ex;
-    margin-right: 1px;
+    margin-right: 2px; /* spacing between tabs */
     padding: 2px;
     padding-left: 10px;
     padding-right: 10px;
@@ -253,8 +282,7 @@ QLabel {
 /* QListView styles */
 QListView::item:selected {
     border: 0px;
-    background-color: #888888;
-    color: #111111;
+    background-color: #47474b;
 }
 
 
@@ -273,11 +301,10 @@ QGroupBox::title {
 
 /* QTreeView styles */
 QTreeView::item:hover {
-    background-color: darkgrey;
-    color: black;
+    background-color: #47474b;
 }
 QTreeView::branch:hover{
-    background-color: darkgrey;
+    background-color: #47474b;
 }
 QTreeView::branch:has-children:!has-siblings:closed,
  QTreeView::branch:closed:has-children:has-siblings {
@@ -366,7 +393,6 @@ QScrollBar::add-page, QScrollBar::add-line, QScrollBar::sub-page, QScrollBar::su
 }
 
 QTextBrowser {
-    background-color: #4d4d4d;
     border-color: #444;
     border: 0px 
 }
@@ -625,10 +651,7 @@ QProgressBar::chunk {
                                 stop:0.5 #45a, stop:1 #238);
 }
 
-QWidget#CollapsibleGroupBoxWidgetQt QToolButton::hover { 
-    background-color: gray;
-}
 
-QWidget#CollapsibleGroupBoxWidgetQt QLabel {
-    border: 0px;; 
+QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBox:indicator:hover, QAbstractSpinBox:hover {
+    border: 1px solid #268bd2;
 }
