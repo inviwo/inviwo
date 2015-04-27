@@ -49,15 +49,12 @@ QToolBar {
     spacing: 3px;
     padding: 1px;
     border: 1px solid black;
-    background-color: #3d3d3d;
-/*    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #383838, stop: 0 #484848, 
-                                stop:0.9 #484848, stop:1 #383838);*/
+    background-color: #3a3a3e;
 }
 QToolBar::handle {
     background-image: url(:/stylesheets/images/dense6pattern.png);
     background-repeat: repeat-xy;
-    background-color: #555;
+    background-color: #4a4a4f;
     border: 1px solid #333;
     width: 5px;
     margin:1px;
@@ -69,7 +66,7 @@ QToolBar::handle {
 /* QToolButton */
 
 QToolBar > QToolButton {
-    background-color: #555555;
+    background-color: #3a3a3e;
     padding:2px;
 }
 QToolButton {
@@ -81,8 +78,7 @@ QToolButton {
 /*QToolTop */
 QToolTip {
     /*font-family: "Courier";*/
-    color: #999999;
-    background-color: #4d4d4d;  
+    background-color: #323235;  
     border-radius: 3px;
     border: 1px solid black;
     font-size: 14px;
@@ -130,10 +126,6 @@ QDockWidget::title, inviwo--InviwoDockWidgetTitleBar {
     padding: 4px;
     padding-left: 5px;
     border-radius: 0px;
-    /*
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    */
     border-top: 1px solid #888;
     border-left: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #888, stop: 0.1 #888, stop:.5 #00888888);
@@ -141,7 +133,7 @@ QDockWidget::title, inviwo--InviwoDockWidgetTitleBar {
                                 stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
     border-bottom: 0px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #555, stop:0.8 #333, stop:1 #222);
+                                stop:0 #4a4a4e, stop:0.8 #323235, stop:1 #222224);
     /* smooth transition at the bottom */
 /*
     padding-top: 6px;
@@ -215,24 +207,24 @@ QTabBar::tab:top:!selected {
 /* QMenu styles */
 QMenuBar,QMenuBar::item {
     color: #999999;
-    background-color: #333;
-    selection-background-color: #444;
+    background-color: #252527;
+    selection-background-color: #3a3a3d;
 }
 QMenu,QMenu::item, QMenu::item::selected {
     color: #999999;
     selection-color: #999;
-    background-color: #444;
-    selection-background-color: #555;
+    background-color: #3a3a3d;
+    selection-background-color: #47474b;
 }
 QMenu {
     border: 1px solid #666;
 }
 QMenuBar::item::selected {
     color: white;
-    background-color: #444;   
-    border-top: 1px solid #666;
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
+    background-color: #3a3a3d;   
+    border-top: 1px solid #6a6a6f;
+    border-left: 1px solid #6a6a6f;
+    border-right: 1px solid #6a6a6f;
 }
 QMenu::separator {
     height: 0px;
