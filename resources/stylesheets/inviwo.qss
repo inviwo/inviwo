@@ -408,9 +408,10 @@ QAbstractSpinBox:disabled {
 }
 
 /* slim slider styles and part of the QSplitter styles */
-QSlider::sub-page:horizontal, QSplitter[Vertical="false"] QFrame#valueArea, QSlider::add-page:vertical, QSplitter[Vertical="true"] QFrame#valueArea {
+QSlider::sub-page:horizontal, QSlider::add-page:vertical, QSplitter[Vertical="false"] QFrame#valueArea, QSplitter[Vertical="true"] QFrame#valueArea {
     border: 0px;
     background: #99a0a7;
+    background: #1e70a8;
     border-radius:2px;
 }
 QSlider::sub-page:horizontal, QSplitter[Vertical="false"] QFrame#valueArea {
@@ -470,17 +471,38 @@ QSlider::handle:disabled {
 
 
 /* QSplitter styles */
+/*
 QSplitter:vertical {
     height: 10px;
 }
 QSplitter:horizontal {
     width: 10px;
 }
+*/
 /* main color definition for splitters is done with QSlider (see above) 
    only cosmetics are done here (rounded corners)!
 */
-QSplitter QFrame {
-    border-radius: 0px;
+
+QSplitter[Vertical="false"] QFrame#valueArea, QSplitter[Vertical="true"] QFrame#valueArea {
+    border: 0px;
+    background: #99a0a7;
+    background: #1e70a8;
+    border-radius:0px;
+}
+
+QSplitter QFrame, QSplitter QFrame#valueArea {
+    border-radius: 0px;    
+    background-clip: content;
+}
+QSplitter[Vertical="true"] QFrame {
+    margin: 0px 4px; 
+    min-width: 4px;
+    max-width: 4px;
+}
+QSplitter[Vertical="false"] QFrame {
+    margin: 4px 0px; 
+    min-height: 4px;
+    max-height: 4px;
 }
 QSplitter[Vertical="true"] QFrame[LeftPart="false"] {
     /* lower part of splitter */
@@ -502,28 +524,36 @@ QSplitter[Vertical="false"] QFrame[LeftPart="false"] {
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
 }
-QSplitter QFrame#valueArea {
-    padding: 0px;
-    background: red;
+QSplitter[Vertical="true"] QFrame#valueArea {
+    margin: 0px 3px; 
+    min-width: 6px;
+    max-width: 6px;
+}
+QSplitter[Vertical="false"] QFrame#valueArea {
+    margin: 3px 0px; 
+    min-height: 6px;
+    max-height: 6px;
 }
 
+QSplitter::handle {
+    background: #99a0a7;
+    border-radius: 6px;
+}
 
-QSplitter::handle:vertical, QSplitter::handle:horizontal {
-    border: 1px solid #111111;
-    border-radius: 4px;
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                                stop:0 #eee, stop:1 #ccc);
-}
-QSplitter::handle:vertical {
-    height: 13px;
-    margin-left: -2px;
-    margin-right: -2px;
-}
 QSplitter::handle:horizontal {
-    width: 13px;
-    margin-top: -2px;
-    margin-bottom: -2px;
+    width: 12px;
 }
+
+QSplitter::handle:vertical {
+    height: 12px;
+}
+
+
+QSplitter::handle:pressed, QSplitter::handle:hover {
+    background: #268bd2;
+}
+
+
 QSplitter QFrame#pythonEditor, QFrame#htmlEditor, QTreeWidget#htmlTree {
     font-family: "Calibra";
     background-color: #888888;
