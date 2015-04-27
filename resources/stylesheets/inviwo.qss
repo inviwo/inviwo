@@ -122,7 +122,6 @@ QDockWidget::title {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #555, stop:0.8 #333, 
                                 stop:0.8 #333, stop:1 #222);
-                                stop:0 #555, stop:0.8 #333, stop:1 #222);
 }
 inviwo--InviwoDockWidgetTitleBar {
     padding: 2px;
@@ -133,7 +132,6 @@ inviwo--InviwoDockWidgetTitleBar {
     border-width: 1px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #555, stop:0.8 #333, stop:1 #222);
-}
 }
 QDockWidget {
     color: #999999;
