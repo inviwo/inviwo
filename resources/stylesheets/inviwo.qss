@@ -31,8 +31,9 @@
 /* General styles */
 QWidget {
     font-family: "Calibra";
-    color: #999999;
-    background-color: #4d4d4d;
+    color: #9d9995;
+    background-color: #252528;/*#313136;*/ /*#4d4d4d;*/
+    background-color: #323235;
 }
 QMainWindow::separator {
     background: #333;
