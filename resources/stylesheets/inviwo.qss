@@ -338,9 +338,7 @@ QCheckBox::indicator:disabled {
 /* QScrollBar styles */
 QScrollBar {
     border: 0px;
-    border-radius: 6px;
-    background: #777;
-    margin: 0px;
+    padding: 2px;
 }
 QScrollBar:horizontal {
     height: 12px;
@@ -349,14 +347,15 @@ QScrollBar:vertical {
     width: 12px;
 }
 QScrollBar::handle {
-    background: #333333;
+    background: #1f1f21; /* dark */
+    background: #625e5b; /* brownish / text */
+    background: #5b5f62; /* blueish / background */
     border-width: 2px;
-    border-radius: 6px;
-    border: 1px solid #555;
+    border-radius: 4px;
+    border: 0px;
 }
 QScrollBar::handle:hover {
-    background: #444;
-    border: 2px solid #777;
+    background: #1e70a8;
 }
 QScrollBar::handle:horizontal {
     min-width: 12px;
