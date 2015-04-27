@@ -410,86 +410,64 @@ QAbstractSpinBox:disabled {
 }
 
 /* slim slider styles and part of the QSplitter styles */
+QSlider::sub-page:horizontal, QSplitter[Vertical="false"] QFrame#valueArea, QSlider::add-page:vertical, QSplitter[Vertical="true"] QFrame#valueArea {
+    border: 0px;
+    background: #99a0a7;
+    border-radius:2px;
+}
 QSlider::sub-page:horizontal, QSplitter[Vertical="false"] QFrame#valueArea {
     margin: -1px 0px -1px 0px;
-    border: 0px;
-    background: #33B5E5;
-    border-radius:2px;
 }
 QSlider::add-page:vertical, QSplitter[Vertical="true"] QFrame#valueArea {
     margin: 0px -1px 0px -1px;
-    border: 0px;
-    background: #33B5E5;
-    border-radius:2px;
 }
 QSlider::groove, QSlider::add-page:horizontal, QSlider::sub-page:vertical, QSplitter[Vertical="false"] QFrame, QSplitter[Vertical="true"] QFrame {
     border: 0px;
-    background: #777;
+    background: #65696d;
     border-radius:1px;
 }
 QSlider::groove:horizontal, QSlider::add-page:horizontal, QSplitter[Vertical="false"] QFrame {
-    height: 2px;
+    height: 3px;
 }
 QSlider::groove:vertical, QSlider::sub-page:vertical, QSplitter[Vertical="true"] QFrame {
-    width: 2px;
+    width: 3px;
 }
 
 QSlider::handle {
-    background:transparent;
-    border:0px;
-    background-clip: content;
-    border-image: url(:/stylesheets/images/slider.png);
-}
-QSlider::handle:hover {
-    border: 0px;
-    color: #A033B5E5;
-    background-clip: content;
-    border-image: url(:/stylesheets/images/slider_hover.png);
-}
-QSlider::handle:horizontal {
-    width: 20px;
-    margin: -10px 0px; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
-}
-QSlider::handle:vertical {
-    height: 20px;
-    margin: 0px -10px; /* handle is placed by default on the contents rect of the groove. Expand outside the groove */
+    background: #c8ccd0;
+    border: 2px solid #c8ccd0;
+    border-radius: 5px;
 }
 /* out-of-bounds indication */
-QSlider::handle:vertical[outOfBounds="true"], QSlider::handle:horizontal[outOfBounds="true"] { 
-    border: 1px solid rgb(255, 0, 0);
+QSlider::handle[outOfBounds="true"] { 
+    border: 2px solid red;
 }
+QSlider::handle:hover {
+    background: #268bd2;
+    border: 2px solid #268bd2;
+}
+QSlider::handle:horizontal {
+    width: 8px;
+    margin: -4px 0px; 
+}
+QSlider::handle:vertical {
+    height: 8px;
+    margin: 0px -4px; 
+}
+
 
 /* disabled slider / QSplitter */
-QSlider::sub-page:horizontal:disabled, QSplitter[Vertical="false"] QFrame:disabled#valueArea {
-    margin: -1px 0px -1px 0px;
-    border: 0px;
-    background: #888;
-    border-radius:2px;
-}
-QSlider::add-page:vertical:disabled, QSplitter[Vertical="true"] QFrame:disabled#valueArea {
-    margin: 0px -1px 0px -1px;
-    border: 0px;
-    background: #888;
-    border-radius:2px;
+QSlider::sub-page:horizontal:disabled, QSplitter[Vertical="false"] QFrame:disabled#valueArea, QSlider::add-page:vertical:disabled, QSplitter[Vertical="true"] QFrame:disabled#valueArea {
+    background: #4f555b;
 }
 
-QSlider::groove, QSlider::add-page:horizontal, QSlider::sub-page:vertical, QSplitter[Vertical="false"] QFrame, QSplitter[Vertical="true"] QFrame {
-    border: 0px;
-    background: #555;
-    border-radius:1px;
-}
-QSlider::groove:horizontal, QSlider::add-page:horizontal, QSplitter[Vertical="false"] QFrame {
-    height: 2px;
-}
-QSlider::groove:vertical, QSlider::sub-page:vertical, QSplitter[Vertical="true"] QFrame {
-    width: 2px;
+QSlider::groove:disabled, QSlider::add-page:horizontal:disabled, QSlider::sub-page:vertical:disabled, QSplitter:disabled[Vertical="false"] QFrame, QSplitter:disabled[Vertical="true"] QFrame {
+    background: #404246;
 }
 
 QSlider::handle:disabled {
-    background:transparent;
-    border:0px;
-    background-clip: content;
-    border-image: url(:/stylesheets/images/slider_disabled.png);
+    background: #5d656b;
+    border: 2px solid #5d656b;
 }
 
 
