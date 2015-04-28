@@ -348,8 +348,10 @@ QRadioButton::indicator::checked:disabled {
     image: url(:/stylesheets/images/circle_disabled.png);
 }
 QCheckBox::indicator {
-    background: #47474b;
     border: 1px solid #4a4a4f;
+    border: 1px solid #3d3d41;
+    background: #47474b;
+    background: #9d9995;
     border-radius: 1px;
 }
 QCheckBox::indicator:checked {
@@ -360,6 +362,14 @@ QCheckBox::indicator:hover {
 }
 QCheckBox::indicator:disabled {
     border-color: #3c3c40;
+    background-color: #4f555b;
+}
+QCheckBox::indicator:checked:disabled {
+    background-color: #65696d;
+}
+
+QCheckBox:indicator:hover {
+    border: 1px solid #268bd2;
 }
 
 
