@@ -42,12 +42,25 @@ QMainWindow::separator {
     border-style: outset;
     border-width: 1px;
 }
-/*
-QWidget#CollapsibleGroupBoxWidgetQt QToolButton::hover { 
+
+/* Common defines for flat property editors, both active and disabled */
+QLineEdit, QAbstractSpinBox, QComboBox {
+    color: #c8ccd0;
+    background: transparent;
+    /* change the border width to zero here, if borders around properties should be invisible */
+    border: 1px solid #4a4a4f; 
+}
+QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
+    color: #777;
+    border-color: #3c3c40;
+    background: transparent;
+}
+QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover, QComboBox:on, QComboBox:focus, QComboBox:hover {
+    background: #47474b;
     border: 1px solid #268bd2;
 }
-*/
 
+/* Composite property */
 QWidget#CollapsibleGroupBoxWidgetQt {
     border: 1px solid #4a4a4f;
     /*border: 1px solid green;*/
@@ -58,7 +71,6 @@ QWidget#CollapsibleGroupBoxWidgetQt QLabel {
     border: none;
     background: transparent;
 }
-
 /* this renders all backgrounds unusable (labels, lineedit, etc.) due to specialization */
 /*
 QWidget#CollapsibleGroupBoxWidgetQt QLabel, QWidget#CollapsibleGroupBoxWidgetQt QWidget {
@@ -336,28 +348,20 @@ QRadioButton::indicator::checked:disabled {
     image: url(:/stylesheets/images/circle_disabled.png);
 }
 QCheckBox::indicator {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #383838, stop:0.2 #999999, stop:1 #999999);
-    border: 1px solid black;
+    background: #47474b;
+    border: 1px solid #4a4a4f;
     border-radius: 1px;
 }
 QCheckBox::indicator:checked {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop:0 #78d, stop:0.2 #46a,
-                                stop:0.8 #45a, stop:1 #238);
-    border: 1px solid black;
-    border-radius: 1px;
+    background: #1e70a8;
 }
-QCheckBox::disabled {
-   color: #666;
-    border-color: #444;
+QCheckBox::indicator:hover {
+    border: 1px solid #268bd2;
 }
 QCheckBox::indicator:disabled {
-    border-color: #444;
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                stop:0 #606060, stop:0.2 #505050,
-                                stop:0.8 #505050, stop:1 #606060);
+    border-color: #3c3c40;
 }
+
 
 
 /* QScrollBar styles */
@@ -397,40 +401,23 @@ QTextBrowser {
     border: 0px 
 }
 
+
+
 /* QLineEdit styles */
 QLineEdit {
-    color: black;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #383838, stop:0.2 #999999, stop:1 #999999);
-    border: 1px solid black;
     border-radius: 1px;
-}
-QLineEdit:disabled {
-    color: #ccc;
-    border-color: #444;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #282828, stop:0.2 #666, stop:1 #666);
 }
 
 
 /* QAbstractSpinBox styles */
 QAbstractSpinBox {
-    border: 1px solid black;
-    color: black;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #383838, stop:0.2 #999999, stop:1 #999999);
+    margin-left: 5px;
 }
 QAbstractSpinBox::up-button {
      image: url(:/stylesheets/images/arrow_up.png);
 }
 QAbstractSpinBox::down-button {
      image: url(:/stylesheets/images/arrow_down.png);
-}
-QAbstractSpinBox:disabled {
-    color: #ccc;
-    border-color: #444;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #282828, stop:0.2 #666, stop:1 #666);
 }
 
 /* slim slider styles and part of the QSplitter styles */
@@ -462,10 +449,6 @@ QSlider::handle {
     background: #c8ccd0;
     border: 2px solid #c8ccd0;
     border-radius: 5px;
-}
-/* out-of-bounds indication */
-QSlider::handle[outOfBounds="true"] { 
-    border: 2px solid red;
 }
 QSlider::handle:hover {
     background: #268bd2;
@@ -562,23 +545,24 @@ QSplitter[Vertical="false"] QFrame#valueArea {
 }
 
 QSplitter::handle {
-    background: #99a0a7;
+    background: #c8ccd0;
+    border: 2px solid #c8ccd0;
     border-radius: 6px;
 }
 
 QSplitter::handle:horizontal {
-    width: 12px;
+    width: 5px;
 }
 
 QSplitter::handle:vertical {
-    height: 12px;
+    height: 5px;
 }
 
 
 QSplitter::handle:pressed, QSplitter::handle:hover {
     background: #268bd2;
+    border: 2px solid #268bd2;
 }
-
 
 QSplitter QFrame#pythonEditor, QFrame#htmlEditor, QTreeWidget#htmlTree {
     font-family: "Calibra";
@@ -592,29 +576,40 @@ QSplitter QFrame#pythonConsole, QFrame#htmlEditorOutput {
 }
 
 
+/* out-of-bounds indication */
+QSlider::handle[outOfBounds="true"], QSplitter::handle[outOfBounds="true"] { 
+    border: 2px solid red;
+}
+
 /* QComboBox styles */
 QComboBox {
-    border: 1px solid black;
     border-radius: 1px;
-    color: black;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #383838, stop:0.2 #999999, stop:1 #999999);
 }
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
     width: 20px;
+    border-top: 0px;
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
+    outline: 0;
+}
+QComboBox::drop-down:hover {
+    background-color: #47474b;
 }
 QComboBox::down-arrow {
      image: url(:/stylesheets/images/arrow_down.png);
 }
-QComboBox:disabled {
-    color: #ccc;
-    border-color: #444;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #282828, stop:0.2 #666, stop:1 #666);
+
+QComboBox QListView {
+    padding-top: 1px;
+    background-color: #3a3a3d;
+    selection-background-color: #47474b;
+    border: 1px solid #6a6a6f;
+    border-top: 1px solid #268bd2;
+    border-bottom-left-radius: 1px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 1px;
+    outline: 0;
 }
 
 
