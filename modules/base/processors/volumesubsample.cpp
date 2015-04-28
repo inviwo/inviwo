@@ -87,6 +87,7 @@ void VolumeSubsample::process() {
 
         // pass meta data on
         volume->copyMetaDataFrom(*inport_.getData());
+        volume->dataMap_.dataRange = inport_.getData()->dataMap_.dataRange;
 
         if (adjustBasisAndOffset_.get()) {
             vec3 volOffset = inport_.getData()->getOffset() + vec3(offset) / vec3(inport_.getData()->getDimensions());

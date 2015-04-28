@@ -52,6 +52,10 @@ public:
     void setNextAsCurrent();
     
     T* getCurrent();
+    const T* getCurrent() const;
+
+    T* getDataAt(int idx);
+    const T* getDataAt(int idx) const;
 
     virtual std::string getDataInfo() const;
 
@@ -135,6 +139,39 @@ T* DataSequence<T>::getCurrent() {
         return sequenceContainer_[currentIdx_];
 
     if(!sequenceContainer_.empty())
+        sequenceContainer_[0];
+
+    return nullptr;
+}
+
+template <typename T>
+const T* DataSequence<T>::getCurrent() const {
+    if (currentIdx_ < static_cast<int>(sequenceContainer_.size()))
+        return sequenceContainer_[currentIdx_];
+
+    if (!sequenceContainer_.empty())
+        sequenceContainer_[0];
+
+    return nullptr;
+}
+
+template <typename T>
+T* DataSequence<T>::getDataAt(int idx) {
+    if (idx < static_cast<int>(sequenceContainer_.size()))
+        return sequenceContainer_[idx];
+
+    if (!sequenceContainer_.empty())
+        sequenceContainer_[0];
+
+    return nullptr;
+}
+
+template <typename T>
+const T* DataSequence<T>::getDataAt(int idx) const {
+    if (idx < static_cast<int>(sequenceContainer_.size()))
+        return sequenceContainer_[idx];
+
+    if (!sequenceContainer_.empty())
         sequenceContainer_[0];
 
     return nullptr;

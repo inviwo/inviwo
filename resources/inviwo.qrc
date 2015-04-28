@@ -52,5 +52,8 @@
     <file>stylesheets/images/circle_gray_disabled.png</file>
     <file>stylesheets/images/close.png</file>
     <file>stylesheets/images/undock.png</file>
+    <file>stylesheets/images/dock-unsticky.png</file>
+    <file>stylesheets/images/dock-sticky.png</file>
+    <file>stylesheets/images/dense6pattern.png</file>
  </qresource>
  </RCC>

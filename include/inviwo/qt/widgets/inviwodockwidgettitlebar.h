@@ -27,36 +27,46 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/inviwodockwidget.h>
-#include <inviwo/qt/widgets/inviwodockwidgettitlebar.h>
-#include <QKeyEvent>
+#ifndef IVW_INVIWODOCKWIDGETTITLEBAR_H
+#define IVW_INVIWODOCKWIDGETTITLEBAR_H
+
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <QWidget>
+
+class QPaintEvent;
+class QDockWidget;
 
 namespace inviwo {
 
-InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
-    : QDockWidget(title, parent) {
-#ifdef __APPLE__
-    this->setStyleSheet("QDockWidget::title {padding-left: 45px; }");
-#endif
+/*! \class InviwoDockWidgetTitleBar
+\brief Custom title bar widget for QDockWidget derived from QWidget.
 
-    // adding custom title bar to dock widget
-    this->setTitleBarWidget(new InviwoDockWidgetTitleBar(this));
-}
+The title bar widget contains a label showing the window title of the 
+parent QDockWidget and buttons for the sticky mode, dock/undock, and close.
+The sticky mode determines whether the floating dock widget can be docked
+to prevent involuntary docking when moving the dock widget. Docking via the 
+dock button or double clicking the title bar is still possible.
 
-InviwoDockWidget::~InviwoDockWidget() {}
+Note: adding a custom title bar to a QDockWidget removes the window decoration!
+*/
+class IVW_QTWIDGETS_API InviwoDockWidgetTitleBar : public QWidget {
+Q_OBJECT
+public:
+    InviwoDockWidgetTitleBar(QWidget *parent=nullptr);
+    virtual ~InviwoDockWidgetTitleBar();
 
-void InviwoDockWidget::show(){
-    raise();
-    QDockWidget::show();
-}
+    virtual void paintEvent(QPaintEvent *) override;
+    
+protected slots:
+    void stickyBtnToggled(bool toggle);
+    void floatBtnClicked();
 
-void InviwoDockWidget::keyPressEvent(QKeyEvent* keyEvent) {
-    if (keyEvent->key() == Qt::Key_Escape && isFloating()){
-        hide();
-    } else {
-        keyEvent->ignore();
-    }
-    QDockWidget::keyPressEvent(keyEvent);
-}
+private:
+    QDockWidget *parent_;
+
+    Qt::DockWidgetAreas allowedDockAreas_;
+};
 
 } // namespace
+
+#endif // IVW_INVIWODOCKWIDGETTITLEBAR_H

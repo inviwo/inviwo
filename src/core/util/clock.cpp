@@ -33,39 +33,27 @@
 namespace inviwo {
 
 Clock::Clock() {
-#ifdef WIN32
-    QueryPerformanceFrequency(&ticksPerSecond_);
-#endif
 }
 
 void Clock::start() {
-#ifdef WIN32
-    QueryPerformanceCounter(&startTime_);
-#else
-    startTime_ = clock();
-#endif
+    startTime_ = std::chrono::high_resolution_clock::now();
+    tickTime_ = startTime_;
 }
 
-void Clock::stop() {
-#ifdef WIN32
-    QueryPerformanceCounter(&stopTime_);
-#else
-    stopTime_ = clock();
-#endif
+void Clock::tick() {
+    tickTime_ = std::chrono::high_resolution_clock::now();
 }
 
 float Clock::getElapsedMiliseconds() const { return 1000.f * getElapsedSeconds(); }
 
 float Clock::getElapsedSeconds() const {
-#ifdef WIN32
-    return static_cast<float>(stopTime_.QuadPart - startTime_.QuadPart) / ticksPerSecond_.QuadPart;
-#else
-    return static_cast<float>(stopTime_ - startTime_) / static_cast<float>(CLOCKS_PER_SEC);
-#endif
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    return (duration_cast<duration<float>>(tickTime_ - startTime_)).count();
 }
 
 ScopedClockCPU::~ScopedClockCPU() {
-    clock_.stop();
+    clock_.tick();
     if (clock_.getElapsedMiliseconds() > logIfAtLeastMilliSec_) {
         std::stringstream message;
         message << logMessage_ << ": " << clock_.getElapsedMiliseconds() << " ms";

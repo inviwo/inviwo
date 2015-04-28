@@ -32,11 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <string>
-#include <time.h>
-
-#ifdef WIN32
-#include <Windows.h>
-#endif
+#include <chrono>
 
 namespace inviwo {
 
@@ -56,32 +52,26 @@ public:
     void start();
 
     /**
-     * Stops the clock.
+     * Set new reference time.
      *
      */
-    void stop();
+    void tick();
 
     /**
-    * Returns the amount of milliseconds between start and stop call.
-    * If neither start or stop has been called, the return value is undefined.
+    * Returns the amount of milliseconds between start and tick call.
+    * If neither start or tick has been called, the return value is undefined.
     */
     float getElapsedMiliseconds() const;
 
     /**
-    * Returns the amount of seconds between start and stop call.
-    * If neither start or stop has been called, the return value is undefined.
+    * Returns the amount of seconds between start and tick call.
+    * If neither start or tick has been called, the return value is undefined.
     */
     float getElapsedSeconds() const;
 
 protected:
-#ifdef WIN32
-    LARGE_INTEGER startTime_;
-    LARGE_INTEGER stopTime_;
-    LARGE_INTEGER ticksPerSecond_;
-#else
-    clock_t startTime_;
-    clock_t stopTime_;
-#endif
+    std::chrono::high_resolution_clock::time_point startTime_;
+    std::chrono::high_resolution_clock::time_point tickTime_;
 };
 
 /** \class ScopedClockCPU

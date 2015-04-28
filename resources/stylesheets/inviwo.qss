@@ -113,18 +113,39 @@ QDockWidget::close-button, QDockWidget::float-button {
     icon-size: 13px;
 }
 QDockWidget::title {
-    padding-top: 5px;
+    padding: 2px;
     padding-left: 5px;
     border-radius: 3px;
+   border-style: solid;
+    border-color: #888;
+    border-width: 1px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #888888, stop:0.4 #555555, 
-                                stop:0.5 #000000, stop:1 #111111);
+                                stop:0 #555, stop:0.8 #333, 
+                                stop:0.8 #333, stop:1 #222);
+}
+inviwo--InviwoDockWidgetTitleBar {
+    padding: 2px;
+    padding-left: 5px;
+    border-radius: 3px;
+    border-style: solid;
+    border-color: #888;
+    border-width: 1px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #555, stop:0.8 #333, stop:1 #222);
 }
 QDockWidget {
     color: #999999;
-    border: 0px;
+    /*border: 0px;*/
     titlebar-close-icon: url(:/stylesheets/images/close.png);
     titlebar-normal-icon: url(:/stylesheets/images/undock.png);
+
+    background-color: #222;
+    border-width: 2px;
+    /* border style does not work here... */
+    /*
+    border-color: white;
+    border-style: dashed;
+    */
 }
 QTabWidget::pane {
     border-top: 0px;

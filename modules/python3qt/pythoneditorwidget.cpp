@@ -339,7 +339,7 @@ void PythonEditorWidget::run() {
     Clock c;
     c.start();
     bool ok = script_.run();
-    c.stop();
+    c.tick();
 
     if (ok) {
         LogInfo("Python Script Executed succesfully");
