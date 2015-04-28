@@ -200,7 +200,7 @@ PortConnection* ProcessorNetwork::addConnection(Outport* sourcePort, Inport* des
 }
 
 void ProcessorNetwork::removeConnection(Outport* sourcePort, Inport* destPort) {
-    PortConnectionMap::iterator itm = portConnectionsMap_.find(std::make_pair(sourcePort, destPort));
+    auto itm = portConnectionsMap_.find(std::make_pair(sourcePort, destPort));
     if (itm != portConnectionsMap_.end()) {
         PortConnection* connection = itm->second;
         notifyObserversProcessorNetworkWillRemoveConnection(connection);

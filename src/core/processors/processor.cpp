@@ -59,7 +59,6 @@ Processor::Processor()
 
 Processor::~Processor() {
     usedIdentifiers_.erase(identifier_);
-    portDependencySets_.deinitialize();
     if (processorWidget_) {
         processorWidget_->setProcessor(nullptr);
     }
@@ -147,7 +146,8 @@ const std::vector<Outport*>& Processor::getOutports() const { return outports_; 
 
 const std::vector<Inport*>& Processor::getInports(Event*) const { return inports_; }
 
-std::vector<Port*> Processor::getPortsByDependencySet(const std::string& portDependencySet) const {
+std::vector<Port*> Processor::getPortsByDependencySet(
+    const std::string& portDependencySet) const {
     return portDependencySets_.getGroupedData(portDependencySet);
 }
 
@@ -231,7 +231,7 @@ bool Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) 
             propagationEnded = false;
             imageInport->changeDataDimensions(resizeEvent);
         } else if (auto multiImageInport =
-                       dynamic_cast<MultiDataInport<Image, ImageInport>*>(port)) {
+                       dynamic_cast<const MultiDataInport<Image, ImageInport>*>(port)) {
             propagationEnded = false;
             for (auto inport : multiImageInport->getInports()) {
                 if (ImageInport* imageInport = dynamic_cast<ImageInport*>(inport)) {
