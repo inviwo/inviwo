@@ -35,7 +35,7 @@ EventHandler::EventHandler() : eventListeners_() {}
 
 EventHandler::~EventHandler() {}
 
-void EventHandler::broadcast(Event* event) {
+void EventHandler::broadcast(Event* event) const {
     for (auto& elem : eventListeners_) elem->invokeEvent(event);
 }
 

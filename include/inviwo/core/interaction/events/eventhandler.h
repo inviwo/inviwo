@@ -42,7 +42,7 @@ public:
     EventHandler();
     virtual ~EventHandler();
 
-    void broadcast(Event* event);
+    void broadcast(Event* event) const;
 
 protected:
     bool addEventListener(EventListener*);
