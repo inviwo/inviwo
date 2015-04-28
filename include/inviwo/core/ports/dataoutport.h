@@ -156,9 +156,9 @@ template <typename T>
 T* DataOutport<T>::detachDataFromOutport() {
     if (ownsData_) {
         ownsData_ = false;
-        Image* img = nullptr;
-        std::swap(img, data_);
-        return img;
+        T* data = nullptr;
+        std::swap(data, data_);
+        return data;
     }
 
     return nullptr;
