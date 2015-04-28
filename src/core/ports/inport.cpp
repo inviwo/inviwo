@@ -35,7 +35,7 @@
 namespace inviwo {
 
 Inport::Inport(std::string identifier)
-    : Port(identifier), lastInvalidationLevel_(VALID), changed_(false) {}
+    : Port(identifier), changed_(false), lastInvalidationLevel_(VALID) {}
 
 Inport::~Inport() {}
 
@@ -122,7 +122,7 @@ void Inport::disconnectFrom(Outport* outport) {
     }
 }
 
-bool Inport::isConnectedTo(Outport* outport) const {
+bool Inport::isConnectedTo(const Outport* outport) const {
     return std::find(connectedOutports_.begin(), connectedOutports_.end(), outport) !=
            connectedOutports_.end();
 }

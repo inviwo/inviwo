@@ -92,7 +92,7 @@ public:
      */
     virtual void setData(Image* data, bool ownsData = true) override;
     virtual void setConstData(const Image* data) override;
-    const Image* getResizedImageData(uvec2 dimensions);
+    const Image* getResizedImageData(uvec2 dimensions) const;
     
     /**
      * Handle resize event

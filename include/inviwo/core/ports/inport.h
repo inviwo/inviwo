@@ -69,11 +69,11 @@ public:
     virtual bool isChanged() const;
 
     // Called from the processor network to create connections.
-    virtual bool canConnectTo(Port* port) const = 0;
+    virtual bool canConnectTo(const Port* port) const = 0;
     virtual void connectTo(Outport* outport);
     virtual void disconnectFrom(Outport* outport);
 
-    virtual bool isConnectedTo(Outport* outport) const;
+    virtual bool isConnectedTo(const Outport* outport) const;
     virtual Outport* getConnectedOutport() const;
     virtual std::vector<Outport*> getConnectedOutports() const;
     virtual size_t getMaxNumberOfConnections() const = 0;
@@ -127,13 +127,15 @@ protected:
     void getPredecessors(std::vector<Processor*>&) const;
 
     std::vector<Outport*> connectedOutports_;
-    mutable CallBackList onChangeCallback_;
-    mutable CallBackList onInvalidCallback_;
-    InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
+
 
 private:
     bool changed_;
+    mutable CallBackList onChangeCallback_;
     std::vector<const Outport*> changedSources_;
+    
+    mutable CallBackList onInvalidCallback_;
+    InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
 };
 
 template <typename T>

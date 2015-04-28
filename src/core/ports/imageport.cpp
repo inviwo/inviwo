@@ -56,7 +56,7 @@ void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {
 
     // Find the image port with largest dimensions
     for (auto port : getProcessor()->getPortsInSameSet(this)) {
-        ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(port);
+        auto imageOutport = dynamic_cast<const ImageOutport*>(port);
 
         if (imageOutport && imageOutport->isConnected()) {
             const uvec2 dim = imageOutport->getDimensions();
@@ -78,11 +78,11 @@ uvec2 ImageInport::getDimensions() const { return requestedDimensions_; }
 
 const Image* ImageInport::getData() const {
     if (isConnected()) {
-        ImageOutport* outport = static_cast<ImageOutport*>(getConnectedOutport());
+        auto outport = static_cast<const ImageOutport*>(getConnectedOutport());
         if (isOutportDeterminingSize()) {
             return outport->getConstData();
         } else {
-            return const_cast<const Image*>(outport->getResizedImageData(requestedDimensions_));
+            return outport->getResizedImageData(requestedDimensions_);
         }
     } else {
         return nullptr;
@@ -151,8 +151,8 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     uvec2 requiredDimensions = resizeEvent->size();
     std::vector<const uvec2> registeredDimensions;
 
-    for (auto inport : getConnectedInports()) {
-        ImageInport* imageInport = dynamic_cast<ImageInport*>(inport);
+    for (auto inport : connectedInports_) {
+        auto imageInport = dynamic_cast<ImageInport*>(inport);
         if (imageInport && !imageInport->isOutportDeterminingSize()) {
             util::push_back_unique(registeredDimensions, imageInport->getDimensions());
         }
@@ -181,7 +181,7 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
 
     // Make sure that all ImageOutports in the same group (dependency set) that has the same size.
     for (auto port : getProcessor()->getPortsInSameSet(this)) {
-        ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(port);
+        auto imageOutport = dynamic_cast<ImageOutport*>(port);
         if (imageOutport && imageOutport != this) {
             imageOutport->setDimensions(resizeEvent->size());
         }
@@ -196,7 +196,7 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
 
 uvec2 ImageOutport::getDimensions() const { return dimensions_; }
 
-const Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) {
+const Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) const {
     return cache_.getImage(requiredDimensions);
 }
 

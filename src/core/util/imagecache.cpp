@@ -38,7 +38,7 @@ void ImageCache::setMaster(const Image* master) {
     valid_ = false;
 }
 
-const Image* ImageCache::getImage(const uvec2 dimensions) {
+const Image* ImageCache::getImage(const uvec2 dimensions) const {
     if (!master_) return nullptr;
 
     if (master_->getDimensions() == dimensions) return master_;
@@ -65,7 +65,7 @@ const Image* ImageCache::getImage(const uvec2 dimensions) {
     }
 }
 
-void ImageCache::prune(std::vector<const uvec2> dimensions) {
+void ImageCache::prune(std::vector<const uvec2> dimensions) const {
     for (auto it = cache_.begin(); it != cache_.end();) {
         if (!util::contains(dimensions, it->first)) {
             it = cache_.erase(it);
@@ -109,7 +109,7 @@ void ImageCache::update(std::vector<const uvec2> dimensions) {
 
 }
 
-void ImageCache::setInvalid() {
+void ImageCache::setInvalid() const {
     valid_ = false;
 }
 

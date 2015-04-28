@@ -64,12 +64,12 @@ public:
     MultiDataInport(std::string identifier);
     virtual ~MultiDataInport();
 
-    virtual bool canConnectTo(Port* port) const {
+    virtual bool canConnectTo(const Port* port) const override {
         if(!port || port->getProcessor() == getProcessor())
             return false;
-        if (dynamic_cast<DataOutport<T>*>(port))
+        if (dynamic_cast<const DataOutport<T>*>(port))
             return true;
-        else if (dynamic_cast<VectorDataOutport<T*>*>(port))
+        else if (dynamic_cast<const VectorDataOutport<T*>*>(port))
             return true;
         else
             return false;

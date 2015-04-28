@@ -53,17 +53,17 @@ public:
     ImageCache& operator=(const ImageCache& that) = delete;
 
     void setMaster(const Image* master);
-    const Image* getImage(const uvec2 dimensions);
+    const Image* getImage(const uvec2 dimensions) const;
 
     /**
      *	Remove all cached images except those in dimensions
      */
-    void prune(std::vector<const uvec2> dimensions);
+    void prune(std::vector<const uvec2> dimensions) const;
     /**
      *	Make sure there is a cached version for all images sizes in dimensions
      */
     void update(std::vector<const uvec2> dimensions);
-    void setInvalid();
+    void setInvalid() const;
 
     bool hasImage(const uvec2 dimensions);
     void addImage(Image* image);
@@ -71,11 +71,11 @@ public:
     Image* getUnusedImage(std::vector<const uvec2> dimensions);
 
 private:
-    bool valid_;
+    mutable bool valid_;
     const Image* master_; // non-owning reference.
 
     using Cache = std::unordered_map<glm::uvec2, std::unique_ptr<Image>>;
-    Cache cache_;
+    mutable Cache cache_;
 };
 
 } // namespace

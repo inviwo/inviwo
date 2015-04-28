@@ -41,9 +41,8 @@ bool Outport::isConnected() const { return !(connectedInports_.empty()); }
 
 bool Outport::isReady() const { return isConnected(); }
 
-bool Outport::isConnectedTo(Inport* port) const {
-    return !(std::find(connectedInports_.begin(), connectedInports_.end(), port) ==
-             connectedInports_.end());
+bool Outport::isConnectedTo(const Inport* port) const {
+    return util::contains(connectedInports_, port);
 }
 
 std::vector<Inport*> Outport::getConnectedInports() const { return connectedInports_; }
@@ -57,7 +56,7 @@ inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalid
 
 void Outport::setValid() {
     invalidationLevel_ = VALID;
-    for (auto port : connectedInports_) port->setValid(this);
+    for (auto inport : connectedInports_) inport->setValid(this);
 }
 
 std::vector<Processor*> Outport::getDirectSuccessors() const {
@@ -81,18 +80,12 @@ void Outport::getSuccessors(std::vector<Processor*>& successors) const {
 
 // Is called exclusively by Inport, which means a connection has been made.
 void Outport::connectTo(Inport* inport) {
-    if (std::find(connectedInports_.begin(), connectedInports_.end(), inport) ==
-        connectedInports_.end()) {
-        connectedInports_.push_back(inport);
-    }
+    util::push_back_unique(connectedInports_, inport);
 }
 
 // Is called exclusively by Inport, which means a connection has been removed.
 void Outport::disconnectFrom(Inport* inport) {
-    auto it = std::find(connectedInports_.begin(), connectedInports_.end(), inport);
-    if ( it != connectedInports_.end()) {
-        connectedInports_.erase(it);
-    }
+    util::erase_remove(connectedInports_, inport);
 }
 
 }  // namespace

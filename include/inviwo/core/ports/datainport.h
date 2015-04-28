@@ -53,7 +53,7 @@ public:
     virtual std::string getContentInfo() const override;
     virtual size_t getMaxNumberOfConnections() const override;
 
-    virtual bool canConnectTo(Port* port) const override;
+    virtual bool canConnectTo(const Port* port) const override;
     virtual void connectTo(Outport* port) override;
     virtual bool isConnected() const override;
     virtual bool isReady() const override;
@@ -89,8 +89,8 @@ size_t inviwo::DataInport<T, N>::getMaxNumberOfConnections() const  {
 }
 
 template <typename T, size_t N>
-bool DataInport<T, N>::canConnectTo(Port* port) const {
-    if (dynamic_cast<DataOutport<T>*>(port) && port->getProcessor() != getProcessor())
+bool DataInport<T, N>::canConnectTo(const Port* port) const {
+    if (dynamic_cast<const DataOutport<T>*>(port) && port->getProcessor() != getProcessor())
         return true;
     else
         return false;
@@ -126,7 +126,7 @@ template <typename T, size_t N>
 const T* DataInport<T, N>::getData() const {
     if (isConnected()) {
         // Safe to static cast since we are unable to connect other outport types.
-        return static_cast<DataOutport<T>*>(getConnectedOutport())->getConstData();
+        return static_cast<const DataOutport<T>*>(getConnectedOutport())->getConstData();
     } else {
         return nullptr;
     }
@@ -138,7 +138,7 @@ std::vector<const T*> DataInport<T, N>::getVectorData() const {
 
     for (auto outport : connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
-        DataOutport<T>* dataport = static_cast<DataOutport<T>*>(outport);
+        auto dataport = static_cast<const DataOutport<T>*>(outport);
         if (dataport->hasData()) res.push_back(dataport->getConstData());
     }
 
@@ -152,7 +152,7 @@ std::vector<std::pair<const Outport*, const T*>> inviwo::DataInport<T, N>::getSo
 
     for (auto outport : connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
-        DataOutport<T>* dataport = static_cast<DataOutport<T>*>(outport);
+        auto dataport = static_cast<const DataOutport<T>*>(outport);
         if (dataport->hasData()) res.emplace_back(dataport, dataport->getConstData());
     }
 

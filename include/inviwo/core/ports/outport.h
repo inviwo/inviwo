@@ -67,7 +67,7 @@ public:
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
 
-    bool isConnectedTo(Inport* port) const;
+    bool isConnectedTo(const Inport* port) const;
     
     std::vector<Inport*> getConnectedInports() const;
     std::vector<Processor*> getDirectSuccessors() const;
@@ -85,7 +85,7 @@ protected:
     void getSuccessors(std::vector<Processor*>&) const;
 
     InvalidationLevel invalidationLevel_;
-private:
+
     std::vector<Inport*> connectedInports_;
 };
 
