@@ -57,5 +57,7 @@
         <file>stylesheets/images/dock-docked.png</file>
         <file>stylesheets/images/dock-floating.png</file>
         <file>stylesheets/images/arrow_lighter_down.png</file>
+        <file>stylesheets/images/arrow_lighter_right.png</file>
+        <file>stylesheets/images/arrow_lighter_up.png</file>
     </qresource>
 </RCC>

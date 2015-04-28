@@ -35,6 +35,9 @@ QWidget {
     background-color: #252528;/*#313136;*/ /*#4d4d4d;*/
     background-color: #323235;
 }
+QStatusBar {
+    background-color: #252527;
+}
 QMainWindow::separator {
     background: #444;
     width: 2px;
@@ -63,14 +66,14 @@ QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover
 /* Composite property */
 QWidget#CollapsibleGroupBoxWidgetQt {
     border: 1px solid #4a4a4f;
-    /*border: 1px solid green;*/
     background: #2b2b2d;
 }
 
-QWidget#CollapsibleGroupBoxWidgetQt QLabel {
-    border: none;
-    background: transparent;
+QWidget#compositeLabel QLabel {
+    border: 1px solid transparent;
+    background: #2b2b2d;
 }
+
 /* this renders all backgrounds unusable (labels, lineedit, etc.) due to specialization */
 /*
 QWidget#CollapsibleGroupBoxWidgetQt QLabel, QWidget#CollapsibleGroupBoxWidgetQt QWidget {
@@ -110,11 +113,11 @@ QToolButton {
     background-color: transparent;
 }
 
-QToolButton#collapseButton {
-    image: url(:/stylesheets/images/arrow_lighter_down.png);
-}
+
 
 QToolButton#resetButton {
+    width: 13px;
+    height: 13px;
     image: url(:/icons/edit-undo-icon.png);
 }
 
@@ -214,8 +217,8 @@ QTabWidget::pane{
     border-bottom: 2px solid #414145;
 }
 QTabWidget::pane QWidget, QTabWidget::pane QFrame, QTabWidget::pane QDockWidget QWidget {
-  background: #414145;
-  background: red;
+    /* docked QDockWidgets ignore QTabWidget */
+    background: #252527;
 }
 
 QTabWidget::tab-bar {
@@ -325,24 +328,34 @@ QGroupBox::title {
 }
 
 /* QTreeView styles */
+QTreeView {
+    border: 1px solid #4a4a4f;
+    show-decoration-selected: 1;
+    selection-background-color: #65696d;
+    outline: 0;
+}
+
+QTreeView::branch:hover{
+    background-color: #47474b;
+}
 QTreeView::item:hover {
     background-color: #47474b;
 }
-QTreeView::branch:hover{
-    background-color: #47474b;
+QTreeView::item:selected, QTreeView::branch:selected {
+    background-color: #65696d;
 }
 QTreeView::branch:has-children:!has-siblings:closed,
  QTreeView::branch:closed:has-children:has-siblings {
     border-image: none;
-    image: url(:/stylesheets/images/arrow_darker_right.png);
+    image: url(:/stylesheets/images/arrow_lighter_right.png);
  }
 
  QTreeView::branch:open:has-children:!has-siblings,
  QTreeView::branch:open:has-children:has-siblings  {
     border-image: none;
-    image: url(:/stylesheets/images/arrow_darker_down.png);
+    image: url(:/stylesheets/images/arrow_lighter_down.png);
  }
- 
+
 /* QRadioButton and QCheckBox styles */
 QRadioButton::indicator, QCheckBox::indicator {
     width: 13px;
@@ -361,8 +374,7 @@ QRadioButton::indicator::checked:disabled {
     image: url(:/stylesheets/images/circle_disabled.png);
 }
 QCheckBox::indicator {
-    border: 1px solid #4a4a4f;
-    border: 1px solid #3d3d41;
+    border: 1px solid #1b1b1d;
     background: #47474b;
     background: #9d9995;
     border-radius: 1px;
@@ -601,7 +613,7 @@ QSplitter QFrame#pythonConsole, QFrame#htmlEditorOutput {
 
 /* out-of-bounds indication */
 QSlider::handle[outOfBounds="true"], QSplitter::handle[outOfBounds="true"] { 
-    border: 2px solid red;
+    border: 2px solid #b41b1b;
 }
 
 /* QComboBox styles */

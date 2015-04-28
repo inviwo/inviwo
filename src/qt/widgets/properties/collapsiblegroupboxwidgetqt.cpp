@@ -73,9 +73,11 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
 
     btnCollapse_ = new QToolButton(this);
     btnCollapse_->setObjectName("collapseButton");
+    btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_lighter_down.png"));
     connect(btnCollapse_, SIGNAL(clicked()), this, SLOT(toggleCollapsed()));
 
     label_ = new EditableLabelQt(this, displayName_, false);
+    label_->setObjectName("compositeLabel");
     connect(label_, SIGNAL(textChanged()), this, SLOT(labelDidChange()));
 
     QToolButton* resetButton = new QToolButton(this);
@@ -273,10 +275,10 @@ bool CollapsibleGroupBoxWidgetQt::isCollapsed() const {
 void CollapsibleGroupBoxWidgetQt::setCollapsed(bool collapse) {
     if (collapsed_ && !collapse) {
         propertyWidgetGroup_->show();
-        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_darker_down.png"));
+        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_lighter_down.png"));
     } else if (!collapsed_ && collapse) {
         propertyWidgetGroup_->hide();
-        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_darker_right.png"));
+        btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_lighter_right.png"));
     }
     collapsed_ = collapse;
 }
