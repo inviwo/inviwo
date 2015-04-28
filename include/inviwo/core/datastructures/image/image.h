@@ -37,9 +37,6 @@
 
 namespace inviwo {
 
-class ImageRepresentation;
-class ImageInport;
-
 class IVW_CORE_API Image : public DataGroup {
 public:
     Image(uvec2 dimensions = uvec2(8, 8), const DataFormatBase* format = DataVec4UINT8::get());

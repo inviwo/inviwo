@@ -39,7 +39,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/multidatainport.h>
 #include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
@@ -70,6 +69,7 @@ public:
     const std::vector<ivec4>& getViewCoords() const;
 
     virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
+    virtual void propagateInteractionEvent(InteractionEvent*) override;
 
 protected:
     virtual void process() override;
@@ -95,7 +95,7 @@ protected:
 
 private:
     static bool inView(const ivec4& view, const ivec2& pos);
-    MultiDataInport<Image, ImageInport> multiinport_;
+    ImageMultiInport multiinport_;
     ImageOutport outport_;
     
     TemplateOptionProperty<Layout> layout_;

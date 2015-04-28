@@ -41,9 +41,7 @@ class Outport;
 class Processor;
 class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
-class MultiInport;
-template <typename T, typename U>
-class MultiDataInport;
+class InteractionEvent;
 
 /**
  * \class Inport
@@ -56,7 +54,6 @@ public:
     friend class Processor;
     friend class ProcessorNetwork;
     friend class ProcessorNetworkEvaluator;
-    friend class MultiInport;
 
     template <typename T, typename U>
     friend class MultiDataInport;
@@ -80,6 +77,8 @@ public:
     virtual size_t getNumberOfConnections() const;
     std::vector<Processor*> getPredecessors() const;
     virtual std::vector<const Outport*> getChangedOutports() const;
+
+    virtual void propagateInteractionEvent(InteractionEvent* event, Outport* target = nullptr);
     /**
      * The on change call back is invoked before Processor::process after a port has been connected,
      * disconnected, or has changed its validation level. Note it is only called if process is also

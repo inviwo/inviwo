@@ -40,7 +40,6 @@ namespace inviwo {
 
 class Inport;
 class SingleInport;
-class MultiInport;
 
 /**
  * \class Outport
@@ -50,9 +49,9 @@ class MultiInport;
 class IVW_CORE_API Outport : public Port {
     friend class Processor;
     friend class Inport;
-    friend class SingleInport;
-    friend class MultiInport;
-    friend class ImageInport;
+
+    template <size_t N>
+    friend class BaseImageInport;
 
 public:
     Outport(std::string identifier = "");
@@ -66,6 +65,8 @@ public:
      *	Called by Processor::invalidate, will invalidate its connected inports.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
+
+    virtual void propagateInteractionEvent(InteractionEvent* event);
 
     bool isConnectedTo(const Inport* port) const;
     

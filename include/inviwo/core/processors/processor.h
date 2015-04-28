@@ -35,6 +35,7 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
@@ -76,7 +77,8 @@ class ResizeEvent;
  */
 class IVW_CORE_API Processor : public PropertyOwner,
                                public MetaDataOwner,
-                               public ProcessorObservable {
+                               public ProcessorObservable,
+                               public EventPropagator {
 public:
     Processor();
     virtual ~Processor();
@@ -124,11 +126,6 @@ public:
 
     const std::vector<Inport*>& getInports() const;
     const std::vector<Outport*>& getOutports() const;
-    /**
-     * getInports(Event*) is used to determine the direct predecessors 
-     * of the processor during event propagation.
-     */
-    virtual const std::vector<Inport*>& getInports(Event*) const;
 
     std::vector<std::string> getPortDependencySets() const;
     std::vector<Port*> getPortsByDependencySet(const std::string& portDependencySet) const;
@@ -192,7 +189,7 @@ public:
     bool hasInteractionHandler() const;
     const std::vector<InteractionHandler*>& getInteractionHandlers() const;
     virtual void invokeInteractionEvent(Event* event);
-
+    virtual void propagateInteractionEvent(InteractionEvent*) override;
     virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source);
 
 

@@ -28,89 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/multidatainport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 
 namespace inviwo {
-
-// Image Inport
-ImageInport::ImageInport(std::string identifier, bool outportDeterminesSize)
-    : DataInport<Image>(identifier)
-    , requestedDimensions_(8, 8)
-    , outportDeterminesSize_(outportDeterminesSize) {}
-
-ImageInport::~ImageInport() {}
-
-void ImageInport::connectTo(Outport* outport) {
-    ResizeEvent resizeEvent(requestedDimensions_);
-    ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(outport);
-    imageOutport->changeDataDimensions(&resizeEvent);
-
-    DataInport<Image>::connectTo(outport);
-}
-
-// set dimensions based on port groups
-void ImageInport::changeDataDimensions(ResizeEvent* resizeEvent) {
-    requestedDimensions_ = resizeEvent->size();
-
-    // Find the image port with largest dimensions
-    for (auto port : getProcessor()->getPortsInSameSet(this)) {
-        auto imageOutport = dynamic_cast<const ImageOutport*>(port);
-
-        if (imageOutport && imageOutport->isConnected()) {
-            const uvec2 dim = imageOutport->getDimensions();
-
-            // Largest outport dimensions
-            if (requestedDimensions_.x * requestedDimensions_.y < dim.x * dim.y)
-                requestedDimensions_ = dim;
-        }
-    }
-
-    resizeEvent->setSize(requestedDimensions_);
-
-    if (auto imageOutport = static_cast<ImageOutport*>(getConnectedOutport())) {
-        imageOutport->changeDataDimensions(resizeEvent);
-    }
-}
-
-uvec2 ImageInport::getDimensions() const { return requestedDimensions_; }
-
-const Image* ImageInport::getData() const {
-    if (isConnected()) {
-        auto outport = static_cast<const ImageOutport*>(getConnectedOutport());
-        if (isOutportDeterminingSize()) {
-            return outport->getConstData();
-        } else {
-            return outport->getResizedImageData(requestedDimensions_);
-        }
-    } else {
-        return nullptr;
-    }
-}
-
-bool ImageInport::isOutportDeterminingSize() const { return outportDeterminesSize_; }
-
-void ImageInport::setOutportDeterminesSize(bool outportDeterminesSize) {
-    outportDeterminesSize_ = outportDeterminesSize;
-}
-
-std::string ImageInport::getContentInfo() const {
-    if (hasData())
-        return getData()->getDataInfo();
-    else
-        return getClassIdentifier() + " has no data.";
-}
-
-void ImageInport::passOnDataToOutport(ImageOutport* outport) const {
-    if (hasData()) {
-        const Image* img = getData();
-        Image* out = outport->getData();
-        if (out) img->resizeRepresentations(out, out->getDimensions());
-    }
-}
-
-////////////////////////////// ImageOutport ////////////////////////////////////////////
 
 ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            bool handleResizeEvents)
@@ -146,18 +67,17 @@ void ImageOutport::setConstData(const Image* data) {
 void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     // This function should check which dimensions request exists, by going through the successors
     // and checking registeredDimensions.
-    // Allocates space holder, sets largest data, cleans up un-used data
+    // Allocates space holder, sets largest data, cleans up unused data
 
-    std::vector<uvec2> registeredDimensions;
-    util::push_back_unique(registeredDimensions, resizeEvent->size());
+    LogInfo("change dim: " << getProcessor()->getIdentifier() << " size " << resizeEvent->size());
+
+    std::vector<uvec2> registeredDimensions {resizeEvent->size()};
     for (auto inport : connectedInports_) {
-        auto imageInport = dynamic_cast<ImageInport*>(inport);
+        auto imageInport = dynamic_cast<ImagePortBase*>(inport);
         if (imageInport && !imageInport->isOutportDeterminingSize()) {
             util::push_back_unique(registeredDimensions, imageInport->getDimensions());
         }
     }
-
-
 
     // find the largest dimension.
     uvec2 newDimensions =
@@ -196,6 +116,8 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
 uvec2 ImageOutport::getDimensions() const { return dimensions_; }
 
 const Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) const {
+    LogInfo("GetImage: " << getProcessor()->getIdentifier() << " size " << requiredDimensions);
+    
     return cache_.getImage(requiredDimensions);
 }
 

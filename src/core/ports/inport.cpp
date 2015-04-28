@@ -87,6 +87,16 @@ std::vector<const Outport*> Inport::getChangedOutports() const {
     return changedSources_;
 }
 
+void Inport::propagateInteractionEvent(InteractionEvent* event, Outport* target) {
+    if (target) {
+        target->propagateInteractionEvent(event);
+    } else {
+        for (auto outport : getConnectedOutports()) {
+            outport->propagateInteractionEvent(event);
+        }
+    }
+}
+
 void Inport::setChanged(bool changed, const Outport* source) {
     changed_ = changed;
 

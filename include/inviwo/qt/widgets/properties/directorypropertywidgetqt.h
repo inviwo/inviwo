@@ -63,7 +63,6 @@ private:
     QLineEdit* lineEdit_;
     QToolButton* openButton_;
     EditableLabelQt* directoryLabel_;
-    bool updatedFromWidget_;
 };
 
 } // namespace

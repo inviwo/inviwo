@@ -38,8 +38,6 @@
 namespace inviwo {
 
 class Processor;
-class MultiInport;
-
 
 /**
  *	Traits class to make ports and data less intertwined. Port traits will by default ask
@@ -60,9 +58,7 @@ struct port_traits {
  * \brief A port can be connected to another port and is owned by a processor.
  */
 class IVW_CORE_API Port : public IvwSerializable {
-
     friend class Processor;
-    friend class MultiInport;
 
 public:
     /**

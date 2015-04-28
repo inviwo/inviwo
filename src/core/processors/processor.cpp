@@ -36,7 +36,6 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/multidatainport.h>
 
 namespace inviwo {
 
@@ -146,8 +145,6 @@ const std::vector<Inport*>& Processor::getInports() const { return inports_; }
 
 const std::vector<Outport*>& Processor::getOutports() const { return outports_; }
 
-const std::vector<Inport*>& Processor::getInports(Event*) const { return inports_; }
-
 std::vector<Port*> Processor::getPortsByDependencySet(
     const std::string& portDependencySet) const {
     return portDependencySets_.getGroupedData(portDependencySet);
@@ -222,24 +219,16 @@ const std::vector<InteractionHandler*>& Processor::getInteractionHandlers() cons
 
 void Processor::invokeInteractionEvent(Event* event) {
     PropertyOwner::invokeInteractionEvent(event);
-    for (auto& elem : interactionHandlers_) elem->invokeEvent(event);
+    for (auto elem : interactionHandlers_) elem->invokeEvent(event);
 }
 
 bool Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
     bool propagationEnded = true;
 
     for (auto port : getPortsInSameSet(source)) {
-        if (auto imageInport = dynamic_cast<ImageInport*>(port)) {
+        if (auto imageInport = dynamic_cast<ImagePortBase*>(port)) {
             propagationEnded = false;
             imageInport->changeDataDimensions(resizeEvent);
-        } else if (auto multiImageInport =
-                       dynamic_cast<const MultiDataInport<Image, ImageInport>*>(port)) {
-            propagationEnded = false;
-            for (auto inport : multiImageInport->getInports()) {
-                if (ImageInport* imageInport = dynamic_cast<ImageInport*>(inport)) {
-                    imageInport->changeDataDimensions(resizeEvent);
-                }
-            }
         }
     }
     return propagationEnded;
@@ -299,6 +288,16 @@ void Processor::disableInvalidation() {
 }
 
 void Processor::performEvaluateRequest() { notifyObserversRequestEvaluate(this); }
+
+void Processor::propagateInteractionEvent(InteractionEvent* event) {
+    invokeInteractionEvent(event);
+
+    if (event->hasBeenUsed()) return;
+    for (auto inport : getInports()) {
+        inport->propagateInteractionEvent(event);
+        if (event->hasBeenUsed()) return;
+    }
+}
 
 const std::string Processor::getCodeStateString(CodeState state) {
     switch (state) {

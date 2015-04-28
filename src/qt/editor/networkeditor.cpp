@@ -38,7 +38,6 @@
 #include <inviwo/core/ports/geometryport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/inport.h>
-#include <inviwo/core/ports/multidatainport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/portinspectorfactory.h>
 #include <inviwo/core/ports/volumeport.h>
@@ -746,7 +745,7 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
                 qgraphicsitem_cast<ProcessorGraphicsItem*>(selectedGraphicsItems[i]);
             if (processorGraphicsItem) {
                 Processor* p = processorGraphicsItem->getProcessor();
-                network->propagateInteractionEvent(p, &pressKeyEvent);
+                p->propagateInteractionEvent(&pressKeyEvent);
                 if (pressKeyEvent.hasBeenUsed()) break;
             }
         }
@@ -770,7 +769,7 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
                 qgraphicsitem_cast<ProcessorGraphicsItem*>(selectedGraphicsItems[i]);
             if (processorGraphicsItem) {
                 Processor* p = processorGraphicsItem->getProcessor();
-                network->propagateInteractionEvent(p, &releaseKeyEvent);
+                p->propagateInteractionEvent(&releaseKeyEvent);
                 if (releaseKeyEvent.hasBeenUsed()) break;
             }
         }

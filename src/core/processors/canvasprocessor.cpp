@@ -329,8 +329,4 @@ bool CanvasProcessor::propagateResizeEvent(ResizeEvent* event, Outport* source) 
     return false;
 }
 
-void CanvasProcessor::propagateInteractionEvent(InteractionEvent* event) {
-    evaluator_->propagateInteractionEvent(this, event);
-}
-
 }  // namespace
