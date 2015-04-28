@@ -75,7 +75,7 @@ public:
     void triggerQueuedEvaluation();
     virtual bool isReady() const;
 
-    virtual void propagateResizeEvent(ResizeEvent*);
+    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
     virtual void propagateInteractionEvent(InteractionEvent*);
 
 protected:

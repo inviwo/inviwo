@@ -35,6 +35,8 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/multidatainport.h>
 
 namespace inviwo {
 

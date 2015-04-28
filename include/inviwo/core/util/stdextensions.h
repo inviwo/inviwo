@@ -31,6 +31,7 @@
 #define IVW_STDEXTENSIONS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/glm.h>
 #include <memory>
 #include <string>
 #include <algorithm>
@@ -72,8 +73,8 @@ struct is_string<T, typename void_helper<typename T::value_type, typename T::tra
 template <typename T>
 struct is_string : detail::is_string<T> {};
 
-template <typename T>
-void erase_remove(T& cont, const typename T::value_type& elem) {
+template <typename T, typename V>
+void erase_remove(T& cont, const V& elem) {
     using std::begin;
     using std::end;
     cont.erase(std::remove(begin(cont), end(cont), elem), cont.end());

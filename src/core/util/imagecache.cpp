@@ -28,10 +28,12 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/imagecache.h>
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
-ImageCache::ImageCache(const Image* master) : master_(master), valid_(true) {}
+ImageCache::ImageCache(const Image* master) : valid_(true), master_(master) {}
 
 void ImageCache::setMaster(const Image* master) {
     master_ = master;
@@ -65,7 +67,7 @@ const Image* ImageCache::getImage(const uvec2 dimensions) const {
     }
 }
 
-void ImageCache::prune(std::vector<const uvec2> dimensions) const {
+void ImageCache::prune(std::vector<uvec2> dimensions) const {
     for (auto it = cache_.begin(); it != cache_.end();) {
         if (!util::contains(dimensions, it->first)) {
             it = cache_.erase(it);
@@ -75,7 +77,7 @@ void ImageCache::prune(std::vector<const uvec2> dimensions) const {
     }
 }
 
-void ImageCache::update(std::vector<const uvec2> dimensions) {
+void ImageCache::update(std::vector<uvec2> dimensions) {
     std::vector<std::unique_ptr<Image>> unusedImages;
 
     for (auto it = cache_.begin(); it != cache_.end();) {
@@ -84,7 +86,7 @@ void ImageCache::update(std::vector<const uvec2> dimensions) {
             unusedImages.push_back(std::move(it->second));
             it = cache_.erase(it);
         } else {
-            dimensions.erase(dim);
+            util::erase_remove(dimensions, *dim);
             ++it;
         }
     }

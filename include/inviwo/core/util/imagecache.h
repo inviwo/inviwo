@@ -37,12 +37,10 @@
 
 namespace inviwo {
 
+class Image;
+
 /**
  * \class ImageCache
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
  */
 class IVW_CORE_API ImageCache { 
 public:
@@ -58,11 +56,11 @@ public:
     /**
      *	Remove all cached images except those in dimensions
      */
-    void prune(std::vector<const uvec2> dimensions) const;
+    void prune(std::vector<uvec2> dimensions) const;
     /**
      *	Make sure there is a cached version for all images sizes in dimensions
      */
-    void update(std::vector<const uvec2> dimensions);
+    void update(std::vector<uvec2> dimensions);
     void setInvalid() const;
 
     bool hasImage(const uvec2 dimensions);

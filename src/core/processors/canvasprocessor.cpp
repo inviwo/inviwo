@@ -312,7 +312,7 @@ bool CanvasProcessor::isReady() const {
     return Processor::isReady() && processorWidget_ && processorWidget_->isVisible();
 }
 
-void CanvasProcessor::propagateResizeEvent(ResizeEvent* event) {
+bool CanvasProcessor::propagateResizeEvent(ResizeEvent* event, Outport* source) {
     // avoid continues evaluation when port dimensions changes
     InviwoApplication::getPtr()->getProcessorNetwork()->lock();
 
@@ -325,6 +325,8 @@ void CanvasProcessor::propagateResizeEvent(ResizeEvent* event) {
     }
     // enable network evaluation again
     InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
+    
+    return false;
 }
 
 void CanvasProcessor::propagateInteractionEvent(InteractionEvent* event) {

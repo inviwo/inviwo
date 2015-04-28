@@ -148,16 +148,15 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     // and checking registeredDimensions.
     // Allocates space holder, sets largest data, cleans up un-used data
 
-    uvec2 requiredDimensions = resizeEvent->size();
-    std::vector<const uvec2> registeredDimensions;
-
+    std::vector<uvec2> registeredDimensions;
+    util::push_back_unique(registeredDimensions, resizeEvent->size());
     for (auto inport : connectedInports_) {
         auto imageInport = dynamic_cast<ImageInport*>(inport);
         if (imageInport && !imageInport->isOutportDeterminingSize()) {
             util::push_back_unique(registeredDimensions, imageInport->getDimensions());
         }
     }
-    util::push_back_unique(registeredDimensions, resizeEvent->size());
+
 
 
     // find the largest dimension.

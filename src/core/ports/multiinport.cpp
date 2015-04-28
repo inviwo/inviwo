@@ -113,7 +113,7 @@ bool MultiInport::isChanged() const {
     return false;
 }
 
-bool MultiInport::isConnectedTo(Outport* outport) const {
+bool MultiInport::isConnectedTo(const Outport* outport) const {
     InportVec::const_iterator it = inports_->begin();
     InportVec::const_iterator endIt = inports_->end();
 

@@ -54,7 +54,7 @@ public:
     
     bool isConnected() const { return !inports_->empty() || !vectorInports_->empty(); }
 
-    bool isConnectedTo(Outport* outport) const;
+    virtual bool isConnectedTo(const Outport* outport) const override;
 
     virtual void setChanged(bool changed = true, const Outport* = nullptr) override;
     virtual bool isChanged() const override;
