@@ -305,7 +305,7 @@ void ImageOverlayGL::ImageOverlayGLInteractionHandler::invokeEvent(Event* event)
     if (touchEvent) {
         if (!viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_STARTED) {
             viewportActive_ = true;
-            activePosition_ = touchEvent->pos();
+            activePosition_ = touchEvent->getCenterPoint();
         } else if (viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_ENDED) {
             viewportActive_ = false;
         }

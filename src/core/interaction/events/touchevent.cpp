@@ -31,20 +31,42 @@
 
 namespace inviwo {
 
-TouchEvent::TouchEvent(ivec2 position, TouchEvent::TouchState state)
-    : InteractionEvent(), position_(position), state_(state) {}
+TouchPoint::TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized)
+    : pos_(pos), posNormalized_(posNormalized), prevPos_(prevPos), prevPosNormalized_(prevPosNormalized) {
 
+}
+
+void TouchPoint::serialize(IvwSerializer& s) const {
+    s.serialize("pos", pos_);
+    s.serialize("posNormalized", posNormalized_);
+    s.serialize("prevPos", prevPos_);
+    s.serialize("prevPosNormalized", prevPosNormalized_);
+
+}
+
+void TouchPoint::deserialize(IvwDeserializer& d) {
+    d.deserialize("pos", pos_);
+    d.deserialize("posNormalized", posNormalized_);
+    d.deserialize("prevPos", prevPos_);
+    d.deserialize("prevPosNormalized", prevPosNormalized_);
+}
+
+TouchEvent::TouchEvent(TouchEvent::TouchState state)
+    : InteractionEvent(), state_(state) {}
+
+TouchEvent::TouchEvent(std::vector<TouchPoint> touchPoints, TouchEvent::TouchState state)
+    : InteractionEvent(), touchPoints_(touchPoints), state_(state) {}
 
 TouchEvent::TouchEvent(const TouchEvent& rhs)
     : InteractionEvent(rhs)
-    , position_(rhs.position_)
+    , touchPoints_(rhs.touchPoints_)
     , state_(rhs.state_) {
 }
 
 TouchEvent& TouchEvent::operator=(const TouchEvent& that) {
     if (this != &that) {
         InteractionEvent::operator=(that);
-        position_ = that.position_;
+        touchPoints_ = that.touchPoints_;
         state_ = that.state_;
     }
     return *this;
@@ -56,9 +78,30 @@ TouchEvent* TouchEvent::clone() const {
 
 TouchEvent::~TouchEvent() {}
 
-void TouchEvent::serialize(IvwSerializer& s) const { InteractionEvent::serialize(s); }
+vec2 TouchEvent::getCenterPoint() const {
+    if (touchPoints_.empty()) {
+        return vec2(0);
+    } else {
+        // Compute average position
+        vec2 sum(0);
+        std::for_each(touchPoints_.begin(), touchPoints_.end(), [&](const TouchPoint& p){
+            sum += p.getPos();
+        });
+        return sum / static_cast<float>(touchPoints_.size());
+    }
+}
 
-void TouchEvent::deserialize(IvwDeserializer& d) { InteractionEvent::deserialize(d); }
+void TouchEvent::serialize(IvwSerializer& s) const {
+    s.serialize("touchState", state_);
+    s.serialize("touchPoints", touchPoints_, "touchPoint");
+    InteractionEvent::serialize(s); 
+}
+
+void TouchEvent::deserialize(IvwDeserializer& d) { 
+    d.deserialize("touchState", state_);
+    d.deserialize("touchPoints", touchPoints_, "touchPoint");
+    InteractionEvent::deserialize(d); 
+}
 
 bool TouchEvent::matching(const Event* aEvent) const {
     const TouchEvent* event = dynamic_cast<const TouchEvent*>(aEvent);
@@ -83,6 +126,5 @@ bool TouchEvent::equalSelectors(const Event* aEvent) const {
         return false;
     }
 }
-
 
 }  // namespace

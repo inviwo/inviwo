@@ -432,8 +432,18 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     default:
         touchState = TouchEvent::TOUCH_STATE_NONE;
     }
-
-    TouchEvent touchEvent(pos, touchState);
+    // Copy touch points
+    std::vector<TouchPoint> touchPoints;
+    touchPoints.reserve(touch->touchPoints().size());
+    for (auto& touchPoint : touch->touchPoints()) {
+        touchPoints.push_back(
+            TouchPoint(vec2(touchPoint.pos().x(), touchPoint.pos().y()),
+            vec2(touchPoint.normalizedPos().x(), touchPoint.normalizedPos().y()),
+            vec2(touchPoint.lastPos().x(), touchPoint.lastPos().y()),
+            vec2(touchPoint.lastNormalizedPos().x(), touchPoint.lastNormalizedPos().y()))
+            );
+    }
+    TouchEvent touchEvent(touchPoints, touchState);
     touch->accept();
     Canvas::touchEvent(&touchEvent);
 
