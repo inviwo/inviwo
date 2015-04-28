@@ -210,16 +210,25 @@ QDockWidget {
 
 QTabWidget {
 }
-QTabWidget::pane {
+QTabWidget::pane{
     border-bottom: 2px solid #414145;
 }
+QTabWidget::pane QWidget, QTabWidget::pane QFrame, QTabWidget::pane QDockWidget QWidget {
+  background: #414145;
+  background: red;
+}
+
 QTabWidget::tab-bar {
     left: 5px;
 }
+QTabBar {
+    /* docked QDockWidgets ignore QTabWidget */
+    background: #252527;
+}
 QTabBar::tab {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                               stop: 0 black, stop:0.15 #37373a, stop:0.8 #323235, stop:1 #222224);
-    border: 1px solid #666; /*#252527;*/
+                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
+    border: 1px solid #4a4a4f; /*#252527;*/
     border-top-width: 0px;
     border-bottom-left-radius: 2px;
     border-bottom-right-radius: 2px;
@@ -230,7 +239,9 @@ QTabBar::tab {
                                 stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
 */
     min-width: 8ex;
-    margin-right: 2px; /* spacing between tabs */
+    margin-top: 1px;
+    margin-left: 2px;
+    margin-right: 1px; /* spacing between tabs */
     padding: 2px;
     padding-left: 10px;
     padding-right: 10px;
@@ -240,6 +251,8 @@ QTabBar::tab {
 QTabBar::tab:selected{
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #414145, stop:0.8 #3c3c40, stop:1 #222224);
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #323235, stop:0.9 #3c3c40, stop:1 #222224);
     border: 1px solid #888;
     color: #e9e4de;
     margin-top: -2px;
@@ -249,7 +262,7 @@ QTabBar::tab:selected{
     border-left: 1px solid #268bd2;
     border-right: 1px solid #268bd2;
     border-bottom: 1px solid #268bd2;
-    margin-top: -2px;
+    /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
 }
 QTabBar::tab:bottom:!selected {
 }
