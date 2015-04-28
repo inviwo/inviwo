@@ -80,10 +80,10 @@ void erase_remove(T& cont, const typename T::value_type& elem) {
 }
 
 template <typename T, typename Pred>
-void erase_remove(T& cont, Pred pred) {
+void erase_remove_if(T& cont, Pred pred) {
     using std::begin;
     using std::end;
-    cont.erase(std::remove(begin(cont), end(cont), pred), cont.end());
+    cont.erase(std::remove_if(begin(cont), end(cont), pred), cont.end());
 }
 
 template <typename T>
@@ -95,8 +95,8 @@ void push_back_unique(T& cont, typename T::value_type elem) {
     }
 }
 
-template <typename T>
-bool contains(T& cont, const typename T::value_type& elem) {
+template <typename T, typename V>
+bool contains(T& cont, const V& elem) {
     using std::begin;
     using std::end;
     return std::find(begin(cont), end(cont), elem) != end(cont);
@@ -119,6 +119,23 @@ bool none_of(T& cont, UnaryPredicate pred) {
     using std::begin;
     using std::end;
     return std::none_of(begin(cont), end(cont), pred);
+}
+
+template <class Iter>
+struct iter_range : std::pair<Iter, Iter> {
+    iter_range(std::pair<Iter, Iter> const& x) : std::pair<Iter, Iter>(x) {}
+    Iter begin() const { return this->first; }
+    Iter end() const { return this->second; }
+};
+
+template <class Iter>
+inline iter_range<Iter> as_range(Iter begin, Iter end) {
+    return iter_range<Iter>(std::make_pair(begin, end));
+}
+
+template <class Iter>
+inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
+    return iter_range<Iter>(x);
 }
 
 /**
