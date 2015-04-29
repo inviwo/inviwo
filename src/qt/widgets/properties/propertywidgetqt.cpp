@@ -143,15 +143,19 @@ void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
 
         PropertyEditorWidgetDockStatus docStatus = propertyEditorWidget->getEditorDockStatus();
 
-        if (docStatus == PropertyEditorWidgetDockStatus::DockedLeft) {
-            app->getMainWindow()->addDockWidget(Qt::LeftDockWidgetArea, propertyEditorWidget);
-            propertyEditorWidget->setFloating(false);
-        } else if (docStatus == PropertyEditorWidgetDockStatus::DockedRight) {
-            app->getMainWindow()->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
-            propertyEditorWidget->setFloating(false);
-        } else {
-            app->getMainWindow()->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
-            propertyEditorWidget->setFloating(true);
+        if (app) {
+            if (docStatus == PropertyEditorWidgetDockStatus::DockedLeft) {
+                app->getMainWindow()->addDockWidget(Qt::LeftDockWidgetArea, propertyEditorWidget);
+                propertyEditorWidget->setFloating(false);
+            }
+            else if (docStatus == PropertyEditorWidgetDockStatus::DockedRight) {
+                app->getMainWindow()->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
+                propertyEditorWidget->setFloating(false);
+            }
+            else {
+                app->getMainWindow()->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
+                propertyEditorWidget->setFloating(true);
+            }
         }
 
         propertyEditorWidget->hide();
@@ -159,48 +163,18 @@ void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
         ivec2 widgetDimension = getEditorWidget()->getEditorDimensionMetaData();
         propertyEditorWidget->resize(QSize(widgetDimension.x, widgetDimension.y));
 
-        // TODO: Desktop screen info should be added to system capabilities
         ivec2 pos = getEditorWidget()->getEditorPositionMetaData();
 
-#ifdef WIN32
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        QPoint decorationOffset(static_cast<InviwoApplicationQt*>(InviwoApplicationQt::getPtr())->getWindowDecorationOffset());
-        pos.x -= decorationOffset.x();
-        pos.y -= decorationOffset.y();
-#endif
-#endif
+        if (app) {
+            QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(widgetDimension.x, widgetDimension.y), false);
 
-        QDesktopWidget* desktop = QApplication::desktop();
-        int primaryScreenIndex = desktop->primaryScreen();
-        QRect wholeScreenGeometry = desktop->screenGeometry(primaryScreenIndex);
-        QRect primaryScreenGeometry = desktop->screenGeometry(primaryScreenIndex);
-
-        for (int i = 0; i < desktop->screenCount(); i++) {
-            if (i != primaryScreenIndex)
-                wholeScreenGeometry = wholeScreenGeometry.united(desktop->screenGeometry(i));
-        }
-
-        wholeScreenGeometry.setRect(wholeScreenGeometry.x() - 10, wholeScreenGeometry.y() - 10,
-                                    wholeScreenGeometry.width() + 20,
-                                    wholeScreenGeometry.height() + 20);
-        // Because the widget is hidden, this->width() and this->height() do not 
-        // contain the updated values!
-        QPoint bottomRight = QPoint(pos.x + widgetDimension.x, pos.y + widgetDimension.y);
-
-        QPoint appPos = app->getMainWindow()->pos();
-
-        if (!wholeScreenGeometry.contains(QPoint(pos.x, pos.y)) ||
-            !wholeScreenGeometry.contains(bottomRight)) {
-            pos = ivec2(appPos.x(), appPos.y());
-            pos += ivec2(primaryScreenGeometry.width() / 2, primaryScreenGeometry.height() / 2);
-            propertyEditorWidget->move(pos.x, pos.y);
-        } else {
-            if (!(pos.x == 0 && pos.y == 0))
-                propertyEditorWidget->move(pos.x, pos.y);
-            else {
-                pos = ivec2(appPos.x(), appPos.y());
-                pos += ivec2(primaryScreenGeometry.width() / 2, primaryScreenGeometry.height() / 2);
-                propertyEditorWidget->move(pos.x, pos.y);
+            if (!(newPos.x() == 0 && newPos.y() == 0)) {
+                propertyEditorWidget->move(newPos);
+            }
+            else { // We guess that this is a new widget and give a new position
+                newPos = app->getMainWindow()->pos();
+                newPos += app->offsetWidget();
+                propertyEditorWidget->move(newPos);
             }
         }
 
