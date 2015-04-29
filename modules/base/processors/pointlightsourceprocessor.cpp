@@ -53,7 +53,8 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , lightEnabled_("lightEnabled", "Enabled", true)
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", false) {
+    , interactionEvents_("interactionEvents", "Interaction Events") 
+{
     addPort(outport_);
     lighting_.addProperty(lightPosition_);
     lighting_.addProperty(lightDiffuse_);
@@ -70,8 +71,15 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     lightSource_ = new PointLight();
     lightInteractionHandler_ = new PointLightInteractionHandler(&lightPosition_, &camera_);
 
-    addProperty(handleInteractionEvents_);
-    handleInteractionEvents_.onChange(this, &PointLightSourceProcessor::handleInteractionEventsChanged);
+    interactionEvents_.addOption("off", "Handle None", 0);
+    interactionEvents_.addOption("on", "Handle All", 1);
+    interactionEvents_.addOption("onlytrackball", "Handle Trackball Related Only", 2);
+    interactionEvents_.addOption("onlyscreencorrds", "Handle Light Pos From Screen Coords Only", 3);
+    interactionEvents_.setSelectedValue(0);
+    interactionEvents_.setCurrentStateAsDefault();
+    addProperty(interactionEvents_);
+
+    interactionEvents_.onChange(this, &PointLightSourceProcessor::handleInteractionEventsChanged);
 }
 
 PointLightSourceProcessor::~PointLightSourceProcessor() {
@@ -108,11 +116,16 @@ void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) 
 
 
 void PointLightSourceProcessor::handleInteractionEventsChanged() {
-    if (handleInteractionEvents_.get()) {
-        addInteractionHandler(lightInteractionHandler_);
+    if (interactionEvents_.get() > 0) {
+        if (!hasInteractionHandler())
+            addInteractionHandler(lightInteractionHandler_);
+
+        
     } else {
         removeInteractionHandler(lightInteractionHandler_);
     }
+
+    lightInteractionHandler_->setHandleEventsOptions(interactionEvents_.get());
 }
 
 PointLightSourceProcessor::PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl, CameraProperty* cam) 
@@ -121,7 +134,9 @@ PointLightSourceProcessor::PointLightInteractionHandler::PointLightInteractionHa
     , camera_(cam)    
     , lookUp_(camera_->getLookUp())
     , lookTo_(0.f)
-    , trackball_(&(pl->get()), &lookTo_, &lookUp_) {
+    , trackball_(&(pl->get()), &lookTo_, &lookUp_)
+    , interactionEventOption_(0)
+{
     static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
     camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged); 
 }
@@ -130,24 +145,32 @@ void PointLightSourceProcessor::PointLightInteractionHandler::invokeEvent(Event*
     //if(event->hasBeenUsed())
     //    return;
 
-    GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
-    if (gestureEvent) {
-        if(gestureEvent->type() == GestureEvent::PAN){
-            setLightPosFromScreenCoords(gestureEvent->screenPosNormalized());
-            gestureEvent->markAsUsed();
-            return;
+    if (interactionEventOption_ == 1 || interactionEventOption_ == 3){
+        GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
+        if (gestureEvent) {
+            if (gestureEvent->type() == GestureEvent::PAN){
+                setLightPosFromScreenCoords(gestureEvent->screenPosNormalized());
+                gestureEvent->markAsUsed();
+                return;
+            }
+        }
+        MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event);
+        if (mouseEvent) {
+            int button = mouseEvent->button();
+            if (button == MouseEvent::MOUSE_BUTTON_MIDDLE) {
+                setLightPosFromScreenCoords(mouseEvent->posNormalized());
+                mouseEvent->markAsUsed();
+                return;
+            }
         }
     }
-    MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event);
-    if (mouseEvent) {
-        int button = mouseEvent->button();
-        if (button == MouseEvent::MOUSE_BUTTON_MIDDLE) {
-            setLightPosFromScreenCoords(mouseEvent->posNormalized());
-            mouseEvent->markAsUsed();
-            return;
-        } 
-    } 
-    trackball_.invokeInteractionEvent(event);
+
+    if (interactionEventOption_ == 1 || interactionEventOption_ == 2)
+        trackball_.invokeInteractionEvent(event);
+}
+
+void PointLightSourceProcessor::PointLightInteractionHandler::setHandleEventsOptions(int option){
+    interactionEventOption_ = option;
 }
 
 void PointLightSourceProcessor::PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& normalizedScreenCoord)
