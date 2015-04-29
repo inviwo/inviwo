@@ -36,6 +36,7 @@
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
