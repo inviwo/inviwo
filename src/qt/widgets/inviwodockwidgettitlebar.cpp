@@ -58,9 +58,14 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     stickyBtn->setChecked(true);
     stickyBtn->setObjectName("dockBtn");
 
-    QToolButton *floatBtn = new QToolButton();
-    floatBtn->setIcon(QIcon(":/stylesheets/images/undock.png"));
-    floatBtn->setObjectName("dockBtn");
+    floatBtn_ = new QToolButton();
+    QIcon icon2;
+    icon2.addPixmap(QPixmap(":/stylesheets/images/dock-docked.png"), QIcon::Normal, QIcon::Off);
+    icon2.addPixmap(QPixmap(":/stylesheets/images/dock-floating.png"), QIcon::Normal, QIcon::On);
+    floatBtn_->setIcon(icon2);
+    floatBtn_->setCheckable(true);
+    floatBtn_->setChecked(parent_->isFloating());
+    floatBtn_->setObjectName("dockBtn");
 
     QToolButton *closeBtn = new QToolButton();
     closeBtn->setIcon(QIcon(":/stylesheets/images/close.png"));
@@ -69,7 +74,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(label, 1);
     layout->addWidget(stickyBtn);
-    layout->addWidget(floatBtn);
+    layout->addWidget(floatBtn_);
     layout->addWidget(closeBtn);
     layout->setSpacing(2);
     layout->setMargin(2);
@@ -77,7 +82,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     this->setLayout(layout);
 
     QObject::connect(stickyBtn, SIGNAL(toggled(bool)), this, SLOT(stickyBtnToggled(bool)));
-    QObject::connect(floatBtn, SIGNAL(clicked()), this, SLOT(floatBtnClicked()));
+    QObject::connect(floatBtn_, SIGNAL(clicked()), this, SLOT(floatBtnClicked()));
     QObject::connect(closeBtn, SIGNAL(clicked()), parent_, SLOT(close()));
 }
 
@@ -104,6 +109,10 @@ void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {
 
 void InviwoDockWidgetTitleBar::floatBtnClicked() {
     parent_->setFloating(!parent_->isFloating());
+}
+
+void InviwoDockWidgetTitleBar::floating(bool floating) {
+    floatBtn_->setChecked(floating);
 }
 
 } // namespace

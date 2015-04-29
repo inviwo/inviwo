@@ -99,6 +99,8 @@ public slots:
     void showAboutBox();
     void setVisibilityMode(bool value); // True = Application, False = Developer
 
+    void reloadStyleSheet();
+
 private:
     void addMenus();
     void addMenuActions();
