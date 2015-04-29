@@ -158,7 +158,7 @@ BaseImageInport<N>::~BaseImageInport() {}
 
 template <size_t N>
 void BaseImageInport<N>::connectTo(Outport* outport) {
-    if (getNumberOfConnections() + 1 > getMaxNumberOfConnections())
+    if (this->getNumberOfConnections() + 1 > this->getMaxNumberOfConnections())
         throw Exception("Trying to connect to a full port.", IvwContext);
 
     ResizeEvent resizeEvent(requestedDimensions_);
@@ -176,7 +176,7 @@ void BaseImageInport<N>::changeDataDimensions(ResizeEvent* resizeEvent, ImageOut
     if (target) {
         target->changeDataDimensions(resizeEvent);
     } else {
-        for (auto outport : getConnectedOutports()) {
+        for (auto outport : this->connectedOutports_) {
             if (auto imageOutport = static_cast<ImageOutport*>(outport)) {
                 imageOutport->changeDataDimensions(resizeEvent);
             }
@@ -191,8 +191,8 @@ uvec2 BaseImageInport<N>::getDimensions() const {
 
 template <size_t N>
 const Image* BaseImageInport<N>::getData() const {
-    if (isConnected()) {
-        auto outport = static_cast<const ImageOutport*>(getConnectedOutport());
+    if (this->isConnected()) {
+        auto outport = static_cast<const ImageOutport*>(this->getConnectedOutport());
         if (isOutportDeterminingSize()) {
             return outport->getConstData();
         } else {
@@ -207,7 +207,7 @@ template <size_t N /*= 1*/>
 std::vector<const Image*> inviwo::BaseImageInport<N>::getVectorData() const {
     std::vector<const Image*> res(N);
 
-    for (auto outport : connectedOutports_) {
+    for (auto outport : this->connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
         auto dataport = static_cast<const ImageOutport*>(outport);
 
@@ -228,7 +228,7 @@ std::vector<std::pair<Outport*, const Image*>>
 inviwo::BaseImageInport<N>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, const Image*>> res(N);
 
-    for (auto outport : connectedOutports_) {
+    for (auto outport : this->connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
         auto dataport = static_cast<ImageOutport*>(outport);
         if (dataport->hasData()) {
@@ -255,15 +255,15 @@ void BaseImageInport<N>::setOutportDeterminesSize(bool outportDeterminesSize) {
 
 template <size_t N>
 std::string BaseImageInport<N>::getContentInfo() const {
-    if (hasData())
+    if (this->hasData())
         return getData()->getDataInfo();
     else
-        return getClassIdentifier() + " has no data.";
+        return this->getClassIdentifier() + " has no data.";
 }
 
 template <size_t N>
 void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
-    if (hasData()) {
+    if (this->hasData()) {
         const Image* img = getData();
         Image* out = outport->getData();
         if (out) img->resizeRepresentations(out, out->getDimensions());

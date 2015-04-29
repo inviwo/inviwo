@@ -32,6 +32,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/stdextensions.h>
