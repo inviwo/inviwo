@@ -67,6 +67,7 @@ public:
     void addImage(Image* image);
     Image* releaseImage(const uvec2 dimensions);
     Image* getUnusedImage(std::vector<const uvec2> dimensions);
+    size_t size() const;
 
 private:
     mutable bool valid_;

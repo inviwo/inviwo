@@ -85,9 +85,8 @@ void TextOverlayGL::deinitialize() {
     Processor::deinitialize();
 }
 
-void TextOverlayGL::process() {   
-    inport_.passOnDataToOutport(&outport_);   
-    utilgl::activateTarget(outport_, COLOR_DEPTH);
+void TextOverlayGL::process() {
+    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_DEPTH);
 
     glDepthFunc(GL_ALWAYS);
     glEnable(GL_BLEND);
@@ -99,11 +98,11 @@ void TextOverlayGL::process() {
     textRenderer_->setFontSize(fontSize);
     float xpos_ = fontPos_.get().x * outport_.getData()->getDimensions().x;
     float ypos_ = fontPos_.get().y * outport_.getData()->getDimensions().y + float(fontSize);
-    
 
     vec2 size = textRenderer_->computeTextSize(text_.get().c_str(), scale);
-    vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f,1.0f));
-    textRenderer_->render(text_.get().c_str(), -1 + xpos_*scale.x - shift.x, 1 - ypos_*scale.y + shift.y, scale, color_.get());
+    vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
+    textRenderer_->render(text_.get().c_str(), -1 + xpos_ * scale.x - shift.x,
+                          1 - ypos_ * scale.y + shift.y, scale, color_.get());
 
     glDisable(GL_BLEND);
     glDepthFunc(GL_LESS);

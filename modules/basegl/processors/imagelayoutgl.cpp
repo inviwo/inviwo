@@ -58,8 +58,19 @@ ImageLayoutGL::ImageLayoutGL()
     , layoutHandler_(this)
     , currentLayout_(Layout::CrossSplit)
     , currentDim_(0u, 0u) {
+    
     addPort(multiinport_);
-    multiinport_.onChange(this, &ImageLayoutGL::multiInportChanged);
+    
+    multiinport_.onConnect([this](){
+        ResizeEvent e(currentDim_);
+        propagateResizeEvent(&e, &outport_);
+    });
+    
+    multiinport_.onDisconnect([this](){
+        ResizeEvent e(currentDim_);
+        propagateResizeEvent(&e, &outport_);
+    });
+    
     addPort(outport_);
     layout_.addOption("single", "Single Only", Layout::Single);
     layout_.addOption("horizontalSplit", "Horizontal Split", Layout::HorizontalSplit);
@@ -141,11 +152,6 @@ bool ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sour
     }
 
     return false;
-}
-
-void ImageLayoutGL::multiInportChanged() {
-//     ResizeEvent e(currentDim_);
-//     propagateResizeEvent(&e, &outport_);
 }
 
 void ImageLayoutGL::onStatusChange() {

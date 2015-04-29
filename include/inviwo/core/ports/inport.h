@@ -96,6 +96,9 @@ public:
     const BaseCallBack* onInvalid(T* o, void (T::*m)()) const;
     const BaseCallBack* onInvalid(std::function<void()> lambda) const;
 
+    const BaseCallBack* onConnect(std::function<void()> lambda) const;
+    const BaseCallBack* onDisconnect(std::function<void()> lambda) const;
+
     void removeOnChange(const BaseCallBack* callback) const;
     template <typename T>
     void removeOnChange(T* o) const;
@@ -103,6 +106,9 @@ public:
     void removeOnInvalid(const BaseCallBack* callback) const;
     template <typename T>
     void removeOnInvalid(T* o) const;
+    
+    void removeOnConnect(const BaseCallBack* callback) const;
+    void removeOnDisconnect(const BaseCallBack* callback) const;
 
 protected:
     /**
@@ -130,11 +136,15 @@ protected:
 
 private:
     bool changed_;
+    
     mutable CallBackList onChangeCallback_;
     std::vector<const Outport*> changedSources_;
     
     mutable CallBackList onInvalidCallback_;
     InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
+    
+    mutable CallBackList onConnectCallback_;
+    mutable CallBackList onDisconnectCallback_;
 };
 
 template <typename T>

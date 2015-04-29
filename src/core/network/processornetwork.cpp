@@ -186,13 +186,13 @@ PortConnection* ProcessorNetwork::addConnection(Outport* sourcePort, Inport* des
 
     if (!connection && sourcePort && destPort && destPort->canConnectTo(sourcePort)) {
         notifyObserversProcessorNetworkWillAddConnection(connection);
-
+        lock();
         connection = new PortConnection(sourcePort, destPort);
         portConnectionsMap_[std::make_pair(sourcePort, destPort)] = connection;
         portConnectionsVec_.push_back(connection);
         modified();
         destPort->connectTo(sourcePort);
-        
+        unlock();
         notifyObserversProcessorNetworkDidAddConnection(connection);
     }
 
@@ -204,7 +204,7 @@ void ProcessorNetwork::removeConnection(Outport* sourcePort, Inport* destPort) {
     if (itm != portConnectionsMap_.end()) {
         PortConnection* connection = itm->second;
         notifyObserversProcessorNetworkWillRemoveConnection(connection);
-
+        lock();
         modified();
         destPort->disconnectFrom(sourcePort);
 
@@ -214,7 +214,7 @@ void ProcessorNetwork::removeConnection(Outport* sourcePort, Inport* destPort) {
         if (itv != portConnectionsVec_.end()) {
             portConnectionsVec_.erase(itv);
         }
-
+        unlock();
         notifyObserversProcessorNetworkDidRemoveConnection(connection);
         delete connection;
     }

@@ -69,13 +69,11 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
     // and checking registeredDimensions.
     // Allocates space holder, sets largest data, cleans up unused data
 
-    LogInfo("change dim: " << getProcessor()->getIdentifier() << " size " << resizeEvent->size());
-
-    std::vector<uvec2> registeredDimensions {resizeEvent->size()};
+    std::vector<uvec2> registeredDimensions{resizeEvent->size()};
     for (auto inport : connectedInports_) {
         auto imageInport = dynamic_cast<ImagePortBase*>(inport);
         if (imageInport && !imageInport->isOutportDeterminingSize()) {
-            util::push_back_unique(registeredDimensions, imageInport->getDimensions());
+            util::push_back_unique(registeredDimensions, imageInport->getRequestedDimensions(this));
         }
     }
 
@@ -84,40 +82,38 @@ void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
         *std::max_element(registeredDimensions.begin(), registeredDimensions.end(),
                           [](const uvec2& a, const uvec2& b) { return a.x * a.y < b.x * b.y; });
 
-    if (isHandlingResizeEvents() && newDimensions != data_->getDimensions()) {  // resize data.
+    std::unique_ptr<ResizeEvent> newEvent {resizeEvent->clone()};
+    newEvent->setSize(newDimensions);
 
+    if (handleResizeEvents_ && newDimensions != data_->getDimensions()) {  // resize data.
         data_->resize(newDimensions);
         dimensions_ = data_->getDimensions();
         cache_.setInvalid();
 
-        ResizeEvent e(newDimensions, data_->getDimensions());
-        broadcast(&e);
+        broadcast(newEvent.get());
     }
 
     // remove unused image from cache
     cache_.prune(registeredDimensions);
 
-
     // Make sure that all ImageOutports in the same group (dependency set) that has the same size.
+    // This functionality needs testing.
     for (auto port : getProcessor()->getPortsInSameSet(this)) {
         auto imageOutport = dynamic_cast<ImageOutport*>(port);
         if (imageOutport && imageOutport != this) {
-            imageOutport->setDimensions(resizeEvent->size());
+            imageOutport->setDimensions(newDimensions);
         }
     }
 
     // Propagate the resize event
-    if (getProcessor()->propagateResizeEvent(resizeEvent, this)) {
-        // Happens if propagation ended
-        getProcessor()->invalidate(INVALID_OUTPUT);
-    }
+    getProcessor()->propagateResizeEvent(newEvent.get(), this);
+    
+    if (handleResizeEvents_) getProcessor()->invalidate(INVALID_OUTPUT);
 }
 
 uvec2 ImageOutport::getDimensions() const { return dimensions_; }
 
 const Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) const {
-    LogInfo("GetImage: " << getProcessor()->getIdentifier() << " size " << requiredDimensions);
-    
     return cache_.getImage(requiredDimensions);
 }
 

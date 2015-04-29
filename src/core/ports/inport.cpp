@@ -118,6 +118,7 @@ void Inport::connectTo(Outport* outport) {
         connectedOutports_.push_back(outport);
         outport->connectTo(this);  // add this to the outport.
         setChanged(true, outport); // mark that we should call onChange.
+        onConnectCallback_.invokeAll();
         invalidate(INVALID_OUTPUT);
     }
 }
@@ -128,6 +129,7 @@ void Inport::disconnectFrom(Outport* outport) {
         connectedOutports_.erase(it);
         outport->disconnectFrom(this);  // remove this from outport.
         setChanged(true, outport);      // mark that we should call onChange.
+        onDisconnectCallback_.invokeAll();
         invalidate(INVALID_OUTPUT);
     }
 }
@@ -167,5 +169,20 @@ const BaseCallBack* Inport::onInvalid(std::function<void()> lambda) const {
 void Inport::removeOnInvalid(const BaseCallBack* callback) const {
     onInvalidCallback_.remove(callback);
 }
+
+
+const BaseCallBack* Inport::onConnect(std::function<void()> lambda) const {
+    return onConnectCallback_.addLambdaCallback(lambda);
+}
+void Inport::removeOnConnect(const BaseCallBack* callback) const {
+    onConnectCallback_.remove(callback);
+}
+const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) const {
+    return onDisconnectCallback_.addLambdaCallback(lambda);
+}
+void Inport::removeOnDisconnect(const BaseCallBack* callback) const {
+    onDisconnectCallback_.remove(callback);
+}
+
 
 }  // namespace

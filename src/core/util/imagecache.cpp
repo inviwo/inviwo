@@ -148,4 +148,6 @@ Image* ImageCache::getUnusedImage(std::vector<const uvec2> dimensions) {
     }
 }
 
+size_t ImageCache::size() const { return cache_.size(); }
+
 }  // namespace

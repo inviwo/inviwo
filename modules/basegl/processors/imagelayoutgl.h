@@ -74,7 +74,6 @@ public:
 protected:
     virtual void process() override;
 
-    void multiInportChanged();
     void updateViewports(ivec2 size, bool force = false);
     void onStatusChange();
 
