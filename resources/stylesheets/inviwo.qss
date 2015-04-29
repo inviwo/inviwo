@@ -215,6 +215,9 @@ QTabWidget {
 }
 QTabWidget::pane{
     border-bottom: 2px solid #414145;
+    /*background: #414145; */ 
+    /* cannot use other color than default background here because of QDockWidgets */
+    /*background: #252527;*/
 }
 QTabWidget::pane QWidget, QTabWidget::pane QFrame, QTabWidget::pane QDockWidget QWidget {
     /* docked QDockWidgets ignore QTabWidget */
