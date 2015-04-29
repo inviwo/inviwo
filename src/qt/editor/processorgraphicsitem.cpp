@@ -344,7 +344,7 @@ void ProcessorGraphicsItem::onProcessorAboutToProcess(Processor*) {
     clock_.start();
 }
 void ProcessorGraphicsItem::onProcessorFinishedProcess(Processor*) {
-    clock_.stop();
+    clock_.tick();
     evalTime_ = clock_.getElapsedMiliseconds();
     maxEvalTime_ = maxEvalTime_ < evalTime_ ? evalTime_ : maxEvalTime_;
     totEvalTime_ += evalTime_;
