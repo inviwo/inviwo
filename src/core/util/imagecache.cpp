@@ -67,7 +67,7 @@ const Image* ImageCache::getImage(const uvec2 dimensions) const {
     }
 }
 
-void ImageCache::prune(std::vector<uvec2> dimensions) const {
+void ImageCache::prune(const std::vector<uvec2>& dimensions) const {
     for (auto it = cache_.begin(); it != cache_.end();) {
         if (!util::contains(dimensions, it->first)) {
             it = cache_.erase(it);
@@ -134,7 +134,7 @@ Image* ImageCache::releaseImage(const uvec2 dimensions) {
     }
 }
 
-Image* ImageCache::getUnusedImage(std::vector<const uvec2> dimensions) {
+Image* ImageCache::getUnusedImage(const std::vector<uvec2>& dimensions) {
     auto it = std::find_if(cache_.begin(), cache_.end(), [&dimensions](const Cache::value_type& elem) {
         return !util::contains(dimensions, elem.first);
     });

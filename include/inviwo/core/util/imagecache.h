@@ -56,7 +56,7 @@ public:
     /**
      *	Remove all cached images except those in dimensions
      */
-    void prune(std::vector<uvec2> dimensions) const;
+    void prune(const std::vector<uvec2>& dimensions) const;
     /**
      *	Make sure there is a cached version for all images sizes in dimensions
      */
@@ -66,7 +66,7 @@ public:
     bool hasImage(const uvec2 dimensions);
     void addImage(Image* image);
     Image* releaseImage(const uvec2 dimensions);
-    Image* getUnusedImage(std::vector<const uvec2> dimensions);
+    Image* getUnusedImage(const std::vector<uvec2>& dimensions);
     size_t size() const;
 
 private:
