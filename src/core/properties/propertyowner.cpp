@@ -264,7 +264,7 @@ std::vector<std::string> PropertyOwner::getPath() const {
     return std::vector<std::string>();
 }
 
-void PropertyOwner::invokeInteractionEvent(Event* event) {
+void PropertyOwner::invokeEvent(Event* event) {
     for (auto elem : eventProperties_) {
         if (elem->getEvent()->matching(event)) {
             elem->getAction()->invoke(event);
@@ -272,7 +272,7 @@ void PropertyOwner::invokeInteractionEvent(Event* event) {
         }
     }
     for (auto elem : compositeProperties_) {
-        elem->invokeInteractionEvent(event);
+        elem->invokeEvent(event);
         if (event->hasBeenUsed()) return;
     }
 }

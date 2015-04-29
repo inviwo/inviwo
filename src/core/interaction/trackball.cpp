@@ -150,9 +150,9 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
 
 Trackball::~Trackball() {}
 
-void Trackball::invokeInteractionEvent(Event* event) {
+void Trackball::invokeEvent(Event* event) {
     if (!handleInteractionEvents_) return;
-    CompositeProperty::invokeInteractionEvent(event);
+    CompositeProperty::invokeEvent(event);
 }
 
 void Trackball::setPanSpeedFactor(float psf) { 

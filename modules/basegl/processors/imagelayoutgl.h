@@ -69,7 +69,7 @@ public:
     const std::vector<ivec4>& getViewCoords() const;
 
     virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
-    virtual void propagateInteractionEvent(InteractionEvent*) override;
+    virtual void propagateEvent(Event*) override;
 
 protected:
     virtual void process() override;

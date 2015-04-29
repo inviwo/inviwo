@@ -57,11 +57,11 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initialize();
-    virtual void initializeResources();
+    virtual void initialize() override;
+    virtual void initializeResources() override;
 
     // Overridden to be able to turn off interaction events.
-    virtual void invokeInteractionEvent(Event*);
+    virtual void invokeEvent(Event*) override;
 
     bool positionModeEnabled() const { return posPicking_.get(); }
 
@@ -69,7 +69,7 @@ public:
     virtual void deserialize(IvwDeserializer& d) override;
 
 protected:
-    void process();
+    virtual void process() override;
 
     void shiftSlice(int);
 

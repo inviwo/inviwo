@@ -118,8 +118,8 @@ void ImageLayoutGL::deinitialize() {
     Processor::deinitialize();
 }
 
-void ImageLayoutGL::propagateInteractionEvent(InteractionEvent* event) {
-    invokeInteractionEvent(event);
+void ImageLayoutGL::propagateEvent(Event* event) {
+    invokeEvent(event);
     
     auto data = multiinport_.getConnectedOutports();
     ivec2 pos = layoutHandler_.getActivePosition();
@@ -129,7 +129,7 @@ void ImageLayoutGL::propagateInteractionEvent(InteractionEvent* event) {
     size_t minNum = std::min(data.size(), viewCoords_.size());
     for (size_t i = 0; i < minNum; ++i) {
         if (inView(viewCoords_[i], pos)) {
-            multiinport_.propagateInteractionEvent(event, data[i]);
+            multiinport_.propagateEvent(event, data[i]);
         }
     }
 }

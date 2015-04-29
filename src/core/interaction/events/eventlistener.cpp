@@ -35,6 +35,6 @@ EventListener::EventListener() {}
 
 EventListener::~EventListener() {}
 
-void EventListener::invokeEvent(Event* /*event*/) {}
+void EventListener::invokeEvent(Event*) {}
 
 } // namespace

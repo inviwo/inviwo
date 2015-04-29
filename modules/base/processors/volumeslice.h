@@ -71,10 +71,10 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void invokeInteractionEvent(Event* event);
+    virtual void invokeEvent(Event* event) override;
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
     void shiftSlice(int);
 

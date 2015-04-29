@@ -52,8 +52,8 @@ void Outport::invalidate(InvalidationLevel invalidationLevel) {
     for (auto port : connectedInports_) port->invalidate(invalidationLevel);
 }
 
-void Outport::propagateInteractionEvent(InteractionEvent* event) {
-    getProcessor()->propagateInteractionEvent(event);
+void Outport::propagateEvent(Event* event) {
+    getProcessor()->propagateEvent(event);
 }
 
 inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }

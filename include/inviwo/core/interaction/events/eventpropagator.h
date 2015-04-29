@@ -36,7 +36,7 @@
 namespace inviwo {
 
 class ResizeEvent;
-class InteractionEvent;
+class Event;
 class Outport;
 
 /**
@@ -48,7 +48,7 @@ class Outport;
 class IVW_CORE_API EventPropagator { 
 public:
     virtual bool propagateResizeEvent(ResizeEvent*, Outport* source) = 0;
-    virtual void propagateInteractionEvent(InteractionEvent*) = 0;
+    virtual void propagateEvent(Event*) = 0;
 };
 
 } // namespace

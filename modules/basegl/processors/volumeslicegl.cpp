@@ -257,9 +257,9 @@ void VolumeSliceGL::initializeResources() {
     planeSettingsChanged();
 }
 
-void VolumeSliceGL::invokeInteractionEvent(Event* event) {
+void VolumeSliceGL::invokeEvent(Event* event) {
     if (!handleInteractionEvents_) return;
-    Processor::invokeInteractionEvent(event);
+    Processor::invokeEvent(event);
 }
 
 void VolumeSliceGL::modeChange() {

@@ -145,8 +145,8 @@ void Canvas::activateDefaultRenderContext(){
     RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
-void Canvas::interactionEvent(InteractionEvent* event) {
-    if (propagator_) propagator_->propagateInteractionEvent(event);
+void Canvas::interactionEvent(Event* event) {
+    if (propagator_) propagator_->propagateEvent(event);
 }
 
 void Canvas::mousePressEvent(MouseEvent* e) {

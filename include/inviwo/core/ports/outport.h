@@ -66,7 +66,7 @@ public:
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
 
-    virtual void propagateInteractionEvent(InteractionEvent* event);
+    virtual void propagateEvent(Event* event);
 
     bool isConnectedTo(const Inport* port) const;
     

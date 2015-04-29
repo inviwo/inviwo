@@ -90,9 +90,9 @@ VolumeSlice::VolumeSlice()
 
 VolumeSlice::~VolumeSlice() {}
 
-void VolumeSlice::invokeInteractionEvent(Event* event) {
+void VolumeSlice::invokeEvent(Event* event) {
     if (!handleInteractionEvents_) return;
-    Processor::invokeInteractionEvent(event);
+    Processor::invokeEvent(event);
 }
 
 void VolumeSlice::shiftSlice(int shift) {

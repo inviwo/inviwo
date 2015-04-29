@@ -44,7 +44,7 @@ class SpatialEntity;
 
 class Inport;
 
-class IVW_CORE_API CameraProperty : public CompositeProperty, public EventListener {
+class IVW_CORE_API CameraProperty : public CompositeProperty {
 
 public:
     InviwoPropertyInfo();

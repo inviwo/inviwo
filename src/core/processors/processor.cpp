@@ -218,8 +218,8 @@ const std::vector<InteractionHandler*>& Processor::getInteractionHandlers() cons
     return interactionHandlers_;
 }
 
-void Processor::invokeInteractionEvent(Event* event) {
-    PropertyOwner::invokeInteractionEvent(event);
+void Processor::invokeEvent(Event* event) {
+    PropertyOwner::invokeEvent(event);
     for (auto elem : interactionHandlers_) elem->invokeEvent(event);
 }
 
@@ -290,12 +290,12 @@ void Processor::disableInvalidation() {
 
 void Processor::performEvaluateRequest() { notifyObserversRequestEvaluate(this); }
 
-void Processor::propagateInteractionEvent(InteractionEvent* event) {
-    invokeInteractionEvent(event);
+void Processor::propagateEvent(Event* event) {
+    invokeEvent(event);
 
     if (event->hasBeenUsed()) return;
     for (auto inport : getInports()) {
-        inport->propagateInteractionEvent(event);
+        inport->propagateEvent(event);
         if (event->hasBeenUsed()) return;
     }
 }

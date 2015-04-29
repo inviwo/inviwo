@@ -166,7 +166,7 @@ void PointLightSourceProcessor::PointLightInteractionHandler::invokeEvent(Event*
     }
 
     if (interactionEventOption_ == 1 || interactionEventOption_ == 2)
-        trackball_.invokeInteractionEvent(event);
+        trackball_.invokeEvent(event);
 }
 
 void PointLightSourceProcessor::PointLightInteractionHandler::setHandleEventsOptions(int option){

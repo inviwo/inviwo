@@ -36,6 +36,7 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
+#include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
@@ -78,7 +79,8 @@ class ResizeEvent;
 class IVW_CORE_API Processor : public PropertyOwner,
                                public MetaDataOwner,
                                public ProcessorObservable,
-                               public EventPropagator {
+                               public EventPropagator,
+                               public EventListener {
 public:
     Processor();
     virtual ~Processor();
@@ -188,9 +190,10 @@ public:
     void removeInteractionHandler(InteractionHandler* interactionHandler);
     bool hasInteractionHandler() const;
     const std::vector<InteractionHandler*>& getInteractionHandlers() const;
-    virtual void invokeInteractionEvent(Event* event);
-    virtual void propagateInteractionEvent(InteractionEvent*) override;
-    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source);
+
+    virtual void invokeEvent(Event* event) override;
+    virtual void propagateEvent(Event* event) override;
+    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
 
     // Override from the property owner

@@ -45,7 +45,6 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
                                vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , EventListener()
     , lookFrom_("lookFrom", "Look from", eye, -vec3(10.0f), vec3(10.0f), vec3(0.1f), VALID,
                 PropertySemantics("Spherical"))
     , lookTo_("lookTo", "Look to", center, -vec3(10.0f), vec3(10.0f), vec3(0.1f), VALID)
@@ -87,7 +86,6 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
-    , EventListener(rhs)
     , lookFrom_(rhs.lookFrom_)
     , lookTo_(rhs.lookTo_)
     , lookUp_(rhs.lookUp_)
@@ -108,7 +106,6 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
 CameraProperty& CameraProperty::operator=(const CameraProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
-        EventListener::operator=(that);
         lookFrom_ = that.lookFrom_;
         lookTo_ = that.lookTo_;
         lookUp_ = that.lookUp_;

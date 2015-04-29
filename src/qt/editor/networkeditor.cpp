@@ -737,15 +737,12 @@ void NetworkEditor::keyPressEvent(QKeyEvent* keyEvent) {
                                     KeyboardEvent::KEY_STATE_PRESS);
 
         QList<QGraphicsItem*> selectedGraphicsItems = selectedItems();
-        ProcessorNetworkEvaluator* network =
-            InviwoApplication::getPtr()->getProcessorNetworkEvaluator();
-
         for (int i = 0; i < selectedGraphicsItems.size(); i++) {
             ProcessorGraphicsItem* processorGraphicsItem =
                 qgraphicsitem_cast<ProcessorGraphicsItem*>(selectedGraphicsItems[i]);
             if (processorGraphicsItem) {
                 Processor* p = processorGraphicsItem->getProcessor();
-                p->propagateInteractionEvent(&pressKeyEvent);
+                p->propagateEvent(&pressKeyEvent);
                 if (pressKeyEvent.hasBeenUsed()) break;
             }
         }
@@ -761,15 +758,12 @@ void NetworkEditor::keyReleaseEvent(QKeyEvent* keyEvent) {
                                       KeyboardEvent::KEY_STATE_RELEASE);
 
         QList<QGraphicsItem*> selectedGraphicsItems = selectedItems();
-        ProcessorNetworkEvaluator* network =
-            InviwoApplication::getPtr()->getProcessorNetworkEvaluator();
-
         for (int i = 0; i < selectedGraphicsItems.size(); i++) {
             ProcessorGraphicsItem* processorGraphicsItem =
                 qgraphicsitem_cast<ProcessorGraphicsItem*>(selectedGraphicsItems[i]);
             if (processorGraphicsItem) {
                 Processor* p = processorGraphicsItem->getProcessor();
-                p->propagateInteractionEvent(&releaseKeyEvent);
+                p->propagateEvent(&releaseKeyEvent);
                 if (releaseKeyEvent.hasBeenUsed()) break;
             }
         }

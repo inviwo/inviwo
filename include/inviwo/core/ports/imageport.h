@@ -44,7 +44,7 @@ namespace inviwo {
 
 class ImageOutport;
 
-class ImagePortBase {
+class IVW_CORE_API ImagePortBase {
 public:
     virtual uvec2 getDimensions() const = 0;
     virtual uvec2 getRequestedDimensions(ImageOutport* outport) const = 0;

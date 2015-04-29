@@ -107,8 +107,8 @@ ImageOverlayGL::ImageOverlayGL()
 
 ImageOverlayGL::~ImageOverlayGL() {}
 
-void ImageOverlayGL::propagateInteractionEvent(InteractionEvent* event) {
-    invokeInteractionEvent(event);
+void ImageOverlayGL::propagateEvent(Event* event) {
+    invokeEvent(event);
 
     if (overlayInteraction_.get() && !viewCoords_.empty() && overlayPort_.isConnected()) {
         ivec2 pos = overlayHandler_.getActivePosition();
@@ -117,14 +117,14 @@ void ImageOverlayGL::propagateInteractionEvent(InteractionEvent* event) {
 
         // single overlay
         if (inView(viewCoords_.front(), pos)) {
-            overlayPort_.propagateInteractionEvent(event);
+            overlayPort_.propagateEvent(event);
         } else {
             // push main view
-            inport_.propagateInteractionEvent(event);
+            inport_.propagateEvent(event);
         }
 
     } else {
-        inport_.propagateInteractionEvent(event);
+        inport_.propagateEvent(event);
     }
 }
 
