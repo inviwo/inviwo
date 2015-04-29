@@ -74,17 +74,21 @@ ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget
     , helpWidget_(helpWidget) {
     setObjectName("ProcessorTreeWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    QFrame* frame = new QFrame();
-    QVBoxLayout* vLayout = new QVBoxLayout(frame);
+    QWidget* centralWidget = new QWidget();
+    QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
     vLayout->setSpacing(7);
     vLayout->setContentsMargins(7, 7, 7, 7);
-    lineEdit_ = new QLineEdit(frame);
+    lineEdit_ = new QLineEdit(centralWidget);
     lineEdit_->setPlaceholderText("Filter processor list...");
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+    lineEdit_->setClearButtonEnabled(true);
+#endif // QT_VERSION
+
     connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(addProcessorsToTree()));
     vLayout->addWidget(lineEdit_);
     QHBoxLayout* listViewLayout = new QHBoxLayout();
-    listViewLayout->addWidget(new QLabel("Group processors by",frame));
-    listView_ = new QComboBox(frame);
+    listViewLayout->addWidget(new QLabel("Group by",centralWidget));
+    listView_ = new QComboBox(centralWidget);
     listView_->addItem("Alphabet");
     listView_->addItem("Category");
     listView_->addItem("Code State");
@@ -119,8 +123,8 @@ ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget
 
     addProcessorsToTree();
     vLayout->addWidget(processorTree_);
-    frame->setLayout(vLayout);
-    setWidget(frame);
+    centralWidget->setLayout(vLayout);
+    setWidget(centralWidget);
 }
 
 ProcessorTreeWidget::~ProcessorTreeWidget() {}

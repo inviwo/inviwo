@@ -66,6 +66,9 @@
 #include <modules/python3qt/pythoneditorwidget.h>
 #endif
 
+// enable menu entry to reload the application stylesheet 
+//#define IVW_STYLESHEET_RELOAD
+
 namespace inviwo {
 
 InviwoMainWindow::InviwoMainWindow()
@@ -361,6 +364,13 @@ void InviwoMainWindow::addMenuActions() {
     aboutBoxAction_ = new QAction(QIcon(":/icons/about.png"), tr("&About"), this);
     connect(aboutBoxAction_, SIGNAL(triggered()), this, SLOT(showAboutBox()));
     helpMenuItem_->addAction(aboutBoxAction_);
+
+
+#if defined(IVW_STYLESHEET_RELOAD)
+    QAction *action = new QAction(tr("&Reload Stylesheet"), this);
+    QObject::connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
+    helpMenuItem_->addAction(action);
+#endif
 }
 
 void InviwoMainWindow::addToolBars() {
@@ -714,6 +724,18 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     return continueOperation;
 }
 
-
+void InviwoMainWindow::reloadStyleSheet() {
+    // The following code snippet allows to reload the Qt style sheets during runtime,
+    // which is handy while we change them. once the style sheets have been finalized,
+    // this code should be removed.
+    QString resourcePath = InviwoApplication::getPtr()
+        ->getPath(InviwoApplication::PATH_RESOURCES)
+        .c_str();
+    QFile styleSheetFile(resourcePath + "/stylesheets/inviwo.qss");
+    styleSheetFile.open(QFile::ReadOnly);
+    QString styleSheet = QLatin1String(styleSheetFile.readAll());
+    dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->setStyleSheet(styleSheet);
+    styleSheetFile.close();
+}
 
 }  // namespace

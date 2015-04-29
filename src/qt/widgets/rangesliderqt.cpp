@@ -45,6 +45,11 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent)
 
     QObject::connect(middle_, SIGNAL(middleMoved(int)), this, SLOT(middleMoved(int)));
 
+    // enable QSplitter:hover stylesheet 
+    // QTBUG-13768 https://bugreports.qt.io/browse/QTBUG-13768
+    this->handle(1)->setAttribute(Qt::WA_Hover);
+    this->handle(2)->setAttribute(Qt::WA_Hover);
+
     this->setProperty("Vertical", orientation == Qt::Vertical);
     left->setProperty("LeftPart", true);
     right->setProperty("LeftPart", false);

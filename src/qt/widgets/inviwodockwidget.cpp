@@ -41,6 +41,9 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
 
     // adding custom title bar to dock widget
     this->setTitleBarWidget(new InviwoDockWidgetTitleBar(this));
+
+    QObject::connect(this, SIGNAL(topLevelChanged(bool)),
+        this->titleBarWidget(), SLOT(floating(bool)));
 }
 
 InviwoDockWidget::~InviwoDockWidget() {}

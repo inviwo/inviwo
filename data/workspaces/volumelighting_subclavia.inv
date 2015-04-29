@@ -425,7 +425,6 @@
                     </Properties>
                     <collapsed content="0" />
                 </Property>
-                <Property type="org.inviwo.BoolProperty" identifier="handleEvents" />
             </Properties>
             <MetaDataMap>
                 <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">

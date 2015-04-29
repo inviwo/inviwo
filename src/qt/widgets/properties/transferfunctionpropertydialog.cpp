@@ -269,6 +269,9 @@ void TransferFunctionPropertyDialog::updateTFPreview() {
 }
 
 void TransferFunctionPropertyDialog::updateFromProperty() {
+    if (!tfProperty_->getOwner())
+        return;
+
     std::string processorName = tfProperty_->getOwner()->getProcessor()->getIdentifier();
     QString windowTitle = QString::fromStdString(tfProperty_->getDisplayName() + " (") +
                           QString::fromStdString(processorName) + QString::fromStdString(")");
