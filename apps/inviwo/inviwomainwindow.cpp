@@ -66,6 +66,9 @@
 #include <modules/python3qt/pythoneditorwidget.h>
 #endif
 
+// enable menu entry to reload the application stylesheet 
+//#define IVW_STYLESHEET_RELOAD
+
 namespace inviwo {
 
 InviwoMainWindow::InviwoMainWindow()
@@ -363,9 +366,11 @@ void InviwoMainWindow::addMenuActions() {
     helpMenuItem_->addAction(aboutBoxAction_);
 
 
+#if defined(IVW_STYLESHEET_RELOAD)
     QAction *action = new QAction(tr("&Reload Stylesheet"), this);
     QObject::connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
     helpMenuItem_->addAction(action);
+#endif
 }
 
 void InviwoMainWindow::addToolBars() {

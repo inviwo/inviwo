@@ -50,12 +50,18 @@ QMainWindow::separator {
 QLineEdit, QAbstractSpinBox, QComboBox {
     color: #c8ccd0;
     background: transparent;
-    /* change the border width to zero here, if borders around properties should be invisible */
-    border: 1px solid #4a4a4f; 
+    /* make background barely visible */
+    /*background: #3a3a3d;*/
+    /* change the border color to transparent here, if borders around properties 
+      should be invisible. DO NOT adjust the border width as the widgets will then 
+      jump on hover!
+      */
+    border: 1px solid #3a3a3e;
+    /*border: 1px solid transparent; */
 }
 QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
     color: #777;
-    border-color: #3c3c40;
+    /*border-color: #3c3c40;*/
     background: transparent;
 }
 QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover, QComboBox:on, QComboBox:focus, QComboBox:hover {
@@ -452,9 +458,15 @@ QAbstractSpinBox {
     margin-left: 5px;
 }
 QAbstractSpinBox::up-button {
-     image: url(:/stylesheets/images/arrow_up.png);
+     image: url(:/stylesheets/images/arrow_lighter_up.png);
 }
 QAbstractSpinBox::down-button {
+     image: url(:/stylesheets/images/arrow_lighter_down.png);
+}
+QAbstractSpinBox::up-button:disabled {
+     image: url(:/stylesheets/images/arrow_up.png);
+}
+QAbstractSpinBox::down-button:disabled {
      image: url(:/stylesheets/images/arrow_down.png);
 }
 
@@ -636,6 +648,9 @@ QComboBox::drop-down:hover {
     background-color: #47474b;
 }
 QComboBox::down-arrow {
+     image: url(:/stylesheets/images/arrow_lighter_down.png);
+}
+QComboBox::down-arrow:disabled {
      image: url(:/stylesheets/images/arrow_down.png);
 }
 
