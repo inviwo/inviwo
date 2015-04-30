@@ -36,24 +36,6 @@
 
 namespace inviwo {
 
-template <class T>
-std::string toLocalizedString(T value) {
-    std::ostringstream stream;
-    stream.imbue(utilqt::getCurrentStdLocale());
-    stream << value;
-    return stream.str();
-}
-
-template <class T>
-T localizedStringTo(const std::string& str) {
-    T result;
-    std::istringstream stream;
-    stream.imbue(utilqt::getCurrentStdLocale());
-    stream.str(str);
-    stream >> result;
-    return result;
-}
-
 namespace utilqt {
     
 /** 
@@ -76,6 +58,25 @@ IVW_QTWIDGETS_API std::locale getCurrentStdLocale();
 IVW_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
 
 } // namespace utilqt
+
+
+template <class T>
+std::string toLocalizedString(T value) {
+    std::ostringstream stream;
+    stream.imbue(utilqt::getCurrentStdLocale());
+    stream << value;
+    return stream.str();
+}
+
+template <class T>
+T localizedStringTo(const std::string& str) {
+    T result;
+    std::istringstream stream;
+    stream.imbue(utilqt::getCurrentStdLocale());
+    stream.str(str);
+    stream >> result;
+    return result;
+}
 
 }  // namespace
 

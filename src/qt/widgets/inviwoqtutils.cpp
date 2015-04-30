@@ -46,7 +46,7 @@ std::locale getCurrentStdLocale() {
         // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
         // although std::locale should only accept locales with underscore, e.g. "sv_SE"
         std::string localeName(QLocale::system().name().replace('_', '-').toStdString());
-        loc = std::locale(localeName);
+        loc = std::locale(localeName.c_str());
     }
     catch (std::exception &e) {
         LogWarnCustom("getStdLocale", "Locale could not be set. " << e.what());
