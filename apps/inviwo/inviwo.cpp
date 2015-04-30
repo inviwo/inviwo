@@ -35,10 +35,7 @@
 #endif
 #endif
 
-#include <locale>
-
 #include <QFile>
-#include <QLocale>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>
@@ -58,27 +55,7 @@ int main(int argc, char** argv) {
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
     inviwoApp.setStyleSheet(styleSheet);
-
-    // set output locale to current locale for printf and streams
-    try
-    {
-        // need to change locale given by Qt from underscore to hyphenated ("sv_SE" to "sv-SE")
-        // although std::locale should only accept locales with underscore, e.g. "sv_SE"
-        std::string localeName(QLocale::system().name().replace('_', '-').toStdString());
-
-        std::locale loc(localeName);
-        std::locale loc1;
-        std::cout << "The initial locale is: " << loc1.name() << std::endl;
-        // setting both, C and C++ locale
-        std::locale loc2 = std::locale::global(loc);
-        std::locale loc3;
-        std::cout << "The current locale is: " << loc3.name() << std::endl;
-        std::cout << "The previous locale was: " << loc2.name() << std::endl;
-    }
-    catch (std::exception& e) {
-        LogErrorCustom("main", "Error setting locale: " << e.what());
-    }
-
+    
     inviwo::InviwoMainWindow mainWin;
     // setup core application
     inviwoApp.setMainWindow(&mainWin);

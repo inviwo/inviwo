@@ -31,12 +31,14 @@
 #define IVW_SLIDETWIDGETQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/customdoublespinboxqt.h>
 
 #include <QSlider>
 #include <QHBoxLayout>
 #include <math.h>
 #include <sstream>
+#include <QLocale>
 
 namespace inviwo {
 
@@ -258,11 +260,13 @@ double inviwo::TemplateSliderWidget<T>::transformIncrementToSpinner() {
 
 template <typename T>
 int inviwo::TemplateSliderWidget<T>::transformIncrementToSpinnerDecimals() {
+    const static QLocale locale;
     double inc = reprToSpinner(increment_);
     std::ostringstream buff;
+    utilqt::localizeStream(buff);
     buff << inc;
     const std::string str(buff.str());
-    auto periodPosition = str.find(".");
+    auto periodPosition = str.find(locale.decimalPoint().toLatin1());
     if (periodPosition == std::string::npos)
         return 0;
     else
