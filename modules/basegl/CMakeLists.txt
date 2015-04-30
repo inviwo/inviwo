@@ -23,6 +23,15 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumediff.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeglprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientmagnitude.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelaplacian.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
@@ -54,6 +63,15 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumediff.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumeglprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientmagnitude.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumegradientprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelaplacian.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp

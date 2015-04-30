@@ -53,6 +53,16 @@
 #include <modules/basegl/processors/imageprocessing/imageinvert.h>
 #include <modules/basegl/processors/imageprocessing/imagemapping.h>
 #include <modules/basegl/processors/imageprocessing/imageresample.h>
+
+#include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>
+#include <modules/basegl/processors/volumeprocessing/volumecombiner.h>
+#include <modules/basegl/processors/volumeprocessing/volumediff.h>
+#include <modules/basegl/processors/volumeprocessing/volumegradientmagnitude.h>
+#include <modules/basegl/processors/volumeprocessing/volumegradientprocessor.h>
+#include <modules/basegl/processors/volumeprocessing/volumelaplacian.h>
+#include <modules/basegl/processors/volumeprocessing/volumelowpass.h>
+#include <modules/basegl/processors/volumeprocessing/volumemapping.h>
+
 #ifdef BASEGL_INCLUDE_SHADER_RESOURCES
 #include <modules/basegl/shader_resources.h>
 #endif
@@ -93,7 +103,18 @@ BaseGLModule::BaseGLModule() : InviwoModule() {
     registerProcessor(ImageGrayscale);
     registerProcessor(ImageInvert);
     registerProcessor(ImageMapping);
-    registerProcessor(ImageResample);
+	registerProcessor(ImageResample);
+
+	//volume processing
+	registerProcessor(VectorMagnitudeProcessor);
+	registerProcessor(VolumeCombiner);
+	registerProcessor(VolumeDiff);;
+	registerProcessor(VolumeGradientMagnitude);
+	registerProcessor(VolumeGradientProcessor);
+	registerProcessor(VolumeLaplacian);
+	registerProcessor(VolumeLowPass);
+	registerProcessor(VolumeMapping);
+
 }
 
 } // namespace
