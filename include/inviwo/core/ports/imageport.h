@@ -46,7 +46,6 @@ class ImageOutport;
 
 class IVW_CORE_API ImagePortBase {
 public:
-    virtual uvec2 getDimensions() const = 0;
     virtual uvec2 getRequestedDimensions(ImageOutport* outport) const = 0;
     virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
                                       ImageOutport* target = nullptr) = 0;
@@ -76,12 +75,8 @@ public:
         const override;
     virtual std::string getContentInfo() const override;
 
-    // Actually returns the requested size... not size of the data.
-    virtual uvec2 getDimensions() const override;
     virtual uvec2 getRequestedDimensions(ImageOutport* outport) const override;
-    /**
-     * Handle resize event
-     */
+
     virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
                                       ImageOutport* target = nullptr) override;
 
@@ -93,7 +88,6 @@ public:
 private:
     const Image* getImage(ImageOutport* port) const;
 
-    uvec2 requestedDimensions_;
     std::unordered_map<ImageOutport*, uvec2> requestedDimensionsMap_;
     bool outportDeterminesSize_;
 };
@@ -110,9 +104,6 @@ public:
 
     virtual ~ImageOutport();
 
-    /**
-     *	We will not handle resize event if we are not the data owner
-     */
     virtual void setData(Image* data, bool ownsData = true) override;
     virtual void setConstData(const Image* data) override;
     const Image* getResizedImageData(uvec2 dimensions) const;
@@ -121,8 +112,7 @@ public:
      * Handle resize event
      */
     void propagateResizeEvent(ResizeEvent* resizeEvent);
-    uvec2 getDimensions() const;
-    
+    uvec2 getDimensions() const;   
     /**
      * Set the dimensions of this port without propagating the size
      * through the network. Will resize the image contained within the port.
@@ -158,7 +148,6 @@ private:
 template <size_t N>
 BaseImageInport<N>::BaseImageInport(std::string identifier, bool outportDeterminesSize)
     : DataInport<Image, N>(identifier)
-    , requestedDimensions_()
     , outportDeterminesSize_(outportDeterminesSize) {}
 
 template <size_t N>
@@ -173,11 +162,7 @@ void BaseImageInport<N>::connectTo(Outport* outport) {
     if (requestedDimensionsMap_.find(imageOutport) != requestedDimensionsMap_.end()) {
         ResizeEvent resizeEvent(requestedDimensionsMap_[imageOutport]);
         imageOutport->propagateResizeEvent(&resizeEvent);
-    } else if (requestedDimensions_ != uvec2(0)) {
-        requestedDimensionsMap_[imageOutport] = requestedDimensions_;
-        ResizeEvent resizeEvent(requestedDimensionsMap_[imageOutport]);
-        imageOutport->propagateResizeEvent(&resizeEvent);
-    }
+    } 
 
     DataInport<Image, N>::connectTo(outport);
 }
@@ -196,7 +181,6 @@ void BaseImageInport<N>::propagateResizeEvent(ResizeEvent* resizeEvent, ImageOut
         requestedDimensionsMap_[target] = resizeEvent->size();
         target->propagateResizeEvent(resizeEvent);
     } else {
-        requestedDimensions_ = resizeEvent->size();
         for (auto outport : this->connectedOutports_) {
             if (auto imageOutport = static_cast<ImageOutport*>(outport)) {
                 requestedDimensionsMap_[imageOutport] = resizeEvent->size();
@@ -207,16 +191,12 @@ void BaseImageInport<N>::propagateResizeEvent(ResizeEvent* resizeEvent, ImageOut
 }
 
 template <size_t N>
-uvec2 BaseImageInport<N>::getDimensions() const {
-    return requestedDimensions_;
-}
-template <size_t N>
 uvec2 BaseImageInport<N>::getRequestedDimensions(ImageOutport* outport) const {
     auto it = requestedDimensionsMap_.find(outport);
     if (it != requestedDimensionsMap_.end()) {
         return it->second;
     } else {
-        return requestedDimensions_;
+        return uvec2(0);
     }
 }
 
@@ -262,8 +242,6 @@ const Image* BaseImageInport<N>::getImage(ImageOutport* port) const {
         auto it = requestedDimensionsMap_.find(port);
         if (it != requestedDimensionsMap_.end()) {
             return port->getResizedImageData(it->second);
-        } else if (requestedDimensions_ != uvec2(0)) {
-            return port->getResizedImageData(requestedDimensions_);
         } else {
             return port->getConstData();
         }

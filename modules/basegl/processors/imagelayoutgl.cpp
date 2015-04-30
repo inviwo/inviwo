@@ -138,17 +138,12 @@ const std::vector<ivec4>& ImageLayoutGL::getViewCoords() const { return viewCoor
 
 bool ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
     updateViewports(resizeEvent->size(), true);
-    auto data = multiinport_.getConnectedOutports();
-    size_t minNum = std::min(data.size(), viewCoords_.size());
+    auto outports = multiinport_.getConnectedOutports();
+    size_t minNum = std::min(outports.size(), viewCoords_.size());
 
     for (size_t i = 0; i < minNum; ++i) {
-        uvec2 inDimU = outport_.getDimensions();
-        uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
-        if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
-            ResizeEvent e(inDimNewU);
-            e.setPreviousSize(inDimU);
-            multiinport_.propagateResizeEvent(&e, static_cast<ImageOutport*>(data[i]));
-        }
+        ResizeEvent e(uvec2(viewCoords_[i].z, viewCoords_[i].w));
+        multiinport_.propagateResizeEvent(&e, static_cast<ImageOutport*>(outports[i]));
     }
 
     return false;

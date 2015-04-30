@@ -318,6 +318,9 @@ bool CanvasProcessor::propagateResizeEvent(ResizeEvent* event, Outport* source) 
         sizeChanged();
     } else {
         inport_.propagateResizeEvent(event);
+
+        // Make sure this processor is invalidated. 
+        invalidate(INVALID_OUTPUT);
     }
     
     return false;

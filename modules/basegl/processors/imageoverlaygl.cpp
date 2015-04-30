@@ -142,13 +142,8 @@ bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sou
     }
 
     if (overlayPort_.isConnected()) {
-        uvec2 inDimU = overlayPort_.getDimensions();
-        uvec2 inDimNewU = uvec2(viewCoords_[0].z, viewCoords_[0].w);
-        if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
-            ResizeEvent e(inDimNewU);
-            e.setPreviousSize(inDimU);
-            overlayPort_.propagateResizeEvent(&e);
-        }
+        ResizeEvent e(uvec2(viewCoords_[0].z, viewCoords_[0].w));
+        overlayPort_.propagateResizeEvent(&e);
     }
 
     return false;
