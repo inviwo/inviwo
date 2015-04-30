@@ -40,7 +40,7 @@ CommandLineParser::CommandLineParser() : CommandLineParser(0, nullptr)
 CommandLineParser::CommandLineParser(int argc, char** argv)
 try : argc_(argc)
     , argv_(argv)
-    , cmd_("Inviwo description...", ' ', "0.9.1")
+    , cmd_("Inviwo description...", ' ', IVW_VERSION)
     , workspaceValueArg_("w", "workspacePath",
         "Specify workspace to open",
         false, "", "Name of workspace")
