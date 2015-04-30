@@ -94,46 +94,23 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
 
 void ProcessorNetwork::removeProcessor(Processor* processor) {
     if (!processor) return;
-    
+
     // Remove all connections for this processor
-     std::vector<PortConnection*> portConnections = getConnections();
-     for (auto& portConnection : portConnections)
-         if (portConnection->involvesProcessor(processor))
-             removeConnection(portConnection->getOutport(), portConnection->getInport());
+    std::vector<PortConnection*> portConnections = getConnections();
+    for (auto& portConnection : portConnections)
+        if (portConnection->involvesProcessor(processor))
+            removeConnection(portConnection->getOutport(), portConnection->getInport());
 
-    //FIXME: Crashing!!
-    /*std::vector<Outport*> outports;
-    std::vector<Inport*> inports;
-    outports = processor->getOutports();
-    for (size_t i = 0; i < outports.size(); ++i) {
-        inports = outports[i]->getConnectedInports();
-        for (size_t j = 0; j < inports.size(); ++j) {
-            removeConnection(outports[i], inports[j]);
+    for (auto outport : processor->getOutports()) {
+        for (auto inport : outport->getConnectedInports()) {
+            removeConnection(outport, inport);
         }
     }
-    inports = processor->getInports();
-    for (size_t i = 0; i < inports.size(); ++i) {
-        outports = inports[i]->getConnectedOutports();
-        for (size_t j = 0; j < outports.size(); ++j) {
-            removeConnection(outports[j], inports[i]);
-        }
-    }*/
-
-    // Temporary workaround until someone fixes the MultiInports.
-    // The code above should work, but a MultiInport has several Inports in it.
-    // So a connection in made between a Outport and a MultiInport. But when you ask
-    // the Outport for it's connected inports you will NOT get the MultiInport but a
-    // SingleInport within the MultiInport. This is not the same port as the connection
-    // was made to, hence will will not find it, and can not delete it!
-    // TODO when the MultiInport behaves as a standard port, remove this.
-    PortConnectionMap connections = portConnectionsMap_;
-    for (auto& connection : connections) {
-        if (connection.second->getInport()->getProcessor() == processor ||
-            connection.second->getOutport()->getProcessor() == processor) {
-            removeConnection(connection.second->getOutport(), connection.second->getInport());
+    for (auto inport : processor->getInports()) {
+        for (auto outport : inport->getConnectedOutports()) {
+            removeConnection(outport, inport);
         }
     }
-    // end workaround.
 
     // Remove all links for this processor
     PropertyLinkMap propertyLinks = propertyLinks_;
@@ -145,12 +122,11 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
                        propertyLink.second->getDestinationProperty());
         }
     }
-    
 
     // remove processor itself
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
-    ProcessorMap::iterator it = processors_.find(processor->getIdentifier());
-    if(it != processors_.end()) processors_.erase(it);
+    auto it = processors_.find(processor->getIdentifier());
+    if (it != processors_.end()) processors_.erase(it);
     processor->ProcessorObservable::removeObserver(this);
     modified();
     notifyObserversProcessorNetworkDidRemoveProcessor(processor);
@@ -1195,6 +1171,14 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
     for (auto& processorsInport : processorsInports) {
         delete processorsInport.second;
     }
+}
+
+NetworkLock::NetworkLock() {
+    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+}
+
+NetworkLock::~NetworkLock() {
+    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 }
 
 } // namespace

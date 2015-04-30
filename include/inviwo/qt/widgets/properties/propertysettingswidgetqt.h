@@ -182,10 +182,11 @@ public:
     }
 
     virtual void apply() {
+        NetworkLock lock;
+
         uvec2 components = OrdinalProperty<T>::getDim();
         size_t count = 0;
-        InviwoApplication::getPtr()->getProcessorNetwork()->lock();
-
+        
         T min = property_->getMinValue();
         T val = property_->get();
         T max = property_->getMaxValue();
@@ -210,8 +211,6 @@ public:
         if (val != valOrg) property_->set(val);
         if (max != maxOrg) property_->setMaxValue(max);
         if (inc != incOrg) property_->setIncrement(inc);
-
-        InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
     }
 
     virtual void reload() {

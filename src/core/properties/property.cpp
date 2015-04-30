@@ -191,7 +191,7 @@ bool Property::hasWidgets() const {
 }
 
 void Property::propertyModified() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+    NetworkLock lock;
     onChangeCallback_.invokeAll();
     setPropertyModified(true);
 
@@ -210,7 +210,6 @@ void Property::propertyModified() {
     }
 
     updateWidgets();
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 }
 
 void Property::setPropertyModified(bool modified) {

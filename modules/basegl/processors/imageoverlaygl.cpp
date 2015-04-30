@@ -138,7 +138,7 @@ bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sou
     updateViewports(resizeEvent->size(), true);
 
     if (inport_.isConnected()) {
-        inport_.changeDataDimensions(resizeEvent);
+        inport_.propagateResizeEvent(resizeEvent);
     }
 
     if (overlayPort_.isConnected()) {
@@ -147,7 +147,7 @@ bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sou
         if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
             ResizeEvent e(inDimNewU);
             e.setPreviousSize(inDimU);
-            overlayPort_.changeDataDimensions(&e);
+            overlayPort_.propagateResizeEvent(&e);
         }
     }
 

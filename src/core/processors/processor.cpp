@@ -229,7 +229,7 @@ bool Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) 
     for (auto port : getPortsInSameSet(source)) {
         if (auto imageInport = dynamic_cast<ImagePortBase*>(port)) {
             propagationEnded = false;
-            imageInport->changeDataDimensions(resizeEvent);
+            imageInport->propagateResizeEvent(resizeEvent);
         }
     }
     return propagationEnded;

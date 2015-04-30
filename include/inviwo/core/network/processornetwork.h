@@ -58,6 +58,17 @@ public:
 IVW_CORE_API bool operator==(const ProcessorPair& p1, const ProcessorPair& p2);
 IVW_CORE_API bool operator<(const ProcessorPair& p1, const ProcessorPair& p2);
 
+// A RAII utility for locking and unlocking the network
+struct IVW_CORE_API NetworkLock {
+    NetworkLock();
+    ~NetworkLock();
+
+    NetworkLock(NetworkLock const&) = delete;
+    NetworkLock& operator=(NetworkLock const& that) = delete;
+    NetworkLock(NetworkLock&& rhs) = delete;
+    NetworkLock& operator=(NetworkLock&& that) = delete;
+};
+
 
 /**
  * This class manages the current processor network. It can be thought of as a container of

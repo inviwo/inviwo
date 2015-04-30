@@ -64,7 +64,7 @@ void ImageOutport::setConstData(const Image* data) {
     cache_.setMaster(data);
 }
 
-void ImageOutport::changeDataDimensions(ResizeEvent* resizeEvent) {
+void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     // This function should check which dimensions request exists, by going through the successors
     // and checking registeredDimensions.
     // Allocates space holder, sets largest data, cleans up unused data

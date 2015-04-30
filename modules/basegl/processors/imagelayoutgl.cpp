@@ -147,7 +147,7 @@ bool ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sour
         if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
             ResizeEvent e(inDimNewU);
             e.setPreviousSize(inDimU);
-            multiinport_.changeDataDimensions(&e, static_cast<ImageOutport*>(data[i]));
+            multiinport_.propagateResizeEvent(&e, static_cast<ImageOutport*>(data[i]));
         }
     }
 

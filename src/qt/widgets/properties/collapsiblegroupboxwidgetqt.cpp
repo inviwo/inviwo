@@ -251,13 +251,11 @@ void CollapsibleGroupBoxWidgetQt::updateWidgets() {
 }
 
 void CollapsibleGroupBoxWidgetQt::resetPropertyToDefaultState() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
-
+    NetworkLock lock;
+    
     for (auto& elem : propertyWidgets_) {
         elem->resetPropertyToDefaultState();
     }
-
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 }
 
 void CollapsibleGroupBoxWidgetQt::labelDidChange() {

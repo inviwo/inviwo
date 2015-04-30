@@ -236,11 +236,10 @@ void NetworkEditor::removeLink(LinkConnectionGraphicsItem* linkGraphicsItem) {
         linkGraphicsItem->getSrcProcessorGraphicsItem()->getProcessor(),
         linkGraphicsItem->getDestProcessorGraphicsItem()->getProcessor());
 
-    network->lock();
+    NetworkLock lock;
     for (auto& link : links) {
         network->removeLink((link)->getSourceProperty(), (link)->getDestinationProperty());
     }
-    network->unlock();
 }
 
 void NetworkEditor::removeLinkGraphicsItem(LinkConnectionGraphicsItem* linkGraphicsItem) {
@@ -279,7 +278,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 
     if (portInspector && !portInspector->isActive()) {
         portInspector->setActive(true);
-        network->lock();
+        NetworkLock lock;
         // Add processors to the network
         CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
         canvasProcessor->deinitialize();
@@ -333,7 +332,6 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
             processorWidget->addObserver(new PortInspectorObserver(this, outport));
         }
 
-        network->unlock();
         return true;
     }
     return false;
@@ -344,12 +342,11 @@ void NetworkEditor::removePortInspector(Outport* port) {
         ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
         PortInspectorMap::iterator it = portInspectors_.find(port);
         if (it!= portInspectors_.end() && it->second->isActive()) {
-            network->lock();
+            NetworkLock lock;
             // Remove processors from the network
             std::vector<Processor*> processors = it->second->getProcessors();
             for (auto& processor : processors) network->removeProcessor(processor);
 
-            network->unlock();
             it->second->setActive(false);
             portInspectors_.erase(it);
         }
@@ -365,58 +362,57 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, 
 
     if (portInspector && !portInspector->isActive()) {
         portInspector->setActive(true);
-        network->lock();
-        // Add processors to the network
-        CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
 
+        CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
         ProcessorWidgetMetaData* wm = canvasProcessor->createMetaData<ProcessorWidgetMetaData>(
             ProcessorWidgetMetaData::CLASS_IDENTIFIER);
         wm->setVisibile(false);
-
         std::vector<Processor*> processors = portInspector->getProcessors();
-        for (auto& processor : processors) {
-            network->addProcessor(processor);
-        }
 
-        canvasProcessor->initialize(); // This is needed since, we need to call initialize after we
-                                       // add the canvas to the processor.
+        {
+            NetworkLock lock;
+            // Add processors to the network
+            for (auto& processor : processors) {
+                network->addProcessor(processor);
+            }
 
-        // Connect the port to inspect to the inports of the inspector network
-        Outport* outport = dynamic_cast<Outport*>(port);
-        std::vector<Inport*> inports = portInspector->getInports();
-        for (auto& inport : inports) network->addConnection(outport, inport);
+            canvasProcessor
+                ->initialize();  // This is needed since, we need to call initialize after we
+                                 // add the canvas to the processor.
 
-        // Add connections to the network
-        std::vector<PortConnection*> connections = portInspector->getConnections();
-        for (auto& connection : connections) {
-            network->addConnection(connection->getOutport(), connection->getInport());
-        }
+            // Connect the port to inspect to the inports of the inspector network
+            Outport* outport = dynamic_cast<Outport*>(port);
+            std::vector<Inport*> inports = portInspector->getInports();
+            for (auto& inport : inports) network->addConnection(outport, inport);
 
-        // Add links to the network
-        std::vector<PropertyLink*> links = portInspector->getPropertyLinks();
-        for (auto& link : links) {
-            network->addLink(link->getSourceProperty(), link->getDestinationProperty());
-        }
+            // Add connections to the network
+            std::vector<PortConnection*> connections = portInspector->getConnections();
+            for (auto& connection : connections) {
+                network->addConnection(connection->getOutport(), connection->getInport());
+            }
 
-        // Do autolinking.
-        for (auto& processor : processors) {
-            network->autoLinkProcessor(processor);
-        }
+            // Add links to the network
+            std::vector<PropertyLink*> links = portInspector->getPropertyLinks();
+            for (auto& link : links) {
+                network->addLink(link->getSourceProperty(), link->getDestinationProperty());
+            }
 
-        int size = InviwoApplication::getPtr()
-                       ->getSettingsByType<SystemSettings>()
-                       ->portInspectorSize_.get();
-        canvasProcessor->setCanvasSize(ivec2(size, size));
+            // Do auto-linking.
+            for (auto& processor : processors) {
+                network->autoLinkProcessor(processor);
+            }
 
-        network->unlock();
+            int size = InviwoApplication::getPtr()
+                           ->getSettingsByType<SystemSettings>()
+                           ->portInspectorSize_.get();
+            canvasProcessor->setCanvasSize(ivec2(size, size));
+        } // Network will unlock and evaluate here.
 
         data = canvasProcessor->getVisibleLayerAsCodedBuffer(type);
 
         // remove the network...
-        network->lock();
+        NetworkLock lock;
         for (auto& processor : processors) network->removeProcessor(processor);
-        network->unlock();
-
         wm->setVisibile(true);
         portInspector->setActive(false);
     }
@@ -441,7 +437,7 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
                                        ivec2 pos, unsigned int networkEditorFlags,
                                        ivec2 canvasSize) {
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
-    network->lock();
+    NetworkLock lock;
 
     IvwDeserializer xmlDeserializer(fileName);
     ProcessorNetwork* processorNetwork = new ProcessorNetwork();
@@ -471,8 +467,6 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
     for (auto& link : links) {
         network->addLink(link->getSourceProperty(), link->getDestinationProperty());
     }
-
-    network->unlock();
 }
 
 std::vector<std::string> NetworkEditor::saveSnapshotsInExternalNetwork(
@@ -511,7 +505,7 @@ std::vector<std::string> NetworkEditor::saveSnapshotsInExternalNetwork(
 }
 
 void NetworkEditor::removeExternalNetwork(std::string identifierPrefix) {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+    NetworkLock lock;
     std::vector<Processor*> processors =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
 
@@ -519,8 +513,6 @@ void NetworkEditor::removeExternalNetwork(std::string identifierPrefix) {
         if (processor->getIdentifier().find(identifierPrefix) != std::string::npos)
             InviwoApplication::getPtr()->getProcessorNetwork()->removeProcessor(processor);
     }
-
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 }
 
 std::vector<std::string> NetworkEditor::getSnapshotsOfExternalNetwork(std::string fileName) {
@@ -1028,7 +1020,7 @@ void NetworkEditor::placeProcessorOnConnection(Processor* processor,
     Inport* connectionInport = connectionItem->getInport();
     Outport* connectionOutport = connectionItem->getOutport();
 
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+    NetworkLock lock;
 
     Inport* inport = nullptr;
     Outport* outport = nullptr;
@@ -1046,38 +1038,31 @@ void NetworkEditor::placeProcessorOnConnection(Processor* processor,
         }
     }
 
-    if(inport && outport) {
+    if (inport && outport) {
         ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
-        network->lock();
-        
         // Remove old connection
         network->removeConnection(connectionOutport, connectionInport);
-        
+
         // Add new Connections
         network->addConnection(connectionOutport, inport);
         network->addConnection(outport, connectionInport);
-        
-        network->unlock();
-    }else{
+    } else {
         connectionItem->resetBorderColors();
         connectionItem->clearMidPoint();
     }
-
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 }
 
 void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
                                               Processor* oldProcessor) {
 
-    ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
 
     const std::vector<Inport*>& inports = newProcessor->getInports();
     const std::vector<Outport*>& outports = newProcessor->getOutports();
     const std::vector<Inport*>& oldInports = oldProcessor->getInports();
     const std::vector<Outport*>& oldOutports = oldProcessor->getOutports();
 
-    network->lock();
-
+    NetworkLock lock;
+    
     std::vector<std::pair<Outport*, Inport*> > newConnections;
 
     for (size_t i = 0; i < std::min(inports.size(), oldInports.size()); ++i) {
@@ -1120,7 +1105,8 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
         }
     }
     
-    // Move propertylinks to the new processor
+    // Move propertylinks to the new processor   
+    ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
     std::vector<PropertyLink*> links = network->getLinks();
     std::map<Property*, Property*>::iterator match;
 
@@ -1157,16 +1143,14 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
     // create all new connections
     for (auto& newConnection : newConnections)
         network->addConnection(newConnection.first, newConnection.second);
-
-    network->unlock();
 }
 
 ///////////////////////////////
 //   SERIALIZATION METHODS   //
 ///////////////////////////////
 void NetworkEditor::clearNetwork() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
-
+    NetworkLock lock;
+    
     // We need to clear the portInspectors manually otherwise the pointers in the 
     // PortInspector networks won't be cleared
     PortInspectorMap portInspectors = portInspectors_;
@@ -1175,7 +1159,6 @@ void NetworkEditor::clearNetwork() {
     InviwoApplication::getPtr()->getProcessorNetwork()->clear();
     ResourceManager::getPtr()->clearAllResources();
 
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
     setModified(true);
 }
 
@@ -1231,35 +1214,34 @@ bool NetworkEditor::loadNetwork(std::string fileName) {
 }
 
 bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
-    // first we clean the current network
+    // Clean the current network
     clearNetwork();
-    // then we lock the network that so no evaluations are triggered during the deserialization
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+    {
+        // Lock the network that so no evaluations are triggered during the de-serialization
+        NetworkLock lock;
 
-    // then we deserialize processor network
-    try {
-        IvwDeserializer xmlDeserializer(stream, path);
-        InviwoApplication::getPtr()->getProcessorNetwork()->deserialize(xmlDeserializer);
-    } catch (const AbortException& exception) {
-        util::log(exception.getContext(),
-                  "Unable to load network " + path + " due to " + exception.getMessage(),
-                  LogLevel::Error);
-        clearNetwork();
-        InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
-        return false;
-    } catch (const IgnoreException& exception) {
-        util::log(exception.getContext(),
-                  "Incomplete network loading " + path + " due to " + exception.getMessage(),
-                  LogLevel::Error);
+        // Deserialize processor network
+        try {
+            IvwDeserializer xmlDeserializer(stream, path);
+            InviwoApplication::getPtr()->getProcessorNetwork()->deserialize(xmlDeserializer);
+        } catch (const AbortException& exception) {
+            util::log(exception.getContext(),
+                      "Unable to load network " + path + " due to " + exception.getMessage(),
+                      LogLevel::Error);
+            clearNetwork();
+            return false;
+        } catch (const IgnoreException& exception) {
+            util::log(exception.getContext(),
+                      "Incomplete network loading " + path + " due to " + exception.getMessage(),
+                      LogLevel::Error);
+        }
+
+        propertyListWidget_->setUsageMode(InviwoApplication::getPtr()
+                                              ->getSettingsByType<SystemSettings>()
+                                              ->getApplicationUsageMode());
+
+        InviwoApplication::getPtr()->getProcessorNetwork()->setModified(true);
     }
-
-    propertyListWidget_->setUsageMode(InviwoApplication::getPtr()
-                                          ->getSettingsByType<SystemSettings>()
-                                          ->getApplicationUsageMode());
-
-    InviwoApplication::getPtr()->getProcessorNetwork()->setModified(true);
-
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 
     setModified(false);
     filename_ = path;

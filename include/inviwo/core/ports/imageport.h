@@ -48,7 +48,7 @@ class IVW_CORE_API ImagePortBase {
 public:
     virtual uvec2 getDimensions() const = 0;
     virtual uvec2 getRequestedDimensions(ImageOutport* outport) const = 0;
-    virtual void changeDataDimensions(ResizeEvent* resizeEvent,
+    virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
                                       ImageOutport* target = nullptr) = 0;
     virtual bool isOutportDeterminingSize() const = 0;
     virtual void setOutportDeterminesSize(bool outportDeterminesSize) = 0;
@@ -82,7 +82,7 @@ public:
     /**
      * Handle resize event
      */
-    virtual void changeDataDimensions(ResizeEvent* resizeEvent,
+    virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
                                       ImageOutport* target = nullptr) override;
 
     virtual bool isOutportDeterminingSize() const override;
@@ -120,7 +120,7 @@ public:
     /**
      * Handle resize event
      */
-    void changeDataDimensions(ResizeEvent* resizeEvent);
+    void propagateResizeEvent(ResizeEvent* resizeEvent);
     uvec2 getDimensions() const;
     
     /**
@@ -172,11 +172,11 @@ void BaseImageInport<N>::connectTo(Outport* outport) {
     ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(outport);
     if (requestedDimensionsMap_.find(imageOutport) != requestedDimensionsMap_.end()) {
         ResizeEvent resizeEvent(requestedDimensionsMap_[imageOutport]);
-        imageOutport->changeDataDimensions(&resizeEvent);
+        imageOutport->propagateResizeEvent(&resizeEvent);
     } else if (requestedDimensions_ != uvec2(0)) {
         requestedDimensionsMap_[imageOutport] = requestedDimensions_;
         ResizeEvent resizeEvent(requestedDimensionsMap_[imageOutport]);
-        imageOutport->changeDataDimensions(&resizeEvent);
+        imageOutport->propagateResizeEvent(&resizeEvent);
     }
 
     DataInport<Image, N>::connectTo(outport);
@@ -191,16 +191,16 @@ void BaseImageInport<N>::disconnectFrom(Outport* outport) {
 
 // set dimensions based on port groups
 template <size_t N>
-void BaseImageInport<N>::changeDataDimensions(ResizeEvent* resizeEvent, ImageOutport* target) {
+void BaseImageInport<N>::propagateResizeEvent(ResizeEvent* resizeEvent, ImageOutport* target) {
     if (target) {
         requestedDimensionsMap_[target] = resizeEvent->size();
-        target->changeDataDimensions(resizeEvent);
+        target->propagateResizeEvent(resizeEvent);
     } else {
         requestedDimensions_ = resizeEvent->size();
         for (auto outport : this->connectedOutports_) {
             if (auto imageOutport = static_cast<ImageOutport*>(outport)) {
                 requestedDimensionsMap_[imageOutport] = resizeEvent->size();
-                imageOutport->changeDataDimensions(resizeEvent);
+                imageOutport->propagateResizeEvent(resizeEvent);
             }
         }
     }
