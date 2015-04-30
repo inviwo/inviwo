@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/core/common/moduleaction.h>
 #include <QDesktopWidget>
 
@@ -434,30 +435,36 @@ bool PropertyWidgetQt::event(QEvent* event) {
 }
 
 std::string PropertyWidgetQt::makeToolTipTop(std::string item) const {
-    return "<html><head/><body>\
+    return "<html><head>\
+            <style>\
+            table { border-color:white;white-space:pre;margin-top:5px;margin-bottom:5px; }\
+            table > tr > td { padding-left:5px; padding-right:5px; }\
+            </style><head/><body>\
             <b style='color:white;'>" + item + "</b>";
 }
 
 std::string PropertyWidgetQt::makeToolTipTableTop() const {
     return "<table border='0' cellspacing='0' cellpadding='0'\
-            style='border-color:white;white-space:pre;'>";
+            style='border-color:white;white-space:pre;margin: 5px 0;'>";
 }
 
-std::string PropertyWidgetQt::makeToolTipRow(std::string item, std::string val) const {
+std::string PropertyWidgetQt::makeToolTipRow(std::string item, std::string val, bool tablehead) const {
     std::stringstream ss;
-    ss << "<tr><td style='color:#bbb;padding-right:8px;'>" << item << "</td>";
-    ss << "<td><nobr>" + val + "</nobr></td>";
+    std::string td = (tablehead ? "th" : "td");
+    ss << "<tr><" << td << " style='color:#bbb;padding-right:8px;'>" << item << "</" << td << ">";
+    ss << "<" << td << "><nobr>" + val + "</nobr></" << td << ">";
     ss << "</tr>" << std::endl;
     
     return ss.str();
 }
 
-std::string PropertyWidgetQt::makeToolTipRow(std::string item, std::vector<std::string> vals) const {
+std::string PropertyWidgetQt::makeToolTipRow(std::string item, std::vector<std::string> vals, bool tablehead) const {
     std::stringstream ss;
-    ss << "<tr><td style='color:#bbb;padding-right:8px;'>" << item << "</td>";
+    std::string td = (tablehead ? "th" : "td");
+    ss << "<tr><" << td << " style='color:#bbb;padding-right:8px;'>" << item << "</" << td << ">";
 
     for (auto& val : vals) {
-        ss << "<td align=center><nobr>" + val + "</nobr></td>";
+        ss << "<" << td << " align=center><nobr>" + val + "</nobr></" << td << ">";
     }
     ss << "</tr>" << std::endl;
     
@@ -475,6 +482,7 @@ std::string PropertyWidgetQt::makeToolTipBottom() const {
 std::string PropertyWidgetQt::getToolTipText() {
     if (property_) {
         std::stringstream ss;
+        utilqt::localizeStream(ss);
 
         ss << makeToolTipTop(property_->getDisplayName());
         ss << makeToolTipTableTop();

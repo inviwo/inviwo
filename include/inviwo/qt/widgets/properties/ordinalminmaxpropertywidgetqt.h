@@ -31,6 +31,7 @@
 #define IVW_ORDINALMINMAXPROPERTYWIDGETQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/qt/widgets/customdoublespinboxqt.h>
@@ -170,11 +171,13 @@ public:
     
 protected:
     virtual int transformIncrementToSpinnerDecimals() {
+        const static QLocale locale;
         double inc = Transformer<T>::valueToSpinbox(minMaxProperty_, minMaxProperty_->getIncrement());
         std::ostringstream buff;
+        utilqt::localizeStream(buff);
         buff << inc;
         const std::string str(buff.str());
-        auto periodPosition = str.find(".");
+        auto periodPosition = str.find(locale.decimalPoint().toLatin1());
         if (periodPosition == std::string::npos) 
             return 0;
         else
@@ -357,6 +360,7 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromSpinBoxMax(double maxVal) {
 template <typename T>
 std::string OrdinalMinMaxPropertyWidgetQt<T>::getToolTipText() {
     std::stringstream ss;
+    utilqt::localizeStream(ss);
 
     ss << this->makeToolTipTop(this->minMaxProperty_->getDisplayName());
     ss << this->makeToolTipTableTop();
@@ -370,7 +374,7 @@ std::string OrdinalMinMaxPropertyWidgetQt<T>::getToolTipText() {
     ss << this->makeToolTipRow("Range min", toString(minMaxProperty_->getRangeMin()));
     ss << this->makeToolTipRow("Range max", toString(minMaxProperty_->getRangeMax()));
     ss << this->makeToolTipRow("Increment", toString(minMaxProperty_->getIncrement()));
-    ss << this->makeToolTipRow("Seperation", toString(minMaxProperty_->getMinSeparation()));
+    ss << this->makeToolTipRow("Separation", toString(minMaxProperty_->getMinSeparation()));
 
     ss << this->makeToolTipTableBottom();
     ss << this->makeToolTipBottom();
