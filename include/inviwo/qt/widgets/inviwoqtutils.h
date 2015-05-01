@@ -33,6 +33,7 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <locale>
 #include <ios>
+#include <sstream>
 
 namespace inviwo {
 
