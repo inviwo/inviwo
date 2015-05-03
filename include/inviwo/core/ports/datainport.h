@@ -57,7 +57,6 @@ public:
     virtual bool canConnectTo(const Port* port) const override;
     virtual void connectTo(Outport* port) override;
     virtual bool isConnected() const override;
-    virtual bool isReady() const override;
 
     virtual const T* getData() const;
     virtual std::vector<const T*> getVectorData() const;
@@ -111,16 +110,18 @@ void DataInport<T, N>::connectTo(Outport* port) {
 }
 
 template <typename T, size_t N>
-bool inviwo::DataInport<T, N>::isConnected() const  {
-    if(N==0) return !connectedOutports_.empty();
-    else return connectedOutports_.size() == N;
+bool inviwo::DataInport<T, N>::isConnected() const {
+    if (N == 0)
+        return !connectedOutports_.empty();
+    else
+        return connectedOutports_.size() >= 1 && connectedOutports_.size() <= N;
 }
 
 template <typename T, size_t N>
-bool DataInport<T, N>::isReady() const {
-    return isConnected() && hasData() && util::all_of(connectedOutports_, [](Outport* p) {
-                                             return p->getInvalidationLevel() == VALID;
-                                         });
+bool DataInport<T, N>::hasData() const {
+    return isConnected() && util::all_of(connectedOutports_, [](Outport* p) {
+               return static_cast<DataOutport<T>*>(p)->hasData();
+           });
 }
 
 template <typename T, size_t N>
@@ -160,12 +161,6 @@ std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N>::getSourceVe
     return res;
 }
 
-template <typename T, size_t N>
-bool DataInport<T, N>::hasData() const {
-    return isConnected() && util::all_of(connectedOutports_, [](Outport* p) {
-                                return static_cast<DataOutport<T>*>(p)->hasData();
-                            });
-}
 
 template <typename T, size_t N>
 std::string DataInport<T, N>::getContentInfo() const {

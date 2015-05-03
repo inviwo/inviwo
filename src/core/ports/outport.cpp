@@ -39,13 +39,11 @@ Outport::~Outport() {}
 
 bool Outport::isConnected() const { return !(connectedInports_.empty()); }
 
-bool Outport::isReady() const { return isConnected(); }
-
 bool Outport::isConnectedTo(const Inport* port) const {
     return util::contains(connectedInports_, port);
 }
 
-std::vector<Inport*> Outport::getConnectedInports() const { return connectedInports_; }
+const std::vector<Inport*>& Outport::getConnectedInports() const { return connectedInports_; }
 
 void Outport::invalidate(InvalidationLevel invalidationLevel) {
     invalidationLevel_ = invalidationLevel;
@@ -61,25 +59,6 @@ inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalid
 void Outport::setValid() {
     invalidationLevel_ = VALID;
     for (auto inport : connectedInports_) inport->setValid(this);
-}
-
-std::vector<Processor*> Outport::getDirectSuccessors() const {
-    std::vector<Processor*> successors;
-    getSuccessors(successors);
-    return successors;
-}
-
-void Outport::getSuccessors(std::vector<Processor*>& successors) const {
-    for (auto inport : connectedInports_) {
-        Processor* p = inport->getProcessor();
-
-        if (std::find(successors.begin(), successors.end(), p) == successors.end()) {
-            successors.push_back(p);
-            for (auto outport : p->getOutports()) {
-                outport->getSuccessors(successors);
-            }
-        }
-    }
 }
 
 // Is called exclusively by Inport, which means a connection has been made.

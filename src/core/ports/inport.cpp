@@ -44,7 +44,8 @@ bool Inport::isConnected() const  {
 }
 
 bool Inport::isReady() const {
-    return isConnected() && getConnectedOutport()->getInvalidationLevel() == VALID;
+    return isConnected() &&
+           util::all_of(connectedOutports_, [](Outport* p) { return p->isReady(); });
 }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
@@ -62,25 +63,6 @@ void Inport::setValid(const Outport* source) {
 
 size_t Inport::getNumberOfConnections() const {
     return connectedOutports_.size();
-}
-
-std::vector<Processor*> Inport::getPredecessors() const {
-    std::vector<Processor*> predecessors;
-    getPredecessors(predecessors);
-    return predecessors;
-}
-
-void Inport::getPredecessors(std::vector<Processor*>& predecessors) const {
-    for (auto outport : getConnectedOutports()) {
-        Processor* p = outport->getProcessor();
-
-        if (std::find(predecessors.begin(), predecessors.end(), p) == predecessors.end()) {
-            predecessors.push_back(p);
-            for (auto inport : p->getInports()) {
-                inport->getPredecessors(predecessors);
-            }
-        }
-    }
 }
 
 std::vector<const Outport*> Inport::getChangedOutports() const {
@@ -147,7 +129,7 @@ Outport* Inport::getConnectedOutport() const {
     }
 }
 
-std::vector<Outport*> Inport::getConnectedOutports() const { return connectedOutports_; }
+const std::vector<Outport*>& Inport::getConnectedOutports() const { return connectedOutports_; }
 
 void Inport::callOnChangeIfChanged() const {
     if (isChanged()) {

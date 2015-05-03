@@ -43,22 +43,24 @@ ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processor
     : processorNetwork_(processorNetwork)
     , evaulationQueued_(false)
     , evaluationDisabled_(false)
-    , processorStatesDirty_(true) 
+    , processorStatesDirty_(true)
     , exceptionHandler_(StandardExceptionHandler()) {
-
+        
     initializeNetwork();
+
+    ivwAssert(
+        processorNetworkEvaluators_.find(processorNetwork) == processorNetworkEvaluators_.end(),
+        "A ProcessorNetworkEvaluator for the given ProcessorNetwork is already created");
     
-    ivwAssert(processorNetworkEvaluators_.find(processorNetwork) == processorNetworkEvaluators_.end() ,
-              "A ProcessorNetworkEvaluator for the given ProcessorNetwork is already created");
     processorNetworkEvaluators_[processorNetwork] = this;
     processorNetwork_->addObserver(this);
 }
 
 ProcessorNetworkEvaluator::~ProcessorNetworkEvaluator() {
-    std::map<ProcessorNetwork*,ProcessorNetworkEvaluator*>::iterator it = processorNetworkEvaluators_.find(processorNetwork_);
+    std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*>::iterator it =
+        processorNetworkEvaluators_.find(processorNetwork_);
 
-    if (it != processorNetworkEvaluators_.end())
-        processorNetworkEvaluators_.erase(it);
+    if (it != processorNetworkEvaluators_.end()) processorNetworkEvaluators_.erase(it);
 }
 
 void ProcessorNetworkEvaluator::topologyUpdated() {
@@ -66,37 +68,33 @@ void ProcessorNetworkEvaluator::topologyUpdated() {
 }
 
 void ProcessorNetworkEvaluator::initializeNetwork() {
-    ivwAssert(processorNetwork_!=0, "processorNetwork_ not initialized, call setProcessorNetwork()");
+    ivwAssert(processorNetwork_ != 0,
+              "processorNetwork_ not initialized, call setProcessorNetwork()");
+
     // initialize network
-    std::vector<Processor*> processors = processorNetwork_->getProcessors();
-
-
-    for (size_t i=0; i<processors.size(); i++) {
+    for (auto p : processorNetwork_->getProcessors()) {
         try {
-            if (!processors[i]->isInitialized())
-                processors[i]->initialize();
+            if (!p->isInitialized()) p->initialize();
         } catch (Exception& e) {
             exceptionHandler_(IvwContext);
         }
     }
 }
 
-void ProcessorNetworkEvaluator::saveSnapshotAllCanvases(std::string dir, std::string default_name, std::string ext) {
-    std::vector<inviwo::CanvasProcessor*> pv = processorNetwork_->getProcessorsByType<inviwo::CanvasProcessor>();
+void ProcessorNetworkEvaluator::saveSnapshotAllCanvases(std::string dir, std::string default_name,
+                                                        std::string ext) {
     int i = 0;
-
-    for (std::vector<inviwo::CanvasProcessor*>::iterator it = pv.begin(); it != pv.end(); it++) {
+    for (auto cp : processorNetwork_->getProcessorsByType<inviwo::CanvasProcessor>()) {
         std::stringstream ss;
 
         if (default_name == "" || default_name == "UPN")
-            ss << (*it)->getIdentifier();
+            ss << cp->getIdentifier();
         else
-            ss << default_name << i+1;
+            ss << default_name << i + 1;
 
         std::string path(dir + ss.str() + ext);
         LogInfo("Saving canvas to: " + path);
-        (*it)->saveImageLayer(path);
-        ++i;
+        cp->saveImageLayer(path);
     }
 }
 
@@ -133,8 +131,7 @@ ProcessorNetworkEvaluator::getStoredPredecessors(Processor* processor) const {
     const_ProcMapIt it = processorStates_.find(processor);
     if (it != processorStates_.end()) {
         return it->second.pred;
-    }
-    else {
+    } else {
         // processor not found, return reference to empty list of dummy element
         return processorStates_.find(nullptr)->second.pred;
     }
@@ -184,18 +181,19 @@ void ProcessorNetworkEvaluator::updateProcessorStates() {
     std::vector<Processor*> endProcessors;
 
     processorStates_.clear();
-    // insert dummy processor to be able to return a reference to an 
+    // insert dummy processor to be able to return a reference to an
     // empty predecessor list, if a processor does not exist (getStoredPredecessors())
     processorStates_.insert(ProcMapPair(nullptr, ProcessorState()));
 
     // update all processor states, i.e. collecting predecessors
-    for (auto processor: processorNetwork_->getProcessors())  {
+    for (auto processor : processorNetwork_->getProcessors()) {
         // register processor in global state map
-        if (!processorStates_.insert(ProcMapPair(processor, ProcessorState(getDirectPredecessors(processor)))).second)
+        if (!processorStates_.insert(ProcMapPair(processor,
+                                                 ProcessorState(getDirectPredecessors(processor))))
+                 .second)
             LogError("Processor State was already registered.");
 
-        if (processor->isEndProcessor())
-            endProcessors.push_back(processor);
+        if (processor->isEndProcessor()) endProcessors.push_back(processor);
     }
 
     // perform topological sorting and store processor order in processorsSorted_
@@ -205,59 +203,12 @@ void ProcessorNetworkEvaluator::updateProcessorStates() {
 }
 
 void ProcessorNetworkEvaluator::resetProcessorVisitedStates() {
-    ProcMapIt it = processorStates_.begin();
-    while (it != processorStates_.end()) {
-        it->second.visited = false;
-        ++it;
-    }
+    for (auto& state : processorStates_) state.second.visited = false;
 }
 
 void ProcessorNetworkEvaluator::setExceptionHandler(ExceptionHandler handler) {
     exceptionHandler_ = handler;
 }
-
-bool ProcessorNetworkEvaluator::isPortConnectedToProcessor(Port* port, Processor* processor) {
-    bool isConnected = false;
-    std::vector<PortConnection*> portConnections = processorNetwork_->getConnections();
-    std::vector<Outport*> outports = processor->getOutports();
-
-    for (size_t i=0; i<outports.size(); i++) {
-        for (size_t j=0; j<portConnections.size(); j++) {
-            const Port* curOutport = portConnections[j]->getOutport();
-
-            if (curOutport == outports[i]) {
-                const Port* connectedInport = portConnections[j]->getInport();
-
-                if (connectedInport == port) {
-                    isConnected = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    if (isConnected) return isConnected;
-
-    std::vector<Inport*> inports = processor->getInports();
-
-    for (size_t i=0; i<inports.size(); i++) {
-        for (size_t j=0; j<portConnections.size(); j++) {
-            const Port* curInport = portConnections[j]->getInport();
-
-            if (curInport == inports[i]) {
-                const Outport* connectedOutport = portConnections[j]->getOutport();
-
-                if (connectedOutport == port) {
-                    isConnected = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    return isConnected;
-}
-
 
 void ProcessorNetworkEvaluator::onProcessorInvalidationEnd(Processor* p) {
     processorNetwork_->onProcessorInvalidationEnd(p);

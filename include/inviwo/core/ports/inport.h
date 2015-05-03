@@ -41,10 +41,9 @@ class Outport;
 class Processor;
 class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
-class InteractionEvent;
 
 /**
- * \class Inport
+ * \class Inport Abstract base class for all inports
  * \brief An Inport can be connected to an Outport.
  * The approved connection can be determined by the canConnectTo function.
  */
@@ -55,14 +54,18 @@ public:
     friend class ProcessorNetwork;
     friend class ProcessorNetworkEvaluator;
 
-    template <typename T, typename U>
-    friend class MultiDataInport;
-
-    Inport(std::string identifier = "");
     virtual ~Inport();
-
+    
     virtual bool isConnected() const override;
+    
+    /**
+     * A inport is ready when it is connected, and it's outports are ready.
+     */
     virtual bool isReady() const override;
+    
+    /**
+     * An inport is changed when it has new data, and it's processor has not been processed.
+     */
     virtual bool isChanged() const;
 
     // Called from the processor network to create connections.
@@ -72,12 +75,15 @@ public:
 
     virtual bool isConnectedTo(const Outport* outport) const;
     virtual Outport* getConnectedOutport() const;
-    virtual std::vector<Outport*> getConnectedOutports() const;
+    virtual const std::vector<Outport*>& getConnectedOutports() const;
     virtual size_t getMaxNumberOfConnections() const = 0;
     virtual size_t getNumberOfConnections() const;
-    std::vector<Processor*> getPredecessors() const;
     virtual std::vector<const Outport*> getChangedOutports() const;
 
+    /**
+     * Propagate event upwards towards connected outports, if targets is nullptr, propagate the
+     * even to all connected outport, otherwise only to target.
+     */
     virtual void propagateEvent(Event* event, Outport* target = nullptr);
     /**
      * The on change call back is invoked before Processor::process after a port has been connected,
@@ -111,6 +117,8 @@ public:
     void removeOnDisconnect(const BaseCallBack* callback) const;
 
 protected:
+    Inport(std::string identifier = "");
+    
     /**
      *	Called by Outport::invalidate on its connected inports, which is call by
      *	Processor::invalidate. Will by default invalidate its processor. From above in the network.
@@ -128,12 +136,8 @@ protected:
     // Called by the processor network.
     void callOnChangeIfChanged() const;
 
-    // recursive implementation of std::vector<Processor*> Inport::getPredecessors() const
-    void getPredecessors(std::vector<Processor*>&) const;
-
     std::vector<Outport*> connectedOutports_;
-
-
+    
 private:
     bool changed_;
     

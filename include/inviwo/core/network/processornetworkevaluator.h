@@ -85,7 +85,6 @@ private:
     void determineProcessingOrder();
     void updateProcessorStates();
     void resetProcessorVisitedStates();
-    bool isPortConnectedToProcessor(Port* port, Processor* processor);
 
     struct ProcessorState {
         ProcessorState() : visited(false) {}
