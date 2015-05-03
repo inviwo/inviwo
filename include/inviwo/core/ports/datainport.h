@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAINPORT_H
@@ -37,10 +37,11 @@
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <limits>
+#include <iterator>
 
 namespace inviwo {
 
-template<typename T>
+template <typename T>
 class DataOutport;
 
 template <typename T, size_t N = 1>
@@ -63,13 +64,69 @@ public:
     virtual std::vector<std::pair<Outport*, const T*>> getSourceVectorData() const;
 
     bool hasData() const;
-};
 
+    
+    // iterator impl.
+    class iterator : public std::iterator<std::forward_iterator_tag, T> {
+        using self = iterator;
+        using pointer = typename std::iterator<std::forward_iterator_tag, T>::pointer;
+        using reference = typename std::iterator<std::forward_iterator_tag, T>::reference;
+        using PortIter = typename std::vector<DataOutport<T>*>::iterator;
+    public:
+        explicit iterator(PortIter ptr) : ptr_(ptr) {}
+        self& operator++() {
+            ptr_++;
+            return *this;
+        }
+        self operator++(int) {
+            self i = *this;
+            ptr_++;
+            return i;
+        }
+        reference operator*() { return *(ptr_->getConstData()); }
+        pointer operator->() { return ptr_->getConstData(); }
+        bool operator==(const self& rhs) const { return ptr_ == rhs.ptr_; }
+        bool operator!=(const self& rhs) const { return ptr_ != rhs.ptr_; }
+
+    private:
+        PortIter ptr_;
+    };
+
+    class const_iterator : public std::iterator<std::forward_iterator_tag, T> {
+        using self = const_iterator;
+        using pointer = typename std::iterator<std::forward_iterator_tag, T>::pointer;
+        using reference = typename std::iterator<std::forward_iterator_tag, T>::reference;
+        using PortIter = typename std::vector<DataOutport<T>*>::iterator;
+        
+    public:
+        explicit const_iterator(PortIter ptr) : ptr_(ptr) {}
+        self& operator++() {
+            ptr_++;
+            return *this;
+        }
+        self operator++(int) {
+            self i = *this;
+            ptr_++;
+            return i;
+        }
+        const reference operator*() { return *(ptr_->getConstData()); }
+        const pointer operator->() { return ptr_->getConstData(); }
+        bool operator==(const self& rhs) const { return ptr_ == rhs.ptr_; }
+        bool operator!=(const self& rhs) const { return ptr_ != rhs.ptr_; }
+
+    private:
+        PortIter ptr_;
+    };
+
+    iterator begin() { return iterator(connectedOutports_.begin()); }
+    iterator end() { return iterator(connectedOutports_.end()); }
+    const_iterator begin() const { return const_iterator(connectedOutports_.begin()); }
+    const_iterator end() const { return const_iterator(connectedOutports_.end()); }
+};
 
 template <typename T, size_t N>
 DataInport<T, N>::DataInport(std::string identifier)
-    : Inport(identifier) {
-}
+    : Inport(identifier) {}
 
 template <typename T, size_t N>
 DataInport<T, N>::~DataInport() {}
@@ -80,12 +137,16 @@ std::string inviwo::DataInport<T, N>::getClassIdentifier() const {
 }
 
 template <typename T, size_t N>
-uvec3 DataInport<T, N>::getColorCode() const { return port_traits<T>::color_code(); }
+uvec3 DataInport<T, N>::getColorCode() const {
+    return port_traits<T>::color_code();
+}
 
 template <typename T, size_t N>
-size_t inviwo::DataInport<T, N>::getMaxNumberOfConnections() const  {
-    if (N==0) return std::numeric_limits<size_t>::max();
-    else return N;
+size_t inviwo::DataInport<T, N>::getMaxNumberOfConnections() const {
+    if (N == 0)
+        return std::numeric_limits<size_t>::max();
+    else
+        return N;
 }
 
 template <typename T, size_t N>
@@ -103,7 +164,7 @@ void DataInport<T, N>::connectTo(Outport* port) {
     DataOutport<T>* dataPort = dynamic_cast<DataOutport<T>*>(port);
     if (!dataPort) throw Exception("Trying to connect incompatible ports.", IvwContext);
 
-    if (getNumberOfConnections() + 1 > getMaxNumberOfConnections()) 
+    if (getNumberOfConnections() + 1 > getMaxNumberOfConnections())
         throw Exception("Trying to connect to a full port.", IvwContext);
 
     Inport::connectTo(port);
@@ -147,7 +208,6 @@ std::vector<const T*> DataInport<T, N>::getVectorData() const {
     return res;
 }
 
-
 template <typename T, size_t N>
 std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, const T*>> res(N);
@@ -160,7 +220,6 @@ std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N>::getSourceVe
 
     return res;
 }
-
 
 template <typename T, size_t N>
 std::string DataInport<T, N>::getContentInfo() const {
@@ -176,6 +235,6 @@ std::string DataInport<T, N>::getContentInfo() const {
     }
 }
 
-} // namespace
+}  // namespace
 
-#endif // IVW_DATAINPORT_H
+#endif  // IVW_DATAINPORT_H
