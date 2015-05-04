@@ -97,9 +97,10 @@ class IVW_CORE_API TouchEvent : public InteractionEvent {
 public:
     enum TouchState {
         TOUCH_STATE_NONE = 0,
-        TOUCH_STATE_STARTED,
-        TOUCH_STATE_UPDATED,
-        TOUCH_STATE_ENDED
+        TOUCH_STATE_STARTED = 1,
+        TOUCH_STATE_UPDATED = 2,
+        TOUCH_STATE_ENDED = 4,
+        TOUCH_STATE_ANY = TOUCH_STATE_STARTED | TOUCH_STATE_UPDATED | TOUCH_STATE_ENDED
     };
     TouchEvent(TouchEvent::TouchState state);
     TouchEvent(std::vector<TouchPoint> touchPoints, TouchEvent::TouchState state);
@@ -118,6 +119,13 @@ public:
      * @return vec2 sum(touch points) / nPoints
      */
     vec2 getCenterPoint() const;
+
+    /**
+    * \brief Computes average normalized position. Returns vec2(0) if no touch points exist.
+    *
+    * @return vec2 sum(touch points) / nPoints
+    */
+    vec2 getCenterPointNormalized() const;
 
     inline TouchEvent::TouchState state() const { return state_; }
 

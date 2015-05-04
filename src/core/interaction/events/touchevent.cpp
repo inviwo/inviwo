@@ -91,6 +91,19 @@ vec2 TouchEvent::getCenterPoint() const {
     }
 }
 
+inviwo::vec2 TouchEvent::getCenterPointNormalized() const {
+    if (touchPoints_.empty()) {
+        return vec2(0);
+    } else {
+        // Compute average position
+        vec2 sum(0);
+        std::for_each(touchPoints_.begin(), touchPoints_.end(), [&](const TouchPoint& p){
+            sum += p.getPosNormalized();
+        });
+        return sum / static_cast<float>(touchPoints_.size());
+    }
+}
+
 void TouchEvent::serialize(IvwSerializer& s) const {
     s.serialize("touchState", state_);
     s.serialize("touchPoints", touchPoints_, "touchPoint");
@@ -113,7 +126,7 @@ bool TouchEvent::matching(const Event* aEvent) const {
 }
 
 bool TouchEvent::matching(const TouchEvent* aEvent) const {
-    return state_ == aEvent->state_
+    return (state_ & aEvent->state_) == aEvent->state_  // aEvent.state equal to any of this.state
         && modifiers_ == aEvent->modifiers_;
 }
 
