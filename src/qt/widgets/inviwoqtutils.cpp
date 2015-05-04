@@ -50,7 +50,7 @@ std::locale getCurrentStdLocale() {
 #else
         std::string localeName(QLocale::system().name().toStdString());
 #endif
-        loc = std::locale(localeName);
+        loc = std::locale(localeName.c_str());
     }
     catch (std::exception &e) {
         LogWarnCustom("getStdLocale", "Locale could not be set. " << e.what());

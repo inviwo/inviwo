@@ -13,7 +13,6 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoapplicationqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidgettitlebar.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtutils.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/lightpositionwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/ordinaleditorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/propertylistwidget.h
@@ -53,6 +52,7 @@ set(MOC_FILES
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtutils.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/eventconverterqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwofiledialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtwidgetsdefine.h
