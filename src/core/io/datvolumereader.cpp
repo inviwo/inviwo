@@ -98,6 +98,9 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
     std::string unit("");
     size_t sequences = 1;
 
+    // For dat file containing references to multiple datfiles
+    std::vector<std::string> datFiles;
+
     while (!f->eof()) {
         getline(*f, textLine);
 
@@ -131,6 +134,9 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
 
         if (key == "objectfilename" || key == "rawfile") {
             rawFile_ = fileDirectory + value;
+        } 
+        if (key == "datfile") {
+            datFiles.push_back(fileDirectory + value);
         } else if (key == "byteorder") {
             if (toLower(value) == "bigendian") {
                 littleEndian_ = false;
@@ -187,15 +193,15 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
         } else if (key == "format") {
             ss >> formatFlag;
             // Backward support for USHORT_12 key
-			if (formatFlag == "USHORT_12") {
-				format_ = DataUINT16::get();
-				// Check so that data range has not been set before
-				if (glm::all(glm::equal(datarange, dvec2(0)))) {
-					datarange.y = 4095;
-				}
-			} else {
-				format_ = DataFormatBase::get(formatFlag);
-			}
+            if (formatFlag == "USHORT_12") {
+                format_ = DataUINT16::get();
+                // Check so that data range has not been set before
+                if (glm::all(glm::equal(datarange, dvec2(0)))) {
+                    datarange.y = 4095;
+                }
+            } else {
+                format_ = DataFormatBase::get(formatFlag);
+            }
         } else if (key == "datarange") {
             ss >> datarange.x;
             ss >> datarange.y;
@@ -210,6 +216,27 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
     };
 
     delete f;
+
+    // Check if other dat files where specified, and then only consider them as a sequence
+    if (!datFiles.empty()){
+        delete volume;
+        volume = nullptr;
+
+        DataSequence<Volume>* volumeSequence = nullptr;
+
+        for (size_t t = 0; t < datFiles.size(); ++t){
+            DatVolumeReader* datVolReader = new DatVolumeReader();
+            volume = datVolReader->readMetaData(datFiles[t]);
+
+            if (!volumeSequence)
+                volumeSequence = new DataSequence<Volume>(*volume);
+
+            volumeSequence->add(volume);
+        }
+
+        LogInfo("Loaded multiple volumes: " << filePath << " volumes: " << datFiles.size());
+        return volumeSequence;
+    }
 
     if (dimensions_ == uvec3(0))
         throw DataReaderException("Error: Unable to find \"Resolution\" tag in .dat file: " +
