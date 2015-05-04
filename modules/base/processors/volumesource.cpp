@@ -170,10 +170,10 @@ void VolumeSource::onOverrideChange() {
 }
 
 void VolumeSource::dataDeserialized(Volume* volume) {
-    // We are deserializing a workspace, so here we
+    // We are de-serializing a workspace, so here we
     // mainly need to make sure that the defaults are correct.
     
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+    NetworkLock lock;
     
     setStateAsDefault(dataRange_, volume->dataMap_.dataRange);
     setStateAsDefault(valueRange_, volume->dataMap_.valueRange);
@@ -208,7 +208,6 @@ void VolumeSource::dataDeserialized(Volume* volume) {
     dimensions_.setCurrentStateAsDefault();
     format_.setCurrentStateAsDefault();
     
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
     invalidateOutput();
 }
 
@@ -217,7 +216,7 @@ void VolumeSource::dataLoaded(Volume* volume) {
     // Here we have loaded a new volume we need to make sure all
     // properties have valid values and correct new defaults.
 
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+    NetworkLock lock;
     
     // Set the data range from the volume
     dataRange_.set(volume->dataMap_.dataRange);
@@ -269,7 +268,6 @@ void VolumeSource::dataLoaded(Volume* volume) {
     dimensions_.setCurrentStateAsDefault();
     format_.setCurrentStateAsDefault();
 
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
     invalidateOutput();
 }
 

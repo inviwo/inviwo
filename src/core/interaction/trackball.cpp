@@ -151,9 +151,9 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
 
 Trackball::~Trackball() {}
 
-void Trackball::invokeInteractionEvent(Event* event) {
+void Trackball::invokeEvent(Event* event) {
     if (!handleInteractionEvents_) return;
-    CompositeProperty::invokeInteractionEvent(event);
+    CompositeProperty::invokeEvent(event);
 }
 
 void Trackball::setPanSpeedFactor(float psf) { 
@@ -195,12 +195,16 @@ vec3 Trackball::mapToObject(vec3 pos, float dist) {
 void Trackball::pinchGesture(Event* event) {
     GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
     vec3 direction = *lookFrom_ - *lookTo_;
-    float vecLength = glm::clamp(glm::length(direction), 0.5f, 4.f);
+    float vecLength = glm::clamp(glm::length(direction), 0.3f, 4.f);
     vec3 normdirection = glm::normalize(direction);
-    *lookFrom_ = *lookFrom_ -
-                 normdirection * (static_cast<float>(vecLength * gestureEvent->deltaDistance()));
-    notifyLookFromChanged(this);
-    isMouseBeingPressedAndHold_ = false;
+    vec3 move = normdirection * (static_cast<float>(vecLength * gestureEvent->deltaDistance()));
+    vec3 newLookFrom = *lookFrom_ - move;
+    vec3 newDirection = newLookFrom - *lookTo_;
+    if (glm::length(newDirection) > 0.3f){
+        *lookFrom_ = newLookFrom;
+        notifyLookFromChanged(this);
+        isMouseBeingPressedAndHold_ = false;
+    }
 }
 
 void Trackball::panGesture(Event* event) {

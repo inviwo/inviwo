@@ -34,42 +34,102 @@
 
 namespace inviwo {
 
-Inport::Inport(std::string identifier) : Port(identifier), changed_(false) {}
+Inport::Inport(std::string identifier)
+    : Port(identifier), changed_(false), lastInvalidationLevel_(VALID) {}
 
 Inport::~Inport() {}
 
+bool Inport::isConnected() const  {
+    return !connectedOutports_.empty();
+}
+
 bool Inport::isReady() const {
-    return isConnected() && getConnectedOutport()->getInvalidationLevel() == VALID;
+    return isConnected() &&
+           util::all_of(connectedOutports_, [](Outport* p) { return p->isReady(); });
 }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
+    if (lastInvalidationLevel_ == VALID && invalidationLevel >= INVALID_OUTPUT)
+        onInvalidCallback_.invokeAll();
+    lastInvalidationLevel_ = std::max(lastInvalidationLevel_, invalidationLevel);
+
     if (processor_) processor_->invalidate(invalidationLevel);
 }
 
-std::vector<Processor*> Inport::getPredecessors() const {
-    std::vector<Processor*> predecessors;
-    getPredecessors(predecessors);
-    return predecessors;
+void Inport::setValid(const Outport* source) {
+    lastInvalidationLevel_ = VALID;
+    setChanged(true, source);
 }
 
-void Inport::getPredecessors(std::vector<Processor*>& predecessors) const {
-    for (auto outport : getConnectedOutports()) {
-        Processor* p = outport->getProcessor();
+size_t Inport::getNumberOfConnections() const {
+    return connectedOutports_.size();
+}
 
-        if (std::find(predecessors.begin(), predecessors.end(), p) == predecessors.end()) {
-            predecessors.push_back(p);
-            for (auto inport : p->getInports()) {
-                inport->getPredecessors(predecessors);
-            }
+std::vector<const Outport*> Inport::getChangedOutports() const {
+    return changedSources_;
+}
+
+void Inport::propagateEvent(Event* event, Outport* target) {
+    if (target) {
+        target->propagateEvent(event);
+    } else {
+        for (auto outport : getConnectedOutports()) {
+            outport->propagateEvent(event);
         }
     }
 }
 
-void Inport::setChanged(bool changed) { changed_ = changed; }
+void Inport::setChanged(bool changed, const Outport* source) {
+    changed_ = changed;
 
-void Inport::removeOnChange(const BaseCallBack* callback) {
-    onChangeCallback_.remove(callback);
+    if (changed_ == false) {
+        if (source == nullptr) {
+            changedSources_.clear();
+        } else {
+            util::erase_remove(changedSources_, source);
+        }
+    } else if (source) {
+        util::push_back_unique(changedSources_, source);
+    }
 }
+
+bool Inport::isChanged() const { return changed_; }
+
+void Inport::connectTo(Outport* outport) {
+    if (!isConnectedTo(outport)) {
+        connectedOutports_.push_back(outport);
+        outport->connectTo(this);  // add this to the outport.
+        setChanged(true, outport); // mark that we should call onChange.
+        onConnectCallback_.invokeAll();
+        invalidate(INVALID_OUTPUT);
+    }
+}
+
+void Inport::disconnectFrom(Outport* outport) {
+    auto it = std::find(connectedOutports_.begin(), connectedOutports_.end(), outport);
+    if (it != connectedOutports_.end()) {
+        connectedOutports_.erase(it);
+        outport->disconnectFrom(this);  // remove this from outport.
+        setChanged(true, outport);      // mark that we should call onChange.
+        onDisconnectCallback_.invokeAll();
+        invalidate(INVALID_OUTPUT);
+    }
+}
+
+bool Inport::isConnectedTo(const Outport* outport) const {
+    return std::find(connectedOutports_.begin(), connectedOutports_.end(), outport) !=
+           connectedOutports_.end();
+}
+
+Outport* Inport::getConnectedOutport() const {
+    if (!connectedOutports_.empty()) {
+        return connectedOutports_.front();
+    } else {
+        return nullptr;
+    }
+}
+
+const std::vector<Outport*>& Inport::getConnectedOutports() const { return connectedOutports_; }
 
 void Inport::callOnChangeIfChanged() const {
     if (isChanged()) {
@@ -81,6 +141,30 @@ const BaseCallBack* Inport::onChange(std::function<void()> lambda) const {
     return onChangeCallback_.addLambdaCallback(lambda);
 }
 
-bool Inport::isChanged() const { return changed_; }
+void Inport::removeOnChange(const BaseCallBack* callback) const {
+    onChangeCallback_.remove(callback);
+}
+
+const BaseCallBack* Inport::onInvalid(std::function<void()> lambda) const {
+    return onInvalidCallback_.addLambdaCallback(lambda);
+}
+void Inport::removeOnInvalid(const BaseCallBack* callback) const {
+    onInvalidCallback_.remove(callback);
+}
+
+
+const BaseCallBack* Inport::onConnect(std::function<void()> lambda) const {
+    return onConnectCallback_.addLambdaCallback(lambda);
+}
+void Inport::removeOnConnect(const BaseCallBack* callback) const {
+    onConnectCallback_.remove(callback);
+}
+const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) const {
+    return onDisconnectCallback_.addLambdaCallback(lambda);
+}
+void Inport::removeOnDisconnect(const BaseCallBack* callback) const {
+    onDisconnectCallback_.remove(callback);
+}
+
 
 }  // namespace

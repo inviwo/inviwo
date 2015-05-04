@@ -24,14 +24,17 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_GROUP_H
 #define IVW_GROUP_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <map>
+
+namespace inviwo {
 
 /*
 
@@ -39,76 +42,89 @@
 2) Key, for example, can be std::string, Processor* , int ... etc
 3) Data, for example, can be Port*, Processor*, Canvas* ... etc
 
-Example Group types: <std::string, Port*> where KEY is std::string, DATA is Port*
-                     <std::string, Processor*> where KEY is std::string, DATA is Processor*
-                     <Processor*, Port*> where KEY is Processor, DATA is Port*
+Example Group types: <std::string, Port*> where Key is std::string, Data is Port*
+                     <std::string, Processor*> where Key is std::string, Data is Processor*
+                     <Processor*, Port*> where Key is Processor, Data is Port*
 
  */
-template <typename KEY, typename DATA>
-class IVW_CORE_API Group {
+template <typename Key, typename Data>
+class Group {
 public:
-    Group() {}
-    ~Group() {}
+    Group();
+    ~Group();
 
     // Erase all data corresponding to each key
-    void deinitialize() {
-        std::vector<KEY> keys = getGroupKeys();
-
-        for (size_t i = 0; i < keys.size(); i++) groupMap_.erase(keys[i]);
-    }
+    void clear();
 
     // Get the data corresponding to supplied key. There can be multiple data for each key.
-    std::vector<DATA> getGroupedData(KEY groupKEY) const {
-        std::pair<typename GroupMap::const_iterator, typename GroupMap::const_iterator> pgRangeIt;
-        std::vector<DATA> ports;
-        pgRangeIt = groupMap_.equal_range(groupKEY);
-
-        for (typename GroupMap::const_iterator mIt = pgRangeIt.first; mIt != pgRangeIt.second;
-             ++mIt)
-            ports.push_back((*mIt).second);
-
-        return ports;
-    }
+    std::vector<Data> getGroupedData(Key groupKEY) const;
 
     // Get all existing keys in map with no duplicates
-    std::vector<KEY> getGroupKeys() const {
-        std::map<KEY, int> keyMap;
-        typename std::map<KEY, int>::iterator keyMapIt;
-        std::vector<KEY> groups;
-
-        if (groupMap_.empty()) return groups;
-
-        typename GroupMap::const_iterator it;
-
-        for (it = groupMap_.begin(); it != groupMap_.end(); ++it) keyMap[(*it).first]++;
-
-        for (keyMapIt = keyMap.begin(); keyMapIt != keyMap.end(); keyMapIt++)
-            groups.push_back((*keyMapIt).first);
-
-        return groups;
-    }
+    std::vector<Key> getGroupKeys() const;
 
     // Get key that corresponds to data
-    KEY getKey(DATA data) const {
-        KEY key;
-        typename GroupMap::const_iterator it;
-
-        for (it = groupMap_.begin(); it != groupMap_.end(); ++it) {
-            if ((*it).second == data) {
-                key = (*it).first;
-                // break;
-            }
-        }
-
-        return key;
-    }
+    Key getKey(const Data& data) const;
 
     // Insert key and data
-    void insert(KEY key, DATA data) { groupMap_.insert(std::pair<KEY, DATA>(key, data)); }
+    void insert(Key key, Data data);
 
 private:
-    typedef std::multimap<KEY, DATA> GroupMap;
+    using GroupMap = std::multimap<Key, Data>;
     GroupMap groupMap_;
 };
+
+template <typename Key, typename Data>
+Group<Key, Data>::Group() {}
+
+template <typename Key, typename Data>
+Group<Key, Data>::~Group() {}
+
+template <typename Key, typename Data>
+void Group<Key, Data>::clear() {
+    groupMap_.clear();
+}
+
+template <typename Key, typename Data>
+std::vector<Data> Group<Key, Data>::getGroupedData(Key groupKEY) const {
+    std::vector<Data> ports;
+
+    for (const auto& elem : util::as_range(groupMap_.equal_range(groupKEY)))
+        ports.push_back(elem.second);
+
+    return ports;
+}
+
+template <typename Key, typename Data>
+std::vector<Key> Group<Key, Data>::getGroupKeys() const {
+    std::vector<Key> groups;
+
+    for (auto it = groupMap_.begin(); it != groupMap_.end();
+         it = groupMap_.upper_bound(it->first)) {
+        groups.push_back(it->first);
+    }
+
+    return groups;
+}
+
+template <typename Key, typename Data>
+Key Group<Key, Data>::getKey(const Data& data) const {
+    Key key {};
+
+    for (const auto& elem : groupMap_) {
+        if (elem.second == data) {
+            key = elem.first;
+            break;
+        }
+    }
+
+    return key;
+}
+
+template <typename Key, typename Data>
+void Group<Key, Data>::insert(Key key, Data data) {
+    groupMap_.insert(std::pair<Key, Data>(key, data));
+}
+
+} // namespace
 
 #endif

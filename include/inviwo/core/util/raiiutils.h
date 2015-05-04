@@ -37,7 +37,7 @@ namespace inviwo {
 
 namespace util {
 
-class KeepTrueWhileInScope {
+class IVW_CORE_API KeepTrueWhileInScope {
 public:
     KeepTrueWhileInScope(bool* b) : variable_(b) { (*variable_) = true; }
     ~KeepTrueWhileInScope() { (*variable_) = false; }
@@ -46,7 +46,7 @@ private:
     bool* variable_;
 };
 
-struct OnScopeExit {
+struct IVW_CORE_API OnScopeExit {
     typedef std::function<void(void)> ExitAction;
 
     OnScopeExit() = delete;

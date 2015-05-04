@@ -37,7 +37,6 @@
 namespace inviwo {
   
 class Shader;
-class ImageInport;
 
 class IVW_MODULE_OPENGL_API ImageProcessorGL : public Processor {
 

@@ -58,8 +58,19 @@ ImageLayoutGL::ImageLayoutGL()
     , layoutHandler_(this)
     , currentLayout_(Layout::CrossSplit)
     , currentDim_(0u, 0u) {
+    
     addPort(multiinport_);
-    multiinport_.onChange(this, &ImageLayoutGL::multiInportChanged);
+    
+    multiinport_.onConnect([this](){
+        ResizeEvent e(currentDim_);
+        propagateResizeEvent(&e, &outport_);
+    });
+    
+    multiinport_.onDisconnect([this](){
+        ResizeEvent e(currentDim_);
+        propagateResizeEvent(&e, &outport_);
+    });
+    
     addPort(outport_);
     layout_.addOption("single", "Single Only", Layout::Single);
     layout_.addOption("horizontalSplit", "Horizontal Split", Layout::HorizontalSplit);
@@ -107,51 +118,35 @@ void ImageLayoutGL::deinitialize() {
     Processor::deinitialize();
 }
 
-const std::vector<Inport*>& ImageLayoutGL::getInports(Event* e) const {
-    InteractionEvent* ie = dynamic_cast<InteractionEvent*>(e);
-    // Last clicked mouse position determines which inport is active
-    // This is recorded with the interactionhandler before-hand
-    if (ie && !viewCoords_.empty()) {
-        currentInteractionInport_.clear();
-        if (multiinport_.isConnected()) {
-            std::vector<Inport*> inports = multiinport_.getInports();
-            size_t minNum = std::min(inports.size(), viewCoords_.size());
-            ivec2 pos = layoutHandler_.getActivePosition();
-            ivec2 dim = outport_.getConstData()->getDimensions();
-            pos.y = dim.y - pos.y;
+void ImageLayoutGL::propagateEvent(Event* event) {
+    invokeEvent(event);
+    
+    auto data = multiinport_.getConnectedOutports();
+    ivec2 pos = layoutHandler_.getActivePosition();
+    ivec2 dim = outport_.getConstData()->getDimensions();
+    pos.y = dim.y - pos.y;
 
-            for (size_t i = 0; i < minNum; ++i) {
-                if (inView(viewCoords_[i], pos)) {
-                    currentInteractionInport_.push_back(inports[i]);
-                }
-            }
+    size_t minNum = std::min(data.size(), viewCoords_.size());
+    for (size_t i = 0; i < minNum; ++i) {
+        if (inView(viewCoords_[i], pos)) {
+            multiinport_.propagateEvent(event, data[i]);
         }
-        return currentInteractionInport_;
     }
-    return Processor::getInports(e);
 }
 
 const std::vector<ivec4>& ImageLayoutGL::getViewCoords() const { return viewCoords_; }
 
-void ImageLayoutGL::multiInportChanged() {
-    if (multiinport_.isConnected()) {
-        updateViewports(true);
-        std::vector<Inport*> inports = multiinport_.getInports();
-        size_t minNum = std::min(inports.size(), viewCoords_.size());
-        uvec2 outDimU = outport_.getData()->getDimensions();
-        vec2 outDim = vec2(outDimU.x, outDimU.y);
-        for (size_t i = 0; i < minNum; ++i) {
-            ImageInport* imageInport = static_cast<ImageInport*>(inports[i]);
-            imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);
-            uvec2 inDimU = imageInport->getDimensions();
-            if (inDimU == uvec2(8, 8)) {
-                uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
-                ResizeEvent e(inDimNewU);
-                e.setPreviousSize(inDimU);
-                imageInport->changeDataDimensions(&e);
-            }
-        }
+bool ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    updateViewports(resizeEvent->size(), true);
+    auto outports = multiinport_.getConnectedOutports();
+    size_t minNum = std::min(outports.size(), viewCoords_.size());
+
+    for (size_t i = 0; i < minNum; ++i) {
+        ResizeEvent e(uvec2(viewCoords_[i].z, viewCoords_[i].w));
+        multiinport_.propagateResizeEvent(&e, static_cast<ImageOutport*>(outports[i]));
     }
+
+    return false;
 }
 
 void ImageLayoutGL::onStatusChange() {
@@ -182,27 +177,13 @@ void ImageLayoutGL::onStatusChange() {
             break;
     }
 
-    updateViewports(true);
-    std::vector<Inport*> inports = multiinport_.getInports();
-    size_t minNum = std::min(inports.size(), viewCoords_.size());
-    uvec2 outDimU = outport_.getData()->getDimensions();
-    vec2 outDim = vec2(outDimU.x, outDimU.y);
-    for (size_t i = 0; i < minNum; ++i) {
-        ImageInport* imageInport = static_cast<ImageInport*>(inports[i]);
-        uvec2 inDimU = imageInport->getDimensions();
-        imageInport->setResizeScale(vec2(viewCoords_[i].z, viewCoords_[i].w) / outDim);
-        uvec2 inDimNewU = uvec2(viewCoords_[i].z, viewCoords_[i].w);
-        if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
-            ResizeEvent e(inDimNewU);
-            e.setPreviousSize(inDimU);
-            imageInport->changeDataDimensions(&e);
-        }
-    }
+    ResizeEvent e(currentDim_);
+    propagateResizeEvent(&e, &outport_);
 }
 
 void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
-    std::vector<const Image*> images = multiinport_.getData();
+    std::vector<const Image*> images = multiinport_.getVectorData();
 
     TextureUnit colorUnit, depthUnit, pickingUnit;
 
@@ -215,8 +196,7 @@ void ImageLayoutGL::process() {
 
     size_t minNum = std::min(images.size(), viewCoords_.size());
     for (size_t i = 0; i < minNum; ++i) {
-        utilgl::bindTextures(images[i], colorUnit.getEnum(), depthUnit.getEnum(),
-                             pickingUnit.getEnum());
+        utilgl::bindTextures(images[i], colorUnit, depthUnit, pickingUnit);
         glViewport(viewCoords_[i].x, viewCoords_[i].y, viewCoords_[i].z, viewCoords_[i].w);
         utilgl::singleDrawImagePlaneRect();
     }
@@ -229,10 +209,7 @@ void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
 }
 
-void ImageLayoutGL::updateViewports(bool force) {
-    ivec2 dim(256, 256);
-    if (outport_.isConnected()) dim = outport_.getData()->getDimensions();
-
+void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get())) return;  // no changes
 
     viewCoords_.clear();

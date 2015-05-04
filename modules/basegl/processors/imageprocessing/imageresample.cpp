@@ -87,7 +87,7 @@ void ImageResample::interpolationTypeChanged() {
 }
 
 void ImageResample::dimensionChanged() {
-    if (dimensions_.get() != ivec2(outport_.getDimensions().x, outport_.getDimensions().y)) {
+    if (dimensions_.get() != ivec2(outport_.getDimensions())) {
         outport_.setDimensions(dimensions_.get());
         internalInvalid_ = true;
     }

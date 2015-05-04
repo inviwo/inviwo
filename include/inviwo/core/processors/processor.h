@@ -35,6 +35,8 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/interaction/events/eventpropagator.h>
+#include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
@@ -45,6 +47,7 @@ namespace inviwo {
 class Event;
 class InteractionHandler;
 class ProcessorWidget;
+class ResizeEvent;
 
 #define InviwoProcessorInfo()                                                   \
     virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; } \
@@ -75,7 +78,9 @@ class ProcessorWidget;
  */
 class IVW_CORE_API Processor : public PropertyOwner,
                                public MetaDataOwner,
-                               public ProcessorObservable {
+                               public ProcessorObservable,
+                               public EventPropagator,
+                               public EventListener {
 public:
     Processor();
     virtual ~Processor();
@@ -123,15 +128,12 @@ public:
 
     const std::vector<Inport*>& getInports() const;
     const std::vector<Outport*>& getOutports() const;
-    /**
-     * getInports(Event*) is used to determine the direct predecessors 
-     * of the processor during event propagation.
-     */
-    virtual const std::vector<Inport*>& getInports(Event*) const;
 
     std::vector<std::string> getPortDependencySets() const;
     std::vector<Port*> getPortsByDependencySet(const std::string& portDependencySet) const;
     std::string getPortDependencySet(Port* port) const;
+    std::vector<Port*> getPortsInSameSet(Port* port) const;
+
 
     bool allInportsConnected() const;
     bool allInportsAreReady() const;
@@ -188,7 +190,11 @@ public:
     void removeInteractionHandler(InteractionHandler* interactionHandler);
     bool hasInteractionHandler() const;
     const std::vector<InteractionHandler*>& getInteractionHandlers() const;
-    virtual void invokeInteractionEvent(Event* event);
+
+    virtual void invokeEvent(Event* event) override;
+    virtual void propagateEvent(Event* event) override;
+    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
+
 
     // Override from the property owner
     virtual Processor* getProcessor() { return this; }

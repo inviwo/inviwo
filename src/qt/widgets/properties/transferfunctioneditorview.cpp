@@ -88,7 +88,7 @@ TransferFunctionEditorView::~TransferFunctionEditorView() {
         workerThread_ = nullptr;
     }
     if (volumeInport_) {
-        volumeInport_->onInvalid(this, &TransferFunctionEditorView::onVolumeInportInvalid, false);
+        volumeInport_->removeOnInvalid(this);
     }
 }
 

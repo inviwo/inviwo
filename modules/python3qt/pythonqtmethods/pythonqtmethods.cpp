@@ -37,6 +37,7 @@
 
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
 
 #include <QInputDialog>
@@ -47,6 +48,7 @@ namespace inviwo {
     PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
         if (!(PyTuple_Size(args) == 1)) {
             std::ostringstream errStr;
+            utilqt::localizeStream(errStr);
             errStr << "loadWorkspace() takes 1 argument: filename";
             errStr << " (" << PyTuple_Size(args) << " given)";
             PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
@@ -79,6 +81,7 @@ namespace inviwo {
     PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* args) {
         if (!(PyTuple_Size(args) == 1)) {
             std::ostringstream errStr;
+            utilqt::localizeStream(errStr);
             errStr << "saveWorkspace() takes 1 argument: filename";
             errStr << " (" << PyTuple_Size(args) << " given)";
             PyErr_SetString(PyExc_TypeError, errStr.str().c_str());

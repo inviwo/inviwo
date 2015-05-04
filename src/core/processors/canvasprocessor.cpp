@@ -104,6 +104,7 @@ void CanvasProcessor::initialize() {
         canvasWidget_->getCanvas()->setEventPropagator(this);
     }
     evaluator_ = InviwoApplication::getPtr()->getProcessorNetworkEvaluator();
+    sizeChanged();
 }
 
 void CanvasProcessor::deinitialize() {
@@ -117,19 +118,17 @@ void CanvasProcessor::deinitialize() {
 
 // Called by dimensions onChange.
 void CanvasProcessor::resizeCanvas() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+    NetworkLock lock;
     if (canvasWidget_ && canvasWidget_->getDimensions() != dimensions_.get()) {
         canvasWidget_->setDimensions(dimensions_.get());
     }
     inputSize_.invalidate(VALID, &dimensions_);
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 }
 
 void CanvasProcessor::setCanvasSize(ivec2 dim) {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+    NetworkLock lock;
     dimensions_.set(dim);
     sizeChanged();
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 }
 
 ivec2 CanvasProcessor::getCanvasSize() const { return dimensions_.get(); }
@@ -138,7 +137,7 @@ bool CanvasProcessor::getUseCustomDimensions() const { return enableCustomInputD
 ivec2 CanvasProcessor::getCustomDimensions() const { return customInputDimensions_; }
 
 void CanvasProcessor::sizeChanged() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+    NetworkLock lock;
 
     customInputDimensions_.setVisible(enableCustomInputDimensions_);
     customInputDimensions_.setReadOnly(keepAspectRatio_);
@@ -147,21 +146,19 @@ void CanvasProcessor::sizeChanged() {
 
     if (keepAspectRatio_) customInputDimensions_ = calcSize();
     
-    ResizeEvent* resizeEvent;
+    ResizeEvent resizeEvent(uvec2(0));
     if (enableCustomInputDimensions_) {
-        resizeEvent = new ResizeEvent(static_cast<uvec2>(customInputDimensions_.get()));
-        resizeEvent->setPreviousSize(static_cast<uvec2>(previousImageSize_));
+        resizeEvent.setSize(static_cast<uvec2>(customInputDimensions_.get()));
+        resizeEvent.setPreviousSize(static_cast<uvec2>(previousImageSize_));
         previousImageSize_ = customInputDimensions_;
     } else {
-        resizeEvent = new ResizeEvent(static_cast<uvec2>(dimensions_.get()));
-        resizeEvent->setPreviousSize(static_cast<uvec2>(previousImageSize_));
+        resizeEvent.setSize(static_cast<uvec2>(dimensions_.get()));
+        resizeEvent.setPreviousSize(static_cast<uvec2>(previousImageSize_));
         previousImageSize_ = dimensions_;
     }
-    inputSize_.invalidate(VALID, &customInputDimensions_);
 
-    inport_.changeDataDimensions(resizeEvent);
-    delete resizeEvent;
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
+    inputSize_.invalidate(VALID, &customInputDimensions_);
+    inport_.propagateResizeEvent(&resizeEvent);
 }
 
 ivec2 CanvasProcessor::calcSize() {
@@ -311,23 +308,22 @@ bool CanvasProcessor::isReady() const {
     return Processor::isReady() && processorWidget_ && processorWidget_->isVisible();
 }
 
-void CanvasProcessor::propagateResizeEvent(ResizeEvent* event) {
-    // avoid continues evaluation when port dimensionschanges
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+bool CanvasProcessor::propagateResizeEvent(ResizeEvent* event, Outport* source) {
+    // avoid continues evaluation when port dimensions changes
+    NetworkLock lock;
 
     dimensions_.set(event->size());
 
     if (enableCustomInputDimensions_) {
         sizeChanged();
     } else {
-        inport_.changeDataDimensions(event);
-    }
-    // enable network evaluation again
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
-}
+        inport_.propagateResizeEvent(event);
 
-void CanvasProcessor::propagateInteractionEvent(InteractionEvent* event) {
-    evaluator_->propagateInteractionEvent(this, event);
+        // Make sure this processor is invalidated. 
+        invalidate(INVALID_OUTPUT);
+    }
+    
+    return false;
 }
 
 }  // namespace

@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
     inviwoApp.setStyleSheet(styleSheet);
-
+    
     inviwo::InviwoMainWindow mainWin;
     // setup core application
     inviwoApp.setMainWindow(&mainWin);

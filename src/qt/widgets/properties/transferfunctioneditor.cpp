@@ -133,10 +133,13 @@ void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     QGraphicsScene::mousePressEvent(e);
 }
 
-void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e){
-    if(mouseDrag_) InviwoApplication::getPtr()->getProcessorNetwork()->lock();
-    QGraphicsScene::mouseMoveEvent(e);
-    if(mouseDrag_) InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
+void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
+    if (mouseDrag_) {
+        NetworkLock lock;
+        QGraphicsScene::mouseMoveEvent(e);
+    } else {
+        QGraphicsScene::mouseMoveEvent(e);    
+    }
 }
 
 void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
@@ -152,7 +155,9 @@ void TransferFunctionEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) 
 void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
     int k = keyEvent->key();
     keyEvent->accept();
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+
+    NetworkLock lock;
+
     if (k == 'A' && keyEvent->modifiers() == Qt::ControlModifier) {                // Select all
         QList<QGraphicsItem*> itemList = items();
         for (auto& elem : itemList) {
@@ -337,8 +342,6 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
         keyEvent->ignore();
         QGraphicsScene::keyPressEvent(keyEvent);
     }
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
-
 }
 
 void TransferFunctionEditor::addControlPoint(QPointF pos) {

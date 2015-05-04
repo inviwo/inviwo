@@ -117,8 +117,8 @@ bool CompositeProperty::isPropertyModified() const {
 }
 
 void CompositeProperty::set(const Property* srcProperty) {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
-
+    NetworkLock lock;
+    
     const CompositeProperty* compositeSrcProp = dynamic_cast<const CompositeProperty*>(srcProperty);
 
     if (compositeSrcProp) {
@@ -134,8 +134,6 @@ void CompositeProperty::set(const Property* srcProperty) {
             LogWarn("CompositeProperty mismatch. Unable to link");
         }
     } 
-
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
 }
 
 inviwo::InvalidationLevel CompositeProperty::getInvalidationLevel() const  {

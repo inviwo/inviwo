@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2014-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,10 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <inviwo/core/ports/volumeport.h>
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+#include "utils/sampler3d.glsl"
+#include "utils/classification.glsl"
 
-namespace inviwo {
-}  // namespace
+uniform sampler3D volume_;
+uniform VolumeParameters volumeParameters_;
+
+uniform sampler3D volume2_;
+uniform VolumeParameters volume2Parameters_;
+
+uniform sampler2D transferFunc_;
+
+in vec4 texCoord_;
+
+
+void main() {
+    vec4 v1 = getNormalizedVoxel(volume_, volumeParameters_, texCoord_.xyz);
+    float a = applyTF(transferFunc_,v1).a;
+    FragData0 = vec4(a,a,a,a);
+    gl_FragDepth = 1.0;
+}

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORNETWORKEVALUATOR_H
@@ -36,14 +36,12 @@
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/network/processornetwork.h>
 
-#include <map>
+#include <unordered_map>
 
 namespace inviwo {
 
-class Canvas;
-
-class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver, public ProcessorObserver {
-
+class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
+                                               public ProcessorObserver {
     friend class Processor;
 
 public:
@@ -52,15 +50,14 @@ public:
 
     // this function is to be called when the network topology was changed
     void topologyUpdated();
-    void saveSnapshotAllCanvases(std::string dir, std::string default_name = "", std::string ext = ".png");
-    
+    void saveSnapshotAllCanvases(std::string dir, std::string default_name = "",
+                                 std::string ext = ".png");
+
     void initializeNetwork();
 
     void disableEvaluation();
     void enableEvaluation();
     void requestEvaluate();
-
-    void propagateInteractionEvent(Processor* processor, InteractionEvent* event);
 
     void setExceptionHandler(ExceptionHandler handler);
 
@@ -68,77 +65,63 @@ public:
     void onProcessorNetworkEvaluateRequest();
     void onProcessorNetworkUnlocked();
 
-    static ProcessorNetworkEvaluator* getProcessorNetworkEvaluatorForProcessorNetwork(ProcessorNetwork* network);
+    static ProcessorNetworkEvaluator* getProcessorNetworkEvaluatorForProcessorNetwork(
+        ProcessorNetwork* network);
 
 private:
-    typedef std::set<Processor *> ProcessorList;
+    using ProcessorList = std::set<Processor*>;
 
     void evaluate();
 
-    void setProcessorVisited(Processor* processor, bool visited=true);
+    void setProcessorVisited(Processor* processor, bool visited = true);
     bool hasBeenVisited(Processor* processor) const;
-    void setPropertyVisited(Property* property, bool visited=true);
+    void setPropertyVisited(Property* property, bool visited = true);
     bool hasBeenVisited(Property* property) const;
     // retrieve predecessors from global processor state list (look-up)
     const ProcessorList& getStoredPredecessors(Processor* processor) const;
     // retrieve predecessors based on given event
-    ProcessorList getDirectPredecessors(Processor* processor, Event* event=nullptr) const;
+    ProcessorList getDirectPredecessors(Processor* processor) const;
     void traversePredecessors(Processor* processor);
     void determineProcessingOrder();
     void updateProcessorStates();
     void resetProcessorVisitedStates();
 
-    void propagateInteractionEventImpl(Processor* processor, InteractionEvent* event);
-    bool isPortConnectedToProcessor(Port* port, Processor* processor);
-
-    ProcessorNetwork* processorNetwork_;
-
-    // the sorted list of processors obtained through topological sorting
-    std::vector<Processor *> processorsSorted_;
-    
     struct ProcessorState {
         ProcessorState() : visited(false) {}
-        ProcessorState(const ProcessorList &predecessors) : visited(false), pred(predecessors) {}
+        ProcessorState(const ProcessorList& predecessors) : visited(false), pred(predecessors) {}
         bool visited;
-        ProcessorList pred; // list of all predecessors
-        // additional information?
+        ProcessorList pred;  // list of all predecessors
     };
 
     // map for managing processor states (predecessors, visited flags, etc.)
-    // TODO: replace std::map with std::unordered_map when using C++11!
-    //
     // map contains a dummy element for nullptr processor
-    typedef std::map<Processor*, ProcessorState> ProcMap;
-    typedef ProcMap::iterator ProcMapIt;
-    typedef ProcMap::const_iterator const_ProcMapIt;
-    typedef std::pair<Processor*, ProcessorState> ProcMapPair;
-
-    ProcMap processorStates_;
+    using ProcMap = std::unordered_map<Processor*, ProcessorState>;
+    using ProcMapIt = ProcMap::iterator;
+    using const_ProcMapIt = ProcMap::const_iterator;
+    using ProcMapPair = std::pair<Processor*, ProcessorState>;
 
     struct PropertyState {
         bool visited;
-        // additional information?
     };
 
     // map for visited state of properties
-    // TODO: replace std::map with std::unordered_map when using C++11!
-    typedef std::map<Property *, PropertyState> PropertyMap;
-    typedef PropertyMap::iterator PropertyMapIt;
-    typedef PropertyMap::const_iterator const_PropertyMapIt;
-    typedef std::pair<Property *, PropertyState> PropertyMapPair;
+    using PropertyMap = std::unordered_map<Property*, PropertyState>;
+    using PropertyMapIt = PropertyMap::iterator;
+    using const_PropertyMapIt = PropertyMap::const_iterator;
+    using PropertyMapPair = std::pair<Property*, PropertyState>;
 
+    ProcessorNetwork* processorNetwork_;
+    // the sorted list of processors obtained through topological sorting
+    std::vector<Processor*> processorsSorted_;
+    ProcMap processorStates_;
     PropertyMap propertiesVisited_;
-
     bool evaulationQueued_;
     bool evaluationDisabled_;
-
-    bool processorStatesDirty_; // flag for lazy topology evaluation
-
+    bool processorStatesDirty_;  // flag for lazy topology evaluation
     static std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*> processorNetworkEvaluators_;
-
     ExceptionHandler exceptionHandler_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROCESSORNETWORKEVALUATOR_H
+#endif  // IVW_PROCESSORNETWORKEVALUATOR_H

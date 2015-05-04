@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2014-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,67 +24,32 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_SINGLE_INPORT_H
-#define IVW_SINGLE_INPORT_H
+#ifndef IVW_VOLUMEDIFF_H
+#define IVW_VOLUMEDIFF_H
 
+#include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/ports/inport.h>
+
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
 namespace inviwo {
 
-class Outport;
-class ProcessorNetwork;
-class MultiInport;
-/**
- * \class SingleInport
- *
- * \brief The SingleInport can be connected to only one outport at a time.
- */
-class IVW_CORE_API SingleInport : public Inport {
+class IVW_MODULE_BASEGL_API VolumeDiff : public VolumeGLProcessor { 
 public:
-    friend class Outport;
-    friend class ProcessorNetwork;
-    friend class MultiInport;
+    VolumeDiff();
+    virtual ~VolumeDiff();
 
-    SingleInport(std::string identifier);
-    virtual ~SingleInport();
-
-    // Called from the processornetwork to create connections.
-    virtual void connectTo(Outport* outport) override;
-    virtual void disconnectFrom(Outport* outport) override;
-
-    virtual bool isConnected() const override;
-    bool isConnectedTo(Outport* outport) const override;
-
-    Outport* getConnectedOutport() const override;
-    std::vector<Outport*> getConnectedOutports() const override;
-
-    template <typename T>
-    void onInvalid(T* o, void (T::*m)(), bool add = true);
+    InviwoProcessorInfo();
 
 protected:
-    virtual void invalidate(InvalidationLevel invalidationLevel) override;
-    virtual void setValid() override;
-
-    Outport* connectedOutport_;
-    
-private:
-    InvalidationLevel invalidationLevel_;
-    CallBackList onInvalidCallback_;
+    VolumeInport vol2_;
+    virtual void preProcess();
 };
 
-template <typename T>
-void SingleInport::onInvalid(T* o, void (T::*m)(), bool add /*= true*/) {
-    if (add)
-        onInvalidCallback_.addMemberFunction(o, m);
-    else
-        onInvalidCallback_.removeMemberFunction(o);
-}
+} // namespace
 
-}  // namespace
+#endif // IVW_VOLUMEDIFF_H
 
-#endif  // IVW_SINGLE_INPORT_H

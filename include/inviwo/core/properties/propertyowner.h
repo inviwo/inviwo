@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/properties/property.h>
+#include <inviwo/core/interaction/events/eventlistener.h>
 
 namespace inviwo {
 
@@ -42,7 +43,9 @@ class Event;
 class EventProperty;
 class CompositeProperty;
 
-class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable, public IvwSerializable {
+class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
+                                   public IvwSerializable,
+                                   public EventListener {
 public:
     PropertyOwner();
     PropertyOwner(const PropertyOwner& rhs);
@@ -84,7 +87,7 @@ public:
     
     static std::string invalidationLevelToString(InvalidationLevel level);
 
-    virtual void invokeInteractionEvent(Event* event);
+    virtual void invokeEvent(Event* event) override;
 
 protected:
     std::vector<Property*> properties_; //< non-owning references.

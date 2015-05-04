@@ -32,72 +32,43 @@
 
 namespace inviwo {
 
-Outport::Outport(std::string identifier) : Port(identifier), invalidationLevel_(INVALID_OUTPUT) {}
+Outport::Outport(std::string identifier)
+    : Port(identifier), invalidationLevel_(VALID) {}
 
 Outport::~Outport() {}
 
 bool Outport::isConnected() const { return !(connectedInports_.empty()); }
 
-bool Outport::isReady() const { return isConnected(); }
-
-bool Outport::isConnectedTo(Inport* port) const {
-    return !(std::find(connectedInports_.begin(), connectedInports_.end(), port) ==
-             connectedInports_.end());
+bool Outport::isConnectedTo(const Inport* port) const {
+    return util::contains(connectedInports_, port);
 }
 
-std::vector<Inport*> Outport::getConnectedInports() const {
-    return connectedInports_;
-}
+const std::vector<Inport*>& Outport::getConnectedInports() const { return connectedInports_; }
 
 void Outport::invalidate(InvalidationLevel invalidationLevel) {
     invalidationLevel_ = invalidationLevel;
     for (auto port : connectedInports_) port->invalidate(invalidationLevel);
 }
 
-inviwo::InvalidationLevel Outport::getInvalidationLevel() const {
-    return invalidationLevel_;
+void Outport::propagateEvent(Event* event) {
+    getProcessor()->propagateEvent(event);
 }
+
+inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }
 
 void Outport::setValid() {
     invalidationLevel_ = VALID;
-    for (auto port : connectedInports_) port->setValid();
-}
-
-std::vector<Processor*> Outport::getDirectSuccessors() const {
-    std::vector<Processor*> successors;
-    getSuccessors(successors);
-    return successors;
-}
-
-void Outport::getSuccessors(std::vector<Processor*>& successors) const {
-    for (auto inport : connectedInports_) {
-        Processor* p = inport->getProcessor();
-
-        if (std::find(successors.begin(), successors.end(), p) == successors.end()) {
-            successors.push_back(p);
-            for (auto outport : p->getOutports()) {
-                outport->getSuccessors(successors);
-            }
-        }
-    }
+    for (auto inport : connectedInports_) inport->setValid(this);
 }
 
 // Is called exclusively by Inport, which means a connection has been made.
 void Outport::connectTo(Inport* inport) {
-    if (std::find(connectedInports_.begin(), connectedInports_.end(), inport) ==
-        connectedInports_.end()) {
-        connectedInports_.push_back(inport);
-    }
+    util::push_back_unique(connectedInports_, inport);
 }
 
 // Is called exclusively by Inport, which means a connection has been removed.
 void Outport::disconnectFrom(Inport* inport) {
-    if (std::find(connectedInports_.begin(), connectedInports_.end(), inport) !=
-        connectedInports_.end()) {
-        connectedInports_.erase(
-            std::remove(connectedInports_.begin(), connectedInports_.end(), inport),
-            connectedInports_.end());
-    }
+    util::erase_remove(connectedInports_, inport);
 }
 
 }  // namespace

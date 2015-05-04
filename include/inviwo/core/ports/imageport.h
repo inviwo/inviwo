@@ -36,50 +36,67 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/interaction/events/eventhandler.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/util/imagecache.h>
+
+#include <unordered_map>
 
 namespace inviwo {
 
 class ImageOutport;
 
-class IVW_CORE_API ImageInport : public DataInport<Image> {
+class IVW_CORE_API ImagePortBase {
 public:
-    ImageInport(std::string identifier, bool outportDeterminesSize = false);
-    virtual ~ImageInport();
+    virtual uvec2 getRequestedDimensions(ImageOutport* outport) const = 0;
+    virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
+                                      ImageOutport* target = nullptr) = 0;
+    virtual bool isOutportDeterminingSize() const = 0;
+    virtual void setOutportDeterminesSize(bool outportDeterminesSize) = 0;
+};
+
+template <size_t N = 1>
+class BaseImageInport : public DataInport<Image, N>, public ImagePortBase {
+public:
+    BaseImageInport(std::string identifier, bool outportDeterminesSize = false);
+    virtual ~BaseImageInport();
 
     /**
-     * Connects this inport to the outport. Propagates
-     * the inport size to the outport if the processor is
-     * an end processor (Canvas) or any of the
-     * dependent outports of this inport are connected.
+     * Connects this inport to the outport. Propagates the inport size to the outport if the
+     * processor is an end processor (Canvas) or any of the dependent outports of this inport are
+     * connected.
      *
      * @note Does not check if the outport is an ImageOutport
      * @param Outport * outport ImageOutport to connect
      */
-    virtual void connectTo(Outport* outport);
+    virtual void connectTo(Outport* outport) override;
+    virtual void disconnectFrom(Outport* outport) override;
+    virtual const Image* getData() const override;
+    virtual std::vector<const Image*> getVectorData() const override;
+    virtual std::vector<std::pair<Outport*, const Image*>> getSourceVectorData()
+        const override;
+    virtual std::string getContentInfo() const override;
 
-    void changeDataDimensions(ResizeEvent* resizeEvent);
-    uvec2 getDimensions() const;
-    const Image* getData() const;
-    void setOutportDeterminesSize(bool outportDeterminesSize);
-    bool isOutportDeterminingSize() const;
-    virtual std::string getContentInfo() const;
+    virtual uvec2 getRequestedDimensions(ImageOutport* outport) const override;
 
-    void setResizeScale(vec2);
-    vec2 getResizeScale();
+    virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
+                                      ImageOutport* target = nullptr) override;
+
+    virtual bool isOutportDeterminingSize() const override;
+    virtual void setOutportDeterminesSize(bool outportDeterminesSize) override;
 
     void passOnDataToOutport(ImageOutport* outport) const;
 
-protected:
-    void propagateResizeToPredecessor(ResizeEvent* resizeEvent);
-
 private:
-    uvec2 dimensions_;
-    vec2 resizeScale_;
+    const Image* getImage(ImageOutport* port) const;
+
+    std::unordered_map<ImageOutport*, uvec2> requestedDimensionsMap_;
     bool outportDeterminesSize_;
 };
 
+using ImageInport = BaseImageInport<1>;
+using ImageMultiInport = BaseImageInport<0>;
+
 class IVW_CORE_API ImageOutport : public DataOutport<Image>, public EventHandler {
-    friend class ImageInport;
+    template <size_t N> friend class BaseImageInport;
 
 public:
     ImageOutport(std::string identifier, const DataFormatBase* format = DataVec4UINT8::get(),
@@ -87,25 +104,18 @@ public:
 
     virtual ~ImageOutport();
 
-    virtual void invalidate(InvalidationLevel invalidationLevel);
-
-    Image* getData();
-
-    virtual void dataChanged();
+    virtual void setData(Image* data, bool ownsData = true) override;
+    virtual void setConstData(const Image* data) override;
+    const Image* getResizedImageData(uvec2 dimensions) const;
 
     /**
-     * Resize port and propagate the resizing to the canvas.
-     *
-     * @param resizeEvent
+     * Handle resize event
      */
-    void changeDataDimensions(ResizeEvent* resizeEvent);
-    uvec2 getDimensions() const;
-
+    void propagateResizeEvent(ResizeEvent* resizeEvent);
+    uvec2 getDimensions() const;   
     /**
      * Set the dimensions of this port without propagating the size
      * through the network. Will resize the image contained within the port.
-     *
-     * @param newDimension Dimension to be set
      */
     void setDimensions(const uvec2& newDimension);
 
@@ -113,9 +123,8 @@ public:
     bool removeResizeEventListener(EventListener*);
 
     /**
-     * Determine if the image data should be
-     * resized during a resize event.
-     * Also prevents resize events from being propagated further.
+     * Determine if the image data should be resized during a resize event.
+     * We will only resize if we own the data in the port.
      * @param handleResizeEvents True if data should be resized during a resize propagation,
      * otherwise false
      */
@@ -123,28 +132,148 @@ public:
     bool isHandlingResizeEvents() const;
 
 protected:
-    Image* getResizedImageData(uvec2 dimensions);
-    void setLargestImageData();
-    /**
-     * \brief Propagates resize event to this processor's inports within the same dependency set
-     *(group)
-     *
-     * @param ResizeEvent * resizeEvent Event to be propagated
-     * @return bool * If propagation ended or not
-     */
-    bool propagateResizeEventToPredecessor(ResizeEvent* resizeEvent);
-    ResizeEvent* scaleResizeEvent(ImageInport*, ResizeEvent*);
+    virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
 private:
     void updateImageFromInputSource();
 
     uvec2 dimensions_;
-    bool mapDataInvalid_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false
-    typedef std::map<std::string, Image*> ImagePortMap;
-    ImagePortMap imageDataMap_;
+
+    ImageCache cache_;
 };
+
+// Image Inport
+template <size_t N>
+BaseImageInport<N>::BaseImageInport(std::string identifier, bool outportDeterminesSize)
+    : DataInport<Image, N>(identifier)
+    , outportDeterminesSize_(outportDeterminesSize) {}
+
+template <size_t N>
+BaseImageInport<N>::~BaseImageInport() {}
+
+template <size_t N>
+void BaseImageInport<N>::connectTo(Outport* outport) {
+    if (this->getNumberOfConnections() + 1 > this->getMaxNumberOfConnections())
+        throw Exception("Trying to connect to a full port.", IvwContext);
+
+    ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(outport);
+    if (requestedDimensionsMap_.find(imageOutport) != requestedDimensionsMap_.end()) {
+        ResizeEvent resizeEvent(requestedDimensionsMap_[imageOutport]);
+        imageOutport->propagateResizeEvent(&resizeEvent);
+    } 
+
+    DataInport<Image, N>::connectTo(outport);
+}
+
+template <size_t N>
+void BaseImageInport<N>::disconnectFrom(Outport* outport) {
+    ImageOutport* imageOutport = dynamic_cast<ImageOutport*>(outport);
+    requestedDimensionsMap_.erase(imageOutport);
+    DataInport<Image, N>::disconnectFrom(outport);
+}
+
+// set dimensions based on port groups
+template <size_t N>
+void BaseImageInport<N>::propagateResizeEvent(ResizeEvent* resizeEvent, ImageOutport* target) {
+    if (target) {
+        requestedDimensionsMap_[target] = resizeEvent->size();
+        target->propagateResizeEvent(resizeEvent);
+    } else {
+        for (auto outport : this->connectedOutports_) {
+            if (auto imageOutport = static_cast<ImageOutport*>(outport)) {
+                requestedDimensionsMap_[imageOutport] = resizeEvent->size();
+                imageOutport->propagateResizeEvent(resizeEvent);
+            }
+        }
+    }
+}
+
+template <size_t N>
+uvec2 BaseImageInport<N>::getRequestedDimensions(ImageOutport* outport) const {
+    auto it = requestedDimensionsMap_.find(outport);
+    if (it != requestedDimensionsMap_.end()) {
+        return it->second;
+    } else {
+        return uvec2(0);
+    }
+}
+
+template <size_t N>
+const Image* BaseImageInport<N>::getData() const {
+    if (this->hasData()) {
+        auto imgport = static_cast<ImageOutport*>(this->getConnectedOutport());
+        return getImage(imgport);
+    } else {
+        return nullptr;
+    }
+}
+
+template <size_t N /*= 1*/>
+std::vector<const Image*> BaseImageInport<N>::getVectorData() const {
+    std::vector<const Image*> res(N);
+
+    for (auto outport : this->connectedOutports_) {
+        auto imgport = static_cast<ImageOutport*>(outport);
+        if (imgport->hasData()) res.push_back(getImage(imgport));
+    }
+
+    return res;
+}
+
+template <size_t N>
+std::vector<std::pair<Outport*, const Image*>> BaseImageInport<N>::getSourceVectorData() const {
+    std::vector<std::pair<Outport*, const Image*>> res(N);
+
+    for (auto outport : this->connectedOutports_) {
+        auto imgport = static_cast<ImageOutport*>(outport);
+        if (imgport->hasData()) res.emplace_back(imgport, getImage(imgport));
+    }
+
+    return res;
+}
+
+template <size_t N>
+const Image* BaseImageInport<N>::getImage(ImageOutport* port) const {
+    if (isOutportDeterminingSize()) {
+        return port->getConstData();
+    } else {
+        auto it = requestedDimensionsMap_.find(port);
+        if (it != requestedDimensionsMap_.end()) {
+            return port->getResizedImageData(it->second);
+        } else {
+            return port->getConstData();
+        }
+    }
+}
+
+template <size_t N>
+bool BaseImageInport<N>::isOutportDeterminingSize() const {
+    return outportDeterminesSize_;
+}
+
+template <size_t N>
+void BaseImageInport<N>::setOutportDeterminesSize(bool outportDeterminesSize) {
+    outportDeterminesSize_ = outportDeterminesSize;
+}
+
+template <size_t N>
+std::string BaseImageInport<N>::getContentInfo() const {
+    if (this->hasData())
+        return getData()->getDataInfo();
+    else
+        return this->getClassIdentifier() + " has no data.";
+}
+
+template <size_t N>
+void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
+    if (this->hasData()) {
+        const Image* img = getData();
+        Image* out = outport->getData();
+        if (out) img->resizeRepresentations(out, out->getDimensions());
+    }
+}
 
 }  // namespace
 

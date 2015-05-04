@@ -32,9 +32,11 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/interaction/events/interactionevent.h>
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
@@ -59,7 +61,6 @@ Processor::Processor()
 
 Processor::~Processor() {
     usedIdentifiers_.erase(identifier_);
-    portDependencySets_.deinitialize();
     if (processorWidget_) {
         processorWidget_->setProcessor(nullptr);
     }
@@ -145,9 +146,8 @@ const std::vector<Inport*>& Processor::getInports() const { return inports_; }
 
 const std::vector<Outport*>& Processor::getOutports() const { return outports_; }
 
-const std::vector<Inport*>& Processor::getInports(Event*) const { return inports_; }
-
-std::vector<Port*> Processor::getPortsByDependencySet(const std::string& portDependencySet) const {
+std::vector<Port*> Processor::getPortsByDependencySet(
+    const std::string& portDependencySet) const {
     return portDependencySets_.getGroupedData(portDependencySet);
 }
 
@@ -157,6 +157,10 @@ std::vector<std::string> Processor::getPortDependencySets() const {
 
 std::string Processor::getPortDependencySet(Port* port) const {
     return portDependencySets_.getKey(port);
+}
+
+std::vector<Port*> Processor::getPortsInSameSet(Port* port) const {
+    return portDependencySets_.getGroupedData(portDependencySets_.getKey(port));
 }
 
 void Processor::initialize() { initialized_ = true; }
@@ -214,9 +218,21 @@ const std::vector<InteractionHandler*>& Processor::getInteractionHandlers() cons
     return interactionHandlers_;
 }
 
-void Processor::invokeInteractionEvent(Event* event) {
-    PropertyOwner::invokeInteractionEvent(event);
-    for (auto& elem : interactionHandlers_) elem->invokeEvent(event);
+void Processor::invokeEvent(Event* event) {
+    PropertyOwner::invokeEvent(event);
+    for (auto elem : interactionHandlers_) elem->invokeEvent(event);
+}
+
+bool Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    bool propagationEnded = true;
+
+    for (auto port : getPortsInSameSet(source)) {
+        if (auto imageInport = dynamic_cast<ImagePortBase*>(port)) {
+            propagationEnded = false;
+            imageInport->propagateResizeEvent(resizeEvent);
+        }
+    }
+    return propagationEnded;
 }
 
 void Processor::serialize(IvwSerializer& s) const {
@@ -255,8 +271,8 @@ void Processor::deserialize(IvwDeserializer& d) {
 
 void Processor::setValid() {
     PropertyOwner::setValid();
-    for (auto port : inports_) port->setChanged(false);
-    for (auto port : outports_) port->setValid();
+    for (auto inport : inports_) inport->setChanged(false);
+    for (auto outport : outports_) outport->setValid();
 }
 
 void Processor::enableInvalidation() {
@@ -273,6 +289,16 @@ void Processor::disableInvalidation() {
 }
 
 void Processor::performEvaluateRequest() { notifyObserversRequestEvaluate(this); }
+
+void Processor::propagateEvent(Event* event) {
+    invokeEvent(event);
+
+    if (event->hasBeenUsed()) return;
+    for (auto inport : getInports()) {
+        inport->propagateEvent(event);
+        if (event->hasBeenUsed()) return;
+    }
+}
 
 const std::string Processor::getCodeStateString(CodeState state) {
     switch (state) {

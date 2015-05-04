@@ -89,7 +89,7 @@ public:
     Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp);
     virtual ~Trackball();
 
-    virtual void invokeInteractionEvent(Event* event);
+    virtual void invokeEvent(Event* event) override;
 
     vec3* getLookTo() { return lookTo_; }
     vec3* getLookFrom() { return lookFrom_; }

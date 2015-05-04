@@ -199,7 +199,7 @@ void InviwoApplicationQt::setWindowDecorationOffset(QPoint windowDecorationOffse
     windowDecorationOffset_ = windowDecorationOffset;
 }
 
-QPoint InviwoApplicationQt::movePointOntoDesktop(const QPoint& point, const QSize& size) {
+QPoint InviwoApplicationQt::movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorationOffset) {
     QPoint pos(point);
     QDesktopWidget* desktop = QApplication::desktop();
     int primaryScreenIndex = desktop->primaryScreen();
@@ -215,8 +215,10 @@ QPoint InviwoApplicationQt::movePointOntoDesktop(const QPoint& point, const QSiz
     QPoint appPos = getMainWindow()->pos();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    QPoint offset = getWindowDecorationOffset();
-    pos -= offset;
+    if (decorationOffset) {
+        QPoint offset = getWindowDecorationOffset();
+        pos -= offset;
+    }
 #endif
 
     if (!wholeScreen.contains(pos) || !wholeScreen.contains(bottomRight)) {

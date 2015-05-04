@@ -36,9 +36,11 @@
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/baseoptionproperty.h>
 #include <modules/base/basemoduledefine.h>
 
 namespace inviwo {
@@ -68,6 +70,8 @@ protected:
         ~PointLightInteractionHandler(){};
 
         void invokeEvent(Event* event);
+        void setHandleEventsOptions(int);
+
         /** 
          * \brief Changes the direction of the light source, relative to the camera, 
          * such that it acts as if it comes from the direction where the user clicked on the screen.
@@ -93,6 +97,7 @@ protected:
         vec3 lookUp_; ///< Necessary for trackball
         vec3 lookTo_; ///< Necessary for trackball
         Trackball trackball_;
+        int interactionEventOption_;
 
     };
 
@@ -114,7 +119,7 @@ private:
     FloatVec3Property lightPosition_;
     BoolProperty lightEnabled_;
     CameraProperty camera_;
-    BoolProperty handleInteractionEvents_; ///< Enable or disable interactions from canvas
+    OptionPropertyInt interactionEvents_;
     PointLightInteractionHandler* lightInteractionHandler_;
     PointLight* lightSource_;
 };

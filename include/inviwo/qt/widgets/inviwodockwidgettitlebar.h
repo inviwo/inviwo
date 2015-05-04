@@ -35,6 +35,7 @@
 
 class QPaintEvent;
 class QDockWidget;
+class QToolButton;
 
 namespace inviwo {
 
@@ -57,6 +58,8 @@ public:
 
     virtual void paintEvent(QPaintEvent *) override;
     
+public slots:
+    void floating(bool floating);
 protected slots:
     void stickyBtnToggled(bool toggle);
     void floatBtnClicked();
@@ -64,6 +67,7 @@ protected slots:
 private:
     QDockWidget *parent_;
 
+    QToolButton *floatBtn_;
     Qt::DockWidgetAreas allowedDockAreas_;
 };
 

@@ -92,8 +92,6 @@ public:
         return inport_.isReady(); 
     }
 
-    virtual void initialize();
-
 protected:
     virtual void process();
 

@@ -33,13 +33,12 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/multidatainport.h>
 #include <inviwo/core/datastructures/geometry/geometry.h>
 
 namespace inviwo {
 
 using GeometryInport = DataInport<Geometry>;
-using GeometryMultiInport = MultiDataInport<Geometry>;
+using GeometryMultiInport = DataInport<Geometry, 0>;
 using GeometryOutport =  DataOutport<Geometry>;
 
 }  // namespace

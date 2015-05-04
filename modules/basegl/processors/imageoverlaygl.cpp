@@ -107,46 +107,25 @@ ImageOverlayGL::ImageOverlayGL()
 
 ImageOverlayGL::~ImageOverlayGL() {}
 
-const std::vector<Inport*>& ImageOverlayGL::getInports(Event* e) const {
-    currentInteractionInport_.clear();
+void ImageOverlayGL::propagateEvent(Event* event) {
+    invokeEvent(event);
 
-    InteractionEvent* ie = dynamic_cast<InteractionEvent*>(e);
-    if (ie) {
-        if (overlayInteraction_.get()) {
-            // Last clicked mouse position determines which inport is active
-            // This is recorded with the interaction handler before-hand
-            if (!viewCoords_.empty() && overlayPort_.isConnected()) {
-                ivec2 pos = overlayHandler_.getActivePosition();
-                ivec2 dim = outport_.getConstData()->getDimensions();
-                pos.y = dim.y - pos.y;
+    if (overlayInteraction_.get() && !viewCoords_.empty() && overlayPort_.isConnected()) {
+        ivec2 pos = overlayHandler_.getActivePosition();
+        ivec2 dim = outport_.getConstData()->getDimensions();
+        pos.y = dim.y - pos.y;
 
-                // single overlay
-                if (inView(viewCoords_.front(), pos)) {
-                    currentInteractionInport_.push_back(const_cast<ImageInport *>(&overlayPort_));
-                }
-                else {
-                    // push main view
-                    currentInteractionInport_.push_back(const_cast<ImageInport *>(&inport_));
-                }
-                /*
-                // multiple overlay inputs
-                std::vector<Inport*> inports = multiinport_.getInports();
-                size_t minNum = std::min(inports.size(), viewCoords_.size());
-                for (size_t i = 0; i < minNum; ++i) {
-                if (inView(viewCoords_[i], pos)) {
-                currentInteractionInport_.push_back(inports[i]);
-                }
-                }
-                */
-            }
-            return currentInteractionInport_;
+        // single overlay
+        if (inView(viewCoords_.front(), pos)) {
+            overlayPort_.propagateEvent(event);
+        } else {
+            // push main view
+            inport_.propagateEvent(event);
         }
-        // interactions on overlays are disabled, forward event only to source imageport
-        currentInteractionInport_.push_back(const_cast<ImageInport *>(&inport_));
-        return currentInteractionInport_;
-    }
 
-    return Processor::getInports(e);
+    } else {
+        inport_.propagateEvent(event);
+    }
 }
 
 const std::vector<ivec4>& ImageOverlayGL::getViewCoords() const { return viewCoords_; }
@@ -155,34 +134,32 @@ bool ImageOverlayGL::isReady() const {
     return inport_.isReady();
 }
 
-void ImageOverlayGL::overlayInportChanged() {
-    if (overlayPort_.isConnected()) {
-        updateViewports(true);
+bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    updateViewports(resizeEvent->size(), true);
+
+    if (inport_.isConnected()) {
+        inport_.propagateResizeEvent(resizeEvent);
     }
 
-    updateDimensions();
+    if (overlayPort_.isConnected()) {
+        ResizeEvent e(uvec2(viewCoords_[0].z, viewCoords_[0].w));
+        overlayPort_.propagateResizeEvent(&e);
+    }
+
+    return false;
+}
+
+
+void ImageOverlayGL::overlayInportChanged() {
+    ResizeEvent e(currentDim_);
+    propagateResizeEvent(&e, &outport_);
 }
 
 void ImageOverlayGL::onStatusChange() {
-    updateViewports(true);
-
-    updateDimensions();
+    ResizeEvent e(currentDim_);
+    propagateResizeEvent(&e, &outport_);
 }
 
-void ImageOverlayGL::updateDimensions() {
-    uvec2 outDimU = outport_.getData()->getDimensions();
-    vec2 outDim = vec2(outDimU.x, outDimU.y);
-    if (overlayPort_.isConnected()) {
-        uvec2 inDimU = overlayPort_.getDimensions();
-        overlayPort_.setResizeScale(vec2(overlayProperty_.viewport_.z, overlayProperty_.viewport_.w) / outDim);
-        uvec2 inDimNewU = uvec2(overlayProperty_.viewport_.z, overlayProperty_.viewport_.w);
-        if (inDimNewU != inDimU && inDimNewU.x != 0 && inDimNewU.y != 0) {
-            ResizeEvent e(inDimNewU);
-            e.setPreviousSize(inDimU);
-            overlayPort_.changeDataDimensions(&e);
-        }
-    }
-}
 
 void ImageOverlayGL::process() {
     ivec2 dim = outport_.getData()->getDimensions();
@@ -233,10 +210,7 @@ void ImageOverlayGL::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void ImageOverlayGL::updateViewports(bool force) {
-    ivec2 dim(256, 256);
-    if (outport_.isConnected()) dim = outport_.getData()->getDimensions();
-
+void ImageOverlayGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim)) return;  // no changes
 
     overlayProperty_.updateViewport(dim);

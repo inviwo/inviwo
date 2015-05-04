@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2014-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,10 +24,42 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <inviwo/core/ports/geometryport.h>
+#include "volumemapping.h"
+
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <modules/opengl/volume/volumegl.h>
+#include <modules/opengl/glwrap/textureunit.h>
+#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/image/layergl.h>
 
 namespace inviwo {
+
+ProcessorClassIdentifier(VolumeMapping, "org.inviwo.VolumeMapping");
+ProcessorDisplayName(VolumeMapping, "Volume Mapping");
+ProcessorTags(VolumeMapping, Tags::GL);
+ProcessorCategory(VolumeMapping, "Volume Operation");
+ProcessorCodeState(VolumeMapping, CODE_STATE_EXPERIMENTAL);
+
+VolumeMapping::VolumeMapping()
+    : VolumeGLProcessor("volume_mapping.frag")
+    , tfProperty_("transferFunction", "Transfer function", TransferFunction(), &inport_) {
+    addProperty(tfProperty_);
+}
+
+VolumeMapping::~VolumeMapping() {}
+
+void VolumeMapping::preProcess() {
+    TextureUnit transFuncUnit;
+
+    const Layer* tfLayer = tfProperty_.get().getData();
+    const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
+    transferFunctionGL->bindTexture(transFuncUnit.getEnum());
+
+    shader_->setUniform("transferFunc_", transFuncUnit.getUnitNumber());
+}
+
 }  // namespace

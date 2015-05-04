@@ -1,0 +1,1634 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1101</width>
+    <height>738</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>40</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ * Version 0.6b
+ *
+ * Copyright (c) 2012-2014 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ *********************************************************************************/
+
+/* General styles */
+QWidget {
+    font-family: &quot;Calibra&quot;;
+    color: #9d9995;
+    background-color: #252528;/*#313136;*/ /*#4d4d4d;*/
+    background-color: #323235;
+}
+QStatusBar {
+    background-color: #252527;
+}
+QMainWindow::separator {
+    background: #444;
+    width: 2px;
+    height: 2px;
+    border-style: outset;
+    border-width: 1px;
+}
+
+/* Common defines for flat property editors, both active and disabled */
+QLineEdit, QAbstractSpinBox, QComboBox {
+    color: #c8ccd0;
+    background: transparent;
+    /* make background barely visible */
+    /*background: #3a3a3d;*/
+    /* change the border color to transparent here, if borders around properties 
+      should be invisible. DO NOT adjust the border width as the widgets will then 
+      jump on hover!
+      */
+    border: 1px solid #3a3a3e;
+    /*border: 1px solid transparent; */
+}
+QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
+    color: #777;
+    /*border-color: #3c3c40;*/
+    background: transparent;
+}
+QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover, QComboBox:on, QComboBox:focus, QComboBox:hover {
+    background: #47474b;
+    border: 1px solid #268bd2;
+}
+
+/* Composite property */
+QWidget#CollapsibleGroupBoxWidgetQt {
+    border: 1px solid #4a4a4f;
+    background: #2b2b2d;
+}
+
+QWidget#compositeLabel QLabel {
+    border: 1px solid transparent;
+    background: #2b2b2d;
+}
+
+/* this renders all backgrounds unusable (labels, lineedit, etc.) due to specialization */
+/*
+QWidget#CollapsibleGroupBoxWidgetQt QLabel, QWidget#CollapsibleGroupBoxWidgetQt QWidget {
+    border: none;
+    background: transparent;
+}
+*/
+
+
+/* QToolBar styles */
+QToolBar {
+    spacing: 3px;
+    padding: 1px;
+    border: 1px solid black;
+    background-color: #3a3a3e;
+}
+QToolBar::handle {
+    background-image: url(:/stylesheets/images/dense6pattern.png);
+    background-repeat: repeat-xy;
+    background-color: #4a4a4f;
+    border: 1px solid #333;
+    width: 5px;
+    margin:1px;
+    margin-right: 3px;
+    padding:1px;
+   border-radius: 2px;
+}
+
+/* QToolButton */
+
+QToolBar &gt; QToolButton {
+    background-color: #3a3a3e;
+    padding:2px;
+}
+QToolButton {
+    border: 1px solid transparent;
+    background-color: transparent;
+}
+
+
+
+QToolButton#resetButton {
+    width: 13px;
+    height: 13px;
+    image: url(:/icons/edit-undo-icon.png);
+}
+
+/*QToolTop */
+QToolTip {
+    /*font-family: &quot;Courier&quot;;*/    
+    color: #9d9995;
+    background-color: #323235;  
+    border-radius: 3px;
+    border: 1px solid black;
+    font-size: 14px;
+    padding: 3px;   
+}
+
+/* QPushButton styles */
+QPushButton {
+    border: 1px solid black;
+    border-radius: 4px;
+    min-height: 20px;
+    min-width: 80px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
+} 
+QPushButton:default {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);
+}
+QPushButton:pressed {
+    padding-top: 1px;
+    padding-left: 1px;
+    background: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                                stop:0 #6f6f75, stop:0.15 #323235, stop:0.95 #323235, stop:1 #222224);
+}
+QPushButton:focus{
+/*    border: 1px solid #268bd2;*/
+}
+QPushButton:disabled{
+    color: #666;
+    border: 1px solid #25272a;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #6f6f75, stop:0.1 #3a3a3e, stop:0.9 #3a3a3e, stop:1 #222224);
+}
+QPushButton:flat {
+     border: none; /* no border for a flat push button */
+ }
+
+
+/* QDockWidget styles */
+QDockWidget::close-button, QDockWidget::float-button {
+    padding: 0px;
+    icon-size: 13px;
+}
+QDockWidget::title, inviwo--InviwoDockWidgetTitleBar {
+    padding: 4px;
+    padding-left: 5px;
+    border-radius: 0px;
+    border-top: 1px solid #888;
+    border-left: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #888, stop: 0.1 #888, stop:.5 #00888888);
+    border-right: 1px solid qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
+    border-bottom: 0px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #4a4a4e, stop:0.8 #323235, stop:1 #222224);
+    /* smooth transition at the bottom */
+/*
+    padding-top: 6px;
+    padding-bottom:-4px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #555, stop:0.7 #333, stop:.9 #222, stop: 1 #4D4D4D);
+*/
+}
+QToolButton#dockBtn:hover {
+    margin-left: 1px;
+    margin-top: 1px;
+    border: 1px solid #268bd2;
+    border-radius: 3px;
+}
+QDockWidget {
+    color: #999999;
+    /*border: 0px;*/
+    titlebar-close-icon: url(:/stylesheets/images/close.png);
+    titlebar-normal-icon: url(:/stylesheets/images/undock.png);
+
+    background-color: #222;
+    border-width: 2px;
+    /* border style does not work here... */
+    /*
+    border-color: white;
+    border-style: dashed;
+    */
+}
+
+QTabWidget {
+}
+QTabWidget::pane{
+    border-bottom: 2px solid #414145;
+    /*background: #414145; */ 
+    /* cannot use other color than default background here because of QDockWidgets */
+    /*background: #252527;*/
+}
+QTabWidget::pane QWidget, QTabWidget::pane QFrame, QTabWidget::pane QDockWidget QWidget {
+    /* docked QDockWidgets ignore QTabWidget */
+    background: #252527;
+}
+
+QTabWidget::tab-bar {
+    left: 5px;
+}
+QTabBar {
+    /* docked QDockWidgets ignore QTabWidget */
+    background: #252527;
+}
+QTabBar::tab {
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
+    border: 1px solid #4a4a4f; /*#252527;*/
+    border-top-width: 0px;
+    border-bottom-left-radius: 2px;
+    border-bottom-right-radius: 2px;
+/*
+    border-left-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
+    border-right-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
+*/
+    min-width: 8ex;
+    margin-top: 1px;
+    margin-left: 2px;
+    margin-right: 1px; /* spacing between tabs */
+    padding: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+    min-height: 20px;
+    min-width: 80px;
+}
+QTabBar::tab:selected{
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #414145, stop:0.8 #3c3c40, stop:1 #222224);
+    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #323235, stop:0.9 #3c3c40, stop:1 #222224);
+    border: 1px solid #888;
+    color: #e9e4de;
+    margin-top: -2px;
+    /*font-weight: bold;*/
+}
+ QTabBar::tab:hover {
+    border-left: 1px solid #268bd2;
+    border-right: 1px solid #268bd2;
+    border-bottom: 1px solid #268bd2;
+    /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
+}
+QTabBar::tab:bottom:!selected {
+}
+
+/* QMenu styles */
+QMenuBar,QMenuBar::item {
+    color: #999999;
+    background-color: #252527;
+    selection-background-color: #3a3a3d;
+}
+QMenu,QMenu::item, QMenu::item::selected {
+    color: #999999;
+    selection-color: #999;
+    background-color: #3a3a3d;
+    selection-background-color: #47474b;
+}
+QMenu {
+    border: 1px solid #666;
+}
+QMenuBar::item::selected {
+    color: white;
+    background-color: #3a3a3d;   
+    border-top: 1px solid #6a6a6f;
+    border-left: 1px solid #6a6a6f;
+    border-right: 1px solid #6a6a6f;
+}
+QMenu::separator {
+    height: 0px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border-top: 2px groove #383838;
+    margin-left: 25px;
+}
+
+
+/* QLabel styles */
+QLabel {
+    border: 0px;
+}
+
+
+/* QListView styles */
+QListView::item:selected {
+    border: 0px;
+    background-color: #47474b;
+}
+
+
+/* QGroupBox styles */
+QGroupBox {
+    border: 1px solid #999999;
+    border-radius: 5px;
+    margin-top: 1ex;
+}
+
+QGroupBox::title {
+    top: -7 ex;
+    left: 10px;
+    subcontrol-origin: border
+}
+
+/* QTreeView styles */
+QTreeView {
+    border: 1px solid #4a4a4f;
+    show-decoration-selected: 1;
+    selection-background-color: #65696d;
+    outline: 0;
+}
+
+QTreeView::branch:hover{
+    background-color: #47474b;
+}
+QTreeView::item:hover {
+    background-color: #47474b;
+}
+QTreeView::item:selected, QTreeView::branch:selected {
+    background-color: #65696d;
+}
+QTreeView::branch:has-children:!has-siblings:closed,
+ QTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:/stylesheets/images/arrow_lighter_right.png);
+ }
+
+ QTreeView::branch:open:has-children:!has-siblings,
+ QTreeView::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:/stylesheets/images/arrow_lighter_down.png);
+ }
+
+/* QRadioButton and QCheckBox styles */
+QRadioButton::indicator, QCheckBox::indicator {
+    width: 13px;
+    height: 13px;
+}
+QRadioButton::indicator::unchecked {
+    image: url(:/stylesheets/images/circle_gray.png);
+}
+QRadioButton::indicator::unchecked:disabled {
+    image: url(:/stylesheets/images/circle_gray_disabled.png);
+}
+QRadioButton::indicator::checked {
+    image: url(:/stylesheets/images/circle.png);
+}
+QRadioButton::indicator::checked:disabled {
+    image: url(:/stylesheets/images/circle_disabled.png);
+}
+QCheckBox::indicator {
+    border: 1px solid #1b1b1d;
+    background: #47474b;
+    background: #9d9995;
+    border-radius: 1px;
+}
+QCheckBox::indicator:checked {
+    background: #1e70a8;
+}
+QCheckBox::indicator:hover {
+    border: 1px solid #268bd2;
+}
+QCheckBox::indicator:disabled {
+    border-color: #3c3c40;
+    background-color: #4f555b;
+}
+QCheckBox::indicator:checked:disabled {
+    background-color: #65696d;
+}
+
+QCheckBox:indicator:hover {
+    border: 1px solid #268bd2;
+}
+
+
+
+/* QScrollBar styles */
+QScrollBar {
+    border: 0px;
+    padding: 2px;
+}
+QScrollBar:horizontal {
+    height: 12px;
+}
+QScrollBar:vertical {
+    width: 12px;
+}
+QScrollBar::handle {
+    background: #1f1f21; /* dark */
+    background: #625e5b; /* brownish / text */
+    background: #5b5f62; /* blueish / background */
+    border-width: 2px;
+    border-radius: 4px;
+    border: 0px;
+}
+QScrollBar::handle:hover {
+    background: #1e70a8;
+}
+QScrollBar::handle:horizontal {
+    min-width: 12px;
+}
+QScrollBar::handle:vertical {
+    min-height: 26px;
+}
+QScrollBar::add-page, QScrollBar::add-line, QScrollBar::sub-page, QScrollBar::sub-line{
+    background: none;
+}
+
+QTextBrowser {
+    border-color: #444;
+    border: 0px 
+}
+
+
+
+/* QLineEdit styles */
+QLineEdit {
+    border-radius: 1px;
+}
+
+
+/* QAbstractSpinBox styles */
+QAbstractSpinBox {
+    margin-left: 5px;
+}
+QAbstractSpinBox::up-button {
+     image: url(:/stylesheets/images/arrow_lighter_up.png);
+}
+QAbstractSpinBox::down-button {
+     image: url(:/stylesheets/images/arrow_lighter_down.png);
+}
+QAbstractSpinBox::up-button:disabled {
+     image: url(:/stylesheets/images/arrow_up.png);
+}
+QAbstractSpinBox::down-button:disabled {
+     image: url(:/stylesheets/images/arrow_down.png);
+}
+
+/* slim slider styles and part of the QSplitter styles */
+QSlider::sub-page:horizontal, QSlider::add-page:vertical, QSplitter[Vertical=&quot;false&quot;] QFrame#valueArea, QSplitter[Vertical=&quot;true&quot;] QFrame#valueArea {
+    border: 0px;
+    background: #99a0a7;
+    background: #1e70a8;
+    border-radius:2px;
+}
+QSlider::sub-page:horizontal, QSplitter[Vertical=&quot;false&quot;] QFrame#valueArea {
+    margin: -1px 0px -1px 0px;
+}
+QSlider::add-page:vertical, QSplitter[Vertical=&quot;true&quot;] QFrame#valueArea {
+    margin: 0px -1px 0px -1px;
+}
+QSlider::groove, QSlider::add-page:horizontal, QSlider::sub-page:vertical, QSplitter[Vertical=&quot;false&quot;] QFrame, QSplitter[Vertical=&quot;true&quot;] QFrame {
+    border: 0px;
+    background: #65696d;
+    border-radius:1px;
+}
+QSlider::groove:horizontal, QSlider::add-page:horizontal, QSplitter[Vertical=&quot;false&quot;] QFrame {
+    height: 3px;
+}
+QSlider::groove:vertical, QSlider::sub-page:vertical, QSplitter[Vertical=&quot;true&quot;] QFrame {
+    width: 3px;
+}
+
+QSlider::handle {
+    background: #c8ccd0;
+    border: 2px solid #c8ccd0;
+    border-radius: 5px;
+}
+QSlider::handle:hover {
+    background: #268bd2;
+    border: 2px solid #268bd2;
+}
+QSlider::handle:horizontal {
+    width: 8px;
+    margin: -4px 0px; 
+}
+QSlider::handle:vertical {
+    height: 8px;
+    margin: 0px -4px; 
+}
+
+
+/* disabled slider / QSplitter */
+QSlider::sub-page:horizontal:disabled, QSplitter[Vertical=&quot;false&quot;] QFrame:disabled#valueArea, QSlider::add-page:vertical:disabled, QSplitter[Vertical=&quot;true&quot;] QFrame:disabled#valueArea {
+    background: #4f555b;
+}
+
+QSlider::groove:disabled, QSlider::add-page:horizontal:disabled, QSlider::sub-page:vertical:disabled, QSplitter:disabled[Vertical=&quot;false&quot;] QFrame, QSplitter:disabled[Vertical=&quot;true&quot;] QFrame {
+    background: #404246;
+}
+
+QSlider::handle:disabled {
+    background: #5d656b;
+    border: 2px solid #5d656b;
+}
+
+
+/* QSplitter styles */
+/*
+QSplitter:vertical {
+    height: 10px;
+}
+QSplitter:horizontal {
+    width: 10px;
+}
+*/
+/* main color definition for splitters is done with QSlider (see above) 
+   only cosmetics are done here (rounded corners)!
+*/
+
+QSplitter[Vertical=&quot;false&quot;] QFrame#valueArea, QSplitter[Vertical=&quot;true&quot;] QFrame#valueArea {
+    border: 0px;
+    background: #99a0a7;
+    background: #1e70a8;
+    border-radius:0px;
+}
+
+QSplitter QFrame, QSplitter QFrame#valueArea {
+    border-radius: 0px;    
+    background-clip: content;
+}
+QSplitter[Vertical=&quot;true&quot;] QFrame {
+    margin: 0px 4px; 
+    min-width: 4px;
+    max-width: 4px;
+}
+QSplitter[Vertical=&quot;false&quot;] QFrame {
+    margin: 4px 0px; 
+    min-height: 4px;
+    max-height: 4px;
+}
+QSplitter[Vertical=&quot;true&quot;] QFrame[LeftPart=&quot;false&quot;] {
+    /* lower part of splitter */
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+QSplitter[Vertical=&quot;true&quot;] QFrame[LeftPart=&quot;true&quot;] {
+    /* upper part of splitter */
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+QSplitter[Vertical=&quot;false&quot;] QFrame[LeftPart=&quot;true&quot;] {
+    /* left part of splitter */
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+QSplitter[Vertical=&quot;false&quot;] QFrame[LeftPart=&quot;false&quot;] {
+    /* right part of splitter */
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+QSplitter[Vertical=&quot;true&quot;] QFrame#valueArea {
+    margin: 0px 3px; 
+    min-width: 6px;
+    max-width: 6px;
+}
+QSplitter[Vertical=&quot;false&quot;] QFrame#valueArea {
+    margin: 3px 0px; 
+    min-height: 6px;
+    max-height: 6px;
+}
+
+QSplitter::handle {
+    background: #c8ccd0;
+    border: 2px solid #c8ccd0;
+    border-radius: 6px;
+}
+
+QSplitter::handle:horizontal {
+    width: 5px;
+}
+
+QSplitter::handle:vertical {
+    height: 5px;
+}
+
+
+QSplitter::handle:pressed, QSplitter::handle:hover {
+    background: #268bd2;
+    border: 2px solid #268bd2;
+}
+
+QSplitter QFrame#pythonEditor, QFrame#htmlEditor, QTreeWidget#htmlTree {
+    font-family: &quot;Calibra&quot;;
+    background-color: #888888;
+    color: #111111;
+}
+QSplitter QFrame#pythonConsole, QFrame#htmlEditorOutput {
+    font-family: &quot;Calibra&quot;;
+    color: #999999;
+    background-color: #4d4d4d;
+}
+
+
+/* out-of-bounds indication */
+QSlider::handle[outOfBounds=&quot;true&quot;], QSplitter::handle[outOfBounds=&quot;true&quot;] { 
+    border: 2px solid #b41b1b;
+}
+
+/* QComboBox styles */
+QComboBox {
+    border-radius: 1px;
+}
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+    border-top: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    outline: 0;
+}
+QComboBox::drop-down:hover {
+    background-color: #47474b;
+}
+QComboBox::down-arrow {
+     image: url(:/stylesheets/images/arrow_lighter_down.png);
+}
+QComboBox::down-arrow:disabled {
+     image: url(:/stylesheets/images/arrow_down.png);
+}
+
+QComboBox QListView {
+    padding-top: 1px;
+    background-color: #3a3a3d;
+    selection-background-color: #47474b;
+    border: 1px solid #6a6a6f;
+    border-top: 1px solid #268bd2;
+    border-bottom-left-radius: 1px; /* same radius as the QComboBox */
+    border-bottom-right-radius: 1px;
+    outline: 0;
+}
+
+
+/* QProgressBar styles */
+QProgressBar {
+    border: 2px solid rgb(75, 75, 75);
+    border-radius: 5px;
+    margin-right: 30px;
+    color: rgb(200, 200, 200);
+    text-align: right;
+}
+QProgressBar::chunk {
+    background-color: qlineargradient(spread:pad, x1:0.506, y1:1, x2:0.489, y2:0,
+                                      stop:0 rgba(14, 124, 36, 255), stop:1 rgba(255, 255, 255, 255));
+    width: 20px;
+}
+QProgressBar {
+    padding: 1px;
+    text-align: top;
+    border: 1px solid black;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                stop:0 #fff, stop:0.4999 #eee,
+                                stop:0.5 #ddd, stop:1 #eee);
+    width: 15px;
+}
+QProgressBar::chunk {
+    border: 1px solid black;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    background: QLinearGradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                                stop:0 #78d, stop:0.4999 #46a,
+                                stop:0.5 #45a, stop:1 #238);
+}
+
+
+QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBox:indicator:hover, QAbstractSpinBox:hover {
+    border: 1px solid #268bd2;
+}</string>
+  </property>
+  <property name="documentMode">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>60</y>
+      <width>112</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="toolButton">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>120</y>
+      <width>25</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>:/stylesheets/images/dock-docked.png</normaloff>:/stylesheets/images/dock-docked.png</iconset>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>100</y>
+      <width>70</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>CheckBox</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>130</y>
+      <width>82</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>RadioButton</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButton_2">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>160</y>
+      <width>82</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>RadioButton</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QSlider" name="horizontalSlider">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>300</y>
+      <width>171</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>50</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QScrollBar" name="verticalScrollBar">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>210</y>
+      <width>16</width>
+      <height>160</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>50</number>
+    </property>
+    <property name="pageStep">
+     <number>20</number>
+    </property>
+    <property name="value">
+     <number>20</number>
+    </property>
+    <property name="sliderPosition">
+     <number>20</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QScrollBar" name="horizontalScrollBar">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>330</y>
+      <width>171</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>20</number>
+    </property>
+    <property name="pageStep">
+     <number>40</number>
+    </property>
+    <property name="value">
+     <number>10</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider">
+    <property name="geometry">
+     <rect>
+      <x>750</x>
+      <y>210</y>
+      <width>19</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>50</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>240</y>
+      <width>161</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>DropDown</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>a</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>b</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>c</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>d</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QWidget" name="widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>20</y>
+      <width>281</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QWidget {
+	background-color: #777
+}</string>
+    </property>
+    <widget class="QDockWidget" name="dockWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>231</width>
+       <height>151</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QWidget {
+	background-color: #4D4D4D;
+}</string>
+     </property>
+     <property name="floating">
+      <bool>true</bool>
+     </property>
+     <property name="windowTitle">
+      <string>DockWidget2</string>
+     </property>
+     <widget class="QWidget" name="dockWidgetContents_2"/>
+    </widget>
+   </widget>
+   <widget class="QTextEdit" name="textEdit">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>280</y>
+      <width>221</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Calibra'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The standard Lorem Ipsum passage, used since the 1500s&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&amp;quot;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Section 1.10.32 of &amp;quot;de Finibus Bonorum et Malorum&amp;quot;, written by Cicero in 45 BC&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>210</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string>this is empty</string>
+    </property>
+    <property name="clearButtonEnabled">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="spinBox">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>180</y>
+      <width>42</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>40</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="toolButton_2">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>120</y>
+      <width>25</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>:/stylesheets/images/dock-sticky.png</normaloff>:/stylesheets/images/dock-sticky.png</iconset>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="toolButton_3">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>120</y>
+      <width>25</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>:/stylesheets/images/close.png</normaloff>:/stylesheets/images/close.png</iconset>
+    </property>
+    <property name="autoRaise">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>60</y>
+      <width>112</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="horizontalSlider_2">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>280</y>
+      <width>171</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>50</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QSlider" name="verticalSlider_2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>210</y>
+      <width>19</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>50</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QFrame" name="frame_2">
+    <property name="geometry">
+     <rect>
+      <x>660</x>
+      <y>20</y>
+      <width>191</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QCheckBox" name="checkBox_10">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>70</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CheckBox</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBox_11">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>70</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CheckBox</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBox_12">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>70</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CheckBox</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBox_13">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>70</y>
+       <width>70</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CheckBox</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_2">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>210</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>filled</string>
+    </property>
+    <property name="placeholderText">
+     <string>this is empty</string>
+    </property>
+    <property name="clearButtonEnabled">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>30</y>
+      <width>112</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+    <property name="default">
+     <bool>true</bool>
+    </property>
+    <property name="flat">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <zorder>widget</zorder>
+   <zorder>pushButton</zorder>
+   <zorder>toolButton</zorder>
+   <zorder>checkBox</zorder>
+   <zorder>radioButton</zorder>
+   <zorder>radioButton_2</zorder>
+   <zorder>horizontalSlider</zorder>
+   <zorder>verticalScrollBar</zorder>
+   <zorder>horizontalScrollBar</zorder>
+   <zorder>verticalSlider</zorder>
+   <zorder>comboBox</zorder>
+   <zorder>textEdit</zorder>
+   <zorder>lineEdit</zorder>
+   <zorder>spinBox</zorder>
+   <zorder>label</zorder>
+   <zorder>toolButton_2</zorder>
+   <zorder>toolButton_3</zorder>
+   <zorder>pushButton_2</zorder>
+   <zorder>horizontalSlider_2</zorder>
+   <zorder>verticalSlider_2</zorder>
+   <zorder>frame_2</zorder>
+   <zorder>lineEdit_2</zorder>
+   <zorder>pushButton_3</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1101</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionTest2"/>
+    <addaction name="separator"/>
+    <addaction name="actionTest"/>
+    <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionTest_2"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>39</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>DockWidget 1</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents"/>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_3">
+   <property name="minimumSize">
+    <size>
+     <width>137</width>
+     <height>200</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>DockWidget 3</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="tabPosition">
+        <enum>QTabWidget::South</enum>
+       </property>
+       <property name="tabShape">
+        <enum>QTabWidget::Rounded</enum>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <property name="documentMode">
+        <bool>false</bool>
+       </property>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Tab 1</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QTextEdit" name="textEdit_2">
+           <property name="html">
+            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Calibra'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The standard Lorem Ipsum passage, used since the 1500s&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&amp;quot;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Section 1.10.32 of &amp;quot;de Finibus Bonorum et Malorum&amp;quot;, written by Cicero in 45 BC&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?&amp;quot;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;1914 translation by H. Rackham&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?&amp;quot;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Section 1.10.33 of &amp;quot;de Finibus Bonorum et Malorum&amp;quot;, written by Cicero in 45 BC&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_3">
+        <attribute name="title">
+         <string>Page</string>
+        </attribute>
+        <widget class="QTreeWidget" name="treeWidget">
+         <property name="geometry">
+          <rect>
+           <x>320</x>
+           <y>20</y>
+           <width>321</width>
+           <height>171</height>
+          </rect>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>false</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <attribute name="headerVisible">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="headerDefaultSectionSize">
+          <number>50</number>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>2</string>
+          </property>
+         </column>
+         <item>
+          <property name="text">
+           <string>2</string>
+          </property>
+          <property name="text">
+           <string>a</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>2</string>
+          </property>
+          <property name="text">
+           <string>b</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>3</string>
+          </property>
+          <property name="text">
+           <string>c</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>4</string>
+          </property>
+          <property name="text">
+           <string>f</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>8</string>
+           </property>
+           <property name="text">
+            <string>d</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>5</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>4</string>
+           </property>
+          </item>
+         </item>
+         <item>
+          <property name="text">
+           <string>5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>6</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>7</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>New Item</string>
+          </property>
+         </item>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="tab_2">
+        <attribute name="title">
+         <string>Tab 2</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string>GroupBox</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>40</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionTest"/>
+   <addaction name="actionTest2"/>
+   <addaction name="actionSave"/>
+  </widget>
+  <widget class="QToolBar" name="toolBar_2">
+   <property name="windowTitle">
+    <string>toolBar_2</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <action name="actionTest">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/icons/new.png</normaloff>:/icons/new.png</iconset>
+   </property>
+   <property name="text">
+    <string>test</string>
+   </property>
+  </action>
+  <action name="actionTest2">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/icons/open.png</normaloff>:/icons/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>test2</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>save</string>
+   </property>
+  </action>
+  <action name="actionSave_As">
+   <property name="text">
+    <string>Save As</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionTest_2">
+   <property name="text">
+    <string>test</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

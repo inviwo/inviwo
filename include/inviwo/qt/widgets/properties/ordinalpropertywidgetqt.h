@@ -31,6 +31,7 @@
 #define IVW_ORDINALPROPERTYWIDGETQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <QMenu>
 #include <QSignalMapper>
 #include <inviwo/qt/widgets/editablelabelqt.h>
@@ -292,6 +293,7 @@ protected:
 template <typename BT, typename T>
 std::string OrdinalPropertyWidgetQt<BT, T>::getToolTipText() {
     std::stringstream ss;
+    utilqt::localizeStream(ss);
 
     ss << this->makeToolTipTop(this->ordinalproperty_->getDisplayName());
     ss << this->makeToolTipTableTop();
@@ -315,15 +317,15 @@ std::string OrdinalPropertyWidgetQt<BT, T>::getToolTipText() {
     cols.push_back(" Max ");
     cols.push_back(" Inc ");
     
-    ss << this->makeToolTipRow("#", cols);
+    ss << this->makeToolTipRow("#", cols, true);
     
     size_t size = this->ordinalproperty_->getDim().x * this->ordinalproperty_->getDim().y;
     for (size_t i = 0; i < size; i++) {
        
-        cols[0] = toString(util::glmcomp(val,i));
-        cols[1] = toString(util::glmcomp(min,i));
-        cols[2] = toString(util::glmcomp(max,i));
-        cols[3] = toString(util::glmcomp(inc,i));
+        cols[0] = toLocalizedString(util::glmcomp(val,i));
+        cols[1] = toLocalizedString(util::glmcomp(min, i));
+        cols[2] = toLocalizedString(util::glmcomp(max, i));
+        cols[3] = toLocalizedString(util::glmcomp(inc, i));
         
         ss << this->makeToolTipRow(toString(i), cols);
     }

@@ -89,8 +89,7 @@ void CanvasProcessorWidgetQt::initialize() {
 
     InviwoApplicationQt* app = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
     if (app) {
-
-        QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x, pos.y), this->size());
+        QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(dim.x, dim.y), false);
 
         if (!(newPos.x() == 0 && newPos.y() == 0)) {
             QWidget::move(newPos);

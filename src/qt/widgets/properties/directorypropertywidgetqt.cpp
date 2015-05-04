@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -46,10 +46,7 @@
 namespace inviwo {
 
 DirectoryPropertyWidgetQt::DirectoryPropertyWidgetQt(DirectoryProperty* property)
-    : PropertyWidgetQt(property)
-    , property_(property)
-    , updatedFromWidget_(false) 
-{
+    : PropertyWidgetQt(property), property_(property) {
     generateWidget();
     updateFromProperty();
 }
@@ -80,22 +77,19 @@ void DirectoryPropertyWidgetQt::generateWidget() {
 
 void DirectoryPropertyWidgetQt::setPropertyValue() {
     QString existingDir = QFileDialog::getExistingDirectory(
-        this, "Open Directory", InviwoFileDialog::getPreviousPath(QString(property_->getContentType().c_str())));
+        this, "Open Directory",
+        InviwoFileDialog::getPreviousPath(QString(property_->getContentType().c_str())));
     std::string dir = existingDir.toLocal8Bit().constData();
 
     if (!dir.empty()) {
-        InviwoFileDialog::setPreviousPath(QString(property_->getContentType().c_str()), existingDir);
+        InviwoFileDialog::setPreviousPath(QString(property_->getContentType().c_str()),
+                                          existingDir);
         setPropertyTreeInfo(dir);
         property_->set(dir);
     }
 }
 
 void DirectoryPropertyWidgetQt::updateFromProperty() {
-    if(updatedFromWidget_){
-        updatedFromWidget_ = false;
-        return;
-    }
-
     QDir currentDir = QDir(QString::fromStdString(property_->get()));
     lineEdit_->setText(currentDir.dirName());
     setPropertyTreeInfo(property_->get());
@@ -118,8 +112,9 @@ void DirectoryPropertyWidgetQt::setPropertyTreeInfo(std::string path) {
         directoryTreeInfo.push_back(fileName);
     }
 
-    updatedFromWidget_ = true;
+    property_->setInitiatingWidget(this);
     property_->setDirectoryTree(directoryTreeInfo);
+    property_->clearInitiatingWidget();
 }
 
 void DirectoryPropertyWidgetQt::setPropertyDisplayName() {

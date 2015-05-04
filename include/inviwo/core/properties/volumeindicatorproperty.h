@@ -51,7 +51,7 @@ public:
     InviwoPropertyInfo();
 
     VolumeIndicatorProperty(std::string identifier, std::string displayName,
-                            InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                            InvalidationLevel invalidationLevel = INVALID_RESOURCES,
                             PropertySemantics semantics = PropertySemantics::Default);
 
     VolumeIndicatorProperty(const VolumeIndicatorProperty& rhs);

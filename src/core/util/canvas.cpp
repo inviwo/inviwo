@@ -126,7 +126,7 @@ void Canvas::resize(uvec2 canvasSize) {
         RenderContext::getPtr()->activateDefaultRenderContext();
         ResizeEvent* resizeEvent = new ResizeEvent(screenDimensions_);
         resizeEvent->setPreviousSize(previousScreenDimensions_);
-        propagator_->propagateResizeEvent(resizeEvent);
+        propagator_->propagateResizeEvent(resizeEvent, nullptr);
         delete resizeEvent;
     }
 }
@@ -145,8 +145,8 @@ void Canvas::activateDefaultRenderContext(){
     RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
-void Canvas::interactionEvent(InteractionEvent* event) {
-    if (propagator_) propagator_->propagateInteractionEvent(event);
+void Canvas::interactionEvent(Event* event) {
+    if (propagator_) propagator_->propagateEvent(event);
 }
 
 void Canvas::mousePressEvent(MouseEvent* e) {

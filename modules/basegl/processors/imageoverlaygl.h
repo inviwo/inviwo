@@ -39,7 +39,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/multidatainport.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/inviwoopengl.h>
 
@@ -117,17 +116,17 @@ public:
 
     InviwoProcessorInfo();
     
-    const std::vector<Inport*>& getInports(Event*) const;
     const std::vector<ivec4>& getViewCoords() const;
 
     bool isReady() const override;
+    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
+    virtual void propagateEvent(Event*) override;
 
 protected:
     virtual void process() override;
 
     void overlayInportChanged();
-    void updateViewports(bool force = false);
-    void updateDimensions();
+    void updateViewports(ivec2 size, bool force = false);
     void onStatusChange();
 
     class ImageOverlayGLInteractionHandler : public InteractionHandler {

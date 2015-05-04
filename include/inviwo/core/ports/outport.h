@@ -34,60 +34,57 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/port.h>
 
-#include <inviwo/core/processors/processor.h>
-
 namespace inviwo {
 
 class Inport;
-class SingleInport;
-class MultiInport;
+class Processor;
 
 /**
- * \class Outport
+ * \class Outport Abstract base class for all outports
  *
  * \brief The Outport can be connected to an arbitrary number of Inports.
  */
 class IVW_CORE_API Outport : public Port {
+    friend class Inport;
     friend class Processor;
-    friend class SingleInport;
-    friend class MultiInport;
-    friend class ImageInport;
 
 public:
-    Outport(std::string identifier = "");
     virtual ~Outport();
-
     virtual bool isConnected() const override;
-    virtual bool isReady() const override;
 
-    virtual InvalidationLevel getInvalidationLevel() const;
+    /**
+     * An outport is ready if it has data and is valid.
+     */
+    virtual bool isReady() const override = 0;
+
     /**
      *	Called by Processor::invalidate, will invalidate its connected inports.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
-
-    bool isConnectedTo(Inport* port) const;
+    virtual InvalidationLevel getInvalidationLevel() const;
     
-    std::vector<Inport*> getConnectedInports() const;
-    std::vector<Processor*> getDirectSuccessors() const;
+    /**
+     *  Propagate events upwards, i.e. to the owning processor.
+     */
+    virtual void propagateEvent(Event* event);
+
+    bool isConnectedTo(const Inport* port) const;
+    const std::vector<Inport*>& getConnectedInports() const;
 
 protected:
-     /**
-     *	Called by Processor::setValid, will call setValid its connected inports.
-     */
+    Outport(std::string identifier = "");
+    /**
+    *	Called by Processor::setValid, will call setValid its connected inports.
+    */
     virtual void setValid();
 
+    // These function are only called by the corresponding inport.
     void connectTo(Inport* port);
     void disconnectFrom(Inport* port);
 
-    // recursive implementation of std::vector<Processor*> getDirectSuccessors() const;
-    void getSuccessors(std::vector<Processor*>&) const;
-
     InvalidationLevel invalidationLevel_;
-private:
     std::vector<Inport*> connectedInports_;
 };
-
 
 }  // namespace
 

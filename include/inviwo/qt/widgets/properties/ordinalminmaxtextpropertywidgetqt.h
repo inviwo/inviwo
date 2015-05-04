@@ -31,6 +31,7 @@
 #define IVW_ORDINALMINMAXTEXTTROPERTYWIDGETQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/ordinaleditorwidget.h>
@@ -192,6 +193,7 @@ void OrdinalMinMaxTextPropertyWidgetQt<T>::updateFromMax() {
 template <typename T>
 std::string OrdinalMinMaxTextPropertyWidgetQt<T>::getToolTipText() {
     std::stringstream ss;
+    utilqt::localizeStream(ss);
 
     ss << this->makeToolTipTop(this->minMaxProperty_->getDisplayName());
     ss << this->makeToolTipTableTop();

@@ -77,7 +77,7 @@ public:
 protected:
     void activateDefaultRenderContext();
 
-    void interactionEvent(InteractionEvent* e);
+    void interactionEvent(Event* e);
 
     void mousePressEvent(MouseEvent* e);
     void mouseReleaseEvent(MouseEvent* e);

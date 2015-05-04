@@ -35,6 +35,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
+#include <modules/opengl/openglsettings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
@@ -91,7 +92,7 @@ OpenGLCapabilities::OpenGLCapabilities()
     currentGlobalGLSLHeader_ = "";
     currentGlobalGLSLVertexDefines_ = "";
     currentGlobalGLSLFragmentDefines_ = "";
-    SystemSettings* systemSets = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
+    OpenGLSettings* systemSets = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
     if(systemSets){
         Property* selpro = systemSets->getPropertyByIdentifier("selectedOpenGLProfile");
         if(selpro){

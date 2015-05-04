@@ -80,6 +80,9 @@ void VolumeFirstHitCLProcessor::process() {
         return;
     }
 
+    auto entryImage = entryPort_.getData();
+    auto exitImage = exitPort_.getData();
+
     mat4 volumeTextureToWorld =
         volumePort_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
     uvec3 volumeDim = volumePort_.getData()->getDimensions();
@@ -88,15 +91,15 @@ void VolumeFirstHitCLProcessor::process() {
                static_cast<float>(std::max(volumeDim.x, std::max(volumeDim.y, volumeDim.z))));
     svec2 localWorkGroupSize(workGroupSize_.get());
     svec2 globalWorkGroupSize(
-        getGlobalWorkGroupSize(entryPort_.getDimensions().x, localWorkGroupSize.x),
-        getGlobalWorkGroupSize(entryPort_.getDimensions().y, localWorkGroupSize.y));
+        getGlobalWorkGroupSize(entryImage->getDimensions().x, localWorkGroupSize.x),
+        getGlobalWorkGroupSize(entryImage->getDimensions().y, localWorkGroupSize.y));
     IVW_OPENCL_PROFILING(profilingEvent, "")
 
     if (useGLSharing_.get()) {
         // Will synchronize with OpenGL upon creation and destruction
         SyncCLGL glSync;
-        const ImageCLGL* entry = entryPort_.getData()->getRepresentation<ImageCLGL>();
-        const ImageCLGL* exit = exitPort_.getData()->getRepresentation<ImageCLGL>();
+        const ImageCLGL* entry = entryImage->getRepresentation<ImageCLGL>();
+        const ImageCLGL* exit = exitImage->getRepresentation<ImageCLGL>();
         const ImageCLGL* output = outport_.getData()->getEditableRepresentation<ImageCLGL>();
         const VolumeCLGL* volume = volumePort_.getData()->getRepresentation<VolumeCLGL>();
         const LayerCLGL* tfCL = transferFunction_.get().getData()->getRepresentation<LayerCLGL>();
@@ -118,8 +121,8 @@ void VolumeFirstHitCLProcessor::process() {
         tfCL->releaseGLObject();
         volume->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     } else {
-        const ImageCL* entry = entryPort_.getData()->getRepresentation<ImageCL>();
-        const ImageCL* exit = exitPort_.getData()->getRepresentation<ImageCL>();
+        const ImageCL* entry = entryImage->getRepresentation<ImageCL>();
+        const ImageCL* exit = exitImage->getRepresentation<ImageCL>();
         const ImageCL* output = outport_.getData()->getEditableRepresentation<ImageCL>();
         const VolumeCL* volume = volumePort_.getData()->getRepresentation<VolumeCL>();
         const LayerCL* tfCL = transferFunction_.get().getData()->getRepresentation<LayerCL>();

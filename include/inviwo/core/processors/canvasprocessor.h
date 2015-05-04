@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CANVASPROCESSOR_H
@@ -40,14 +40,13 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/interaction/events/eventpropagator.h>
 
 namespace inviwo {
 
 class CanvasProcessorWidget;
 class ProcessorNetworkEvaluator;
 
-class IVW_CORE_API CanvasProcessor : public Processor, public EventPropagator {
+class IVW_CORE_API CanvasProcessor : public Processor {
 public:
     CanvasProcessor();
     virtual ~CanvasProcessor();
@@ -66,7 +65,8 @@ public:
 
     void saveImageLayer();
     void saveImageLayer(std::string filePath);
-    std::vector<unsigned char>* getLayerAsCodedBuffer(LayerType layerType, const std::string& type, size_t idx = 0);
+    std::vector<unsigned char>* getLayerAsCodedBuffer(LayerType layerType, const std::string& type,
+                                                      size_t idx = 0);
     std::vector<unsigned char>* getColorLayerAsCodedBuffer(const std::string& type, size_t idx = 0);
     std::vector<unsigned char>* getDepthLayerAsCodedBuffer(const std::string& type);
     std::vector<unsigned char>* getPickingLayerAsCodedBuffer(const std::string& type);
@@ -75,8 +75,7 @@ public:
     void triggerQueuedEvaluation();
     virtual bool isReady() const;
 
-    virtual void propagateResizeEvent(ResizeEvent*);
-    virtual void propagateInteractionEvent(InteractionEvent*);
+    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
 protected:
     void performEvaluationAtNextShow();
@@ -88,7 +87,6 @@ protected:
     BoolProperty enableCustomInputDimensions_;
     IntVec2Property customInputDimensions_;
     BoolProperty keepAspectRatio_;
-    //customInputDimensions_ * aspectRatioScaling_ = dimensions_, but with aspect ratio preservation
     FloatProperty aspectRatioScaling_;
     OptionPropertyInt visibleLayer_;
     DirectoryProperty saveLayerDirectory_;
@@ -102,11 +100,11 @@ private:
 
     ivec2 previousImageSize_;
 
-    ProcessorNetworkEvaluator* evaluator_; //< non-owning reference
-    CanvasProcessorWidget* canvasWidget_; //< non-owning reference
+    ProcessorNetworkEvaluator* evaluator_;  //< non-owning reference
+    CanvasProcessorWidget* canvasWidget_;   //< non-owning reference
     bool queuedRequest_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_CANVASPROCESSOR_H
+#endif  // IVW_CANVASPROCESSOR_H

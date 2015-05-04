@@ -24,10 +24,37 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <inviwo/core/ports/bufferport.h>
+#ifndef IVW_VOLUMELOWPASS_H
+#define IVW_VOLUMELOWPASS_H
+
+#include <modules/basegl/baseglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/progressbarowner.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/baseoptionproperty.h>
 
 namespace inviwo {
-}  // namespace
+
+class IVW_MODULE_BASEGL_API VolumeLowPass : public VolumeGLProcessor , public ProgressBarOwner { 
+public:
+    VolumeLowPass();
+    virtual ~VolumeLowPass();
+
+    InviwoProcessorInfo();
+protected:
+    virtual void preProcess();
+
+private:
+    IntProperty kernelSize_;
+};
+
+} // namespace
+
+#endif // IVW_VOLUMELOWPASS_H
+
