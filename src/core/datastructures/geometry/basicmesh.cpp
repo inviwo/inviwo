@@ -522,7 +522,7 @@ static vec3 N(const mat4& m,const vec3 v){
     return V.xyz();
 }
 
-BasicMesh* BasicMesh::box(const mat4& m, const vec4 &color){
+BasicMesh* BasicMesh::cube(const mat4& m, const vec4 &color){
     BasicMesh* mesh = new BasicMesh();
     mesh->setModelMatrix(mat4(1));
     
