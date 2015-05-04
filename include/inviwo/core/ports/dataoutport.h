@@ -35,13 +35,13 @@
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/outportiterator.h>
 #include <inviwo/core/util/introspection.h>
 
 namespace inviwo {
 
 template <typename T>
-class DataOutport : public Outport {
-
+class DataOutport : public Outport, public OutportIteratorImpl<T> {
 public:
     DataOutport(std::string identifier);
     virtual ~DataOutport();
@@ -79,9 +79,37 @@ protected:
     bool isSequence_;
 };
 
+
+namespace detail {
+
+template <typename T, typename std::enable_if<!std::is_polymorphic<T>::value, int>::type = 0>
+bool isDataSequence(T* data) {
+    return false;
+};
+template <typename T, typename std::enable_if<std::is_polymorphic<T>::value, int>::type = 0>
+bool isDataSequence(T* data) {
+    return dynamic_cast<DataSequence<T>*>(data) != nullptr;
+};
+
+template <typename T, typename std::enable_if<!std::is_polymorphic<T>::value, int>::type = 0>
+DataSequence<T>* getDataSequence(T* data) {
+    return nullptr;
+};
+template <typename T, typename std::enable_if<std::is_polymorphic<T>::value, int>::type = 0>
+DataSequence<T>* getDataSequence(T* data) {
+    return dynamic_cast<DataSequence<T>*>(data);
+};
+
+}
+
+
 template <typename T>
 DataOutport<T>::DataOutport(std::string identifier)
-    : Outport(identifier), data_(nullptr), ownsData_(true), isSequence_(false) {}
+    : Outport(identifier)
+    , OutportIteratorImpl<T>(this)
+    , data_(nullptr)
+    , ownsData_(true)
+    , isSequence_(false) {}
 
 template <typename T>
 DataOutport<T>::~DataOutport() {
@@ -102,22 +130,26 @@ template <typename T>
 T* DataOutport<T>::getData() {
     ivwAssert(ownsData_, "Port does not own data, so can not return writable data.");
 
-    if (isSequence_) return static_cast<DataSequence<T>*>(data_)->getCurrent();
-    else return data_;
+    if (isSequence_)
+        return detail::getDataSequence<T>(data_)->getCurrent();
+    else
+        return data_;
 }
 
 template <typename T>
 DataSequence<T>* DataOutport<T>::getDataSequence() {
     ivwAssert(ownsData_, "Port does not own data, so can not return writable data.");
 
-    if (isSequence_) return static_cast<DataSequence<T>*>(data_);
-    else return nullptr;
+    if (isSequence_)
+        return detail::getDataSequence<T>(data_);
+    else
+        return nullptr;
 }
 
 template <typename T>
 const T* DataOutport<T>::getConstData() const {
     if (isSequence_)
-        return const_cast<const T*>(static_cast<DataSequence<T>*>(data_)->getCurrent());
+        return const_cast<const T*>(detail::getDataSequence<T>(data_)->getCurrent());
     else
         return const_cast<const T*>(data_);
 }
@@ -125,7 +157,7 @@ const T* DataOutport<T>::getConstData() const {
 template <typename T>
 const DataSequence<T>* DataOutport<T>::getConstDataSequence() const {
     if (isSequence_)
-        return const_cast<const DataSequence<T>*>(static_cast<DataSequence<T>*>(data_));
+        return const_cast<const DataSequence<T>*>(detail::getDataSequence<T>(data_));
     else
         return nullptr;
 }
@@ -135,8 +167,8 @@ void DataOutport<T>::setData(T* data, bool ownsData) {
     if (ownsData_ && data_ && data_ != data) {
         delete data_;  // Delete old data
     }
-
-    isSequence_ = (dynamic_cast<DataSequence<T>*>(data) != nullptr);
+    
+    isSequence_ = detail::isDataSequence<T>(data);
     ownsData_ = ownsData;
     data_ = data;  // Add reference to new data
 }
@@ -144,9 +176,6 @@ void DataOutport<T>::setData(T* data, bool ownsData) {
 template <typename T>
 void DataOutport<T>::setConstData(const T* data) {
     setData(const_cast<T*>(data), false);
-    
-    // Not sure if we need this... //Peter
-    isSequence_ = (dynamic_cast<const DataSequence<T>*>(data) != nullptr);
 }
 
 template <typename T>
@@ -183,7 +212,7 @@ bool DataOutport<T>::isDataOwner() const {
 template <typename T>
 std::string DataOutport<T>::getContentInfo() const {
     if (hasDataSequence()) {
-        const DataSequence<T>* seq = static_cast<const DataSequence<T>*>(data_);
+        auto seq = static_cast<const DataSequence<T>*>(detail::getDataSequence<T>(data_));
         return seq->getDataInfo();
     } else if (hasData()) {
         std::string info = port_traits<T>::data_info(data_);
