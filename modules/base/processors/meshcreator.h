@@ -59,7 +59,8 @@ private:
     enum MeshType {
         SPHERE,
         COLOR_SPHERE,
-        CUBE,
+        CUBE_BASIC_MESH,
+        CUBE_SIMPLE_MESH,
         LINE_CUBE,
         PLANE,
         DISK,
