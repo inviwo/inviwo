@@ -55,7 +55,11 @@ protected:
 
     void onCameraPropertyChange();
 
+    void touchGesture(Event* event);
+
     CameraProperty* cameraProp_; //< non-owning reference
+
+    EventProperty touchGesture_;
 };
 
 } // namespace

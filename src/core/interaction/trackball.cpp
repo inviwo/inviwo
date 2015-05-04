@@ -116,7 +116,8 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
     
     , panGesture_("panGesture", "Pan",
         new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
-        new Action(this, &Trackball::panGesture)) {
+        new Action(this, &Trackball::panGesture)) 
+    {
         
 
     mouseReset_.setVisible(false);
@@ -142,9 +143,9 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
     addProperty(stepPanLeft_);
     addProperty(stepPanDown_);
     addProperty(stepPanRight_);
-    addProperty(pinchGesture_);
-    addProperty(panGesture_);
-    
+    //addProperty(pinchGesture_);
+    //addProperty(panGesture_);
+
     setCollapsed(true);
 }
 
@@ -230,7 +231,7 @@ void Trackball::panGesture(Event* event) {
     isMouseBeingPressedAndHold_ = false;
 }
 
-void Trackball::rotate(Event* event) {  
+void Trackball::rotate(Event* event) {
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
     
     vec2 curMousePos = mouseEvent->posNormalized();
