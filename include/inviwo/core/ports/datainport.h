@@ -84,7 +84,15 @@ DataInport<T, N, Flat>::~DataInport() {}
 
 template <typename T, size_t N, bool Flat>
 std::string inviwo::DataInport<T, N, Flat>::getClassIdentifier() const {
-    return port_traits<T>::class_identifier() + (N == 0 ? "Multi" : "") + "Inport";
+    switch (N) {
+        case 0:
+            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + "Inport";
+        case 1:
+            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + "MultiInport";
+        default:
+            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + toString(N) +
+                   "Inport";
+    }
 }
 
 template <typename T, size_t N, bool Flat>
@@ -166,11 +174,19 @@ std::vector<const T*> DataInport<T, N, Flat>::getVectorData() const {
 template <typename T, size_t N, bool Flat>
 std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N, Flat>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, const T*>> res(N);
-
+    
     for (auto outport : connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
-        auto dataport = static_cast<DataOutport<T>*>(outport);
-        if (dataport->hasData()) res.emplace_back(dataport, dataport->getConstData());
+        
+        if (Flat) {
+            auto oi = dynamic_cast<OutportIterator<T>*>(outport);
+            if (oi) {
+                for (auto& elem : *oi) res.emplace_back(outport, &elem);
+            }
+        } else {
+            auto dataport = static_cast<DataOutport<T>*>(outport);
+            if (dataport->hasData()) res.emplace_back(dataport, dataport->getConstData());
+        }
     }
 
     return res;
@@ -204,11 +220,11 @@ public:
     self& operator++() {
         if (Flat) {
             dIter_++;
-            auto tmp = dynamic_cast<OutportIterator<T>*>(*pIter_);
-            if (tmp && dIter_ == tmp->end()) {
+            auto outportIterable = dynamic_cast<OutportIterator<T>*>(*pIter_);
+            if (outportIterable && dIter_ == outportIterable->end()) {
                 pIter_++;
                 if (pIter_ != pEnd_)
-                    dIter_ = dynamic_cast<OutportIterator<T>*>(*pIter_)->begin();
+                    dIter_ = outportIterable->begin();
                 else {
                     dIter_ = DataIter();
                 }
@@ -223,8 +239,8 @@ public:
 
         if (Flat) {
             dIter_++;
-            auto tmp = dynamic_cast<OutportIterator<T>*>(*pIter_);
-            if (tmp && dIter_ == tmp->end()) {
+            auto outportIterable = dynamic_cast<OutportIterator<T>*>(*pIter_);
+            if (outportIterable && dIter_ == outportIterable->end()) {
                 pIter_++;
                 if (pIter_ != pEnd_)
                     dIter_ = dynamic_cast<OutportIterator<T>*>(*pIter_)->begin();

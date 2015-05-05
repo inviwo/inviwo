@@ -139,6 +139,54 @@ inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
     return iter_range<Iter>(x);
 }
 
+
+/**
+ * A type trait for std container types
+ * from: http://stackoverflow.com/a/16316640
+ * 
+ * Requirements on Container T:
+ * T::iterator = T::begin();
+ * T::iterator = T::end();
+ * T::const_iterator = T::begin() const;
+ * T::const_iterator = T::end() const;
+ * 
+ * *T::iterator = T::value_type &
+ * *T::const_iterator = T::value_type const &
+ */
+
+// Does not work in VS2013, no Expression SFINAE.
+// template <typename T>
+// struct is_container : std::integral_constant<bool, 
+//     std::is_same<
+//         decltype(std::declval<std::remove_const<T>::type>().begin()), 
+//         typename std::remove_const<T>::type::iterator
+//         >::value &&
+//     std::is_same<
+//         decltype(std::declval<std::remove_const<T>::type>().end()), 
+//         typename std::remove_const<T>::type::iterator
+//     >::value &&
+//     std::is_same<
+//         decltype(std::declval<const std::remove_const<T>::type>().begin()),
+//         typename std::remove_const<T>::type::const_iterator
+//     >::value &&
+//     std::is_same<
+//         decltype(std::declval<const std::remove_const<T>::type>().end()),    
+//         typename std::remove_const<T>::type::const_iterator
+//     >::value &&
+//     std::is_same<
+//         decltype(*std::declval<std::remove_const<T>::type::iterator>()),
+//         typename std::remove_const<T>::type::value_type&
+//     >::value &&
+//     std::is_same<
+//         decltype(*std::declval<const std::remove_const<T>::type::iterator>()), 
+//         typename std::remove_const<T>::type::value_type const&
+//     >::value 
+//    > {};
+
+//bool v1 = util::is_container<std::vector<float>>::value;
+//bool v2 = util::is_container<glm::vec3>::value;
+
+
 /**
  *	Function to combine several hash values
  *	http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
