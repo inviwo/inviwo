@@ -34,6 +34,7 @@
 #include <modules/opengl/rendering/meshdrawer.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -94,24 +95,23 @@ void GeometryPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
 
 void GeometryPicking::process() {
     utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
+
     MeshDrawer drawer(static_cast<const Mesh*>(geometryInport_.getData()));
     shader_->activate();
     shader_->setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
 
-    const SpatialCameraCoordinateTransformer<3>& ct =
-        geometryInport_.getData()->getCoordinateTransformer(&camera_);
+    const auto& ct = geometryInport_.getData()->getCoordinateTransformer(&camera_);
 
     mat4 dataToClip_ =
         ct.getWorldToClipMatrix() * glm::translate(position_.get()) * ct.getDataToWorldMatrix();
 
     shader_->setUniform("dataToClip_", dataToClip_);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glDepthFunc(GL_ALWAYS);
-    drawer.draw();
-    glDepthFunc(GL_LESS);
-    glDisable(GL_CULL_FACE);
+    {
+        utilgl::CullFaceState culling(GL_BACK);
+        utilgl::DepthFuncState depthfunc(GL_ALWAYS);
+        drawer.draw();
+    }
 
     shader_->deactivate();
     utilgl::deactivateCurrentTarget();

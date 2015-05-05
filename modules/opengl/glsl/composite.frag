@@ -30,23 +30,24 @@
 #include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
 
-uniform sampler2D texColor0_;
-uniform sampler2D texDepth0_;
-uniform sampler2D texPicking0_;
+uniform sampler2D tex0Color;
+uniform sampler2D tex0Depth;
+uniform sampler2D tex0Picking;
 
-uniform sampler2D texColor1_;
-uniform sampler2D texDepth1_;
-uniform sampler2D texPicking1_;
-uniform vec2 screenDimRCP_;
+uniform sampler2D tex1Color;
+uniform sampler2D tex1Depth;
+uniform sampler2D tex1Picking;
+
+uniform ImageParameters outportParameters;
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * screenDimRCP_;
-    vec4 color0 = texture(texColor0_, texCoords);
-    vec4 picking0 = texture(texPicking0_, texCoords);
-    float depth0 = texture(texDepth0_, texCoords).r;
-    vec4 color1 = texture(texColor1_, texCoords);
-    vec4 picking1 = texture(texPicking1_, texCoords);
-    float depth1 = texture(texDepth1_, texCoords).r;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec4 color0 = texture(tex0Color, texCoords);
+    vec4 picking0 = texture(tex0Picking, texCoords);
+    float depth0 = texture(tex0Depth, texCoords).r;
+    vec4 color1 = texture(tex1Color, texCoords);
+    vec4 picking1 = texture(tex1Picking, texCoords);
+    float depth1 = texture(tex1Depth, texCoords).r;
     vec4 colorOut;
     vec4 pickingOut;
     float depthOut;
