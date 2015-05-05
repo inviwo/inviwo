@@ -68,7 +68,7 @@ protected:
     void changeRenderMode();
     void updateDrawers();
 
-    GeometryMultiInport inport_;
+    GeometryFlatMultiInport inport_;
     ImageOutport outport_;
 
     CameraProperty camera_;
