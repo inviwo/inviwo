@@ -36,22 +36,25 @@
 namespace inviwo {
 
 template <typename T>
-struct OutportIterator {
-    OutportIterator() {}
-    virtual ~OutportIterator() {}
+struct OutportIterable {
+    OutportIterable() {}
+    virtual ~OutportIterable() {}
 
     class const_iterator : public std::iterator<std::forward_iterator_tag, T> {
         using self = const_iterator;
         using ContIter = typename std::vector<T>::const_iterator;
 
     public:
-        const_iterator() : container_(false), ptr_(nullptr), iter_() {}
-        explicit const_iterator(const T* ptr) : container_(false), ptr_(ptr), iter_() {}
-        explicit const_iterator(ContIter iter) : container_(true), ptr_(nullptr), iter_(iter) {}
+        const_iterator() : container_(false), end_(true), ptr_(nullptr), iter_() {}
+        explicit const_iterator(const T* ptr, bool end)
+            : container_(false), end_(end), ptr_(ptr), iter_() {}
+        explicit const_iterator(ContIter iter, bool end)
+            : container_(true), end_(end), ptr_(nullptr), iter_(iter) {}
         self& operator++() {
             if (container_) {
                 iter_++;
             } else {
+                end_ = true;
                 ptr_ = nullptr;
             }
             return *this;
@@ -61,6 +64,7 @@ struct OutportIterator {
             if (container_) {
                 iter_++;
             } else {
+                end_ = true;
                 ptr_ = nullptr;
             }
             return i;
@@ -70,14 +74,27 @@ struct OutportIterator {
         const T* operator->() { return container_ ? &(*iter_) : ptr_; }
 
         bool operator==(const self& rhs) const {
-            return container_ ? iter_ == rhs.iter_ : ptr_ == rhs.ptr_;
+            if (end_ && rhs.end_) return true;
+
+            if (container_ == rhs.container_) {
+                return container_ ? iter_ == rhs.iter_ : ptr_ == rhs.ptr_;
+            } else {
+                return false;
+            }
         }
         bool operator!=(const self& rhs) const {
-            return container_ ? iter_ != rhs.iter_ : ptr_ != rhs.ptr_;
+            if (end_ && rhs.end_) return false;
+
+            if (container_ == rhs.container_) {
+                return container_ ? iter_ != rhs.iter_ : ptr_ != rhs.ptr_;
+            } else {
+                return true;
+            }
         }
 
     private:
         bool container_;
+        bool end_;
         const T* ptr_;
         ContIter iter_;
     };
@@ -90,34 +107,32 @@ template <typename T>
 class DataOutport;
 
 template <typename T>
-struct OutportIteratorImpl : public OutportIterator<T> {
-    OutportIteratorImpl(DataOutport<T>* port) : port_(port) {}
-    using const_iterator = typename OutportIterator<T>::const_iterator;
+struct OutportIterableImpl : public OutportIterable<T> {
+    OutportIterableImpl(DataOutport<T>* port) : port_(port) {}
+    using const_iterator = typename OutportIterable<T>::const_iterator;
 
-    virtual const_iterator begin() const override { return const_iterator(port_->getConstData()); }
-    virtual const_iterator end() const override { return const_iterator(nullptr); }
+    virtual const_iterator begin() const override { return const_iterator(port_->getConstData(), false); }
+    virtual const_iterator end() const override { return const_iterator(nullptr, true); }
 
 private:
     DataOutport<T>* port_;
 };
 template <typename T>
-struct OutportIteratorImpl<std::vector<T>> : public OutportIterator<T> {
-    OutportIteratorImpl(DataOutport<std::vector<T>>* port) : port_(port) {}
-    using const_iterator = typename OutportIterator<T>::const_iterator;
+struct OutportIterableImpl<std::vector<T>> : public OutportIterable<T> {
+    OutportIterableImpl(DataOutport<std::vector<T>>* port) : port_(port) {}
+    using const_iterator = typename OutportIterable<T>::const_iterator;
 
     virtual const_iterator begin() const override {
-        return const_iterator(port_->getConstData()->begin());
+        return const_iterator(port_->getConstData()->begin(), false);
     };
     virtual const_iterator end() const override {
-        return const_iterator(port_->getConstData()->end());
+        return const_iterator(port_->getConstData()->end(), true);
     };
 
 private:
     DataOutport<std::vector<T>>* port_;
 };
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_OUTPORTITERATOR_H
-
+#endif  // IVW_OUTPORTITERATOR_H

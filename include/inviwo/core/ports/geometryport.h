@@ -39,6 +39,7 @@ namespace inviwo {
 
 using GeometryInport = DataInport<Geometry>;
 using GeometryMultiInport = DataInport<Geometry, 0>;
+using GeometryFlatMultiInport = DataInport<Geometry, 0, true>;
 using GeometryOutport =  DataOutport<Geometry>;
 
 }  // namespace

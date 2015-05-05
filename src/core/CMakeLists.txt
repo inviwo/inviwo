@@ -137,8 +137,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/geometryport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/imageport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/inport.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/ports/inportiterable.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/outport.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/ports/outportiterator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/ports/outportiterable.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/port.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/portfactoryobject.h
@@ -348,7 +349,6 @@ set(SOURCE_FILES
     ports/imageport.cpp
     ports/inport.cpp
     ports/outport.cpp
-    ports/outportiterator.cpp
     ports/port.cpp
     ports/portfactory.cpp
     ports/portfactoryobject.cpp

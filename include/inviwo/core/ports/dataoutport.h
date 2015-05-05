@@ -35,13 +35,13 @@
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/ports/outport.h>
-#include <inviwo/core/ports/outportiterator.h>
+#include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/util/introspection.h>
 
 namespace inviwo {
 
 template <typename T>
-class DataOutport : public Outport, public OutportIteratorImpl<T> {
+class DataOutport : public Outport, public OutportIterableImpl<T> {
 public:
     DataOutport(std::string identifier);
     virtual ~DataOutport();
@@ -106,7 +106,7 @@ DataSequence<T>* getDataSequence(T* data) {
 template <typename T>
 DataOutport<T>::DataOutport(std::string identifier)
     : Outport(identifier)
-    , OutportIteratorImpl<T>(this)
+    , OutportIterableImpl<T>(this)
     , data_(nullptr)
     , ownsData_(true)
     , isSequence_(false) {}

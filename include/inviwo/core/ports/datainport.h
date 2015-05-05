@@ -34,7 +34,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
-#include <inviwo/core/ports/outportiterator.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <limits>
@@ -46,7 +47,7 @@ template <typename T>
 class DataOutport;
 
 template <typename T, size_t N = 1, bool Flat = false>
-class DataInport : public Inport {
+class DataInport : public Inport, public InportIterable<T, Flat> {
 public:
     DataInport(std::string identifier);
     virtual ~DataInport();
@@ -65,19 +66,11 @@ public:
     virtual std::vector<std::pair<Outport*, const T*>> getSourceVectorData() const;
 
     bool hasData() const;
-
-    class const_iterator;
-    const_iterator begin() const {
-        return const_iterator(connectedOutports_.begin(), connectedOutports_.end());
-    }
-    const_iterator end() const {
-        return const_iterator(connectedOutports_.end(), connectedOutports_.end());
-    }
 };
 
 template <typename T, size_t N, bool Flat>
 DataInport<T, N, Flat>::DataInport(std::string identifier)
-    : Inport(identifier) {}
+    : Inport(identifier), InportIterable<T, Flat>(&connectedOutports_) {}
 
 template <typename T, size_t N, bool Flat>
 DataInport<T, N, Flat>::~DataInport() {}
@@ -114,7 +107,7 @@ bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
     
     if (dynamic_cast<const DataOutport<T>*>(port))
         return true;
-    else if (Flat && dynamic_cast<const OutportIterator<T>*>(port))
+    else if (Flat && dynamic_cast<const OutportIterable<T>*>(port))
         return true;
     else
         return false;
@@ -125,8 +118,8 @@ void DataInport<T, N, Flat>::connectTo(Outport* port) {
     if (!port) return;
 
     const DataOutport<T>* dataPort = dynamic_cast<const DataOutport<T>*>(port);
-    const OutportIterator<T>* flatPort =
-        Flat ? dynamic_cast<const OutportIterator<T>*>(port) : nullptr;
+    const OutportIterable<T>* flatPort =
+        Flat ? dynamic_cast<const OutportIterable<T>*>(port) : nullptr;
 
     if (dataPort == nullptr && flatPort == nullptr)
         throw Exception("Trying to connect incompatible ports.", IvwContext);
@@ -179,7 +172,7 @@ std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N, Flat>::getSo
         // Safe to static cast since we are unable to connect other outport types.
         
         if (Flat) {
-            auto oi = dynamic_cast<OutportIterator<T>*>(outport);
+            auto oi = dynamic_cast<OutportIterable<T>*>(outport);
             if (oi) {
                 for (auto& elem : *oi) res.emplace_back(outport, &elem);
             }
@@ -205,79 +198,6 @@ std::string DataInport<T, N, Flat>::getContentInfo() const {
         return "Port has no data";
     }
 }
-
-template <typename T, size_t N, bool Flat>
-class DataInport<T, N, Flat>::const_iterator : public std::iterator<std::forward_iterator_tag, T> {
-    using self = const_iterator;
-    using PortIter = typename std::vector<Outport*>::const_iterator;
-    using DataIter = typename OutportIterator<T>::const_iterator;
-
-public:
-    explicit const_iterator(PortIter pIterBegin, PortIter pIterEnd)
-        : pIter_(pIterBegin), pEnd_(pIterEnd), dIter_() {
-        if (Flat && pIter_ != pEnd_) dIter_ = dynamic_cast<OutportIterator<T>*>(*pIter_)->begin();
-    }
-    self& operator++() {
-        if (Flat) {
-            dIter_++;
-            auto outportIterable = dynamic_cast<OutportIterator<T>*>(*pIter_);
-            if (outportIterable && dIter_ == outportIterable->end()) {
-                pIter_++;
-                if (pIter_ != pEnd_)
-                    dIter_ = outportIterable->begin();
-                else {
-                    dIter_ = DataIter();
-                }
-            }
-        } else {
-            pIter_++;
-        }
-        return *this;
-    }
-    self operator++(int) {
-        self i = *this;
-
-        if (Flat) {
-            dIter_++;
-            auto outportIterable = dynamic_cast<OutportIterator<T>*>(*pIter_);
-            if (outportIterable && dIter_ == outportIterable->end()) {
-                pIter_++;
-                if (pIter_ != pEnd_)
-                    dIter_ = dynamic_cast<OutportIterator<T>*>(*pIter_)->begin();
-                else {
-                    dIter_ = DataIter();
-                }
-            }
-        } else {
-            pIter_++;
-        }
-
-        return i;
-    }
-    const T& operator*() {
-        return Flat ? *dIter_ : *(static_cast<DataOutport<T>*>(*pIter_)->getConstData());
-    }
-    const T* operator->() {
-        return Flat ? &(*dIter_) : static_cast<DataOutport<T>*>(*pIter_)->getConstData();
-    }
-    bool operator==(const self& rhs) const {
-        if (Flat)
-            return pIter_ == rhs.pIter_ && dIter_ == rhs.dIter_;
-        else
-            return pIter_ == rhs.pIter_;
-    }
-    bool operator!=(const self& rhs) const {
-        if (Flat)
-            return pIter_ != rhs.pIter_ || dIter_ != rhs.dIter_;
-        else
-            return pIter_ != rhs.pIter_;
-    }
-
-private:
-    PortIter pIter_;
-    PortIter pEnd_;
-    DataIter dIter_;
-};
 
 }  // namespace
 
