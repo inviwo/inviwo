@@ -68,6 +68,12 @@ public:
     bool hasData() const;
 };
 
+template<typename T>
+using MultiDataInport = DataInport<T, 0, false>;
+
+template<typename T>
+using FlatMultiDataInport = DataInport<T, 0, true>;
+
 template <typename T, size_t N, bool Flat>
 DataInport<T, N, Flat>::DataInport(std::string identifier)
     : Inport(identifier), InportIterable<T, Flat>(&connectedOutports_) {}
@@ -149,7 +155,7 @@ template <typename T, size_t N, bool Flat>
 const T* DataInport<T, N, Flat>::getData() const {
     if (isConnected()) {
         // Safe to static cast since we are unable to connect other outport types.
-        return &*begin();
+        return &*(this->begin());
     } else {
         return nullptr;
     }
