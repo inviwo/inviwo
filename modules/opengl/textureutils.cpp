@@ -395,9 +395,9 @@ void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont, const Image*
             TextureUnit unit1, unit2, unit3;
             bindTextures(image, unit1, unit2, unit3);
             utilgl::setShaderUniforms(shader, image, id + "Parameters");
-            shader->setUniform(id + "Color", cont[0].getUnitNumber());
-            shader->setUniform(id + "Depth", cont[1].getUnitNumber());
-            shader->setUniform(id + "Picking", cont[2].getUnitNumber());
+            shader->setUniform(id + "Color", unit1.getUnitNumber());
+            shader->setUniform(id + "Depth", unit2.getUnitNumber());
+            shader->setUniform(id + "Picking", unit3.getUnitNumber());
             cont.push_back(std::move(unit1));
             cont.push_back(std::move(unit2));
             cont.push_back(std::move(unit3));
@@ -415,6 +415,7 @@ void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont, ImageOutport
                         ImageType type) {
     bindAndSetUniforms(shader, cont, port.getData(), port.getIdentifier(), type);
 }
+
 }
 
 }  // namespace
