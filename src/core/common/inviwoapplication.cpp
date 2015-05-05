@@ -89,8 +89,13 @@ InviwoApplication::~InviwoApplication() {
     for (auto module : modules_) {
         delete module;
     }
-
     modules_.clear();
+
+    for (auto callback : moudleCallbackActions_){
+        delete callback;
+    }
+    moudleCallbackActions_.clear();
+
 
     delete processorNetwork_;
     delete processorNetworkEvaluator_;

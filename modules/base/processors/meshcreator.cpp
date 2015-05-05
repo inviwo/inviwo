@@ -54,7 +54,8 @@ MeshCreator::MeshCreator()
 
     meshType_.addOption("sphere", "Sphere", SPHERE);
     meshType_.addOption("colorsphere", "Color Sphere", COLOR_SPHERE);
-    meshType_.addOption("cube", "Cube", CUBE);
+    meshType_.addOption("cube_basic_mesh", "Cube (Basic Mesh)", CUBE_BASIC_MESH);
+    meshType_.addOption("cube", "Cube (Simple Mesh)", CUBE_SIMPLE_MESH);
     meshType_.addOption("linecube", "Line cube", LINE_CUBE);
     meshType_.addOption("plane", "Plane", PLANE);
     meshType_.addOption("disk", "Disk", DISK);
@@ -89,9 +90,19 @@ Mesh* MeshCreator::createMesh() {
         case COLOR_SPHERE:
             // TODO: use given mesh resolution!
             return BasicMesh::colorsphere(position1_, meshScale_.get());
-        case CUBE: {
+        case CUBE_BASIC_MESH: {
             vec3 posLLF = position1_;
             vec3 posURB = position2_;
+
+            mat4 m = glm::translate(mat4(1.0f), posLLF );
+            m = glm::scale(m, posURB - posLLF);
+
+            return BasicMesh::cube(m, color_.get());
+        }
+        case CUBE_SIMPLE_MESH: {
+            vec3 posLLF = position1_;
+            vec3 posURB = position2_;
+            
             return SimpleMeshCreator::rectangularPrism(posLLF, posURB, posLLF, posURB,
                                                        vec4(posLLF, 1.f), vec4(posURB, 1.f));
         }

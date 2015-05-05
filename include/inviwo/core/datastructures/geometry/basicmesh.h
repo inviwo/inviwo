@@ -99,7 +99,7 @@ public:
                             const vec4& color = vec4(1,1,1,1), const ivec2& res = ivec2(1));
 
 
-    static BasicMesh* box(const mat4& orientation, const vec4 &color = vec4(1,1,1,1));
+    static BasicMesh* cube(const mat4& orientation, const vec4 &color = vec4(1,1,1,1));
 
     static BasicMesh* coordindicator(const vec3& center,
                                      const float& size);
