@@ -269,6 +269,46 @@ protected:
     GLfloat oldPointSize_;
 };
 
+struct DepthFuncState  {
+    DepthFuncState() = delete;
+    DepthFuncState(DepthFuncState const&) = delete;
+    DepthFuncState& operator=(DepthFuncState const& that) = delete;
+
+    DepthFuncState(GLenum state) : oldState_{GL_LESS}, state_(state) {
+        glGetIntegerv(GL_DEPTH_FUNC, &oldState_);
+        if (oldState_ != state_) {
+            glDepthFunc(state_);
+        }
+    }
+
+    DepthFuncState(DepthFuncState&& rhs)
+        : oldState_(rhs.oldState_), state_(rhs.state_) {
+        rhs.state_ = rhs.oldState_;
+    }
+    DepthFuncState& operator=(DepthFuncState&& that) {
+        if (this != &that) {
+            state_ = that.oldState_;
+            std::swap(state_, that.state_);
+            oldState_ = that.oldState_;
+        }
+        return *this;
+    }
+
+    virtual ~DepthFuncState() {
+        if (oldState_ != state_) {
+            glDepthFunc(oldState_);    
+        }
+    }
+
+protected:
+    GLint oldState_;
+    GLint state_;
+};
+
+
+
+
+
 }  // namespace
 
 }  // namespace
