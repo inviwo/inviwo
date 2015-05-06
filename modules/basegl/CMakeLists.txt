@@ -23,6 +23,11 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumediff.h
@@ -32,13 +37,9 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelaplacian.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -63,6 +64,11 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumediff.cpp
@@ -72,13 +78,9 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelaplacian.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumelowpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumemapping.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslicegl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/viewmanager.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

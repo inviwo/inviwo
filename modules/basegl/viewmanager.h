@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,66 +27,45 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGELAYOUTGL_H
-#define IVW_IMAGELAYOUTGL_H
+#ifndef IVW_VIEWMANAGER_H
+#define IVW_VIEWMANAGER_H
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/interaction/interactionhandler.h>
-#include <inviwo/core/ports/imageport.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/shader.h>
-#include <modules/basegl/viewmanager.h>
 
 namespace inviwo {
 
-// Mouse click activates the area for mouse/key interactions.
-class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
+/**
+ * \class ViewManager
+ *
+ * \brief A viewport manager for layout processors like imagelayout
+ *
+ */
+class IVW_MODULE_BASEGL_API ViewManager {
 public:
-    InviwoProcessorInfo();
+    ViewManager();
 
-    enum class Layout {
-        Single,
-        HorizontalSplit,
-        VerticalSplit,
-        CrossSplit,
-        ThreeLeftOneRight,
-        ThreeRightOneLeft,
-    };
+    Event* registerEvent(Event* event);
+    ivec2 getActivePosition() const { return activePosition_; }
+    size_t getActiveView() const { return activeView_; }
 
-    ImageLayoutGL();
-    virtual ~ImageLayoutGL();
-
-    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
-    virtual void propagateEvent(Event*) override;
-
-protected:
-    virtual void process() override;
-
-    void updateViewports(ivec2 size, bool force = false);
-    void onStatusChange();
+    const std::vector<ivec4>& getViews() const;
+    void push_back(ivec4 view);
+    ivec4& operator[](size_t ind);
+    size_t size() const;
+    void clear();
 
 private:
-    ImageMultiInport multiinport_;
-    ImageOutport outport_;
+    size_t findView(ivec2 pos) const;
+    static ivec2 flipY(ivec2 pos, ivec2 size);
+    static bool inView(const ivec4& view, const ivec2& pos);
 
-    TemplateOptionProperty<Layout> layout_;
-    FloatProperty horizontalSplitter_;
-    FloatProperty verticalSplitter_;
-    FloatProperty vertical3Left1RightSplitter_;
-    FloatProperty vertical3Right1LeftSplitter_;
-
-    Shader shader_;
-    ViewManager viewManager_;
-    Layout currentLayout_;
-    ivec2 currentDim_;
+    bool viewportActive_;
+    ivec2 activePosition_;
+    size_t activeView_;
+    std::vector<ivec4> views_;
 };
 
 }  // namespace
 
-#endif  // IVW_IMAGELAYOUTGL_H
+#endif  // IVW_VIEWMANAGER_H

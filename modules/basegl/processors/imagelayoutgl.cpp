@@ -104,29 +104,20 @@ ImageLayoutGL::ImageLayoutGL()
 
 ImageLayoutGL::~ImageLayoutGL() {}
 
-void ImageLayoutGL::initialize() {
-    Processor::initialize();
-    onStatusChange();
-}
-
-
 void ImageLayoutGL::propagateEvent(Event* event) {
     invokeEvent(event);
     
-    viewManager_.registerEvent(event);
+    std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
 
     size_t activeView = viewManager_.getActiveView();
     auto data = multiinport_.getConnectedOutports();
 
-    if (activeView < data.size() ) {
-        Event* newEvent = viewManager_.newAdjustedEvent(event);
-        multiinport_.propagateEvent(newEvent, data[activeView]);
+    if (newEvent && activeView < data.size() ) {
+
+        multiinport_.propagateEvent(newEvent.get(), data[activeView]);
         if (newEvent->hasBeenUsed()) event->markAsUsed();
-        delete newEvent;
     }
 }
-
-const std::vector<ivec4>& ImageLayoutGL::getViewCoords() const { return viewManager_.getViews(); }
 
 bool ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
     updateViewports(resizeEvent->size(), true);
@@ -306,106 +297,6 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     currentLayout_ = layout_.get();
 }
 
-ImageLayoutGL::ViewManager::ViewManager()
-    : viewportActive_(false)
-    , activePosition_(ivec2(0))
-    , activeView_(0) {}
 
-void ImageLayoutGL::ViewManager::registerEvent(Event* event) {
-    if (MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event)) {
-        activePosition_ = flipY(mouseEvent->pos(), mouseEvent->canvasSize());
-        if (!viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_PRESS) {
-            viewportActive_ = true;
-            activeView_ = findView(activePosition_);
-        } else if (viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_RELEASE) {
-            viewportActive_ = false;
-        }
-
-    } else if (GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event)) {
-        activePosition_ = flipY(gestureEvent->canvasSize() * gestureEvent->screenPosNormalized(),
-                                gestureEvent->canvasSize());
-        if (!viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_STARTED) {
-            viewportActive_ = true;
-            activeView_ = findView(activePosition_);
-        } else if (viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_ENDED) {
-            viewportActive_ = false;
-        }
-
-    } else if (TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(event)) {
-        // TODO fix TouchEvents
-        //         activePosition_ = flipY(touchEvent->pos(), touchEvent->canvasSize());
-        //         if (!viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_STARTED) {
-        //             viewportActive_ = true;
-        //             activeView_ = findView(activePosition_);
-        //         } else if (viewportActive_ && touchEvent->state() ==
-        //         TouchEvent::TOUCH_STATE_ENDED) {
-        //             viewportActive_ = false;
-        //         }
-    }
-}
-
-Event* ImageLayoutGL::ViewManager::newAdjustedEvent(Event* oldEvent) {
-    if (MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(oldEvent)) {
-        MouseEvent* newEvent = mouseEvent->clone();
-        const ivec4& view = views_[activeView_];
-        newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w)),
-                         uvec2(view.z, view.w));
-        return newEvent;
-
-    } else if (GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(oldEvent)) {
-        GestureEvent* newEvent = gestureEvent->clone();
-        const ivec4& view = views_[activeView_];
-        newEvent->modify(
-            vec2(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w))) /
-            vec2(view.z, view.w));
-        return newEvent;
-
-    } else if (TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(oldEvent)) {
-        // TODO fix TouchEvents
-        TouchEvent* newEvent = touchEvent->clone();
-        const ivec4& view = views_[activeView_];
-        //  newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y),ivec2(view.z, view.w)),
-        //  uvec2(view.z, view.w));
-
-        return newEvent;
-    }
-}
-
-const std::vector<ivec4>& ImageLayoutGL::ViewManager::getViews() const {
-    return views_;
-}
-
-void ImageLayoutGL::ViewManager::push_back(ivec4 view) {
-    views_.push_back(view);
-}
-
-ivec4& ImageLayoutGL::ViewManager::operator[](size_t ind) {
-    return views_[ind];
-}
-
-size_t ImageLayoutGL::ViewManager::size() const {
-    return views_.size();
-}
-
-void ImageLayoutGL::ViewManager::clear() {
-    views_.clear();
-}
-
-size_t ImageLayoutGL::ViewManager::findView(ivec2 pos) const {
-    for (size_t i = 0; i < views_.size(); ++i) {
-        if (inView(views_[i], pos)) {
-            return i;
-        }
-    }
-    return 0;
-}
-
-inviwo::ivec2 ImageLayoutGL::ViewManager::flipY(ivec2 pos, ivec2 size) {
-    return ivec2(pos.x, size.y - pos.y);
-}
-
-bool ImageLayoutGL::ViewManager::inView(const ivec4& view, const ivec2& pos) {
-    return view.x < pos.x && pos.x < view.x + view.z && view.y < pos.y && pos.y < view.y + view.w;
-}
 
 }  // namespace
