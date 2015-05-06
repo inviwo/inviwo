@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_REFERENCE_COUNTER_H
@@ -39,17 +39,17 @@ namespace inviwo {
  *
  * Reference counter for an object. Object should be removed when reference count equals zero.
  */
-class ReferenceCounter {
+class IVW_CORE_API ReferenceCounter {
 public:
-    ReferenceCounter(): referenceCount_(1) {};
-    virtual ~ReferenceCounter() { ivwAssert(getRefCount() == 0, "Deleting object with reference count != 0"); }
+    ReferenceCounter();;
+    virtual ~ReferenceCounter();
     /**
      * Increase reference count of this object.
      * Object should not be removed unless reference count is zero.
      *
      * @return New reference count after increasing it.
      */
-    int increaseRefCount() { return ++referenceCount_; }
+    int increaseRefCount();
 
     /**
      * Decrease reference count of this object.
@@ -57,20 +57,18 @@ public:
      *
      * @return New reference count after decreasing it.
      */
-    int decreaseRefCount() { return --referenceCount_; }
+    int decreaseRefCount();
     /**
      * Get reference count of this object.
      * Object should not be removed unless reference count is zero.
      *
      */
-    int getRefCount() const { return referenceCount_; }
+    int getRefCount() const;
+
 private:
     int referenceCount_;
-
-
 };
 
+};  // namespace inviwo
 
-}; // namespace inviwo
-
-#endif // IVW_REFERENCE_COUNTER_H
+#endif  // IVW_REFERENCE_COUNTER_H

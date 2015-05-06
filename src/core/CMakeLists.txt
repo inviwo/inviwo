@@ -414,6 +414,7 @@ set(SOURCE_FILES
     util/observer.cpp    
     util/raiiutils.cpp
     util/rendercontext.cpp
+	util/referencecounter.cpp
     util/settings/linksettings.cpp    
     util/settings/settings.cpp    
     util/settings/systemsettings.cpp    
