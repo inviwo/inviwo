@@ -108,7 +108,15 @@ struct port_traits<std::vector<T>> {
             (!data->empty() ? " with " + port_traits<T>::data_info(&(data->front())) : " "); 
     }
 };
-
+template <typename T>
+struct port_traits<std::vector<T*>> {
+    static std::string class_identifier() { return port_traits<T>::class_identifier() + "PtrVector"; }
+    static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
+    static std::string data_info(const std::vector<T*>* data) { 
+        return "Vector of size " + toString(data->size()) +
+            (!data->empty() ? " with " + port_traits<T>::data_info(data->front()) : " "); 
+    }
+};
 }  // namespace
 
 #endif  // IVW_PORT_H
