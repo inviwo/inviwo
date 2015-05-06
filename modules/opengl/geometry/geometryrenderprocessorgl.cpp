@@ -300,17 +300,27 @@ void GeometryRenderProcessorGL::updateDrawers() {
     DrawerMap temp;
     std::swap(temp, drawers_);
 
+    std::map<const Outport*, std::vector<const Geometry*>> data;
     for (auto& elem : inport_.getSourceVectorData()) {
-        
-        auto it = temp.find(elem.first);     
+        data[elem.first].push_back(elem.second);
+    }
 
-        if (util::contains(changed, elem.first) || it == temp.end()) { // data is changed or new.
-            GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(elem.second);
-            if (renderer) {
-                drawers_[elem.first] = std::unique_ptr<GeometryDrawer>(renderer);
+    for (auto elem : data) {
+        auto ibegin = temp.lower_bound(elem.first);
+        auto iend = temp.upper_bound(elem.first);
+
+        if (util::contains(changed, elem.first) || ibegin == temp.end() ||
+            elem.second.size() != std::distance(ibegin, iend)) {  // data is changed or new.
+
+            for (auto geo : elem.second) {
+                GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geo);
+                if (renderer) {
+                    drawers_.emplace(
+                        std::make_pair(elem.first, std::unique_ptr<GeometryDrawer>(renderer)));
+                }
             }
-        } else {                                                       // reuse the old data.
-             drawers_[elem.first] = std::move(it->second);
+        } else {  // reuse the old data.
+            drawers_.insert(std::make_move_iterator(ibegin), std::make_move_iterator(iend));
         }
     }
 }

@@ -93,8 +93,9 @@ protected:
 
     Shader shader_;
 
-    using DrawerMap = std::map<const Outport*, std::unique_ptr<GeometryDrawer>>;
+    using DrawerMap = std::multimap<const Outport*, std::unique_ptr<GeometryDrawer>>;
     DrawerMap drawers_;
+
 };
 
 } // namespace
