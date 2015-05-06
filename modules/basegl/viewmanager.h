@@ -47,7 +47,7 @@ public:
 
     Event* registerEvent(Event* event);
     ivec2 getActivePosition() const { return activePosition_; }
-    size_t getActiveView() const { return activeView_; }
+    int getActiveView() const { return activeView_; }
 
     const std::vector<ivec4>& getViews() const;
     void push_back(ivec4 view);
@@ -62,7 +62,7 @@ private:
 
     bool viewportActive_;
     ivec2 activePosition_;
-    size_t activeView_;
+    int activeView_;
     std::vector<ivec4> views_;
 };
 

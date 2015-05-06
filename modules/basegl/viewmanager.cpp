@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-ViewManager::ViewManager() : viewportActive_(false), activePosition_(ivec2(0)), activeView_(0) {}
+ViewManager::ViewManager() : viewportActive_(false), activePosition_(ivec2(0)), activeView_(-1) {}
 
 Event* ViewManager::registerEvent(Event* event) {
     if (MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event)) {
@@ -43,11 +43,15 @@ Event* ViewManager::registerEvent(Event* event) {
             viewportActive_ = false;
         }
 
-        MouseEvent* newEvent = mouseEvent->clone();
-        const ivec4& view = views_[activeView_];
-        newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w)),
-                         uvec2(view.z, view.w));
-        return newEvent;
+        if (activeView_ >= 0 && activeView_ < views_.size()) {
+            MouseEvent* newEvent = mouseEvent->clone();
+            const ivec4& view = views_[activeView_];
+            newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w)),
+                             uvec2(view.z, view.w));
+            return newEvent;
+        } else {
+            return nullptr;
+        }
 
     } else if (GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event)) {
         activePosition_ = flipY(gestureEvent->canvasSize() * gestureEvent->screenPosNormalized(),
@@ -59,12 +63,16 @@ Event* ViewManager::registerEvent(Event* event) {
             viewportActive_ = false;
         }
 
-        GestureEvent* newEvent = gestureEvent->clone();
-        const ivec4& view = views_[activeView_];
-        newEvent->modify(
-            vec2(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w))) /
-            vec2(view.z, view.w));
-        return newEvent;
+        if (activeView_ >= 0 && activeView_ < views_.size()) {
+            GestureEvent* newEvent = gestureEvent->clone();
+            const ivec4& view = views_[activeView_];
+            newEvent->modify(
+                vec2(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w))) /
+                vec2(view.z, view.w));
+            return newEvent;
+        } else {
+            return nullptr;
+        }
 
     } else if (TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(event)) {
         // TODO fix TouchEvents
@@ -77,12 +85,17 @@ Event* ViewManager::registerEvent(Event* event) {
         //             viewportActive_ = false;
         //         }
 
-        TouchEvent* newEvent = touchEvent->clone();
-        const ivec4& view = views_[activeView_];
-        //  newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y),ivec2(view.z, view.w)),
-        //  uvec2(view.z, view.w));
+        if (activeView_ >= 0 && activeView_ < views_.size()) {
+            TouchEvent* newEvent = touchEvent->clone();
+            const ivec4& view = views_[activeView_];
+            //  newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y),ivec2(view.z,
+            //  view.w)),
+            //  uvec2(view.z, view.w));
 
-        return newEvent;
+            return newEvent;
+        } else {
+            return nullptr;
+        }
     }
 
     return nullptr;
@@ -104,7 +117,7 @@ size_t ViewManager::findView(ivec2 pos) const {
             return i;
         }
     }
-    return 0;
+    return -1;
 }
 
 inviwo::ivec2 ViewManager::flipY(ivec2 pos, ivec2 size) { return ivec2(pos.x, size.y - pos.y); }
