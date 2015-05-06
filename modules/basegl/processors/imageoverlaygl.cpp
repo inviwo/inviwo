@@ -135,7 +135,7 @@ void ImageOverlayGL::propagateEvent(Event* event) {
             overlayPort_.propagateEvent(event, overlayPort_.getConnectedOutport());
         } else {
             // push main view
-            inport_.propagateEvent(event, inport_.getConnectedOutport());
+            inport_.propagateEvent(event);
         }
 
     } else {
@@ -153,7 +153,7 @@ bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sou
     updateViewports(resizeEvent->size(), true);
 
     if (inport_.isConnected()) {
-        inport_.propagateResizeEvent(resizeEvent, static_cast<ImageOutport *>(inport_.getConnectedOutport()));
+        inport_.propagateResizeEvent(resizeEvent);
     }
 
     if (overlayPort_.isConnected()) {
@@ -164,12 +164,6 @@ bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sou
     return false;
 }
 
-
-//void ImageOverlayGL::overlayInportChanged() {
-//    ResizeEvent e(currentDim_);
-//    propagateResizeEvent(&e, &outport_);
-//}
-
 void ImageOverlayGL::onStatusChange() {
     ResizeEvent e(currentDim_);
     propagateResizeEvent(&e, &outport_);
@@ -178,8 +172,24 @@ void ImageOverlayGL::onStatusChange() {
 
 void ImageOverlayGL::process() {
     ivec2 dim = outport_.getData()->getDimensions();
+    
+    TextureUnit colorUnit, depthUnit, pickingUnit;
 
-    utilgl::activateTargetAndCopySource(outport_, inport_, inviwo::ALL_LAYERS);
+    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
+
+    shader_.activate();
+
+    shader_.setUniform("color_", colorUnit.getUnitNumber());
+    shader_.setUniform("depth_", depthUnit.getUnitNumber());
+    shader_.setUniform("picking_", pickingUnit.getUnitNumber());
+
+    // copy inport to outport before drawing the overlays
+    utilgl::bindTextures(inport_.getData(), colorUnit.getEnum(),
+        depthUnit.getEnum(), pickingUnit.getEnum());
+    utilgl::singleDrawImagePlaneRect();
+
+    // TODO: activating and copying the source from a ImageSource processor does not work right now
+    //utilgl::activateTargetAndCopySource(outport_, inport_, inviwo::COLOR_DEPTH_PICKING);
 
     if (overlayPort_.hasData()) {
         // draw overlay
@@ -195,14 +205,7 @@ void ImageOverlayGL::process() {
         }
 
         glDepthFunc(GL_ALWAYS);
-
-        shader_.activate();
-
-        TextureUnit colorUnit, depthUnit, pickingUnit;
-        shader_.setUniform("color_", colorUnit.getUnitNumber());
-        shader_.setUniform("depth_", depthUnit.getUnitNumber());
-        shader_.setUniform("picking_", pickingUnit.getUnitNumber());
-
+        
         utilgl::bindTextures(overlayPort_.getData(), colorUnit.getEnum(),
             depthUnit.getEnum(), pickingUnit.getEnum());
         ivec4 viewport = overlayProperty_.viewport_;

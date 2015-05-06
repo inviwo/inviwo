@@ -125,7 +125,6 @@ public:
 protected:
     virtual void process() override;
 
-    //void overlayInportChanged();
     void updateViewports(ivec2 size, bool force = false);
     void onStatusChange();
 
