@@ -54,8 +54,8 @@ ImageLayoutGL::ImageLayoutGL()
                                    0.f, 1.f)
     , vertical3Right1LeftSplitter_("vertical3Right1LeftSplitter", "Split Position", 2.0f / 3.0f,
                                    0.f, 1.f)
-    , shader_(nullptr)
-    , layoutHandler_(this)
+    , shader_("img_texturequad.vert", "img_copy.frag")
+    , viewManager_()
     , currentLayout_(Layout::CrossSplit)
     , currentDim_(0u, 0u) {
     
@@ -100,49 +100,41 @@ ImageLayoutGL::ImageLayoutGL()
     addProperty(vertical3Right1LeftSplitter_);
 
     layout_.onChange(this, &ImageLayoutGL::onStatusChange);
-
-    addInteractionHandler(&layoutHandler_);
 }
 
 ImageLayoutGL::~ImageLayoutGL() {}
 
 void ImageLayoutGL::initialize() {
     Processor::initialize();
-    shader_ = new Shader("img_texturequad.vert", "img_copy.frag");
     onStatusChange();
 }
 
-void ImageLayoutGL::deinitialize() {
-    delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
-}
 
 void ImageLayoutGL::propagateEvent(Event* event) {
     invokeEvent(event);
     
-    auto data = multiinport_.getConnectedOutports();
-    ivec2 pos = layoutHandler_.getActivePosition();
-    ivec2 dim = outport_.getConstData()->getDimensions();
-    pos.y = dim.y - pos.y;
+    viewManager_.registerEvent(event);
 
-    size_t minNum = std::min(data.size(), viewCoords_.size());
-    for (size_t i = 0; i < minNum; ++i) {
-        if (inView(viewCoords_[i], pos)) {
-            multiinport_.propagateEvent(event, data[i]);
-        }
+    size_t activeView = viewManager_.getActiveView();
+    auto data = multiinport_.getConnectedOutports();
+
+    if (activeView < data.size() ) {
+        Event* newEvent = viewManager_.newAdjustedEvent(event);
+        multiinport_.propagateEvent(newEvent, data[activeView]);
+        if (newEvent->hasBeenUsed()) event->markAsUsed();
+        delete newEvent;
     }
 }
 
-const std::vector<ivec4>& ImageLayoutGL::getViewCoords() const { return viewCoords_; }
+const std::vector<ivec4>& ImageLayoutGL::getViewCoords() const { return viewManager_.getViews(); }
 
 bool ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
     updateViewports(resizeEvent->size(), true);
     auto outports = multiinport_.getConnectedOutports();
-    size_t minNum = std::min(outports.size(), viewCoords_.size());
+    size_t minNum = std::min(outports.size(), viewManager_.size());
 
     for (size_t i = 0; i < minNum; ++i) {
-        ResizeEvent e(uvec2(viewCoords_[i].z, viewCoords_[i].w));
+        ResizeEvent e(uvec2(viewManager_[i].z, viewManager_[i].w));
         multiinport_.propagateResizeEvent(&e, static_cast<ImageOutport*>(outports[i]));
     }
 
@@ -186,25 +178,24 @@ void ImageLayoutGL::process() {
     std::vector<const Image*> images = multiinport_.getVectorData();
 
     TextureUnit colorUnit, depthUnit, pickingUnit;
-
     utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
 
-    shader_->activate();
-    shader_->setUniform("color_", colorUnit.getUnitNumber());
-    shader_->setUniform("depth_", depthUnit.getUnitNumber());
-    shader_->setUniform("picking_", pickingUnit.getUnitNumber());
+    shader_.activate();
+    shader_.setUniform("color_", colorUnit.getUnitNumber());
+    shader_.setUniform("depth_", depthUnit.getUnitNumber());
+    shader_.setUniform("picking_", pickingUnit.getUnitNumber());
 
-    size_t minNum = std::min(images.size(), viewCoords_.size());
+    size_t minNum = std::min(images.size(), viewManager_.size());
     for (size_t i = 0; i < minNum; ++i) {
         utilgl::bindTextures(images[i], colorUnit, depthUnit, pickingUnit);
-        glViewport(viewCoords_[i].x, viewCoords_[i].y, viewCoords_[i].z, viewCoords_[i].w);
+        glViewport(viewManager_[i].x, viewManager_[i].y, viewManager_[i].z, viewManager_[i].w);
         utilgl::singleDrawImagePlaneRect();
     }
 
     ivec2 dim = outport_.getData()->getDimensions();
     glViewport(0, 0, dim.x, dim.y);
 
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
     TextureUnit::setZeroUnit();
 }
@@ -212,7 +203,7 @@ void ImageLayoutGL::process() {
 void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim) && (currentLayout_ == layout_.get())) return;  // no changes
 
-    viewCoords_.clear();
+    viewManager_.clear();
     int smallWindowDim = dim.y / 3;
     switch (layout_.getSelectedValue()) {
         case Layout::HorizontalSplit:
@@ -224,9 +215,9 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #########
             // X, Y, W, H
 
-            viewCoords_.push_back(
+            viewManager_.push_back(
                 ivec4(0, horizontalSplitter_ * dim.y, dim.x, (1.f - horizontalSplitter_) * dim.y));
-            viewCoords_.push_back(ivec4(0, 0, dim.x, horizontalSplitter_ * dim.y));
+            viewManager_.push_back(ivec4(0, 0, dim.x, horizontalSplitter_ * dim.y));
             break;
         case Layout::VerticalSplit:
 
@@ -237,8 +228,8 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #########
             // X, Y, W, H
 
-            viewCoords_.push_back(ivec4(0, 0, verticalSplitter_ * dim.x, dim.y));
-            viewCoords_.push_back(
+            viewManager_.push_back(ivec4(0, 0, verticalSplitter_ * dim.x, dim.y));
+            viewManager_.push_back(
                 ivec4(verticalSplitter_ * dim.x, 0, (1.0f - verticalSplitter_) * dim.x, dim.y));
             break;
         case Layout::CrossSplit:
@@ -250,17 +241,17 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #########
             // X, Y, W, H
 
-            viewCoords_.push_back(ivec4(0, horizontalSplitter_ * dim.y, verticalSplitter_ * dim.x,
+            viewManager_.push_back(ivec4(0, horizontalSplitter_ * dim.y, verticalSplitter_ * dim.x,
                                         (1.0f - horizontalSplitter_) * dim.y));
 
-            viewCoords_.push_back(ivec4(verticalSplitter_ * dim.x, horizontalSplitter_ * dim.y,
+            viewManager_.push_back(ivec4(verticalSplitter_ * dim.x, horizontalSplitter_ * dim.y,
                                         (1.0f - verticalSplitter_) * dim.x,
                                         (1.0f - horizontalSplitter_) * dim.y));
 
-            viewCoords_.push_back(
+            viewManager_.push_back(
                 ivec4(0, 0, verticalSplitter_ * dim.x, horizontalSplitter_ * dim.y));
 
-            viewCoords_.push_back(ivec4(verticalSplitter_ * dim.x, 0,
+            viewManager_.push_back(ivec4(verticalSplitter_ * dim.x, 0,
                                         (1.0f - verticalSplitter_) * dim.x,
                                         horizontalSplitter_ * dim.y));
             break;
@@ -275,13 +266,13 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #############
             // X, Y, W, H
 
-            viewCoords_.push_back(
+            viewManager_.push_back(
                 ivec4(0, 2 * smallWindowDim, vertical3Left1RightSplitter_ * dim.x, smallWindowDim));
-            viewCoords_.push_back(
+            viewManager_.push_back(
                 ivec4(0, smallWindowDim, vertical3Left1RightSplitter_ * dim.x, smallWindowDim));
-            viewCoords_.push_back(
+            viewManager_.push_back(
                 ivec4(0, 0, vertical3Left1RightSplitter_ * dim.x, smallWindowDim));
-            viewCoords_.push_back(ivec4(vertical3Left1RightSplitter_ * dim.x, 0,
+            viewManager_.push_back(ivec4(vertical3Left1RightSplitter_ * dim.x, 0,
                                         (1.f - vertical3Left1RightSplitter_) * dim.x, dim.y));
             break;
         case Layout::ThreeRightOneLeft:
@@ -295,92 +286,125 @@ void ImageLayoutGL::updateViewports(ivec2 dim, bool force) {
             // #############
             // X, Y, W, H
 
-            viewCoords_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, 2 * smallWindowDim,
+            viewManager_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, 2 * smallWindowDim,
                                         (1.f - vertical3Right1LeftSplitter_) * dim.x,
                                         smallWindowDim));
-            viewCoords_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, smallWindowDim,
+            viewManager_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, smallWindowDim,
                                         (1.f - vertical3Right1LeftSplitter_) * dim.x,
                                         smallWindowDim));
-            viewCoords_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, 0,
+            viewManager_.push_back(ivec4(vertical3Right1LeftSplitter_ * dim.x, 0,
                                         (1.f - vertical3Right1LeftSplitter_) * dim.x,
                                         smallWindowDim));
-            viewCoords_.push_back(ivec4(0, 0, vertical3Right1LeftSplitter_ * dim.x, dim.y));
+            viewManager_.push_back(ivec4(0, 0, vertical3Right1LeftSplitter_ * dim.x, dim.y));
             break;
         case Layout::Single:
         default:
-            viewCoords_.push_back(ivec4(0, 0, dim.x, dim.y));
+            viewManager_.push_back(ivec4(0, 0, dim.x, dim.y));
     }
 
     currentDim_ = dim;
     currentLayout_ = layout_.get();
 }
 
-ImageLayoutGL::ImageLayoutGLInteractionHandler::ImageLayoutGLInteractionHandler(ImageLayoutGL* src)
-    : InteractionHandler()
-    , src_(src)
-    , activePositionChangeEvent_(ivec2(0), MouseEvent::MOUSE_BUTTON_LEFT,
-                                 MouseEvent::MOUSE_STATE_PRESS, InteractionEvent::MODIFIER_NONE,
-                                 uvec2(512))
-    , viewportActive_(false)
-    , activePosition_(ivec2(0)) {}
+ImageLayoutGL::ViewManager::ViewManager()
+    : viewportActive_(false)
+    , activePosition_(ivec2(0))
+    , activeView_(0) {}
 
-void ImageLayoutGL::ImageLayoutGLInteractionHandler::invokeEvent(Event* event) {
-    const std::vector<ivec4>& viewCoords = src_->getViewCoords();
-
-    MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event);
-    if (mouseEvent) {
-        if (!viewportActive_ && mouseEvent->state() == activePositionChangeEvent_.state()) {
+void ImageLayoutGL::ViewManager::registerEvent(Event* event) {
+    if (MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event)) {
+        activePosition_ = flipY(mouseEvent->pos(), mouseEvent->canvasSize());
+        if (!viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_PRESS) {
             viewportActive_ = true;
-            activePosition_ = mouseEvent->pos();
+            activeView_ = findView(activePosition_);
         } else if (viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_RELEASE) {
             viewportActive_ = false;
         }
 
-        ivec2 mPos = mouseEvent->pos();
-        ivec2 cSize = mouseEvent->canvasSize();
-        // Flip y-coordinate to bottom->up
-        ivec2 activePosition(activePosition_.x, cSize.y - activePosition_.y);
-        for (size_t i = 0; i < viewCoords.size(); ++i) {
-            if (inView(viewCoords[i], activePosition)) {
-                ivec2 vc = ivec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
-                mouseEvent->modify(mPos - vc, uvec2(viewCoords[i].z, viewCoords[i].w));
-                break;
-            }
-        }
-
-        return;
-    }
-
-    GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
-    if (gestureEvent) {
-        vec2 mPosNorm = gestureEvent->screenPosNormalized();
-        vec2 cSize = gestureEvent->canvasSize();
-        vec2 mPos = mPosNorm * cSize;
-        vec2 activePosition(mPos.x, cSize.y - mPos.y);
-        for (size_t i = 0; i < viewCoords.size(); ++i) {
-            if (inView(viewCoords[i], activePosition)) {
-                vec2 vc = vec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
-                gestureEvent->modify((mPos - vc) / vec2(viewCoords[i].zw()));
-                break;
-            }
-        }
-
-        return;
-    }
-
-    TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(event);
-    if (touchEvent) {
-        if (!viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_STARTED) {
+    } else if (GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event)) {
+        activePosition_ = flipY(gestureEvent->canvasSize() * gestureEvent->screenPosNormalized(),
+                                gestureEvent->canvasSize());
+        if (!viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_STARTED) {
             viewportActive_ = true;
-            activePosition_ = touchEvent->pos();
-        } else if (viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_ENDED) {
+            activeView_ = findView(activePosition_);
+        } else if (viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_ENDED) {
             viewportActive_ = false;
         }
-        return;
+
+    } else if (TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(event)) {
+        // TODO fix TouchEvents
+        //         activePosition_ = flipY(touchEvent->pos(), touchEvent->canvasSize());
+        //         if (!viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_STARTED) {
+        //             viewportActive_ = true;
+        //             activeView_ = findView(activePosition_);
+        //         } else if (viewportActive_ && touchEvent->state() ==
+        //         TouchEvent::TOUCH_STATE_ENDED) {
+        //             viewportActive_ = false;
+        //         }
     }
 }
 
-bool ImageLayoutGL::inView(const ivec4& view, const ivec2& pos) {
+Event* ImageLayoutGL::ViewManager::newAdjustedEvent(Event* oldEvent) {
+    if (MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(oldEvent)) {
+        MouseEvent* newEvent = mouseEvent->clone();
+        const ivec4& view = views_[activeView_];
+        newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w)),
+                         uvec2(view.z, view.w));
+        return newEvent;
+
+    } else if (GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(oldEvent)) {
+        GestureEvent* newEvent = gestureEvent->clone();
+        const ivec4& view = views_[activeView_];
+        newEvent->modify(
+            vec2(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w))) /
+            vec2(view.z, view.w));
+        return newEvent;
+
+    } else if (TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(oldEvent)) {
+        // TODO fix TouchEvents
+        TouchEvent* newEvent = touchEvent->clone();
+        const ivec4& view = views_[activeView_];
+        //  newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y),ivec2(view.z, view.w)),
+        //  uvec2(view.z, view.w));
+
+        return newEvent;
+    }
+}
+
+const std::vector<ivec4>& ImageLayoutGL::ViewManager::getViews() const {
+    return views_;
+}
+
+void ImageLayoutGL::ViewManager::push_back(ivec4 view) {
+    views_.push_back(view);
+}
+
+ivec4& ImageLayoutGL::ViewManager::operator[](size_t ind) {
+    return views_[ind];
+}
+
+size_t ImageLayoutGL::ViewManager::size() const {
+    return views_.size();
+}
+
+void ImageLayoutGL::ViewManager::clear() {
+    views_.clear();
+}
+
+size_t ImageLayoutGL::ViewManager::findView(ivec2 pos) const {
+    for (size_t i = 0; i < views_.size(); ++i) {
+        if (inView(views_[i], pos)) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+inviwo::ivec2 ImageLayoutGL::ViewManager::flipY(ivec2 pos, ivec2 size) {
+    return ivec2(pos.x, size.y - pos.y);
+}
+
+bool ImageLayoutGL::ViewManager::inView(const ivec4& view, const ivec2& pos) {
     return view.x < pos.x && pos.x < view.x + view.z && view.y < pos.y && pos.y < view.y + view.w;
 }
 

@@ -40,10 +40,9 @@
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/glwrap/shader.h>
 
 namespace inviwo {
-
-class Shader;
 
 // Right mouse click activates the area for mouse/key interactions.
 class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
@@ -63,7 +62,6 @@ public:
     InviwoProcessorInfo();
 
     virtual void initialize() override;
-    virtual void deinitialize() override;
 
     const std::vector<Inport*>& getInports(Event*) const;
     const std::vector<ivec4>& getViewCoords() const;
@@ -77,23 +75,35 @@ protected:
     void updateViewports(ivec2 size, bool force = false);
     void onStatusChange();
 
-    class ImageLayoutGLInteractionHandler : public InteractionHandler {
+    class ViewManager {
     public:
-        ImageLayoutGLInteractionHandler(ImageLayoutGL*);
-        ~ImageLayoutGLInteractionHandler(){};
+        ViewManager();
+        ~ViewManager(){};
 
-        void invokeEvent(Event* event);
+        void registerEvent(Event* event);
         ivec2 getActivePosition() const { return activePosition_; }
+        size_t getActiveView() const { return activeView_; }
+        Event* newAdjustedEvent(Event* oldEvent);
+
+        const std::vector<ivec4>& getViews() const;
+        void push_back(ivec4 view);
+        ivec4& operator[](size_t ind);
+        size_t size() const;
+        void clear();
 
     private:
-        ImageLayoutGL* src_;
-        MouseEvent activePositionChangeEvent_;
+        size_t findView(ivec2 pos) const;
+        static ivec2 flipY(ivec2 pos, ivec2 size);
+        static bool inView(const ivec4& view, const ivec2& pos);
+
         bool viewportActive_;
         ivec2 activePosition_;
+        size_t activeView_;
+        std::vector<ivec4> views_;
     };
 
 private:
-    static bool inView(const ivec4& view, const ivec2& pos);
+
     ImageMultiInport multiinport_;
     ImageOutport outport_;
     
@@ -103,16 +113,12 @@ private:
     FloatProperty vertical3Left1RightSplitter_;
     FloatProperty vertical3Right1LeftSplitter_;
 
-    Shader* shader_;
+    Shader shader_;
 
-    ImageLayoutGLInteractionHandler layoutHandler_;
+    ViewManager viewManager_;
 
     Layout currentLayout_;
     ivec2 currentDim_;
-
-    std::vector<ivec4> viewCoords_;
-
-    mutable std::vector<Inport*> currentInteractionInport_;
 };
 
 }  // namespace
