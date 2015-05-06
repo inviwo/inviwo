@@ -207,6 +207,7 @@ void Image::resizeRepresentations(Image* targetImage, uvec2 targetDim) const {
     std::vector<DataGroupRepresentation*>& targetRepresentations = targetImage->representations_;
     size_t numRepTargets = targetRepresentations.size();
 
+    bool copyDone = false;
     if (numRepTargets > 0) {
         //Scheme: Only ask for one editable representations to resize
         //Thus all others can update from one resized version
@@ -244,8 +245,7 @@ void Image::resizeRepresentations(Image* targetImage, uvec2 targetDim) const {
 
         ImageRepresentation* sourceImageRepresentation = nullptr;
         ImageRepresentation* targetImageRepresentation = nullptr;
-
-        bool copyDone = false;
+   
         for (size_t i = 0; i < targetRepresentations.size() && !copyDone; i++) {
             for (size_t j = 0; j < representations_.size() && !copyDone; j++) {
                 if (typeid(*representations_[j]) == typeid(*targetRepresentations[preferredResizeOrder[i]])) {
@@ -261,7 +261,9 @@ void Image::resizeRepresentations(Image* targetImage, uvec2 targetDim) const {
                 }
             }
         }
-    } else {
+    } 
+    
+    if (!copyDone) { // Fallback
         // If not representation exist, create ImageRAM one
         const ImageRAM* imageRAM = this->getRepresentation<ImageRAM>();
         imageRAM->copyAndResizeRepresentation(targetImage->getEditableRepresentation<ImageRAM>());
