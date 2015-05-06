@@ -125,7 +125,7 @@ public:
 protected:
     virtual void process() override;
 
-    void overlayInportChanged();
+    //void overlayInportChanged();
     void updateViewports(ivec2 size, bool force = false);
     void onStatusChange();
 
@@ -137,10 +137,14 @@ protected:
         void invokeEvent(Event* event);
         ivec2 getActivePosition() const { return activePosition_; }
 
+        void setEnabled(bool enable) { enabled_ = enable; }
+        bool isEnabled() const { return enabled_; }
+
     private:
         ImageOverlayGL* src_;
         MouseEvent activePositionChangeEvent_;
         bool viewportActive_;
+        bool enabled_;
         ivec2 activePosition_;
     };
 
