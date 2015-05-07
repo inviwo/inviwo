@@ -44,13 +44,13 @@
 namespace inviwo {
 class Shader;
 
-/** \docpage{org.inviwo.GeometryPicking, Geometry Picking}
-* Composite image with geometry where geometry repositioned through picking
+/** \docpage{org.inviwo.MeshPicking, Mesh Picking}
+* Composite image with mesh where mesh repositioned through picking
 *
-* Use Left Mouse Button to move the geomtry around in the scene 
+* Use Left Mouse Button to move the mesh around in the scene 
 *
 * ### Inports
-*   * __GeometryInport__ The input geometry.
+*   * __MeshInport__ The input mesh.
 *   * __ImageInport__ The input image.
 *
 * ### Outports
@@ -67,24 +67,24 @@ class Shader;
 *
 */
 
-class IVW_MODULE_BASEGL_API GeometryPicking : public CompositeProcessorGL {
+class IVW_MODULE_BASEGL_API MeshPicking : public CompositeProcessorGL {
 public:
     InviwoProcessorInfo();
 
-    GeometryPicking();
-    virtual ~GeometryPicking();
+    MeshPicking();
+    virtual ~MeshPicking();
 
     void initialize();
     void deinitialize();
 
     virtual void process();
     
-    bool isReady() const { return geometryInport_.isReady(); }
+    bool isReady() const { return meshInport_.isReady(); }
 
     void updateWidgetPositionFromPicking(const PickingObject*);
 
 private:
-    GeometryInport geometryInport_;
+    MeshInport meshInport_;
     ImageInport imageInport_;
     ImageOutport outport_;
 

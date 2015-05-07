@@ -32,7 +32,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(MeshSource, "org.inviwo.GeometrySource");
-ProcessorDisplayName(MeshSource,  "Geometry Source");
+ProcessorDisplayName(MeshSource,  "Mesh Source");
 ProcessorTags(MeshSource, Tags::CPU);
 ProcessorCategory(MeshSource, "Data Input");
 ProcessorCodeState(MeshSource, CODE_STATE_STABLE);

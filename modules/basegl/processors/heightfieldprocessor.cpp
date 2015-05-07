@@ -42,7 +42,7 @@ ProcessorCategory(HeightFieldProcessor, "Heightfield");
 ProcessorCodeState(HeightFieldProcessor, CODE_STATE_EXPERIMENTAL); 
 
 HeightFieldProcessor::HeightFieldProcessor()
-    : GeometryRenderProcessorGL()
+    : MeshRenderProcessorGL()
     , inportHeightfield_("heightfield.inport", true)
     , inportTexture_("texture.inport", true)
     , inportNormalMap_("normalmap.inport", true)
@@ -104,7 +104,7 @@ void HeightFieldProcessor::process() {
     shader_.setUniform("heightScale_", heightScale_.get());
 
     // render mesh
-    GeometryRenderProcessorGL::process();
+    MeshRenderProcessorGL::process();
     TextureUnit::setZeroUnit();
 }
 

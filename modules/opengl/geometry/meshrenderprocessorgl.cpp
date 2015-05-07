@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "geometryrenderprocessorgl.h"
+#include "meshrenderprocessorgl.h"
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/trackball.h>
@@ -43,13 +43,13 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(GeometryRenderProcessorGL, "org.inviwo.GeometryRenderGL");
-ProcessorDisplayName(GeometryRenderProcessorGL, "Geometry Renderer");
-ProcessorTags(GeometryRenderProcessorGL, Tags::GL);
-ProcessorCategory(GeometryRenderProcessorGL, "Geometry Rendering");
-ProcessorCodeState(GeometryRenderProcessorGL, CODE_STATE_STABLE);
+ProcessorClassIdentifier(MeshRenderProcessorGL, "org.inviwo.GeometryRenderGL");
+ProcessorDisplayName(MeshRenderProcessorGL, "Mesh Renderer");
+ProcessorTags(MeshRenderProcessorGL, Tags::GL);
+ProcessorCategory(MeshRenderProcessorGL, "Geometry Rendering");
+ProcessorCodeState(MeshRenderProcessorGL, CODE_STATE_STABLE);
 
-GeometryRenderProcessorGL::GeometryRenderProcessorGL()
+MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()
     , inport_("geometry.inport")
     , outport_("image.outport")
@@ -74,13 +74,13 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     addPort(inport_);
     addPort(outport_);
     addProperty(camera_);
-    centerViewOnGeometry_.onChange(this, &GeometryRenderProcessorGL::centerViewOnGeometry);
+    centerViewOnGeometry_.onChange(this, &MeshRenderProcessorGL::centerViewOnGeometry);
     addProperty(centerViewOnGeometry_);
-    setNearFarPlane_.onChange(this, &GeometryRenderProcessorGL::setNearFarPlane);
+    setNearFarPlane_.onChange(this, &MeshRenderProcessorGL::setNearFarPlane);
     addProperty(setNearFarPlane_);
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });    addProperty(resetViewParams_);
     outport_.addResizeEventListener(&camera_);
-    inport_.onChange(this, &GeometryRenderProcessorGL::updateDrawers);
+    inport_.onChange(this, &MeshRenderProcessorGL::updateDrawers);
 
     cullFace_.addOption("culldisable", "Disable", GL_NONE);
     cullFace_.addOption("cullfront", "Front", GL_FRONT);
@@ -92,7 +92,7 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     polygonMode_.addOption("polyline", "Lines", GL_LINE);
     polygonMode_.addOption("polyfill", "Fill", GL_FILL);
     polygonMode_.set(GL_FILL);
-    polygonMode_.onChange(this, &GeometryRenderProcessorGL::changeRenderMode);
+    polygonMode_.onChange(this, &MeshRenderProcessorGL::changeRenderMode);
 
     geomProperties_.addProperty(cullFace_);
     geomProperties_.addProperty(polygonMode_);
@@ -123,9 +123,9 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-GeometryRenderProcessorGL::~GeometryRenderProcessorGL() {}
+MeshRenderProcessorGL::~MeshRenderProcessorGL() {}
 
-void GeometryRenderProcessorGL::initializeResources() {
+void MeshRenderProcessorGL::initializeResources() {
     // shading defines
     utilgl::addShaderDefines(&shader_, lightingProperty_);
     int layerID = 0;
@@ -168,7 +168,7 @@ void GeometryRenderProcessorGL::initializeResources() {
     shader_.build();
 }
 
-void GeometryRenderProcessorGL::changeRenderMode() {
+void MeshRenderProcessorGL::changeRenderMode() {
     switch (polygonMode_.get()) {
         case GL_FILL: {
             renderLineWidth_.setVisible(false);
@@ -188,7 +188,7 @@ void GeometryRenderProcessorGL::changeRenderMode() {
     }
 }
 
-void GeometryRenderProcessorGL::process() {
+void MeshRenderProcessorGL::process() {
     if (!inport_.hasData()) return;
 
     utilgl::activateAndClearTarget(outport_);
@@ -210,7 +210,7 @@ void GeometryRenderProcessorGL::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void GeometryRenderProcessorGL::centerViewOnGeometry() {
+void MeshRenderProcessorGL::centerViewOnGeometry() {
     if (!inport_.hasData()) return;
 
     vec3 worldMin(std::numeric_limits<float>::max());
@@ -242,7 +242,7 @@ void GeometryRenderProcessorGL::centerViewOnGeometry() {
     camera_.setLook(camera_.getLookFrom(), 0.5f * (worldMin + worldMax), camera_.getLookUp());
 }
 
-void GeometryRenderProcessorGL::setNearFarPlane() {
+void MeshRenderProcessorGL::setNearFarPlane() {
     if (!inport_.hasData()) return;
 
     const Mesh* geom = inport_.getData();
@@ -284,7 +284,7 @@ void GeometryRenderProcessorGL::setNearFarPlane() {
     camera_.setFarPlaneDist(std::max(0.0f, 1.01f * std::abs((m * vec4(farPos, 1.0f)).z)));
 }
 
-void GeometryRenderProcessorGL::updateDrawers() {
+void MeshRenderProcessorGL::updateDrawers() {
     auto changed = inport_.getChangedOutports();
     DrawerMap temp;
     std::swap(temp, drawers_);

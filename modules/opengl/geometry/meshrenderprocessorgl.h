@@ -48,14 +48,14 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API GeometryRenderProcessorGL : public Processor {
+class IVW_MODULE_OPENGL_API MeshRenderProcessorGL : public Processor {
 public:
-    GeometryRenderProcessorGL();
+    MeshRenderProcessorGL();
 
-    GeometryRenderProcessorGL(const GeometryRenderProcessorGL&) = delete;
-    GeometryRenderProcessorGL& operator=(const GeometryRenderProcessorGL&) = delete;
+    MeshRenderProcessorGL(const MeshRenderProcessorGL&) = delete;
+    MeshRenderProcessorGL& operator=(const MeshRenderProcessorGL&) = delete;
 
-    ~GeometryRenderProcessorGL();
+    ~MeshRenderProcessorGL();
 
     InviwoProcessorInfo();
 
@@ -68,7 +68,7 @@ protected:
     void changeRenderMode();
     void updateDrawers();
 
-    GeometryFlatMultiInport inport_;
+    MeshFlatMultiInport inport_;
     ImageOutport outport_;
 
     CameraProperty camera_;
