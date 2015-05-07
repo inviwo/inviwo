@@ -31,7 +31,7 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/trackball.h>
-#include <inviwo/core/rendering/geometrydrawerfactory.h>
+#include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <modules/opengl/rendering/meshdrawer.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/glwrap/shader.h>
@@ -302,10 +302,10 @@ void GeometryRenderProcessorGL::updateDrawers() {
             elem.second.size() != std::distance(ibegin, iend)) {  // data is changed or new.
 
             for (auto geo : elem.second) {
-                GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(geo);
+                MeshDrawer* renderer = MeshDrawerFactory::getPtr()->create(geo);
                 if (renderer) {
                     drawers_.emplace(
-                        std::make_pair(elem.first, std::unique_ptr<GeometryDrawer>(renderer)));
+                        std::make_pair(elem.first, std::unique_ptr<MeshDrawer>(renderer)));
                 }
             }
         } else {  // reuse the old data.

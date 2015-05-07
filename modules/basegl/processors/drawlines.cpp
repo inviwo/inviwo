@@ -90,7 +90,7 @@ void DrawLines::initialize() {
     lineShader_ = new Shader("img_color.frag");
     lines_ = new Mesh(GeometryEnums::LINES, GeometryEnums::STRIP);
     lines_->addAttribute(new Position2dBuffer());
-    lineDrawer_ = new MeshDrawer(lines_);
+    lineDrawer_ = new MeshDrawerGL(lines_);
 }
 
 void DrawLines::deinitialize() {

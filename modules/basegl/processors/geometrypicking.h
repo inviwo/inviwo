@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <modules/opengl/image/compositeprocessorgl.h>
 #include <inviwo/core/interaction/pickingobject.h>
 #include <inviwo/core/properties/cameraproperty.h>

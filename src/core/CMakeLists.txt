@@ -131,7 +131,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/bufferport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/datainport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/dataoutport.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/ports/geometryport.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/ports/meshport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/imageport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/inport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/inportiterable.h
@@ -190,8 +190,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/geometrydrawer.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/geometrydrawerfactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawerfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanagerobserver.h
@@ -386,7 +386,7 @@ set(SOURCE_FILES
     properties/stringproperty.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
-    rendering/geometrydrawerfactory.cpp
+    rendering/meshdrawerfactory.cpp
     resources/resourcemanager.cpp
     util/assertion.cpp
     util/canvas.cpp

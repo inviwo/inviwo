@@ -59,7 +59,7 @@ OpenGLModule::OpenGLModule() :
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "opengl/glsl");
 #endif
 
-    registerDrawer(new MeshDrawer());
+    registerDrawer(new MeshDrawerGL());
     registerRepresentationConverter(new LayerRAM2GLConverter());
     registerRepresentationConverter(new LayerGL2RAMConverter());
     registerRepresentationConverter(new LayerDisk2GLConverter());

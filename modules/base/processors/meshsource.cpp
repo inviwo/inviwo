@@ -27,26 +27,23 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYSOURCE_H
-#define IVW_GEOMETRYSOURCE_H
-
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/ports/geometryport.h>
-#include <modules/base/processors/datasource.h>
+#include "meshsource.h"
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API GeometrySource : public DataSource<Mesh, MeshOutport> {
-public:
-    GeometrySource();
-    virtual ~GeometrySource();
+ProcessorClassIdentifier(MeshSource, "org.inviwo.GeometrySource");
+ProcessorDisplayName(MeshSource,  "Geometry Source");
+ProcessorTags(MeshSource, Tags::CPU);
+ProcessorCategory(MeshSource, "Data Input");
+ProcessorCodeState(MeshSource, CODE_STATE_STABLE);
 
-    InviwoProcessorInfo();
-};
+MeshSource::MeshSource() : DataSource<Mesh, GeometryOutport>() {
+    DataSource<Mesh, GeometryOutport>::file_.setContentType("geometry");
+    DataSource<Mesh, GeometryOutport>::file_.setDisplayName("Geometry file");
+}
+
+MeshSource::~MeshSource() {
+}
 
 } // namespace
-
-#endif // IVW_GEOMETRYSOURCE_H
 

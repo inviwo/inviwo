@@ -24,36 +24,29 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <inviwo/core/rendering/geometrydrawerfactory.h>
-#include <inviwo/core/common/inviwoapplication.h>
+#ifndef IVW_GEOMETRYSOURCE_H
+#define IVW_GEOMETRYSOURCE_H
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/ports/meshport.h>
+#include <modules/base/processors/datasource.h>
 
 namespace inviwo {
 
-struct CanDrawGeometry {
+class IVW_MODULE_BASE_API MeshSource : public DataSource<Mesh, MeshOutport> {
 public:
-    CanDrawGeometry(const Mesh* geom) : geom_(geom){};
-    bool operator()(const GeometryDrawer* drawer) { return drawer->canDraw(geom_); }
+    MeshSource();
+    virtual ~MeshSource();
 
-private:
-    const Mesh* geom_;
+    InviwoProcessorInfo();
 };
 
-GeometryDrawerFactory::GeometryDrawerFactory() {}
+} // namespace
 
-void GeometryDrawerFactory::registerObject(GeometryDrawer* drawer) {
-    drawers_.insert(drawer);
-}
+#endif // IVW_GEOMETRYSOURCE_H
 
-GeometryDrawer* GeometryDrawerFactory::create(const Mesh* geom) const {
-    auto it = std::find_if(drawers_.begin(), drawers_.end(), CanDrawGeometry(geom));
-
-    if (it != drawers_.end())
-        return (*it)->create(geom);
-    else
-        return nullptr;
-};
-
-}  // namespace

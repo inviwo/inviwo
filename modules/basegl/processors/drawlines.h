@@ -99,7 +99,7 @@ private:
     EventProperty keyEnableDraw_;
 
     Mesh* lines_;
-    MeshDrawer* lineDrawer_;
+    MeshDrawerGL* lineDrawer_;
 
     Shader* lineShader_;
 

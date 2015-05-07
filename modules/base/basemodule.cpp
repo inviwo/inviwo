@@ -32,7 +32,7 @@
 #include <modules/base/processors/diffuselightsourceprocessor.h>
 #include <modules/base/processors/directionallightsourceprocessor.h>
 #include <modules/base/processors/distancetransformram.h>
-#include <modules/base/processors/geometrysource.h>
+#include <modules/base/processors/meshsource.h>
 #include <modules/base/processors/heightfieldmapper.h>
 #include <modules/base/processors/imageexport.h>
 #include <modules/base/processors/imagesource.h>
@@ -51,7 +51,7 @@
 #include <modules/base/processors/volumesubset.h>
 
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
@@ -69,7 +69,7 @@ BaseModule::BaseModule() : InviwoModule() {
     registerProcessor(DiffuseLightSourceProcessor);
     registerProcessor(DirectionalLightSourceProcessor);
     registerProcessor(DistanceTransformRAM);
-    registerProcessor(GeometrySource);
+    registerProcessor(MeshSource);
     registerProcessor(HeightFieldMapper);
     registerProcessor(ImageExport);
     registerProcessor(ImageSource);

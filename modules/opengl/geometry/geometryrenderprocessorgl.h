@@ -33,7 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
@@ -41,7 +41,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/rendering/geometrydrawer.h>
+#include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <vector>
@@ -93,7 +93,7 @@ protected:
 
     Shader shader_;
 
-    using DrawerMap = std::multimap<const Outport*, std::unique_ptr<GeometryDrawer>>;
+    using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
     DrawerMap drawers_;
 
 };

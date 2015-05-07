@@ -35,23 +35,23 @@
 
 namespace inviwo {
 
-struct CanDrawGeometry;
-class GeometryDrawerFactory;
+struct CanDrawMesh;
+class MeshDrawerFactory;
 
-/** \class GeometryDrawer
+/** \class MeshDrawer
  *
  * Base class for drawers capable of drawing Geometry.
- * A derived GeometryDrawer should be registered by the module.
+ * A derived MeshDrawer should be registered by the module.
  * The GeometryDrawerFactory can be used to get a drawer
  * without knowing the type of Geometry. This is enabled by
  * implementing the abstract functions canRender and create.
  *
  * \section example Example
- * Example of how to implement a derived GeometryDrawer.
+ * Example of how to implement a derived MeshDrawer.
  * @code
- *    class IVW_XXX_API DerivedDrawer: public GeometryDrawer {
+ *    class IVW_XXX_API DerivedDrawer: public MeshDrawer {
  *    public:
- *        DerivedDrawer(const DerivedMesh* g): GeometryDrawer(), geomToRender_(g) {};
+ *        DerivedDrawer(const DerivedMesh* g): MeshDrawer(), geomToRender_(g) {};
  *        virtual void draw() { // do stuff
  *        }
  *        virtual const Mesh* getGeometry() const { return geomToRender_; }
@@ -72,12 +72,12 @@ class GeometryDrawerFactory;
  * @see GeometryDrawerFactory
  * @see Module
  */
-class GeometryDrawer {
-    friend struct CanDrawGeometry;       // Access to canRender
-    friend class GeometryDrawerFactory;  // Access to create
+class MeshDrawer {
+    friend struct CanDrawMesh;       // Access to canRender
+    friend class MeshDrawerFactory;  // Access to create
 public:
-    GeometryDrawer(){};
-    virtual ~GeometryDrawer(){};
+    MeshDrawer(){};
+    virtual ~MeshDrawer(){};
 
     /**
      * Draw the geometry the renderer was created for.
@@ -96,12 +96,12 @@ protected:
     /**
      * Return a new object of the derived class.
      *
-     * @note The GeometryDrawer does not take ownership of the Geometry.
+     * @note The MeshDrawer does not take ownership of the Geometry.
      * @param geom The geometry to render. This will always be of a type that canDraw return true
      *for.
      * @return A new renderer.
      */
-    virtual GeometryDrawer* create(const Mesh* geom) const = 0;
+    virtual MeshDrawer* create(const Mesh* geom) const = 0;
 
     /**
      * Determine if the renderer can render geometry.

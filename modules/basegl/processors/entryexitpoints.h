@@ -35,10 +35,10 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/rendering/geometrydrawer.h>
+#include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -72,7 +72,7 @@ private:
     Shader* genericShader_;
     Shader* capNearClippingPrg_;
     Image* tmpEntryPoints_;
-    GeometryDrawer* drawer_;
+    MeshDrawer* drawer_;
 };
 
 } // namespace

@@ -27,23 +27,31 @@
  * 
  *********************************************************************************/
 
-#include "geometrysource.h"
+#ifndef IVW_GEOMETRY_DRAWER_FACTORY_H
+#define IVW_GEOMETRY_DRAWER_FACTORY_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/rendering/meshdrawer.h>
+#include <inviwo/core/util/factory.h>
+#include <inviwo/core/util/singleton.h>
+#include <set>
 
 namespace inviwo {
 
-ProcessorClassIdentifier(GeometrySource, "org.inviwo.GeometrySource");
-ProcessorDisplayName(GeometrySource,  "Geometry Source");
-ProcessorTags(GeometrySource, Tags::CPU);
-ProcessorCategory(GeometrySource, "Data Input");
-ProcessorCodeState(GeometrySource, CODE_STATE_STABLE);
+class IVW_CORE_API MeshDrawerFactory : public Singleton<MeshDrawerFactory>  {
+public:
+    MeshDrawerFactory();
+    virtual ~MeshDrawerFactory() {}
 
-GeometrySource::GeometrySource() : DataSource<Mesh, GeometryOutport>() {
-    DataSource<Mesh, GeometryOutport>::file_.setContentType("geometry");
-    DataSource<Mesh, GeometryOutport>::file_.setDisplayName("Geometry file");
-}
+    void registerObject(MeshDrawer* drawer);
+    virtual MeshDrawer* create(const Mesh* geom) const;
 
-GeometrySource::~GeometrySource() {
-}
+
+private:
+    std::set<MeshDrawer*> drawers_;
+};
 
 } // namespace
 
+#endif // IVW_GEOMETRY_DRAWER_FACTORY_H

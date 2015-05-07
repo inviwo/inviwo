@@ -29,7 +29,7 @@
 
 #include "entryexitpoints.h"
 #include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/rendering/geometrydrawerfactory.h>
+#include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/clockgl.h>
@@ -165,7 +165,7 @@ void EntryExitPoints::onGeometryChange() {
     delete drawer_;
     drawer_ = nullptr;
     if (geometryPort_.hasData())
-        drawer_ = GeometryDrawerFactory::getPtr()->create(geometryPort_.getData());
+        drawer_ = MeshDrawerFactory::getPtr()->create(geometryPort_.getData());
 }
 
 }  // namespace

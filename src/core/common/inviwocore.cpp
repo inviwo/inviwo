@@ -58,7 +58,7 @@
 #include <inviwo/core/processors/canvasprocessor.h>
 
 //Ports
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 

@@ -96,7 +96,7 @@ void GeometryPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
 void GeometryPicking::process() {
     utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
 
-    MeshDrawer drawer(static_cast<const Mesh*>(geometryInport_.getData()));
+    MeshDrawerGL drawer(static_cast<const Mesh*>(geometryInport_.getData()));
     shader_->activate();
     shader_->setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
 
