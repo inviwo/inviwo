@@ -40,6 +40,7 @@ class QToolButton;
 class QGroupBox;
 class QPushButton;
 class QLabel;
+class QGridLayout;
 
 namespace inviwo {
 
@@ -112,7 +113,7 @@ private:
     EditableLabelQt* label_;
     QToolButton* btnCollapse_;
     QWidget* propertyWidgetGroup_;
-    QVBoxLayout* propertyWidgetGroupLayout_;
+    QGridLayout* propertyWidgetGroupLayout_;
     QLabel* defaultLabel_;
     PropertyOwner* propertyOwner_;
     bool showIfEmpty_;

@@ -75,26 +75,30 @@ QWidget[bgType="0"]#CompositeWidget > .QWidget {
     background-color: #323235;
 }
 QWidget[bgType="1"]#CompositeWidget > .QWidget {
-    background-color: #3a3a3d;
+    background-color: #38383c;
+    /*background-color: darkslategray;*/
 }
 QWidget[bgType="2"]#CompositeWidget > .QWidget {
     background: #323235;
+    /*background-color: darkslateblue;*/
 }
 QWidget[bgType="3"]#CompositeWidget > .QWidget {
     background: #3a3a3d;
+    /*background-color: maroon;*/
 }
 
 
-/*QWidget#compositeLabel QLabel {*/
+/*
 QWidget#CompositeContents {
-    border: 0px solid blue;
+    border: 1px solid steelblue;
     background: #2b2b2d;
     background: red;
 }
+*/
 
 
 QWidget#CompositeContents > QWidget {
-    /*border: 1px solid red;*/
+    border: 0px solid red;
     /*background: #2b2b2d;*/
 }
 
@@ -110,6 +114,7 @@ QLineEdit, QAbstractSpinBox, QComboBox {
       jump on hover!
       */
     border: 1px solid #3a3a3e;
+    border: 1px solid #3e3e3f;
     /*border: 1px solid transparent; */
 }
 QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
@@ -190,11 +195,16 @@ QToolTip {
 QPushButton {
     border: 1px solid black;
     border-radius: 4px;
-    /*min-height: 20px;*/
-    min-width: 40px;
+    min-height: 20px;
+    min-width: 80px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
 } 
+QWidget#CompositeWidget > .QPushButton {
+    /* overwrite minimum size for push buttons within the composite properties */
+    min-height: 5px;
+    min-width: 40px;    
+}
 QPushButton:default {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);
