@@ -33,6 +33,7 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
 
@@ -246,6 +247,7 @@ void ProcessorNetworkEvaluator::requestEvaluate() {
 void ProcessorNetworkEvaluator::evaluate() {
     // lock processor network to avoid concurrent evaluation
     NetworkLock lock(processorNetwork_);
+    util::OnScopeExit reset([this](){resetProcessorVisitedStates();});
 
     RenderContext::getPtr()->activateDefaultRenderContext();
 
@@ -304,8 +306,6 @@ void ProcessorNetworkEvaluator::evaluate() {
             }
         }
     }
-
-    resetProcessorVisitedStates();
 }
 
 }  // namespace
