@@ -60,7 +60,7 @@ void SettingsWidget::generateWidget() {
     mainWidget_ = new QWidget();
     layout_ = new QVBoxLayout(mainWidget_);
     layout_->setAlignment(Qt::AlignTop);
-    layout_->setContentsMargins(7, 7, 7, 7);
+    layout_->setContentsMargins(0, 0, 0, 0);
     layout_->setSpacing(7);
     scrollArea_->setWidget(mainWidget_);
 

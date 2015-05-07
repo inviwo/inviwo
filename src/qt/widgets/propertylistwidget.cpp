@@ -95,7 +95,7 @@ PropertyListWidget::PropertyListWidget(QWidget* parent)
     listLayout_ = new QVBoxLayout();
     listWidget_->setLayout(listLayout_);
     listLayout_->setAlignment(Qt::AlignTop);
-    listLayout_->setContentsMargins(7, 7, 7, 7);
+    listLayout_->setContentsMargins(0, 0, 0, 0);
     listLayout_->setSpacing(7);
     listLayout_->setSizeConstraint(QLayout::SetMinAndMaxSize);
 
@@ -161,13 +161,22 @@ CollapsibleGroupBoxWidgetQt* PropertyListWidget::getPropertiesForProcessor(Proce
     WidgetMap::iterator it = widgetMap_.find(processor);
     if (it != widgetMap_.end()) {
         res = it->second;
-    } else {
+    }
+    else {
+        Clock clock;
+        clock.start();
         res = createPropertiesForProcessor(processor);
+        clock.tick();
+        LogInfo("createPropertiesForProcessor() " << clock.getElapsedMiliseconds() << "ms");
     }
 
     if(listLayout_->indexOf(res) < 0) {  // Not in the layout yet.    
+        Clock clock;
+        clock.start();
         listLayout_->insertWidget(0, res, 0, Qt::AlignTop);
         res->updateVisibility();
+        clock.tick();
+        LogInfo("updateVisibility() " << clock.getElapsedMiliseconds() << "ms");
     }
 
     return res;

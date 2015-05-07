@@ -86,6 +86,9 @@ public:
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
 
+    void setNestedDepth(int depth);
+    int getNestedDepth() const;
+
 public slots:
     void toggleCollapsed();
     void updateVisibility();
@@ -113,6 +116,8 @@ private:
     QLabel* defaultLabel_;
     PropertyOwner* propertyOwner_;
     bool showIfEmpty_;
+    const int maxNumNestedShades_;
+    int nestedDepth_;
 };
 
 

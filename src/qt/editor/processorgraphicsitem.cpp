@@ -55,6 +55,8 @@
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/widgets/processors/processorwidgetqt.h>
 
+#include <inviwo/core/util/clock.h>
+
 namespace inviwo {
 
 static const int width = 150;
@@ -289,10 +291,18 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         case QGraphicsItem::ItemSelectedHasChanged:
             if (isSelected()) {
                 setZValue(SELECTED_PROCESSORGRAPHICSITEM_DEPTH);
+                Clock clock;
+                clock.start();
                 NetworkEditor::getPtr()->addPropertyWidgets(getProcessor());
+                clock.tick();
+                LogInfo("addPropertyWidgets() " << clock.getElapsedMiliseconds() << "ms");
             } else {
                 setZValue(PROCESSORGRAPHICSITEM_DEPTH);
+                Clock clock;
+                clock.start();
                 NetworkEditor::getPtr()->removePropertyWidgets(getProcessor());
+                clock.tick();
+                LogInfo("removePropertyWidgets() " << clock.getElapsedMiliseconds() << "ms");
             }
             if (processorMeta_) processorMeta_->setSelected(isSelected());
             break;

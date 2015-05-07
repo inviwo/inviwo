@@ -43,15 +43,20 @@
 #include <QLabel>
 
 namespace inviwo {
-
+    
 CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(std::string displayName)
     : PropertyWidgetQt()
     , PropertyOwnerObserver()
     , displayName_(displayName)
     , collapsed_(false)
     , propertyOwner_(nullptr)
-    , showIfEmpty_(false) {
-    setObjectName("CollapsibleGroupBoxWidgetQt");
+    , showIfEmpty_(false)
+    , maxNumNestedShades_(4)
+    , nestedDepth_(0) {
+    setObjectName("CompositeWidget");
+
+    setNestedDepth(nestedDepth_);
+
     generateWidget();
     updateFromProperty();
 }
@@ -65,6 +70,7 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     propertyWidgetGroupLayout_->setSpacing(PropertyWidgetQt::SPACING);
 
     propertyWidgetGroup_ = new QWidget(this);
+    propertyWidgetGroup_->setObjectName("CompositeContents");
     propertyWidgetGroup_->setLayout(propertyWidgetGroupLayout_);
 
     defaultLabel_ = new QLabel("No properties available");
@@ -104,10 +110,12 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     layout->addLayout(heading);
     layout->addWidget(propertyWidgetGroup_);
 
-    setContentsMargins(1, 1, 1, 1);
-    setObjectName("CollapsibleGroupBoxWidgetQt");
+    // Adjust the margins when using a border, i.e. margin >= border width.
+    // Otherwise the border might be overdrawn by childrens.
+    const int margin = 0;
+    this->setContentsMargins(margin, margin, margin, margin);
 
-    setLayout(layout);
+    this->setLayout(layout);
 }
 
 QSize CollapsibleGroupBoxWidgetQt::sizeHint() const {
@@ -144,6 +152,12 @@ void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
         static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
 
     if (propertyWidget) {
+
+        auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt *>(propertyWidget);
+        if (collapsibleWidget) {
+            collapsibleWidget->setNestedDepth(this->getNestedDepth() + 1);
+        }
+
         propertyWidgetGroupLayout_->addWidget(propertyWidget);
         propertyWidgets_.push_back(propertyWidget);
         prop->registerWidget(propertyWidget);
@@ -391,6 +405,23 @@ std::vector<PropertyWidgetQt*> CollapsibleGroupBoxWidgetQt::getPropertyWidgets()
 
 void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) {
     showIfEmpty_ = val;
+}
+
+void CollapsibleGroupBoxWidgetQt::setNestedDepth(int depth) {
+    nestedDepth_ = depth;
+    QObject::setProperty("bgType", nestedDepth_ % maxNumNestedShades_);
+
+    // update depth of all nested collapsible group box widgets
+    for (auto& elem : propertyWidgets_) {
+        auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt *>(elem);
+        if (collapsibleWidget) {
+            collapsibleWidget->setNestedDepth(nestedDepth_ + 1);
+        }
+    }
+}
+
+int CollapsibleGroupBoxWidgetQt::getNestedDepth() const {
+    return nestedDepth_;
 }
 
 

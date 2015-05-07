@@ -34,7 +34,15 @@ QWidget {
     color: #9d9995;
     background-color: #252528;/*#313136;*/ /*#4d4d4d;*/
     background-color: #323235;
+    background: transparent;
 }
+
+/* set a common background color for all central widgets of dock widgets.
+   All other QWidgets will have a transparent background. */
+QDockWidget > .QWidget, QDockWidget > .QScrollArea, QDialog {
+    background-color: #323235;
+}
+
 QStatusBar {
     background-color: #252527;
 }
@@ -45,6 +53,51 @@ QMainWindow::separator {
     border-style: outset;
     border-width: 1px;
 }
+
+QWidget#PropertyWidget {
+}
+
+/* Composite property */
+QWidget#CompositeWidget {
+    /*border: 1px solid #4a4a4f;*/
+    border: 1px solid red;
+    border: none;
+    background: #2b2b2d;
+    /*background: steelblue;*/
+}
+
+/* default background for nested composite properties with depth > 4 */
+QWidget#CompositeWidget > .QWidget {
+    background: lime;
+}
+
+QWidget[bgType="0"]#CompositeWidget > .QWidget {
+    background-color: #323235;
+}
+QWidget[bgType="1"]#CompositeWidget > .QWidget {
+    background-color: #3a3a3d;
+}
+QWidget[bgType="2"]#CompositeWidget > .QWidget {
+    background: #323235;
+}
+QWidget[bgType="3"]#CompositeWidget > .QWidget {
+    background: #3a3a3d;
+}
+
+
+/*QWidget#compositeLabel QLabel {*/
+QWidget#CompositeContents {
+    border: 0px solid blue;
+    background: #2b2b2d;
+    background: red;
+}
+
+
+QWidget#CompositeContents > QWidget {
+    /*border: 1px solid red;*/
+    /*background: #2b2b2d;*/
+}
+
 
 /* Common defines for flat property editors, both active and disabled */
 QLineEdit, QAbstractSpinBox, QComboBox {
@@ -69,20 +122,11 @@ QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover
     border: 1px solid #268bd2;
 }
 
-/* Composite property */
-QWidget#CollapsibleGroupBoxWidgetQt {
-    border: 1px solid #4a4a4f;
-    background: #2b2b2d;
-}
 
-QWidget#compositeLabel QLabel {
-    border: 1px solid transparent;
-    background: #2b2b2d;
-}
 
 /* this renders all backgrounds unusable (labels, lineedit, etc.) due to specialization */
 /*
-QWidget#CollapsibleGroupBoxWidgetQt QLabel, QWidget#CollapsibleGroupBoxWidgetQt QWidget {
+QWidget#CompositeWidget QLabel, QWidget#CompositeWidget QWidget {
     border: none;
     background: transparent;
 }
@@ -146,8 +190,8 @@ QToolTip {
 QPushButton {
     border: 1px solid black;
     border-radius: 4px;
-    min-height: 20px;
-    min-width: 80px;
+    /*min-height: 20px;*/
+    min-width: 40px;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
 } 
@@ -221,6 +265,7 @@ QDockWidget {
     */
 }
 
+
 QTabWidget {
 }
 QTabWidget::pane{
@@ -229,7 +274,7 @@ QTabWidget::pane{
     /* cannot use other color than default background here because of QDockWidgets */
     /*background: #252527;*/
 }
-QTabWidget::pane QWidget, QTabWidget::pane QFrame, QTabWidget::pane QDockWidget QWidget {
+QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
     /* docked QDockWidgets ignore QTabWidget */
     background: #252527;
 }
@@ -446,7 +491,7 @@ QScrollBar::add-page, QScrollBar::add-line, QScrollBar::sub-page, QScrollBar::su
 
 QTextBrowser {
     border-color: #444;
-    border: 0px 
+    border: 0px;
 }
 
 
