@@ -61,7 +61,7 @@ protected:
     void onGeometryChange();
 
 private:
-    GeometryInport geometryPort_;
+    MeshInport inport_;
     ImageOutport entryPort_;
     ImageOutport exitPort_;
 

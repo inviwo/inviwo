@@ -54,7 +54,7 @@ protected:
 
 private:
     VolumeInport inport_;
-    GeometryOutport outport_;
+    MeshOutport outport_;
 };
 
 } // namespace

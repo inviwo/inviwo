@@ -37,9 +37,9 @@ ProcessorTags(MeshSource, Tags::CPU);
 ProcessorCategory(MeshSource, "Data Input");
 ProcessorCodeState(MeshSource, CODE_STATE_STABLE);
 
-MeshSource::MeshSource() : DataSource<Mesh, GeometryOutport>() {
-    DataSource<Mesh, GeometryOutport>::file_.setContentType("geometry");
-    DataSource<Mesh, GeometryOutport>::file_.setDisplayName("Geometry file");
+MeshSource::MeshSource() : DataSource<Mesh, MeshOutport>() {
+    DataSource<Mesh, MeshOutport>::file_.setContentType("geometry");
+    DataSource<Mesh, MeshOutport>::file_.setDisplayName("Geometry file");
 }
 
 MeshSource::~MeshSource() {

@@ -37,11 +37,6 @@
 
 namespace inviwo {
 
-using GeometryInport = DataInport<Mesh>;
-using GeometryMultiInport = DataInport<Mesh, 0>;
-using GeometryFlatMultiInport = DataInport<Mesh, 0, true>;
-using GeometryOutport =  DataOutport<Mesh>;
-
 using MeshInport = DataInport<Mesh>;
 using MeshMultiInport = DataInport<Mesh, 0>;
 using MeshFlatMultiInport = DataInport<Mesh, 0, true>;

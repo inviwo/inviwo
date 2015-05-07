@@ -56,10 +56,10 @@
 
 namespace inviwo {
 
-typedef BasisTransform<GeometryInport, GeometryOutport> BasisTransformGeometry;
+typedef BasisTransform<MeshInport, MeshOutport> BasisTransformMesh;
 typedef BasisTransform<VolumeInport, VolumeOutport> BasisTransformVolume;
-template <> ProcessorClassIdentifier(BasisTransformGeometry, "org.inviwo.BasisTransformGeometry");
-template <> ProcessorDisplayName(BasisTransformGeometry, "Basis Transform Geometry");
+template <> ProcessorClassIdentifier(BasisTransformMesh, "org.inviwo.BasisTransformGeometry");
+template <> ProcessorDisplayName(BasisTransformMesh, "Basis Transform Mesh");
 template <> ProcessorClassIdentifier(BasisTransformVolume, "org.inviwo.BasisTransformVolume");
 template <> ProcessorDisplayName(BasisTransformVolume, "Basis Transform Volume");
 
@@ -82,7 +82,7 @@ BaseModule::BaseModule() : InviwoModule() {
     registerProcessor(SpotLightSourceProcessor);
     registerProcessor(VolumeSource);
     registerProcessor(VolumeExport);
-    registerProcessor(BasisTransformGeometry);
+    registerProcessor(BasisTransformMesh);
     registerProcessor(BasisTransformVolume);
     registerProcessor(VolumeSlice);
     registerProcessor(VolumeSubsample);

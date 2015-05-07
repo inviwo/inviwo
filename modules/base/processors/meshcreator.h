@@ -70,7 +70,7 @@ private:
         COORD_AXES
     };
 
-    GeometryOutport outport_;
+    MeshOutport outport_;
     
     FloatVec3Property position1_;
     FloatVec3Property position2_;
