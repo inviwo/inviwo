@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include "viewmanager.h"
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/gestureevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 
 namespace inviwo {
 
