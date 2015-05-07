@@ -29,6 +29,7 @@
 
 #include "inviwomainwindow.h"
 #include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/qt/editor/networkeditorview.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/propertylistwidget.h>
@@ -242,7 +243,8 @@ bool InviwoMainWindow::processCommandLineArgs() {
             path = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES);
         
         repaint();
-        networkEvaluator->saveSnapshotAllCanvases(path, cmdparser->getSnapshotName());
+        util::saveAllCanvases(InviwoApplication::getPtr()->getProcessorNetwork(), 
+                              path, cmdparser->getSnapshotName());
     }
 
     if (cmdparser->getQuitApplicationAfterStartup()) {

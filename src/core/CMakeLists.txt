@@ -239,6 +239,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -413,8 +414,8 @@ set(SOURCE_FILES
     util/logcentral.cpp
     util/observer.cpp    
     util/raiiutils.cpp
+    util/referencecounter.cpp
     util/rendercontext.cpp
-	util/referencecounter.cpp
     util/settings/linksettings.cpp    
     util/settings/settings.cpp    
     util/settings/systemsettings.cpp    
@@ -424,6 +425,7 @@ set(SOURCE_FILES
     util/stringconversion.cpp
     util/systemcapabilities.cpp
     util/timer.cpp
+    util/utilities.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
