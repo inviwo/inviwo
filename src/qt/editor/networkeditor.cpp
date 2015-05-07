@@ -1052,47 +1052,38 @@ void NetworkEditor::placeProcessorOnConnection(Processor* processor,
     }
 }
 
-void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
-                                              Processor* oldProcessor) {
-
-
+void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor, Processor* oldProcessor) {
     const std::vector<Inport*>& inports = newProcessor->getInports();
     const std::vector<Outport*>& outports = newProcessor->getOutports();
     const std::vector<Inport*>& oldInports = oldProcessor->getInports();
     const std::vector<Outport*>& oldOutports = oldProcessor->getOutports();
 
     NetworkLock lock;
-    
+
     std::vector<std::pair<Outport*, Inport*> > newConnections;
 
     for (size_t i = 0; i < std::min(inports.size(), oldInports.size()); ++i) {
-        if (inports.at(i)->canConnectTo(oldInports.at(i)->getConnectedOutport())) {
-            // MultiInports may have several connected outports
-            std::vector<Outport*> previouslyConnectedOutports =
-                oldInports.at(i)->getConnectedOutports();
-            for (auto& previouslyConnectedOutport : previouslyConnectedOutports) {
+        for (auto outport : oldInports[i]->getConnectedOutports()) {
+            if (inports[i]->canConnectTo(outport)) {
                 // save new connection connectionOutportoldInport-processorInport
-                newConnections.push_back(std::make_pair(previouslyConnectedOutport, inports.at(i)));
+                newConnections.push_back(std::make_pair(outport, inports[i]));
             }
         }
     }
 
     for (size_t i = 0; i < std::min(outports.size(), oldOutports.size()); ++i) {
-        std::vector<Inport*> previouslyConnectedInports = oldOutports.at(i)->getConnectedInports();
-
-        for (auto& previouslyConnectedInport : previouslyConnectedInports) {
-            if (previouslyConnectedInport->canConnectTo(outports.at(i))) {
+        for (auto inport : oldOutports[i]->getConnectedInports()) {
+            if (inport->canConnectTo(outports[i])) {
                 // save new connection processorOutport-connectionInport
-                newConnections.push_back(std::make_pair(outports.at(i), previouslyConnectedInport));
+                newConnections.push_back(std::make_pair(outports[i], inport));
             }
         }
     }
-    
-    
+
     // Copy over the value of old props to new ones if id and classname are equal.
     std::vector<Property*> newProps = newProcessor->getProperties();
     std::vector<Property*> oldProps = oldProcessor->getProperties();
-    
+
     std::map<Property*, Property*> propertymap;
 
     for (auto& newProp : newProps) {
@@ -1104,39 +1095,39 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor,
             }
         }
     }
-    
-    // Move propertylinks to the new processor   
+
+    // Move propertylinks to the new processor
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
     std::vector<PropertyLink*> links = network->getLinks();
     std::map<Property*, Property*>::iterator match;
 
-    for (auto& oldProp : oldProps) {
-        for (auto& link : links) {
-            if ((link)->getDestinationProperty() == (oldProp)) {
+    for (auto oldProp : oldProps) {
+        for (auto link : links) {
+            if (link->getDestinationProperty() == oldProp) {
                 match = propertymap.find(oldProp);
-                if( match != propertymap.end()) {
+                if (match != propertymap.end()) {
                     // add link from
-                    Property* start = (link)->getSourceProperty();
+                    Property* start = link->getSourceProperty();
                     // to
                     Property* end = match->second;
-                    
+
                     network->addLink(start, end);
                 }
             }
-            if ((link)->getSourceProperty() == (oldProp)) {
+            if (link->getSourceProperty() == oldProp) {
                 match = propertymap.find(oldProp);
-                if( match != propertymap.end()) {
+                if (match != propertymap.end()) {
                     // add link from
                     Property* start = match->second;
-                     //to
-                    Property* end = (link)->getDestinationProperty();
+                    // to
+                    Property* end = link->getDestinationProperty();
 
                     network->addLink(start, end);
                 }
             }
         }
     }
-       
+
     // remove old processor
     network->removeProcessor(oldProcessor);
 

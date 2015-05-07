@@ -109,7 +109,7 @@ size_t inviwo::DataInport<T, N, Flat>::getMaxNumberOfConnections() const {
 
 template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
-    if (port->getProcessor() == getProcessor()) return false;
+    if (!port || port->getProcessor() == getProcessor()) return false;
     
     if (dynamic_cast<const DataOutport<T>*>(port))
         return true;
