@@ -1173,12 +1173,16 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
     }
 }
 
-NetworkLock::NetworkLock() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorNetwork()) {
+    network_->lock();
+}
+
+NetworkLock::NetworkLock(ProcessorNetwork* network) : network_(network) {
+    network_->lock();
 }
 
 NetworkLock::~NetworkLock() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
+    network_->unlock();
 }
 
 } // namespace
