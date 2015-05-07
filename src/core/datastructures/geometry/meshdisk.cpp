@@ -48,10 +48,6 @@ MeshDisk* MeshDisk::clone() const {
     return new MeshDisk(*this);
 }
 
-void MeshDisk::initialize() {}
-
-void MeshDisk::deinitialize() {}
-
 void MeshDisk::update(bool editable) {}
 
 }  // namespace

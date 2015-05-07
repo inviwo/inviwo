@@ -45,8 +45,6 @@ public:
     LayerRAM* clone() const = 0;
     virtual ~LayerRAM();
 
-    virtual void initialize() = 0;
-    virtual void deinitialize() = 0;
 
     virtual void setDimensions(uvec2 dimensions);
     virtual void resize(uvec2 dimensions) = 0;
@@ -73,6 +71,9 @@ public:
     }
 
 protected:
+    virtual void initialize() = 0;
+    virtual void deinitialize() = 0;
+
     void* data_;
 };
 

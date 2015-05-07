@@ -42,14 +42,4 @@ ProcessorCodeState(CanvasProcessorGL, CODE_STATE_STABLE);
 CanvasProcessorGL::CanvasProcessorGL()
     : CanvasProcessor() {}
 
-void CanvasProcessorGL::process() {
-    CanvasProcessor::process();
-    //getCanvas()->render(inport_.getData(), static_cast<LayerType>(visibleLayer_.get()));
-}
-
-void CanvasProcessorGL::doIfNotReady() {
-    CanvasProcessor::doIfNotReady();
-    //getCanvas()->render(nullptr, static_cast<LayerType>(visibleLayer_.get()));
-}
-
 } // namespace

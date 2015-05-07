@@ -47,17 +47,14 @@ FrameBufferObject::FrameBufferObject() : id_(0u)
 {
     glGenFramebuffersEXT(1, &id_);
     glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, &maxColorattachments_);
-    //drawBuffers_ = new GLenum[maxColorattachments_];
 
-    //for (int i=0; i < maxColorattachments_; i++)
-    //    drawBuffers_[i] = GL_NONE;
     drawBuffers_.reserve(maxColorattachments_);
     buffersInUse_.resize(maxColorattachments_, false);
 }
 
 FrameBufferObject::~FrameBufferObject() {
+    deactivate();
     glDeleteFramebuffersEXT(1, &id_);
-    //delete [] drawBuffers_;
 }
 
 void FrameBufferObject::activate() {

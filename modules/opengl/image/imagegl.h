@@ -48,8 +48,6 @@ public:
     ImageGL(const ImageGL& rhs);
     virtual ~ImageGL();
 
-    void initialize();
-    void deinitialize();
     virtual ImageGL* clone() const;
 
     void reAttachAllLayers(ImageType type = ALL_LAYERS);
@@ -87,12 +85,9 @@ private:
     LayerGL* depthLayerGL_;               //< non-owning reference  
     LayerGL* pickingLayerGL_;             //< non-owning reference
 
-    mutable BufferObjectArray* rectArray_;
-    FrameBufferObject* frameBufferObject_;
+    FrameBufferObject frameBufferObject_;
     GLenum pickingAttachmentID_;
-    Shader* shader_;
-
-    bool initialized_;
+    mutable Shader shader_;
 };
 
 } // namespace

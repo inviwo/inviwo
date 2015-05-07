@@ -35,13 +35,14 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
 
 /**
  * \class CanvasProcessorGL
  *
- * \brief Takes and ImageInport and renders it into a OpenGL window i.e. a canvas.
+ * \brief Takes an Image Inport and renders it into a OpenGL window i.e. a canvas.
  */
 class IVW_MODULE_OPENGL_API CanvasProcessorGL : public CanvasProcessor {
 public:
@@ -49,10 +50,6 @@ public:
     
     CanvasProcessorGL();
     virtual ~CanvasProcessorGL() {};
-
-protected:
-    virtual void process();
-    virtual void doIfNotReady();
 
 };
 

@@ -43,8 +43,6 @@ public:
     MeshRAM();
     MeshRAM(const MeshRAM& rhs);
     virtual ~MeshRAM();
-    virtual void initialize();
-    virtual void deinitialize();
     virtual MeshRAM* clone() const;
 
 protected:

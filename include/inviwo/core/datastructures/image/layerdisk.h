@@ -45,8 +45,7 @@ public:
     LayerDisk& operator=(const LayerDisk& that);
     virtual LayerDisk* clone() const;
     virtual ~LayerDisk();
-    virtual void initialize();
-    virtual void deinitialize();
+
     virtual bool copyAndResizeLayer(DataRepresentation*) const;
 
     /**

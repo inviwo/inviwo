@@ -33,18 +33,15 @@ namespace inviwo {
 
 LayerDisk::LayerDisk(LayerType type)
     : LayerRepresentation(uvec2(0), type, DataFormatBase::get()), DiskRepresentation() {
-    initialize();
 }
 
 LayerDisk::LayerDisk(std::string url, LayerType type)
     : LayerRepresentation(uvec2(0), type, DataFormatBase::get()), DiskRepresentation(url) {
-    initialize();
 }
 
 LayerDisk::LayerDisk(const LayerDisk& rhs)
     : LayerRepresentation(rhs)
     , DiskRepresentation(rhs) {
-    initialize();
 }
 
 LayerDisk& LayerDisk::operator=(const LayerDisk& that) {
@@ -54,17 +51,11 @@ LayerDisk& LayerDisk::operator=(const LayerDisk& that) {
     return *this;
 }
 
-LayerDisk::~LayerDisk() {
-    deinitialize();
-}
+LayerDisk::~LayerDisk() {}
 
 LayerDisk* LayerDisk::clone() const {
     return new LayerDisk(*this);
 }
-
-void LayerDisk::initialize() {}
-
-void LayerDisk::deinitialize() {}
 
 bool LayerDisk::copyAndResizeLayer(DataRepresentation*) const {
     return false;

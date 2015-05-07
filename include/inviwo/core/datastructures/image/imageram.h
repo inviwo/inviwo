@@ -48,9 +48,6 @@ public:
     virtual ImageRAM* clone() const;
     virtual ~ImageRAM();
 
-    virtual void initialize();
-    virtual void deinitialize();
-
     virtual bool copyAndResizeRepresentation(DataRepresentation*) const;
 
     LayerRAM* getColorLayerRAM(size_t idx = 0);

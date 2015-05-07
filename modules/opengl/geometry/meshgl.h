@@ -44,8 +44,7 @@ public:
     MeshGL();
     MeshGL(const MeshGL& rhs);
     virtual ~MeshGL();
-    virtual void initialize();
-    virtual void deinitialize();
+
     virtual MeshGL* clone() const;
 
     void enable() const;

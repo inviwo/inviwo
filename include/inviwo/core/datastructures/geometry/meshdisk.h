@@ -45,9 +45,6 @@ public:
     MeshDisk& operator=(const MeshDisk& that);
     virtual MeshDisk* clone() const;
 
-    virtual void initialize();
-    virtual void deinitialize();
-
 protected:
     virtual void update(bool editable);
 };

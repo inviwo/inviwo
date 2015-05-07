@@ -36,81 +36,56 @@ namespace inviwo {
 
 ImageGL::ImageGL()
     : ImageRepresentation()
-    , rectArray_(nullptr)
-    , frameBufferObject_(nullptr)
-    , shader_(nullptr)
-    , initialized_(false) {
-    initialize();
+    , frameBufferObject_()
+    , shader_("standard.vert", "img_copy.frag") {
 }
 
 ImageGL::ImageGL(const ImageGL& rhs)
     : ImageRepresentation(rhs)
-    , rectArray_(nullptr)
-    , frameBufferObject_(nullptr)
-    , shader_(nullptr)
-    , initialized_(false) {
-    initialize();
+    , frameBufferObject_()
+    , shader_("standard.vert", "img_copy.frag") {
 }
 
-ImageGL::~ImageGL() { deinitialize(); }
-
-void ImageGL::initialize() {
-    if (initialized_) return;
-
-    if (shader_) delete shader_;
-
-    shader_ = new Shader("standard.vert", "img_copy.frag");
-
-    if (frameBufferObject_) delete frameBufferObject_;
-
-    frameBufferObject_ = new FrameBufferObject();
-    initialized_ = true;
-}
-
-void ImageGL::deinitialize() {
-    frameBufferObject_->deactivate();
-    delete frameBufferObject_;
-    frameBufferObject_ = nullptr;
-    delete shader_;
-    shader_ = nullptr;
-    delete rectArray_;
-    rectArray_ = nullptr;
+ImageGL::~ImageGL() {
+    LGL_ERROR;
+    frameBufferObject_.deactivate();
+    LGL_ERROR;
 }
 
 ImageGL* ImageGL::clone() const { return new ImageGL(*this); }
 
 void ImageGL::reAttachAllLayers(ImageType type) {
-    frameBufferObject_->activate();
-    frameBufferObject_->detachAllTextures();
+    frameBufferObject_.activate();
+    frameBufferObject_.detachAllTextures();
     pickingAttachmentID_ = 0;
 
     for (auto& elem : colorLayersGL_) {
         elem->getTexture()->bind();
-        frameBufferObject_->attachColorTexture(elem->getTexture());
+        frameBufferObject_.attachColorTexture(elem->getTexture());
     }
 
     if (depthLayerGL_ && typeContainsDepth(type)) {
         depthLayerGL_->getTexture()->bind();
-        frameBufferObject_->attachTexture(depthLayerGL_->getTexture(),
+        frameBufferObject_.attachTexture(depthLayerGL_->getTexture(),
                                           static_cast<GLenum>(GL_DEPTH_ATTACHMENT));
     }
 
     if (pickingLayerGL_ && typeContainsPicking(type)) {
         pickingLayerGL_->getTexture()->bind();
         pickingAttachmentID_ =
-            frameBufferObject_->attachColorTexture(pickingLayerGL_->getTexture(), 0, true, 1);
+            frameBufferObject_.attachColorTexture(pickingLayerGL_->getTexture(), 0, true, 1);
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    frameBufferObject_->checkStatus();
-    frameBufferObject_->deactivate();
+    frameBufferObject_.checkStatus();
+    frameBufferObject_.deactivate();
 }
 
 void ImageGL::activateBuffer(ImageType type) {
-    frameBufferObject_->activate();
+    frameBufferObject_.activate();
 
-    const std::vector<GLenum>& drawBuffers = frameBufferObject_->getDrawBuffers();
+    const std::vector<GLenum>& drawBuffers = frameBufferObject_.getDrawBuffers();
     if (!drawBuffers.empty()) {
         GLsizei numBuffersToDrawTo = static_cast<GLsizei>(drawBuffers.size());
 
@@ -134,7 +109,7 @@ void ImageGL::activateBuffer(ImageType type) {
 }
 
 void ImageGL::deactivateBuffer() { 
-    frameBufferObject_->deactivate();
+    frameBufferObject_.deactivate();
 
     // Depth writing might have been disabled, enable it again just in case
     glEnable(GL_DEPTH_TEST);
@@ -166,21 +141,20 @@ bool ImageGL::copyAndResizeRepresentation(DataRepresentation* targetRep) const {
     else
         scale = glm::scale(glm::vec3(ratioSource / ratioTarget, 1.0f, 1.0f));
 
-    shader_->activate();
-    shader_->setUniform("color_", colorUnit.getUnitNumber());
+    shader_.activate();
+    shader_.setUniform("color_", colorUnit.getUnitNumber());
     if (source->getDepthLayerGL()) {
-        shader_->setUniform("depth_", depthUnit.getUnitNumber());
+        shader_.setUniform("depth_", depthUnit.getUnitNumber());
     }
     if (source->getPickingLayerGL()) {
-        shader_->setUniform("picking_", pickingUnit.getUnitNumber());
+        shader_.setUniform("picking_", pickingUnit.getUnitNumber());
     }
-    shader_->setUniform("dataToClip_", scale);
+    shader_.setUniform("dataToClip_", scale);
 
     LGL_ERROR;
-    //target->frameBufferObject_->checkStatus();
     target->renderImagePlaneRect();
     LGL_ERROR;
-    shader_->deactivate();
+    shader_.deactivate();
     target->deactivateBuffer();
     LGL_ERROR;
 
@@ -254,9 +228,9 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     return true;
 }
 
-FrameBufferObject* ImageGL::getFBO() { return frameBufferObject_; }
+FrameBufferObject* ImageGL::getFBO() { return &frameBufferObject_; }
 
-const FrameBufferObject* ImageGL::getFBO() const { return frameBufferObject_; }
+const FrameBufferObject* ImageGL::getFBO() const { return &frameBufferObject_; }
 
 LayerGL* ImageGL::getLayerGL(LayerType type, size_t idx) {
     switch (type) {
@@ -362,15 +336,14 @@ void ImageGL::update(bool editable) {
 }
 
 void ImageGL::renderImagePlaneRect() const {
-    delete rectArray_;
-    rectArray_ = new BufferObjectArray();
-    CanvasGL::attachImagePlanRect(rectArray_);
+    BufferObjectArray rectArray{};
+    CanvasGL::attachImagePlanRect(&rectArray);
     LGL_ERROR;
     glDepthFunc(GL_ALWAYS);
-    rectArray_->bind();
+    rectArray.bind();
     LGL_ERROR;
     CanvasGL::singleDrawImagePlaneRect();
-    rectArray_->unbind();
+    rectArray.unbind();
     glDepthFunc(GL_LESS);
     LGL_ERROR;
 }
