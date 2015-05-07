@@ -27,23 +27,23 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYDISK2RAMCONVERTER_H
-#define IVW_GEOMETRYDISK2RAMCONVERTER_H
+#ifndef IVW_MESHDISK2RAMCONVERTER_H
+#define IVW_MESHDISK2RAMCONVERTER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/datastructures/geometry/geometryram.h>
+#include <inviwo/core/datastructures/geometry/meshram.h>
 #include <inviwo/core/datastructures/geometry/meshdisk.h>
 
 
 namespace inviwo {
 
-class IVW_CORE_API GeometryDisk2RAMConverter : public RepresentationConverterType<GeometryRAM> {
+class IVW_CORE_API MeshDisk2RAMConverter : public RepresentationConverterType<MeshRAM> {
 public:
-    GeometryDisk2RAMConverter();
-    virtual ~GeometryDisk2RAMConverter();
+    MeshDisk2RAMConverter();
+    virtual ~MeshDisk2RAMConverter();
 
     inline bool canConvertFrom(const DataRepresentation* source) const {
         return dynamic_cast<const MeshDisk*>(source) != nullptr;
@@ -55,5 +55,5 @@ public:
 
 } // namespace
 
-#endif // IVW_GEOMETRYDISK2RAMCONVERTER_H
+#endif // IVW_MESHDISK2RAMCONVERTER_H
 

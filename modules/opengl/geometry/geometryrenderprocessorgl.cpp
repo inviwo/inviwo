@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "geometryrenderprocessorgl.h"
-#include <modules/opengl/geometry/geometrygl.h>
+#include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/trackball.h>
 #include <inviwo/core/rendering/geometrydrawerfactory.h>
@@ -211,50 +211,41 @@ void GeometryRenderProcessorGL::process() {
 }
 
 void GeometryRenderProcessorGL::centerViewOnGeometry() {
-    std::vector<const Geometry*> geometries = inport_.getVectorData();
-    if (geometries.empty()) return;
+    if (!inport_.hasData()) return;
 
     vec3 worldMin(std::numeric_limits<float>::max());
     vec3 worldMax(std::numeric_limits<float>::lowest());
 
-    for (auto geom : geometries) {
-        const Mesh* mesh = dynamic_cast<const Mesh*>(geom);
-        if (mesh) {
-            vec3 minPos(std::numeric_limits<float>::max());
-            vec3 maxPos(std::numeric_limits<float>::lowest());
-            for (auto buff : mesh->getBuffers()) {
-                if (buff->getBufferType() == POSITION_ATTRIB) {
-                    const Position3dBufferRAM* posbuff = dynamic_cast<const Position3dBufferRAM*>(
-                        buff->getRepresentation<BufferRAM>());
+    for (auto& mesh : inport_) {
+        vec3 minPos(std::numeric_limits<float>::max());
+        vec3 maxPos(std::numeric_limits<float>::lowest());
+        for (auto buff : mesh.getBuffers()) {
+            if (buff->getBufferType() == POSITION_ATTRIB) {
+                const Position3dBufferRAM* posbuff =
+                    dynamic_cast<const Position3dBufferRAM*>(buff->getRepresentation<BufferRAM>());
 
-                    if (posbuff) {
-                        const std::vector<vec3>* pos = posbuff->getDataContainer();
-                        for (const auto& p : *pos) {
-                            minPos = glm::min(minPos, p);
-                            maxPos = glm::max(maxPos, p);
-                        }
+                if (posbuff) {
+                    const std::vector<vec3>* pos = posbuff->getDataContainer();
+                    for (const auto& p : *pos) {
+                        minPos = glm::min(minPos, p);
+                        maxPos = glm::max(maxPos, p);
                     }
                 }
             }
-
-            mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
-
-            worldMin = glm::min(worldMin, (trans * vec4(minPos, 1.f)).xyz());
-            worldMax = glm::max(worldMax, (trans * vec4(maxPos, 1.f)).xyz());
         }
+
+        mat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
+
+        worldMin = glm::min(worldMin, (trans * vec4(minPos, 1.f)).xyz());
+        worldMax = glm::max(worldMax, (trans * vec4(maxPos, 1.f)).xyz());
     }
     camera_.setLook(camera_.getLookFrom(), 0.5f * (worldMin + worldMax), camera_.getLookUp());
 }
 
 void GeometryRenderProcessorGL::setNearFarPlane() {
-    std::vector<const Geometry*> geometries = inport_.getVectorData();
-    if (geometries.empty()) return;
+    if (!inport_.hasData()) return;
 
-    const Mesh* geom = dynamic_cast<const Mesh*>(geometries[0]);
-
-    if (geom == nullptr) {
-        return;
-    }
+    const Mesh* geom = inport_.getData();
 
     const Position3dBufferRAM* posBuffer = dynamic_cast<const Position3dBufferRAM*>(
         geom->getAttributes(0)->getRepresentation<BufferRAM>());
@@ -273,26 +264,24 @@ void GeometryRenderProcessorGL::setNearFarPlane() {
     nearDist = std::numeric_limits<float>::infinity();
     farDist = 0;
     vec3 nearPos, farPos;
-    vec3 camPos = (geom->getCoordinateTransformer().getWorldToModelMatrix() * vec4(camera_.getLookFrom(), 1.0)).xyz();
+    vec3 camPos = (geom->getCoordinateTransformer().getWorldToModelMatrix() *
+                   vec4(camera_.getLookFrom(), 1.0)).xyz();
     for (auto& po : *pos) {
         auto d = glm::distance2(po, camPos);
-        if (d < nearDist){
+        if (d < nearDist) {
             nearDist = d;
             nearPos = po;
         }
-        if (d > farDist){
+        if (d > farDist) {
             farDist = d;
             farPos = po;
         }
     }
 
-    mat4 m =  camera_.viewMatrix() * geom->getCoordinateTransformer().getModelToWorldMatrix();
+    mat4 m = camera_.viewMatrix() * geom->getCoordinateTransformer().getModelToWorldMatrix();
 
-
-
-    camera_.setNearPlaneDist(std::max(0.0f, 0.99f*std::abs((m * vec4(nearPos, 1.0f)).z)));
-    camera_.setFarPlaneDist(std::max(0.0f, 1.01f*std::abs((m * vec4(farPos, 1.0f)).z)));
-    
+    camera_.setNearPlaneDist(std::max(0.0f, 0.99f * std::abs((m * vec4(nearPos, 1.0f)).z)));
+    camera_.setFarPlaneDist(std::max(0.0f, 1.01f * std::abs((m * vec4(farPos, 1.0f)).z)));
 }
 
 void GeometryRenderProcessorGL::updateDrawers() {
@@ -300,7 +289,7 @@ void GeometryRenderProcessorGL::updateDrawers() {
     DrawerMap temp;
     std::swap(temp, drawers_);
 
-    std::map<const Outport*, std::vector<const Geometry*>> data;
+    std::map<const Outport*, std::vector<const Mesh*>> data;
     for (auto& elem : inport_.getSourceVectorData()) {
         data[elem.first].push_back(elem.second);
     }

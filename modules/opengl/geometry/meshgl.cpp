@@ -35,13 +35,23 @@
 namespace inviwo {
 
 MeshGL::MeshGL()
-    : GeometryGL()
+    : MeshRepresentation()
     , attributesArray_(new BufferObjectArray()) {
 }
 
 MeshGL::MeshGL(const MeshGL& rhs)
-    : GeometryGL(rhs)
+    : MeshRepresentation(rhs)
     , attributesArray_(new BufferObjectArray()){
+
+    update(true);
+}
+
+MeshGL& MeshGL::operator=(const MeshGL& that) {
+    if (this != &that) {
+        MeshRepresentation::operator=(that);
+    }
+    update(true);
+    return *this;
 }
 
 MeshGL::~MeshGL() {

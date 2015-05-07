@@ -24,29 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/geometry/meshdisk.h>
 
 namespace inviwo {
 
-MeshDisk::MeshDisk() : GeometryDisk() {}
+MeshDisk::MeshDisk() : MeshRepresentation(), DiskRepresentation() {}
 
-MeshDisk::MeshDisk(std::string srcFile) : GeometryDisk(srcFile) {}
+MeshDisk::MeshDisk(std::string srcFile) : MeshRepresentation(), DiskRepresentation(srcFile) {}
 
-MeshDisk::MeshDisk(const MeshDisk& rhs) : GeometryDisk(rhs) {}
+MeshDisk::MeshDisk(const MeshDisk& rhs) : MeshRepresentation(rhs), DiskRepresentation(rhs) {}
 
 MeshDisk& MeshDisk::operator=(const MeshDisk& that) {
     if (this != &that) {
-        GeometryDisk::operator=(that);
+        MeshRepresentation::operator=(that);
+        DiskRepresentation::operator=(that);
     }
     return *this;
 }
 
-MeshDisk* MeshDisk::clone() const {
-    return new MeshDisk(*this);
-}
+MeshDisk* MeshDisk::clone() const { return new MeshDisk(*this); }
 
 void MeshDisk::update(bool editable) {}
 

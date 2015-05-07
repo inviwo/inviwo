@@ -31,7 +31,7 @@
 #define IVW_GEOMETRY_DRAWER_FACTORY_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/rendering/geometrydrawer.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/singleton.h>
@@ -45,7 +45,7 @@ public:
     virtual ~GeometryDrawerFactory() {}
 
     void registerObject(GeometryDrawer* drawer);
-    virtual GeometryDrawer* create(const Geometry* geom) const;
+    virtual GeometryDrawer* create(const Mesh* geom) const;
 
 
 private:

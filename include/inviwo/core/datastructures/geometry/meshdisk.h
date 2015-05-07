@@ -32,17 +32,19 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/geometry/geometrydisk.h>
+#include <inviwo/core/datastructures/geometry/meshrepresentation.h>
+#include <inviwo/core/datastructures/diskrepresentation.h>
+
 
 namespace inviwo {
 
-class IVW_CORE_API MeshDisk : public GeometryDisk {
+class IVW_CORE_API MeshDisk : public MeshRepresentation, public DiskRepresentation {
 public:
     MeshDisk();
     MeshDisk(std::string srcFile);
     MeshDisk(const MeshDisk& rhs);
-    virtual ~MeshDisk(){}
     MeshDisk& operator=(const MeshDisk& that);
+    virtual ~MeshDisk(){}
     virtual MeshDisk* clone() const;
 
 protected:

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2013-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,26 +24,25 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "geometrysource.h"
+#include <inviwo/core/datastructures/geometry/meshrepresentation.h>
 
 namespace inviwo {
 
-ProcessorClassIdentifier(GeometrySource, "org.inviwo.GeometrySource");
-ProcessorDisplayName(GeometrySource,  "Geometry Source");
-ProcessorTags(GeometrySource, Tags::CPU);
-ProcessorCategory(GeometrySource, "Data Input");
-ProcessorCodeState(GeometrySource, CODE_STATE_STABLE);
+MeshRepresentation::MeshRepresentation() : DataGroupRepresentation() {}
 
-GeometrySource::GeometrySource() : DataSource<Mesh, GeometryOutport>() {
-    DataSource<Mesh, GeometryOutport>::file_.setContentType("geometry");
-    DataSource<Mesh, GeometryOutport>::file_.setDisplayName("Geometry file");
+MeshRepresentation::MeshRepresentation(const MeshRepresentation& rhs)
+    : DataGroupRepresentation(rhs) {}
+
+MeshRepresentation::~MeshRepresentation() {}
+
+MeshRepresentation& MeshRepresentation::operator=(const MeshRepresentation& that) {
+    if (this != &that) {
+        DataGroupRepresentation::operator=(that);
+    }
+    return *this;
 }
 
-GeometrySource::~GeometrySource() {
-}
-
-} // namespace
-
+}  // namespace

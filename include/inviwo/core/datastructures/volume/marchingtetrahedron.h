@@ -50,11 +50,11 @@ public:
     template <typename T>
     void evaluate();
 
-    static inline Geometry* apply(const VolumeRepresentation *in, const double &iso,
+    static inline Mesh* apply(const VolumeRepresentation *in, const double &iso,
                                   const vec4 &color) {
         MarchingTetrahedron marchingOP = MarchingTetrahedron(in, iso, color);
         marchingOP.evaluateFor<MarchingTetrahedron>();
-        return marchingOP.getOutput<Geometry>();
+        return marchingOP.getOutput<Mesh>();
     }
 
 private:

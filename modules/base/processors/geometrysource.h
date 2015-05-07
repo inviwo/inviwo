@@ -32,13 +32,13 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/ports/geometryport.h>
 #include <modules/base/processors/datasource.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API GeometrySource : public DataSource<Geometry, GeometryOutport> {
+class IVW_MODULE_BASE_API GeometrySource : public DataSource<Mesh, MeshOutport> {
 public:
     GeometrySource();
     virtual ~GeometrySource();

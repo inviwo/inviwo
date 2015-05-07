@@ -24,14 +24,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_GEOMETRY_DRAWER_H
 #define IVW_GEOMETRY_DRAWER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 
@@ -51,15 +51,19 @@ class GeometryDrawerFactory;
  * @code
  *    class IVW_XXX_API DerivedDrawer: public GeometryDrawer {
  *    public:
- *        DerivedDrawer(const DerivedGeometry* g): GeometryDrawer(), geomToRender_(g) {};
+ *        DerivedDrawer(const DerivedMesh* g): GeometryDrawer(), geomToRender_(g) {};
  *        virtual void draw() { // do stuff
  *        }
- *        virtual const Geometry* getGeometry() const { return geomToRender_; }
+ *        virtual const Mesh* getGeometry() const { return geomToRender_; }
  *    protected:
- *        virtual DerivedDrawer* create(const Geometry* geom) const { return new DerivedDrawer(static_cast<const DerivedGeometry*>(geom)); }
- *        virtual bool canRender(const Geometry* geom) const { return dynamic_cast<const DerivedGeometry*>(geom) != nullptr; }
+ *        virtual DerivedDrawer* create(const Mesh* geom) const { 
+ *            return new DerivedDrawer(static_cast<const DerivedMesh*>(geom)); 
+ *        }
+ *        virtual bool canRender(const Mesh* geom) const { 
+ *            return dynamic_cast<const DerivedMesh*>(geom) != nullptr; 
+ *        }
  *    private:
- *        const DerivedGeometry* geomToRender_;
+ *        const DerivedMesh* geomToRender_;
  *    };
  *
  * @endcode
@@ -69,11 +73,11 @@ class GeometryDrawerFactory;
  * @see Module
  */
 class GeometryDrawer {
-    friend struct CanDrawGeometry; // Access to canRender
-    friend class GeometryDrawerFactory; // Access to create
+    friend struct CanDrawGeometry;       // Access to canRender
+    friend class GeometryDrawerFactory;  // Access to create
 public:
-    GeometryDrawer() {};
-    virtual ~GeometryDrawer() {};
+    GeometryDrawer(){};
+    virtual ~GeometryDrawer(){};
 
     /**
      * Draw the geometry the renderer was created for.
@@ -86,18 +90,18 @@ public:
      *
      * @return
      */
-    virtual const Geometry* getGeometry() const = 0;
+    virtual const Mesh* getGeometry() const = 0;
 
 protected:
-
     /**
      * Return a new object of the derived class.
      *
      * @note The GeometryDrawer does not take ownership of the Geometry.
-     * @param geom The geometry to render. This will always be of a type that canDraw return true for.
+     * @param geom The geometry to render. This will always be of a type that canDraw return true
+     *for.
      * @return A new renderer.
      */
-    virtual GeometryDrawer* create(const Geometry* geom) const = 0;
+    virtual GeometryDrawer* create(const Mesh* geom) const = 0;
 
     /**
      * Determine if the renderer can render geometry.
@@ -105,11 +109,9 @@ protected:
      * @param geom The Geometry to draw
      * @return Return true if able to render the Geometry, otherwise false.
      */
-    virtual bool canDraw(const Geometry* geom) const = 0;
-
+    virtual bool canDraw(const Mesh* geom) const = 0;
 };
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_GEOMETRY_DRAWER_H
+#endif  // IVW_GEOMETRY_DRAWER_H

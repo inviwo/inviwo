@@ -33,9 +33,17 @@
 
 namespace inviwo {
 
-MeshRAM::MeshRAM() : GeometryRAM() {}
+MeshRAM::MeshRAM() : MeshRepresentation() {}
 
-MeshRAM::MeshRAM(const MeshRAM& rhs) : GeometryRAM(rhs) { update(true); }
+MeshRAM::MeshRAM(const MeshRAM& rhs) : MeshRepresentation(rhs) { update(true); }
+
+MeshRAM& MeshRAM::operator=(const MeshRAM& that) {
+    if (this != &that) {
+        MeshRepresentation::operator=(that);
+    }
+    update(true);
+    return *this;
+}
 
 MeshRAM::~MeshRAM() {}
 

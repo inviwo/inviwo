@@ -80,7 +80,7 @@ protected:
 
 
 private:
-    GeometryInport geometryPort_;
+    MeshInport geometryPort_;
     ImageOutport entryPort_;
     ImageOutport exitPort_;
 

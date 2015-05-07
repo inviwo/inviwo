@@ -28,15 +28,12 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/diskrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/basicmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/edge.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometry.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometrydisk.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometrydisk2ramconverter.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometryram.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometryrepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshdisk2ramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometrytype.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/mesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshdisk.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshram.h
+	${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/plane.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/polygon.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemesh.h
@@ -263,14 +260,11 @@ set(SOURCE_FILES
     datastructures/datarepresentation.cpp
     datastructures/diskrepresentation.cpp
     datastructures/geometry/basicmesh.cpp
-    datastructures/geometry/geometry.cpp
-    datastructures/geometry/geometrydisk.cpp
-    datastructures/geometry/geometrydisk2ramconverter.cpp
-    datastructures/geometry/geometryram.cpp
-    datastructures/geometry/geometryrepresentation.cpp
+    datastructures/geometry/meshdisk2ramconverter.cpp
     datastructures/geometry/mesh.cpp
     datastructures/geometry/meshdisk.cpp
     datastructures/geometry/meshram.cpp
+	datastructures/geometry/meshrepresentation.cpp
     datastructures/geometry/plane.cpp
     datastructures/geometry/simplemesh.cpp
     datastructures/geometry/simplemeshcreator.cpp

@@ -31,21 +31,22 @@
 #define IVW_MESHGL_H
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <modules/opengl/geometry/geometrygl.h>
+#include <inviwo/core/datastructures/geometry/meshrepresentation.h>
 
 namespace inviwo {
 
 class BufferGL;
 class BufferObjectArray;
 
-class IVW_MODULE_OPENGL_API MeshGL : public GeometryGL {
+class IVW_MODULE_OPENGL_API MeshGL : public MeshRepresentation {
 
 public:
     MeshGL();
     MeshGL(const MeshGL& rhs);
-    virtual ~MeshGL();
-
+    MeshGL& operator=(const MeshGL& that);
     virtual MeshGL* clone() const;
+  
+    virtual ~MeshGL();
 
     void enable() const;
     void disable() const;

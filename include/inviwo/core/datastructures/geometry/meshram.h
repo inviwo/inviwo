@@ -30,20 +30,23 @@
 #ifndef IVW_MESHRAM_H
 #define IVW_MESHRAM_H
 
-#include <inviwo/core/datastructures/geometry/geometryram.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/datastructures/datagrouprepresentation.h>
+#include <inviwo/core/datastructures/geometry/meshrepresentation.h>
 
 namespace inviwo {
 
 class Mesh;
 class BufferRAM;
 
-class IVW_CORE_API MeshRAM : public GeometryRAM {
+class IVW_CORE_API MeshRAM : public MeshRepresentation {
 
 public:
     MeshRAM();
     MeshRAM(const MeshRAM& rhs);
-    virtual ~MeshRAM();
+    MeshRAM& operator=(const MeshRAM& that);
     virtual MeshRAM* clone() const;
+    virtual ~MeshRAM();
 
 protected:
     virtual void update(bool editable);

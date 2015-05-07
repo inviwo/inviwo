@@ -87,7 +87,7 @@ void EntryExitPoints::deinitialize() {
 }
 
 void EntryExitPoints::process() {
-    const Geometry* geom = geometryPort_.getData();
+    const Mesh* geom = geometryPort_.getData();
 
     // Check if no renderer exist or if geometry changed
     if (!drawer_) onGeometryChange();

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHREPRESENTATION_H
@@ -37,18 +37,17 @@
 
 namespace inviwo {
 
-class IVW_CORE_API MeshRepresentation : public DataRepresentation {
-
+class IVW_CORE_API MeshRepresentation : public DataGroupRepresentation {
 public:
-
-
     MeshRepresentation();
+    MeshRepresentation(const MeshRepresentation& rhs);
+    MeshRepresentation& operator=(const MeshRepresentation& that);
+    virtual MeshRepresentation* clone() const override = 0;
     virtual ~MeshRepresentation();
-    virtual void performOperation(DataOperation*) const;
-    virtual DataRepresentation* clone() const = 0;
-    virtual std::string getClassName() const;
+
+    virtual void performOperation(DataOperation*) const override{};
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_MESHREPRESENTATION_H
+#endif  // IVW_MESHREPRESENTATION_H

@@ -54,14 +54,14 @@ public:
     GLenum getDefaultDrawMode();
     GLenum getDrawMode(GeometryEnums::DrawType, GeometryEnums::ConnectivityType);
 
-    virtual const Geometry* getGeometry() const { return meshToDraw_; }
+    virtual const Mesh* getGeometry() const { return meshToDraw_; }
 
 protected:
-    virtual GeometryDrawer* create(const Geometry* geom) const {
-        return new MeshDrawer(static_cast<const Mesh*>(geom));
+    virtual GeometryDrawer* create(const Mesh* geom) const {
+        return new MeshDrawer(geom);
     }
-    virtual bool canDraw(const Geometry* geom) const {
-        return dynamic_cast<const Mesh*>(geom) != nullptr;
+    virtual bool canDraw(const Mesh* geom) const {
+        return geom != nullptr;
     }
 
     virtual void initialize(Mesh::AttributesInfo = Mesh::AttributesInfo());

@@ -34,11 +34,11 @@ namespace inviwo {
 
 struct CanDrawGeometry {
 public:
-    CanDrawGeometry(const Geometry* geom) : geom_(geom){};
+    CanDrawGeometry(const Mesh* geom) : geom_(geom){};
     bool operator()(const GeometryDrawer* drawer) { return drawer->canDraw(geom_); }
 
 private:
-    const Geometry* geom_;
+    const Mesh* geom_;
 };
 
 GeometryDrawerFactory::GeometryDrawerFactory() {}
@@ -47,9 +47,8 @@ void GeometryDrawerFactory::registerObject(GeometryDrawer* drawer) {
     drawers_.insert(drawer);
 }
 
-GeometryDrawer* GeometryDrawerFactory::create(const Geometry* geom) const {
-    std::set<GeometryDrawer*>::const_iterator it =
-        std::find_if(drawers_.begin(), drawers_.end(), CanDrawGeometry(geom));
+GeometryDrawer* GeometryDrawerFactory::create(const Mesh* geom) const {
+    auto it = std::find_if(drawers_.begin(), drawers_.end(), CanDrawGeometry(geom));
 
     if (it != drawers_.end())
         return (*it)->create(geom);

@@ -55,13 +55,13 @@ public:
 protected:
     virtual void process();
 
-    Geometry* clipGeometryAgainstPlaneRevised(const Geometry*, Plane);
-    Geometry* clipGeometryAgainstPlane(const Geometry*, Plane);
+    Mesh* clipGeometryAgainstPlaneRevised(const Mesh*, Plane);
+    Mesh* clipGeometryAgainstPlane(const Mesh*, Plane);
     float degreeToRad(float);
 
 private:
-    GeometryInport inport_;
-    GeometryOutport outport_;
+    MeshInport inport_;
+    MeshOutport outport_;
 
     BoolProperty clippingEnabled_;
     FloatVec3Property planePoint_;
