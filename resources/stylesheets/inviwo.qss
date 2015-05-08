@@ -71,19 +71,29 @@ QWidget#CompositeWidget > .QWidget {
     background: lime;
 }
 
+QWidget[bgType="toplevel"]#CompositeWidget {
+    background-color: #323235; /* assign default background color */
+}
+
+QWidget[bgType="toplevel"]#CompositeWidget > .QWidget, 
+QWidget[bgType="3"]#CompositeWidget,
 QWidget[bgType="0"]#CompositeWidget > .QWidget {
     background-color: #323235;
+    background-color: #2a2a2e;
 }
-QWidget[bgType="1"]#CompositeWidget > .QWidget {
+QWidget[bgType="0"]#CompositeWidget, QWidget[bgType="1"]#CompositeWidget > .QWidget {
     background-color: #38383c;
+    background-color: #242428;
     /*background-color: darkslategray;*/
 }
-QWidget[bgType="2"]#CompositeWidget > .QWidget {
+QWidget[bgType="1"]#CompositeWidget, QWidget[bgType="2"]#CompositeWidget > .QWidget {
     background: #323235;
+    background-color: #2a2a2e;
     /*background-color: darkslateblue;*/
 }
-QWidget[bgType="3"]#CompositeWidget > .QWidget {
+QWidget[bgType="2"]#CompositeWidget, QWidget[bgType="3"]#CompositeWidget > .QWidget {
     background: #3a3a3d;
+    background-color: #242428;
     /*background-color: maroon;*/
 }
 

@@ -433,7 +433,13 @@ void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) {
 
 void CollapsibleGroupBoxWidgetQt::setNestedDepth(int depth) {
     nestedDepth_ = depth;
-    QObject::setProperty("bgType", nestedDepth_ % maxNumNestedShades_);
+    if (nestedDepth_ == 0) {
+        // special case for depth zero
+        QObject::setProperty("bgType", "toplevel");
+    }
+    else {
+        QObject::setProperty("bgType", nestedDepth_ % maxNumNestedShades_);
+    }
 
     // update depth of all nested collapsible group box widgets
     for (auto& elem : propertyWidgets_) {
