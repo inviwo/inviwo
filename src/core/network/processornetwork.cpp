@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <algorithm>
 
 namespace inviwo {
