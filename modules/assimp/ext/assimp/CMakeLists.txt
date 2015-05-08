@@ -30,10 +30,10 @@ if(NOT GIT_COMMIT_HASH)
   set(GIT_COMMIT_HASH 0)
 endif(NOT GIT_COMMIT_HASH)
 
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/revision.h.in
-  ${CMAKE_CURRENT_SOURCE_DIR}/revision.h
-)
+#configure_file(
+#  ${CMAKE_CURRENT_SOURCE_DIR}/revision.h.in
+#  ${CMAKE_CURRENT_SOURCE_DIR}/revision.h
+#)
 
 include_directories(${CMAKE_BINARY_DIR})
 
