@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/image/layerclconverter.h>
@@ -33,33 +33,30 @@
 
 namespace inviwo {
 
-LayerRAM2CLConverter::LayerRAM2CLConverter()
-    : RepresentationConverterType<LayerCL>()
-{}
+LayerRAM2CLConverter::LayerRAM2CLConverter() : RepresentationConverterType<LayerCL>() {}
 
 DataRepresentation* LayerRAM2CLConverter::createFrom(const DataRepresentation* source) {
     DataRepresentation* destination = 0;
     const LayerRAM* layerRAM = static_cast<const LayerRAM*>(source);
-    uvec2 dimensions = layerRAM->getDimensions();;
+    uvec2 dimensions = layerRAM->getDimensions();
     const void* data = layerRAM->getData();
-    destination = new LayerCL(dimensions, layerRAM->getLayerType(), layerRAM->getDataFormat(), data);
+    destination =
+        new LayerCL(dimensions, layerRAM->getLayerType(), layerRAM->getDataFormat(), data);
     return destination;
 }
-void LayerRAM2CLConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void LayerRAM2CLConverter::update(const DataRepresentation* source,
+                                  DataRepresentation* destination) {
     const LayerRAM* layerSrc = static_cast<const LayerRAM*>(source);
     LayerCL* layerDst = static_cast<LayerCL*>(destination);
 
     if (layerSrc->getDimensions() != layerDst->getDimensions()) {
-        layerDst->resize(layerSrc->getDimensions());
+        layerDst->setDimensions(layerSrc->getDimensions());
     }
 
     layerDst->upload(layerSrc->getData());
 }
 
-LayerCL2RAMConverter::LayerCL2RAMConverter()
-    : RepresentationConverterType<LayerRAM>()
-{}
-
+LayerCL2RAMConverter::LayerCL2RAMConverter() : RepresentationConverterType<LayerRAM>() {}
 
 DataRepresentation* LayerCL2RAMConverter::createFrom(const DataRepresentation* source) {
     DataRepresentation* destination = 0;
@@ -70,8 +67,9 @@ DataRepresentation* LayerCL2RAMConverter::createFrom(const DataRepresentation* s
     if (destination) {
         LayerRAM* layerRAM = static_cast<LayerRAM*>(destination);
         layerCL->download(layerRAM->getData());
-        //const cl::CommandQueue& queue = OpenCL::getInstance()->getQueue();
-        //queue.enqueueReadLayer(layerCL->getLayer(), true, glm::svec3(0), glm::svec3(dimensions, 1), 0, 0, layerRAM->getData());
+        // const cl::CommandQueue& queue = OpenCL::getInstance()->getQueue();
+        // queue.enqueueReadLayer(layerCL->getLayer(), true, glm::svec3(0), glm::svec3(dimensions,
+        // 1), 0, 0, layerRAM->getData());
     } else {
         LogError("Invalid conversion or not implemented");
     }
@@ -79,15 +77,16 @@ DataRepresentation* LayerCL2RAMConverter::createFrom(const DataRepresentation* s
     return destination;
 }
 
-void LayerCL2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void LayerCL2RAMConverter::update(const DataRepresentation* source,
+                                  DataRepresentation* destination) {
     const LayerCL* layerSrc = static_cast<const LayerCL*>(source);
     LayerRAM* layerDst = static_cast<LayerRAM*>(destination);
 
     if (layerSrc->getDimensions() != layerDst->getDimensions()) {
-        layerDst->resize(layerSrc->getDimensions());
+        layerDst->setDimensions(layerSrc->getDimensions());
     }
 
     layerSrc->download(layerDst->getData());
 }
 
-} // namespace
+}  // namespace

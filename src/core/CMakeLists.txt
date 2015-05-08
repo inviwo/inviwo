@@ -277,6 +277,7 @@ set(SOURCE_FILES
     datastructures/image/layerdisk.cpp
     datastructures/image/layerram.cpp
     datastructures/image/layerramconverter.cpp
+    datastructures/image/layerramprecision.cpp
     datastructures/image/layerrepresentation.cpp
     datastructures/light/baselightsource.cpp
     datastructures/representationconverter.cpp
@@ -290,6 +291,7 @@ set(SOURCE_FILES
     datastructures/volume/volumeram.cpp
     datastructures/volume/volumeramconverter.cpp
     datastructures/volume/volumerepresentation.cpp
+    datastructures/volume/volumeramprecision.cpp
     interaction/action.cpp
     interaction/cameratrackball.cpp
     interaction/events/event.cpp

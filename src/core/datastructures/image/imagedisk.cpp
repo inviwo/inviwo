@@ -51,7 +51,7 @@ ImageDisk* ImageDisk::clone() const {
 ImageDisk::~ImageDisk() {
 }
 
-bool ImageDisk::copyAndResizeRepresentation(DataRepresentation*) const {
+bool ImageDisk::copyRepresentationsTo(DataRepresentation*) const {
     return false;
 }
 

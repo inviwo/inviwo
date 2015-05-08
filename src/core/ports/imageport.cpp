@@ -86,7 +86,7 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     newEvent->setSize(newDimensions);
 
     if (handleResizeEvents_ && newDimensions != data_->getDimensions()) {  // resize data.
-        data_->resize(newDimensions);
+        data_->setDimensions(newDimensions);
         dimensions_ = data_->getDimensions();
         cache_.setInvalid();
 
@@ -123,7 +123,7 @@ bool ImageOutport::removeResizeEventListener(EventListener* el) { return removeE
 
 void ImageOutport::setDimensions(const uvec2& newDimension) {
     // Set new dimensions
-    DataOutport<Image>::getData()->resize(newDimension);
+    DataOutport<Image>::getData()->setDimensions(newDimension);
     dimensions_ = newDimension;
     cache_.setInvalid();
 }

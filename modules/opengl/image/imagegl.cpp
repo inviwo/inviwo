@@ -59,9 +59,9 @@ void ImageGL::reAttachAllLayers(ImageType type) {
     frameBufferObject_.detachAllTextures();
     pickingAttachmentID_ = 0;
 
-    for (auto& elem : colorLayersGL_) {
-        elem->getTexture()->bind();
-        frameBufferObject_.attachColorTexture(elem->getTexture());
+    for (auto layer : colorLayersGL_) {
+        layer->getTexture()->bind();
+        frameBufferObject_.attachColorTexture(layer->getTexture());
     }
 
     if (depthLayerGL_ && typeContainsDepth(type)) {
@@ -116,7 +116,7 @@ void ImageGL::deactivateBuffer() {
     glDepthMask(GL_TRUE);
 }
 
-bool ImageGL::copyAndResizeRepresentation(DataRepresentation* targetRep) const {
+bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
     const ImageGL* source = this;
     ImageGL* target = dynamic_cast<ImageGL*>(targetRep);
     

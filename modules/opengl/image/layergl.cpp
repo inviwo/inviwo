@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/formats.h>
@@ -33,14 +33,11 @@
 namespace inviwo {
 
 LayerGL::LayerGL(uvec2 dimensions, LayerType type, const DataFormatBase* format, Texture2D* tex)
-    : LayerRepresentation(dimensions, type, format)
-    , texture_(tex)
-{
+    : LayerRepresentation(dimensions, type, format), texture_(tex) {
     initialize();
 }
 
-LayerGL::LayerGL(const LayerGL& rhs)
-    : LayerRepresentation(rhs) {
+LayerGL::LayerGL(const LayerGL& rhs) : LayerRepresentation(rhs) {
     texture_ = rhs.texture_->clone();
 }
 
@@ -53,22 +50,18 @@ LayerGL& LayerGL::operator=(const LayerGL& rhs) {
     return *this;
 }
 
-LayerGL::~LayerGL() {
-    deinitialize();
-}
+LayerGL::~LayerGL() { deinitialize(); }
 
-LayerGL* LayerGL::clone() const {
-    return new LayerGL(*this);
-}
+LayerGL* LayerGL::clone() const { return new LayerGL(*this); }
 
 void LayerGL::initialize() {
     if (!texture_) {
         GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
 
         if (getLayerType() == DEPTH_LAYER) {
-            texture_ = new Texture2D(getDimensions(), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24, glFormat.type, GL_NEAREST);
-        }
-        else {
+            texture_ = new Texture2D(getDimensions(), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
+                                     glFormat.type, GL_NEAREST);
+        } else {
             texture_ = new Texture2D(getDimensions(), glFormat, GL_LINEAR);
         }
     }
@@ -94,7 +87,7 @@ void LayerGL::unbindTexture() const {
     glActiveTexture(GL_TEXTURE0);
 }
 
-bool LayerGL::copyAndResizeLayer(DataRepresentation* targetLayerGL) const {
+bool LayerGL::copyRepresentationsTo(DataRepresentation* targetLayerGL) const {
     /*const LayerGL* source = this;
     LayerGL* target = dynamic_cast<LayerGL*>(targetLayerGL);
     if(!target){
@@ -109,7 +102,7 @@ bool LayerGL::copyAndResizeLayer(DataRepresentation* targetLayerGL) const {
     return false;
 }
 
-void LayerGL::resize(uvec2 dimensions) {
+void LayerGL::setDimensions(uvec2 dimensions) {
     dimensions_ = dimensions;
 
     if (texture_) {
@@ -119,12 +112,8 @@ void LayerGL::resize(uvec2 dimensions) {
     }
 }
 
-Texture2D* LayerGL::getTexture() {
-    return texture_;
-}
+Texture2D* LayerGL::getTexture() { return texture_; }
 
-const Texture2D* LayerGL::getTexture() const {
-    return texture_;
-}
+const Texture2D* LayerGL::getTexture() const { return texture_; }
 
-} // namespace
+}  // namespace

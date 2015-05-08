@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/pvm/pvmvolumereader.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>

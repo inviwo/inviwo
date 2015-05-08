@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYERRAM_H
@@ -37,24 +37,24 @@
 namespace inviwo {
 
 class IVW_CORE_API LayerRAM : public LayerRepresentation {
-
 public:
-    LayerRAM(uvec2 dimensions = uvec2(32,32), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataVec4UINT8::get());
+    LayerRAM(uvec2 dimensions = uvec2(32, 32), LayerType type = COLOR_LAYER,
+             const DataFormatBase* format = DataVec4UINT8::get());
     LayerRAM(const LayerRAM& rhs);
     LayerRAM& operator=(const LayerRAM& that);
     LayerRAM* clone() const = 0;
     virtual ~LayerRAM();
 
+    /**
+     * Copy and resize the representations of this onto the target.
+     */
+    virtual bool copyRepresentationsTo(DataRepresentation*) const override;
 
-    virtual void setDimensions(uvec2 dimensions);
-    virtual void resize(uvec2 dimensions) = 0;
-    virtual bool copyAndResizeLayer(DataRepresentation*) const;
-
-    void* getData();
-    const void* getData() const;
+    virtual void* getData() = 0;
+    virtual const void* getData() const = 0;
 
     // Takes ownership of data pointer
-    void setData(void* data);
+    virtual void setData(void* data, uvec2 dimensions) = 0;
 
     virtual void setValueFromSingleDouble(const uvec2& pos, double val) = 0;
     virtual void setValueFromVec2Double(const uvec2& pos, dvec2 val) = 0;
@@ -67,26 +67,10 @@ public:
     virtual dvec4 getValueAsVec4Double(const uvec2& pos) const = 0;
 
     static inline unsigned int posToIndex(const uvec2& pos, const uvec2& dim) {
-        return pos.x+(pos.y*dim.x);
+        return pos.x + (pos.y * dim.x);
     }
-
-protected:
-    virtual void initialize() = 0;
-    virtual void deinitialize() = 0;
-
-    void* data_;
 };
 
-/**
- * Factory for layers.
- * Creates an LayerRAM with data type specified by format.
- *
- * @param dimensionsof layer to create.
- * @param format of layer to create.
- * @return nullptr if no valid format was specified.
- */
-IVW_CORE_API LayerRAM* createLayerRAM(const uvec2& dimensions, LayerType type, const DataFormatBase* format);
+}  // namespace
 
-} // namespace
-
-#endif // IVW_LAYERRAM_H
+#endif  // IVW_LAYERRAM_H

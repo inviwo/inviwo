@@ -58,7 +58,7 @@ public:
      * @param void * data is raw volume data pointer
      * @return void none
      */
-    virtual void setData(void* data) = 0;
+    virtual void setData(void* data, uvec3 dimensions) = 0;
     virtual void removeDataOwnership() = 0;
 
     // Histograms
@@ -106,28 +106,6 @@ T VolumeRAM::periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posI
     glm::detail::tvec3<T, glm::defaultp> pos = posIn % dim;
     return pos.x + (pos.y * dim.x) + (pos.z * dim.x * dim.y);
 }
-
-/**
- * Factory for volumes.
- * Creates an VolumeRAM with data type specified by format.
- *
- * @param dimensions of volume to create.
- * @param format of volume to create.
- * @return nullptr if no valid format was specified.
- */
-IVW_CORE_API VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format,
-                                        void* dataPtr = nullptr);
-
-template <typename T>
-class VolumeRAMPrecision;
-struct VolumeRamDispatcher {
-    using type = VolumeRAM*;
-    template <class T>
-    VolumeRAM* dispatch(void* dataPtr, const uvec3& dimensions) {
-        typedef typename T::type F;
-        return new VolumeRAMPrecision<F>(static_cast<F*>(dataPtr), dimensions);
-    }
-};
 
 }  // namespace
 

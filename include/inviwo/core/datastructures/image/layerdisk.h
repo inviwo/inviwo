@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYERDISK_H
@@ -37,7 +37,6 @@
 namespace inviwo {
 
 class IVW_CORE_API LayerDisk : public LayerRepresentation, public DiskRepresentation {
-
 public:
     LayerDisk(LayerType type = COLOR_LAYER);
     LayerDisk(std::string url, LayerType type = COLOR_LAYER);
@@ -46,7 +45,11 @@ public:
     virtual LayerDisk* clone() const;
     virtual ~LayerDisk();
 
-    virtual bool copyAndResizeLayer(DataRepresentation*) const;
+    virtual void setDimensions(uvec2 dimensions);
+    /**
+     * Copy and resize the representations of this onto the target.
+     */
+    virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
 
     /**
      * \brief Updates the data format retrieved during loading
@@ -57,6 +60,6 @@ public:
     void updateDataFormat(const DataFormatBase*);
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_LAYERDISK_H
+#endif  // IVW_LAYERDISK_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/layerdisk.h>
@@ -32,37 +32,28 @@
 namespace inviwo {
 
 LayerDisk::LayerDisk(LayerType type)
-    : LayerRepresentation(uvec2(0), type, DataFormatBase::get()), DiskRepresentation() {
-}
+    : LayerRepresentation(uvec2(0), type, DataFormatBase::get()), DiskRepresentation() {}
 
 LayerDisk::LayerDisk(std::string url, LayerType type)
-    : LayerRepresentation(uvec2(0), type, DataFormatBase::get()), DiskRepresentation(url) {
-}
+    : LayerRepresentation(uvec2(0), type, DataFormatBase::get()), DiskRepresentation(url) {}
 
-LayerDisk::LayerDisk(const LayerDisk& rhs)
-    : LayerRepresentation(rhs)
-    , DiskRepresentation(rhs) {
-}
+LayerDisk::LayerDisk(const LayerDisk& rhs) : LayerRepresentation(rhs), DiskRepresentation(rhs) {}
 
 LayerDisk& LayerDisk::operator=(const LayerDisk& that) {
-    if (this != &that)
+    if (this != &that) {
         LayerRepresentation::operator=(that);
-
+    }
     return *this;
 }
 
 LayerDisk::~LayerDisk() {}
 
-LayerDisk* LayerDisk::clone() const {
-    return new LayerDisk(*this);
-}
+LayerDisk* LayerDisk::clone() const { return new LayerDisk(*this); }
 
-bool LayerDisk::copyAndResizeLayer(DataRepresentation*) const {
-    return false;
-}
+void LayerDisk::setDimensions(uvec2 dimensions) { dimensions_ = dimensions; }
 
-void LayerDisk::updateDataFormat(const DataFormatBase* format){
-    setDataFormat(format);
-}
+bool LayerDisk::copyRepresentationsTo(DataRepresentation*) const { return false; }
 
-} // namespace
+void LayerDisk::updateDataFormat(const DataFormatBase* format) { setDataFormat(format); }
+
+}  // namespace

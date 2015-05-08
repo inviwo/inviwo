@@ -24,71 +24,29 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/io/datawriter.h>
 
 namespace inviwo {
 
 LayerRAM::LayerRAM(uvec2 dimensions, LayerType type, const DataFormatBase* format)
-    : LayerRepresentation(dimensions, type, format), data_(nullptr) {}
+    : LayerRepresentation(dimensions, type, format) {}
 
-LayerRAM::LayerRAM(const LayerRAM& rhs)
-    : LayerRepresentation(rhs) {
-}
+LayerRAM::LayerRAM(const LayerRAM& rhs) : LayerRepresentation(rhs) {}
 
 LayerRAM& LayerRAM::operator=(const LayerRAM& that) {
-    if (this != &that)
-        LayerRepresentation::operator=(that);
-
+    if (this != &that) LayerRepresentation::operator=(that);
     return *this;
 }
 
-LayerRAM::~LayerRAM() {
-}
+LayerRAM::~LayerRAM() {}
 
-bool LayerRAM::copyAndResizeLayer(DataRepresentation* targetLayerRam) const {
+bool LayerRAM::copyRepresentationsTo(DataRepresentation* targetLayerRam) const {
     return Canvas::generalLayerWriter_->writeDataToRepresentation(this, targetLayerRam);
 }
 
-void LayerRAM::setDimensions(uvec2 dimensions) {
-    resize(dimensions);
-}
-
-void* LayerRAM::getData() {
-    return data_;
-}
-
-const void* LayerRAM::getData() const {
-    return data_;
-}
-
-void LayerRAM::setData(void* data) {
-    deinitialize();
-    data_ = data;
-}
-
-LayerRAM* createLayerRAM(const uvec2& dimensions, LayerType type, const DataFormatBase* format) {
-    switch (format->getId()) {
-        case DataFormatEnums::NOT_SPECIALIZED:
-            LogErrorCustom("createLayerRAM", "Invalid format");
-            return nullptr;
-#define DataFormatIdMacro(i)                                           \
-    case DataFormatEnums::i:                                           \
-        return new LayerRAMPrecision<Data##i::type>(dimensions, type); \
-        break;
-#include <inviwo/core/util/formatsdefinefunc.h>
-
-        default:
-            LogErrorCustom("createLayerRAM", "Invalid format or not implemented");
-            return nullptr;
-    }
-
-    return nullptr;
-}
-
-} // namespace
+}  // namespace

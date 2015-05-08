@@ -45,17 +45,14 @@ public:
     ImageCL(const ImageCL& other);
     virtual ~ImageCL();
     virtual ImageCL* clone() const;
-    virtual void initialize();
-    virtual void deinitialize();
 
     LayerCL* getLayerCL();
     const LayerCL* getLayerCL() const;
 
-    virtual bool copyAndResizeRepresentation(DataRepresentation*) const;
+    virtual bool copyRepresentationsTo(DataRepresentation*) const;
 
 protected:
     virtual void update(bool);
-
     LayerCL* layerCL_;
 };
 

@@ -77,13 +77,15 @@ bool FreeImageWriter::writeDataToRepresentation(const DataRepresentation* src, D
 
     if (!source->getData())
         return true;
+    
+    uvec2 dimensions = target->getDimensions();
 
-    void* rawData = FreeImageUtils::rescaleLayerRAM(source, target->getDimensions());
+    void* rawData = FreeImageUtils::rescaleLayerRAM(source, dimensions);
 
     if (!rawData)
         return false;
 
-    target->setData(rawData);
+    target->setData(rawData, dimensions);
 
     return true;
 }

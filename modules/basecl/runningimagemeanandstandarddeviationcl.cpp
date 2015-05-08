@@ -50,10 +50,10 @@ bool RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(con
         return false;
     }
     if (glm::any(glm::notEqual(newSamples->getDimensions(), standardDeviation_[0].getDimensions()))) {
-        standardDeviation_[0].resize(newSamples->getDimensions());
-        standardDeviation_[1].resize(newSamples->getDimensions());
-        mean_[0].resize(newSamples->getDimensions());
-        mean_[1].resize(newSamples->getDimensions());
+        standardDeviation_[0].setDimensions(newSamples->getDimensions());
+        standardDeviation_[1].setDimensions(newSamples->getDimensions());
+        mean_[0].setDimensions(newSamples->getDimensions());
+        mean_[1].setDimensions(newSamples->getDimensions());
     }
 
     //IVW_OPENCL_PROFILING(profilingEvent, "")

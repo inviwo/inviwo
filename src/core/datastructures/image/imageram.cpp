@@ -48,7 +48,7 @@ ImageRAM& ImageRAM::operator=(const ImageRAM& that) {
 }
 ImageRAM::~ImageRAM() {}
 
-bool ImageRAM::copyAndResizeRepresentation(DataRepresentation* targetRep) const {
+bool ImageRAM::copyRepresentationsTo(DataRepresentation* targetRep) const {
     const ImageRAM* source = this;
     ImageRAM* target = dynamic_cast<ImageRAM*>(targetRep);
 
@@ -59,18 +59,18 @@ bool ImageRAM::copyAndResizeRepresentation(DataRepresentation* targetRep) const 
                               target->getOwner()->getNumberOfColorLayers());
 
     for (size_t i = 0; i < minSize; ++i) {
-        if (!source->getColorLayerRAM(i)->copyAndResizeLayer(target->getColorLayerRAM(i)))
+        if (!source->getColorLayerRAM(i)->copyRepresentationsTo(target->getColorLayerRAM(i)))
             return false;
     }
 
     // Copy and resize depth layer
     if (source->getDepthLayerRAM() && target->getDepthLayerRAM())
-        if (!source->getDepthLayerRAM()->copyAndResizeLayer(target->getDepthLayerRAM()))
+        if (!source->getDepthLayerRAM()->copyRepresentationsTo(target->getDepthLayerRAM()))
             return false;
 
     // Copy and resize picking layer
     if (source->getPickingLayerRAM() && target->getPickingLayerRAM())
-        if (!source->getPickingLayerRAM()->copyAndResizeLayer(target->getPickingLayerRAM()))
+        if (!source->getPickingLayerRAM()->copyRepresentationsTo(target->getPickingLayerRAM()))
             return false;
 
     return true;

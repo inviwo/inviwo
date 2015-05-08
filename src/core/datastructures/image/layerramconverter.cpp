@@ -24,17 +24,15 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/layerramconverter.h>
-#include <inviwo/core/datastructures/image/layerramprecision.h>
+
 
 namespace inviwo {
 
-LayerDisk2RAMConverter::LayerDisk2RAMConverter()
-    : RepresentationConverterType<LayerRAM>()
-{}
+LayerDisk2RAMConverter::LayerDisk2RAMConverter() : RepresentationConverterType<LayerRAM>() {}
 
 LayerDisk2RAMConverter::~LayerDisk2RAMConverter() {}
 
@@ -49,21 +47,16 @@ LayerDisk2RAMConverter::~LayerDisk2RAMConverter() {}
  **/
 DataRepresentation* LayerDisk2RAMConverter::createFrom(const DataRepresentation* source) {
     const LayerDisk* layerDisk = static_cast<const LayerDisk*>(source);
-
+    
+    // This has the side effect of setting the data format of layerdisk
     void* data = layerDisk->readData();
-
-    switch (layerDisk->getDataFormat()->getId()) {
-#define DataFormatIdMacro(i) case DataFormatEnums::i: return new LayerRAM_##i(static_cast<Data##i::type*>(data), layerDisk->getDimensions(), layerDisk->getLayerType());
-#include <inviwo/core/util/formatsdefinefunc.h>
-
-        default:
-            LogError("Cannot convert format from Disk to RAM:" << layerDisk->getDataFormat()->getString());
-    }
-
-    return nullptr;
+    
+    LayerDisk2RAMDispatcher disp;
+    return source->getDataFormat()->dispatch(disp, layerDisk, data);
 }
 
-void LayerDisk2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void LayerDisk2RAMConverter::update(const DataRepresentation* source,
+                                    DataRepresentation* destination) {
     const LayerDisk* layerSrc = static_cast<const LayerDisk*>(source);
     LayerRAM* layerDst = static_cast<LayerRAM*>(destination);
 
@@ -73,4 +66,4 @@ void LayerDisk2RAMConverter::update(const DataRepresentation* source, DataRepres
     layerSrc->readDataInto(layerDst->getData());
 }
 
-} // namespace
+}  // namespace

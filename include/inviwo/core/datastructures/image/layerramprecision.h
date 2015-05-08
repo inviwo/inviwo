@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYERRAMPRECISION_H
@@ -46,10 +46,15 @@ public:
     virtual LayerRAMPrecision<T>* clone() const;
     virtual ~LayerRAMPrecision();
 
-    virtual void initialize();
-    virtual void initialize(void*);
-    virtual void deinitialize();
-    virtual void resize(uvec2 dimensions);
+    virtual void* getData() override;
+    virtual const void* getData() const override;
+    virtual void setData(void* data, uvec2 dimensions) override;
+
+    /**
+     * Reeize the representation to dimension. This is destructive, the data will not be
+     * preserved. Use copyRepresentationsTo to update the data.
+     */
+    virtual void setDimensions(uvec2 dimensions) override;
 
     void setValueFromSingleDouble(const uvec2& pos, double val);
     void setValueFromVec2Double(const uvec2& pos, dvec2 val);
@@ -63,36 +68,56 @@ public:
 
 private:
     static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
+    std::unique_ptr<T[]> data_;
 };
 
+/**
+ * Factory for layers.
+ * Creates an LayerRAM with data type specified by format.
+ *
+ * @param dimensionsof layer to create.
+ * @param format of layer to create.
+ * @return nullptr if no valid format was specified.
+ */
+IVW_CORE_API LayerRAM* createLayerRAM(const uvec2& dimensions, LayerType type,
+                                      const DataFormatBase* format);
+
+struct LayerRAMDispatcher {
+    using type = LayerRAM*;
+    template <class T>
+    LayerRAM* dispatch(const uvec2& dimensions, LayerType type) {
+        using F = typename T::type;
+        return new LayerRAMPrecision<F>(dimensions, type);
+    }
+};
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(uvec2 dimensions, LayerType type,
                                         const DataFormatBase* format)
-    : LayerRAM(dimensions, type, format) {
-    initialize();
-}
+    : LayerRAM(dimensions, type, format), data_(new T[dimensions_.x * dimensions_.y]()) {}
+
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(T* data, uvec2 dimensions, LayerType type,
                                         const DataFormatBase* format)
-    : LayerRAM(dimensions, type, format) {
-    initialize(data);
-}
+    : LayerRAM(dimensions, type, format)
+    , data_(data ? data : new T[dimensions_.x * dimensions_.y]()) {}
 
 template <typename T>
 LayerRAMPrecision<T>::LayerRAMPrecision(const LayerRAMPrecision<T>& rhs)
-    : LayerRAM(rhs) {
-    initialize();
-    std::memcpy(data_, rhs.getData(), dimensions_.x * dimensions_.y * sizeof(T));
+    : LayerRAM(rhs), data_(new T[dimensions_.x * dimensions_.y]) {
+    std::memcpy(data_.get(), rhs.data_.get(), dimensions_.x * dimensions_.y * sizeof(T));
 }
 
 template <typename T>
 LayerRAMPrecision<T>& LayerRAMPrecision<T>::operator=(const LayerRAMPrecision<T>& that) {
     if (this != &that) {
         LayerRAM::operator=(that);
-        delete[] data_;
-        initialize();
-        std::memcpy(data_, that.getData(), dimensions_.x*dimensions_.y*sizeof(T));
+
+        auto dim = that.dimensions_;
+        auto data = util::make_unique<T[]>(dim.x * dim.y);
+        std::memcpy(data.get(), that.data_.get(), dim.x * dim.y * sizeof(T));
+        data_.swap(data);
+        std::swap(dim, dimensions_);
     }
 
     return *this;
@@ -104,102 +129,74 @@ LayerRAMPrecision<T>* LayerRAMPrecision<T>::clone() const {
 }
 
 template <typename T>
-LayerRAMPrecision<T>::~LayerRAMPrecision() {
-    deinitialize();
-};
+LayerRAMPrecision<T>::~LayerRAMPrecision(){};
 
-template<typename T>
-void LayerRAMPrecision<T>::initialize() {
-    data_ = new T[dimensions_.x*dimensions_.y]();
+template <typename T>
+void* LayerRAMPrecision<T>::getData() {
+    return data_.get();
+}
+template <typename T>
+const void* LayerRAMPrecision<T>::getData() const {
+    return const_cast<const T*>(data_.get());
 }
 
-template<typename T>
-void LayerRAMPrecision<T>::initialize(void* data) {
-    if (data == nullptr)
-        data_ = new T[dimensions_.x*dimensions_.y]();
-    else
-        data_ = data;
+template <typename T>
+void inviwo::LayerRAMPrecision<T>::setData(void* d, uvec2 dimensions) {
+    std::unique_ptr<T[]> data(static_cast<T*>(d));
+    data_.swap(data);
+    std::swap(dimensions_, dimensions);
 }
 
-template<typename T>
-void LayerRAMPrecision<T>::deinitialize() {
-    if (data_) {
-        delete[] static_cast<T*>(data_);
-        data_ = nullptr;
-    }
+template <typename T>
+void LayerRAMPrecision<T>::setDimensions(uvec2 dimensions) {
+    auto data = util::make_unique<T[]>(dimensions.x * dimensions.y);
+    data_.swap(data);
+    std::swap(dimensions, dimensions_);
 }
 
-template<typename T>
-void LayerRAMPrecision<T>::resize(uvec2 dimensions) {
-    dimensions_ = dimensions;
-    //Delete and reallocate data_ to new size
-    deinitialize();
-    initialize();
-}
-
-template<typename T>
+template <typename T>
 void LayerRAMPrecision<T>::setValueFromSingleDouble(const uvec2& pos, double val) {
-    T* data = static_cast<T*>(data_);
-    getDataFormat()->doubleToValue(val, &(data[posToIndex(pos, dimensions_)]));
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
-template<typename T>
+template <typename T>
 void LayerRAMPrecision<T>::setValueFromVec2Double(const uvec2& pos, dvec2 val) {
-    T* data = static_cast<T*>(data_);
-    getDataFormat()->vec2DoubleToValue(val, &(data[posToIndex(pos, dimensions_)]));
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
-template<typename T>
+template <typename T>
 void LayerRAMPrecision<T>::setValueFromVec3Double(const uvec2& pos, dvec3 val) {
-    T* data = static_cast<T*>(data_);
-    getDataFormat()->vec3DoubleToValue(val, &(data[posToIndex(pos, dimensions_)]));
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
-template<typename T>
+template <typename T>
 void LayerRAMPrecision<T>::setValueFromVec4Double(const uvec2& pos, dvec4 val) {
-    T* data = static_cast<T*>(data_);
-    getDataFormat()->vec4DoubleToValue(val, &(data[posToIndex(pos, dimensions_)]));
+    data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
-template<typename T>
+template <typename T>
 double LayerRAMPrecision<T>::getValueAsSingleDouble(const uvec2& pos) const {
-    double result;
-    T* data = static_cast<T*>(data_);
-    T val = data[posToIndex(pos, dimensions_)];
-    result = getDataFormat()->valueToNormalizedDouble(&val);
-    return result;
+    return util::glm_convert_normalized<double>(data_[posToIndex(pos, dimensions_)]);
 }
 
-template<typename T>
+template <typename T>
 dvec2 LayerRAMPrecision<T>::getValueAsVec2Double(const uvec2& pos) const {
-    dvec2 result;
-    T* data = static_cast<T*>(data_);
-    T val = data[posToIndex(pos, dimensions_)];
-    result = getDataFormat()->valueToNormalizedVec2Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec2>(data_[posToIndex(pos, dimensions_)]);
 }
 
-template<typename T>
+template <typename T>
 dvec3 LayerRAMPrecision<T>::getValueAsVec3Double(const uvec2& pos) const {
-    dvec3 result;
-    T* data = static_cast<T*>(data_);
-    T val = data[posToIndex(pos, dimensions_)];
-    result = getDataFormat()->valueToNormalizedVec3Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec3>(data_[posToIndex(pos, dimensions_)]);
 }
 
-template<typename T>
+template <typename T>
 dvec4 LayerRAMPrecision<T>::getValueAsVec4Double(const uvec2& pos) const {
-    dvec4 result;
-    T* data = static_cast<T*>(data_);
-    T val = data[posToIndex(pos, dimensions_)];
-    result = getDataFormat()->valueToNormalizedVec4Double(&val);
-    return result;
+    return util::glm_convert_normalized<dvec4>(data_[posToIndex(pos, dimensions_)]);
 }
 
 #define DataFormatIdMacro(i) typedef LayerRAMPrecision<Data##i::type> LayerRAM_##i;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
-} // namespace
+}  // namespace
 
-#endif // IVW_LAYERRAMPRECISION_H
+#endif  // IVW_LAYERRAMPRECISION_H

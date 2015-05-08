@@ -48,11 +48,14 @@ namespace inviwo {
  *  which are owned by the referenced/owned Data objects.
  *
  *  Differences between DataGroup and Data:
- *    - DataGroup can never hold any data with owning(referencing[later]) a Data object or a DataGroup object
+ *    - DataGroup can never hold any data with owning(referencing[later]) a Data object or a 
+ *      DataGroup object
  *    - DataGroupRepresentation need reference to all Data objects to be created correctly
- *    - DataGroup does not have converters, as the DataGroup objects always can create them self correctly.
- *    - DataGroupRepresentation becomes invalid when a child representations becomes invalid, thus we do not know when it's valid
- *      and we need to call update before we return it from getRepresentation.
+ *    - DataGroup does not have converters, as the DataGroup objects always can create them self 
+ *      correctly.
+ *    - DataGroupRepresentation becomes invalid when a child representations becomes invalid, 
+ *      thus we do not know when it's valid and we need to call update before we return it 
+ *      from getRepresentation.
  */
 class IVW_CORE_API DataGroup : public BaseData {
 
@@ -76,7 +79,6 @@ public:
     bool hasRepresentations() const;
 
     void setRepresentationsAsInvalid();
-
     void clearRepresentations();
 
 protected:

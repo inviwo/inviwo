@@ -283,7 +283,7 @@ void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
     if (this->hasData()) {
         const Image* img = getData();
         Image* out = outport->getData();
-        if (out) img->resizeRepresentations(out, out->getDimensions());
+        if (out) img->copyRepresentationsTo(out);
     }
 }
 

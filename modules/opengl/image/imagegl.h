@@ -55,7 +55,7 @@ public:
     void activateBuffer(ImageType type = ALL_LAYERS);
     void deactivateBuffer();
 
-    virtual bool copyAndResizeRepresentation(DataRepresentation*) const;
+    virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
     bool updateFrom(const ImageGL*);
 
     FrameBufferObject* getFBO();

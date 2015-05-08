@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYER_H
@@ -41,55 +41,37 @@ class LayerRepresentation;
 
 class IVW_CORE_API Layer : public Data, public StructuredGridEntity<2> {
 public:
-    Layer(uvec2 dimensions = uvec2(32,32), const DataFormatBase* format = DataVec4UINT8::get(), LayerType type = COLOR_LAYER);
+    Layer(uvec2 dimensions = uvec2(32, 32), const DataFormatBase* format = DataVec4UINT8::get(),
+          LayerType type = COLOR_LAYER);
     Layer(LayerRepresentation*);
     Layer(const Layer&);
     Layer& operator=(const Layer& that);
     virtual Layer* clone() const;
     virtual ~Layer();
 
+    virtual uvec2 getDimensions() const override;
+    
+    /**
+     * Reeize all representation to dimension. This is destructive, the data will not be
+     * preserved. Use copyRepresentationsTo to update the data.
+     */
+    virtual void setDimensions(const uvec2& dim) override;
 
-    void resize(uvec2 dimensions);
-
-    void resizeRepresentations(Layer* targetLayer, uvec2 targetDim);
-
-    uvec2 getDimensions() const;
-    void setDimensions(const uvec2& dim);
+    /**
+     * Copy and resize the representation of this onto the representations of target.
+     * Does not change the dimensions of target.
+     */
+    void copyRepresentationsTo(Layer* target);
 
     LayerType getLayerType() const;
-
-    template <typename T>
-    const T* getRepresentation() const;
-
-    template <typename T>
-    T* getEditableRepresentation();
 
 protected:
     virtual DataRepresentation* createDefaultRepresentation();
 
 private:
     LayerType layerType_;
-
 };
 
-template <typename T>
-T* Layer::getEditableRepresentation() {
-    T* repr =  Data::getEditableRepresentation<T>();
-    if (!repr) return nullptr;
-    this->setDataFormat(repr->getDataFormat());
-    this->setDimensions(repr->getDimensions());
-    return repr;
-}
+}  // namespace
 
-template <typename T>
-const T* Layer::getRepresentation() const {
-    const T* repr = Data::getRepresentation<T>();
-    if (!repr) return nullptr;
-    const_cast<Layer*>(this)->setDataFormat(repr->getDataFormat());
-    const_cast<Layer*>(this)->setDimensions(repr->getDimensions());
-    return repr;
-}
-
-} // namespace
-
-#endif // IVW_LAYER_H
+#endif  // IVW_LAYER_H

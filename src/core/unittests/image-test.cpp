@@ -40,7 +40,6 @@
 
 namespace inviwo{
 
-
 #define IMG_RGB InviwoApplication::getPtr()->getModuleByType<UnitTestsModule>()->getPath() + "/testdata/images/2x2.bmp"
 #define IMG_WHITE InviwoApplication::getPtr()->getModuleByType<UnitTestsModule>()->getPath() + "/testdata/images/white.bmp"
 #define IMG_RANGE InviwoApplication::getPtr()->getModuleByType<UnitTestsModule>()->getPath() + "/testdata/images/range.bmp"
@@ -203,7 +202,7 @@ TEST(ImageTests, ImageResize) {
     EXPECT_EQ(dim.y,2);
 
 
-    img.resize(uvec2(10,10));
+    img.setDimensions(uvec2(10,10));
 
 
     const LayerRAM* layer2 = img.getColorLayer()->getRepresentation<LayerRAM>();
