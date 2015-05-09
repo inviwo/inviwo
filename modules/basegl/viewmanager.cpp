@@ -90,10 +90,10 @@ Event* ViewManager::registerEvent(Event* event) {
 
         if (activeView_ >= 0 && activeView_ < views_.size()) {
             TouchEvent* newEvent = touchEvent->clone();
-            const ivec4& view = views_[activeView_];
-            //  newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y),ivec2(view.z,
-            //  view.w)),
-            //  uvec2(view.z, view.w));
+            // const ivec4& view = views_[activeView_];
+            // newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y),ivec2(view.z,
+            // view.w)),
+            // uvec2(view.z, view.w));
 
             return newEvent;
         } else {
