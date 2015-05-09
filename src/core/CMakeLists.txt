@@ -296,6 +296,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequencesampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesequenceutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumeutils.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/zip.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
