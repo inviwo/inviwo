@@ -27,63 +27,26 @@
  * 
  *********************************************************************************/
 
-#include <modules/opencl/image/imagecl.h>
+#ifndef IVW_GEOMETRYSOURCE_H
+#define IVW_GEOMETRYSOURCE_H
+
+#include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/ports/meshport.h>
+#include <modules/base/processors/datasource.h>
 
 namespace inviwo {
 
-ImageCL::ImageCL()
-    : ImageRepresentation(), layerCL_(nullptr) {}
+class IVW_MODULE_BASE_API MeshSource : public DataSource<Mesh, MeshOutport> {
+public:
+    MeshSource();
+    virtual ~MeshSource();
 
-ImageCL::ImageCL(const ImageCL& rhs)
-    : ImageRepresentation(rhs) {}
-
-ImageCL::~ImageCL() {
-}
-
-ImageCL* ImageCL::clone() const {
-    return new ImageCL(*this);
-}
-
-LayerCL* ImageCL::getLayerCL() {
-    return layerCL_;
-}
-
-const LayerCL* ImageCL::getLayerCL() const {
-    return layerCL_;
-}
-
-bool ImageCL::copyRepresentationsTo(DataRepresentation* targetRep) const {
-    ImageCL* targetCL = dynamic_cast<ImageCL*>(targetRep);
-
-    if (!targetCL) return false;
-
-    return this->getLayerCL()->copyRepresentationsTo(targetCL->getLayerCL());
-}
-
-void ImageCL::update(bool editable) {
-    //TODO: Convert more then just first color layer
-    layerCL_ = nullptr;
-    Image *owner = this->getOwner();
-
-    if (editable) {
-        layerCL_ = owner->getColorLayer()->getEditableRepresentation<LayerCL>();
-    } else {
-        layerCL_ = const_cast<LayerCL*>(owner->getColorLayer()->getRepresentation<LayerCL>());
-    }
-
-    if(layerCL_->getDataFormat() != getOwner()->getDataFormat()){
-        owner->getColorLayer()->setDataFormat(layerCL_->getDataFormat());
-        owner->getColorLayer()->setDimensions(layerCL_->getDimensions());
-    }
-}
+    InviwoProcessorInfo();
+};
 
 } // namespace
 
-namespace cl {
+#endif // IVW_GEOMETRYSOURCE_H
 
-template <>
-cl_int Kernel::setArg(cl_uint index, const inviwo::ImageCL& value) {
-    return setArg(index, value.getLayerCL()->get());
-}
-
-} // namespace cl

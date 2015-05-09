@@ -48,9 +48,4 @@ void VolumeRAM::setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset
     setValuesFromVolume(src, dstOffset, src->getDimensions(), uvec3(0));
 }
 
-VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format, void* dataPtr) {
-    VolumeRamDispatcher disp;
-    return format->dispatch(disp, dataPtr, dimensions);
-}
-
 }  // namespace

@@ -67,9 +67,6 @@ public:
     void setAsInvalid();
     bool isValid() const;
 
-    virtual void initialize() = 0;
-    virtual void deinitialize() = 0;
-
 protected:
     //Update representations_ with DataRepresentation from each Data and DataGroup object
     virtual void update(bool) = 0;

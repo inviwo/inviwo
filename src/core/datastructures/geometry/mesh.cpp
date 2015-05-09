@@ -24,18 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 
-Mesh::Mesh() : Geometry(), defaultAttributeInfo_(AttributesInfo()) {}
+Mesh::Mesh() : DataGroup(), SpatialEntity<3>(), defaultAttributeInfo_(AttributesInfo()) {}
 
-Mesh::Mesh(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct) : Geometry(), defaultAttributeInfo_(AttributesInfo(dt, ct)) {}
+Mesh::Mesh(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct)
+    : DataGroup(), SpatialEntity<3>(), defaultAttributeInfo_(AttributesInfo(dt, ct)) {}
 
-Mesh::Mesh(const Mesh& rhs) : Geometry(rhs) {
+Mesh::Mesh(const Mesh& rhs) : DataGroup(rhs), SpatialEntity<3>(rhs) {
     std::vector<bool>::const_iterator itOwnership = rhs.attributesOwnership_.begin();
     std::vector<Buffer*>::const_iterator it;
     for (it = rhs.attributes_.begin(); it != rhs.attributes_.end(); ++it, ++itOwnership) {
@@ -53,7 +54,8 @@ Mesh::Mesh(const Mesh& rhs) : Geometry(rhs) {
 
 Mesh& Mesh::operator=(const Mesh& that) {
     if (this != &that) {
-        Geometry::operator=(that);
+        DataGroup::operator=(that);
+        SpatialEntity<3>::operator=(that);
         deinitialize();
 
         std::vector<bool>::const_iterator itOwnership = that.attributesOwnership_.begin();
@@ -73,14 +75,9 @@ Mesh& Mesh::operator=(const Mesh& that) {
     return *this;
 }
 
-Mesh::~Mesh() {
-    deinitialize();
-}
+Mesh::~Mesh() { deinitialize(); }
 
-
-Mesh* Mesh::clone() const {
-    return new Mesh(*this);
-}
+Mesh* Mesh::clone() const { return new Mesh(*this); }
 
 void Mesh::deinitialize() {
     std::vector<bool>::const_iterator itOwnership = attributesOwnership_.begin();
@@ -98,20 +95,17 @@ void Mesh::deinitialize() {
     indexAttributes_.clear();
 }
 
-const std::vector<Buffer*>& Mesh::getBuffers() const {
-    return attributes_;
-}
+const std::vector<Buffer*>& Mesh::getBuffers() const { return attributes_; }
 
-const Mesh::IndexVector& Mesh::getIndexBuffers() const {
-    return indexAttributes_;
-}
+const Mesh::IndexVector& Mesh::getIndexBuffers() const { return indexAttributes_; }
 
-std::string Mesh::getDataInfo() const{
+std::string Mesh::getDataInfo() const {
     std::ostringstream ss;
 
-    ss << "<table border='0' cellspacing='0' cellpadding='0' style='border-color:white;white-space:pre;'>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Type</td><td><nobr>Mesh</nobr></td></tr>\n"
-        << "<tr><td style='color:#bbb;padding-right:8px;'>Data</td><td><nobr>";
+    ss << "<table border='0' cellspacing='0' cellpadding='0' "
+          "style='border-color:white;white-space:pre;'>\n"
+       << "<tr><td style='color:#bbb;padding-right:8px;'>Type</td><td><nobr>Mesh</nobr></td></tr>\n"
+       << "<tr><td style='color:#bbb;padding-right:8px;'>Data</td><td><nobr>";
 
     switch (getDefaultAttributesInfo().dt) {
         case GeometryEnums::POINTS:
@@ -127,17 +121,15 @@ std::string Mesh::getDataInfo() const{
             ss << "Not specified";
     }
     ss << "</nobr></td></tr>\n"
-        << "</tr></table>\n";
+       << "</tr></table>\n";
 
     return ss.str();
 }
-
 
 void Mesh::addAttribute(Buffer* att, bool takeOwnership /*= true*/) {
     attributes_.push_back(att);
     attributesOwnership_.push_back(takeOwnership);
 }
-
 
 void Mesh::setAttribute(size_t idx, Buffer* att, bool takeOwnership /*= true*/) {
     if (idx < attributes_.size()) {
@@ -153,37 +145,31 @@ void Mesh::addIndicies(AttributesInfo info, IndexBuffer* ind) {
     indexAttributes_.push_back(std::make_pair(info, ind));
 }
 
-const Buffer* Mesh::getAttributes(size_t idx) const {
-    return attributes_[idx];
-}
+const Buffer* Mesh::getAttributes(size_t idx) const { return attributes_[idx]; }
 
-const Buffer* Mesh::getIndicies(size_t idx) const {
-    return indexAttributes_[idx].second;
-}
+const Buffer* Mesh::getIndicies(size_t idx) const { return indexAttributes_[idx].second; }
 
-Buffer* Mesh::getAttributes(size_t idx) {
-    return attributes_[idx];
-}
+Buffer* Mesh::getAttributes(size_t idx) { return attributes_[idx]; }
 
-Buffer* Mesh::getIndicies(size_t idx) {
-    return indexAttributes_[idx].second;
-}
+Buffer* Mesh::getIndicies(size_t idx) { return indexAttributes_[idx].second; }
 
-Mesh::AttributesInfo Mesh::getDefaultAttributesInfo() const {
-    return defaultAttributeInfo_;
-}
+Mesh::AttributesInfo Mesh::getDefaultAttributesInfo() const { return defaultAttributeInfo_; }
 
 Mesh::AttributesInfo Mesh::getIndexAttributesInfo(size_t idx) const {
     return indexAttributes_[idx].first;
 }
 
-size_t Mesh::getNumberOfAttributes() const {
-    return attributes_.size();
+size_t Mesh::getNumberOfAttributes() const { return attributes_.size(); }
+
+size_t Mesh::getNumberOfIndicies() const { return indexAttributes_.size(); }
+
+const SpatialCameraCoordinateTransformer<3>& Mesh::getCoordinateTransformer(
+    const CameraProperty* camera) const {
+    return SpatialEntity<3>::getCoordinateTransformer(Camera<3>(camera));
 }
 
-size_t Mesh::getNumberOfIndicies() const {
-    return indexAttributes_.size();
-}
+inviwo::uvec3 Mesh::COLOR_CODE = uvec3(188, 188, 101);
 
-} // namespace
+const std::string Mesh::CLASS_IDENTIFIER = "org.inviwo.Mesh";
 
+}  // namespace

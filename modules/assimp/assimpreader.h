@@ -33,10 +33,10 @@
 #include <modules/assimp/assimpmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datareader.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 namespace inviwo {
 
-class IVW_MODULE_ASSIMP_API AssimpReader : public DataReaderType<Geometry>{
+class IVW_MODULE_ASSIMP_API AssimpReader : public DataReaderType<Mesh>{
 public:
     AssimpReader();
     AssimpReader(const AssimpReader& rhs);
@@ -44,7 +44,7 @@ public:
     virtual AssimpReader* clone() const;
     virtual ~AssimpReader(){}
     
-    virtual Geometry* readMetaData(const std::string filePath);
+    virtual Mesh* readMetaData(const std::string filePath);
     virtual void* readData() const;
     virtual void readDataInto(void* dest) const;
 };

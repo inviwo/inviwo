@@ -28,15 +28,12 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/diskrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/basicmesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/edge.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometry.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometrydisk.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometrydisk2ramconverter.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometryram.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometryrepresentation.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshdisk2ramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/geometrytype.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/mesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshdisk.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshram.h
+	${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/meshrepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/plane.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/polygon.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemesh.h
@@ -134,7 +131,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/bufferport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/datainport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/dataoutport.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/ports/geometryport.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/ports/meshport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/imageport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/inport.h
     ${IVW_INCLUDE_DIR}/inviwo/core/ports/inportiterable.h
@@ -193,8 +190,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/transferfunctionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/valuewrapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/volumeindicatorproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/geometrydrawer.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/geometrydrawerfactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/rendering/meshdrawerfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/resources/resourcemanagerobserver.h
@@ -263,14 +260,11 @@ set(SOURCE_FILES
     datastructures/datarepresentation.cpp
     datastructures/diskrepresentation.cpp
     datastructures/geometry/basicmesh.cpp
-    datastructures/geometry/geometry.cpp
-    datastructures/geometry/geometrydisk.cpp
-    datastructures/geometry/geometrydisk2ramconverter.cpp
-    datastructures/geometry/geometryram.cpp
-    datastructures/geometry/geometryrepresentation.cpp
+    datastructures/geometry/meshdisk2ramconverter.cpp
     datastructures/geometry/mesh.cpp
     datastructures/geometry/meshdisk.cpp
     datastructures/geometry/meshram.cpp
+	datastructures/geometry/meshrepresentation.cpp
     datastructures/geometry/plane.cpp
     datastructures/geometry/simplemesh.cpp
     datastructures/geometry/simplemeshcreator.cpp
@@ -283,6 +277,7 @@ set(SOURCE_FILES
     datastructures/image/layerdisk.cpp
     datastructures/image/layerram.cpp
     datastructures/image/layerramconverter.cpp
+    datastructures/image/layerramprecision.cpp
     datastructures/image/layerrepresentation.cpp
     datastructures/light/baselightsource.cpp
     datastructures/representationconverter.cpp
@@ -296,6 +291,7 @@ set(SOURCE_FILES
     datastructures/volume/volumeram.cpp
     datastructures/volume/volumeramconverter.cpp
     datastructures/volume/volumerepresentation.cpp
+    datastructures/volume/volumeramprecision.cpp
     interaction/action.cpp
     interaction/cameratrackball.cpp
     interaction/events/event.cpp
@@ -392,7 +388,7 @@ set(SOURCE_FILES
     properties/stringproperty.cpp
     properties/transferfunctionproperty.cpp
     properties/volumeindicatorproperty.cpp
-    rendering/geometrydrawerfactory.cpp
+    rendering/meshdrawerfactory.cpp
     resources/resourcemanager.cpp
     util/assertion.cpp
     util/canvas.cpp

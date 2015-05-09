@@ -34,11 +34,11 @@
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/layerdisk.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 
 namespace inviwo {
 
 class IVW_CORE_API LayerDisk2RAMConverter : public RepresentationConverterType<LayerRAM> {
-
 public:
     LayerDisk2RAMConverter();
     virtual ~LayerDisk2RAMConverter();
@@ -48,6 +48,16 @@ public:
     }
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
+};
+
+struct LayerDisk2RAMDispatcher {
+    using type = LayerRAM*;
+    template <class T>
+    LayerRAM* dispatch(const LayerDisk* source, void* data) {
+        using F = typename T::type;
+        return new LayerRAMPrecision<F>(static_cast<F*>(data), source->getDimensions(),
+                                        source->getLayerType());
+    }
 };
 
 } // namespace

@@ -51,8 +51,6 @@ public:
     void initialize(Layer* colorLayer = nullptr, uvec2 dimensions = uvec2(8, 8),
                     const DataFormatBase* format = DataVec4UINT8::get());
 
-    uvec2 getDimensions() const;
-
     size_t addColorLayer(Layer*);
 
     const Layer* getLayer(LayerType, size_t idx = 0) const;
@@ -69,8 +67,19 @@ public:
     const Layer* getPickingLayer() const;
     Layer* getPickingLayer();
 
-    void resize(uvec2 dimensions);
-    void resizeRepresentations(Image* targetImage, uvec2 targetDim) const;
+    uvec2 getDimensions() const;
+
+    /**
+     * Reeize all representation to dimension. This is destructive, the data will not be
+     * preserved. Use copyRepresentationsTo to update the data.
+     */
+    void setDimensions(uvec2 dimensions);
+
+    /**
+     * Copy and resize the representation of this onto the representations of target.
+     * Does not change the dimensions of target.
+     */
+    void copyRepresentationsTo(Image* target) const;
 
     const DataFormatBase* getDataFormat() const;
 

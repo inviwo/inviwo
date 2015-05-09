@@ -24,34 +24,36 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRY_DRAWER_FACTORY_H
-#define IVW_GEOMETRY_DRAWER_FACTORY_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
-#include <inviwo/core/rendering/geometrydrawer.h>
-#include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
-#include <set>
+#include <inviwo/core/rendering/meshdrawerfactory.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
-class IVW_CORE_API GeometryDrawerFactory : public Singleton<GeometryDrawerFactory>  {
+struct CanDrawMesh {
 public:
-    GeometryDrawerFactory();
-    virtual ~GeometryDrawerFactory() {}
-
-    void registerObject(GeometryDrawer* drawer);
-    virtual GeometryDrawer* create(const Geometry* geom) const;
-
+    CanDrawMesh(const Mesh* geom) : geom_(geom){};
+    bool operator()(const MeshDrawer* drawer) { return drawer->canDraw(geom_); }
 
 private:
-    std::set<GeometryDrawer*> drawers_;
+    const Mesh* geom_;
 };
 
-} // namespace
+MeshDrawerFactory::MeshDrawerFactory() {}
 
-#endif // IVW_GEOMETRY_DRAWER_FACTORY_H
+void MeshDrawerFactory::registerObject(MeshDrawer* drawer) {
+    drawers_.insert(drawer);
+}
+
+MeshDrawer* MeshDrawerFactory::create(const Mesh* geom) const {
+    auto it = std::find_if(drawers_.begin(), drawers_.end(), CanDrawMesh(geom));
+
+    if (it != drawers_.end())
+        return (*it)->create(geom);
+    else
+        return nullptr;
+};
+
+}  // namespace

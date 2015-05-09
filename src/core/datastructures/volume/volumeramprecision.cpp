@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2013-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,66 +24,16 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <modules/opencl/image/imagecl.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
-ImageCL::ImageCL()
-    : ImageRepresentation(), layerCL_(nullptr) {}
-
-ImageCL::ImageCL(const ImageCL& rhs)
-    : ImageRepresentation(rhs) {}
-
-ImageCL::~ImageCL() {
+VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format, void* dataPtr) {
+    VolumeRamDispatcher disp;
+    return format->dispatch(disp, dataPtr, dimensions);
 }
 
-ImageCL* ImageCL::clone() const {
-    return new ImageCL(*this);
-}
-
-LayerCL* ImageCL::getLayerCL() {
-    return layerCL_;
-}
-
-const LayerCL* ImageCL::getLayerCL() const {
-    return layerCL_;
-}
-
-bool ImageCL::copyRepresentationsTo(DataRepresentation* targetRep) const {
-    ImageCL* targetCL = dynamic_cast<ImageCL*>(targetRep);
-
-    if (!targetCL) return false;
-
-    return this->getLayerCL()->copyRepresentationsTo(targetCL->getLayerCL());
-}
-
-void ImageCL::update(bool editable) {
-    //TODO: Convert more then just first color layer
-    layerCL_ = nullptr;
-    Image *owner = this->getOwner();
-
-    if (editable) {
-        layerCL_ = owner->getColorLayer()->getEditableRepresentation<LayerCL>();
-    } else {
-        layerCL_ = const_cast<LayerCL*>(owner->getColorLayer()->getRepresentation<LayerCL>());
-    }
-
-    if(layerCL_->getDataFormat() != getOwner()->getDataFormat()){
-        owner->getColorLayer()->setDataFormat(layerCL_->getDataFormat());
-        owner->getColorLayer()->setDimensions(layerCL_->getDimensions());
-    }
-}
-
-} // namespace
-
-namespace cl {
-
-template <>
-cl_int Kernel::setArg(cl_uint index, const inviwo::ImageCL& value) {
-    return setArg(index, value.getLayerCL()->get());
-}
-
-} // namespace cl
+}  // namespace

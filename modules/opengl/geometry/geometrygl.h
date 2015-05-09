@@ -42,8 +42,6 @@ public:
     GeometryGL();
     GeometryGL(const GeometryGL& rhs);
     virtual ~GeometryGL();
-    virtual void initialize();
-    virtual void deinitialize();
 };
 
 } // namespace

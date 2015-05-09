@@ -52,16 +52,8 @@ LayerRepresentation& LayerRepresentation::operator=(const LayerRepresentation& t
 
 LayerRepresentation::~LayerRepresentation() {}
 
-void LayerRepresentation::resize(uvec2 dimensions) {
-    dimensions_ = dimensions;
-}
-
 uvec2 LayerRepresentation::getDimensions() const {
     return dimensions_;
-}
-
-void LayerRepresentation::setDimensions(uvec2 dimensions) {
-    dimensions_ = dimensions;
 }
 
 LayerType LayerRepresentation::getLayerType() const {

@@ -104,7 +104,7 @@ void CubeProxyGeometry::process() {
     }
 
     // Create parallelepiped and set it to the outport. The outport will own the data.
-    Geometry* geom = SimpleMeshCreator::parallelepiped(pos, p1, p2, p3,
+    Mesh* geom = SimpleMeshCreator::parallelepiped(pos, p1, p2, p3,
                                                        tex, t1, t2, t3,
                                                        col, c1, c2, c3);
     geom->setModelMatrix(inport_.getData()->getModelMatrix());

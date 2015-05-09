@@ -45,13 +45,11 @@ public:
     ImageCLGL(const ImageCLGL& other);
     virtual ~ImageCLGL();
     virtual ImageCLGL* clone() const;
-    virtual void initialize();
-    virtual void deinitialize();
 
     LayerCLGL* getLayerCL();
     const LayerCLGL* getLayerCL() const;
 
-    virtual bool copyAndResizeRepresentation(DataRepresentation*) const;
+    virtual bool copyRepresentationsTo(DataRepresentation*) const override;
 
 protected:
     virtual void update(bool);

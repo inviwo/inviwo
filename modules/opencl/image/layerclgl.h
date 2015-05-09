@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYERCLGL_H
@@ -48,25 +48,26 @@ namespace inviwo {
  *
  * @see Observable
  */
-class IVW_MODULE_OPENCL_API LayerCLGL : public LayerCLBase, public LayerRepresentation, public TextureObserver {
+class IVW_MODULE_OPENCL_API LayerCLGL : public LayerCLBase,
+                                        public LayerRepresentation,
+                                        public TextureObserver {
 public:
-    LayerCLGL(uvec2 dimensions = uvec2(64), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataFormatBase::get(),
-              Texture2D* data = nullptr);
+    LayerCLGL(uvec2 dimensions = uvec2(64), LayerType type = COLOR_LAYER,
+              const DataFormatBase* format = DataFormatBase::get(), Texture2D* data = nullptr);
     virtual ~LayerCLGL();
     LayerCLGL(const LayerCLGL& rhs);
-
-    virtual void initialize() {};
-    virtual void deinitialize();
     virtual LayerCLGL* clone() const;
 
     void initialize(Texture2D* texture);
-
-    virtual void setDimensions(uvec2 dimensions) { dimensions_ = dimensions; deinitialize(); initialize(texture_); }
-    virtual void resize(uvec2 dimensions);
-    virtual bool copyAndResizeLayer(DataRepresentation* target) const;
+    void deinitialize();
+    
+    virtual void setDimensions(uvec2 dimensions) override;
+    virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
 
     virtual cl::Image2D& getEditable() { return *static_cast<cl::Image2D*>(clImage_); }
-    virtual const cl::Image2D& get() const { return *const_cast<const cl::Image2D*>(static_cast<const cl::Image2D*>(clImage_)); }
+    virtual const cl::Image2D& get() const {
+        return *const_cast<const cl::Image2D*>(static_cast<const cl::Image2D*>(clImage_));
+    }
     const Texture2D* getTexture() const { return texture_; }
 
     /**
@@ -85,18 +86,17 @@ public:
         std::vector<cl::Memory> syncLayers(1, *clImage_);
         OpenCL::getPtr()->getQueue().enqueueAcquireGLObjects(&syncLayers, syncEvents);
     }
-    void releaseGLObject(std::vector<cl::Event>* syncEvents = nullptr, cl::Event* event= nullptr) const {
+    void releaseGLObject(std::vector<cl::Event>* syncEvents = nullptr,
+                         cl::Event* event = nullptr) const {
         std::vector<cl::Memory> syncLayers(1, *clImage_);
         OpenCL::getPtr()->getQueue().enqueueReleaseGLObjects(&syncLayers, syncEvents, event);
     }
-
-
 
 protected:
     Texture2D* texture_;
 };
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -105,8 +105,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::LayerCLGL& value);
 
-} // namespace cl
+}  // namespace cl
 
-
-
-#endif // IVW_LAYERCLGL_H
+#endif  // IVW_LAYERCLGL_H

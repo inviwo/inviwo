@@ -261,6 +261,7 @@ BlendModeState& utilgl::BlendModeState::operator=(BlendModeState&& that) {
         smode_ = that.smode_;
         oldsMode_ = that.oldsMode_;
         that.smode_ = that.oldsMode_;
+
         dmode_ = that.dmode_;
         olddMode_ = that.olddMode_;
         that.dmode_ = that.olddMode_;
@@ -269,19 +270,20 @@ BlendModeState& utilgl::BlendModeState::operator=(BlendModeState&& that) {
 }
 
 utilgl::BlendModeState::BlendModeState(BlendModeState&& rhs)
-    : GlBoolState(std::move(rhs)), smode_(rhs.smode_), oldsMode_(rhs.oldsMode_),dmode_(rhs.dmode_), olddMode_(rhs.olddMode_) {
+    : GlBoolState(std::move(rhs))
+    , smode_(rhs.smode_)
+    , dmode_(rhs.dmode_)
+    , oldsMode_(rhs.oldsMode_)
+    , olddMode_(rhs.olddMode_) {
     rhs.smode_ = rhs.oldsMode_;
-     rhs.dmode_ = rhs.olddMode_;
+    rhs.dmode_ = rhs.olddMode_;
 }
-
-
 
 utilgl::BlendModeState::~BlendModeState() {
     if (state_ && (oldsMode_ != smode_ || olddMode_ != dmode_)) {
         glBlendFunc(oldsMode_, olddMode_);
     }
 }
-
 
 }  // namespace
 }  // namespace

@@ -77,7 +77,7 @@ protected:
     Shader* textShader_;
     GLuint texCharacter_;
     Mesh* mesh_;
-    MeshDrawer* drawer_;
+    MeshDrawerGL* drawer_;
 
 };
 

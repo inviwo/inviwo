@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/imageram.h>
@@ -33,18 +33,11 @@
 
 namespace inviwo {
 
-ImageRAM::ImageRAM()
-    : ImageRepresentation() {
-}
+ImageRAM::ImageRAM() : ImageRepresentation() {}
 
-ImageRAM::ImageRAM(const ImageRAM& rhs)
-    : ImageRepresentation(rhs) {
-    update(true);
-}
+ImageRAM::ImageRAM(const ImageRAM& rhs) : ImageRepresentation(rhs) { update(true); }
 
-ImageRAM* ImageRAM::clone() const {
-    return new ImageRAM(*this);
-}
+ImageRAM* ImageRAM::clone() const { return new ImageRAM(*this); }
 ImageRAM& ImageRAM::operator=(const ImageRAM& that) {
     if (this != &that) {
         ImageRepresentation::operator=(that);
@@ -53,17 +46,9 @@ ImageRAM& ImageRAM::operator=(const ImageRAM& that) {
 
     return *this;
 }
-ImageRAM::~ImageRAM() {
-    ImageRAM::deinitialize();
-}
+ImageRAM::~ImageRAM() {}
 
-void ImageRAM::initialize() {
-}
-
-void ImageRAM::deinitialize() {
-}
-
-bool ImageRAM::copyAndResizeRepresentation(DataRepresentation* targetRep) const {
+bool ImageRAM::copyRepresentationsTo(DataRepresentation* targetRep) const {
     const ImageRAM* source = this;
     ImageRAM* target = dynamic_cast<ImageRAM*>(targetRep);
 
@@ -74,18 +59,18 @@ bool ImageRAM::copyAndResizeRepresentation(DataRepresentation* targetRep) const 
                               target->getOwner()->getNumberOfColorLayers());
 
     for (size_t i = 0; i < minSize; ++i) {
-        if (!source->getColorLayerRAM(i)->copyAndResizeLayer(target->getColorLayerRAM(i)))
+        if (!source->getColorLayerRAM(i)->copyRepresentationsTo(target->getColorLayerRAM(i)))
             return false;
     }
 
     // Copy and resize depth layer
     if (source->getDepthLayerRAM() && target->getDepthLayerRAM())
-        if (!source->getDepthLayerRAM()->copyAndResizeLayer(target->getDepthLayerRAM()))
+        if (!source->getDepthLayerRAM()->copyRepresentationsTo(target->getDepthLayerRAM()))
             return false;
 
     // Copy and resize picking layer
     if (source->getPickingLayerRAM() && target->getPickingLayerRAM())
-        if (!source->getPickingLayerRAM()->copyAndResizeLayer(target->getPickingLayerRAM()))
+        if (!source->getPickingLayerRAM()->copyRepresentationsTo(target->getPickingLayerRAM()))
             return false;
 
     return true;
@@ -97,63 +82,50 @@ void ImageRAM::update(bool editable) {
     pickingLayerRAM_ = nullptr;
 
     if (editable) {
-        Image *owner = this->getOwner();
-        for (size_t i=0; i<owner->getNumberOfColorLayers(); ++i){
-            colorLayersRAM_.push_back(owner->getColorLayer(i)->getEditableRepresentation<LayerRAM>());
+        Image* owner = this->getOwner();
+        for (size_t i = 0; i < owner->getNumberOfColorLayers(); ++i) {
+            colorLayersRAM_.push_back(
+                owner->getColorLayer(i)->getEditableRepresentation<LayerRAM>());
         }
 
         Layer* depthLayer = owner->getDepthLayer();
-        if (depthLayer){
+        if (depthLayer) {
             depthLayerRAM_ = depthLayer->getEditableRepresentation<LayerRAM>();
         }
 
         Layer* pickingLayer = owner->getPickingLayer();
-        if (pickingLayer){
+        if (pickingLayer) {
             pickingLayerRAM_ = pickingLayer->getEditableRepresentation<LayerRAM>();
         }
-    }
-    else {
-        const Image *owner = this->getOwner();
-        for (size_t i=0; i<owner->getNumberOfColorLayers(); ++i){
-            colorLayersRAM_.push_back(const_cast<LayerRAM*>(owner->getColorLayer(i)->getRepresentation<LayerRAM>()));
+    } else {
+        const Image* owner = this->getOwner();
+        for (size_t i = 0; i < owner->getNumberOfColorLayers(); ++i) {
+            colorLayersRAM_.push_back(
+                const_cast<LayerRAM*>(owner->getColorLayer(i)->getRepresentation<LayerRAM>()));
         }
 
         const Layer* depthLayer = owner->getDepthLayer();
-        if (depthLayer){
+        if (depthLayer) {
             depthLayerRAM_ = const_cast<LayerRAM*>(depthLayer->getRepresentation<LayerRAM>());
         }
 
         const Layer* pickingLayer = owner->getPickingLayer();
-        if (pickingLayer){
+        if (pickingLayer) {
             pickingLayerRAM_ = const_cast<LayerRAM*>(pickingLayer->getRepresentation<LayerRAM>());
         }
     }
 }
 
-LayerRAM* ImageRAM::getColorLayerRAM(size_t idx) {
-    return colorLayersRAM_.at(idx);
-}
+LayerRAM* ImageRAM::getColorLayerRAM(size_t idx) { return colorLayersRAM_.at(idx); }
 
-LayerRAM* ImageRAM::getDepthLayerRAM() {
-    return depthLayerRAM_;
-}
+LayerRAM* ImageRAM::getDepthLayerRAM() { return depthLayerRAM_; }
 
-LayerRAM* ImageRAM::getPickingLayerRAM() {
-    return pickingLayerRAM_;
-}
+LayerRAM* ImageRAM::getPickingLayerRAM() { return pickingLayerRAM_; }
 
-const LayerRAM* ImageRAM::getColorLayerRAM(size_t idx) const {
-    return colorLayersRAM_.at(idx);
-}
+const LayerRAM* ImageRAM::getColorLayerRAM(size_t idx) const { return colorLayersRAM_.at(idx); }
 
-const LayerRAM* ImageRAM::getDepthLayerRAM() const {
-    return depthLayerRAM_;
-}
+const LayerRAM* ImageRAM::getDepthLayerRAM() const { return depthLayerRAM_; }
 
-const LayerRAM* ImageRAM::getPickingLayerRAM() const {
-    return pickingLayerRAM_;
-}
+const LayerRAM* ImageRAM::getPickingLayerRAM() const { return pickingLayerRAM_; }
 
-
-
-} // namespace
+}  // namespace

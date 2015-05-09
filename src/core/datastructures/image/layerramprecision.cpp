@@ -27,21 +27,13 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYPORT_H
-#define IVW_GEOMETRYPORT_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 
 namespace inviwo {
 
-using GeometryInport = DataInport<Geometry>;
-using GeometryMultiInport = DataInport<Geometry, 0>;
-using GeometryFlatMultiInport = DataInport<Geometry, 0, true>;
-using GeometryOutport =  DataOutport<Geometry>;
+LayerRAM* createLayerRAM(const uvec2& dimensions, LayerType type, const DataFormatBase* format) {
+    LayerRAMDispatcher disp;
+    return format->dispatch(disp, dimensions, type);
+}
 
 }  // namespace
-
-#endif  // IVW_GEOMETRYPORT_H

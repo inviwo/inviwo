@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-AssimpReader::AssimpReader() : DataReaderType<Geometry>() {
+AssimpReader::AssimpReader() : DataReaderType<Mesh>() {
     aiString str{};
     Assimp::Importer importer{};
 
@@ -54,18 +54,18 @@ AssimpReader::AssimpReader() : DataReaderType<Geometry>() {
     }
 }
 
-AssimpReader::AssimpReader(const AssimpReader& rhs) : DataReaderType<Geometry>(rhs) {}
+AssimpReader::AssimpReader(const AssimpReader& rhs) : DataReaderType<Mesh>(rhs) {}
 
 AssimpReader* AssimpReader::clone() const { return new AssimpReader(*this); }
 
 AssimpReader& AssimpReader::operator=(const AssimpReader& that) {
     if (this != &that) {
-        DataReaderType<Geometry>::operator=(that);
+        DataReaderType<Mesh>::operator=(that);
     }
     return *this;
 }
 
-Geometry* AssimpReader::readMetaData(const std::string filePath) {
+Mesh* AssimpReader::readMetaData(const std::string filePath) {
     Assimp::Importer importer;
 
     // And have it read the given file with some example post processing

@@ -33,7 +33,7 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 #include <inviwo/core/properties/baseoptionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -70,7 +70,7 @@ private:
         COORD_AXES
     };
 
-    GeometryOutport outport_;
+    MeshOutport outport_;
     
     FloatVec3Property position1_;
     FloatVec3Property position2_;

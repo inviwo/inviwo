@@ -29,9 +29,9 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/ports/inport.h>
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/processors/processor.h>
@@ -285,22 +285,22 @@ void CameraProperty::inportChanged() {
     if (!fitToBasis_) return;
 
     VolumeInport* volumeInport = dynamic_cast<VolumeInport*>(inport_);
-    GeometryInport* geometryInport = dynamic_cast<GeometryInport*>(inport_);
+    MeshInport* meshInport = dynamic_cast<MeshInport*>(inport_);
 
     // using SpatialEntity since Geometry is not derived from data
     const SpatialEntity<3>* data = nullptr;
 
     if (volumeInport) {
         data = volumeInport->getData();
-    } else if (geometryInport) {
-        data = geometryInport->getData();
+    } else if (meshInport) {
+        data = meshInport->getData();
     }
 
     if (data_ == nullptr && oldBasis_ == mat3(0.0f)) {  // first time only
         if (volumeInport && volumeInport->hasData()) {
             oldBasis_ = volumeInport->getData()->getBasis();
-        } else if (geometryInport && geometryInport->hasData()) {
-            oldBasis_ = geometryInport->getData()->getBasis();
+        } else if (meshInport && meshInport->hasData()) {
+            oldBasis_ = meshInport->getData()->getBasis();
         }
     } else if (data && data_ != data ) {
         fitWithBasis(data->getBasis());

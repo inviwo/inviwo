@@ -33,7 +33,7 @@
 #include <modules/opengl/buffer/elementbuffergl.h>
 #include <modules/opengl/buffer/elementbufferglconverter.h>
 #include <modules/opengl/canvasprocessorgl.h>
-#include <modules/opengl/geometry/geometryrenderprocessorgl.h>
+#include <modules/opengl/geometry/meshrenderprocessorgl.h>
 #include <modules/opengl/glwrap/shadermanager.h>
 #include <modules/opengl/image/layerglconverter.h>
 #include <modules/opengl/openglmodule.h>
@@ -59,7 +59,7 @@ OpenGLModule::OpenGLModule() :
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "opengl/glsl");
 #endif
 
-    registerDrawer(new MeshDrawer());
+    registerDrawer(new MeshDrawerGL());
     registerRepresentationConverter(new LayerRAM2GLConverter());
     registerRepresentationConverter(new LayerGL2RAMConverter());
     registerRepresentationConverter(new LayerDisk2GLConverter());
@@ -74,7 +74,7 @@ OpenGLModule::OpenGLModule() :
     registerRepresentationConverter(new ElementBufferGL2RAMConverter());
 
     registerProcessor(CanvasProcessorGL);
-    registerProcessor(GeometryRenderProcessorGL);
+    registerProcessor(MeshRenderProcessorGL);
 
     OpenGLCapabilities* openGLCap = new OpenGLCapabilities();
     registerCapabilities(openGLCap);

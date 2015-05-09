@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_REPRESENTATIONCONVERTER_H
@@ -39,7 +39,6 @@ namespace inviwo {
 class DataRepresentation;
 
 class IVW_CORE_API RepresentationConverter {
-
 public:
     RepresentationConverter();
     virtual ~RepresentationConverter();
@@ -61,13 +60,12 @@ public:
 template <typename TO>
 class RepresentationConverterType : public RepresentationConverter {
 public:
-    virtual ~RepresentationConverterType() {};
+    virtual ~RepresentationConverterType(){};
 
     bool canConvertTo(const DataRepresentation* destination) const {
         return dynamic_cast<const TO*>(destination) != nullptr;
     }
 };
-
 
 template <typename T>
 class RepresentationConverterPackage : public RepresentationConverter {
@@ -76,39 +74,40 @@ public:
         converters_ = new std::vector<RepresentationConverter*>();
     };
     ~RepresentationConverterPackage() {
-        for (std::vector<RepresentationConverter*>::iterator it = converters_->begin() ; it != converters_->end(); ++it)
-            delete(*it);
+        for (std::vector<RepresentationConverter*>::iterator it = converters_->begin();
+             it != converters_->end(); ++it)
+            delete (*it);
 
         delete converters_;
     }
     bool canConvertFrom(const DataRepresentation* source) const {
-        for (std::vector<RepresentationConverter*>::const_iterator it = converters_->begin() ; it != converters_->end(); ++it) {
-            if ((*it)->canConvertFrom(source))
-                return true;
+        for (std::vector<RepresentationConverter*>::const_iterator it = converters_->begin();
+             it != converters_->end(); ++it) {
+            if ((*it)->canConvertFrom(source)) return true;
         }
 
         return false;
     }
     bool canConvertTo(const DataRepresentation* destination) const {
-        for (std::vector<RepresentationConverter*>::const_iterator it = converters_->begin() ; it != converters_->end(); ++it) {
-            if ((*it)->canConvertTo(destination))
-                return true;
+        for (std::vector<RepresentationConverter*>::const_iterator it = converters_->begin();
+             it != converters_->end(); ++it) {
+            if ((*it)->canConvertTo(destination)) return true;
         }
 
         return false;
     }
     DataRepresentation* createFrom(const DataRepresentation* source) {
-        for (std::vector<RepresentationConverter*>::iterator it = converters_->begin() ; it != converters_->end(); ++it) {
-            if ((*it)->canConvertFrom(source))
-                return (*it)->createFrom(source);
+        for (std::vector<RepresentationConverter*>::iterator it = converters_->begin();
+             it != converters_->end(); ++it) {
+            if ((*it)->canConvertFrom(source)) return (*it)->createFrom(source);
         }
 
         return nullptr;
     }
     virtual void update(const DataRepresentation* source, DataRepresentation* destination) {
-        for (std::vector<RepresentationConverter*>::iterator it = converters_->begin() ; it != converters_->end(); ++it) {
-            if ((*it)->canConvertFrom(source))
-                (*it)->update(source, destination);
+        for (std::vector<RepresentationConverter*>::iterator it = converters_->begin();
+             it != converters_->end(); ++it) {
+            if ((*it)->canConvertFrom(source)) (*it)->update(source, destination);
         }
     }
 
@@ -116,6 +115,7 @@ public:
     size_t getNumberOfConverters() { return converters_->size(); }
 
     const std::vector<RepresentationConverter*>* getConverters() const { return converters_; }
+
 private:
     std::vector<RepresentationConverter*>* converters_;
 };
@@ -128,6 +128,6 @@ public:
     virtual ~ConverterException() throw() {}
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_REPRESENTATIONCONVERTER_H
+#endif  // IVW_REPRESENTATIONCONVERTER_H

@@ -35,26 +35,27 @@
 namespace inviwo {
 
 MeshGL::MeshGL()
-    : GeometryGL()
-    , attributesArray_(nullptr) {
+    : MeshRepresentation()
+    , attributesArray_(new BufferObjectArray()) {
 }
 
 MeshGL::MeshGL(const MeshGL& rhs)
-    : GeometryGL(rhs)
-    , attributesArray_(nullptr){
+    : MeshRepresentation(rhs)
+    , attributesArray_(new BufferObjectArray()){
+
+    update(true);
+}
+
+MeshGL& MeshGL::operator=(const MeshGL& that) {
+    if (this != &that) {
+        MeshRepresentation::operator=(that);
+    }
+    update(true);
+    return *this;
 }
 
 MeshGL::~MeshGL() {
-    deinitialize();
-}
-
-void MeshGL::initialize() {
-    attributesArray_ = new BufferObjectArray();
-}
-
-void MeshGL::deinitialize() {
     delete attributesArray_;
-    attributesArray_ = nullptr;
 }
 
 MeshGL* MeshGL::clone() const {

@@ -27,17 +27,17 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/geometry/geometrydisk2ramconverter.h>
+#include <inviwo/core/datastructures/geometry/meshdisk2ramconverter.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
 
 namespace inviwo {
 
-GeometryDisk2RAMConverter::GeometryDisk2RAMConverter()
-    : RepresentationConverterType<GeometryRAM>() {}
+MeshDisk2RAMConverter::MeshDisk2RAMConverter()
+    : RepresentationConverterType<MeshRAM>() {}
 
-GeometryDisk2RAMConverter::~GeometryDisk2RAMConverter() {}
+MeshDisk2RAMConverter::~MeshDisk2RAMConverter() {}
 
-DataRepresentation* GeometryDisk2RAMConverter::createFrom(const DataRepresentation* source) {
+DataRepresentation* MeshDisk2RAMConverter::createFrom(const DataRepresentation* source) {
     const MeshDisk* meshdisk = dynamic_cast<const MeshDisk*>(source);
 
     if (meshdisk) {
@@ -47,7 +47,7 @@ DataRepresentation* GeometryDisk2RAMConverter::createFrom(const DataRepresentati
     return nullptr;
 }
 
-void GeometryDisk2RAMConverter::update(const DataRepresentation* source,
+void MeshDisk2RAMConverter::update(const DataRepresentation* source,
                                        DataRepresentation* destination) {
     const MeshDisk* meshdisk = dynamic_cast<const MeshDisk*>(source);
     MeshRAM* meshram = dynamic_cast<MeshRAM*>(destination);

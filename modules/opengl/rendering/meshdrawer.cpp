@@ -32,30 +32,30 @@
 
 namespace inviwo {
 
-MeshDrawer::MeshDrawer() : meshToDraw_(nullptr) {}
+MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 
-MeshDrawer::MeshDrawer(const Mesh* mesh)
+MeshDrawerGL::MeshDrawerGL(const Mesh* mesh)
     : meshToDraw_(mesh) {
         
     initialize(mesh->getDefaultAttributesInfo());
 }
 
-MeshDrawer::MeshDrawer(const Mesh* mesh, Mesh::AttributesInfo ai)
+MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, Mesh::AttributesInfo ai)
     : meshToDraw_(mesh) {
         
     initialize(ai);
 }
 
-MeshDrawer::MeshDrawer(const Mesh* mesh, GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct)
+MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct)
     : meshToDraw_(mesh) {
         
     initialize(Mesh::AttributesInfo(dt, ct));
 }
 
-MeshDrawer::~MeshDrawer() {
+MeshDrawerGL::~MeshDrawerGL() {
 }
 
-void MeshDrawer::draw() {
+void MeshDrawerGL::draw() {
     const MeshGL* meshGL = getMeshGL();
     meshGL->enable();
     // If default is indices, render all index lists
@@ -71,22 +71,22 @@ void MeshDrawer::draw() {
     meshGL->disable();
 }
 
-void MeshDrawer::draw(GeometryEnums::DrawType dt) {
+void MeshDrawerGL::draw(GeometryEnums::DrawType dt) {
     const MeshGL* meshGL = getMeshGL();
     meshGL->enable();
     (this->*drawMethods_[dt].drawFunc)(dt);
     meshGL->disable();
 }
 
-const MeshGL* MeshDrawer::getMeshGL() const {
+const MeshGL* MeshDrawerGL::getMeshGL() const {
     return meshToDraw_->getRepresentation<MeshGL>();
 }
 
-GLenum MeshDrawer::getDefaultDrawMode() {
+GLenum MeshDrawerGL::getDefaultDrawMode() {
     return drawMethods_[0].drawMode;
 }
 
-GLenum MeshDrawer::getDrawMode(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct) {
+GLenum MeshDrawerGL::getDrawMode(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct) {
     switch (dt)
     {
         case GeometryEnums::TRIANGLES:
@@ -138,13 +138,13 @@ GLenum MeshDrawer::getDrawMode(GeometryEnums::DrawType dt, GeometryEnums::Connec
     }
 }
 
-void MeshDrawer::drawArray(GeometryEnums::DrawType dt) const {
+void MeshDrawerGL::drawArray(GeometryEnums::DrawType dt) const {
     glDrawArrays(drawMethods_[dt].drawMode,
                  0,
                  static_cast<GLsizei>(meshToDraw_->getAttributes(0)->getSize()));
 }
 
-void MeshDrawer::drawElements(GeometryEnums::DrawType dt) const {
+void MeshDrawerGL::drawElements(GeometryEnums::DrawType dt) const {
     
     std::vector<const Buffer*>::const_iterator it = drawMethods_[dt].elementBufferList.begin();
     while (it != drawMethods_[dt].elementBufferList.end()) {
@@ -156,9 +156,9 @@ void MeshDrawer::drawElements(GeometryEnums::DrawType dt) const {
     }
 }
 
-void MeshDrawer::initialize(Mesh::AttributesInfo ai)
+void MeshDrawerGL::initialize(Mesh::AttributesInfo ai)
 {
-    drawMethods_[0].drawFunc = &MeshDrawer::emptyFunc;
+    drawMethods_[0].drawFunc = &MeshDrawerGL::emptyFunc;
     drawMethods_[0].drawMode = getDrawMode(ai.dt, ai.ct);
     drawMethods_[0].elementBufferList.clear();
 
@@ -168,8 +168,8 @@ void MeshDrawer::initialize(Mesh::AttributesInfo ai)
         drawMethods_[i].elementBufferList.clear();
     }
 
-    drawMethods_[ai.dt].drawFunc = &MeshDrawer::drawArray;
-    drawMethods_[GeometryEnums::NOT_SPECIFIED].drawFunc = &MeshDrawer::drawArray;
+    drawMethods_[ai.dt].drawFunc = &MeshDrawerGL::drawArray;
+    drawMethods_[GeometryEnums::NOT_SPECIFIED].drawFunc = &MeshDrawerGL::drawArray;
     //drawMethods_[POINTS].drawFunc = &MeshDrawer::renderArray;
     //drawMethods_[POINTS].drawMode = GL_POINTS;
 
@@ -178,7 +178,7 @@ void MeshDrawer::initialize(Mesh::AttributesInfo ai)
             initializeIndexBuffer(meshToDraw_->getIndicies(i), meshToDraw_->getIndexAttributesInfo(i));
     }
 }
-void MeshDrawer::initializeIndexBuffer(const Buffer* indexBuffer, Mesh::AttributesInfo ai) {
+void MeshDrawerGL::initializeIndexBuffer(const Buffer* indexBuffer, Mesh::AttributesInfo ai) {
     // check draw mode if there exists another indexBuffer
     if (drawMethods_[ai.dt].elementBufferList.size() != 0) {
         if (getDrawMode(ai.dt, ai.ct) != drawMethods_[ai.dt].drawMode) {
@@ -186,7 +186,7 @@ void MeshDrawer::initializeIndexBuffer(const Buffer* indexBuffer, Mesh::Attribut
         }
     } 
     else {
-        drawMethods_[ai.dt].drawFunc = &MeshDrawer::drawElements;
+        drawMethods_[ai.dt].drawFunc = &MeshDrawerGL::drawElements;
         drawMethods_[ai.dt].drawMode = getDrawMode(ai.dt, ai.ct);
     }
     drawMethods_[ai.dt].elementBufferList.push_back(indexBuffer);

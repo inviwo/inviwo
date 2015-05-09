@@ -81,8 +81,7 @@ void EntryExitPointsCLProcessor::initialize() {
 void EntryExitPointsCLProcessor::deinitialize() {}
 
 void EntryExitPointsCLProcessor::process() {
-    const Geometry* geom = geometryPort_.getData();
-    const Mesh* mesh = dynamic_cast<const Mesh*>(geom);
+    const Mesh* mesh = geometryPort_.getData();
 
     if (!mesh) return;
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2013-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,29 +24,24 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYSOURCE_H
-#define IVW_GEOMETRYSOURCE_H
+#ifndef IVW_GEOMETRYPORT_H
+#define IVW_GEOMETRYPORT_H
 
-#include <modules/base/basemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
-#include <inviwo/core/ports/geometryport.h>
-#include <modules/base/processors/datasource.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API GeometrySource : public DataSource<Geometry, GeometryOutport> {
-public:
-    GeometrySource();
-    virtual ~GeometrySource();
+using MeshInport = DataInport<Mesh>;
+using MeshMultiInport = DataInport<Mesh, 0>;
+using MeshFlatMultiInport = DataInport<Mesh, 0, true>;
+using MeshOutport =  DataOutport<Mesh>;
 
-    InviwoProcessorInfo();
-};
+}  // namespace
 
-} // namespace
-
-#endif // IVW_GEOMETRYSOURCE_H
-
+#endif  // IVW_GEOMETRYPORT_H

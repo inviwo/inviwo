@@ -24,25 +24,22 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/imagerepresentation.h>
 
 namespace inviwo {
 
-ImageRepresentation::ImageRepresentation()
-    : DataGroupRepresentation() {
-}
+ImageRepresentation::ImageRepresentation() : DataGroupRepresentation() {}
 
 ImageRepresentation::ImageRepresentation(const ImageRepresentation& rhs)
-    : DataGroupRepresentation(rhs) {
-}
+    : DataGroupRepresentation(rhs) {}
+    
 ImageRepresentation& ImageRepresentation::operator=(const ImageRepresentation& that) {
     if (this != &that) {
         DataGroupRepresentation::operator=(that);
     }
-
     return *this;
 }
 
@@ -50,9 +47,7 @@ ImageRepresentation::~ImageRepresentation() {}
 
 void ImageRepresentation::performOperation(DataOperation*) const {}
 
-uvec2 ImageRepresentation::getDimensions() const {
-    return getOwner()->getDimensions();
-}
+uvec2 ImageRepresentation::getDimensions() const { return getOwner()->getDimensions(); }
 
 Image* ImageRepresentation::getOwner() {
     return reinterpret_cast<Image*>(DataRepresentation::getOwner());
@@ -62,4 +57,4 @@ const Image* ImageRepresentation::getOwner() const {
     return reinterpret_cast<const Image*>(DataRepresentation::getOwner());
 }
 
-} // namespace
+}  // namespace

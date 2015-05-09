@@ -47,12 +47,6 @@ ImageCLGL* ImageCLGL::clone() const {
     return new ImageCLGL(*this);
 }
 
-void ImageCLGL::initialize() {
-}
-
-void ImageCLGL::deinitialize() {
-}
-
 LayerCLGL* ImageCLGL::getLayerCL() {
     return layerCLGL_;
 }
@@ -61,12 +55,12 @@ const LayerCLGL* ImageCLGL::getLayerCL() const {
     return layerCLGL_;
 }
 
-bool ImageCLGL::copyAndResizeRepresentation(DataRepresentation* targetRep) const {
+bool ImageCLGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
     ImageCLGL* targetCLGL = dynamic_cast<ImageCLGL*>(targetRep);
 
     if (!targetCLGL) return false;
 
-    return layerCLGL_->copyAndResizeLayer(targetCLGL->getLayerCL());
+    return layerCLGL_->copyRepresentationsTo(targetCLGL->getLayerCL());
 }
 
 void ImageCLGL::update(bool editable) {

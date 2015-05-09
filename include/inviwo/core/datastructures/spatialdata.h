@@ -146,8 +146,8 @@ public:
 
     virtual ~StructuredGridEntity() {}
 
-    Vector<N, unsigned int> getDimensions() const;
-    void setDimensions(const Vector<N, unsigned int>& dimensions);
+    virtual Vector<N, unsigned int> getDimensions() const;
+    virtual void setDimensions(const Vector<N, unsigned int>& dimensions);
 
     
     /**
