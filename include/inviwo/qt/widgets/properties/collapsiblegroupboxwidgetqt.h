@@ -40,6 +40,7 @@ class QToolButton;
 class QGroupBox;
 class QPushButton;
 class QLabel;
+class QGridLayout;
 
 namespace inviwo {
 
@@ -86,6 +87,9 @@ public:
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
 
+    void setNestedDepth(int depth);
+    int getNestedDepth() const;
+
 public slots:
     void toggleCollapsed();
     void updateVisibility();
@@ -109,10 +113,12 @@ private:
     EditableLabelQt* label_;
     QToolButton* btnCollapse_;
     QWidget* propertyWidgetGroup_;
-    QVBoxLayout* propertyWidgetGroupLayout_;
+    QGridLayout* propertyWidgetGroupLayout_;
     QLabel* defaultLabel_;
     PropertyOwner* propertyOwner_;
     bool showIfEmpty_;
+    const int maxNumNestedShades_;
+    int nestedDepth_;
 };
 
 

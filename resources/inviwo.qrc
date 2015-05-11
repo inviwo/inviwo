@@ -26,6 +26,8 @@
         <file>icons/processor_experimental.png</file>
         <file>icons/processor_stable.png</file>
         <file>icons/python.png</file>
+        <file>icons/reset.png</file>
+        <file>icons/reset-dark.png</file>
         <file>icons/save.png</file>
         <file>icons/saveas.png</file>
         <file>icons/stopwatch.png</file>
