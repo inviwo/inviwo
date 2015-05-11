@@ -239,7 +239,7 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
             for (size_t j = 0; j < representations_.size() && !copyDone; j++) {
                 auto sourceRepr = static_cast<ImageRepresentation*>(representations_[j]);
                 auto targetRepr = static_cast<ImageRepresentation*>(targets[ordering[i]]);
-                if (typeid(sourceRepr) == typeid(targetRepr)) {
+                if (typeid(*sourceRepr) == typeid(*targetRepr)) {
                     sourceRepr->update(false);
                     targetRepr->update(true);
                     sourceRepr->copyRepresentationsTo(targetRepr);
