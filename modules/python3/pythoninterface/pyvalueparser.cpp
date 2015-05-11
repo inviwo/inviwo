@@ -66,7 +66,7 @@ std::string PyValueParser::parse(PyObject* args) {
 
 template <>
 PyObject* PyValueParser::toPyObject(bool b) {
-    return Py_BuildValue("i", b);
+    return Py_BuildValue("O", b ? Py_True : Py_False);
 }
 template <>
 PyObject* PyValueParser::toPyObject(std::string str) {
