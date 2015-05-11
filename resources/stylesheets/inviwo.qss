@@ -187,7 +187,12 @@ QToolButton {
 QToolButton#resetButton {
     width: 13px;
     height: 13px;
-    image: url(:/icons/edit-undo-icon.png);
+    image: url(:/icons/reset-dark.png);
+}
+QToolButton:hover#resetButton {
+    width: 13px;
+    height: 13px;
+    image: url(:/icons/reset.png);
 }
 
 /*QToolTop */
