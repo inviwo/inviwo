@@ -42,16 +42,19 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QLabel>
+#include <QCheckBox>
 
 namespace inviwo {
     
-CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(std::string displayName)
+CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(std::string displayName, bool isCheckable)
     : PropertyWidgetQt()
     , PropertyOwnerObserver()
     , displayName_(displayName)
     , collapsed_(false)
     , propertyOwner_(nullptr)
     , showIfEmpty_(false)
+    , checkable_(isCheckable)
+    , checked_(false)
     , maxNumNestedShades_(4)
     , nestedDepth_(0) {
     setObjectName("CompositeWidget");
@@ -90,6 +93,9 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
 
     label_ = new EditableLabelQt(this, displayName_, false);
     label_->setObjectName("compositeLabel");
+    QSizePolicy labelPol = label_->sizePolicy();
+    labelPol.setHorizontalStretch(10);
+    label_->setSizePolicy(labelPol);
     connect(label_, SIGNAL(textChanged()), this, SLOT(labelDidChange()));
 
     QToolButton* resetButton = new QToolButton(this);
@@ -98,15 +104,22 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetPropertyToDefaultState()));
     resetButton->setToolTip(tr("Reset the group of properties to its default state"));
 
+    checkBox_ = new QCheckBox(this);
+    checkBox_->setMinimumSize(5, 5);
+    //checkBox_->setMaximumSize(13, 13);
+    checkBox_->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
+    checkBox_->setChecked(checked_);
+    checkBox_->setVisible(checkable_);
+
+    QObject::connect(checkBox_, SIGNAL(clicked()), this, SLOT(checkedStateChanged()));
+
     QHBoxLayout* heading = new QHBoxLayout();
     heading->setContentsMargins(0, 0, 0, 0);
     heading->setSpacing(PropertyWidgetQt::SPACING);
     heading->addWidget(btnCollapse_);
     heading->addWidget(label_);
-    QSizePolicy labelPol = label_->sizePolicy();
-    labelPol.setHorizontalStretch(10);
-    label_->setSizePolicy(labelPol);
     heading->addStretch(1);
+    heading->addWidget(checkBox_);
     heading->addWidget(resetButton);
 
     QVBoxLayout* layout = new QVBoxLayout();
@@ -117,7 +130,7 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     layout->addWidget(propertyWidgetGroup_);
 
     // Adjust the margins when using a border, i.e. margin >= border width.
-    // Otherwise the border might be overdrawn by childrens.
+    // Otherwise the border might be overdrawn by children.
     const int margin = 0;
     this->setContentsMargins(margin, margin, margin, margin);
 
@@ -291,9 +304,42 @@ void CollapsibleGroupBoxWidgetQt::toggleCollapsed() {
     setCollapsed(!isCollapsed());
 }
 
+void CollapsibleGroupBoxWidgetQt::checkedStateChanged() {
+    setChecked(checkBox_->isChecked());
+}
+
 bool CollapsibleGroupBoxWidgetQt::isCollapsed() const {
     return collapsed_;
 }
+
+bool CollapsibleGroupBoxWidgetQt::isChecked() const {
+    return checked_;
+}
+
+void CollapsibleGroupBoxWidgetQt::setChecked(bool checked) {
+    if (!checkable_) {
+        return;
+    }
+
+    checked_ = checked;
+    // update checkbox
+    checkBox_->setChecked(checked_);
+}
+
+bool CollapsibleGroupBoxWidgetQt::isCheckable() const {
+    return checkable_;
+}
+
+void CollapsibleGroupBoxWidgetQt::setCheckable(bool checkable) {
+    if (checkable_ == checkable) {
+        return;
+    }
+
+    checkable_ = checkable;
+    // update header
+    checkBox_->setVisible(checkable_);
+}
+
 
 void CollapsibleGroupBoxWidgetQt::setCollapsed(bool collapse) {
     if (collapsed_ && !collapse) {

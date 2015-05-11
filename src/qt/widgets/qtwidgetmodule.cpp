@@ -30,6 +30,7 @@
 #include <inviwo/qt/widgets/qtwidgetmodule.h>
 
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -48,6 +49,7 @@
 
 #include <inviwo/qt/widgets/properties/anglepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/boolpropertywidgetqt.h>
+#include <inviwo/qt/widgets/properties/boolcompositepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <inviwo/qt/widgets/properties/colorpropertywidgetqt.h>
@@ -75,6 +77,7 @@ QtWidgetModule::QtWidgetModule() : InviwoModule() {
     setIdentifier("QtWidget");
     registerPropertyWidget(BoolPropertyWidgetQt, BoolProperty, "Default");
     registerPropertyWidget(ButtonPropertyWidgetQt, ButtonProperty, "Default");
+    registerPropertyWidget(BoolCompositePropertyWidgetQt, BoolCompositeProperty, "Default");
     
     registerPropertyWidget(CompositePropertyWidgetQt, CameraProperty, "Default");
     registerPropertyWidget(CompositePropertyWidgetQt, SimpleLightingProperty, "Default");
