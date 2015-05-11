@@ -100,7 +100,7 @@ public:
 
 class IVW_MODULE_PYTHON3_API PyGetWorkspaceSavePathMethod : public PyMethod {
 public:
-    virtual std::string getName() const { return "getWorkspaceSavePatht"; }
+    virtual std::string getName() const { return "getWorkspaceSavePath"; }
     virtual std::string getDesc() const { return "Returns the path to Inviwos workspace folder."; }
     virtual PyCFunction getFunc() { return py_getWorkspaceSavePath; }
 };
