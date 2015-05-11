@@ -39,9 +39,17 @@ QWidget {
 
 /* set a common background color for all central widgets of dock widgets.
    All other QWidgets will have a transparent background. */
-QDockWidget > .QWidget, QDockWidget > .QScrollArea, QDialog {
+QDockWidget > .QWidget, QDockWidget > .QScrollArea, QDialog, QDockWidget#PythonInfoWidget > .QWidget QScrollArea {
     background-color: #323235;
 }
+
+QDockWidget#PythonInfoWidget > .QWidget {
+    background-color: #252527;
+}
+QDockWidget#PythonInfoWidget > .QWidget QScrollArea {
+    /*border: none;*/
+}
+
 
 QStatusBar {
     background-color: #252527;
@@ -293,15 +301,18 @@ QDockWidget {
 
 QTabWidget {
 }
-QTabWidget::pane{
+QTabWidget::pane:bottom {
     border-bottom: 2px solid #414145;
     /*background: #414145; */ 
     /* cannot use other color than default background here because of QDockWidgets */
     /*background: #252527;*/
 }
+QTabWidget::pane:top {
+    /*border-top: 2px solid #414145;*/
+}
 QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
     /* docked QDockWidgets ignore QTabWidget */
-    background: #252527;
+    background: transparent; /*#252527*/
 }
 
 QTabWidget::tab-bar {
@@ -312,31 +323,33 @@ QTabBar {
     background: #252527;
 }
 QTabBar::tab {
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
-    border: 1px solid #4a4a4f; /*#252527;*/
-    border-top-width: 0px;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-/*
-    border-left-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
-    border-right-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
-*/
-    min-width: 8ex;
-    margin-top: 1px;
-    margin-left: 2px;
-    margin-right: 1px; /* spacing between tabs */
-    padding: 2px;
-    padding-left: 10px;
-    padding-right: 10px;
     min-height: 20px;
     min-width: 80px;
+    border: 1px solid #4a4a4f; /*#252527;*/
+    border-radius: 3px;
+    padding: 2px 10px 0px 10px;
+    margin: 0px 1px 1px 2px; /* top, right (spacing between tabs), bottom, left */
 }
-QTabBar::tab:selected{
+QTabBar::tab:bottom {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #414145, stop:0.8 #3c3c40, stop:1 #222224);
+                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
+    border-top-width: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+
+    margin-top: 1px;
+}
+QTabBar::tab:top {
+    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                               stop: 0 #2a2a2a, stop:0.18 #323235, stop:0.88 #37373a, stop:1 #505058);
+    border-bottom-width: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+
+    margin-bottom: 1px;
+}
+
+QTabBar::tab:bottom:selected{
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #323235, stop:0.9 #3c3c40, stop:1 #222224);
     border: 1px solid #888;
@@ -344,10 +357,24 @@ QTabBar::tab:selected{
     margin-top: -2px;
     /*font-weight: bold;*/
 }
- QTabBar::tab:hover {
+QTabBar::tab:top:selected{
+    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                                stop:0 #323235, stop:0.88 #3c3c40, stop:1 #5f5f5f);
+    border: 1px solid #888;
+    color: #e9e4de;
+    margin-bottom: -2px;
+    /*font-weight: bold;*/
+}
+QTabBar::tab:bottom:hover {
     border-left: 1px solid #268bd2;
     border-right: 1px solid #268bd2;
     border-bottom: 1px solid #268bd2;
+    /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
+}
+QTabBar::tab:top:hover {
+    border-left: 1px solid #268bd2;
+    border-right: 1px solid #268bd2;
+    border-top: 1px solid #268bd2;
     /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
 }
 QTabBar::tab:bottom:!selected {
