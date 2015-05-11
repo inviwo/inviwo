@@ -60,6 +60,7 @@ void Python3QtModule::deinitialize() {
 
 void Python3QtModule::initPyQtModule() {
     inviwoPyQtModule_ = new PyModule("inviwoqt");
+    inviwoPyQtModule_->addMethod(new PyGetPathCurrentWorkspace());
     inviwoPyQtModule_->addMethod(new PyLoadNetworkMethod());
     inviwoPyQtModule_->addMethod(new PySaveNetworkMethod());
     inviwoPyQtModule_->addMethod(new PyQuitInviwoMethod());

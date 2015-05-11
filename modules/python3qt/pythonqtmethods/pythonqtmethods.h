@@ -35,11 +35,19 @@
 
 namespace inviwo {
 
+    PyObject* py_getPathCurrentWorkspace(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_prompt(PyObject* /*self*/, PyObject* /*args*/);
     PyObject* py_showTransferFunctionEditor(PyObject* /*self*/, PyObject* /*args*/);
+
+    class IVW_MODULE_PYTHON3QT_API PyGetPathCurrentWorkspace : public PyMethod {
+    public:
+        std::string getName() const { return "getPathCurrentWorkspace"; }
+        std::string getDesc() const { return "Return the path to the current loaded workspace."; }
+        virtual PyCFunction getFunc() { return py_getPathCurrentWorkspace; }
+    };
 
     class IVW_MODULE_PYTHON3QT_API PyLoadNetworkMethod : public PyMethod {
     public:

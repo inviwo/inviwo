@@ -44,8 +44,22 @@
 #include <QDir>
 
 namespace inviwo {
+    
 
-    PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
+    PyObject* py_getPathCurrentWorkspace(PyObject* /*self*/, PyObject* args) {
+        if (!(PyTuple_Size(args) == 0)) {
+            std::ostringstream errStr;
+            utilqt::localizeStream(errStr);
+            errStr << "loadWorkspace() takes no parameters";
+            errStr << " (" << PyTuple_Size(args) << " given)";
+            PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
+            return nullptr;
+        }
+
+        return PyValueParser::toPyObject(NetworkEditor::getPtr()->getCurrentFilename());
+    }
+
+        PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
         if (!(PyTuple_Size(args) == 1)) {
             std::ostringstream errStr;
             utilqt::localizeStream(errStr);
