@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/compositeproperty.h>
+ #include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
