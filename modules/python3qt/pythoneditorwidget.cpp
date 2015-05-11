@@ -294,6 +294,7 @@ void PythonEditorWidget::saveAs() {
         if (!path.endsWith(".py")) path.append(".py");
 
         scriptFileName_ = path.toLocal8Bit().constData();
+        unsavedChanges_ = true;
         save();
     }
 }
