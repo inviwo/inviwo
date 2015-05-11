@@ -45,7 +45,6 @@ BoolCompositeProperty::BoolCompositeProperty(std::string identifier, std::string
     checked_.setVisible(false);
     this->addProperty(checked_);
     checked_.onChange([this]() {
-        LogInfo("BoolCompositeProperty changed " << checked_.get());
         Property::propertyModified();
     });
 }
@@ -64,11 +63,6 @@ void BoolCompositeProperty::setChecked(bool checked) {
     if (checked_.get() != checked) {
         checked_.set(checked);
     }
-}
-
-void BoolCompositeProperty::onToggle() {
-    LogInfo("BoolCompositeProperty changed " << checked_.get());
-    Property::propertyModified();
 }
 
 } // namespace

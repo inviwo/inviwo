@@ -50,9 +50,6 @@ public:
     virtual bool isChecked() const;
     virtual void setChecked(bool checked);
     
-protected:
-    void onToggle();
-
 private:
     BoolProperty checked_;
 };
