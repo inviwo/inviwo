@@ -79,18 +79,33 @@ Event* ViewManager::registerEvent(Event* event) {
 
     } else if (TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(event)) {
         // TODO fix TouchEvents
-        //         activePosition_ = flipY(touchEvent->pos(), touchEvent->canvasSize());
-        //         if (!viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_STARTED) {
-        //             viewportActive_ = true;
-        //             activeView_ = findView(activePosition_);
-        //         } else if (viewportActive_ && touchEvent->state() ==
-        //         TouchEvent::TOUCH_STATE_ENDED) {
-        //             viewportActive_ = false;
-        //         }
+        activePosition_ = flipY(touchEvent->getCenterPoint(), touchEvent->canvasSize());
+        if (!viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_STARTED) {
+            viewportActive_ = true;
+            activeView_ = findView(activePosition_);
+        } else if (viewportActive_ && touchEvent->state() ==
+            TouchEvent::TOUCH_STATE_ENDED) {
+            viewportActive_ = false;
+        }
 
         if (activeView_ >= 0 && activeView_ < views_.size()) {
-            TouchEvent* newEvent = touchEvent->clone();
-            // const ivec4& view = views_[activeView_];
+            // Modify all touch points
+            const ivec4& view = views_[activeView_];
+            vec2 viewportOffset(view.x, view.y);
+            vec2 viewportSize(view.z, view.w);
+            std::vector<TouchPoint> modifiedTouchPoints;
+            auto touchPoints = touchEvent->getTouchPoints();
+            modifiedTouchPoints.reserve(touchPoints.size());
+            // Loop over all touch points and modify their positions
+            for (auto elem : touchPoints) {
+                vec2 pos = flipY(elem.getPos() - viewportOffset, viewportSize);
+                vec2 posNormalized = pos / viewportSize;
+                vec2 prevPos = flipY(elem.getPrevPos() - viewportOffset, viewportSize);
+                vec2 prevPosNormalized = prevPos / viewportSize;
+                modifiedTouchPoints.push_back(TouchPoint(pos, posNormalized, prevPos, prevPosNormalized));
+            }
+            TouchEvent* newEvent = new TouchEvent(modifiedTouchPoints, touchEvent->state(), viewportSize);
+            
             // newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y),ivec2(view.z,
             // view.w)),
             // uvec2(view.z, view.w));

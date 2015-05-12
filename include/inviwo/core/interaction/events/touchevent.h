@@ -102,16 +102,16 @@ public:
         TOUCH_STATE_ENDED = 4,
         TOUCH_STATE_ANY = TOUCH_STATE_STARTED | TOUCH_STATE_UPDATED | TOUCH_STATE_ENDED
     };
-    TouchEvent(TouchEvent::TouchState state);
-    TouchEvent(std::vector<TouchPoint> touchPoints, TouchEvent::TouchState state);
+    TouchEvent(TouchEvent::TouchState state, uvec2 canvasSize = uvec2(0));
+    TouchEvent(std::vector<TouchPoint> touchPoints, TouchEvent::TouchState state, uvec2 canvasSize);
 
-    TouchEvent(const TouchEvent& rhs);
-    TouchEvent& operator=(const TouchEvent& that);
     virtual TouchEvent* clone() const;
     virtual ~TouchEvent();
 
     std::vector<TouchPoint> getTouchPoints() const { return touchPoints_; }
     void setTouchPoints(std::vector<TouchPoint> val) { touchPoints_ = val; }
+
+    inline uvec2 canvasSize() const { return canvasSize_; }
 
     /** 
      * \brief Computes average position. Returns vec2(0) if no touch points exist.
@@ -140,6 +140,7 @@ public:
 
 private:
     std::vector<TouchPoint> touchPoints_;
+    uvec2 canvasSize_;
 
     TouchEvent::TouchState state_;
 };

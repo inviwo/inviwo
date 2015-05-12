@@ -451,7 +451,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
             vec2(touchPoint.lastNormalizedPos().x(), touchPoint.lastNormalizedPos().y()))
             );
     }
-    TouchEvent touchEvent(touchPoints, touchState);
+    TouchEvent touchEvent(touchPoints, touchState, getScreenDimensions());
     touch->accept();
     Canvas::touchEvent(&touchEvent);
 

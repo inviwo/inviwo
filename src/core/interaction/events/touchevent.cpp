@@ -51,26 +51,11 @@ void TouchPoint::deserialize(IvwDeserializer& d) {
     d.deserialize("prevPosNormalized", prevPosNormalized_);
 }
 
-TouchEvent::TouchEvent(TouchEvent::TouchState state)
-    : InteractionEvent(), state_(state) {}
+TouchEvent::TouchEvent(TouchEvent::TouchState state, uvec2 canvasSize)
+    : InteractionEvent(), state_(state), canvasSize_(canvasSize) {}
 
-TouchEvent::TouchEvent(std::vector<TouchPoint> touchPoints, TouchEvent::TouchState state)
-    : InteractionEvent(), touchPoints_(touchPoints), state_(state) {}
-
-TouchEvent::TouchEvent(const TouchEvent& rhs)
-    : InteractionEvent(rhs)
-    , touchPoints_(rhs.touchPoints_)
-    , state_(rhs.state_) {
-}
-
-TouchEvent& TouchEvent::operator=(const TouchEvent& that) {
-    if (this != &that) {
-        InteractionEvent::operator=(that);
-        touchPoints_ = that.touchPoints_;
-        state_ = that.state_;
-    }
-    return *this;
-}
+TouchEvent::TouchEvent(std::vector<TouchPoint> touchPoints, TouchEvent::TouchState state, uvec2 canvasSize)
+    : InteractionEvent(), touchPoints_(touchPoints), state_(state), canvasSize_(canvasSize) {}
 
 TouchEvent* TouchEvent::clone() const {
     return new TouchEvent(*this);
