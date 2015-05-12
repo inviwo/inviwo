@@ -93,7 +93,7 @@ public:
             return pIter_ == rhs.pIter_ && dIter_ == rhs.dIter_;
         }
         bool operator!=(const self& rhs) const {
-            return pIter_ != rhs.pIter_ || dIter_ != rhs.dIter_;
+            return pIter_ != rhs.pIter_ && dIter_ != rhs.dIter_;
         }
 
     private:
