@@ -31,7 +31,7 @@
 
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
-#include <modules/opengl/rendering/meshdrawer.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/openglutils.h>

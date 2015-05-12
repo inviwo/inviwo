@@ -37,7 +37,7 @@
 #include <modules/opengl/glwrap/bufferobjectarray.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/glwrap/textureunit.h>
-#include <modules/opengl/rendering/meshdrawer.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/openglcapabilities.h>
 
 namespace inviwo {

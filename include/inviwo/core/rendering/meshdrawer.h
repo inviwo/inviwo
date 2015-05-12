@@ -42,7 +42,7 @@ class MeshDrawerFactory;
  *
  * Base class for drawers capable of drawing Geometry.
  * A derived MeshDrawer should be registered by the module.
- * The GeometryDrawerFactory can be used to get a drawer
+ * The MeshDrawerFactory can be used to get a drawer
  * without knowing the type of Geometry. This is enabled by
  * implementing the abstract functions canRender and create.
  *
@@ -69,7 +69,7 @@ class MeshDrawerFactory;
  * @endcode
  *
  * @see Geometry
- * @see GeometryDrawerFactory
+ * @see MeshDrawerFactory
  * @see Module
  */
 class MeshDrawer {
