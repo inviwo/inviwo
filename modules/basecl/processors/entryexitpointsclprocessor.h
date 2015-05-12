@@ -47,7 +47,7 @@ namespace inviwo {
  * Computes the entry and exit points of a triangle mesh from the camera position in texture space. 
  * The output color will be zero if no intersection is found, otherwise .
  * ### Inports
- *   * __GeometryInport__ The mesh to intersect.
+ *   * __MeshInport__ The mesh to intersect.
  *
  * ### Outports
  *   * __ImageOutport__ The first hit point.

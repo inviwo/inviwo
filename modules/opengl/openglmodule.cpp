@@ -39,7 +39,7 @@
 #include <modules/opengl/openglmodule.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/openglsettings.h>
-#include <modules/opengl/rendering/meshdrawer.h>
+#include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/volume/volumeglconverter.h>
 #ifdef OPENGL_INCLUDE_SHADER_RESOURCES
 #include <modules/opengl/shader_resources.h>
