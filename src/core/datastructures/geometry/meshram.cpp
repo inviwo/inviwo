@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
@@ -33,26 +33,21 @@
 
 namespace inviwo {
 
-MeshRAM::MeshRAM()
-    : GeometryRAM() {
-}
+MeshRAM::MeshRAM() : MeshRepresentation() {}
 
-MeshRAM::MeshRAM(const MeshRAM& rhs)
-    : GeometryRAM(rhs) {
+MeshRAM::MeshRAM(const MeshRAM& rhs) : MeshRepresentation(rhs) { update(true); }
+
+MeshRAM& MeshRAM::operator=(const MeshRAM& that) {
+    if (this != &that) {
+        MeshRepresentation::operator=(that);
+    }
     update(true);
+    return *this;
 }
 
-MeshRAM::~MeshRAM() {
-    deinitialize();
-}
+MeshRAM::~MeshRAM() {}
 
-void MeshRAM::initialize() {}
-
-void MeshRAM::deinitialize() {}
-
-MeshRAM* MeshRAM::clone() const {
-    return new MeshRAM(*this);
-}
+MeshRAM* MeshRAM::clone() const { return new MeshRAM(*this); }
 
 void MeshRAM::update(bool editable) {
     attributesRAM_.clear();
@@ -68,5 +63,4 @@ void MeshRAM::update(bool editable) {
     }
 }
 
-} // namespace
-
+}  // namespace

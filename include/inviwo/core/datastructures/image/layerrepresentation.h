@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYERREPRESENTATION_H
@@ -39,24 +39,31 @@
 namespace inviwo {
 
 class IVW_CORE_API LayerRepresentation : public DataRepresentation {
-
     friend class Layer;
 
 public:
-    LayerRepresentation(uvec2 dimensions = uvec2(32,32), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataVec4UINT8::get());
+    LayerRepresentation(uvec2 dimensions = uvec2(32, 32), LayerType type = COLOR_LAYER,
+                        const DataFormatBase* format = DataVec4UINT8::get());
     LayerRepresentation(const LayerRepresentation& rhs);
     LayerRepresentation& operator=(const LayerRepresentation& that);
     virtual LayerRepresentation* clone() const = 0;
     virtual ~LayerRepresentation();
 
     virtual void performOperation(DataOperation*) const {};
-    virtual void resize(uvec2 dimensions);
-    virtual bool copyAndResizeLayer(DataRepresentation*) const = 0;
 
     uvec2 getDimensions() const;
-    // Removes old data and reallocate for new dimensions.
-    // Needs to be overloaded by child classes.
-    virtual void setDimensions(uvec2 dimensions);
+    
+    /**
+     * Reeize the representation to dimension. This is destructive, the data will not be
+     * preserved. Use copyRepresentationsTo to update the data.
+     * Needs to be overloaded by child classes.
+     */
+    virtual void setDimensions(uvec2 dimensions) = 0;
+
+    /**
+     * Copy and resize the representations of this onto the target.
+     */
+    virtual bool copyRepresentationsTo(DataRepresentation*) const = 0;
 
     LayerType getLayerType() const;
 
@@ -65,6 +72,6 @@ protected:
     LayerType layerType_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_LAYERREPRESENTATION_H
+#endif  // IVW_LAYERREPRESENTATION_H

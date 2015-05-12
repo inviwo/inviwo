@@ -36,6 +36,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 namespace inviwo {
 
@@ -138,6 +139,55 @@ template <class Iter>
 inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
     return iter_range<Iter>(x);
 }
+
+
+/**
+ * A type trait for std container types
+ * from: http://stackoverflow.com/a/16316640
+ * This is a slightly modified version to avoid constexpr.
+ *
+ * Requirements on Container T:
+ * T::iterator = T::begin();
+ * T::iterator = T::end();
+ * T::const_iterator = T::begin() const;
+ * T::const_iterator = T::end() const;
+ * 
+ * *T::iterator = T::value_type &
+ * *T::const_iterator = T::value_type const &
+ */
+
+template <typename T>
+class is_container {
+    using test_type = typename std::remove_const<T>::type;
+
+    template <
+        typename A, class = typename std::enable_if<
+            std::is_same<
+                decltype(std::declval<A>().begin()),
+                typename A::iterator>::value &&
+            std::is_same<
+                decltype(std::declval<A>().end()),
+                typename A::iterator>::value &&
+            std::is_same<
+                decltype(std::declval<const A>().begin()),
+                typename A::const_iterator>::value &&
+            std::is_same<
+                decltype(std::declval<const A>().end()),
+                typename A::const_iterator>::value &&
+            std::is_same<
+                decltype(*std::declval<typename A::iterator>()),
+                typename A::value_type&>::value &&
+            std::is_same<
+                decltype(*std::declval<const typename A::iterator>()),
+                typename A::value_type const&>::value>::type>
+    static std::true_type test(int);
+
+    template <class>
+    static std::false_type test(...);
+
+public:
+    static const bool value = decltype(test<test_type>(0))::value;
+};
 
 /**
  *	Function to combine several hash values

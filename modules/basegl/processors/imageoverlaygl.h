@@ -41,6 +41,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/basegl/viewmanager.h>
 
 namespace inviwo {
 
@@ -57,17 +58,16 @@ class IVW_MODULE_BASEGL_API OverlayProperty : public CompositeProperty {
 public:
     enum class Positioning {
         Relative,
-        Absolute,
+        Absolute
     };
-    enum class BlendMode {
-        Replace,
-        Over,
+    enum class BlendMode : GLint {
+        Replace = GL_NONE,
+        Over = GL_SRC_ALPHA
     };
 
-    OverlayProperty(std::string identifier,
-        std::string displayName,
-        InvalidationLevel invalidationLevel=INVALID_OUTPUT,
-        PropertySemantics semantics=PropertySemantics::Default);
+    OverlayProperty(std::string identifier, std::string displayName,
+                    InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                    PropertySemantics semantics = PropertySemantics::Default);
     virtual ~OverlayProperty() {}
 
     void updateViewport(vec2 destDim);
@@ -81,10 +81,9 @@ public:
     TemplateOptionProperty<BlendMode> blendMode_;
 
     // TODO: consider absolute positioning
-    //TemplateOptionProperty<Positioning> positioning_;
-    //TemplateOptionProperty<Positioning> anchorPositioning_;
+    // TemplateOptionProperty<Positioning> positioning_;
+    // TemplateOptionProperty<Positioning> anchorPositioning_;
 };
-
 
 /** \docpage{org.inviwo.ImageOverlayGL, Image Overlay}
 * Places one or more input images on top of the source image.
@@ -115,7 +114,7 @@ public:
     ~ImageOverlayGL();
 
     InviwoProcessorInfo();
-    
+
     const std::vector<ivec4>& getViewCoords() const;
 
     bool isReady() const override;
@@ -125,45 +124,23 @@ public:
 protected:
     virtual void process() override;
 
-    void overlayInportChanged();
     void updateViewports(ivec2 size, bool force = false);
     void onStatusChange();
-
-    class ImageOverlayGLInteractionHandler : public InteractionHandler {
-    public:
-        ImageOverlayGLInteractionHandler(ImageOverlayGL*);
-        ~ImageOverlayGLInteractionHandler(){};
-
-        void invokeEvent(Event* event);
-        ivec2 getActivePosition() const { return activePosition_; }
-
-    private:
-        ImageOverlayGL* src_;
-        MouseEvent activePositionChangeEvent_;
-        bool viewportActive_;
-        ivec2 activePosition_;
-    };
 
 private:
     static bool inView(const ivec4& view, const ivec2& pos);
     ImageInport inport_;
     ImageInport overlayPort_;
     ImageOutport outport_;
-    
-    BoolProperty overlayInteraction_; //<! allows to interact with overlay images, otherwise only the source image will receive interaction events
+
+    BoolProperty overlayInteraction_;  //<! allows to interact with overlay images, otherwise only
+                                       //the source image will receive interaction events
 
     // TODO: replace this with std::vector to match multi-inport
     OverlayProperty overlayProperty_;
-
     Shader shader_;
-
-    ImageOverlayGLInteractionHandler overlayHandler_;
-
+    ViewManager viewManager_;
     ivec2 currentDim_;
-
-    std::vector<ivec4> viewCoords_;
-
-    mutable std::vector<Inport*> currentInteractionInport_;
 };
 
 }  // namespace

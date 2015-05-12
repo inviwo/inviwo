@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/datagrouprepresentation.h>
+#include <type_traits>
 
 namespace inviwo {
 /** 
@@ -47,11 +48,14 @@ namespace inviwo {
  *  which are owned by the referenced/owned Data objects.
  *
  *  Differences between DataGroup and Data:
- *    - DataGroup can never hold any data with owning(referencing[later]) a Data object or a DataGroup object
+ *    - DataGroup can never hold any data with owning(referencing[later]) a Data object or a 
+ *      DataGroup object
  *    - DataGroupRepresentation need reference to all Data objects to be created correctly
- *    - DataGroup does not have converters, as the DataGroup objects always can create them self correctly.
- *    - DataGroupRepresentation becomes invalid when a child representations becomes invalid, thus we do not know when it's valid
- *      and we need to call update before we return it from getRepresentation.
+ *    - DataGroup does not have converters, as the DataGroup objects always can create them self 
+ *      correctly.
+ *    - DataGroupRepresentation becomes invalid when a child representations becomes invalid, 
+ *      thus we do not know when it's valid and we need to call update before we return it 
+ *      from getRepresentation.
  */
 class IVW_CORE_API DataGroup : public BaseData {
 
@@ -75,7 +79,6 @@ public:
     bool hasRepresentations() const;
 
     void setRepresentationsAsInvalid();
-
     void clearRepresentations();
 
 protected:
@@ -86,36 +89,54 @@ private:
     T* getRepresentation(bool editable) const; 
 };
 
-template<typename T>
+namespace detail {
+
+template <typename T, typename std::enable_if<
+                          !std::is_abstract<T>::value && std::is_default_constructible<T>::value &&
+                              std::is_base_of<DataGroupRepresentation, T>::value,
+                          int>::type = 0>
+T* createGroupRepresentation() {
+    return new T();
+};
+
+template <typename T, typename std::enable_if<
+                          std::is_abstract<T>::value || !std::is_default_constructible<T>::value ||
+                              !std::is_base_of<DataGroupRepresentation, T>::value,
+                          int>::type = 0>
+T* createGroupRepresentation() {
+    return nullptr;
+};
+}
+
+template <typename T>
 T* inviwo::DataGroup::getRepresentation(bool editable) const {
     // check if a representation exists and return it
     for (int i = 0; i < static_cast<int>(representations_.size()); ++i) {
-        T* representation = dynamic_cast<T*>(representations_[i]);
-
-        if (representation) {
-            DataGroupRepresentation* basRep = dynamic_cast<DataGroupRepresentation*>(representation);
-
-            if (basRep) {
-                basRep->update(editable);
-                basRep->setAsValid();
-                return representation;
-            }
+        if (T* representation = dynamic_cast<T*>(representations_[i])) {
+            representations_[i]->update(editable);
+            representations_[i]->setAsValid();
+            return representation;
         }
     }
 
-    //no representation exists, create one
-    T* result = new T();
-    DataGroupRepresentation* basRep = dynamic_cast<DataGroupRepresentation*>(result);
+    // no representation exists, create one
+    T* representation = detail::createGroupRepresentation<T>();
 
-    if (basRep) {
-        basRep->setOwner(const_cast<DataGroup*>(this));
-        basRep->initialize();
-        basRep->update(editable);
-        basRep->setAsValid();
+    if (!representation) {
+        throw Exception("Trying to create an invalid group representation: " +
+                            std::string(typeid(T).name()) + " for data: " +
+                            std::string(typeid(this).name()),
+                        IvwContext);
     }
 
-    representations_.push_back(result);
-    return result;
+    // Need to cast to be able to call the protected update function, we are friends with base.
+    DataGroupRepresentation* baseRepr = static_cast<DataGroupRepresentation*>(representation);
+    baseRepr->setOwner(const_cast<DataGroup*>(this));
+    baseRepr->update(editable);
+    baseRepr->setAsValid();
+    representations_.push_back(baseRepr);
+
+    return representation;
 }
 
 template<typename T>
@@ -131,8 +152,7 @@ T* DataGroup::getEditableRepresentation() {
 template<typename T>
 bool DataGroup::hasRepresentation() const {
     for (int i=0; i<static_cast<int>(representations_.size()); i++) {
-        T* representation = dynamic_cast<T*>(representations_[i]);
-        if (representation) return true;
+        if (dynamic_cast<T*>(representations_[i])) return true;
     }
     return false;
 }

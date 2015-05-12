@@ -44,10 +44,7 @@ public:
     virtual ImageDisk* clone() const;
     virtual ~ImageDisk();
 
-    virtual void initialize();
-    virtual void deinitialize();
-
-    virtual bool copyAndResizeRepresentation(DataRepresentation*) const;
+    virtual bool copyRepresentationsTo(DataRepresentation*) const override;
 
 protected:
     virtual void update(bool editable);

@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#include "geometryrenderprocessorgl.h"
-#include <modules/opengl/geometry/geometrygl.h>
+#include "meshrenderprocessorgl.h"
+#include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/trackball.h>
-#include <inviwo/core/rendering/geometrydrawerfactory.h>
+#include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <modules/opengl/rendering/meshdrawer.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/glwrap/shader.h>
@@ -43,13 +43,13 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(GeometryRenderProcessorGL, "org.inviwo.GeometryRenderGL");
-ProcessorDisplayName(GeometryRenderProcessorGL, "Geometry Renderer");
-ProcessorTags(GeometryRenderProcessorGL, Tags::GL);
-ProcessorCategory(GeometryRenderProcessorGL, "Geometry Rendering");
-ProcessorCodeState(GeometryRenderProcessorGL, CODE_STATE_STABLE);
+ProcessorClassIdentifier(MeshRenderProcessorGL, "org.inviwo.GeometryRenderGL");
+ProcessorDisplayName(MeshRenderProcessorGL, "Mesh Renderer");
+ProcessorTags(MeshRenderProcessorGL, Tags::GL);
+ProcessorCategory(MeshRenderProcessorGL, "Geometry Rendering");
+ProcessorCodeState(MeshRenderProcessorGL, CODE_STATE_STABLE);
 
-GeometryRenderProcessorGL::GeometryRenderProcessorGL()
+MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()
     , inport_("geometry.inport")
     , outport_("image.outport")
@@ -74,13 +74,13 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     addPort(inport_);
     addPort(outport_);
     addProperty(camera_);
-    centerViewOnGeometry_.onChange(this, &GeometryRenderProcessorGL::centerViewOnGeometry);
+    centerViewOnGeometry_.onChange(this, &MeshRenderProcessorGL::centerViewOnGeometry);
     addProperty(centerViewOnGeometry_);
-    setNearFarPlane_.onChange(this, &GeometryRenderProcessorGL::setNearFarPlane);
+    setNearFarPlane_.onChange(this, &MeshRenderProcessorGL::setNearFarPlane);
     addProperty(setNearFarPlane_);
     resetViewParams_.onChange([this]() { camera_.resetCamera(); });    addProperty(resetViewParams_);
     outport_.addResizeEventListener(&camera_);
-    inport_.onChange(this, &GeometryRenderProcessorGL::updateDrawers);
+    inport_.onChange(this, &MeshRenderProcessorGL::updateDrawers);
 
     cullFace_.addOption("culldisable", "Disable", GL_NONE);
     cullFace_.addOption("cullfront", "Front", GL_FRONT);
@@ -92,7 +92,7 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     polygonMode_.addOption("polyline", "Lines", GL_LINE);
     polygonMode_.addOption("polyfill", "Fill", GL_FILL);
     polygonMode_.set(GL_FILL);
-    polygonMode_.onChange(this, &GeometryRenderProcessorGL::changeRenderMode);
+    polygonMode_.onChange(this, &MeshRenderProcessorGL::changeRenderMode);
 
     geomProperties_.addProperty(cullFace_);
     geomProperties_.addProperty(polygonMode_);
@@ -123,9 +123,9 @@ GeometryRenderProcessorGL::GeometryRenderProcessorGL()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-GeometryRenderProcessorGL::~GeometryRenderProcessorGL() {}
+MeshRenderProcessorGL::~MeshRenderProcessorGL() {}
 
-void GeometryRenderProcessorGL::initializeResources() {
+void MeshRenderProcessorGL::initializeResources() {
     // shading defines
     utilgl::addShaderDefines(&shader_, lightingProperty_);
     int layerID = 0;
@@ -168,7 +168,7 @@ void GeometryRenderProcessorGL::initializeResources() {
     shader_.build();
 }
 
-void GeometryRenderProcessorGL::changeRenderMode() {
+void MeshRenderProcessorGL::changeRenderMode() {
     switch (polygonMode_.get()) {
         case GL_FILL: {
             renderLineWidth_.setVisible(false);
@@ -188,7 +188,7 @@ void GeometryRenderProcessorGL::changeRenderMode() {
     }
 }
 
-void GeometryRenderProcessorGL::process() {
+void MeshRenderProcessorGL::process() {
     if (!inport_.hasData()) return;
 
     utilgl::activateAndClearTarget(outport_);
@@ -210,51 +210,42 @@ void GeometryRenderProcessorGL::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void GeometryRenderProcessorGL::centerViewOnGeometry() {
-    std::vector<const Geometry*> geometries = inport_.getVectorData();
-    if (geometries.empty()) return;
+void MeshRenderProcessorGL::centerViewOnGeometry() {
+    if (!inport_.hasData()) return;
 
     vec3 worldMin(std::numeric_limits<float>::max());
     vec3 worldMax(std::numeric_limits<float>::lowest());
 
-    for (auto geom : geometries) {
-        const Mesh* mesh = dynamic_cast<const Mesh*>(geom);
-        if (mesh) {
-            vec3 minPos(std::numeric_limits<float>::max());
-            vec3 maxPos(std::numeric_limits<float>::lowest());
-            for (auto buff : mesh->getBuffers()) {
-                if (buff->getBufferType() == POSITION_ATTRIB) {
-                    const Position3dBufferRAM* posbuff = dynamic_cast<const Position3dBufferRAM*>(
-                        buff->getRepresentation<BufferRAM>());
+    for (auto& mesh : inport_) {
+        vec3 minPos(std::numeric_limits<float>::max());
+        vec3 maxPos(std::numeric_limits<float>::lowest());
+        for (auto buff : mesh.getBuffers()) {
+            if (buff->getBufferType() == POSITION_ATTRIB) {
+                const Position3dBufferRAM* posbuff =
+                    dynamic_cast<const Position3dBufferRAM*>(buff->getRepresentation<BufferRAM>());
 
-                    if (posbuff) {
-                        const std::vector<vec3>* pos = posbuff->getDataContainer();
-                        for (const auto& p : *pos) {
-                            minPos = glm::min(minPos, p);
-                            maxPos = glm::max(maxPos, p);
-                        }
+                if (posbuff) {
+                    const std::vector<vec3>* pos = posbuff->getDataContainer();
+                    for (const auto& p : *pos) {
+                        minPos = glm::min(minPos, p);
+                        maxPos = glm::max(maxPos, p);
                     }
                 }
             }
-
-            mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
-
-            worldMin = glm::min(worldMin, (trans * vec4(minPos, 1.f)).xyz());
-            worldMax = glm::max(worldMax, (trans * vec4(maxPos, 1.f)).xyz());
         }
+
+        mat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
+
+        worldMin = glm::min(worldMin, (trans * vec4(minPos, 1.f)).xyz());
+        worldMax = glm::max(worldMax, (trans * vec4(maxPos, 1.f)).xyz());
     }
     camera_.setLook(camera_.getLookFrom(), 0.5f * (worldMin + worldMax), camera_.getLookUp());
 }
 
-void GeometryRenderProcessorGL::setNearFarPlane() {
-    std::vector<const Geometry*> geometries = inport_.getVectorData();
-    if (geometries.empty()) return;
+void MeshRenderProcessorGL::setNearFarPlane() {
+    if (!inport_.hasData()) return;
 
-    const Mesh* geom = dynamic_cast<const Mesh*>(geometries[0]);
-
-    if (geom == nullptr) {
-        return;
-    }
+    const Mesh* geom = inport_.getData();
 
     const Position3dBufferRAM* posBuffer = dynamic_cast<const Position3dBufferRAM*>(
         geom->getAttributes(0)->getRepresentation<BufferRAM>());
@@ -273,44 +264,52 @@ void GeometryRenderProcessorGL::setNearFarPlane() {
     nearDist = std::numeric_limits<float>::infinity();
     farDist = 0;
     vec3 nearPos, farPos;
-    vec3 camPos = (geom->getCoordinateTransformer().getWorldToModelMatrix() * vec4(camera_.getLookFrom(), 1.0)).xyz();
+    vec3 camPos = (geom->getCoordinateTransformer().getWorldToModelMatrix() *
+                   vec4(camera_.getLookFrom(), 1.0)).xyz();
     for (auto& po : *pos) {
         auto d = glm::distance2(po, camPos);
-        if (d < nearDist){
+        if (d < nearDist) {
             nearDist = d;
             nearPos = po;
         }
-        if (d > farDist){
+        if (d > farDist) {
             farDist = d;
             farPos = po;
         }
     }
 
-    mat4 m =  camera_.viewMatrix() * geom->getCoordinateTransformer().getModelToWorldMatrix();
+    mat4 m = camera_.viewMatrix() * geom->getCoordinateTransformer().getModelToWorldMatrix();
 
-
-
-    camera_.setNearPlaneDist(std::max(0.0f, 0.99f*std::abs((m * vec4(nearPos, 1.0f)).z)));
-    camera_.setFarPlaneDist(std::max(0.0f, 1.01f*std::abs((m * vec4(farPos, 1.0f)).z)));
-    
+    camera_.setNearPlaneDist(std::max(0.0f, 0.99f * std::abs((m * vec4(nearPos, 1.0f)).z)));
+    camera_.setFarPlaneDist(std::max(0.0f, 1.01f * std::abs((m * vec4(farPos, 1.0f)).z)));
 }
 
-void GeometryRenderProcessorGL::updateDrawers() {
+void MeshRenderProcessorGL::updateDrawers() {
     auto changed = inport_.getChangedOutports();
     DrawerMap temp;
     std::swap(temp, drawers_);
 
+    std::map<const Outport*, std::vector<const Mesh*>> data;
     for (auto& elem : inport_.getSourceVectorData()) {
-        
-        auto it = temp.find(elem.first);     
+        data[elem.first].push_back(elem.second);
+    }
 
-        if (util::contains(changed, elem.first) || it == temp.end()) { // data is changed or new.
-            GeometryDrawer* renderer = GeometryDrawerFactory::getPtr()->create(elem.second);
-            if (renderer) {
-                drawers_[elem.first] = std::unique_ptr<GeometryDrawer>(renderer);
+    for (auto elem : data) {
+        auto ibegin = temp.lower_bound(elem.first);
+        auto iend = temp.upper_bound(elem.first);
+
+        if (util::contains(changed, elem.first) || ibegin == temp.end() ||
+            elem.second.size() != std::distance(ibegin, iend)) {  // data is changed or new.
+
+            for (auto geo : elem.second) {
+                MeshDrawer* renderer = MeshDrawerFactory::getPtr()->create(geo);
+                if (renderer) {
+                    drawers_.emplace(
+                        std::make_pair(elem.first, std::unique_ptr<MeshDrawer>(renderer)));
+                }
             }
-        } else {                                                       // reuse the old data.
-             drawers_[elem.first] = std::move(it->second);
+        } else {  // reuse the old data.
+            drawers_.insert(std::make_move_iterator(ibegin), std::make_move_iterator(iend));
         }
     }
 }

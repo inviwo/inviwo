@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/image/layerclgl.h>
@@ -35,10 +35,9 @@
 
 namespace inviwo {
 
-
-LayerCLGL::LayerCLGL(uvec2 dimensions, LayerType type, const DataFormatBase* format, Texture2D* data)
-    : LayerRepresentation(dimensions, type, format), texture_(data)
-{
+LayerCLGL::LayerCLGL(uvec2 dimensions, LayerType type, const DataFormatBase* format,
+                     Texture2D* data)
+    : LayerRepresentation(dimensions, type, format), texture_(data) {
     if (data) {
         initialize(data);
     }
@@ -60,19 +59,16 @@ void LayerCLGL::initialize(Texture2D* texture) {
     CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture);
 
     if (it == OpenCLImageSharing::clImageSharingMap_.end()) {
-        clImage_ = new cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture->getID());
-        OpenCLImageSharing::clImageSharingMap_.insert(TextureCLImageSharingPair(texture_, new OpenCLImageSharing(clImage_)));
+        clImage_ = new cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                     GL_TEXTURE_2D, 0, texture->getID());
+        OpenCLImageSharing::clImageSharingMap_.insert(
+            TextureCLImageSharingPair(texture_, new OpenCLImageSharing(clImage_)));
     } else {
         clImage_ = it->second->sharedMemory_;
         it->second->increaseRefCount();
     }
 
     texture->addObserver(this);
-    LayerCLGL::initialize();
-}
-
-LayerCLGL* LayerCLGL::clone() const {
-    return new LayerCLGL(*this);
 }
 
 void LayerCLGL::deinitialize() {
@@ -94,21 +90,22 @@ void LayerCLGL::deinitialize() {
     }
 }
 
+LayerCLGL* LayerCLGL::clone() const { return new LayerCLGL(*this); }
 
-void LayerCLGL::resize(uvec2 dimensions) {
+void LayerCLGL::setDimensions(uvec2 dimensions) {
     if (dimensions == dimensions_) {
         return;
     }
+    dimensions_ = dimensions;
 
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.
     const_cast<Texture2D*>(texture_)->resize(dimensions);
-    LayerRepresentation::resize(dimensions);
 }
 
-bool LayerCLGL::copyAndResizeLayer(DataRepresentation* targetRep) const {
-    //ivwAssert(false, "Not implemented");
+bool LayerCLGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
+    // ivwAssert(false, "Not implemented");
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // TODO: Implement copying in addition to the resizing
     LayerCLGL* target = dynamic_cast<LayerCLGL*>(targetRep);
@@ -145,11 +142,12 @@ void LayerCLGL::notifyAfterTextureInitialization() {
     if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
         if (it->second->getRefCount() == 0) {
             try {
-                it->second->sharedMemory_ = new cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture_->getID());
+                it->second->sharedMemory_ =
+                    new cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                      GL_TEXTURE_2D, 0, texture_->getID());
             } catch (cl::Error& err) {
                 LogOpenCLError(err.err());
             }
-
         }
 
         clImage_ = it->second->sharedMemory_;
@@ -157,18 +155,13 @@ void LayerCLGL::notifyAfterTextureInitialization() {
     }
 }
 
-
-
-
-} // namespace
+}  // namespace
 
 namespace cl {
 
 template <>
-cl_int Kernel::setArg(cl_uint index, const inviwo::LayerCLGL& value)
-{
+cl_int Kernel::setArg(cl_uint index, const inviwo::LayerCLGL& value) {
     return setArg(index, value.get());
 }
 
-
-} // namespace cl
+}  // namespace cl

@@ -33,6 +33,7 @@
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <modules/opengl/textureutils.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -42,17 +43,13 @@ ProcessorTags(ImageOverlayGL, Tags::GL);
 ProcessorCategory(ImageOverlayGL, "Image Operation");
 ProcessorCodeState(ImageOverlayGL, CODE_STATE_EXPERIMENTAL);
 
-
-OverlayProperty::OverlayProperty(std::string identifier,
-                                  std::string displayName,
-                                InvalidationLevel invalidationLevel,
-                                PropertySemantics semantics)
+OverlayProperty::OverlayProperty(std::string identifier, std::string displayName,
+                                 InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , size_("size", "Size", vec2(0.48f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , pos_("position", "Position", vec2(0.25f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("anchor", "Anchor", vec2(0.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
-    , blendMode_("blendMode", "Blending Mode")
-{
+    , blendMode_("blendMode", "Blending Mode") {
     blendMode_.addOption("replace", "Replace", BlendMode::Replace);
     blendMode_.addOption("over", "Blend", BlendMode::Over);
     blendMode_.setSelectedValue(BlendMode::Over);
@@ -80,7 +77,6 @@ void OverlayProperty::updateViewport(vec2 destDim) {
     viewport_ = ivec4(pos.x, pos.y, size.x, size.y);
 }
 
-
 ImageOverlayGL::ImageOverlayGL()
     : Processor()
     , inport_("inport")
@@ -89,20 +85,27 @@ ImageOverlayGL::ImageOverlayGL()
     , overlayInteraction_("overlayInteraction", "Overlay Interaction", false)
     , overlayProperty_("overlay", "Overlay")
     , shader_("img_texturequad.vert", "img_copy.frag")
-    , overlayHandler_(this)
-    , currentDim_(0u, 0u) 
-{
+    , viewManager_()
+    , currentDim_(0u, 0u) {
     addPort(inport_);
     addPort(overlayPort_);
-    overlayPort_.onChange(this, &ImageOverlayGL::overlayInportChanged);
+
+    overlayPort_.onConnect([this]() {
+        ResizeEvent e(currentDim_);
+        propagateResizeEvent(&e, &outport_);
+    });
+
+    overlayPort_.onDisconnect([this]() {
+        ResizeEvent e(currentDim_);
+        propagateResizeEvent(&e, &outport_);
+    });
+
     addPort(outport_);
 
     addProperty(overlayInteraction_);
     addProperty(overlayProperty_);
 
     overlayProperty_.onChange(this, &ImageOverlayGL::onStatusChange);
-
-    addInteractionHandler(&overlayHandler_);
 }
 
 ImageOverlayGL::~ImageOverlayGL() {}
@@ -110,16 +113,14 @@ ImageOverlayGL::~ImageOverlayGL() {}
 void ImageOverlayGL::propagateEvent(Event* event) {
     invokeEvent(event);
 
-    if (overlayInteraction_.get() && !viewCoords_.empty() && overlayPort_.isConnected()) {
-        ivec2 pos = overlayHandler_.getActivePosition();
-        ivec2 dim = outport_.getConstData()->getDimensions();
-        pos.y = dim.y - pos.y;
+    if (overlayInteraction_.get() && overlayPort_.isConnected()) {
+        std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
+        int activeView = viewManager_.getActiveView();
 
-        // single overlay
-        if (inView(viewCoords_.front(), pos)) {
-            overlayPort_.propagateEvent(event);
+        if (newEvent && activeView >= 0) {
+            overlayPort_.propagateEvent(newEvent.get(), overlayPort_.getConnectedOutport());
+            if (newEvent->hasBeenUsed()) event->markAsUsed();
         } else {
-            // push main view
             inport_.propagateEvent(event);
         }
 
@@ -128,11 +129,7 @@ void ImageOverlayGL::propagateEvent(Event* event) {
     }
 }
 
-const std::vector<ivec4>& ImageOverlayGL::getViewCoords() const { return viewCoords_; }
-
-bool ImageOverlayGL::isReady() const {
-    return inport_.isReady();
-}
+bool ImageOverlayGL::isReady() const { return inport_.isReady(); }
 
 bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
     updateViewports(resizeEvent->size(), true);
@@ -142,17 +139,12 @@ bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sou
     }
 
     if (overlayPort_.isConnected()) {
-        ResizeEvent e(uvec2(viewCoords_[0].z, viewCoords_[0].w));
-        overlayPort_.propagateResizeEvent(&e);
+        ResizeEvent e(uvec2(viewManager_[0].z, viewManager_[0].w));
+        overlayPort_.propagateResizeEvent(
+            &e, static_cast<ImageOutport*>(overlayPort_.getConnectedOutport()));
     }
 
     return false;
-}
-
-
-void ImageOverlayGL::overlayInportChanged() {
-    ResizeEvent e(currentDim_);
-    propagateResizeEvent(&e, &outport_);
 }
 
 void ImageOverlayGL::onStatusChange() {
@@ -160,49 +152,27 @@ void ImageOverlayGL::onStatusChange() {
     propagateResizeEvent(&e, &outport_);
 }
 
-
 void ImageOverlayGL::process() {
-    ivec2 dim = outport_.getData()->getDimensions();
+    utilgl::activateTargetAndCopySource(outport_, inport_, inviwo::COLOR_DEPTH_PICKING);
 
-    TextureUnit colorUnit, depthUnit, pickingUnit;
+    if (overlayPort_.hasData()) {  // draw overlay
+        utilgl::BlendModeState blendMode(static_cast<GLint>(overlayProperty_.blendMode_.get()),
+                                         GL_ONE_MINUS_SRC_ALPHA);
+        utilgl::DepthFuncState(GL_ALWAYS);
 
-    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
+        TextureUnit colorUnit, depthUnit, pickingUnit;
+        shader_.activate();
+        shader_.setUniform("color_", colorUnit.getUnitNumber());
+        shader_.setUniform("depth_", depthUnit.getUnitNumber());
+        shader_.setUniform("picking_", pickingUnit.getUnitNumber());
+        utilgl::bindTextures(overlayPort_, colorUnit, depthUnit, pickingUnit);
 
-    shader_.activate();
-
-    shader_.setUniform("color_", colorUnit.getUnitNumber());
-    shader_.setUniform("depth_", depthUnit.getUnitNumber());
-    shader_.setUniform("picking_", pickingUnit.getUnitNumber());
-
-    // copy inport to outport before drawing the overlays
-    utilgl::bindTextures(inport_.getData(), colorUnit.getEnum(), 
-        depthUnit.getEnum(), pickingUnit.getEnum());
-    utilgl::singleDrawImagePlaneRect();
-
-    if (overlayPort_.hasData()) {
-        // draw overlay
-        switch (overlayProperty_.blendMode_.get()) {
-        case OverlayProperty::BlendMode::Over:
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            break;
-        case OverlayProperty::BlendMode::Replace:
-        default:
-            glDisable(GL_BLEND);
-            break;
-        }
-
-        glDepthFunc(GL_ALWAYS);
-
-        utilgl::bindTextures(overlayPort_.getData(), colorUnit.getEnum(),
-            depthUnit.getEnum(), pickingUnit.getEnum());
         ivec4 viewport = overlayProperty_.viewport_;
         glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
         utilgl::singleDrawImagePlaneRect();
 
-        glDisable(GL_BLEND);
-        glDepthFunc(GL_LESS);
         // restore viewport
+        ivec2 dim = outport_.getData()->getDimensions();
         glViewport(0, 0, dim.x, dim.y);
     }
 
@@ -214,81 +184,11 @@ void ImageOverlayGL::updateViewports(ivec2 dim, bool force) {
     if (!force && (currentDim_ == dim)) return;  // no changes
 
     overlayProperty_.updateViewport(dim);
-    viewCoords_.clear();
+    viewManager_.clear();
     if (overlayPort_.isConnected()) {
-        viewCoords_.push_back(overlayProperty_.viewport_);
+        viewManager_.push_back(overlayProperty_.viewport_);
     }
     currentDim_ = dim;
-}
-
-ImageOverlayGL::ImageOverlayGLInteractionHandler::ImageOverlayGLInteractionHandler(ImageOverlayGL* src)
-    : InteractionHandler()
-    , src_(src)
-    , activePositionChangeEvent_(ivec2(0), MouseEvent::MOUSE_BUTTON_LEFT,
-                                 MouseEvent::MOUSE_STATE_PRESS, InteractionEvent::MODIFIER_NONE,
-                                 uvec2(512))
-    , viewportActive_(false)
-    , activePosition_(ivec2(0)) {}
-
-void ImageOverlayGL::ImageOverlayGLInteractionHandler::invokeEvent(Event* event) {
-
-    const std::vector<ivec4>& viewCoords = src_->getViewCoords();
-
-    MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event);
-    if (mouseEvent) {
-        if (!viewportActive_ && mouseEvent->state() == activePositionChangeEvent_.state()) {
-            viewportActive_ = true;
-            activePosition_ = mouseEvent->pos();
-        } else if (viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_RELEASE) {
-            viewportActive_ = false;
-        }
-
-        ivec2 mPos = mouseEvent->pos();
-        ivec2 cSize = mouseEvent->canvasSize();
-        // Flip y-coordinate to bottom->up
-        ivec2 activePosition(activePosition_.x, cSize.y - activePosition_.y);
-        for (size_t i = 0; i < viewCoords.size(); ++i) {
-            if (inView(viewCoords[i], activePosition)) {
-                ivec2 vc = ivec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
-                mouseEvent->modify(mPos - vc, uvec2(viewCoords[i].z, viewCoords[i].w));
-                break;
-            }
-        }
-
-        return;
-    }
-
-    GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
-    if (gestureEvent) {
-        vec2 mPosNorm = gestureEvent->screenPosNormalized();
-        vec2 cSize = gestureEvent->canvasSize();
-        vec2 mPos = mPosNorm * cSize;
-        vec2 activePosition(mPos.x, cSize.y - mPos.y);
-        for (size_t i = 0; i < viewCoords.size(); ++i) {
-            if (inView(viewCoords[i], activePosition)) {
-                vec2 vc = vec2(viewCoords[i].x, cSize.y - viewCoords[i].y - viewCoords[i].w);
-                gestureEvent->modify((mPos - vc) / vec2(viewCoords[i].zw()));
-                break;
-            }
-        }
-
-        return;
-    }
-
-    TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(event);
-    if (touchEvent) {
-        if (!viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_STARTED) {
-            viewportActive_ = true;
-            activePosition_ = touchEvent->getCenterPoint();
-        } else if (viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_ENDED) {
-            viewportActive_ = false;
-        }
-        return;
-    }
-}
-
-bool ImageOverlayGL::inView(const ivec4& view, const ivec2& pos) {
-    return view.x < pos.x && pos.x < view.x + view.z && view.y < pos.y && pos.y < view.y + view.w;
 }
 
 }  // namespace

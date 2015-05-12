@@ -29,7 +29,7 @@
 
 #include "entryexitpoints.h"
 #include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/rendering/geometrydrawerfactory.h>
+#include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/clockgl.h>
@@ -45,25 +45,25 @@ ProcessorCodeState(EntryExitPoints, CODE_STATE_STABLE);
 
 EntryExitPoints::EntryExitPoints()
     : Processor()
-    , geometryPort_("geometry")
+    , inport_("geometry")
     , entryPort_("entry-points", DataVec4UINT16::get())
     , exitPort_("exit-points", DataVec4UINT16::get())
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), &geometryPort_)
+              vec3(0.0f, 1.0f, 0.0f), &inport_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
     , trackball_(&camera_)
     , genericShader_(nullptr)
     , capNearClippingPrg_(nullptr)
     , tmpEntryPoints_(nullptr)
     , drawer_(nullptr) {
-    addPort(geometryPort_);
+    addPort(inport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
     addProperty(capNearClipping_);
     addProperty(camera_);
     addProperty(trackball_);
     entryPort_.addResizeEventListener(&camera_);
-    geometryPort_.onChange(this, &EntryExitPoints::onGeometryChange);
+    inport_.onChange(this, &EntryExitPoints::onGeometryChange);
 }
 
 EntryExitPoints::~EntryExitPoints() {}
@@ -87,7 +87,7 @@ void EntryExitPoints::deinitialize() {
 }
 
 void EntryExitPoints::process() {
-    const Geometry* geom = geometryPort_.getData();
+    const Mesh* geom = inport_.getData();
 
     // Check if no renderer exist or if geometry changed
     if (!drawer_) onGeometryChange();
@@ -164,8 +164,8 @@ void EntryExitPoints::process() {
 void EntryExitPoints::onGeometryChange() {
     delete drawer_;
     drawer_ = nullptr;
-    if (geometryPort_.hasData())
-        drawer_ = GeometryDrawerFactory::getPtr()->create(geometryPort_.getData());
+    if (inport_.hasData())
+        drawer_ = MeshDrawerFactory::getPtr()->create(inport_.getData());
 }
 
 }  // namespace

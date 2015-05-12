@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,42 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRY_DRAWER_FACTORY_H
-#define IVW_GEOMETRY_DRAWER_FACTORY_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
-#include <inviwo/core/rendering/geometrydrawer.h>
-#include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
-#include <set>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
-class IVW_CORE_API GeometryDrawerFactory : public Singleton<GeometryDrawerFactory>  {
-public:
-    GeometryDrawerFactory();
-    virtual ~GeometryDrawerFactory() {}
+PropertyClassIdentifier(BoolCompositeProperty, "org.inviwo.BoolCompositeProperty");
 
-    void registerObject(GeometryDrawer* drawer);
-    virtual GeometryDrawer* create(const Geometry* geom) const;
+BoolCompositeProperty::BoolCompositeProperty(std::string identifier, std::string displayName,
+                                     bool checked,
+                                     InvalidationLevel invalidationLevel,
+                                     PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    , checked_("checked", "checked", checked, invalidationLevel, semantics) 
+{
+    checked_.setVisible(false);
+    this->addProperty(checked_);
+    checked_.onChange([this]() {
+        Property::propertyModified();
+    });
+}
 
+BoolCompositeProperty* BoolCompositeProperty::clone() const {
+    return new BoolCompositeProperty(*this);
+}
 
-private:
-    std::set<GeometryDrawer*> drawers_;
-};
+BoolCompositeProperty::~BoolCompositeProperty() {}
+
+bool BoolCompositeProperty::isChecked() const {
+    return checked_.get();
+}
+
+void BoolCompositeProperty::setChecked(bool checked) {
+    if (checked_.get() != checked) {
+        checked_.set(checked);
+    }
+}
 
 } // namespace
-
-#endif // IVW_GEOMETRY_DRAWER_FACTORY_H

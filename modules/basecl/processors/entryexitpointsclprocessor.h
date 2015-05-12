@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/common/inviwoapplication.h>
@@ -80,7 +80,7 @@ protected:
 
 
 private:
-    GeometryInport geometryPort_;
+    MeshInport geometryPort_;
     ImageOutport entryPort_;
     ImageOutport exitPort_;
 

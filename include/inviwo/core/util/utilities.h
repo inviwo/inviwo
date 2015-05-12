@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,22 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYPORT_H
-#define IVW_GEOMETRYPORT_H
+#ifndef IVW_UTILITIES_H
+#define IVW_UTILITIES_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
+#include <string>
 
 namespace inviwo {
 
-using GeometryInport = DataInport<Geometry>;
-using GeometryMultiInport = DataInport<Geometry, 0>;
-using GeometryOutport =  DataOutport<Geometry>;
+class ProcessorNetwork;
+
+namespace util {
+
+IVW_CORE_API void saveAllCanvases(ProcessorNetwork* network, std::string dir,
+                                  std::string default_name = "", std::string ext = ".png");
+}
 
 }  // namespace
 
-#endif  // IVW_GEOMETRYPORT_H
+#endif  // IVW_UTILITIES_H

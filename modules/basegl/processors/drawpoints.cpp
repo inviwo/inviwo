@@ -81,7 +81,7 @@ void DrawPoints::initialize() {
     pointShader_ = new Shader("img_color.frag");
     points_ = new Mesh(GeometryEnums::POINTS, GeometryEnums::NONE);
     points_->addAttribute(new Position2dBuffer());
-    pointDrawer_ = new MeshDrawer(points_);
+    pointDrawer_ = new MeshDrawerGL(points_);
 }
 
 void DrawPoints::deinitialize() {

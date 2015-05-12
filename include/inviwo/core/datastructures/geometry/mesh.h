@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESH_H
@@ -32,24 +32,25 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/datagroup.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <utility>
 
 namespace inviwo {
 
-class IVW_CORE_API Mesh : public Geometry {
-
+class IVW_CORE_API Mesh : public DataGroup, public SpatialEntity<3> {
 public:
     struct AttributesInfo {
         GeometryEnums::DrawType dt;
         GeometryEnums::ConnectivityType ct;
         AttributesInfo() : dt(GeometryEnums::POINTS), ct(GeometryEnums::NONE) {}
-        AttributesInfo(GeometryEnums::DrawType d, GeometryEnums::ConnectivityType c) : dt(d), ct(c) {}
+        AttributesInfo(GeometryEnums::DrawType d, GeometryEnums::ConnectivityType c)
+            : dt(d), ct(c) {}
     };
 
-    typedef std::vector<std::pair<AttributesInfo, IndexBuffer*> > IndexVector; 
+    typedef std::vector<std::pair<AttributesInfo, IndexBuffer*> > IndexVector;
 
     Mesh();
     Mesh(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
@@ -63,14 +64,14 @@ public:
     virtual void performOperation(DataOperation*) const {};
 
     /**
-     * Add a buffer with rendering data, such as positions/colors/normals. 
+     * Add a buffer with rendering data, such as positions/colors/normals.
      *
      * @param att Data to be rendered.
      * @param takeOwnership True if the buffer should be deleted by the mesh.
      */
     void addAttribute(Buffer* att, bool takeOwnership = true);
 
-    /** 
+    /**
      * Replaces buffer at index with new buffer and deletes old one if it has ownership of it.
      * Does nothing if index out of range.
      * @param size_t idx Index of buffer to replace
@@ -80,8 +81,8 @@ public:
     void setAttribute(size_t idx, Buffer* att, bool takeOwnership = true);
 
     /**
-     * Add index buffer. The indices will be used as look up 
-     * values into the buffers during rendering. 
+     * Add index buffer. The indices will be used as look up
+     * values into the buffers during rendering.
      * The Mesh will take ownership of the added buffer.
      * @param info Rendering type and connectivity.
      * @param ind Index buffer, will be owned by mesh.
@@ -103,15 +104,23 @@ public:
     size_t getNumberOfAttributes() const;
     size_t getNumberOfIndicies() const;
 
+    virtual const SpatialCameraCoordinateTransformer<3>& getCoordinateTransformer(
+        const CameraProperty* camera) const;
+    using SpatialEntity<3>::getCoordinateTransformer;
+
+    static uvec3 COLOR_CODE;
+    static const std::string CLASS_IDENTIFIER;
+
 protected:
     std::vector<Buffer*> attributes_;
-    std::vector<bool> attributesOwnership_; // Indicates if the Mesh owns the corresponding Buffer in attributes_
+    std::vector<bool>
+        attributesOwnership_;  // Indicates if the Mesh owns the corresponding Buffer in attributes_
     IndexVector indexAttributes_;
     AttributesInfo defaultAttributeInfo_;
 
     void deinitialize();
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_MESH_H
+#endif  // IVW_MESH_H

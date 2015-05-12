@@ -121,10 +121,6 @@ void Image::initialize(Layer* colorLayer, uvec2 dimensions, const DataFormatBase
     pickingLayer_ = new Layer(dimensions, format, PICKING_LAYER);
 }
 
-uvec2 Image::getDimensions() const {
-    return getColorLayer()->getDimensions();
-}
-
 size_t Image::addColorLayer(Layer* layer) {
     colorLayers_.push_back(layer);
     //Return index to this layer
@@ -189,82 +185,74 @@ Layer* Image::getPickingLayer() {
     return pickingLayer_;
 }
 
-void Image::resize(uvec2 dimensions) {
-    setRepresentationsAsInvalid();
-
-    //Resize all layers
-    for (auto& elem : colorLayers_) (elem)->resize(dimensions);
-
-    if (depthLayer_)
-        depthLayer_->resize(dimensions);
-
-    if (pickingLayer_)
-        pickingLayer_->resize(dimensions);
+uvec2 Image::getDimensions() const {
+    return getColorLayer()->getDimensions();
 }
 
-void Image::resizeRepresentations(Image* targetImage, uvec2 targetDim) const {
-    // targetImage->resize(targetDim);
-    std::vector<DataGroupRepresentation*>& targetRepresentations = targetImage->representations_;
-    size_t numRepTargets = targetRepresentations.size();
+void Image::setDimensions(uvec2 dimensions) {
+    setRepresentationsAsInvalid();
 
-    if (numRepTargets > 0) {
-        //Scheme: Only ask for one editable representations to resize
-        //Thus all others can update from one resized version
+    for (auto layer : colorLayers_) layer->setDimensions(dimensions);
+    if (depthLayer_) depthLayer_->setDimensions(dimensions);
+    if (pickingLayer_) pickingLayer_->setDimensions(dimensions);
+}
+
+void Image::copyRepresentationsTo(Image* targetImage) const {
+    auto& targets = targetImage->representations_;
+    size_t nTargets = targets.size();
+
+    bool copyDone = false;
+    if (nTargets > 0) {
+        // Scheme: Only ask for one editable representations to resize
+        // Thus all others can update from one resized version
 
         // Find out in which preferred order we wanna try resizing
         // We prefer the order, unknown - ImageRAM - ImageDisk.
-        std::vector<size_t> preferredResizeOrder;
-        preferredResizeOrder.resize(targetRepresentations.size());
+        std::vector<size_t> ordering;
+        ordering.resize(targets.size());
         size_t nextInsertIdx = 0;
         bool imageDiskFound = false;
         bool imageRamFound = false;
-        for (size_t j = 0; j < numRepTargets; j++) {
-            if (dynamic_cast<ImageRAM*>(targetRepresentations[j])){
-                if(imageDiskFound){
-                    preferredResizeOrder[numRepTargets-2] = j;
+        for (size_t j = 0; j < nTargets; j++) {
+            if (dynamic_cast<ImageRAM*>(targets[j])) {
+                if (imageDiskFound) {
+                    ordering[nTargets - 2] = j;
                 } else {
-                    preferredResizeOrder[numRepTargets-1] = j;
+                    ordering[nTargets - 1] = j;
                 }
                 imageRamFound = true;
-            }
-            else if (dynamic_cast<ImageDisk*>(targetRepresentations[j])) {
-                if(imageRamFound){
-                    preferredResizeOrder[numRepTargets-2] = preferredResizeOrder[numRepTargets-1];
-                    preferredResizeOrder[numRepTargets-1] = j;
+            } else if (dynamic_cast<ImageDisk*>(targets[j])) {
+                if (imageRamFound) {
+                    ordering[nTargets - 2] = ordering[nTargets - 1];
+                    ordering[nTargets - 1] = j;
                 } else {
-                    preferredResizeOrder[numRepTargets-1] = j;
+                    ordering[nTargets - 1] = j;
                 }
                 imageDiskFound = true;
-            }
-            else {
-                preferredResizeOrder[nextInsertIdx] = j;
+            } else {
+                ordering[nextInsertIdx] = j;
                 nextInsertIdx++;
             }
         }
 
-        ImageRepresentation* sourceImageRepresentation = nullptr;
-        ImageRepresentation* targetImageRepresentation = nullptr;
-
-        bool copyDone = false;
-        for (size_t i = 0; i < targetRepresentations.size() && !copyDone; i++) {
+        for (size_t i = 0; i < targets.size() && !copyDone; i++) {
             for (size_t j = 0; j < representations_.size() && !copyDone; j++) {
-                if (typeid(*representations_[j]) == typeid(*targetRepresentations[preferredResizeOrder[i]])) {
-                    sourceImageRepresentation =
-                        static_cast<ImageRepresentation*>(representations_[j]);
-                    sourceImageRepresentation->update(false);
-                    targetImageRepresentation =
-                        static_cast<ImageRepresentation*>(targetRepresentations[preferredResizeOrder[i]]);
-                    targetImageRepresentation->update(true);
-                    sourceImageRepresentation->copyAndResizeRepresentation(
-                        targetImageRepresentation);
+                auto sourceRepr = static_cast<ImageRepresentation*>(representations_[j]);
+                auto targetRepr = static_cast<ImageRepresentation*>(targets[ordering[i]]);
+                if (typeid(*sourceRepr) == typeid(*targetRepr)) {
+                    sourceRepr->update(false);
+                    targetRepr->update(true);
+                    sourceRepr->copyRepresentationsTo(targetRepr);
                     copyDone = true;
                 }
             }
         }
-    } else {
+    }
+
+    if (!copyDone) {  // Fallback
         // If not representation exist, create ImageRAM one
         const ImageRAM* imageRAM = this->getRepresentation<ImageRAM>();
-        imageRAM->copyAndResizeRepresentation(targetImage->getEditableRepresentation<ImageRAM>());
+        imageRAM->copyRepresentationsTo(targetImage->getEditableRepresentation<ImageRAM>());
     }
 }
 

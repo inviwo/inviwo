@@ -84,9 +84,9 @@ void MeshClipping::process() {
         - Build new mesh from the triangle strip list and return it.
     */
     if (clippingEnabled_.get()) {
-        const Geometry* geom = inport_.getData();
+        const Mesh* geom = inport_.getData();
         // LogInfo("Calling clipping method.");
-        Geometry* clippedPlaneGeom =
+        Mesh* clippedPlaneGeom =
             clipGeometryAgainstPlaneRevised(geom, Plane(planePoint_.get(), planeNormal_.get()));
         if (clippedPlaneGeom) {
             clippedPlaneGeom->setModelMatrix(inport_.getData()->getModelMatrix());
@@ -237,7 +237,7 @@ std::vector<EdgeIndex> triangleListtoEdgeList(const std::vector<unsigned int>* t
     return result;
 }
 
-Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plane plane) {
+Mesh* MeshClipping::clipGeometryAgainstPlaneRevised(const Mesh* in, Plane plane) {
     GeometryEnums::ConnectivityType indexAttrInfo;
     const std::vector<vec3>* vertexList;
     const std::vector<vec3>* texcoordlist;
@@ -648,7 +648,7 @@ Geometry* MeshClipping::clipGeometryAgainstPlaneRevised(const Geometry* in, Plan
     return outputMesh;
 }
 
-Geometry* MeshClipping::clipGeometryAgainstPlane(const Geometry* in, Plane plane) {
+Mesh* MeshClipping::clipGeometryAgainstPlane(const Mesh* in, Plane plane) {
     //LogInfo("Entered clipGeometryAgainstPlane(...).");
     const SimpleMesh* inputMesh = dynamic_cast<const SimpleMesh*>(in);
 

@@ -33,7 +33,7 @@
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 #include <inviwo/core/datastructures/geometry/plane.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -55,13 +55,13 @@ public:
 protected:
     virtual void process();
 
-    Geometry* clipGeometryAgainstPlaneRevised(const Geometry*, Plane);
-    Geometry* clipGeometryAgainstPlane(const Geometry*, Plane);
+    Mesh* clipGeometryAgainstPlaneRevised(const Mesh*, Plane);
+    Mesh* clipGeometryAgainstPlane(const Mesh*, Plane);
     float degreeToRad(float);
 
 private:
-    GeometryInport inport_;
-    GeometryOutport outport_;
+    MeshInport inport_;
+    MeshOutport outport_;
 
     BoolProperty clippingEnabled_;
     FloatVec3Property planePoint_;

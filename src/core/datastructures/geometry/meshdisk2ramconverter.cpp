@@ -27,23 +27,34 @@
  * 
  *********************************************************************************/
 
-#include "geometrysource.h"
+#include <inviwo/core/datastructures/geometry/meshdisk2ramconverter.h>
+#include <inviwo/core/datastructures/geometry/meshram.h>
 
 namespace inviwo {
 
-ProcessorClassIdentifier(GeometrySource, "org.inviwo.GeometrySource");
-ProcessorDisplayName(GeometrySource,  "Geometry Source");
-ProcessorTags(GeometrySource, Tags::CPU);
-ProcessorCategory(GeometrySource, "Data Input");
-ProcessorCodeState(GeometrySource, CODE_STATE_STABLE);
+MeshDisk2RAMConverter::MeshDisk2RAMConverter()
+    : RepresentationConverterType<MeshRAM>() {}
 
-GeometrySource::GeometrySource() : DataSource<Geometry, GeometryOutport>() {
-    DataSource<Geometry, GeometryOutport>::file_.setContentType("geometry");
-    DataSource<Geometry, GeometryOutport>::file_.setDisplayName("Geometry file");
+MeshDisk2RAMConverter::~MeshDisk2RAMConverter() {}
+
+DataRepresentation* MeshDisk2RAMConverter::createFrom(const DataRepresentation* source) {
+    const MeshDisk* meshdisk = dynamic_cast<const MeshDisk*>(source);
+
+    if (meshdisk) {
+        return static_cast<MeshRAM*>(meshdisk->readData());
+    }
+
+    return nullptr;
 }
 
-GeometrySource::~GeometrySource() {
+void MeshDisk2RAMConverter::update(const DataRepresentation* source,
+                                       DataRepresentation* destination) {
+    const MeshDisk* meshdisk = dynamic_cast<const MeshDisk*>(source);
+    MeshRAM* meshram = dynamic_cast<MeshRAM*>(destination);
+
+    if (meshdisk && meshram) {
+        meshdisk->readDataInto(meshram);
+    }
 }
 
-} // namespace
-
+}  // namespace

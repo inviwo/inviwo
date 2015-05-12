@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/introspection.h>
+#include <inviwo/core/util/stringconversion.h>
 
 namespace inviwo {
 
@@ -42,9 +43,8 @@ class Processor;
 /**
  *	Traits class to make ports and data less intertwined. Port traits will by default ask
  *	it's data for a class identifier, a color code, and data info. You can specialize port
- *traits for
- *	type that does not have those methods, and where you can't add them easily. Note that if a
- *	method is missing we will still compile and fail gracefully.
+ *  traits for type that does not have those methods, and where you can't add them easily.
+ *  Note that if a method is missing we will still compile and fail gracefully.
  */
 template <typename T>
 struct port_traits {
@@ -55,7 +55,6 @@ struct port_traits {
 
 /**
  * \class Port, A abstract base class for all ports.
- *
  * \brief A port can be connected to other ports and is owned by a processor.
  */
 class IVW_CORE_API Port : public IvwSerializable {
@@ -98,6 +97,26 @@ protected:
     Processor* processor_;  //< non-owning reference
 };
 
+
+// Specialization for vectors.
+template <typename T>
+struct port_traits<std::vector<T>> {
+    static std::string class_identifier() { return port_traits<T>::class_identifier() + "Vector"; }
+    static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
+    static std::string data_info(const std::vector<T>* data) { 
+        return "Vector of size " + toString(data->size()) +
+            (!data->empty() ? " with " + port_traits<T>::data_info(&(data->front())) : " "); 
+    }
+};
+template <typename T>
+struct port_traits<std::vector<T*>> {
+    static std::string class_identifier() { return port_traits<T>::class_identifier() + "PtrVector"; }
+    static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
+    static std::string data_info(const std::vector<T*>* data) { 
+        return "Vector of size " + toString(data->size()) +
+            (!data->empty() ? " with " + port_traits<T>::data_info(data->front()) : " "); 
+    }
+};
 }  // namespace
 
 #endif  // IVW_PORT_H

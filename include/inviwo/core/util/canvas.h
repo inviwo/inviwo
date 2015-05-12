@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
-#include <inviwo/core/datastructures/geometry/geometry.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/interaction/pickingcontainer.h>
 #include <inviwo/core/interaction/events/eventhandler.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
@@ -92,7 +92,7 @@ protected:
 
     uvec2 mousePosToPixelCoordinates(ivec2 mpos);
 
-    static Geometry* screenAlignedRect_;
+    static Mesh* screenAlignedRect_;
 
     bool initialized_;
     bool shared_;

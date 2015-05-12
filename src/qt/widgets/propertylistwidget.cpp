@@ -89,13 +89,13 @@ PropertyListWidget::PropertyListWidget(QWidget* parent)
     scrollArea_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     scrollArea_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     scrollArea_->setFrameShape(QFrame::NoFrame);
-    scrollArea_->setContentsMargins(0, 0, 0, 0);
+    scrollArea_->setContentsMargins(0, PropertyWidgetQt::SPACING, 0, PropertyWidgetQt::SPACING);
 
     listWidget_ = new PropertyListFrame(this);
     listLayout_ = new QVBoxLayout();
     listWidget_->setLayout(listLayout_);
     listLayout_->setAlignment(Qt::AlignTop);
-    listLayout_->setContentsMargins(7, 7, 7, 7);
+    listLayout_->setContentsMargins(0, PropertyWidgetQt::SPACING, 0, PropertyWidgetQt::SPACING);
     listLayout_->setSpacing(7);
     listLayout_->setSizeConstraint(QLayout::SetMinAndMaxSize);
 

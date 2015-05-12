@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <algorithm>
 
 namespace inviwo {
@@ -66,10 +67,9 @@ ProcessorNetwork::ProcessorNetwork()
 }
 
 ProcessorNetwork::~ProcessorNetwork() {
-    for (auto& elem : processors_) {
-        delete elem.second;
-    }
-    processors_.clear();
+    lock();
+    clear();
+
     delete linkEvaluator_;
 }
 
@@ -523,20 +523,18 @@ std::vector<Property*> ProcessorNetwork::getPropertiesRecursive(PropertyOwner* o
 /////////////////////////////////////////////////////////////////////////////////////////
 
 void ProcessorNetwork::clear() {
+    NetworkLock lock(this);
+    
     std::vector<Processor*> processors = getProcessors();
-
-    lock();
-
     //Invalidate inports to alert processors that they should stop their calculations.
-    // TODO Check if needed? solve in a nicer way... /Peter
     for (auto processor : processors) {
         for (auto inport : processor->getInports()) inport->invalidate(INVALID_OUTPUT);
     }
 
-    for (auto processor : processors) removeAndDeleteProcessor(processor);
-
-    locked_ = 0; // make sure we remove all locks.
-    unlock();
+    for (auto processor : processors) {
+        RenderContext::getPtr()->activateDefaultRenderContext();
+        removeAndDeleteProcessor(processor);
+    }
 }
 
 void ProcessorNetwork::modified() {
@@ -1173,12 +1171,16 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
     }
 }
 
-NetworkLock::NetworkLock() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->lock();
+NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorNetwork()) {
+    network_->lock();
+}
+
+NetworkLock::NetworkLock(ProcessorNetwork* network) : network_(network) {
+    network_->lock();
 }
 
 NetworkLock::~NetworkLock() {
-    InviwoApplication::getPtr()->getProcessorNetwork()->unlock();
+    network_->unlock();
 }
 
 } // namespace

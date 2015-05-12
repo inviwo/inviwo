@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYERCL_H
@@ -39,14 +39,12 @@
 namespace inviwo {
 
 class IVW_MODULE_OPENCL_API LayerCL : public LayerCLBase, public LayerRepresentation {
-
 public:
-    LayerCL(uvec2 dimensions = uvec2(128,128), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataFormatBase::get(),
-            const void* data = nullptr);
+    LayerCL(uvec2 dimensions = uvec2(128, 128), LayerType type = COLOR_LAYER,
+            const DataFormatBase* format = DataFormatBase::get(), const void* data = nullptr);
     LayerCL(const LayerCL& other);
     virtual ~LayerCL();
-    virtual void initialize() {};
-    virtual void deinitialize();
+
     virtual LayerCL* clone() const;
 
     void initialize(const void* texels);
@@ -58,19 +56,20 @@ public:
      * @return (void)
      */
     void download(void* data) const;
-    virtual void setDimensions(uvec2 dimensions);
-    virtual void resize(uvec2 dimensions);
-    virtual bool copyAndResizeLayer(DataRepresentation* target) const;
-    cl::ImageFormat getFormat() const { return layerFormat_;}
+    virtual void setDimensions(uvec2 dimensions) override;
+    virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
+    cl::ImageFormat getFormat() const { return layerFormat_; }
 
     virtual cl::Image2D& getEditable() { return *static_cast<cl::Image2D*>(clImage_); }
-    virtual const cl::Image2D& get() const { return *const_cast<const cl::Image2D*>(static_cast<const cl::Image2D*>(clImage_)); }
+    virtual const cl::Image2D& get() const {
+        return *const_cast<const cl::Image2D*>(static_cast<const cl::Image2D*>(clImage_));
+    }
 
 protected:
     cl::ImageFormat layerFormat_;
 };
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -79,8 +78,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::LayerCL& value);
 
-} // namespace cl
+}  // namespace cl
 
-
-
-#endif // IVW_LAYERCL_H
+#endif  // IVW_LAYERCL_H

@@ -48,9 +48,8 @@ const Image* ImageCache::getImage(const uvec2 dimensions) const {
     if (!valid_) {
         // Resize all map data once
         for (auto& elem : cache_) {
-            master_->resizeRepresentations(elem.second.get(), elem.first);
+            master_->copyRepresentationsTo(elem.second.get());
         }
-
         valid_ = true;
     }
 
@@ -60,8 +59,8 @@ const Image* ImageCache::getImage(const uvec2 dimensions) const {
         return it->second.get();
     } else {
         Image* newImage = master_->clone();
-        newImage->resize(dimensions);
-        master_->resizeRepresentations(newImage, dimensions);
+        newImage->setDimensions(dimensions);
+        master_->copyRepresentationsTo(newImage);
         cache_.emplace(newImage->getDimensions(), std::unique_ptr<Image>(newImage));
         return newImage;
     }
@@ -98,12 +97,12 @@ void ImageCache::update(std::vector<uvec2> dimensions) {
         if (!unusedImages.empty()) {
             std::unique_ptr<Image> img { std::move(unusedImages.back()) };
             unusedImages.pop_back();
-            img->resize(dim);
+            img->setDimensions(dim);
             cache_.emplace(dim, std::move(img));
             valid_ = false;
         } else {
             Image* newImage = master_->clone();
-            newImage->resize(dim);    
+            newImage->setDimensions(dim);    
             cache_.emplace(newImage->getDimensions(), std::unique_ptr<Image>(newImage));
             valid_ = false;
         }

@@ -27,32 +27,33 @@
  * 
  *********************************************************************************/
 
-#include "geometrypicking.h"
+#include "meshpicking.h"
 
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <modules/opengl/rendering/meshdrawer.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
-ProcessorClassIdentifier(GeometryPicking, "org.inviwo.GeometryPicking");
-ProcessorDisplayName(GeometryPicking, "Geometry Picking");
-ProcessorTags(GeometryPicking, Tags::GL);
-ProcessorCategory(GeometryPicking, "Geometry Rendering");
-ProcessorCodeState(GeometryPicking, CODE_STATE_STABLE);
+ProcessorClassIdentifier(MeshPicking, "org.inviwo.GeometryPicking");
+ProcessorDisplayName(MeshPicking, "Mesh Picking");
+ProcessorTags(MeshPicking, Tags::GL);
+ProcessorCategory(MeshPicking, "Geometry Rendering");
+ProcessorCodeState(MeshPicking, CODE_STATE_STABLE);
 
-GeometryPicking::GeometryPicking()
+MeshPicking::MeshPicking()
     : CompositeProcessorGL()
-    , geometryInport_("geometryInport")
+    , meshInport_("geometryInport")
     , imageInport_("imageInport")
     , outport_("outport")
     , position_("position", "Position", vec3(0.0f), vec3(-100.f), vec3(100.f))
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f))
     , trackball_(&camera_) {
-    addPort(geometryInport_);
+    addPort(meshInport_);
     addPort(imageInport_);
     addPort(outport_);
     outport_.addResizeEventListener(&camera_);
@@ -61,23 +62,23 @@ GeometryPicking::GeometryPicking()
     addProperty(trackball_);
 }
 
-GeometryPicking::~GeometryPicking() {}
+MeshPicking::~MeshPicking() {}
 
-void GeometryPicking::initialize() {
+void MeshPicking::initialize() {
     CompositeProcessorGL::initialize();
     shader_ = new Shader("standard.vert", "picking.frag");
     widgetPickingObject_ = PickingManager::getPtr()->registerPickingCallback(
-        this, &GeometryPicking::updateWidgetPositionFromPicking);
+        this, &MeshPicking::updateWidgetPositionFromPicking);
 }
 
-void GeometryPicking::deinitialize() {
+void MeshPicking::deinitialize() {
     CompositeProcessorGL::deinitialize();
     delete shader_;
     shader_ = nullptr;
     PickingManager::getPtr()->unregisterPickingObject(widgetPickingObject_);
 }
 
-void GeometryPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
+void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
     vec2 move = p->getPickingMove();
 
     if (move.x == 0.f && move.y == 0.f) return;
@@ -92,26 +93,25 @@ void GeometryPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
     invalidate(INVALID_OUTPUT);
 }
 
-void GeometryPicking::process() {
+void MeshPicking::process() {
     utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
-    MeshDrawer drawer(static_cast<const Mesh*>(geometryInport_.getData()));
+
+    MeshDrawerGL drawer(static_cast<const Mesh*>(meshInport_.getData()));
     shader_->activate();
     shader_->setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
 
-    const SpatialCameraCoordinateTransformer<3>& ct =
-        geometryInport_.getData()->getCoordinateTransformer(&camera_);
+    const auto& ct = meshInport_.getData()->getCoordinateTransformer(&camera_);
 
     mat4 dataToClip_ =
         ct.getWorldToClipMatrix() * glm::translate(position_.get()) * ct.getDataToWorldMatrix();
 
     shader_->setUniform("dataToClip_", dataToClip_);
 
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glDepthFunc(GL_ALWAYS);
-    drawer.draw();
-    glDepthFunc(GL_LESS);
-    glDisable(GL_CULL_FACE);
+    {
+        utilgl::CullFaceState culling(GL_BACK);
+        utilgl::DepthFuncState depthfunc(GL_ALWAYS);
+        drawer.draw();
+    }
 
     shader_->deactivate();
     utilgl::deactivateCurrentTarget();

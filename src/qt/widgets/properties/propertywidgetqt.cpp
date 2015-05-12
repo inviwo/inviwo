@@ -87,10 +87,10 @@ PropertyWidgetQt::PropertyWidgetQt()
     , semanicsMenuItem_(nullptr)
     , semanticsActionGroup_(nullptr)
     , contextMenu_(nullptr) {
+    this->setObjectName("PropertyWidget");
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(showContextMenu(const QPoint&)));
-    //setStyleSheet("border: 1px solid rgb(255, 0, 0)"); //For debuging
 }
 
 PropertyWidgetQt::PropertyWidgetQt(Property* property)
@@ -103,10 +103,10 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
     , semanicsMenuItem_(nullptr)
     , semanticsActionGroup_(nullptr)
     , contextMenu_(nullptr) {
+    this->setObjectName("PropertyWidget");
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(showContextMenu(const QPoint&)));
-    //setStyleSheet("border: 1px solid rgb(255, 0, 0)"); //For debuging
 }
 
 PropertyWidgetQt::~PropertyWidgetQt() {}

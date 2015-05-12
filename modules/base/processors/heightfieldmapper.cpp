@@ -97,7 +97,7 @@ void HeightFieldMapper::process() {
         outImg = img;
     } else if (outImg->getDimensions() != dim) {
         // adjust dimensions of output image
-        outImg->resize(dim);
+        outImg->setDimensions(dim);
     }
 
     LayerRAM *dstLayer = outImg->getColorLayer(0)->getEditableRepresentation<LayerRAM>();

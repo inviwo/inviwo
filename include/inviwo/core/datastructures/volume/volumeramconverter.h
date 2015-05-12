@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/representationconverter.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
@@ -49,6 +50,17 @@ public:
 
     DataRepresentation* createFrom(const DataRepresentation* source);
     void update(const DataRepresentation* source, DataRepresentation* destination);
+};
+
+struct VolumeDisk2RAMDispatcher {
+    using type = VolumeRAM*;
+    template <class T>
+    VolumeRAM* dispatch(const DataRepresentation* source) {
+        typedef typename T::type F;
+        const VolumeDisk* volumeDisk = static_cast<const VolumeDisk*>(source);
+        return new VolumeRAMPrecision<F>(static_cast<F*>(volumeDisk->readData()),
+                                         volumeDisk->getDimensions());
+    }
 };
 
 } // namespace

@@ -202,9 +202,6 @@
             </MetaDataMap>
         </Processor>
         <Processor type="org.inviwo.ImageLayoutGL" identifier="Image Layout">
-            <InteractonHandlers>
-                <InteractionHandler type="undefined" />
-            </InteractonHandlers>
             <InPorts>
                 <InPort type="org.inviwo.ImageMultiInport" identifier="multiinport" id="ref35" />
             </InPorts>

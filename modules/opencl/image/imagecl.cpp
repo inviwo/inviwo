@@ -44,12 +44,6 @@ ImageCL* ImageCL::clone() const {
     return new ImageCL(*this);
 }
 
-void ImageCL::initialize() {
-}
-
-void ImageCL::deinitialize() {
-}
-
 LayerCL* ImageCL::getLayerCL() {
     return layerCL_;
 }
@@ -58,12 +52,12 @@ const LayerCL* ImageCL::getLayerCL() const {
     return layerCL_;
 }
 
-bool ImageCL::copyAndResizeRepresentation(DataRepresentation* targetRep) const {
+bool ImageCL::copyRepresentationsTo(DataRepresentation* targetRep) const {
     ImageCL* targetCL = dynamic_cast<ImageCL*>(targetRep);
 
     if (!targetCL) return false;
 
-    return this->getLayerCL()->copyAndResizeLayer(targetCL->getLayerCL());
+    return this->getLayerCL()->copyRepresentationsTo(targetCL->getLayerCL());
 }
 
 void ImageCL::update(bool editable) {

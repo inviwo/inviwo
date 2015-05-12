@@ -85,7 +85,7 @@ void ImageSource::load() {
         try {
             Layer* outLayer = reader->readMetaData(imageFileName_.get());
             // Call getRepresentation here to force read a ram representation.
-            // Otherwise the default image size, i.e. 256x265, will be reported 
+            // Otherwise the default image size, i.e. 256x265, will be reported
             // until you do the conversion. Since the LayerDisk does not have any metadata.
             outLayer->getRepresentation<LayerRAM>();
             Image* outImage = new Image(outLayer);
@@ -95,7 +95,9 @@ void ImageSource::load() {
             imageDimension_.set(outLayer->getDimensions());
 
         } catch (DataReaderException const& e) {
-            util::log(e.getContext(), "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(), LogLevel::Error);
+            util::log(e.getContext(),
+                      "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(),
+                      LogLevel::Error);
             imageFileName_.set("");
         }
         delete reader;

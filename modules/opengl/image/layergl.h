@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYERGL_H
@@ -39,22 +39,20 @@ namespace inviwo {
 
 class Shader;
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
-
 public:
-    LayerGL(uvec2 dimensions = uvec2(256,256), LayerType type = COLOR_LAYER, const DataFormatBase* format = DataVec4UINT8::get(),
-            Texture2D* tex = nullptr);
+    LayerGL(uvec2 dimensions = uvec2(256, 256), LayerType type = COLOR_LAYER,
+            const DataFormatBase* format = DataVec4UINT8::get(), Texture2D* tex = nullptr);
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
     virtual ~LayerGL();
     virtual LayerGL* clone() const;
 
-    virtual void setDimensions(uvec2 dimensions) { resize(dimensions); }
+    virtual void setDimensions(uvec2 dimensions) override;
 
     void bindTexture(GLenum texUnit) const;
     void unbindTexture() const;
 
-    virtual bool copyAndResizeLayer(DataRepresentation*) const;
-    virtual void resize(uvec2 dimensions);
+    virtual bool copyRepresentationsTo(DataRepresentation*) const override;
 
     Texture2D* getTexture();
     const Texture2D* getTexture() const;
@@ -68,6 +66,6 @@ private:
     mutable GLenum texUnit_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_LAYERGL_H
+#endif  // IVW_LAYERGL_H

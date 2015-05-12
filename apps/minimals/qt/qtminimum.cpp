@@ -41,6 +41,7 @@
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <moduleregistration.h>
 
@@ -119,8 +120,7 @@ int main(int argc, char** argv) {
 
         if (path.empty()) path = inviwoApp.getPath(InviwoApplication::PATH_IMAGES);
 
-        inviwoApp.getProcessorNetworkEvaluator()->saveSnapshotAllCanvases(
-            path, cmdparser->getSnapshotName());
+        util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, cmdparser->getSnapshotName());
     }
 
     if (sharedCanvas)

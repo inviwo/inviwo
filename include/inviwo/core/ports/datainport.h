@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAINPORT_H
@@ -34,17 +34,20 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
+#include <inviwo/core/ports/outportiterable.h>
+#include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <limits>
+#include <iterator>
 
 namespace inviwo {
 
-template<typename T>
+template <typename T>
 class DataOutport;
 
-template <typename T, size_t N = 1>
-class DataInport : public Inport {
+template <typename T, size_t N = 1, bool Flat = false>
+class DataInport : public Inport, public InportIterable<T, Flat> {
 public:
     DataInport(std::string identifier);
     virtual ~DataInport();
@@ -65,105 +68,131 @@ public:
     bool hasData() const;
 };
 
+template<typename T>
+using MultiDataInport = DataInport<T, 0, false>;
 
-template <typename T, size_t N>
-DataInport<T, N>::DataInport(std::string identifier)
-    : Inport(identifier) {
+template<typename T>
+using FlatMultiDataInport = DataInport<T, 0, true>;
+
+template <typename T, size_t N, bool Flat>
+DataInport<T, N, Flat>::DataInport(std::string identifier)
+    : Inport(identifier), InportIterable<T, Flat>(&connectedOutports_) {}
+
+template <typename T, size_t N, bool Flat>
+DataInport<T, N, Flat>::~DataInport() {}
+
+template <typename T, size_t N, bool Flat>
+std::string inviwo::DataInport<T, N, Flat>::getClassIdentifier() const {
+    switch (N) {
+        case 0:
+            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + "Inport";
+        case 1:
+            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + "MultiInport";
+        default:
+            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + toString(N) +
+                   "Inport";
+    }
 }
 
-template <typename T, size_t N>
-DataInport<T, N>::~DataInport() {}
-
-template <typename T, size_t N>
-std::string inviwo::DataInport<T, N>::getClassIdentifier() const {
-    return port_traits<T>::class_identifier() + (N == 0 ? "Multi" : "") + "Inport";
+template <typename T, size_t N, bool Flat>
+uvec3 DataInport<T, N, Flat>::getColorCode() const {
+    return port_traits<T>::color_code();
 }
 
-template <typename T, size_t N>
-uvec3 DataInport<T, N>::getColorCode() const { return port_traits<T>::color_code(); }
-
-template <typename T, size_t N>
-size_t inviwo::DataInport<T, N>::getMaxNumberOfConnections() const  {
-    if (N==0) return std::numeric_limits<size_t>::max();
-    else return N;
+template <typename T, size_t N, bool Flat>
+size_t inviwo::DataInport<T, N, Flat>::getMaxNumberOfConnections() const {
+    if (N == 0)
+        return std::numeric_limits<size_t>::max();
+    else
+        return N;
 }
 
-template <typename T, size_t N>
-bool DataInport<T, N>::canConnectTo(const Port* port) const {
-    if (dynamic_cast<const DataOutport<T>*>(port) && port->getProcessor() != getProcessor())
+template <typename T, size_t N, bool Flat>
+bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
+    if (!port || port->getProcessor() == getProcessor()) return false;
+    
+    if (dynamic_cast<const DataOutport<T>*>(port))
+        return true;
+    else if (Flat && dynamic_cast<const OutportIterable<T>*>(port))
         return true;
     else
         return false;
 }
 
-template <typename T, size_t N>
-void DataInport<T, N>::connectTo(Outport* port) {
+template <typename T, size_t N, bool Flat>
+void DataInport<T, N, Flat>::connectTo(Outport* port) {
     if (!port) return;
 
-    DataOutport<T>* dataPort = dynamic_cast<DataOutport<T>*>(port);
-    if (!dataPort) throw Exception("Trying to connect incompatible ports.", IvwContext);
+    const DataOutport<T>* dataPort = dynamic_cast<const DataOutport<T>*>(port);
+    const OutportIterable<T>* flatPort =
+        Flat ? dynamic_cast<const OutportIterable<T>*>(port) : nullptr;
 
-    if (getNumberOfConnections() + 1 > getMaxNumberOfConnections()) 
+    if (dataPort == nullptr && flatPort == nullptr)
+        throw Exception("Trying to connect incompatible ports.", IvwContext);
+
+    if (getNumberOfConnections() + 1 > getMaxNumberOfConnections())
         throw Exception("Trying to connect to a full port.", IvwContext);
 
     Inport::connectTo(port);
 }
 
-template <typename T, size_t N>
-bool inviwo::DataInport<T, N>::isConnected() const {
+template <typename T, size_t N, bool Flat>
+bool inviwo::DataInport<T, N, Flat>::isConnected() const {
     if (N == 0)
         return !connectedOutports_.empty();
     else
         return connectedOutports_.size() >= 1 && connectedOutports_.size() <= N;
 }
 
-template <typename T, size_t N>
-bool DataInport<T, N>::hasData() const {
+template <typename T, size_t N, bool Flat>
+bool DataInport<T, N, Flat>::hasData() const {
     return isConnected() && util::all_of(connectedOutports_, [](Outport* p) {
-               return static_cast<DataOutport<T>*>(p)->hasData();
-           });
+        return static_cast<DataOutport<T>*>(p)->hasData();
+    });
 }
 
-template <typename T, size_t N>
-const T* DataInport<T, N>::getData() const {
+template <typename T, size_t N, bool Flat>
+const T* DataInport<T, N, Flat>::getData() const {
     if (isConnected()) {
         // Safe to static cast since we are unable to connect other outport types.
-        return static_cast<const DataOutport<T>*>(getConnectedOutport())->getConstData();
+        return &*(this->begin());
     } else {
         return nullptr;
     }
 }
 
-template <typename T, size_t N>
-std::vector<const T*> DataInport<T, N>::getVectorData() const {
+template <typename T, size_t N, bool Flat>
+std::vector<const T*> DataInport<T, N, Flat>::getVectorData() const {
     std::vector<const T*> res(N);
 
-    for (auto outport : connectedOutports_) {
-        // Safe to static cast since we are unable to connect other outport types.
-        auto dataport = static_cast<const DataOutport<T>*>(outport);
-        if (dataport->hasData()) res.push_back(dataport->getConstData());
-    }
-
+    for (auto it = this->begin(); it!= this->end(); ++it) res.push_back(&*it);
+    
     return res;
 }
 
-
-template <typename T, size_t N>
-std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N>::getSourceVectorData() const {
+template <typename T, size_t N, bool Flat>
+std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N, Flat>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, const T*>> res(N);
-
+    
     for (auto outport : connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
-        auto dataport = static_cast<DataOutport<T>*>(outport);
-        if (dataport->hasData()) res.emplace_back(dataport, dataport->getConstData());
+        
+        if (Flat) {
+            auto oi = dynamic_cast<OutportIterable<T>*>(outport);
+            if (oi) {
+                for (auto& elem : *oi) res.emplace_back(outport, &elem);
+            }
+        } else {
+            auto dataport = static_cast<DataOutport<T>*>(outport);
+            if (dataport->hasData()) res.emplace_back(dataport, dataport->getConstData());
+        }
     }
 
     return res;
 }
 
-
-template <typename T, size_t N>
-std::string DataInport<T, N>::getContentInfo() const {
+template <typename T, size_t N, bool Flat>
+std::string DataInport<T, N, Flat>::getContentInfo() const {
     if (hasData()) {
         std::string info = port_traits<T>::data_info(getData());
         if (!info.empty()) {
@@ -176,6 +205,6 @@ std::string DataInport<T, N>::getContentInfo() const {
     }
 }
 
-} // namespace
+}  // namespace
 
-#endif // IVW_DATAINPORT_H
+#endif  // IVW_DATAINPORT_H

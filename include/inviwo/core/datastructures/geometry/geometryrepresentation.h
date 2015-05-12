@@ -42,9 +42,6 @@ public:
     GeometryRepresentation(const GeometryRepresentation& rhs);
     virtual ~GeometryRepresentation();
     virtual void performOperation(DataOperation*) const;
-
-    virtual void initialize() = 0;
-    virtual void deinitialize() = 0;
 };
 
 } // namespace

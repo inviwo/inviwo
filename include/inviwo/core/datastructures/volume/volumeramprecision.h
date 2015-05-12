@@ -58,7 +58,7 @@ public:
     virtual void* getData(size_t) override;
     virtual const void* getData(size_t) const override;
 
-    virtual void setData(void* data) override;
+    virtual void setData(void* data, uvec3 dimensions) override;
 
     virtual void removeDataOwnership() override;
 
@@ -94,6 +94,27 @@ private:
     mutable HistogramContainer histCont_;
 };
 
+/**
+ * Factory for volumes.
+ * Creates an VolumeRAM with data type specified by format.
+ *
+ * @param dimensions of volume to create.
+ * @param format of volume to create.
+ * @return nullptr if no valid format was specified.
+ */
+IVW_CORE_API VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format,
+                                        void* dataPtr = nullptr);
+
+struct VolumeRamDispatcher {
+    using type = VolumeRAM*;
+    template <class T>
+    VolumeRAM* dispatch(void* dataPtr, const uvec3& dimensions) {
+        typedef typename T::type F;
+        return new VolumeRAMPrecision<F>(static_cast<F*>(dataPtr), dimensions);
+    }
+};
+
+
 template <typename T>
 VolumeRAMPrecision<T>::VolumeRAMPrecision(uvec3 dimensions, const DataFormatBase* format)
     : VolumeRAM(format)
@@ -122,11 +143,11 @@ template <typename T>
 VolumeRAMPrecision<T>& VolumeRAMPrecision<T>::operator=(const VolumeRAMPrecision<T>& that) {
     if (this != &that) {
         VolumeRAM::operator=(that);
-        dimensions_ = that.dimensions_;
-        auto data = util::make_unique<T[]>(dimensions_.x * dimensions_.y * dimensions_.z);
-        std::memcpy(data.get(), that.data_.get(),
-                    dimensions_.x * dimensions_.y * dimensions_.z * sizeof(T));
+        auto dim = that.dimensions_;
+        auto data = util::make_unique<T[]>(dim.x * dim.y * dim.z);
+        std::memcpy(data.get(), that.data_.get(), dim.x * dim.y * dim.z * sizeof(T));
         data_.swap(data);
+        std::swap(dim, dimensions_);
         ownsDataPtr_ = true;
     }
     return *this;
@@ -167,9 +188,10 @@ const void* VolumeRAMPrecision<T>::getData(size_t pos) const {
 }
 
 template <typename T>
-void inviwo::VolumeRAMPrecision<T>::setData(void* d) {
+void inviwo::VolumeRAMPrecision<T>::setData(void* d, uvec3 dimensions) {
     std::unique_ptr<T[]> data(static_cast<T*>(d));
     data_.swap(data);
+    std::swap(dimensions_, dimensions);
 
     if (!ownsDataPtr_) data.release();
     ownsDataPtr_ = true;

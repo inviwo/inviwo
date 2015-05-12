@@ -31,6 +31,8 @@
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
+#include <modules/opengl/textureutils.h>
+#include <modules/opengl/shaderutils.h>
 
 namespace inviwo {
 
@@ -52,25 +54,16 @@ void CompositeProcessorGL::deinitialize() {
 }
 
 void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageType type, ImageInport& inport) {
-    if (inport.isReady() && outport.isReady()) {
+    if (inport.isReady() && outport.hasData()) {        
         utilgl::activateTarget(outport, type);
-        TextureUnit inportColorUnit, inportDepthUnit, inportPickingUnit;
-        utilgl::bindTextures(inport, inportColorUnit.getEnum(), inportDepthUnit.getEnum(),
-                     inportPickingUnit.getEnum());
-        TextureUnit outportColorUnit, outportDepthUnit, outportPickingUnit;
-        utilgl::bindTextures(outport, outportColorUnit.getEnum(), outportDepthUnit.getEnum(),
-                     outportPickingUnit.getEnum());
         shader_->activate();
-        vec2 dim = static_cast<vec2>(outport.getDimensions());
-        shader_->setUniform("screenDim_", dim);
-        shader_->setUniform("screenDimRCP_", vec2(1.0f,1.0f)/dim);
-        shader_->setUniform("texColor0_", inportColorUnit.getUnitNumber());
-        shader_->setUniform("texDepth0_", inportDepthUnit.getUnitNumber());
-        shader_->setUniform("texPicking0_", inportPickingUnit.getUnitNumber());
-        shader_->setUniform("texColor1_", outportColorUnit.getUnitNumber());
-        shader_->setUniform("texDepth1_", outportDepthUnit.getUnitNumber());
-        shader_->setUniform("texPicking1_", outportPickingUnit.getUnitNumber());
+
+        TextureUnitContainer units;
+        utilgl::bindAndSetUniforms(shader_, units, inport.getData(),  "tex0", COLOR_DEPTH_PICKING);
+        utilgl::bindAndSetUniforms(shader_, units, outport.getData(), "tex1", COLOR_DEPTH_PICKING);
+        utilgl::setShaderUniforms(shader_, outport, "outportParameters");
         utilgl::singleDrawImagePlaneRect();
+
         shader_->deactivate();
         utilgl::deactivateCurrentTarget();
     }

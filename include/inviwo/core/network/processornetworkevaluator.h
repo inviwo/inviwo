@@ -48,22 +48,15 @@ public:
     ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
     virtual ~ProcessorNetworkEvaluator();
 
-    // this function is to be called when the network topology was changed
-    void topologyUpdated();
-    void saveSnapshotAllCanvases(std::string dir, std::string default_name = "",
-                                 std::string ext = ".png");
-
-    void initializeNetwork();
-
     void disableEvaluation();
     void enableEvaluation();
     void requestEvaluate();
 
     void setExceptionHandler(ExceptionHandler handler);
 
-    void onProcessorInvalidationEnd(Processor*);
-    void onProcessorNetworkEvaluateRequest();
-    void onProcessorNetworkUnlocked();
+    virtual void onProcessorInvalidationEnd(Processor*) override;
+    virtual void onProcessorNetworkEvaluateRequest() override;
+    virtual void onProcessorNetworkUnlocked() override;
 
     static ProcessorNetworkEvaluator* getProcessorNetworkEvaluatorForProcessorNetwork(
         ProcessorNetwork* network);
@@ -117,7 +110,7 @@ private:
     PropertyMap propertiesVisited_;
     bool evaulationQueued_;
     bool evaluationDisabled_;
-    bool processorStatesDirty_;  // flag for lazy topology evaluation
+
     static std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*> processorNetworkEvaluators_;
     ExceptionHandler exceptionHandler_;
 };

@@ -60,6 +60,8 @@ void PythonInfoWidget::show(){
 void PythonInfoWidget::buildWidget() {
     QWidget* content = new QWidget(this);
     QVBoxLayout* layout_ = new QVBoxLayout();
+    layout_->setContentsMargins(0, 7, 0, 0);
+    layout_->setSpacing(7);
     tabWidget_ = new QTabWidget(content);
     layout_->addWidget(tabWidget_);
     std::vector<PyModule*> modules = PyInviwo::getPtr()->getAllPythonModules();
@@ -88,6 +90,7 @@ void PythonInfoWidget::onModuleRegistered(PyModule* module) {
     funcLabel->setFont(font);
     paramLabel->setFont(font);
     descLabel->setFont(font);
+
     layout->addWidget(funcLabel,0,0);
     layout->addWidget(paramLabel,0,1);
     layout->addWidget(descLabel,0,2);

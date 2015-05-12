@@ -41,7 +41,7 @@ namespace inviwo {
 
 EventHandler* eventHandler_();
 
-Geometry* Canvas::screenAlignedRect_ = nullptr;
+Mesh* Canvas::screenAlignedRect_ = nullptr;
 DataWriterType<Layer>* Canvas::generalLayerWriter_ = nullptr;
 
 Canvas::Canvas(uvec2 dimensions)

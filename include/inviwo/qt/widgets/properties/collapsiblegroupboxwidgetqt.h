@@ -40,6 +40,8 @@ class QToolButton;
 class QGroupBox;
 class QPushButton;
 class QLabel;
+class QGridLayout;
+class QCheckBox;
 
 namespace inviwo {
 
@@ -52,7 +54,7 @@ class IVW_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,
                                                       public ProcessorObserver {
     Q_OBJECT
 public:
-    CollapsibleGroupBoxWidgetQt(std::string displayName = "");
+    CollapsibleGroupBoxWidgetQt(std::string displayName = "", bool isCheckable=false);
     virtual std::string getDisplayName() const;
     virtual void setDisplayName(const std::string& displayName);
 
@@ -67,6 +69,12 @@ public:
     
     virtual bool isCollapsed() const;
     virtual void setCollapsed(bool value);
+
+    virtual bool isChecked() const;
+    virtual void setChecked(bool checked);
+
+    bool isCheckable() const;
+    void setCheckable(bool checkable);
 
     // Overridden from PropertyWidget
     virtual void showWidget();
@@ -86,9 +94,13 @@ public:
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
 
+    void setNestedDepth(int depth);
+    int getNestedDepth() const;
+
 public slots:
     void toggleCollapsed();
     void updateVisibility();
+    void checkedStateChanged();
     virtual void setDeveloperUsageMode(bool value);
     virtual void setApplicationUsageMode(bool value);
     virtual void labelDidChange();
@@ -101,6 +113,7 @@ protected:
 
     std::string displayName_;
     bool collapsed_;
+    bool checked_;
 
     std::vector<Property*> properties_;
     std::vector<PropertyWidgetQt*> propertyWidgets_;
@@ -109,10 +122,14 @@ private:
     EditableLabelQt* label_;
     QToolButton* btnCollapse_;
     QWidget* propertyWidgetGroup_;
-    QVBoxLayout* propertyWidgetGroupLayout_;
+    QGridLayout* propertyWidgetGroupLayout_;
     QLabel* defaultLabel_;
+    QCheckBox *checkBox_;
     PropertyOwner* propertyOwner_;
     bool showIfEmpty_;
+    bool checkable_;
+    const int maxNumNestedShades_;
+    int nestedDepth_;
 };
 
 

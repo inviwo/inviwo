@@ -66,10 +66,10 @@ HelpWidget::HelpWidget(QWidget* parent)
     setObjectName("HelpWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-    QFrame* frame = new QFrame();
-    QVBoxLayout* vLayout = new QVBoxLayout(frame);
+    QWidget* centralWidget = new QWidget();
+    QVBoxLayout* vLayout = new QVBoxLayout(centralWidget);
     vLayout->setSpacing(7);
-    vLayout->setContentsMargins(7, 7, 7, 7);
+    vLayout->setContentsMargins(0, 0, 0, 0);
 
     std::string helpfile =
         InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_HELP, "inviwo.qhc");
@@ -79,8 +79,8 @@ HelpWidget::HelpWidget(QWidget* parent)
     helpBrowser_ = new HelpBrowser(this, helpEngine_);
     helpBrowser_->setHtml(QString("Hello world"));
     vLayout->addWidget(helpBrowser_);
-    frame->setLayout(vLayout);
-    setWidget(frame);
+    centralWidget->setLayout(vLayout);
+    setWidget(centralWidget);
 
     connect(helpEngine_, SIGNAL(setupFinished()), this, SLOT(setupFinished()));
 

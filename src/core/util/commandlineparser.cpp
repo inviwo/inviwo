@@ -29,45 +29,32 @@
 
 #include <inviwo/core/util/commandlineparser.h>
 
-
 namespace inviwo {
 
-CommandLineParser::CommandLineParser() : CommandLineParser(0, nullptr)
-{
+CommandLineParser::CommandLineParser() : CommandLineParser(0, nullptr) {}
 
-}
-
-CommandLineParser::CommandLineParser(int argc, char** argv)
-try : argc_(argc)
+CommandLineParser::CommandLineParser(int argc, char** argv) try
+    : argc_(argc)
     , argv_(argv)
     , cmd_("Inviwo description...", ' ', IVW_VERSION)
-    , workspaceValueArg_("w", "workspacePath",
-        "Specify workspace to open",
-        false, "", "Name of workspace")
-    , outputValueArg_("o", "outputPath",
-        "Specify output path",
-        false, "", "Output path")
-    , pythonScriptArg_("p", "pythonScript",
-        "Specify a python script to run at startup",
-        false, "", "Path to the file containing the script")
+    , workspaceValueArg_("w", "workspacePath", "Specify workspace to open", false, "",
+                         "Name of workspace")
+    , outputValueArg_("o", "outputPath", "Specify output path", false, "", "Output path")
     , snapshotArg_("s", "snapshot",
-        "Specify default name of each snapshot, or empty string for processor name.",
-        false, "", "Snapshot default name: UPN=Use Processor name.")
-    , screenGrabArg_("g", "screengrab",
-        "Specify default name of each screengrab.",
-        false, "", "")
-    , logToFileArg_("l", "logtofile",
-        "Write log messages to file.",
-        false, "", "")
-    , quitArg_("q", "quit",
-        "Pass this flag if you want to close inviwo after startup.")
+                   "Specify default name of each snapshot, or empty string for processor name.",
+                   false, "", "Snapshot default name: UPN=Use Processor name.")
+    , screenGrabArg_("g", "screengrab", "Specify default name of each screengrab.", false, "", "")
+    , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
+                       "Path to the file containing the script")
+    , logToFileArg_("l", "logtofile", "Write log messages to file.", false, "", "")
     , noSplashScreenArg_("n", "nosplash",
-        "Pass this flag if you do not want to show a splash screen.")
-{
+                         "Pass this flag if you do not want to show a splash screen.")
+    , quitArg_("q", "quit", "Pass this flag if you want to close inviwo after startup.") {
+      
     cmd_.add(workspaceValueArg_);
-//#if defined(IVW_PYTHON_AVAILABLE)
+    //#if defined(IVW_PYTHON_AVAILABLE)
     cmd_.add(pythonScriptArg_);
-//#endif
+    //#endif
     cmd_.add(outputValueArg_);
     cmd_.add(snapshotArg_);
     cmd_.add(screenGrabArg_);
@@ -75,12 +62,9 @@ try : argc_(argc)
     cmd_.add(noSplashScreenArg_);
     cmd_.add(logToFileArg_);
 
-}
-catch (TCLAP::ArgException& e) {
+} catch (TCLAP::ArgException& e) {
     LogError(e.error() << " for arg " << e.argId());
 }
-//catch (...) {
-//}
 
 CommandLineParser::~CommandLineParser() {
 }

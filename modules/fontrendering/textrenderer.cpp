@@ -211,7 +211,7 @@ void TextRenderer::initMesh() {
     mesh_->addAttribute(texCoordsBuffer);
     mesh_->addIndicies(Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP), indices_);
 
-    drawer_ = new MeshDrawer(mesh_);
+    drawer_ = new MeshDrawerGL(mesh_);
 }
 
 void TextRenderer::setFontSize(int val) {

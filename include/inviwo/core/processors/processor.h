@@ -79,8 +79,7 @@ class ResizeEvent;
 class IVW_CORE_API Processor : public PropertyOwner,
                                public MetaDataOwner,
                                public ProcessorObservable,
-                               public EventPropagator,
-                               public EventListener {
+                               public EventPropagator {
 public:
     Processor();
     virtual ~Processor();

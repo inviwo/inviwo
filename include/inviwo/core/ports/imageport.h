@@ -148,7 +148,10 @@ private:
 template <size_t N>
 BaseImageInport<N>::BaseImageInport(std::string identifier, bool outportDeterminesSize)
     : DataInport<Image, N>(identifier)
-    , outportDeterminesSize_(outportDeterminesSize) {}
+    , outportDeterminesSize_(outportDeterminesSize) {
+        // A default size
+        requestedDimensionsMap_[nullptr] = uvec2(0); 
+    }
 
 template <size_t N>
 BaseImageInport<N>::~BaseImageInport() {}
@@ -162,7 +165,10 @@ void BaseImageInport<N>::connectTo(Outport* outport) {
     if (requestedDimensionsMap_.find(imageOutport) != requestedDimensionsMap_.end()) {
         ResizeEvent resizeEvent(requestedDimensionsMap_[imageOutport]);
         imageOutport->propagateResizeEvent(&resizeEvent);
-    } 
+    } else {
+        ResizeEvent resizeEvent(requestedDimensionsMap_[nullptr]);
+        imageOutport->propagateResizeEvent(&resizeEvent);
+    }
 
     DataInport<Image, N>::connectTo(outport);
 }
@@ -187,6 +193,8 @@ void BaseImageInport<N>::propagateResizeEvent(ResizeEvent* resizeEvent, ImageOut
                 imageOutport->propagateResizeEvent(resizeEvent);
             }
         }
+        // Save a default size.
+        requestedDimensionsMap_[nullptr] = resizeEvent->size();
     }
 }
 
@@ -196,7 +204,11 @@ uvec2 BaseImageInport<N>::getRequestedDimensions(ImageOutport* outport) const {
     if (it != requestedDimensionsMap_.end()) {
         return it->second;
     } else {
-        return uvec2(0);
+        auto it = requestedDimensionsMap_.find(nullptr);
+        if (it != requestedDimensionsMap_.end())
+            return it->second;
+        else
+            return uvec2(0);
     }
 }
 
@@ -271,7 +283,7 @@ void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
     if (this->hasData()) {
         const Image* img = getData();
         Image* out = outport->getData();
-        if (out) img->resizeRepresentations(out, out->getDimensions());
+        if (out) img->copyRepresentationsTo(out);
     }
 }
 

@@ -34,7 +34,23 @@ QWidget {
     color: #9d9995;
     background-color: #252528;/*#313136;*/ /*#4d4d4d;*/
     background-color: #323235;
+    background: transparent;
 }
+
+/* set a common background color for all central widgets of dock widgets.
+   All other QWidgets will have a transparent background. */
+QDockWidget > .QWidget, QDockWidget > .QScrollArea, QDialog, QDockWidget#PythonInfoWidget > .QWidget QScrollArea {
+    background-color: #323235;
+}
+
+QDockWidget#PythonInfoWidget > .QWidget {
+    background-color: #252527;
+}
+QDockWidget#PythonInfoWidget > .QWidget QScrollArea {
+    /*border: none;*/
+}
+
+
 QStatusBar {
     background-color: #252527;
 }
@@ -45,6 +61,65 @@ QMainWindow::separator {
     border-style: outset;
     border-width: 1px;
 }
+
+QWidget#PropertyWidget {
+}
+
+/* Composite property */
+QWidget#CompositeWidget {
+    /*border: 1px solid #4a4a4f;*/
+    border: 1px solid red;
+    border: none;
+    background: #2b2b2d;
+    /*background: steelblue;*/
+}
+
+/* default background for nested composite properties with depth > 4 */
+QWidget#CompositeWidget > .QWidget {
+    background: lime;
+}
+
+QWidget[bgType="toplevel"]#CompositeWidget {
+    background-color: #323235; /* assign default background color */
+}
+
+QWidget[bgType="toplevel"]#CompositeWidget > .QWidget, 
+QWidget[bgType="3"]#CompositeWidget,
+QWidget[bgType="0"]#CompositeWidget > .QWidget {
+    background-color: #323235;
+    background-color: #2a2a2e;
+}
+QWidget[bgType="0"]#CompositeWidget, QWidget[bgType="1"]#CompositeWidget > .QWidget {
+    background-color: #38383c;
+    background-color: #242428;
+    /*background-color: darkslategray;*/
+}
+QWidget[bgType="1"]#CompositeWidget, QWidget[bgType="2"]#CompositeWidget > .QWidget {
+    background: #323235;
+    background-color: #2a2a2e;
+    /*background-color: darkslateblue;*/
+}
+QWidget[bgType="2"]#CompositeWidget, QWidget[bgType="3"]#CompositeWidget > .QWidget {
+    background: #3a3a3d;
+    background-color: #242428;
+    /*background-color: maroon;*/
+}
+
+
+/*
+QWidget#CompositeContents {
+    border: 1px solid steelblue;
+    background: #2b2b2d;
+    background: red;
+}
+*/
+
+
+QWidget#CompositeContents > QWidget {
+    border: 0px solid red;
+    /*background: #2b2b2d;*/
+}
+
 
 /* Common defines for flat property editors, both active and disabled */
 QLineEdit, QAbstractSpinBox, QComboBox {
@@ -57,6 +132,7 @@ QLineEdit, QAbstractSpinBox, QComboBox {
       jump on hover!
       */
     border: 1px solid #3a3a3e;
+    border: 1px solid #3e3e3f;
     /*border: 1px solid transparent; */
 }
 QLineEdit:disabled, QAbstractSpinBox:disabled, QComboBox:disabled, QCheckBox:disabled {
@@ -69,20 +145,11 @@ QLineEdit:focus, QLineEdit:hover, QAbstractSpinBox:focus, QAbstractSpinBox:hover
     border: 1px solid #268bd2;
 }
 
-/* Composite property */
-QWidget#CollapsibleGroupBoxWidgetQt {
-    border: 1px solid #4a4a4f;
-    background: #2b2b2d;
-}
 
-QWidget#compositeLabel QLabel {
-    border: 1px solid transparent;
-    background: #2b2b2d;
-}
 
 /* this renders all backgrounds unusable (labels, lineedit, etc.) due to specialization */
 /*
-QWidget#CollapsibleGroupBoxWidgetQt QLabel, QWidget#CollapsibleGroupBoxWidgetQt QWidget {
+QWidget#CompositeWidget QLabel, QWidget#CompositeWidget QWidget {
     border: none;
     background: transparent;
 }
@@ -128,7 +195,12 @@ QToolButton {
 QToolButton#resetButton {
     width: 13px;
     height: 13px;
-    image: url(:/icons/edit-undo-icon.png);
+    image: url(:/icons/reset-dark.png);
+}
+QToolButton:hover#resetButton {
+    width: 13px;
+    height: 13px;
+    image: url(:/icons/reset.png);
 }
 
 /*QToolTop */
@@ -151,6 +223,11 @@ QPushButton {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #6f6f75, stop:0.1 #323235, stop:0.9 #323235, stop:1 #222224);
 } 
+QWidget#CompositeWidget > .QPushButton {
+    /* overwrite minimum size for push buttons within the composite properties */
+    min-height: 5px;
+    min-width: 40px;    
+}
 QPushButton:default {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #6f6f75, stop:0.1 #144c72, stop:0.9 #144c72, stop:1 #222224);
@@ -221,17 +298,21 @@ QDockWidget {
     */
 }
 
+
 QTabWidget {
 }
-QTabWidget::pane{
+QTabWidget::pane:bottom {
     border-bottom: 2px solid #414145;
     /*background: #414145; */ 
     /* cannot use other color than default background here because of QDockWidgets */
     /*background: #252527;*/
 }
-QTabWidget::pane QWidget, QTabWidget::pane QFrame, QTabWidget::pane QDockWidget QWidget {
+QTabWidget::pane:top {
+    /*border-top: 2px solid #414145;*/
+}
+QTabWidget::pane QWidget, QTabWidget::pane QDockWidget QWidget {
     /* docked QDockWidgets ignore QTabWidget */
-    background: #252527;
+    background: transparent; /*#252527*/
 }
 
 QTabWidget::tab-bar {
@@ -242,31 +323,33 @@ QTabBar {
     background: #252527;
 }
 QTabBar::tab {
-    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
-    border: 1px solid #4a4a4f; /*#252527;*/
-    border-top-width: 0px;
-    border-bottom-left-radius: 2px;
-    border-bottom-right-radius: 2px;
-/*
-    border-left-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
-    border-right-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
-                                stop:0 #888, stop: 0.1 #888, stop:.8 #00888888);
-*/
-    min-width: 8ex;
-    margin-top: 1px;
-    margin-left: 2px;
-    margin-right: 1px; /* spacing between tabs */
-    padding: 2px;
-    padding-left: 10px;
-    padding-right: 10px;
     min-height: 20px;
     min-width: 80px;
+    border: 1px solid #4a4a4f; /*#252527;*/
+    border-radius: 3px;
+    padding: 2px 10px 0px 10px;
+    margin: 0px 1px 1px 2px; /* top, right (spacing between tabs), bottom, left */
 }
-QTabBar::tab:selected{
+QTabBar::tab:bottom {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #414145, stop:0.8 #3c3c40, stop:1 #222224);
+                               stop: 0 #1a1a1a, stop:0.3 #37373a, stop:0.9 #323235, stop:1 #222224);
+    border-top-width: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+
+    margin-top: 1px;
+}
+QTabBar::tab:top {
+    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                               stop: 0 #2a2a2a, stop:0.18 #323235, stop:0.88 #37373a, stop:1 #505058);
+    border-bottom-width: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+
+    margin-bottom: 1px;
+}
+
+QTabBar::tab:bottom:selected{
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                 stop:0 #323235, stop:0.9 #3c3c40, stop:1 #222224);
     border: 1px solid #888;
@@ -274,10 +357,24 @@ QTabBar::tab:selected{
     margin-top: -2px;
     /*font-weight: bold;*/
 }
- QTabBar::tab:hover {
+QTabBar::tab:top:selected{
+    background-color: qlineargradient(x1:0, y1:1, x2:0, y2:0,
+                                stop:0 #323235, stop:0.88 #3c3c40, stop:1 #5f5f5f);
+    border: 1px solid #888;
+    color: #e9e4de;
+    margin-bottom: -2px;
+    /*font-weight: bold;*/
+}
+QTabBar::tab:bottom:hover {
     border-left: 1px solid #268bd2;
     border-right: 1px solid #268bd2;
     border-bottom: 1px solid #268bd2;
+    /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
+}
+QTabBar::tab:top:hover {
+    border-left: 1px solid #268bd2;
+    border-right: 1px solid #268bd2;
+    border-top: 1px solid #268bd2;
     /*margin-top: -2px;*/ /* tab moves up a bit to indicate interaction */
 }
 QTabBar::tab:bottom:!selected {
@@ -446,7 +543,7 @@ QScrollBar::add-page, QScrollBar::add-line, QScrollBar::sub-page, QScrollBar::su
 
 QTextBrowser {
     border-color: #444;
-    border: 0px 
+    border: 0px;
 }
 
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,36 +24,33 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/geometry/geometrydisk2ramconverter.h>
-#include <inviwo/core/datastructures/geometry/meshram.h>
+#include <inviwo/core/util/utilities.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/canvasprocessor.h>
+
 
 namespace inviwo {
 
-GeometryDisk2RAMConverter::GeometryDisk2RAMConverter()
-    : RepresentationConverterType<GeometryRAM>() {}
+void util::saveAllCanvases(ProcessorNetwork* network, std::string dir,
+                           std::string default_name /*= ""*/, std::string ext /*= ".png"*/) {
 
-GeometryDisk2RAMConverter::~GeometryDisk2RAMConverter() {}
+    int i = 0;
+    for (auto cp : network->getProcessorsByType<inviwo::CanvasProcessor>()) {
+        std::stringstream ss;
 
-DataRepresentation* GeometryDisk2RAMConverter::createFrom(const DataRepresentation* source) {
-    const MeshDisk* meshdisk = dynamic_cast<const MeshDisk*>(source);
+        if (default_name == "" || default_name == "UPN")
+            ss << cp->getIdentifier();
+        else
+            ss << default_name << i + 1;
 
-    if (meshdisk) {
-        return static_cast<MeshRAM*>(meshdisk->readData());
-    }
-
-    return nullptr;
-}
-
-void GeometryDisk2RAMConverter::update(const DataRepresentation* source,
-                                       DataRepresentation* destination) {
-    const MeshDisk* meshdisk = dynamic_cast<const MeshDisk*>(source);
-    MeshRAM* meshram = dynamic_cast<MeshRAM*>(destination);
-
-    if (meshdisk && meshram) {
-        meshdisk->readDataInto(meshram);
+        std::string path(dir + ss.str() + ext);
+        LogInfoCustom("Inviwo", "Saving canvas to: " + path);
+        cp->saveImageLayer(path);
+        i++;
     }
 }
 

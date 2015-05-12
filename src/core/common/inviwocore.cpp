@@ -33,7 +33,7 @@
 //Data Structures
 #include <inviwo/core/datastructures/volume/volumeramconverter.h>
 #include <inviwo/core/datastructures/image/layerramconverter.h>
-#include <inviwo/core/datastructures/geometry/geometrydisk2ramconverter.h>
+#include <inviwo/core/datastructures/geometry/meshdisk2ramconverter.h>
 
 //Meta Data
 #include <inviwo/core/metadata/metadata.h>
@@ -58,7 +58,7 @@
 #include <inviwo/core/processors/canvasprocessor.h>
 
 //Ports
-#include <inviwo/core/ports/geometryport.h>
+#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 
@@ -94,7 +94,7 @@ InviwoCore::InviwoCore() : InviwoModule() {
     // Register Converters
     registerRepresentationConverter(new VolumeDisk2RAMConverter());
     registerRepresentationConverter(new LayerDisk2RAMConverter());
-    registerRepresentationConverter(new GeometryDisk2RAMConverter());
+    registerRepresentationConverter(new MeshDisk2RAMConverter());
     // Register MetaData
     registerMetaData(new BoolMetaData());
     registerMetaData(new IntMetaData());
@@ -154,9 +154,9 @@ InviwoCore::InviwoCore() : InviwoModule() {
     registerSettings(new SystemSettings());
     registerSettings(new LinkSettings());
     // Register Ports
-    registerPort(GeometryInport);
-    registerPort(GeometryMultiInport);
-    registerPort(GeometryOutport);
+    registerPort(MeshInport);
+    registerPort(MeshMultiInport);
+    registerPort(MeshOutport);
     registerPort(ImageInport);
     registerPort(ImageOutport);
     registerPort(VolumeInport);

@@ -32,19 +32,19 @@
 
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/rendering/geometrydrawer.h>
+#include <inviwo/core/rendering/meshdrawer.h>
 #include <vector>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API MeshDrawer: public GeometryDrawer {
+class IVW_MODULE_OPENGL_API MeshDrawerGL: public MeshDrawer {
 
 public:
-    MeshDrawer();
-    MeshDrawer(const Mesh* mesh);
-    MeshDrawer(const Mesh* mesh, Mesh::AttributesInfo);
-    MeshDrawer(const Mesh* mesh, GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
-    virtual ~MeshDrawer();
+    MeshDrawerGL();
+    MeshDrawerGL(const Mesh* mesh);
+    MeshDrawerGL(const Mesh* mesh, Mesh::AttributesInfo);
+    MeshDrawerGL(const Mesh* mesh, GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
+    virtual ~MeshDrawerGL();
 
     virtual void draw();
     virtual void draw(GeometryEnums::DrawType dt);
@@ -54,14 +54,14 @@ public:
     GLenum getDefaultDrawMode();
     GLenum getDrawMode(GeometryEnums::DrawType, GeometryEnums::ConnectivityType);
 
-    virtual const Geometry* getGeometry() const { return meshToDraw_; }
+    virtual const Mesh* getGeometry() const { return meshToDraw_; }
 
 protected:
-    virtual GeometryDrawer* create(const Geometry* geom) const {
-        return new MeshDrawer(static_cast<const Mesh*>(geom));
+    virtual MeshDrawer* create(const Mesh* geom) const {
+        return new MeshDrawerGL(geom);
     }
-    virtual bool canDraw(const Geometry* geom) const {
-        return dynamic_cast<const Mesh*>(geom) != nullptr;
+    virtual bool canDraw(const Mesh* geom) const {
+        return geom != nullptr;
     }
 
     virtual void initialize(Mesh::AttributesInfo = Mesh::AttributesInfo());
@@ -70,7 +70,7 @@ protected:
     void drawElements(GeometryEnums::DrawType) const;
     void emptyFunc(GeometryEnums::DrawType dt) const {};
 
-    typedef void (MeshDrawer::*DrawFunc)(GeometryEnums::DrawType) const;
+    typedef void (MeshDrawerGL::*DrawFunc)(GeometryEnums::DrawType) const;
     struct DrawMethod {
         DrawFunc drawFunc;
         GLenum drawMode;

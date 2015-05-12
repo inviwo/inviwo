@@ -424,8 +424,8 @@ void VolumeSliceGL::renderPositionIndicator() {
         updateIndicatorMesh();
     }
 
-    MeshDrawer drawer(meshCrossHair_);
-    MeshDrawer drawerBox(meshBox_);
+    MeshDrawerGL drawer(meshCrossHair_);
+    MeshDrawerGL drawerBox(meshBox_);
 
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);

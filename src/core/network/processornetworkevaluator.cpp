@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/network/processornetworkevaluator.h>
@@ -33,25 +33,22 @@
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
 
-
-std::map<ProcessorNetwork*,ProcessorNetworkEvaluator*> ProcessorNetworkEvaluator::processorNetworkEvaluators_;
+std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*>
+    ProcessorNetworkEvaluator::processorNetworkEvaluators_;
 
 ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork)
     : processorNetwork_(processorNetwork)
     , evaulationQueued_(false)
     , evaluationDisabled_(false)
-    , processorStatesDirty_(true)
     , exceptionHandler_(StandardExceptionHandler()) {
-        
-    initializeNetwork();
-
     ivwAssert(
         processorNetworkEvaluators_.find(processorNetwork) == processorNetworkEvaluators_.end(),
         "A ProcessorNetworkEvaluator for the given ProcessorNetwork is already created");
-    
+
     processorNetworkEvaluators_[processorNetwork] = this;
     processorNetwork_->addObserver(this);
 }
@@ -63,45 +60,9 @@ ProcessorNetworkEvaluator::~ProcessorNetworkEvaluator() {
     if (it != processorNetworkEvaluators_.end()) processorNetworkEvaluators_.erase(it);
 }
 
-void ProcessorNetworkEvaluator::topologyUpdated() {
-    processorStatesDirty_ = true;
-}
-
-void ProcessorNetworkEvaluator::initializeNetwork() {
-    ivwAssert(processorNetwork_ != 0,
-              "processorNetwork_ not initialized, call setProcessorNetwork()");
-
-    // initialize network
-    for (auto p : processorNetwork_->getProcessors()) {
-        try {
-            if (!p->isInitialized()) p->initialize();
-        } catch (Exception& e) {
-            exceptionHandler_(IvwContext);
-        }
-    }
-}
-
-void ProcessorNetworkEvaluator::saveSnapshotAllCanvases(std::string dir, std::string default_name,
-                                                        std::string ext) {
-    int i = 0;
-    for (auto cp : processorNetwork_->getProcessorsByType<inviwo::CanvasProcessor>()) {
-        std::stringstream ss;
-
-        if (default_name == "" || default_name == "UPN")
-            ss << cp->getIdentifier();
-        else
-            ss << default_name << i + 1;
-
-        std::string path(dir + ss.str() + ext);
-        LogInfo("Saving canvas to: " + path);
-        cp->saveImageLayer(path);
-    }
-}
-
 void ProcessorNetworkEvaluator::setProcessorVisited(Processor* processor, bool visited) {
     ProcMapIt it = processorStates_.find(processor);
-    if (it != processorStates_.end())
-        it->second.visited = visited;
+    if (it != processorStates_.end()) it->second.visited = visited;
 }
 
 bool ProcessorNetworkEvaluator::hasBeenVisited(Processor* processor) const {
@@ -114,8 +75,7 @@ bool ProcessorNetworkEvaluator::hasBeenVisited(Processor* processor) const {
 
 void ProcessorNetworkEvaluator::setPropertyVisited(Property* property, bool visited) {
     PropertyMapIt it = propertiesVisited_.find(property);
-    if (it != propertiesVisited_.end())
-        it->second.visited = visited;
+    if (it != propertiesVisited_.end()) it->second.visited = visited;
 }
 
 bool ProcessorNetworkEvaluator::hasBeenVisited(Property* property) const {
@@ -126,8 +86,8 @@ bool ProcessorNetworkEvaluator::hasBeenVisited(Property* property) const {
         return false;
 }
 
-const ProcessorNetworkEvaluator::ProcessorList& 
-ProcessorNetworkEvaluator::getStoredPredecessors(Processor* processor) const {
+const ProcessorNetworkEvaluator::ProcessorList& ProcessorNetworkEvaluator::getStoredPredecessors(
+    Processor* processor) const {
     const_ProcMapIt it = processorStates_.find(processor);
     if (it != processorStates_.end()) {
         return it->second.pred;
@@ -155,7 +115,7 @@ ProcessorNetworkEvaluator::ProcessorList ProcessorNetworkEvaluator::getDirectPre
 void ProcessorNetworkEvaluator::traversePredecessors(Processor* processor) {
     if (!hasBeenVisited(processor)) {
         setProcessorVisited(processor);
-        
+
         for (auto p : getStoredPredecessors(processor)) traversePredecessors(p);
 
         processorsSorted_.push_back(processor);
@@ -165,7 +125,7 @@ void ProcessorNetworkEvaluator::traversePredecessors(Processor* processor) {
 void ProcessorNetworkEvaluator::determineProcessingOrder() {
     std::vector<Processor*> endProcessors;
 
-    for (auto processor: processorNetwork_->getProcessors())  {
+    for (auto processor : processorNetwork_->getProcessors()) {
         if (processor->isEndProcessor()) endProcessors.push_back(processor);
     }
 
@@ -188,9 +148,8 @@ void ProcessorNetworkEvaluator::updateProcessorStates() {
     // update all processor states, i.e. collecting predecessors
     for (auto processor : processorNetwork_->getProcessors()) {
         // register processor in global state map
-        if (!processorStates_.insert(ProcMapPair(processor,
-                                                 ProcessorState(getDirectPredecessors(processor))))
-                 .second)
+        if (!processorStates_.insert(ProcMapPair(processor, ProcessorState(getDirectPredecessors(
+                                                                processor)))).second)
             LogError("Processor State was already registered.");
 
         if (processor->isEndProcessor()) endProcessors.push_back(processor);
@@ -221,9 +180,8 @@ void ProcessorNetworkEvaluator::onProcessorInvalidationEnd(Processor* p) {
 }
 
 void ProcessorNetworkEvaluator::onProcessorNetworkEvaluateRequest() {
-    //Direct request, thus we don't want to queue the evaluation anymore
-    if (evaulationQueued_)
-        evaulationQueued_ = false;
+    // Direct request, thus we don't want to queue the evaluation anymore
+    if (evaulationQueued_) evaulationQueued_ = false;
 
     requestEvaluate();
 }
@@ -236,9 +194,7 @@ void ProcessorNetworkEvaluator::onProcessorNetworkUnlocked() {
     }
 }
 
-void ProcessorNetworkEvaluator::disableEvaluation() {
-    evaluationDisabled_ = true;
-}
+void ProcessorNetworkEvaluator::disableEvaluation() { evaluationDisabled_ = true; }
 
 void ProcessorNetworkEvaluator::enableEvaluation() {
     evaluationDisabled_ = false;
@@ -284,23 +240,29 @@ void ProcessorNetworkEvaluator::requestEvaluate() {
     }
 
     evaulationQueued_ = false;
-    //if we haven't returned yet, perform evaluation of the network
+    // if we haven't returned yet, perform evaluation of the network
     evaluate();
 }
 
 void ProcessorNetworkEvaluator::evaluate() {
     // lock processor network to avoid concurrent evaluation
-    processorNetwork_->lock();
+    NetworkLock lock(processorNetwork_);
+    util::OnScopeExit reset([this](){resetProcessorVisitedStates();});
+
     RenderContext::getPtr()->activateDefaultRenderContext();
 
     // if the processor network has changed determine the new processor order
     if (processorNetwork_->isModified()) {
-        initializeNetwork();
+        // make sure all processor are initialized
+        for (auto p : processorNetwork_->getProcessors()) {
+            try {
+                if (!p->isInitialized()) p->initialize();
+            } catch (Exception& e) {
+                exceptionHandler_(IvwContext);
+            }
+        }
         processorNetwork_->setModified(false);
-        processorStatesDirty_ = true;
-    }
 
-    if (processorStatesDirty_) {
         // network topology has changed, update internal processor states
         updateProcessorStates();
     }
@@ -344,10 +306,6 @@ void ProcessorNetworkEvaluator::evaluate() {
             }
         }
     }
-    resetProcessorVisitedStates();
-
-    // unlock processor network to allow next evaluation
-    processorNetwork_->unlock();
 }
 
-} // namespace
+}  // namespace

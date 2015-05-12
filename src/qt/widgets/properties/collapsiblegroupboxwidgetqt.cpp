@@ -40,36 +40,51 @@
 #include <QToolButton>
 #include <QGroupBox>
 #include <QPushButton>
+#include <QGridLayout>
 #include <QLabel>
+#include <QCheckBox>
 
 namespace inviwo {
-
-CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(std::string displayName)
+    
+CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(std::string displayName, bool isCheckable)
     : PropertyWidgetQt()
     , PropertyOwnerObserver()
     , displayName_(displayName)
     , collapsed_(false)
     , propertyOwner_(nullptr)
-    , showIfEmpty_(false) {
-    setObjectName("CollapsibleGroupBoxWidgetQt");
+    , showIfEmpty_(false)
+    , checkable_(isCheckable)
+    , checked_(false)
+    , maxNumNestedShades_(4)
+    , nestedDepth_(0) {
+    setObjectName("CompositeWidget");
+
+    setNestedDepth(nestedDepth_);
+
     generateWidget();
     updateFromProperty();
 }
 
 void CollapsibleGroupBoxWidgetQt::generateWidget() {
-    propertyWidgetGroupLayout_ = new QVBoxLayout();
+    propertyWidgetGroupLayout_ = new QGridLayout();
     propertyWidgetGroupLayout_->setAlignment(Qt::AlignTop);
     propertyWidgetGroupLayout_->setContentsMargins(
-        PropertyWidgetQt::SPACING, PropertyWidgetQt::SPACING, PropertyWidgetQt::SPACING,
-        PropertyWidgetQt::SPACING);
-    propertyWidgetGroupLayout_->setSpacing(PropertyWidgetQt::SPACING);
+        PropertyWidgetQt::SPACING, PropertyWidgetQt::SPACING, 0, PropertyWidgetQt::SPACING);
+    propertyWidgetGroupLayout_->setHorizontalSpacing(0);
+    propertyWidgetGroupLayout_->setVerticalSpacing(PropertyWidgetQt::SPACING);
 
     propertyWidgetGroup_ = new QWidget(this);
+    propertyWidgetGroup_->setObjectName("CompositeContents");
     propertyWidgetGroup_->setLayout(propertyWidgetGroupLayout_);
 
     defaultLabel_ = new QLabel("No properties available");
 
-    propertyWidgetGroupLayout_->addWidget(defaultLabel_);
+    propertyWidgetGroupLayout_->addWidget(defaultLabel_, 0, 0);
+    propertyWidgetGroupLayout_->addItem(new QSpacerItem(PropertyWidgetQt::SPACING, 1, QSizePolicy::Fixed), 0, 1);
+    propertyWidgetGroupLayout_->setColumnStretch(0, 1);
+    propertyWidgetGroupLayout_->setColumnStretch(1, 0);
+    //propertyWidgetGroupLayout_->setColumnMinimumWidth(1, PropertyWidgetQt::SPACING);
+    
 
     btnCollapse_ = new QToolButton(this);
     btnCollapse_->setObjectName("collapseButton");
@@ -78,6 +93,9 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
 
     label_ = new EditableLabelQt(this, displayName_, false);
     label_->setObjectName("compositeLabel");
+    QSizePolicy labelPol = label_->sizePolicy();
+    labelPol.setHorizontalStretch(10);
+    label_->setSizePolicy(labelPol);
     connect(label_, SIGNAL(textChanged()), this, SLOT(labelDidChange()));
 
     QToolButton* resetButton = new QToolButton(this);
@@ -86,15 +104,22 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     connect(resetButton, SIGNAL(clicked()), this, SLOT(resetPropertyToDefaultState()));
     resetButton->setToolTip(tr("Reset the group of properties to its default state"));
 
+    checkBox_ = new QCheckBox(this);
+    checkBox_->setMinimumSize(5, 5);
+    //checkBox_->setMaximumSize(13, 13);
+    checkBox_->setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
+    checkBox_->setChecked(checked_);
+    checkBox_->setVisible(checkable_);
+
+    QObject::connect(checkBox_, SIGNAL(clicked()), this, SLOT(checkedStateChanged()));
+
     QHBoxLayout* heading = new QHBoxLayout();
     heading->setContentsMargins(0, 0, 0, 0);
     heading->setSpacing(PropertyWidgetQt::SPACING);
     heading->addWidget(btnCollapse_);
     heading->addWidget(label_);
-    QSizePolicy labelPol = label_->sizePolicy();
-    labelPol.setHorizontalStretch(10);
-    label_->setSizePolicy(labelPol);
     heading->addStretch(1);
+    heading->addWidget(checkBox_);
     heading->addWidget(resetButton);
 
     QVBoxLayout* layout = new QVBoxLayout();
@@ -104,10 +129,12 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     layout->addLayout(heading);
     layout->addWidget(propertyWidgetGroup_);
 
-    setContentsMargins(1, 1, 1, 1);
-    setObjectName("CollapsibleGroupBoxWidgetQt");
+    // Adjust the margins when using a border, i.e. margin >= border width.
+    // Otherwise the border might be overdrawn by children.
+    const int margin = 0;
+    this->setContentsMargins(margin, margin, margin, margin);
 
-    setLayout(layout);
+    this->setLayout(layout);
 }
 
 QSize CollapsibleGroupBoxWidgetQt::sizeHint() const {
@@ -144,14 +171,25 @@ void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
         static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
 
     if (propertyWidget) {
-        propertyWidgetGroupLayout_->addWidget(propertyWidget);
+        propertyWidget->hideWidget();
+
+        auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt *>(propertyWidget);
+        if (collapsibleWidget) {
+            collapsibleWidget->setNestedDepth(this->getNestedDepth() + 1);
+            // make the collapsible widget go all the way to the right border
+            propertyWidgetGroupLayout_->addWidget(propertyWidget, propertyWidgetGroupLayout_->rowCount(), 0, 1, -1);
+        }
+        else { // not a collapsible widget
+            // property widget should only be added to the left column of the layout
+            propertyWidgetGroupLayout_->addWidget(propertyWidget, propertyWidgetGroupLayout_->rowCount(), 0);
+        }
+
         propertyWidgets_.push_back(propertyWidget);
         prop->registerWidget(propertyWidget);
         connect(propertyWidget, SIGNAL(usageModeChanged()), this, SLOT(updateContextMenu()));
         connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)),
                 this, SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
         
-        propertyWidget->hideWidget();
     } else {
         LogWarn("Could not find a widget for property: " << prop->getClassIdentifier());
     }
@@ -266,9 +304,42 @@ void CollapsibleGroupBoxWidgetQt::toggleCollapsed() {
     setCollapsed(!isCollapsed());
 }
 
+void CollapsibleGroupBoxWidgetQt::checkedStateChanged() {
+    setChecked(checkBox_->isChecked());
+}
+
 bool CollapsibleGroupBoxWidgetQt::isCollapsed() const {
     return collapsed_;
 }
+
+bool CollapsibleGroupBoxWidgetQt::isChecked() const {
+    return checked_;
+}
+
+void CollapsibleGroupBoxWidgetQt::setChecked(bool checked) {
+    if (!checkable_) {
+        return;
+    }
+
+    checked_ = checked;
+    // update checkbox
+    checkBox_->setChecked(checked_);
+}
+
+bool CollapsibleGroupBoxWidgetQt::isCheckable() const {
+    return checkable_;
+}
+
+void CollapsibleGroupBoxWidgetQt::setCheckable(bool checkable) {
+    if (checkable_ == checkable) {
+        return;
+    }
+
+    checkable_ = checkable;
+    // update header
+    checkBox_->setVisible(checkable_);
+}
+
 
 void CollapsibleGroupBoxWidgetQt::setCollapsed(bool collapse) {
     if (collapsed_ && !collapse) {
@@ -301,34 +372,36 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
             static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
         
         if (propertyWidget) {
+            // set visibility first
+            if (visible) {
+                propertyWidget->showWidget();
+            }
+            else{
+                propertyWidget->hideWidget();
+            }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+            propertyWidgetGroupLayout_->replaceWidget(widget, propertyWidget, Qt::FindDirectChildrenOnly);
+#else 
+            propertyWidgetGroupLayout_->removeWidget(widget);
+            propertyWidgetGroupLayout_->addWidget(propertyWidget, layoutPosition, 0);
+#endif // QT_VERSION >= 5.2
             
             prop->deregisterWidget(widget);
+            prop->registerWidget(propertyWidget);
             widget->hideWidget();
-            
-            propertyWidgetGroupLayout_->removeWidget(widget);
-            propertyWidgetGroupLayout_->insertWidget(layoutPosition, propertyWidget);
-            
+            // TODO: do we need to clean up this widget? It is no longer part of the layout and not 
+            //       parented to this container
+                        
             // Replace the item in propertyWidgets_;
             *wit = propertyWidget;
-            
-            prop->registerWidget(propertyWidget);
             
             connect(propertyWidget, SIGNAL(usageModeChanged()), this, SLOT(updateContextMenu()));
             connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)),
                     this, SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
-            
-            if (visible) {
-                propertyWidget->showWidget();
-            }else{
-                propertyWidget->hideWidget();
-            }
-            
-            
         } else {
             LogWarn("Could not change semantic for property: " << prop->getClassIdentifier());
         }
-        
-        
     }
 }
 
@@ -342,7 +415,19 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
         static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
 
     if (propertyWidget) {
-        propertyWidgetGroupLayout_->insertWidget(static_cast<int>(index + 1), propertyWidget);
+        propertyWidget->showWidget();
+
+        const int insertPos = static_cast<int>(index) + 1;
+        auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt *>(propertyWidget);
+        if (collapsibleWidget) {
+            collapsibleWidget->setNestedDepth(this->getNestedDepth() + 1);
+            // make the collapsible widget go all the way to the right border
+            propertyWidgetGroupLayout_->addWidget(propertyWidget, insertPos, 0, 1, -1);
+        }
+        else { // not a collapsible widget
+            // property widget should only be added to the left column of the layout
+            propertyWidgetGroupLayout_->addWidget(propertyWidget, insertPos, 0);
+        }
 
         auto widgetInsertPoint = propertyWidgets_.begin()+index;
         if (widgetInsertPoint != propertyWidgets_.end()) ++widgetInsertPoint;
@@ -353,7 +438,6 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
         connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)),
                 this, SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
         
-        propertyWidget->showWidget();
         
         updateVisibility();
     } else {
@@ -391,6 +475,29 @@ std::vector<PropertyWidgetQt*> CollapsibleGroupBoxWidgetQt::getPropertyWidgets()
 
 void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) {
     showIfEmpty_ = val;
+}
+
+void CollapsibleGroupBoxWidgetQt::setNestedDepth(int depth) {
+    nestedDepth_ = depth;
+    if (nestedDepth_ == 0) {
+        // special case for depth zero
+        QObject::setProperty("bgType", "toplevel");
+    }
+    else {
+        QObject::setProperty("bgType", nestedDepth_ % maxNumNestedShades_);
+    }
+
+    // update depth of all nested collapsible group box widgets
+    for (auto& elem : propertyWidgets_) {
+        auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt *>(elem);
+        if (collapsibleWidget) {
+            collapsibleWidget->setNestedDepth(nestedDepth_ + 1);
+        }
+    }
+}
+
+int CollapsibleGroupBoxWidgetQt::getNestedDepth() const {
+    return nestedDepth_;
 }
 
 
