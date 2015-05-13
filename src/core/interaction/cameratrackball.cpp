@@ -276,16 +276,225 @@ void CameraTrackball::onCameraPropertyChange(){
     setPanSpeedFactor(cameraProp_->getFovy()/60.f);
 }
 
+//glm::dmat3x2 psuedoInverse(dvec3 from, dvec3 to) {
+//    glm::dmat3x2 out;
+//    double x1 = from[0];
+//    double y1 = from[1];
+//    double z1 = from[2];
+//    double x2 = to[0];
+//    double y2 = to[1];
+//    double z2 = to[2];
+//
+//    out[0][0] = (x2*(-x1*x2 - y1*y2 - z1*z2)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2) + (
+//        x1*(x2*x2 + y2*y2 + z2*z2)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2);
+//
+//    out[0][1] = (x2*(x1*x1 + y1*y1 + z1*z1)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2) + (
+//        x1*(-x1*x2 - y1*y2 - z1*z2)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2);
+//
+//    out[1][0] = (y2*(-x1*x2 - y1*y2 - z1*z2)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2) + (
+//        y1*(x2*x2 + y2*y2 + z2*z2)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2);
+//
+//    out[1][1] = (y2*(x1*x1 + y1*y1 + z1*z1)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2) + (
+//        y1*(-x1*x2 - y1*y2 - z1*z2)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2);
+//
+//    out[2][0] = (z2*(-x1*x2 - y1*y2 - z1*z2)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2) + (
+//        z1*(x2*x2 + y2*y2 + z2*z2)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2);
+//
+//    out[2][1] = ((x1*x1 + y1*y1 + z1*z1)*z2) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2) + (
+//        z1*(-x1*x2 - y1*y2 - z1*z2)) / (
+//        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 -
+//        2 * x1*x2*z1*z2 - 2 * y1*y2*z1*z2 + x1*x1*z2*z2 + y1*y1*z2*z2);
+//
+//    for (int r = 0; r < 2; ++r) {
+//        for (int c = 0; c < 3; ++c) {
+//            if ( !std::isfinite<float>(out[c][r]) ) {
+//                out[c][r] = 0;
+//            }
+//        }
+//    }
+//    return out;
+//}
+
+glm::dmat4x2 psuedoInverse(dvec4 from, dvec4 to) {
+    glm::dmat4x2 out;
+    double x1 = from[0];
+    double y1 = from[1];
+    double z1 = from[2];
+    double x2 = to[0];
+    double y2 = to[1];
+    double z2 = to[2];
+    double w1 = from[3];
+    double w2 = to[3];
+
+    out[0][0] = (w2*w2*x1 - w1*w2*x2 - x2*(y1*y2 + z1*z2) + x1*(y2*y2 + z2*z2)) / (
+        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 +
+        w2*w2*(x1*x1 + y1*y1 + z1*z1) -
+        2 * (x1*x2 + y1*y2)*z1*z2 + (x1*x1 + y1*y1)*z2*z2 -
+        2 * w1*w2*(x1*x2 + y1*y2 + z1*z2) + w1*w1*(x2*x2 + y2*y2 + z2*z2));
+
+    out[1][0] = (w2*w2*y1 + x2*x2*y1 - w1*w2*y2 - x1*x2*y2 + z2*(-y2*z1 + y1*z2)) / (
+        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 +
+        w2*w2*(x1*x1 + y1*y1 + z1*z1) -
+        2 * (x1*x2 + y1*y2)*z1*z2 + (x1*x1 + y1*y1)*z2*z2 -
+        2 * w1*w2*(x1*x2 + y1*y2 + z1*z2) + w1*w1*(x2*x2 + y2*y2 + z2*z2));
+
+    out[2][0] = ((w2*w2 + x2*x2 + y2*y2)*z1 - (w1*w2 + x1*x2 + y1*y2)*z2) / (
+        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 +
+        w2*w2*(x1*x1 + y1*y1 + z1*z1) -
+        2 * (x1*x2 + y1*y2)*z1*z2 + (x1*x1 + y1*y1)*z2*z2 -
+        2 * w1*w2*(x1*x2 + y1*y2 + z1*z2) + w1*w1*(x2*x2 + y2*y2 + z2*z2));
+
+    out[3][0] = (-w2*(x1*x2 + y1*y2 + z1*z2) + w1*(x2*x2 + y2*y2 + z2*z2)) / (
+        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 +
+        w2*w2*(x1*x1 + y1*y1 + z1*z1) -
+        2 * (x1*x2 + y1*y2)*z1*z2 + (x1*x1 + y1*y1)*z2*z2 -
+        2 * w1*w2*(x1*x2 + y1*y2 + z1*z2) + w1*w1*(x2*x2 + y2*y2 + z2*z2));
+
+    out[0][1] = (-w1*w2*x1 + w1*w1*x2 + x2*(y1*y1 + z1*z1) - x1*(y1*y2 + z1*z2)) / (
+        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 +
+        w2*w2*(x1*x1 + y1*y1 + z1*z1) -
+        2 * (x1*x2 + y1*y2)*z1*z2 + (x1*x1 + y1*y1)*z2*z2 -
+        2 * w1*w2*(x1*x2 + y1*y2 + z1*z2) + w1*w1*(x2*x2 + y2*y2 + z2*z2));
+
+    out[1][1] = (-w1*w2*y1 - x1*x2*y1 + w1*w1*y2 + x1*x1*y2 + z1*(y2*z1 - y1*z2)) / (
+        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 +
+        w2*w2*(x1*x1 + y1*y1 + z1*z1) -
+        2 * (x1*x2 + y1*y2)*z1*z2 + (x1*x1 + y1*y1)*z2*z2 -
+        2 * w1*w2*(x1*x2 + y1*y2 + z1*z2) + w1*w1*(x2*x2 + y2*y2 + z2*z2));
+
+    out[2][1] = (-(w1*w2 + x1*x2 + y1*y2)*z1 + (w1*w1 + x1*x1 + y1*y1)*z2) / (
+        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 +
+        w2*w2*(x1*x1 + y1*y1 + z1*z1) -
+        2 * (x1*x2 + y1*y2)*z1*z2 + (x1*x1 + y1*y1)*z2*z2 -
+        2 * w1*w2*(x1*x2 + y1*y2 + z1*z2) + w1*w1*(x2*x2 + y2*y2 + z2*z2));
+
+    out[3][1] = (w2*(x1*x1 + y1*y1 + z1*z1) - w1*(x1*x2 + y1*y2 + z1*z2)) / (
+        x2*x2*y1*y1 - 2 * x1*x2*y1*y2 + x1*x1*y2*y2 + x2*x2*z1*z1 + y2*y2*z1*z1 +
+        w2*w2*(x1*x1 + y1*y1 + z1*z1) -
+        2 * (x1*x2 + y1*y2)*z1*z2 + (x1*x1 + y1*y1)*z2*z2 -
+        2 * w1*w2*(x1*x2 + y1*y2 + z1*z2) + w1*w1*(x2*x2 + y2*y2 + z2*z2));
+
+    for (int r = 0; r < 2; ++r) {
+        for (int c = 0; c < 3; ++c) {
+            if (!std::isfinite<float>(out[c][r])) {
+                out[c][r] = 0;
+            }
+        }
+    }
+    return out;
+}
+
 void CameraTrackball::touchGesture(Event* event) {
     TouchEvent* touchEvent = static_cast<TouchEvent*>(event);
 
     if (touchEvent->getTouchPoints().size() == 2) {
-        vec2 v1 = touchEvent->getTouchPoints()[1].getPrevPosNormalized() - touchEvent->getTouchPoints()[0].getPrevPosNormalized();
-        vec2 v2 = touchEvent->getTouchPoints()[1].getPosNormalized() - touchEvent->getTouchPoints()[0].getPosNormalized();
-        float angle = glm::orientedAngle(glm::normalize(v2), glm::normalize(v1));
-        float scale = glm::length(v1) / glm::length(v2);
+        //vec2 translation = touchEvent->getCenterPointNormalized() - touchEvent->getPrevCenterPointNormalized();
+        //vec2 v1 = touchEvent->getTouchPoints()[1].getPrevPosNormalized() - touchEvent->getTouchPoints()[0].getPrevPosNormalized() - translation;
+        //vec2 v2 = touchEvent->getTouchPoints()[1].getPosNormalized() - touchEvent->getTouchPoints()[0].getPosNormalized() - translation;
+        //float ndcDepth = 0.5f;
+        vec4 lookToClipCoord = cameraProp_->projectionMatrix()*cameraProp_->viewMatrix()*vec4(cameraProp_->getLookTo(), 1.f);
+        vec3 lookToNDCCoord = vec3(lookToClipCoord.xyz() / lookToClipCoord.w);
+        float ndcDepth = lookToNDCCoord.z;
+        
+        vec2 prevCenterPoint = touchEvent->getPrevCenterPointNormalized(); prevCenterPoint.y = 1.f - prevCenterPoint.y;
+        vec2 centerPoint = touchEvent->getCenterPointNormalized(); centerPoint.y = 1.f - centerPoint.y;
+        vec3 translation = cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*centerPoint, ndcDepth)) - cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*prevCenterPoint, ndcDepth));
+        
+        vec2 prev0 = touchEvent->getTouchPoints()[0].getPrevPosNormalized(); prev0.y = 1.f - prev0.y;
+        vec2 prev1 = touchEvent->getTouchPoints()[1].getPrevPosNormalized(); prev1.y = 1.f - prev1.y;
+        vec2 pos0 = touchEvent->getTouchPoints()[0].getPosNormalized(); pos0.y = 1.f - pos0.y;
+        vec2 pos1 = touchEvent->getTouchPoints()[1].getPosNormalized(); pos1.y = 1.f - pos1.y;
+
+        vec3 v1 = cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*prev1, ndcDepth)) - cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*prev0, ndcDepth)) - translation;
+        vec3 v2 = cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*pos1, ndcDepth)) - cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*pos0, ndcDepth)) - translation;
+
+        float angle = 0.5f*glm::orientedAngle(glm::normalize(v2), glm::normalize(v1), glm::normalize((*lookTo_ - *lookFrom_)));
+        float scale = glm::length(v1) / glm::length(v2); 
+
+
+        //vec3 v1PrevNDC = vec3(0.0f, 0.00001, 0);
+        //vec3 v2PrevNDC = vec3(1, 0, 0);
+        //vec3 v1NDC = vec3(0, 0, 0);
+        //vec3 v2NDC = vec3(0.9f, 0.f, 0.f);
+
+        //dvec3 v1PrevNDC(2.f*touchEvent->getTouchPoints()[0].getPrevPosNormalized() - 1.f, 0.f);
+        //dvec3 v2PrevNDC(2.f*touchEvent->getTouchPoints()[1].getPrevPosNormalized() - 1.f, 0.f);
+        //dvec3 v1NDC(2.f*touchEvent->getTouchPoints()[0].getPosNormalized() - 1.f, 0.f);
+        //dvec3 v2NDC(2.f*touchEvent->getTouchPoints()[1].getPosNormalized() - 1.f, 0.f);
+
+        dvec3 lookTo(0);
+        dvec4 v1PrevNDC(cameraProp_->getClipPosFromNormalizedDeviceCoords(vec3(2.f*touchEvent->getTouchPoints()[0].getPrevPosNormalized() - 1.f, 0.f)), 1.);
+        dvec4 v2PrevNDC(cameraProp_->getClipPosFromNormalizedDeviceCoords(vec3(2.f*touchEvent->getTouchPoints()[1].getPrevPosNormalized() - 1.f, 0.f)), 1.);
+        dvec4 v1NDC(cameraProp_->getClipPosFromNormalizedDeviceCoords(vec3(2.f*touchEvent->getTouchPoints()[0].getPosNormalized() - 1.f, 0.f)), 1.);
+        dvec4 v2NDC(cameraProp_->getClipPosFromNormalizedDeviceCoords(vec3(2.f*touchEvent->getTouchPoints()[1].getPosNormalized() - 1.f, 0.f)), 1.);
+
+        //dvec3 v1PrevNDC(cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(2.f*touchEvent->getTouchPoints()[0].getPrevPosNormalized() - 1.f, -1.f)) - vec3(cameraProp_->getLookTo()));
+        //dvec3 v2PrevNDC(cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(2.f*touchEvent->getTouchPoints()[1].getPrevPosNormalized() - 1.f, -1.f)) - vec3(cameraProp_->getLookTo()));
+        //dvec3 v1NDC(cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(2.f*touchEvent->getTouchPoints()[0].getPosNormalized() - 1.f, -1.f)) - vec3(cameraProp_->getLookTo()));
+        //dvec3 v2NDC(cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(2.f*touchEvent->getTouchPoints()[1].getPosNormalized() - 1.f, -1.f)) - vec3(cameraProp_->getLookTo()));
+
+
+        glm::dmat4x2 inv = psuedoInverse(v1PrevNDC, v2PrevNDC);
+        glm::dmat2x4 newPoints(v1NDC, v2NDC);
+        glm::dmat4x4 T = newPoints*inv;
+        auto test = T*v1PrevNDC;
+        auto zero = test - v1NDC;
+        auto test2 = T*v2PrevNDC;
+        auto zero2 = test2 - v2NDC;
+
+        dmat4 newViewMatrix = dmat4(cameraProp_->inverseProjectionMatrix()) * T * dmat4(cameraProp_->projectionMatrix()) * dmat4(cameraProp_->viewMatrix());
+
+        //vec3 LookFrom = (cameraProp_->inverseViewMatrix()*vec4(0.f, 0.f, 0.f, 1.f)).xyz();
+        //vec3 LookTo = (cameraProp_->inverseViewMatrix()*vec4(0.f, 0.f, -1.f, 1.f)).xyz() - LookFrom;
+        //vec3 LookTo2 = (cameraProp_->inverseViewMatrix()*vec4(0.f, 0.f, -1.f, 1.f)).xyz();
+        //vec3 LookTo3 = (cameraProp_->inverseViewMatrix()*vec4(0.f, 0.f, 1.f, 0.f)).xyz();
+        //vec3 LookUp = glm::normalize(cameraProp_->inverseViewMatrix()*vec4(0.f, 1.f, 0.f, 0.f)).xyz();
+        dmat4 inverseNewViewMatrix = glm::inverse(newViewMatrix);
+        vec3 LookFrom((inverseNewViewMatrix*dvec4(0.f, 0.f, 0.f, 1.f)).xyz());
+        vec3 LookUp(glm::normalize(inverseNewViewMatrix*dvec4(0.f, 1.f, 0.f, 0.f)).xyz());
+
+        mat4 fNewViewMatrix(newViewMatrix);
+        //cameraProp_->setViewMatrix(fNewViewMatrix);
+        //*lookUp_ = glm::normalize(glm::transpose(glm::inverse(TT)) * vec4(*lookUp_, 1.f)).xyz();
+        //*lookFrom_ = *lookTo_ + vec4(TT*dvec4(*lookFrom_ - *lookTo_, 1.f)).xyz();
+        //*lookFrom_ = LookFrom;
+        //*lookUp_ = LookUp;
+        
+        /*
+        vec3 LookTo = (cameraProp_->viewMatrix()*vec4(0.f, 0.f, 0.f, 1.f)).xyz();
+        vec3 LookFrom = (cameraProp_->viewMatrix()*vec4(0.f, 0.f, -1.f, 1.f)).xyz();
+        vec3 LookUp = glm::normalize(cameraProp_->viewMatrix()*vec4(0.f, 1.f, 0.f, 1.f)).xyz();
+        vec3 LookUp2 = glm::normalize(cameraProp_->viewMatrix()*vec4(0.f, 1.f, 0.f, 0.f)).xyz();*/
+
         *lookUp_ = glm::rotate(*lookUp_, angle, (*lookTo_ - *lookFrom_));
         *lookFrom_ = *lookTo_ + (scale*(*lookFrom_ - *lookTo_));
+        // Reverse translation in order to make it look like we are following the object
+        // as opposed to moving in the opposite direction of the object.
+        *lookFrom_ -= (translation);
+        *lookTo_ -= (translation);
+
         notifyAllChanged(this);
 
     } else 

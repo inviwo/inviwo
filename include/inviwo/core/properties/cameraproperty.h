@@ -98,6 +98,14 @@ public:
      */
     vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
+    /**
+    * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
+    *
+    * @param vec3 ndcCoords Coordinates in [-1 1]
+    * @return vec3 Clip space position
+    */
+    vec3 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
+
     void updateViewMatrix();
     void updateProjectionMatrix();
     const mat4& viewMatrix() const;
@@ -106,6 +114,7 @@ public:
     const mat4& inverseProjectionMatrix() const;
 
     void setProjectionMatrix(float fovy, float aspect, float farPlane, float nearPlane);
+    void setViewMatrix(mat4 newViewMatrix);
 
     void invokeEvent(Event* event);
 

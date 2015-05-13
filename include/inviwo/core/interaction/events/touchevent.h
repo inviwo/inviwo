@@ -127,6 +127,13 @@ public:
     */
     vec2 getCenterPointNormalized() const;
 
+    /**
+    * \brief Computes previous average normalized position. Returns vec2(0) if no touch points exist.
+    *
+    * @return vec2 sum(touch points) / nPoints
+    */
+    vec2 getPrevCenterPointNormalized() const;
+
     inline TouchEvent::TouchState state() const { return state_; }
 
     virtual std::string getClassIdentifier() const { return "org.inviwo.TouchEvent"; }

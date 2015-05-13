@@ -89,6 +89,19 @@ inviwo::vec2 TouchEvent::getCenterPointNormalized() const {
     }
 }
 
+vec2 TouchEvent::getPrevCenterPointNormalized() const {
+    if (touchPoints_.empty()) {
+        return vec2(0);
+    } else {
+        // Compute average position
+        vec2 sum(0);
+        std::for_each(touchPoints_.begin(), touchPoints_.end(), [&](const TouchPoint& p){
+            sum += p.getPrevPosNormalized();
+        });
+        return sum / static_cast<float>(touchPoints_.size());
+    }
+}
+
 void TouchEvent::serialize(IvwSerializer& s) const {
     s.serialize("touchState", state_);
     s.serialize("touchPoints", touchPoints_, "touchPoint");

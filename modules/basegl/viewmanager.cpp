@@ -105,10 +105,6 @@ Event* ViewManager::registerEvent(Event* event) {
                 modifiedTouchPoints.push_back(TouchPoint(pos, posNormalized, prevPos, prevPosNormalized));
             }
             TouchEvent* newEvent = new TouchEvent(modifiedTouchPoints, touchEvent->state(), viewportSize);
-            
-            // newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y),ivec2(view.z,
-            // view.w)),
-            // uvec2(view.z, view.w));
 
             return newEvent;
         } else {
