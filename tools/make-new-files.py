@@ -182,13 +182,17 @@ class Paths:
 		self.class_name = file
 		self.file_name = file.lower()
 		
-		m = re.compile(r".*/include/inviwo/(?P<kind>core|qt)/((?P<qt>editor|widgets)/)?.*").match("/".join(abspath))		
+		m = re.compile(r".*/include/inviwo/(?P<kind>core|qt)/((?P<qt>editor|widgets))?.*").match("/".join(abspath))
 		if m: # Core/Qt path
 			inviwo_pos = next(i for (i,x) in enumerate(abspath) if x=="inviwo" and abspath[i-1]=="include")
 			self.module_name = m.group("kind")
 			if self.module_name == "qt": self.module_name += m.group("qt")
 			self.api_def = "IVW_" + self.module_name.upper() + "_API"
-			self.module_define = "<inviwo/core/common/inviwo" + self.module_name.lower() + "define.h>"
+			if m.group("kind") == "qt"
+				self.module_define = "<inviwo/qt/"+ m.group("qt") +"/inviwo" + self.module_name.lower() + "define.h>"
+			else:
+				self.module_define = "<inviwo/core/common/inviwo" + self.module_name.lower() + "define.h>"
+			
 			self.include_define = "<" + "/".join(abspath[inviwo_pos:] + [self.file_name + ".h"]) + ">"
 			self.header_file = os.sep.join(abspath + [self.file_name + ".h"])
 			self.source = os.sep.join(abspath[:inviwo_pos-1] + ["src"] + abspath[inviwo_pos+1:] + [self.file_name])
