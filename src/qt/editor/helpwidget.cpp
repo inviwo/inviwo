@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/helpwidget.h>
+#include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <QFrame>
@@ -41,6 +42,7 @@
 #include <QFile>
 #include <QByteArray>
 #include <QCoreApplication>
+#include <QBuffer>
 
 namespace inviwo {
 
@@ -130,10 +132,28 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
     QUrl url(name);
     if (name.isRelative()) url = source().resolved(url);
 
-#ifdef IVW_DEBUG // Look for the html in the doc-qt folder.
+    if (url.fileName() == "processor.png") {
+        std::string quary = url.query().toStdString();
+        auto pairs = splitString(quary, '$');
+        for (auto& pair : pairs) {
+            auto elem = splitString(pair, '=');
+            if (elem[0] == "classIdentifier") {
+                QImage img = generatePreview(elem[1]);
+
+                QByteArray data;
+                QBuffer buffer(&data);
+                buffer.open(QIODevice::WriteOnly);
+                img.save(&buffer, "PNG");
+
+                return data;
+            }
+        }
+    }
+
+#ifdef IVW_DEBUG  // Look for the html in the doc-qt folder.
     if (type == QTextDocument::HtmlResource || type == QTextDocument::ImageResource) {
         std::string docbase = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA,
-                                                         "../tools/doxygen/doc-qt/html");
+                                                                   "../tools/doxygen/doc-qt/html");
         QString file = name.toString();
         file.replace("qthelp://org.inviwo/doc", QString::fromStdString(docbase));
         QFile newfile(file);
