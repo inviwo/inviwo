@@ -231,6 +231,23 @@ TAB_SIZE               = 4
 ALIASES                = "docpage{1}=\page docpage-\1 \1" \
                          "docpage{2}=\page docpage-\1 \2"
 
+ALIASES += inports="<h3>Inports</h3><ul class='inport'>"
+ALIASES += endinports="</ul>"
+ALIASES += outports="<h3>Outports</h3><ul class='outport'>"
+ALIASES += endoutports="</ul>"
+ALIASES += properties="<h3>Properties</h3><ul class='property'>"
+ALIASES += endproperties="</ul>"
+ALIASES += port{2}="<li><div style='width:10px;height:10px;float: left;margin-right: 5px;background-color:\1'></div>\2</li>"
+ALIASES += port{1}="<li><div style='width:10px;height:10px;float: left;margin-right: 5px;'/></div>\1</li>"
+ALIASES += property{1}="<li>\1</li>"
+
+ALIASES += bufferport{1}="<li><div class='BufferPort'></div>\1</li>"
+ALIASES += meshport{1}="<li><div class='MeshPort'></div>\1</li>"
+ALIASES += imageport{1}="<li><div class='ImagePort'></div>\1</li>"
+ALIASES += lightsourceport{1}="<li><div class='LightSourcePort'></div>\1</li>"
+ALIASES += volumeport{1}="<li><div class='VolumePort'></div>\1</li>"
+ALIASES += pointcloudport{1}="<li><div class='PointCloudPort'></div>\1</li>"
+
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
 # will allow you to use the command class in the itcl::class meaning.

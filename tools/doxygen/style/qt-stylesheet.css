@@ -1,137 +1,49 @@
 /* The standard CSS for doxygen 1.8.8 */
 
 html {
-	background-color: #4d4d4d;
+	background-color: #323235;
 }
 
 body, table, div, p, dl {
-	color: #999999;
-    background-color: #4d4d4d;
-	font: 400 14px/22px Roboto, sans-serif;
+	color: #9d9995;
+    background-color: #323235;
+	font: 400 11px/16px Calibra, sans-serif;
 }
 
-/* @group Heading Levels */
+h1, h2, h3 {
+	color: #c8ccd0;
+}
 
-h1.groupheader {
-	font-size: 150%;
+b {
+	color: #bfbdbb;
+	font-weight: 600;
 }
 
 .title {
-	font: 400 14px/28px Roboto,sans-serif;
-	font-size: 150%;
+	font: 400 18px/24px Calibra,sans-serif;
+	color: white;
 	font-weight: bold;
-	margin: 10px 2px;
+	margin-top: 10px;
 }
 
-h2.groupheader {
-	border-bottom: 1px solid #879ECB;
-	font-size: 150%;
-	font-weight: normal;
-	margin-top: 1.75em;
-	padding-top: 8px;
-	padding-bottom: 4px;
-	width: 100%;
-}
-
-h3.groupheader {
-	font-size: 100%;
-}
-
-dt {
-	font-weight: bold;
-}
-
-p.startli, p.startdd {
-	margin-top: 2px;
-}
-
-p.starttd {
-	margin-top: 0px;
-}
-
-p.endli {
+h3 {
 	margin-bottom: 0px;
 }
 
-p.enddd {
-	margin-bottom: 4px;
-}
-
-p.endtd {
-	margin-bottom: 2px;
-}
-
-/* @end */
-
-caption {
-	font-weight: bold;
-}
-
-span.legend {
-        font-size: 70%;
-        text-align: center;
-}
-
-h3.version {
-        font-size: 90%;
-        text-align: center;
-}
-
 a {
+	color: #268bd2;
 	font-weight: normal;
-	text-decoration: none;
-}
-
-pre.fragment {
-        border: 1px solid #515151;
-        padding: 4px 6px;
-        margin: 4px 8px 4px 2px;
-        overflow: auto;
-        word-wrap: break-word;
-        font-size:  9pt;
-        line-height: 125%;
-        font-family: monospace, fixed;
-        font-size: 105%;
-}
-
-div.fragment {
-    padding: 4px 6px;
-    margin: 4px 8px 4px 2px;
-	border: 1px solid #515151;
-}
-
-div.groupHeader {
-	margin-left: 16px;
-	margin-top: 12px;
-	font-weight: bold;
-}
-
-div.groupText {
-	margin-left: 16px;
-	font-style: italic;
+	/*text-decoration: none;*/
 }
 
 body {
 	 margin: 0;
-}
-
-div.contents {
-	margin-top: 10px;
+	 margin-top: 10px;
 	margin-left: 12px;
 	margin-right: 8px;
 }
 
-
-p.formulaDsp {
-	text-align: center;
-}
-
-img.formulaDsp {
-	
-}
-
-img.formulaInl {
-	vertical-align: middle;
+div.contents {
 }
 
 div.center {
@@ -145,30 +57,32 @@ div.center img {
 	border: 0px;
 }
 
-address.footer {
-	text-align: right;
-	padding-right: 12px;
-}
-
-img.footer {
-	border: 0px;
-	vertical-align: middle;
-}
-
-td.tiny {
-	font-size: 75%;
-}
-
-hr {
-	height: 0px;
-	border: none;
-	border-top: 1px solid #4A6AAA;
-}
-
-hr.footer {
-	height: 1px;
-}
-
 .image {
-        text-align: center;
+    text-align: left;
+    margin-left: 20px;
+}
+
+div.BufferPort {
+	margin-right: 5px;
+	background-color: rgb(255, 133, 0);
+}
+div.MeshPort {
+	margin-right: 5px;
+	background-color: rgb(188, 188, 101);
+}
+div.ImagePort {
+	margin-right:0px;
+	background-color:rgb(90, 127, 183);
+}
+div.LightSourcePort {
+	margin-right: 5px;
+	background-color: rgb(128,64,196);
+}
+div.VolumePort {
+	margin-right: 5px;
+	background-color: rgb(188, 101, 101);
+}
+div.PointCloudPort {
+	margin-right: 5px;
+	background-color: rgb(255, 0, 255);
 }
