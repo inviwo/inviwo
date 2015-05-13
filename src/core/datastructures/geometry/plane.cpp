@@ -31,6 +31,9 @@
 
 namespace inviwo {
 
+inviwo::uvec3 Plane::COLOR_CODE = uvec3(225, 174, 225);
+const std::string Plane::CLASS_IDENTIFIER = "org.inviwo.Plane";
+
 Plane::Plane() :
     point_(vec3(0.0f,0.0f,0.0f)),
     normal_(vec3(0.0f,1.0f,0.0f)) {
