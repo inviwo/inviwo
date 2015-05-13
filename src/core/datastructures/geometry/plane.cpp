@@ -110,6 +110,10 @@ IntersectionResult Plane::getSegmentIntersection(const vec3& start, const vec3& 
     return IntersectionResult(false);
 }
 
+std::string Plane::getDataInfo() const { 
+    return "Plane"; 
+}
+
 IVW_CORE_API bool rayPlaneIntersection(const vec3& origin, const vec3& dir, const vec3& pointInPlane, const vec3& planeNormal, float& tHit)
 {
     // Ray-plane intersection ( http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-7-intersecting-simple-shapes/ray-plane-and-ray-disk-intersection/ )
