@@ -37,6 +37,40 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.BasisTransformVolume, Basis Transform Volume}
+ * ![](processor.png?classIdentifier=org.inviwo.BasisTransformVolume)
+ *
+ * Transforms the worl of a volume.
+ * 
+ * ### Inports
+ *   * __VolumeInport__ Input volume.
+ *
+ * ### Outports
+ *   * __VolumeOutport__ Transformed output volume.
+ * 
+ * ### Properties
+ *   * __Lengths__ Length of each basis vector
+ *   * __Angles__ Angles between vectors
+ *   * __Offset__ Offset of basis
+ */
+
+/** \docpage{org.inviwo.BasisTransformGeometry, Basis Transform Mesh}
+ * ![](processor.png?classIdentifier=org.inviwo.BasisTransformGeometry)
+ *
+ * Transforms the basis of a mesh.
+ * 
+ * ### Inports
+ *   * __MeshInport__ Input mesh.
+ *
+ * ### Outports
+ *   * __MeshOutport__ Transformed output mesh.
+ * 
+ * ### Properties
+ *   * __Lengths__ Length of each basis vector
+ *   * __Angles__ Angles between vectors
+ *   * __Offset__ Offset of basis
+ */
+
 template <typename InportType, typename OutportType>
 class IVW_MODULE_BASE_API BasisTransform : public Processor {
 

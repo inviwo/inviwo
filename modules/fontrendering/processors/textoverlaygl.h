@@ -43,6 +43,25 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.TextOverlayGL, Text Overlay}
+ * ![](processor.png?classIdentifier=org.inviwo.TextOverlayGL)
+ *
+ * Overlay text onto an image. 
+ * 
+ * ### Inports
+ *   * __Inport__ Input image
+ *
+ * ### Outports
+ *   * __Outport__ Output image with overlayed text
+ * 
+ * ### Properties
+ *   * __Text__ Text to overlay
+ *   * __Font size__ Text size
+ *   * __Position__ Where to put the text, relative position from 0 to 1
+ *   * __Anchor__ What point of the text to put at "Position". relative from -1,1. 0 meas the image
+ *     is centered on "Position".
+ */
+
 class IVW_MODULE_FONTRENDERING_API TextOverlayGL : public Processor {
 public:
     TextOverlayGL();

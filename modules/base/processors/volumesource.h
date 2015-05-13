@@ -45,6 +45,17 @@
 #include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
+    /** \docpage{org.inviwo.VolumeSource, Volume Source}
+     * ![](processor.png?classIdentifier=org.inviwo.VolumeSource)
+     *
+     * Loads a Volume
+     * 
+     * ### Outports
+     *   * __Outport__ The loaded volume
+     * 
+     * ### Properties
+     *   * __File name__ File to load.
+     */
 
 class IVW_MODULE_BASE_API VolumeSource : public DataSource<Volume, VolumeOutport> {
 public:
