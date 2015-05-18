@@ -51,10 +51,10 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(std::string displayName
     , PropertyOwnerObserver()
     , displayName_(displayName)
     , collapsed_(false)
+    , checked_(false)
     , propertyOwner_(nullptr)
     , showIfEmpty_(false)
     , checkable_(isCheckable)
-    , checked_(false)
     , maxNumNestedShades_(4)
     , nestedDepth_(0) {
     setObjectName("CompositeWidget");
@@ -365,8 +365,6 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
         std::find(propertyWidgets_.begin(), propertyWidgets_.end(), widget);
     
     if (pit != properties_.end() && wit != propertyWidgets_.end()) {
-
-        int layoutPosition = propertyWidgetGroupLayout_->indexOf(widget);
         
         PropertyWidgetQt* propertyWidget =
             static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
@@ -383,6 +381,7 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
             propertyWidgetGroupLayout_->replaceWidget(widget, propertyWidget, Qt::FindDirectChildrenOnly);
 #else 
+            int layoutPosition = propertyWidgetGroupLayout_->indexOf(widget);
             propertyWidgetGroupLayout_->removeWidget(widget);
             propertyWidgetGroupLayout_->addWidget(propertyWidget, layoutPosition, 0);
 #endif // QT_VERSION >= 5.2

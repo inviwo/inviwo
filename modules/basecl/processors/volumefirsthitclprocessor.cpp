@@ -83,8 +83,8 @@ void VolumeFirstHitCLProcessor::process() {
     auto entryImage = entryPort_.getData();
     auto exitImage = exitPort_.getData();
 
-    mat4 volumeTextureToWorld =
-        volumePort_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
+    //mat4 volumeTextureToWorld =
+    //    volumePort_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
     uvec3 volumeDim = volumePort_.getData()->getDimensions();
     float stepSize =
         1.f / (samplingRate_.get() *
