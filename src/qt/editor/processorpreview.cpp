@@ -28,10 +28,18 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/processorpreview.h>
+#include <inviwo/core/processors/processor.h>
+
+#include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/qt/editor/processorgraphicsitem.h>
+#include <QPainter>
+#include <QGraphicsScene>
+#include <QGraphicsView>
+
 
 namespace inviwo {
 
-QImage generatePreview(std::string classIdentifier) {
+QImage util::generatePreview(std::string classIdentifier) {
     Processor* processor =
         static_cast<Processor*>(ProcessorFactory::getPtr()->create(classIdentifier));
     auto item = new ProcessorGraphicsItem(processor);

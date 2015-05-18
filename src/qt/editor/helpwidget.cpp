@@ -138,7 +138,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
         for (auto& pair : pairs) {
             auto elem = splitString(pair, '=');
             if (elem[0] == "classIdentifier") {
-                QImage img = generatePreview(elem[1]);
+                QImage img = util::generatePreview(elem[1]);
 
                 QByteArray data;
                 QBuffer buffer(&data);

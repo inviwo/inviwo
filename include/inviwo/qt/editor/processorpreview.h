@@ -32,22 +32,17 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
-
-#include <inviwo/core/processors/processorfactory.h>
-#include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <QImage>
-#include <QPainter>
-#include <QGraphicsScene>
-#include <QGraphicsView>
 
 namespace inviwo {
 
+namespace util {
 /**
  * Generate an image of a processor
  */
+IVW_QTEDITOR_API QImage generatePreview(std::string classIdentifier);
 
-QImage generatePreview(std::string classIdentifier);
-
+} // namespace
 
 } // namespace
 
