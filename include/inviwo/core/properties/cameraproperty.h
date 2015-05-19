@@ -101,10 +101,10 @@ public:
     /**
     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
     *
-    * @param vec3 ndcCoords Coordinates in [-1 1]
-    * @return vec3 Clip space position
+    * @param vec4 ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for perspective division.   
+    * @return vec4 Clip space position
     */
-    vec3 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
+    vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
     void updateViewMatrix();
     void updateProjectionMatrix();
@@ -114,7 +114,6 @@ public:
     const mat4& inverseProjectionMatrix() const;
 
     void setProjectionMatrix(float fovy, float aspect, float farPlane, float nearPlane);
-    void setViewMatrix(mat4 newViewMatrix);
 
     void invokeEvent(Event* event);
 

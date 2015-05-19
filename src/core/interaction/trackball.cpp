@@ -29,6 +29,7 @@
 
 #include <inviwo/core/interaction/trackball.h>
 #include <glm/gtx/vector_angle.hpp>
+#include <math.h>
 
 namespace inviwo {
 static const float RADIUS = 0.5f;
@@ -229,7 +230,7 @@ void Trackball::touchGesture(Event* event) {
 
 
         auto scale = glm::length(v1) / glm::length(v2);
-        if (!isfinite(scale)) {
+        if (!std::isfinite(scale)) {
             scale = 1;
         }
         // Difference between midpoints before and after

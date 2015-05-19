@@ -193,10 +193,10 @@ vec3 CameraProperty::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords
     return worldCoords.xyz();
 }
 
-vec3 CameraProperty::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
+vec4 CameraProperty::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     float clipW = projectionMatrix_[2][3] /
         (ndcCoords.z - (projectionMatrix_[2][2] / projectionMatrix_[3][2]));
-    return ndcCoords * clipW;
+    return vec4(ndcCoords * clipW, clipW);;
     
 }
 
@@ -207,19 +207,6 @@ void CameraProperty::setProjectionMatrix(float fovy, float aspect, float nearPla
     farPlane_.set(farPlane);
     nearPlane_.set(nearPlane);
     updateProjectionMatrix();
-}
-
-void CameraProperty::setViewMatrix(mat4 newViewMatrix) {
-    inverseViewMatrix_ = glm::inverse(newViewMatrix);
-    viewMatrix_ = newViewMatrix;
-    bool lock = isInvalidationLocked();
-
-    if (!lock) lockInvalidation();
-    lookFrom_ = (inverseViewMatrix_*vec4(0.f, 0.f, 0.f, 1.f)).xyz();
-    //lookTo_ = lookFrom_.get() - (inverseViewMatrix_*vec4(0.f, 0.f, -1.f, 1.f)).xyz();
-    lookUp_ = glm::normalize(inverseViewMatrix_*vec4(0.f, 1.f, 0.f, 0.f)).xyz();
-    if (!lock) unlockInvalidation();
-    invalidateCamera();
 }
 
 void CameraProperty::updateProjectionMatrix() {
