@@ -444,12 +444,16 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     std::vector<TouchPoint> touchPoints;
     touchPoints.reserve(touch->touchPoints().size());
     for (auto& touchPoint : touch->touchPoints()) {
+        vec2 screenTouchPos(touchPoint.pos().x(), touchPoint.pos().y());
+        vec2 screenSize(getScreenDimensions());
+        vec2 prevScreenTouchPos(touchPoint.lastPos().x(), touchPoint.lastPos().y());
+
         touchPoints.push_back(
-            TouchPoint(vec2(touchPoint.pos().x(), touchPoint.pos().y()),
-            vec2(touchPoint.normalizedPos().x(), touchPoint.normalizedPos().y()),
-            vec2(touchPoint.lastPos().x(), touchPoint.lastPos().y()),
-            vec2(touchPoint.lastNormalizedPos().x(), touchPoint.lastNormalizedPos().y()))
-            );
+            TouchPoint(screenTouchPos,
+            (screenTouchPos + 0.5f) / screenSize,
+            prevScreenTouchPos,
+            (prevScreenTouchPos + 0.5f) / screenSize
+            ));
     }
     TouchEvent touchEvent(touchPoints, touchState, getScreenDimensions());
     touch->accept();

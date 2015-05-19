@@ -133,6 +133,7 @@ protected:
     void pinchGesture(Event* event);
     void panGesture(Event* event);
 
+    void touchGesture(Event* event);
 
     float pixelWidth_;
     float panSpeedFactor_;
@@ -167,6 +168,8 @@ protected:
     
     EventProperty pinchGesture_;
     EventProperty panGesture_;
+
+    EventProperty touchGesture_;
 
 };
 }
