@@ -110,14 +110,6 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
         new KeyboardEvent('D', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
         new Action(this, &Trackball::panRight))
     
-    , pinchGesture_("pinchGesture", "Pinch",
-        new GestureEvent(GestureEvent::PINCH, GestureEvent::GESTURE_STATE_ANY, 2),
-        new Action(this, &Trackball::pinchGesture))
-    
-    , panGesture_("panGesture", "Pan",
-        new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
-        new Action(this, &Trackball::panGesture)) 
-
     , touchGesture_("touchGesture", "Touch",
         new TouchEvent(TouchEvent::TOUCH_STATE_ANY),
         new Action(this, &Trackball::touchGesture))
@@ -126,10 +118,6 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
 
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
-    pinchGesture_.setVisible(false);
-    pinchGesture_.setCurrentStateAsDefault();
-    panGesture_.setVisible(false);
-    panGesture_.setCurrentStateAsDefault();
 
     addProperty(handleInteractionEvents_);
 
@@ -147,8 +135,6 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
     addProperty(stepPanLeft_);
     addProperty(stepPanDown_);
     addProperty(stepPanRight_);
-    //addProperty(pinchGesture_);
-    //addProperty(panGesture_);
 
     addProperty(touchGesture_);
 
@@ -198,49 +184,6 @@ vec3 Trackball::mapToObject(vec3 pos, float dist) {
     return (currentViewXaxis + currentViewYaxis + currentViewZaxis);
 }
 
-void Trackball::pinchGesture(Event* event) {
-    GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
-    vec3 direction = *lookFrom_ - *lookTo_;
-    float vecLength = glm::clamp(glm::length(direction), 0.3f, 4.f);
-    vec3 normdirection = glm::normalize(direction);
-    vec3 move = normdirection * (static_cast<float>(vecLength * gestureEvent->deltaDistance()));
-    vec3 newLookFrom = *lookFrom_ - move;
-    vec3 newDirection = newLookFrom - *lookTo_;
-    if (glm::length(newDirection) > 0.3f){
-        *lookFrom_ = newLookFrom;
-        notifyLookFromChanged(this);
-        isMouseBeingPressedAndHold_ = false;
-    }
-}
-
-void Trackball::panGesture(Event* event) {
-    GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
-
-    float ratio = (float)gestureEvent->canvasSize().x 
-                / (float)gestureEvent->canvasSize().y;
-    vec2 screenScale = vec2(1.f);
-
-    if(ratio > 1.f)
-        screenScale.x = ratio;
-    else if(ratio < 1.f)
-        screenScale.y = 1.f/ratio;
-
-    vec3 offsetVector =
-        vec3(gestureEvent->deltaPos().x * screenScale.x, 
-             gestureEvent->deltaPos().y * screenScale.y, 0.f);
-
-    offsetVector *= panSpeedFactor_;
-
-    vec3 direction = *lookFrom_ - *lookTo_;
-    float vecLength = glm::length(direction);
-    vec3 mappedOffsetVector = mapToObject(offsetVector, vecLength);
-
-    *lookTo_ += mappedOffsetVector;
-    *lookFrom_ += mappedOffsetVector;
-    notifyAllChanged(this);
-    isMouseBeingPressedAndHold_ = false;
-}
-
 void Trackball::touchGesture(Event* event) {
     TouchEvent* touchEvent = static_cast<TouchEvent*>(event);
 
@@ -264,25 +207,38 @@ void Trackball::touchGesture(Event* event) {
         // (0, 1)--(1, 1)
         //   |        |
         // (0, 0)--(1, 0)
-        auto prevPos1 = touchPoint1->getPrevPosNormalized(); prevPos1.y = 1. - prevPos1.y;
-        auto prevPos2 = touchPoint2->getPrevPosNormalized(); prevPos2.y = 1. - prevPos2.y;
-        auto pos1 = touchPoint1->getPosNormalized(); pos1.y = 1. - pos1.y;
-        auto pos2 = touchPoint2->getPosNormalized(); pos2.y = 1. - pos2.y;
+        dvec2 prevPos1 = touchPoint1->getPrevPosNormalized(); prevPos1.y = 1. - prevPos1.y;
+        dvec2 prevPos2 = touchPoint2->getPrevPosNormalized(); prevPos2.y = 1. - prevPos2.y;
+        dvec2 pos1 = touchPoint1->getPosNormalized(); pos1.y = 1. - pos1.y;
+        dvec2 pos2 = touchPoint2->getPosNormalized(); pos2.y = 1. - pos2.y;
 
         auto v1(prevPos2 - prevPos1);
         auto v2(pos2 - pos1);
 
+        // The glm implementation of orientedAngle returns positive angle 
+        // for small negative angles. 
+        //auto angle = glm::orientedAngle(glm::normalize(v1), glm::normalize(v2));
+        // Roll our own angle calculation
+        auto v1Normalized = glm::normalize(v1);
+        auto v2Normalized = glm::normalize(v2);
+        auto angle = acos(glm::clamp(glm::dot(v1Normalized, v2Normalized), -1., 1.));
+        // Check orientation using cross product.
+        if (v1Normalized.x*v2Normalized.y - v2Normalized.x*v1Normalized.y < 0) {
+            angle = -angle;
+        }
 
-        float angle = glm::orientedAngle(glm::normalize(v1), glm::normalize(v2));
-        float scale = glm::length(v1) / glm::length(v2);
+
+        auto scale = glm::length(v1) / glm::length(v2);
         if (!isfinite(scale)) {
             scale = 1;
         }
         // Difference between midpoints before and after
-        auto prevCenterPoint = glm::mix(prevPos1, prevPos2, 0.5f);
-        auto centerPoint = glm::mix(pos1, pos2, 0.5f);
+        auto prevCenterPoint = glm::mix(prevPos1, prevPos2, 0.5);
+        auto centerPoint = glm::mix(pos1, pos2, 0.5);
 
         // Compute translation in world space
+        // We currently do not have the information about the scene 
+        // so we need to rely on the mapToObject function
         //vec4 lookToClipCoord = cameraProp_->projectionMatrix()*cameraProp_->viewMatrix()*vec4(cameraProp_->getLookTo(), 1.f);
         //vec3 lookToNDCCoord = vec3(lookToClipCoord.xyz() / lookToClipCoord.w);
         //float ndcDepth = lookToNDCCoord.z;
@@ -291,25 +247,25 @@ void Trackball::touchGesture(Event* event) {
         //}
         //vec3 worldSpaceTranslation = cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*centerPoint, ndcDepth)) - cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*prevCenterPoint, ndcDepth));
 
-        vec3 cameraDir = (*lookTo_ - *lookFrom_);
-        vec3 fromClosestPointToLookFrom = -cameraDir;
+        vec3 direction = (*lookTo_ - *lookFrom_);
+        vec3 fromClosestPointToLookFrom = -direction;
 
-        vec3 worldSpaceTranslation = mapToObject(vec3(centerPoint, 0), glm::length(cameraDir)) - mapToObject(vec3(prevCenterPoint, 0), glm::length(cameraDir));
+        vec3 worldSpaceTranslation = mapToObject(vec3(centerPoint, 0)*panSpeedFactor_, glm::length(direction)) - mapToObject(vec3(prevCenterPoint, 0)*panSpeedFactor_, glm::length(direction));
 
 
         // Zoom based on the closest point to the object
         // Use the look at point if the closest point is unknown
-        *lookFrom_ = *lookTo_ + (scale * fromClosestPointToLookFrom);
+        *lookFrom_ = *lookTo_ + static_cast<float>(scale) * fromClosestPointToLookFrom;
         // Rotating using angle from screen space is equivalent to rotating 
         // around the direction in world space since we are looking into the screen.
-        *lookUp_ = glm::normalize(glm::rotate(*lookUp_, angle, glm::normalize(cameraDir)));
+        *lookUp_ = glm::normalize(glm::rotate(*lookUp_, static_cast<float>(angle), glm::normalize(direction)));
 
         *lookFrom_ -= (worldSpaceTranslation);
         *lookTo_ -= (worldSpaceTranslation);
         notifyAllChanged(this);
 
         //LogInfo("\nTwo fingers: Scale: " << scale << "\nAngle: " << angle << "\nTranslation: " << worldSpaceTranslation);
-
+        isMouseBeingPressedAndHold_ = false;
     }
 
 }

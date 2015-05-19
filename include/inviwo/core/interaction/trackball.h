@@ -130,9 +130,12 @@ protected:
     void zoomIn(Event* event);
     void zoomOut(Event* event);
     
-    void pinchGesture(Event* event);
-    void panGesture(Event* event);
-
+    /** 
+     * \brief Rotates around the direction vector, 
+     * zooms along the direction vector and translates along up/right vector.
+     * 
+     * @param Event * event TouchEvent
+     */
     void touchGesture(Event* event);
 
     float pixelWidth_;
@@ -165,9 +168,6 @@ protected:
     EventProperty stepPanLeft_;
     EventProperty stepPanDown_;
     EventProperty stepPanRight_;
-    
-    EventProperty pinchGesture_;
-    EventProperty panGesture_;
 
     EventProperty touchGesture_;
 
