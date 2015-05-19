@@ -464,6 +464,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
 #if defined(USING_QT5) && (QT_VERSION < QT_VERSION_CHECK(5, 3, 0))
     if(touch->touchPoints().size() == 1 && lastNumFingers_ < 2){
         MouseEvent* mouseEvent = nullptr;
+		ivec2 pos = ivec2(static_cast<int>(glm::floor(firstPoint.pos().x())), static_cast<int>(glm::floor(firstPoint.pos().y())));
         switch (touchState)
         {
         case TouchEvent::TOUCH_STATE_STARTED:
