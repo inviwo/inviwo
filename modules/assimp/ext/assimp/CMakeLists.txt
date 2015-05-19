@@ -1,5 +1,12 @@
 ivw_project( assimp )
 
+#--------------------------------------------------------------------
+# Supress warnings
+if(WIN32)
+add_definitions( "/W0 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo /IGNORE:4006" )
+endif()
+#--------------------------------------------------------------------
+
 # Define here the needed parameters
 set (ASSIMP_VERSION_MAJOR 3)
 set (ASSIMP_VERSION_MINOR 1)

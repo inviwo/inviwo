@@ -67,6 +67,11 @@ public:
     void setPoint(const vec3);
     void setNormal(const vec3&);
 
+    std::string getDataInfo() const;
+
+    static uvec3 COLOR_CODE;
+    static const std::string CLASS_IDENTIFIER;
+
 private:
     vec3 point_;
     vec3 normal_;

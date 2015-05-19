@@ -43,18 +43,18 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.Background, Background}
+ * ![](processor.png?classIdentifier=org.inviwo.Background)
  * Adds a background to an image. 
- * ![](background.png)
  * The following mixing is applied
  * 
  *     out.rgb = in.rgb + color.rgb * color.a * (1.0 - in.a)
  *     out.a = in.a + color.a * (1.0 - in.a)
  * 
  * ### Inports
- *   * __ImageInport__ The input image.
+ *   * __ImageInport__ Input image.
  *
  * ### Outports
- *   * __ImageOutport__ The output image.
+ *   * __ImageOutport__ Output image.
  * 
  * ### Properties
  *   * __Style__ The are three different styles to choose from Linear gradient, uniform color,

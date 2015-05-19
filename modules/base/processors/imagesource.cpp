@@ -46,8 +46,8 @@ ProcessorCodeState(ImageSource, CODE_STATE_STABLE);
 ImageSource::ImageSource()
     : Processor()
     , outport_("image.outport", DataVec4UINT8::get(), false)
-    , imageFileName_("imageFileName", "Image file name", "", "image")
-    , imageDimension_("imageDimension_", "Image Dimension", ivec2(0), ivec2(0), ivec2(10000),
+    , imageFileName_("imageFileName", "File name", "", "image")
+    , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000),
                       ivec2(1), VALID, PropertySemantics("Text"))
     , isDeserializing_(false) {
     addPort(outport_);

@@ -37,7 +37,17 @@
 #include <modules/base/processors/datasource.h>
 
 namespace inviwo {
-
+    /** \docpage{org.inviwo.GeometrySource, Mesh Source}
+     * ![](processor.png?classIdentifier=org.inviwo.GeometrySource)
+     *
+     * Loads a mesh
+     *
+     * ### Outports
+     *   * __Outport__ The loaded mesh
+     * 
+     * ### Properties
+     *   * __File name__ File to load.
+     */
 class IVW_MODULE_BASE_API MeshSource : public DataSource<Mesh, MeshOutport> {
 public:
     MeshSource();

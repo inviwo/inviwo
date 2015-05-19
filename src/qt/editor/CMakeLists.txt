@@ -31,6 +31,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorlinkgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorportgraphicsitem.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorpreview.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorprogressgraphicsitem.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/editor/processorstatusgraphicsitem.h
     ${MOC_FILES}
@@ -45,8 +46,8 @@ source_group("MOC Files" FILES ${MOC_FILES})
 set(SOURCE_FILES
     connectiongraphicsitem.cpp
     consolewidget.cpp
-    helpwidget.cpp
     editorgrapicsitem.cpp
+    helpwidget.cpp
     linkdialog/linkdialog.cpp
     linkdialog/linkdialogcurvegraphicsitems.cpp
     linkdialog/linkdialogprocessorgraphicsitems.cpp
@@ -60,6 +61,7 @@ set(SOURCE_FILES
     processorlinkgraphicsitem.cpp
     processorlistwidget.cpp
     processorportgraphicsitem.cpp
+    processorpreview.cpp
     processorprogressgraphicsitem.cpp
     processorstatusgraphicsitem.cpp
     resourcemanagerwidget.cpp

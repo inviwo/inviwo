@@ -146,19 +146,22 @@ bool inviwo::DataInport<T, N, Flat>::isConnected() const {
 
 template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::hasData() const {
-    return isConnected() && util::all_of(connectedOutports_, [](Outport* p) {
-        return static_cast<DataOutport<T>*>(p)->hasData();
-    });
+    if (N > 0) {
+        return isConnected() && util::all_of(connectedOutports_, [](Outport* p) {
+                                    return static_cast<DataOutport<T>*>(p)->hasData();
+                                });
+    } else {
+        return isConnected() && this->begin() != this->end();
+    }
 }
 
 template <typename T, size_t N, bool Flat>
 const T* DataInport<T, N, Flat>::getData() const {
     if (isConnected()) {
-        // Safe to static cast since we are unable to connect other outport types.
-        return &*(this->begin());
-    } else {
-        return nullptr;
-    }
+        auto it = this->begin();
+        if (it != this->end()) return &*(it);
+    } 
+    return nullptr;   
 }
 
 template <typename T, size_t N, bool Flat>

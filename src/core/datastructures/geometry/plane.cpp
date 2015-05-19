@@ -31,6 +31,9 @@
 
 namespace inviwo {
 
+inviwo::uvec3 Plane::COLOR_CODE = uvec3(225, 174, 225);
+const std::string Plane::CLASS_IDENTIFIER = "org.inviwo.Plane";
+
 Plane::Plane() :
     point_(vec3(0.0f,0.0f,0.0f)),
     normal_(vec3(0.0f,1.0f,0.0f)) {
@@ -105,6 +108,10 @@ IntersectionResult Plane::getSegmentIntersection(const vec3& start, const vec3& 
 
     // no intersection
     return IntersectionResult(false);
+}
+
+std::string Plane::getDataInfo() const { 
+    return "Plane"; 
 }
 
 IVW_CORE_API bool rayPlaneIntersection(const vec3& origin, const vec3& dir, const vec3& pointInPlane, const vec3& planeNormal, float& tHit)

@@ -54,37 +54,26 @@ public:
                 auto ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
                 dIter_ = ptr->begin();
                 dEnd_ = ptr->end();
+                
+                while (dIter_ == dEnd_ && pIter_ != pEnd_) {
+                    pIter_++;
+                    if (pIter_ != pEnd_) {
+                        auto ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
+                        dIter_ = ptr->begin();
+                        dEnd_ = ptr->end();
+                    } else {
+                        dIter_ = dEnd_;
+                    }
+                }
             }
         }
         self& operator++() {
-            dIter_++;
-            if (dIter_ == dEnd_) {
-                pIter_++;
-                if (pIter_ != pEnd_) {
-                    auto ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
-                    dIter_ = ptr->begin();
-                    dEnd_ = ptr->end();
-                } else {
-                    dIter_ = dEnd_;
-                }
-            }
-
+            incrementIter();
             return *this;
         }
         self operator++(int) {
             self i = *this;
-            dIter_++;
-            if (dIter_ == dEnd_) {
-                pIter_++;
-                if (pIter_ != pEnd_) {
-                    auto ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
-                    dIter_ = ptr->begin();
-                    dEnd_ = ptr->end();
-                } else {
-                    dIter_ = dEnd_;
-                }
-            }
-
+            incrementIter();
             return i;
         }
         const T& operator*() { return *dIter_; }
@@ -93,10 +82,25 @@ public:
             return pIter_ == rhs.pIter_ && dIter_ == rhs.dIter_;
         }
         bool operator!=(const self& rhs) const {
-            return pIter_ != rhs.pIter_ || dIter_ != rhs.dIter_;
+            return pIter_ != rhs.pIter_ && dIter_ != rhs.dIter_;
         }
 
     private:
+        void incrementIter() {
+            dIter_++;
+            while (dIter_ == dEnd_ && pIter_ != pEnd_) {
+                pIter_++;
+                if (pIter_ != pEnd_) {
+                    auto ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
+                    dIter_ = ptr->begin();
+                    dEnd_ = ptr->end();
+                } else {
+                    dIter_ = dEnd_;
+                }
+            }
+        }
+    
+    
         PortIter pIter_;
         PortIter pEnd_;
         DataIter dIter_;

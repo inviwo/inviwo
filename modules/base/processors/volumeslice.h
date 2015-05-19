@@ -48,6 +48,7 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeSlice, Volume Slice}
+ * ![](processor.png?classIdentifier=org.inviwo.VolumeSlice)
  * Outputs a slice from a volume, CPU-based
  *
  * ### Inports

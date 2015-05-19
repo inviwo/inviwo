@@ -39,6 +39,19 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.CanvasGL, Canvas}
+ * ![](processor.png?classIdentifier=org.inviwo.CanvasGL)
+ *
+ * Show a image
+ * 
+ * ### Inports
+ *   * __Inport__ Input image
+ *
+ * 
+ * ### Properties
+ *   * __Canvas Size__ Size of canvas
+ */
+
 /**
  * \class CanvasProcessorGL
  *

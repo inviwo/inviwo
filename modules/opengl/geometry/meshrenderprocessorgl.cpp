@@ -189,8 +189,6 @@ void MeshRenderProcessorGL::changeRenderMode() {
 }
 
 void MeshRenderProcessorGL::process() {
-    if (!inport_.hasData()) return;
-
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 
