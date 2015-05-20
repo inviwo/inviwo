@@ -86,12 +86,6 @@ PointLightSourceProcessor::~PointLightSourceProcessor() {
     delete lightSource_;
     removeInteractionHandler(lightInteractionHandler_);
     delete lightInteractionHandler_;
-    const std::vector<InteractionHandler*>& interactionHandlers = getInteractionHandlers();
-    for (auto handler : interactionHandlers) {
-        removeInteractionHandler(handler);
-        LogWarn("Interaction handler was not removed and deleted");
-    }
-
 }
 
 void PointLightSourceProcessor::process() {

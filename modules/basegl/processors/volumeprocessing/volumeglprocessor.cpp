@@ -87,6 +87,7 @@ void VolumeGLProcessor::process() {
         // pass meta data on
         volume->copyMetaDataFrom(*inport_.getData());
         volume->dataMap_.dataRange = inport_.getData()->dataMap_.dataRange;
+        volume->dataMap_.valueRange = inport_.getData()->dataMap_.valueRange;
         outport_.setData(volume);
     }
 
