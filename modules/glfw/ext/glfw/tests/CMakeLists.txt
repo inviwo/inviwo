@@ -1,25 +1,24 @@
 
-link_libraries(glfw ${OPENGL_glu_LIBRARY})
+link_libraries(glfw)
 
 if (BUILD_SHARED_LIBS)
     add_definitions(-DGLFW_DLL)
-    link_libraries(${OPENGL_gl_LIBRARY} ${MATH_LIBRARY})
+    link_libraries("${OPENGL_gl_LIBRARY}" "${MATH_LIBRARY}")
 else()
     link_libraries(${glfw_LIBRARIES})
 endif()
 
-include_directories(${GLFW_SOURCE_DIR}/include
-                    ${GLFW_SOURCE_DIR}/deps)
+include_directories("${GLFW_SOURCE_DIR}/include"
+                    "${GLFW_SOURCE_DIR}/deps")
 
-if (NOT APPLE)
-    # HACK: This is NOTFOUND on OS X 10.8
-    include_directories(${OPENGL_INCLUDE_DIR})
+if ("${OPENGL_INCLUDE_DIR}")
+    include_directories("${OPENGL_INCLUDE_DIR}")
 endif()
 
-set(GETOPT ${GLFW_SOURCE_DIR}/deps/getopt.h
-           ${GLFW_SOURCE_DIR}/deps/getopt.c)
-set(TINYCTHREAD ${GLFW_SOURCE_DIR}/deps/tinycthread.h
-                ${GLFW_SOURCE_DIR}/deps/tinycthread.c)
+set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
+           "${GLFW_SOURCE_DIR}/deps/getopt.c")
+set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
+                "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
 add_executable(clipboard clipboard.c ${GETOPT})
 add_executable(defaults defaults.c)
@@ -29,7 +28,7 @@ add_executable(gamma gamma.c ${GETOPT})
 add_executable(glfwinfo glfwinfo.c ${GETOPT})
 add_executable(iconify iconify.c ${GETOPT})
 add_executable(joysticks joysticks.c)
-add_executable(modes modes.c ${GETOPT})
+add_executable(monitors monitors.c ${GETOPT})
 add_executable(peter peter.c)
 add_executable(reopen reopen.c)
 add_executable(cursor cursor.c)
@@ -58,12 +57,15 @@ set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c)
 set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
-target_link_libraries(empty ${CMAKE_THREAD_LIBS_INIT} ${RT_LIBRARY})
-target_link_libraries(threads ${CMAKE_THREAD_LIBS_INIT} ${RT_LIBRARY})
+target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
+target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}" "${RT_LIBRARY}")
 
 set(WINDOWS_BINARIES accuracy empty sharing tearing threads title windows cursoranim)
 set(CONSOLE_BINARIES clipboard defaults events fsaa gamma glfwinfo
-                     iconify joysticks modes peter reopen cursor)
+                     iconify joysticks monitors peter reopen cursor)
+
+set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+                      FOLDER "GLFW3/Tests")
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables
@@ -74,6 +76,7 @@ endif()
 if (APPLE)
     set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
-                          MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL})
+                          MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL}
+                          MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/AppleInfo.plist")
 endif()
 

@@ -54,27 +54,25 @@ typedef void* id;
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorNS  ns
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-
-//------------------------------------------------------------------------
-// Platform-specific window structure
-//------------------------------------------------------------------------
+// Cocoa-specific per-window data
+//
 typedef struct _GLFWwindowNS
 {
     id              object;
     id	            delegate;
     id              view;
     unsigned int    modifierFlags;
-    int             cursorInside;
+
+    // The total sum of the distances the cursor has been warped
+    // since the last cursor motion event was processed
+    // This is kept to counteract Cocoa doing the same internally
+    double          warpDeltaX, warpDeltaY;
+
 } _GLFWwindowNS;
 
 
-//------------------------------------------------------------------------
-// Platform-specific library global data for Cocoa
-//------------------------------------------------------------------------
+// Cocoa-specific global data
+//
 typedef struct _GLFWlibraryNS
 {
     CGEventSourceRef eventSource;
@@ -82,14 +80,14 @@ typedef struct _GLFWlibraryNS
     id              autoreleasePool;
     id              cursor;
 
+    short int       publicKeys[256];
     char*           clipboardString;
 
 } _GLFWlibraryNS;
 
 
-//------------------------------------------------------------------------
-// Platform-specific monitor structure
-//------------------------------------------------------------------------
+// Cocoa-specific per-monitor data
+//
 typedef struct _GLFWmonitorNS
 {
     CGDirectDisplayID   displayID;
@@ -99,33 +97,27 @@ typedef struct _GLFWmonitorNS
 } _GLFWmonitorNS;
 
 
-//------------------------------------------------------------------------
-// Platform-specific cursor structure
-//------------------------------------------------------------------------
+// Cocoa-specific per-cursor data
+//
 typedef struct _GLFWcursorNS
 {
-    id                  object;
+    id              object;
+
 } _GLFWcursorNS;
 
 
-//------------------------------------------------------------------------
-// Platform-specific time structure
-//------------------------------------------------------------------------
+// Cocoa-specific global timer data
+//
 typedef struct _GLFWtimeNS
 {
-        double      base;
-        double      resolution;
+    double          base;
+    double          resolution;
+
 } _GLFWtimeNS;
 
 
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
-
-// Time
 void _glfwInitTimer(void);
 
-// Fullscreen
 GLboolean _glfwSetVideoMode(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoMode(_GLFWmonitor* monitor);
 

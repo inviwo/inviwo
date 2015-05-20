@@ -24,40 +24,10 @@
 //
 //========================================================================
 
-#ifndef _linux_joystick_h_
-#define _linux_joystick_h_
-
-#include <regex.h>
-
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickLinux linux_js
+#ifndef _xkb_unicode_h_
+#define _xkb_unicode_h_
 
 
-// Linux-specific joystick API data
-//
-typedef struct _GLFWjoystickLinux
-{
-    struct
-    {
-        int             present;
-        int             fd;
-        float*          axes;
-        int             axisCount;
-        unsigned char*  buttons;
-        int             buttonCount;
-        char*           name;
-        char*           path;
-    } js[GLFW_JOYSTICK_LAST + 1];
+long _glfwKeySym2Unicode(unsigned int keysym);
 
-#if defined(__linux__)
-    int             inotify;
-    int             watch;
-    regex_t         regex;
-#endif /*__linux__*/
-} _GLFWjoystickLinux;
-
-
-int _glfwInitJoysticks(void);
-void _glfwTerminateJoysticks(void);
-
-#endif // _linux_joystick_h_
+#endif // _xkb_unicode_h_

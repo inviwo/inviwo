@@ -33,7 +33,18 @@
  #include "glfw_config.h"
 #endif
 
-#define _GLFW_VERSION_NUMBER "3.1.0"
+#define _GLFW_VERSION_NUMBER "3.1.1"
+
+#if defined(GLFW_INCLUDE_GLCOREARB) || \
+    defined(GLFW_INCLUDE_ES1)       || \
+    defined(GLFW_INCLUDE_ES2)       || \
+    defined(GLFW_INCLUDE_ES3)       || \
+    defined(GLFW_INCLUDE_NONE)      || \
+    defined(GLFW_INCLUDE_GLEXT)     || \
+    defined(GLFW_INCLUDE_GLU)       || \
+    defined(GLFW_DLL)
+ #error "You may not define any header option macros when compiling GLFW"
+#endif
 
 #if defined(_GLFW_USE_OPENGL)
  // This is the default for glfw3.h
@@ -74,6 +85,8 @@ typedef struct _GLFWcursor      _GLFWcursor;
  #include "x11_platform.h"
 #elif defined(_GLFW_WAYLAND)
  #include "wl_platform.h"
+#elif defined(_GLFW_MIR)
+ #include "mir_platform.h"
 #else
  #error "No supported window creation API selected"
 #endif
@@ -110,7 +123,7 @@ typedef struct _GLFWcursor      _GLFWcursor;
 // Helper macros
 //========================================================================
 
-// Checks for whether the library has been intitalized
+// Checks for whether the library has been initialized
 #define _GLFW_REQUIRE_INIT()                         \
     if (!_glfwInitialized)                           \
     {                                                \
@@ -135,7 +148,7 @@ typedef struct _GLFWcursor      _GLFWcursor;
 
 
 //========================================================================
-// Internal types
+// Platform-independent structures
 //========================================================================
 
 /*! @brief Window configuration.
@@ -152,7 +165,8 @@ struct _GLFWwndconfig
     GLboolean     resizable;
     GLboolean     visible;
     GLboolean     decorated;
-    GLboolean     polite;
+    GLboolean     focused;
+    GLboolean     autoIconify;
     GLboolean     floating;
     _GLFWmonitor* monitor;
 };
@@ -173,6 +187,7 @@ struct _GLFWctxconfig
     GLboolean     debug;
     int           profile;
     int           robustness;
+    int           release;
     _GLFWwindow*  share;
 };
 
@@ -180,7 +195,7 @@ struct _GLFWctxconfig
 /*! @brief Framebuffer configuration.
  *
  *  This describes buffers and their sizes.  It also contains
- *  a platform-specific ID used to map back to the backend API's object.
+ *  a platform-specific ID used to map back to the backend API object.
  *
  *  It is used to pass framebuffer parameters from shared code to the platform
  *  API and also to enumerate and select available framebuffer configs.
@@ -215,12 +230,10 @@ struct _GLFWwindow
     struct _GLFWwindow* next;
 
     // Window settings and state
-    GLboolean           iconified;
     GLboolean           resizable;
     GLboolean           decorated;
-    GLboolean           polite;
+    GLboolean           autoIconify;
     GLboolean           floating;
-    GLboolean           visible;
     GLboolean           closed;
     void*               userPointer;
     GLFWvidmode         videoMode;
@@ -242,6 +255,7 @@ struct _GLFWwindow
         GLboolean       forward, debug;
         int             profile;
         int             robustness;
+        int             release;
     } context;
 
 #if defined(_GLFW_USE_OPENGL)
@@ -262,6 +276,7 @@ struct _GLFWwindow
         GLFWscrollfun           scroll;
         GLFWkeyfun              key;
         GLFWcharfun             character;
+        GLFWcharmodsfun         charmods;
         GLFWdropfun             drop;
     } callbacks;
 
@@ -295,7 +310,6 @@ struct _GLFWmonitor
 
 /*! @brief Cursor structure
  */
-
 struct _GLFWcursor
 {
     _GLFWcursor*    next;
@@ -324,7 +338,8 @@ struct _GLFWlibrary
         int         resizable;
         int         visible;
         int         decorated;
-        int         polite;
+        int         focused;
+        int         autoIconify;
         int         floating;
         int         samples;
         int         sRGB;
@@ -337,6 +352,7 @@ struct _GLFWlibrary
         int         debug;
         int         profile;
         int         robustness;
+        int         release;
     } hints;
 
     double          cursorPosX, cursorPosY;
@@ -404,11 +420,6 @@ void _glfwPlatformTerminate(void);
  *  @note The returned string must not change for the duration of the program.
  */
 const char* _glfwPlatformGetVersionString(void);
-
-/*! @copydoc glfwGetKeyName
- *  @ingroup platform
- */
-const char* _glfwPlatformGetKeyName(int key, int scancode);
 
 /*! @copydoc glfwGetCursorPos
  *  @ingroup platform
@@ -544,11 +555,6 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height);
  */
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
 
-/*! @copydoc glfwSetWindowSizeLimits
- *  @ingroup platform
- */
-void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight, int numer, int denom);
-
 /*! @copydoc glfwGetFramebufferSize
  *  @ingroup platform
  */
@@ -574,10 +580,29 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window);
  */
 void _glfwPlatformShowWindow(_GLFWwindow* window);
 
+/*! @ingroup platform
+ */
+void _glfwPlatformUnhideWindow(_GLFWwindow* window);
+
 /*! @copydoc glfwHideWindow
  *  @ingroup platform
  */
 void _glfwPlatformHideWindow(_GLFWwindow* window);
+
+/*! @brief Returns whether the window is focused.
+ *  @ingroup platform
+ */
+int _glfwPlatformWindowFocused(_GLFWwindow* window);
+
+/*! @brief Returns whether the window is iconified.
+ *  @ingroup platform
+ */
+int _glfwPlatformWindowIconified(_GLFWwindow* window);
+
+/*! @brief Returns whether the window is visible.
+ *  @ingroup platform
+ */
+int _glfwPlatformWindowVisible(_GLFWwindow* window);
 
 /*! @copydoc glfwPollEvents
  *  @ingroup platform
@@ -629,6 +654,11 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname);
  */
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
 
+/*! @copydoc glfwCreateStandardCursor
+ *  @ingroup platform
+ */
+int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape);
+
 /*! @copydoc glfwDestroyCursor
  *  @ingroup platform
  */
@@ -638,6 +668,7 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor);
  *  @ingroup platform
  */
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
+
 
 //========================================================================
 // Event API functions
@@ -683,14 +714,6 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
  */
 void _glfwInputWindowIconify(_GLFWwindow* window, int iconified);
 
-/*! @brief Notifies shared code of a window show/hide event.
- *  @param[in] window The window that received the event.
- *  @param[in] visible `GL_TRUE` if the window was shown, or `GL_FALSE` if it
- *  was hidden.
- *  @ingroup event
- */
-void _glfwInputWindowVisibility(_GLFWwindow* window, int visible);
-
 /*! @brief Notifies shared code of a window damage event.
  *  @param[in] window The window that received the event.
  */
@@ -715,9 +738,12 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
 /*! @brief Notifies shared code of a Unicode character input event.
  *  @param[in] window The window that received the event.
  *  @param[in] codepoint The Unicode code point of the input character.
+ *  @param[in] mods Bit field describing which modifier keys were held down.
+ *  @param[in] plain `GL_TRUE` if the character is regular text input, or
+ *  `GL_FALSE` otherwise.
  *  @ingroup event
  */
-void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint);
+void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, int plain);
 
 /*! @brief Notifies shared code of a scroll event.
  *  @param[in] window The window that received the event.

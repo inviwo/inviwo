@@ -35,9 +35,9 @@
 
 // Parses the client API version string and extracts the version number
 //
-static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
+static GLboolean parseVersionString(int* api, int* major, int* minor, int* rev)
 {
-    int i, _api = GLFW_OPENGL_API, _major, _minor = 0, _rev = 0;
+    int i;
     const char* version;
     const char* prefixes[] =
     {
@@ -46,6 +46,8 @@ static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
         "OpenGL ES ",
         NULL
     };
+
+    *api = GLFW_OPENGL_API;
 
     version = (const char*) glGetString(GL_VERSION);
     if (!version)
@@ -62,22 +64,17 @@ static GLboolean parseGLVersion(int* api, int* major, int* minor, int* rev)
         if (strncmp(version, prefixes[i], length) == 0)
         {
             version += length;
-            _api = GLFW_OPENGL_ES_API;
+            *api = GLFW_OPENGL_ES_API;
             break;
         }
     }
 
-    if (!sscanf(version, "%d.%d.%d", &_major, &_minor, &_rev))
+    if (!sscanf(version, "%d.%d.%d", major, minor, rev))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "No version found in context version string");
         return GL_FALSE;
     }
-
-    *api = _api;
-    *major = _major;
-    *minor = _minor;
-    *rev = _rev;
 
     return GL_TRUE;
 }
@@ -92,7 +89,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
     if (ctxconfig->api != GLFW_OPENGL_API &&
         ctxconfig->api != GLFW_OPENGL_ES_API)
     {
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid client API requested");
+        _glfwInputError(GLFW_INVALID_ENUM, "Invalid client API");
         return GL_FALSE;
     }
 
@@ -107,15 +104,12 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             // OpenGL 1.x series ended with version 1.5
             // OpenGL 2.x series ended with version 2.1
             // OpenGL 3.x series ended with version 3.3
+            // For now, let everything else through
 
             _glfwInputError(GLFW_INVALID_VALUE,
-                            "Invalid OpenGL version %i.%i requested",
+                            "Invalid OpenGL version %i.%i",
                             ctxconfig->major, ctxconfig->minor);
             return GL_FALSE;
-        }
-        else
-        {
-            // For now, let everything else through
         }
 
         if (ctxconfig->profile)
@@ -124,7 +118,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
                 ctxconfig->profile != GLFW_OPENGL_COMPAT_PROFILE)
             {
                 _glfwInputError(GLFW_INVALID_ENUM,
-                                "Invalid OpenGL profile requested");
+                                "Invalid OpenGL profile");
                 return GL_FALSE;
             }
 
@@ -135,8 +129,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
                 // and above
 
                 _glfwInputError(GLFW_INVALID_VALUE,
-                                "Context profiles only exist for "
-                                "OpenGL version 3.2 and above");
+                                "Context profiles are only defined for OpenGL version 3.2 and above");
                 return GL_FALSE;
             }
         }
@@ -145,8 +138,7 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         {
             // Forward-compatible contexts are only defined for OpenGL version 3.0 and above
             _glfwInputError(GLFW_INVALID_VALUE,
-                            "Forward compatibility only exist for OpenGL "
-                            "version 3.0 and above");
+                            "Forward-compatibility is only defined for OpenGL version 3.0 and above");
             return GL_FALSE;
         }
     }
@@ -159,30 +151,11 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             // OpenGL ES 1.0 is the smallest valid version
             // OpenGL ES 1.x series ended with version 1.1
             // OpenGL ES 2.x series ended with version 2.0
-
-            _glfwInputError(GLFW_INVALID_VALUE,
-                            "Invalid OpenGL ES version %i.%i requested",
-                            ctxconfig->major, ctxconfig->minor);
-            return GL_FALSE;
-        }
-        else
-        {
             // For now, let everything else through
-        }
 
-        if (ctxconfig->profile)
-        {
-            // OpenGL ES does not support profiles
             _glfwInputError(GLFW_INVALID_VALUE,
-                            "Context profiles are not supported by OpenGL ES");
-            return GL_FALSE;
-        }
-
-        if (ctxconfig->forward)
-        {
-            // OpenGL ES does not support forward-compatibility
-            _glfwInputError(GLFW_INVALID_VALUE,
-                            "Forward compatibility is not supported by OpenGL ES");
+                            "Invalid OpenGL ES version %i.%i",
+                            ctxconfig->major, ctxconfig->minor);
             return GL_FALSE;
         }
     }
@@ -192,8 +165,19 @@ GLboolean _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         if (ctxconfig->robustness != GLFW_NO_RESET_NOTIFICATION &&
             ctxconfig->robustness != GLFW_LOSE_CONTEXT_ON_RESET)
         {
-            _glfwInputError(GLFW_INVALID_VALUE,
-                            "Invalid context robustness mode requested");
+            _glfwInputError(GLFW_INVALID_ENUM,
+                            "Invalid context robustness mode");
+            return GL_FALSE;
+        }
+    }
+
+    if (ctxconfig->release)
+    {
+        if (ctxconfig->release != GLFW_RELEASE_BEHAVIOR_NONE &&
+            ctxconfig->release != GLFW_RELEASE_BEHAVIOR_FLUSH)
+        {
+            _glfwInputError(GLFW_INVALID_ENUM,
+                            "Invalid context release behavior");
             return GL_FALSE;
         }
     }
@@ -368,10 +352,10 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
 {
     _GLFWwindow* window = _glfwPlatformGetCurrentContext();
 
-    if (!parseGLVersion(&window->context.api,
-                        &window->context.major,
-                        &window->context.minor,
-                        &window->context.revision))
+    if (!parseVersionString(&window->context.api,
+                            &window->context.major,
+                            &window->context.minor,
+                            &window->context.revision))
     {
         return GL_FALSE;
     }
@@ -467,6 +451,17 @@ GLboolean _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
             else if (strategy == GL_NO_RESET_NOTIFICATION_ARB)
                 window->context.robustness = GLFW_NO_RESET_NOTIFICATION;
         }
+    }
+
+    if (glfwExtensionSupported("GL_KHR_context_flush_control"))
+    {
+        GLint behavior;
+        glGetIntegerv(GL_CONTEXT_RELEASE_BEHAVIOR, &behavior);
+
+        if (behavior == GL_NONE)
+            window->context.release = GLFW_RELEASE_BEHAVIOR_NONE;
+        else if (behavior == GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH)
+            window->context.release = GLFW_RELEASE_BEHAVIOR_FLUSH;
     }
 #endif // _GLFW_USE_OPENGL
 
@@ -569,7 +564,6 @@ GLFWAPI void glfwSwapInterval(int interval)
 
 GLFWAPI int glfwExtensionSupported(const char* extension)
 {
-    const GLubyte* extensions;
     _GLFWwindow* window;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GL_FALSE);
@@ -581,29 +575,14 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
         return GL_FALSE;
     }
 
-    if (!extension || *extension == '\0')
+    if (*extension == '\0')
     {
         _glfwInputError(GLFW_INVALID_VALUE, NULL);
         return GL_FALSE;
     }
 
-    if (window->context.major < 3)
-    {
-        // Check if extension is in the old style OpenGL extensions string
-
-        extensions = glGetString(GL_EXTENSIONS);
-        if (!extensions)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Failed to retrieve extension string");
-            return GL_FALSE;
-        }
-
-        if (_glfwStringInExtensionString(extension, extensions))
-            return GL_TRUE;
-    }
 #if defined(_GLFW_USE_OPENGL)
-    else
+    if (window->context.major >= 3)
     {
         int i;
         GLint count;
@@ -626,7 +605,22 @@ GLFWAPI int glfwExtensionSupported(const char* extension)
                 return GL_TRUE;
         }
     }
+    else
 #endif // _GLFW_USE_OPENGL
+    {
+        // Check if extension is in the old style OpenGL extensions string
+
+        const GLubyte* extensions = glGetString(GL_EXTENSIONS);
+        if (!extensions)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Failed to retrieve extension string");
+            return GL_FALSE;
+        }
+
+        if (_glfwStringInExtensionString(extension, extensions))
+            return GL_TRUE;
+    }
 
     // Check if extension is in the platform-specific string
     return _glfwPlatformExtensionSupported(extension);

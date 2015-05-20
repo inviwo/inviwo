@@ -42,7 +42,7 @@ int _glfwInitContextAPI(void)
         CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
     if (_glfw.nsgl.framework == NULL)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_API_UNAVAILABLE,
                         "NSGL: Failed to locate OpenGL framework");
         return GL_FALSE;
     }
@@ -76,8 +76,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     if (ctxconfig->major == 3 && ctxconfig->minor < 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                        "NSGL: The targeted version of OS X does not "
-                        "support OpenGL 3.0 or 3.1");
+                        "NSGL: The targeted version of OS X does not support OpenGL 3.0 or 3.1");
         return GL_FALSE;
     }
 
@@ -86,18 +85,14 @@ int _glfwCreateContext(_GLFWwindow* window,
         if (!ctxconfig->forward)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of OS X only "
-                            "supports OpenGL 3.2 and later versions if they "
-                            "are forward-compatible");
+                            "NSGL: The targeted version of OS X only supports forward-compatible contexts for OpenGL 3.2 and above");
             return GL_FALSE;
         }
 
         if (ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
         {
             _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of OS X only "
-                            "supports OpenGL 3.2 and later versions if they "
-                            "use the core profile");
+                            "NSGL: The targeted version of OS X only supports core profile contexts for OpenGL 3.2 and above");
             return GL_FALSE;
         }
     }
@@ -106,20 +101,16 @@ int _glfwCreateContext(_GLFWwindow* window,
     if (ctxconfig->major > 2)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                        "NSGL: The targeted version of OS X does not "
-                        "support OpenGL version 3.0 or above");
+                        "NSGL: The targeted version of OS X does not support OpenGL version 3.0 or above");
         return GL_FALSE;
     }
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
 
-    // Fail if a robustness strategy was requested
-    if (ctxconfig->robustness)
-    {
-        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                        "NSGL: OS X does not support OpenGL robustness "
-                        "strategies");
-        return GL_FALSE;
-    }
+    // Context robustness modes (GL_KHR_robustness) are not yet supported on
+    // OS X but are not a hard constraint, so ignore and continue
+
+    // Context release behaviors (GL_KHR_context_flush_control) are not yet
+    // supported on OS X but are not a hard constraint, so ignore and continue
 
 #define ADD_ATTR(x) { attributes[attributeCount++] = x; }
 #define ADD_ATTR2(x, y) { ADD_ATTR(x); ADD_ATTR(y); }
@@ -127,12 +118,41 @@ int _glfwCreateContext(_GLFWwindow* window,
     // Arbitrary array size here
     NSOpenGLPixelFormatAttribute attributes[40];
 
+    ADD_ATTR(NSOpenGLPFAAccelerated);
     ADD_ATTR(NSOpenGLPFAClosestPolicy);
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
-    if (ctxconfig->major > 2)
-        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
+    if (ctxconfig->major >= 4)
+    {
+        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core);
+    }
+    else
 #endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+    if (ctxconfig->major >= 3)
+    {
+        ADD_ATTR2(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
+    }
+#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
+
+    if (ctxconfig->major <= 2)
+    {
+        if (fbconfig->auxBuffers != GLFW_DONT_CARE)
+            ADD_ATTR2(NSOpenGLPFAAuxBuffers, fbconfig->auxBuffers);
+
+        if (fbconfig->accumRedBits != GLFW_DONT_CARE &&
+            fbconfig->accumGreenBits != GLFW_DONT_CARE &&
+            fbconfig->accumBlueBits != GLFW_DONT_CARE &&
+            fbconfig->accumAlphaBits != GLFW_DONT_CARE)
+        {
+            const int accumBits = fbconfig->accumRedBits +
+                                  fbconfig->accumGreenBits +
+                                  fbconfig->accumBlueBits +
+                                  fbconfig->accumAlphaBits;
+
+            ADD_ATTR2(NSOpenGLPFAAccumSize, accumBits);
+        }
+    }
 
     if (fbconfig->redBits != GLFW_DONT_CARE &&
         fbconfig->greenBits != GLFW_DONT_CARE &&
@@ -142,7 +162,7 @@ int _glfwCreateContext(_GLFWwindow* window,
                         fbconfig->greenBits +
                         fbconfig->blueBits;
 
-        // OS X needs non-zero color size, so set resonable values
+        // OS X needs non-zero color size, so set reasonable values
         if (colorBits == 0)
             colorBits = 24;
         else if (colorBits < 15)
@@ -160,22 +180,6 @@ int _glfwCreateContext(_GLFWwindow* window,
     if (fbconfig->stencilBits != GLFW_DONT_CARE)
         ADD_ATTR2(NSOpenGLPFAStencilSize, fbconfig->stencilBits);
 
-    if (fbconfig->accumRedBits != GLFW_DONT_CARE &&
-        fbconfig->accumGreenBits != GLFW_DONT_CARE &&
-        fbconfig->accumBlueBits != GLFW_DONT_CARE &&
-        fbconfig->accumAlphaBits != GLFW_DONT_CARE)
-    {
-        const int accumBits = fbconfig->accumRedBits +
-                              fbconfig->accumGreenBits +
-                              fbconfig->accumBlueBits +
-                              fbconfig->accumAlphaBits;
-
-        ADD_ATTR2(NSOpenGLPFAAccumSize, accumBits);
-    }
-
-    if (fbconfig->auxBuffers != GLFW_DONT_CARE)
-        ADD_ATTR2(NSOpenGLPFAAuxBuffers, fbconfig->auxBuffers);
-
     if (fbconfig->stereo)
         ADD_ATTR(NSOpenGLPFAStereo);
 
@@ -184,16 +188,19 @@ int _glfwCreateContext(_GLFWwindow* window,
 
     if (fbconfig->samples != GLFW_DONT_CARE)
     {
-        if (fbconfig->samples == 0){
+        if (fbconfig->samples == 0)
+        {
             ADD_ATTR2(NSOpenGLPFASampleBuffers, 0);
-        } else {
+        }
+        else
+        {
             ADD_ATTR2(NSOpenGLPFASampleBuffers, 1);
             ADD_ATTR2(NSOpenGLPFASamples, fbconfig->samples);
         }
     }
 
     // NOTE: All NSOpenGLPixelFormats on the relevant cards support sRGB
-    //       frambuffer, so there's no need (and no way) to request it
+    //       framebuffer, so there's no need (and no way) to request it
 
     ADD_ATTR(0);
 
@@ -219,7 +226,7 @@ int _glfwCreateContext(_GLFWwindow* window,
                                    shareContext:share];
     if (window->nsgl.context == nil)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: Failed to create OpenGL context");
         return GL_FALSE;
     }
