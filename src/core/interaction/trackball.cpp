@@ -51,6 +51,11 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
                                VALID)
 
+    , allowTranslationAlongViewSpaceAxes_(1)
+    , allowHorizontalPanning_("allowHorziontalPanning", "Horizontal panning enabled", true)
+    , allowVerticalPanning_("allowVerticalPanning", "Vertical panning enabled", true)
+    , allowZooming_("allowZoom", "Zoom enabled", true)
+
     , mouseRotate_("trackballRotate", "Rotate",
         new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
             MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
@@ -122,6 +127,13 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
 
     addProperty(handleInteractionEvents_);
 
+    addProperty(allowHorizontalPanning_);
+    addProperty(allowVerticalPanning_);
+    addProperty(allowZooming_);
+    allowHorizontalPanning_.onChange(this, &Trackball::updatePanZoomRestrictions);
+    allowVerticalPanning_.onChange(this, &Trackball::updatePanZoomRestrictions);
+    allowZooming_.onChange(this, &Trackball::updatePanZoomRestrictions);
+
     addProperty(mouseRotate_);
     addProperty(mouseZoom_);
     addProperty(mousePan_);
@@ -137,7 +149,8 @@ Trackball::Trackball(vec3* lookFrom, vec3* lookTo, vec3* lookUp)
     addProperty(stepPanDown_);
     addProperty(stepPanRight_);
 
-    addProperty(touchGesture_);
+    addProperty(touchGesture_); 
+    touchGesture_.setVisible(false); // No options to change button combination to trigger event
 
     setCollapsed(true);
 }
@@ -229,10 +242,11 @@ void Trackball::touchGesture(Event* event) {
         }
 
 
-        auto scale = glm::length(v1) / glm::length(v2);
-        if (!std::isfinite(scale)) {
-            scale = 1;
+        auto zoom = 1 - glm::length(v1) / glm::length(v2);
+        if (!std::isfinite(zoom)) {
+            zoom = 0;
         }
+        zoom *= allowTranslationAlongViewSpaceAxes_.z;
         // Difference between midpoints before and after
         auto prevCenterPoint = glm::mix(prevPos1, prevPos2, 0.5);
         auto centerPoint = glm::mix(pos1, pos2, 0.5);
@@ -249,14 +263,12 @@ void Trackball::touchGesture(Event* event) {
         //vec3 worldSpaceTranslation = cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*centerPoint, ndcDepth)) - cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*prevCenterPoint, ndcDepth));
 
         vec3 direction = (*lookTo_ - *lookFrom_);
-        vec3 fromClosestPointToLookFrom = -direction;
 
-        vec3 worldSpaceTranslation = mapToObject(vec3(centerPoint, 0)*panSpeedFactor_, glm::length(direction)) - mapToObject(vec3(prevCenterPoint, 0)*panSpeedFactor_, glm::length(direction));
-
+        vec3 worldSpaceTranslation = mapToObject(vec3(centerPoint, 0)*panSpeedFactor_*allowTranslationAlongViewSpaceAxes_, glm::length(direction)) - mapToObject(vec3(prevCenterPoint, 0)*panSpeedFactor_*allowTranslationAlongViewSpaceAxes_, glm::length(direction));
 
         // Zoom based on the closest point to the object
         // Use the look at point if the closest point is unknown
-        *lookFrom_ = *lookTo_ + static_cast<float>(scale) * fromClosestPointToLookFrom;
+        *lookFrom_ += static_cast<float>(zoom) * direction;
         // Rotating using angle from screen space is equivalent to rotating 
         // around the direction in world space since we are looking into the screen.
         *lookUp_ = glm::normalize(glm::rotate(*lookUp_, static_cast<float>(angle), glm::normalize(direction)));
@@ -321,7 +333,7 @@ void Trackball::zoom(Event* event) {
     
     } else if (curMousePos != lastMousePos_ && direction.length() > 0) {
         // use the difference in mouse y-position to determine amount of zoom
-        diff = curTrackballPos.y - lastTrackballPos_.y;
+        diff = (curTrackballPos.y - lastTrackballPos_.y)*allowTranslationAlongViewSpaceAxes_.z;
         // zoom by moving the camera
         *lookFrom_ -= direction*diff;
         notifyLookFromChanged(this);
@@ -364,7 +376,7 @@ void Trackball::pan(Event* event) {
 
     vec3 direction = *lookFrom_ - *lookTo_;
     float vecLength = glm::length(direction);
-    vec3 mappedTrackBallOffsetVector = mapToObject(trackBallOffsetVector, vecLength);
+    vec3 mappedTrackBallOffsetVector = mapToObject(trackBallOffsetVector*allowTranslationAlongViewSpaceAxes_, vecLength);
 
     if (curMousePos != lastMousePos_) {
         *lookTo_ += mappedTrackBallOffsetVector;
@@ -424,7 +436,7 @@ void Trackball::stepZoom(Direction dir) {
         direction = *lookTo_ - *lookFrom_;
 
     // zoom by moving the camera
-    *lookFrom_ -= direction*STEPSIZE;
+    *lookFrom_ -= direction*STEPSIZE*allowTranslationAlongViewSpaceAxes_.z;
     notifyLookFromChanged(this);
 }
 
@@ -457,8 +469,8 @@ void Trackball::stepPan(Direction dir) {
     vec3 trackBallOffsetVector = trackballOrigin - trackballDirection;
     //compute next camera position
     trackBallOffsetVector.z = 0.0f;
-    vec3 mappedTrackBallOffsetVector = mapToObject(trackBallOffsetVector);
-    *lookTo_  += mappedTrackBallOffsetVector;
+    vec3 mappedTrackBallOffsetVector = mapToObject(trackBallOffsetVector*allowTranslationAlongViewSpaceAxes_);
+    *lookTo_ += mappedTrackBallOffsetVector;
     *lookFrom_ += mappedTrackBallOffsetVector;
     notifyAllChanged(this);
 }
@@ -483,6 +495,10 @@ void Trackball::rotateFromPosToPos(const vec3& currentCamPos, const vec3& nextCa
     // }
 
     notifyAllChanged(this);
+}
+
+void Trackball::updatePanZoomRestrictions() {
+    allowTranslationAlongViewSpaceAxes_ = vec3(allowHorizontalPanning_.get() ? 1.f : 0, allowVerticalPanning_.get() ? 1.f : 0, allowZooming_.get() ? 1.f : 0);
 }
 
 void Trackball::rotateLeft(Event* event) {

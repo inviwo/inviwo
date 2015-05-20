@@ -108,6 +108,8 @@ protected:
     vec3 mapToObject(vec3 pos, float dist = 1.f);
     void rotateFromPosToPos(const vec3& currentCamPos, const vec3& nextCamPos, float rotationAngle);
 
+    void updatePanZoomRestrictions(); // Call when any of allowHorizontalPanning_ / allowVerticalPanning_ / allowZooming_ changes
+
     void rotate(Event* event);
     void zoom(Event* event);
     void pan(Event* event);
@@ -148,6 +150,18 @@ protected:
     vec3* lookFrom_;
     vec3* lookTo_;
     vec3* lookUp_;
+
+    /* 
+     * 0 if movement should be restricted along view-space axis, 1 otherwise.
+     * x corresponds to horizontal panning
+     * y corresponds to vertical panning
+     * z corresponds to zooming
+     * Updated when allowHorizontalPanning_ / allowVerticalPanning_ / allowZooming_ changes.
+     */
+    vec3 allowTranslationAlongViewSpaceAxes_; 
+    BoolProperty allowHorizontalPanning_; ///< Enable/disable horizontal panning
+    BoolProperty allowVerticalPanning_;   ///< Enable/disable vertical panning
+    BoolProperty allowZooming_;           ///< Enable/disable zooming
 
     BoolProperty handleInteractionEvents_;
 
