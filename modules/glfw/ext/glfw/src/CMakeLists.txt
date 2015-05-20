@@ -71,9 +71,9 @@ if (BUILD_SHARED_LIBS)
         set_target_properties(glfw PROPERTIES PREFIX "" IMPORT_PREFIX "")
 
         if (MINGW)
-            set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.a")
+            set_target_properties(glfw PROPERTIES IMPORT_SUFFIX ".a")
         else()
-            set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
+            set_target_properties(glfw PROPERTIES IMPORT_SUFFIX ".lib")
         endif()
     elseif (APPLE)
         # Append -fno-common to the compile flags to work around a bug in
