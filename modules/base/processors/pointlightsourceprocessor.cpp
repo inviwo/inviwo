@@ -141,6 +141,10 @@ PointLightSourceProcessor::PointLightInteractionHandler::PointLightInteractionHa
     camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged); 
 }
 
+void PointLightSourceProcessor::PointLightInteractionHandler::serialize(IvwSerializer& s) const {}
+
+void PointLightSourceProcessor::PointLightInteractionHandler::deserialize(IvwDeserializer& d) {}
+
 void PointLightSourceProcessor::PointLightInteractionHandler::invokeEvent(Event* event) {
     //if(event->hasBeenUsed())
     //    return;

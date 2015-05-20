@@ -69,6 +69,8 @@ protected:
         PointLightInteractionHandler(FloatVec3Property*, CameraProperty*);
         ~PointLightInteractionHandler(){};
 
+        virtual std::string getClassIdentifier() const { return "org.inviwo.PointLightInteractionHandler"; }
+
         void invokeEvent(Event* event);
         void setHandleEventsOptions(int);
 
@@ -90,6 +92,9 @@ protected:
         void onAllTrackballChanged( const Trackball* trackball );
         void onLookFromChanged( const Trackball* trackball );
         void onCameraChanged();
+
+        void serialize(IvwSerializer& s) const;
+        void deserialize(IvwDeserializer& d);
 
     private:
         FloatVec3Property* lightPosition_;
