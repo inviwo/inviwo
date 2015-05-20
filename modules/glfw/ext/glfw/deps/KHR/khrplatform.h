@@ -26,7 +26,7 @@
 
 /* Khronos platform-specific types and definitions.
  *
- * $Revision$ on $Date$
+ * $Revision: 23298 $ on $Date: 2013-09-30 17:07:13 -0700 (Mon, 30 Sep 2013) $
  *
  * Adopters may modify this file to suit their platform. Adopters are
  * encouraged to submit platform specific modifications to the Khronos

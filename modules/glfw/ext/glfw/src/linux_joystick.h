@@ -27,34 +27,37 @@
 #ifndef _linux_joystick_h_
 #define _linux_joystick_h_
 
+#include <regex.h>
+
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
-    _GLFWjoystickLinux linux_js[GLFW_JOYSTICK_LAST + 1]
+    _GLFWjoystickLinux linux_js
 
 
-//========================================================================
-// GLFW platform specific types
-//========================================================================
-
-//------------------------------------------------------------------------
-// Platform-specific joystick structure
-//------------------------------------------------------------------------
+// Linux-specific joystick API data
+//
 typedef struct _GLFWjoystickLinux
 {
-    int             present;
-    int             fd;
-    float*          axes;
-    int             axisCount;
-    unsigned char*  buttons;
-    int             buttonCount;
-    char*           name;
+    struct
+    {
+        int             present;
+        int             fd;
+        float*          axes;
+        int             axisCount;
+        unsigned char*  buttons;
+        int             buttonCount;
+        char*           name;
+        char*           path;
+    } js[GLFW_JOYSTICK_LAST + 1];
+
+#if defined(__linux__)
+    int             inotify;
+    int             watch;
+    regex_t         regex;
+#endif /*__linux__*/
 } _GLFWjoystickLinux;
 
 
-//========================================================================
-// Prototypes for platform specific internal functions
-//========================================================================
-
-void _glfwInitJoysticks(void);
+int _glfwInitJoysticks(void);
 void _glfwTerminateJoysticks(void);
 
 #endif // _linux_joystick_h_

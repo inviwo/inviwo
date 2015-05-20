@@ -77,7 +77,7 @@ static void mode(void* data,
         int size = monitor->wl.modesSize * 2;
         _GLFWvidmodeWayland* modes =
             realloc(monitor->wl.modes,
-                    monitor->wl.modesSize * sizeof(_GLFWvidmodeWayland));
+                    size * sizeof(_GLFWvidmodeWayland));
         monitor->wl.modes = modes;
         monitor->wl.modesSize = size;
     }
@@ -234,5 +234,17 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
             return;
         }
     }
+}
+
+void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformGetGammaRamp not implemented yet\n");
+}
+
+void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
+{
+    // TODO
+    fprintf(stderr, "_glfwPlatformSetGammaRamp not implemented yet\n");
 }
 

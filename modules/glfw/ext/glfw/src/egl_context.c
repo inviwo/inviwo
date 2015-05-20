@@ -47,33 +47,25 @@ static const char* getErrorString(EGLint error)
         case EGL_BAD_ALLOC:
             return "EGL failed to allocate resources for the requested operation";
         case EGL_BAD_ATTRIBUTE:
-            return "An unrecognized attribute or attribute value was passed "
-                   "in the attribute list";
+            return "An unrecognized attribute or attribute value was passed in the attribute list";
         case EGL_BAD_CONTEXT:
-            return "An EGLContext argument does not name a valid EGL "
-                   "rendering context";
+            return "An EGLContext argument does not name a valid EGL rendering context";
         case EGL_BAD_CONFIG:
-            return "An EGLConfig argument does not name a valid EGL frame "
-                   "buffer configuration";
+            return "An EGLConfig argument does not name a valid EGL frame buffer configuration";
         case EGL_BAD_CURRENT_SURFACE:
-            return "The current surface of the calling thread is a window, pixel "
-                   "buffer or pixmap that is no longer valid";
+            return "The current surface of the calling thread is a window, pixel buffer or pixmap that is no longer valid";
         case EGL_BAD_DISPLAY:
-            return "An EGLDisplay argument does not name a valid EGL display "
-                   "connection";
+            return "An EGLDisplay argument does not name a valid EGL display connection";
         case EGL_BAD_SURFACE:
-            return "An EGLSurface argument does not name a valid surface "
-                   "configured for GL rendering";
+            return "An EGLSurface argument does not name a valid surface configured for GL rendering";
         case EGL_BAD_MATCH:
             return "Arguments are inconsistent";
         case EGL_BAD_PARAMETER:
             return "One or more argument values are invalid";
         case EGL_BAD_NATIVE_PIXMAP:
-            return "A NativePixmapType argument does not refer to a valid "
-                   "native pixmap";
+            return "A NativePixmapType argument does not refer to a valid native pixmap";
         case EGL_BAD_NATIVE_WINDOW:
-            return "A NativeWindowType argument does not refer to a valid "
-                   "native window";
+            return "A NativeWindowType argument does not refer to a valid native window";
         case EGL_CONTEXT_LOST:
             return "The application must destroy all contexts and reinitialise";
     }
@@ -167,6 +159,7 @@ static GLboolean chooseFBConfigs(const _GLFWctxconfig* ctxconfig,
         u->stencilBits = getConfigAttrib(n, EGL_STENCIL_SIZE);
 
         u->samples = getConfigAttrib(n, EGL_SAMPLES);
+        u->doublebuffer = GL_TRUE;
 
         u->egl = n;
         usableCount++;
@@ -235,7 +228,7 @@ void _glfwTerminateContextAPI(void)
     assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
 }
 
-// Prepare for creation of the OpenGL context
+// Create the OpenGL or OpenGL ES context
 //
 int _glfwCreateContext(_GLFWwindow* window,
                        const _GLFWctxconfig* ctxconfig,
@@ -295,8 +288,7 @@ int _glfwCreateContext(_GLFWwindow* window,
 
         window->egl.visual = XGetVisualInfo(_glfw.x11.display,
                                             mask, &info, &count);
-
-        if (window->egl.visual == NULL)
+        if (!window->egl.visual)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "EGL: Failed to retrieve visual for EGLConfig");
@@ -309,7 +301,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         if (!eglBindAPI(EGL_OPENGL_ES_API))
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
+            _glfwInputError(GLFW_API_UNAVAILABLE,
                             "EGL: Failed to bind OpenGL ES: %s",
                             getErrorString(eglGetError()));
             return GL_FALSE;
@@ -319,7 +311,7 @@ int _glfwCreateContext(_GLFWwindow* window,
     {
         if (!eglBindAPI(EGL_OPENGL_API))
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
+            _glfwInputError(GLFW_API_UNAVAILABLE,
                             "EGL: Failed to bind OpenGL: %s",
                             getErrorString(eglGetError()));
             return GL_FALSE;
@@ -339,12 +331,12 @@ int _glfwCreateContext(_GLFWwindow* window,
 
             if (ctxconfig->forward)
                 flags |= EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR;
-
-            if (ctxconfig->debug)
-                flags |= EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
         }
 
-        if (ctxconfig->robustness != GLFW_NO_ROBUSTNESS)
+        if (ctxconfig->debug)
+            flags |= EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR;
+
+        if (ctxconfig->robustness)
         {
             if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
                 strategy = EGL_NO_RESET_NOTIFICATION_KHR;
@@ -381,12 +373,15 @@ int _glfwCreateContext(_GLFWwindow* window,
         setEGLattrib(EGL_NONE, EGL_NONE);
     }
 
+    // Context release behaviors (GL_KHR_context_flush_control) are not yet
+    // supported on EGL but are not a hard constraint, so ignore and continue
+
     window->egl.context = eglCreateContext(_glfw.egl.display,
                                            config, share, attribs);
 
     if (window->egl.context == EGL_NO_CONTEXT)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "EGL: Failed to create context: %s",
                         getErrorString(eglGetError()));
         return GL_FALSE;
@@ -510,21 +505,21 @@ GLFWglproc _glfwPlatformGetProcAddress(const char* procname)
 
 GLFWAPI EGLDisplay glfwGetEGLDisplay(void)
 {
-    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_REQUIRE_INIT_OR_RETURN(EGL_NO_DISPLAY);
     return _glfw.egl.display;
 }
 
 GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_REQUIRE_INIT_OR_RETURN(EGL_NO_CONTEXT);
     return window->egl.context;
 }
 
 GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+    _GLFW_REQUIRE_INIT_OR_RETURN(EGL_NO_SURFACE);
     return window->egl.surface;
 }
 

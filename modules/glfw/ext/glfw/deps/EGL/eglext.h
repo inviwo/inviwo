@@ -34,7 +34,7 @@ extern "C" {
 
 /* Header file version number */
 /* Current version at http://www.khronos.org/registry/egl/ */
-/* $Revision$ on $Date$ */
+/* $Revision: 20690 $ on $Date: 2013-02-22 17:15:05 -0800 (Fri, 22 Feb 2013) $ */
 #define EGL_EGLEXT_VERSION 15
 
 #ifndef EGL_KHR_config_attribs

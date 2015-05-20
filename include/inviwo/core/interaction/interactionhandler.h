@@ -44,8 +44,8 @@ public:
 
     virtual std::string getClassIdentifier() const { return "undefined"; }
 
-    void serialize(IvwSerializer& s) const;
-    void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const;
+    virtual void deserialize(IvwDeserializer& d);
 };
 
 } // namespace
