@@ -34,11 +34,8 @@ namespace inviwo {
 InteractionHandler::InteractionHandler() : EventListener() {}
 InteractionHandler::~InteractionHandler() {}
 
-void InteractionHandler::serialize(IvwSerializer& s) const {
-    s.serialize("type", getClassIdentifier(), true);
-}
+void InteractionHandler::serialize(IvwSerializer& s) const {}
 
-void InteractionHandler::deserialize(IvwDeserializer& d) {
-}
+void InteractionHandler::deserialize(IvwDeserializer& d) {}
 
 } // namespace
