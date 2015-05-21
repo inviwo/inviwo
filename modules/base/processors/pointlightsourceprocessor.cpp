@@ -111,10 +111,7 @@ void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) 
 
 void PointLightSourceProcessor::handleInteractionEventsChanged() {
     if (interactionEvents_.get() > 0) {
-        if (!hasInteractionHandler())
-            addInteractionHandler(lightInteractionHandler_);
-
-        
+        addInteractionHandler(lightInteractionHandler_);
     } else {
         removeInteractionHandler(lightInteractionHandler_);
     }
