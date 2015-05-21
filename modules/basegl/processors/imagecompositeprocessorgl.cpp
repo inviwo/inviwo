@@ -29,6 +29,7 @@
 
 #include "imagecompositeprocessorgl.h"
 #include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/textureutils.h>
 
 namespace inviwo {
 
@@ -51,9 +52,9 @@ ImageCompositeProcessorGL::ImageCompositeProcessorGL()
 }
     
 void ImageCompositeProcessorGL::process() {
-    // Make sure there is a GL representation.
-    outport_.getData()->getEditableRepresentation<ImageGL>();
-    imageInport1_.passOnDataToOutport(&outport_);
+    utilgl::activateTargetAndCopySource(outport_, imageInport1_);
+    utilgl::deactivateCurrentTarget();
+
     compositePortsToOutport(outport_, COLOR_DEPTH, imageInport2_);
 }
 
