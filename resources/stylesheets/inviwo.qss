@@ -553,6 +553,16 @@ QLineEdit {
     border-radius: 1px;
 }
 
+QSplitter:handle {
+    background: #c8ccd0;
+    border: 1px solid #c8ccd0;
+}
+QSplitter::handle:pressed, QSplitter::handle:hover {
+    background: #268bd2;
+    border: 1px solid #268bd2;
+}
+
+
 
 /* QAbstractSpinBox styles */
 QAbstractSpinBox {
@@ -572,27 +582,30 @@ QAbstractSpinBox::down-button:disabled {
 }
 
 /* slim slider styles and part of the QSplitter styles */
-QSlider::sub-page:horizontal, QSlider::add-page:vertical, QSplitter[Vertical="false"] QFrame#valueArea, QSplitter[Vertical="true"] QFrame#valueArea {
+QSlider::sub-page:horizontal, QSlider::add-page:vertical, 
+QSplitter[Vertical="false"]#RangeSliderQt QFrame#valueArea, 
+QSplitter[Vertical="true"]#RangeSliderQt QFrame#valueArea {
     border: 0px;
     background: #99a0a7;
     background: #1e70a8;
     border-radius:2px;
 }
-QSlider::sub-page:horizontal, QSplitter[Vertical="false"] QFrame#valueArea {
+QSlider::sub-page:horizontal, QSplitter[Vertical="false"]#RangeSliderQt QFrame#valueArea {
     margin: -1px 0px -1px 0px;
 }
-QSlider::add-page:vertical, QSplitter[Vertical="true"] QFrame#valueArea {
+QSlider::add-page:vertical, QSplitter[Vertical="true"]#RangeSliderQt QFrame#valueArea {
     margin: 0px -1px 0px -1px;
 }
-QSlider::groove, QSlider::add-page:horizontal, QSlider::sub-page:vertical, QSplitter[Vertical="false"] QFrame, QSplitter[Vertical="true"] QFrame {
+QSlider::groove, QSlider::add-page:horizontal, QSlider::sub-page:vertical, 
+QSplitter[Vertical="false"]#RangeSliderQt QFrame, QSplitter[Vertical="true"]#RangeSliderQt QFrame {
     border: 0px;
     background: #65696d;
     border-radius:1px;
 }
-QSlider::groove:horizontal, QSlider::add-page:horizontal, QSplitter[Vertical="false"] QFrame {
+QSlider::groove:horizontal, QSlider::add-page:horizontal, QSplitter[Vertical="false"]#RangeSliderQt QFrame {
     height: 3px;
 }
-QSlider::groove:vertical, QSlider::sub-page:vertical, QSplitter[Vertical="true"] QFrame {
+QSlider::groove:vertical, QSlider::sub-page:vertical, QSplitter[Vertical="true"]#RangeSliderQt QFrame {
     width: 3px;
 }
 
@@ -616,11 +629,13 @@ QSlider::handle:vertical {
 
 
 /* disabled slider / QSplitter */
-QSlider::sub-page:horizontal:disabled, QSplitter[Vertical="false"] QFrame:disabled#valueArea, QSlider::add-page:vertical:disabled, QSplitter[Vertical="true"] QFrame:disabled#valueArea {
+QSlider::sub-page:horizontal:disabled, QSplitter[Vertical="false"]#RangeSliderQt QFrame:disabled#valueArea, 
+QSlider::add-page:vertical:disabled, QSplitter[Vertical="true"]#RangeSliderQt QFrame:disabled#valueArea {
     background: #4f555b;
 }
 
-QSlider::groove:disabled, QSlider::add-page:horizontal:disabled, QSlider::sub-page:vertical:disabled, QSplitter:disabled[Vertical="false"] QFrame, QSplitter:disabled[Vertical="true"] QFrame {
+QSlider::groove:disabled, QSlider::add-page:horizontal:disabled, QSlider::sub-page:vertical:disabled, 
+QSplitter:disabled[Vertical="false"]#RangeSliderQt QFrame, QSplitter:disabled[Vertical="true"]#RangeSliderQt QFrame {
     background: #404246;
 }
 
@@ -643,87 +658,95 @@ QSplitter:horizontal {
    only cosmetics are done here (rounded corners)!
 */
 
-QSplitter[Vertical="false"] QFrame#valueArea, QSplitter[Vertical="true"] QFrame#valueArea {
+
+
+QSplitter[Vertical="false"]#RangeSliderQt QFrame#valueArea, 
+QSplitter[Vertical="true"]#RangeSliderQt QFrame#valueArea {
     border: 0px;
     background: #99a0a7;
     background: #1e70a8;
     border-radius:0px;
 }
 
-QSplitter QFrame, QSplitter QFrame#valueArea {
+QSplitter#RangeSliderQt QFrame, QSplitter#RangeSliderQt QFrame#valueArea {
     border-radius: 0px;    
     background-clip: content;
 }
-QSplitter[Vertical="true"] QFrame {
+QSplitter[Vertical="true"]#RangeSliderQt QFrame {
     margin: 0px 4px; 
     min-width: 4px;
     max-width: 4px;
 }
-QSplitter[Vertical="false"] QFrame {
+QSplitter[Vertical="false"]#RangeSliderQt QFrame {
     margin: 4px 0px; 
     min-height: 4px;
     max-height: 4px;
 }
-QSplitter[Vertical="true"] QFrame[LeftPart="false"] {
+QSplitter[Vertical="true"]#RangeSliderQt QFrame[LeftPart="false"] {
     /* lower part of splitter */
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
 }
-QSplitter[Vertical="true"] QFrame[LeftPart="true"] {
+QSplitter[Vertical="true"]#RangeSliderQt QFrame[LeftPart="true"] {
     /* upper part of splitter */
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
-QSplitter[Vertical="false"] QFrame[LeftPart="true"] {
+QSplitter[Vertical="false"]#RangeSliderQt QFrame[LeftPart="true"] {
     /* left part of splitter */
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
 }
-QSplitter[Vertical="false"] QFrame[LeftPart="false"] {
+QSplitter[Vertical="false"]#RangeSliderQt QFrame[LeftPart="false"] {
     /* right part of splitter */
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
 }
-QSplitter[Vertical="true"] QFrame#valueArea {
+QSplitter[Vertical="true"]#RangeSliderQt QFrame#valueArea {
     margin: 0px 3px; 
     min-width: 6px;
     max-width: 6px;
 }
-QSplitter[Vertical="false"] QFrame#valueArea {
+QSplitter[Vertical="false"]#RangeSliderQt QFrame#valueArea {
     margin: 3px 0px; 
     min-height: 6px;
     max-height: 6px;
 }
 
-QSplitter::handle {
+QSplitter::handle#RangeSliderQt {
     background: #c8ccd0;
     border: 2px solid #c8ccd0;
     border-radius: 6px;
 }
 
-QSplitter::handle:horizontal {
+QSplitter::handle:horizontal#RangeSliderQt {
     width: 5px;
-}
-
-QSplitter::handle:vertical {
     height: 5px;
 }
 
+QSplitter::handle:vertical#RangeSliderQt {
+    height: 5px;
+    width: 5px;
+}
 
-QSplitter::handle:pressed, QSplitter::handle:hover {
+
+QSplitter::handle:pressed#RangeSliderQt, 
+QSplitter::handle:hover#RangeSliderQt {
     background: #268bd2;
     border: 2px solid #268bd2;
 }
 
 QSplitter QFrame#pythonEditor, QFrame#htmlEditor, QTreeWidget#htmlTree {
     font-family: "Calibra";
-    background-color: #888888;
+    background-color: #b0b0bc;
     color: #111111;
+    border: 1px solid #9d9995;
 }
 QSplitter QFrame#pythonConsole, QFrame#htmlEditorOutput {
     font-family: "Calibra";
     color: #999999;
     background-color: #4d4d4d;
+    border: 1px solid #6a6a6f;
 }
 
 

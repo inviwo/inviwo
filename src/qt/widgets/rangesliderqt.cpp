@@ -50,6 +50,7 @@ RangeSliderQt::RangeSliderQt(Qt::Orientation orientation, QWidget* parent)
     this->handle(1)->setAttribute(Qt::WA_Hover);
     this->handle(2)->setAttribute(Qt::WA_Hover);
 
+    this->setObjectName("RangeSliderQt");
     this->setProperty("Vertical", orientation == Qt::Vertical);
     left->setProperty("LeftPart", true);
     right->setProperty("LeftPart", false);

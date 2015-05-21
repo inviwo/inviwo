@@ -140,6 +140,7 @@ void PythonEditorWidget::buildWidget() {
     horizontalLayout->addItem(horizontalSpacer);
     // Done creating buttons
     QSplitter* splitter = new QSplitter(content);
+
     splitter->setOrientation(Qt::Vertical);
     pythonCode_ = new PythonTextEditor(content);
     pythonCode_->setObjectName("pythonEditor");
@@ -156,6 +157,11 @@ void PythonEditorWidget::buildWidget() {
     splitter->addWidget(pythonOutput_);
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 0);
+    splitter->setHandleWidth(2);
+    // enable QSplitter:hover stylesheet 
+    // QTBUG-13768 https://bugreports.qt.io/browse/QTBUG-13768
+    splitter->handle(1)->setAttribute(Qt::WA_Hover);
+
     verticalLayout->addWidget(splitter);
     setWidget(content);
     connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));

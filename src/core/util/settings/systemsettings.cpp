@@ -76,8 +76,8 @@ SystemSettings::SystemSettings()
 
     , pythonSyntax_("pythonSyntax_", "Python Syntax Highlighting")
     , pyFontSize_("pyFontSize_" , "Font Size" , 11 , 1, 72)
-    , pyBGColor_("pyBGColor", "Background", ivec4(0x88, 0x88, 0x88, 255), ivec4(0, 0, 0, 1),
-                 ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), INVALID_OUTPUT,
+    , pyBGColor_("pyBGColor", "Background", ivec4(0xb0, 0xb0, 0xbc, 255), ivec4(0, 0, 0, 1),
+                 ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), INVALID_OUTPUT, 
                  PropertySemantics::Color)
     , pyTextColor_("pyTextColor", "Text", ivec4(0x11, 0x11, 0x11, 255), ivec4(0, 0, 0, 1),
                    ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), INVALID_OUTPUT,

@@ -198,7 +198,7 @@ void TransferFunctionPropertyDialog::generateWidget() {
 
     rightPanel->setLayout(rightLayout);
     
-    QFrame* mainPanel = new QFrame(this);
+    QWidget* mainPanel = new QWidget(this);
     QHBoxLayout* mainLayout = new QHBoxLayout();
     mainLayout->setContentsMargins(7, 7, 7, 7);
     mainLayout->setSpacing(7);
