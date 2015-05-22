@@ -50,21 +50,41 @@ MeshClipping::MeshClipping()
     , inport_("geometry.input")
     , outport_("geometry.output")
     , clippingEnabled_("clippingEnabled", "Enable clipping", false)
+    , movePointAlongNormal_("movePointAlongNormal", "Move Plane Point Along Normal", false, VALID)
+    , moveCameraAlongNormal_("moveCameraAlongNormal", "Move Camera Along Normal", true, VALID)
+    , pointPlaneMove_("pointPlaneMove", "Plane Point Along Normal Move", 0.f, -2.f, 2.f, 0.01f)
     , planePoint_("planePoint", "Plane Point", vec3(0.0f), vec3(-10.0f), vec3(10.0f), vec3(0.1f))
     , planeNormal_("planeNormal", "Plane Normal", vec3(0.0f, 0.0f, -1.0f), vec3(-1.0f), vec3(1.0f), vec3(0.1f))
-    , renderAsPoints_("renderAsPoints", "Render As Points by Default", false) {
+    , alignPlaneNormalToCameraNormal_("alignPlaneNormalToCameraNormal", "Align Plane Normal To Camera Normal", VALID)
+    , renderAsPoints_("renderAsPoints", "Render As Points by Default", false)
+    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
+    vec3(0.0f, 1.0f, 0.0f), nullptr, VALID){
     addPort(inport_);
     addPort(outport_);
     addProperty(clippingEnabled_);
+    addProperty(movePointAlongNormal_);
+    movePointAlongNormal_.onChange(this, &MeshClipping::onMovePointAlongNormalToggled);
+    addProperty(moveCameraAlongNormal_);
+    addProperty(pointPlaneMove_);
+
     addProperty(planePoint_);
     addProperty(planeNormal_);
+
+    addProperty(alignPlaneNormalToCameraNormal_);
+    alignPlaneNormalToCameraNormal_.onChange(this, &MeshClipping::onAlignPlaneNormalToCameraNormalPressed);
+
     addProperty(renderAsPoints_);
+
+    addProperty(camera_);
+    camera_.setVisible(false);
 }
 
 MeshClipping::~MeshClipping() {}
 
 void MeshClipping::initialize() {
     Processor::initialize();
+
+    onMovePointAlongNormalToggled();
 }
 
 void MeshClipping::deinitialize() {
@@ -85,9 +105,29 @@ void MeshClipping::process() {
     */
     if (clippingEnabled_.get()) {
         const Mesh* geom = inport_.getData();
+
+        vec3 point = planePoint_.get();
+        vec3 normal = planeNormal_.get();
+        if (movePointAlongNormal_.get()){
+            // Set new plane position based on offset
+            vec3 offsetPlaneDiff = normal * pointPlaneMove_.get();
+            point += offsetPlaneDiff;
+            // Move camera along the offset as well
+            if (moveCameraAlongNormal_.get()){
+                vec3 offsetGeometryABS = glm::abs(geom->getOffset());
+                float planeMoveDiff = pointPlaneMove_.get() - previousPointPlaneMove_;
+                vec3 offsetDiff = normal * planeMoveDiff;
+                vec3 lookOffset = offsetDiff*offsetGeometryABS*0.5f;
+                //camera_.setLookTo(camera_.getLookTo() + lookOffset);
+                camera_.setLook(camera_.getLookFrom() + lookOffset,
+                    camera_.getLookTo() + lookOffset, camera_.getLookUp());
+            }
+            previousPointPlaneMove_ = pointPlaneMove_.get();
+        }
+
         // LogInfo("Calling clipping method.");
         Mesh* clippedPlaneGeom =
-            clipGeometryAgainstPlaneRevised(geom, Plane(planePoint_.get(), planeNormal_.get()));
+            clipGeometryAgainstPlaneRevised(geom, Plane(point, normal));
         if (clippedPlaneGeom) {
             clippedPlaneGeom->setModelMatrix(inport_.getData()->getModelMatrix());
             clippedPlaneGeom->setWorldMatrix(inport_.getData()->getWorldMatrix());
@@ -100,6 +140,48 @@ void MeshClipping::process() {
     } else {
         outport_.setConstData(inport_.getData());
     }
+}
+
+void MeshClipping::onMovePointAlongNormalToggled(){
+    planePoint_.setReadOnly(movePointAlongNormal_.get());
+    pointPlaneMove_.set(0.f);
+    previousPointPlaneMove_ = 0.f;
+    pointPlaneMove_.setVisible(movePointAlongNormal_.get());
+}
+
+void MeshClipping::onAlignPlaneNormalToCameraNormalPressed(){
+    planeNormal_.set(glm::normalize(camera_.getLookTo() - camera_.getLookFrom()));
+
+    // Calculate new plane point by finding the closest geometry point to the camera
+    const Mesh* geom = inport_.getData();
+    const std::vector<vec3>* vertexList;
+    const SimpleMesh* simpleInputMesh = dynamic_cast<const SimpleMesh*>(geom);
+    if (simpleInputMesh) {
+        vertexList = simpleInputMesh->getVertexList()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
+    }
+    else {
+        const BasicMesh* basicInputMesh = dynamic_cast<const BasicMesh*>(geom);
+        if (basicInputMesh) {
+            vertexList = basicInputMesh->getVertices()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
+        }
+        else {
+            LogError("Unsupported mesh type, only simple and basic meshes are supported");
+            return;
+        }
+    }
+
+    float minDist = glm::distance(camera_.getLookFrom(), vertexList->at(0));
+    vec3 closestVertex = vertexList->at(0);
+    for (unsigned int t = 1; t < vertexList->size(); ++t) {
+        // Calculate distance to camera
+        float dist = glm::distance(camera_.getLookFrom(), vertexList->at(t));
+        if (dist < minDist){
+            minDist = dist;
+            closestVertex = vertexList->at(t);
+        }
+    }
+
+    planePoint_.set(closestVertex);
 }
 
 // Convert degrees to radians

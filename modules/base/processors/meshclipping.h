@@ -37,8 +37,9 @@
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 #include <inviwo/core/datastructures/geometry/plane.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-
 
 namespace inviwo {
 
@@ -55,6 +56,9 @@ public:
 protected:
     virtual void process();
 
+    void onMovePointAlongNormalToggled();
+    void onAlignPlaneNormalToCameraNormalPressed();
+
     Mesh* clipGeometryAgainstPlaneRevised(const Mesh*, Plane);
     Mesh* clipGeometryAgainstPlane(const Mesh*, Plane);
     float degreeToRad(float);
@@ -64,9 +68,16 @@ private:
     MeshOutport outport_;
 
     BoolProperty clippingEnabled_;
+    BoolProperty movePointAlongNormal_;
+    BoolProperty moveCameraAlongNormal_;
+    FloatProperty pointPlaneMove_;
     FloatVec3Property planePoint_;
     FloatVec3Property planeNormal_;
+    ButtonProperty alignPlaneNormalToCameraNormal_;
     BoolProperty renderAsPoints_;
+    CameraProperty camera_;
+
+    float previousPointPlaneMove_;
 
     static const float EPSILON;
 };
