@@ -82,7 +82,7 @@ void ImageGrayscale::preProcess() {
         break;
     }
 
-    shader_->setUniform("lumScale_", lumScale);
+    shader_.setUniform("lumScale_", lumScale);
 }
 
 }  // namespace

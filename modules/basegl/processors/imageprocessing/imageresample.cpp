@@ -74,16 +74,14 @@ void ImageResample::initialize() {
 }
 
 void ImageResample::interpolationTypeChanged() {
-    if (shader_) {
-        switch (interpolationType_.get()) {
-            case 1:
-                shader_->getFragmentShaderObject()->addShaderDefine("BICUBIC_INTERPOLATION", "1");
-                break;
-            default:
-                shader_->getFragmentShaderObject()->removeShaderDefine("BICUBIC_INTERPOLATION");
-        }
-        shader_->build();
+    switch (interpolationType_.get()) {
+        case 1:
+            shader_.getFragmentShaderObject()->addShaderDefine("BICUBIC_INTERPOLATION", "1");
+            break;
+        default:
+            shader_.getFragmentShaderObject()->removeShaderDefine("BICUBIC_INTERPOLATION");
     }
+    shader_.build();
 }
 
 void ImageResample::dimensionChanged() {

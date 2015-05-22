@@ -55,7 +55,7 @@ void ImageMapping::preProcess() {
     const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
 
     transferFunctionGL->bindTexture(transFuncUnit.getEnum());
-    shader_->setUniform("transferFunc_", transFuncUnit.getUnitNumber());
+    shader_.setUniform("transferFunc_", transFuncUnit.getUnitNumber());
 }
 
 }  // namespace

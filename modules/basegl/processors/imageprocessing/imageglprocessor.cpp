@@ -41,7 +41,7 @@ ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     , outport_(fragmentShader + "outport")
     , internalInvalid_(false)
     , fragmentShader_(fragmentShader)
-    , shader_(nullptr) {
+    , shader_(fragmentShader, false) {
     addPort(inport_);
     addPort(outport_);
 
@@ -54,14 +54,8 @@ ImageGLProcessor::~ImageGLProcessor() {}
 
 void ImageGLProcessor::initialize() {
     Processor::initialize();
-    delete shader_;
-    shader_ = new Shader(fragmentShader_, true);
+    shader_.build();
     internalInvalid_ = true;
-}
-
-void ImageGLProcessor::deinitialize() {
-    Processor::deinitialize();
-    delete shader_;
 }
 
 void ImageGLProcessor::process() {
@@ -85,15 +79,15 @@ void ImageGLProcessor::process() {
     utilgl::bindColorTexture(inport_, imgUnit);
 
     utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
-    shader_->activate();
+    shader_.activate();
 
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-    shader_->setUniform("inport_", imgUnit.getUnitNumber());
+    utilgl::setShaderUniforms(&shader_, outport_, "outportParameters_");
+    shader_.setUniform("inport_", imgUnit.getUnitNumber());
 
     preProcess();
 
     utilgl::singleDrawImagePlaneRect();
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 
     postProcess();

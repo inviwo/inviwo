@@ -47,7 +47,7 @@ FindEdges::FindEdges()
 FindEdges::~FindEdges() {}
 
 void FindEdges::preProcess() {
-    shader_->setUniform("alpha_", alpha_.get());
+    shader_.setUniform("alpha_", alpha_.get());
 }
 
 }  // namespace
