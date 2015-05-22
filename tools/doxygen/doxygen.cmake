@@ -27,15 +27,21 @@
  # 
  #################################################################################
  
-function(make_template FILENAME DOXY_NAME BRIEF OUTPUT_DIR INPUT_LIST TAGFILE INPUT_TAG_LIST)
+function(make_template FILENAME DOXY_NAME BRIEF OUTPUT_DIR INPUT_LIST TAGFILE INPUT_TAG_LIST EXTRA_FILE_LIST)
 	set(PROJNAME ${DOXY_NAME})
 	ivw_message("Make doxygen project " ${PROJNAME})
-	
+
+	set(MAINPAGE "${IVW_ROOT_DIR}/README.md")
+
+	list(APPEND INPUT_LIST ${MAINPAGE})
 	string(REGEX REPLACE ";" " \\\\\n                         " INPUTS "${INPUT_LIST}")
 	set(INPUTS ${INPUTS})
 	
 	string(REGEX REPLACE ";" " \\\\\n                         " INPUT_TAGS "${INPUT_TAG_LIST}")
 	set(INPUT_TAGS ${INPUT_TAGS})
+
+	string(REGEX REPLACE ";" " \\\\\n                         " EXTRA_FILES "${EXTRA_FILE_LIST}")
+	set(EXTRA_FILES ${EXTRA_FILES})
 
 	configure_file(${IVW_DOXY_DIR}/main.doxy.template ${FILENAME})
 endfunction()
@@ -107,73 +113,78 @@ endfunction()
 						  # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
 	
 	set(IVW_DOXY_DIR ${IVW_ROOT_DIR}/tools/doxygen)
-	
-	set(IVW_DOXY_OUT ${IVW_ROOT_DIR}/tools/doxygen/doc)
-	
-	# Main
-	make_template(
-		"${IVW_DOXY_DIR}/main.doxy" 
-		"Inviwo" 
-		"Inviwo documentation" 
-		"doc/" 
-		"${IVW_SOURCE_DIR};${IVW_INCLUDE_DIR};${IVW_APPLICATION_DIR};${IVW_MODULE_DIR}"
-		"" 
-		""
-	)
-	
-	# Help
-	make_template(
-		"${IVW_DOXY_DIR}/help.doxy" 
-		"Inviwo help" 
-		"Inviwo help" 
-		"${IVW_DOXY_OUT}" 
-		"${IVW_SOURCE_DIR};${IVW_INCLUDE_DIR};${IVW_APPLICATION_DIR};${IVW_MODULE_DIR}"
-		"" 
-		""
-	)
-	file(READ ${IVW_DOXY_DIR}/help.doxy.template HELP_SETTINGS)
-	file(APPEND ${IVW_DOXY_DIR}/help.doxy ${HELP_SETTINGS})
-	
-	# Core
-	make_template(
-		"${IVW_DOXY_DIR}/core.doxy" 
-		"Inviwo Core" 
-		"Core functionality of Inviwo" 
-		"${IVW_DOXY_OUT}/core" 
-		"${IVW_SOURCE_DIR}/core;${IVW_CORE_INCLUDE_DIR}" 
-		"${IVW_DOXY_OUT}/core/html/ivwcore.tag"
-		""
-	)
-	
-	# OT
-	make_template(
-		"${IVW_DOXY_DIR}/qt.doxy" 
-		"Inviwo Qt" 
-		"Main Qt elements of Inviwo" 
-		"${IVW_DOXY_OUT}/qt" 
-		"${IVW_SOURCE_DIR}/qt;${IVW_QT_INCLUDE_DIR}" 
-		"${IVW_DOXY_OUT}/qt/html/ivwqt.tag"
-		"${IVW_DOXY_OUT}/core/html/ivwcore.tag=../../core/html;qtcore.tags=http://qt-project.org/doc/qt-5/"
-	)
-	
-	# Apps
-	set(IVW_DOXY_APP_TAGS
-		"${IVW_DOXY_OUT}/qt/html/ivwqt.tag=../../qt/html"
-		"${IVW_DOXY_OUT}/core/html/ivwcore.tag=../../core/html"
-		"${IVW_DOXY_OUT}/modules/html/ivwmodules.tag=../../modules/html"
-		"qtcore.tags=http://qt-project.org/doc/qt-5/"
-	)
-	
-	make_template(
-		"${IVW_DOXY_DIR}/apps.doxy" 
-		"Inviwo Apps" 
-		"Applications using Inviwo Core and Modules" 
-		"${IVW_DOXY_OUT}/apps" 
-		"${IVW_SOURCE_DIR}/core;${IVW_CORE_INCLUDE_DIR}" 
-		"${IVW_DOXY_OUT}/core/html/ivwapps.tag"
-		"${IVW_DOXY_APP_TAGS}"
+	set(IVW_DOXY_OUT ${CMAKE_CURRENT_BINARY_DIR}/tools/doxygen)
+	set(IVW_DOXY_TAG_FILES "")
+
+	set(IVW_DOXY_EXTRA_FILES 
+		"${IVW_DOXY_DIR}/style/img_downArrow.png"
 	)
 
+	# All In one.
+	make_template(
+		"${IVW_DOXY_OUT}/main.doxy" 
+		"Inviwo" 
+		"Inviwo documentation" 
+		"${IVW_DOXY_OUT}/doc/main" 
+		"${IVW_SOURCE_DIR};${IVW_INCLUDE_DIR};${IVW_APPLICATION_DIR};${IVW_MODULE_DIR}"
+		"" 
+		""
+		"${IVW_DOXY_EXTRA_FILES}"
+	)
+	
+	add_custom_target(inviwo-documentation
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${IVW_DOXY_OUT}/doc/main/html"
+        COMMAND ${DOXYGEN_EXECUTABLE} "${IVW_DOXY_OUT}/main.doxy"
+        COMMAND ln -sf "${IVW_DOXY_OUT}/doc/main/html/index.html" "${IVW_DOXY_OUT}/doc/main/index.html"
+        WORKING_DIRECTORY ${IVW_DOXY_OUT}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+	
+	# Help, used for the help inside invowo
+	make_template(
+		"${IVW_DOXY_OUT}/help.doxy" 
+		"Inviwo help" 
+		"Inviwo help" 
+		"${IVW_DOXY_OUT}/doc/help"  
+		"${IVW_SOURCE_DIR};${IVW_INCLUDE_DIR};${IVW_APPLICATION_DIR};${IVW_MODULE_DIR}"
+		"" 
+		""
+		"${IVW_DOXY_EXTRA_FILES}"
+	)
+	file(READ ${IVW_DOXY_DIR}/help.doxy.template HELP_SETTINGS)
+	file(APPEND "${IVW_DOXY_OUT}/help.doxy" ${HELP_SETTINGS})
+	
+	# Core
+	set(IVW_DOXY_TAG_CORE "${IVW_DOXY_OUT}/doc/core/html/ivwcore.tag")
+	make_template(
+		"${IVW_DOXY_OUT}/core.doxy" 
+		"Inviwo Core" 
+		"Core functionality of Inviwo" 
+		"${IVW_DOXY_OUT}/doc/core/" 
+		"${IVW_SOURCE_DIR}/core;${IVW_CORE_INCLUDE_DIR}" 
+		"${IVW_DOXY_TAG_CORE}"
+		"${IVW_DOXY_TAG_FILES}"
+		"${IVW_DOXY_EXTRA_FILES}"
+	)
+	list(APPEND IVW_DOXY_TAG_FILES "${IVW_DOXY_TAG_CORE}=${IVW_DOXY_OUT}/doc/core/html")
+	
+	# OT
+	set(IVW_DOXY_TAG_QT "${IVW_DOXY_OUT}/doc/qt/html/ivwqt.tag")
+	list(APPEND IVW_DOXY_TAG_FILES "qtcore.tags=http://qt-project.org/doc/qt-5/")
+	make_template(
+		"${IVW_DOXY_OUT}/qt.doxy" 
+		"Inviwo Qt" 
+		"Main Qt elements of Inviwo" 
+		"${IVW_DOXY_OUT}/doc/qt/" 
+		"${IVW_SOURCE_DIR}/qt;${IVW_QT_INCLUDE_DIR}" 
+		"${IVW_DOXY_TAG_QT}"
+		"${IVW_DOXY_TAG_FILES}"
+		"${IVW_DOXY_EXTRA_FILES}"
+	)
+	list(APPEND IVW_DOXY_TAG_FILES "${IVW_DOXY_TAG_CORE}=${IVW_DOXY_OUT}/doc/qt/html")
+
+	# Modules
 	set(IVW_DOXY_MODULE_BASES "")
 	foreach(module ${IVW_MODULE_PATHS})
         get_filename_component(folder_name ${module} NAME)
@@ -181,18 +192,12 @@ endfunction()
 		list(APPEND IVW_DOXY_MODULE_BASES ${path_name})
 		list(REMOVE_DUPLICATES IVW_DOXY_MODULE_BASES)
     endforeach()
-	
-
 	get_unique_names(unique_names "${IVW_DOXY_MODULE_BASES}")
-	ivw_message("unique_names " ${unique_names})
 	
 	set(index 0)
 	foreach(base ${IVW_DOXY_MODULE_BASES})
 		list(GET unique_names ${index} name)
-		
-		ivw_message("Name " ${index} ": " ${name})
-		ivw_message("Base " ${index} ": " ${base})
-		
+			
 		string(REPLACE "/" "_" file_name ${name})
 		string(TOLOWER ${file_name} file_name)
 		string(REPLACE "/" " " desc_name ${name})
@@ -205,17 +210,34 @@ endfunction()
 			endif()
 		endforeach()
 		
+		set(IVW_DOXY_TAG_MODULE "${IVW_DOXY_OUT}/doc/core/html/${file_name}.tag")
 		make_template(
-			"${IVW_DOXY_DIR}/${file_name}.doxy" 
+			"${IVW_DOXY_OUT}/${file_name}.doxy" 
 			"${desc_name}" 
 			"Modules for ${desc_name}" 
-			"${IVW_DOXY_OUT}/${file_name}" 
+			"${IVW_DOXY_OUT}/doc/${file_name}/" 
 			"${inc_dirs}" 
-			"${IVW_DOXY_OUT}/core/html/${file_name}.tag"
-			""
+			"${IVW_DOXY_TAG_MODULE}"
+			"${IVW_DOXY_TAG_FILES}"
+			"${IVW_DOXY_EXTRA_FILES}"
 		)
+		list(APPEND IVW_DOXY_TAG_FILES "${IVW_DOXY_TAG_MODULE}=${IVW_DOXY_OUT}/doc/${file_name}/html")
 		MATH(EXPR index "${index}+1")
 	endforeach()
 	
+	
+	# Apps
+	set(IVW_DOXY_TAG_APPS "${IVW_DOXY_OUT}/doc/core/html/ivwapps.tag")
+	make_template(
+		"${IVW_DOXY_OUT}/apps.doxy" 
+		"Inviwo Apps" 
+		"Applications using Inviwo Core and Modules" 
+		"${IVW_DOXY_OUT}/doc/apps/" 
+		"${IVW_SOURCE_DIR}/core;${IVW_CORE_INCLUDE_DIR}" 
+		"${IVW_DOXY_TAG_APPS}"
+		"${IVW_DOXY_TAG_FILES}"
+		"${IVW_DOXY_EXTRA_FILES}"
+	)
+	list(APPEND IVW_DOXY_TAG_FILES "${IVW_DOXY_TAG_APPS}={IVW_DOXY_OUT}/doc/apps/html")
 	
  endif()

@@ -1,10 +1,11 @@
 # Doxyfile 1.8.8
 
-PROJECT_NAME           = @PROJNAME@
-PROJECT_NUMBER         = @IVW_VERSION@
-PROJECT_BRIEF          = @BRIEF@
-PROJECT_LOGO           = ../../resources/icons/inviwo_dark.png
-OUTPUT_DIRECTORY       = @OUTPUT_DIR@
+PROJECT_NAME           = "@PROJNAME@"
+PROJECT_NUMBER         = "@IVW_VERSION@"
+PROJECT_BRIEF          = "@BRIEF@"
+PROJECT_LOGO           = "@IVW_RESOURCES_DIR@/icons/inviwo_dark.png"
+OUTPUT_DIRECTORY       = "@OUTPUT_DIR@"
+CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = YES
 JAVADOC_AUTOBRIEF      = YES
 QT_AUTOBRIEF           = YES
@@ -37,26 +38,30 @@ EXCLUDE_PATTERNS       = */ext/* \
 
 EXCLUDE_SYMBOLS        = cl::*
 
-FILTER_PATTERNS        = "*.frag=filter/glslfilter.py, " \
-                         "*.vert=filter/glslfilter.py, " \
-                         "*.geom=filter/glslfilter.py, " \
-                         "*.glsl=filter/glslfilter.py" 
+FILTER_PATTERNS        = "*.frag=@IVW_DOXY_DIR@/filter/glslfilter.py" \
+                         "*.vert=@IVW_DOXY_DIR@/filter/glslfilter.py" \
+                         "*.geom=@IVW_DOXY_DIR@/filter/glslfilter.py" \
+                         "*.glsl=@IVW_DOXY_DIR@/filter/glslfilter.py" 
 
-USE_MDFILE_AS_MAINPAGE = 
+USE_MDFILE_AS_MAINPAGE = "@MAINPAGE@"
 
 SOURCE_BROWSER         = YES
 
 VERBATIM_HEADERS       = NO
 
-CLANG_ASSISTED_PARSING = NO
-CLANG_OPTIONS          = 
+#CLANG_ASSISTED_PARSING = NO
+#CLANG_OPTIONS          = 
 
-HTML_STYLESHEET        = doxygen.css
+HTML_STYLESHEET        = 
 HTML_EXTRA_STYLESHEET  = 
-HTML_EXTRA_FILES       = style/*
+HTML_EXTRA_FILES       = "@EXTRA_FILES@"
+HTML_HEADER            = 
+HTML_FOOTER            = 
 
 HTML_DYNAMIC_SECTIONS  = YES
 HTML_INDEX_NUM_ENTRIES = 100
+
+GENERATE_LATEX         = NO
 
 GENERATE_DOCSET        = NO
 DOCSET_FEEDNAME        = "Interactive Visualization Workshop"

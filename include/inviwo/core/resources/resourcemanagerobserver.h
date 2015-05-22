@@ -61,12 +61,12 @@ public:
 };
 
 
-/** \class ListObservable
+/** \class ResourceManagerObservable
  *
  * Observable for list type objects. Should call notifyResourceAdded as soon as an item
  * has been added to the list and notifyResourceRemoved when an item has been removed.
  *
- * @see ListObserver
+ * @see Observable
  */
 class IVW_CORE_API ResourceManagerObservable: public Observable<ResourceManagerObserver> {
 public:

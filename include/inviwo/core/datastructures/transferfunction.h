@@ -27,11 +27,6 @@
  * 
  *********************************************************************************/
 
-/** \class for holding transfer function data
- *
- *  This class holds transfer function data, currently one parameter in the variable data_.
- */
-
 #ifndef IVW_TRANSFERFUNCTION_H
 #define IVW_TRANSFERFUNCTION_H
 
@@ -59,6 +54,11 @@ public:
     void notifyControlPointChanged(const TransferFunctionDataPoint* p) const;
 };
 
+
+/** \class TransferFunction for holding transfer function data
+ *
+ *  This class holds transfer function data, currently one parameter in the variable data_.
+ */
 class IVW_CORE_API TransferFunction
     : public IvwSerializable
     , public TransferFunctionObservable
