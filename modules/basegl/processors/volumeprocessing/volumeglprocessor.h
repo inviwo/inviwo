@@ -50,7 +50,7 @@ class FrameBufferObject;
  * post-processing of the output data stored in the outport. Furthermore, it is possible to
  * be notified of inport changes by overwriting VolumeGLProcessor::afterInportChanged().
  *
- * \see ImageGLProcessor
+ * \see VolumeGLProcessor
  */
 class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor { 
 public:

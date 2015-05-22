@@ -31,7 +31,7 @@
 #define IVW_FINDEDGES_H
 
 #include <modules/basegl/baseglmoduledefine.h>
-#include <modules/basegl/processors/imageglprocessor.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {

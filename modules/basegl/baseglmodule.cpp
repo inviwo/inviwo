@@ -33,7 +33,6 @@
 #include <modules/basegl/processors/drawlines.h>
 #include <modules/basegl/processors/drawpoints.h>
 #include <modules/basegl/processors/entryexitpoints.h>
-#include <modules/basegl/processors/findedges.h>
 #include <modules/basegl/processors/firstivwprocessor.h>
 #include <modules/basegl/processors/heightfieldprocessor.h>
 #include <modules/basegl/processors/imagecompositeprocessorgl.h>
@@ -48,12 +47,13 @@
 #include <modules/basegl/processors/volumeraycaster.h>
 #include <modules/basegl/processors/isoraycaster.h>
 #include <modules/basegl/processors/volumeslicegl.h>
+#include <modules/basegl/processors/imageprocessing/findedges.h>
 #include <modules/basegl/processors/imageprocessing/imagegamma.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <modules/basegl/processors/imageprocessing/imagegrayscale.h>
 #include <modules/basegl/processors/imageprocessing/imageinvert.h>
 #include <modules/basegl/processors/imageprocessing/imagemapping.h>
 #include <modules/basegl/processors/imageprocessing/imageresample.h>
-
 #include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>
 #include <modules/basegl/processors/volumeprocessing/volumecombiner.h>
 #include <modules/basegl/processors/volumeprocessing/volumediff.h>
@@ -82,7 +82,6 @@ BaseGLModule::BaseGLModule() : InviwoModule() {
     registerProcessor(DrawLines);
     registerProcessor(DrawPoints);
     registerProcessor(EntryExitPoints);
-    registerProcessor(FindEdges);
     registerProcessor(FirstIvwProcessor);
     registerProcessor(MeshPicking);
     registerProcessor(HeightFieldProcessor);
@@ -99,6 +98,7 @@ BaseGLModule::BaseGLModule() : InviwoModule() {
     registerProcessor(VolumeSliceGL);
 
     // image processing
+    registerProcessor(FindEdges);
     registerProcessor(ImageGamma);
     registerProcessor(ImageGrayscale);
     registerProcessor(ImageInvert);
