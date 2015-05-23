@@ -133,7 +133,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
     if (name.isRelative()) url = source().resolved(url);
 
     if (inviwo::filesystem::getFileNameWithExtension(url.toString().toLocal8Bit().constData()) == "processor.png") {
-        std::string quary = url.query().toLocal8Bit().constData();
+        std::string quary = url.toString(QUrl::RemoveScheme).toLocal8Bit().constData();
         auto pairs = splitString(quary, '$');
         for (auto& pair : pairs) {
             auto elem = splitString(pair, '=');
