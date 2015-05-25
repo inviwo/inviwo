@@ -86,14 +86,14 @@ public:
      *
      * eg. xml tree with key=Properties and itemKey=Property
      *
-     * <Properties>
-     *      <Property identifier="enableMIP" displayName="MIP">
-     *          <value content="0" />
-     *      </Property>
-     *      <Property identifier="enableShading" displayName="Shading">
-     *          <value content="0" />
-     *      </Property>
-     * <Properties>
+     *     <Properties>
+     *          <Property identifier="enableMIP" displayName="MIP">
+     *              <value content="0" />
+     *          </Property>
+     *          <Property identifier="enableShading" displayName="Shading">
+     *              <value content="0" />
+     *          </Property>
+     *     <Properties>
      *
      * @param const std::string & key vector key.
      * @param std::vector<T> & sVector vector to be deserialized.
@@ -123,14 +123,14 @@ public:
      *
      * eg. xml tree
      *
-     * <Properties>
-     *      <Property identifier="enableMIP" displayName="MIP">
-     *          <value content="0" />
-     *      </Property>
-     *      <Property identifier="enableShading" displayName="Shading">
-     *          <value content="0" />
-     *      </Property>
-     * <Properties>
+     *     <Properties>
+     *          <Property identifier="enableMIP" displayName="MIP">
+     *              <value content="0" />
+     *          </Property>
+     *          <Property identifier="enableShading" displayName="Shading">
+     *              <value content="0" />
+     *          </Property>
+     *     <Properties>
      *
      * In the above xml tree,
      *
@@ -144,9 +144,8 @@ public:
      *
      * Note: If children has attribute "type", then comparisionAttribute becomes meaningless.
      *       Because deserializer always allocates a new instance of type using registered
-     *factories.
-     *
-     *       eg., <Processor type="EntryExitPoints" identifier="EntryExitPoints" reference="ref2" />
+     *       factories. eg.,
+     *           <Processor type="EntryExitPoints" identifier="EntryExitPoints" reference="ref2" />
      *
      * @param const std::string & key Map key or parent node of itemKey.
      * @param std::map<K

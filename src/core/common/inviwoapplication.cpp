@@ -202,8 +202,8 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
             break;
 
         case inviwo::InviwoApplication::PATH_PORTINSPECTORS:
-                result += "/data/workspaces/portinspectors/";
-                break;
+            result += "/data/workspaces/portinspectors/";
+            break;
 
         case inviwo::InviwoApplication::PATH_SCRIPTS:
             result += "/data/scripts/";
