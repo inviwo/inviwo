@@ -48,6 +48,71 @@ namespace inviwo {
 class PointLight;
 class PointLightInteractionHandler;
 
+class IVW_MODULE_BASE_API PointLightTrackball : public Trackball<PointLightInteractionHandler> {
+public:
+    InviwoPropertyInfo();
+
+    PointLightTrackball(PointLightInteractionHandler* p) : Trackball<PointLightInteractionHandler>(p) {};
+    virtual ~PointLightTrackball() = default;
+};
+
+/*
+* Enables light source to be placed relative to camera using middle mouse button or pan gesture with two fingers.
+* Uses trackball interaction for all other types of interaction.
+*/
+class IVW_MODULE_BASE_API PointLightInteractionHandler : public InteractionHandler {
+public:
+    PointLightInteractionHandler(FloatVec3Property*, CameraProperty*);
+    ~PointLightInteractionHandler(){};
+
+    virtual std::string getClassIdentifier() const { return "org.inviwo.PointLightInteractionHandler"; }
+
+    void invokeEvent(Event* event);
+    void setHandleEventsOptions(int);
+
+    /**
+    * \brief Changes the direction of the light source, relative to the camera,
+    * such that it acts as if it comes from the direction where the user clicked on the screen.
+    *
+    * Intersects a sphere covering the scene and places the light source
+    * in the direction of the intersection point but at the same distance from the origin as before.
+    * If the intersection is outside the sphere the light source will be placed perpendicular
+    * to the camera at the same distance as before.
+    *
+    *
+    * @param vec2 normalizedScreenCoord Coordinates in [0 1], where y coordinate is 0 at top of screen.
+    */
+    void setLightPosFromScreenCoords(const vec2& normalizedScreenCoord);
+
+    // Update up vector when camera changes
+    void onCameraChanged();
+
+    // Necessary for trackball
+    vec3& getLookTo() { return lookTo_; }
+    vec3& getLookFrom() { return lightPosition_->get(); }
+    vec3& getLookUp() { return lookUp_; }
+    const vec3& getLookTo() const { return lookTo_; }
+    const vec3& getLookFrom() const { return lightPosition_->get(); }
+    const vec3& getLookUp() const { return lookUp_; }
+
+    void setLookTo(vec3 lookTo) { lookTo_ = lookTo; }
+    void setLookFrom(vec3 lookFrom) { lightPosition_->set(lookFrom); }
+    void setLookUp(vec3 lookUp) { lookUp_ = lookUp; }
+
+    void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) { lightPosition_->set(lookFrom); lookTo_ = lookTo; lookUp = lookUp; }
+    void serialize(IvwSerializer& s) const;
+    void deserialize(IvwDeserializer& d);
+
+private:
+    FloatVec3Property* lightPosition_;
+    CameraProperty* camera_;
+    vec3 lookUp_; ///< Necessary for trackball
+    vec3 lookTo_; ///< Necessary for trackball
+    PointLightTrackball trackball_;
+    int interactionEventOption_;
+
+};
+
 class IVW_MODULE_BASE_API PointLightSourceProcessor : public Processor {
 public:
     PointLightSourceProcessor();
@@ -60,51 +125,7 @@ protected:
 
     void handleInteractionEventsChanged();
 
-    /* 
-     * Enables light source to be placed relative to camera using middle mouse button or pan gesture with two fingers. 
-     * Uses trackball interaction for all other types of interaction. 
-     */
-    class PointLightInteractionHandler : public InteractionHandler, public TrackballObserver {
-    public:
-        PointLightInteractionHandler(FloatVec3Property*, CameraProperty*);
-        ~PointLightInteractionHandler(){};
 
-        virtual std::string getClassIdentifier() const { return "org.inviwo.PointLightInteractionHandler"; }
-
-        void invokeEvent(Event* event);
-        void setHandleEventsOptions(int);
-
-        /** 
-         * \brief Changes the direction of the light source, relative to the camera, 
-         * such that it acts as if it comes from the direction where the user clicked on the screen.
-         *
-         * Intersects a sphere covering the scene and places the light source 
-         * in the direction of the intersection point but at the same distance from the origin as before. 
-         * If the intersection is outside the sphere the light source will be placed perpendicular 
-         * to the camera at the same distance as before.
-         *
-         * 
-         * @param vec2 normalizedScreenCoord Coordinates in [0 1], where y coordinate is 0 at top of screen.
-         */
-        void setLightPosFromScreenCoords(const vec2& normalizedScreenCoord);
-
-        // Notify property when trackball changed
-        void onAllTrackballChanged( const Trackball* trackball );
-        void onLookFromChanged( const Trackball* trackball );
-        void onCameraChanged();
-
-        void serialize(IvwSerializer& s) const;
-        void deserialize(IvwDeserializer& d);
-
-    private:
-        FloatVec3Property* lightPosition_;
-        CameraProperty* camera_;
-        vec3 lookUp_; ///< Necessary for trackball
-        vec3 lookTo_; ///< Necessary for trackball
-        Trackball trackball_;
-        int interactionEventOption_;
-
-    };
 
     /**
      * Update light source parameters. Transformation will be given in texture space.

@@ -40,6 +40,7 @@ CameraBase::CameraBase(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
     , invalidViewMatrix_(true)
     , invalidProjectionMatrix_(true) {}
 
+
 const mat4& CameraBase::viewMatrix() const {
     if (invalidViewMatrix_) {
         viewMatrix_ = glm::lookAt(lookFrom_, lookTo_, lookUp_);
@@ -56,6 +57,20 @@ const mat4& CameraBase::projectionMatrix() const {
         invalidProjectionMatrix_ = false;
     }
     return projectionMatrix_;
+}
+
+vec3 CameraBase::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
+    vec4 clipCoords = getClipPosFromNormalizedDeviceCoords(ndcCoords);
+    vec4 eyeCoords = inverseProjectionMatrix() * clipCoords;
+    vec4 worldCoords = inverseViewMatrix() * eyeCoords;
+    worldCoords /= worldCoords.w;
+    return worldCoords.xyz();
+}
+
+vec4 CameraBase::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
+    float clipW = projectionMatrix_[2][3] /
+        (ndcCoords.z - (projectionMatrix_[2][2] / projectionMatrix_[3][2]));
+    return vec4(ndcCoords * clipW, clipW);;
 }
 
 void CameraBase::serialize(IvwSerializer& s) const {
@@ -75,11 +90,31 @@ void CameraBase::deserialize(IvwDeserializer& d) {
     invalidViewMatrix_ = true;
 }
 
+bool CameraBase::equalTo(const CameraBase& other) const {
+    return !(glm::any(glm::notEqual(lookFrom_, other.lookFrom_)) |
+        glm::any(glm::notEqual(lookTo_, other.lookTo_)) |
+        (nearPlaneDist_ != other.nearPlaneDist_) |
+        (farPlaneDist_ != other.farPlaneDist_));
+}
+
 PerspectiveCamera::PerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
                                      float farPlane, float fieldOfView, float aspectRatio)
     : CameraBase(lookFrom, lookTo, lookUp, nearPlane, farPlane)
     , fovy_(fieldOfView)
     , aspectRatio_(aspectRatio){};
+
+
+bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
+    return !(lhs.equalTo(rhs) |
+             (lhs.fovy_ != rhs.fovy_) |
+             (lhs.aspectRatio_ != rhs.aspectRatio_));
+}
+
+bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
+    return (lhs.equalTo(rhs) |
+        (lhs.fovy_ != rhs.fovy_) |
+        (lhs.aspectRatio_ != rhs.aspectRatio_));
+}
 
 void PerspectiveCamera::serialize(IvwSerializer& s) const {
     CameraBase::serialize(s);
@@ -95,6 +130,17 @@ void PerspectiveCamera::deserialize(IvwDeserializer& d) {
 OrthographicCamera::OrthographicCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
                                        float farPlane, vec4 frustum)
     : CameraBase(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum){};
+
+
+bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs) {
+    return !(lhs.equalTo(rhs) |
+        glm::any(glm::notEqual(lhs.frustum_, rhs.frustum_)));
+}
+
+bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs) {
+    return (lhs.equalTo(rhs) |
+        glm::any(glm::notEqual(lhs.frustum_, rhs.frustum_)));
+}
 
 void OrthographicCamera::serialize(IvwSerializer& s) const {
     CameraBase::serialize(s);

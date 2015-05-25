@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -44,6 +45,13 @@ class SpatialEntity;
 
 class Inport;
 
+/**
+* \class CameraProperty
+* 
+* Besides giving access to a perspective camera in the GUI 
+* it also enables linking individual camera properties.
+* @see PerspectiveCamera
+*/
 class IVW_CORE_API CameraProperty : public CompositeProperty {
 
 public:
@@ -60,11 +68,26 @@ public:
     
     CameraProperty(const CameraProperty& rhs);
     CameraProperty& operator=(const CameraProperty& that);
-    virtual CameraProperty* clone() const;
-    virtual ~CameraProperty();
+    CameraProperty& operator=(const PerspectiveCamera& value);
 
+    virtual operator PerspectiveCamera&() { return value_; };
+    virtual operator const PerspectiveCamera&() const { return value_; }
+
+    virtual CameraProperty* clone() const;
+    virtual ~CameraProperty() = default;
+
+    virtual PerspectiveCamera& get() { return value_; }
+    virtual const PerspectiveCamera& get() const { return value_; }
+    virtual void set(const PerspectiveCamera& value);
+    virtual void set(const Property* srcProperty);
+
+    virtual void resetToDefaultState() override;
+
+
+    /** 
+     * Reset camera position, direction and field of view to default state.
+     */
     void resetCamera();
-    void setCamera(const CameraProperty*);
 
     vec3& getLookFrom();
     const vec3& getLookFrom() const;
@@ -106,8 +129,6 @@ public:
     */
     vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
-    void updateViewMatrix();
-    void updateProjectionMatrix();
     const mat4& viewMatrix() const;
     const mat4& projectionMatrix() const;
     const mat4& inverseViewMatrix() const;
@@ -134,24 +155,37 @@ public:
     void inportChanged();
 
 private:
+
+    // These functions make sure that the 
+    // template value (PerspectiveCamera) is 
+    // in sync with the property values.
+    void lookFromChangedFromProperty();
+    void lookToChangedFromProperty();
+    void lookUpChangedFromProperty();
+    void verticalFieldOfViewChangedFromProperty();
+    void aspectRatioChangedFromProperty();
+    void nearPlaneChangedFromProperty();
+    void farPlaneChangedFromProperty();
+
+    PerspectiveCamera value_;
+    // These properties enable linking of individual 
+    // camera properties but requires them to be synced 
+    // with the template value_ (PerspectiveCamera).
     FloatVec3Property lookFrom_;
     FloatVec3Property lookTo_;
     FloatVec3Property lookUp_;
+
     FloatProperty fovy_;
     FloatProperty aspectRatio_;
-    FloatProperty farPlane_;
     FloatProperty nearPlane_;
-    BoolProperty fitToBasis_;
+    FloatProperty farPlane_;
 
-    vec3 lookRight_;
-    mat4 viewMatrix_;
-    mat4 projectionMatrix_;
-    mat4 inverseViewMatrix_;
-    mat4 inverseProjectionMatrix_;
+
+    BoolProperty fitToBasis_;
 
     bool lockInvalidation_;
 
-    Inport* inport_;
+    Inport* inport_; ///< Allows the camera to be positioned relative to new data (VolumeInport, MeshInport)
     const SpatialEntity<3>* data_; //< non-owning reference;
     mat3 oldBasis_;
 };
