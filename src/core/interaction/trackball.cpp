@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/trackball.h>
-#include <glm/gtx/vector_angle.hpp>
-#include <math.h>
+
 
 namespace inviwo {
 

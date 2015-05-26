@@ -44,6 +44,9 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/util/observer.h>
 
+#include <glm/gtx/vector_angle.hpp>
+#include <math.h>
+
 namespace inviwo {
 
 template< typename T>
