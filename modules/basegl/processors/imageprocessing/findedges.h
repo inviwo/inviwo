@@ -27,27 +27,29 @@
  * 
  *********************************************************************************/
 
-#include "findedges.h"
-#include <modules/opengl/textureutils.h>
+#ifndef IVW_FINDEDGES_H
+#define IVW_FINDEDGES_H
+
+#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-ProcessorClassIdentifier(FindEdges, "org.inviwo.FindEdges");
-ProcessorDisplayName(FindEdges, "Image Find Edges");
-ProcessorTags(FindEdges, Tags::GL);
-ProcessorCategory(FindEdges, "Image Operation");
-ProcessorCodeState(FindEdges, CODE_STATE_EXPERIMENTAL);
+class IVW_MODULE_BASEGL_API FindEdges : public ImageGLProcessor {
+public:
+    FindEdges();
+    ~FindEdges();
 
-FindEdges::FindEdges()
-    : ImageGLProcessor("img_findedges.frag")
-    , alpha_("alpha", "Alpha", 0.5f, 0.0f, 1.0f) {
-    addProperty(alpha_);
-}
+    InviwoProcessorInfo();
 
-FindEdges::~FindEdges() {}
+protected:
+    virtual void preProcess();
 
-void FindEdges::preProcess() {
-    shader_->setUniform("alpha_", alpha_.get());
-}
+private:
+    FloatProperty alpha_;
+};
 
-}  // namespace
+} // namespace
+
+#endif // IVW_FINDEDGES_H

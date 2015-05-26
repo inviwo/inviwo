@@ -45,6 +45,7 @@
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/advancedmaterialproperty.h>
 
+#include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/interaction/trackball.h>
 
 #include <inviwo/qt/widgets/properties/anglepropertywidgetqt.h>
@@ -84,7 +85,7 @@ QtWidgetModule::QtWidgetModule() : InviwoModule() {
     registerPropertyWidget(CompositePropertyWidgetQt, SimpleRaycastingProperty, "Default");
     registerPropertyWidget(CompositePropertyWidgetQt, AdvancedMaterialProperty, "Default");
 
-    registerPropertyWidget(CompositePropertyWidgetQt, Trackball, "Default");
+    registerPropertyWidget(CompositePropertyWidgetQt, CameraTrackball, "Default");
 
     registerPropertyWidget(ColorPropertyWidgetQt, IntVec3Property, "Color");
     registerPropertyWidget(ColorPropertyWidgetQt, IntVec4Property, "Color");
@@ -147,7 +148,6 @@ QtWidgetModule::QtWidgetModule() : InviwoModule() {
     registerPropertyWidget(Int64PropertyWidgetQt, Int64Property, "Text");
     
     registerPropertyWidget(LightPropertyWidgetQt, FloatVec3Property, "LightPosition");
-    registerPropertyWidget(OptionPropertyWidgetQt, BaseOptionProperty, "Default");
     registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyInt, "Default");
     registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyFloat, "Default");
     registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyDouble, "Default");

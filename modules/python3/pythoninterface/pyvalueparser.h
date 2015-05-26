@@ -99,7 +99,10 @@ std::string typestring() {
 template <typename T, int N, typename... Args>
 typename std::enable_if<0 == N, void>::type parseImpl(PyObject* arg, T& val, Args*... args) {
     std::string ts = typestring<T>();
-    PyArg_ParseTuple(arg, ts.c_str(), args...);
+    if (PyTuple_Check(arg)) 
+        PyArg_ParseTuple(arg, ts.c_str(), args...);
+    else
+        PyArg_Parse(arg, ts.c_str(), args...);
 }
 template <typename T, int N, typename... Args>
 typename std::enable_if<0 < N, void>::type parseImpl(PyObject* arg, T& val, Args*... args) {

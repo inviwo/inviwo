@@ -35,6 +35,8 @@
 
 namespace inviwo {
 
+PropertyClassIdentifier(PointLightTrackball, "org.inviwo.PointLightTrackball");
+
 ProcessorClassIdentifier(PointLightSourceProcessor, "org.inviwo.Point light source");
 ProcessorDisplayName(PointLightSourceProcessor,  "Point light source");
 ProcessorTags(PointLightSourceProcessor, Tags::CPU);
@@ -119,24 +121,24 @@ void PointLightSourceProcessor::handleInteractionEventsChanged() {
     lightInteractionHandler_->setHandleEventsOptions(interactionEvents_.get());
 }
 
-PointLightSourceProcessor::PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl, CameraProperty* cam) 
+PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl, CameraProperty* cam) 
     : InteractionHandler()
     , lightPosition_(pl)
     , camera_(cam)    
     , lookUp_(camera_->getLookUp())
     , lookTo_(0.f)
-    , trackball_(&(pl->get()), &lookTo_, &lookUp_)
+    , trackball_(this)
     , interactionEventOption_(0)
 {
-    static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
+    //static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
     camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged); 
 }
 
-void PointLightSourceProcessor::PointLightInteractionHandler::serialize(IvwSerializer& s) const {}
+void PointLightInteractionHandler::serialize(IvwSerializer& s) const {}
 
-void PointLightSourceProcessor::PointLightInteractionHandler::deserialize(IvwDeserializer& d) {}
+void PointLightInteractionHandler::deserialize(IvwDeserializer& d) {}
 
-void PointLightSourceProcessor::PointLightInteractionHandler::invokeEvent(Event* event) {
+void PointLightInteractionHandler::invokeEvent(Event* event) {
     //if(event->hasBeenUsed())
     //    return;
 
@@ -164,11 +166,11 @@ void PointLightSourceProcessor::PointLightInteractionHandler::invokeEvent(Event*
         trackball_.invokeEvent(event);
 }
 
-void PointLightSourceProcessor::PointLightInteractionHandler::setHandleEventsOptions(int option){
+void PointLightInteractionHandler::setHandleEventsOptions(int option){
     interactionEventOption_ = option;
 }
 
-void PointLightSourceProcessor::PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& normalizedScreenCoord)
+void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& normalizedScreenCoord)
 {
     vec2 deviceCoord(2.f*(normalizedScreenCoord-0.5f)); 
     // Flip vertical axis since mouse event y position starts at top of screen
@@ -192,20 +194,12 @@ void PointLightSourceProcessor::PointLightInteractionHandler::setLightPosFromScr
         }
     }
     // Ensure that up vector is same as camera afterwards
-    *(trackball_.getLookUp()) = camera_->getLookUp();
+    setLookUp(camera_->getLookUp());
 }
 
-void PointLightSourceProcessor::PointLightInteractionHandler::onAllTrackballChanged(const Trackball* trackball) {
-    lightPosition_->propertyModified();
-}
-
-void PointLightSourceProcessor::PointLightInteractionHandler::onLookFromChanged(const Trackball* trackball) {
-    lightPosition_->propertyModified();
-}
-
-void PointLightSourceProcessor::PointLightInteractionHandler::onCameraChanged() {
+void PointLightInteractionHandler::onCameraChanged() {
     // This makes sure that the interaction with the light source is consistent with the direction of the camera
-    *(trackball_.getLookUp()) = camera_->getLookUp();
+    setLookUp(camera_->getLookUp());
 }
 
 } // namespace

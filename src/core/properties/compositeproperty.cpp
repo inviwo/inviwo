@@ -94,16 +94,6 @@ void CompositeProperty::setVisible(bool val) {
     Property::setVisible(val);
 }
 
-bool CompositeProperty::getReadOnly() const {
-    bool readOnly = true;
-    for (Property* property : properties_) readOnly = readOnly && property->getReadOnly();
-    return readOnly;
-}
-
-void CompositeProperty::setReadOnly(const bool& value) {
-    for (Property* property : properties_) property->setReadOnly(value);
-}
-
 void CompositeProperty::setPropertyModified(bool modified) {
     for (Property* property: properties_) property->setPropertyModified(modified);
     Property::setPropertyModified(modified);

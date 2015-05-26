@@ -9,16 +9,16 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpoints.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/findedges.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagecompositeprocessorgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageglprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagelayoutgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagemixer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageoverlaygl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageglprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
@@ -50,16 +50,16 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpoints.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/findedges.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagecompositeprocessorgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageglprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagelayoutgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagemixer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageoverlaygl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/findedges.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageglprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp

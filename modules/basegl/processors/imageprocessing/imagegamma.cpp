@@ -48,7 +48,7 @@ ImageGamma::ImageGamma()
 ImageGamma::~ImageGamma() {}
 
 void ImageGamma::preProcess() {
-    shader_->setUniform("gamma_", gamma_.get());
+    shader_.setUniform("gamma_", gamma_.get());
 }
 
 }  // namespace

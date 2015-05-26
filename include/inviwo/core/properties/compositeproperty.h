@@ -57,9 +57,6 @@ public:
     // Override original functions in Property
     virtual void setOwner(PropertyOwner* owner) override;
 
-    virtual bool getReadOnly() const override; // returns true if all sub properties are read only
-    virtual void setReadOnly(const bool& value) override;
-
     virtual void set(const Property* src) override;
     virtual void setPropertyModified(bool modified) override;
     virtual bool isPropertyModified() const override;
