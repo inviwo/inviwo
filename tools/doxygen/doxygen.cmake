@@ -119,11 +119,11 @@ function(make_doxy_target OUTPUT_DIR, DOXY_NAME)
 		COMMAND ${CMAKE_COMMAND} -E echo "Building doxygen ${DOXY_NAME}"
 		COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR}/doc/${name_lower}/html"
         COMMAND ${DOXYGEN_EXECUTABLE} "${OUTPUT_DIR}/${name_lower}.doxy"
-        COMMAND ln -sf "${OUTPUT_DIR}/doc/${name_lower}/html/index.html" "${OUTPUT_DIR}/doc/${name_lower}/index.html"
         WORKING_DIRECTORY ${OUTPUT_DIR}
         COMMENT "Generating ${DOXY_NAME} API documentation with Doxygen"
         VERBATIM
     )
+    set_target_properties("DOXY-${DOXY_NAME}" PROPERTIES FOLDER "doc")
 endfunction()
 
 function(make_documentation OUTPUT_DIR DOXY_NAME BRIEF INPUT_LIST TAGFILE INPUT_TAG_LIST 
@@ -227,6 +227,7 @@ function(make_help INPUT_DIR IMAGE_PATH_LIST)
         VERBATIM
     )
     add_dependencies("DOXY-QCH" "DOXY-Help")
+    set_target_properties("DOXY-QCH" PROPERTIES FOLDER "doc")
 
 endfunction()
 
@@ -265,7 +266,8 @@ if(IVW_DOXYGEN_PROJECT)
         COMMENT "Generating ALL API documentation with Doxygen"
         VERBATIM
     )
-	
+    set_target_properties("DOXY-ALL" PROPERTIES FOLDER "doc")
+
 	# Core
 	set(IVW_DOXY_TAG_CORE "${IVW_DOXY_OUT}/doc/core/ivwcore.tag")
 	make_documentation(
@@ -309,7 +311,9 @@ if(IVW_DOXYGEN_PROJECT)
 		get_filename_component(path_name ${module} PATH)
 		list(APPEND IVW_DOXY_MODULE_BASES ${path_name})
 		list(REMOVE_DUPLICATES IVW_DOXY_MODULE_BASES)
-		list(APPEND IMAGE_PATH_LIST "${module}/images")
+		if(EXISTS "${module}/images")
+			list(APPEND IMAGE_PATH_LIST "${module}/images")
+		endif()
     endforeach()
 	get_unique_names(unique_names "${IVW_DOXY_MODULE_BASES}")
 	
