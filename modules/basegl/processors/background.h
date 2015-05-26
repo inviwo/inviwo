@@ -43,7 +43,7 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.Background, Background}
- * ![](processor.png?classIdentifier=org.inviwo.Background)
+ * ![](org.inviwo.Background.png?classIdentifier=org.inviwo.Background)
  * Adds a background to an image. 
  * The following mixing is applied
  * 

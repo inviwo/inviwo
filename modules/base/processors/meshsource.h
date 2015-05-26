@@ -38,7 +38,7 @@
 
 namespace inviwo {
     /** \docpage{org.inviwo.GeometrySource, Mesh Source}
-     * ![](processor.png?classIdentifier=org.inviwo.GeometrySource)
+     * ![](org.inviwo.GeometrySource.png?classIdentifier=org.inviwo.GeometrySource)
      *
      * Loads a mesh
      *

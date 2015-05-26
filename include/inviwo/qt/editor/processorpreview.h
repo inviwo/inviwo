@@ -33,14 +33,15 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <QImage>
+#include <QString>
 
 namespace inviwo {
 
-namespace util {
+namespace utilqt {
 /**
  * Generate an image of a processor
  */
-IVW_QTEDITOR_API QImage generatePreview(std::string classIdentifier);
+IVW_QTEDITOR_API QImage generatePreview(const QString& classIdentifier);
 
 } // namespace
 

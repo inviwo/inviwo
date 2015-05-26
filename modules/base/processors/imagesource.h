@@ -39,7 +39,7 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.ImageSource, Image Source}
- * ![](processor.png?classIdentifier=org.inviwo.ImageSource)
+ * ![](org.inviwo.ImageSource.png?classIdentifier=org.inviwo.ImageSource)
  *
  * Loads a image
  * 

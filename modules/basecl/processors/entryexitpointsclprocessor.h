@@ -44,7 +44,7 @@
 
 namespace inviwo {
 /** \docpage{org.inviwo.EntryExitPointsCL, Entry-exit points}
- * ![](processor.png?classIdentifier=org.inviwo.EntryExitPointsCL)
+ * ![](org.inviwo.EntryExitPointsCL.png?classIdentifier=org.inviwo.EntryExitPointsCL)
  * Computes the entry and exit points of a triangle mesh from the camera position in texture space. 
  * The output color will be zero if no intersection is found, otherwise .
  * ### Inports

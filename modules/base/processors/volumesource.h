@@ -46,7 +46,7 @@
 
 namespace inviwo {
     /** \docpage{org.inviwo.VolumeSource, Volume Source}
-     * ![](processor.png?classIdentifier=org.inviwo.VolumeSource)
+     * ![](org.inviwo.VolumeSource.png?classIdentifier=org.inviwo.VolumeSource)
      *
      * Loads a Volume
      * 

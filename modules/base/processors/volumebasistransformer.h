@@ -38,7 +38,7 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.BasisTransformVolume, Basis Transform Volume}
- * ![](processor.png?classIdentifier=org.inviwo.BasisTransformVolume)
+ * ![](org.inviwo.BasisTransformVolume.png?classIdentifier=org.inviwo.BasisTransformVolume)
  *
  * Transforms the worl of a volume.
  * 
@@ -55,7 +55,7 @@ namespace inviwo {
  */
 
 /** \docpage{org.inviwo.BasisTransformGeometry, Basis Transform Mesh}
- * ![](processor.png?classIdentifier=org.inviwo.BasisTransformGeometry)
+ * ![](org.inviwo.BasisTransformGeometry.png?classIdentifier=org.inviwo.BasisTransformGeometry)
  *
  * Transforms the basis of a mesh.
  * 

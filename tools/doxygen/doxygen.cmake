@@ -150,7 +150,7 @@ function(make_documentation OUTPUT_DIR DOXY_NAME BRIEF INPUT_LIST TAGFILE INPUT_
 	endif()
 endfunction()
 
-function(make_help INPUT_DIR IMAGE_PATH_LIST)
+function(make_help INPUT_DIR SOURCE_LIST IMAGE_PATH_LIST)
 	# Help, used for the help inside invowo
 	set(GENERATE_QHP "YES")
 	set(HTML_LAYOUT_FILE "${INPUT_DIR}/layout.xml")
@@ -189,7 +189,7 @@ function(make_help INPUT_DIR IMAGE_PATH_LIST)
 		"${IVW_DOXY_OUT}" 
 		"Help" 
 		"Inviwo help"  
-		"${IVW_SOURCE_DIR};${IVW_INCLUDE_DIR};${IVW_APPLICATION_DIR};${IVW_MODULE_DIR}"
+		"${SOURCE_LIST}"
 		"" 
 		""
 		"${IVW_DOXY_EXTRA_FILES}"
@@ -253,12 +253,18 @@ if(IVW_DOXYGEN_PROJECT)
 	)
 
 	set(ALIASES_LIST
-		"\"docpage{1}=\#\\1\""
-		"\"docpage{2}=\#\\2\""
+		"docpage{1}=\"\\ingroup processors \n \#\\1\""
+		"docpage{2}=\"\\ingroup processors \n \#\\2\""
 	)
 
 	set(IMAGE_PATH_LIST 
 		"${IVW_ROOT_DIR}/data/help/images"
+	)
+
+	set(IVW_DOXY_ALL_SOURCES 
+		"${IVW_INCLUDE_DIR}"
+		"${IVW_SOURCE_DIR}"
+		"${IVW_APPLICATION_DIR}"
 	)
 
 	add_custom_target("DOXY-ALL"
@@ -314,6 +320,7 @@ if(IVW_DOXYGEN_PROJECT)
 		if(EXISTS "${module}/images")
 			list(APPEND IMAGE_PATH_LIST "${module}/images")
 		endif()
+		list(APPEND IVW_DOXY_ALL_SOURCES ${module})
     endforeach()
 	get_unique_names(unique_names "${IVW_DOXY_MODULE_BASES}")
 	
@@ -358,7 +365,7 @@ if(IVW_DOXYGEN_PROJECT)
 		"${IVW_DOXY_OUT}" 
 		"Apps" 
 		"Applications using Inviwo Core and Modules" 
-		"${IVW_SOURCE_DIR}/core;${IVW_CORE_INCLUDE_DIR}" 
+		"${IVW_APPLICATION_DIR}" 
 		"${IVW_DOXY_TAG_APPS}"
 		"${IVW_DOXY_TAG_FILES}"
 		"${IVW_DOXY_EXTRA_FILES}"
@@ -381,7 +388,7 @@ if(IVW_DOXYGEN_PROJECT)
 		"${IVW_DOXY_OUT}" 
 		"Inviwo" 
 		"Inviwo documentation" 
-		"${IVW_INCLUDE_DIR};${IVW_SOURCE_DIR};${IVW_MODULE_DIR};${IVW_APPLICATION_DIR}"
+		"${IVW_DOXY_ALL_SOURCES}"
 		"" 
 		""
 		"${IVW_DOXY_EXTRA_FILES}"
@@ -392,7 +399,7 @@ if(IVW_DOXYGEN_PROJECT)
 
 
 	# Help, used for the help inside invowo
-	make_help("${IVW_DOXY_DIR}/help" "${IMAGE_PATH_LIST}")
+	make_help("${IVW_DOXY_DIR}/help" "${IVW_DOXY_ALL_SOURCES}" "${IMAGE_PATH_LIST}")
 	add_dependencies("DOXY-ALL" "DOXY-Help")
 	add_dependencies("DOXY-ALL" "DOXY-QCH")
 

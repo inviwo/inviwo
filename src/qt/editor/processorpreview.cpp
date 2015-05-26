@@ -39,9 +39,11 @@
 
 namespace inviwo {
 
-QImage util::generatePreview(std::string classIdentifier) {
+QImage utilqt::generatePreview(const QString& classIdentifier) {
+    std::string cid = classIdentifier.toLocal8Bit().constData();
+
     Processor* processor =
-        static_cast<Processor*>(ProcessorFactory::getPtr()->create(classIdentifier));
+        static_cast<Processor*>(ProcessorFactory::getPtr()->create(cid));
     auto item = new ProcessorGraphicsItem(processor);
     auto scene = new QGraphicsScene(nullptr);
     scene->addItem(item);

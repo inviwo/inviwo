@@ -45,7 +45,7 @@ class Shader;
 
 
 /** \docpage{org.inviwo.DrawLines, Draw Lines}
-* ![](processor.png?classIdentifier=org.inviwo.DrawLines)
+* ![](org.inviwo.DrawLines.png?classIdentifier=org.inviwo.DrawLines)
 * 
 * Interactive 2D line drawing
 *

@@ -40,7 +40,7 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.CanvasGL, Canvas}
- * ![](processor.png?classIdentifier=org.inviwo.CanvasGL)
+ * ![](org.inviwo.CanvasGL.png?classIdentifier=org.inviwo.CanvasGL)
  *
  * Show a image
  * 

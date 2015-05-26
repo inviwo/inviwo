@@ -42,7 +42,7 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.DrawPoints, Draw Points}
- * ![](processor.png?classIdentifier=org.inviwo.DrawPoints)
+ * ![](org.inviwo.DrawPoints.png?classIdentifier=org.inviwo.DrawPoints)
  * 
  * Interactive 2D point drawing 
  * 

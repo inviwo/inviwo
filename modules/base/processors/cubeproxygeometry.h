@@ -40,7 +40,7 @@
 
 namespace inviwo {
 /** \docpage{org.inviwo.CubeProxyGeometry, Cube Proxy Geometry}
- * ![](processor.png?classIdentifier=org.inviwo.CubeProxyGeometry)
+ * ![](org.inviwo.CubeProxyGeometry.png?classIdentifier=org.inviwo.CubeProxyGeometry)
  *
  * Constructs a cube proxy geometry.
  * 

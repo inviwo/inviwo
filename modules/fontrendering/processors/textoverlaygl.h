@@ -44,7 +44,7 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.TextOverlayGL, Text Overlay}
- * ![](processor.png?classIdentifier=org.inviwo.TextOverlayGL)
+ * ![](org.inviwo.TextOverlayGL.png?classIdentifier=org.inviwo.TextOverlayGL)
  *
  * Overlay text onto an image. 
  * 
