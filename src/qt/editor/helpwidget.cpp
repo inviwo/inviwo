@@ -109,9 +109,7 @@ void HelpWidget::showDocForClassName(std::string classIdentifier) {
     if (!helpEngine_) return;
     std::string className = joinString(splitString(classIdentifier, '.'), "_8");
 
-    QUrl url(
-        QString::fromStdString("qthelp://org.inviwo/doc/docpage-" + className + ".html"));
-
+    QUrl url(QString::fromStdString("qthelp://org.inviwo/doc/docpage-" + className + ".html"));
     QUrl foundUrl = helpEngine_->findFile(url);
 
     if (foundUrl.isValid()) {

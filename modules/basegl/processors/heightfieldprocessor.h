@@ -54,7 +54,7 @@ namespace HeightFieldShading {
 
 /** \docpage{org.inviwo.HeightFieldRenderGL, Height Field Renderer}
  * Maps a heightfield onto a geometry and renders it to an image. 
- * ![](heightfieldrenderer.png)
+ * ![](org.inviwo.HeightFieldRenderGL.png?classIdentifier=org.inviwo.HeightFieldRenderGL)
  * 
  * 
  * ### Inports

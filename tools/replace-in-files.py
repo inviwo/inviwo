@@ -39,6 +39,7 @@ def find_files(paths, extensions, excludes=[""]):
 
 def find_matches(files, expr):
 	r = re.compile(r"(" + expr +")")
+	matches = []
 	for file in files:
 		match_in_file = False
 		with fileinput.input(file) as f:
@@ -49,6 +50,10 @@ def find_matches(files, expr):
 						match_in_file = True
 					matched = r.sub(colorama.Fore.YELLOW+ r"\1"+ colorama.Style.RESET_ALL, line.rstrip())
 					print("{0:5d} {1:s}".format(i,matched))
+		if match_in_file:
+			matches.append(file)
+	return matches
+
 
 def replace_matches(files, expr, repl, dummy=False):
 	r = re.compile(r"(" + expr +")")

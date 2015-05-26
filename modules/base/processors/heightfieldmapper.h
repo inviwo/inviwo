@@ -56,7 +56,7 @@ namespace HeightFieldScaling {
  * image to be used in the Height Field Renderer processor. Additionally, data values 
  * are mapped to either an user-defined range or are scaled to fit in a given maximum 
  * height based on the sea level.
- * ![](heightfieldmapper.png)
+ * ![](org.inviwo.HeightFieldMapper.png?classIdentifier=org.inviwo.HeightFieldMapper)
  * 
  * 
  * ### Inports
