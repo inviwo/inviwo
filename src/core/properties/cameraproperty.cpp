@@ -141,13 +141,29 @@ void CameraProperty::set(const PerspectiveCamera& value) {
 }
 
 void CameraProperty::set(const Property* srcProperty) {
-    const CameraProperty* templatedSrcProp =
-        dynamic_cast<const CameraProperty*>(srcProperty);
-    if (templatedSrcProp) {
-        *this = *templatedSrcProp;
-    }
+    
 
-    Property::set(srcProperty);
+    const CameraProperty* cameraSrcProp = dynamic_cast<const CameraProperty*>(srcProperty);
+
+    if (cameraSrcProp) {
+        NetworkLock lock;
+        // Since we know all properties in this composite property
+        // we can set them directly:
+        lookFrom_ = cameraSrcProp->lookFrom_;
+        lookTo_ = cameraSrcProp->lookTo_;
+        lookUp_ = cameraSrcProp->lookUp_;
+
+        fovy_ = cameraSrcProp->fovy_;
+        aspectRatio_ = cameraSrcProp->aspectRatio_;
+        nearPlane_ = cameraSrcProp->nearPlane_;
+        farPlane_ = cameraSrcProp->farPlane_;
+
+        fitToBasis_ = cameraSrcProp->fitToBasis_;
+
+        value_ = cameraSrcProp->value_;
+
+        Property::set(srcProperty);
+    }
 }
 
 CameraProperty* CameraProperty::clone() const {
