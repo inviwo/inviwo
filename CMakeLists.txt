@@ -126,4 +126,4 @@ include(cmake/packaging.cmake)
 
 #--------------------------------------------------------------------
 # Generate Doxygen setup. 
-include(tools/doxygen/doxygen.cmake)
+add_subdirectory(tools/doxygen)

@@ -27,11 +27,12 @@
  # 
  #################################################################################
  
+option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" ON)
+
 function(make_template FILENAME DOXY_NAME BRIEF OUTPUT_DIR INPUT_LIST TAGFILE INPUT_TAG_LIST
 	                   EXTRA_FILE_LIST IMAGE_PATH_LIST ALIASES_LIST)
 
 	set(PROJNAME ${DOXY_NAME})
-	ivw_message("Make doxygen project " ${PROJNAME})
 
 	set(MAINPAGE "${IVW_ROOT_DIR}/README.md")
 
@@ -51,7 +52,7 @@ function(make_template FILENAME DOXY_NAME BRIEF OUTPUT_DIR INPUT_LIST TAGFILE IN
 	string(REGEX REPLACE ";" " \\\\\n                         " ALIASES "${ALIASES_LIST}")
 	set(ALIASES ${ALIASES})
 
-	configure_file(${IVW_DOXY_DIR}/main.doxy.template ${FILENAME})
+	configure_file(${IVW_DOXY_DIR}/Doxygen.in ${FILENAME})
 endfunction()
  
 function(get_unique_names retval paths)
@@ -233,8 +234,6 @@ endfunction()
 
 
 if(IVW_DOXYGEN_PROJECT)
-	ivw_message("Generate doxygen files")
-
 	find_package(Perl)    # sets, PERL_FOUND, PERL_EXECUTABLE
 	find_package(Doxygen) # sets, DOXYGEN_FOUND, DOXYGEN_EXECUTABLE, 
 						  # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
@@ -253,8 +252,8 @@ if(IVW_DOXYGEN_PROJECT)
 	)
 
 	set(ALIASES_LIST
-		"docpage{1}=\"\\ingroup processors \n \#\\1\""
-		"docpage{2}=\"\\ingroup processors \n \#\\2\""
+		"docpage{1}=\"\\ingroup processors \\n \#\\1\""
+		"docpage{2}=\"\\ingroup processors \\n \#\\2\""
 	)
 
 	set(IMAGE_PATH_LIST 
@@ -266,6 +265,10 @@ if(IVW_DOXYGEN_PROJECT)
 		"${IVW_SOURCE_DIR}"
 		"${IVW_APPLICATION_DIR}"
 	)
+
+	if(MSVC)
+		set(WARN_FORMAT, "$file($line): $text")
+	endif()
 
 	add_custom_target("DOXY-ALL"
         WORKING_DIRECTORY ${IVW_DOXY_OUT}

@@ -152,10 +152,6 @@ mark_as_advanced(FORCE IVW_USE_GLFW_NOT_OPENGLQT)
 option(IVW_PACKAGE_PROJECT "Create Inviwo Package Project" OFF)
 
 #--------------------------------------------------------------------
-# Package creation
-option(IVW_DOXYGEN_PROJECT "Create Inviwo doxygen files" ON)
-
-#--------------------------------------------------------------------
 # Use and generate resources when available
 option(IVW_USE_GENERATED_RESOURCES "Use and Generate File Resources" OFF)
 

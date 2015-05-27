@@ -150,7 +150,7 @@ def filter(filename):
       parseShader(filename, txt, "Vertex-Shader")
     else:
       showLines(txt)
-  except IOError,e:
+  except IOError as e:
     sys.stderr.write(e[1]+"\n")
 
 if len(sys.argv) != 2:
