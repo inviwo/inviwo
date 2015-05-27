@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ORDINALPROPERTYANIMATOR_H
@@ -60,169 +60,45 @@ protected:
     void changeActive();
 
 private:
-    
     struct BaseProp {
-        BaseProp(std::string classname,
-                 std::string displayName)
-            : classname_(classname)
-            , displayName_(displayName) {
-        }
+        BaseProp(std::string classname, std::string displayName)
+            : classname_(classname), displayName_(displayName) {}
         virtual ~BaseProp() {}
-        std::string classname_;
-        std::string displayName_;
 
         virtual Property* getProp() = 0;
         virtual Property* getDelta() = 0;
         virtual void update(bool pbc) = 0;
+
+        std::string classname_;
+        std::string displayName_;
     };
 
     template <typename T>
     struct VecProp : public BaseProp {
-        VecProp(std::string classname, std::string displayName)
-        : BaseProp(classname, displayName)
-        , prop_(nullptr)
-        , delta_(nullptr) {
+        VecProp(std::string classname, std::string displayName);
+        virtual ~VecProp();
 
-            prop_ = dynamic_cast<OrdinalProperty<T>*>(
-                PropertyFactory::getPtr()->getProperty(classname, classname, displayName));
+        void setLimits();
 
-            std::stringstream ss1;
-            ss1 << classname << "-" << "Delta";
-            std::string identifier = ss1.str();
-
-            delta_ = dynamic_cast<OrdinalProperty<T>*>(
-                PropertyFactory::getPtr()->getProperty(classname, identifier, "Delta"));
-
-            prop_->onChange(this, &VecProp<T>::setLimits);
-
-        }
-
-        void setLimits() {
-            T max = prop_->getMaxValue();
-
-            T dmin = delta_->getMinValue();
-            T dmax = delta_->getMaxValue();
-
-            T newMin = -T(static_cast<typename T::value_type>(0.1))*max;
-            T newMax =  T(static_cast<typename T::value_type>(0.1))*max;
-
-            if (dmin != newMin) {
-                delta_->setMinValue(newMin);
-            }
-            if (dmax != newMax) {
-                delta_->setMaxValue(newMax);
-            }
-        }
-
-        virtual ~VecProp() {
-            delete prop_;
-            delete delta_;
-        }
-
-        virtual Property* getProp() {
-            return prop_;
-        }
-        virtual Property* getDelta() {
-            return delta_;
-        }
-        virtual void update(bool pbc) {
-            T p = prop_->get();
-            T d = delta_->get();
-            T r = p+d;
-            for (glm::length_t i = 0; i<static_cast<glm::length_t>(prop_->getDim().x); ++i) {
-                if (r[i]>prop_->getMaxValue()[i]) {
-                    if (pbc) {
-                        r[i] = r[i] - (prop_->getMaxValue()[i] - prop_->getMinValue()[i]);
-                    } else {
-                        r[i] = prop_->getMaxValue()[i];
-                    }
-                } else if (r[i] < prop_->getMinValue()[i]) {
-                    if (pbc) {
-                        r[i] = r[i] + (prop_->getMaxValue()[i] - prop_->getMinValue()[i]);
-                    } else {
-                        r[i] = prop_->getMinValue()[i];
-                    }
-                }
-            }
-            if (r != p) {
-                prop_->set(r);
-            }
-        }
+        virtual Property* getProp() override;
+        virtual Property* getDelta() override;
+        virtual void update(bool pbc) override;
 
         OrdinalProperty<T>* prop_;
         OrdinalProperty<T>* delta_;
         typedef T valueType;
     };
 
-
     template <typename T>
     struct PrimProp : public BaseProp {
-        PrimProp(std::string classname, std::string displayName)
-        : BaseProp(classname, displayName)
-        , prop_(nullptr)
-        , delta_(nullptr) {
+        PrimProp(std::string classname, std::string displayName);
+        virtual ~PrimProp();
 
-            prop_ = dynamic_cast<OrdinalProperty<T>*>(
-                PropertyFactory::getPtr()->getProperty(classname, classname, displayName));
+        void setLimits();
 
-            std::stringstream ss1;
-            ss1 << classname << "-" << "Delta";
-            std::string identifier = ss1.str();
-
-            delta_ = dynamic_cast<OrdinalProperty<T>*>(
-                PropertyFactory::getPtr()->getProperty(classname, identifier, "Delta"));
-
-            prop_->onChange(this, &PrimProp<T>::setLimits);
-        }
-
-        void setLimits() {
-            T max = prop_->getMaxValue();
-
-            T dmin = delta_->getMinValue();
-            T dmax = delta_->getMaxValue();
-
-            if (dmin != - max / 10) {
-                delta_->setMinValue(-max / 10);
-            }
-            if (dmax != max / 10) {
-                delta_->setMaxValue(max/10);
-            }        
-        }
-
-        virtual ~PrimProp() {
-            delete prop_;
-            delete delta_;
-        }
-
-        virtual Property* getProp() {
-            return prop_;
-        }
-        virtual Property* getDelta() {
-            return delta_;
-        }
-        virtual void update(bool pbc) {
-            T p = prop_->get();
-            T d = delta_->get();
-            T r = p + d;
-            
-            if (r>prop_->getMaxValue()) {
-                if (pbc) {
-                    r = r - (prop_->getMaxValue() - prop_->getMinValue());
-                } else {
-                    r = prop_->getMaxValue();
-                }
-            } else if (r < prop_->getMinValue()) {
-                if (pbc) {
-                    r = r + (prop_->getMaxValue() - prop_->getMinValue());
-                } else {
-                    r = prop_->getMinValue();
-                }
-            }
-            
-            if (r != p) {
-                prop_->set(r);
-            }
-        }
+        virtual Property* getProp() override;
+        virtual Property* getDelta() override;
+        virtual void update(bool pbc) override;
 
         OrdinalProperty<T>* prop_;
         OrdinalProperty<T>* delta_;
@@ -238,7 +114,155 @@ private:
     std::vector<BaseProp*> properties_;
 };
 
-} // namespace
+template <typename T>
+void OrdinalPropertyAnimator::VecProp<T>::update(bool pbc) {
+    T p = prop_->get();
+    T d = delta_->get();
+    T r = p + d;
+    for (glm::length_t i = 0; i < static_cast<glm::length_t>(prop_->getDim().x); ++i) {
+        if (r[i] > prop_->getMaxValue()[i]) {
+            if (pbc) {
+                r[i] = r[i] - (prop_->getMaxValue()[i] - prop_->getMinValue()[i]);
+            } else {
+                r[i] = prop_->getMaxValue()[i];
+            }
+        } else if (r[i] < prop_->getMinValue()[i]) {
+            if (pbc) {
+                r[i] = r[i] + (prop_->getMaxValue()[i] - prop_->getMinValue()[i]);
+            } else {
+                r[i] = prop_->getMinValue()[i];
+            }
+        }
+    }
+    if (r != p) {
+        prop_->set(r);
+    }
+}
 
-#endif // IVW_ORDINALPROPERTYANIMATOR_H
+template <typename T>
+Property* OrdinalPropertyAnimator::VecProp<T>::getDelta() {
+    return delta_;
+}
 
+template <typename T>
+Property* OrdinalPropertyAnimator::VecProp<T>::getProp() {
+    return prop_;
+}
+
+template <typename T>
+OrdinalPropertyAnimator::VecProp<T>::~VecProp() {
+    delete prop_;
+    delete delta_;
+}
+
+template <typename T>
+void OrdinalPropertyAnimator::VecProp<T>::setLimits() {
+    T max = prop_->getMaxValue();
+
+    T dmin = delta_->getMinValue();
+    T dmax = delta_->getMaxValue();
+
+    T newMin = -T(static_cast<typename T::value_type>(0.1)) * max;
+    T newMax = T(static_cast<typename T::value_type>(0.1)) * max;
+
+    if (dmin != newMin) {
+        delta_->setMinValue(newMin);
+    }
+    if (dmax != newMax) {
+        delta_->setMaxValue(newMax);
+    }
+}
+
+template <typename T>
+OrdinalPropertyAnimator::VecProp<T>::VecProp(std::string classname, std::string displayName)
+    : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
+    prop_ = dynamic_cast<OrdinalProperty<T>*>(
+        PropertyFactory::getPtr()->getProperty(classname, classname, displayName));
+
+    std::stringstream ss1;
+    ss1 << classname << "-"
+        << "Delta";
+    std::string identifier = ss1.str();
+
+    delta_ = dynamic_cast<OrdinalProperty<T>*>(
+        PropertyFactory::getPtr()->getProperty(classname, identifier, "Delta"));
+
+    prop_->onChange(this, &VecProp<T>::setLimits);
+}
+
+template <typename T>
+void OrdinalPropertyAnimator::PrimProp<T>::update(bool pbc) {
+    T p = prop_->get();
+    T d = delta_->get();
+    T r = p + d;
+
+    if (r > prop_->getMaxValue()) {
+        if (pbc) {
+            r = r - (prop_->getMaxValue() - prop_->getMinValue());
+        } else {
+            r = prop_->getMaxValue();
+        }
+    } else if (r < prop_->getMinValue()) {
+        if (pbc) {
+            r = r + (prop_->getMaxValue() - prop_->getMinValue());
+        } else {
+            r = prop_->getMinValue();
+        }
+    }
+
+    if (r != p) {
+        prop_->set(r);
+    }
+}
+
+template <typename T>
+Property* OrdinalPropertyAnimator::PrimProp<T>::getDelta() {
+    return delta_;
+}
+
+template <typename T>
+Property* OrdinalPropertyAnimator::PrimProp<T>::getProp() {
+    return prop_;
+}
+
+template <typename T>
+OrdinalPropertyAnimator::PrimProp<T>::~PrimProp() {
+    delete prop_;
+    delete delta_;
+}
+
+template <typename T>
+void OrdinalPropertyAnimator::PrimProp<T>::setLimits() {
+    T max = prop_->getMaxValue();
+
+    T dmin = delta_->getMinValue();
+    T dmax = delta_->getMaxValue();
+
+    if (dmin != -max / 10) {
+        delta_->setMinValue(-max / 10);
+    }
+    if (dmax != max / 10) {
+        delta_->setMaxValue(max / 10);
+    }
+}
+
+template <typename T>
+OrdinalPropertyAnimator::PrimProp<T>::PrimProp(std::string classname, std::string displayName)
+    : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
+    prop_ = dynamic_cast<OrdinalProperty<T>*>(
+        PropertyFactory::getPtr()->getProperty(classname, classname, displayName));
+
+    std::stringstream ss1;
+    ss1 << classname << "-"
+        << "Delta";
+    std::string identifier = ss1.str();
+
+    delta_ = dynamic_cast<OrdinalProperty<T>*>(
+        PropertyFactory::getPtr()->getProperty(classname, identifier, "Delta"));
+
+    prop_->onChange(this, &PrimProp<T>::setLimits);
+}
+
+}  // namespace
+
+#endif  // IVW_ORDINALPROPERTYANIMATOR_H

@@ -774,7 +774,7 @@ Property* ProcessorNetwork::getProperty(std::vector<std::string> path) const {
     return nullptr;
 }
 
-const int ProcessorNetwork::processorNetworkVersion_ = 10;
+const int ProcessorNetwork::processorNetworkVersion_ = 11;
 
 
 ProcessorNetwork::NetworkConverter::NetworkConverter(int from)
@@ -802,10 +802,13 @@ bool ProcessorNetwork::NetworkConverter::convert(TxElement* root) {
             traverseNodes(root, &ProcessorNetwork::NetworkConverter::updatePropertyLinks);
         case 9:
             ProcessorNetwork::NetworkConverter::updatePortsInProcessors(root);
+        case 10:
+            traverseNodes(
+                root, &ProcessorNetwork::NetworkConverter::updateNoSpaceInProcessorClassIdentifers);
         default:
             break;
     }
-    
+
     return true;
 }
 
@@ -1168,6 +1171,50 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
 
     for (auto& processorsInport : processorsInports) {
         delete processorsInport.second;
+    }
+}
+
+void ProcessorNetwork::NetworkConverter::updateNoSpaceInProcessorClassIdentifers(TxElement* node) {
+    std::string renamed[] = {
+        "org.inviwo.Diffuse light source",
+        "org.inviwo.Directional light source",
+        "org.inviwo.Ordinal Property Animator",
+        "org.inviwo.Point light source",
+        "org.inviwo.Spot light source",
+        "org.inviwo.3D Model Reader",
+        "org.inviwo.Cones Test",
+        "org.inviwo.Edge Processor",
+        "org.inviwo.Final Composition",
+        "org.inviwo.Bader Info",
+        "Cone Liver test",
+        "El. vis. Raycaster",
+        "org.inviwo.Point Cloud Generator",
+        "org.inviwo.Surface Extraction",
+        "org.inviwo.GromacsDynamicTrajectoryData source",
+        "org.inviwo.Gromacs source",
+        "org.inviwo.Gromacs to geometry",
+        "org.inviwo.Gromacs to stream line geometry",
+        "org.inviwo.Occlusion Density Volume",
+        "org.inviwo.Point Cloud Mesh Extraction",
+        "org.inviwo.Point Cloud Mesh Extraction2",
+        "org.inviwo.Camera Test",
+        "org.inviwo.Composite Property Test"
+    };
+    
+    std::string key;
+    node->GetValue(&key);
+
+    if (key == "Processor") {
+        std::string type = node->GetAttributeOrDefault("type", "");
+        int size = sizeof(renamed)/sizeof(std::string);
+        if(std::find(renamed, renamed+size, type) != renamed+size) {
+            std::string newtype = removeFromString(type, ' ');
+            if (splitString(type, '.').size() < 3){
+                node->SetAttribute("type", "org.inviwo." + newtype);
+            } else {
+                node->SetAttribute("type", newtype);
+            }
+        }
     }
 }
 

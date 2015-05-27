@@ -39,21 +39,21 @@ ProcessorCategory(CubeProxyGeometry, "Geometry Creation");
 ProcessorCodeState(CubeProxyGeometry, CODE_STATE_STABLE);
 
 CubeProxyGeometry::CubeProxyGeometry()
-    : Processor(),
-      inport_("volume.inport"),
-      outport_("geometry.outport"),
-      clippingEnabled_("clippingEnabled", "Enable Clipping", true),
-      clipX_("clipX", "Clip X Slices", 0, 256, 0, 256, 1, 1),
-      clipY_("clipY", "Clip Y Slices", 0, 256, 0, 256, 1, 1),
-      clipZ_("clipZ", "Clip Z Slices", 0, 256, 0, 256, 1, 1) {
-      
+    : Processor()
+    , inport_("volume.inport")
+    , outport_("geometry.outport")
+    , clippingEnabled_("clippingEnabled", "Enable Clipping", true)
+    , clipX_("clipX", "Clip X Slices", 0, 256, 0, 256, 1, 1)
+    , clipY_("clipY", "Clip Y Slices", 0, 256, 0, 256, 1, 1)
+    , clipZ_("clipZ", "Clip Z Slices", 0, 256, 0, 256, 1, 1) {
+
     addPort(inport_);
     addPort(outport_);
     addProperty(clippingEnabled_);
     addProperty(clipX_);
     addProperty(clipY_);
     addProperty(clipZ_);
-    dims_ = uvec3(1,1,1);
+    dims_ = uvec3(1, 1, 1);
 
     // Since the clips depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.

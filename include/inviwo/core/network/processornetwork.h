@@ -413,6 +413,7 @@ private:
         void updateDimensionTag(TxElement* node);
         void updatePropertyLinks(TxElement* node);
         void updatePortsInProcessors(TxElement* node);
+        void updateNoSpaceInProcessorClassIdentifers(TxElement* node);
 
         void traverseNodes(TxElement* node, updateType update);
     };
