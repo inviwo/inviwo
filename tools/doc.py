@@ -19,8 +19,13 @@ except ImportError:
 	def print_warn(mess, **kwargs):
 		print(mess, **kwargs)
 
+# pwd = C:\Users\petst55\Work\Inviwo
+# run Inviwo-dev/tools/replace-in-files.py
+# run Inviwo-dev/tools/doc.py
 # n = find_files(["inviwo-dev", "inviwo-research"], source_extensions, excludes=["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*", "*/vrnbase/*"])
-# m = find_matches(n, "public Processor ")
+# m = find_matches(n, "public (Processor|ImageGLProcessor|DataSource<.*>|VolumeGLProcessor|CompositeProcessorGL) ")
+
+
 
 def gen(hfile):
 	cppfile = hfile.split(".")[0]+".cpp"
@@ -141,7 +146,9 @@ def gen(hfile):
 def add_doc(file):
 	d = gen(file)
 	if not d["hasdoc"]:
-		pattern = r"^\s*class\s+\w*\s+" + d["type"] + r"\s+:\s+public\s+Processor\s+.*$"
+		added = False
+		bases = r"(Processor|ImageGLProcessor|DataSource<.*>|VolumeGLProcessor|CompositeProcessorGL)"
+		pattern = r"^\s*class\s+\w*\s+" + d["type"] + r"\s*:\s*public\s+"+bases+"[\s,]+.*$"
 		rexp = re.compile(pattern)
 		with open(file, "r") as f:
 			lines = f.readlines()
@@ -149,8 +156,11 @@ def add_doc(file):
 		with open(file, "w") as f:
 			for (i,line) in enumerate(lines):
 				if rexp.match(line):
+					added = True
 					f.write(d["doc"])
-				f.write(line)		
+				f.write(line)
+	if not added:
+		print_error("Faild to add doc: " + pattern + " type: \"" + d["type"] +"\"" )		
 
 
 def test(files):
@@ -164,8 +174,12 @@ def test(files):
 def document(files):
 	for file in files:
 		d = gen(file)
+		if len(d["type"]) == 0:
+			print("No type     " + file)
+			continue
+
 		if not d["hasdoc"]:
 			print_warn("Adding docs: " + file)
 			add_doc(file)
 		else:
-			print("Has doc:     "+ file)
+			print("Has doc:     " + file)

@@ -159,8 +159,8 @@ function(make_help INPUT_DIR SOURCE_LIST IMAGE_PATH_LIST)
 	set(HTML_HEADER "${INPUT_DIR}/header.html")
 	set(HTML_FOOTER "${INPUT_DIR}/footer.html")
 	set(ALIASES_LIST
-		"\"docpage{1}=\\page docpage-\\1 \\1\""
-		"\"docpage{2}=\\page docpage-\\1 \\2\""
+		"docpage{1}=\"\\page docpage-\\1 \\1\""
+		"docpage{2}=\"\\page docpage-\\1 \\2\""
 	)
 
 	set(ADITIONAL_FLAGS_LIST 
@@ -233,7 +233,7 @@ function(make_help INPUT_DIR SOURCE_LIST IMAGE_PATH_LIST)
 endfunction()
 
 
-if(IVW_DOXYGEN_PROJECT)
+if(${IVW_DOXYGEN_PROJECT})
 	find_package(Perl)    # sets, PERL_FOUND, PERL_EXECUTABLE
 	find_package(Doxygen) # sets, DOXYGEN_FOUND, DOXYGEN_EXECUTABLE, 
 						  # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
@@ -243,7 +243,7 @@ if(IVW_DOXYGEN_PROJECT)
 	endif()
 
 	set(IVW_DOXY_DIR ${IVW_ROOT_DIR}/tools/doxygen)
-	set(IVW_DOXY_OUT ${CMAKE_CURRENT_BINARY_DIR}/tools/doxygen)
+	set(IVW_DOXY_OUT ${CMAKE_CURRENT_BINARY_DIR})
 	set(IVW_DOXY_TAG_FILES "")
 	set(IVW_DOXY_DEPENDS "")
 
@@ -266,8 +266,8 @@ if(IVW_DOXYGEN_PROJECT)
 		"${IVW_APPLICATION_DIR}"
 	)
 
-	if(MSVC)
-		set(WARN_FORMAT, "$file($line): $text")
+	if(${MSVC})
+		set(WARN_FORMAT "\$file(\$line): \$text")
 	endif()
 
 	add_custom_target("DOXY-ALL"
