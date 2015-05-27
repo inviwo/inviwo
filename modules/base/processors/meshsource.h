@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_GEOMETRYSOURCE_H
@@ -37,17 +37,17 @@
 #include <modules/base/processors/datasource.h>
 
 namespace inviwo {
-    /** \docpage{org.inviwo.GeometrySource, Mesh Source}
-     * ![](org.inviwo.GeometrySource.png?classIdentifier=org.inviwo.GeometrySource)
-     *
-     * Loads a mesh
-     *
-     * ### Outports
-     *   * __Outport__ The loaded mesh
-     * 
-     * ### Properties
-     *   * __File name__ File to load.
-     */
+/** \docpage{org.inviwo.GeometrySource, Mesh Source}
+ * ![](org.inviwo.GeometrySource.png?classIdentifier=org.inviwo.GeometrySource)
+ *
+ * Loads a mesh
+ *
+ * ### Outports
+ *   * __Outport__ The loaded mesh
+ *
+ * ### Properties
+ *   * __File name__ File to load.
+ */
 class IVW_MODULE_BASE_API MeshSource : public DataSource<Mesh, MeshOutport> {
 public:
     MeshSource();
@@ -56,7 +56,6 @@ public:
     InviwoProcessorInfo();
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_GEOMETRYSOURCE_H
-
+#endif  // IVW_GEOMETRYSOURCE_H

@@ -53,10 +53,10 @@ public:
      * The PropertySemantics can be set to TextEditor. Then a TextEditorWidget will be used instead
      *of a FilePropertyWidget
      *
-     * @param std::string identifier identifier for the property
-     * @param std::string displayName displayName for the property
-     * @param std::string value the path to the file
-     * @param PropertySemantics semantics Can be set to Editor
+     * @param identifier identifier for the property
+     * @param displayName displayName for the property
+     * @param value the path to the file
+     * @param semantics Can be set to Editor
      */
     FileProperty(std::string identifier, std::string displayName, std::string value = "",
                  std::string contentType = "default",

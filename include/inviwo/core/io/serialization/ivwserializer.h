@@ -46,8 +46,8 @@ public:
     /**
      * Copies parameters from other serializer.
      *
-     * @param IvwSerializeBase & s object of similar type.
-     * @param bool allowReference disables or enables reference management schemes.
+     * @param s object of similar type.
+     * @param allowReference disables or enables reference management schemes.
      * @throws SerializationException
      */
     IvwSerializer(IvwSerializer& s, bool allowReference = true);
@@ -56,8 +56,8 @@ public:
      *data.
      * The specified file name will not be used to write any content until writeFile() is called.
      *
-     * @param std::string fileName full path to xml file.
-     * @param bool allowReference disables or enables reference management schemes.
+     * @param fileName full path to xml file.
+     * @param allowReference disables or enables reference management schemes.
      * @throws SerializationException
      */
     IvwSerializer(const std::string& fileName, bool allowReference = true);
@@ -74,7 +74,7 @@ public:
     /**
      * \brief Writes serialized data to stream.
      *
-     * @param std::ostream & stream Stream to be written to.
+     * @param stream Stream to be written to.
      * @throws SerializationException
      */
     virtual void writeFile(std::ostream& stream);

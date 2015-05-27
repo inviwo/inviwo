@@ -40,6 +40,21 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.VolumeExport, Volume Export}
+ * ![](org.inviwo.VolumeExport.png?classIdentifier=org.inviwo.VolumeExport)
+ *
+ * ...
+ * 
+ * ### Inports
+ *   * __volume__ ...
+ * 
+ * 
+ * ### Properties
+ *   * __Export Volume__ ...
+ *   * __Overwrite__ ...
+ *   * __Volume file name__ ...
+ *
+ */
 class IVW_MODULE_BASE_API VolumeExport : public Processor {
 public:
     VolumeExport();

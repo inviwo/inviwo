@@ -41,6 +41,17 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.VolumeLowPass, Volume Low Pass}
+ * ![](org.inviwo.VolumeLowPass.png?classIdentifier=org.inviwo.VolumeLowPass)
+ *
+ * ...
+ * 
+ * 
+ * 
+ * ### Properties
+ *   * __Kernel size__ ...
+ *
+ */
 class IVW_MODULE_BASEGL_API VolumeLowPass : public VolumeGLProcessor , public ProgressBarOwner { 
 public:
     VolumeLowPass();

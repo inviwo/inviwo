@@ -149,7 +149,7 @@ protected:
  *
  * Class to support observer pattern.
  *
- * \section example Example
+ * \section Observable.example Example
  * Example of how to apply it to a simple button.
  * @code
  *    class IVW_XXX_API ButtonObserver: public Observer {

@@ -49,7 +49,8 @@
 
 namespace inviwo {
 /** \docpage{org.inviwo.VolumeRaycasterCL, Volume Raycaster}
- * Perform volume rendering on the input volume. 
+ * ![](org.inviwo.VolumeRaycasterCL.png?classIdentifier=org.inviwo.VolumeRaycasterCL)
+ * * Perform volume rendering on the input volume. 
  * ### Inports
  *   * __VolumeInport__ The volume data to render.
  *   * __ImageInport__ The entry point.

@@ -43,6 +43,19 @@ namespace inviwo {
  * \brief Upscale/Downscale image according to parameters
  *
  */
+/** \docpage{org.inviwo.ImageResample, Image Resample}
+ * ![](org.inviwo.ImageResample.png?classIdentifier=org.inviwo.ImageResample)
+ *
+ * ...
+ * 
+ * 
+ * 
+ * ### Properties
+ *   * __Dimension Source__ ...
+ *   * __Outport dimensions__ ...
+ *   * __Interpolation Type__ ...
+ *
+ */
 class IVW_MODULE_BASEGL_API ImageResample : public ImageGLProcessor  { 
 public:
     ImageResample();

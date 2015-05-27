@@ -42,6 +42,19 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.FirstIVWProcessor, First Processor}
+ * ![](org.inviwo.FirstIVWProcessor.png?classIdentifier=org.inviwo.FirstIVWProcessor)
+ *
+ * ...
+ * 
+ * 
+ * ### Outports
+ *   * __outport__ ...
+ * 
+ * ### Properties
+ *   * __Color__ ...
+ *
+ */
 class IVW_MODULE_BASEGL_API FirstIvwProcessor : public Processor {
 public:
     FirstIvwProcessor();

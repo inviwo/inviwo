@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeLaplacian, "org.inviwo.Volume Laplacian");
+ProcessorClassIdentifier(VolumeLaplacian, "org.inviwo.VolumeLaplacian");
 ProcessorDisplayName(VolumeLaplacian,  "Volume Laplacian");
 ProcessorTags(VolumeLaplacian, Tags::None);
 ProcessorCategory(VolumeLaplacian, "Volume Operation");

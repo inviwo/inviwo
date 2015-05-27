@@ -41,6 +41,20 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.OrdinalPropertyAnimator, Property Animator}
+ * ![](org.inviwo.OrdinalPropertyAnimator.png?classIdentifier=org.inviwo.OrdinalPropertyAnimator)
+ *
+ * ...
+ * 
+ * 
+ * 
+ * ### Properties
+ *   * __Property__ ...
+ *   * __Active__ ...
+ *   * __Delay (ms)__ ...
+ *   * __Periodic__ ...
+ *
+ */
 class IVW_MODULE_BASE_API OrdinalPropertyAnimator : public Processor {
 public:
     OrdinalPropertyAnimator();

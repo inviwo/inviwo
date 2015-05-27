@@ -36,6 +36,17 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.FindEdges, Image Find Edges}
+ * ![](org.inviwo.FindEdges.png?classIdentifier=org.inviwo.FindEdges)
+ *
+ * ...
+ * 
+ * 
+ * 
+ * ### Properties
+ *   * __Alpha__ ...
+ *
+ */
 class IVW_MODULE_BASEGL_API FindEdges : public ImageGLProcessor {
 public:
     FindEdges();

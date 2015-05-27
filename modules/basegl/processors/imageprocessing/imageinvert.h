@@ -38,7 +38,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageInvert, Image Invert}
  * Create the invert image of an input image. The alpha channel is not touched.
- * ![](imageinvert.png)
+ * ![](org.inviwo.ImageInvert.png?classIdentifier=org.inviwo.ImageInvert)
  * This processor computes the inverted image as follows
  * 
  *     out.rgb = 1.0 - in.rgb

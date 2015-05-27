@@ -54,10 +54,10 @@ public:
     /**
      * \brief Updates the data format retrieved during loading
      *
-     * @param const DataFormatBase* the new dataformat
+     * @param format the new dataformat
      *
      */
-    void updateDataFormat(const DataFormatBase*);
+    void updateDataFormat(const DataFormatBase* format);
 };
 
 }  // namespace

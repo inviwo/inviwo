@@ -38,7 +38,8 @@
 
 namespace inviwo {
 
-/** \docpage{"org.inviwo.ImageCompositeProcessorGL, ImageCompositeProcessorGL}
+/** \docpage{org.inviwo.ImageCompositeProcessorGL, ImageCompositeProcessorGL}
+ * ![](org.inviwo.ImageCompositeProcessorGL.png?classIdentifier=org.inviwo.ImageCompositeProcessorGL)
  * Do a depth based compositing of two images
  *
  * ### Inports
@@ -50,14 +51,6 @@ namespace inviwo {
  * 
  */
 
-
-/**
- * \class ImageCompositeProcessorGL
- *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_BASEGL_API ImageCompositeProcessorGL : public CompositeProcessorGL { 
 public:
     InviwoProcessorInfo();

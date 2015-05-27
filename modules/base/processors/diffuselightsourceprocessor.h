@@ -42,8 +42,8 @@ namespace inviwo {
 
 class DiffuseLight;
 
-/** \docpage{org.inviwo.DiffuseLightSourceProcessor, Diffuse light source}
- * ![](org.inviwo.DiffuseLightSourceProcessor.png?classIdentifier=org.inviwo.DiffuseLightSourceProcessor)
+/** \docpage{org.inviwo.Diffuselightsource, Diffuse light source}
+ * ![](org.inviwo.Diffuselightsource.png?classIdentifier=org.inviwo.Diffuselightsource)
  *
  * ...
  * 

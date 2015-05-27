@@ -42,9 +42,9 @@ class Processor;
 class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
 
-/**
- * \class Inport Abstract base class for all inports
- * \brief An Inport can be connected to an Outport.
+/** \class Inport
+ * \brief Abstract base class for all inports
+ * An Inport can be connected to an Outport.
  * The approved connection can be determined by the canConnectTo function.
  */
 class IVW_CORE_API Inport : public Port {

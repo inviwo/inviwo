@@ -87,7 +87,7 @@ public:
 
 /** \docpage{org.inviwo.ImageOverlayGL, Image Overlay}
 * Places one or more input images on top of the source image.
-* ![](imageoverlay.png)
+* ![](org.inviwo.ImageOverlayGL.png?classIdentifier=org.inviwo.ImageOverlayGL)
 *
 * ### Inports
 *   * __ImageInport__ Source image.

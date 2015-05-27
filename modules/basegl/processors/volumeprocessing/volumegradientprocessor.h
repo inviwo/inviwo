@@ -45,6 +45,18 @@ namespace inviwo {
  *
  * \brief Computes the gradient of a 3D scalar field and stores it in a vec3 volume.
  */
+/** \docpage{org.inviwo.VolumeGradient, Volume Gradient}
+ * ![](org.inviwo.VolumeGradient.png?classIdentifier=org.inviwo.VolumeGradient)
+ *
+ * ...
+ * 
+ * 
+ * 
+ * ### Properties
+ *   * __Render Channel__ ...
+ *   * __Stored voxel values in 4th channel__ ...
+ *
+ */
 class IVW_MODULE_BASEGL_API VolumeGradientProcessor : public VolumeGLProcessor  { 
 public:
     VolumeGradientProcessor();

@@ -60,7 +60,7 @@ namespace BlendModes {
 
 /** \docpage{org.inviwo.ImageMixer, Image Mixer}
  * Mixes two input images according to the chosen blend mode. 
- * ![](imagemixer.png)
+ * ![](org.inviwo.ImageMixer.png?classIdentifier=org.inviwo.ImageMixer)
  * The result is blended with the input image A according to 
  * <tt>mix(a,b) = a * (1 - weight) + f(a,b) * weight</tt>,
  * where f(a,b) is given by the blend mode.

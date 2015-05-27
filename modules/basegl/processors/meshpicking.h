@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_POSITIONWIDGETPROCESSOR_H
@@ -40,27 +40,27 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 
-
 namespace inviwo {
 class Shader;
 
-/** \docpage{org.inviwo.MeshPicking, Mesh Picking}
-* Composite image with mesh where mesh repositioned through picking
-*
-* Use Left Mouse Button to move the mesh around in the scene 
-*
-* ### Inports
-*   * __MeshInport__ The input mesh.
-*   * __ImageInport__ The input image.
-*
-* ### Outports
-*   * __ImageOutport__ The output image.
-*
-* ### Properties
-*   * __Position_ Defines size of all lines.
-*   * __Camera__ Camera of the scene.
-*   * __Trackball__ Camera trackball.
-*/
+/** \docpage{org.inviwo.GeometryPicking, Mesh Picking}
+ * ![](org.inviwo.GeometryPicking.png?classIdentifier=org.inviwo.GeometryPicking)
+ * Composite image with mesh where mesh repositioned through picking
+ *
+ * Use Left Mouse Button to move the mesh around in the scene
+ *
+ * ### Inports
+ *   * __MeshInport__ The input mesh.
+ *   * __ImageInport__ The input image.
+ *
+ * ### Outports
+ *   * __ImageOutport__ The output image.
+ *
+ * ### Properties
+ *   * __Position_ Defines size of all lines.
+ *   * __Camera__ Camera of the scene.
+ *   * __Trackball__ Camera trackball.
+ */
 
 /**
 * \brief Composite image with geometry where geometry repositioned through picking
@@ -78,7 +78,7 @@ public:
     void deinitialize();
 
     virtual void process();
-    
+
     bool isReady() const { return meshInport_.isReady(); }
 
     void updateWidgetPositionFromPicking(const PickingObject*);
@@ -98,6 +98,6 @@ private:
     Shader* shader_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_POSITIONWIDGETPROCESSOR_H
+#endif  // IVW_POSITIONWIDGETPROCESSOR_H

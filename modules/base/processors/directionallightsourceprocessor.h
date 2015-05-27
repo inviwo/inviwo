@@ -42,8 +42,8 @@
 namespace inviwo {
 
 class DirectionalLight;
-/** \docpage{org.inviwo.DirectionalLightSourceProcessor, Directional light source}
- * ![](org.inviwo.DirectionalLightSourceProcessor.png?classIdentifier=org.inviwo.DirectionalLightSourceProcessor)
+/** \docpage{org.inviwo.Directionallightsource, Directional light source}
+ * ![](org.inviwo.Directionallightsource.png?classIdentifier=org.inviwo.Directionallightsource)
  *
  * ...
  * 

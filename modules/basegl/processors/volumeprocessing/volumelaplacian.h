@@ -41,7 +41,15 @@
 
 namespace inviwo {
 
-
+/** \docpage{org.inviwo.VolumeLaplacian, Volume Laplacian}
+ * ![](org.inviwo.VolumeLaplacian.png?classIdentifier=org.inviwo.VolumeLaplacian)
+ *
+ * ...
+ * 
+ * 
+ * 
+ *
+ */
 class IVW_MODULE_BASEGL_API VolumeLaplacian : public VolumeGLProcessor { 
 public:
     VolumeLaplacian();

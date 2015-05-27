@@ -52,7 +52,25 @@
 
 namespace inviwo {
 
-class DistanceTransformRAM : public Processor, public ProgressBarOwner {
+/** \docpage{org.inviwo.DistanceTransformRAM, Distance Transform}
+ * ![](org.inviwo.DistanceTransformRAM.png?classIdentifier=org.inviwo.DistanceTransformRAM)
+ *
+ * ...
+ * 
+ * ### Inports
+ *   * __volume.inport__ ...
+ * 
+ * ### Outports
+ *   * __volume.outport__ ...
+ * 
+ * ### Properties
+ *   * __Enabled__ ...
+ *   * __Squared Distance__ ...
+ *   * __Update Distance Map__ ...
+ *   * __Scaling Factor__ ...
+ *
+ */
+class IVW_MODULE_BASE_API DistanceTransformRAM : public Processor, public ProgressBarOwner {
 public:
     DistanceTransformRAM();
     ~DistanceTransformRAM();

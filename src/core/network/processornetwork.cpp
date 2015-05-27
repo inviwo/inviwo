@@ -1198,7 +1198,9 @@ void ProcessorNetwork::NetworkConverter::updateNoSpaceInProcessorClassIdentifers
         "org.inviwo.Point Cloud Mesh Extraction",
         "org.inviwo.Point Cloud Mesh Extraction2",
         "org.inviwo.Camera Test",
-        "org.inviwo.Composite Property Test"
+        "org.inviwo.Composite Property Test",
+        "org.inviwo.Volume Laplacian",
+        "org.inviwo.Bader Partition"
     };
     
     std::string key;

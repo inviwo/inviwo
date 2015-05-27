@@ -46,6 +46,7 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeMaxCL, Volume Max}
+ * ![](org.inviwo.VolumeMaxCL.png?classIdentifier=org.inviwo.VolumeMaxCL)
  * Computes the maximum data value for each sub-region of the input volume.
  *
  * ### Inports

@@ -55,8 +55,8 @@ public:
 };
 
 
-/** \class TransferFunction for holding transfer function data
- *
+/** \class TransferFunction 
+ * \brief for holding transfer function data.
  *  This class holds transfer function data, currently one parameter in the variable data_.
  */
 class IVW_CORE_API TransferFunction

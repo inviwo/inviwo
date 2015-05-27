@@ -57,7 +57,7 @@ public:
     /**
      * \brief loads and rescales data from url.
      *
-     * @param uvec2 dst_dimesion destination dimension
+     * @param dst_dimesion destination dimension
      * @return void* returns the raw data that has been rescaled to dst_dimension
      */
     void* loadFileDataAndRescale(uvec2 dst_dimesion) const;

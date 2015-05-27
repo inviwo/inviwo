@@ -43,6 +43,22 @@ namespace inviwo {
 
 class FileExtension;
 
+/** \docpage{org.inviwo.ImageSourceSeries, Image Series Source}
+ * ![](org.inviwo.ImageSourceSeries.png?classIdentifier=org.inviwo.ImageSourceSeries)
+ *
+ * ...
+ * 
+ * 
+ * ### Outports
+ *   * __image.outport__ ...
+ * 
+ * ### Properties
+ *   * __Image file name__ ...
+ *   * __Image file directory", "image__ ...
+ *   * __Image index__ ...
+ *   * __Update File List__ ...
+ *
+ */
 class IVW_MODULE_BASE_API ImageSourceSeries : public Processor {
 public:
     ImageSourceSeries();

@@ -39,6 +39,19 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.ExampleProcessor, Example Processor}
+ * ![](org.inviwo.ExampleProcessor.png?classIdentifier=org.inviwo.ExampleProcessor)
+ *
+ * ...
+ * 
+ * ### Inports
+ *   * __volume.inport__ ...
+ * 
+ * ### Outports
+ *   * __geometry.outport__ ...
+ * 
+ *
+ */
 class IVW_MODULE_EXAMPLE_API ExampleProcessor : public Processor {
 public:
     ExampleProcessor();

@@ -38,6 +38,15 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.VolumeMapping, Volume Mapping}
+ * ![](org.inviwo.VolumeMapping.png?classIdentifier=org.inviwo.VolumeMapping)
+ *
+ * ...
+ * 
+ * ### Properties
+ *   * __Transfer function__ ...
+ *
+ */
 class IVW_MODULE_BASEGL_API VolumeMapping  : public VolumeGLProcessor { 
 public:
     VolumeMapping();

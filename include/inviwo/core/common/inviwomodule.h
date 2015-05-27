@@ -115,7 +115,7 @@ protected:
     /** 
      * \brief Set the name of the module. I.e module folder name
      * 
-     * @param const std::string & identifier Name of module folder
+     * @param identifier Name of module folder
      */
     void setIdentifier(const std::string& identifier);
 

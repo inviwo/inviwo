@@ -40,9 +40,9 @@ class Inport;
 class Processor;
 
 /**
- * \class Outport Abstract base class for all outports
- *
- * \brief The Outport can be connected to an arbitrary number of Inports.
+ * \class Outport 
+ * \brief Abstract base class for all outports
+ * The Outport can be connected to an arbitrary number of Inports.
  */
 class IVW_CORE_API Outport : public Port {
     friend class Inport;

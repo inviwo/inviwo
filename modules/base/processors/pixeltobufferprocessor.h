@@ -43,14 +43,24 @@
 
 namespace inviwo {
 
-//class OnClickInteractionHandler : public InteractionHandler {
-//public:
-//    OnClickInteractionHandler();
-//    virtual ~OnClickInteractionHandler();
-//
-//
-//};
-
+/** \docpage{org.inviwo.PixelToBufferProcessor, Pixel to buffer}
+ * ![](org.inviwo.PixelToBufferProcessor.png?classIdentifier=org.inviwo.PixelToBufferProcessor)
+ *
+ * ...
+ * 
+ * ### Inports
+ *   * __input__ ...
+ * 
+ * ### Outports
+ *   * __pixelValues__ ...
+ * 
+ * ### Properties
+ *   * __From pixel__ ...
+ *   * __Clear collected values__ ...
+ *   * __Channel__ ...
+ *   * __Enable picking__ ...
+ *
+ */
 class IVW_MODULE_BASE_API PixelToBufferProcessor : public Processor, public InteractionHandler { 
 public:
     PixelToBufferProcessor();

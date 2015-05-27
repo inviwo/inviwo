@@ -40,6 +40,21 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.ImageExport, Image Export}
+ * ![](org.inviwo.ImageExport.png?classIdentifier=org.inviwo.ImageExport)
+ *
+ * ...
+ * 
+ * ### Inports
+ *   * __image__ ...
+ * 
+ * 
+ * ### Properties
+ *   * __Export Image__ ...
+ *   * __Image file name__ ...
+ *   * __Overwrite__ ...
+ *
+ */
 class IVW_MODULE_BASE_API ImageExport : public Processor {
 public:
     ImageExport();

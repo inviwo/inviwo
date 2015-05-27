@@ -39,7 +39,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageMapping, Image Mapping}
  * Maps the input image to an output image with the help of a transfer function.
- * ![](imagemapping.png)
+ * ![](org.inviwo.ImageMapping.png?classIdentifier=org.inviwo.ImageMapping)
  * 
  * ### Inports
  *   * __ImageInport__ The input image.

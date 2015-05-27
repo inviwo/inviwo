@@ -37,6 +37,17 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.VolumeDiff, Volume Difference}
+ * ![](org.inviwo.VolumeDiff.png?classIdentifier=org.inviwo.VolumeDiff)
+ *
+ * ...
+ * 
+ * ### Inports
+ *   * __vol2__ ...
+ * 
+ * 
+ *
+ */
 class IVW_MODULE_BASEGL_API VolumeDiff : public VolumeGLProcessor { 
 public:
     VolumeDiff();

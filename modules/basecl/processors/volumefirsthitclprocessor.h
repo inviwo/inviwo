@@ -43,7 +43,10 @@
 
 namespace inviwo {
 /** \docpage{org.inviwo.VolumeFirstHitCL, Volume First Hit}
- * Computes the first point with non-zero opacity within a volume given entry and exit points in texture space. 
+ * ![](org.inviwo.VolumeFirstHitCL.png?classIdentifier=org.inviwo.VolumeFirstHitCL)
+ * Computes the first point with non-zero opacity within a volume given 
+ * entry and exit points in texture space. 
+ * 
  * ### Inports
  *   * __VolumeInport__ The volume to intersect.
  *   * __ImageInport__ The entry point.

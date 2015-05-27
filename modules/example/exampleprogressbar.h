@@ -40,6 +40,19 @@
 namespace inviwo {
 
 // for a progressbar the processor has to be derived from ProgressBarOwner
+/** \docpage{org.inviwo.ExampleProgressBar, Example Progress Bar}
+ * ![](org.inviwo.ExampleProgressBar.png?classIdentifier=org.inviwo.ExampleProgressBar)
+ *
+ * ...
+ * 
+ * ### Inports
+ *   * __image.inport__ ...
+ * 
+ * ### Outports
+ *   * __image.outport__ ...
+ * 
+ *
+ */
 class IVW_MODULE_EXAMPLE_API ExampleProgressBar : public Processor, public ProgressBarOwner {
 public:
     ExampleProgressBar();

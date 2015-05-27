@@ -45,6 +45,15 @@ namespace inviwo {
  *
  * \brief Takes and ImageInport and renders it into a OpenGL window i.e. a canvas.
  */
+/** \docpage{org.inviwo.VectorMagnitude, Vector Magnitude}
+ * ![](org.inviwo.VectorMagnitude.png?classIdentifier=org.inviwo.VectorMagnitude)
+ *
+ * ...
+ * 
+ * 
+ * 
+ *
+ */
 class IVW_MODULE_BASEGL_API VectorMagnitudeProcessor : public VolumeGLProcessor  { 
 public:
     VectorMagnitudeProcessor();

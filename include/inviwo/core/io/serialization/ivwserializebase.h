@@ -85,7 +85,7 @@ public:
      * and de-serializer. Some of them are reference data manager,
      * (ticpp::Node) node switch and factory registration.
      *
-     * @param bool allowReference disables or enables reference management schemes.
+     * @param allowReference disables or enables reference management schemes.
      */
     IvwSerializeBase(bool allowReference=true);
 
@@ -96,8 +96,8 @@ public:
      * and de-serializer. Some of them are reference data manager,
      * (ticpp::Node) node switch and factory registration.
      *
-     * @param IvwSerializeBase & s object of similar type.
-     * @param bool allowReference disables or enables reference management schemes.
+     * @param s object of similar type.
+     * @param allowReference disables or enables reference management schemes.
      */
     IvwSerializeBase(IvwSerializeBase& s, bool allowReference=true);
     /**
@@ -107,8 +107,8 @@ public:
      * and de-serializer. Some of them are reference data manager,
      * (ticpp::Node) node switch and factory registration.
      *
-     * @param std::string fileName full path to xml file (for reading or writing).
-     * @param bool allowReference disables or enables reference management schemes.
+     * @param fileName full path to xml file (for reading or writing).
+     * @param allowReference disables or enables reference management schemes.
      */
     IvwSerializeBase(std::string fileName, bool allowReference=true);
     /**
@@ -118,9 +118,9 @@ public:
      * and de-serializer. Some of them are reference data manager,
      * (ticpp::Node) node switch and factory registration.
      *
-     * @param std::istream& stream containing all xml data (for reading).
-     * @param std::string path A path that will be used to decode the location of data during deserialization. 
-     * @param bool allowReference disables or enables reference management schemes.
+     * @param stream containing all xml data (for reading).
+     * @param path A path that will be used to decode the location of data during deserialization. 
+     * @param allowReference disables or enables reference management schemes.
      */
     IvwSerializeBase(std::istream& stream, const std::string& path, bool allowReference=true);
     
@@ -140,8 +140,8 @@ public:
      * return true if type is one of following type:
      * bool, char, signed int, unsigned int, float, double, long double, std::string
      *
-     * @param const std::type_info & type can be one of  bool, char, signed int, unsigned int, float, double, long double, std::string
-     * @return bool true or false
+     * @param type can be one of  bool, char, signed int, unsigned int, float, double, long double, std::string
+     * @return true or false
      */
     bool isPrimitiveType(const std::type_info& type) const;
 
@@ -153,7 +153,7 @@ public:
     /**
      * \brief For allocating objects such as processors, properties.. using registered factories.
      *
-     * @param const std::string & className is used by registered factories to allocate the required object.
+     * @param className is used by registered factories to allocate the required object.
      * @return T* nullptr if allocation fails or className does not exist in any factories.
      */
     template <typename T>
@@ -174,8 +174,8 @@ public:
         /**
          * \brief NodeSwitch helps track parent node during recursive/nested function calls.
          *
-         * @param IvwSerializeBase & serializer reference to serializer or deserializer
-         * @param TxElement * node //Parent (Ticpp Node) element.
+         * @param serializer reference to serializer or deserializer
+         * @param node //Parent (Ticpp Node) element.
          */
         NodeSwitch(IvwSerializeBase& serializer, TxElement* node, bool retrieveChild = true);
         
@@ -183,8 +183,8 @@ public:
         /**
          * \brief NodeSwitch helps track parent node during recursive/nested function calls.
          *
-         * @param IvwSerializeBase & serializer reference to serializer or deserializer
-         * @param std::string key the child to switch to.
+         * @param serializer reference to serializer or deserializer
+         * @param key the child to switch to.
          */
         NodeSwitch(IvwSerializeBase& serializer, const std::string& key, bool retrieveChild = true);
         

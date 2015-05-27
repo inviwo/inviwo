@@ -39,6 +39,23 @@
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.VolumeSubsample, Volume Subsample}
+ * ![](org.inviwo.VolumeSubsample.png?classIdentifier=org.inviwo.VolumeSubsample)
+ *
+ * ...
+ * 
+ * ### Inports
+ *   * __volume.inport__ ...
+ * 
+ * ### Outports
+ *   * __volume.outport__ ...
+ * 
+ * ### Properties
+ *   * __Enable Operation__ ...
+ *   * __Adjust Basis and Offset__ ...
+ *   * __Factor__ ...
+ *
+ */
 class IVW_MODULE_BASE_API VolumeSubsample : public Processor {
 public:
     VolumeSubsample();

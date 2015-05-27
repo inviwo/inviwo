@@ -42,7 +42,8 @@
 
 
 namespace inviwo {
-/** \docpage{org.inviwo.GrayscaleCL, Image grayscale}
+/** \docpage{org.inviwo.GrayscaleCL, Image Grayscale}
+ * ![](org.inviwo.GrayscaleCL.png?classIdentifier=org.inviwo.GrayscaleCL)
  * Turns an image into grayscale using the following operation:
  *      out = 0.2989*red + 0.5870*green + 0.1140*blue;
  * 

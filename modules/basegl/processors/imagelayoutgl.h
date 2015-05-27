@@ -46,6 +46,24 @@
 namespace inviwo {
 
 // Mouse click activates the area for mouse/key interactions.
+/** \docpage{org.inviwo.ImageLayoutGL, Image Layout}
+ * ![](org.inviwo.ImageLayoutGL.png?classIdentifier=org.inviwo.ImageLayoutGL)
+ *
+ * ...
+ * 
+ * ### Inports
+ *   * __multiinport__ ...
+ * 
+ * ### Outports
+ *   * __outport__ ...
+ * 
+ * ### Properties
+ *   * __Vertical Split__ ...
+ *   * __Split Position__ ...
+ *   * __Split Position__ ...
+ *   * __Horizontal Split__ ...
+ *
+ */
 class IVW_MODULE_BASEGL_API ImageLayoutGL : public Processor {
 public:
     InviwoProcessorInfo();

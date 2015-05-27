@@ -46,7 +46,7 @@ class MeshDrawerFactory;
  * without knowing the type of Geometry. This is enabled by
  * implementing the abstract functions canRender and create.
  *
- * \section example Example
+ * \section MeshDrawer.example Example
  * Example of how to implement a derived MeshDrawer.
  * @code
  *    class IVW_XXX_API DerivedDrawer: public MeshDrawer {

@@ -40,7 +40,7 @@ namespace inviwo {
 /** \docpage{org.inviwo.VolumeCombiner, Volume Combiner}
 * Combines two volumes into a single volume. Resolution and data type of the 
 * result match the one of input volume A. The input volumes can be scaled individually.
-* ![](volumecombiner.png)
+* ![](org.inviwo.VolumeCombiner.png?classIdentifier=org.inviwo.VolumeCombiner)
 *
 * ### Inports
 *   * __VolumeInport__ Input volume A.

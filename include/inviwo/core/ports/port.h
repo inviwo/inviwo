@@ -53,9 +53,9 @@ struct port_traits {
     static std::string data_info(const T* data) { return util::data_info<T>(data); }
 };
 
-/**
- * \class Port, A abstract base class for all ports.
- * \brief A port can be connected to other ports and is owned by a processor.
+/** \class Port
+ * \brief A abstract base class for all ports.
+ * A port can be connected to other ports and is owned by a processor.
  */
 class IVW_CORE_API Port : public IvwSerializable {
     friend class Processor;

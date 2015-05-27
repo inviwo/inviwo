@@ -39,7 +39,7 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.ImageGamma, Image Gamma}
  * Apply gamma correction to an input image. The alpha channel is not touched.
- * ![](imagegamma.png)
+ * ![](org.inviwo.ImageGamma.png?classIdentifier=org.inviwo.ImageGamma)
  * This processor applies a gamma correction as follows
  * 
  *     out.rgb = pow(in.rgb, gamma)

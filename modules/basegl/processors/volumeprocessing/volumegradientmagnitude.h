@@ -49,6 +49,17 @@ namespace inviwo {
  * intermediate gradient volume is never generated and, thus, this processor is more memory 
  * efficient.
  */
+/** \docpage{org.inviwo.VolumeGradientMagnitude, Volume Gradient Magnitude}
+ * ![](org.inviwo.VolumeGradientMagnitude.png?classIdentifier=org.inviwo.VolumeGradientMagnitude)
+ *
+ * ...
+ * 
+ * 
+ * 
+ * ### Properties
+ *   * __Render Channel__ ...
+ *
+ */
 class IVW_MODULE_BASEGL_API VolumeGradientMagnitude : public VolumeGLProcessor  { 
 public:
     VolumeGradientMagnitude();
