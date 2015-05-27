@@ -63,15 +63,15 @@ public:
     CameraBase& operator=(const CameraBase& other) = default;
 
     vec3& getLookFrom() { return lookFrom_; }
-    vec3 getLookFrom() const;
+    const vec3& getLookFrom() const;
     void setLookFrom(vec3 val);
 
     vec3& getLookTo() { return lookTo_; }
-    vec3 getLookTo() const;
+    const vec3& getLookTo() const;
     void setLookTo(vec3 val);
 
     vec3& getLookUp() { return lookUp_; }
-    vec3 getLookUp() const;
+    const vec3& getLookUp() const;
     void setLookUp(vec3 val);
 
 
@@ -209,7 +209,7 @@ public:
     friend bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
     friend bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
 
-    vec4 getFrustum() const;
+    const vec4& getFrustum() const;
     /**
      * \brief Left, right, bottom, top view volume
      *
@@ -218,7 +218,7 @@ public:
      * @param inviwo::vec4 val
      * @return void
      */
-    void setFrustum(inviwo::vec4 val);
+    void setFrustum(vec4 val);
 
     virtual void serialize(IvwSerializer& s) const override;
     virtual void deserialize(IvwDeserializer& d) override;
@@ -235,17 +235,17 @@ bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
 
 // Implementation details
 
-inline vec3 CameraBase::getLookFrom() const { return lookFrom_; }
+inline const vec3& CameraBase::getLookFrom() const { return lookFrom_; }
 inline void CameraBase::setLookFrom(vec3 val) {
     lookFrom_ = val;
     invalidateViewMatrix();
 }
-inline vec3 CameraBase::getLookTo() const { return lookTo_; }
+inline const vec3& CameraBase::getLookTo() const { return lookTo_; }
 inline void CameraBase::setLookTo(vec3 val) {
     lookTo_ = val;
     invalidateViewMatrix();
 }
-inline vec3 CameraBase::getLookUp() const { return lookUp_; }
+inline const vec3& CameraBase::getLookUp() const { return lookUp_; }
 inline void CameraBase::setLookUp(vec3 val) {
     lookUp_ = val;
     invalidateViewMatrix();
@@ -290,7 +290,7 @@ inline mat4 PerspectiveCamera::calculateProjectionMatrix() const {
     return glm::perspective(glm::radians(fovy_), aspectRatio_, nearPlaneDist_, farPlaneDist_);
 };
 
-inline vec4 OrthographicCamera::getFrustum() const { return frustum_; }
+inline const vec4& OrthographicCamera::getFrustum() const { return frustum_; }
 
 inline void OrthographicCamera::setFrustum(inviwo::vec4 val) {
     frustum_ = val;
