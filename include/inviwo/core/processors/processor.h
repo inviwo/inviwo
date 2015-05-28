@@ -69,6 +69,7 @@ class ResizeEvent;
 #define ProcessorCodeState(T, codeState) const CodeState T::CODE_STATE = codeState;
 
 /**
+ * \defgroup processors Processors
  * \class Processor
  *
  * \brief A processor generally performs operation on input data and outputs the new result.

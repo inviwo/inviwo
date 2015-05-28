@@ -114,12 +114,13 @@ function(get_unique_names retval paths)
 	set(${retval} ${ret} PARENT_SCOPE)
 endfunction()
 
-function(make_doxy_target OUTPUT_DIR, DOXY_NAME)
+function(make_doxy_target OUTPUT_DIR DOXY_NAME IMAGE_PATH_LIST)
 	string(TOLOWER ${DOXY_NAME} name_lower)
 	add_custom_target("DOXY-${DOXY_NAME}"
 		COMMAND ${CMAKE_COMMAND} -E echo "Building doxygen ${DOXY_NAME}"
 		COMMAND ${CMAKE_COMMAND} -E make_directory "${OUTPUT_DIR}/doc/${name_lower}/html"
         COMMAND ${DOXYGEN_EXECUTABLE} "${OUTPUT_DIR}/${name_lower}.doxy"
+        COMMAND ${CMAKE_COMMAND} -DDEST_PATH="${OUTPUT_DIR}/doc/${name_lower}/html" -P "${OUTPUT_DIR}/doc/copy_img.cmake"
         WORKING_DIRECTORY ${OUTPUT_DIR}
         COMMENT "Generating ${DOXY_NAME} API documentation with Doxygen"
         VERBATIM
@@ -147,6 +148,7 @@ function(make_documentation OUTPUT_DIR DOXY_NAME BRIEF INPUT_LIST TAGFILE INPUT_
 		make_doxy_target(
 			"${OUTPUT_DIR}"
 			"${DOXY_NAME}"
+			"${IMAGE_PATH_LIST}"
 		)
 	endif()
 endfunction()
@@ -405,5 +407,25 @@ if(${IVW_DOXYGEN_PROJECT})
 	make_help("${IVW_DOXY_DIR}/help" "${IVW_DOXY_ALL_SOURCES}" "${IMAGE_PATH_LIST}")
 	add_dependencies("DOXY-ALL" "DOXY-Help")
 	add_dependencies("DOXY-ALL" "DOXY-QCH")
+
+	foreach(path ${IMG_PATHS})
+		message(${path})
+	endforeach()
+
+	# make a img-copy script
+	set(COPY_SCRIPT_LIST
+		"foreach(path ${IMAGE_PATH_LIST})"
+		"	string(REPLACE \"\\\"\" \"\" new_path \${path})"
+		"	string(REPLACE \"\\\"\" \"\" new_dest \${DEST_PATH})"
+		"	message(\"Look for images in: \" \${new_path})"
+		"	file(GLOB imgs \${new_path}/*)"
+		"	foreach(img \${imgs})"
+		"		message(\"Copy \${img} to \${new_dest}\")"
+		"		file(COPY \${img} DESTINATION \${new_dest})"
+		"	endforeach()"
+		"endforeach()"
+	)
+	string(REPLACE ";" "\n" COPY_SCRIPT "${COPY_SCRIPT_LIST}")
+	file(WRITE "${IVW_DOXY_OUT}/doc/copy_img.cmake" ${COPY_SCRIPT})
 
  endif()
