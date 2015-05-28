@@ -32,8 +32,11 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/ivwserializable.h>
+#include <unordered_set>
 
 namespace inviwo {
+
+class Processor;
 
 class IVW_CORE_API Event : public IvwSerializable {
 public:
@@ -51,11 +54,15 @@ public:
     void markAsUsed();
     bool hasBeenUsed();
 
+    void markAsVisited(Processor*);
+    bool hasVisitedProcessor(Processor*);
+
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
 
 private:
     bool used_;
+    std::unordered_set<Processor*> visitedProcessors_;
 };
 
 }  // namespace

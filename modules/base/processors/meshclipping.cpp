@@ -76,7 +76,6 @@ MeshClipping::MeshClipping()
     addProperty(renderAsPoints_);
 
     addProperty(camera_);
-    camera_.setVisible(false);
 }
 
 MeshClipping::~MeshClipping() {}
