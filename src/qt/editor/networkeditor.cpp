@@ -49,6 +49,7 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/linkdialog/linkdialog.h>
@@ -918,34 +919,31 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
         if (connectionItem && !oldConnectionTarget_) {  //< New connection found
             QString className;
             ProcessorDragObject::decode(e->mimeData(), className);
-            Processor* processor = static_cast<Processor*>(
-                ProcessorFactory::getPtr()->create(className.toLocal8Bit().constData()));
-            
-            bool inputmatch = false;
-            // try to find a match between connection outport and one of the new processors inports
-            for (auto& elem : processor->getInports()) {
-                if (elem->canConnectTo(connectionItem->getOutport())) {
-                    inputmatch = true;
-                    break;
-                }
-            }
 
-            bool outputmatch = false;
-            // try to find a match between connection inport and one of the new processors outports
-            for (auto& elem : processor->getOutports()) {
-                if (connectionItem->getInport()->canConnectTo(elem)) {
-                    outputmatch = true;
-                    break;
+            try {
+                std::unique_ptr<Processor> processor{static_cast<Processor*>(
+                    ProcessorFactory::getPtr()->create(className.toLocal8Bit().constData()))};
+
+                bool inputmatch =
+                    util::any_of(processor->getInports(), [&connectionItem](Inport* inport) {
+                        return inport->canConnectTo(connectionItem->getOutport());
+                    });
+                bool outputmatch =
+                    util::any_of(processor->getOutports(), [&connectionItem](Outport* outport) {
+                        return connectionItem->getInport()->canConnectTo(outport);
+                    });
+
+                if (inputmatch && outputmatch) {
+                    connectionItem->setBorderColor(Qt::green);
+                } else {
+                    connectionItem->setBorderColor(Qt::red);
                 }
-            }
-            if(inputmatch && outputmatch) {
-                connectionItem->setBorderColor(Qt::green);
-            } else {
+                oldConnectionTarget_->setMidPoint(e->scenePos());
+            } catch (Exception& e) {
                 connectionItem->setBorderColor(Qt::red);
             }
             oldConnectionTarget_ = connectionItem;
-            oldConnectionTarget_->setMidPoint(e->scenePos());
-            delete processor;
+
 
         } else if (connectionItem) {  // move event on active connection
             oldConnectionTarget_->setMidPoint(e->scenePos());
@@ -973,37 +971,48 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
 
 void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
     if (ProcessorDragObject::canDecode(e->mimeData())) {
-        QString className;
-        ProcessorDragObject::decode(e->mimeData(), className);
+        QString name;
+        ProcessorDragObject::decode(e->mimeData(), name);
+        std::string className = name.toLocal8Bit().constData();
 
-        if (!className.isEmpty()) {
+        if (!className.empty()) {
             e->setAccepted(true);
             e->acceptProposedAction();
 
-            // create processor, add it to processor network, and generate it's widgets
-            Processor* processor = static_cast<Processor*>(
-                ProcessorFactory::getPtr()->create(className.toLocal8Bit().constData()));
+            try {
+                // create processor, add it to processor network, and generate it's widgets
+                Processor* processor =
+                    static_cast<Processor*>(ProcessorFactory::getPtr()->create(className));
 
-            clearSelection();
+                clearSelection();
 
-            ProcessorMetaData* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+                ProcessorMetaData* meta =
+                    processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 
-            if (oldProcessorTarget_) {
-                meta->setPosition(
-                    vec2(oldProcessorTarget_->scenePos().x(), oldProcessorTarget_->scenePos().y()));
-            } else {
-                QPointF spos = snapToGrid(e->scenePos());
-                meta->setPosition(vec2(spos.x(), spos.y()));
-            }
+                if (oldProcessorTarget_) {
+                    meta->setPosition(vec2(oldProcessorTarget_->scenePos().x(),
+                                           oldProcessorTarget_->scenePos().y()));
+                } else {
+                    QPointF spos = snapToGrid(e->scenePos());
+                    meta->setPosition(vec2(spos.x(), spos.y()));
+                }
 
-            InviwoApplication::getPtr()->getProcessorNetwork()->addProcessor(processor);
+                InviwoApplication::getPtr()->getProcessorNetwork()->addProcessor(processor);
+                InviwoApplication::getPtr()->getProcessorNetwork()->autoLinkProcessor(processor);
 
-            InviwoApplication::getPtr()->getProcessorNetwork()->autoLinkProcessor(processor);
-    
-            if (oldConnectionTarget_) {
-                placeProcessorOnConnection(processor, oldConnectionTarget_);
-            } else if (oldProcessorTarget_) {
-                placeProcessorOnProcessor(processor, oldProcessorTarget_->getProcessor());
+                if (oldConnectionTarget_) {
+                    placeProcessorOnConnection(processor, oldConnectionTarget_);
+                } else if (oldProcessorTarget_) {
+                    placeProcessorOnProcessor(processor, oldProcessorTarget_->getProcessor());
+                }
+            } catch (Exception& exception) {
+                if (oldConnectionTarget_) {
+                    oldConnectionTarget_->resetBorderColors();
+                    oldConnectionTarget_->clearMidPoint();
+                }
+                util::log(exception.getContext(), "Unable to create processor " + className +
+                                                      " due to " + exception.getMessage(),
+                          LogLevel::Error);
             }
 
             // clear oldDragTarget
