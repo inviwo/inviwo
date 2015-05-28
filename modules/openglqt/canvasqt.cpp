@@ -418,26 +418,24 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     if (nTouchPoints < 1) {
         return;
     }
+
     QTouchEvent::TouchPoint firstPoint = touch->touchPoints()[0];
     
-    TouchEvent::TouchState touchState;
-
     switch (firstPoint.state())
     {
     case Qt::TouchPointPressed:
-        touchState = TouchEvent::TOUCH_STATE_STARTED;
         gestureMode_ = nTouchPoints > 1; // Treat single touch point as mouse event
         break;
     case Qt::TouchPointMoved:
-        touchState = TouchEvent::TOUCH_STATE_UPDATED;
+        gestureMode_ = nTouchPoints > 1; // Treat single touch point as mouse event
+        break;
+    case Qt::TouchPointStationary:
         gestureMode_ = nTouchPoints > 1; // Treat single touch point as mouse event
         break;
     case Qt::TouchPointReleased:
-        touchState = TouchEvent::TOUCH_STATE_ENDED;
         gestureMode_ = false;
         break;
     default:
-        touchState = TouchEvent::TOUCH_STATE_NONE;
         gestureMode_ = false;
     }
     // Copy touch points
@@ -447,15 +445,32 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
         vec2 screenTouchPos(touchPoint.pos().x(), touchPoint.pos().y());
         vec2 screenSize(getScreenDimensions());
         vec2 prevScreenTouchPos(touchPoint.lastPos().x(), touchPoint.lastPos().y());
-
+        TouchPoint::TouchState touchState;
+        switch (firstPoint.state())
+        {
+        case Qt::TouchPointPressed:
+            touchState = TouchPoint::TOUCH_STATE_STARTED;
+            break;
+        case Qt::TouchPointMoved:
+            touchState = TouchPoint::TOUCH_STATE_UPDATED;
+            break;
+        case Qt::TouchPointStationary:
+            touchState = TouchPoint::TOUCH_STATE_STATIONARY;
+            break;
+        case Qt::TouchPointReleased:
+            touchState = TouchPoint::TOUCH_STATE_ENDED;
+            break;
+        default:
+            touchState = TouchPoint::TOUCH_STATE_NONE;
+        }
         touchPoints.push_back(
             TouchPoint(screenTouchPos,
             (screenTouchPos + 0.5f) / screenSize,
             prevScreenTouchPos,
-            (prevScreenTouchPos + 0.5f) / screenSize
-            ));
+            (prevScreenTouchPos + 0.5f) / screenSize,
+            touchState));
     }
-    TouchEvent touchEvent(touchPoints, touchState, getScreenDimensions());
+    TouchEvent touchEvent(touchPoints, getScreenDimensions());
     touch->accept();
     Canvas::touchEvent(&touchEvent);
 
@@ -465,19 +480,21 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     if(touch->touchPoints().size() == 1 && lastNumFingers_ < 2){
         MouseEvent* mouseEvent = nullptr;
 		ivec2 pos = ivec2(static_cast<int>(glm::floor(firstPoint.pos().x())), static_cast<int>(glm::floor(firstPoint.pos().y())));
-        switch (touchState)
+        switch (touchPoints.front().state())
         {
-        case TouchEvent::TOUCH_STATE_STARTED:
+        case TouchPoint::TOUCH_STATE_STARTED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_PRESS, 
                 EventConverterQt::getModifier(touch), getScreenDimensions());
             Canvas::mousePressEvent(mouseEvent);
             break;
-        case TouchEvent::TOUCH_STATE_UPDATED:
+        case TouchPoint::TOUCH_STATE_UPDATED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_MOVE, 
                 EventConverterQt::getModifier(touch), getScreenDimensions());
             Canvas::mouseMoveEvent(mouseEvent);
             break;
-        case TouchEvent::TOUCH_STATE_ENDED:
+        case TouchPoint::TOUCH_STATE_STATIONARY:
+            break; // Do not fire event while standing still.
+        case TouchPoint::TOUCH_STATE_ENDED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_RELEASE, 
                 EventConverterQt::getModifier(touch), getScreenDimensions());
             Canvas::mouseReleaseEvent(mouseEvent);
@@ -491,18 +508,6 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
 
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
     screenPositionNormalized_ = touchEvent.getCenterPointNormalized();
-    //if(lastNumFingers_ > 1){
-    //    vec2 fpos = vec2(0.f);
-    //    for (auto& elem : touch->touchPoints())
-    //        fpos += vec2(elem.pos().x(), glm::floor(elem.pos().y()));
-
-    //    fpos /= static_cast<float>(touch->touchPoints().size());
-
-    //    screenPositionNormalized_ = vec2(glm::floor(fpos.x)/getScreenDimensions().x, glm::floor(fpos.y)/getScreenDimensions().y);
-    //}
-    //else{
-    //    screenPositionNormalized_ = vec2(static_cast<float>(pos.x)/getScreenDimensions().x, static_cast<float>(pos.y)/getScreenDimensions().y);
-    //}
 }
 
 bool CanvasQt::gestureEvent(QGestureEvent* ge) {

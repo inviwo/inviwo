@@ -70,7 +70,7 @@ public:
     CameraProperty& operator=(const CameraProperty& that);
     CameraProperty& operator=(const PerspectiveCamera& value);
 
-    virtual operator PerspectiveCamera&() { return value_; };
+    //virtual operator PerspectiveCamera&() { return value_; }; // Do not allow user to get non-const reference since no notification mechanism exist.
     virtual operator const PerspectiveCamera&() const { return value_; }
 
     virtual CameraProperty* clone() const;
@@ -89,13 +89,10 @@ public:
      */
     void resetCamera();
 
-    vec3& getLookFrom();
     const vec3& getLookFrom() const;
     void setLookFrom(vec3 lookFrom);
-    vec3& getLookTo();
     const vec3& getLookTo() const;
     void setLookTo(vec3 lookTo);
-    vec3& getLookUp();
     const vec3& getLookUp() const;
     void setLookUp(vec3 lookUp);
     vec3 getLookRight() const;
@@ -139,15 +136,12 @@ public:
     void invokeEvent(Event* event);
 
     // Local camera invalidation
-    // Use lock and unlock to set several camera properties without casing evaluation,
+    // Use lock and unlock to set several camera properties without causing evaluation,
     // then call invalidateCamera().
     void invalidateCamera();
     void lockInvalidation();
     void unlockInvalidation();
     bool isInvalidationLocked();
-
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
 
     void setInport(Inport* inport);
     void fitWithBasis(const mat3& basis);

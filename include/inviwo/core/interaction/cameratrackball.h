@@ -46,10 +46,10 @@ public:
      * @see Trackball
      * @param CameraProperty* cameraProp Pointer to the camera that will be controlled.
      */
-    CameraTrackball(CameraProperty* cameraProp);
+    CameraTrackball(CameraProperty* cameraProp, Image* depthImage = nullptr);
     virtual ~CameraTrackball();
+    virtual CameraTrackball* clone() const;
 protected:
-    void onCameraPropertyChange();
 
     CameraProperty* cameraProp_; //< non-owning reference
 };

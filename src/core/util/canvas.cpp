@@ -146,7 +146,10 @@ void Canvas::activateDefaultRenderContext(){
 }
 
 void Canvas::interactionEvent(Event* event) {
-    if (propagator_) propagator_->propagateEvent(event);
+    if (propagator_){
+        NetworkLock lock;
+        propagator_->propagateEvent(event);
+    }
 }
 
 void Canvas::mousePressEvent(MouseEvent* e) {

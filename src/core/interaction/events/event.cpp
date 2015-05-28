@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/event.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
@@ -56,6 +57,15 @@ void Event::markAsUsed(){
 
 bool Event::hasBeenUsed(){
     return used_;
+}
+
+void Event::markAsVisited(Processor* p){
+    visitedProcessors_.insert(p);
+}
+
+bool Event::hasVisitedProcessor(Processor* p){
+    std::unordered_set<Processor*>::const_iterator it = visitedProcessors_.find(p);
+    return (it != visitedProcessors_.end());
 }
 
 void Event::serialize(IvwSerializer& s) const {}
