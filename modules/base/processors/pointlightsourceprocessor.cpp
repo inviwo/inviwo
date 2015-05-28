@@ -37,7 +37,7 @@ namespace inviwo {
 
 PropertyClassIdentifier(PointLightTrackball, "org.inviwo.PointLightTrackball");
 
-ProcessorClassIdentifier(PointLightSourceProcessor, "org.inviwo.Point light source");
+ProcessorClassIdentifier(PointLightSourceProcessor, "org.inviwo.Pointlightsource");
 ProcessorDisplayName(PointLightSourceProcessor,  "Point light source");
 ProcessorTags(PointLightSourceProcessor, Tags::CPU);
 ProcessorCategory(PointLightSourceProcessor, "Light source");
