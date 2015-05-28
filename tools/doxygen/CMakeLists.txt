@@ -144,13 +144,11 @@ function(make_documentation OUTPUT_DIR DOXY_NAME BRIEF INPUT_LIST TAGFILE INPUT_
 		"${IMAGE_PATH_LIST}"
 		"${ALIASES_LIST}"
 	)
-	if(${DOXYGEN_FOUND})
-		make_doxy_target(
-			"${OUTPUT_DIR}"
-			"${DOXY_NAME}"
-			"${IMAGE_PATH_LIST}"
-		)
-	endif()
+	make_doxy_target(
+		"${OUTPUT_DIR}"
+		"${DOXY_NAME}"
+		"${IMAGE_PATH_LIST}"
+	)
 endfunction()
 
 function(make_help INPUT_DIR SOURCE_LIST IMAGE_PATH_LIST)
@@ -236,10 +234,14 @@ endfunction()
 
 
 if(${IVW_DOXYGEN_PROJECT})
-	find_package(Perl)    # sets, PERL_FOUND, PERL_EXECUTABLE
-	find_package(Doxygen) # sets, DOXYGEN_FOUND, DOXYGEN_EXECUTABLE, 
-						  # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
+	find_package(Perl QUIET)    # sets, PERL_FOUND, PERL_EXECUTABLE
+	find_package(Doxygen QUIET) # sets, DOXYGEN_FOUND, DOXYGEN_EXECUTABLE, 
+						        # DOXYGEN_DOT_FOUND, DOXYGEN_DOT_EXECUTABLE
 	
+	if(NOT ${DOXYGEN_FOUND})
+		return()
+	endif()
+
 	if(${DOXYGEN_DOT_FOUND})
 		get_filename_component(DOXYGEN_DOT_PATH ${DOXYGEN_DOT_EXECUTABLE} PATH)
 	endif()
