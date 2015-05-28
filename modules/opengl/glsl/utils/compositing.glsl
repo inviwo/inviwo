@@ -71,7 +71,10 @@ vec4 compositeFHN(in vec4 curResult, in vec4 color, in vec3 gradient, in float t
 
     if (result == vec4(0.0) && color.a > 0.0) {
         tDepth = t;
-        result = vec4(normalize(gradient) * 0.5 + 0.5, 1.0);
+        // Note that the gradient is reversed since we define the normal of a surface as
+        // the direction towards a lower intensity medium (gradient points in the inreasing direction)
+        vec3 firstHitNormal = normalize(-gradient);
+        result = vec4(firstHitNormal * 0.5 + 0.5, 1.0);
     }
 
     return result;
@@ -83,12 +86,13 @@ vec4 compositeFHN_VS(in vec4 curResult, in vec4 color, in vec3 gradient, in floa
 
     if (result == vec4(0.0) && color.a > 0.0) {
         tDepth = t;
-        vec4 fh_normal = vec4(normalize(gradient), 0.0);
-        // TODO: This transformation is incorrect
-        // should be transpose(mat3(viewToWorld))* fh_normal
+        // Note that the gradient is reversed since we define the normal of a surface as
+        // the direction towards a lower intensity medium (gradient points in the inreasing direction)
+        vec3 firstHitNormal = normalize(-gradient);
+
         // https://cloud.githubusercontent.com/assets/9251300/4753062/34392416-5ab3-11e4-9569-026a8ec9687a.png
-        vec4 transformed_normal = camera.worldToView * fh_normal;
-        result = vec4(normalize(transformed_normal.xyz) * 0.5 + 0.5, 1.0);
+        vec3 viewSpaceNormal = transpose(mat3(camera.worldToView)) * firstHitNormal;
+        result = vec4(normalize(viewSpaceNormal.xyz) * 0.5 + 0.5, 1.0);
     }
 
     return result;
