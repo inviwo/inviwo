@@ -39,6 +39,7 @@ namespace inviwo {
 
 class Shader;
 class ImageGL;
+class LayerRAM;
 class MeshGL;
 class BufferObjectArray;
 
@@ -86,6 +87,8 @@ protected:
 
     void drawRect();
     void checkChannels(int);
+
+    const LayerRAM* getDepthLayerRAM() const;
 
     static void enableDrawImagePlaneRect();
     static void disableDrawImagePlaneRect();

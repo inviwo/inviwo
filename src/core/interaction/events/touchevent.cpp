@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-    TouchPoint::TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState)
-    : pos_(pos), posNormalized_(posNormalized), prevPos_(prevPos), prevPosNormalized_(prevPosNormalized), state_(touchState) {
+    TouchPoint::TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState, double depth)
+    : pos_(pos), posNormalized_(posNormalized), prevPos_(prevPos), prevPosNormalized_(prevPosNormalized), state_(touchState), depth_(depth) {
 
 }
 
@@ -42,6 +42,7 @@ void TouchPoint::serialize(IvwSerializer& s) const {
     s.serialize("prevPos", prevPos_);
     s.serialize("prevPosNormalized", prevPosNormalized_);
     s.serialize("state", state_);
+    s.serialize("depth", depth_);
 
 }
 
@@ -51,6 +52,7 @@ void TouchPoint::deserialize(IvwDeserializer& d) {
     d.deserialize("prevPos", prevPos_);
     d.deserialize("prevPosNormalized", prevPosNormalized_);
     d.deserialize("state", state_);
+    d.deserialize("depth", depth_);
 }
 
 TouchEvent::TouchEvent(uvec2 canvasSize)

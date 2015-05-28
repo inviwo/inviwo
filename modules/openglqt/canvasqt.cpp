@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/openglqt/canvasqt.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 #include <modules/opengl/openglcapabilities.h>
 #if defined(USE_NEW_OPENGLWIDGET)
 #include <QOpenGLContext>
@@ -441,6 +442,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
     touchPoints.reserve(touch->touchPoints().size());
+    const LayerRAM* depthLayerRAM = getDepthLayerRAM();
     for (auto& touchPoint : touch->touchPoints()) {
         vec2 screenTouchPos(touchPoint.pos().x(), touchPoint.pos().y());
         vec2 screenSize(getScreenDimensions());
@@ -463,12 +465,18 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
         default:
             touchState = TouchPoint::TOUCH_STATE_NONE;
         }
+        double depth = 1.0;
+        if (depthLayerRAM){
+            depth = depthLayerRAM->getValueAsSingleDouble(
+                uvec2(static_cast<unsigned int>(glm::floor(screenTouchPos.x)), 
+                static_cast<unsigned int>(glm::floor(screenTouchPos.y))));
+        }
         touchPoints.push_back(
             TouchPoint(screenTouchPos,
             (screenTouchPos + 0.5f) / screenSize,
             prevScreenTouchPos,
             (prevScreenTouchPos + 0.5f) / screenSize,
-            touchState));
+            touchState, depth));
     }
     TouchEvent touchEvent(touchPoints, getScreenDimensions());
     touch->accept();

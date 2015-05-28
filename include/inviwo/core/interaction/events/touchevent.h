@@ -47,7 +47,7 @@ public:
         TOUCH_STATE_ANY = TOUCH_STATE_STARTED | TOUCH_STATE_UPDATED | TOUCH_STATE_STATIONARY | TOUCH_STATE_ENDED
     };
     TouchPoint() {};
-    TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState);
+    TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState, double depth = 1.0);
     virtual ~TouchPoint() {};
 
 
@@ -103,6 +103,7 @@ protected:
     vec2 prevPosNormalized_;
 
     TouchPoint::TouchState state_;
+    double depth_;
 
 };
 

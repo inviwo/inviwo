@@ -29,6 +29,7 @@
 
 #include "canvasgl.h"
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/glwrap/shader.h>
@@ -227,6 +228,15 @@ void CanvasGL::checkChannels(int channels) {
         shader_->link();
         singleChannel_ = false;
     }
+}
+
+const LayerRAM* CanvasGL::getDepthLayerRAM() const{
+    const Layer* depthLayer = image_->getDepthLayer();
+    if (depthLayer) {
+        return depthLayer->getRepresentation<LayerRAM>();
+    }
+    else
+        return nullptr;
 }
 
 void CanvasGL::enableDrawImagePlaneRect() {
