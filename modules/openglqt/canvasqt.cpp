@@ -480,19 +480,21 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     if(touch->touchPoints().size() == 1 && lastNumFingers_ < 2){
         MouseEvent* mouseEvent = nullptr;
 		ivec2 pos = ivec2(static_cast<int>(glm::floor(firstPoint.pos().x())), static_cast<int>(glm::floor(firstPoint.pos().y())));
-        switch (touchState)
+        switch (touchPoints.front().state())
         {
-        case TouchEvent::TOUCH_STATE_STARTED:
+        case TouchPoint::TOUCH_STATE_STARTED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_PRESS, 
                 EventConverterQt::getModifier(touch), getScreenDimensions());
             Canvas::mousePressEvent(mouseEvent);
             break;
-        case TouchEvent::TOUCH_STATE_UPDATED:
+        case TouchPoint::TOUCH_STATE_UPDATED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_MOVE, 
                 EventConverterQt::getModifier(touch), getScreenDimensions());
             Canvas::mouseMoveEvent(mouseEvent);
             break;
-        case TouchEvent::TOUCH_STATE_ENDED:
+        case TouchPoint::TOUCH_STATE_STATIONARY:
+            break; // Do not fire event while standing still.
+        case TouchPoint::TOUCH_STATE_ENDED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_RELEASE, 
                 EventConverterQt::getModifier(touch), getScreenDimensions());
             Canvas::mouseReleaseEvent(mouseEvent);
@@ -506,18 +508,6 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
 
     lastNumFingers_ = static_cast<int>(touch->touchPoints().size());
     screenPositionNormalized_ = touchEvent.getCenterPointNormalized();
-    //if(lastNumFingers_ > 1){
-    //    vec2 fpos = vec2(0.f);
-    //    for (auto& elem : touch->touchPoints())
-    //        fpos += vec2(elem.pos().x(), glm::floor(elem.pos().y()));
-
-    //    fpos /= static_cast<float>(touch->touchPoints().size());
-
-    //    screenPositionNormalized_ = vec2(glm::floor(fpos.x)/getScreenDimensions().x, glm::floor(fpos.y)/getScreenDimensions().y);
-    //}
-    //else{
-    //    screenPositionNormalized_ = vec2(static_cast<float>(pos.x)/getScreenDimensions().x, static_cast<float>(pos.y)/getScreenDimensions().y);
-    //}
 }
 
 bool CanvasQt::gestureEvent(QGestureEvent* ge) {

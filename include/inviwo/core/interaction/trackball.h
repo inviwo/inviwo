@@ -119,7 +119,6 @@ protected:
     enum Direction { UP = 0, LEFT, DOWN, RIGHT };
 
     vec3 mapNormalizedMousePosToTrackball(const vec2& mousePos, float radius = 1.0f);
-    vec3 mapToObject(vec3 pos, float dist = 1.f);
     void rotateTrackBall(const vec3 &fromTrackballPos, const vec3 &toTrackballPos);
 
     void rotate(Event* event);
@@ -349,22 +348,6 @@ vec3 Trackball<T>::mapNormalizedMousePosToTrackball(const vec2& mousePos, float 
     }
 
     return result;
-}
-
-template <typename T>
-vec3 Trackball<T>::mapToObject(vec3 pos, float dist) {
-    // return (camera_->viewMatrix() * vec4(pos,0)).xyz;
-    // TODO: Use proper co-ordinate transformation matrices
-    // Get x,y,z axis vectors of current camera view
-    vec3 currentViewYaxis = glm::normalize(getLookUp());
-    vec3 currentViewZaxis = glm::normalize(getLookFrom() - getLookTo());
-    vec3 currentViewXaxis = glm::normalize(glm::cross(currentViewYaxis, currentViewZaxis));
-
-    //mapping to camera co-ordinate
-    currentViewXaxis *= pos.x*dist;
-    currentViewYaxis *= pos.y*dist;
-    currentViewZaxis *= pos.z*dist;
-    return (currentViewXaxis + currentViewYaxis + currentViewZaxis);
 }
 
 template< typename T>
