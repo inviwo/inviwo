@@ -52,7 +52,7 @@ class IVW_MODULE_BASE_API PointLightTrackball : public Trackball<PointLightInter
 public:
     InviwoPropertyInfo();
 
-    PointLightTrackball(PointLightInteractionHandler* p) : Trackball<PointLightInteractionHandler>(p) {};
+    PointLightTrackball(PointLightInteractionHandler* p);;
     virtual ~PointLightTrackball() = default;
 };
 
@@ -66,6 +66,8 @@ public:
     ~PointLightInteractionHandler(){};
 
     virtual std::string getClassIdentifier() const { return "org.inviwo.PointLightInteractionHandler"; }
+
+    const PerspectiveCamera& getCamera() { return camera_->get(); }
 
     void invokeEvent(Event* event);
     void setHandleEventsOptions(int);
@@ -88,9 +90,6 @@ public:
     void onCameraChanged();
 
     // Necessary for trackball
-    vec3& getLookTo() { return lookTo_; }
-    vec3& getLookFrom() { return lightPosition_->get(); }
-    vec3& getLookUp() { return lookUp_; }
     const vec3& getLookTo() const { return lookTo_; }
     const vec3& getLookFrom() const { return lightPosition_->get(); }
     const vec3& getLookUp() const { return lookUp_; }

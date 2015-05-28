@@ -39,15 +39,17 @@
 namespace inviwo {
 PropertyClassIdentifier(CameraTrackball, "org.inviwo.Trackball");
 
-CameraTrackball::CameraTrackball(CameraProperty* cameraProp)
-    //: Trackball(&cameraProp->getLookFrom(), &cameraProp->getLookTo(), &cameraProp->getLookUp())
-    : Trackball(cameraProp)
+CameraTrackball::CameraTrackball(CameraProperty* cameraProp, Image* depthImage)
+    : Trackball(cameraProp, ScreenToWorldTransformer(&(cameraProp->get()), depthImage))
     , cameraProp_(cameraProp)
 {
-    cameraProp_->onChange(this, &CameraTrackball::onCameraPropertyChange);
 }
 
 CameraTrackball::~CameraTrackball() {}
+
+CameraTrackball* CameraTrackball::clone() const {
+    return new CameraTrackball(*this);
+}
 
 //
 //void CameraTrackball::onLookFromChanged() {
@@ -61,9 +63,5 @@ CameraTrackball::~CameraTrackball() {}
 //
 //    //cameraProp_->updateViewMatrix();
 //}
-
-void CameraTrackball::onCameraPropertyChange(){
-    setPanSpeedFactor(cameraProp_->getFovy()/60.f);
-}
 
 }  // namespace

@@ -202,4 +202,8 @@ void PointLightInteractionHandler::onCameraChanged() {
     setLookUp(camera_->getLookUp());
 }
 
+PointLightTrackball::PointLightTrackball(PointLightInteractionHandler* p) : Trackball<PointLightInteractionHandler>(p, ScreenToWorldTransformer(&(p->getCamera()))) {
+
+}
+
 } // namespace

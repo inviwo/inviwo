@@ -29,10 +29,52 @@
 
 #include <inviwo/core/interaction/trackball.h>
 
+#include <inviwo/core/datastructures/image/imageram.h>
 
 namespace inviwo {
 
 
 
+
+ScreenToWorldTransformer::ScreenToWorldTransformer(const CameraBase* camera, Image* screen): camera_(camera), screen_(screen) {
+
+}
+
+vec3 ScreenToWorldTransformer::getNormalizedDeviceFromNormalizedScreen(const vec2& normalizedScreenCoord) const {
+    vec3 normalizedDeviceCoordinate;
+    if (screen_ && screen_->getDepthLayer() &&
+        !(glm::any(glm::lessThan(normalizedScreenCoord, vec2(0))) | glm::any(glm::greaterThan(normalizedScreenCoord, vec2(1.f)))) ) {
+        const LayerRAM* depthLayer = screen_->getDepthLayer()->getRepresentation<LayerRAM>();
+        uvec2 screenPos(normalizedScreenCoord*vec2(vec2(screen_->getDimensions()) - 1.f) + 0.5f);
+
+        double depth = depthLayer->getValueAsSingleDouble(screenPos);
+        // Set the depth of the focus point if the user did not click on an object
+        // depth==1 is the far plane
+        if (depth >= 1.0) {
+            // Use focus point for depth
+            vec4 lookToClipCoord = camera_->projectionMatrix()*camera_->viewMatrix()*vec4(camera_->getLookTo(), 1.f);
+            normalizedDeviceCoordinate = vec3(2.f*normalizedScreenCoord - 1.f, lookToClipCoord.z / lookToClipCoord.w);
+        } else {
+            //double zNDC = -(depth - 0.5*(camera_->getNearPlaneDist() + camera_->getFarPlaneDist())) /
+            //              (0.5*(camera_->getFarPlaneDist() - camera_->getNearPlaneDist()));
+            double zNDC = 2.*depth -1.;
+            normalizedDeviceCoordinate = vec3(2.f*normalizedScreenCoord - 1.f, static_cast<float>(zNDC));
+        }
+       
+
+    } else {
+        // Default to using focus point for depth
+        vec4 lookToClipCoord = camera_->projectionMatrix()*camera_->viewMatrix()*vec4(camera_->getLookTo(), 1.f);
+
+        normalizedDeviceCoordinate = vec3(2.f*normalizedScreenCoord - 1.f, lookToClipCoord.z / lookToClipCoord.w);
+    }
+
+    return normalizedDeviceCoordinate;
+}
+
+inviwo::vec3 ScreenToWorldTransformer::getWorldPosFromNormalizedDeviceCoords(const vec3& normalizedDeviceCoord) const {
+
+    return camera_->getWorldPosFromNormalizedDeviceCoords(normalizedDeviceCoord);
+}
 
 } // namespace

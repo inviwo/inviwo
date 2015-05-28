@@ -201,13 +201,13 @@ void CameraProperty::resetCamera() {
     invalidateCamera();
 }
 
-void CameraProperty::setLookFrom(vec3 lookFrom) { get().setLookFrom(lookFrom); lookFrom_.set(lookFrom); }
+void CameraProperty::setLookFrom(vec3 lookFrom) { lookFrom_.set(lookFrom); }
 
-void CameraProperty::setLookTo(vec3 lookTo) { get().setLookTo(lookTo); lookTo_.set(lookTo); }
+void CameraProperty::setLookTo(vec3 lookTo) { lookTo_.set(lookTo); }
 
-void CameraProperty::setLookUp(vec3 lookUp) { get().setLookUp(lookUp); lookUp_.set(lookUp); }
+void CameraProperty::setLookUp(vec3 lookUp) { lookUp_.set(lookUp); }
 
-void CameraProperty::setFovy(float fovy) { get().setFovy(fovy); fovy_.set(fovy); }
+void CameraProperty::setFovy(float fovy) { fovy_.set(fovy); }
 
 void CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
     bool lock = isInvalidationLocked();
@@ -227,13 +227,13 @@ void CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
     invalidateCamera();
 }
 
-float CameraProperty::getNearPlaneDist() const { return get().getNearPlaneDist(); }
+float CameraProperty::getNearPlaneDist() const { return nearPlane_.get(); }
 
-float CameraProperty::getFarPlaneDist() const { return get().getFarPlaneDist(); }
+float CameraProperty::getFarPlaneDist() const { return farPlane_.get(); }
 
-void CameraProperty::setNearPlaneDist(float v) { get().setNearPlaneDist(v); nearPlane_.set(v); }
+void CameraProperty::setNearPlaneDist(float v) { nearPlane_.set(v); }
 
-void CameraProperty::setFarPlaneDist(float v) { get().setFarPlaneDist(v); farPlane_.set(v); }
+void CameraProperty::setFarPlaneDist(float v) { farPlane_.set(v); }
 
 
 // XYZ between -1 -> 1
@@ -257,10 +257,10 @@ void CameraProperty::setProjectionMatrix(float fovy, float aspect, float nearPla
     nearPlane_.set(nearPlane);
 
 
-    get().setFovy(fovy); 
-    get().setAspectRatio(aspect);
-    get().setNearPlaneDist(nearPlane);
-    get().setFarPlaneDist(farPlane);
+    get().setFovy(fovy_.get());
+    get().setAspectRatio(aspectRatio_.get());
+    get().setNearPlaneDist(nearPlane_.get());
+    get().setFarPlaneDist(farPlane_.get());
 
     if (!lock) unlockInvalidation();
 
@@ -284,16 +284,6 @@ void CameraProperty::invokeEvent(Event* event) {
         get().setAspectRatio(width / height);
         invalidateCamera();
     }
-}
-
-void CameraProperty::serialize(IvwSerializer& s) const {
-    CompositeProperty::serialize(s);
-}
-
-void CameraProperty::deserialize(IvwDeserializer& d) {
-    CompositeProperty::deserialize(d);
-    // Update data from property deserialization
-    get() = PerspectiveCamera(lookFrom_, lookTo_, lookUp_, nearPlane_, farPlane_, fovy_, aspectRatio_);
 }
 
 void CameraProperty::setInport(Inport* inport) {
@@ -362,55 +352,43 @@ void CameraProperty::inportChanged() {
 }
 
 void CameraProperty::lookFromChangedFromProperty() {
-    get().setLookFrom(lookFrom_.get()); invalidateCamera();
+    value_.setLookFrom(lookFrom_.get()); invalidateCamera();
 }
 
 void CameraProperty::lookToChangedFromProperty() {
-    get().setLookTo(lookTo_.get()); invalidateCamera();
+    value_.setLookTo(lookTo_.get()); invalidateCamera();
 }
 
 void CameraProperty::lookUpChangedFromProperty() {
-    get().setLookUp(lookUp_.get()); invalidateCamera();
+    value_.setLookUp(lookUp_.get()); invalidateCamera();
 }
 
 void CameraProperty::verticalFieldOfViewChangedFromProperty() {
-    get().setFovy(fovy_.get()); invalidateCamera();
+    value_.setFovy(fovy_.get()); invalidateCamera();
 }
 
 void CameraProperty::aspectRatioChangedFromProperty() {
-    get().setAspectRatio(aspectRatio_.get()); invalidateCamera();
+    value_.setAspectRatio(aspectRatio_.get()); invalidateCamera();
 }
 
 void CameraProperty::nearPlaneChangedFromProperty() {
-    get().setNearPlaneDist(nearPlane_.get()); invalidateCamera();
+    value_.setNearPlaneDist(nearPlane_.get()); invalidateCamera();
 }
 
 void CameraProperty::farPlaneChangedFromProperty() {
-    get().setFarPlaneDist(farPlane_.get()); invalidateCamera();
-}
-
-vec3& CameraProperty::getLookFrom() {
-    return get().getLookFrom();
+    value_.setFarPlaneDist(farPlane_.get()); invalidateCamera();
 }
 
 const vec3& CameraProperty::getLookFrom() const {
-    return get().getLookFrom();
-}
-
-vec3& CameraProperty::getLookTo() {
-    return get().getLookTo();
+    return value_.getLookFrom();
 }
 
 const vec3& CameraProperty::getLookTo() const {
-    return get().getLookTo();
-}
-
-vec3& CameraProperty::getLookUp() {
-    return get().getLookUp();
+    return value_.getLookTo();
 }
 
 const vec3& CameraProperty::getLookUp() const {
-    return get().getLookUp();
+    return value_.getLookUp();
 }
 
 vec3 CameraProperty::getLookRight() const {
@@ -418,27 +396,27 @@ vec3 CameraProperty::getLookRight() const {
 }
 
 float CameraProperty::getFovy() const {
-    return get().getFovy();
+    return value_.getFovy();
 }
 
 float CameraProperty::getAspectRatio() const {
-    return get().getAspectRatio();
+    return value_.getAspectRatio();
 }
 
 const mat4& CameraProperty::viewMatrix() const {
-    return get().viewMatrix();
+    return value_.viewMatrix();
 }
 
 const mat4& CameraProperty::projectionMatrix() const {
-    return get().projectionMatrix();
+    return value_.projectionMatrix();
 }
 
 const mat4& CameraProperty::inverseViewMatrix() const {
-    return get().inverseViewMatrix();
+    return value_.inverseViewMatrix();
 }
 
 const mat4& CameraProperty::inverseProjectionMatrix() const {
-    return get().inverseProjectionMatrix();
+    return value_.inverseProjectionMatrix();
 }
 
 void CameraProperty::lockInvalidation() {

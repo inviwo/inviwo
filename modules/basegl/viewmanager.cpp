@@ -80,11 +80,11 @@ Event* ViewManager::registerEvent(Event* event) {
     } else if (TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(event)) {
         // TODO fix TouchEvents
         activePosition_ = flipY(touchEvent->getCenterPoint(), touchEvent->canvasSize());
-        if (!viewportActive_ && touchEvent->state() == TouchEvent::TOUCH_STATE_STARTED) {
+        if (!viewportActive_ && touchEvent->getTouchPoints().front().state() == TouchPoint::TOUCH_STATE_STARTED) {
             viewportActive_ = true;
             activeView_ = findView(activePosition_);
-        } else if (viewportActive_ && touchEvent->state() ==
-            TouchEvent::TOUCH_STATE_ENDED) {
+        } else if (viewportActive_ && touchEvent->getTouchPoints().front().state() ==
+            TouchPoint::TOUCH_STATE_ENDED) {
             viewportActive_ = false;
         }
 
@@ -102,9 +102,9 @@ Event* ViewManager::registerEvent(Event* event) {
                 vec2 posNormalized = pos / viewportSize;
                 vec2 prevPos = flipY(elem.getPrevPos() - viewportOffset, viewportSize);
                 vec2 prevPosNormalized = prevPos / viewportSize;
-                modifiedTouchPoints.push_back(TouchPoint(pos, posNormalized, prevPos, prevPosNormalized));
+                modifiedTouchPoints.push_back(TouchPoint(pos, posNormalized, prevPos, prevPosNormalized, elem.state()));
             }
-            TouchEvent* newEvent = new TouchEvent(modifiedTouchPoints, touchEvent->state(), viewportSize);
+            TouchEvent* newEvent = new TouchEvent(modifiedTouchPoints, viewportSize);
 
             return newEvent;
         } else {

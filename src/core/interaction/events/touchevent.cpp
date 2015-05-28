@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-TouchPoint::TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized)
-    : pos_(pos), posNormalized_(posNormalized), prevPos_(prevPos), prevPosNormalized_(prevPosNormalized) {
+    TouchPoint::TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState)
+    : pos_(pos), posNormalized_(posNormalized), prevPos_(prevPos), prevPosNormalized_(prevPosNormalized), state_(touchState) {
 
 }
 
@@ -41,6 +41,7 @@ void TouchPoint::serialize(IvwSerializer& s) const {
     s.serialize("posNormalized", posNormalized_);
     s.serialize("prevPos", prevPos_);
     s.serialize("prevPosNormalized", prevPosNormalized_);
+    s.serialize("state", state_);
 
 }
 
@@ -49,13 +50,14 @@ void TouchPoint::deserialize(IvwDeserializer& d) {
     d.deserialize("posNormalized", posNormalized_);
     d.deserialize("prevPos", prevPos_);
     d.deserialize("prevPosNormalized", prevPosNormalized_);
+    d.deserialize("state", state_);
 }
 
-TouchEvent::TouchEvent(TouchEvent::TouchState state, uvec2 canvasSize)
-    : InteractionEvent(), state_(state), canvasSize_(canvasSize) {}
+TouchEvent::TouchEvent(uvec2 canvasSize)
+    : InteractionEvent(), canvasSize_(canvasSize) {}
 
-TouchEvent::TouchEvent(std::vector<TouchPoint> touchPoints, TouchEvent::TouchState state, uvec2 canvasSize)
-    : InteractionEvent(), touchPoints_(touchPoints), state_(state), canvasSize_(canvasSize) {}
+TouchEvent::TouchEvent(std::vector<TouchPoint> touchPoints, uvec2 canvasSize)
+    : InteractionEvent(), touchPoints_(touchPoints), canvasSize_(canvasSize) {}
 
 TouchEvent* TouchEvent::clone() const {
     return new TouchEvent(*this);
@@ -103,13 +105,11 @@ vec2 TouchEvent::getPrevCenterPointNormalized() const {
 }
 
 void TouchEvent::serialize(IvwSerializer& s) const {
-    s.serialize("touchState", state_);
     s.serialize("touchPoints", touchPoints_, "touchPoint");
     InteractionEvent::serialize(s); 
 }
 
 void TouchEvent::deserialize(IvwDeserializer& d) { 
-    d.deserialize("touchState", state_);
     d.deserialize("touchPoints", touchPoints_, "touchPoint");
     InteractionEvent::deserialize(d); 
 }
@@ -124,15 +124,13 @@ bool TouchEvent::matching(const Event* aEvent) const {
 }
 
 bool TouchEvent::matching(const TouchEvent* aEvent) const {
-    return (state_ & aEvent->state_) == aEvent->state_  // aEvent.state equal to any of this.state
-        && modifiers_ == aEvent->modifiers_;
+    return modifiers_ == aEvent->modifiers_;
 }
 
 bool TouchEvent::equalSelectors(const Event* aEvent) const {
     const TouchEvent* event = dynamic_cast<const TouchEvent*>(aEvent);
     if (event) {
-        return InteractionEvent::equalSelectors(event)
-            && state_ == event->state_;
+        return InteractionEvent::equalSelectors(event);
     } else {
         return false;
     }
