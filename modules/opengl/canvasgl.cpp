@@ -239,6 +239,15 @@ const LayerRAM* CanvasGL::getDepthLayerRAM() const{
         return nullptr;
 }
 
+double CanvasGL::getDepthValueAtCoord(uvec2 coord) const{
+    const LayerRAM* depthLayerRAM = getDepthLayerRAM();
+    if (depthLayerRAM) {
+        return depthLayerRAM->getValueAsSingleDouble(coord);
+    }
+    else
+        return 1.0;
+}
+
 void CanvasGL::enableDrawImagePlaneRect() {
         screenAlignedRectGL_->enable();
 }

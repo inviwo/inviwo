@@ -305,7 +305,9 @@ void CanvasQt::mousePressEvent(QMouseEvent* e) {
 
     MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()),
                            EventConverterQt::getMouseButton(e), MouseEvent::MOUSE_STATE_PRESS,
-                           EventConverterQt::getModifier(e), getScreenDimensions());
+                           EventConverterQt::getModifier(e), getScreenDimensions(), 
+                           getDepthValueAtCoord(uvec2(static_cast<unsigned int>(e->pos().x()),
+                           static_cast<unsigned int>(e->pos().y()))));
     e->accept();
     Canvas::mousePressEvent(&mouseEvent);
 }
@@ -320,7 +322,9 @@ void CanvasQt::mouseReleaseEvent(QMouseEvent* e) {
 
     MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()),
         EventConverterQt::getMouseButtonCausingEvent(e), MouseEvent::MOUSE_STATE_RELEASE,
-                          EventConverterQt::getModifier(e), getScreenDimensions());
+        EventConverterQt::getModifier(e), getScreenDimensions(),
+        getDepthValueAtCoord(uvec2(static_cast<unsigned int>(e->pos().x()),
+        static_cast<unsigned int>(e->pos().y()))));
     e->accept();
     Canvas::mouseReleaseEvent(&mouseEvent);
 }
@@ -335,7 +339,9 @@ void CanvasQt::mouseMoveEvent(QMouseEvent* e) {
     if (e->buttons() == Qt::LeftButton || e->buttons() == Qt::RightButton || e->buttons() == Qt::MiddleButton) {
         MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()),
                               EventConverterQt::getMouseButton(e), MouseEvent::MOUSE_STATE_MOVE,
-                              EventConverterQt::getModifier(e), getScreenDimensions());
+                              EventConverterQt::getModifier(e), getScreenDimensions(),
+                              getDepthValueAtCoord(uvec2(static_cast<unsigned int>(e->pos().x()),
+                              static_cast<unsigned int>(e->pos().y()))));
         e->accept();
         Canvas::mouseMoveEvent(&mouseEvent);
     }
@@ -366,7 +372,9 @@ void CanvasQt::wheelEvent(QWheelEvent* e){
 
     MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()), numSteps,
         EventConverterQt::getMouseWheelButton(e), MouseEvent::MOUSE_STATE_WHEEL, orientation,
-        EventConverterQt::getModifier(e), getScreenDimensions());
+        EventConverterQt::getModifier(e), getScreenDimensions(),
+        getDepthValueAtCoord(uvec2(static_cast<unsigned int>(e->pos().x()),
+        static_cast<unsigned int>(e->pos().y()))));
     e->accept();
     Canvas::mouseWheelEvent(&mouseEvent);
 }
@@ -487,7 +495,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
 #if defined(USING_QT5) && (QT_VERSION < QT_VERSION_CHECK(5, 3, 0))
     if(touch->touchPoints().size() == 1 && lastNumFingers_ < 2){
         MouseEvent* mouseEvent = nullptr;
-		ivec2 pos = ivec2(static_cast<int>(glm::floor(firstPoint.pos().x())), static_cast<int>(glm::floor(firstPoint.pos().y())));
+        ivec2 pos = ivec2(static_cast<int>(glm::floor(firstPoint.pos().x())), static_cast<int>(glm::floor(firstPoint.pos().y())));
         switch (touchPoints.front().state())
         {
         case TouchPoint::TOUCH_STATE_STARTED:

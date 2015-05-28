@@ -89,6 +89,7 @@ protected:
     void checkChannels(int);
 
     const LayerRAM* getDepthLayerRAM() const;
+    double getDepthValueAtCoord(uvec2) const;
 
     static void enableDrawImagePlaneRect();
     static void disableDrawImagePlaneRect();

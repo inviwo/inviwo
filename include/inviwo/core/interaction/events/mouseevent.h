@@ -66,11 +66,12 @@ public:
     // Mouse and wheel event
     MouseEvent(ivec2 position, int delta, int button, int state = MOUSE_STATE_NONE,
                int orientation = MOUSE_WHEEL_NONE, int modifiers = InteractionEvent::MODIFIER_NONE,
-               uvec2 canvasSize = uvec2(0));
+               uvec2 canvasSize = uvec2(0), double depth = 1.0);
 
     // Mouse event
     MouseEvent(ivec2 position, int button, int state = MOUSE_STATE_NONE,
-               int modifiers = InteractionEvent::MODIFIER_NONE, uvec2 canvasSize = uvec2(0));
+               int modifiers = InteractionEvent::MODIFIER_NONE, 
+               uvec2 canvasSize = uvec2(0), double depth = 1.0);
 
     // Selector
     MouseEvent(int button, int modifiers = InteractionEvent::MODIFIER_NONE,
@@ -90,6 +91,7 @@ public:
     inline int state() const { return state_; }
     inline int wheelOrientation() const { return wheelOrientation_; }
     inline uvec2 canvasSize() const { return canvasSize_; }
+    inline double depth() const { return depth_; }
     inline int button() const { return button_; }
     inline void setButton(int button) { button_ = button; }
     std::string buttonName() const;
@@ -115,6 +117,7 @@ private:
     ivec2 position_;
     int wheelSteps_;
     uvec2 canvasSize_;
+    double depth_;
 
     static const std::string buttonNames_[4];
 };

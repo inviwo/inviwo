@@ -92,6 +92,12 @@ public:
     */
     vec2 getPrevPosNormalized() const { return prevPosNormalized_; }
     void setPrevPosNormalized(vec2 val) { prevPosNormalized_ = val; }
+    /**
+    * \brief Retrieve depth value at touch point
+    * @return double
+    */
+    double getDepth() const { return depth_; }
+    void setDepth(double val) { depth_ = val; }
 
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);

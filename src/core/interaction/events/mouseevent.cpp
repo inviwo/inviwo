@@ -32,7 +32,7 @@
 namespace inviwo {
 
 MouseEvent::MouseEvent(ivec2 position, int delta, int button, int state, int orientation,
-                       int modifiers, uvec2 canvasSize)
+                       int modifiers, uvec2 canvasSize, double depth)
     : InteractionEvent(modifiers)
     , button_(button)
     , state_(state)
@@ -40,11 +40,12 @@ MouseEvent::MouseEvent(ivec2 position, int delta, int button, int state, int ori
 
     , position_(position)
     , wheelSteps_(delta)
-    , canvasSize_(canvasSize) {}
+    , canvasSize_(canvasSize)
+    , depth_(depth) {}
 
 MouseEvent::MouseEvent(ivec2 position, int button, int state /*= MOUSE_STATE_NONE*/,
                        int modifiers /*= InteractionEvent::MODIFIER_NONE*/,
-                       uvec2 canvasSize /*= uvec2(0)*/)
+                       uvec2 canvasSize /*= uvec2(0)*/, double depth)
     : InteractionEvent(modifiers)
     , button_(button)
     , state_(state)
@@ -52,7 +53,8 @@ MouseEvent::MouseEvent(ivec2 position, int button, int state /*= MOUSE_STATE_NON
 
     , position_(position)
     , wheelSteps_(0)
-    , canvasSize_(canvasSize) {}
+    , canvasSize_(canvasSize)
+    , depth_(depth) {}
 
 MouseEvent::MouseEvent(int button, int modifiers /*= InteractionEvent::MODIFIER_NONE*/,
                        int state /*= MOUSE_STATE_NONE*/, int orientation /*= MOUSE_WHEEL_NONE*/)
@@ -63,7 +65,8 @@ MouseEvent::MouseEvent(int button, int modifiers /*= InteractionEvent::MODIFIER_
 
     , position_(0)
     , wheelSteps_(0)
-    , canvasSize_(0) {}
+    , canvasSize_(0)
+    , depth_(1.0) {}
 
 MouseEvent::MouseEvent(const MouseEvent& rhs)
     : InteractionEvent(rhs)
