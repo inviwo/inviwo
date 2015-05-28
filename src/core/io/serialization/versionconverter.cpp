@@ -34,8 +34,6 @@ namespace inviwo {
 VersionConverter::VersionConverter() {}
 
 bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProperty& prop) {
-    LogInfoCustom("VersionConverter", "  Looking for matching sub properties");
-
     TxElement propitem("Property");
     propitem.SetAttribute("type", prop.getClassIdentifier());
     propitem.SetAttribute("identifier", prop.getIdentifier());
@@ -71,10 +69,6 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
                 list.InsertEndChild(*(child.Get()));
                 match = true;
             }
-        }
-        if (!match) {
-            LogWarnCustom("VersionConverter", "    No match found for sup property: " +
-                                                  joinString(p->getPath(), "."));
         }
         res = res && match;
     }
@@ -115,9 +109,6 @@ bool util::xmlFindMatchingSubPropertiesForComposites(
 
     for (auto& prop : props) {
         if (!util::xmlHasProp(pelm[0], *prop)) {
-            LogWarnCustom("VersionConverter",
-                          "Could not find serialized version of composite property: " << joinString(
-                              prop->getPath(), "."));
 
             bool foundMatchingComposite = util::xmlCopyMatchingCompositeProperty(pelm[0], *prop);
             bool foundSubProp = false;
@@ -164,8 +155,6 @@ TxElement* util::xmlGetElement(TxElement* node, std::string path) {
 }
 
 bool util::xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop) {
-    LogInfoCustom("VersionConverter", "  Looking for matching Composite");
-    
     ticpp::Iterator<ticpp::Element> child;
     for (child = child.begin(node); child != child.end(); child++) {
         std::string name;
@@ -181,7 +170,6 @@ bool util::xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProp
             return true;
         }
     }
-    LogWarnCustom("VersionConverter", "    No Composite found");
 
     return false;
 }

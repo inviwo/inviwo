@@ -197,6 +197,8 @@ void PropertyOwner::serialize(IvwSerializer& s) const {
 }
 
 void PropertyOwner::deserialize(IvwDeserializer& d) {
+
+    // This is for finding renamed composites, and moving old properties to new composites.
     NodeVersionConverter<PropertyOwner> tvc(this, &PropertyOwner::findPropsForComposites);
     d.convertVersion(&tvc);
 
@@ -230,7 +232,7 @@ void PropertyOwner::deserialize(IvwDeserializer& d) {
 
 bool PropertyOwner::findPropsForComposites(TxElement* node) {
     std::vector<const CompositeProperty*> props;
-    for (std::vector<Property*>::const_iterator it = properties_.begin(); it != properties_.end(); ++it) {
+    for (auto it = properties_.begin(); it != properties_.end(); ++it) {
         CompositeProperty* cp = dynamic_cast<CompositeProperty*>(*it);
         if(cp){
             props.push_back(cp);
