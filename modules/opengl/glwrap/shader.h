@@ -40,7 +40,8 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Shader {
 public:
-    typedef std::map<GLenum, ShaderObject *> ShaderObjectMap;
+    using ShaderObjectPtr = std::unique_ptr<ShaderObject, std::function<void(ShaderObject*)>>;
+    using ShaderObjectMap = std::map<GLenum, ShaderObjectPtr>;
 
     Shader(std::string fragmentFilename, bool linkShader = true);
     Shader(std::string vertexFilename, std::string fragmentFilename, bool linkShader = true);
@@ -93,9 +94,7 @@ private:
 
     ShaderObjectMap shaderObjects_;
 
-    void initialize();
     void linkAndRegister(bool linkShader);
-    void deinitialize();
 
     void createAndAddShader(GLenum, std::string, bool);
 
