@@ -64,7 +64,7 @@ public:
     EventProperty(const EventProperty& rhs);
     EventProperty& operator=(const EventProperty& that);
     virtual EventProperty* clone() const;
-    virtual ~EventProperty();
+    virtual ~EventProperty() = default;
 
     /**
      * \brief Maps action to new event.
@@ -83,9 +83,9 @@ public:
     virtual void deserialize(IvwDeserializer& d);
 
 private:
-    InteractionEvent* event_;           //< owning reference
-    InteractionEvent* defaultEvent_;    //< owning reference
-    Action* action_;                    //< owning reference
+    std::unique_ptr<InteractionEvent> event_;           //< owning reference
+    std::unique_ptr<InteractionEvent> defaultEvent_;    //< owning reference
+    std::unique_ptr<Action> action_;                    //< owning reference
 };
 
 }  // namespace

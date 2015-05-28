@@ -37,75 +37,70 @@ EventProperty::EventProperty(std::string identifier, std::string displayName, In
                              Action* action, InvalidationLevel invalidationLevel,
                              PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics)
-    , event_(e)
-    , defaultEvent_(e->clone())
-    , action_(action) {
-}
+    , event_{e}
+    , defaultEvent_{e ? e->clone() : nullptr}
+    , action_{action} {}
 
 EventProperty::EventProperty(const EventProperty& rhs)
     : Property(rhs)
-    , event_(rhs.event_->clone())
-    , defaultEvent_(rhs.defaultEvent_->clone())
-    , action_(rhs.action_->clone()) {}
+    , event_{rhs.event_ ? rhs.event_->clone() : nullptr}
+    , defaultEvent_{rhs.defaultEvent_ ? rhs.defaultEvent_->clone() : nullptr}
+    , action_{rhs.action_ ? rhs.action_->clone() : nullptr} {}
 
 EventProperty& EventProperty::operator=(const EventProperty& that) {
     if (this != &that) {
         Property::operator=(that);
-        if (event_) delete event_;
-        event_ = that.event_->clone();
-        if (defaultEvent_) delete defaultEvent_;
-        defaultEvent_ = that.defaultEvent_->clone();
-        if (action_) delete action_;
-        action_ = that.action_->clone();
+
+        std::unique_ptr<InteractionEvent> e{that.event_ ? that.event_->clone() : nullptr};
+        std::unique_ptr<InteractionEvent> d{that.defaultEvent_ ? that.defaultEvent_->clone()
+                                                               : nullptr};
+        std::unique_ptr<Action> a{that.action_ ? that.action_->clone() : nullptr};
+
+        std::swap(event_, e);
+        std::swap(defaultEvent_, d);
+        std::swap(action_, a);
     }
     return *this;
 }
 
 EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
-EventProperty::~EventProperty() {
-    if (event_) delete event_;
-    if (defaultEvent_) delete defaultEvent_;
-    if (action_) delete action_;
-}
-
 void EventProperty::serialize(IvwSerializer& s) const {
     Property::serialize(s);
-    if(!event_->equalSelectors(defaultEvent_))
-        s.serialize("Event", event_);
+    if (!event_->equalSelectors(defaultEvent_.get())) {
+        s.serialize("Event", event_.get());
+    }
 }
 
 void EventProperty::deserialize(IvwDeserializer& d) {
     Property::deserialize(d);
-    d.deserialize("Event", event_);
+    InteractionEvent* e = event_.get();
+    d.deserialize("Event", e); // e has to be a lvalue.
+    if(e != event_.get()) event_.reset(e);
 }
 
 InteractionEvent* EventProperty::getEvent() const {
-    return event_;
+    return event_.get();
 }
 
 Action* EventProperty::getAction() const {
-    return action_;
+    return action_.get();
 }
 
 void EventProperty::setEvent(InteractionEvent* e) {
-    if (event_ && event_ != e) delete event_;
-    event_ = e;
+    if (e != event_.get()) event_.reset(e);
 }
 
 void EventProperty::setAction(Action* action) {
-    if (action_ && action_ != action) delete action_;
-    action_ = action;
+    if (action != action_.get()) action_.reset(action);
 }
 
 void EventProperty::setCurrentStateAsDefault() {
-    if (defaultEvent_) delete defaultEvent_;
-    defaultEvent_ = event_->clone();
+    defaultEvent_.reset(event_ ? event_->clone() : nullptr);
 }
 
 void EventProperty::resetToDefaultState() {
-    if (event_) delete event_;
-    event_ = defaultEvent_->clone();
+    event_.reset(defaultEvent_ ? defaultEvent_->clone() : nullptr);
 }
 
 }  // namespace
