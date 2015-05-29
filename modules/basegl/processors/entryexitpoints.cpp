@@ -51,7 +51,7 @@ EntryExitPoints::EntryExitPoints()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
-    , trackball_(&camera_, entryPort_.getData())
+    , trackball_(&camera_)
     , genericShader_(nullptr)
     , capNearClippingPrg_(nullptr)
     , tmpEntryPoints_(nullptr)

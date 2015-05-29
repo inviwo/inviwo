@@ -51,19 +51,6 @@
 namespace inviwo {
 
 
-class IVW_CORE_API ScreenToWorldTransformer {
-public:
-    ScreenToWorldTransformer(const CameraBase* camera, Image* screen = nullptr);
-
-    vec3 getNormalizedDeviceFromNormalizedScreen(const vec2& normalizedScreenCoord) const;
-    vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& normalizedDeviceCoord) const;
-protected:
-    const CameraBase* camera_;
-    Image* screen_;
-
-};
-
-
 template< typename T>
 class Trackball : public CompositeProperty {
 public:
@@ -72,9 +59,6 @@ public:
      * Rotates and moves object around a sphere.
      * This object does not take ownership of pointers handed to it.
      * The template class is expected to have the following functions:
-     * vec3& getLookTo();
-     * vec3& getLookFrom();
-     * vec3& getLookUp();
      * const vec3& getLookTo() const;
      * const vec3& getLookFrom() const;
      * const vec3& getLookUp() const;
@@ -84,9 +68,9 @@ public:
      * void setLookUp(vec3 lookUp);
      *
      * void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);
-     * @CameraTrackball
+     * @see CameraTrackball
      */
-    Trackball(T* object, ScreenToWorldTransformer screenToWorldTransformer);
+    Trackball(T* object, const CameraBase* camera);
     virtual ~Trackball();
 
     virtual void invokeEvent(Event* event) override;
@@ -111,7 +95,7 @@ public:
 
 
     vec3 getWorldSpacePanning(const vec3& fromNormalizedDeviceCoord, const vec3& toNormalizedDeviceCoord);
-
+    vec3 getNormalizedDeviceFromNormalizedScreen(const vec2& normalizedScreenCoord) const;
 protected:
     void setPanSpeedFactor(float psf);
 
@@ -196,18 +180,28 @@ protected:
     EventProperty touchGesture_;
 
     T* object_;
-    ScreenToWorldTransformer screenToWorldTransformer_;
+    const CameraBase* camera_;
 
     float RADIUS = 0.5f; ///< Radius in normalized screen space [0 1]^2
     float STEPSIZE = 0.05f;
 };
 
+template< typename T>
+vec3 inviwo::Trackball<T>::getNormalizedDeviceFromNormalizedScreen(const vec2& normalizedScreenCoord) const {
+    vec3 normalizedDeviceCoordinate;
+    // Default to using focus point for depth
+    vec4 lookToClipCoord = camera_->projectionMatrix()*camera_->viewMatrix()*vec4(getLookTo(), 1.f);
+
+    normalizedDeviceCoordinate = vec3(2.f*normalizedScreenCoord - 1.f, lookToClipCoord.z / lookToClipCoord.w);
+
+    return normalizedDeviceCoordinate;
+}
 
 template <typename T>
-Trackball<T>::Trackball(T* object, ScreenToWorldTransformer screenToWorldTransformer)
+Trackball<T>::Trackball(T* object, const CameraBase* camera)
     : CompositeProperty("trackball", "Trackball")
     , object_(object)
-    , screenToWorldTransformer_(screenToWorldTransformer)
+    , camera_(camera)
     , isMouseBeingPressedAndHold_(false)
     , lastMousePos_(ivec2(0))
     , lastTrackballPos_(vec3(0.5f))
@@ -353,8 +347,8 @@ vec3 Trackball<T>::mapNormalizedMousePosToTrackball(const vec2& mousePos, float 
 template< typename T>
 vec3 inviwo::Trackball<T>::getWorldSpacePanning(const vec3& fromNormalizedDeviceCoord, const vec3& toNormalizedDeviceCoord) {
 
-    vec3 prevWorldPos(screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(vec3(fromNormalizedDeviceCoord)));
-    vec3 worldPos(screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(toNormalizedDeviceCoord));
+    vec3 prevWorldPos(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(fromNormalizedDeviceCoord)));
+    vec3 worldPos(camera_->getWorldPosFromNormalizedDeviceCoords(toNormalizedDeviceCoord));
 
     vec3 translation = worldPos - prevWorldPos;
     return translation; 
@@ -412,7 +406,7 @@ void Trackball<T>::touchGesture(Event* event) {
         auto centerPoint = glm::mix(pos1, pos2, 0.5);
 
         if (touchPoint1->state() == TouchPoint::TOUCH_STATE_STATIONARY || touchPoint2->state() == TouchPoint::TOUCH_STATE_STATIONARY) {
-            gestureStartNDCDepth_ = screenToWorldTransformer_.getNormalizedDeviceFromNormalizedScreen(centerPoint).z;
+            gestureStartNDCDepth_ = std::min(touchPoint1->getDepth(), touchPoint2->getDepth());
         }
 
         // Compute translation in world space
@@ -478,7 +472,7 @@ void Trackball<T>::rotate(Event* event) {
         lastTrackballPos_ = curTrackballPos;
         lastMousePos_ = curMousePos;
         vec2 normalizedScreenCoord(curMousePos.x, 1.f - curMousePos.y);
-        vec3 curNDCCoord = screenToWorldTransformer_.getNormalizedDeviceFromNormalizedScreen(normalizedScreenCoord);
+        //vec3 curNDCCoord = screenToWorldTransformer_.getNormalizedDeviceFromNormalizedScreen(normalizedScreenCoord);
         //gestureStartNDCDepth_ = curNDCCoord.z;
         //lookToPressPosWorldSpaceDistance_ = glm::distance(getLookTo(), screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(curNDCCoord));
 
@@ -559,7 +553,7 @@ void Trackball<T>::pan(Event* event) {
     if (!isMouseBeingPressedAndHold_) {
         lastMousePos_ = curMousePos;
         lastTrackballPos_ = curTrackballPos;
-        gestureStartNDCDepth_ = screenToWorldTransformer_.getNormalizedDeviceFromNormalizedScreen(normalizedScreenCoord).z;
+        gestureStartNDCDepth_ = mouseEvent->depth();
         isMouseBeingPressedAndHold_ = true;
 
     }
@@ -655,7 +649,7 @@ void Trackball<T>::stepPan(Direction dir) {
     if (!allowVerticalPanning_)
         destination.y = origin.y;
 
-    vec3 fromNormalizedDeviceCoord(screenToWorldTransformer_.getNormalizedDeviceFromNormalizedScreen(origin));
+    vec3 fromNormalizedDeviceCoord(getNormalizedDeviceFromNormalizedScreen(origin));
     vec3 toNormalizedDeviceCoord(2.f*destination - 1.f, fromNormalizedDeviceCoord.z);
     vec3 translation = getWorldSpacePanning(fromNormalizedDeviceCoord, toNormalizedDeviceCoord);
     setLook(getLookFrom() - translation, getLookTo() - translation, getLookUp());

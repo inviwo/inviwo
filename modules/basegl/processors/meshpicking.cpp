@@ -52,7 +52,7 @@ MeshPicking::MeshPicking()
     , position_("position", "Position", vec3(0.0f), vec3(-100.f), vec3(100.f))
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f))
-    , trackball_(&camera_, outport_.getData()) {
+    , trackball_(&camera_) {
     addPort(meshInport_);
     addPort(imageInport_);
     addPort(outport_);

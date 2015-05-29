@@ -39,8 +39,8 @@
 namespace inviwo {
 PropertyClassIdentifier(CameraTrackball, "org.inviwo.Trackball");
 
-CameraTrackball::CameraTrackball(CameraProperty* cameraProp, Image* depthImage)
-    : Trackball(cameraProp, ScreenToWorldTransformer(&(cameraProp->get()), depthImage))
+CameraTrackball::CameraTrackball(CameraProperty* cameraProp)
+    : Trackball(cameraProp, &(cameraProp->get()))
     , cameraProp_(cameraProp)
 {
 }
