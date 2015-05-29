@@ -303,10 +303,11 @@ void CanvasQt::mousePressEvent(QMouseEvent* e) {
     if (gestureMode_) return;
 #endif
     uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
+    uvec2 screenPosInvY(screenPos.x, static_cast<unsigned int>(static_cast<int>(getScreenDimensions().y) - 1 - e->pos().y()));
     MouseEvent mouseEvent(screenPos,
                            EventConverterQt::getMouseButton(e), MouseEvent::MOUSE_STATE_PRESS,
                            EventConverterQt::getModifier(e), getScreenDimensions(), 
-                           getDepthValueAtCoord(screenPos));
+                           getDepthValueAtCoord(screenPosInvY));
     e->accept();
     Canvas::mousePressEvent(&mouseEvent);
 }
@@ -336,10 +337,11 @@ void CanvasQt::mouseMoveEvent(QMouseEvent* e) {
 
     if (e->buttons() == Qt::LeftButton || e->buttons() == Qt::RightButton || e->buttons() == Qt::MiddleButton) {
         uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
+        uvec2 screenPosInvY(screenPos.x, static_cast<unsigned int>(static_cast<int>(getScreenDimensions().y) - 1 - e->pos().y()));
         MouseEvent mouseEvent(screenPos,
                               EventConverterQt::getMouseButton(e), MouseEvent::MOUSE_STATE_MOVE,
                               EventConverterQt::getModifier(e), getScreenDimensions(),
-                              getDepthValueAtCoord(screenPos));
+                              getDepthValueAtCoord(screenPosInvY));
         e->accept();
         Canvas::mouseMoveEvent(&mouseEvent);
     }
@@ -368,10 +370,11 @@ void CanvasQt::wheelEvent(QWheelEvent* e){
         numSteps = (orientation==MouseEvent::MOUSE_WHEEL_HORIZONTAL? numDegrees.x() : numDegrees.y());
     }
     uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
+    uvec2 screenPosInvY(screenPos.x, static_cast<unsigned int>( static_cast<int>(getScreenDimensions().y) - 1 - e->pos().y() ));
     MouseEvent mouseEvent(screenPos, numSteps,
         EventConverterQt::getMouseWheelButton(e), MouseEvent::MOUSE_STATE_WHEEL, orientation,
         EventConverterQt::getModifier(e), getScreenDimensions(),
-        getDepthValueAtCoord(screenPos));
+        getDepthValueAtCoord(screenPosInvY));
     e->accept();
     Canvas::mouseWheelEvent(&mouseEvent);
 }
@@ -476,7 +479,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
             (screenTouchPos + 0.5f) / screenSize,
             prevScreenTouchPos,
             (prevScreenTouchPos + 0.5f) / screenSize,
-            touchState, getDepthValueAtCoord(uvec2(screenTouchPos))));
+            touchState, getDepthValueAtCoord(uvec2(screenTouchPos.x, screenSize.y-1-screenTouchPos.y))));
     }
     TouchEvent touchEvent(touchPoints, getScreenDimensions());
     touch->accept();
@@ -488,23 +491,24 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     if(touch->touchPoints().size() == 1 && lastNumFingers_ < 2){
         MouseEvent* mouseEvent = nullptr;
         ivec2 pos = ivec2(static_cast<int>(glm::floor(firstPoint.pos().x())), static_cast<int>(glm::floor(firstPoint.pos().y())));
+        uvec2 posToRetrieveDepth(static_cast<unsigned int>(pos.x), static_cast<unsigned int>(getScreenDimensions().y-1-pos.y));
         switch (touchPoints.front().state())
         {
         case TouchPoint::TOUCH_STATE_STARTED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_PRESS, 
-                EventConverterQt::getModifier(touch), getScreenDimensions());
+                EventConverterQt::getModifier(touch), getScreenDimensions(), posToRetrieveDepth);
             Canvas::mousePressEvent(mouseEvent);
             break;
         case TouchPoint::TOUCH_STATE_UPDATED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_MOVE, 
-                EventConverterQt::getModifier(touch), getScreenDimensions());
+                EventConverterQt::getModifier(touch), getScreenDimensions(), posToRetrieveDepth);
             Canvas::mouseMoveEvent(mouseEvent);
             break;
         case TouchPoint::TOUCH_STATE_STATIONARY:
             break; // Do not fire event while standing still.
         case TouchPoint::TOUCH_STATE_ENDED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_RELEASE, 
-                EventConverterQt::getModifier(touch), getScreenDimensions());
+                EventConverterQt::getModifier(touch), getScreenDimensions(), posToRetrieveDepth);
             Canvas::mouseReleaseEvent(mouseEvent);
             break;
         default:

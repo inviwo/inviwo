@@ -95,7 +95,7 @@ public:
 
 
     vec3 getWorldSpacePanning(const vec3& fromNormalizedDeviceCoord, const vec3& toNormalizedDeviceCoord);
-    vec3 getNormalizedDeviceFromNormalizedScreen(const vec2& normalizedScreenCoord) const;
+    vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(const vec2& normalizedScreenCoord) const;
 protected:
     void setPanSpeedFactor(float psf);
 
@@ -187,7 +187,7 @@ protected:
 };
 
 template< typename T>
-vec3 inviwo::Trackball<T>::getNormalizedDeviceFromNormalizedScreen(const vec2& normalizedScreenCoord) const {
+vec3 inviwo::Trackball<T>::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(const vec2& normalizedScreenCoord) const {
     vec3 normalizedDeviceCoordinate;
     // Default to using focus point for depth
     vec4 lookToClipCoord = camera_->projectionMatrix()*camera_->viewMatrix()*vec4(getLookTo(), 1.f);
@@ -407,6 +407,9 @@ void Trackball<T>::touchGesture(Event* event) {
 
         if (touchPoint1->state() == TouchPoint::TOUCH_STATE_STATIONARY || touchPoint2->state() == TouchPoint::TOUCH_STATE_STATIONARY) {
             gestureStartNDCDepth_ = std::min(touchPoint1->getDepth(), touchPoint2->getDepth());
+            if (gestureStartNDCDepth_ >= 1.) {
+                gestureStartNDCDepth_ = getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(pos1).z;
+            }
         }
 
         // Compute translation in world space
@@ -554,6 +557,9 @@ void Trackball<T>::pan(Event* event) {
         lastMousePos_ = curMousePos;
         lastTrackballPos_ = curTrackballPos;
         gestureStartNDCDepth_ = mouseEvent->depth();
+        if (gestureStartNDCDepth_ >= 1.) {
+            gestureStartNDCDepth_ = getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord).z;
+        }
         isMouseBeingPressedAndHold_ = true;
 
     }
@@ -649,7 +655,7 @@ void Trackball<T>::stepPan(Direction dir) {
     if (!allowVerticalPanning_)
         destination.y = origin.y;
 
-    vec3 fromNormalizedDeviceCoord(getNormalizedDeviceFromNormalizedScreen(origin));
+    vec3 fromNormalizedDeviceCoord(getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(origin));
     vec3 toNormalizedDeviceCoord(2.f*destination - 1.f, fromNormalizedDeviceCoord.z);
     vec3 translation = getWorldSpacePanning(fromNormalizedDeviceCoord, toNormalizedDeviceCoord);
     setLook(getLookFrom() - translation, getLookTo() - translation, getLookUp());
