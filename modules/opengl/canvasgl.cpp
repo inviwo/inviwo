@@ -231,9 +231,13 @@ void CanvasGL::checkChannels(int channels) {
 }
 
 const LayerRAM* CanvasGL::getDepthLayerRAM() const{
-    const Layer* depthLayer = image_->getDepthLayer();
-    if (depthLayer) {
-        return depthLayer->getRepresentation<LayerRAM>();
+    if (image_) {
+        const Layer* depthLayer = image_->getDepthLayer();
+        if (depthLayer) {
+            return depthLayer->getRepresentation<LayerRAM>();
+        }
+        else
+            return nullptr;
     }
     else
         return nullptr;
