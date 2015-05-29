@@ -100,6 +100,7 @@ public:
     float getFovy() const;
     void setFovy(float fovy);
 
+    void setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
 
     void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);

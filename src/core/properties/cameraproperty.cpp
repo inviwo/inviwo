@@ -201,26 +201,30 @@ void CameraProperty::resetCamera() {
     invalidateCamera();
 }
 
+// It seems like it is a job for the code managing interaction to consider the boundaries.
+// Need to change that code before clamping values.
+//void CameraProperty::setLookFrom(vec3 lookFrom) { lookFrom_.set(glm::clamp(lookFrom, lookFrom_.getMinValue(), lookFrom_.getMaxValue())); }
+//void CameraProperty::setLookTo(vec3 lookTo) { lookTo_.set(glm::clamp(lookTo, lookTo_.getMinValue(), lookTo_.getMaxValue())); }
 void CameraProperty::setLookFrom(vec3 lookFrom) { lookFrom_.set(lookFrom); }
 
 void CameraProperty::setLookTo(vec3 lookTo) { lookTo_.set(lookTo); }
 
 void CameraProperty::setLookUp(vec3 lookUp) { lookUp_.set(lookUp); }
 
-void CameraProperty::setFovy(float fovy) { fovy_.set(fovy); }
+void CameraProperty::setFovy(float fovy) { fovy_.set(glm::clamp(fovy, fovy_.getMinValue(), fovy_.getMaxValue())); }
+
+void CameraProperty::setAspectRatio(float aspectRatio) {
+    aspectRatio_.set(glm::clamp(aspectRatio, aspectRatio_.getMinValue(), aspectRatio_.getMaxValue()));
+}
 
 void CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
     bool lock = isInvalidationLocked();
 
     if (!lock) lockInvalidation();
 
-    lookFrom_.set(lookFrom);
-    lookTo_.set(lookTo);
-    lookUp_.set(lookUp);
-
-    get().setLookFrom(lookFrom);
-    get().setLookTo(lookTo);
-    get().setLookUp(lookUp);
+    setLookFrom(lookFrom);
+    setLookTo(lookTo);
+    setLookUp(lookUp);
 
     if (!lock) unlockInvalidation();
 
@@ -231,9 +235,9 @@ float CameraProperty::getNearPlaneDist() const { return nearPlane_.get(); }
 
 float CameraProperty::getFarPlaneDist() const { return farPlane_.get(); }
 
-void CameraProperty::setNearPlaneDist(float v) { nearPlane_.set(v); }
+void CameraProperty::setNearPlaneDist(float v) { nearPlane_.set(glm::clamp(v, nearPlane_.getMinValue(), nearPlane_.getMaxValue())); }
 
-void CameraProperty::setFarPlaneDist(float v) { farPlane_.set(v); }
+void CameraProperty::setFarPlaneDist(float v) { farPlane_.set(glm::clamp(v, farPlane_.getMinValue(), farPlane_.getMaxValue())); }
 
 
 // XYZ between -1 -> 1
@@ -251,16 +255,10 @@ void CameraProperty::setProjectionMatrix(float fovy, float aspect, float nearPla
 
     if (!lock) lockInvalidation();
 
-    fovy_.set(fovy);
-    aspectRatio_.set(aspect);
-    farPlane_.set(farPlane);
-    nearPlane_.set(nearPlane);
-
-
-    get().setFovy(fovy_.get());
-    get().setAspectRatio(aspectRatio_.get());
-    get().setNearPlaneDist(nearPlane_.get());
-    get().setFarPlaneDist(farPlane_.get());
+    setFovy(fovy);
+    setAspectRatio(aspect);
+    setFarPlaneDist(farPlane);
+    setNearPlaneDist(nearPlane);
 
     if (!lock) unlockInvalidation();
 
@@ -281,8 +279,7 @@ void CameraProperty::invokeEvent(Event* event) {
         uvec2 canvasSize = resizeEvent->size();
         float width = (float)canvasSize[0];
         float height = (float)canvasSize[1];
-        get().setAspectRatio(width / height);
-        invalidateCamera();
+        setAspectRatio(width / height);
     }
 }
 
