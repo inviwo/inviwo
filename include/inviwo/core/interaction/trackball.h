@@ -44,6 +44,7 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/util/intersection/raysphereintersection.h>
 #include <inviwo/core/util/observer.h>
+#include <inviwo/core/datastructures/camera.h>
 
 #include <glm/gtx/vector_angle.hpp>
 #include <math.h>

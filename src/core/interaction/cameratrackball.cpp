@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/datastructures/camera.h>
 //#include <glm/gtx/decomposition.hpp>
 // Dependencies
 #include <glm/mat4x4.hpp>
