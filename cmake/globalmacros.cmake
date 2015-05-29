@@ -638,6 +638,8 @@ macro(ivw_vs_folder project_name folder_name)
              LINK_FLAGS_MINSIZEREL
              ${VS_MULTITHREADED_RELEASE_DLL_IGNORE_LIBRARY_FLAGS} FOLDER ${folder_name})
         endif(MSVC)
+    else()
+         set_target_properties(${project_name} PROPERTIES FOLDER ${folder_name})
     endif(WIN32)
 endmacro()
 
