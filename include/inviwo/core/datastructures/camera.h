@@ -100,8 +100,8 @@ public:
 
     const mat4& viewMatrix() const;
     const mat4& projectionMatrix() const;
-    mat4 inverseViewMatrix() const;
-    mat4 inverseProjectionMatrix() const;
+    const mat4& inverseViewMatrix() const;
+    const mat4& inverseProjectionMatrix() const;
 
     /**
     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
@@ -260,16 +260,6 @@ inline float CameraBase::getFarPlaneDist() const { return farPlaneDist_; }
 inline void CameraBase::setFarPlaneDist(float val) {
     farPlaneDist_ = val;
     invalidateProjectionMatrix();
-}
-
-inline mat4 CameraBase::inverseViewMatrix() const {
-    if (invalidViewMatrix_) viewMatrix();
-    return inverseViewMatrix_;
-}
-
-inline mat4 CameraBase::inverseProjectionMatrix() const {
-    if (invalidProjectionMatrix_) projectionMatrix();
-    return inverseProjectionMatrix_;
 }
 
 inline void CameraBase::invalidateViewMatrix() { invalidViewMatrix_ = true; }

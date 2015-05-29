@@ -59,6 +59,18 @@ const mat4& CameraBase::projectionMatrix() const {
     return projectionMatrix_;
 }
 
+const mat4& CameraBase::inverseViewMatrix() const {
+    if (invalidViewMatrix_) viewMatrix();
+    return inverseViewMatrix_;
+}
+
+
+
+const mat4& CameraBase::inverseProjectionMatrix() const {
+    if (invalidProjectionMatrix_) projectionMatrix();
+    return inverseProjectionMatrix_;
+}
+
 vec3 CameraBase::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     vec4 clipCoords = getClipPosFromNormalizedDeviceCoords(ndcCoords);
     vec4 eyeCoords = inverseProjectionMatrix() * clipCoords;
