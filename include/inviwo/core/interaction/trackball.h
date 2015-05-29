@@ -95,7 +95,7 @@ public:
     void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) { object_->setLook(lookFrom, lookTo, lookUp); }
 
 
-    vec3 getWorldSpacePanning(const vec3& fromNormalizedDeviceCoord, const vec3& toNormalizedDeviceCoord);
+    vec3 getWorldSpaceTranslationFromNDCSpace(const vec3& fromNormalizedDeviceCoord, const vec3& toNormalizedDeviceCoord);
     vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(const vec2& normalizedScreenCoord) const;
 protected:
     void setPanSpeedFactor(float psf);
@@ -141,7 +141,6 @@ protected:
     vec2 lastMousePos_;
     vec3 lastTrackballPos_;
     double gestureStartNDCDepth_;
-    //float lookToPressPosWorldSpaceDistance_;
 
     vec3* lookFrom_;
     vec3* lookTo_;
@@ -206,7 +205,7 @@ Trackball<T>::Trackball(T* object, const CameraBase* camera)
     , isMouseBeingPressedAndHold_(false)
     , lastMousePos_(ivec2(0))
     , lastTrackballPos_(vec3(0.5f))
-    , gestureStartNDCDepth_(0)
+    , gestureStartNDCDepth_(-1)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
     VALID)
 
@@ -346,7 +345,7 @@ vec3 Trackball<T>::mapNormalizedMousePosToTrackball(const vec2& mousePos, float 
 }
 
 template< typename T>
-vec3 inviwo::Trackball<T>::getWorldSpacePanning(const vec3& fromNormalizedDeviceCoord, const vec3& toNormalizedDeviceCoord) {
+vec3 inviwo::Trackball<T>::getWorldSpaceTranslationFromNDCSpace(const vec3& fromNormalizedDeviceCoord, const vec3& toNormalizedDeviceCoord) {
 
     vec3 prevWorldPos(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(fromNormalizedDeviceCoord)));
     vec3 worldPos(camera_->getWorldPosFromNormalizedDeviceCoords(toNormalizedDeviceCoord));
@@ -399,6 +398,7 @@ void Trackball<T>::touchGesture(Event* event) {
         }
 
         auto zoom = 1 - glm::length(v1) / glm::length(v2);
+
         if (!std::isfinite(zoom) || !allowZooming_) {
             zoom = 0;
         }
@@ -414,19 +414,6 @@ void Trackball<T>::touchGesture(Event* event) {
         }
 
         // Compute translation in world space
-        // We currently do not have the information about the scene 
-        // so we need to rely on the mapToObject function
-        //vec4 lookToClipCoord = cameraProp_->projectionMatrix()*cameraProp_->viewMatrix()*vec4(cameraProp_->getLookTo(), 1.f);
-        //vec3 lookToNDCCoord = vec3(lookToClipCoord.xyz() / lookToClipCoord.w);
-        //float ndcDepth = lookToNDCCoord.z;
-        //if (!std::isfinite(lookToClipCoord.w)) {
-        //    ndcDepth = 1;
-        //}
-        //vec3 worldSpaceTranslation = cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*centerPoint, ndcDepth)) - cameraProp_->getWorldPosFromNormalizedDeviceCoords(vec3(-1.f + 2.f*prevCenterPoint, ndcDepth));
-
-        vec3 direction = (getLookTo() - getLookFrom());
-        //dvec2 allowTranslation(allowHorizontalPanning_ ? 1 : 0, allowVerticalPanning_ ? 1 : 0);
-
         vec3 fromNormalizedDeviceCoord(2.*prevCenterPoint- 1., gestureStartNDCDepth_);
         vec3 toNormalizedDeviceCoord(2.*centerPoint - 1., gestureStartNDCDepth_);
         if (!allowHorizontalPanning_)
@@ -434,17 +421,24 @@ void Trackball<T>::touchGesture(Event* event) {
         if (!allowVerticalPanning_)
             toNormalizedDeviceCoord.y = fromNormalizedDeviceCoord.y;
 
-        vec3 worldSpaceTranslation = getWorldSpacePanning(fromNormalizedDeviceCoord, toNormalizedDeviceCoord);
+        vec3 worldSpaceTranslation = getWorldSpaceTranslationFromNDCSpace(fromNormalizedDeviceCoord, toNormalizedDeviceCoord);
         
-        //vec3 worldSpaceTranslation = mapToObject(vec3(centerPoint*allowTranslation, 0)*panSpeedFactor_, glm::length(direction)) - mapToObject(vec3(prevCenterPoint*allowTranslation, 0)*panSpeedFactor_, glm::length(direction));
-
         // Zoom based on the closest point to the object
         // Use the look at point if the closest point is unknown
-        vec3 newLookFrom = getLookFrom() + static_cast<float>(zoom)* direction;
+        auto depth = std::min(touchPoint1->getDepth(), touchPoint2->getDepth());
+        if (depth >= 1) {
+            // Get NDC depth of the lookTo position
+            depth = getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(vec2(0.f)).z;
+        }
+        auto zoomToWorldPos(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(0.f, 0.f, depth)));
+
+        vec3 newLookFrom = getLookFrom() + static_cast<float>(zoom) * (zoomToWorldPos-getLookFrom());
+
         // Rotating using angle from screen space is equivalent to rotating 
         // around the direction in world space since we are looking into the screen.
         vec3 newLookUp;
         if (allowViewDirectionRotation_) {
+            vec3 direction = (getLookTo() - getLookFrom());
             newLookUp = glm::normalize(glm::rotate(getLookUp(), static_cast<float>(angle), glm::normalize(direction)));
         } else {
             newLookUp = getLookUp();
@@ -571,7 +565,8 @@ void Trackball<T>::pan(Event* event) {
     if (!allowVerticalPanning_)
         toNormalizedDeviceCoord.y = fromNormalizedDeviceCoord.y;
 
-    vec3 translation = getWorldSpacePanning(fromNormalizedDeviceCoord, toNormalizedDeviceCoord);
+    vec3 translation = getWorldSpaceTranslationFromNDCSpace(fromNormalizedDeviceCoord, toNormalizedDeviceCoord);
+
     setLook(getLookFrom() - translation, getLookTo() - translation, getLookUp());
 
     lastMousePos_ = curMousePos;
@@ -658,7 +653,7 @@ void Trackball<T>::stepPan(Direction dir) {
 
     vec3 fromNormalizedDeviceCoord(getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(origin));
     vec3 toNormalizedDeviceCoord(2.f*destination - 1.f, fromNormalizedDeviceCoord.z);
-    vec3 translation = getWorldSpacePanning(fromNormalizedDeviceCoord, toNormalizedDeviceCoord);
+    vec3 translation = getWorldSpaceTranslationFromNDCSpace(fromNormalizedDeviceCoord, toNormalizedDeviceCoord);
     setLook(getLookFrom() - translation, getLookTo() - translation, getLookUp());
 
 }
