@@ -97,7 +97,7 @@ add_library(openexr ${HEADER_FILES} ${SOURCE_FILES} ${HALF_HEADER_FILES} ${HALF_
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(openexr ext/freeimagelib)
+ivw_folder(openexr ext/freeimagelib)
 
 #--------------------------------------------------------------------
 # Add dependencies

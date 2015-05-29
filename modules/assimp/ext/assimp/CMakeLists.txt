@@ -281,5 +281,5 @@ endif()
 
 # Creates VS folder structure
 ivw_define_standard_definitions(assimp)
-ivw_vs_folder(assimp ext)
+ivw_folder(assimp ext)
 

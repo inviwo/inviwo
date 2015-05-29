@@ -574,7 +574,7 @@ endif()
 
 # InViWo Macros
 ivw_define_standard_definitions(glfw)
-ivw_vs_folder(glfw ext)
+ivw_folder(glfw ext)
 
 #--------------------------------------------------------------------
 # Install files other than the library

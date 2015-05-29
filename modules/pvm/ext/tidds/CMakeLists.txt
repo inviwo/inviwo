@@ -27,7 +27,7 @@ add_library(tidds ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(tidds ext)
+ivw_folder(tidds ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

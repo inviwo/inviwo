@@ -136,12 +136,12 @@ set(VS_MULTITHREADED_RELEASE_DLL_IGNORE_LIBRARY_FLAGS
 #--------------------------------------------------------------------
 # Disable deprecation warnings for standard C functions
 if(CMAKE_COMPILER_2005)
-  add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
+    add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif(CMAKE_COMPILER_2005)
 
 # Mac specific
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_definitions(-DDARWIN)
+    add_definitions(-DDARWIN)
 endif()
 option(IVW_USE_GLFW_NOT_OPENGLQT "Use GLFW for context creation instead of OpenGLQt module" OFF)
 
@@ -168,10 +168,10 @@ if(SHARED_LIBS)
     set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
     if(WIN32)
         if(MSVC)
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-		set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
-		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
+		    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+		    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+		    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
+		    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
         endif(MSVC)
     endif()
 else()
@@ -265,9 +265,9 @@ IF(WIN32)
        
         option(MULTI_PROCESSOR_BUILD "Build with multiple processors" ON)
         if(MULTI_PROCESSOR_BUILD)
-             SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-             SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-         endif()	
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+            SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+        endif()	
     ENDIF(MSVC)
 ENDIF()
 
@@ -280,11 +280,11 @@ option(PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
 #--------------------------------------------------------------------
 # Specify build-based defintions
 if(BUILD_SHARED_LIBS)
-  add_definitions(-DINVIWO_ALL_DYN_LINK)
-  add_definitions(-DGLM_SHARED_BUILD)
+    add_definitions(-DINVIWO_ALL_DYN_LINK)
+    add_definitions(-DGLM_SHARED_BUILD)
 else(BUILD_SHARED_LIBS)
-  add_definitions(-DFREEGLUT_STATIC)
-  add_definitions(-DGLEW_STATIC)
+    add_definitions(-DFREEGLUT_STATIC)
+    add_definitions(-DGLEW_STATIC)
 endif(BUILD_SHARED_LIBS)
 
 IF(WIN32)
@@ -305,22 +305,22 @@ if(IVW_PROFILING)
 endif(IVW_PROFILING)
 
 IF(NOT MSVC)
-  include(CheckCXXCompilerFlag)
-  CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-  CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  else()
-    ivw_message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-  endif()
+    include(CheckCXXCompilerFlag)
+    CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+    CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+    if(COMPILER_SUPPORTS_CXX11)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    elseif(COMPILER_SUPPORTS_CXX0X)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    else()
+        ivw_message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+    endif()
 else()
-  if( MSVC_VERSION LESS 1700 )       # VC10-/VS2010- 
-    ivw_message(FATAL_ERROR "Inviwo requires C++11 features. " 
+    if( MSVC_VERSION LESS 1700 )       # VC10-/VS2010- 
+        ivw_message(FATAL_ERROR "Inviwo requires C++11 features. " 
                         "You need at least Visual Studio 11 (Microsoft Visual Studio 2012), " 
                         "with Microsoft Visual C++ Compiler Nov 2012 CTP (v120_CTP_Nov2012).") 
-  elseif( MSVC_VERSION EQUAL 1700 )  # VC11/VS2012 
-    set(CMAKE_GENERATOR_TOOLSET "v120_CTP_Nov2012" CACHE STRING "Platform Toolset" FORCE) 
-  endif() 
+    elseif( MSVC_VERSION EQUAL 1700 )  # VC11/VS2012 
+        set(CMAKE_GENERATOR_TOOLSET "v120_CTP_Nov2012" CACHE STRING "Platform Toolset" FORCE) 
+    endif() 
 endif()

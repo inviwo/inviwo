@@ -33,7 +33,7 @@ add_library(ilmimf ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(ilmimf ext/freeimagelib/openexrlib)
+ivw_folder(ilmimf ext/freeimagelib/openexrlib)
 
 #--------------------------------------------------------------------
 # Add dependencies

@@ -74,5 +74,5 @@ else()
 	cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 endif()
 
-ivw_vs_folder(gtest ext)
+ivw_folder(gtest ext)
 ivw_make_package(gtest gtest)

@@ -241,8 +241,8 @@ ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/zlib)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-#ivw_vs_folder(freeimage ext/freeimagelib)
-ivw_vs_folder(freeimage ext)
+#ivw_folder(freeimage ext/freeimagelib)
+ivw_folder(freeimage ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

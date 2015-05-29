@@ -41,7 +41,7 @@ add_library(ticpp ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(ticpp ext)
+ivw_folder(ticpp ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

@@ -55,7 +55,7 @@ add_library(libtiff ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(libtiff ext/freeimagelib)
+ivw_folder(libtiff ext/freeimagelib)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

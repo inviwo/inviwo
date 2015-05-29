@@ -57,7 +57,7 @@ ivw_define_standard_properties(inviwo_glfwminimum)
 
 #--------------------------------------------------------------------
 # Move to folder
-ivw_vs_folder(inviwo_glfwminimum minimals)
+ivw_folder(inviwo_glfwminimum minimals)
 
 #--------------------------------------------------------------------
 # Add application to pack

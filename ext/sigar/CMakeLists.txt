@@ -119,7 +119,7 @@ endif(SIGAR_LINK_FLAGS)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(sigar ext)
+ivw_folder(sigar ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

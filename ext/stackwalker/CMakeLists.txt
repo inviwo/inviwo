@@ -36,7 +36,7 @@ ENDIF()
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(stackwalker ext)
+ivw_folder(stackwalker ext)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

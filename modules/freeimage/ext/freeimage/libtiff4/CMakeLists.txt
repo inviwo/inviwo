@@ -49,7 +49,7 @@ add_library(libtiff4 ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(libtiff4 ext/freeimagelib)
+ivw_folder(libtiff4 ext/freeimagelib)
 
 #--------------------------------------------------------------------
 # Add dependencies

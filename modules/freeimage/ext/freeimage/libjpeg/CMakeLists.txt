@@ -41,7 +41,7 @@ add_library(libjpeg ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(libjpeg ext/freeimagelib)
+ivw_folder(libjpeg ext/freeimagelib)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

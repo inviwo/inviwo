@@ -35,7 +35,7 @@ add_library(half ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(half ext/freeimagelib/openexrlib)
+ivw_folder(half ext/freeimagelib/openexrlib)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

@@ -56,7 +56,7 @@ add_library(ilmthread ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(ilmthread ext/freeimagelib/openexrlib)
+ivw_folder(ilmthread ext/freeimagelib/openexrlib)
 
 #--------------------------------------------------------------------
 # Add dependencies

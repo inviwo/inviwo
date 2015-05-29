@@ -35,7 +35,7 @@ add_library(internallibpng ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(internallibpng ext/freeimagelib)
+ivw_folder(internallibpng ext/freeimagelib)
 
 #--------------------------------------------------------------------
 # Add dependencies

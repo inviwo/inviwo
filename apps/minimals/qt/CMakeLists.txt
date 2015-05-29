@@ -59,7 +59,7 @@ ivw_define_standard_properties(inviwo_qtminimum)
 
 #--------------------------------------------------------------------
 # Move to folder
-ivw_vs_folder(inviwo_qtminimum minimals)
+ivw_folder(inviwo_qtminimum minimals)
 
 #--------------------------------------------------------------------
 # Add application to pack

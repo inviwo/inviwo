@@ -46,9 +46,9 @@ list(APPEND package_list InviwoQtEditor)
 list(APPEND package_list InviwoCore)
 # Only include one OpenGL context creation module
 if(IVW_USE_GLFW_NOT_OPENGLQT)
-list(REMOVE_ITEM package_list InviwoOpenGLQtModule)
+    list(REMOVE_ITEM package_list InviwoOpenGLQtModule)
 else()
-list(REMOVE_ITEM package_list InviwoGLFWModule)
+    list(REMOVE_ITEM package_list InviwoGLFWModule)
 endif()
 
 #--------------------------------------------------------------------
@@ -79,14 +79,16 @@ if(WIN32)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(MACOSX_BUNDLE_BUNDLE_NAME Inviwo)
-  set(MACOSX_BUNDLE_GUI_IDENTIFIER "Inviwo")
-  set(MACOSX_BUNDLE_ICON_FILE ${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns)
-  set(MACOSX_BUNDLE_INFO_STRING "Inviwo ${IVW_VERSION}, Copyright (c) 2012-2015 Inviwo Foundation")
-  set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${IVW_VERSION}")
-  set(MACOSX_BUNDLE_LONG_VERSION_STRING "${IVW_VERSION}.")
-  set(MACOSX_BUNDLE_BUNDLE_VERSION "${IVW_VERSION}")
-  set(MACOSX_BUNDLE_COPYRIGHT "(C) 2012-2015 Inviwo Foundation")
+    set(MACOSX_BUNDLE_BUNDLE_NAME Inviwo)
+    set(MACOSX_BUNDLE_GUI_IDENTIFIER "Inviwo")
+    set(MACOSX_BUNDLE_ICON_FILE ${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns)
+    set(MACOSX_BUNDLE_INFO_STRING "Inviwo ${IVW_VERSION}, Copyright (c) 2012-2015 Inviwo Foundation")
+    set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${IVW_VERSION}")
+    set(MACOSX_BUNDLE_LONG_VERSION_STRING "${IVW_VERSION}.")
+    set(MACOSX_BUNDLE_BUNDLE_VERSION "${IVW_VERSION}")
+    set(MACOSX_BUNDLE_COPYRIGHT "(C) 2012-2015 Inviwo Foundation")
+    set_source_files_properties(${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set(SOURCE_FILES ${SOURCE_FILES} ${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns)
 endif()
 
 #--------------------------------------------------------------------
@@ -100,18 +102,48 @@ ivw_define_standard_properties(inviwo)
 #--------------------------------------------------------------------
 # Add application to pack
 if(IVW_PACKAGE_PROJECT)
-if(WIN32)
-   install(TARGETS inviwo
-            RUNTIME DESTINATION bin
-            COMPONENT qt_app)
-else()
-    install(TARGETS inviwo
-            RUNTIME DESTINATION bin
-            BUNDLE DESTINATION bin
-            ARCHIVE DESTINATION lib
-            LIBRARY DESTINATION lib
-            COMPONENT qt_app)
-endif()
+    if(WIN32)
+        install(TARGETS inviwo
+                RUNTIME DESTINATION bin
+                COMPONENT qt_app)
+
+    elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+        #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
+
+        set(plugin_dest_dir Inviwo.app/Contents/MacOS)
+        set(qtconf_dest_dir Inviwo.app/Contents/Resources)
+        set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app")
+        install(TARGETS inviwo 
+            BUNDLE DESTINATION . COMPONENT Runtime
+            RUNTIME DESTINATION bin COMPONENT Runtime
+        )
+        install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime)
+        set(DIRS ${QT_LIBRARY_DIRS})
+
+        install(CODE "file(GLOB_RECURSE LIBS
+                     \"\${CMAKE_INSTALL_PREFIX}/lib/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+                     include(BundleUtilities)
+                     fixup_bundle(\"${APPS}\" \"\${LIBS}\" \"${DIRS}\")" 
+                COMPONENT Runtime
+        )
+        install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qch DESTINATION Inviwo.app/Contents/data/help COMPONENT qt_editor)
+        install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qhc DESTINATION Inviwo.app/Contents/data/help COMPONENT qt_editor)
+        install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qhcp DESTINATION Inviwo.app/Contents/data/help COMPONENT qt_editor)
+        install(DIRECTORY ${IVW_ROOT_DIR}/data/images DESTINATION Inviwo.app/Contents/data COMPONENT images)
+        install(DIRECTORY ${IVW_ROOT_DIR}/data/scripts DESTINATION Inviwo.app/Contents/data COMPONENT scripts)
+        install(DIRECTORY ${IVW_ROOT_DIR}/data/volumes DESTINATION Inviwo.app/Contents/data COMPONENT volumes)
+        install(DIRECTORY ${IVW_ROOT_DIR}/data/workspaces DESTINATION Inviwo.app/Contents/data COMPONENT workspaces)
+
+        set(CPACK_BINARY_DRAGNDROP ON)
+
+    else()
+        install(TARGETS inviwo
+                RUNTIME DESTINATION bin
+                BUNDLE DESTINATION bin
+                ARCHIVE DESTINATION lib
+                LIBRARY DESTINATION lib
+                COMPONENT qt_app)
+    endif()
 endif()
 
 #--------------------------------------------------------------------

@@ -36,7 +36,7 @@ add_library(libmng ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(libmng ext/freeimagelib)
+ivw_folder(libmng ext/freeimagelib)
 
 #--------------------------------------------------------------------
 # Add dependencies

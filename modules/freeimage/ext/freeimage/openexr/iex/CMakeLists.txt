@@ -33,7 +33,7 @@ add_library(iex ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(iex ext/freeimagelib/openexrlib)
+ivw_folder(iex ext/freeimagelib/openexrlib)
 
 #--------------------------------------------------------------------
 # Add dependencies

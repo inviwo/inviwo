@@ -41,7 +41,7 @@ add_library(zlib ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_vs_folder(zlib ext/freeimagelib)
+ivw_folder(zlib ext/freeimagelib)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
