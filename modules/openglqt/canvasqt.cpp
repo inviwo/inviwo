@@ -491,24 +491,25 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     if(touch->touchPoints().size() == 1 && lastNumFingers_ < 2){
         MouseEvent* mouseEvent = nullptr;
         ivec2 pos = ivec2(static_cast<int>(glm::floor(firstPoint.pos().x())), static_cast<int>(glm::floor(firstPoint.pos().y())));
-        uvec2 posToRetrieveDepth(static_cast<unsigned int>(pos.x), static_cast<unsigned int>(getScreenDimensions().y-1-pos.y));
+        uvec2 screenPosInvY(static_cast<unsigned int>(pos.x), static_cast<unsigned int>(getScreenDimensions().y-1-pos.y));
+        double depth = getDepthValueAtCoord(screenPosInvY);
         switch (touchPoints.front().state())
         {
         case TouchPoint::TOUCH_STATE_STARTED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_PRESS, 
-                EventConverterQt::getModifier(touch), getScreenDimensions(), posToRetrieveDepth);
+                EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
             Canvas::mousePressEvent(mouseEvent);
             break;
         case TouchPoint::TOUCH_STATE_UPDATED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_MOVE, 
-                EventConverterQt::getModifier(touch), getScreenDimensions(), posToRetrieveDepth);
+                EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
             Canvas::mouseMoveEvent(mouseEvent);
             break;
         case TouchPoint::TOUCH_STATE_STATIONARY:
             break; // Do not fire event while standing still.
         case TouchPoint::TOUCH_STATE_ENDED:
             mouseEvent = new MouseEvent(pos, MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_RELEASE, 
-                EventConverterQt::getModifier(touch), getScreenDimensions(), posToRetrieveDepth);
+                EventConverterQt::getModifier(touch), getScreenDimensions(), depth);
             Canvas::mouseReleaseEvent(mouseEvent);
             break;
         default:
