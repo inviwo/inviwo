@@ -47,6 +47,14 @@ public:
         TOUCH_STATE_ANY = TOUCH_STATE_STARTED | TOUCH_STATE_UPDATED | TOUCH_STATE_STATIONARY | TOUCH_STATE_ENDED
     };
     TouchPoint() {};
+    /** 
+     * @param vec2 pos Position in screen coordinates [0 dim-1]^2.
+     * @param vec2 posNormalized Position normalized to the size of the screen [0 1]^2.
+     * @param vec2 prevPos Previous position in screen coordinates [0 dim-1]^2.
+     * @param vec2 prevPosNormalized Previous position normalized to the size of the screen [0 1]^2.
+     * @param TouchPoint::TouchState touchState State of the touch point.
+     * @param double depth Depth value in normalized device coordinates ([-1 1]) at touch point, 1 if no depth is available.
+     */
     TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState, double depth = 1.0);
     virtual ~TouchPoint() {};
 
@@ -93,8 +101,9 @@ public:
     vec2 getPrevPosNormalized() const { return prevPosNormalized_; }
     void setPrevPosNormalized(vec2 val) { prevPosNormalized_ = val; }
     /**
-    * \brief Retrieve depth value at touch point
-    * @return double
+    * Retrieve depth value in normalized device coordinates at touch point.
+    * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
+    * Will be 1 if no depth value is available.
     */
     double getDepth() const { return depth_; }
     void setDepth(double val) { depth_ = val; }

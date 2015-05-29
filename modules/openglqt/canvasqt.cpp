@@ -302,12 +302,11 @@ void CanvasQt::mousePressEvent(QMouseEvent* e) {
 #if !defined(QT_NO_GESTURES) && defined(USING_QT4)
     if (gestureMode_) return;
 #endif
-
-    MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()),
+    uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
+    MouseEvent mouseEvent(screenPos,
                            EventConverterQt::getMouseButton(e), MouseEvent::MOUSE_STATE_PRESS,
                            EventConverterQt::getModifier(e), getScreenDimensions(), 
-                           getDepthValueAtCoord(uvec2(static_cast<unsigned int>(e->pos().x()),
-                           static_cast<unsigned int>(e->pos().y()))));
+                           getDepthValueAtCoord(screenPos));
     e->accept();
     Canvas::mousePressEvent(&mouseEvent);
 }
@@ -319,12 +318,11 @@ void CanvasQt::mouseReleaseEvent(QMouseEvent* e) {
         return;
     }
 #endif
-
-    MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()),
+    uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
+    MouseEvent mouseEvent(screenPos,
         EventConverterQt::getMouseButtonCausingEvent(e), MouseEvent::MOUSE_STATE_RELEASE,
         EventConverterQt::getModifier(e), getScreenDimensions(),
-        getDepthValueAtCoord(uvec2(static_cast<unsigned int>(e->pos().x()),
-        static_cast<unsigned int>(e->pos().y()))));
+        getDepthValueAtCoord(screenPos));
     e->accept();
     Canvas::mouseReleaseEvent(&mouseEvent);
 }
@@ -337,11 +335,11 @@ void CanvasQt::mouseMoveEvent(QMouseEvent* e) {
 
 
     if (e->buttons() == Qt::LeftButton || e->buttons() == Qt::RightButton || e->buttons() == Qt::MiddleButton) {
-        MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()),
+        uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
+        MouseEvent mouseEvent(screenPos,
                               EventConverterQt::getMouseButton(e), MouseEvent::MOUSE_STATE_MOVE,
                               EventConverterQt::getModifier(e), getScreenDimensions(),
-                              getDepthValueAtCoord(uvec2(static_cast<unsigned int>(e->pos().x()),
-                              static_cast<unsigned int>(e->pos().y()))));
+                              getDepthValueAtCoord(screenPos));
         e->accept();
         Canvas::mouseMoveEvent(&mouseEvent);
     }
@@ -369,12 +367,11 @@ void CanvasQt::wheelEvent(QWheelEvent* e){
     } else if (!numDegrees.isNull()) {
         numSteps = (orientation==MouseEvent::MOUSE_WHEEL_HORIZONTAL? numDegrees.x() : numDegrees.y());
     }
-
-    MouseEvent mouseEvent(ivec2(e->pos().x(), e->pos().y()), numSteps,
+    uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
+    MouseEvent mouseEvent(screenPos, numSteps,
         EventConverterQt::getMouseWheelButton(e), MouseEvent::MOUSE_STATE_WHEEL, orientation,
         EventConverterQt::getModifier(e), getScreenDimensions(),
-        getDepthValueAtCoord(uvec2(static_cast<unsigned int>(e->pos().x()),
-        static_cast<unsigned int>(e->pos().y()))));
+        getDepthValueAtCoord(screenPos));
     e->accept();
     Canvas::mouseWheelEvent(&mouseEvent);
 }
@@ -473,18 +470,13 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
         default:
             touchState = TouchPoint::TOUCH_STATE_NONE;
         }
-        double depth = 1.0;
-        if (depthLayerRAM){
-            depth = depthLayerRAM->getValueAsSingleDouble(
-                uvec2(static_cast<unsigned int>(glm::floor(screenTouchPos.x)), 
-                static_cast<unsigned int>(glm::floor(screenTouchPos.y))));
-        }
+
         touchPoints.push_back(
             TouchPoint(screenTouchPos,
             (screenTouchPos + 0.5f) / screenSize,
             prevScreenTouchPos,
             (prevScreenTouchPos + 0.5f) / screenSize,
-            touchState, depth));
+            touchState, getDepthValueAtCoord(uvec2(screenTouchPos))));
     }
     TouchEvent touchEvent(touchPoints, getScreenDimensions());
     touch->accept();

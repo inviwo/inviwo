@@ -91,6 +91,11 @@ public:
     inline int state() const { return state_; }
     inline int wheelOrientation() const { return wheelOrientation_; }
     inline uvec2 canvasSize() const { return canvasSize_; }
+    /**
+    * Retrieve depth value in normalized device coordinates at mouse position.
+    * Defined in [-1 1], where -1 is the near plane and 1 is the far plane.
+    * Will be 1 if no depth value is available.
+    */
     inline double depth() const { return depth_; }
     inline int button() const { return button_; }
     inline void setButton(int button) { button_ = button; }
@@ -117,7 +122,7 @@ private:
     ivec2 position_;
     int wheelSteps_;
     uvec2 canvasSize_;
-    double depth_;
+    double depth_; ///< Depth in normalized device coordinates [-1 1].
 
     static const std::string buttonNames_[4];
 };

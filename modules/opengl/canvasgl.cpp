@@ -242,7 +242,8 @@ const LayerRAM* CanvasGL::getDepthLayerRAM() const{
 double CanvasGL::getDepthValueAtCoord(uvec2 coord) const{
     const LayerRAM* depthLayerRAM = getDepthLayerRAM();
     if (depthLayerRAM) {
-        return depthLayerRAM->getValueAsSingleDouble(coord);
+        // Convert to normalized device coordinates
+        return 2.0*depthLayerRAM->getValueAsSingleDouble(coord)-1.0;
     }
     else
         return 1.0;
