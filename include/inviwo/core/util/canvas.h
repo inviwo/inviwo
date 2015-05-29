@@ -61,7 +61,7 @@ public:
     virtual void render(const Image*, LayerType layerType = COLOR_LAYER);
     virtual void resize(uvec2 canvasSize);
 
-    uvec2 getScreenDimensions();
+    uvec2 getScreenDimensions() const;
 
     virtual void update();
 

@@ -131,7 +131,7 @@ void Canvas::resize(uvec2 canvasSize) {
     }
 }
 
-uvec2 Canvas::getScreenDimensions() {
+uvec2 Canvas::getScreenDimensions() const {
     return screenDimensions_;
 }
 
