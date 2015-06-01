@@ -141,6 +141,9 @@ protected:
     vec2 lastMousePos_;
     vec3 lastTrackballPos_;
     double gestureStartNDCDepth_;
+    float lookToPressPosWorldSpaceDistance_; // Used for rotation
+    float trackBallRadius_;
+    vec3 prevWorldPos_;
 
     vec3* lookFrom_;
     vec3* lookTo_;
@@ -182,7 +185,6 @@ protected:
     T* object_;
     const CameraBase* camera_;
 
-    float RADIUS = 0.5f; ///< Radius in normalized screen space [0 1]^2
     float STEPSIZE = 0.05f;
 };
 
@@ -463,51 +465,76 @@ void Trackball<T>::rotate(Event* event) {
     if (!allowVerticalRotation_) {
         curMousePos.x = 0.5;
     }
-    vec3 curTrackballPos = mapNormalizedMousePosToTrackball(curMousePos);
+    
+    
 
     // disable movements on first press
     if (!isMouseBeingPressedAndHold_) {
+        vec2 normalizedScreenCoord(curMousePos.x, 1.f - curMousePos.y);
+        trackBallRadius_ = 1.f;// glm::distance(vec2(0), 2.f*normalizedScreenCoord - 1.f);
+        vec3 curTrackballPos = mapNormalizedMousePosToTrackball(curMousePos, trackBallRadius_);
         lastTrackballPos_ = curTrackballPos;
         lastMousePos_ = curMousePos;
-        vec2 normalizedScreenCoord(curMousePos.x, 1.f - curMousePos.y);
-        //vec3 curNDCCoord = screenToWorldTransformer_.getNormalizedDeviceFromNormalizedScreen(normalizedScreenCoord);
-        //gestureStartNDCDepth_ = curNDCCoord.z;
-        //lookToPressPosWorldSpaceDistance_ = glm::distance(getLookTo(), screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(curNDCCoord));
+        
+        gestureStartNDCDepth_ = mouseEvent->depth();
+        //if (gestureStartNDCDepth_ >= 1.) {
+        //    gestureStartNDCDepth_ = getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord).z;
+        //}
+        vec3 curNDCCoord(2.f*normalizedScreenCoord - 1.f, static_cast<float>(gestureStartNDCDepth_));
+        prevWorldPos_ = camera_->getWorldPosFromNormalizedDeviceCoords(curNDCCoord);
+        lookToPressPosWorldSpaceDistance_ = glm::distance(getLookTo(), camera_->getWorldPosFromNormalizedDeviceCoords(curNDCCoord));
 
         isMouseBeingPressedAndHold_ = true;
 
-    } else if (curTrackballPos != lastTrackballPos_) {
-        //vec3 worldPos = screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(vec3(curTrackballPos.xy(), curTrackballPos.z - gestureStartNDCDepth_));
-        //vec3 prevWorldPos = screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(vec3(lastTrackballPos_.xy(), lastTrackballPos_.z - gestureStartNDCDepth_));
-        //{
-        //    float t0 = 0; float t1 = std::numeric_limits<float>::max();
-        //    vec3 o = screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(vec3(lastTrackballPos_.xy(), -1.f));
-        //    vec3 d = glm::normalize(screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(vec3(lastTrackballPos_.xy(), 0.f)) - o);
-        //    raySphereIntersection(getLookTo(), lookToPressPosWorldSpaceDistance_, o, d, &t0, &t1);
-        //    prevWorldPos = o + d*t1;
-        //}
-
-        //{
-        //    float t0 = 0; float t1 = std::numeric_limits<float>::max();
-        //    vec3 o = screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(vec3(curTrackballPos.xy(), -1.f));
-        //    vec3 d = glm::normalize(screenToWorldTransformer_.getWorldPosFromNormalizedDeviceCoords(vec3(curTrackballPos.xy(), 0.f)) - o);
-        //    raySphereIntersection(getLookTo(), lookToPressPosWorldSpaceDistance_, o, d, &t0, &t1);
-        //    worldPos = o + d*t1;
-        //}
-        //glm::quat quaternion = glm::angleAxis(static_cast<float>(M_PI)*(lastMousePos_.x - curMousePos.x), getLookUp()) * glm::angleAxis(static_cast<float>(M_PI)*((1.f - curMousePos.y) - (1.f - lastMousePos_.y)), glm::cross(getLookUp(), glm::normalize(getLookFrom() - getLookTo())));
-        //vec3 Pa = glm::normalize(prevWorldPos - getLookTo());
-        //vec3 Pc = glm::normalize(worldPos - getLookTo());
-        //vec3 rotationAxis = glm::cross(Pa, Pc);
-        //float angle = atan2(glm::length(rotationAxis), glm::dot(Pa, Pc));
-        ////glm::quat quaternion = glm::angleAxis(angle, rotationAxis);
-
-        rotateTrackBall(lastTrackballPos_, curTrackballPos);
+    } 
+    //else if (curTrackballPos != lastTrackballPos_) {
+        vec3 curTrackballPos = mapNormalizedMousePosToTrackball(curMousePos, trackBallRadius_);
+        vec2 normalizedScreenCoord(curMousePos.x, 1.f - curMousePos.y);
 
 
+
+
+
+        //vec4 clipPos = camera_->getClipPosFromNormalizedDeviceCoords(vec3(normalizedScreenCoord, static_cast<float>(gestureStartNDCDepth_)));
+        //vec3 viewSpacePos = (camera_->inverseProjectionMatrix()*clipPos).xyz();
+        //vec4 clipPosNear = camera_->getClipPosFromNormalizedDeviceCoords(vec3(normalizedScreenCoord, static_cast<float>(-1.f)));
+        //vec3 viewSpacePosNear = (camera_->inverseProjectionMatrix()*clipPosNear).xyz();
+        //vec3 dir = viewSpacePos - viewSpacePosNear;
+        //vec3 normDir = glm::normalize(dir);
+
+        
+        vec3 worldPos;
+        float t0 = 0; float t1 = std::numeric_limits<float>::max();
+        vec3 o = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(curTrackballPos.xy(), -1.f));
+        vec3 d = glm::normalize(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(curTrackballPos.xy(), 0.f)) - o);
+        bool intersected = intersected & raySphereIntersection(getLookTo(), lookToPressPosWorldSpaceDistance_, o, d, &t0, &t1);
+        worldPos = o + d*t1;
+        if (intersected && gestureStartNDCDepth_ < 1) {
+            vec3 Pa = prevWorldPos_ - getLookTo();
+            vec3 Pc = worldPos - getLookTo();
+            glm::quat quaternion = glm::quat(glm::normalize(Pc), glm::normalize(Pa));
+            setLook(getLookTo() + glm::rotate(quaternion, getLookFrom() - getLookTo()), getLookTo(), glm::rotate(quaternion, getLookUp()));
+        } else {
+            vec3 prevWorldPos = prevWorldPos_;
+            float rotationAroundHorizontalAxis = (curMousePos.y - lastMousePos_.y)*M_PI;
+            float rotationAroundVerticalAxis = (curMousePos.x - lastMousePos_.x)*M_PI;
+            vec3 Pa = prevWorldPos - getLookTo();
+            vec3 Pc = glm::rotate(glm::rotate(Pa, rotationAroundHorizontalAxis, glm::cross(getLookUp(), glm::normalize(getLookFrom() - getLookTo()))), rotationAroundVerticalAxis, getLookUp());
+            glm::quat quaternion = glm::quat(glm::normalize(Pc), glm::normalize(Pa));
+            setLook(getLookTo() + glm::rotate(quaternion, getLookFrom() - getLookTo()), getLookTo(), glm::rotate(quaternion, getLookUp()));
+            
+            
+            //rotateTrackBall(lastTrackballPos_, curTrackballPos);
+        }
+
+
+        //rotateTrackBall(lastTrackballPos_, curTrackballPos);
+
+        prevWorldPos_ = getLookFrom();
         //update mouse positions
         lastMousePos_ = curMousePos;
         lastTrackballPos_ = curTrackballPos;
-    }
+    //}
 }
 
 template <typename T>
