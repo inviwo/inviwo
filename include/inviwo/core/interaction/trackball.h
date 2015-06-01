@@ -51,7 +51,6 @@
 
 namespace inviwo {
 
-
 template< typename T>
 class Trackball : public CompositeProperty {
 public:
@@ -141,9 +140,7 @@ protected:
     vec2 lastMousePos_;
     vec3 lastTrackballPos_;
     double gestureStartNDCDepth_;
-    float lookToPressPosWorldSpaceDistance_; // Used for rotation
-    float trackBallRadius_;
-    vec3 prevWorldPos_;
+    float trackBallWorldSpaceRadius_;
 
     vec3* lookFrom_;
     vec3* lookTo_;
@@ -185,6 +182,7 @@ protected:
     T* object_;
     const CameraBase* camera_;
 
+    float RADIUS = 0.5f; ///< Radius in normalized screen space [0 1]^2
     float STEPSIZE = 0.05f;
 };
 
@@ -471,8 +469,8 @@ void Trackball<T>::rotate(Event* event) {
     // disable movements on first press
     if (!isMouseBeingPressedAndHold_) {
         vec2 normalizedScreenCoord(curMousePos.x, 1.f - curMousePos.y);
-        trackBallRadius_ = 1.f;// glm::distance(vec2(0), 2.f*normalizedScreenCoord - 1.f);
-        vec3 curTrackballPos = mapNormalizedMousePosToTrackball(curMousePos, trackBallRadius_);
+        trackBallWorldSpaceRadius_ = 1.f;// glm::distance(vec2(0), 2.f*normalizedScreenCoord - 1.f);
+        vec3 curTrackballPos = mapNormalizedMousePosToTrackball(curMousePos);
         lastTrackballPos_ = curTrackballPos;
         lastMousePos_ = curMousePos;
         
@@ -481,44 +479,48 @@ void Trackball<T>::rotate(Event* event) {
         //    gestureStartNDCDepth_ = getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord).z;
         //}
         vec3 curNDCCoord(2.f*normalizedScreenCoord - 1.f, static_cast<float>(gestureStartNDCDepth_));
-        prevWorldPos_ = camera_->getWorldPosFromNormalizedDeviceCoords(curNDCCoord);
-        lookToPressPosWorldSpaceDistance_ = glm::distance(getLookTo(), camera_->getWorldPosFromNormalizedDeviceCoords(curNDCCoord));
+        trackBallWorldSpaceRadius_ = glm::distance(getLookTo(), camera_->getWorldPosFromNormalizedDeviceCoords(curNDCCoord));
 
         isMouseBeingPressedAndHold_ = true;
 
-    } 
-    //else if (curTrackballPos != lastTrackballPos_) {
-        vec3 curTrackballPos = mapNormalizedMousePosToTrackball(curMousePos, trackBallRadius_);
-        vec2 normalizedScreenCoord(curMousePos.x, 1.f - curMousePos.y);
+    } else {
+        vec3 curTrackballPos = mapNormalizedMousePosToTrackball(curMousePos, trackBallWorldSpaceRadius_);
+        vec2 normalizedDeviceCoord(2.f*curMousePos.x - 1.f, 2.f*(1.f - curMousePos.y) - 1.f);
+        vec2 prevNormalizedDeviceCoord(2.f*lastMousePos_.x - 1.f, 2.f*(1.f - lastMousePos_.y) - 1.f);
 
+        vec3 trackballWorldPos;
+        vec3 prevTrackballWorldPos;
+        bool intersected;
+        // Compute coordinates on a sphere to rotate from and to
+        {
+            float t0 = 0; float t1 = std::numeric_limits<float>::max();
+            vec3 o = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(prevNormalizedDeviceCoord, -1.f));
+            vec3 d = glm::normalize(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(prevNormalizedDeviceCoord, 0.f)) - o);
+            intersected = raySphereIntersection(getLookTo(), trackBallWorldSpaceRadius_, o, d, &t0, &t1);
+            prevTrackballWorldPos = o + d*t1;
+        }
 
+        {
+            float t0 = 0; float t1 = std::numeric_limits<float>::max();
+            vec3 o = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(normalizedDeviceCoord, -1.f));
+            vec3 d = glm::normalize(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(normalizedDeviceCoord, 0.f)) - o);
+            intersected = intersected & raySphereIntersection(getLookTo(), trackBallWorldSpaceRadius_, o, d, &t0, &t1);
+            trackballWorldPos = o + d*t1;
+        }
 
-
-
-        //vec4 clipPos = camera_->getClipPosFromNormalizedDeviceCoords(vec3(normalizedScreenCoord, static_cast<float>(gestureStartNDCDepth_)));
-        //vec3 viewSpacePos = (camera_->inverseProjectionMatrix()*clipPos).xyz();
-        //vec4 clipPosNear = camera_->getClipPosFromNormalizedDeviceCoords(vec3(normalizedScreenCoord, static_cast<float>(-1.f)));
-        //vec3 viewSpacePosNear = (camera_->inverseProjectionMatrix()*clipPosNear).xyz();
-        //vec3 dir = viewSpacePos - viewSpacePosNear;
-        //vec3 normDir = glm::normalize(dir);
-
-        
-        vec3 worldPos;
-        float t0 = 0; float t1 = std::numeric_limits<float>::max();
-        vec3 o = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(curTrackballPos.xy(), -1.f));
-        vec3 d = glm::normalize(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(curTrackballPos.xy(), 0.f)) - o);
-        bool intersected = intersected & raySphereIntersection(getLookTo(), lookToPressPosWorldSpaceDistance_, o, d, &t0, &t1);
-        worldPos = o + d*t1;
         if (intersected && gestureStartNDCDepth_ < 1) {
-            vec3 Pa = prevWorldPos_ - getLookTo();
-            vec3 Pc = worldPos - getLookTo();
+            vec3 Pa = prevTrackballWorldPos - getLookTo();
+            vec3 Pc = trackballWorldPos - getLookTo();
             glm::quat quaternion = glm::quat(glm::normalize(Pc), glm::normalize(Pa));
             setLook(getLookTo() + glm::rotate(quaternion, getLookFrom() - getLookTo()), getLookTo(), glm::rotate(quaternion, getLookUp()));
         } else {
-            vec3 prevWorldPos = prevWorldPos_;
-            float rotationAroundHorizontalAxis = (curMousePos.y - lastMousePos_.y)*M_PI;
+            
+            vec3 prevWorldPos = getLookFrom();
             float rotationAroundVerticalAxis = (curMousePos.x - lastMousePos_.x)*M_PI;
+            float rotationAroundHorizontalAxis = (curMousePos.y - lastMousePos_.y)*M_PI;
+
             vec3 Pa = prevWorldPos - getLookTo();
+
             vec3 Pc = glm::rotate(glm::rotate(Pa, rotationAroundHorizontalAxis, glm::cross(getLookUp(), glm::normalize(getLookFrom() - getLookTo()))), rotationAroundVerticalAxis, getLookUp());
             glm::quat quaternion = glm::quat(glm::normalize(Pc), glm::normalize(Pa));
             setLook(getLookTo() + glm::rotate(quaternion, getLookFrom() - getLookTo()), getLookTo(), glm::rotate(quaternion, getLookUp()));
@@ -530,11 +532,10 @@ void Trackball<T>::rotate(Event* event) {
 
         //rotateTrackBall(lastTrackballPos_, curTrackballPos);
 
-        prevWorldPos_ = getLookFrom();
         //update mouse positions
         lastMousePos_ = curMousePos;
         lastTrackballPos_ = curTrackballPos;
-    //}
+    }
 }
 
 template <typename T>
