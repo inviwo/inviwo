@@ -711,12 +711,12 @@ endmacro()
 #--------------------------------------------------------------------
 # Add folder to module pack
 macro(ivw_add_to_module_pack folder)
-if(IVW_PACKAGE_PROJECT)
-    get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-    install(DIRECTORY ${folder}
-             DESTINATION modules/${FOLDER_NAME}
-             COMPONENT ${_cpackName})
-endif()
+    if(IVW_PACKAGE_PROJECT)
+        get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+        install(DIRECTORY ${folder}
+                 DESTINATION modules/${FOLDER_NAME}
+                 COMPONENT ${_cpackName})
+    endif()
 endmacro()
 
 #--------------------------------------------------------------------
@@ -839,7 +839,7 @@ macro(ivw_make_package package_name project_name)
         elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             install(TARGETS ${project_name}
                     RUNTIME DESTINATION bin
-                    BUNDLE DESTINATION .
+                    BUNDLE DESTINATION bin
                     ARCHIVE DESTINATION lib
                     LIBRARY DESTINATION lib
                     COMPONENT ${_cpackName})

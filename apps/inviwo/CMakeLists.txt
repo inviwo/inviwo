@@ -110,29 +110,42 @@ if(IVW_PACKAGE_PROJECT)
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         #Following http://www.cmake.org/Wiki/BundleUtilitiesExample
 
+        install(TARGETS inviwo 
+            RUNTIME DESTINATION bin 
+            BUNDLE DESTINATION . 
+            ARCHIVE DESTINATION lib 
+            LIBRARY DESTINATION lib 
+            COMPONENT qt_app
+        )
+
         set(plugin_dest_dir Inviwo.app/Contents/MacOS)
         set(qtconf_dest_dir Inviwo.app/Contents/Resources)
-        set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app")
-        install(TARGETS inviwo 
-            BUNDLE DESTINATION . COMPONENT Runtime
-            RUNTIME DESTINATION bin COMPONENT Runtime
+        set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/MacOS/Inviwo")
+        set(DIRS "${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")
+        
+        install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
+        
+        install(
+            DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib/
+            DESTINATION ${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}
+            COMPONENT qt_app
         )
-        install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT Runtime)
-        set(DIRS ${QT_LIBRARY_DIRS})
-
-        install(CODE "file(GLOB_RECURSE LIBS
-                     \"\${CMAKE_INSTALL_PREFIX}/lib/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-                     include(BundleUtilities)
-                     fixup_bundle(\"${APPS}\" \"\${LIBS}\" \"${DIRS}\")" 
-                COMPONENT Runtime
+        install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
+                      include(BundleUtilities)
+                      file(GLOB_RECURSE LIBS \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+                      fixup_bundle(\"${APPS}\" \"\${LIBS};\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/plugins/platforms/libqcocoa.dylib\" \"${DIRS}\")"
+                COMPONENT qt_app
         )
-        install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qch DESTINATION Inviwo.app/Contents/data/help COMPONENT qt_editor)
-        install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qhc DESTINATION Inviwo.app/Contents/data/help COMPONENT qt_editor)
-        install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qhcp DESTINATION Inviwo.app/Contents/data/help COMPONENT qt_editor)
-        install(DIRECTORY ${IVW_ROOT_DIR}/data/images DESTINATION Inviwo.app/Contents/data COMPONENT images)
-        install(DIRECTORY ${IVW_ROOT_DIR}/data/scripts DESTINATION Inviwo.app/Contents/data COMPONENT scripts)
-        install(DIRECTORY ${IVW_ROOT_DIR}/data/volumes DESTINATION Inviwo.app/Contents/data COMPONENT volumes)
-        install(DIRECTORY ${IVW_ROOT_DIR}/data/workspaces DESTINATION Inviwo.app/Contents/data COMPONENT workspaces)
+        install(
+            DIRECTORY ${CMAKE_INSTALL_PREFIX}/modules/
+            DESTINATION Inviwo.app/Contents/Resources/modules
+            COMPONENT qt_app
+        )
+        install(
+            DIRECTORY ${IVW_ROOT_DIR}/data/ 
+            DESTINATION Inviwo.app/Contents/Resources/data
+            COMPONENT qt_app
+        )
 
         set(CPACK_BINARY_DRAGNDROP ON)
 

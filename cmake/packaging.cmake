@@ -28,6 +28,8 @@
  #################################################################################
  
 if(IVW_PACKAGE_PROJECT)
+	include (InstallRequiredSystemLibraries)
+
 	set(CPACK_PACKAGE_NAME "Inviwo")
 	set(CPACK_PACKAGE_VENDOR "Inviwo Foundation")
 	set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Interactive Visualization Workshop")
@@ -176,11 +178,13 @@ if(IVW_PACKAGE_PROJECT)
 
 	elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		if(IVW_PACKAGE_INSTALLER)
+			ivw_message("${CMAKE_BINARY_DIR}/packaging/macosx/Info.plist")
+
 			#http://www.cmake.org/cmake/help/v3.2/module/CPackBundle.html
 			set(CPACK_GENERATOR "Bundle;DragNDrop")
 			set(CPACK_BUNDLE_NAME "Inviwo")
-			set(CPACK_BUNDLE_ICON "${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns")
-			set(CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/packaging/macosx/Info.plist")
+			set(CPACK_BUNDLE_ICON "Resources/inviwo_light.icns")
+			#set(CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/packaging/macosx/Info.plist")
 			set(CPACK_OSX_PACKAGE_VERSION 10.10)
 		else()
 			set(CPACK_GENERATOR "TGZ")
@@ -194,15 +198,14 @@ if(IVW_PACKAGE_PROJECT)
 		endif()
 	endif()
 
-	if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qch DESTINATION data/help COMPONENT qt_editor)
-		install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qhc DESTINATION data/help COMPONENT qt_editor)
-		install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qhcp DESTINATION data/help COMPONENT qt_editor)
-		install(DIRECTORY ${IVW_ROOT_DIR}/data/images DESTINATION data COMPONENT images)
-		install(DIRECTORY ${IVW_ROOT_DIR}/data/scripts DESTINATION data COMPONENT scripts)
-		install(DIRECTORY ${IVW_ROOT_DIR}/data/volumes DESTINATION data COMPONENT volumes)
-		install(DIRECTORY ${IVW_ROOT_DIR}/data/workspaces DESTINATION data COMPONENT workspaces)
-	endif()
+	install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qch DESTINATION data/help COMPONENT qt_editor)
+	install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qhc DESTINATION data/help COMPONENT qt_editor)
+	install(FILES ${IVW_ROOT_DIR}/data/help/inviwo.qhcp DESTINATION data/help COMPONENT qt_editor)
+	install(DIRECTORY ${IVW_ROOT_DIR}/data/images DESTINATION data COMPONENT images)
+	install(DIRECTORY ${IVW_ROOT_DIR}/data/scripts DESTINATION data COMPONENT scripts)
+	install(DIRECTORY ${IVW_ROOT_DIR}/data/volumes DESTINATION data COMPONENT volumes)
+	install(DIRECTORY ${IVW_ROOT_DIR}/data/workspaces DESTINATION data COMPONENT workspaces)
 	include(CPack)
+
 endif()
 
