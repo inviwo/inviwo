@@ -1084,7 +1084,7 @@ void ProcessorNetwork::NetworkConverter::updatePropertyLinks(TxElement* node) {
 
 void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root) {
     struct RefManager : public ticpp::Visitor {
-        virtual bool VisitEnter(const TxElement& node, const TxAttribute*) {
+        virtual bool VisitEnter(const TxElement& node, const TxAttribute*) override {
             std::string id = node.GetAttributeOrDefault("id", "");
             if (!id.empty()) {
                 ids_.push_back(id);
@@ -1092,6 +1092,9 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
             }
             return true;
         };
+        virtual bool VisitEnter( const TiXmlDocument& doc ) override {
+            return ticpp::Visitor::VisitEnter(doc);
+        }
 
         std::string getNewRef() {
             std::string ref("ref0");

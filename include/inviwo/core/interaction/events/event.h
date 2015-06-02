@@ -62,7 +62,10 @@ public:
 
 private:
     bool used_;
+#pragma warning(push)
+#pragma warning(disable : 4251)
     std::unordered_set<Processor*> visitedProcessors_;
+#pragma warning(pop)
 };
 
 }  // namespace
