@@ -45,10 +45,7 @@ EXCLUDE_PATTERNS       = */ext/* \
 
 EXCLUDE_SYMBOLS        = cl::*
 
-FILTER_PATTERNS        = "*.frag=@IVW_DOXY_DIR@/filter/glslfilter.py" \
-                         "*.vert=@IVW_DOXY_DIR@/filter/glslfilter.py" \
-                         "*.geom=@IVW_DOXY_DIR@/filter/glslfilter.py" \
-                         "*.glsl=@IVW_DOXY_DIR@/filter/glslfilter.py" 
+FILTER_PATTERNS        = @FILER_PATTERNS@
 
 USE_MDFILE_AS_MAINPAGE = "@MAINPAGE@"
 
