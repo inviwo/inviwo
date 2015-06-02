@@ -125,8 +125,8 @@ protected:
     Matrix<N + 1, float> worldMatrix_;
 };
 
-extern template class IVW_CORE_API SpatialEntity<2>;
-extern template class IVW_CORE_API SpatialEntity<3>;
+extern template class SpatialEntity<2>;
+extern template class SpatialEntity<3>;
 
 template <unsigned int N>
 class StructuredGridEntity : public SpatialEntity<N> {
