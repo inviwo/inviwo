@@ -29,6 +29,9 @@
 
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/image/layergl.h>
+#include <modules/opengl/textureutils.h>
+#include <modules/opengl/glwrap/texture.h>
+#include <modules/opengl/glwrap/texture2d.h>
 
 namespace inviwo {
 
@@ -76,9 +79,7 @@ void LayerGL::deinitialize() {
 
 void LayerGL::bindTexture(GLenum texUnit) const {
     texUnit_ = texUnit;
-    glActiveTexture(texUnit);
-    texture_->bind();
-    glActiveTexture(GL_TEXTURE0);
+    utilgl::bindTexture(texture_, texUnit);
 }
 
 void LayerGL::unbindTexture() const {

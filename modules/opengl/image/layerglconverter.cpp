@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "layerglconverter.h"
+#include <modules/opengl/glwrap/texture2d.h>
 
 namespace inviwo {
 

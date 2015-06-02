@@ -33,11 +33,13 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
-#include <modules/opengl/glwrap/texture2d.h>
+#include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
 
 class Shader;
+class Texture2D;
+
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
     LayerGL(uvec2 dimensions = uvec2(256, 256), LayerType type = COLOR_LAYER,

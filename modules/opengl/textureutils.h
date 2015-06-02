@@ -37,6 +37,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/glwrap/texture.h>
 #include <modules/opengl/glwrap/textureunit.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
@@ -138,6 +139,12 @@ IVW_MODULE_OPENGL_API void unbindTextures(const ImageInport& inport);
 IVW_MODULE_OPENGL_API void unbindTextures(const ImageOutport& outport);
 
 // convenience texture bindings
+IVW_MODULE_OPENGL_API void bindTexture(Texture* const texture, GLenum texUnit);
+IVW_MODULE_OPENGL_API void bindTexture(Texture* const texture, const TextureUnit& texUnit);
+
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
+                                              Texture* const texture, const std::string samplerID);
+
 IVW_MODULE_OPENGL_API void bindTexture(const TransferFunctionProperty& tf,
                                        const TextureUnit& texUnit);
 
