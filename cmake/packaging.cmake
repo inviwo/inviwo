@@ -183,7 +183,7 @@ if(IVW_PACKAGE_PROJECT)
 			#http://www.cmake.org/cmake/help/v3.2/module/CPackBundle.html
 			set(CPACK_GENERATOR "Bundle;DragNDrop")
 			set(CPACK_BUNDLE_NAME "Inviwo")
-			set(CPACK_BUNDLE_ICON "Resources/inviwo_light.icns")
+			set(CPACK_BUNDLE_ICON "${IVW_ROOT_DIR}/Resources/icons/inviwo_light.icns")
 			#set(CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/packaging/macosx/Info.plist")
 			set(CPACK_OSX_PACKAGE_VERSION 10.10)
 		else()

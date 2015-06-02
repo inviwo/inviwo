@@ -38,8 +38,7 @@ set(HEADER_FILES
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
-ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
-source_group("MOC Files" FILES ${MOC_FILES})
+
 
 #--------------------------------------------------------------------
 # Add source files
@@ -76,6 +75,9 @@ ivw_define_qt_definitions()
 
 #--------------------------------------------------------------------
 # Create library
+find_package(Qt5Core QUIET REQUIRED)
+ivw_qt_wrap_cpp(MOC_FILES ${MOC_FILES})
+source_group("MOC Files" FILES ${MOC_FILES})
 add_library(inviwo-qteditor ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 
 # Add dependencies to this list
@@ -110,6 +112,9 @@ else()
         endif()
     endif()
 endif()
+
+
+
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
 ivw_compile_optimize_inviwo_core()

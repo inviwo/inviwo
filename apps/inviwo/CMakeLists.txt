@@ -81,7 +81,7 @@ endif()
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(MACOSX_BUNDLE_BUNDLE_NAME Inviwo)
     set(MACOSX_BUNDLE_GUI_IDENTIFIER "Inviwo")
-    set(MACOSX_BUNDLE_ICON_FILE ${IVW_ROOT_DIR}/resources/icons/inviwo_light.icns)
+    set(MACOSX_BUNDLE_ICON_FILE inviwo_light.icns)
     set(MACOSX_BUNDLE_INFO_STRING "Inviwo ${IVW_VERSION}, Copyright (c) 2012-2015 Inviwo Foundation")
     set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${IVW_VERSION}")
     set(MACOSX_BUNDLE_LONG_VERSION_STRING "${IVW_VERSION}.")
@@ -132,8 +132,9 @@ if(IVW_PACKAGE_PROJECT)
         )
         install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
                       include(BundleUtilities)
-                      file(GLOB_RECURSE LIBS \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
-                      fixup_bundle(\"${APPS}\" \"\${LIBS};\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/plugins/platforms/libqcocoa.dylib\" \"${DIRS}\")"
+                      file(GLOB_RECURSE LIBS1 \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}\")
+                      file(GLOB_RECURSE LIBS2 \"\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+                      fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
                 COMPONENT qt_app
         )
         install(

@@ -865,9 +865,13 @@ macro(ivw_make_package package_name project_name)
 
     list(APPEND _allLibsDir "${IVW_LIBRARY_DIR}")
     if(WIN32 AND BUILD_SHARED_LIBS)
-        set(PROJECT_LIBRARIES optimized ${IVW_LIBRARY_DIR}/Release/${project_name}.lib debug ${IVW_LIBRARY_DIR}/Debug/${project_name}${CMAKE_DEBUG_POSTFIX}.lib)
+        set(PROJECT_LIBRARIES 
+            optimized ${IVW_LIBRARY_DIR}/Release/${project_name}.lib 
+            debug ${IVW_LIBRARY_DIR}/Debug/${project_name}${CMAKE_DEBUG_POSTFIX}.lib)
     else()
-	   set(PROJECT_LIBRARIES optimized ${project_name} debug ${project_name}${CMAKE_DEBUG_POSTFIX})
+	   set(PROJECT_LIBRARIES 
+           optimized ${project_name} 
+           debug ${project_name}${CMAKE_DEBUG_POSTFIX})
     endif()
     list(APPEND _allLibs ${PROJECT_LIBRARIES})
   
