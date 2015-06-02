@@ -41,6 +41,7 @@ endif()
 
 if(CMAKE_VERSION VERSION_GREATER "3.0.0")
     cmake_policy(SET CMP0042 OLD) # MacOSX rpath policy.
+    cmake_policy(SET CMP0028 OLD) # allow :: in targets. like Qt5::Sql
 endif()
 
 if (NOT CMAKE_VERSION VERSION_LESS "3.1.0")

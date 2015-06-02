@@ -82,7 +82,20 @@ add_library(inviwo-qteditor ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 
 # Add dependencies to this list
 if(DESIRED_QT_VERSION MATCHES 5)
-    ivw_add_dependencies(InviwoQtWidgets Qt5Help)
+    set(IVW_WIDGETS_QT_DEPENDS
+        Qt5Core
+        Qt5Gui
+        Qt5Widgets
+        Qt5Help
+        #Qt5Sql 
+        #Qt5Network
+    )
+
+    foreach(qtarget ${IVW_WIDGETS_QT_DEPENDS})
+        ivw_qt_add_dependencies(${qtarget} qt_editor)
+    endforeach()
+
+    ivw_add_dependencies(InviwoQtWidgets )
     
     if(IVW_PACKAGE_PROJECT)
         if(WIN32)
@@ -90,12 +103,6 @@ if(DESIRED_QT_VERSION MATCHES 5)
                 set(QT_BINARY_DIR "${Qt5Help_DIR}/../../../bin")
                 install(FILES ${QT_BINARY_DIR}/Qt5Help${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
                 install(FILES ${QT_BINARY_DIR}/Qt5Help.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
-                install(FILES ${QT_BINARY_DIR}/Qt5CLucene${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
-                install(FILES ${QT_BINARY_DIR}/Qt5CLucene.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
-                install(FILES ${QT_BINARY_DIR}/Qt5Sql${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
-                install(FILES ${QT_BINARY_DIR}/Qt5Sql.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
-                install(FILES ${QT_BINARY_DIR}/Qt5Network${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
-                install(FILES ${QT_BINARY_DIR}/Qt5Network.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
             endif()
         endif()
     endif()

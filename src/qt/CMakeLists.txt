@@ -47,6 +47,39 @@ if(IVW_QT_EDITOR OR IVW_QT_WIDGETS)
     mark_as_advanced(CLEAR DESIRED_QT_VERSION)
 endif()
 
+
+macro(ivw_qt_add_dependencies qtarget ivw_comp)
+    ivw_add_dependencies(${qtarget})    
+    if(${qtarget}_FOUND AND IVW_PACKAGE_PROJECT)
+        if(WIN32)
+            set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
+            install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
+                    DESTINATION bin 
+                    COMPONENT ${ivw_comp} 
+                    CONFIGURATIONS Debug)
+            install(FILES ${QTARGET_DIR}/${qtarget}.dll 
+                    DESTINATION bin 
+                    COMPONENT ${ivw_comp} 
+                    CONFIGURATIONS Release)
+        elseif(APPLE)
+            foreach(plugin ${${qtarget}_PLUGINS})
+                get_target_property(_loc ${plugin} LOCATION)
+                get_filename_component(_path ${_loc} DIRECTORY)
+                get_filename_component(_dirname ${_path} NAME)
+                install(FILES ${_loc} 
+                        DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
+                        COMPONENT ${ivw_comp})
+            endforeach()
+        else()
+
+
+        endif()
+    endif()
+endmacro()
+
+
+
+
 if(IVW_QT_WIDGETS)
     add_subdirectory(widgets)
 endif()
@@ -54,4 +87,33 @@ endif()
 if(IVW_QT_EDITOR)
     add_subdirectory(editor)
 endif()
+
+
+if(IVW_PACKAGE_PROJECT)
+    if(WIN32 AND Qt5Core_FOUND)
+        set(QT_BINARY_DIR "${Qt5Core_DIR}/../../../bin")
+        install(FILES ${QT_BINARY_DIR}/Qt5CLucene${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
+        install(FILES ${QT_BINARY_DIR}/Qt5CLucene.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
+        install(FILES ${QT_BINARY_DIR}/Qt5Sql${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
+        install(FILES ${QT_BINARY_DIR}/Qt5Sql.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
+        install(FILES ${QT_BINARY_DIR}/Qt5Network${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Debug)
+        install(FILES ${QT_BINARY_DIR}/Qt5Network.dll DESTINATION bin COMPONENT qt_modules CONFIGURATIONS Release)
+        install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icudt5*")
+        install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icuin5*")
+        install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icuuc5*")
+        set(QT_PLUGINS_DIR "${Qt5Core_DIR}/../../../plugins")
+        install(FILES ${QT_PLUGINS_DIR}/platforms/qwindows${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin/platforms COMPONENT qt_widgets CONFIGURATIONS Debug)
+        install(FILES ${QT_PLUGINS_DIR}/platforms/qwindows.dll DESTINATION bin/platforms COMPONENT qt_widgets CONFIGURATIONS Release)
+        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin/sqldrivers COMPONENT qt_widgets CONFIGURATIONS Debug)
+        install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll DESTINATION bin/sqldrivers COMPONENT qt_widgets CONFIGURATIONS Release)
+    endif()
+endif()
+
+# Hide some options 
+mark_as_advanced(FORCE QT_QMAKE_EXECUTABLE)
+mark_as_advanced(FORCE Qt5Multimedia_DIR)
+mark_as_advanced(FORCE Qt5Network_DIR)
+mark_as_advanced(FORCE Qt5Script_DIR)
+mark_as_advanced(FORCE Qt5_DIR)
+
 

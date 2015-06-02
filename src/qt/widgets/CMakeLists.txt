@@ -147,55 +147,8 @@ if(DESIRED_QT_VERSION MATCHES 5)
     )
 
     foreach(qtarget ${IVW_WIDGETS_QT_DEPENDS})
-        #find_package(${qtarget} QUIET REQUIRED)
-        ivw_add_dependencies(${qtarget})    
-        if(${qtarget}_FOUND AND IVW_PACKAGE_PROJECT)
-            if(WIN32)
-                set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
-                install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
-                        DESTINATION bin 
-                        COMPONENT qt_widgets 
-                        CONFIGURATIONS Debug)
-                install(FILES ${QTARGET_DIR}/${qtarget}.dll 
-                        DESTINATION bin 
-                        COMPONENT qt_widgets 
-                        CONFIGURATIONS Release)
-            elseif(APPLE)
-                foreach(plugin ${${qtarget}_PLUGINS})
-                    get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} DIRECTORY)
-                    get_filename_component(_dirname ${_path} NAME)
-                    install(FILES ${_loc} 
-                            DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
-                            COMPONENT qt_widgets)
-                endforeach()
-            else()
-
-
-            endif()
-        endif()
+        ivw_qt_add_dependencies(${qtarget} qt_widgets)
     endforeach()
-
-    if(IVW_PACKAGE_PROJECT)
-        if(WIN32 AND Qt5Core_FOUND)
-            set(QT_BINARY_DIR "${Qt5Core_DIR}/../../../bin")
-            install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icudt5*")
-            install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icuin5*")
-            install(DIRECTORY ${QT_BINARY_DIR} DESTINATION bin/../ COMPONENT qt_widgets FILES_MATCHING PATTERN "icuuc5*")
-            set(QT_PLUGINS_DIR "${Qt5Core_DIR}/../../../plugins")
-            install(FILES ${QT_PLUGINS_DIR}/platforms/qwindows${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin/platforms COMPONENT qt_widgets CONFIGURATIONS Debug)
-            install(FILES ${QT_PLUGINS_DIR}/platforms/qwindows.dll DESTINATION bin/platforms COMPONENT qt_widgets CONFIGURATIONS Release)
-            install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite${CMAKE_DEBUG_POSTFIX}.dll DESTINATION bin/sqldrivers COMPONENT qt_widgets CONFIGURATIONS Debug)
-            install(FILES ${QT_PLUGINS_DIR}/sqldrivers/qsqlite.dll DESTINATION bin/sqldrivers COMPONENT qt_widgets CONFIGURATIONS Release)
-        endif()
-    endif()
-
-    # Hide some options 
-    mark_as_advanced(FORCE QT_QMAKE_EXECUTABLE)
-    mark_as_advanced(FORCE Qt5Multimedia_DIR)
-    mark_as_advanced(FORCE Qt5Network_DIR)
-    mark_as_advanced(FORCE Qt5Script_DIR)
-    mark_as_advanced(FORCE Qt5_DIR)
 
 else()
     ivw_add_dependencies(Qt)
