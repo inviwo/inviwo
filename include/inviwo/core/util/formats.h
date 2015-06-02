@@ -627,6 +627,8 @@ auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type 
             return obj.template dispatch<DataVec4UINT32>(std::forward<Args>(args)...);
         case DataFormatEnums::Vec4UINT64:
             return obj.template dispatch<DataVec4UINT64>(std::forward<Args>(args)...);
+        case DataFormatEnums::NOT_SPECIALIZED:
+        case DataFormatEnums::NUMBER_OF_FORMATS:
         default:
             return nullptr;
     }
