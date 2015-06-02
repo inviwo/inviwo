@@ -101,13 +101,13 @@ void ISORaycaster::initializeResources(){
     
 void ISORaycaster::onVolumeChange(){
     if (volumePort_.hasData()) {
-        int channels = volumePort_.getData()->getDataFormat()->getComponents();
+        std::size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
 
-        if (channels == static_cast<int>(channel_.size()))
+        if (channels == channel_.size())
             return;
 
         channel_.clearOptions();
-        for (int i = 0; i < channels; i++) {
+        for (std::size_t i = 0; i < channels; i++) {
             std::stringstream ss;
             ss << "Channel " << i;
             channel_.addOption(ss.str(), ss.str(), i);

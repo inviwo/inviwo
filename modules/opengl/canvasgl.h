@@ -86,7 +86,7 @@ protected:
     void renderTexture(int);
 
     void drawRect();
-    void checkChannels(int);
+    void checkChannels(std::size_t);
 
     /** 
      * \brief Get depth layer RAM representation. Will return nullptr if depth layer does not exist.

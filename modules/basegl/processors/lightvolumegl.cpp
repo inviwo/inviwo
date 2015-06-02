@@ -435,7 +435,7 @@ void LightVolumeGL::supportColoredLightChanged() {
     }
 
     if (outport_.hasData()) {
-        int components = outport_.getData()->getDataFormat()->getComponents();
+        std::size_t components = outport_.getData()->getDataFormat()->getComponents();
 
         if ((components < 3 && supportColoredLight_.get()) || (components > 1 && !supportColoredLight_.get()))
             internalVolumesInvalid_ = true;

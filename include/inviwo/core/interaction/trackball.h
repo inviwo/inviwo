@@ -96,8 +96,6 @@ public:
 
     vec3 getWorldSpaceTranslationFromNDCSpace(const vec3& fromNormalizedDeviceCoord, const vec3& toNormalizedDeviceCoord);
     vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(const vec2& normalizedScreenCoord) const;
-protected:
-    void setPanSpeedFactor(float psf);
 
 protected:
     enum Direction { UP = 0, LEFT, DOWN, RIGHT };

@@ -934,6 +934,8 @@ namespace half_float
 		/// and may be less efficient than no initialization, it is needed to provide proper value-initialization semantics.
 #if __APPLE__
        HALF_CONSTEXPR  half() = default;  // no initialization
+#elif (_MSC_VER >= 1800) // support for Visual Studio 2013 and newer
+       HALF_CONSTEXPR  half() = default;  // no initialization
 #else
        HALF_CONSTEXPR half() : data_() {}
 #endif

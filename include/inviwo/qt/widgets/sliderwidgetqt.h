@@ -270,7 +270,7 @@ int inviwo::TemplateSliderWidget<T>::transformIncrementToSpinnerDecimals() {
     if (periodPosition == std::string::npos)
         return 0;
     else
-        return str.length() - periodPosition - 1;
+        return static_cast<int>(str.length() - periodPosition) - 1;
 }
 
 template <typename T>

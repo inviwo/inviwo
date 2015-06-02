@@ -72,7 +72,7 @@ class MeshDrawerFactory;
  * @see MeshDrawerFactory
  * @see Module
  */
-class MeshDrawer {
+class IVW_CORE_API MeshDrawer {
     friend struct CanDrawMesh;       // Access to canRender
     friend class MeshDrawerFactory;  // Access to create
 public:

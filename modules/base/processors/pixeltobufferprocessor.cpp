@@ -71,7 +71,7 @@ void PixelToBufferProcessor::inportChanged() {
     }
     auto data = inport_.getData();
     fromPixel_.setMaxValue(ivec2(data->getDimensions())-1);
-    channel_.setMaxValue(data->getDataFormat()->components()-1);
+    channel_.setMaxValue(static_cast<int>(data->getDataFormat()->components())-1);
 }
 
 void PixelToBufferProcessor::process() {

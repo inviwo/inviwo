@@ -257,7 +257,7 @@ void ProcessorNetworkEvaluator::evaluate() {
         for (auto p : processorNetwork_->getProcessors()) {
             try {
                 if (!p->isInitialized()) p->initialize();
-            } catch (...) {
+            } catch (Exception&) {
                 exceptionHandler_(IvwContext);
             }
         }
@@ -279,7 +279,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                     for (auto inport : processor->getInports()) {
                         inport->callOnChangeIfChanged();
                     }
-                } catch (...) {
+                } catch (Exception&) {
                     exceptionHandler_(IvwContext);
                     processor->setValid();
                     continue;
@@ -292,7 +292,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                 try {
                     // do the actual processing
                     processor->process();
-                } catch (...) {
+                } catch (Exception&) {
                     exceptionHandler_(IvwContext);
                 }
                 // set processor as valid
