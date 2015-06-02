@@ -31,7 +31,7 @@
 #define IVW_PROPERTYSETTINGSWIDGETQT_H
 
 // Qt
-#include <QWidget>
+#include <QDialog>
 #include <QLineEdit>
 #include <QLabel>
 #include <QLocale>
@@ -86,15 +86,15 @@ struct SinglePropertySetting {
     }
 };
 
-class IVW_QTWIDGETS_API PropertySettingsWidgetQt : public QWidget, public PropertyWidget {
+class IVW_QTWIDGETS_API PropertySettingsWidgetQt : public QDialog, public PropertyWidget {
     Q_OBJECT
 public:
     PropertySettingsWidgetQt(Property* property, QWidget*);
     virtual ~PropertySettingsWidgetQt();
 
     virtual void updateFromProperty() { reload(); };
-    virtual void showWidget() { QWidget::setVisible(true); }
-    virtual void hideWidget() { QWidget::setVisible(false); }
+    virtual void showWidget() { QDialog::setVisible(true); }
+    virtual void hideWidget() { QDialog::setVisible(false); }
 
     virtual UsageMode getUsageMode() const { return property_->getUsageMode(); };
 
@@ -108,7 +108,7 @@ public slots:
 protected:
     virtual void generateWidget() = 0;
 
-    QGridLayout gridLayout_;
+    QGridLayout *gridLayout_;
     QPushButton btnApply_;
     QPushButton btnOk_;
     QPushButton btnCancel_;
@@ -133,14 +133,14 @@ public:
         connect(&btnOk_, SIGNAL(clicked()), this, SLOT(save()));
         connect(&btnCancel_, SIGNAL(clicked()), this, SLOT(cancel()));
 
-        gridLayout_.setContentsMargins(10, 10, 10, 10);
-        gridLayout_.setSpacing(10);
+        gridLayout_->setContentsMargins(10, 10, 10, 10);
+        gridLayout_->setSpacing(10);
 
-        gridLayout_.addWidget(new QLabel("Component", this), 0, 0);
-        gridLayout_.addWidget(new QLabel("Min", this), 0, 1);
-        gridLayout_.addWidget(new QLabel("Value", this), 0, 2);
-        gridLayout_.addWidget(new QLabel("Max", this), 0, 3);
-        gridLayout_.addWidget(new QLabel("Increment", this), 0, 4);
+        gridLayout_->addWidget(new QLabel("Component", this), 0, 0);
+        gridLayout_->addWidget(new QLabel("Min", this), 0, 1);
+        gridLayout_->addWidget(new QLabel("Value", this), 0, 2);
+        gridLayout_->addWidget(new QLabel("Max", this), 0, 3);
+        gridLayout_->addWidget(new QLabel("Increment", this), 0, 4);
 
         uvec2 components = OrdinalProperty<T>::getDim();
 
@@ -156,21 +156,21 @@ public:
                 std::stringstream ss;
                 ss << desc[i] << (components.y == 1 ? "" : ", " + desc[j]);
                 settings_.push_back(new SinglePropertySetting(this, ss.str()));
-                gridLayout_.addWidget(settings_[count]->label_, count + 1, 0);
-                gridLayout_.addWidget(settings_[count]->min_, count + 1, 1);
-                gridLayout_.addWidget(settings_[count]->val_, count + 1, 2);
-                gridLayout_.addWidget(settings_[count]->max_, count + 1, 3);
-                gridLayout_.addWidget(settings_[count]->inc_, count + 1, 4);
+                gridLayout_->addWidget(settings_[count]->label_, count + 1, 0);
+                gridLayout_->addWidget(settings_[count]->min_, count + 1, 1);
+                gridLayout_->addWidget(settings_[count]->val_, count + 1, 2);
+                gridLayout_->addWidget(settings_[count]->max_, count + 1, 3);
+                gridLayout_->addWidget(settings_[count]->inc_, count + 1, 4);
                 count++;
             }
         }
 
-        gridLayout_.addWidget(&btnApply_, count + 1, 0, 1, 1);
-        gridLayout_.addWidget(&btnOk_, count + 1, 1, 1, 2);
-        gridLayout_.addWidget(&btnCancel_, count + 1, 3, 1, 2);
-        gridLayout_.setColumnStretch(2, 2);
+        gridLayout_->addWidget(&btnApply_, count + 1, 0, 1, 1);
+        gridLayout_->addWidget(&btnOk_, count + 1, 1, 1, 2);
+        gridLayout_->addWidget(&btnCancel_, count + 1, 3, 1, 2);
+        gridLayout_->setColumnStretch(2, 2);
 
-        setLayout(&gridLayout_);
+        setLayout(gridLayout_);
 
         reload();
         setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));

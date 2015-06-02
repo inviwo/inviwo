@@ -49,7 +49,6 @@ void BaseOrdinalPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout(); 
     hLayout->setContentsMargins(0,0,0,0);
     hLayout->setSpacing(7);
-    setLayout(hLayout);
 
     label_ = new EditableLabelQt(this, property_->getDisplayName());
     hLayout->addWidget(label_);
@@ -93,6 +92,7 @@ void BaseOrdinalPropertyWidgetQt::generateWidget() {
             SLOT(setPropertyValue(int)));
 
     this->setEnabled(!property_->getReadOnly());
+    setLayout(hLayout);
 
     setFixedHeight(sizeHint().height());
     sp = sizePolicy();

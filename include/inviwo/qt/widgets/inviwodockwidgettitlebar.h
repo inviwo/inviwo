@@ -58,6 +58,9 @@ public:
 
     virtual void paintEvent(QPaintEvent *) override;
     
+    void setSticky(bool toggle);
+    bool isSticky() const;
+
 public slots:
     void floating(bool floating);
 protected slots:
@@ -67,6 +70,7 @@ protected slots:
 private:
     QDockWidget *parent_;
 
+    QToolButton *stickyBtn_;
     QToolButton *floatBtn_;
     Qt::DockWidgetAreas allowedDockAreas_;
 };
