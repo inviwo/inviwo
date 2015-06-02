@@ -49,14 +49,14 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     QLabel *label = new QLabel(parent->windowTitle());
     label->setStyleSheet("QWidget { padding-left: 5px; background-color: 'transparent'; }");
 
-    QToolButton *stickyBtn = new QToolButton();
+    stickyBtn_ = new QToolButton();
     QIcon icon;
     icon.addPixmap(QPixmap(":/stylesheets/images/dock-unsticky.png"), QIcon::Normal, QIcon::Off);
     icon.addPixmap(QPixmap(":/stylesheets/images/dock-sticky.png"), QIcon::Normal, QIcon::On);
-    stickyBtn->setIcon(icon);
-    stickyBtn->setCheckable(true);
-    stickyBtn->setChecked(true);
-    stickyBtn->setObjectName("dockBtn");
+    stickyBtn_->setIcon(icon);
+    stickyBtn_->setCheckable(true);
+    stickyBtn_->setChecked(true);
+    stickyBtn_->setObjectName("dockBtn");
 
     floatBtn_ = new QToolButton();
     QIcon icon2;
@@ -73,7 +73,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(label, 1);
-    layout->addWidget(stickyBtn);
+    layout->addWidget(stickyBtn_);
     layout->addWidget(floatBtn_);
     layout->addWidget(closeBtn);
     layout->setSpacing(2);
@@ -81,7 +81,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
 
     this->setLayout(layout);
 
-    QObject::connect(stickyBtn, SIGNAL(toggled(bool)), this, SLOT(stickyBtnToggled(bool)));
+    QObject::connect(stickyBtn_, SIGNAL(toggled(bool)), this, SLOT(stickyBtnToggled(bool)));
     QObject::connect(floatBtn_, SIGNAL(clicked()), this, SLOT(floatBtnClicked()));
     QObject::connect(closeBtn, SIGNAL(clicked()), parent_, SLOT(close()));
 }
@@ -113,6 +113,14 @@ void InviwoDockWidgetTitleBar::floatBtnClicked() {
 
 void InviwoDockWidgetTitleBar::floating(bool floating) {
     floatBtn_->setChecked(floating);
+}
+
+void InviwoDockWidgetTitleBar::setSticky(bool toggle) {
+    stickyBtn_->setChecked(toggle);
+}
+
+bool InviwoDockWidgetTitleBar::isSticky() const {
+    return stickyBtn_->isChecked();
 }
 
 } // namespace

@@ -33,16 +33,25 @@
 namespace inviwo {
 
 PropertySettingsWidgetQt::PropertySettingsWidgetQt(Property* property, QWidget* parent)
-    : QWidget(nullptr)
+    : QDialog(parent)
     , PropertyWidget(property)
-    , gridLayout_(this)
+    , gridLayout_(new QGridLayout())
     , btnApply_("Apply", this)
     , btnOk_("Ok", this)
     , btnCancel_("Cancel", this) {
-    this->setWindowFlags(Qt::WindowStaysOnTopHint);
+    //this->setWindowFlags(Qt::WindowStaysOnTopHint);
+    this->setModal(true);
+    // remove help button from title bar
+    Qt::WindowFlags flags = this->windowFlags() ^ Qt::WindowContextHelpButtonHint;
+    // make it a tool window
+    flags |= Qt::Popup;
+    this->setWindowFlags(flags);
 }
 
 PropertySettingsWidgetQt::~PropertySettingsWidgetQt() {
+    if (gridLayout_ && (gridLayout_->parent() == nullptr)) {
+        delete gridLayout_;
+    }
 }
 
 void PropertySettingsWidgetQt::keyPressEvent(QKeyEvent * event) {

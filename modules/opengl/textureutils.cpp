@@ -335,6 +335,27 @@ void multiDrawImagePlaneRect(int instances) {
     disableImagePlaneRect(rectArray);
 }
 
+void bindTexture(Texture* const texture, GLenum texUnit) {
+    glActiveTexture(texUnit);
+    texture->bind();
+    glActiveTexture(GL_TEXTURE0);
+}
+
+
+void bindTexture(Texture* const texture, const TextureUnit& texUnit) {
+    glActiveTexture(texUnit.getEnum());
+    texture->bind();
+    glActiveTexture(GL_TEXTURE0);
+}
+
+void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
+    Texture* const texture, const std::string samplerID) {
+    TextureUnit unit;
+    bindTexture(texture, unit);
+    shader->setUniform(samplerID, unit.getUnitNumber());
+    cont.push_back(std::move(unit));
+}
+
 void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit) {
     const Layer* tfLayer = tfp.get().getData();
     if (tfLayer) {
@@ -344,7 +365,7 @@ void bindTexture(const TransferFunctionProperty& tfp, const TextureUnit& texUnit
 }
 
 void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
-                        const TransferFunctionProperty& tf) {
+    const TransferFunctionProperty& tf) {
     TextureUnit unit;
     bindTexture(tf, unit);
     shader->setUniform(tf.getIdentifier(), unit.getUnitNumber());

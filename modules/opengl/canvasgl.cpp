@@ -216,7 +216,7 @@ void CanvasGL::drawRect() {
     rectArray_->unbind();
 }
 
-void CanvasGL::checkChannels(int channels) {
+void CanvasGL::checkChannels(std::size_t channels) {
     if (!singleChannel_ && channels == 1) {
         shader_->getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
         shader_->getFragmentShaderObject()->build();

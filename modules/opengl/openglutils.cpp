@@ -190,7 +190,7 @@ utilgl::GlBoolState::GlBoolState(GlBoolState&& rhs)
 
 utilgl::GlBoolState::GlBoolState(GLenum target, bool state)
     : target_(target), oldState_{}, state_(state) {
-    oldState_ = glIsEnabled(target_);
+    oldState_ = (glIsEnabled(target_) == GL_TRUE);
     if (oldState_ != state_) {
         if (state)
             glEnable(target_);

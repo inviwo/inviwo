@@ -35,6 +35,7 @@
 
 
 class QKeyEvent;
+class QLayout;
 
 namespace inviwo {
 
@@ -46,6 +47,12 @@ public:
     virtual ~InviwoDockWidget();
     virtual void show();
     virtual void keyPressEvent(QKeyEvent* keyEvent);
+
+    void setSticky(bool sticky);
+    bool isSticky() const;
+
+    void setContents(QWidget *widget);
+    void setContents(QLayout *layout);
 };
 
 } // namespace

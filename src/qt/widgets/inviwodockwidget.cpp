@@ -62,4 +62,37 @@ void InviwoDockWidget::keyPressEvent(QKeyEvent* keyEvent) {
     QDockWidget::keyPressEvent(keyEvent);
 }
 
+void InviwoDockWidget::setSticky(bool sticky) {
+    auto titleBar = dynamic_cast<InviwoDockWidgetTitleBar *>(this->titleBarWidget());
+    if (titleBar) {
+        titleBar->setSticky(sticky);
+    }
+}
+
+bool InviwoDockWidget::isSticky() const {
+    return (this->allowedAreas() != Qt::NoDockWidgetArea);
+}
+
+void InviwoDockWidget::setContents(QWidget *widget) {
+    QWidget *oldWidget = this->widget();
+    if (oldWidget) {
+        this->setWidget(nullptr);
+        delete oldWidget;
+    }
+
+    this->setWidget(widget);
+}
+
+void InviwoDockWidget::setContents(QLayout *layout) {
+    QWidget *oldWidget = this->widget();
+    if (oldWidget) {
+        this->setWidget(nullptr);
+        delete oldWidget;
+    }
+
+    QWidget *centralWidget = new QWidget();
+    centralWidget->setLayout(layout);
+    this->setWidget(centralWidget);
+}
+
 } // namespace
