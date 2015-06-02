@@ -243,6 +243,15 @@ if(${IVW_DOXYGEN_PROJECT})
 		return()
 	endif()
 
+	if(${DOXYGEN_DOT_FOUND})
+		get_filename_component(DOXYGEN_DOT_PATH ${DOXYGEN_DOT_EXECUTABLE} PATH)
+	endif()
+
+	set(IVW_DOXY_DIR ${IVW_ROOT_DIR}/tools/doxygen)
+	set(IVW_DOXY_OUT ${CMAKE_CURRENT_BINARY_DIR})
+	set(IVW_DOXY_TAG_FILES "")
+	set(IVW_DOXY_DEPENDS "")
+
 	if(PYTHONINTERP_FOUND)
 		set(FILER_PATTERNS_LIST
 			"\"*.frag=${PYTHON_EXECUTABLE} ${IVW_DOXY_DIR}/filter/glslfilter.py\""
@@ -253,15 +262,6 @@ if(${IVW_DOXYGEN_PROJECT})
         string(REGEX REPLACE ";" " \\\\\n                         " FILER_PATTERNS "${FILER_PATTERNS_LIST}")
 		set(FILER_PATTERNS ${FILER_PATTERNS})
 	endif()
-
-	if(${DOXYGEN_DOT_FOUND})
-		get_filename_component(DOXYGEN_DOT_PATH ${DOXYGEN_DOT_EXECUTABLE} PATH)
-	endif()
-
-	set(IVW_DOXY_DIR ${IVW_ROOT_DIR}/tools/doxygen)
-	set(IVW_DOXY_OUT ${CMAKE_CURRENT_BINARY_DIR})
-	set(IVW_DOXY_TAG_FILES "")
-	set(IVW_DOXY_DEPENDS "")
 
 	set(IVW_DOXY_EXTRA_FILES 
 		"${IVW_DOXY_DIR}/style/img_downArrow.png"
