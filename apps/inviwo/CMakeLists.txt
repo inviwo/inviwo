@@ -111,8 +111,8 @@ if(IVW_PACKAGE_PROJECT)
         install(TARGETS inviwo 
             RUNTIME DESTINATION bin 
             BUNDLE DESTINATION . 
-            ARCHIVE DESTINATION lib 
-            LIBRARY DESTINATION lib 
+            ARCHIVE DESTINATION Inviwo.app/Contents/MacOS/ 
+            LIBRARY DESTINATION Inviwo.app/Contents/MacOS/ 
             COMPONENT qt_app
         )
 
@@ -121,6 +121,7 @@ if(IVW_PACKAGE_PROJECT)
         set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/MacOS/Inviwo")
         set(DIRS "${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")
         
+        # get link errors with out this line.
         install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
         
         install(

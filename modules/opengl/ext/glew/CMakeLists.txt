@@ -63,6 +63,14 @@ if(WIN32)
    install(TARGETS GLEW
             RUNTIME DESTINATION bin
             COMPONENT modules)
+else(APPLE)
+    install(TARGETS GLEW
+            RUNTIME DESTINATION bin
+            BUNDLE DESTINATION .
+            ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
+            LIBRARY DESTINATION Inviwo.app/Contents/MacOS
+            COMPONENT modules)
+
 else()
     install(TARGETS GLEW
             RUNTIME DESTINATION bin
