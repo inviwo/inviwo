@@ -744,7 +744,7 @@ double inviwo::Trackball<T>::getBoundedZoom(const dvec3& lookFrom, const dvec3& 
     auto distanceToMinBounds = glm::abs(dvec3(getLookFromMinValue()) - dvec3(getLookToMinValue()));
     auto distanceToMaxBounds = glm::abs(dvec3(getLookFromMaxValue()) - dvec3(getLookToMaxValue()));
     auto minDistance = glm::min(distanceToMinBounds, distanceToMaxBounds);
-    double maxZoom;
+    double maxZoomOut;
     auto directionLength = glm::length(lookFrom - zoomTo);
     // Use a heuristic if the lookFrom and lookTo bounds are equal:
     // One cannot zoom out more than half of the smallest bound in xyz.
@@ -758,14 +758,14 @@ double inviwo::Trackball<T>::getBoundedZoom(const dvec3& lookFrom, const dvec3& 
         // within the bounds but is best for backwards compatibility 
         // (distance between lookFrom and lookTo will be too small otherwise)
         auto lookToBounds = 0.5*(dvec3(getLookToMaxValue()) - dvec3(getLookToMinValue()));
-        maxZoom = directionLength - glm::min(glm::min(lookToBounds.y, lookToBounds.z), lookToBounds.x);
+        maxZoomOut = directionLength - glm::min(glm::min(lookToBounds.y, lookToBounds.z), lookToBounds.x);
     } else {
-        maxZoom = directionLength - glm::min(glm::min(minDistance.y, minDistance.z), minDistance.x);
+        maxZoomOut = directionLength - glm::min(glm::min(minDistance.y, minDistance.z), minDistance.x);
     }
 
     // Clamp so that the user does not zoom outside of the bounds and not
-    // further than the lookTo point.
-    zoom = glm::clamp(zoom, maxZoom, directionLength);
+    // further than, or onto, the lookTo point.
+    zoom = glm::clamp(zoom, maxZoomOut, directionLength - camera_->getNearPlaneDist());
     return zoom;
 
 
