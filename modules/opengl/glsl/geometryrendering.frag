@@ -45,22 +45,18 @@ void main() {
                                    normalize(normal_), normalize(toCameraDir_));
 
 
-	PickingData = vec4(0,0,0,0); 
-
+PickingData = vec4(0,0,0,0); 
 
 #ifdef COLOR_LAYER
     FragData0 = fragColor;
 #endif
 #ifdef TEXCOORD_LAYER
     tex_coord_out = vec4(texCoord_,1.0f);
-	//tex_coord_out = vec4(1,0,0,1);
 #endif
 #ifdef NORMALS_LAYER
     normals_out = vec4((normalize(normal_)+1.0)*0.5,1.0f);
-	//normals_out = vec4(0,1,0,1);
 #endif
 #ifdef VIEW_NORMALS_LAYER
     view_normals_out = vec4((normalize(viewNormal_)+1.0)*0.5,1.0f);
-	//view_normals_out = vec4(0,0,1,1);
 #endif
 }
