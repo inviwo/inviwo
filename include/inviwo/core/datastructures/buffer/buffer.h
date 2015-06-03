@@ -106,6 +106,7 @@ typedef BufferPrecision<vec3, TEXCOORD_ATTRIB> TexCoord3dBuffer;
 typedef BufferPrecision<float, CURVATURE_ATTRIB> CurvatureBuffer;
 typedef BufferPrecision<std::uint32_t, INDEX_ATTRIB> IndexBuffer;
 
+typedef BufferPrecision<float, POSITION_ATTRIB> BufferFloat32;
 }  // namespace
 
 #endif  // IVW_BUFFER_H

@@ -30,6 +30,7 @@
 #ifndef IVW_MESHGLDRAWER_H
 #define IVW_MESHGLDRAWER_H
 
+#include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/rendering/meshdrawer.h>

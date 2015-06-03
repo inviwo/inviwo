@@ -53,7 +53,9 @@ CanvasGL::CanvasGL(uvec2 dimensions)
     , layerType_(COLOR_LAYER)
     , shader_(nullptr)
     , noiseShader_(nullptr)
-    , singleChannel_(false) {}
+    , singleChannel_(false)
+    , previousRenderedLayerIdx_(0) 
+{}
 
 CanvasGL::~CanvasGL() {
     deinitialize();
@@ -105,18 +107,18 @@ void CanvasGL::defaultGLState(){
 
 void CanvasGL::activate() {}
 
-void CanvasGL::render(const Image* image, LayerType layerType) {
+void CanvasGL::render(const Image* image, LayerType layerType, size_t idx) {
     image_ = image;
     layerType_ = layerType;
     pickingContainer_->setPickingSource(image_);    
     if (image_) {
         imageGL_ = image_->getRepresentation<ImageGL>();
-        if (imageGL_ && imageGL_->getLayerGL(layerType_)) {
-            checkChannels(imageGL_->getLayerGL(layerType_)->getDataFormat()->getComponents());
+        if (imageGL_ && imageGL_->getLayerGL(layerType_, idx)) {
+            checkChannels(imageGL_->getLayerGL(layerType_, idx)->getDataFormat()->getComponents());
         } else {
             checkChannels(image_->getDataFormat()->getComponents());
         }
-        renderLayer();
+        renderLayer(idx);
     } else {
         imageGL_ = nullptr;
         renderNoise();
@@ -132,7 +134,7 @@ void CanvasGL::resize(uvec2 size) {
 void CanvasGL::glSwapBuffers() {}
 
 void CanvasGL::update() {
-    renderLayer();
+    renderLayer(previousRenderedLayerIdx_);
 }
 
 void CanvasGL::attachImagePlanRect(BufferObjectArray* arrayObject) {
@@ -156,9 +158,10 @@ void CanvasGL::multiDrawImagePlaneRect(int instances) {
     glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, instances);
 }
 
-void CanvasGL::renderLayer() {
+void CanvasGL::renderLayer(size_t idx) {
+    previousRenderedLayerIdx_ = idx;
     if (imageGL_) {
-        const LayerGL* layerGL = imageGL_->getLayerGL(layerType_);
+        const LayerGL* layerGL = imageGL_->getLayerGL(layerType_,idx);
         if (layerGL) {
             TextureUnit textureUnit;
             layerGL->bindTexture(textureUnit.getEnum());

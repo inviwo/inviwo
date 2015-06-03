@@ -35,6 +35,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <type_traits>
+#include <iterator>
 
 namespace inviwo {
 

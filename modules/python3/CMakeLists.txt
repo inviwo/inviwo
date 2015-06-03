@@ -9,11 +9,10 @@ if (PYTHONLIBS_FOUND)
     ivw_add_definition(IVW_PYTHON_AVAILABLE)
 endif()
 
-ivw_include_directories(${PYTHON_INCLUDE_DIRS})
-get_filename_component(PYTHON_LIBRARY_DIR ${PYTHON_LIBRARY} PATH)
+ivw_include_directories(${PYTHON_INCLUDE_DIR})
+get_filename_component(PYTHON_LIBRARY_DIR "${PYTHON_LIBRARY}" PATH)
 ivw_link_directories(${PYTHON_LIBRARY_DIR})
-add_dependency_libs_to_module(${PYTHON_LIBRARY})
-
+add_dependency_libs_to_module("${PYTHON_LIBRARIES}")
 
 #--------------------------------------------------------------------
 # Add header files
@@ -74,7 +73,7 @@ ivw_group("Script Files" ${SCRIPT_FILES})
 
 #--------------------------------------------------------------------
 # Create module
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${SCRIPT_FILES})
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SCRIPT_FILES})
 
 
 #--------------------------------------------------------------------

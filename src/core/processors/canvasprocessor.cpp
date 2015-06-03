@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -53,6 +53,7 @@ CanvasProcessor::CanvasProcessor()
     , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, VALID)
     , aspectRatioScaling_("aspectRatioScaling", "Image Scale", 1.f, 0.1f, 4.f, 0.01f, VALID)
     , visibleLayer_("visibleLayer", "Visible Layer")
+    , colorLayer_("colorLayer_", "Color Layer ID", 0, 0, 0)
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
     , saveLayerButton_("saveLayer", "Save Image Layer", VALID)
     , inputSize_("inputSize", "Input Dimension Parameters")
@@ -86,19 +87,31 @@ CanvasProcessor::CanvasProcessor()
     visibleLayer_.addOption("picking", "Picking layer", PICKING_LAYER);
     visibleLayer_.set(COLOR_LAYER);
     addProperty(visibleLayer_);
+    addProperty(colorLayer_);
     addProperty(saveLayerDirectory_);
 
     saveLayerButton_.onChange(this, &CanvasProcessor::saveImageLayer);
     addProperty(saveLayerButton_);
 
+    colorLayer_.setSerializationMode(ALL);
+
+    visibleLayer_.onChange([&](){
+        colorLayer_.setVisible(visibleLayer_.get() == COLOR_LAYER);
+    });
+
+    inport_.onChange([&](){
+        colorLayer_.setMaxValue(inport_.getData()->getNumberOfColorLayers() - 1);
+    });
+
+
     setAllPropertiesCurrentStateAsDefault();
 }
 
-CanvasProcessor::~CanvasProcessor() {
-}
+CanvasProcessor::~CanvasProcessor() {}
 
-void CanvasProcessor::initialize() { 
-    Processor::initialize(); 
+
+void CanvasProcessor::initialize() {
+    Processor::initialize();
     if (processorWidget_) {
         canvasWidget_ = dynamic_cast<CanvasProcessorWidget*>(processorWidget_);
         canvasWidget_->getCanvas()->setEventPropagator(this);
@@ -145,7 +158,6 @@ void CanvasProcessor::sizeChanged() {
     aspectRatioScaling_.setVisible(enableCustomInputDimensions_ && keepAspectRatio_);
 
     if (keepAspectRatio_) customInputDimensions_ = calcSize();
-    
     ResizeEvent resizeEvent(uvec2(0));
     if (enableCustomInputDimensions_) {
         resizeEvent.setSize(static_cast<uvec2>(customInputDimensions_.get()));
@@ -190,17 +202,23 @@ void CanvasProcessor::saveImageLayer() {
 void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
     const Image* image = inport_.getData();
     if (image) {
-        const Layer* layer = image->getLayer(static_cast<LayerType>(visibleLayer_.get()));
-        if (layer){
+        const Layer* layer = nullptr;
+        if (visibleLayer_.get() == COLOR_LAYER){
+            layer = image->getColorLayer(colorLayer_.get());
+        }
+        else{
+            layer = image->getLayer(static_cast<LayerType>(visibleLayer_.get()));
+        }
+        if (layer) {
             std::string fileExtension = filesystem::getFileExtension(snapshotPath);
             DataWriterType<Layer>* writer = nullptr;
             bool deleteWriter = true;
-            if(Canvas::generalLayerWriter_ && fileExtension == "png"){
+            if (Canvas::generalLayerWriter_ && fileExtension == "png") {
                 writer = Canvas::generalLayerWriter_;
                 deleteWriter = false;
-            }
-            else{
-                writer = DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(fileExtension);
+            } else {
+                writer =
+                    DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(fileExtension);
             }
 
             if (writer) {
@@ -208,52 +226,55 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
                     writer->setOverwrite(true);
                     writer->writeData(layer, snapshotPath);
                     LogInfo("Canvas layer exported to disk: " << snapshotPath);
-                    if(deleteWriter)
-                        delete writer;
-                } catch (DataWriterException const& e) {
-                    LogProcessorError(e.getMessage());
+                    if (deleteWriter) delete writer;
+                }
+                catch (DataWriterException const& e) {
+                    LogError(e.getMessage());
                 }
             } else {
-                LogProcessorError("Error: Cound not find a writer for the specified extension and data type");
+                LogError(
+                    "Error: Cound not find a writer for the specified extension and data type");
             }
-        }
-        else {
-            LogProcessorError("Error: Cound not find color layer to write out");
+        } else {
+            LogError("Error: Cound not find color layer to write out");
         }
     } else if (snapshotPath.empty()) {
-        LogProcessorError("Error: Please specify a file to write to");
+        LogWarn("Error: Please specify a file to write to");
     } else if (!image) {
-        LogProcessorError("Error: Please connect an image to export");
+        LogWarn("Error: Please connect an image to export");
     }
 }
 
-std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType layerType, const std::string& type, size_t idx) {
+std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType layerType,
+                                                                   const std::string& type,
+                                                                   size_t idx) {
     if (!inport_.hasData()) return nullptr;
     const Image* image = inport_.getData();
     const Layer* layer = image->getLayer(layerType, idx);
 
-    if (layer){
-        DataWriterType<Layer>* writer =
-            DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(type);
+    if (layer) {
+        std::unique_ptr<DataWriterType<Layer>> writer{
+            DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(type)};
 
         if (writer) {
             try {
                 return writer->writeDataToBuffer(layer, type);
-            } catch (DataWriterException const& e) {
-                LogProcessorError(e.getMessage());
+            }
+            catch (DataWriterException const& e) {
+                LogError(e.getMessage());
             }
         } else {
-            LogProcessorError("Error: Cound not find a writer for the specified data type");
+            LogError("Error: Cound not find a writer for the specified data type");
         }
-    }
-    else {
-        LogProcessorError("Error: Cound not find layer to write");
+    } else {
+        LogError("Error: Cound not find layer to write");
     }
 
     return nullptr;
 }
 
-std::vector<unsigned char>* CanvasProcessor::getColorLayerAsCodedBuffer(const std::string& type, size_t idx) {
+std::vector<unsigned char>* CanvasProcessor::getColorLayerAsCodedBuffer(const std::string& type,
+                                                                        size_t idx) {
     return getLayerAsCodedBuffer(LayerType::COLOR_LAYER, type, idx);
 }
 
@@ -266,18 +287,27 @@ std::vector<unsigned char>* CanvasProcessor::getPickingLayerAsCodedBuffer(const 
 }
 
 std::vector<unsigned char>* CanvasProcessor::getVisibleLayerAsCodedBuffer(const std::string& type) {
+    if (visibleLayer_.get() == COLOR_LAYER){
+        getColorLayerAsCodedBuffer(type, colorLayer_.get());
+    }
     return getLayerAsCodedBuffer(static_cast<LayerType>(visibleLayer_.get()), type);
 }
 
 void CanvasProcessor::process() {
-    if(canvasWidget_ && canvasWidget_->getCanvas()) {
+    if (canvasWidget_ && canvasWidget_->getCanvas()) {
         canvasWidget_->getCanvas()->activate();
-        canvasWidget_->getCanvas()->render(inport_.getData(), static_cast<LayerType>(visibleLayer_.get()));    
+        LayerType layerType = static_cast<LayerType>(visibleLayer_.get());
+        if (visibleLayer_.get() == COLOR_LAYER){
+            canvasWidget_->getCanvas()->render(inport_.getData(), COLOR_LAYER, colorLayer_.get());
+        }
+        else{
+            canvasWidget_->getCanvas()->render(inport_.getData(), layerType, 0);
+        }//*/
     }
 }
 
 void CanvasProcessor::doIfNotReady() {
-    if(canvasWidget_ && canvasWidget_->getCanvas()) {
+    if (canvasWidget_ && canvasWidget_->getCanvas()) {
         canvasWidget_->getCanvas()->activate();
         canvasWidget_->getCanvas()->render(nullptr, static_cast<LayerType>(visibleLayer_.get()));
     }

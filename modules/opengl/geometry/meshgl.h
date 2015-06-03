@@ -30,6 +30,7 @@
 #ifndef IVW_MESHGL_H
 #define IVW_MESHGL_H
 
+#include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshrepresentation.h>
 

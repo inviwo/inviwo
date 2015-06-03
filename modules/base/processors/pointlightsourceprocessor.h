@@ -98,6 +98,12 @@ public:
     void setLookFrom(vec3 lookFrom) { lightPosition_->set(lookFrom); }
     void setLookUp(vec3 lookUp) { lookUp_ = lookUp; }
 
+    const vec3 getLookFromMinValue() const { return lightPosition_->getMinValue(); }
+    const vec3 getLookFromMaxValue() const { return lightPosition_->getMaxValue(); }
+
+    const vec3 getLookToMinValue() const { return vec3(-std::numeric_limits < float >::max()); }
+    const vec3 getLookToMaxValue() const { return vec3(std::numeric_limits < float >::max()); }
+
     void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) { lightPosition_->set(lookFrom); lookTo_ = lookTo; lookUp = lookUp; }
     void serialize(IvwSerializer& s) const;
     void deserialize(IvwDeserializer& d);

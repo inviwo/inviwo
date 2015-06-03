@@ -54,7 +54,7 @@ public:
     virtual void activate();
     void defaultGLState();
 
-    virtual void render(const Image* im, LayerType layerType = COLOR_LAYER);
+    virtual void render(const Image* im, LayerType layerType = COLOR_LAYER , size_t idx = 0);
     virtual void resize(uvec2 size);
     virtual void glSwapBuffers();
     virtual void update();
@@ -81,7 +81,7 @@ public:
 protected:
     virtual void initializeSquare();
 
-    void renderLayer();
+    void renderLayer(size_t idx = 0);
     void renderNoise();
     void renderTexture(int);
 
@@ -120,6 +120,7 @@ private:
     Shader* shader_;
     Shader* noiseShader_;
     int singleChannel_;
+    size_t previousRenderedLayerIdx_;
 
 };
 

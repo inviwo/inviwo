@@ -43,6 +43,10 @@ void main() {
     vec3 toCameraDir_ = camera_.position - worldPosition_.xyz;
     fragColor.rgb = APPLY_LIGHTING(light_, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
                                    normalize(normal_), normalize(toCameraDir_));
+
+
+PickingData = vec4(0,0,0,0); 
+
 #ifdef COLOR_LAYER
     FragData0 = fragColor;
 #endif

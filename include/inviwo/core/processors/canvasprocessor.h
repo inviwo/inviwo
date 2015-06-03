@@ -89,6 +89,7 @@ protected:
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
     OptionPropertyInt visibleLayer_;
+    IntProperty colorLayer_;
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;
     CompositeProperty inputSize_;
