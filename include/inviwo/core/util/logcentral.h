@@ -30,8 +30,6 @@
 #ifndef IVW_LOGGER_H
 #define IVW_LOGGER_H
 
-#pragma warning(disable : 4231)
-
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/exception.h>
