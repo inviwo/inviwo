@@ -121,10 +121,19 @@ if(IVW_PACKAGE_PROJECT)
         set(APPS "\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/MacOS/Inviwo")
         set(DIRS "${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/")
         
+        install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
+        
         install(
             DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib/
             DESTINATION ${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}
             COMPONENT qt_app
+        )
+        install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
+                      include(BundleUtilities)
+                      file(GLOB_RECURSE LIBS1 \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}\")
+                      file(GLOB_RECURSE LIBS2 \"\${CMAKE_INSTALL_PREFIX}/Inviwo.app/Contents/plugins/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+                      fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
+                COMPONENT qt_app
         )
         install(
             DIRECTORY ${CMAKE_INSTALL_PREFIX}/modules/
@@ -137,17 +146,7 @@ if(IVW_PACKAGE_PROJECT)
             COMPONENT qt_app
         )
 
-        file(GLOB_RECURSE temp "/Users/petst/Work/Projects/Inviwo-Developent/Private/install/Inviwo.app/Contents/MacOS/*${CMAKE_SHARED_LIBRARY_SUFFIX}")
-        ivw_message("FILES: ${temp}")
-
-        install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
-                      include(BundleUtilities)
-                      file(GLOB_RECURSE LIBS \${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}/*${CMAKE_SHARED_LIBRARY_SUFFIX})
-                      message(\"LIBS: \${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir} -> \${LIBS}\")
-                      fixup_bundle(\"${APPS}\" \"\${LIBS}\" \"${DIRS}\")"
-                COMPONENT qt_app
-        )
-        #set(CPACK_BINARY_DRAGNDROP ON)
+        set(CPACK_BINARY_DRAGNDROP ON)
 
     else()
         install(TARGETS inviwo

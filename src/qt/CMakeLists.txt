@@ -67,11 +67,11 @@ macro(ivw_qt_add_dependencies qtarget ivw_comp)
                 get_filename_component(_path ${_loc} DIRECTORY)
                 get_filename_component(_dirname ${_path} NAME)
                 install(FILES ${_loc} 
-                        DESTINATION Inviwo.app/Contents/MacOS/${_dirname} 
+                        DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
                         COMPONENT ${ivw_comp})
             endforeach()
         else()
-            # unix version here
+
 
         endif()
     endif()
