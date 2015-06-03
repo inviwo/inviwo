@@ -139,7 +139,9 @@ if(IVW_PACKAGE_PROJECT)
 	set(CPACK_COMPONENT_SCRIPTS_GROUP "Examples")
 
 	set(CPACK_COMPONENTS_ALL ${IVW_PACKAGES})
-	set(CPACK_PACKAGE_EXECUTABLES ${IVW_EXECUTABLES})
+
+	#List of pairs of executables and labels. Used by the NSIS generator to create Start Menu shortcuts. 
+	set(CPACK_PACKAGE_EXECUTABLES ${IVW_EXECUTABLES}) 
 
 	option(IVW_PACKAGE_INSTALLER "Use NSIS to create installer" OFF)
 
@@ -176,15 +178,14 @@ if(IVW_PACKAGE_PROJECT)
 		endif()
 		set(CPACK_NSIS_INSTALLED_ICON_NAME "bin/inviwo.exe")
 
-	elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	elseif(APPLE)
 		if(IVW_PACKAGE_INSTALLER)
-			ivw_message("${CMAKE_BINARY_DIR}/packaging/macosx/Info.plist")
-
+			set(CPACK_MONOLITHIC_INSTALL 1) #Can't get components to work with DragNDrop
 			#http://www.cmake.org/cmake/help/v3.2/module/CPackBundle.html
-			set(CPACK_GENERATOR "Bundle;DragNDrop")
+			set(CPACK_GENERATOR "DragNDrop")
 			set(CPACK_BUNDLE_NAME "Inviwo")
 			set(CPACK_BUNDLE_ICON "${IVW_ROOT_DIR}/Resources/icons/inviwo_light.icns")
-			#set(CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/packaging/macosx/Info.plist")
+			set(CPACK_BUNDLE_PLIST "${IVW_ROOT_DIR}/Resources/Info.plist")
 			set(CPACK_OSX_PACKAGE_VERSION 10.10)
 		else()
 			set(CPACK_GENERATOR "TGZ")
