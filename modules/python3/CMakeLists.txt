@@ -9,12 +9,10 @@ if (PYTHONLIBS_FOUND)
     ivw_add_definition(IVW_PYTHON_AVAILABLE)
 endif()
 
-ivw_include_directories(${PYTHON_INCLUDE_DIRS})
-get_filename_component(PYTHON_LIBRARY_DIR "${PYTHON_LIBRARY_RELEASE}" PATH)
+ivw_include_directories(${PYTHON_INCLUDE_DIR})
+get_filename_component(PYTHON_LIBRARY_DIR "${PYTHON_LIBRARY}" PATH)
 ivw_link_directories(${PYTHON_LIBRARY_DIR})
-add_dependency_libs_to_module("${PYTHON_LIBRARY_DEBUG}")
-add_dependency_libs_to_module("${PYTHON_LIBRARY_RELEASE}")
-
+add_dependency_libs_to_module("${PYTHON_LIBRARIES}")
 
 #--------------------------------------------------------------------
 # Add header files
