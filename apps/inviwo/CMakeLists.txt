@@ -124,11 +124,11 @@ if(IVW_PACKAGE_PROJECT)
         # get link errors with out this line.
         install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
         
-        install(
-            DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib/
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}
-            COMPONENT qt_app
-        )
+        #install(
+        #    DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib/
+        #    DESTINATION ${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}
+        #    COMPONENT qt_app
+        #)
         install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
                       include(BundleUtilities)
                       file(GLOB_RECURSE LIBS1 \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}\")
@@ -136,11 +136,11 @@ if(IVW_PACKAGE_PROJECT)
                       fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
                 COMPONENT qt_app
         )
-        install(
-            DIRECTORY ${CMAKE_INSTALL_PREFIX}/modules/
-            DESTINATION Inviwo.app/Contents/Resources/modules
-            COMPONENT qt_app
-        )
+        #install(
+        #    DIRECTORY ${CMAKE_INSTALL_PREFIX}/modules/
+        #    DESTINATION Inviwo.app/Contents/Resources/modules
+        #    COMPONENT qt_app
+        #)
         install(
             DIRECTORY ${IVW_ROOT_DIR}/data/ 
             DESTINATION Inviwo.app/Contents/Resources/data

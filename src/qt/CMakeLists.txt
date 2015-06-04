@@ -49,7 +49,7 @@ endif()
 
 
 macro(ivw_qt_add_dependencies qtarget ivw_comp)
-    ivw_add_dependencies(${qtarget})    
+    find_package(${qtarget} QUIET REQUIRED)
     if(${qtarget}_FOUND AND IVW_PACKAGE_PROJECT)
         if(WIN32)
             set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")

@@ -95,6 +95,32 @@ std::string getParentFolderPath(const std::string& basePath, const std::string& 
 std::string findBasePath() {
     // Search for directory containing data folder to find application basepath.
     // Working directory will be used if data folder is not found in parent directories.
+    
+    #if defined(__APPLE__) 
+    // We might be in a bundle
+    // the executable will be in
+    //    Inviwo.app/Contents/MacOS/Inviwo
+    // and the our base should be
+    //    Inviwo.app/Contents/Resources
+    
+    CFURLRef appUrlRef = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("data"), NULL, NULL);
+    if(appUrlRef) {
+        CFStringRef filePathRef = CFURLCopyPath(appUrlRef);
+        const char* filePath = CFStringGetCStringPtr(filePathRef, kCFStringEncodingUTF8);
+        std::string macPath(filePath);
+        // Release references
+        CFRelease(filePathRef);
+        CFRelease(appUrlRef);
+
+        if (directoryExists(macPath)) {
+            // remove "data"
+            auto path = splitString(macPath, '/');
+            path.pop_back();
+            return joinString(path, "/");
+        }
+    }
+    #endif
+    
     static const std::string lookForWorkspaces = "/data/workspaces";
     std::string basePath =
         inviwo::filesystem::getParentFolderPath(inviwo::filesystem::getWorkingDirectory(), lookForWorkspaces);
@@ -105,7 +131,6 @@ std::string findBasePath() {
         && (directoryExists(IVW_TRUNK + lookForWorkspaces) && directoryExists(IVW_TRUNK + lookForModules))){
             basePath = IVW_TRUNK;
     }
-
     return basePath;
 }
 
