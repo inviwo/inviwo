@@ -148,7 +148,7 @@ if(DESIRED_QT_VERSION MATCHES 5)
 
     foreach(qtarget ${IVW_WIDGETS_QT_DEPENDS})
         ivw_add_dependencies(${qtarget})  
-        ivw_qt_add_dependencies(${qtarget} qt_widgets)
+        ivw_qt_add_to_install(${qtarget} qt_widgets)
     endforeach()
 
 else()

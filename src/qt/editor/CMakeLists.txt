@@ -91,11 +91,11 @@ if(DESIRED_QT_VERSION MATCHES 5)
 
     foreach(qtarget ${IVW_EDITOR_QT_DEPENDS})
         ivw_add_dependencies(${qtarget})  
-        ivw_qt_add_dependencies(${qtarget} qt_editor)
+        ivw_qt_add_to_install(${qtarget} qt_editor)
     endforeach()
 
     foreach(qtarget Qt5Sql Qt5Network)
-        ivw_qt_add_dependencies(${qtarget} qt_editor)
+        ivw_qt_add_to_install(${qtarget} qt_editor)
     endforeach()
 
     ivw_add_dependencies(InviwoQtWidgets )

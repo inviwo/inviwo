@@ -1121,31 +1121,30 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Adds special qt dependency and includes package variables to the project
-macro(ivw_qt_add_dependencies qtarget ivw_comp)
-    find_package(${qtarget} QUIET REQUIRED)
-    if(${qtarget}_FOUND AND IVW_PACKAGE_PROJECT)
-        if(WIN32)
-            set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
-            install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
-                    DESTINATION bin 
-                    COMPONENT ${ivw_comp} 
-                    CONFIGURATIONS Debug)
-            install(FILES ${QTARGET_DIR}/${qtarget}.dll 
-                    DESTINATION bin 
-                    COMPONENT ${ivw_comp} 
-                    CONFIGURATIONS Release)
-        elseif(APPLE)
-            foreach(plugin ${${qtarget}_PLUGINS})
-                get_target_property(_loc ${plugin} LOCATION)
-                get_filename_component(_path ${_loc} DIRECTORY)
-                get_filename_component(_dirname ${_path} NAME)
-                install(FILES ${_loc} 
-                        DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
-                        COMPONENT ${ivw_comp})
-            endforeach()
-        else()
-
-
+macro(ivw_qt_add_to_install qtarget ivw_comp)
+    if(IVW_PACKAGE_PROJECT)
+        find_package(${qtarget} QUIET REQUIRED)
+        if(${qtarget}_FOUND)
+            if(WIN32)
+                set(QTARGET_DIR "${${qtarget}_DIR}/../../../bin")
+                install(FILES ${QTARGET_DIR}/${qtarget}${CMAKE_DEBUG_POSTFIX}.dll 
+                        DESTINATION bin 
+                        COMPONENT ${ivw_comp} 
+                        CONFIGURATIONS Debug)
+                install(FILES ${QTARGET_DIR}/${qtarget}.dll 
+                        DESTINATION bin 
+                        COMPONENT ${ivw_comp} 
+                        CONFIGURATIONS Release)
+            elseif(APPLE)
+                foreach(plugin ${${qtarget}_PLUGINS})
+                    get_target_property(_loc ${plugin} LOCATION)
+                    get_filename_component(_path ${_loc} DIRECTORY)
+                    get_filename_component(_dirname ${_path} NAME)
+                    install(FILES ${_loc} 
+                            DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
+                            COMPONENT ${ivw_comp})
+                endforeach()
+            endif()
         endif()
     endif()
 endmacro()
