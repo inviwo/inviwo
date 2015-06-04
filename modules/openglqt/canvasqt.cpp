@@ -302,8 +302,8 @@ void CanvasQt::mousePressEvent(QMouseEvent* e) {
 #if !defined(QT_NO_GESTURES) && defined(USING_QT4)
     if (gestureMode_) return;
 #endif
-    uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
-    uvec2 screenPosInvY(screenPos.x, static_cast<unsigned int>(static_cast<int>(getScreenDimensions().y) - 1 - e->pos().y()));
+    ivec2 screenPos(e->pos().x(), e->pos().y());
+    ivec2 screenPosInvY(screenPos.x, static_cast<int>(getScreenDimensions().y) - 1 - screenPos.y);
     MouseEvent mouseEvent(screenPos,
                            EventConverterQt::getMouseButton(e), MouseEvent::MOUSE_STATE_PRESS,
                            EventConverterQt::getModifier(e), getScreenDimensions(), 
@@ -336,8 +336,8 @@ void CanvasQt::mouseMoveEvent(QMouseEvent* e) {
 
 
     if (e->buttons() == Qt::LeftButton || e->buttons() == Qt::RightButton || e->buttons() == Qt::MiddleButton) {
-        uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
-        uvec2 screenPosInvY(screenPos.x, static_cast<unsigned int>(static_cast<int>(getScreenDimensions().y) - 1 - e->pos().y()));
+        ivec2 screenPos(e->pos().x(), e->pos().y());
+        ivec2 screenPosInvY(screenPos.x, static_cast<int>(getScreenDimensions().y) - 1 - screenPos.y);
         MouseEvent mouseEvent(screenPos,
                               EventConverterQt::getMouseButton(e), MouseEvent::MOUSE_STATE_MOVE,
                               EventConverterQt::getModifier(e), getScreenDimensions(),
@@ -369,8 +369,8 @@ void CanvasQt::wheelEvent(QWheelEvent* e){
     } else if (!numDegrees.isNull()) {
         numSteps = (orientation==MouseEvent::MOUSE_WHEEL_HORIZONTAL? numDegrees.x() : numDegrees.y());
     }
-    uvec2 screenPos(static_cast<unsigned int>(e->pos().x()), static_cast<unsigned int>(e->pos().y()));
-    uvec2 screenPosInvY(screenPos.x, static_cast<unsigned int>( static_cast<int>(getScreenDimensions().y) - 1 - e->pos().y() ));
+    ivec2 screenPos(e->pos().x(), e->pos().y());
+    ivec2 screenPosInvY(screenPos.x, static_cast<int>(getScreenDimensions().y) - 1 - screenPos.y);
     MouseEvent mouseEvent(screenPos, numSteps,
         EventConverterQt::getMouseWheelButton(e), MouseEvent::MOUSE_STATE_WHEEL, orientation,
         EventConverterQt::getModifier(e), getScreenDimensions(),
@@ -479,7 +479,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
             (screenTouchPos + 0.5f) / screenSize,
             prevScreenTouchPos,
             (prevScreenTouchPos + 0.5f) / screenSize,
-            touchState, getDepthValueAtCoord(uvec2(screenTouchPos.x, screenSize.y-1-screenTouchPos.y))));
+            touchState, getDepthValueAtCoord(ivec2(screenTouchPos.x, screenSize.y-1-screenTouchPos.y))));
     }
     TouchEvent touchEvent(touchPoints, getScreenDimensions());
     touch->accept();

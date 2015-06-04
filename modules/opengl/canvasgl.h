@@ -101,10 +101,10 @@ protected:
      * Depth is defined in [-1 1], where -1 is the near plane and 1 is the far plane.
      * Will be 1 if no depth value is available.
      * 
-     * @param uvec2 screenCoordinate Screen coordinates [0 dim-1]^2
+     * @param ivec2 screenCoordinate Screen coordinates [0 dim-1]^2
      * @return double NDC depth in [-1 1], 1 if no depth value exist.
      */
-    double getDepthValueAtCoord(uvec2 screenCoordinate) const;
+    double getDepthValueAtCoord(ivec2 screenCoordinate) const;
 
     static void enableDrawImagePlaneRect();
     static void disableDrawImagePlaneRect();
