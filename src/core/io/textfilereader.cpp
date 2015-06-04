@@ -24,51 +24,48 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/textfilereader.h>
+#include <inviwo/core/util/raiiutils.h>
+#include <thread>
 
 namespace inviwo {
 
-TextFileReader::TextFileReader(const std::string& filePath): filePath_(filePath)
-{}
+TextFileReader::TextFileReader(const std::string& filePath) : filePath_(filePath) {}
 
-std::string TextFileReader::read(const std::string& filePath) throw (std::ifstream::failure)
-{
+std::string TextFileReader::read(const std::string& filePath) {
     filePath_ = filePath;
     return read();
 }
 
-std::string TextFileReader::read() throw (std::ifstream::failure)
-{
+std::string TextFileReader::read() {
+    using iter = std::istreambuf_iterator<char>;
+
     std::ifstream file;
     // Make ifstream throw exception if file could not be opened
     file.exceptions(std::ifstream::failbit);
 
     try {
         file.open(filePath_.c_str());
+        std::string data(iter(file), (iter()));
+
+        // When editing files using Visual Studio it may happen that the file is empty.
+        // Wait a bit and hope that the content is there later.
+        if (data.empty()) {
+            file.close();
+            std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(400));  
+            file.open(filePath_.c_str());
+            data = std::string(iter(file), (iter()));
+        }
+
+        return data;
+
     } catch (std::ifstream::failure& ex) {
         LogError("Error opening file " << filePath_);
         throw ex;
     }
-
-    std::string data(std::istreambuf_iterator<char>(file), (std::istreambuf_iterator<char>()));
-
-    if (data.empty()) {
-        // When editing files using Visual Studio it may happen that the file is empty.
-        // Wait a bit and hope that the content is there later.
-#ifdef WIN32
-        Sleep(400);
-#endif
-        std::ifstream srcFile(filePath_.c_str());
-        data = std::string(std::istreambuf_iterator<char>(file), (std::istreambuf_iterator<char>()));
-    }
-
-    file.close();
-    return data;
 }
 
-
-
-} // namespace
+}  // namespace
