@@ -76,14 +76,14 @@ IF ( CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR )
 ENDIF ( CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR )
 
 # Cache these to allow the user to override them manually.
-SET( ASSIMP_LIB_INSTALL_DIR "lib" CACHE PATH
-	"Path the built library files are installed to." )
-SET( ASSIMP_INCLUDE_INSTALL_DIR "include" CACHE PATH
-	"Path the header files are installed to." )
-SET( ASSIMP_BIN_INSTALL_DIR "bin" CACHE PATH
-	"Path the tool executables are installed to." )
-SET ( ASSIMP_BUILD_STATIC_LIB OFF CACHE BOOL
-    "Build a static (.a) version of the library" )
+if(APPLE)
+  SET(ASSIMP_LIB_INSTALL_DIR "Inviwo.app/Contents/MacOS")
+else()
+  SET(ASSIMP_LIB_INSTALL_DIR "lib")
+endif()
+SET(ASSIMP_INCLUDE_INSTALL_DIR "include")
+SET(ASSIMP_BIN_INSTALL_DIR "bin")
+SET(ASSIMP_BUILD_STATIC_LIB OFF)
 
 SET(ASSIMP_DEBUG_POSTFIX "d" CACHE STRING "Debug Postfitx for lib, samples and tools")
 
@@ -100,11 +100,11 @@ CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/assimp.pc.in" "${PROJECT_BINARY_DIR}/assi
 INSTALL( FILES "${PROJECT_BINARY_DIR}/assimp.pc" DESTINATION ${ASSIMP_LIB_INSTALL_DIR}/pkgconfig/ COMPONENT ${LIBASSIMP-DEV_COMPONENT})
 
 # Only generate this target if no higher-level project already has
-IF (NOT TARGET uninstall)
-	# add make uninstall capability
-	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
-	add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-ENDIF()
+#IF (NOT TARGET uninstall)
+#	# add make uninstall capability
+#	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
+#	add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+#ENDIF()
 
 # Globally enable Boost resp. the Boost workaround – it is also needed by the
 # tools which include the Assimp headers.
@@ -131,9 +131,16 @@ ELSE ( ASSIMP_ENABLE_BOOST_WORKAROUND )
 ENDIF ( ASSIMP_ENABLE_BOOST_WORKAROUND )
 
 # cmake configuration files
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assimp-config.cmake.in"         "${CMAKE_CURRENT_BINARY_DIR}/assimp-config.cmake" @ONLY IMMEDIATE)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assimp-config-version.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/assimp-config-version.cmake" @ONLY IMMEDIATE)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/assimp-config.cmake"             "${CMAKE_CURRENT_BINARY_DIR}/assimp-config-version.cmake" DESTINATION "${ASSIMP_LIB_INSTALL_DIR}/cmake/assimp-${ASSIMP_VERSION_MAJOR}.${ASSIMP_VERSION_MINOR}" COMPONENT ${LIBASSIMP-DEV_COMPONENT})
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assimp-config.cmake.in"         
+  "${CMAKE_CURRENT_BINARY_DIR}/assimp-config.cmake" @ONLY IMMEDIATE
+)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assimp-config-version.cmake.in" 
+  "${CMAKE_CURRENT_BINARY_DIR}/assimp-config-version.cmake" @ONLY IMMEDIATE
+)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/assimp-config.cmake"             
+  "${CMAKE_CURRENT_BINARY_DIR}/assimp-config-version.cmake" 
+  DESTINATION "${ASSIMP_LIB_INSTALL_DIR}/cmake/assimp-${ASSIMP_VERSION_MAJOR}.${ASSIMP_VERSION_MINOR}" 
+  COMPONENT ${LIBASSIMP-DEV_COMPONENT})
 
 SET ( ASSIMP_NO_EXPORT OFF CACHE BOOL
 	"Disable Assimp's export functionality." 
@@ -192,92 +199,92 @@ ENDIF ( ASSIMP_BUILD_COMPILER STREQUAL "")
 MARK_AS_ADVANCED ( ASSIMP_BUILD_ARCHITECTURE ASSIMP_BUILD_COMPILER )
 
 ADD_SUBDIRECTORY( code/ )
-SET ( ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL
-	"If the supplementary tools for Assimp are built in addition to the library."
-)
-IF ( ASSIMP_BUILD_ASSIMP_TOOLS )
-	IF ( WIN32 )
-		ADD_SUBDIRECTORY( tools/assimp_view/ )
-	ENDIF ( WIN32 )
-	ADD_SUBDIRECTORY( tools/assimp_cmd/ )
-ENDIF ( ASSIMP_BUILD_ASSIMP_TOOLS )
+#SET ( ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL
+#	"If the supplementary tools for Assimp are built in addition to the library."
+#)
+#IF ( ASSIMP_BUILD_ASSIMP_TOOLS )
+#	IF ( WIN32 )
+#		ADD_SUBDIRECTORY( tools/assimp_view/ )
+#	ENDIF ( WIN32 )
+#	ADD_SUBDIRECTORY( tools/assimp_cmd/ )
+#ENDIF ( ASSIMP_BUILD_ASSIMP_TOOLS )
 
-SET ( ASSIMP_BUILD_SAMPLES OFF CACHE BOOL
-	"If the official samples are built as well (needs Glut)."
-)
+#SET ( ASSIMP_BUILD_SAMPLES OFF CACHE BOOL
+#	"If the official samples are built as well (needs Glut)."
+#)
 
-IF ( ASSIMP_BUILD_SAMPLES)
-	IF ( WIN32 )
-		ADD_SUBDIRECTORY( samples/SimpleTexturedOpenGL/ )
-	ENDIF ( WIN32 )
-	ADD_SUBDIRECTORY( samples/SimpleOpenGL/ )
-ENDIF ( ASSIMP_BUILD_SAMPLES )
+#IF ( ASSIMP_BUILD_SAMPLES)
+#	IF ( WIN32 )
+#		ADD_SUBDIRECTORY( samples/SimpleTexturedOpenGL/ )
+#	ENDIF ( WIN32 )
+#	ADD_SUBDIRECTORY( samples/SimpleOpenGL/ )
+#ENDIF ( ASSIMP_BUILD_SAMPLES )
 
-IF ( WIN32 )
-	SET ( ASSIMP_BUILD_TESTS OFF CACHE BOOL
-		"If the test suite for Assimp is built in addition to the library."
-	)
-	
-	IF ( ASSIMP_BUILD_TESTS )
-		ADD_SUBDIRECTORY( test/ )
-	ENDIF ( ASSIMP_BUILD_TESTS )
-ENDIF ( WIN32 )
+#IF ( WIN32 )
+#	SET ( ASSIMP_BUILD_TESTS OFF CACHE BOOL
+#		"If the test suite for Assimp is built in addition to the library."
+#	)
+#	
+#	IF ( ASSIMP_BUILD_TESTS )
+#		ADD_SUBDIRECTORY( test/ )
+#	ENDIF ( ASSIMP_BUILD_TESTS )
+#ENDIF ( WIN32 )
 
-IF(MSVC)
-	SET ( ASSIMP_INSTALL_PDB ON CACHE BOOL
-		"Install MSVC debug files."
-	)
-ENDIF(MSVC)
+#IF(MSVC)
+#	SET ( ASSIMP_INSTALL_PDB ON CACHE BOOL
+#		"Install MSVC debug files."
+#	)
+#ENDIF(MSVC)
 
-if(CMAKE_CPACK_COMMAND AND UNIX AND ASSIMP_OPT_BUILD_PACKAGES)
-  # Packing information
-  set(CPACK_PACKAGE_NAME                    "assimp{ASSIMP_VERSION_MAJOR}")
-  set(CPACK_PACKAGE_CONTACT "" CACHE STRING "Package maintainer and PGP signer.")
-  set(CPACK_PACKAGE_VENDOR                  "http://assimp.sourceforge.net/")
-  set(CPACK_PACKAGE_DISPLAY_NAME            "Assimp ${ASSIMP_VERSION}")
-  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY     " - Open Asset Import Library ${ASSIMP_VERSION}")
-  set(CPACK_PACKAGE_VERSION                 "${ASSIMP_VERSION}.${ASSIMP_PACKAGE_VERSION}" )
-  set(CPACK_PACKAGE_VERSION_MAJOR           "${ASSIMP_VERSION_MAJOR}")
-  set(CPACK_PACKAGE_VERSION_MINOR           "${ASSIMP_VERSION_MINOR}")
-  set(CPACK_PACKAGE_VERSION_PATCH           "${ASSIMP_VERSION_PATCH}")
-  set(CPACK_PACKAGE_INSTALL_DIRECTORY       "assimp${ASSIMP_VERSION_MAJOR}.${ASSIMP_VERSION_MINOR}")
-  #set(CPACK_PACKAGE_DESCRIPTION_FILE       "${CMAKE_CURRENT_SOURCE_DIR}/description")
-  set(CPACK_RESOURCE_FILE_LICENSE           "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+#if(CMAKE_CPACK_COMMAND AND UNIX AND ASSIMP_OPT_BUILD_PACKAGES)
+#  # Packing information
+#  set(CPACK_PACKAGE_NAME                    "assimp{ASSIMP_VERSION_MAJOR}")
+#  set(CPACK_PACKAGE_CONTACT "" CACHE STRING "Package maintainer and PGP signer.")
+#  set(CPACK_PACKAGE_VENDOR                  "http://assimp.sourceforge.net/")
+#  set(CPACK_PACKAGE_DISPLAY_NAME            "Assimp ${ASSIMP_VERSION}")
+#  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY     " - Open Asset Import Library ${ASSIMP_VERSION}")
+#  set(CPACK_PACKAGE_VERSION                 "${ASSIMP_VERSION}.${ASSIMP_PACKAGE_VERSION}" )
+#  set(CPACK_PACKAGE_VERSION_MAJOR           "${ASSIMP_VERSION_MAJOR}")
+#  set(CPACK_PACKAGE_VERSION_MINOR           "${ASSIMP_VERSION_MINOR}")
+#  set(CPACK_PACKAGE_VERSION_PATCH           "${ASSIMP_VERSION_PATCH}")
+#  set(CPACK_PACKAGE_INSTALL_DIRECTORY       "assimp${ASSIMP_VERSION_MAJOR}.${ASSIMP_VERSION_MINOR}")
+#  #set(CPACK_PACKAGE_DESCRIPTION_FILE       "${CMAKE_CURRENT_SOURCE_DIR}/description")
+#  set(CPACK_RESOURCE_FILE_LICENSE           "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 
-  string(TOUPPER ${LIBASSIMP_COMPONENT}     "LIBASSIMP_COMPONENT_UPPER")
-  string(TOUPPER ${LIBASSIMP-DEV_COMPONENT} "LIBASSIMP-DEV_COMPONENT_UPPER")
+#  string(TOUPPER ${LIBASSIMP_COMPONENT}     "LIBASSIMP_COMPONENT_UPPER")
+#  string(TOUPPER ${LIBASSIMP-DEV_COMPONENT} "LIBASSIMP-DEV_COMPONENT_UPPER")
 
-  set(CPACK_COMPONENT_ASSIMP-BIN_DISPLAY_NAME                       "tools")
-  set(CPACK_COMPONENT_ASSIMP-BIN_DEPENDS                            "${LIBASSIMP_COMPONENT}" )
-  set(CPACK_COMPONENT_${LIBASSIMP_COMPONENT_UPPER}_DISPLAY_NAME     "libraries")
-  set(CPACK_COMPONENT_${LIBASSIMP-DEV_COMPONENT_UPPER}_DISPLAY_NAME "common headers and installs")
-  set(CPACK_COMPONENT_${LIBASSIMP-DEV_COMPONENT_UPPER}_DEPENDS $    "{LIBASSIMP_COMPONENT}" )
-  set(CPACK_COMPONENT_ASSIMP-DEV_DISPLAY_NAME                       "${CPACK_COMPONENT_${LIBASSIMP-DEV_COMPONENT}_DISPLAY_NAME}" )
-  set(CPACK_COMPONENT_ASSIMP-DEV_DEPENDS                            "${LIBASSIMP-DEV_COMPONENT}" )
-  set(CPACK_DEBIAN_BUILD_DEPENDS debhelper cmake libboost-dev libboost-thread-dev libboost-math-dev zlib1g-dev pkg-config)
+#  set(CPACK_COMPONENT_ASSIMP-BIN_DISPLAY_NAME                       "tools")
+#  set(CPACK_COMPONENT_ASSIMP-BIN_DEPENDS                            "${LIBASSIMP_COMPONENT}" )
+#  set(CPACK_COMPONENT_${LIBASSIMP_COMPONENT_UPPER}_DISPLAY_NAME     "libraries")
+#  set(CPACK_COMPONENT_${LIBASSIMP-DEV_COMPONENT_UPPER}_DISPLAY_NAME "common headers and installs")
+#  set(CPACK_COMPONENT_${LIBASSIMP-DEV_COMPONENT_UPPER}_DEPENDS $    "{LIBASSIMP_COMPONENT}" )
+#  set(CPACK_COMPONENT_ASSIMP-DEV_DISPLAY_NAME                       "${CPACK_COMPONENT_${LIBASSIMP-DEV_COMPONENT}_DISPLAY_NAME}" )
+#  set(CPACK_COMPONENT_ASSIMP-DEV_DEPENDS                            "${LIBASSIMP-DEV_COMPONENT}" )
+#  set(CPACK_DEBIAN_BUILD_DEPENDS debhelper cmake libboost-dev libboost-thread-dev libboost-math-dev zlib1g-dev pkg-config)
 
-  # debian
-  set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
-  set(CPACK_DEBIAN_CMAKE_OPTIONS    "-DBUILD_ASSIMP_SAMPLES:BOOL=${ASSIMP_BUILD_SAMPLES}")
-  set(CPACK_DEBIAN_PACKAGE_SECTION  "libs" )
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS  "${CPACK_COMPONENTS_ALL}")
-  set(CPACK_DEBIAN_PACKAGE_SUGGESTS)
-  set(CPACK_DEBIAN_PACKAGE_NAME     "assimp")
-  set(CPACK_DEBIAN_PACKAGE_REMOVE_SOURCE_FILES contrib/cppunit-1.12.1 contrib/cppunit_note.txt contrib/zlib workspaces test doc obj samples packaging)
-  set(CPACK_DEBIAN_PACKAGE_SOURCE_COPY svn export --force)
-  set(CPACK_DEBIAN_CHANGELOG)
-  execute_process(COMMAND lsb_release -is
-    OUTPUT_VARIABLE _lsb_distribution OUTPUT_STRIP_TRAILING_WHITESPACE
-    RESULT_VARIABLE _lsb_release_failed)
-  set(CPACK_DEBIAN_DISTRIBUTION_NAME ${_lsb_distribution} CACHE STRING "Name of the distrubiton")
-  string(TOLOWER ${CPACK_DEBIAN_DISTRIBUTION_NAME} CPACK_DEBIAN_DISTRIBUTION_NAME)
-  if( ${CPACK_DEBIAN_DISTRIBUTION_NAME} STREQUAL "ubuntu" )
-    set(CPACK_DEBIAN_DISTRIBUTION_RELEASES lucid maverick natty oneiric precise CACHE STRING "Release code-names of the distrubiton release")
-  endif()
-  set(DPUT_HOST "" CACHE STRING "PPA repository to upload the debian sources")
-  include(CPack)
-  include(DebSourcePPA)
-endif()
+#  # debian
+#  set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+#  set(CPACK_DEBIAN_CMAKE_OPTIONS    "-DBUILD_ASSIMP_SAMPLES:BOOL=${ASSIMP_BUILD_SAMPLES}")
+#  set(CPACK_DEBIAN_PACKAGE_SECTION  "libs" )
+#  set(CPACK_DEBIAN_PACKAGE_DEPENDS  "${CPACK_COMPONENTS_ALL}")
+#  set(CPACK_DEBIAN_PACKAGE_SUGGESTS)
+#  set(CPACK_DEBIAN_PACKAGE_NAME     "assimp")
+#  set(CPACK_DEBIAN_PACKAGE_REMOVE_SOURCE_FILES contrib/cppunit-1.12.1 contrib/cppunit_note.txt contrib/zlib workspaces test doc obj samples packaging)
+#  set(CPACK_DEBIAN_PACKAGE_SOURCE_COPY svn export --force)
+#  set(CPACK_DEBIAN_CHANGELOG)
+#  execute_process(COMMAND lsb_release -is
+#    OUTPUT_VARIABLE _lsb_distribution OUTPUT_STRIP_TRAILING_WHITESPACE
+#    RESULT_VARIABLE _lsb_release_failed)
+#  set(CPACK_DEBIAN_DISTRIBUTION_NAME ${_lsb_distribution} CACHE STRING "Name of the distrubiton")
+#  string(TOLOWER ${CPACK_DEBIAN_DISTRIBUTION_NAME} CPACK_DEBIAN_DISTRIBUTION_NAME)
+#  if( ${CPACK_DEBIAN_DISTRIBUTION_NAME} STREQUAL "ubuntu" )
+#    set(CPACK_DEBIAN_DISTRIBUTION_RELEASES lucid maverick natty oneiric precise CACHE STRING "Release code-names of the distrubiton release")
+#  endif()
+#  set(DPUT_HOST "" CACHE STRING "PPA repository to upload the debian sources")
+#  include(CPack)
+#  include(DebSourcePPA)
+#endif()
 
 # Creates VS folder structure
 ivw_define_standard_definitions(assimp)

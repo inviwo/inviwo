@@ -97,6 +97,13 @@ if(WIN32)
    install(TARGETS glfw
             RUNTIME DESTINATION bin
             COMPONENT glfw_module)
+else(APPLE)
+    install(TARGETS glfw
+            RUNTIME DESTINATION bin
+            BUNDLE DESTINATION .
+            ARCHIVE DESTINATION Inviwo.app/Contents/MacOS
+            LIBRARY DESTINATION Inviwo.app/Contents/MacOS
+            COMPONENT glfw_module)
 else()
     install(TARGETS glfw
             RUNTIME DESTINATION bin
