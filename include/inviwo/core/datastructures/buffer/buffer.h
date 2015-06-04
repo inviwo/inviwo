@@ -106,7 +106,29 @@ typedef BufferPrecision<vec3, TEXCOORD_ATTRIB> TexCoord3dBuffer;
 typedef BufferPrecision<float, CURVATURE_ATTRIB> CurvatureBuffer;
 typedef BufferPrecision<std::uint32_t, INDEX_ATTRIB> IndexBuffer;
 
-typedef BufferPrecision<float, POSITION_ATTRIB> BufferFloat32;
+// Scalar buffers
+typedef BufferPrecision<float, POSITION_ATTRIB> FloatBuffer;
+typedef BufferPrecision<int, INDEX_ATTRIB> IntBuffer;
+typedef BufferPrecision<std::uint32_t, INDEX_ATTRIB> BufferUInt32;
+typedef BufferPrecision<double, POSITION_ATTRIB> DoubleBuffer;
+
+// Vector buffers
+typedef BufferPrecision<vec2, TEXCOORD_ATTRIB> FloatVec2Buffer;
+typedef BufferPrecision<vec3, POSITION_ATTRIB> FloatVec3Buffer;
+typedef BufferPrecision<vec4, COLOR_ATTRIB>    FloatVec4Buffer;
+
+typedef BufferPrecision<dvec2, TEXCOORD_ATTRIB> DoubleVec2Buffer;
+typedef BufferPrecision<dvec3, POSITION_ATTRIB> DoubleVec3Buffer;
+typedef BufferPrecision<dvec4, COLOR_ATTRIB>    DoubleVec4Buffer;
+
+typedef BufferPrecision<ivec2, POSITION_ATTRIB> IntVec2Buffer;
+typedef BufferPrecision<ivec3, POSITION_ATTRIB> IntVec3Buffer;
+typedef BufferPrecision<ivec4, POSITION_ATTRIB> IntVec4Buffer;
+
+typedef BufferPrecision<uvec2, POSITION_ATTRIB> UIntVec2Buffer;
+typedef BufferPrecision<uvec3, POSITION_ATTRIB> UIntVec3Buffer;
+typedef BufferPrecision<uvec4, POSITION_ATTRIB> UIntVec4Buffer;
+
 }  // namespace
 
 #endif  // IVW_BUFFER_H
