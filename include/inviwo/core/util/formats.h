@@ -30,10 +30,6 @@
 #ifndef IVW_FORMATS_H
 #define IVW_FORMATS_H
 
-#pragma warning(disable : 4723)
-#pragma warning(disable : 4756)
-#pragma warning(disable : 4244) // min/max to double.
-
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/stringconversion.h>
