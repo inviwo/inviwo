@@ -82,14 +82,14 @@ add_library(inviwo-qteditor ${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
 
 # Add dependencies to this list
 if(DESIRED_QT_VERSION MATCHES 5)
-    set(IVW_WIDGETS_QT_DEPENDS
+    set(IVW_EDITOR_QT_DEPENDS
         Qt5Core
         Qt5Gui
         Qt5Widgets
         Qt5Help
     )
 
-    foreach(qtarget ${IVW_WIDGETS_QT_DEPENDS})
+    foreach(qtarget ${IVW_EDITOR_QT_DEPENDS})
         ivw_add_dependencies(${qtarget})  
         ivw_qt_add_dependencies(${qtarget} qt_editor)
     endforeach()
