@@ -34,13 +34,6 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/glwrap/shader.h>
 
-/*
-*
-* Before release:
-*  * Add gausian blur
-*
-*/
-
 namespace inviwo {
 
 ProcessorClassIdentifier(VolumeLowPass, "org.inviwo.VolumeLowPass");
