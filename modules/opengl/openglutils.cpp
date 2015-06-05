@@ -93,7 +93,7 @@ utilgl::PolygonModeState::PolygonModeState(GLenum mode, GLfloat lineWidth, GLflo
     // Only GL_FRONT_AND_BACK in core profile.
     glGetIntegerv(GL_POLYGON_MODE, &oldMode_);
 
-    if (mode != oldMode_) glPolygonMode(GL_FRONT_AND_BACK, mode);
+    if (static_cast<int>(mode) != oldMode_) glPolygonMode(GL_FRONT_AND_BACK, mode);
 
     switch (mode_) {
         case GL_POINT: {

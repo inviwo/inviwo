@@ -69,7 +69,7 @@ struct IVW_MODULE_OPENGL_API GlBoolState {
     GlBoolState(GlBoolState&& rhs);
     GlBoolState& operator=(GlBoolState&& that);
 
-    operator bool();;
+    operator bool();
 
     virtual ~GlBoolState();
 

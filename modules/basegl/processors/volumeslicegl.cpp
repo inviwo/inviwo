@@ -565,15 +565,15 @@ void VolumeSliceGL::updateMaxSliceNumber() {
     }
     disableInvalidation();
     uvec3 dims = inport_.getData()->getDimensions();
-    if (dims.x != sliceX_.getMaxValue()) {
+    if (static_cast<int>(dims.x) != sliceX_.getMaxValue()) {
         sliceX_.setMaxValue(static_cast<int>(dims.x));
         sliceX_.set(static_cast<int>(dims.x) / 2);
     }
-    if (dims.y != sliceY_.getMaxValue()) {
+    if (static_cast<int>(dims.y) != sliceY_.getMaxValue()) {
         sliceY_.setMaxValue(static_cast<int>(dims.y));
         sliceY_.set(static_cast<int>(dims.y) / 2);
     }
-    if (dims.z != sliceZ_.getMaxValue()) {
+    if (static_cast<int>(dims.z) != sliceZ_.getMaxValue()) {
         sliceZ_.setMaxValue(static_cast<int>(dims.z));
         sliceZ_.set(static_cast<int>(dims.z) / 2);
     }

@@ -58,7 +58,7 @@ public:
                 while (dIter_ == dEnd_ && pIter_ != pEnd_) {
                     pIter_++;
                     if (pIter_ != pEnd_) {
-                        auto ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
+                        ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
                         dIter_ = ptr->begin();
                         dEnd_ = ptr->end();
                     } else {

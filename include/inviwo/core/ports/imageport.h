@@ -46,6 +46,7 @@ class ImageOutport;
 
 class IVW_CORE_API ImagePortBase {
 public:
+    virtual ~ImagePortBase() = default;
     virtual uvec2 getRequestedDimensions(ImageOutport* outport) const = 0;
     virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
                                       ImageOutport* target = nullptr) = 0;
@@ -204,7 +205,7 @@ uvec2 BaseImageInport<N>::getRequestedDimensions(ImageOutport* outport) const {
     if (it != requestedDimensionsMap_.end()) {
         return it->second;
     } else {
-        auto it = requestedDimensionsMap_.find(nullptr);
+        it = requestedDimensionsMap_.find(nullptr);
         if (it != requestedDimensionsMap_.end())
             return it->second;
         else

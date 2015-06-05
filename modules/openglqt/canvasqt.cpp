@@ -450,7 +450,6 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
     touchPoints.reserve(touch->touchPoints().size());
-    const LayerRAM* depthLayerRAM = getDepthLayerRAM();
     for (auto& touchPoint : touch->touchPoints()) {
         vec2 screenTouchPos(touchPoint.pos().x(), touchPoint.pos().y());
         vec2 screenSize(getScreenDimensions());

@@ -438,15 +438,15 @@ void IvwDeserializer::deserialize(const std::string& key, std::map<K, V, C, A>& 
             // In the next deserialization call do net fetch the "child" since we are looping...
             // hence the "false" as the last arg.
             NodeSwitch elementNodeSwitch(*this, &(*child), false);
-            K key;
-            child->GetAttribute(comparisionAttribute, &key);
+            K childkey;
+            child->GetAttribute(comparisionAttribute, &childkey);
 
-            typename std::map<K, V, C, A>::iterator it = map.find(key);
+            typename std::map<K, V, C, A>::iterator it = map.find(childkey);
             V value = (it != map.end() ? it->second : nullptr);
 
             try {
                 deserialize(itemKey, value);
-                map[key] = value;
+                map[childkey] = value;
             } catch (SerializationException& e) {
                 handleError(e);
             }

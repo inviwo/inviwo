@@ -216,15 +216,15 @@ const T* Data::createNewRepresentationUsingConverters() const {
     if (package) {
         const std::vector<RepresentationConverter*>* converters = package->getConverters();
 
-        for (auto converter : *converters) {
+        for (auto pkgconverter : *converters) {
             // Check if we already have the destination representation
             // and can update to it instead of creating a new
             bool updatedRepresentation = false;
 
             for (int k = 0; k < static_cast<int>(representations_.size()); ++k) {
                 auto repr = representations_[k];
-                if (lastValidRepresentation_ != repr && converter->canConvertTo(repr)) {
-                    converter->update(lastValidRepresentation_, repr);
+                if (lastValidRepresentation_ != repr && pkgconverter->canConvertTo(repr)) {
+                    pkgconverter->update(lastValidRepresentation_, repr);
                     setRepresentationAsValid(k);
                     lastValidRepresentation_ = repr;
                     updatedRepresentation = true;
@@ -234,7 +234,7 @@ const T* Data::createNewRepresentationUsingConverters() const {
 
             // Create the representation if it did not exist
             if (!updatedRepresentation) {
-                lastValidRepresentation_ = converter->createFrom(lastValidRepresentation_);
+                lastValidRepresentation_ = pkgconverter->createFrom(lastValidRepresentation_);
                 if (!lastValidRepresentation_) return nullptr;
                 lastValidRepresentation_->setOwner(const_cast<Data*>(this));
                 representations_.push_back(lastValidRepresentation_);

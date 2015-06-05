@@ -46,7 +46,7 @@ Event* ViewManager::registerEvent(Event* event) {
             viewportActive_ = false;
         }
 
-        if (activeView_ >= 0 && activeView_ < views_.size()) {
+        if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
             MouseEvent* newEvent = mouseEvent->clone();
             const ivec4& view = views_[activeView_];
             newEvent->modify(flipY(activePosition_ - ivec2(view.x, view.y), ivec2(view.z, view.w)),
@@ -66,7 +66,7 @@ Event* ViewManager::registerEvent(Event* event) {
             viewportActive_ = false;
         }
 
-        if (activeView_ >= 0 && activeView_ < views_.size()) {
+        if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
             GestureEvent* newEvent = gestureEvent->clone();
             const ivec4& view = views_[activeView_];
             newEvent->modify(
@@ -88,7 +88,7 @@ Event* ViewManager::registerEvent(Event* event) {
             viewportActive_ = false;
         }
 
-        if (activeView_ >= 0 && activeView_ < views_.size()) {
+        if (activeView_ >= 0 && activeView_ < static_cast<long>(views_.size())) {
             // Modify all touch points
             const ivec4& view = views_[activeView_];
             vec2 viewportOffset(view.x, view.y);

@@ -52,7 +52,7 @@ class IVW_MODULE_BASE_API PointLightTrackball : public Trackball<PointLightInter
 public:
     InviwoPropertyInfo();
 
-    PointLightTrackball(PointLightInteractionHandler* p);;
+    PointLightTrackball(PointLightInteractionHandler* p);
     virtual ~PointLightTrackball() = default;
 };
 

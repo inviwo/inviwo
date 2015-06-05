@@ -192,7 +192,8 @@ bool ImageGL::updateFrom(const ImageGL* source) {
             glBlitFramebufferEXT(0, 0, sTex->getWidth(), sTex->getHeight(), 0, 0, tTex->getWidth(),
                                  tTex->getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-            if (GL_COLOR_ATTACHMENT0_EXT + i == pickingAttachmentID_) pickingCopied = true;
+            if (GL_COLOR_ATTACHMENT0_EXT + i == static_cast<int>(pickingAttachmentID_))
+                pickingCopied = true;
         }
     }
 
@@ -200,8 +201,7 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
     srcFBO->setRead_Blit(false);
     tgtFBO->setDraw_Blit(false);
-    
-    
+
     LGL_ERROR;
 
     // Secondary copy using PBO
@@ -223,7 +223,7 @@ bool ImageGL::updateFrom(const ImageGL* source) {
 
         if (sTex && tTex) tTex->loadFromPBO(sTex);
     }
-    
+
     LGL_ERROR;
     return true;
 }

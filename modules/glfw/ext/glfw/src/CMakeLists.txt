@@ -118,3 +118,7 @@ if (GLFW_INSTALL)
     install(TARGETS glfw EXPORT glfwTargets DESTINATION lib${LIB_SUFFIX})
 endif()
 
+if(APPLE)
+  #Ignore warnings in external packages
+  set_target_properties(glfw PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
+endif(APPLE)

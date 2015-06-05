@@ -114,32 +114,34 @@ std::string ShaderObject::embeddDefines(std::string source) {
     
     std::string curLine;
     std::istringstream globalGLSLHeaderStream(globalGLSLHeader);
-    while (std::getline(globalGLSLHeaderStream, curLine))
-        lineNumberResolver_.push_back(std::pair<std::string, unsigned int>("GlobalGLSLSHeader", 0));
-
-    std::ostringstream extensions;
-    ShaderExtensionContainer::const_iterator it=shaderExtensions_.begin();
-    while (it != shaderExtensions_.end()) {
-        extensions << "#extension " << (*it).first << " : " << ((*it).second ? "enable" : "disable") << "\n";
-        lineNumberResolver_.push_back(std::pair<std::string, unsigned int>("Extension", 0));
-        ++it;
+    while (std::getline(globalGLSLHeaderStream, curLine)) {
+        lineNumberResolver_.emplace_back("GlobalGLSLSHeader", 0);
     }
-
+    
+    std::ostringstream extensions;
+    for(const auto& se : shaderExtensions_) {
+        extensions << "#extension " << se.first << " : " << (se.second ? "enable" : "disable") << "\n";
+        lineNumberResolver_.emplace_back("Extension", 0);
+    }
+    
     std::ostringstream defines;
-    for (ShaderDefineContainer::const_iterator it=shaderDefines_.begin(), itEnd = shaderDefines_.end(); it!=itEnd; ++it) {
-        defines << "#define " << (*it).first << " " << (*it).second << "\n";
-        lineNumberResolver_.push_back(std::pair<std::string, unsigned int>("Defines", 0));
+    for (const auto& sd : shaderDefines_) {
+        defines << "#define " << sd.first << " " << sd.second << "\n";
+        lineNumberResolver_.emplace_back("Defines", 0);
     }
 
     std::string globalDefines;
-    if (shaderType_ == GL_VERTEX_SHADER)
+    if (shaderType_ == GL_VERTEX_SHADER) {
         globalDefines += ShaderManager::getPtr()->getGlobalGLSLVertexDefines();
-    else if (shaderType_ == GL_FRAGMENT_SHADER)
+    } else if (shaderType_ == GL_FRAGMENT_SHADER) {
         globalDefines += ShaderManager::getPtr()->getGlobalGLSLFragmentDefines();
+    }
+    
     std::istringstream globalGLSLDefinesStream(globalDefines);
-    while (std::getline(globalGLSLDefinesStream, curLine))
-        lineNumberResolver_.push_back(std::pair<std::string, unsigned int>("GlobalGLSLSDefines", 0));
-
+    while (std::getline(globalGLSLDefinesStream, curLine)) {
+        lineNumberResolver_.emplace_back("GlobalGLSLSDefines", 0);
+    }
+    
     return globalGLSLHeader + extensions.str() + defines.str() + globalDefines;
 }
 
@@ -148,7 +150,7 @@ std::string ShaderObject::embeddOutDeclarations(std::string source) {
 
     for (auto curDeclaration : outDeclarations_) {
         result << "out vec4 " << curDeclaration << ";\n";
-        lineNumberResolver_.push_back(std::pair<std::string, unsigned int>("Out Declaration", 0));
+        lineNumberResolver_.emplace_back("Out Declaration", 0);
     }
 
     return result.str();

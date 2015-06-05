@@ -38,7 +38,7 @@ namespace inviwo {
 template <typename T>
 class ComparePointers {
 public:
-    explicit ComparePointers(const T* p) : p(p) {}
+    explicit ComparePointers(const T* ptr) : p(ptr) {}
     bool operator() (const T* rhs) const { return p == rhs; }
 private:
     const T* p;

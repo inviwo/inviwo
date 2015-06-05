@@ -140,7 +140,9 @@ protected:
      * @param Event * event TouchEvent
      */
     void touchGesture(Event* event);
-
+    
+    T* object_;
+    const CameraBase* camera_;
     bool isMouseBeingPressedAndHold_;
 
     vec2 lastMousePos_;
@@ -152,6 +154,7 @@ protected:
     vec3* lookUp_;
     
     // Interaction restrictions
+    BoolProperty handleInteractionEvents_;
     // Options to restrict translation along view-space axes.
     BoolProperty allowHorizontalPanning_; ///< Enable/disable horizontal panning
     BoolProperty allowVerticalPanning_;   ///< Enable/disable vertical panning
@@ -162,7 +165,6 @@ protected:
     BoolProperty allowVerticalRotation_;      ///< Enable/disable rotation around vertical axis
     BoolProperty allowViewDirectionRotation_; ///< Enable/disable rotation around view direction axis
 
-    BoolProperty handleInteractionEvents_;
 
     // Event Properties.
     EventProperty mouseRotate_;
@@ -183,9 +185,6 @@ protected:
     EventProperty stepPanRight_;
 
     EventProperty touchGesture_;
-
-    T* object_;
-    const CameraBase* camera_;
 
     float RADIUS = 0.5f; ///< Radius in normalized screen space [0 1]^2
     float STEPSIZE = 0.05f;
@@ -356,8 +355,8 @@ void Trackball<T>::touchGesture(Event* event) {
         auto touchPoints = touchEvent->getTouchPoints();
         const TouchPoint* touchPoint1 = &touchPoints[0]; const TouchPoint* touchPoint2 = &touchPoints[1];
         float distance = std::numeric_limits<float>::max();
-        for (auto i = 0; i < touchEvent->getTouchPoints().size() - 1; ++i) {
-            for (auto j = i + 1; j < touchEvent->getTouchPoints().size(); ++j) {
+        for (size_t i = 0; i < touchEvent->getTouchPoints().size() - 1; ++i) {
+            for (size_t j = i + 1; j < touchEvent->getTouchPoints().size(); ++j) {
                 float ijDistance = glm::distance2(touchPoints[i].getPos(), touchPoints[j].getPos());
                 if (ijDistance < distance) {
                     distance = ijDistance;
@@ -437,8 +436,8 @@ void Trackball<T>::touchGesture(Event* event) {
         // around the direction in world space since we are looking into the screen.
         vec3 newLookUp;
         if (allowViewDirectionRotation_) {
-            vec3 direction = (getLookTo() - getLookFrom());
-            newLookUp = glm::normalize(glm::rotate(getLookUp(), static_cast<float>(angle), glm::normalize(direction)));
+            vec3 direction2 = (getLookTo() - getLookFrom());
+            newLookUp = glm::normalize(glm::rotate(getLookUp(), static_cast<float>(angle), glm::normalize(direction2)));
         } else {
             newLookUp = getLookUp();
         }
@@ -701,7 +700,7 @@ dvec3 Trackball<T>::getBoundedTranslation(const dvec3& lookFrom, const dvec3& lo
     // simply disallow movements that would cause the lookTo point to
     // go out of bounds
     auto newPos(lookTo - translation);
-    auto clampedPos = glm::clamp(newPos, dvec3(getLookToMinValue()), dvec3(getLookToMaxValue()));
+    //auto clampedPos = glm::clamp(newPos, dvec3(getLookToMinValue()), dvec3(getLookToMaxValue()));
     auto distanceToMinBounds = newPos - dvec3(getLookToMinValue());
     auto distanceToMaxBounds = dvec3(getLookToMaxValue()) - newPos;
     auto axesMinDistance = glm::min(distanceToMinBounds, distanceToMaxBounds);

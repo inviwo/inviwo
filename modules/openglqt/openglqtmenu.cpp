@@ -120,20 +120,20 @@ void OpenGLQtMenu::shaderMenuCallback(QObject* obj) {
 
     const std::vector<Shader*> shaders{ShaderManager::getPtr()->getShaders()};
     auto it = std::find_if(shaders.begin(), shaders.end(), [shaderId](Shader* shader) -> bool {
-        return shader->getID() == shaderId;
+        return static_cast<int>(shader->getID()) == shaderId;
     });
 
     if (it != shaders.end()) {
-        ShaderObject* obj;
+        ShaderObject* shaderObj;
         switch (type) {
             case 1:
-                obj = (*it)->getVertexShaderObject();
+                shaderObj = (*it)->getVertexShaderObject();
                 break;
             case 2:
-                obj = (*it)->getGeometryShaderObject();
+                shaderObj = (*it)->getGeometryShaderObject();
                 break;
             case 3:
-                obj = (*it)->getFragmentShaderObject();
+                shaderObj = (*it)->getFragmentShaderObject();
                 break;
             default:
                 return;
@@ -143,7 +143,7 @@ void OpenGLQtMenu::shaderMenuCallback(QObject* obj) {
             static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
         
         QTextBrowser* shadercode = new QTextBrowser(nullptr);
-        shadercode->setText(obj->print(true).c_str());
+        shadercode->setText(shaderObj->print(true).c_str());
         shadercode->setStyleSheet("font: 12pt \"Courier\";");
 
         QDialog* dialog = new QDialog(win);

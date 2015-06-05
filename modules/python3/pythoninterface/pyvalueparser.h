@@ -81,14 +81,14 @@ template <typename T, typename std::enable_if<util::rank<T>::value == 1, int>::t
 std::string typestring() {
     using type = typename T::value_type;
     std::stringstream ss;
-    for (int i = 0; i < util::extent<T, 0>::value; ++i) ss << typeToChar<type>::value;
+    for (size_t i = 0; i < util::extent<T, 0>::value; ++i) ss << typeToChar<type>::value;
     return ss.str();
 }
 template <typename T, typename std::enable_if<util::rank<T>::value == 2, int>::type = 0>
 std::string typestring() {
     using type = typename T::col_type;
     std::stringstream ss;
-    for (int i = 0; i < util::extent<T, 1>::value; ++i) {
+    for (size_t i = 0; i < util::extent<T, 1>::value; ++i) {
         ss << "(" << typestring<type>() << ")";
     }
     return ss.str();

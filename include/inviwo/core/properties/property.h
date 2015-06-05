@@ -45,10 +45,10 @@ namespace inviwo {
 
 #define InviwoPropertyInfo()                                                    \
     virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; } \
-    static const std::string CLASS_IDENTIFIER;
+    static const std::string CLASS_IDENTIFIER
 
 #define PropertyClassIdentifier(T, classIdentifier) \
-    const std::string T::CLASS_IDENTIFIER = classIdentifier;
+    const std::string T::CLASS_IDENTIFIER = classIdentifier
 
 /** \class Property
  * 

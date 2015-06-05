@@ -78,7 +78,7 @@ void FrameBufferObject::defineDrawBuffers() {
 void FrameBufferObject::deactivate() {
     GLint currentFbo = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &currentFbo);
-    if (currentFbo == id_) {
+    if (currentFbo == static_cast<GLint>(id_)) {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, prevFbo_);
         LGL_ERROR;
     }
@@ -373,7 +373,7 @@ bool FrameBufferObject::performAttachColorTexture(GLenum& outAttachNumber) {
         drawBuffers_.push_back(colorAttachmentEnums_[0]);
         buffersInUse_[outAttachNumber - colorAttachmentEnums_[0]] = true;
         return true;
-    } else if (drawBuffers_.size() == maxColorattachments_) {
+    } else if (static_cast<long>(drawBuffers_.size()) == maxColorattachments_) {
         // cannot attach texture, maximum number of color attachments reached
         LogError("Maximum number of color attachments reached.");
         outAttachNumber = GL_NONE;
@@ -403,7 +403,7 @@ bool FrameBufferObject::performAttachColorTexture(GLenum& outAttachNumber) {
 
 bool FrameBufferObject::performAttachColorTexture(GLenum& outAttachNumber, int attachmentNumber,
                                                   bool attachFromRear, int forcedLocation) {
-    if (drawBuffers_.size() == maxColorattachments_) {
+    if (static_cast<long>(drawBuffers_.size()) == maxColorattachments_) {
         LogError("Maximum number of color attachments reached.");
         outAttachNumber = GL_NONE;
         return false;

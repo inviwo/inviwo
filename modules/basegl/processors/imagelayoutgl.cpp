@@ -112,7 +112,7 @@ void ImageLayoutGL::propagateEvent(Event* event) {
     int activeView = viewManager_.getActiveView();
     auto data = multiinport_.getConnectedOutports();
 
-    if (newEvent && activeView >= 0 && activeView < data.size() ) {
+    if (newEvent && activeView >= 0 && activeView < static_cast<long>(data.size()) ) {
 
         multiinport_.propagateEvent(newEvent.get(), data[activeView]);
         if (newEvent->hasBeenUsed()) event->markAsUsed();

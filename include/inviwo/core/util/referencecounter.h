@@ -41,7 +41,7 @@ namespace inviwo {
  */
 class IVW_CORE_API ReferenceCounter {
 public:
-    ReferenceCounter();;
+    ReferenceCounter();
     virtual ~ReferenceCounter();
     /**
      * Increase reference count of this object.

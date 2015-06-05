@@ -425,7 +425,7 @@ void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
     recentFileList_.removeAll(workspaceFileName);
     recentFileList_.prepend(workspaceFileName);
 
-    if (recentFileList_.size() > maxNumRecentFiles_) recentFileList_.removeLast();
+    if (recentFileList_.size() > static_cast<int>(maxNumRecentFiles_)) recentFileList_.removeLast();
 
     updateRecentWorkspaces();
 }

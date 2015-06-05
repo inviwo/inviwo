@@ -102,7 +102,7 @@ HistogramContainer calculateVolumeHistogram(const T* data, uvec3 dimensions,
         }
     }
 
-    for (int i = 0; i < extent; ++i) {
+    for (size_t i = 0; i < extent; ++i) {
         histograms[i].dataRange_ = dataRange;
         histograms[i].stats_.min = util::glmcomp(min, i);
         histograms[i].stats_.max = util::glmcomp(max, i);

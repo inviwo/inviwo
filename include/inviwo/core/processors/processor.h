@@ -59,7 +59,7 @@ class ResizeEvent;
     static const std::string CATEGORY;                                          \
     static const std::string DISPLAY_NAME;                                      \
     static const CodeState CODE_STATE;                                          \
-    static const Tags TAGS;
+    static const Tags TAGS
 
 #define ProcessorClassIdentifier(T, classIdentifier) \
     const std::string T::CLASS_IDENTIFIER = classIdentifier;

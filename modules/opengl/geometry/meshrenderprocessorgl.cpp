@@ -128,7 +128,7 @@ MeshRenderProcessorGL::~MeshRenderProcessorGL() {}
 void MeshRenderProcessorGL::initializeResources() {
     // shading defines
     utilgl::addShaderDefines(&shader_, lightingProperty_);
-    int layerID = 0;
+    size_t layerID = 0;
 
     if (colorLayer_.get()) {
         shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
@@ -297,7 +297,7 @@ void MeshRenderProcessorGL::updateDrawers() {
         auto iend = temp.upper_bound(elem.first);
 
         if (util::contains(changed, elem.first) || ibegin == temp.end() ||
-            elem.second.size() != std::distance(ibegin, iend)) {  // data is changed or new.
+            static_cast<long>(elem.second.size()) != std::distance(ibegin, iend)) {  // data is changed or new.
 
             for (auto geo : elem.second) {
                 MeshDrawer* renderer = MeshDrawerFactory::getPtr()->create(geo);

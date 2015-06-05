@@ -68,6 +68,7 @@
 #endif
 
 // Convenience macros for clang warning pragmas
+// List of all warnings and messages http://fuckingclangwarnings.com
 #ifdef __clang__
 #define STARTCLANGIGNORESTR(X) #X
 #define STARTCLANGIGNORE(X) \

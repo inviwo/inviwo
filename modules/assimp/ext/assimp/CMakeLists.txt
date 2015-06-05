@@ -289,4 +289,7 @@ ADD_SUBDIRECTORY( code/ )
 # Creates VS folder structure
 ivw_define_standard_definitions(assimp)
 ivw_folder(assimp ext)
-
+if(APPLE)
+  #Ignore warnings in external packages
+  set_target_properties(assimp PROPERTIES XCODE_ATTRIBUTE_GCC_WARN_INHIBIT_ALL_WARNINGS YES)
+endif(APPLE)
