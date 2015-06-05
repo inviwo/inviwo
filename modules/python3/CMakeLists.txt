@@ -1,6 +1,6 @@
 #--------------------------------------------------------------------
 # Inviwo Python3 Module
-ivw_module(Python3) 
+ivw_module(Python3)
 
 set(Python_ADDITIONAL_VERSIONS 3.5)
 find_package(PythonLibs 3)
@@ -12,13 +12,26 @@ endif()
 ivw_include_directories(${PYTHON_INCLUDE_DIR})
 get_filename_component(PYTHON_LIBRARY_DIR "${PYTHON_LIBRARY}" PATH)
 ivw_link_directories(${PYTHON_LIBRARY_DIR})
-add_dependency_libs_to_module("${PYTHON_LIBRARIES}")
+
+if(PYTHON_DEBUG_LIBRARY)
+    add_dependency_libs_to_module("${PYTHON_DEBUG_LIBRARY}")
+    set(IVW_PYTHON_LINK_DEBUG ON CACHE BOOL "")
+endif()
+
+if(IVW_PYTHON_LINK_DEBUG )
+    ivw_add_definition(IVW_PYTHON_LINK_DEBUG)
+endif()
+    
+
+
+add_dependency_libs_to_module("${PYTHON_LIBRARY_RELEASE}")
+
 
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycamera.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycanvas.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pycanvas.h
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyinfo.h
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pylist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/defaultinterface/pyproperties.h

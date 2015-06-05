@@ -32,7 +32,7 @@
 
 #pragma warning(push)
 #pragma warning(disable: 4273)
-#ifdef _DEBUG
+#if !defined(IVW_PYTHON_LINK_DEBUG) &&  defined(_DEBUG)
     #undef _DEBUG //Prevent linking debug build of python
     #include <Python.h>
     #define _DEBUG 1
