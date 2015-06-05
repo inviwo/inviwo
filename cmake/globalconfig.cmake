@@ -102,25 +102,27 @@ mark_as_advanced(EXECUTABLE_OUTPUT_PATH LIBRARY_OUTPUT_PATH)
 
 # Set Common Variables
 get_filename_component(IVW_ROOT_DIR ${CMAKE_CURRENT_LIST_DIR} PATH)
-set(IVW_INCLUDE_DIR ${IVW_ROOT_DIR}/include)
-set(IVW_CORE_INCLUDE_DIR ${IVW_ROOT_DIR}/include/inviwo/core)
-set(IVW_QT_INCLUDE_DIR ${IVW_ROOT_DIR}/include/inviwo/qt)
-set(IVW_MODULE_DIR ${IVW_ROOT_DIR}/modules)
-set(IVW_SOURCE_DIR ${IVW_ROOT_DIR}/src)
-set(IVW_CORE_SOURCE_DIR ${IVW_ROOT_DIR}/src/core)
-set(IVW_QT_SOURCE_DIR ${IVW_ROOT_DIR}/src/qt)
-set(IVW_APPLICATION_DIR ${IVW_ROOT_DIR}/apps)
-set(IVW_RESOURCES_DIR ${IVW_ROOT_DIR}/resources)
-set(IVW_EXTENSIONS_DIR ${IVW_ROOT_DIR}/ext)
-set(IVW_BINARY_DIR ${CMAKE_BINARY_DIR})
-set(IVW_LIBRARY_DIR ${LIBRARY_OUTPUT_PATH})
-set(IVW_EXECUTABLE_DIR ${EXECUTABLE_OUTPUT_PATH})
+set(IVW_INCLUDE_DIR             ${IVW_ROOT_DIR}/include)
+set(IVW_CORE_INCLUDE_DIR        ${IVW_ROOT_DIR}/include/inviwo/core)
+set(IVW_QT_INCLUDE_DIR          ${IVW_ROOT_DIR}/include/inviwo/qt)
+set(IVW_MODULE_DIR              ${IVW_ROOT_DIR}/modules)
+set(IVW_SOURCE_DIR              ${IVW_ROOT_DIR}/src)
+set(IVW_CORE_SOURCE_DIR         ${IVW_ROOT_DIR}/src/core)
+set(IVW_QT_SOURCE_DIR           ${IVW_ROOT_DIR}/src/qt)
+set(IVW_APPLICATION_DIR         ${IVW_ROOT_DIR}/apps)
+set(IVW_RESOURCES_DIR           ${IVW_ROOT_DIR}/resources)
+set(IVW_EXTENSIONS_DIR          ${IVW_ROOT_DIR}/ext)
+set(IVW_BINARY_DIR              ${CMAKE_BINARY_DIR})
+set(IVW_LIBRARY_DIR             ${LIBRARY_OUTPUT_PATH})
+set(IVW_EXECUTABLE_DIR          ${EXECUTABLE_OUTPUT_PATH})
 set(IVW_CMAKE_SOURCE_MODULE_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(IVW_CMAKE_BINARY_MODULE_DIR ${CMAKE_BINARY_DIR}/cmake)
 
 #Generate headers
 generate_external_module_header()
-configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/inviwocommondefines_template.h ${CMAKE_BINARY_DIR}/modules/_generated/inviwocommondefines.h @ONLY IMMEDIATE)
+configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/inviwocommondefines_template.h 
+               ${CMAKE_BINARY_DIR}/modules/_generated/inviwocommondefines.h 
+               @ONLY IMMEDIATE)
 
 # Set ignored libs
 set(VS_MULTITHREADED_DEBUG_DLL_IGNORE_LIBRARY_FLAGS
@@ -148,8 +150,8 @@ endif(CMAKE_COMPILER_2005)
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_definitions(-DDARWIN)
 endif()
-option(IVW_USE_GLFW_NOT_OPENGLQT "Use GLFW for context creation instead of OpenGLQt module" OFF)
 
+option(IVW_USE_GLFW_NOT_OPENGLQT "Use GLFW for context creation instead of OpenGLQt module" OFF)
 mark_as_advanced(FORCE IVW_USE_GLFW_NOT_OPENGLQT)
 
 #--------------------------------------------------------------------
@@ -191,16 +193,17 @@ else()
     endif()
 endif()
 
-IF(WIN32)
-	IF(MSVC)
-		add_definitions( "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo" )
-		string(REGEX REPLACE "[/\\-]Zm[0-9]+" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ym0x20000000")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm512")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-	ENDIF(MSVC)
-ENDIF()
+
+#--------------------------------------------------------------------
+# Disable deprecation warnings for standard C functions
+if(WIN32 AND MSVC)
+	add_definitions( "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo" )
+	string(REGEX REPLACE "[/\\-]Zm[0-9]+" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ym0x20000000")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm512")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+endif()
 
 
 #--------------------------------------------------------------------

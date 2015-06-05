@@ -637,6 +637,24 @@ macro(ivw_define_standard_properties project_name)
 		set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 11)
 		set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
 	endif()
+
+    #--------------------------------------------------------------------
+    # Specify warnings
+    if(APPLE)
+        #https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_NON_VIRTUAL_DESTRUCTOR YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_FUNCTION YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_UNUSED_VARIABLE YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_ABOUT_RETURN_TYPE YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_PEDANTIC YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SHADOW YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_GCC_WARN_SIGN_COMPARE YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
+        set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
+    endif()
 endmacro()
 
 #--------------------------------------------------------------------
