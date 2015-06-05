@@ -427,10 +427,9 @@ void Trackball<T>::touchGesture(Event* event) {
         auto direction = zoomToWorldPos - getLookFrom();
         zoom *= glm::length(direction);
         direction = glm::normalize(direction);
-        if (zoom < 0) {
-            zoom = getBoundedZoom(dvec3(getLookFrom()), dvec3(getLookTo()), zoom);
-        }
+        zoom = getBoundedZoom(dvec3(getLookFrom()), dvec3(getLookTo()), zoom);
         vec3 newLookFrom = getLookFrom() + static_cast<float>(zoom)* (direction);
+        //LogInfo("New lookFrom: " << newLookFrom << " Direction: " << direction << " Zoom: " << zoom);
 
         //vec3 boundedWorldSpaceTranslation(getBoundedTranslation(dvec3(newLookFrom), dvec3(getLookTo()), worldSpaceTranslation));
         vec3 boundedWorldSpaceTranslation(getBoundedTranslation(dvec3(newLookFrom), dvec3(getLookTo()), worldSpaceTranslation));
@@ -551,9 +550,7 @@ void Trackball<T>::zoom(Event* event) {
         double zoom = (normalizedDeviceCoord.y - prevNormalizedDeviceCoord.y)*directionLength;
         // zoom by moving the camera
         if (allowZooming_) {
-            //if (zoom < 0) {
-                zoom = getBoundedZoom(dvec3(getLookFrom()), dvec3(getLookTo()), zoom);
-            //}
+            zoom = getBoundedZoom(dvec3(getLookFrom()), dvec3(getLookTo()), zoom);
 
             setLookFrom(getLookFrom() - glm::normalize(direction)*static_cast<float>(zoom));
         }
