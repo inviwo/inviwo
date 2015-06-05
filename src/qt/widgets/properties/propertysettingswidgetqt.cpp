@@ -40,7 +40,7 @@ PropertySettingsWidgetQt::PropertySettingsWidgetQt(Property* property, QWidget* 
     , btnOk_("Ok", this)
     , btnCancel_("Cancel", this) {
     //this->setWindowFlags(Qt::WindowStaysOnTopHint);
-    this->setModal(true);
+    this->setModal(false);
     // remove help button from title bar
     Qt::WindowFlags flags = this->windowFlags() ^ Qt::WindowContextHelpButtonHint;
     // make it a tool window

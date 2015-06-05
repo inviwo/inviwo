@@ -162,9 +162,8 @@ protected:
         if (!this->settingsWidget_) {
             this->settingsWidget_ =
                 new TemplatePropertySettingsWidgetQt<BT, T>(ordinalproperty_, this);
-            ordinalproperty_->registerWidget(this->settingsWidget_);
         }
-        this->settingsWidget_->show();
+        this->settingsWidget_->showWidget();
     }
 
     virtual void setPropertyValue(int sliderId) = 0;

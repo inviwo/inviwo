@@ -30,6 +30,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -166,12 +167,7 @@ void Property::registerWidget(PropertyWidget* propertyWidget) {
 }
 
 void Property::deregisterWidget(PropertyWidget* propertyWidget) {
-    if (std::find(propertyWidgets_.begin(), propertyWidgets_.end(), propertyWidget) !=
-        propertyWidgets_.end()) {
-        propertyWidgets_.erase(
-            std::remove(propertyWidgets_.begin(), propertyWidgets_.end(), propertyWidget),
-            propertyWidgets_.end());
-    }
+    util::erase_remove(propertyWidgets_, propertyWidget);
 }
 
 void Property::setInitiatingWidget(PropertyWidget* propertyWidget){

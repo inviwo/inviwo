@@ -93,8 +93,15 @@ public:
     virtual ~PropertySettingsWidgetQt();
 
     virtual void updateFromProperty() { reload(); };
-    virtual void showWidget() { QDialog::setVisible(true); }
-    virtual void hideWidget() { QDialog::setVisible(false); }
+    virtual void showWidget() {
+        property_->registerWidget(this);
+        updateFromProperty();
+        QDialog::setVisible(true);
+    }
+    virtual void hideWidget() {
+        property_->deregisterWidget(this);
+        QDialog::setVisible(false);
+    }
 
     virtual UsageMode getUsageMode() const { return property_->getUsageMode(); };
 
@@ -177,7 +184,7 @@ public:
     }
 
     virtual void save() {
-        hide();
+        hideWidget();
         apply();
     }
 
@@ -206,11 +213,12 @@ public:
                 count++;
             }
         }
-
+        property_->setInitiatingWidget(this);
         if (min != minOrg) property_->setMinValue(min);
         if (val != valOrg) property_->set(val);
         if (max != maxOrg) property_->setMaxValue(max);
         if (inc != incOrg) property_->setIncrement(inc);
+        property_->clearInitiatingWidget();
     }
 
     virtual void reload() {
@@ -239,7 +247,7 @@ public:
         }
     }
     virtual void cancel() {
-        hide();
+        hideWidget();
         reload();
     }
 
