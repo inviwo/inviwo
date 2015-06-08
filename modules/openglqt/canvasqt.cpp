@@ -450,9 +450,11 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     // Copy touch points
     std::vector<TouchPoint> touchPoints;
     touchPoints.reserve(touch->touchPoints().size());
+    // Fetch layer before loop (optimization)
+    const LayerRAM* depthLayerRAM = getDepthLayerRAM();
+    vec2 screenSize(getScreenDimensions());
     for (auto& touchPoint : touch->touchPoints()) {
         vec2 screenTouchPos(touchPoint.pos().x(), touchPoint.pos().y());
-        vec2 screenSize(getScreenDimensions());
         vec2 prevScreenTouchPos(touchPoint.lastPos().x(), touchPoint.lastPos().y());
         TouchPoint::TouchState touchState;
         switch (firstPoint.state())
@@ -478,7 +480,8 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
             (screenTouchPos + 0.5f) / screenSize,
             prevScreenTouchPos,
             (prevScreenTouchPos + 0.5f) / screenSize,
-            touchState, getDepthValueAtCoord(ivec2(screenTouchPos.x, screenSize.y-1-screenTouchPos.y))));
+            touchState, getDepthValueAtCoord(ivec2(screenTouchPos.x, screenSize.y-1-screenTouchPos.y)
+                                             , depthLayerRAM)));
     }
     TouchEvent touchEvent(touchPoints, getScreenDimensions());
     touch->accept();

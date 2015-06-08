@@ -246,11 +246,14 @@ const LayerRAM* CanvasGL::getDepthLayerRAM() const{
         return nullptr;
 }
 
-double CanvasGL::getDepthValueAtCoord(ivec2 coord) const{
-    const LayerRAM* depthLayerRAM = getDepthLayerRAM();
-    if (depthLayerRAM) {
+double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM) const{
+    const LayerRAM* dlr = depthLayerRAM;
+    if (!dlr)
+        dlr = getDepthLayerRAM();
+
+    if (dlr) {
         uvec2 screenDims = getScreenDimensions();
-        uvec2 depthDims = depthLayerRAM->getDimensions();
+        uvec2 depthDims = dlr->getDimensions();
         coord = glm::max(coord, ivec2(0));
 
         float depthScreenRatioX = glm::floor(static_cast<float>(depthDims.x) / static_cast<float>(screenDims.x));
@@ -261,7 +264,7 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord) const{
         depthDims -= 1;
         coordDepth = glm::min(coordDepth, depthDims);
 
-        double depthValue = depthLayerRAM->getValueAsSingleDouble(coordDepth);
+        double depthValue = dlr->getValueAsSingleDouble(coordDepth);
 
         // Convert to normalized device coordinates
         return 2.0*depthValue - 1.0;

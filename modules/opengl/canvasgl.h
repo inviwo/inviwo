@@ -104,7 +104,7 @@ protected:
      * @param ivec2 screenCoordinate Screen coordinates [0 dim-1]^2
      * @return double NDC depth in [-1 1], 1 if no depth value exist.
      */
-    double getDepthValueAtCoord(ivec2 screenCoordinate) const;
+    double getDepthValueAtCoord(ivec2 screenCoordinate, const LayerRAM* depthLayerRAM = nullptr) const;
 
     static void enableDrawImagePlaneRect();
     static void disableDrawImagePlaneRect();
