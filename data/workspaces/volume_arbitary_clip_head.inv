@@ -81,7 +81,7 @@
                         </Property>
                         <Property type="org.inviwo.FloatProperty" identifier="aspectRatio">
                             <minvalue content="0" />
-                            <maxvalue content="1" />
+                            <maxvalue content="100" />
                             <increment content="0.1" />
                         </Property>
                         <Property type="org.inviwo.FloatProperty" identifier="near">
@@ -157,7 +157,7 @@
                         </Property>
                         <Property type="org.inviwo.FloatProperty" identifier="aspectRatio">
                             <minvalue content="0" />
-                            <maxvalue content="1" />
+                            <maxvalue content="100" />
                             <increment content="0.1" />
                         </Property>
                         <Property type="org.inviwo.FloatProperty" identifier="near">
@@ -465,7 +465,7 @@
                         </Property>
                         <Property type="org.inviwo.FloatProperty" identifier="aspectRatio">
                             <minvalue content="0" />
-                            <maxvalue content="1" />
+                            <maxvalue content="100" />
                             <increment content="0.1" />
                         </Property>
                         <Property type="org.inviwo.FloatProperty" identifier="near">
@@ -658,7 +658,7 @@
                         </Property>
                         <Property type="org.inviwo.FloatProperty" identifier="aspectRatio">
                             <minvalue content="0" />
-                            <maxvalue content="1" />
+                            <maxvalue content="100" />
                             <increment content="0.1" />
                         </Property>
                         <Property type="org.inviwo.FloatProperty" identifier="near">
