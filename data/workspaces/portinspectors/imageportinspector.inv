@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <InviwoTreeData version="1.0">
     <!-- Don't edit the following code -->
-    <ProcessorNetworkVersion content="10" />
+    <ProcessorNetworkVersion content="11" />
     <Processors>
         <Processor type="org.inviwo.CanvasGL" identifier="CanvasGL">
             <InPorts>

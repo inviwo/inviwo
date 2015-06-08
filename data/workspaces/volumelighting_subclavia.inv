@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <InviwoTreeData version="1.0">
     <!-- Don't edit the following code -->
-    <ProcessorNetworkVersion content="10" />
+    <ProcessorNetworkVersion content="11" />
     <Processors>
         <Processor type="org.inviwo.CanvasGL" identifier="Canvas">
             <InPorts>
@@ -358,7 +358,7 @@
                 </MetaDataItem>
             </MetaDataMap>
         </Processor>
-        <Processor type="org.inviwo.Point light source" identifier="Point light source">
+        <Processor type="org.inviwo.Pointlightsource" identifier="Point light source">
             <OutPorts>
                 <OutPort type="Outport" identifier="PointLightSource" id="ref17" />
             </OutPorts>
