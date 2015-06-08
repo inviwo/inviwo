@@ -102,6 +102,10 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
 OrdinalPropertyAnimator::~OrdinalPropertyAnimator() {
     timer_->stop();
     delete timer_;
+
+    for (auto p : properties_)
+        delete p;
+
 }
 
 void OrdinalPropertyAnimator::initialize() {

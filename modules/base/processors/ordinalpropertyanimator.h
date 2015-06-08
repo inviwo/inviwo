@@ -165,8 +165,6 @@ Property* OrdinalPropertyAnimator::VecProp<T>::getProp() {
 
 template <typename T>
 OrdinalPropertyAnimator::VecProp<T>::~VecProp() {
-    delete prop_;
-    delete delta_;
 }
 
 template <typename T>
@@ -241,8 +239,7 @@ Property* OrdinalPropertyAnimator::PrimProp<T>::getProp() {
 
 template <typename T>
 OrdinalPropertyAnimator::PrimProp<T>::~PrimProp() {
-    delete prop_;
-    delete delta_;
+
 }
 
 template <typename T>
