@@ -56,28 +56,7 @@ class Trackball : public CompositeProperty {
 public:
 
     /**
-     * Rotates and moves object around a sphere. The following restrictions 
-     * are enforced:
-     * LookToMinValue < lookTo < LookToMaxValuewhile 
-     * length(lookTo-lookFrom) < min(|LookFromMaxValue - LookToMaxValue|, |LookToMinValue - LookFromMinValue|)
-     *
-     * This means that the user will not get stuck in a corner when trying to rotate, 
-     * but will still be constrained to look at the object.
-     *
-     *     _________________________________________________LookFromMaxValue
-     *     |                                               |
-     *     |                                               |
-     *     |                                               |
-     *     |               ______________LookToMaxValue    |
-     *     |               |            |                  |
-     *     |      lookFrom | lookTo     |                  |
-     *     |          o----|-->o        |                  |
-     *     |               |____________|                  |
-     *     |   LookToMinValue |                            |
-     *     |                  |Max(length(lookTo-lookFrom))|
-     *     |__________________|____________________________|
-     * LookFromMinValue
-     *
+     * Rotates and moves object around a sphere.
      * This object does not take ownership of pointers handed to it.
      * The template class is expected to have the following functions:
      * const vec3& getLookTo() const;
@@ -89,10 +68,6 @@ public:
      * void setLookUp(vec3 lookUp);
      *
      * void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);
-     * vec3 getLookFromMinValue() const;
-     * vec3 getLookFromMaxValue() const;
-     * vec3 getLookToMinValue() const;
-     * vec3 getLookToMaxValue() const;
      * @see CameraTrackball
      */
     Trackball(T* object, const CameraBase* camera);
@@ -104,11 +79,11 @@ public:
     const vec3& getLookFrom() const { return object_->getLookFrom(); }
     const vec3& getLookUp() const { return object_->getLookUp(); }
 
-    vec3 getLookFromMinValue() const { return object_->getLookFromMinValue(); }
-    vec3 getLookFromMaxValue() const { return object_->getLookFromMaxValue(); }
+    const vec3 getLookFromMinValue() const { return object_->getLookFromMinValue(); }
+    const vec3 getLookFromMaxValue() const { return object_->getLookFromMaxValue(); }
 
-    vec3 getLookToMinValue() const { return object_->getLookToMinValue(); }
-    vec3 getLookToMaxValue() const { return object_->getLookToMaxValue(); }
+    const vec3 getLookToMinValue() const { return object_->getLookToMinValue(); }
+    const vec3 getLookToMaxValue() const { return object_->getLookToMaxValue(); }
 
     void setLookTo(vec3 lookTo) { object_->setLookTo(lookTo); }
     void setLookFrom(vec3 lookFrom) { object_->setLookFrom(lookFrom); }
@@ -514,36 +489,36 @@ void Trackball<T>::rotate(Event* event) {
         // Compute coordinates on a sphere to rotate from and to
         {
             float t0 = 0; float t1 = std::numeric_limits<float>::max();
-            auto o = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(prevNormalizedDeviceCoord, -1.f));
-            auto d = glm::normalize(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(prevNormalizedDeviceCoord, 0.f)) - o);
+            vec3 o = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(prevNormalizedDeviceCoord, -1.f));
+            vec3 d = glm::normalize(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(prevNormalizedDeviceCoord, 0.f)) - o);
             intersected = raySphereIntersection(getLookTo(), trackBallWorldSpaceRadius_, o, d, &t0, &t1);
             prevTrackballWorldPos = o + d*t1;
         }
 
         {
             float t0 = 0; float t1 = std::numeric_limits<float>::max();
-            auto o = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(normalizedDeviceCoord, -1.f));
-            auto d = glm::normalize(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(normalizedDeviceCoord, 0.f)) - o);
+            vec3 o = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(normalizedDeviceCoord, -1.f));
+            vec3 d = glm::normalize(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(normalizedDeviceCoord, 0.f)) - o);
             intersected = intersected & raySphereIntersection(getLookTo(), trackBallWorldSpaceRadius_, o, d, &t0, &t1);
             trackballWorldPos = o + d*t1;
         }
 
         if (intersected && gestureStartNDCDepth_ < 1) {
-            auto Pa = prevTrackballWorldPos - getLookTo();
-            auto Pc = trackballWorldPos - getLookTo();
+            vec3 Pa = prevTrackballWorldPos - getLookTo();
+            vec3 Pc = trackballWorldPos - getLookTo();
             glm::quat quaternion = glm::quat(glm::normalize(Pc), glm::normalize(Pa));
             setLook(getLookTo() + glm::rotate(quaternion, getLookFrom() - getLookTo()), getLookTo(), glm::rotate(quaternion, getLookUp()));
         } else {
             
-            auto prevWorldPos = getLookFrom();
-            auto rotationAroundVerticalAxis   = static_cast<float>( (curMousePos.x - lastMousePos_.x)*M_PI );
-            auto rotationAroundHorizontalAxis = static_cast<float>( (curMousePos.y - lastMousePos_.y)*M_PI );
+            vec3 prevWorldPos = getLookFrom();
+            float rotationAroundVerticalAxis = static_cast<float>((curMousePos.x - lastMousePos_.x)*M_PI);
+            float rotationAroundHorizontalAxis = static_cast<float>((curMousePos.y - lastMousePos_.y)*M_PI);
 
-            auto Pa = prevWorldPos - getLookTo();
-            auto toLookFromDirection = getLookFrom() - getLookTo();
-            auto Pc = glm::rotate(glm::rotate(Pa, rotationAroundHorizontalAxis, glm::cross(getLookUp(), glm::normalize(toLookFromDirection))), rotationAroundVerticalAxis, getLookUp());
+            vec3 Pa = prevWorldPos - getLookTo();
+
+            vec3 Pc = glm::rotate(glm::rotate(Pa, rotationAroundHorizontalAxis, glm::cross(getLookUp(), glm::normalize(getLookFrom() - getLookTo()))), rotationAroundVerticalAxis, getLookUp());
             glm::quat quaternion = glm::quat(glm::normalize(Pc), glm::normalize(Pa));
-            setLook(getLookTo() + glm::rotate(quaternion, toLookFromDirection), getLookTo(), glm::rotate(quaternion, getLookUp()));
+            setLook(getLookTo() + glm::rotate(quaternion, getLookFrom() - getLookTo()), getLookTo(), glm::rotate(quaternion, getLookUp()));
             
             
             //rotateTrackBall(lastTrackballPos_, curTrackballPos);

@@ -105,6 +105,9 @@ void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     TransferFunctionEditorControlPoint* controlPointGraphicsItem =
         getControlPointGraphicsItemAt(e->scenePos());
 
+    
+    #include <warn/push>
+    #include <warn/ignore/switch-enum>
     switch (e->button()) {
         case Qt::LeftButton:
             if (controlPointGraphicsItem) {
@@ -129,6 +132,7 @@ void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
         default:
             break;
     }
+    #include <warn/pop>
 
     QGraphicsScene::mousePressEvent(e);
 }

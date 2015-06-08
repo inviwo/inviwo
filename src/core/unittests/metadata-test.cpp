@@ -32,8 +32,12 @@
 #include <inviwo/core/io/serialization/ivwserializable.h>
 #include <string.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <gtest/gtest.h>
 
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
 namespace inviwo{
 

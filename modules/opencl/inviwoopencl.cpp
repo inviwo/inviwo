@@ -987,6 +987,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
             break;
 
+        case DataFormatEnums::NUMBER_OF_FORMATS:
         default:
             // Should not be able to reach here
             LogErrorCustom("cl::ImageFormat typeToImageFormat", "Format not implmented yet");

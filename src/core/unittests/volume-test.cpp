@@ -38,8 +38,10 @@
 #include <inviwo/core/util/filesystem.h>
 #include <math.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <gtest/gtest.h>
-
+#include <warn/pop>
 
 namespace inviwo {
 

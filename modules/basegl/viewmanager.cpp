@@ -41,7 +41,7 @@ Event* ViewManager::registerEvent(Event* event) {
         activePosition_ = flipY(mouseEvent->pos(), mouseEvent->canvasSize());
         if (!viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_PRESS) {
             viewportActive_ = true;
-            activeView_ = findView(activePosition_);
+            activeView_ = static_cast<int>(findView(activePosition_));
         } else if (viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_RELEASE) {
             viewportActive_ = false;
         }
@@ -61,7 +61,7 @@ Event* ViewManager::registerEvent(Event* event) {
                                 gestureEvent->canvasSize());
         if (!viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_STARTED) {
             viewportActive_ = true;
-            activeView_ = findView(activePosition_);
+            activeView_ = static_cast<int>(findView(activePosition_));
         } else if (viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_ENDED) {
             viewportActive_ = false;
         }
@@ -82,7 +82,7 @@ Event* ViewManager::registerEvent(Event* event) {
         activePosition_ = flipY(touchEvent->getCenterPoint(), touchEvent->canvasSize());
         if (!viewportActive_ && touchEvent->getTouchPoints().front().state() == TouchPoint::TOUCH_STATE_STARTED) {
             viewportActive_ = true;
-            activeView_ = findView(activePosition_);
+            activeView_ = static_cast<int>(findView(activePosition_));
         } else if (viewportActive_ && touchEvent->getTouchPoints().front().state() ==
             TouchPoint::TOUCH_STATE_ENDED) {
             viewportActive_ = false;

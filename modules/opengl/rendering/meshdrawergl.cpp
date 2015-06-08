@@ -107,6 +107,8 @@ GLenum MeshDrawerGL::getDrawMode(GeometryEnums::DrawType dt, GeometryEnums::Conn
                 case GeometryEnums::STRIP_ADJACENCY:
                     return GL_TRIANGLE_STRIP_ADJACENCY;
 
+                case GeometryEnums::LOOP:
+                case GeometryEnums::NUMBER_OF_CONNECTIVITY_TYPES:
                 default:
                     return GL_POINTS;
             }
@@ -129,10 +131,15 @@ GLenum MeshDrawerGL::getDrawMode(GeometryEnums::DrawType dt, GeometryEnums::Conn
                 case GeometryEnums::STRIP_ADJACENCY:
                     return GL_LINE_STRIP_ADJACENCY;
 
+                case GeometryEnums::FAN:
+                case GeometryEnums::NUMBER_OF_CONNECTIVITY_TYPES:
                 default:
                     return GL_POINTS;
             }
 
+        case GeometryEnums::POINTS:
+        case GeometryEnums::NOT_SPECIFIED:
+        case GeometryEnums::NUMBER_OF_DRAW_TYPES:
         default:
             return GL_POINTS;
     }

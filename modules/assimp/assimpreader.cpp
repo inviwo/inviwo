@@ -33,11 +33,16 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+
 #include <assimp/Importer.hpp>   // C++ importer interface
 #include <assimp/scene.h>        // Output data structure
 #include <assimp/postprocess.h>  // Post processing flags
 #include <assimp/types.h>
 #include <assimp/importerdesc.h>
+
+#include <warn/pop>
 
 namespace inviwo {
 

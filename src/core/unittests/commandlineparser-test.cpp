@@ -30,7 +30,10 @@
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <warn/pop>
 namespace inviwo{
 
 TEST(CommandLineParserTest, DefaultTest) {

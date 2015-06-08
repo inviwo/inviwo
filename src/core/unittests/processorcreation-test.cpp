@@ -27,7 +27,10 @@
  *
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <warn/pop>
 
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processorfactory.h>

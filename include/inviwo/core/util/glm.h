@@ -40,11 +40,9 @@
 #define GLM_FORCE_SIZE_T_LENGTH
 #endif
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
-#pragma clang diagnostic ignored "-Wsign-compare"
-#endif
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <warn/ignore/sign-compare>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -59,9 +57,8 @@
 #include <glm/gtx/io.hpp>
 
 #include <half/half.hpp>
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
+
+#include <warn/pop>
 
 #include <limits>
 #include <type_traits>

@@ -61,6 +61,8 @@ MouseEvent::MouseButton EventConverterQt::getMouseButtonCausingEvent(const QMous
     // include the button that caused the event.
     // The QMouseEvent::getButton function
     // returns the button that caused the event
+    #include <warn/push>
+    #include <warn/ignore/switch-enum>
     switch (e->button())
     {
     case Qt::LeftButton:
@@ -72,6 +74,7 @@ MouseEvent::MouseButton EventConverterQt::getMouseButtonCausingEvent(const QMous
     default:
         return MouseEvent::MOUSE_BUTTON_NONE;
     }
+    #include <warn/pop>
 }
 
 MouseEvent::MouseButton inviwo::EventConverterQt::getMouseWheelButton(const QWheelEvent* e) {

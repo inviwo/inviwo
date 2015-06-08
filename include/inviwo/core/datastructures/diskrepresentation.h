@@ -56,10 +56,11 @@ public:
     void readDataInto(void* dest) const;
 
 private:
-#pragma warning(push)
-#pragma warning(disable : 4251)
+
+    #include <warn/push>
+    #include <warn/ignore/dll-interface>
     std::string sourceFile_;
-#pragma warning(pop)
+    #include <warn/pop>
     // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
     DataReader* reader_;
 };

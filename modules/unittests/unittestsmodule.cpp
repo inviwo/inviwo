@@ -29,7 +29,10 @@
 
 #include <modules/unittests/unittestsmodule.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/unittests/logerrorcounter.h>

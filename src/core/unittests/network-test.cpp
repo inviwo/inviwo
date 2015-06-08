@@ -32,7 +32,10 @@
 #include <modules/base/processors/cubeproxygeometry.h>
 #include <modules/base/processors/volumeslice.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <warn/pop>
 
 namespace inviwo {
 

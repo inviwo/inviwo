@@ -74,7 +74,10 @@ struct IVW_CORE_API OnScopeExit {
     void release() { setAction(); }
 
 private:
+    #include <warn/push>
+    #include <warn/ignore/dll-interface>
     ExitAction action_;
+    #include <warn/pop>
 };
 
 template <typename T>

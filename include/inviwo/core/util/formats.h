@@ -174,10 +174,10 @@ protected:
     double max_;
     double min_;
 
-    #pragma warning(push)
-    #pragma warning(disable: 4251)
+    #include <warn/push>
+    #include <warn/ignore/dll-interface>
     std::string formatStr_;
-    #pragma warning(pop)
+    #include <warn/pop>
 };
 
 template <typename T>

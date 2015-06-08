@@ -46,7 +46,10 @@ public:
     virtual bool testParam(void*) = 0;
     virtual std::string paramType()const = 0;
 private:
+    #include <warn/push>
+    #include <warn/ignore/dll-interface>
     std::string name_;
+    #include <warn/pop>
     bool optional_;
 };
 

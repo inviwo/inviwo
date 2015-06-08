@@ -62,10 +62,10 @@ public:
 
 private:
     bool used_;
-#pragma warning(push)
-#pragma warning(disable : 4251)
+    #include <warn/push>
+    #include <warn/ignore/dll-interface>
     std::unordered_set<Processor*> visitedProcessors_;
-#pragma warning(pop)
+    #include <warn/pop>
 };
 
 }  // namespace

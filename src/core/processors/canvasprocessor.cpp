@@ -100,7 +100,7 @@ CanvasProcessor::CanvasProcessor()
     });
 
     inport_.onChange([&](){
-        colorLayer_.setMaxValue(inport_.getData()->getNumberOfColorLayers() - 1);
+        colorLayer_.setMaxValue(static_cast<int>(inport_.getData()->getNumberOfColorLayers() - 1));
     });
 
 

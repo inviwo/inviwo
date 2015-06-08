@@ -27,7 +27,10 @@
  *
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <gtest/gtest.h>
+#include <warn/pop>
 
 #include <modules/unittests/unittestsmoduledefine.h>
 #include <inviwo/core/io/serialization/ivwserializable.h>

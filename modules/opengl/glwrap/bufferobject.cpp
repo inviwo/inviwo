@@ -43,6 +43,7 @@ BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, Buf
             usageGL_ = GL_DYNAMIC_DRAW;
             break;
 
+        case STATIC:
         default:
             usageGL_ = GL_STATIC_DRAW;
             break;

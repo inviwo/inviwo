@@ -225,6 +225,7 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, siz
                     break;
             }
             break;
+        case DataFormatEnums::NOT_SPECIALIZED_TYPE:
         default:
             break;
     }

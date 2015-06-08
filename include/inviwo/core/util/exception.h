@@ -66,11 +66,11 @@ public:
     virtual const ExceptionContext& getContext() const;
 
 private:
-#pragma warning(push)
-#pragma warning(disable : 4251)
+    #include <warn/push>
+    #include <warn/ignore/dll-interface>
     std::string message_;
     ExceptionContext context_;
-#pragma warning(pop)
+    #include <warn/pop>
 };
 
 class IVW_CORE_API IgnoreException : public Exception {

@@ -138,7 +138,8 @@ void DistanceTransformRAM::process() {
 void DistanceTransformRAM::updateOutport() {
     VolumeRAM *vol = outport_.getData()->getEditableRepresentation<VolumeRAM>();
     DataFormatEnums::Id dataFormat = vol->getDataFormat()->getId();
-
+    #include <warn/push>
+    #include <warn/ignore/switch-enum>
     switch (dataFormat)
     {
     case DataFormatEnums::NOT_SPECIALIZED:
@@ -162,7 +163,7 @@ DataFormatIdMacro(UINT64)
     default:
         break;
     }
-
+    #include <warn/pop>
     distTransformDirty_ = false;
 }
 

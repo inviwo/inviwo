@@ -58,6 +58,9 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
 
     const DataFormatBase* format = data->getDataFormat();
     int components = 0;
+
+    #include <warn/push>
+    #include <warn/ignore/switch-enum>
     switch (format->getId())
     {
     case inviwo::DataFormatEnums::UINT8:
@@ -69,6 +72,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     default:
         break;
     }
+    #include <warn/pop>
 
     if (components == 0)
         throw DataWriterException("Error: Output format " + std::string(format->getString()) + " not support by PVM writer", IvwContext);

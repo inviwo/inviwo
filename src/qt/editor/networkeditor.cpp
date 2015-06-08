@@ -939,7 +939,7 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
                     connectionItem->setBorderColor(Qt::red);
                 }
                 connectionItem->setMidPoint(e->scenePos());
-            } catch (Exception& e) {
+            } catch (Exception&) {
                 connectionItem->setBorderColor(Qt::red);
             }
             oldConnectionTarget_ = connectionItem;

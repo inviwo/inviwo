@@ -222,10 +222,10 @@ public:
 
 private:
     LogLevel logLevel_;
-#pragma warning(push)
-#pragma warning(disable : 4251)
+    #include <warn/push>
+    #include <warn/ignore/dll-interface>
     std::vector<Logger*> loggers_;
-#pragma warning(pop)
+    #include <warn/pop>
     bool logStacktrace_;
 };
 

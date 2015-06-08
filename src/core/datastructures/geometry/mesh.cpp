@@ -117,6 +117,8 @@ std::string Mesh::getDataInfo() const {
         case GeometryEnums::TRIANGLES:
             ss << "Triangles";
             break;
+        case GeometryEnums::NOT_SPECIFIED:
+        case GeometryEnums::NUMBER_OF_DRAW_TYPES:
         default:
             ss << "Not specified";
     }

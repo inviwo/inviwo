@@ -78,7 +78,7 @@ OrdinalPropertyAnimator::OrdinalPropertyAnimator()
 
     std::vector<BaseProp*>::const_iterator itBegin = properties_.begin(); 
     for (std::vector<BaseProp*>::const_iterator it = itBegin; it != properties_.end(); ++it) {
-        type_.addOption((*it)->classname_, (*it)->displayName_, std::distance(itBegin, it));
+        type_.addOption((*it)->classname_, (*it)->displayName_, static_cast<int>(std::distance(itBegin, it)));
         Property* prop = (*it)->getProp();
         Property* delta = (*it)->getDelta();
 

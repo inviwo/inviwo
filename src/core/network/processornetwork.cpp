@@ -1092,7 +1092,14 @@ void ProcessorNetwork::NetworkConverter::updatePortsInProcessors(TxElement* root
             }
             return true;
         };
-        virtual bool VisitEnter( const TiXmlDocument& doc ) override {
+        virtual bool VisitEnter(const TxDocument& doc) override {
+            return ticpp::Visitor::VisitEnter(doc);
+        }
+        virtual bool VisitEnter(const TiXmlElement& element,
+                                const TiXmlAttribute* firstAttribute) override {
+            return ticpp::Visitor::VisitEnter(element, firstAttribute);
+        }
+        virtual bool VisitEnter(const TiXmlDocument& doc) override {
             return ticpp::Visitor::VisitEnter(doc);
         }
 

@@ -125,8 +125,13 @@ protected:
     Matrix<N + 1, float> worldMatrix_;
 };
 
-extern template class SpatialEntity<2>;
-extern template class SpatialEntity<3>;
+#ifdef _MSC_VER
+template class IVW_CORE_API SpatialEntity<2>;
+template class IVW_CORE_API SpatialEntity<3>;
+#else
+extern template class IVW_CORE_API SpatialEntity<2>;
+extern template class IVW_CORE_API SpatialEntity<3>;
+#endif
 
 template <unsigned int N>
 class StructuredGridEntity : public SpatialEntity<N> {
@@ -358,7 +363,7 @@ template <unsigned int N>
 Matrix<N + 1, float> StructuredGridEntity<N>::getIndexMatrix() const {
     Matrix<N + 1, float> indexMatrix(1.0f);
     for (size_t i = 0; i < N; ++i) {
-        indexMatrix[i][i] = dimensions_[i];
+        indexMatrix[i][i] = static_cast<float>(dimensions_[i]);
     }
 
     // Offset to coordinates to center them in the middle of the texel/voxel.

@@ -54,6 +54,8 @@ void VolumeLaplacian::process() {
         break;
     #include <inviwo/core/util/formatsdefinefunc.h>
 
+    case NUMBER_OF_FORMATS:
+    case NOT_SPECIALIZED:
     default:
         break;
     }

@@ -30,6 +30,9 @@
 #include <modules/freeimage/freeimageutils.h>
 #include <algorithm>
 
+#include <warn/push>
+#include <warn/ignore/switch-enum>
+
 bool FreeImageUtils::loader_initialized = false;
 
 inline DataFormatEnums::Id getDataFormatFromBitmap(FIBITMAP* bitmap) {
@@ -157,7 +160,6 @@ inline FREE_IMAGE_TYPE getFreeImageFormatFromDataFormat(inviwo::DataFormatEnums:
         default:
             break;
     }
-
     return FIT_UNKNOWN;
 }
 
@@ -258,10 +260,10 @@ void* FreeImageUtils::loadImageToData(void* data, std::string filename, uvec2& o
             case inviwo::DataFormatEnums::NOT_SPECIALIZED:
                 LogErrorCustom("loadImageToData", "Invalid format");
                 break;
-#define DataFormatIdMacro(i)                                                            \
-    case inviwo::DataFormatEnums::i:                                                    \
-        outData = fiBitmapToDataArray<Data##i::type>(data, bitmap, 8 * Data##i::size(), \
-                                                     Data##i::components());            \
+#define DataFormatIdMacro(i)                                                                   \
+    case inviwo::DataFormatEnums::i:                                                           \
+        outData = fiBitmapToDataArray<Data##i::type>(data, bitmap, 8 * Data##i::size(),        \
+                                                     static_cast<int>(Data##i::components())); \
         break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
@@ -289,10 +291,10 @@ void* FreeImageUtils::loadImageToDataAndRescale(void* data, std::string filename
             case inviwo::DataFormatEnums::NOT_SPECIALIZED:
                 LogErrorCustom("loadImageToDataAndRescale", "Invalid format");
                 break;
-#define DataFormatIdMacro(i)                                                    \
-    case inviwo::DataFormatEnums::i:                                            \
-        outData = fiBitmapToDataArrayAndRescale<Data##i::type>(                 \
-            data, bitmap, dst_dim, 8 * Data##i::size(), Data##i::components()); \
+#define DataFormatIdMacro(i)                                                                      \
+    case inviwo::DataFormatEnums::i:                                                              \
+        outData = fiBitmapToDataArrayAndRescale<Data##i::type>(                                   \
+            data, bitmap, dst_dim, 8 * Data##i::size(), static_cast<int>(Data##i::components())); \
         break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
@@ -326,14 +328,15 @@ void* FreeImageUtils::rescaleLayerRAM(const LayerRAM* srcLayerRam, uvec2 dst_dim
             LogErrorCustom("rescaleLayerRAM", "Invalid format");
             rawData = nullptr;
             break;
-#define DataFormatIdMacro(i)                                                          \
-    case inviwo::DataFormatEnums::i:                                                  \
-        bitmap = handleBitmapCreations<Data##i::type>(                                \
-            static_cast<const Data##i::type*>(srcLayerRam->getData()), formatType,    \
-            srcLayerRam->getDimensions(), 8 * Data##i::size(), Data##i::components(), \
-            srcLayerRam->getDataFormat());                                            \
-        rawData = fiBitmapToDataArrayAndRescale<Data##i::type>(                       \
-            nullptr, bitmap, dst_dim, 8 * Data##i::size(), Data##i::components());       \
+#define DataFormatIdMacro(i)                                                        \
+    case inviwo::DataFormatEnums::i:                                                \
+        bitmap = handleBitmapCreations<Data##i::type>(                              \
+            static_cast<const Data##i::type*>(srcLayerRam->getData()), formatType,  \
+            srcLayerRam->getDimensions(), 8 * Data##i::size(),                      \
+            static_cast<int>(Data##i::components()), srcLayerRam->getDataFormat()); \
+        rawData = fiBitmapToDataArrayAndRescale<Data##i::type>(                     \
+            nullptr, bitmap, dst_dim, 8 * Data##i::size(),                          \
+            static_cast<int>(Data##i::components()));                               \
         break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
@@ -435,12 +438,12 @@ FIBITMAP* FreeImageUtils::createBitmapFromData(const LayerRAM* inputLayer, bool 
         case inviwo::DataFormatEnums::NOT_SPECIALIZED:
             LogErrorCustom("createBitmapFromData", "Invalid format");
             return nullptr;
-#define DataFormatIdMacro(i)                                                         \
-    case inviwo::DataFormatEnums::i:                                                 \
-        return handleBitmapCreations<Data##i::type>(                                 \
-            static_cast<const Data##i::type*>(inputLayer->getData()), formatType,    \
-            inputLayer->getDimensions(), 8 * Data##i::size(), Data##i::components(), \
-            inputLayer->getDataFormat(), noScaling);
+#define DataFormatIdMacro(i)                                                      \
+    case inviwo::DataFormatEnums::i:                                              \
+        return handleBitmapCreations<Data##i::type>(                              \
+            static_cast<const Data##i::type*>(inputLayer->getData()), formatType, \
+            inputLayer->getDimensions(), 8 * Data##i::size(),                     \
+            static_cast<int>(Data##i::components()), inputLayer->getDataFormat(), noScaling);
 #include <inviwo/core/util/formatsdefinefunc.h>
 
         default:
@@ -460,7 +463,7 @@ void FreeImageUtils::copyBitmapToData(FIBITMAP* bitmap, LayerRAM* outImage) {
 #define DataFormatIdMacro(i)                                                                 \
     case inviwo::DataFormatEnums::i:                                                         \
         fiBitmapToDataArray<Data##i::type>(outImage->getData(), bitmap, 8 * Data##i::size(), \
-                                           Data##i::components());                           \
+                                           static_cast<int>(Data##i::components()));         \
         break;
 #include <inviwo/core/util/formatsdefinefunc.h>
 
@@ -605,3 +608,6 @@ std::vector<unsigned char>* FreeImageUtils::saveLayerToBuffer(const char* type,
     }
     return nullptr;
 }
+
+#include <warn/pop>
+

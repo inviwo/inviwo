@@ -150,7 +150,7 @@ VolumeSliceGL::VolumeSliceGL()
     rotationAroundAxis_.addOption("180", "180 deg", 2);
     rotationAroundAxis_.addOption("270", "270 deg", 3);
     rotationAroundAxis_.addOption("free", "Free rotation", 4);
-    rotationAroundAxis_.set(0.f);
+    rotationAroundAxis_.set(0);
     rotationAroundAxis_.setCurrentStateAsDefault();
 
     volumeWrapping_.addOption("color", "Fill with color", GL_CLAMP_TO_EDGE);

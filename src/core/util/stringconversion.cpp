@@ -138,7 +138,7 @@ std::string randomString(size_t length) {
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, possibleValues.size() - 1);
+    std::uniform_int_distribution<> dis(0, static_cast<int>(possibleValues.size()) - 1);
 
     while (s.size() < length) s += possibleValues[dis(gen)];
 
