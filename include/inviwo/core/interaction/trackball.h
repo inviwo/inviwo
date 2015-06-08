@@ -56,7 +56,28 @@ class Trackball : public CompositeProperty {
 public:
 
     /**
-     * Rotates and moves object around a sphere.
+     * Rotates and moves object around a sphere. The following restrictions 
+     * are enforced:
+     * LookToMinValue < lookTo < LookToMaxValuewhile 
+     * length(lookTo-lookFrom) < min(|LookFromMaxValue - LookToMaxValue|, |LookToMinValue - LookFromMinValue|)
+     *
+     * This means that the user will not get stuck in a corner when trying to rotate, 
+     * but will still be constrained to look at the object.
+     *
+     *     _________________________________________________LookFromMaxValue
+     *     |                                               |
+     *     |                                               |
+     *     |                                               |
+     *     |               ______________LookToMaxValue    |
+     *     |               |            |                  |
+     *     |      lookFrom | lookTo     |                  |
+     *     |          o----|-->o        |                  |
+     *     |               |____________|                  |
+     *     |   LookToMinValue |                            |
+     *     |                  |Max(length(lookTo-lookFrom))|
+     *     |__________________|____________________________|
+     * LookFromMinValue
+     *
      * This object does not take ownership of pointers handed to it.
      * The template class is expected to have the following functions:
      * const vec3& getLookTo() const;
@@ -68,6 +89,10 @@ public:
      * void setLookUp(vec3 lookUp);
      *
      * void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);
+     * vec3 getLookFromMinValue() const;
+     * vec3 getLookFromMaxValue() const;
+     * vec3 getLookToMinValue() const;
+     * vec3 getLookToMaxValue() const;
      * @see CameraTrackball
      */
     Trackball(T* object, const CameraBase* camera);
@@ -79,11 +104,11 @@ public:
     const vec3& getLookFrom() const { return object_->getLookFrom(); }
     const vec3& getLookUp() const { return object_->getLookUp(); }
 
-    const vec3 getLookFromMinValue() const { return object_->getLookFromMinValue(); }
-    const vec3 getLookFromMaxValue() const { return object_->getLookFromMaxValue(); }
+    vec3 getLookFromMinValue() const { return object_->getLookFromMinValue(); }
+    vec3 getLookFromMaxValue() const { return object_->getLookFromMaxValue(); }
 
-    const vec3 getLookToMinValue() const { return object_->getLookToMinValue(); }
-    const vec3 getLookToMaxValue() const { return object_->getLookToMaxValue(); }
+    vec3 getLookToMinValue() const { return object_->getLookToMinValue(); }
+    vec3 getLookToMaxValue() const { return object_->getLookToMaxValue(); }
 
     void setLookTo(vec3 lookTo) { object_->setLookTo(lookTo); }
     void setLookFrom(vec3 lookFrom) { object_->setLookFrom(lookFrom); }
