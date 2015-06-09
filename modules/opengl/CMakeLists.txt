@@ -31,7 +31,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/textureunit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/compositeprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/imageprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerglconverter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopengl.h
@@ -77,7 +76,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/textureunit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/compositeprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/imageprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerglconverter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopengl.cpp
