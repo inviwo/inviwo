@@ -198,11 +198,11 @@ std::string getInviwoUserSettingsPath() {
     int MAX_PATH = 512;
     char path[PATH_MAX];
 
-    STARTCLANGIGNORE("-Wdeprecated-declarations")
+    #include <warn/push>
+    #include <warn/ignore/deprecated-declarations>
     FSFindFolder(kUserDomain, folderType, kCreateFolder, &ref);
     FSRefMakePath(&ref, (UInt8*)&path, MAX_PATH);
-    ENDCLANGIGNORE
-
+    #include <warn/pop>
     ss << path << "/org.inviwo.network-editor/";
 
 #else

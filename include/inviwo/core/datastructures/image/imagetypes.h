@@ -50,7 +50,8 @@ enum LayerType {
     PICKING_LAYER = 2
 };
 
-STARTCLANGIGNORE("-Wunused-function")
+#include <warn/push>
+#include <warn/ignore/unused-function>
 static bool typeContainsColor(ImageType type) {
     return (type == COLOR_ONLY || type == COLOR_DEPTH || type == COLOR_PICKING || type == COLOR_DEPTH_PICKING);
 }
@@ -62,7 +63,7 @@ static bool typeContainsDepth(ImageType type) {
 static bool typeContainsPicking(ImageType type) {
     return (type == COLOR_PICKING || type == COLOR_DEPTH_PICKING);
 }
-ENDCLANGIGNORE
+#include <warn/pop>
 } // namespace
 
 #endif // IVW_IMAGETYPES_H

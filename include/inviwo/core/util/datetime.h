@@ -40,7 +40,9 @@
 
 namespace inviwo {
 
-STARTCLANGIGNORE("-Wunused-function")
+#include <warn/push>
+#include <warn/ignore/unused-function>
+
 static const std::string currentDateTime() {
     time_t currentDateTime = time(0);
     struct tm dateTimeStruct;
@@ -49,7 +51,7 @@ static const std::string currentDateTime() {
     strftime(dateTimeBuffer, sizeof(dateTimeBuffer), "%Y%m%d_%H%M%S", &dateTimeStruct);
     return dateTimeBuffer;
 }
-ENDCLANGIGNORE
+#include <warn/pop>
 
 } // namespace
 

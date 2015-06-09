@@ -40,8 +40,8 @@
 #pragma warning(3: 4266) // warn if no overide of function in baseclass
 #pragma warning(3: 4265) // warn if non-virtual destructor
 #pragma warning(3: 4263) // warn for virtual functions that do not overide something in baseclass
-
 #pragma warning(disable: 4251) // 'identifier' : class 'type' needs to have dll-interface to be used by clients of class 'type2'
+// List of all warnings messages and id for clang http://fuckingclangwarnings.com
 
 #define NOMINMAX
 
@@ -65,20 +65,6 @@
             #define IVW_DEBUG
         #endif
     #endif
-#endif
-
-// Convenience macros for clang warning pragmas
-// List of all warnings and messages http://fuckingclangwarnings.com
-#ifdef __clang__
-#define STARTCLANGIGNORESTR(X) #X
-#define STARTCLANGIGNORE(X) \
-    _Pragma("clang diagnostic push") \
-    _Pragma(STARTCLANGIGNORESTR(clang diagnostic ignored X))
-#define ENDCLANGIGNORE \
-    _Pragma("clang diagnostic pop")
-#else
-#define STARTCLANGIGNORE(X)
-#define ENDCLANGIGNORE
 #endif
 
 #include <iostream>

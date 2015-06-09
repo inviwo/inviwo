@@ -375,11 +375,12 @@ private:
 };
 
 static const CLFormats CLFormats_ = CLFormats();
-STARTCLANGIGNORE("-Wunused-function")
-    static const CLFormats* getCLFormats() {
-        return &CLFormats_;
+#include <warn/push>
+#include <warn/ignore/unused-function>
+static const CLFormats* getCLFormats() {
+    return &CLFormats_;
 }
-ENDCLANGIGNORE
+#include <warn/pop>
 }
 
 

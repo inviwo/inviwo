@@ -128,11 +128,12 @@ private:
 };
 
 static const GLFormats glFormats_ = GLFormats();
-STARTCLANGIGNORE("-Wunused-function")
+#include <warn/push>
+#include <warn/ignore/unused-function>
 static const GLFormats* getGLFormats() {
     return &glFormats_;
 }
-ENDCLANGIGNORE
+#include <warn/pop>
 }
 
 #endif

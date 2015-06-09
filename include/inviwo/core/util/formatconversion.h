@@ -51,7 +51,8 @@ static const float BYTE_DIV = 1.f/BYTE_SWAP;
 #define KILOBYTES_TO_BYTES(bytes) (bytes*BYTE_SWAP)
 #define MEGABYTES_TO_BYTES(bytes) (bytes*BYTE_SWAP*BYTE_SWAP)
 
-STARTCLANGIGNORE("-Wunused-function")
+#include <warn/push>
+#include <warn/ignore/unused-function>
 static std::string formatBytesToString(glm::u64 bytes) {
     std::ostringstream stream;
     stream.precision(2);
@@ -70,7 +71,7 @@ static std::string formatBytesToString(glm::u64 bytes) {
 
     return stream.str();
 };
-ENDCLANGIGNORE
+#include <warn/pop>
 
 } // namespace
 
