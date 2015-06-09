@@ -199,7 +199,7 @@ void VolumeRaycasterCL::setKernelArguments() {
 
 void VolumeRaycasterCL::setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition,
                                               const vec3& ambientColor, const vec3& diffuseColor,
-                                              const vec3& specularColor, int specularExponent) {
+                                              const vec3& specularColor, float specularExponent) {
     light_.position = vec4(lightPosition, 1.f);
     light_.ambientColor = vec4(ambientColor, 1.f);
     light_.diffuseColor = vec4(diffuseColor, 1.f);

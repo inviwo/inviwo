@@ -203,6 +203,8 @@ QSizeF LinkDialogPropertyGraphicsItem::sizeHint(Qt::SizeHint which, const QSizeF
         case Qt::PreferredSize:
             return rect().size() + QSize(12, 12);
 
+        case Qt::MinimumDescent:
+        case Qt::NSizeHints:
         default:
             break;
     }

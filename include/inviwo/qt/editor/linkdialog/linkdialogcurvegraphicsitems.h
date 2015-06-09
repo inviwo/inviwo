@@ -65,7 +65,8 @@ public:
     enum { Type = UserType + LinkDialogCurveGraphicsItemType };
     int type() const  {return Type; }
 protected:
-    virtual QPainterPath obtainCurvePath(QPointF startPoint, QPointF endPoint) const;
+    virtual QPainterPath obtainCurvePath() const override;
+    virtual QPainterPath obtainCurvePath(QPointF startPoint, QPointF endPoint) const override;
 };
 
 //////////////////////////////////////////////////////////////////////////

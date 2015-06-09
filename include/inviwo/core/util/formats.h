@@ -728,6 +728,8 @@ DEFAULTVALUES(bool, uvec2(1, 1), "Bool", false, false, true, true)
     case DataFormatEnums::Vec4UINT16: fun<DataVec4UINT16::type>(); break; \
     case DataFormatEnums::Vec4UINT32: fun<DataVec4UINT32::type>(); break; \
     case DataFormatEnums::Vec4UINT64: fun<DataVec4UINT64::type>(); break; \
+    case DataFormatEnums::NUMBER_OF_FORMATS: \
+    case DataFormatEnums::NOT_SPECIALIZED: \
     default: break; \
 }
 

@@ -112,6 +112,9 @@ Type Square(Type a) { return (a * a); }
 
 template <typename T>
 void DistanceTransformRAM::computeDistanceTransform() {
+#include <warn/push>
+#include <warn/ignore/conversion>
+
     const VolumeRAM *srcVol = volumePort_.getData()->getRepresentation<VolumeRAM>();
     VolumeRAM *vol = outport_.getData()->getEditableRepresentation<VolumeRAM>();
 
@@ -298,6 +301,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
     }
 
     LogInfo("Total Time: " << totalTime);
+#include <warn/pop>
 }
 
 } // namespace

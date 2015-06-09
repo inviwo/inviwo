@@ -56,6 +56,10 @@ QPainterPath DialogCurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPoint
     return bezierCurve;
 }
 
+QPainterPath DialogCurveGraphicsItem::obtainCurvePath() const  {
+    return CurveGraphicsItem::obtainCurvePath();
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 DialogConnectionGraphicsItem::DialogConnectionGraphicsItem(

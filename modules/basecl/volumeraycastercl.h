@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUME_RAYCASTER_CL_H
@@ -45,7 +45,7 @@
 namespace inviwo {
 
 /**
- * \brief Perform volume rendering on the input volume. 
+ * \brief Perform volume rendering on the input volume.
  *
  */
 class IVW_MODULE_BASECL_API VolumeRaycasterCL : public KernelOwner {
@@ -55,39 +55,49 @@ public:
 
     bool isValid() const { return kernel_ != nullptr; }
 
-
-
-    /** 
-     * \brief Perform volume rendering on the input volume. 
-     * 
-     * @param const Volume * volume 
+    /**
+     * \brief Perform volume rendering on the input volume.
+     *
+     * @param const Volume * volume
      * @param const Layer * entryPoints Start point of ray in texture space.
      * @param const Layer * exitPoints End point of ray in texture space.
      * @param const Layer * transferFunction Transfer function, mapping value to color and opacity.
-     * @param Layer * outImage Output image 
-     * @param const VECTOR_CLASS<cl::Event> * waitForEvents 
-     * @param cl::Event * event 
+     * @param Layer * outImage Output image
+     * @param const VECTOR_CLASS<cl::Event> * waitForEvents
+     * @param cl::Event * event
      */
-    void volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints, const Layer* transferFunction, Layer* outImage, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
-    
-    void volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL, const LayerCLBase* background, const LayerCLBase* entryCL, const LayerCLBase* exitCL, const LayerCLBase* transferFunctionCL, LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
-    
+    void volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints,
+                       const Layer* transferFunction, Layer* outImage,
+                       const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
+                       cl::Event* event = nullptr);
+
+    void volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL,
+                       const LayerCLBase* background, const LayerCLBase* entryCL,
+                       const LayerCLBase* exitCL, const LayerCLBase* transferFunctionCL,
+                       LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize,
+                       const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
+                       cl::Event* event = nullptr);
+
     void samplingRate(float samplingRate);
     float samplingRate() const { return samplingRate_; }
 
-	const CameraProperty*  getCamera() const { return camera_; }
+    const CameraProperty* getCamera() const { return camera_; }
     void setCamera(CameraProperty* camera) { camera_ = camera; }
     void setLightingProperties(const SimpleLightingProperty& light);
-    void setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition, const vec3& ambientColor, const vec3& diffuseColor, const vec3& specularColor, int specularExponent);
+    void setLightingProperties(ShadingMode::Modes mode, const vec3& lightPosition,
+                               const vec3& ambientColor, const vec3& diffuseColor,
+                               const vec3& specularColor, float specularExponent);
 
-    const Layer* getBackground() const { 
-        if (background_) return background_; 
-        else return &defaultBackground_;
+    const Layer* getBackground() const {
+        if (background_)
+            return background_;
+        else
+            return &defaultBackground_;
     }
-    /** 
-     * \brief Set background to use in the rendering. 
+    /**
+     * \brief Set background to use in the rendering.
      *
-     * The default background, black, will be used if layer is a nullptr. 
+     * The default background, black, will be used if layer is a nullptr.
      * @param Layer * val Layer to use as background. Will not take ownership.
      */
     void setBackground(const Layer* val) { background_ = val; }
@@ -135,6 +145,6 @@ private:
     cl::Kernel* kernel_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VOLUME_RAYCASTER_CL_H
+#endif  // IVW_VOLUME_RAYCASTER_CL_H

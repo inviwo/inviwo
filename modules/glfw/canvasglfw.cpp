@@ -220,7 +220,7 @@ void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
     double x;
     double y;
     glfwGetCursorPos(window, &x, &y);
-    int delta = (yoffset<0.0 ? floor(yoffset) : ceil(yoffset));
+    int delta = static_cast<int>(yoffset<0.0 ? floor(yoffset) : ceil(yoffset));
     MouseEvent* mouseEvent = new MouseEvent(ivec2(floor(x), floor(y)), delta, thisCanvas->mouseButton_,
         thisCanvas->mouseState_, MouseEvent::MOUSE_WHEEL_VERTICAL, thisCanvas->mouseModifiers_, thisCanvas->getScreenDimensions());
 
