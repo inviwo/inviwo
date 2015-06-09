@@ -80,7 +80,7 @@
 #include <warn/ignore/name-length-exceeded>
 #include <warn/ignore/newline-eof>
 #include <warn/ignore/no-such-warning>
-//#include <warn/ignore/non-virtual-dtor>
+#include <warn/ignore/non-virtual-dtor>
 #include <warn/ignore/object-layout-change>
 #include <warn/ignore/old-style-cast>
 #include <warn/ignore/overloaded-virtual>
@@ -114,6 +114,7 @@
 #include <warn/ignore/used-but-marked-unused>
 #include <warn/ignore/weak-vtables>
 #include <warn/ignore/dll-interface>
+#include <warn/ignore/dll-interface-base>
 #include <warn/ignore/arc-bridge-casts-disallowed-in-nonarc>
 #include <warn/ignore/arc-repeated-use-of-weak>
 #include <warn/ignore/deprecated-implementations>
