@@ -30,127 +30,72 @@
 #ifndef IVW_VOLUMERAMSUBSAMPLE_H
 #define IVW_VOLUMERAMSUBSAMPLE_H
 
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeoperation.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
-class IVW_CORE_API VolumeRAMSubSample : public VolumeOperation {
-
+class IVW_CORE_API VolumeRAMSubSample {
 public:
-    enum FACTOR{
-        HALF=2
-    };
-
-    VolumeRAMSubSample(const VolumeRepresentation* in, FACTOR factor) : VolumeOperation(in), factor_(factor) {}
-    virtual ~VolumeRAMSubSample() {}
-
-    template<typename T>
-    void evaluate();
-
-    static inline VolumeRAM* apply(const VolumeRepresentation* in, FACTOR factor) {
-        VolumeRAMSubSample subsampleOP = VolumeRAMSubSample(in, factor);
-        in->performOperation(&subsampleOP);
-        return subsampleOP.getOutput<VolumeRAM>();
-    }
-
-protected:
-    template<typename T, typename D>
-    void halfsample();
-
-private:
-    FACTOR factor_;
+    enum class FACTOR : size_t { HALF = 2 };
+    static VolumeRAM* apply(const VolumeRepresentation* in, FACTOR factor);
 };
 
-template<typename T>
-class VolumeRAMPrecision;
+struct VolumeRAMSubSampleDispatcher {
+    using type = VolumeRAM*;
+    template <class T>
+    VolumeRAM* dispatch(const VolumeRepresentation* in, VolumeRAMSubSample::FACTOR factor);
+};
 
-template<typename T>
-void VolumeRAMSubSample::evaluate() {
-    const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(getInputVolume());
+template <class DataType>
+VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in,  VolumeRAMSubSample::FACTOR factor) {
+    using T = typename DataType::type;
+    using P = typename util::same_extent<T, double>::type;
 
-    if (!volume) {
-        setOutput(nullptr);
-        return;
-    }
-
-    uvec3 dataDims = volume->getDimensions();
-    size_t sXY = static_cast<size_t>(dataDims.x*dataDims.y);
-    size_t sX = static_cast<size_t>(dataDims.x);
+    const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(in);
+    if (!volume) return nullptr;
+ 
+    const size3_t dataDims{volume->getDimensions()};
+    const size_t sXY{dataDims.x*dataDims.y};
+    const size_t sX{dataDims.x};
 
     //calculate new size
-    uvec3 newDims = dataDims / static_cast<unsigned int>(factor_);
-    size_t dXY = static_cast<size_t>(newDims.x*newDims.y);
-    size_t dX = static_cast<size_t>(newDims.x);
+    const size3_t newDims{dataDims / static_cast<size_t>(factor)};
+    const size_t dXY{newDims.x*newDims.y};
+    const size_t dX{newDims.x};
 
     //allocate space
-    VolumeRAMPrecision<T>* newVolume = new VolumeRAMPrecision<T>(newDims);
+    VolumeRAMPrecision<T>* newVolume = new VolumeRAMPrecision<T>(static_cast<uvec3>(newDims));
 
     //get data pointers
-    const T* src = reinterpret_cast<const T*>(volume->getData());
-    T* dst = reinterpret_cast<T*>(newVolume->getData());
+    const T* src = static_cast<const T*>(volume->getData());
+    T* dst = static_cast<T*>(newVolume->getData());
     const DataFormatBase* format = volume->getDataFormat();
 
     //Half sampling
-    if(factor_ == HALF){
-        //VolumeHalfSampleCalculator<T>::calculate(this, dst, src, dataDims, newDims);
-        #define sumCurVal(v) curVal = v; val += format->valueToVec4Double(&curVal)*0.125;
-        for (int z=0; z < static_cast<int>(newDims.z); ++z) {
-            for (int y=0; y < static_cast<int>(newDims.y); ++y) {
+    if (factor == VolumeRAMSubSample::FACTOR::HALF) {
+        for (long long z=0; z < newDims.z; ++z) {
+            for (long long y=0; y < newDims.y; ++y) {
                 #pragma omp parallel for
-                for (int x=0; x < static_cast<int>(newDims.x); ++x) {
-                    size_t px = static_cast<size_t>(x*2);
-                    size_t py = static_cast<size_t>(y*2);
-                    size_t pz = static_cast<size_t>(z*2);
-                    dvec4 val = dvec4(0.0);
-                    T curVal;
-                    sumCurVal(src[(pz*sXY) + (py*sX) + px]) 
-                    sumCurVal(src[(pz*sXY) + (py*sX) + (px+1)])
-                    sumCurVal(src[(pz*sXY) + ((py+1)*sX) + px])
-                    sumCurVal(src[(pz*sXY) + ((py+1)*sX) + (px+1)])
-                    sumCurVal(src[((pz+1)*sXY) + (py*sX) + px])
-                    sumCurVal(src[((pz+1)*sXY) + (py*sX) + (px+1)])
-                    sumCurVal(src[((pz+1)*sXY) + ((py+1)*sX) + px])
-                    sumCurVal(src[((pz+1)*sXY) + ((py+1)*sX) + (px+1)])
-                    format->vec4DoubleToValue(val, &curVal);
-                    dst[(z*dXY) + (y*dX) + x] = curVal;
+                for (long long x=0; x < newDims.x; ++x) {
+                    const long long px{x*2};
+                    const long long py{y*2};
+                    const long long pz{z*2};
+                    P val{0.0};
+                    val += src[(pz*sXY) + (py*sX) + px];
+                    val += src[(pz*sXY) + (py*sX) + (px+1)];
+                    val += src[(pz*sXY) + ((py+1)*sX) + px];
+                    val += src[(pz*sXY) + ((py+1)*sX) + (px+1)];
+                    val += src[((pz+1)*sXY) + (py*sX) + px];
+                    val += src[((pz+1)*sXY) + (py*sX) + (px+1)];
+                    val += src[((pz+1)*sXY) + ((py+1)*sX) + px];
+                    val += src[((pz+1)*sXY) + ((py+1)*sX) + (px+1)];
+                    dst[(z*dXY) + (y*dX) + x] = static_cast<T>(val*0.125);
                 }
             }
         }
     }
-
-    setOutput(newVolume);
+    return newVolume;
 }
-
-template<typename T, typename D>
-void halfsample(T* dst, const T* src, uvec3 dstDims, uvec3 srcDims){
-    size_t sXY = static_cast<size_t>(srcDims.x*srcDims.y);
-    size_t sX = static_cast<size_t>(srcDims.x);
-    size_t dXY = static_cast<size_t>(dstDims.x*dstDims.y);
-    size_t dX = static_cast<size_t>(dstDims.x);
-
-    int x,y,z;
-    #pragma omp parallel for
-    for (z=0; z < static_cast<int>(dstDims.z); ++z) {
-        for (y=0; y < static_cast<int>(dstDims.y); ++y) {
-            for (x=0; x < static_cast<int>(dstDims.x); ++x) {
-                size_t px = static_cast<size_t>(x*2);
-                size_t py = static_cast<size_t>(y*2);
-                size_t pz = static_cast<size_t>(z*2);
-                D val = D(src[(pz*sXY) + (py*sX) + px])*0.125;
-                val += D(src[(pz*sXY) + (py*sX) + (px+1)])*0.125;
-                val += D(src[(pz*sXY) + ((py+1)*sX) + px])*0.125;
-                val += D(src[(pz*sXY) + ((py+1)*sX) + (px+1)])*0.125;
-                val += D(src[((pz+1)*sXY) + (py*sX) + px])*0.125;
-                val += D(src[((pz+1)*sXY) + (py*sX) + (px+1)])*0.125;
-                val += D(src[((pz+1)*sXY) + ((py+1)*sX) + px])*0.125;
-                val += D(src[((pz+1)*sXY) + ((py+1)*sX) + (px+1)])*0.125;
-                dst[(z*dXY) + (y*dX) + x] = T(val);
-            }
-        }
-    }
-}
-
 
 } // namespace
 

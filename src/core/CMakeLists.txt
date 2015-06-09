@@ -262,11 +262,11 @@ set(SOURCE_FILES
     datastructures/datarepresentation.cpp
     datastructures/diskrepresentation.cpp
     datastructures/geometry/basicmesh.cpp
-    datastructures/geometry/meshdisk2ramconverter.cpp
     datastructures/geometry/mesh.cpp
     datastructures/geometry/meshdisk.cpp
+    datastructures/geometry/meshdisk2ramconverter.cpp
     datastructures/geometry/meshram.cpp
-	datastructures/geometry/meshrepresentation.cpp
+    datastructures/geometry/meshrepresentation.cpp
     datastructures/geometry/plane.cpp
     datastructures/geometry/simplemesh.cpp
     datastructures/geometry/simplemeshcreator.cpp
@@ -290,10 +290,12 @@ set(SOURCE_FILES
     datastructures/volume/marchingtetrahedron.cpp
     datastructures/volume/volume.cpp
     datastructures/volume/volumedisk.cpp
+    datastructures/volume/volumeoperation.cpp
     datastructures/volume/volumeram.cpp
     datastructures/volume/volumeramconverter.cpp
-    datastructures/volume/volumerepresentation.cpp
     datastructures/volume/volumeramprecision.cpp
+    datastructures/volume/volumeramsubsample.cpp
+    datastructures/volume/volumerepresentation.cpp
     interaction/action.cpp
     interaction/cameratrackball.cpp
     interaction/events/event.cpp
@@ -365,8 +367,8 @@ set(SOURCE_FILES
     processors/progressbar.cpp
     properties/advancedmaterialproperty.cpp
     properties/baseoptionproperty.cpp
-    properties/boolproperty.cpp
     properties/boolcompositeproperty.cpp
+    properties/boolproperty.cpp
     properties/buttonproperty.cpp
     properties/cameraproperty.cpp
     properties/compositeproperty.cpp

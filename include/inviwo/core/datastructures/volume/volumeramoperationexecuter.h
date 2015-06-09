@@ -32,7 +32,7 @@
 
 #include <inviwo/core/datastructures/dataoperation.h>
 #include <inviwo/core/datastructures/volume/volumeramsubset.h>
-#include <inviwo/core/datastructures/volume/volumeramsubsample.h>
+//#include <inviwo/core/datastructures/volume/volumeramsubsample.h>
 
 namespace inviwo {
 
@@ -46,12 +46,12 @@ void executeOperationOnVolumeRAMPrecision(DataOperation* dop) {
         return;
     }
 
-    VolumeRAMSubSample* volSubSampleDop = dynamic_cast<VolumeRAMSubSample*>(dop);
-
-    if (volSubSampleDop) {
-        volSubSampleDop->evaluate<T>();
-        return;
-    }
+//     VolumeRAMSubSample* volSubSampleDop = dynamic_cast<VolumeRAMSubSample*>(dop);
+// 
+//     if (volSubSampleDop) {
+//         volSubSampleDop->evaluate<T>();
+//         return;
+//     }
 };
 
 } // namespace

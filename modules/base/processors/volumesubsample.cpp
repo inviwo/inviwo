@@ -75,7 +75,7 @@ void VolumeSubsample::process() {
         Volume* volume = nullptr;
 
         if(subSampleFactor_.get() == 2)
-            volume = new Volume(VolumeRAMSubSample::apply(vol, VolumeRAMSubSample::HALF));
+            volume = new Volume(VolumeRAMSubSample::apply(vol, VolumeRAMSubSample::FACTOR::HALF));
         
         if(!volume) {
             outport_.setConstData(inport_.getData());

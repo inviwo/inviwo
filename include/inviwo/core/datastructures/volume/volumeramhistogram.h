@@ -32,7 +32,6 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeoperation.h>
 #include <inviwo/core/datastructures/histogram.h>
 
 namespace inviwo {

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,12 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEOPERATION_H
-#define IVW_VOLUMEOPERATION_H
-
-#include <inviwo/core/datastructures/dataoperation.h>
-#include <inviwo/core/util/formats.h>
+#include <inviwo/core/datastructures/volume/volumeoperation.h>
 
 namespace inviwo {
 
-class VolumeRepresentation;
+VolumeOperation::VolumeOperation(const VolumeRepresentation* in) : DataOperation(), in_(in) {}
 
-class IVW_CORE_API VolumeOperation : public DataOperation {
-public:
-    VolumeOperation(const VolumeRepresentation* in);
-    virtual ~VolumeOperation() = default;
-
-    const VolumeRepresentation* getInputVolume();
-
-    template <typename T>
-    void evaluate() {}
-
-    template <typename VO>
-    void evaluateFor() {
-        VO* t = dynamic_cast<VO*>(this);
-        if (!t) return;  // todo maybe print error=
-
-        DataFormatEnums::Id id_ = getInputVolume()->getDataFormat()->getId();
-        CallFunctionWithTemplateArgsForType(t->template evaluate, id_);
-    }
-
-private:
-    const VolumeRepresentation* in_;
-};
+const VolumeRepresentation* VolumeOperation::getInputVolume() { return in_; }
 
 }  // namespace
-
-#endif  // IVW_VOLUMEOPERATION_H
