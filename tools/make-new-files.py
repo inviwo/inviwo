@@ -188,7 +188,7 @@ class Paths:
 			self.module_name = m.group("kind")
 			if self.module_name == "qt": self.module_name += m.group("qt")
 			self.api_def = "IVW_" + self.module_name.upper() + "_API"
-			if m.group("kind") == "qt"
+			if m.group("kind") == "qt":
 				self.module_define = "<inviwo/qt/"+ m.group("qt") +"/inviwo" + self.module_name.lower() + "define.h>"
 			else:
 				self.module_define = "<inviwo/core/common/inviwo" + self.module_name.lower() + "define.h>"
