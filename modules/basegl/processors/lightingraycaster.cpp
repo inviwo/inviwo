@@ -116,7 +116,7 @@ void LightingRaycaster::onVolumeChange() {
             return;
 
         channel_.clearOptions();
-        for (std::size_t i = 0; i < channels; i++) {
+        for (int i = 0; i < static_cast<int>(channels); i++) {
             std::stringstream ss;
             ss << "Channel " << i;
             channel_.addOption(ss.str(), ss.str(), i);

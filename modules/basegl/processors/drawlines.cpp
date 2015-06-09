@@ -81,8 +81,8 @@ void DrawLines::initialize() {
     GLint aliasRange[2];
     glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, aliasRange);
 
-    lineSize_.setMinValue(aliasRange[0]);
-    lineSize_.setMaxValue(aliasRange[1]);
+    lineSize_.setMinValue(static_cast<float>(aliasRange[0]));
+    lineSize_.setMaxValue(static_cast<float>(aliasRange[1]));
 
     if (aliasRange[0] == aliasRange[1])
         lineSize_.setVisible(false);

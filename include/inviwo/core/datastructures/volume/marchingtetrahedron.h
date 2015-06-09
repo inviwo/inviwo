@@ -200,20 +200,20 @@ private:
 
     template <typename T>
     static double toSingle(const glm::detail::tvec2<T, glm::defaultp> &v) {
-        return v.x;
+        return static_cast<double>(v.x);
     }
     template <typename T>
     static double toSingle(const glm::detail::tvec3<T, glm::defaultp> &v) {
-        return v.x;
+        return static_cast<double>(v.x);
     }
     template <typename T>
     static double toSingle(const glm::detail::tvec4<T, glm::defaultp> &v) {
-        return v.x;
+        return static_cast<double>(v.x);
     }
 
     template <typename T>
     static double toSingle(const T &v) {
-        return v;
+        return static_cast<double>(v);
     }
 
     static glm::vec3 interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,

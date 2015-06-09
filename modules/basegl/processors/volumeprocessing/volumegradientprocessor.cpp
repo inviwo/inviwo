@@ -77,7 +77,7 @@ void VolumeGradientProcessor::initializeResources(){
 
 void VolumeGradientProcessor::onVolumeChange() {
     if (inport_.hasData()){
-        int channels = inport_.getData()->getDataFormat()->getComponents();
+        int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
 
         if(channels == static_cast<int>(channel_.size()))
             return;

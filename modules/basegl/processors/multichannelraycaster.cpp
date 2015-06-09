@@ -107,7 +107,7 @@ void MultichannelRaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, lighting_);
 
     if (volumePort_.hasData()) {
-        const int channels = volumePort_.getData()->getDataFormat()->getComponents();
+        int channels = static_cast<int>(volumePort_.getData()->getDataFormat()->getComponents());
         
         std::vector<Property*> tfs = transferFunctions_.getProperties();
         for (int i = 0; i < static_cast<int>(tfs.size()); i++) {
@@ -139,7 +139,7 @@ void MultichannelRaycaster::process() {
     utilgl::bindTexture(volumePort_, volUnit);
 
     std::vector<Property*> tfs = transferFunctions_.getProperties();
-    const int channels =  volumePort_.getData()->getDataFormat()->getComponents();
+    int channels = static_cast<int>(volumePort_.getData()->getDataFormat()->getComponents());
     TextureUnit* transFuncUnits = new TextureUnit[channels];
     GLint* tfUnitNumbers = new GLint[channels];
     for (int channel = 0; channel < channels; channel++) {

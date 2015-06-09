@@ -70,7 +70,7 @@ void OverlayProperty::updateViewport(vec2 destDim) {
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
     pos.x -= shift.x;
     // negate y axis
-    pos.y = 1.0 - (pos.y + shift.y);
+    pos.y = 1.f - (pos.y + shift.y);
 
     pos *= destDim;
     size *= destDim;

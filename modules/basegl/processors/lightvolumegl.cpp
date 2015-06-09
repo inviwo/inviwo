@@ -330,6 +330,8 @@ bool LightVolumeGL::lightSourceChanged() {
             break;
         }
 
+        case LightSourceType::LIGHT_CONE:
+        case LightSourceType::LIGHT_AREA:
         default:
             LogWarn("Light source not supported, can only handle Directional or Point Light");
             break;
