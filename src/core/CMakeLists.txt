@@ -39,6 +39,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemesh.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/geometry/simplemeshcreator.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/histogram.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/kdtree.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/image.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imagedisk.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/imageram.h

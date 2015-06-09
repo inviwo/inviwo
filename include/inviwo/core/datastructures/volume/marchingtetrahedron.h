@@ -35,7 +35,7 @@
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeoperation.h>
-#include <modules/experimental/datastructures/kdtree.h>
+#include <inviwo/core/datastructures/kdtree.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 

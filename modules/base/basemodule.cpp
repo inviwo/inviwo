@@ -43,6 +43,7 @@
 #include <modules/base/processors/pointlightsourceprocessor.h>
 #include <modules/base/processors/ordinalpropertyanimator.h>
 #include <modules/base/processors/spotlightsourceprocessor.h>
+#include <modules/base/processors/surfaceextraction.h>
 #include <modules/base/processors/volumesource.h>
 #include <modules/base/processors/volumeexport.h>
 #include <modules/base/processors/volumebasistransformer.h>
@@ -80,6 +81,7 @@ BaseModule::BaseModule() : InviwoModule() {
     registerProcessor(PointLightSourceProcessor);
     registerProcessor(OrdinalPropertyAnimator);
     registerProcessor(SpotLightSourceProcessor);
+    registerProcessor(SurfaceExtraction);
     registerProcessor(VolumeSource);
     registerProcessor(VolumeExport);
     registerProcessor(BasisTransformMesh);
