@@ -90,8 +90,6 @@ protected:
     void gestureEvent(GestureEvent* e);
     void touchEvent(TouchEvent* e);
 
-    uvec2 mousePosToPixelCoordinates(ivec2 mpos);
-
     static Mesh* screenAlignedRect_;
 
     bool initialized_;

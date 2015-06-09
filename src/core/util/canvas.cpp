@@ -154,7 +154,7 @@ void Canvas::interactionEvent(Event* event) {
 
 void Canvas::mousePressEvent(MouseEvent* e) {
     if (e->button() == MouseEvent::MOUSE_BUTTON_LEFT) {
-        bool picked = pickingContainer_->performPick(mousePosToPixelCoordinates(e->pos()));
+        bool picked = pickingContainer_->performMousePick(e);
 
         if (!picked)
             interactionEvent(e);
@@ -170,7 +170,7 @@ void Canvas::mouseReleaseEvent(MouseEvent* e) {
 
 void Canvas::mouseMoveEvent(MouseEvent* e) {
     if (pickingContainer_->isPickableSelected())
-        pickingContainer_->movePicked(mousePosToPixelCoordinates(e->pos()));
+        pickingContainer_->moveMousePicked(e);
     else
         interactionEvent(e);
 }
@@ -193,18 +193,6 @@ void Canvas::gestureEvent(GestureEvent* e) {
 
 void Canvas::touchEvent(TouchEvent* e){
     interactionEvent(e);
-}
-
-uvec2 Canvas::mousePosToPixelCoordinates(ivec2 mpos) {
-    ivec2 pos = mpos;
-    ivec2 dim(getScreenDimensions());
-    pos.x = std::max(pos.x - 1, 0);
-    pos.x = std::min(pos.x, dim.x - 1);
-    
-    pos.y = std::max(dim.y - pos.y - 1, 0);
-    pos.y = std::min(pos.y, dim.y - 1);
-        
-    return uvec2(pos);
 }
 
 void Canvas::setEventPropagator(EventPropagator* propagator) {

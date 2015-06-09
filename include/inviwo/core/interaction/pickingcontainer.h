@@ -37,6 +37,8 @@ namespace inviwo {
 
 class Image;
 class PickingObject;
+class MouseEvent;
+class TouchEvent;
 
 class IVW_CORE_API PickingContainer {
 public:
@@ -45,15 +47,21 @@ public:
 
     bool isPickableSelected();
 
-    bool performPick(const uvec2& coord);
-    void movePicked(const uvec2& coord);
+    bool performMousePick(MouseEvent*);
+    void moveMousePicked(MouseEvent*);
+
+    bool performTouchPick(TouchEvent*);
+    void moveTouchPicked(TouchEvent*);
 
     void setPickableSelected(bool selected);
     void setPickingSource(const Image* src);
 
 protected:
+    PickingObject* findPickingObject(const uvec2& coord);
+
     vec2 pixelMoveVector(const uvec2& previous, const uvec2& current);
     vec2 normalizedCoordinates(const uvec2& coord);
+    uvec2 mousePosToPixelCoordinates(ivec2 mpos, ivec2 dim);
 
 private:
     const Image* src_;

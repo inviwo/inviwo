@@ -54,8 +54,7 @@ public:
     virtual ~PickingManager();
 
     template <typename T>
-    const PickingObject* registerPickingCallback(T* o, void (T::*m)(const PickingObject*),
-                                                 bool readDepth = true);
+    const PickingObject* registerPickingCallback(T* o, void (T::*m)(const PickingObject*));
 
     bool unregisterPickingObject(const PickingObject*);
     bool pickingEnabled();
@@ -76,8 +75,7 @@ private:
 
 template <typename T>
 const PickingObject* PickingManager::registerPickingCallback(T* o,
-                                                             void (T::*m)(const PickingObject*),
-                                                             bool readDepth /*= true*/) {
+                                                             void (T::*m)(const PickingObject*)) {
     PickingObject* pickObj;
 
     if (unRegisteredPickingObjects_.empty()) {
@@ -89,7 +87,6 @@ const PickingObject* PickingManager::registerPickingCallback(T* o,
     }
 
     pickObj->getCallbackContainer()->addMemberFunction(o, m);
-    pickObj->setReadDepth(readDepth);
     return pickObj;
 }
 

@@ -28,11 +28,14 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/pickingobject.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 
 namespace inviwo {
 
 PickingObject::PickingObject(size_t id, DataVec3UINT8::type c) : id_(id), colorUINT8_(c),
-    pos_(vec2(0.f)), readDepth_(true), depth_(0.f), move_(vec2(0.f)) {
+    interactionEvent_(nullptr), interactionEventType_(NONE_SUPPORTED), pos_(vec2(0.f)), 
+    depth_(0.f), move_(vec2(0.f)) {
     onPickedCallback_ = new PickingCallback();
     color_ = static_cast<vec3>(DataVec3UINT8::get()->valueToNormalizedVec3Double(&c));
 }
@@ -61,20 +64,22 @@ const vec2& PickingObject::getPickingMove() const {
     return move_;
 }
 
-void PickingObject::setReadDepth(bool rd) {
-    readDepth_ = rd;
-}
-
-bool PickingObject::readDepth() {
-    return readDepth_;
-}
-
 const double& PickingObject::getPickingDepth() const {
     return depth_;
 }
 
 void PickingObject::picked() const {
     onPickedCallback_->invoke(this);
+}
+
+void PickingObject::setPickingMouseEvent(MouseEvent* e){
+    interactionEvent_ = e;
+    interactionEventType_ = MOUSE_INTERACTION_EVENT;
+}
+
+void PickingObject::setPickingTouchEvent(TouchEvent* e){
+    interactionEvent_ = e;
+    interactionEventType_ = TOUCH_INTERACTION_EVENT;
 }
 
 void PickingObject::setPickingPosition(vec2 pos) {

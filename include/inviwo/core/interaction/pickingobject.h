@@ -36,11 +36,20 @@
 
 namespace inviwo {
 
+class InteractionEvent;
+class MouseEvent;
+class TouchEvent;
+
 /** \class PickingObject
  */
 class IVW_CORE_API PickingObject {
-
 public:
+    enum InteractionEventType {
+        NONE_SUPPORTED = 0,
+        MOUSE_INTERACTION_EVENT = 1,
+        TOUCH_INTERACTION_EVENT = 2
+    };
+
     PickingObject(size_t, DataVec3UINT8::type);
 
     virtual ~PickingObject();
@@ -51,11 +60,12 @@ public:
     const vec2& getPickingPosition() const;
     const vec2& getPickingMove() const;
 
-    void setReadDepth(bool);
-    bool readDepth();
     const double& getPickingDepth() const;
 
     void picked() const;
+
+    void setPickingMouseEvent(MouseEvent*);
+    void setPickingTouchEvent(TouchEvent*);
 
     void setPickingMove(vec2);
     void setPickingPosition(vec2);
@@ -67,10 +77,14 @@ private:
     size_t id_;
     DataVec3UINT8::type colorUINT8_;
     vec3 color_;
+
+    InteractionEvent* interactionEvent_;
+    InteractionEventType interactionEventType_;
+
     vec2 pos_;
-    bool readDepth_;
     double depth_;
     vec2 move_;
+
     PickingCallback* onPickedCallback_;
 };
 
