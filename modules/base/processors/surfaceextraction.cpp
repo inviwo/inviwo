@@ -90,8 +90,8 @@ void SurfaceExtraction::process() {
 
 void SurfaceExtraction::setMinMax(){
     if(volume_.hasData()){
-        isoValue_.setMinValue(volume_.getData()->dataMap_.dataRange.x);
-        isoValue_.setMaxValue(volume_.getData()->dataMap_.dataRange.y);
+        isoValue_.setMinValue(static_cast<const float>(volume_.getData()->dataMap_.dataRange.x));
+        isoValue_.setMaxValue(static_cast<const float>(volume_.getData()->dataMap_.dataRange.y));
     }
 }
 

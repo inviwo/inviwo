@@ -53,7 +53,10 @@ public:
         if (!t) return;  // todo maybe print error=
 
         DataFormatEnums::Id id_ = getInputVolume()->getDataFormat()->getId();
+        #include <warn/push>
+        #include <warn/ignore/switch-enum>
         CallFunctionWithTemplateArgsForType(t->template evaluate, id_);
+        #include <warn/pop>
     }
 
 private:

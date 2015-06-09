@@ -62,7 +62,10 @@ void VolumeLaplacian::process() {
     }
     */
 
+    #include <warn/push>
+    #include <warn/ignore/switch-enum>
     CallFunctionWithTemplateArgsForType(processRepresentation, inport_.getData()->getDataFormat()->getId());
+    #include <warn/pop>
 }
 
 } // namespace

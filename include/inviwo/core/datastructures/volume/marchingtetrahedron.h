@@ -218,9 +218,13 @@ private:
 
     static glm::vec3 interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
                                  const double &v1) {
-        float t = 0;
-        if (v0 != v1) t = v0 / (v0 - v1);
-        return t * p1 + (1 - t) * p0;
+        double t = 0;
+        
+        if (v0 != v1) 
+            t = v0 / (v0 - v1);
+        
+        float tF = static_cast<float>(t);
+        return tF * p1 + (1.f - tF) * p0;
     }
 };
 
