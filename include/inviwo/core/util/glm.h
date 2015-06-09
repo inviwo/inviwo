@@ -50,6 +50,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/std_based_type.hpp>
 #include <glm/gtx/matrix_operation.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/common.hpp>
@@ -89,7 +90,9 @@ typedef glm::dmat3 dmat3;
 typedef glm::dmat4 dmat4;
 typedef glm::quat quat;
 
-
+typedef glm::size2_t size2_t;
+typedef glm::size3_t size3_t;
+typedef glm::size4_t size4_t;
 
 namespace util {
 
