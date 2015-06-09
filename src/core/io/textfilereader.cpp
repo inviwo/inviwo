@@ -26,10 +26,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/raiiutils.h>
+
+#include <warn/push>
+#include <warn/ignore/non-virtual-dtor>
 #include <thread>
+#include <warn/pop>
 
 namespace inviwo {
 

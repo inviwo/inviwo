@@ -332,3 +332,20 @@ else()
         set(CMAKE_GENERATOR_TOOLSET "v120_CTP_Nov2012" CACHE STRING "Platform Toolset" FORCE) 
     endif() 
 endif()
+
+
+
+#--------------------------------------------------------------------
+# Exclude stuff from cotire
+set(IVW_COTIRE_EXCLUDES
+    "${IVW_EXTENSIONS_DIR}/warn"
+    "${IVW_MODULE_DIR}/unittests/ext"
+  )
+
+if(WIN32 AND MSVC)
+    if(DEFINED MSVC_ACRO)
+        list(APPEND IVW_COTIRE_EXCLUDES 
+            "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/include/thread"
+            "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/include/thr/xthread")
+    endif()
+endif()

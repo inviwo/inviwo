@@ -822,7 +822,7 @@ macro(ivw_compile_optimize_inviwo_core)
 		endif()
 
         set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH 
-            "${COTIRE_PREFIX_HEADER_IGNORE_PATH};${IVW_EXTENSIONS_DIR}/warn")
+            "${COTIRE_PREFIX_HEADER_IGNORE_PATH};$IVW_COTIRE_EXCLUDES}")
         set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
         get_target_property(_prefixHeader inviwo-core COTIRE_CXX_PREFIX_HEADER)
         set_target_properties(${_projectName} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${_prefixHeader}")
@@ -835,7 +835,7 @@ endmacro()
 macro(ivw_compile_optimize)
     if(PRECOMPILED_HEADERS)
         set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH 
-            "${COTIRE_PREFIX_HEADER_IGNORE_PATH};${IVW_EXTENSIONS_DIR}/warn")
+            "${COTIRE_PREFIX_HEADER_IGNORE_PATH};${IVW_COTIRE_EXCLUDES}")
         set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
 		list(APPEND _allPchDirs ${IVW_EXTENSIONS_DIR})
 		set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${_allPchDirs}")
