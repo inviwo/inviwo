@@ -35,37 +35,24 @@ namespace inviwo {
 
 ProcessorClassIdentifier(VolumeLaplacian, "org.inviwo.VolumeLaplacian");
 ProcessorDisplayName(VolumeLaplacian,  "Volume Laplacian");
-ProcessorTags(VolumeLaplacian, Tags::None);
+ProcessorTags(VolumeLaplacian, Tags::CPU);
 ProcessorCategory(VolumeLaplacian, "Volume Operation");
 ProcessorCodeState(VolumeLaplacian, CODE_STATE_BROKEN);
 
 VolumeLaplacian::VolumeLaplacian()
-    : VolumeGLProcessor("volume_laplacian.frag") {
+    : inport_("inport")
+    , outport_("outport") {
+    addPort(inport_);
+    addPort(outport_);
 }
 
 void VolumeLaplacian::process() {
-    //VolumeGLProcessor::process();
+    const Volume* volume = inport_.getData();
 
-    /*
-    switch (inport_.getData()->getDataFormat()->getId()) {
-    #define DataFormatIdMacro(i) \
-    case i: \
-        processRepresentation<Data##i::type, Data##i::bits>(); \
-        break;
-    #include <inviwo/core/util/formatsdefinefunc.h>
+    VolumeLaplacian::Dispatcher disp;
+    Volume* res = volume->getDataFormat()->dispatch(disp, volume);
 
-    case NUMBER_OF_FORMATS:
-    case NOT_SPECIALIZED:
-    default:
-        break;
-    }
-    }
-    */
-
-    #include <warn/push>
-    #include <warn/ignore/switch-enum>
-    CallFunctionWithTemplateArgsForType(processRepresentation, inport_.getData()->getDataFormat()->getId());
-    #include <warn/pop>
+    outport_.setData(res);
 }
 
 } // namespace

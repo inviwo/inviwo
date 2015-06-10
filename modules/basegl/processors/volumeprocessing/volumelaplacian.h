@@ -34,7 +34,6 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <limits>
@@ -50,10 +49,10 @@ namespace inviwo {
  * 
  *
  */
-class IVW_MODULE_BASEGL_API VolumeLaplacian : public VolumeGLProcessor { 
+class IVW_MODULE_BASEGL_API VolumeLaplacian : public Processor {
 public:
     VolumeLaplacian();
-    virtual ~VolumeLaplacian(){}
+    virtual ~VolumeLaplacian() {}
 
     InviwoProcessorInfo();
 
@@ -62,32 +61,44 @@ public:
 protected:
     template <typename T>
     void processRepresentation();
-    
+
 private:
-    template<typename T>
+    template <typename T>
     struct offset {
         offset(T w, ivec3 p) : weight(w), shift(0) {}
         T weight;
         ivec3 shift;
     };
+
+    struct Dispatcher {
+        using type = Volume*;
+        template <class T>
+        Volume* dispatch(const Volume* volume);
+    };
+
+
+    VolumeInport inport_;
+    VolumeOutport outport_;
 };
 
-template <typename T>
-void VolumeLaplacian::processRepresentation() {
+template <class DataType>
+Volume* inviwo::VolumeLaplacian::Dispatcher::dispatch(const Volume* volume) {
+    using T = typename DataType::type;
+
     LogInfo("Calculating");
     const VolumeRAMPrecision<T>* inRep =
         static_cast<const VolumeRAMPrecision<T>*>(
-            inport_.getData()->getRepresentation<VolumeRAM>()
+            volume->getRepresentation<VolumeRAM>()
         );
 
-    Volume* newData = inport_.getData()->clone();
+    Volume* newData = volume->clone();
 
     VolumeRAMPrecision<T>* outRep =
         static_cast<VolumeRAMPrecision<T>*>(
             newData->getEditableRepresentation<VolumeRAM>()
         );
 
-    ivec3 dim = static_cast<ivec3>(inport_.getData()->getDimensions());
+    ivec3 dim = static_cast<ivec3>(volume->getDimensions());
     
     const T* in = static_cast<const T*>(inRep->getData());
     T* out = static_cast<T*>(outRep->getData());
@@ -115,8 +126,8 @@ void VolumeLaplacian::processRepresentation() {
         for (pos.y = 0; pos.y < dim.y; pos.y++) {
             for (pos.x = 0; pos.x < dim.x; pos.x++) {
                 value = T(0);
-                for (it = kernel.begin(); it != endIt; ++it) {
-                    value += it->weight * in[VolumeRAM::periodicPosToIndex(pos + it->shift, dim)];
+                for (const auto& k : kernel) {
+                    value += k.weight * in[VolumeRAM::periodicPosToIndex(pos + k.shift, dim)];
                 }
                 out[VolumeRAM::periodicPosToIndex(pos, dim)] = value;
 //                minval = glm::min(minval, value);
@@ -126,10 +137,12 @@ void VolumeLaplacian::processRepresentation() {
             }
         }
     }
-    outport_.setData(newData);
+   
 
     //mean/=count;
     LogInfo("Done: count " << count);
+
+    return newData;
 }
 
 } // namespace
