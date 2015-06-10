@@ -534,6 +534,7 @@ template<> inline DataFormatEnums::Id DataVec4UINT64::id() { return DataFormatEn
 
 template <typename T, typename... Args>
 auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type {
+    using R = typename T::type;
     switch (formatId_) {
         case DataFormatEnums::FLOAT16:
             return obj.template dispatch<DataFLOAT16>(std::forward<Args>(args)...);
@@ -626,7 +627,7 @@ auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type 
         case DataFormatEnums::NOT_SPECIALIZED:
         case DataFormatEnums::NUMBER_OF_FORMATS:
         default:
-            return nullptr;
+            return R();
     }
 }
 
@@ -680,59 +681,6 @@ DEFAULTVALUES(std::string, uvec2(1, 1), "String", "", "", "", "")
 DEFAULTVALUES(bool, uvec2(1, 1), "Bool", false, false, true, true)
 
 #undef DEFAULTVALUES
-
-
-#define CallFunctionWithTemplateArgsForType(fun, id) \
-    switch (id) {\
-    case DataFormatEnums::FLOAT16: fun<DataFLOAT16::type>(); break; \
-    case DataFormatEnums::FLOAT32: fun<DataFLOAT32::type>(); break; \
-    case DataFormatEnums::FLOAT64: fun<DataFLOAT64::type>(); break; \
-    case DataFormatEnums::INT8: fun<DataINT8::type>(); break; \
-    case DataFormatEnums::INT16: fun<DataINT16::type>(); break; \
-    case DataFormatEnums::INT32: fun<DataINT32::type>(); break; \
-    case DataFormatEnums::INT64: fun<DataINT64::type>(); break; \
-    case DataFormatEnums::UINT8: fun<DataUINT8::type>(); break; \
-    case DataFormatEnums::UINT16: fun<DataUINT16::type>(); break; \
-    case DataFormatEnums::UINT32: fun<DataUINT32::type>(); break; \
-    case DataFormatEnums::UINT64: fun<DataUINT64::type>(); break; \
-    case DataFormatEnums::Vec2FLOAT16: fun<DataVec2FLOAT16::type>(); break; \
-    case DataFormatEnums::Vec2FLOAT32: fun<DataVec2FLOAT32::type>(); break; \
-    case DataFormatEnums::Vec2FLOAT64: fun<DataVec2FLOAT64::type>(); break; \
-    case DataFormatEnums::Vec2INT8: fun<DataVec2INT8::type>(); break; \
-    case DataFormatEnums::Vec2INT16: fun<DataVec2INT16::type>(); break; \
-    case DataFormatEnums::Vec2INT32: fun<DataVec2INT32::type>(); break; \
-    case DataFormatEnums::Vec2INT64: fun<DataVec2INT64::type>(); break; \
-    case DataFormatEnums::Vec2UINT8: fun<DataVec2UINT8::type>(); break; \
-    case DataFormatEnums::Vec2UINT16: fun<DataVec2UINT16::type>(); break; \
-    case DataFormatEnums::Vec2UINT32: fun<DataVec2UINT32::type>(); break; \
-    case DataFormatEnums::Vec2UINT64: fun<DataVec2UINT64::type>(); break; \
-    case DataFormatEnums::Vec3FLOAT16: fun<DataVec3FLOAT16::type>(); break; \
-    case DataFormatEnums::Vec3FLOAT32: fun<DataVec3FLOAT32::type>(); break; \
-    case DataFormatEnums::Vec3FLOAT64: fun<DataVec3FLOAT64::type>(); break; \
-    case DataFormatEnums::Vec3INT8: fun<DataVec3INT8::type>(); break; \
-    case DataFormatEnums::Vec3INT16: fun<DataVec3INT16::type>(); break; \
-    case DataFormatEnums::Vec3INT32: fun<DataVec3INT32::type>(); break; \
-    case DataFormatEnums::Vec3INT64: fun<DataVec3INT64::type>(); break; \
-    case DataFormatEnums::Vec3UINT8: fun<DataVec3UINT8::type>(); break; \
-    case DataFormatEnums::Vec3UINT16: fun<DataVec3UINT16::type>(); break; \
-    case DataFormatEnums::Vec3UINT32: fun<DataVec3UINT32::type>(); break; \
-    case DataFormatEnums::Vec3UINT64: fun<DataVec3UINT64::type>(); break; \
-    case DataFormatEnums::Vec4FLOAT16: fun<DataVec4FLOAT16::type>(); break; \
-    case DataFormatEnums::Vec4FLOAT32: fun<DataVec4FLOAT32::type>(); break; \
-    case DataFormatEnums::Vec4FLOAT64: fun<DataVec4FLOAT64::type>(); break; \
-    case DataFormatEnums::Vec4INT8: fun<DataVec4INT8::type>(); break; \
-    case DataFormatEnums::Vec4INT16: fun<DataVec4INT16::type>(); break; \
-    case DataFormatEnums::Vec4INT32: fun<DataVec4INT32::type>(); break; \
-    case DataFormatEnums::Vec4INT64: fun<DataVec4INT64::type>(); break; \
-    case DataFormatEnums::Vec4UINT8: fun<DataVec4UINT8::type>(); break; \
-    case DataFormatEnums::Vec4UINT16: fun<DataVec4UINT16::type>(); break; \
-    case DataFormatEnums::Vec4UINT32: fun<DataVec4UINT32::type>(); break; \
-    case DataFormatEnums::Vec4UINT64: fun<DataVec4UINT64::type>(); break; \
-    case DataFormatEnums::NUMBER_OF_FORMATS: \
-    case DataFormatEnums::NOT_SPECIALIZED: \
-    default: break; \
-}
-
 
 }
 
