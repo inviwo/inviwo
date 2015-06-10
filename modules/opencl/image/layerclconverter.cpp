@@ -68,7 +68,7 @@ DataRepresentation* LayerCL2RAMConverter::createFrom(const DataRepresentation* s
         LayerRAM* layerRAM = static_cast<LayerRAM*>(destination);
         layerCL->download(layerRAM->getData());
         // const cl::CommandQueue& queue = OpenCL::getInstance()->getQueue();
-        // queue.enqueueReadLayer(layerCL->getLayer(), true, glm::svec3(0), glm::svec3(dimensions,
+        // queue.enqueueReadLayer(layerCL->getLayer(), true, glm::size3_t(0), glm::size3_t(dimensions,
         // 1), 0, 0, layerRAM->getData());
     } else {
         LogError("Invalid conversion or not implemented");

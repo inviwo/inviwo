@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-VolumeRAM* createVolumeRAM(const uvec3& dimensions, const DataFormatBase* format, void* dataPtr) {
+VolumeRAM* createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format, void* dataPtr) {
     VolumeRamDispatcher disp;
     return format->dispatch(disp, dataPtr, dimensions);
 }

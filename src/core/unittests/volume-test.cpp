@@ -61,7 +61,7 @@ void testVolumeLoad(std::string filename) {
     const T* data = static_cast<const T*>(volumeRAM->getData());
     ASSERT_TRUE(data != nullptr);
 
-    uvec3 dim = volume->getDimensions();
+    size3_t dim = volume->getDimensions();
     long long ref0;
     double ref1;
     double ref2;
@@ -108,7 +108,7 @@ void testVolumeClone(std::string filename) {
     Volume* volume2 = volume->clone();
 
     const T* data = static_cast<const T*>(volumeRAM->getData());
-    uvec3 dim = volume->getDimensions();
+    size3_t dim = volume->getDimensions();
 
     const VolumeRAMPrecision<T>* volumeRAM1 =
         static_cast<const VolumeRAMPrecision<T>*>(volume1->getRepresentation<VolumeRAM>());
@@ -118,8 +118,8 @@ void testVolumeClone(std::string filename) {
     const T* data1 = static_cast<const T*>(volumeRAM1->getData());
     const T* data2 = static_cast<const T*>(volumeRAM2->getData());
 
-    uvec3 dim1 = volume1->getDimensions();
-    uvec3 dim2 = volume2->getDimensions();
+    size3_t dim1 = volume1->getDimensions();
+    size3_t dim2 = volume2->getDimensions();
 
     EXPECT_EQ(dim,dim1);
     EXPECT_EQ(dim,dim2);

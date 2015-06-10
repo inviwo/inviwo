@@ -100,7 +100,7 @@ private:
 
     ButtonProperty btnForceUpdate_;
 
-    uvec3 volDim_;
+    size3_t volDim_;
     bool dirty_;
     bool distTransformDirty_;
 
@@ -118,7 +118,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
     const VolumeRAM *srcVol = volumePort_.getData()->getRepresentation<VolumeRAM>();
     VolumeRAM *vol = outport_.getData()->getEditableRepresentation<VolumeRAM>();
 
-    uvec3 dataDim = vol->getDimensions();
+    size3_t dataDim = vol->getDimensions();
     if (dataDim != srcVol->getDimensions())
         return;
 
@@ -145,7 +145,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
     for (int z=0; z<static_cast<int>(dataDim.z); ++z) {
         for (int y=0; y<static_cast<int>(dataDim.y); ++y) {
             for (std::size_t x=0; x<dataDim.x; ++x) {
-                uvec3 pos(x, y, z);
+                size3_t pos(x, y, z);
                 if (srcVol->getValueAsSingleDouble(pos) > 0.5) {
                     // set distance to zero
                     data[(z * dataDim.y + y) * dataDim.x + x] = lowVal;

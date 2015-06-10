@@ -52,7 +52,7 @@ class IVW_MODULE_OPENCL_API LayerCLGL : public LayerCLBase,
                                         public LayerRepresentation,
                                         public TextureObserver {
 public:
-    LayerCLGL(uvec2 dimensions = uvec2(64), LayerType type = COLOR_LAYER,
+    LayerCLGL(size2_t dimensions = size2_t(64), LayerType type = COLOR_LAYER,
               const DataFormatBase* format = DataFormatBase::get(), Texture2D* data = nullptr);
     virtual ~LayerCLGL();
     LayerCLGL(const LayerCLGL& rhs);
@@ -61,7 +61,7 @@ public:
     void initialize(Texture2D* texture);
     void deinitialize();
     
-    virtual void setDimensions(uvec2 dimensions) override;
+    virtual void setDimensions(size2_t dimensions) override;
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
 
     virtual cl::Image2D& getEditable() { return *static_cast<cl::Image2D*>(clImage_); }

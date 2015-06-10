@@ -104,7 +104,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
 
     // Make sure dimension and format match
     const DataFormatBase* format = volumes[0]->getDataFormat();
-    uvec3 mdim = volumes[0]->getDimensions();
+    size3_t mdim = volumes[0]->getDimensions();
     for (size_t i = 1; i < volumes.size(); i++) {
         if (format != volumes[i]->getDataFormat() || mdim != volumes[i]->getDimensions()) {
             LogWarn("PVM volumes did not have the same format or dimensions, using first volume.");
@@ -177,7 +177,7 @@ void MPVMVolumeReader::readDataInto(void*) const { return; }
 void* MPVMVolumeReader::readData() const { return nullptr; }
 
 void MPVMVolumeReader::printPVMMeta(Volume* volume, std::string filePath) {
-    uvec3 dim = volume->getDimensions();
+    size3_t dim = volume->getDimensions();
     size_t bytes = dim.x * dim.y * dim.z * (volume->getDataFormat()->getSize());
     std::string size = formatBytesToString(bytes);
     LogInfo("Loaded volume: " << filePath << " size: " << size);

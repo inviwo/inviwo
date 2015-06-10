@@ -53,7 +53,7 @@ public:
      * \param resizeToDimension (const ivec2 &) Size to resize to
      * \return (void)
      */
-    static void resize(const cl::Image& src, const cl::Image& dst, const uvec2& resizeToDimension);
+    static void resize(const cl::Image& src, const cl::Image& dst, const size2_t& resizeToDimension);
 
 private:
     LayerCLResizer();

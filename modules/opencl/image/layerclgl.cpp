@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-LayerCLGL::LayerCLGL(uvec2 dimensions, LayerType type, const DataFormatBase* format,
+LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
                      Texture2D* data)
     : LayerRepresentation(dimensions, type, format), texture_(data) {
     if (data) {
@@ -92,7 +92,7 @@ void LayerCLGL::deinitialize() {
 
 LayerCLGL* LayerCLGL::clone() const { return new LayerCLGL(*this); }
 
-void LayerCLGL::setDimensions(uvec2 dimensions) {
+void LayerCLGL::setDimensions(size2_t dimensions) {
     if (dimensions == dimensions_) {
         return;
     }

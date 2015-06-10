@@ -74,7 +74,7 @@ public:
     void volumeRaycast(const Volume* volume, const VolumeCLBase* volumeCL,
                        const LayerCLBase* background, const LayerCLBase* entryCL,
                        const LayerCLBase* exitCL, const LayerCLBase* transferFunctionCL,
-                       LayerCLBase* outImageCL, svec2 globalWorkGroupSize, svec2 localWorkGroupSize,
+                       LayerCLBase* outImageCL, size2_t globalWorkGroupSize, size2_t localWorkGroupSize,
                        const VECTOR_CLASS<cl::Event>* waitForEvents = nullptr,
                        cl::Event* event = nullptr);
 
@@ -109,8 +109,8 @@ public:
     */
     void setDefaultBackgroundColor(const vec4 color);
 
-    svec2 workGroupSize() const { return workGroupSize_; }
-    void workGroupSize(const svec2& val) { workGroupSize_ = val; }
+    size2_t workGroupSize() const { return workGroupSize_; }
+    void workGroupSize(const size2_t& val) { workGroupSize_ = val; }
 
     bool useGLSharing() const { return useGLSharing_; }
     void useGLSharing(bool val) { useGLSharing_ = val; }
@@ -130,7 +130,7 @@ public:
 private:
     void compileKernel();
     // Parameters
-    svec2 workGroupSize_;
+    size2_t workGroupSize_;
     bool useGLSharing_;
     ivec2 outputOffset_;
     ivec2 outputSize_;

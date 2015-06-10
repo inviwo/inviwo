@@ -27,13 +27,26 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/volume/volumeramsubsample.h>
+#include <inviwo/core/datastructures/volume/volumeborder.h>
 
 namespace inviwo {
 
-VolumeRAM* VolumeRAMSubSample::apply(const VolumeRepresentation* in, FACTOR factor) {
-    detail::VolumeRAMSubSampleDispatcher disp;
-    return in->getDataFormat()->dispatch(disp, in, factor);
+bool VolumeBorders::operator!=(const VolumeBorders& vb) const {
+    return (llf != vb.llf || urb != vb.urb);
 }
+
+bool VolumeBorders::operator==(const VolumeBorders& vb) const {
+    return (llf == vb.llf && urb == vb.urb);
+}
+
+VolumeBorders::VolumeBorders(const size3_t& llfBorder, const size3_t& urbBorder)
+    : llf(llfBorder), urb(urbBorder) {}
+
+VolumeBorders::VolumeBorders(size_t front, size_t back, size_t left, size_t right, size_t lower,
+                             size_t upper)
+    : llf(size3_t(front, left, lower)), urb(size3_t(back, right, upper)) {}
+
+VolumeBorders::VolumeBorders()
+    : llf(size3_t(0, 0, 0)), urb(size3_t(0, 0, 0)), numVoxels(0), hasBorder(false) {}
 
 }  // namespace

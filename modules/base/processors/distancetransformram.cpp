@@ -106,7 +106,7 @@ void DistanceTransformRAM::process() {
         dirty_ = false;
         const Volume* srcVolume = volumePort_.getData();
 
-        volDim_ = glm::max(srcVolume->getDimensions(), uvec3(1u));
+        volDim_ = glm::max(srcVolume->getDimensions(), size3_t(1u));
 
         const Volume *volDst = outport_.getConstData();
         if (!volDst || (volDst->getDimensions() != volDim_)

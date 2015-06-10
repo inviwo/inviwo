@@ -59,7 +59,7 @@ Volume* PVMVolumeReader::readMetaData(const std::string filePath) {
     if (!volume) return nullptr;
 
     // Print information
-    uvec3 dim = volume->getDimensions();
+    size3_t dim = volume->getDimensions();
     size_t bytes = dim.x * dim.y * dim.z * (volume->getDataFormat()->getSize());
     std::string size = formatBytesToString(bytes);
     LogInfo("Loaded volume: " << filePath << " size: " << size);
@@ -87,7 +87,7 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
         }
     }
 
-    glm::uvec3 dim(0);
+    size3_t dim(0);
     glm::mat3 basis(2.0f);
     glm::vec3 spacing(0.0f);
 
@@ -100,8 +100,10 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
     unsigned char* comment;
 
     try {
-        data = readPVMvolume(filePath.c_str(), &dim.x, &dim.y, &dim.z, &bytesPerVoxel, &spacing.x,
+        uvec3 udim{0};
+        data = readPVMvolume(filePath.c_str(), &udim.x, &udim.y, &udim.z, &bytesPerVoxel, &spacing.x,
                              &spacing.y, &spacing.z, &description, &courtesy, &parameter, &comment);
+        dim = udim;
 
     } catch (Exception& e) {
         LogErrorCustom("PVMVolumeReader", e.what());
@@ -130,7 +132,7 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
                 IvwContextCustom("PVMVolumeReader"));
     }
 
-    if (dim == uvec3(0)) {
+    if (dim == size3_t(0)) {
         throw DataReaderException("Error: Unable to find dimensions in .pvm file: " + filePath,
                                   IvwContextCustom("PVMVolumeReader"));
     }

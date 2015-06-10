@@ -462,7 +462,7 @@ void VolumeSliceGL::updateIndicatorMesh() {
     meshBox_ = new Mesh;
     meshBox_->setModelMatrix(mat4(1.0f));
 
-    uvec2 canvasSize(outport_.getDimensions());
+    size2_t canvasSize(outport_.getDimensions());
     const vec2 indicatorSize = vec2(4.0f / canvasSize.x, 4.0f / canvasSize.y);
     vec4 color(indicatorColor_.get());
 
@@ -564,7 +564,7 @@ void VolumeSliceGL::updateMaxSliceNumber() {
         return;
     }
     disableInvalidation();
-    uvec3 dims = inport_.getData()->getDimensions();
+    const size3_t dims{inport_.getData()->getDimensions()};
     if (static_cast<int>(dims.x) != sliceX_.getMaxValue()) {
         sliceX_.setMaxValue(static_cast<int>(dims.x));
         sliceX_.set(static_cast<int>(dims.x) / 2);

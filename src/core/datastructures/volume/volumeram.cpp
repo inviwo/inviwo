@@ -44,8 +44,8 @@ VolumeRAM& VolumeRAM::operator=(const VolumeRAM& that) {
 }
 VolumeRAM::~VolumeRAM() {}
 
-void VolumeRAM::setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset) {
-    setValuesFromVolume(src, dstOffset, src->getDimensions(), uvec3(0));
+void VolumeRAM::setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset) {
+    setValuesFromVolume(src, dstOffset, src->getDimensions(), size3_t(0));
 }
 
 }  // namespace

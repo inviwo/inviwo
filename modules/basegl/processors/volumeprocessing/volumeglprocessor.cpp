@@ -101,7 +101,7 @@ void VolumeGLProcessor::process() {
 
     preProcess();
 
-    uvec3 dim = inport_.getData()->getDimensions();
+    const size3_t dim{inport_.getData()->getDimensions()};
     fbo_->activate();
     glViewport(0, 0, dim.x, dim.y);
     if (reattach) {

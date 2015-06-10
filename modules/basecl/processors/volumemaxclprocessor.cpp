@@ -81,8 +81,8 @@ void VolumeMaxCLProcessor::process() {
     }
     const Volume* volume = inport_.getData();
 
-    uvec3 dim = volume->getDimensions();
-    uvec3 outDim = uvec3(glm::ceil(vec3(dim) / static_cast<float>(volumeRegionSize_.get())));
+    const size3_t dim{volume->getDimensions()};
+    const size3_t outDim{glm::ceil(vec3(dim) / static_cast<float>(volumeRegionSize_.get()))};
     // const DataFormatBase* volFormat = inport_.getData()->getDataFormat(); // Not used
 
     if (!outport_.hasData() || outport_.getData()->getDimensions() != outDim) {
@@ -96,8 +96,8 @@ void VolumeMaxCLProcessor::process() {
     }
     Volume* volumeOut = outport_.getData();
 
-    svec3 localWorkGroupSize(workGroupSize_.get());
-    svec3 globalWorkGroupSize(getGlobalWorkGroupSize(outDim.x, localWorkGroupSize.x),
+    size3_t localWorkGroupSize(workGroupSize_.get());
+    size3_t globalWorkGroupSize(getGlobalWorkGroupSize(outDim.x, localWorkGroupSize.x),
                               getGlobalWorkGroupSize(outDim.y, localWorkGroupSize.y),
                               getGlobalWorkGroupSize(outDim.z, localWorkGroupSize.z));
 
@@ -122,9 +122,9 @@ void VolumeMaxCLProcessor::process() {
 
 void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume,
                                                   const VolumeCLBase* volumeCL,
-                                                  VolumeCLBase* volumeOutCL, const uvec3& outDim,
-                                                  const svec3& globalWorkGroupSize,
-                                                  const svec3& localWorkgroupSize) {
+                                                  VolumeCLBase* volumeOutCL, const size3_t& outDim,
+                                                  const size3_t& globalWorkGroupSize,
+                                                  const size3_t& localWorkgroupSize) {
     cl::Event events[2];
     try {
         BufferCL* tmpVolumeCL;
@@ -153,7 +153,7 @@ void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume,
         if (!supportsVolumeWrite_) {
             std::vector<cl::Event> waitFor(1, events[0]);
             OpenCL::getPtr()->getQueue().enqueueCopyBufferToImage(
-                tmpVolumeCL->get(), volumeOutCL->getEditable(), 0, svec3(0), svec3(outDim),
+                tmpVolumeCL->get(), volumeOutCL->getEditable(), 0, size3_t(0), size3_t(outDim),
                 &waitFor, &events[1]);
         }
     } catch (cl::Error& err) {

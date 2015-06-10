@@ -118,19 +118,19 @@ Image* VolumeSlice::VolumeSliceDispatcher::dispatch(const Volume* vol,
     Image* image;
 
     const DataFormatBase* format = vol->getDataFormat();
-    const uvec3 voldim = vol->getDimensions();
+    const size3_t voldim = vol->getDimensions();
 
     // Calculate image dimensions
-    uvec2 dim;
+    size2_t dim;
     switch (axis) {
         case CoordinateEnums::X:
-            dim = uvec2(voldim.y, voldim.z);
+            dim = size2_t(voldim.y, voldim.z);
             break;
         case CoordinateEnums::Y:
-            dim = uvec2(voldim.x, voldim.z);
+            dim = size2_t(voldim.x, voldim.z);
             break;
         case CoordinateEnums::Z:
-            dim = uvec2(voldim.x, voldim.y);
+            dim = size2_t(voldim.x, voldim.y);
             break;
     }
 

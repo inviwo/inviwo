@@ -51,7 +51,7 @@ void VolumeDiff::preProcess() {
 
     const VolumeGL* volGL = vol2_.getData()->getRepresentation<VolumeGL>();
     volGL->bindTexture(volBlurUnit.getEnum());
-    uvec3 dim = volGL->getDimensions();
+    const size3_t dim{volGL->getDimensions()};
 
     shader_->setUniform("volume2_", volBlurUnit.getUnitNumber());
     shader_->setUniform("volume2Parameters_.dimensions", vec3(dim));

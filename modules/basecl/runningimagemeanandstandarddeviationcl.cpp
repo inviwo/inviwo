@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-RunningImageMeanAndStandardDeviationCL::RunningImageMeanAndStandardDeviationCL(const uvec2& layerDimension, const svec2& workgroupSize)
+RunningImageMeanAndStandardDeviationCL::RunningImageMeanAndStandardDeviationCL(const uvec2& layerDimension, const size2_t& workgroupSize)
     : pingPongIndex_(0)
     , workGroupSize_(workgroupSize)
     , kernel_(nullptr) {
@@ -98,7 +98,7 @@ bool RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(con
     return true;
 }
 
-void RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(const uvec2& nSamples, const LayerCLBase* samples, int iteration, const LayerCLBase* prevMean, LayerCLBase* nextMean, const LayerCLBase* prevStandardDeviation, LayerCLBase* nextStandardDeviation, const svec2& workGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents, cl::Event *event) {
+void RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(const uvec2& nSamples, const LayerCLBase* samples, int iteration, const LayerCLBase* prevMean, LayerCLBase* nextMean, const LayerCLBase* prevStandardDeviation, LayerCLBase* nextStandardDeviation, const size2_t& workGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents, cl::Event *event) {
     
     
     size_t workGroupSizeX = static_cast<size_t>(workGroupSize.x); size_t workGroupSizeY = static_cast<size_t>(workGroupSize.y);
@@ -113,7 +113,7 @@ void RunningImageMeanAndStandardDeviationCL::computeMeanAndStandardDeviation(con
     kernel_->setArg(argIndex++, *nextMean);
     kernel_->setArg(argIndex++, *prevStandardDeviation);
     kernel_->setArg(argIndex++, *nextStandardDeviation);
-    OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, svec2(globalWorkSizeX, globalWorkSizeY) , svec2(workGroupSizeX, workGroupSizeY), waitForEvents, event);
+    OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, size2_t(globalWorkSizeX, globalWorkSizeY) , size2_t(workGroupSizeX, workGroupSizeY), waitForEvents, event);
 }
 
 } // namespace

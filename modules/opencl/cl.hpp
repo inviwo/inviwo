@@ -125,18 +125,14 @@
 #include <cstring>
 ///////////////////////////// inviwo modifications /////////////////////////////////////////////
 // The following modifications have been made:
-// - Replaced size_t<3> with glm::svec3
-// - Added constructors for NDRange to handle usage of glm::svec2 and glm::svec3
+// - Replaced size_t<3> with glm::size3_t
+// - Added constructors for NDRange to handle usage of glm::size2_t and glm::size3_t
 // - Default device, context and command queue is replaced with corresponding inviwo variables
 // - Changed setArg(cl_uint index, T& value)  to setArg(cl_uint index, const T& value)
 // - Changed KernelArgumentHandler:
 //      static T* ptr(T& value) { return &value; } to static const T* ptr(const T& value) { return &value; }
 //      static void* ptr(LocalSpaceArg& value) { return &value; } to static const void* ptr(const LocalSpaceArg& value) { return &value; }
-#include <glm/glm.hpp>
-namespace glm {
-typedef glm::detail::tvec2<size_t, glm::defaultp>    svec2;
-typedef glm::detail::tvec3<size_t, glm::defaultp>    svec3;
-}
+#include <inviwo/core/util/glm.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4335,7 +4331,7 @@ public:
     }
 
     //! \brief Constructs two-dimensional range.
-    NDRange(const glm::svec2& size)
+    NDRange(const glm::size2_t& size)
         : dimensions_(2)
     {
         sizes_[0] = size[0];
@@ -4352,7 +4348,7 @@ public:
     }
 
     //! \brief Constructs three-dimensional range.
-    NDRange(const glm::svec3& size)
+    NDRange(const glm::size3_t& size)
         : dimensions_(3)
     {
         sizes_[0] = size[0];
@@ -5292,9 +5288,9 @@ public:
     cl_int enqueueReadBufferRect(
         const Buffer& buffer,
         cl_bool blocking,
-        const glm::svec3& buffer_offset,
-        const glm::svec3& host_offset,
-        const glm::svec3& region,
+        const glm::size3_t& buffer_offset,
+        const glm::size3_t& host_offset,
+        const glm::size3_t& region,
         ::size_t buffer_row_pitch,
         ::size_t buffer_slice_pitch,
         ::size_t host_row_pitch,
@@ -5331,9 +5327,9 @@ public:
     cl_int enqueueWriteBufferRect(
         const Buffer& buffer,
         cl_bool blocking,
-        const glm::svec3& buffer_offset,
-        const glm::svec3& host_offset,
-        const glm::svec3& region,
+        const glm::size3_t& buffer_offset,
+        const glm::size3_t& host_offset,
+        const glm::size3_t& region,
         ::size_t buffer_row_pitch,
         ::size_t buffer_slice_pitch,
         ::size_t host_row_pitch,
@@ -5370,9 +5366,9 @@ public:
     cl_int enqueueCopyBufferRect(
         const Buffer& src,
         const Buffer& dst,
-        const glm::svec3& src_origin,
-        const glm::svec3& dst_origin,
-        const glm::svec3& region,
+        const glm::size3_t& src_origin,
+        const glm::size3_t& dst_origin,
+        const glm::size3_t& region,
         ::size_t src_row_pitch,
         ::size_t src_slice_pitch,
         ::size_t dst_row_pitch,
@@ -5444,8 +5440,8 @@ public:
     cl_int enqueueReadImage(
         const Image& image,
         cl_bool blocking,
-        const glm::svec3& origin,
-        const glm::svec3& region,
+        const glm::size3_t& origin,
+        const glm::size3_t& region,
         ::size_t row_pitch,
         ::size_t slice_pitch,
         void* ptr,
@@ -5471,8 +5467,8 @@ public:
     cl_int enqueueWriteImage(
         const Image& image,
         cl_bool blocking,
-        const glm::svec3& origin,
-        const glm::svec3& region,
+        const glm::size3_t& origin,
+        const glm::size3_t& region,
         ::size_t row_pitch,
         ::size_t slice_pitch,
         void* ptr,
@@ -5498,9 +5494,9 @@ public:
     cl_int enqueueCopyImage(
         const Image& src,
         const Image& dst,
-        const glm::svec3& src_origin,
-        const glm::svec3& dst_origin,
-        const glm::svec3& region,
+        const glm::size3_t& src_origin,
+        const glm::size3_t& dst_origin,
+        const glm::size3_t& region,
         const VECTOR_CLASS<Event>* events = NULL,
         Event* event = NULL) const
     {
@@ -5531,8 +5527,8 @@ public:
     cl_int enqueueFillImage(
         const Image& image,
         cl_float4 fillColor,
-        const glm::svec3& origin,
-        const glm::svec3& region,
+        const glm::size3_t& origin,
+        const glm::size3_t& region,
         const VECTOR_CLASS<Event>* events = NULL,
         Event* event = NULL) const
     {
@@ -5565,8 +5561,8 @@ public:
     cl_int enqueueFillImage(
         const Image& image,
         cl_int4 fillColor,
-        const glm::svec3& origin,
-        const glm::svec3& region,
+        const glm::size3_t& origin,
+        const glm::size3_t& region,
         const VECTOR_CLASS<Event>* events = NULL,
         Event* event = NULL) const
     {
@@ -5599,8 +5595,8 @@ public:
     cl_int enqueueFillImage(
         const Image& image,
         cl_uint4 fillColor,
-        const glm::svec3& origin,
-        const glm::svec3& region,
+        const glm::size3_t& origin,
+        const glm::size3_t& region,
         const VECTOR_CLASS<Event>* events = NULL,
         Event* event = NULL) const
     {
@@ -5627,8 +5623,8 @@ public:
     cl_int enqueueCopyImageToBuffer(
         const Image& src,
         const Buffer& dst,
-        const glm::svec3& src_origin,
-        const glm::svec3& region,
+        const glm::size3_t& src_origin,
+        const glm::size3_t& region,
         ::size_t dst_offset,
         const VECTOR_CLASS<Event>* events = NULL,
         Event* event = NULL) const
@@ -5653,8 +5649,8 @@ public:
         const Buffer& src,
         const Image& dst,
         ::size_t src_offset,
-        const glm::svec3& dst_origin,
-        const glm::svec3& region,
+        const glm::size3_t& dst_origin,
+        const glm::size3_t& region,
         const VECTOR_CLASS<Event>* events = NULL,
         Event* event = NULL) const
     {
@@ -5703,8 +5699,8 @@ public:
         const Image& buffer,
         cl_bool blocking,
         cl_map_flags flags,
-        const glm::svec3& origin,
-        const glm::svec3& region,
+        const glm::size3_t& origin,
+        const glm::size3_t& region,
         ::size_t * row_pitch,
         ::size_t * slice_pitch,
         const VECTOR_CLASS<Event>* events = NULL,
@@ -6381,9 +6377,9 @@ inline cl_int copy( const CommandQueue &queue, const cl::Buffer &buffer, Iterato
 inline cl_int enqueueReadBufferRect(
     const Buffer& buffer,
     cl_bool blocking,
-    const glm::svec3& buffer_offset,
-    const glm::svec3& host_offset,
-    const glm::svec3& region,
+    const glm::size3_t& buffer_offset,
+    const glm::size3_t& host_offset,
+    const glm::size3_t& region,
     ::size_t buffer_row_pitch,
     ::size_t buffer_slice_pitch,
     ::size_t host_row_pitch,
@@ -6417,9 +6413,9 @@ inline cl_int enqueueReadBufferRect(
 inline cl_int enqueueWriteBufferRect(
     const Buffer& buffer,
     cl_bool blocking,
-    const glm::svec3& buffer_offset,
-    const glm::svec3& host_offset,
-    const glm::svec3& region,
+    const glm::size3_t& buffer_offset,
+    const glm::size3_t& host_offset,
+    const glm::size3_t& region,
     ::size_t buffer_row_pitch,
     ::size_t buffer_slice_pitch,
     ::size_t host_row_pitch,
@@ -6453,9 +6449,9 @@ inline cl_int enqueueWriteBufferRect(
 inline cl_int enqueueCopyBufferRect(
     const Buffer& src,
     const Buffer& dst,
-    const glm::svec3& src_origin,
-    const glm::svec3& dst_origin,
-    const glm::svec3& region,
+    const glm::size3_t& src_origin,
+    const glm::size3_t& dst_origin,
+    const glm::size3_t& region,
     ::size_t src_row_pitch,
     ::size_t src_slice_pitch,
     ::size_t dst_row_pitch,
@@ -6488,8 +6484,8 @@ inline cl_int enqueueCopyBufferRect(
 inline cl_int enqueueReadImage(
     const Image& image,
     cl_bool blocking,
-    const glm::svec3& origin,
-    const glm::svec3& region,
+    const glm::size3_t& origin,
+    const glm::size3_t& region,
     ::size_t row_pitch,
     ::size_t slice_pitch,
     void* ptr,
@@ -6518,8 +6514,8 @@ inline cl_int enqueueReadImage(
 inline cl_int enqueueWriteImage(
     const Image& image,
     cl_bool blocking,
-    const glm::svec3& origin,
-    const glm::svec3& region,
+    const glm::size3_t& origin,
+    const glm::size3_t& region,
     ::size_t row_pitch,
     ::size_t slice_pitch,
     void* ptr,
@@ -6548,9 +6544,9 @@ inline cl_int enqueueWriteImage(
 inline cl_int enqueueCopyImage(
     const Image& src,
     const Image& dst,
-    const glm::svec3& src_origin,
-    const glm::svec3& dst_origin,
-    const glm::svec3& region,
+    const glm::size3_t& src_origin,
+    const glm::size3_t& dst_origin,
+    const glm::size3_t& region,
     const VECTOR_CLASS<Event>* events = NULL,
     Event* event = NULL)
 {
@@ -6574,8 +6570,8 @@ inline cl_int enqueueCopyImage(
 inline cl_int enqueueCopyImageToBuffer(
     const Image& src,
     const Buffer& dst,
-    const glm::svec3& src_origin,
-    const glm::svec3& region,
+    const glm::size3_t& src_origin,
+    const glm::size3_t& region,
     ::size_t dst_offset,
     const VECTOR_CLASS<Event>* events = NULL,
     Event* event = NULL)
@@ -6601,8 +6597,8 @@ inline cl_int enqueueCopyBufferToImage(
     const Buffer& src,
     const Image& dst,
     ::size_t src_offset,
-    const glm::svec3& dst_origin,
-    const glm::svec3& region,
+    const glm::size3_t& dst_origin,
+    const glm::size3_t& region,
     const VECTOR_CLASS<Event>* events = NULL,
     Event* event = NULL)
 {

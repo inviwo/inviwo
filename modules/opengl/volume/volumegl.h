@@ -43,7 +43,7 @@ class Volume;
 class IVW_MODULE_OPENGL_API VolumeGL : public VolumeRepresentation {
 
 public:
-    VolumeGL(uvec3 dimensions = uvec3(128,128,128), const DataFormatBase* format = DataFormatBase::get(), bool initializeTexture = true);
+    VolumeGL(size3_t dimensions = size3_t(128,128,128), const DataFormatBase* format = DataFormatBase::get(), bool initializeTexture = true);
     VolumeGL(Texture3D* tex, const DataFormatBase* format);
     VolumeGL(const VolumeGL& rhs);
     VolumeGL& operator=(const VolumeGL& rhs);
@@ -53,14 +53,14 @@ public:
     void bindTexture(GLenum texUnit) const;
     void unbindTexture() const;
 
-    virtual const uvec3& getDimensions() const override;
-    virtual void setDimensions(uvec3 dimensions) override;
+    virtual const size3_t& getDimensions() const override;
+    virtual void setDimensions(size3_t dimensions) override;
 
     Texture3D* getTexture();
     const Texture3D* getTexture() const;
 
 private:
-    uvec3 dimensions_;
+    size3_t dimensions_;
     Texture3D* volumeTexture_;
 };
 

@@ -37,7 +37,7 @@
 
 namespace inviwo {
 
-MeshEntryExitPointsCL::MeshEntryExitPointsCL(const glm::svec2& workGroupSize /*= svec2(16)*/)
+MeshEntryExitPointsCL::MeshEntryExitPointsCL(const glm::size2_t& workGroupSize /*= size2_t(16)*/)
     : workGroupSize_(workGroupSize)
     , kernel_(nullptr) {
     kernel_ = addKernel("entryexitpoints.cl", "entryExitPointsKernel");
@@ -80,8 +80,8 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(const Mesh* mesh, const mat4&
 }
 
 void MeshEntryExitPointsCL::computeEntryExitPoints(const mat4& NDCToTextureMat, const mat4& worldToTextureMat, const BufferCLBase* vertices, const BufferCLBase* indices, int nIndices, const LayerCLBase* entryPointsCL, const LayerCLBase* exitPointsCL, const uvec2& outportDim, const VECTOR_CLASS<cl::Event> *waitForEvents /*= nullptr*/, cl::Event* event /*= nullptr*/) {
-    svec2 localWorkGroupSize(workGroupSize_);
-    svec2 globalWorkGroupSize(getGlobalWorkGroupSize(outportDim.x, localWorkGroupSize.x),
+    size2_t localWorkGroupSize(workGroupSize_);
+    size2_t globalWorkGroupSize(getGlobalWorkGroupSize(outportDim.x, localWorkGroupSize.x),
         getGlobalWorkGroupSize(outportDim.y, localWorkGroupSize.y));
 
     try

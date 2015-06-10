@@ -88,7 +88,7 @@ void ImageMixer::deinitialize() {
 void ImageMixer::process() {
     if (inport0_.isChanged()) {
         const DataFormatBase* format = inport0_.getData()->getDataFormat();
-        uvec2 dimensions = inport0_.getData()->getDimensions();
+        size2_t dimensions = inport0_.getData()->getDimensions();
         if (!outport_.hasData() || format != outport_.getData()->getDataFormat() ||
             dimensions != outport_.getData()->getDimensions()) {
             Image* img = new Image(dimensions, format);

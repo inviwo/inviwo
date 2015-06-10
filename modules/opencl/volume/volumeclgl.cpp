@@ -36,14 +36,14 @@ namespace inviwo {
 
 VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
     : VolumeRepresentation(format)
-    , dimensions_(data != nullptr ? data->getDimensions() : uvec3(64))
+    , dimensions_(data != nullptr ? data->getDimensions() : size3_t(64))
     , texture_(data) {
     if (data) {
         initialize(data);
     }
 }
 
-VolumeCLGL::VolumeCLGL(const uvec3& dimensions, const DataFormatBase* format, Texture3D* data)
+VolumeCLGL::VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format, Texture3D* data)
     : VolumeRepresentation(format), dimensions_(dimensions), texture_(data) {
     initialize(data);
 }
@@ -75,7 +75,7 @@ void VolumeCLGL::initialize(Texture3D* texture) {
     VolumeCLGL::initialize();
 }
 
-const uvec3& VolumeCLGL::getDimensions() const { return dimensions_; }
+const size3_t& VolumeCLGL::getDimensions() const { return dimensions_; }
 
 VolumeCLGL* VolumeCLGL::clone() const { return new VolumeCLGL(*this); }
 
@@ -140,7 +140,7 @@ void VolumeCLGL::releaseGLObject(
     queue.enqueueReleaseGLObjects(&syncImages, syncEvents, event);
 }
 
-void VolumeCLGL::setDimensions(uvec3 dimensions) {
+void VolumeCLGL::setDimensions(size3_t dimensions) {
     if (dimensions == dimensions_) {
         return;
     }

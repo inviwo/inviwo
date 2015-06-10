@@ -40,7 +40,7 @@ namespace inviwo {
 
 class IVW_MODULE_OPENCL_API LayerCL : public LayerCLBase, public LayerRepresentation {
 public:
-    LayerCL(uvec2 dimensions = uvec2(128, 128), LayerType type = COLOR_LAYER,
+    LayerCL(size2_t dimensions = size2_t(128, 128), LayerType type = COLOR_LAYER,
             const DataFormatBase* format = DataFormatBase::get(), const void* data = nullptr);
     LayerCL(const LayerCL& other);
     virtual ~LayerCL();
@@ -56,7 +56,7 @@ public:
      * @return (void)
      */
     void download(void* data) const;
-    virtual void setDimensions(uvec2 dimensions) override;
+    virtual void setDimensions(size2_t dimensions) override;
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
     cl::ImageFormat getFormat() const { return layerFormat_; }
 

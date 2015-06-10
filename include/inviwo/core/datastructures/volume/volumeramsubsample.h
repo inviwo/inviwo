@@ -40,7 +40,9 @@ public:
     static VolumeRAM* apply(const VolumeRepresentation* in, FACTOR factor);
 };
 
-struct VolumeRAMSubSampleDispatcher {
+namespace detail {
+
+struct IVW_CORE_API VolumeRAMSubSampleDispatcher {
     using type = VolumeRAM*;
     template <class T>
     VolumeRAM* dispatch(const VolumeRepresentation* in, VolumeRAMSubSample::FACTOR factor);
@@ -64,7 +66,7 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
     const size_t dX{newDims.x};
 
     //allocate space
-    VolumeRAMPrecision<T>* newVolume = new VolumeRAMPrecision<T>(static_cast<uvec3>(newDims));
+    VolumeRAMPrecision<T>* newVolume = new VolumeRAMPrecision<T>(newDims);
 
     //get data pointers
     const T* src = static_cast<const T*>(volume->getData());
@@ -73,10 +75,10 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
 
     //Half sampling
     if (factor == VolumeRAMSubSample::FACTOR::HALF) {
-        for (long long z=0; z < newDims.z; ++z) {
-            for (long long y=0; y < newDims.y; ++y) {
+        for (long long z=0; z < static_cast<long long>(newDims.z); ++z) {
+            for (long long y=0; y < static_cast<long long>(newDims.y); ++y) {
                 #pragma omp parallel for
-                for (long long x=0; x < newDims.x; ++x) {
+                for (long long x=0; x < static_cast<long long>(newDims.x); ++x) {
                     const long long px{x*2};
                     const long long py{y*2};
                     const long long pz{z*2};
@@ -89,13 +91,19 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
                     val += src[((pz+1)*sXY) + (py*sX) + (px+1)];
                     val += src[((pz+1)*sXY) + ((py+1)*sX) + px];
                     val += src[((pz+1)*sXY) + ((py+1)*sX) + (px+1)];
+
+                    #include <warn/push>
+                    #include <warn/ignore/conversion>
                     dst[(z*dXY) + (y*dX) + x] = static_cast<T>(val*0.125);
+                    #include <warn/pop>
                 }
             }
         }
     }
     return newVolume;
 }
+
+} // namespace
 
 } // namespace
 

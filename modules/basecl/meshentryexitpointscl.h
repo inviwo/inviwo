@@ -47,7 +47,7 @@ namespace inviwo {
 class IVW_MODULE_BASECL_API MeshEntryExitPointsCL : public KernelOwner { 
 public:
 
-    MeshEntryExitPointsCL(const glm::svec2& workGroupSize = svec2(16));
+    MeshEntryExitPointsCL(const glm::size2_t& workGroupSize = size2_t(16));
     virtual ~MeshEntryExitPointsCL(){}
 
     /** 
@@ -70,10 +70,10 @@ public:
     void computeEntryExitPoints(const mat4& NDCToTextureMat, const mat4& worldToTextureMat, const BufferCLBase* vertices, const BufferCLBase* indices, int nIndices, const LayerCLBase* entryPointsCL, const LayerCLBase* exitPointsCL,
         const uvec2& outportDim, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event* event = nullptr);
 
-    svec2 getWorkGroupSize() const { return workGroupSize_; }
-    void setWorkGroupSize(svec2 val) { workGroupSize_ = val; }
+    size2_t getWorkGroupSize() const { return workGroupSize_; }
+    void setWorkGroupSize(size2_t val) { workGroupSize_ = val; }
 private:
-    glm::svec2 workGroupSize_;
+    glm::size2_t workGroupSize_;
 
     cl::Kernel* kernel_;
 };

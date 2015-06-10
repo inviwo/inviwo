@@ -230,7 +230,7 @@ const HistogramContainer* TransferFunctionEditorView::getNormalizedHistograms() 
         const VolumeRAM* volumeRAM = volumeInport_->getData()->getRepresentation<VolumeRAM>();
 
         if (volumeRAM) {
-            if (volumeRAM->hasHistograms()) return volumeRAM->getHistograms(2048, uvec3(1));
+            if (volumeRAM->hasHistograms()) return volumeRAM->getHistograms(2048, size3_t(1));
 
             else if (!histogramTheadWorking_) {
                 histogramTheadWorking_ = true;
@@ -333,7 +333,7 @@ void TransferFunctionEditorView::onVolumeInportChange() {
 }
 
 void HistogramWorkerQt::process() {
-    volumeRAM_->calculateHistograms(numBins_, uvec3(1), stop);
+    volumeRAM_->calculateHistograms(numBins_, size3_t(1), stop);
     emit finished();
 }
 

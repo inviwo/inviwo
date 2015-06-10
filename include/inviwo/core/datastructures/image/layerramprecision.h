@@ -37,9 +37,9 @@ namespace inviwo {
 template <typename T>
 class LayerRAMPrecision : public LayerRAM {
 public:
-    LayerRAMPrecision(uvec2 dimensions = uvec2(8, 8), LayerType type = COLOR_LAYER,
+    LayerRAMPrecision(size2_t dimensions = size2_t(8, 8), LayerType type = COLOR_LAYER,
                       const DataFormatBase* format = defaultformat());
-    LayerRAMPrecision(T* data, uvec2 dimensions = uvec2(8, 8), LayerType type = COLOR_LAYER,
+    LayerRAMPrecision(T* data, size2_t dimensions = size2_t(8, 8), LayerType type = COLOR_LAYER,
                       const DataFormatBase* format = defaultformat());
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
@@ -48,23 +48,23 @@ public:
 
     virtual void* getData() override;
     virtual const void* getData() const override;
-    virtual void setData(void* data, uvec2 dimensions) override;
+    virtual void setData(void* data, size2_t dimensions) override;
 
     /**
      * Reeize the representation to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
      */
-    virtual void setDimensions(uvec2 dimensions) override;
+    virtual void setDimensions(size2_t dimensions) override;
 
-    void setValueFromSingleDouble(const uvec2& pos, double val);
-    void setValueFromVec2Double(const uvec2& pos, dvec2 val);
-    void setValueFromVec3Double(const uvec2& pos, dvec3 val);
-    void setValueFromVec4Double(const uvec2& pos, dvec4 val);
+    void setValueFromSingleDouble(const size2_t& pos, double val);
+    void setValueFromVec2Double(const size2_t& pos, dvec2 val);
+    void setValueFromVec3Double(const size2_t& pos, dvec3 val);
+    void setValueFromVec4Double(const size2_t& pos, dvec4 val);
 
-    double getValueAsSingleDouble(const uvec2& pos) const;
-    dvec2 getValueAsVec2Double(const uvec2& pos) const;
-    dvec3 getValueAsVec3Double(const uvec2& pos) const;
-    dvec4 getValueAsVec4Double(const uvec2& pos) const;
+    double getValueAsSingleDouble(const size2_t& pos) const;
+    dvec2 getValueAsVec2Double(const size2_t& pos) const;
+    dvec3 getValueAsVec3Double(const size2_t& pos) const;
+    dvec4 getValueAsVec4Double(const size2_t& pos) const;
 
 private:
     static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
@@ -75,29 +75,29 @@ private:
  * Factory for layers.
  * Creates an LayerRAM with data type specified by format.
  *
- * @param dimensionsof layer to create.
+ * @param dimensions of layer to create.
  * @param format of layer to create.
  * @return nullptr if no valid format was specified.
  */
-IVW_CORE_API LayerRAM* createLayerRAM(const uvec2& dimensions, LayerType type,
+IVW_CORE_API LayerRAM* createLayerRAM(const size2_t& dimensions, LayerType type,
                                       const DataFormatBase* format);
 
-struct LayerRAMDispatcher {
+struct IVW_CORE_API LayerRAMDispatcher {
     using type = LayerRAM*;
     template <class T>
-    LayerRAM* dispatch(const uvec2& dimensions, LayerType type) {
+    LayerRAM* dispatch(const size2_t& dimensions, LayerType type) {
         using F = typename T::type;
         return new LayerRAMPrecision<F>(dimensions, type);
     }
 };
 
 template <typename T>
-LayerRAMPrecision<T>::LayerRAMPrecision(uvec2 dimensions, LayerType type,
+LayerRAMPrecision<T>::LayerRAMPrecision(size2_t dimensions, LayerType type,
                                         const DataFormatBase* format)
     : LayerRAM(dimensions, type, format), data_(new T[dimensions_.x * dimensions_.y]()) {}
 
 template <typename T>
-LayerRAMPrecision<T>::LayerRAMPrecision(T* data, uvec2 dimensions, LayerType type,
+LayerRAMPrecision<T>::LayerRAMPrecision(T* data, size2_t dimensions, LayerType type,
                                         const DataFormatBase* format)
     : LayerRAM(dimensions, type, format)
     , data_(data ? data : new T[dimensions_.x * dimensions_.y]()) {}
@@ -141,56 +141,56 @@ const void* LayerRAMPrecision<T>::getData() const {
 }
 
 template <typename T>
-void inviwo::LayerRAMPrecision<T>::setData(void* d, uvec2 dimensions) {
+void inviwo::LayerRAMPrecision<T>::setData(void* d, size2_t dimensions) {
     std::unique_ptr<T[]> data(static_cast<T*>(d));
     data_.swap(data);
     std::swap(dimensions_, dimensions);
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setDimensions(uvec2 dimensions) {
+void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
     auto data = util::make_unique<T[]>(dimensions.x * dimensions.y);
     data_.swap(data);
     std::swap(dimensions, dimensions_);
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setValueFromSingleDouble(const uvec2& pos, double val) {
+void LayerRAMPrecision<T>::setValueFromSingleDouble(const size2_t& pos, double val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setValueFromVec2Double(const uvec2& pos, dvec2 val) {
+void LayerRAMPrecision<T>::setValueFromVec2Double(const size2_t& pos, dvec2 val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setValueFromVec3Double(const uvec2& pos, dvec3 val) {
+void LayerRAMPrecision<T>::setValueFromVec3Double(const size2_t& pos, dvec3 val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-void LayerRAMPrecision<T>::setValueFromVec4Double(const uvec2& pos, dvec4 val) {
+void LayerRAMPrecision<T>::setValueFromVec4Double(const size2_t& pos, dvec4 val) {
     data_[posToIndex(pos, dimensions_)] = util::glm_convert<T>(val);
 }
 
 template <typename T>
-double LayerRAMPrecision<T>::getValueAsSingleDouble(const uvec2& pos) const {
+double LayerRAMPrecision<T>::getValueAsSingleDouble(const size2_t& pos) const {
     return util::glm_convert_normalized<double>(data_[posToIndex(pos, dimensions_)]);
 }
 
 template <typename T>
-dvec2 LayerRAMPrecision<T>::getValueAsVec2Double(const uvec2& pos) const {
+dvec2 LayerRAMPrecision<T>::getValueAsVec2Double(const size2_t& pos) const {
     return util::glm_convert_normalized<dvec2>(data_[posToIndex(pos, dimensions_)]);
 }
 
 template <typename T>
-dvec3 LayerRAMPrecision<T>::getValueAsVec3Double(const uvec2& pos) const {
+dvec3 LayerRAMPrecision<T>::getValueAsVec3Double(const size2_t& pos) const {
     return util::glm_convert_normalized<dvec3>(data_[posToIndex(pos, dimensions_)]);
 }
 
 template <typename T>
-dvec4 LayerRAMPrecision<T>::getValueAsVec4Double(const uvec2& pos) const {
+dvec4 LayerRAMPrecision<T>::getValueAsVec4Double(const size2_t& pos) const {
     return util::glm_convert_normalized<dvec4>(data_[posToIndex(pos, dimensions_)]);
 }
 

@@ -138,11 +138,11 @@ class StructuredGridEntity : public SpatialEntity<N> {
 public:
     StructuredGridEntity();
     StructuredGridEntity(const StructuredGridEntity<N>& rhs);
-    StructuredGridEntity(const Vector<N, unsigned int>& dimensions);
-    StructuredGridEntity(const Vector<N, unsigned int>& dimensions, const Vector<N, float>& spacing);
-    StructuredGridEntity(const Vector<N, unsigned int>& dimensions,
+    StructuredGridEntity(const Vector<N, size_t>& dimensions);
+    StructuredGridEntity(const Vector<N, size_t>& dimensions, const Vector<N, float>& spacing);
+    StructuredGridEntity(const Vector<N, size_t>& dimensions,
                          const Matrix<N + 1, float>& modelMatrix);
-    StructuredGridEntity(const Vector<N, unsigned int>& dimensions,
+    StructuredGridEntity(const Vector<N, size_t>& dimensions,
                          const Matrix<N + 1, float>& modelMatrix,
                          const Matrix<N + 1, float>& worldMatrix);
 
@@ -151,8 +151,8 @@ public:
 
     virtual ~StructuredGridEntity() {}
 
-    virtual Vector<N, unsigned int> getDimensions() const;
-    virtual void setDimensions(const Vector<N, unsigned int>& dimensions);
+    virtual Vector<N, size_t> getDimensions() const;
+    virtual void setDimensions(const Vector<N, size_t>& dimensions);
 
     
     /**
@@ -169,7 +169,7 @@ public:
     virtual const StructuredCameraCoordinateTransformer<N>& getCoordinateTransformer(Camera<N> camera) const;
 
 protected:
-    Vector<N, unsigned int> dimensions_;
+    Vector<N, size_t> dimensions_;
 };
 
 
@@ -308,11 +308,11 @@ StructuredGridEntity<N>::StructuredGridEntity(const StructuredGridEntity<N>& rhs
     : SpatialEntity<N>(rhs), dimensions_(rhs.dimensions_) {}
 
 template <unsigned int N>
-StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, unsigned int>& dimensions)
+StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimensions)
     : SpatialEntity<N>(), dimensions_(dimensions) {}
 
 template <unsigned int N>
-StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, unsigned int>& dimensions,
+StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimensions,
                                               const Vector<N, float>& spacing)
     : SpatialEntity<N>(), dimensions_(dimensions) {
     Matrix<N, float> basis(1.0f);
@@ -329,13 +329,13 @@ StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, unsigned int>& dim
 }
 
 template <unsigned int N>
-StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, unsigned int>& dimensions,
+StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimensions,
                                               const Matrix<N + 1, float>& modelMatrix)
     : SpatialEntity<N>(modelMatrix)
     , dimensions_(dimensions) {}
 
 template <unsigned int N>
-StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, unsigned int>& dimensions,
+StructuredGridEntity<N>::StructuredGridEntity(const Vector<N, size_t>& dimensions,
                                               const Matrix<N + 1, float>& modelMatrix,
                                               const Matrix<N + 1, float>& worldMatrix)
     : SpatialEntity<N>(modelMatrix, worldMatrix)
@@ -351,11 +351,11 @@ StructuredGridEntity<N>& StructuredGridEntity<N>::operator=(const StructuredGrid
 }
 
 template <unsigned int N>
-Vector<N, unsigned int> StructuredGridEntity<N>::getDimensions() const {
+Vector<N, size_t> StructuredGridEntity<N>::getDimensions() const {
     return dimensions_;
 }
 template <unsigned int N>
-void StructuredGridEntity<N>::setDimensions(const Vector<N, unsigned int>& dimensions) {
+void StructuredGridEntity<N>::setDimensions(const Vector<N, size_t>& dimensions) {
     dimensions_ = dimensions;
 }
 

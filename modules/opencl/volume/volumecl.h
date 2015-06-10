@@ -41,7 +41,7 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API VolumeCL : public VolumeCLBase, public VolumeRepresentation {
 public:
     VolumeCL(const DataFormatBase* format = DataFormatBase::get(), const void* data = nullptr);
-    VolumeCL(uvec3 dimensions, const DataFormatBase* format = DataFormatBase::get(),
+    VolumeCL(size3_t dimensions, const DataFormatBase* format = DataFormatBase::get(),
              const void* data = nullptr);
     virtual ~VolumeCL();
     VolumeCL(const VolumeCL& rhs);
@@ -51,8 +51,8 @@ public:
 
     void initialize(const void* voxels);
 
-    virtual const uvec3& getDimensions() const override;
-    virtual void setDimensions(uvec3 dimensions) override;
+    virtual const size3_t& getDimensions() const override;
+    virtual void setDimensions(size3_t dimensions) override;
 
     void upload(const void* data);
     /**
@@ -68,7 +68,7 @@ public:
     virtual const cl::Image3D& get() const;
 
 protected:
-    uvec3 dimensions_;
+    size3_t dimensions_;
     cl::ImageFormat imageFormat_;
 };
 

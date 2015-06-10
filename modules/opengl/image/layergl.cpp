@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-LayerGL::LayerGL(uvec2 dimensions, LayerType type, const DataFormatBase* format, Texture2D* tex)
+LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* format, Texture2D* tex)
     : LayerRepresentation(dimensions, type, format), texture_(tex) {
     initialize();
 }
@@ -103,7 +103,7 @@ bool LayerGL::copyRepresentationsTo(DataRepresentation* targetLayerGL) const {
     return false;
 }
 
-void LayerGL::setDimensions(uvec2 dimensions) {
+void LayerGL::setDimensions(size2_t dimensions) {
     dimensions_ = dimensions;
 
     if (texture_) {

@@ -85,7 +85,7 @@ void HeightFieldMapper::process() {
     // check the number of channels
     const DataFormatBase *format = srcImg->getDataFormat();
     std::size_t numInputChannels = format->getComponents();
-    glm::uvec2 dim = srcImg->getDimensions();
+    size2_t dim = srcImg->getDimensions();
 
     Image *outImg = nullptr;
 

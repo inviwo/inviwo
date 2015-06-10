@@ -39,7 +39,7 @@ namespace inviwo {
 
 class IVW_CORE_API Image : public DataGroup {
 public:
-    Image(uvec2 dimensions = uvec2(8, 8), const DataFormatBase* format = DataVec4UINT8::get());
+    Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UINT8::get());
     Image(Layer* colorLayer);
     Image(const Image&);
     Image& operator=(const Image& that);
@@ -48,7 +48,7 @@ public:
     virtual std::string getDataInfo() const;
 
     void deinitialize();
-    void initialize(Layer* colorLayer = nullptr, uvec2 dimensions = uvec2(8, 8),
+    void initialize(Layer* colorLayer = nullptr, size2_t dimensions = size2_t(8, 8),
                     const DataFormatBase* format = DataVec4UINT8::get());
 
     size_t addColorLayer(Layer*);
@@ -67,13 +67,13 @@ public:
     const Layer* getPickingLayer() const;
     Layer* getPickingLayer();
 
-    uvec2 getDimensions() const;
+    size2_t getDimensions() const;
 
     /**
      * Reeize all representation to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
      */
-    void setDimensions(uvec2 dimensions);
+    void setDimensions(size2_t dimensions);
 
     /**
      * Copy and resize the representation of this onto the representations of target.

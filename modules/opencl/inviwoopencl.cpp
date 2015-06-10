@@ -1019,14 +1019,14 @@ size_t getGlobalWorkGroupSize(size_t nItems, size_t localWorkGroupSize)
     return localWorkGroupSize*static_cast<size_t>(ceil(static_cast<float>(nItems) / static_cast<float>(localWorkGroupSize)));
 }
 
-svec2 getGlobalWorkGroupSize(svec2 nItems, glm::svec2 localWorkGroupSize)
+size2_t getGlobalWorkGroupSize(size2_t nItems, glm::size2_t localWorkGroupSize)
 {
-    return localWorkGroupSize*svec2(glm::ceil(vec2(nItems) / vec2(localWorkGroupSize)));
+    return localWorkGroupSize*size2_t(glm::ceil(vec2(nItems) / vec2(localWorkGroupSize)));
 }
 
-svec3 getGlobalWorkGroupSize(svec3 nItems, glm::svec3 localWorkGroupSize)
+size3_t getGlobalWorkGroupSize(size3_t nItems, glm::size3_t localWorkGroupSize)
 {
-    return localWorkGroupSize*svec3(glm::ceil(vec3(nItems) / vec3(localWorkGroupSize)));
+    return localWorkGroupSize*size3_t(glm::ceil(vec3(nItems) / vec3(localWorkGroupSize)));
 }
 
 }

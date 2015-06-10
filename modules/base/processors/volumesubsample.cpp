@@ -82,8 +82,8 @@ void VolumeSubsample::process() {
             return;
         }
 
-        uvec3 dim = volume->getDimensions();
-        uvec3 offset = uvec3(0);
+        size3_t dim = volume->getDimensions();
+        size3_t offset = size3_t(0);
 
         // pass meta data on
         volume->copyMetaDataFrom(*inport_.getData());

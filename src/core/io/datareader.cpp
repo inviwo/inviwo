@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/datareader.h>
@@ -33,30 +33,21 @@ namespace inviwo {
 DataReaderException::DataReaderException(const std::string& message, ExceptionContext context)
     : Exception(message, context) {}
 
-
 DataReader::DataReader() : extensions_() {}
 
-DataReader::DataReader(const DataReader& rhs) : extensions_(rhs.extensions_) {
-}
+DataReader::DataReader(const DataReader& rhs) : extensions_(rhs.extensions_) {}
 
 DataReader& DataReader::operator=(const DataReader& that) {
     if (this != &that) {
         extensions_.clear();
 
-        for (const auto &elem : that.getExtensions())
-          extensions_.push_back(elem);
+        for (const auto& elem : that.getExtensions()) extensions_.push_back(elem);
     }
 
     return *this;
 }
 
-const std::vector<FileExtension>& DataReader::getExtensions() const {
-    return extensions_;
-}
-void DataReader::addExtension(FileExtension ext) {
-    extensions_.push_back(ext);
-}
+const std::vector<FileExtension>& DataReader::getExtensions() const { return extensions_; }
+void DataReader::addExtension(FileExtension ext) { extensions_.push_back(ext); }
 
-
-
-} // namespace
+}  // namespace

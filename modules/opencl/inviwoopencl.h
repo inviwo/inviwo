@@ -45,8 +45,8 @@ typedef ImageGL Image2DGL;
 typedef ImageGL Image3DGL;
 }
 #endif
-using glm::svec2;
-using glm::svec3;
+using glm::size2_t;
+using glm::size3_t;
 
 using cl::CommandQueue;
 using cl::Context;
@@ -247,8 +247,8 @@ private:
  */
 IVW_MODULE_OPENCL_API size_t getGlobalWorkGroupSize(size_t nItems, size_t localWorkGroupSize);
 
-IVW_MODULE_OPENCL_API svec2 getGlobalWorkGroupSize(svec2 nItems, glm::svec2 localWorkGroupSize);
-IVW_MODULE_OPENCL_API svec3 getGlobalWorkGroupSize(svec3 nItems, glm::svec3 localWorkGroupSize);
+IVW_MODULE_OPENCL_API size2_t getGlobalWorkGroupSize(size2_t nItems, glm::size2_t localWorkGroupSize);
+IVW_MODULE_OPENCL_API size3_t getGlobalWorkGroupSize(size3_t nItems, glm::size3_t localWorkGroupSize);
 
 
 /**

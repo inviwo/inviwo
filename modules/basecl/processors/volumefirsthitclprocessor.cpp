@@ -85,12 +85,12 @@ void VolumeFirstHitCLProcessor::process() {
 
     //mat4 volumeTextureToWorld =
     //    volumePort_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
-    uvec3 volumeDim = volumePort_.getData()->getDimensions();
+    const size3_t volumeDim{volumePort_.getData()->getDimensions()};
     float stepSize =
         1.f / (samplingRate_.get() *
                static_cast<float>(std::max(volumeDim.x, std::max(volumeDim.y, volumeDim.z))));
-    svec2 localWorkGroupSize(workGroupSize_.get());
-    svec2 globalWorkGroupSize(
+    size2_t localWorkGroupSize(workGroupSize_.get());
+    size2_t globalWorkGroupSize(
         getGlobalWorkGroupSize(entryImage->getDimensions().x, localWorkGroupSize.x),
         getGlobalWorkGroupSize(entryImage->getDimensions().y, localWorkGroupSize.y));
     IVW_OPENCL_PROFILING(profilingEvent, "")
@@ -140,8 +140,8 @@ void VolumeFirstHitCLProcessor::process() {
 
 void VolumeFirstHitCLProcessor::firstHit(const cl::Image& volumeCL, const cl::Image& entryPoints,
                                 const cl::Image& exitPoints, const cl::Image& transferFunctionCL,
-                                const cl::Image& output, float stepSize, svec2 globalWorkGroupSize,
-                                svec2 localWorkGroupSize, cl::Event* profilingEvent) {
+                                const cl::Image& output, float stepSize, size2_t globalWorkGroupSize,
+                                size2_t localWorkGroupSize, cl::Event* profilingEvent) {
     try {
         cl_uint arg = 0;
         kernel_->setArg(arg++, volumeCL);

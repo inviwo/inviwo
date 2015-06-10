@@ -37,16 +37,14 @@ namespace inviwo {
 
 class IVW_CORE_API VolumeBorders {
 public:
-    VolumeBorders() : llf(uvec3(0, 0, 0)), urb(uvec3(0, 0, 0)), numVoxels(0), hasBorder(false) {}
-    VolumeBorders(size_t front, size_t back, size_t left, size_t right, size_t lower, size_t upper)
-        : llf(uvec3(front, left, lower)), urb(uvec3(back, right, upper)) {}
-    VolumeBorders(const uvec3& llfBorder, const uvec3& urbBorder)
-        : llf(llfBorder), urb(urbBorder) {}
-    bool operator==(const VolumeBorders& vb) const { return (llf == vb.llf && urb == vb.urb); }
-    bool operator!=(const VolumeBorders& vb) const { return (llf != vb.llf || urb != vb.urb); }
+    VolumeBorders();
+    VolumeBorders(size_t front, size_t back, size_t left, size_t right, size_t lower, size_t upper);
+    VolumeBorders(const size3_t& llfBorder, const size3_t& urbBorder);
+    bool operator==(const VolumeBorders& vb) const;
+    bool operator!=(const VolumeBorders& vb) const;
 
-    uvec3 llf;
-    uvec3 urb;
+    size3_t llf;
+    size3_t urb;
     size_t numVoxels;
     bool hasBorder;
 };

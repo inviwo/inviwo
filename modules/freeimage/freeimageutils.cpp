@@ -320,7 +320,7 @@ void* FreeImageUtils::rescaleLayerRAM(const LayerRAM* srcLayerRam, uvec2 dst_dim
     FIBITMAP* bitmap = nullptr;
     FREE_IMAGE_TYPE formatType = getFreeImageFormatFromDataFormat(srcLayerRam->getDataFormatId());
 
-    ivwAssert(srcLayerRam->getDimensions() != uvec2(0),
+    ivwAssert(srcLayerRam->getDimensions() != size2_t(0),
               "Trying to rescale layer with zero dimensions.");
 
     switch (srcLayerRam->getDataFormatId()) {

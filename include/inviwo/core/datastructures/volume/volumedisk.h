@@ -38,19 +38,19 @@ namespace inviwo {
 
 class IVW_CORE_API VolumeDisk : public VolumeRepresentation, public DiskRepresentation {
 public:
-    VolumeDisk(uvec3 dimensions = uvec3(128, 128, 128),
+    VolumeDisk(size3_t dimensions = size3_t(128, 128, 128),
                const DataFormatBase* format = DataUINT8::get());
-    VolumeDisk(std::string url, uvec3 dimensions = uvec3(128, 128, 128),
+    VolumeDisk(std::string url, size3_t dimensions = size3_t(128, 128, 128),
                const DataFormatBase* format = DataUINT8::get());
     VolumeDisk(const VolumeDisk& rhs);
     VolumeDisk& operator=(const VolumeDisk& that);
     virtual VolumeDisk* clone() const;
     virtual ~VolumeDisk();
 
-    virtual void setDimensions(uvec3 dimensions);
-    virtual const uvec3& getDimensions() const;
+    virtual void setDimensions(size3_t dimensions);
+    virtual const size3_t& getDimensions() const;
 private:
-    uvec3 dimensions_;
+    size3_t dimensions_;
 };
 
 }  // namespace

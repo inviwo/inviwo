@@ -57,7 +57,7 @@ DataRepresentation* LayerCLGL2RAMConverter::createFrom(const DataRepresentation*
         LayerRAM* layerRAM = static_cast<LayerRAM*>(destination);
         texture->download(layerRAM->getData());
         //const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue();
-        //queue.enqueueReadLayer(layerCL->getLayer(), true, glm::svec3(0), glm::svec3(dimensions, 1), 0, 0, layerRAM->getData());
+        //queue.enqueueReadLayer(layerCL->getLayer(), true, glm::size3_t(0), glm::size3_t(dimensions, 1), 0, 0, layerRAM->getData());
     } else {
         LogError("Invalid conversion or not implemented");
     }
@@ -104,8 +104,8 @@ DataRepresentation* LayerCLGL2CLConverter::createFrom(const DataRepresentation* 
     destination = new LayerCL(src->getDimensions(), src->getLayerType(), src->getDataFormat());
     {   SyncCLGL glSync;
         src->aquireGLObject(glSync.getGLSyncEvent());
-        OpenCL::getPtr()->getQueue().enqueueCopyImage(src->get(), static_cast<LayerCL*>(destination)->get(), glm::svec3(0), glm::svec3(0),
-                glm::svec3(src->getDimensions(), 1));
+        OpenCL::getPtr()->getQueue().enqueueCopyImage(src->get(), static_cast<LayerCL*>(destination)->get(), glm::size3_t(0), glm::size3_t(0),
+                glm::size3_t(src->getDimensions(), 1));
         src->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     }
     return destination;
@@ -121,7 +121,7 @@ void LayerCLGL2CLConverter::update(const DataRepresentation* source, DataReprese
 
     {   SyncCLGL glSync;
         src->aquireGLObject(glSync.getGLSyncEvent());
-        OpenCL::getPtr()->getQueue().enqueueCopyImage(src->get(), dst->get(), glm::svec3(0), glm::svec3(0), glm::svec3(src->getDimensions(), 1));
+        OpenCL::getPtr()->getQueue().enqueueCopyImage(src->get(), dst->get(), glm::size3_t(0), glm::size3_t(0), glm::size3_t(src->getDimensions(), 1));
         src->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     }
 }

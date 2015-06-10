@@ -31,10 +31,10 @@
 
 namespace inviwo {
 
-VolumeDisk::VolumeDisk(uvec3 dimensions, const DataFormatBase* format)
+VolumeDisk::VolumeDisk(size3_t dimensions, const DataFormatBase* format)
     : VolumeRepresentation(format), DiskRepresentation(), dimensions_(dimensions) {}
 
-VolumeDisk::VolumeDisk(std::string srcFile, uvec3 dimensions, const DataFormatBase* format)
+VolumeDisk::VolumeDisk(std::string srcFile, size3_t dimensions, const DataFormatBase* format)
     : VolumeRepresentation(format), DiskRepresentation(srcFile), dimensions_(dimensions) {}
 
 VolumeDisk::VolumeDisk(const VolumeDisk& rhs)
@@ -52,10 +52,10 @@ VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
 
 VolumeDisk::~VolumeDisk() {}
 
-void VolumeDisk::setDimensions(uvec3 dimensions) {
+void VolumeDisk::setDimensions(size3_t dimensions) {
     throw Exception("Can not set dimension of a Volume Disk", IvwContext);
 }
 
-const uvec3& VolumeDisk::getDimensions() const { return dimensions_; }
+const size3_t& VolumeDisk::getDimensions() const { return dimensions_; }
 
 }  // namespace

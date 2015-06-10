@@ -40,8 +40,8 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API Texture3D : public Texture {
 
 public:
-    Texture3D(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
-    Texture3D(uvec3 dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
+    Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
+    Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
     Texture3D(const Texture3D& other);
     Texture3D& operator=(const Texture3D& other);
     virtual ~Texture3D();
@@ -54,15 +54,15 @@ public:
 
     void upload(const void* data);
 
-    void uploadAndResize(const void* data, const uvec3& dim);
+    void uploadAndResize(const void* data, const size3_t& dim);
 
-    const uvec3& getDimensions() const { return dimensions_; }
+    const size3_t& getDimensions() const { return dimensions_; }
 
 protected:
     void default3DTextureParameterFunction(Texture*);
 
 private:
-    uvec3 dimensions_;
+    size3_t dimensions_;
 };
 
 } // namespace

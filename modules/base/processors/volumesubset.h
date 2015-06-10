@@ -80,7 +80,7 @@ private:
     IntMinMaxProperty rangeY_;
     IntMinMaxProperty rangeZ_;
 
-    uvec3 dims_;
+    size3_t dims_;
 };
 
 }

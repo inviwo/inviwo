@@ -62,7 +62,7 @@ void ImageGLProcessor::process() {
     if (internalInvalid_) {
         internalInvalid_ = false;
         const DataFormatBase* format = inport_.getData()->getDataFormat();
-        uvec2 dimensions;
+        size2_t dimensions;
         if (outport_.isHandlingResizeEvents() || !inport_.isOutportDeterminingSize())
             dimensions  = outport_.getData()->getDimensions();
         else

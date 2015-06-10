@@ -39,11 +39,11 @@ namespace inviwo {
 namespace util {
 
 template <typename T, typename std::enable_if<util::rank<T>::value <= 1, int>::type = 0>
-HistogramContainer calculateVolumeHistogram(const T* data, uvec3 dimensions,
+HistogramContainer calculateVolumeHistogram(const T* data, size3_t dimensions,
                                                            dvec2 dataRange,
                                                            const bool& stop = false,
                                                            size_t bins = 2048,
-                                                           uvec3 sampleRate = uvec3(1)) {
+                                                           size3_t sampleRate = size3_t(1)) {
     // a double type with the same extent as T
     typedef typename util::same_extent<T, double>::type D;
     // a size_t type with same extent as T
@@ -74,7 +74,7 @@ HistogramContainer calculateVolumeHistogram(const T* data, uvec3 dimensions,
     const D rangeMin(dataRange.x);
     const D rangeScaleFactor(static_cast<double>(bins - 1) / (dataRange.y - dataRange.x));
 
-    uvec3 pos(0);
+    size3_t pos(0);
     // Column major data, so x is the fastest index.
     for (pos.z = 0; pos.z < dimensions.z; pos.z += sampleRate.z) {
         for (pos.y = 0; pos.y < dimensions.y; pos.y += sampleRate.y) {

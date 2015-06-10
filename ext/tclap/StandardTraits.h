@@ -132,10 +132,7 @@ template<>
 struct ArgTraits<size_t> {
     typedef ValueLike ValueCategory;
 };
-#endif
-
-
-#ifdef HAVE_LONG_LONG
+#elif defined(HAVE_LONG_LONG)
 /**
  * unsigned long longs have value-like semantics.
  */

@@ -43,7 +43,7 @@ namespace inviwo {
 
 VolumeRaycasterCL::VolumeRaycasterCL()
     : KernelOwner()
-    , workGroupSize_(svec2(8, 8))
+    , workGroupSize_(size2_t(8, 8))
     , useGLSharing_(true)
     , outputOffset_(0)
     , outputSize_(1)
@@ -71,8 +71,8 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPo
                                       Layer* outImage,
                                       const VECTOR_CLASS<cl::Event>* waitForEvents /*= nullptr*/,
                                       cl::Event* event /*= nullptr*/) {
-    svec2 localWorkGroupSize(workGroupSize_);
-    svec2 globalWorkGroupSize(getGlobalWorkGroupSize(outputSize_.x, localWorkGroupSize.x),
+    size2_t localWorkGroupSize(workGroupSize_);
+    size2_t globalWorkGroupSize(getGlobalWorkGroupSize(outputSize_.x, localWorkGroupSize.x),
                               getGlobalWorkGroupSize(outputSize_.y, localWorkGroupSize.y));
 
     if (useGLSharing_) {
@@ -125,8 +125,8 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const VolumeCLBase* 
                                       const LayerCLBase* background, const LayerCLBase* entryCLGL,
                                       const LayerCLBase* exitCLGL,
                                       const LayerCLBase* transferFunctionCL,
-                                      LayerCLBase* outImageCL, svec2 globalWorkGroupSize,
-                                      svec2 localWorkGroupSize,
+                                      LayerCLBase* outImageCL, size2_t globalWorkGroupSize,
+                                      size2_t localWorkGroupSize,
                                       const VECTOR_CLASS<cl::Event>* waitForEvents /*= nullptr*/,
                                       cl::Event* event /*= nullptr*/) {
     // Note that the overloaded setArg methods requires

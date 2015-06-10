@@ -55,7 +55,7 @@ VolumeSubset::VolumeSubset() : Processor()
     addProperty(rangeX_);
     addProperty(rangeY_);
     addProperty(rangeZ_);
-    dims_ = uvec3(1,1,1);
+    dims_ = size3_t(1,1,1);
 
     // Since the ranges depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
@@ -71,10 +71,10 @@ VolumeSubset::~VolumeSubset() {}
 void VolumeSubset::process() {
     if (enabled_.get()) {
         const VolumeRAM* vol = inport_.getData()->getRepresentation<VolumeRAM>();
-        uvec3 dim = uvec3(static_cast<unsigned int>(rangeX_.get().y),
+        size3_t dim = size3_t(static_cast<unsigned int>(rangeX_.get().y),
                           static_cast<unsigned int>(rangeY_.get().y),
                           static_cast<unsigned int>(rangeZ_.get().y));
-        uvec3 offset = uvec3(static_cast<unsigned int>(rangeX_.get().x),
+        size3_t offset = size3_t(static_cast<unsigned int>(rangeX_.get().x),
                              static_cast<unsigned int>(rangeY_.get().x),
                              static_cast<unsigned int>(rangeZ_.get().x));
         dim -= offset;

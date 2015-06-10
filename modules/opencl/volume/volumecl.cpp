@@ -34,12 +34,12 @@ namespace inviwo {
 
 VolumeCL::VolumeCL(const DataFormatBase* format, const void* data)
     : VolumeRepresentation(format)
-    , dimensions_(uvec3(128, 128, 128))
+    , dimensions_(size3_t(128, 128, 128))
     , imageFormat_(dataFormatToCLImageFormat(format->getId())) {
     initialize(data);
 }
 
-VolumeCL::VolumeCL(uvec3 dimensions, const DataFormatBase* format, const void* data)
+VolumeCL::VolumeCL(size3_t dimensions, const DataFormatBase* format, const void* data)
     : VolumeRepresentation(format)
     , dimensions_(dimensions)
     , imageFormat_(dataFormatToCLImageFormat(format->getId())) {
@@ -49,8 +49,8 @@ VolumeCL::VolumeCL(uvec3 dimensions, const DataFormatBase* format, const void* d
 VolumeCL::VolumeCL(const VolumeCL& rhs)
     : VolumeRepresentation(rhs), dimensions_(rhs.dimensions_), imageFormat_(rhs.imageFormat_) {
     initialize(nullptr);
-    OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::svec3(0),
-                                                  glm::svec3(0), glm::svec3(dimensions_));
+    OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::size3_t(0),
+                                                  glm::size3_t(0), glm::size3_t(dimensions_));
 }
 
 VolumeCL::~VolumeCL() { deinitialize(); }
@@ -60,17 +60,17 @@ void VolumeCL::initialize(const void* voxels) {
                                dimensions_.x, dimensions_.y, dimensions_.z);
 
     if (voxels) {
-        OpenCL::getPtr()->getQueue().enqueueWriteImage(*clImage_, true, glm::svec3(0),
-                                                       glm::svec3(dimensions_), 0, 0,
+        OpenCL::getPtr()->getQueue().enqueueWriteImage(*clImage_, true, glm::size3_t(0),
+                                                       glm::size3_t(dimensions_), 0, 0,
                                                        const_cast<void*>(voxels));
     }
 
     VolumeCL::initialize();
 }
 
-const uvec3& VolumeCL::getDimensions() const { return dimensions_; }
+const size3_t& VolumeCL::getDimensions() const { return dimensions_; }
 
-void VolumeCL::setDimensions(uvec3 dimensions) {
+void VolumeCL::setDimensions(size3_t dimensions) {
     dimensions_ = dimensions;
     deinitialize();
     initialize();
@@ -82,12 +82,12 @@ void VolumeCL::deinitialize() { delete clImage_; }
 
 void VolumeCL::upload(const void* data) {
     OpenCL::getPtr()->getQueue().enqueueWriteImage(
-        *clImage_, true, glm::svec3(0), glm::svec3(dimensions_), 0, 0, const_cast<void*>(data));
+        *clImage_, true, glm::size3_t(0), glm::size3_t(dimensions_), 0, 0, const_cast<void*>(data));
 }
 
 void VolumeCL::download(void* data) const {
-    OpenCL::getPtr()->getQueue().enqueueReadImage(*clImage_, true, glm::svec3(0),
-                                                  glm::svec3(dimensions_), 0, 0, data);
+    OpenCL::getPtr()->getQueue().enqueueReadImage(*clImage_, true, glm::size3_t(0),
+                                                  glm::size3_t(dimensions_), 0, 0, data);
 }
 
 cl::ImageFormat VolumeCL::getFormat() const { return imageFormat_; }

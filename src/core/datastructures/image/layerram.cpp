@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-LayerRAM::LayerRAM(uvec2 dimensions, LayerType type, const DataFormatBase* format)
+LayerRAM::LayerRAM(size2_t dimensions, LayerType type, const DataFormatBase* format)
     : LayerRepresentation(dimensions, type, format) {}
 
 LayerRAM::LayerRAM(const LayerRAM& rhs) : LayerRepresentation(rhs) {}

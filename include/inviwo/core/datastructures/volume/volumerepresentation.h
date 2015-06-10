@@ -53,8 +53,8 @@ public:
 
     // Removes old data and reallocate for new dimensions.
     // Needs to be overloaded by child classes.
-    virtual void setDimensions(uvec3 dimensions) = 0;
-    virtual const uvec3& getDimensions() const = 0;
+    virtual void setDimensions(size3_t dimensions) = 0;
+    virtual const size3_t& getDimensions() const = 0;
 };
 
 } // namespace

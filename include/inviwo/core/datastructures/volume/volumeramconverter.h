@@ -52,6 +52,7 @@ public:
     void update(const DataRepresentation* source, DataRepresentation* destination);
 };
 
+namespace detail {
 struct VolumeDisk2RAMDispatcher {
     using type = VolumeRAM*;
     template <class T>
@@ -62,6 +63,8 @@ struct VolumeDisk2RAMDispatcher {
                                          volumeDisk->getDimensions());
     }
 };
+
+}
 
 } // namespace
 

@@ -44,7 +44,7 @@ class IVW_MODULE_OPENCL_API VolumeCLGL : public VolumeCLBase,
                                          public TextureObserver {
 public:
     VolumeCLGL(const DataFormatBase* format = DataFormatBase::get(), Texture3D* data = nullptr);
-    VolumeCLGL(const uvec3& dimensions, const DataFormatBase* format, Texture3D* data);
+    VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format, Texture3D* data);
     VolumeCLGL(const VolumeCLGL& rhs);
 
     virtual VolumeCLGL* clone() const;
@@ -53,8 +53,8 @@ public:
     virtual void deinitialize();
 
     void initialize(Texture3D* texture);
-    virtual const uvec3& getDimensions() const override;
-    virtual void setDimensions(uvec3 dimensions) override;
+    virtual const size3_t& getDimensions() const override;
+    virtual void setDimensions(size3_t dimensions) override;
 
     virtual cl::Image3D& getEditable();
     virtual const cl::Image3D& get() const;
@@ -78,7 +78,7 @@ public:
                          const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue()) const;
 
 protected:
-    uvec3 dimensions_;
+    size3_t dimensions_;
     Texture3D* texture_;
 };
 

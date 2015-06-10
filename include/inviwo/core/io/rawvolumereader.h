@@ -57,7 +57,7 @@ public:
 private:
     std::string rawFile_;
     bool littleEndian_;
-    glm::uvec3 dimensions_;
+    size3_t dimensions_;
     vec3 spacing_;
     const DataFormatBase* format_;
     bool parametersSet_;

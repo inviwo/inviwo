@@ -42,7 +42,7 @@ class VolumeRepresentation;
 
 class IVW_CORE_API Volume : public Data, public StructuredGridEntity<3> {
 public:
-    Volume(uvec3 dimensions = uvec3(128,128,128), const DataFormatBase* format = DataUINT8::get());
+    Volume(size3_t dimensions = size3_t(128,128,128), const DataFormatBase* format = DataUINT8::get());
     Volume(const Volume&);
     Volume(VolumeRepresentation*);
     Volume& operator=(const Volume& that);
@@ -50,8 +50,8 @@ public:
     virtual ~Volume();
     virtual std::string getDataInfo() const;
 
-    uvec3 getDimensions() const;
-    void setDimensions(const uvec3& dim);
+    size3_t getDimensions() const;
+    void setDimensions(const size3_t& dim);
 
     void setOffset(const vec3& offset);
     vec3 getOffset() const;

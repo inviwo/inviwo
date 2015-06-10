@@ -36,7 +36,7 @@ namespace inviwo {
 ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            bool handleResizeEvents)
     : DataOutport<Image>(identifier)
-    , dimensions_(uvec2(8, 8))
+    , dimensions_(8, 8)
     , handleResizeEvents_(handleResizeEvents) {
  
     // create a default image
@@ -69,7 +69,7 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     // and checking registeredDimensions.
     // Allocates space holder, sets largest data, cleans up unused data
 
-    std::vector<uvec2> registeredDimensions{resizeEvent->size()};
+    std::vector<size2_t> registeredDimensions{resizeEvent->size()};
     for (auto inport : connectedInports_) {
         auto imageInport = dynamic_cast<ImagePortBase*>(inport);
         if (imageInport && !imageInport->isOutportDeterminingSize()) {
@@ -78,9 +78,9 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     }
 
     // find the largest dimension.
-    uvec2 newDimensions =
+    size2_t newDimensions =
         *std::max_element(registeredDimensions.begin(), registeredDimensions.end(),
-                          [](const uvec2& a, const uvec2& b) { return a.x * a.y < b.x * b.y; });
+                          [](const size2_t& a, const size2_t& b) { return a.x * a.y < b.x * b.y; });
 
     std::unique_ptr<ResizeEvent> newEvent {resizeEvent->clone()};
     newEvent->setSize(newDimensions);
@@ -111,9 +111,9 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     if (handleResizeEvents_) getProcessor()->invalidate(INVALID_OUTPUT);
 }
 
-uvec2 ImageOutport::getDimensions() const { return dimensions_; }
+size2_t ImageOutport::getDimensions() const { return dimensions_; }
 
-const Image* ImageOutport::getResizedImageData(uvec2 requiredDimensions) const {
+const Image* ImageOutport::getResizedImageData(size2_t requiredDimensions) const {
     return cache_.getImage(requiredDimensions);
 }
 
@@ -121,7 +121,7 @@ bool ImageOutport::addResizeEventListener(EventListener* el) { return addEventLi
 
 bool ImageOutport::removeResizeEventListener(EventListener* el) { return removeEventListener(el); }
 
-void ImageOutport::setDimensions(const uvec2& newDimension) {
+void ImageOutport::setDimensions(const size2_t& newDimension) {
     // Set new dimensions
     DataOutport<Image>::getData()->setDimensions(newDimension);
     dimensions_ = newDimension;

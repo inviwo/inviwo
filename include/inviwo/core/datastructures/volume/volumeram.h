@@ -58,31 +58,31 @@ public:
      * @param void * data is raw volume data pointer
      * @return void none
      */
-    virtual void setData(void* data, uvec3 dimensions) = 0;
+    virtual void setData(void* data, size3_t dimensions) = 0;
     virtual void removeDataOwnership() = 0;
 
     // Histograms
     virtual bool hasHistograms() const = 0;
-    virtual HistogramContainer* getHistograms(size_t bins = 2048u, uvec3 sampleRate = uvec3(1)) = 0;
+    virtual HistogramContainer* getHistograms(size_t bins = 2048u, size3_t sampleRate = size3_t(1)) = 0;
 
     virtual const HistogramContainer* getHistograms(size_t bins = 2048u,
-                                                    uvec3 sampleRate = uvec3(1)) const = 0;
-    virtual void calculateHistograms(size_t bins, uvec3 sampleRate, const bool& stop) const = 0;
+                                                    size3_t sampleRate = size3_t(1)) const = 0;
+    virtual void calculateHistograms(size_t bins, size3_t sampleRate, const bool& stop) const = 0;
 
     // uniform getters and setters
-    virtual void setValueFromSingleDouble(const uvec3& pos, double val) = 0;
-    virtual void setValueFromVec2Double(const uvec3& pos, dvec2 val) = 0;
-    virtual void setValueFromVec3Double(const uvec3& pos, dvec3 val) = 0;
-    virtual void setValueFromVec4Double(const uvec3& pos, dvec4 val) = 0;
+    virtual void setValueFromSingleDouble(const size3_t& pos, double val) = 0;
+    virtual void setValueFromVec2Double(const size3_t& pos, dvec2 val) = 0;
+    virtual void setValueFromVec3Double(const size3_t& pos, dvec3 val) = 0;
+    virtual void setValueFromVec4Double(const size3_t& pos, dvec4 val) = 0;
 
-    virtual void setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset,
-                                     const uvec3& subSize, const uvec3& subOffset) = 0;
-    void setValuesFromVolume(const VolumeRAM* src, const uvec3& dstOffset = uvec3(0));
+    virtual void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset,
+                                     const size3_t& subSize, const size3_t& subOffset) = 0;
+    void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset = size3_t(0));
 
-    virtual double getValueAsSingleDouble(const uvec3& pos) const = 0;
-    virtual dvec2 getValueAsVec2Double(const uvec3& pos) const = 0;
-    virtual dvec3 getValueAsVec3Double(const uvec3& pos) const = 0;
-    virtual dvec4 getValueAsVec4Double(const uvec3& pos) const = 0;
+    virtual double getValueAsSingleDouble(const size3_t& pos) const = 0;
+    virtual dvec2 getValueAsVec2Double(const size3_t& pos) const = 0;
+    virtual dvec3 getValueAsVec3Double(const size3_t& pos) const = 0;
+    virtual dvec4 getValueAsVec4Double(const size3_t& pos) const = 0;
 
     virtual size_t getNumberOfBytes() const = 0;
 

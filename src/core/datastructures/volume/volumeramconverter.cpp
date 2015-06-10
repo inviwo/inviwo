@@ -37,7 +37,7 @@ VolumeDisk2RAMConverter::VolumeDisk2RAMConverter() : RepresentationConverterType
 VolumeDisk2RAMConverter::~VolumeDisk2RAMConverter() {}
 
 DataRepresentation* VolumeDisk2RAMConverter::createFrom(const DataRepresentation* source) {
-    VolumeDisk2RAMDispatcher disp;
+    detail::VolumeDisk2RAMDispatcher disp;
     return source->getDataFormat()->dispatch(disp, source);
 }
 

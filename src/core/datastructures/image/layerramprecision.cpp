@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-LayerRAM* createLayerRAM(const uvec2& dimensions, LayerType type, const DataFormatBase* format) {
+LayerRAM* createLayerRAM(const size2_t& dimensions, LayerType type, const DataFormatBase* format) {
     LayerRAMDispatcher disp;
     return format->dispatch(disp, dimensions, type);
 }

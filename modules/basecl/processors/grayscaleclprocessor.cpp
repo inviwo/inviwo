@@ -94,14 +94,14 @@ void GrayscaleCLProcessor::process() {
             cl_uint arg = 0;
             kernel_->setArg(arg++, *colorImageCL);
             kernel_->setArg(arg++, *outImageCL);
-            OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, static_cast<glm::svec2>(outportDim));
+            OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, static_cast<glm::size2_t>(outportDim));
         } else {
             const ImageCL* colorImageCL = inImage->getRepresentation<ImageCL>();
             ImageCL* outImageCL = outImage->getEditableRepresentation<ImageCL>();
             cl_uint arg = 0;
             kernel_->setArg(arg++, *colorImageCL);
             kernel_->setArg(arg++, *outImageCL);
-            OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, static_cast<glm::svec2>(outportDim));
+            OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, static_cast<glm::size2_t>(outportDim));
         }
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));

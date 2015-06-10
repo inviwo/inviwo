@@ -59,7 +59,6 @@ void VolumeCombiner::preProcess() {
 
     const VolumeGL* volGL = vol2_.getData()->getRepresentation<VolumeGL>();
     volGL->bindTexture(vol2Unit.getEnum());
-    uvec3 dim = volGL->getDimensions();
 
     shader_->setUniform("volume2_", vol2Unit.getUnitNumber());
     utilgl::setShaderUniforms(shader_, vol2_, "volume2Parameters_");

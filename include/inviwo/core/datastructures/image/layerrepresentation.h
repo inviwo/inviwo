@@ -42,7 +42,7 @@ class IVW_CORE_API LayerRepresentation : public DataRepresentation {
     friend class Layer;
 
 public:
-    LayerRepresentation(uvec2 dimensions = uvec2(32, 32), LayerType type = COLOR_LAYER,
+    LayerRepresentation(size2_t dimensions = size2_t(32, 32), LayerType type = COLOR_LAYER,
                         const DataFormatBase* format = DataVec4UINT8::get());
     LayerRepresentation(const LayerRepresentation& rhs);
     LayerRepresentation& operator=(const LayerRepresentation& that);
@@ -51,14 +51,14 @@ public:
 
     virtual void performOperation(DataOperation*) const {};
 
-    uvec2 getDimensions() const;
+    size2_t getDimensions() const;
     
     /**
      * Reeize the representation to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
      * Needs to be overloaded by child classes.
      */
-    virtual void setDimensions(uvec2 dimensions) = 0;
+    virtual void setDimensions(size2_t dimensions) = 0;
 
     /**
      * Copy and resize the representations of this onto the target.
@@ -68,7 +68,7 @@ public:
     LayerType getLayerType() const;
 
 protected:
-    uvec2 dimensions_;
+    size2_t dimensions_;
     LayerType layerType_;
 };
 

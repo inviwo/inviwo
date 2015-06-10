@@ -39,7 +39,7 @@ namespace inviwo {
 
 DatVolumeReader::DatVolumeReader()
     : DataReaderType<Volume>(), rawFile_(""), filePos_(0), littleEndian_(true),
-      dimensions_(uvec3(0, 0, 0)), format_(nullptr) {
+      dimensions_(0), format_(nullptr) {
     addExtension(FileExtension("dat", "Inviwo dat file format"));
 }
 
@@ -238,7 +238,7 @@ Volume* DatVolumeReader::readMetaData(std::string filePath) {
         return volumeSequence;
     }
 
-    if (dimensions_ == uvec3(0))
+    if (dimensions_ == size3_t(0))
         throw DataReaderException("Error: Unable to find \"Resolution\" tag in .dat file: " +
                                   filePath, IvwContext);
     else if (format_ == nullptr)

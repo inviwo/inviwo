@@ -41,7 +41,7 @@ class LayerRepresentation;
 
 class IVW_CORE_API Layer : public Data, public StructuredGridEntity<2> {
 public:
-    Layer(uvec2 dimensions = uvec2(32, 32), const DataFormatBase* format = DataVec4UINT8::get(),
+    Layer(size2_t dimensions = size2_t(32, 32), const DataFormatBase* format = DataVec4UINT8::get(),
           LayerType type = COLOR_LAYER);
     Layer(LayerRepresentation*);
     Layer(const Layer&);
@@ -49,13 +49,13 @@ public:
     virtual Layer* clone() const;
     virtual ~Layer();
 
-    virtual uvec2 getDimensions() const override;
+    virtual size2_t getDimensions() const override;
     
     /**
-     * Reeize all representation to dimension. This is destructive, the data will not be
+     * Resize all representation to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
      */
-    virtual void setDimensions(const uvec2& dim) override;
+    virtual void setDimensions(const size2_t& dim) override;
 
     /**
      * Copy and resize the representation of this onto the representations of target.

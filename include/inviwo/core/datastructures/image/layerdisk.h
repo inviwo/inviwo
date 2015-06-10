@@ -45,7 +45,7 @@ public:
     virtual LayerDisk* clone() const;
     virtual ~LayerDisk();
 
-    virtual void setDimensions(uvec2 dimensions);
+    virtual void setDimensions(size2_t dimensions);
     /**
      * Copy and resize the representations of this onto the target.
      */

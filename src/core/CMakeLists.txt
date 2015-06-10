@@ -289,12 +289,14 @@ set(SOURCE_FILES
     datastructures/transferfunctiondatapoint.cpp
     datastructures/volume/marchingtetrahedron.cpp
     datastructures/volume/volume.cpp
+    datastructures/volume/volumeborder.cpp
     datastructures/volume/volumedisk.cpp
     datastructures/volume/volumeoperation.cpp
     datastructures/volume/volumeram.cpp
     datastructures/volume/volumeramconverter.cpp
     datastructures/volume/volumeramprecision.cpp
     datastructures/volume/volumeramsubsample.cpp
+    datastructures/volume/volumeramsubset.cpp
     datastructures/volume/volumerepresentation.cpp
     interaction/action.cpp
     interaction/cameratrackball.cpp

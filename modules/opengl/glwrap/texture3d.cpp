@@ -32,12 +32,12 @@
 
 namespace inviwo {
 
-Texture3D::Texture3D(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
+Texture3D::Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
     : Texture(GL_TEXTURE_3D, glFormat, filtering, level), dimensions_(dimensions) {
     setTextureParameterFunction(this, &Texture3D::default3DTextureParameterFunction);
 }
 
-Texture3D::Texture3D(uvec3 dimensions, GLint format, GLint internalformat, GLenum dataType,
+Texture3D::Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType,
                      GLenum filtering, GLint level)
     : Texture(GL_TEXTURE_3D, format, internalformat, dataType, filtering, level)
     , dimensions_(dimensions) {
@@ -117,7 +117,7 @@ void Texture3D::upload(const void* data) {
     LGL_ERROR;
 }
 
-void Texture3D::uploadAndResize(const void* data, const uvec3& dim) {
+void Texture3D::uploadAndResize(const void* data, const size3_t& dim) {
     dimensions_ = dim;
     initialize(data);
 }

@@ -38,7 +38,7 @@ namespace inviwo {
 
 class IVW_CORE_API LayerRAM : public LayerRepresentation {
 public:
-    LayerRAM(uvec2 dimensions = uvec2(32, 32), LayerType type = COLOR_LAYER,
+    LayerRAM(size2_t dimensions = size2_t(32, 32), LayerType type = COLOR_LAYER,
              const DataFormatBase* format = DataVec4UINT8::get());
     LayerRAM(const LayerRAM& rhs);
     LayerRAM& operator=(const LayerRAM& that);
@@ -54,19 +54,19 @@ public:
     virtual const void* getData() const = 0;
 
     // Takes ownership of data pointer
-    virtual void setData(void* data, uvec2 dimensions) = 0;
+    virtual void setData(void* data, size2_t dimensions) = 0;
 
-    virtual void setValueFromSingleDouble(const uvec2& pos, double val) = 0;
-    virtual void setValueFromVec2Double(const uvec2& pos, dvec2 val) = 0;
-    virtual void setValueFromVec3Double(const uvec2& pos, dvec3 val) = 0;
-    virtual void setValueFromVec4Double(const uvec2& pos, dvec4 val) = 0;
+    virtual void setValueFromSingleDouble(const size2_t& pos, double val) = 0;
+    virtual void setValueFromVec2Double(const size2_t& pos, dvec2 val) = 0;
+    virtual void setValueFromVec3Double(const size2_t& pos, dvec3 val) = 0;
+    virtual void setValueFromVec4Double(const size2_t& pos, dvec4 val) = 0;
 
-    virtual double getValueAsSingleDouble(const uvec2& pos) const = 0;
-    virtual dvec2 getValueAsVec2Double(const uvec2& pos) const = 0;
-    virtual dvec3 getValueAsVec3Double(const uvec2& pos) const = 0;
-    virtual dvec4 getValueAsVec4Double(const uvec2& pos) const = 0;
+    virtual double getValueAsSingleDouble(const size2_t& pos) const = 0;
+    virtual dvec2 getValueAsVec2Double(const size2_t& pos) const = 0;
+    virtual dvec3 getValueAsVec3Double(const size2_t& pos) const = 0;
+    virtual dvec4 getValueAsVec4Double(const size2_t& pos) const = 0;
 
-    static inline unsigned int posToIndex(const uvec2& pos, const uvec2& dim) {
+    static inline size_t posToIndex(const size2_t& pos, const size2_t& dim) {
         return pos.x + (pos.y * dim.x);
     }
 };

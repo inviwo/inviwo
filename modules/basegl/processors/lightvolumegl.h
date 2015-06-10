@@ -124,7 +124,7 @@ private:
     float blendingFactor_;
 
     bool internalVolumesInvalid_;
-    uvec3 volumeDimOut_;
+    size3_t volumeDimOut_;
     vec3 volumeDimOutF_;
     vec3 volumeDimOutFRCP_;
     vec3 volumeDimInF_;

@@ -196,7 +196,7 @@ private:
     }
 
     template <typename T>
-    double getValue(const T *src, uvec3 pos, uvec3 dim);
+    double getValue(const T *src, size3_t pos, size3_t dim);
 
     template <typename T>
     static double toSingle(const glm::detail::tvec2<T, glm::defaultp> &v) {
@@ -229,7 +229,7 @@ private:
 };
 
 template <typename T>
-double MarchingTetrahedron::getValue(const T *src, uvec3 pos, uvec3 dim) {
+double MarchingTetrahedron::getValue(const T *src, size3_t pos, size3_t dim) {
     double v = toSingle(src[VolumeRAM::posToIndex(pos, dim)]);
     return -(v - iso_);
 }
@@ -261,7 +261,7 @@ void MarchingTetrahedron::evaluate() {
 
     const T *src = reinterpret_cast<const T *>(volume->getData());
 
-    uvec3 dim = volume->getDimensions();
+    size3_t dim = volume->getDimensions();
     double x, y, z, dx, dy, dz;
     dx = 1.0f / (dim.x - 1);
     dy = 1.0f / (dim.y - 1);
@@ -288,14 +288,14 @@ void MarchingTetrahedron::evaluate() {
                 p[6] = glm::vec3(x + dx, y + dy, z + dz);
                 p[7] = glm::vec3(x, y + dy, z + dz);
 
-                v[0] = getValue(src, uvec3(i, j, k), dim);
-                v[1] = getValue(src, uvec3(i + 1, j, k), dim);
-                v[2] = getValue(src, uvec3(i + 1, j + 1, k), dim);
-                v[3] = getValue(src, uvec3(i, j + 1, k), dim);
-                v[4] = getValue(src, uvec3(i, j, k + 1), dim);
-                v[5] = getValue(src, uvec3(i + 1, j, k + 1), dim);
-                v[6] = getValue(src, uvec3(i + 1, j + 1, k + 1), dim);
-                v[7] = getValue(src, uvec3(i, j + 1, k + 1), dim);
+                v[0] = getValue(src, size3_t(i, j, k), dim);
+                v[1] = getValue(src, size3_t(i + 1, j, k), dim);
+                v[2] = getValue(src, size3_t(i + 1, j + 1, k), dim);
+                v[3] = getValue(src, size3_t(i, j + 1, k), dim);
+                v[4] = getValue(src, size3_t(i, j, k + 1), dim);
+                v[5] = getValue(src, size3_t(i + 1, j, k + 1), dim);
+                v[6] = getValue(src, size3_t(i + 1, j + 1, k + 1), dim);
+                v[7] = getValue(src, size3_t(i, j + 1, k + 1), dim);
 
                 bool ok = true;
                 for (int ii = 0; ii < 8 && ok; ii++) {

@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-Layer::Layer(uvec2 dimensions, const DataFormatBase* format, LayerType type)
+Layer::Layer(size2_t dimensions, const DataFormatBase* format, LayerType type)
     : Data(format), StructuredGridEntity<2>(dimensions), layerType_(type) {}
 
 Layer::Layer(LayerRepresentation* in)
@@ -64,15 +64,15 @@ Layer::~Layer() {
     // Representations are deleted by Data destructor.
 }
 
-uvec2 Layer::getDimensions() const {
+size2_t Layer::getDimensions() const {
     if (hasRepresentations() && lastValidRepresentation_) {
-        uvec2 dim = static_cast<LayerRepresentation*>(lastValidRepresentation_)->getDimensions();
-        if (dim != uvec2(0)) return dim;
+        size2_t dim = static_cast<LayerRepresentation*>(lastValidRepresentation_)->getDimensions();
+        if (dim != size2_t(0)) return dim;
     }
     return StructuredGridEntity<2>::getDimensions();
 }
 
-void Layer::setDimensions(const uvec2& dim) {
+void Layer::setDimensions(const size2_t& dim) {
     StructuredGridEntity<2>::setDimensions(dim);
 
     if (lastValidRepresentation_) {

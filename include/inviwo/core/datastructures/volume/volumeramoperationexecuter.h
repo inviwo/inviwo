@@ -31,7 +31,7 @@
 #define IVW_VOLUMERAMOPERATIONEXECUTER_H
 
 #include <inviwo/core/datastructures/dataoperation.h>
-#include <inviwo/core/datastructures/volume/volumeramsubset.h>
+//#include <inviwo/core/datastructures/volume/volumeramsubset.h>
 //#include <inviwo/core/datastructures/volume/volumeramsubsample.h>
 
 namespace inviwo {
@@ -39,12 +39,12 @@ namespace inviwo {
 //TODO: Make operation factory
 template<typename T>
 void executeOperationOnVolumeRAMPrecision(DataOperation* dop) {
-    VolumeRAMSubSet* volSubSetDop = dynamic_cast<VolumeRAMSubSet*>(dop);
-
-    if (volSubSetDop) {
-        volSubSetDop->evaluate<T>();
-        return;
-    }
+//     VolumeRAMSubSet* volSubSetDop = dynamic_cast<VolumeRAMSubSet*>(dop);
+// 
+//     if (volSubSetDop) {
+//         volSubSetDop->evaluate<T>();
+//         return;
+//     }
 
 //     VolumeRAMSubSample* volSubSampleDop = dynamic_cast<VolumeRAMSubSample*>(dop);
 // 

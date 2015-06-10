@@ -55,7 +55,7 @@ public:
      * @param layerDimension    Initial guess on layer dimension
      * @param workgroupSize     Work group size 
      */
-    RunningImageMeanAndStandardDeviationCL(const uvec2& layerDimension = uvec2(32), const svec2& workgroupSize = uvec2(16));
+    RunningImageMeanAndStandardDeviationCL(const uvec2& layerDimension = uvec2(32), const size2_t& workgroupSize = uvec2(16));
     virtual ~RunningImageMeanAndStandardDeviationCL(){}
 
     virtual void onKernelCompiled(const cl::Kernel* kernel) {};
@@ -98,15 +98,15 @@ public:
      * @param event                     Event that will be signaled on completion.
      * @return void 
      */
-    void computeMeanAndStandardDeviation(const uvec2& nSamples, const LayerCLBase* newSamples, int iteration, const LayerCLBase* prevMean, LayerCLBase* nextMean, const LayerCLBase* prevStandardDeviation, LayerCLBase* nextStandardDeviation, const svec2& workGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
+    void computeMeanAndStandardDeviation(const uvec2& nSamples, const LayerCLBase* newSamples, int iteration, const LayerCLBase* prevMean, LayerCLBase* nextMean, const LayerCLBase* prevStandardDeviation, LayerCLBase* nextStandardDeviation, const size2_t& workGroupSize, const VECTOR_CLASS<cl::Event> *waitForEvents = nullptr, cl::Event *event = nullptr);
 
-    svec2 WorkGroupSize() const { return workGroupSize_; }
-    void WorkGroupSize(svec2 val) { workGroupSize_ = val; }
+    size2_t WorkGroupSize() const { return workGroupSize_; }
+    void WorkGroupSize(size2_t val) { workGroupSize_ = val; }
 private:
     Layer standardDeviation_[2]; ///< Standard deviation for each pixel of previous and current iteration. 
     Layer mean_[2]; ///< Mean value for each pixel of previous and current iteration. 
     int pingPongIndex_;
-    svec2 workGroupSize_;
+    size2_t workGroupSize_;
 
     cl::Kernel* kernel_;
 };

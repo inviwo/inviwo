@@ -81,8 +81,8 @@ protected:
 
     void firstHit(const cl::Image& volumeCL, const cl::Image& entryPoints,
                   const cl::Image& exitPoints, const cl::Image& transferFunctionCL,
-                  const cl::Image& output, float stepSize, svec2 outportDim,
-                  svec2 localWorkGroupSize, cl::Event* profilingEvent);
+                  const cl::Image& output, float stepSize, size2_t outportDim,
+                  size2_t localWorkGroupSize, cl::Event* profilingEvent);
 
 private:
     VolumeInport volumePort_;

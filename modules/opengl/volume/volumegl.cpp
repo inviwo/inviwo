@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-VolumeGL::VolumeGL(uvec3 dimensions, const DataFormatBase* format, bool initializeTexture)
+VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, bool initializeTexture)
     : VolumeRepresentation(format), dimensions_(dimensions), volumeTexture_(nullptr) {
     GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
     volumeTexture_ = new Texture3D(dimensions_, glFormat, GL_LINEAR);
@@ -76,9 +76,9 @@ void VolumeGL::bindTexture(GLenum texUnit) const {
 
 void VolumeGL::unbindTexture() const { volumeTexture_->unbind(); }
 
-const uvec3& VolumeGL::getDimensions() const { return dimensions_; }
+const size3_t& VolumeGL::getDimensions() const { return dimensions_; }
 
-void VolumeGL::setDimensions(uvec3 dimensions) {
+void VolumeGL::setDimensions(size3_t dimensions) {
     dimensions_ = dimensions;
     volumeTexture_->uploadAndResize(nullptr, dimensions_);
 }

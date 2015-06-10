@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-Volume::Volume(uvec3 dimensions, const DataFormatBase* format)
+Volume::Volume(size3_t dimensions, const DataFormatBase* format)
     : Data(format), StructuredGridEntity<3>(dimensions), dataMap_(format) {}
 
 Volume::Volume(const Volume& rhs)
@@ -104,8 +104,8 @@ std::string Volume::getDataInfo() const {
     return ss.str();
 }
 
-uvec3 Volume::getDimensions() const { return StructuredGridEntity<3>::getDimensions(); }
-void Volume::setDimensions(const uvec3& dim) { StructuredGridEntity<3>::setDimensions(dim); }
+size3_t Volume::getDimensions() const { return StructuredGridEntity<3>::getDimensions(); }
+void Volume::setDimensions(const size3_t& dim) { StructuredGridEntity<3>::setDimensions(dim); }
 
 void Volume::setOffset(const vec3& offset) {
     SpatialEntity<3>::setOffset(Vector<3, float>(offset));

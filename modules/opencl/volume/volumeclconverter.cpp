@@ -40,7 +40,7 @@ VolumeRAM2CLConverter::VolumeRAM2CLConverter()
 DataRepresentation* VolumeRAM2CLConverter::createFrom(const DataRepresentation* source) {
     DataRepresentation* destination = 0;
     const VolumeRAM* volumeRAM = static_cast<const VolumeRAM*>(source);
-    uvec3 dimensions = volumeRAM->getDimensions();
+    size3_t dimensions = volumeRAM->getDimensions();
     const void* data = volumeRAM->getData();
     destination = new VolumeCL(dimensions, volumeRAM->getDataFormat(), data);
     return destination;
@@ -65,14 +65,14 @@ VolumeCL2RAMConverter::VolumeCL2RAMConverter()
 DataRepresentation* VolumeCL2RAMConverter::createFrom(const DataRepresentation* source) {
     DataRepresentation* destination = 0;
     const VolumeCL* volumeCL = static_cast<const VolumeCL*>(source);
-    uvec3 dimensions = volumeCL->getDimensions();
+    size3_t dimensions = volumeCL->getDimensions();
     destination = createVolumeRAM(dimensions, volumeCL->getDataFormat());
 
     if (destination) {
         VolumeRAM* volumeRAM = static_cast<VolumeRAM*>(destination);
         volumeCL->download(volumeRAM->getData());
         //const cl::CommandQueue& queue = OpenCL::getInstance()->getQueue();
-        //queue.enqueueReadImage(volumeCL->getVolume(), true, glm::svec3(0), glm::svec3(dimension), 0, 0, volumeRAM->getData());
+        //queue.enqueueReadImage(volumeCL->getVolume(), true, glm::size3_t(0), glm::size3_t(dimension), 0, 0, volumeRAM->getData());
     }
 
     return destination;

@@ -42,14 +42,14 @@ class Texture2D;
 
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
-    LayerGL(uvec2 dimensions = uvec2(256, 256), LayerType type = COLOR_LAYER,
+    LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = COLOR_LAYER,
             const DataFormatBase* format = DataVec4UINT8::get(), Texture2D* tex = nullptr);
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
     virtual ~LayerGL();
     virtual LayerGL* clone() const;
 
-    virtual void setDimensions(uvec2 dimensions) override;
+    virtual void setDimensions(size2_t dimensions) override;
 
     void bindTexture(GLenum texUnit) const;
     void unbindTexture() const;

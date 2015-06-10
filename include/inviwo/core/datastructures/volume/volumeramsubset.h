@@ -30,92 +30,69 @@
 #ifndef IVW_VOLUMERAMSUBSET_H
 #define IVW_VOLUMERAMSUBSET_H
 
-#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumeborder.h>
-#include <inviwo/core/datastructures/volume/volumeoperation.h>
 
 namespace inviwo {
 
-class IVW_CORE_API VolumeRAMSubSet : public VolumeOperation {
+class IVW_CORE_API VolumeRAMSubSet {
 public:
-    VolumeRAMSubSet(const VolumeRepresentation* in, uvec3 dim, uvec3 offset,
-                    const VolumeBorders& border, bool clampBorderOutsideVolume)
-        : VolumeOperation(in)
-        , newDim_(dim)
-        , newOffset_(offset)
-        , newBorder_(border)
-        , clampBorderOutsideVolume_(clampBorderOutsideVolume) {}
-    virtual ~VolumeRAMSubSet() {}
-
-    template <typename T>
-    void evaluate();
-
-    static inline VolumeRAM* apply(const VolumeRepresentation* in, uvec3 dim, uvec3 offset,
-                                   const VolumeBorders& border = VolumeBorders(),
-                                   bool clampBorderOutsideVolume = true) {
-        VolumeRAMSubSet subsetOP =
-            VolumeRAMSubSet(in, dim, offset, border, clampBorderOutsideVolume);
-        in->performOperation(&subsetOP);
-        return subsetOP.getOutput<VolumeRAM>();
-    }
-
-private:
-    uvec3 newDim_;
-    uvec3 newOffset_;
-    VolumeBorders newBorder_;
-    bool clampBorderOutsideVolume_;
+    static VolumeRAM* apply(const VolumeRepresentation* in, size3_t dim, size3_t offset,
+                            const VolumeBorders& border = VolumeBorders(),
+                            bool clampBorderOutsideVolume = true);
 };
 
-template <typename T>
-class VolumeRAMPrecision;
+namespace detail {
 
-template <typename T>
-void VolumeRAMSubSet::evaluate() {
-    const VolumeRAMPrecision<T>* volume =
-        dynamic_cast<const VolumeRAMPrecision<T>*>(getInputVolume());
+struct IVW_CORE_API VolumeRAMSubSetDispatcher {
+    using type = VolumeRAM*;
+    template <class T>
+    VolumeRAM* dispatch(const VolumeRepresentation* in, size3_t dim, size3_t offset,
+                        const VolumeBorders& border, bool clampBorderOutsideVolume);
+};
 
-    if (!volume) {
-        setOutput(nullptr);
-        return;
-    }
+template <class DataType>
+VolumeRAM* VolumeRAMSubSetDispatcher::dispatch(const VolumeRepresentation* in, size3_t dim,
+                                               size3_t offset, const VolumeBorders& border,
+                                               bool clampBorderOutsideVolume) {
+    using T = typename DataType::type;
+    using P = typename util::same_extent<T, double>::type;
 
-    uvec3 dataDims = volume->getDimensions();
-
-    if (newOffset_.x > dataDims.x && newOffset_.y > dataDims.y && newOffset_.z > dataDims.z) {
-        setOutput(nullptr);
-        return;
-    }
+    const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(in);
+    if (!volume) return nullptr;
 
     // determine parameters
-    uvec3 copyDataDims = static_cast<uvec3>(glm::max(
-        static_cast<ivec3>(newDim_) -
-            glm::max(static_cast<ivec3>(newOffset_ + newDim_) - static_cast<ivec3>(dataDims),
-                     ivec3(0, 0, 0)),
-        ivec3(0, 0, 0)));
-    ivec3 newOffset_Dims = static_cast<ivec3>(glm::min(newOffset_, dataDims) - newBorder_.llf);
-    VolumeBorders trueBorder = VolumeBorders();
-    VolumeBorders correctBorder = newBorder_;
+    const size3_t dataDims{volume->getDimensions()};
+    const size3_t copyDataDims{static_cast<size3_t>(
+        glm::max(static_cast<ivec3>(dim) -
+                     glm::max(static_cast<ivec3>(offset + dim) - static_cast<ivec3>(dataDims),
+                              ivec3(0)),
+                 ivec3(0)))};
 
-    if (clampBorderOutsideVolume_) {
-        correctBorder.llf += static_cast<uvec3>(-glm::min(newOffset_Dims, ivec3(0, 0, 0)));
-        correctBorder.urb += static_cast<uvec3>(
+    ivec3 newOffset_Dims = static_cast<ivec3>(glm::min(offset, dataDims) - border.llf);
+    VolumeBorders trueBorder = VolumeBorders();
+    VolumeBorders correctBorder = border;
+
+    if (clampBorderOutsideVolume) {
+        correctBorder.llf += static_cast<size3_t>(-glm::min(newOffset_Dims, ivec3(0, 0, 0)));
+        correctBorder.urb += static_cast<size3_t>(
             -glm::min(static_cast<ivec3>(dataDims) -
-                          static_cast<ivec3>(newOffset_ + copyDataDims + correctBorder.urb),
+                          static_cast<ivec3>(offset + copyDataDims + correctBorder.urb),
                       ivec3(0, 0, 0)));
-        newOffset_Dims = static_cast<ivec3>(newOffset_ - correctBorder.llf);
+        newOffset_Dims = static_cast<ivec3>(offset - correctBorder.llf);
     } else {
-        trueBorder.llf = static_cast<uvec3>(-glm::min(newOffset_Dims, ivec3(0, 0, 0)));
-        trueBorder.urb = static_cast<uvec3>(
-            glm::max(static_cast<ivec3>(newOffset_ + copyDataDims + correctBorder.urb) -
+        trueBorder.llf = static_cast<size3_t>(-glm::min(newOffset_Dims, ivec3(0, 0, 0)));
+        trueBorder.urb = static_cast<size3_t>(
+            glm::max(static_cast<ivec3>(offset + copyDataDims + correctBorder.urb) -
                          static_cast<ivec3>(dataDims),
                      ivec3(0, 0, 0)));
     }
 
-    uvec3 newOffset_DimsU = static_cast<uvec3>(glm::max(newOffset_Dims, ivec3(0, 0, 0)));
+    size3_t newOffset_DimsU = static_cast<size3_t>(glm::max(newOffset_Dims, ivec3(0, 0, 0)));
     size_t initialStartPos = (newOffset_DimsU.z * (dataDims.x * dataDims.y)) +
                              (newOffset_DimsU.y * dataDims.x) + newOffset_DimsU.x;
-    uvec3 dimsWithBorder = newDim_ + correctBorder.llf + correctBorder.urb;
-    uvec3 copyDimsWithoutBorder = static_cast<uvec3>(
+    size3_t dimsWithBorder = dim + correctBorder.llf + correctBorder.urb;
+    size3_t copyDimsWithoutBorder = static_cast<size3_t>(
         glm::max(static_cast<ivec3>(copyDataDims + correctBorder.llf + correctBorder.urb) -
                      static_cast<ivec3>(trueBorder.llf) - static_cast<ivec3>(trueBorder.urb),
                  ivec3(1, 1, 1)));
@@ -124,11 +101,10 @@ void VolumeRAMSubSet::evaluate() {
         copyDimsWithoutBorder.x * static_cast<size_t>(volume->getDataFormat()->getSize());
     // allocate space
     VolumeRAMPrecision<T>* newVolume =
-        new VolumeRAMPrecision<T>(newDim_ + correctBorder.llf + correctBorder.urb);
+        new VolumeRAMPrecision<T>(dim + correctBorder.llf + correctBorder.urb);
 
-    // newVolume->clear();
-    const T* src = reinterpret_cast<const T*>(volume->getData());
-    T* dst = reinterpret_cast<T*>(newVolume->getData());
+    const T* src = static_cast<const T*>(volume->getData());
+    T* dst = static_cast<T*>(newVolume->getData());
     // memcpy each row for every slice to form sub volume
 
     for (int i = 0; i < static_cast<int>(copyDimsWithoutBorder.z); i++) {
@@ -142,8 +118,10 @@ void VolumeRAMSubSet::evaluate() {
         }
     }
 
-    setOutput(newVolume);
+    return newVolume;
 }
+
+}  // namespace
 
 }  // namespace
 

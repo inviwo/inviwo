@@ -80,7 +80,7 @@ void PVMVolumeWriter::writeData(const Volume* data, const std::string filePath) 
     const VolumeRAM* vr = data->getRepresentation<VolumeRAM>();
     const unsigned char *dataPtr = (const unsigned char *)vr->getData();
 
-    uvec3 dim = vr->getDimensions();
+    size3_t dim = vr->getDimensions();
     vec3 spacing(1.f);
     mat3 basis = data->getBasis();
     spacing.x = basis[0][0] / dim.x;

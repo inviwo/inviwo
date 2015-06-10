@@ -47,7 +47,7 @@ class ImageOutport;
 class IVW_CORE_API ImagePortBase {
 public:
     virtual ~ImagePortBase() = default;
-    virtual uvec2 getRequestedDimensions(ImageOutport* outport) const = 0;
+    virtual size2_t getRequestedDimensions(ImageOutport* outport) const = 0;
     virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
                                       ImageOutport* target = nullptr) = 0;
     virtual bool isOutportDeterminingSize() const = 0;
@@ -76,7 +76,7 @@ public:
         const override;
     virtual std::string getContentInfo() const override;
 
-    virtual uvec2 getRequestedDimensions(ImageOutport* outport) const override;
+    virtual size2_t getRequestedDimensions(ImageOutport* outport) const override;
 
     virtual void propagateResizeEvent(ResizeEvent* resizeEvent,
                                       ImageOutport* target = nullptr) override;
@@ -89,7 +89,7 @@ public:
 private:
     const Image* getImage(ImageOutport* port) const;
 
-    std::unordered_map<ImageOutport*, uvec2> requestedDimensionsMap_;
+    std::unordered_map<ImageOutport*, size2_t> requestedDimensionsMap_;
     bool outportDeterminesSize_;
 };
 
@@ -107,18 +107,18 @@ public:
 
     virtual void setData(Image* data, bool ownsData = true) override;
     virtual void setConstData(const Image* data) override;
-    const Image* getResizedImageData(uvec2 dimensions) const;
+    const Image* getResizedImageData(size2_t dimensions) const;
 
     /**
      * Handle resize event
      */
     void propagateResizeEvent(ResizeEvent* resizeEvent);
-    uvec2 getDimensions() const;   
+    size2_t getDimensions() const;   
     /**
      * Set the dimensions of this port without propagating the size
      * through the network. Will resize the image contained within the port.
      */
-    void setDimensions(const uvec2& newDimension);
+    void setDimensions(const size2_t& newDimension);
 
     bool addResizeEventListener(EventListener*);
     bool removeResizeEventListener(EventListener*);
@@ -138,7 +138,7 @@ protected:
 private:
     void updateImageFromInputSource();
 
-    uvec2 dimensions_;
+    size2_t dimensions_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false
 
@@ -151,7 +151,7 @@ BaseImageInport<N>::BaseImageInport(std::string identifier, bool outportDetermin
     : DataInport<Image, N>(identifier)
     , outportDeterminesSize_(outportDeterminesSize) {
         // A default size
-        requestedDimensionsMap_[nullptr] = uvec2(0); 
+        requestedDimensionsMap_[nullptr] = size2_t(0); 
     }
 
 template <size_t N>
@@ -200,7 +200,7 @@ void BaseImageInport<N>::propagateResizeEvent(ResizeEvent* resizeEvent, ImageOut
 }
 
 template <size_t N>
-uvec2 BaseImageInport<N>::getRequestedDimensions(ImageOutport* outport) const {
+size2_t BaseImageInport<N>::getRequestedDimensions(ImageOutport* outport) const {
     auto it = requestedDimensionsMap_.find(outport);
     if (it != requestedDimensionsMap_.end()) {
         return it->second;
@@ -209,7 +209,7 @@ uvec2 BaseImageInport<N>::getRequestedDimensions(ImageOutport* outport) const {
         if (it != requestedDimensionsMap_.end())
             return it->second;
         else
-            return uvec2(0);
+            return size2_t(0);
     }
 }
 

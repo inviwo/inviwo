@@ -32,7 +32,7 @@
 #include <inviwo/core/util/assertion.h>
 namespace inviwo {
 
-LayerCL::LayerCL(uvec2 dimensions, LayerType type, const DataFormatBase* format, const void* data)
+LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* format, const void* data)
     : LayerRepresentation(dimensions, type, format)
     , layerFormat_(dataFormatToCLImageFormat(format->getId())) {
     initialize(data);
@@ -40,8 +40,8 @@ LayerCL::LayerCL(uvec2 dimensions, LayerType type, const DataFormatBase* format,
 
 LayerCL::LayerCL(const LayerCL& rhs) : LayerRepresentation(rhs), layerFormat_(rhs.layerFormat_) {
     initialize(nullptr);
-    OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::svec3(0),
-                                                  glm::svec3(0), glm::svec3(dimensions_, 1));
+    OpenCL::getPtr()->getQueue().enqueueCopyImage(rhs.get(), *clImage_, glm::size3_t(0),
+                                                  glm::size3_t(0), glm::size3_t(dimensions_, 1));
 }
 
 LayerCL::~LayerCL() {delete clImage_; }
@@ -57,8 +57,8 @@ void LayerCL::initialize(const void* texels) {
         // char*)OpenCL::getPtr()->getQueue().enqueueMapBuffer(pinnedMem, true, CL_MAP_WRITE, 0,
         // sizeof(texels), 0);
         // memcpy(mappedMem, texels, sizeof(texels));
-        // OpenCL::getPtr()->getQueue().enqueueWriteLayer(*layer2D_, true, glm::svec3(0),
-        // glm::svec3(dimensions_, 1), 0, 0, mappedMem);
+        // OpenCL::getPtr()->getQueue().enqueueWriteLayer(*layer2D_, true, glm::size3_t(0),
+        // glm::size3_t(dimensions_, 1), 0, 0, mappedMem);
         // OpenCL::getPtr()->getQueue().enqueueUnmapMemObject(pinnedMem, mappedMem);
         // This should also use pinned memory...
         clImage_ =
@@ -69,8 +69,8 @@ void LayerCL::initialize(const void* texels) {
         // Alternatively first allocate memory on device and then transfer
         // layer2D_ = new cl::Layer2D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
         // getFormat(), dimensions_.x, dimensions_.y);
-        // OpenCL::getPtr()->getQueue().enqueueWriteLayer(*layer2D_, true, glm::svec3(0),
-        // glm::svec3(dimensions_, 1), 0, 0, texels);
+        // OpenCL::getPtr()->getQueue().enqueueWriteLayer(*layer2D_, true, glm::size3_t(0),
+        // glm::size3_t(dimensions_, 1), 0, 0, texels);
     } else {
         clImage_ =
             new cl::Image2D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
@@ -82,12 +82,12 @@ LayerCL* LayerCL::clone() const { return new LayerCL(*this); }
 
 void LayerCL::upload(const void* data) {
     OpenCL::getPtr()->getQueue().enqueueWriteImage(
-        *clImage_, true, glm::svec3(0), glm::svec3(dimensions_, 1), 0, 0, const_cast<void*>(data));
+        *clImage_, true, glm::size3_t(0), glm::size3_t(dimensions_, 1), 0, 0, const_cast<void*>(data));
 }
 
 void LayerCL::download(void* data) const {
-    OpenCL::getPtr()->getQueue().enqueueReadImage(*clImage_, true, glm::svec3(0),
-                                                  glm::svec3(dimensions_, 1), 0, 0, data);
+    OpenCL::getPtr()->getQueue().enqueueReadImage(*clImage_, true, glm::size3_t(0),
+                                                  glm::size3_t(dimensions_, 1), 0, 0, data);
 }
 
 bool LayerCL::copyRepresentationsTo(DataRepresentation* target) const {
@@ -99,7 +99,7 @@ bool LayerCL::copyRepresentationsTo(DataRepresentation* target) const {
     return true;
 }
 
-void LayerCL::setDimensions(uvec2 dimensions) {
+void LayerCL::setDimensions(size2_t dimensions) {
     if (dimensions == dimensions_) {
         return;
     }

@@ -34,7 +34,7 @@
 
 namespace inviwo {
 
-Image::Image(uvec2 dimensions, const DataFormatBase* format) : DataGroup() {
+Image::Image(size2_t dimensions, const DataFormatBase* format) : DataGroup() {
     initialize(nullptr, dimensions, format);
 }
 
@@ -108,7 +108,7 @@ void Image::deinitialize() {
     pickingLayer_ = nullptr;
 }
 
-void Image::initialize(Layer* colorLayer, uvec2 dimensions, const DataFormatBase* format) {
+void Image::initialize(Layer* colorLayer, size2_t dimensions, const DataFormatBase* format) {
     if (colorLayer) {
         addColorLayer(colorLayer);
         dimensions = colorLayer->getDimensions();
@@ -185,11 +185,11 @@ Layer* Image::getPickingLayer() {
     return pickingLayer_;
 }
 
-uvec2 Image::getDimensions() const {
+size2_t Image::getDimensions() const {
     return getColorLayer()->getDimensions();
 }
 
-void Image::setDimensions(uvec2 dimensions) {
+void Image::setDimensions(size2_t dimensions) {
     setRepresentationsAsInvalid();
 
     for (auto layer : colorLayers_) layer->setDimensions(dimensions);

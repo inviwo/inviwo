@@ -40,7 +40,7 @@ void ImageCache::setMaster(const Image* master) {
     valid_ = false;
 }
 
-const Image* ImageCache::getImage(const uvec2 dimensions) const {
+const Image* ImageCache::getImage(const size2_t dimensions) const {
     if (!master_) return nullptr;
 
     if (master_->getDimensions() == dimensions) return master_;
@@ -66,7 +66,7 @@ const Image* ImageCache::getImage(const uvec2 dimensions) const {
     }
 }
 
-void ImageCache::prune(const std::vector<uvec2>& dimensions) const {
+void ImageCache::prune(const std::vector<size2_t>& dimensions) const {
     for (auto it = cache_.begin(); it != cache_.end();) {
         if (!util::contains(dimensions, it->first)) {
             it = cache_.erase(it);
@@ -76,7 +76,7 @@ void ImageCache::prune(const std::vector<uvec2>& dimensions) const {
     }
 }
 
-void ImageCache::update(std::vector<uvec2> dimensions) {
+void ImageCache::update(std::vector<size2_t> dimensions) {
     std::vector<std::unique_ptr<Image>> unusedImages;
 
     for (auto it = cache_.begin(); it != cache_.end();) {
@@ -114,7 +114,7 @@ void ImageCache::setInvalid() const {
     valid_ = false;
 }
 
-bool ImageCache::hasImage(const uvec2 dimensions) {
+bool ImageCache::hasImage(const size2_t dimensions) {
     return cache_.find(dimensions) != cache_.end();
 }
 
@@ -122,7 +122,7 @@ void ImageCache::addImage(Image* image) {
     cache_.emplace(image->getDimensions(), std::unique_ptr<Image>(image));
 }
 
-Image* ImageCache::releaseImage(const uvec2 dimensions) {
+Image* ImageCache::releaseImage(const size2_t dimensions) {
     auto it = cache_.find(dimensions);
     if (it != cache_.end()) {
         Image* ptr = it->second.release();
@@ -133,7 +133,7 @@ Image* ImageCache::releaseImage(const uvec2 dimensions) {
     }
 }
 
-Image* ImageCache::getUnusedImage(const std::vector<uvec2>& dimensions) {
+Image* ImageCache::getUnusedImage(const std::vector<size2_t>& dimensions) {
     auto it = std::find_if(cache_.begin(), cache_.end(), [&dimensions](const Cache::value_type& elem) {
         return !util::contains(dimensions, elem.first);
     });
