@@ -31,8 +31,8 @@
 
 namespace inviwo {
 
-    TouchPoint::TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState, double depth)
-    : pos_(pos), posNormalized_(posNormalized), prevPos_(prevPos), prevPosNormalized_(prevPosNormalized), state_(touchState), depth_(depth) {
+TouchPoint::TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState, double depth)
+: pos_(pos), posNormalized_(posNormalized), prevPos_(prevPos), prevPosNormalized_(prevPosNormalized), state_(touchState), depth_(depth) {
 
 }
 
@@ -66,6 +66,22 @@ TouchEvent* TouchEvent::clone() const {
 }
 
 TouchEvent::~TouchEvent() {}
+
+bool TouchEvent::hasTouchPoints() const { 
+    return !touchPoints_.empty(); 
+}
+
+const std::vector<TouchPoint>& TouchEvent::getTouchPoints() const { 
+    return touchPoints_; 
+}
+
+std::vector<TouchPoint>& TouchEvent::getTouchPoints() { 
+    return touchPoints_; 
+}
+
+void TouchEvent::setTouchPoints(std::vector<TouchPoint> val) { 
+    touchPoints_ = val; 
+}
 
 vec2 TouchEvent::getCenterPoint() const {
     if (touchPoints_.empty()) {

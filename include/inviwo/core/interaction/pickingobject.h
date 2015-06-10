@@ -33,12 +33,10 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/interaction/pickingcallback.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
 
 namespace inviwo {
-
-class InteractionEvent;
-class MouseEvent;
-class TouchEvent;
 
 /** \class PickingObject
  */
@@ -64,8 +62,8 @@ public:
 
     void picked() const;
 
-    void setPickingMouseEvent(MouseEvent*);
-    void setPickingTouchEvent(TouchEvent*);
+    void setPickingMouseEvent(MouseEvent);
+    void setPickingTouchEvent(TouchEvent);
 
     void setPickingMove(vec2);
     void setPickingPosition(vec2);
@@ -78,7 +76,8 @@ private:
     DataVec3UINT8::type colorUINT8_;
     vec3 color_;
 
-    InteractionEvent* interactionEvent_;
+    MouseEvent mouseEvent_;
+    TouchEvent touchEvent_;
     InteractionEventType interactionEventType_;
 
     vec2 pos_;

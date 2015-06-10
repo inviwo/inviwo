@@ -63,6 +63,8 @@ public:
         MOUSE_WHEEL_ANY = MOUSE_WHEEL_HORIZONTAL | MOUSE_WHEEL_VERTICAL
     };
 
+    MouseEvent();
+
     // Mouse and wheel event
     MouseEvent(ivec2 position, int delta, int button, int state = MOUSE_STATE_NONE,
                int orientation = MOUSE_WHEEL_NONE, int modifiers = InteractionEvent::MODIFIER_NONE,

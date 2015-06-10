@@ -130,8 +130,12 @@ public:
     virtual TouchEvent* clone() const;
     virtual ~TouchEvent();
 
-    std::vector<TouchPoint> getTouchPoints() const { return touchPoints_; }
-    void setTouchPoints(std::vector<TouchPoint> val) { touchPoints_ = val; }
+    bool hasTouchPoints() const;
+
+    const std::vector<TouchPoint>& getTouchPoints() const;
+    std::vector<TouchPoint>& getTouchPoints();
+
+    void setTouchPoints(std::vector<TouchPoint> val);
 
     inline uvec2 canvasSize() const { return canvasSize_; }
 

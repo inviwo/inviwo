@@ -53,7 +53,7 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
         setPickableSelected(true);
         currentPickObj_->setPickingPosition(normalizedCoordinates(coord));
         currentPickObj_->setPickingDepth(e->depth());
-        currentPickObj_->setPickingMouseEvent(e);
+        currentPickObj_->setPickingMouseEvent(*e);
 
         currentPickObj_->setPickingMove(vec2(0.f, 0.f));
         currentPickObj_->picked();
@@ -68,7 +68,7 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
 void PickingContainer::moveMousePicked(MouseEvent* e) {
     uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
     currentPickObj_->setPickingMove(pixelMoveVector(prevCoord_, coord));
-    currentPickObj_->setPickingMouseEvent(e);
+    currentPickObj_->setPickingMouseEvent(*e);
     prevCoord_ = coord;
     currentPickObj_->picked();
 }

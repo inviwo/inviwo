@@ -31,6 +31,17 @@
 
 namespace inviwo {
 
+MouseEvent::MouseEvent()
+    : InteractionEvent(InteractionEvent::MODIFIER_NONE)
+    , button_(MOUSE_BUTTON_NONE)
+    , state_(MOUSE_STATE_NONE)
+    , wheelOrientation_(MOUSE_WHEEL_NONE)
+
+    , position_(ivec2(0))
+    , wheelSteps_(0)
+    , canvasSize_(uvec2(0))
+    , depth_(1.0) {}
+
 MouseEvent::MouseEvent(ivec2 position, int delta, int button, int state, int orientation,
                        int modifiers, uvec2 canvasSize, double depth)
     : InteractionEvent(modifiers)
