@@ -32,16 +32,22 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/touchevent.h>
 
 namespace inviwo {
 
 PickingContainer::PickingContainer()
-    : src_(nullptr), mousePickObj_(nullptr), prevMouseCoord_(uvec2(0, 0)), mousePickingOngoing_(false){};
+    : src_(nullptr), mousePickObj_(nullptr), prevMouseCoord_(uvec2(0, 0)), mousePickingOngoing_(false){}
 
-PickingContainer::~PickingContainer() {};
+PickingContainer::~PickingContainer() {}
+
+bool PickingContainer::pickingEnabled() {
+    return PickingManager::getPtr()->pickingEnabled();
+}
 
 bool PickingContainer::performMousePick(MouseEvent* e) {
+    if (!pickingEnabled())
+        return false;
+
     if (e->button() == MouseEvent::MOUSE_BUTTON_LEFT && e->state() == MouseEvent::MOUSE_STATE_PRESS){
         uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
         prevMouseCoord_ = coord;
@@ -83,9 +89,107 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
     return false;
 }
 
-bool PickingContainer::performTouchPick(TouchEvent*) {
-    //TODO: Implement
-    return false;
+bool PickingContainer::performTouchPick(TouchEvent* e) {
+    if (!pickingEnabled())
+        return false;
+
+    std::vector<TouchPoint>& touchPoints = e->getTouchPoints();
+
+    // Clear the picked touch point map
+    pickedTouchPoints_.clear();
+
+    std::unordered_map<int, PickingObject*>::iterator touchPickObjs_it;
+    std::unordered_map<PickingObject*, std::vector<TouchPoint>>::iterator pickedTouchPoints_it;
+
+    auto touchPoint = std::begin(touchPoints);
+    while (touchPoint != std::end(touchPoints)) {
+        bool isAssociated = false;
+        if (touchPoint->state() == TouchPoint::TOUCH_STATE_STARTED) {
+            // Find out if new touch point is touching inside a picking object
+            uvec2 coord = mousePosToPixelCoordinates(touchPoint->getPos(), e->canvasSize());
+            PickingObject* pickObj = findPickingObject(coord);
+
+            // If it is, put it in the TouchIDPickingMap
+            if (pickObj) {
+                touchPickObjs_.insert(std::pair<int, PickingObject*>(touchPoint->getId(), pickObj));
+
+                // Associate touch point with picking object
+                // which can already have other associated touch points.
+                pickedTouchPoints_it = pickedTouchPoints_.find(pickObj);
+                if (pickedTouchPoints_it != pickedTouchPoints_.end()){
+                    pickedTouchPoints_it->second.push_back(*touchPoint);
+                }
+                else{
+                    pickedTouchPoints_.insert(std::pair<PickingObject*, 
+                        std::vector<TouchPoint>>(pickObj, std::vector<TouchPoint>{*touchPoint}));
+                }
+                isAssociated = true;
+            }
+        }
+        else if (touchPoint->state() == TouchPoint::TOUCH_STATE_ENDED) {
+            // Erase touch point from TouchIDPickingMap
+            touchPickObjs_.erase(touchPoint->getId());
+        }
+        else {
+            // Find out if touch point is in the TouchIDPickingMap
+            // If it exists, associate touch point with picking object
+            touchPickObjs_it = touchPickObjs_.find(touchPoint->getId());
+            if (touchPickObjs_it != touchPickObjs_.end()){
+                // Associate touch point with picking object
+                // which can already have other associated touch points.
+                pickedTouchPoints_it = pickedTouchPoints_.find(touchPickObjs_it->second);
+                if (pickedTouchPoints_it != pickedTouchPoints_.end()){
+                    pickedTouchPoints_it->second.push_back(*touchPoint);
+                }
+                else{
+                    pickedTouchPoints_.insert(std::pair<PickingObject*, 
+                        std::vector<TouchPoint>>(touchPickObjs_it->second, std::vector<TouchPoint>{*touchPoint}));
+                }
+                isAssociated = true;
+            }
+        }
+        // Removed touch point from the actual event if it was associated with a picking object
+        if (isAssociated)
+            touchPoint = touchPoints.erase(touchPoint);
+        else
+            ++touchPoint;
+    }
+
+    // Build touch event for all picking objects with associated touch points
+    for (pickedTouchPoints_it = pickedTouchPoints_.begin(); pickedTouchPoints_it != pickedTouchPoints_.end(); ++pickedTouchPoints_it){
+        // Treat one touch point the same as mouse event, for now
+        if (pickedTouchPoints_it->second.size() == 1){
+            uvec2 coord = mousePosToPixelCoordinates(pickedTouchPoints_it->second[0].getPos(), e->canvasSize());
+            if (pickedTouchPoints_it->second[0].state() == TouchPoint::TOUCH_STATE_STARTED){
+                pickedTouchPoints_it->first->setPickingPosition(normalizedCoordinates(coord));
+                pickedTouchPoints_it->first->setPickingDepth(pickedTouchPoints_it->second[0].getDepth());
+                pickedTouchPoints_it->first->setPickingMove(vec2(0.f, 0.f));
+            }
+            else{
+                uvec2 prevCoord = mousePosToPixelCoordinates(pickedTouchPoints_it->second[0].getPrevPos(), e->canvasSize());
+                pickedTouchPoints_it->first->setPickingMove(pixelMoveVector(prevCoord, coord));
+            }
+            // One touch point is currently treated as mouse event as well...
+            // So prepare for that
+            prevMouseCoord_ = coord;
+            mousePickObj_ = pickedTouchPoints_it->first;
+            mousePickingOngoing_ = true;
+        }
+
+        pickedTouchPoints_it->first->setPickingTouchEvent(TouchEvent(pickedTouchPoints_it->second, e->canvasSize()));
+    }
+
+    // One touch point is currently treated as mouse event as well...
+    // So prepare for that
+    if (touchPoints.size() == 1){
+        prevMouseCoord_ = mousePosToPixelCoordinates(touchPoints[0].getPos(), e->canvasSize());
+    }
+
+    // Mark all picking objects in TouchIDPickingMap as picked.
+    for (touchPickObjs_it = touchPickObjs_.begin(); touchPickObjs_it != touchPickObjs_.end(); ++touchPickObjs_it)
+        touchPickObjs_it->second->picked();
+
+    return !touchPickObjs_.empty();
 }
 
 void PickingContainer::setPickingSource(const Image* src) {
@@ -93,7 +197,7 @@ void PickingContainer::setPickingSource(const Image* src) {
 }
 
 PickingObject* PickingContainer::findPickingObject(const uvec2& coord){
-    if (PickingManager::getPtr()->pickingEnabled() && src_) {
+    if (pickingEnabled() && src_) {
         const Layer* pickingLayer = src_->getPickingLayer();
 
         if (pickingLayer) {

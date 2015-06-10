@@ -32,22 +32,24 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <unordered_map>
 
 namespace inviwo {
 
 class Image;
 class PickingObject;
 class MouseEvent;
-class TouchEvent;
 
 class IVW_CORE_API PickingContainer {
 public:
     PickingContainer();
     virtual ~PickingContainer();
 
+    bool pickingEnabled();
+
     // Return true if picking was performed, otherwise false
     bool performMousePick(MouseEvent*);
-
     bool performTouchPick(TouchEvent*);
 
     void setPickingSource(const Image* src);
@@ -65,6 +67,9 @@ private:
     PickingObject* mousePickObj_;
     uvec2 prevMouseCoord_;
     bool mousePickingOngoing_;
+
+    std::unordered_map<int, PickingObject*> touchPickObjs_;
+    std::unordered_map<PickingObject*, std::vector<TouchPoint>> pickedTouchPoints_;
 };
 
 } // namespace
