@@ -45,15 +45,11 @@ public:
     PickingContainer();
     virtual ~PickingContainer();
 
-    bool isPickableSelected();
-
+    // Return true if picking was performed, otherwise false
     bool performMousePick(MouseEvent*);
-    void moveMousePicked(MouseEvent*);
 
     bool performTouchPick(TouchEvent*);
-    void moveTouchPicked(TouchEvent*);
 
-    void setPickableSelected(bool selected);
     void setPickingSource(const Image* src);
 
 protected:
@@ -65,9 +61,10 @@ protected:
 
 private:
     const Image* src_;
-    PickingObject* currentPickObj_;
-    uvec2 prevCoord_;
-    bool selected_;
+
+    PickingObject* mousePickObj_;
+    uvec2 prevMouseCoord_;
+    bool mousePickingOngoing_;
 };
 
 } // namespace

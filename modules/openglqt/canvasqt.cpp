@@ -457,7 +457,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
         vec2 screenTouchPos(touchPoint.pos().x(), touchPoint.pos().y());
         vec2 prevScreenTouchPos(touchPoint.lastPos().x(), touchPoint.lastPos().y());
         TouchPoint::TouchState touchState;
-        switch (firstPoint.state())
+        switch (touchPoint.state())
         {
         case Qt::TouchPointPressed:
             touchState = TouchPoint::TOUCH_STATE_STARTED;
@@ -476,7 +476,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
         }
 
         touchPoints.push_back(
-            TouchPoint(screenTouchPos,
+            TouchPoint(touchPoint.id(), screenTouchPos,
             (screenTouchPos + 0.5f) / screenSize,
             prevScreenTouchPos,
             (prevScreenTouchPos + 0.5f) / screenSize,

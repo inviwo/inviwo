@@ -102,7 +102,7 @@ Event* ViewManager::registerEvent(Event* event) {
                 vec2 posNormalized = pos / viewportSize;
                 vec2 prevPos = flipY(elem.getPrevPos() - viewportOffset, viewportSize);
                 vec2 prevPosNormalized = prevPos / viewportSize;
-                modifiedTouchPoints.push_back(TouchPoint(pos, posNormalized, prevPos, prevPosNormalized, elem.state()));
+                modifiedTouchPoints.push_back(TouchPoint(elem.getId(), pos, posNormalized, prevPos, prevPosNormalized, elem.state()));
             }
             TouchEvent* newEvent = new TouchEvent(modifiedTouchPoints, viewportSize);
 

@@ -37,53 +37,55 @@
 namespace inviwo {
 
 PickingContainer::PickingContainer()
-    : src_(nullptr), currentPickObj_(nullptr), prevCoord_(uvec2(0, 0)), selected_(false){};
+    : src_(nullptr), mousePickObj_(nullptr), prevMouseCoord_(uvec2(0, 0)), mousePickingOngoing_(false){};
 
 PickingContainer::~PickingContainer() {};
 
-bool PickingContainer::isPickableSelected() { return selected_; }
-
 bool PickingContainer::performMousePick(MouseEvent* e) {
-    uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
-    prevCoord_ = coord;
+    if (e->button() == MouseEvent::MOUSE_BUTTON_LEFT && e->state() == MouseEvent::MOUSE_STATE_PRESS){
+        uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
+        prevMouseCoord_ = coord;
 
-    currentPickObj_ = findPickingObject(coord);
+        mousePickObj_ = findPickingObject(coord);
 
-    if (currentPickObj_) {
-        setPickableSelected(true);
-        currentPickObj_->setPickingPosition(normalizedCoordinates(coord));
-        currentPickObj_->setPickingDepth(e->depth());
-        currentPickObj_->setPickingMouseEvent(*e);
+        if (mousePickObj_) {
+            mousePickingOngoing_ = true;
+            mousePickObj_->setPickingPosition(normalizedCoordinates(coord));
+            mousePickObj_->setPickingDepth(e->depth());
+            mousePickObj_->setPickingMouseEvent(*e);
 
-        currentPickObj_->setPickingMove(vec2(0.f, 0.f));
-        currentPickObj_->picked();
-        return true;
+            mousePickObj_->setPickingMove(vec2(0.f, 0.f));
+            mousePickObj_->picked();
+            return true;
+        }
+        else{
+            mousePickingOngoing_ = false;
+            return false;
+        }
     }
-    else{
-        setPickableSelected(false);
+    else if (e->state() == MouseEvent::MOUSE_STATE_MOVE){
+        if (mousePickingOngoing_){
+            uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
+            mousePickObj_->setPickingMove(pixelMoveVector(prevMouseCoord_, coord));
+            mousePickObj_->setPickingMouseEvent(*e);
+            prevMouseCoord_ = coord;
+            mousePickObj_->picked();
+            return true;
+        }
+        else
+            return false;
+    }
+    else if (e->button() == MouseEvent::MOUSE_BUTTON_LEFT && e->state() == MouseEvent::MOUSE_STATE_RELEASE){
+        mousePickingOngoing_ = false;
         return false;
     }
-}
 
-void PickingContainer::moveMousePicked(MouseEvent* e) {
-    uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
-    currentPickObj_->setPickingMove(pixelMoveVector(prevCoord_, coord));
-    currentPickObj_->setPickingMouseEvent(*e);
-    prevCoord_ = coord;
-    currentPickObj_->picked();
+    return false;
 }
 
 bool PickingContainer::performTouchPick(TouchEvent*) {
     //TODO: Implement
     return false;
-}
-
-void PickingContainer::moveTouchPicked(TouchEvent*) {
-    //TODO: Implement
-}
-
-void PickingContainer::setPickableSelected(bool selected) {
-    selected_ = selected;
 }
 
 void PickingContainer::setPickingSource(const Image* src) {

@@ -82,6 +82,8 @@ protected:
     void mousePressEvent(MouseEvent* e);
     void mouseReleaseEvent(MouseEvent* e);
     void mouseMoveEvent(MouseEvent* e);
+
+    void mouseButtonEvent(MouseEvent* e);
     void mouseWheelEvent(MouseEvent* e);
 
     void keyPressEvent(KeyboardEvent* e);

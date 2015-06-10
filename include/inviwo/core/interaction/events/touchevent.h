@@ -48,6 +48,7 @@ public:
     };
     TouchPoint() {};
     /** 
+     * @param int id Touch point id that distinguishes a particular touch point
      * @param vec2 pos Position in screen coordinates [0 dim-1]^2.
      * @param vec2 posNormalized Position normalized to the size of the screen [0 1]^2.
      * @param vec2 prevPos Previous position in screen coordinates [0 dim-1]^2.
@@ -55,11 +56,17 @@ public:
      * @param TouchPoint::TouchState touchState State of the touch point.
      * @param double depth Depth value in normalized device coordinates ([-1 1]) at touch point, 1 if no depth is available.
      */
-    TouchPoint(vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState, double depth = 1.0);
+    TouchPoint(int id, vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 prevPosNormalized, TouchPoint::TouchState touchState, double depth = 1.0);
     virtual ~TouchPoint() {};
 
 
     inline TouchPoint::TouchState state() const { return state_; }
+    /**
+    * \brief Retrieve touch point id
+    * @return int
+    */
+    int getId() const { return id_; }
+    void setId(int id) { id_ = id; }
     /** 
      * \brief Retrieve position in screen coordinates [0 dim-1]^2
      * Coordinate system:
@@ -111,6 +118,8 @@ public:
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
 protected:
+    int id_;
+
     vec2 pos_;
     vec2 posNormalized_;
 
