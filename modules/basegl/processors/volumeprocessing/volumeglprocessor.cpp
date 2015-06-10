@@ -103,7 +103,7 @@ void VolumeGLProcessor::process() {
 
     const size3_t dim{inport_.getData()->getDimensions()};
     fbo_->activate();
-    glViewport(0, 0, dim.x, dim.y);
+    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
     if (reattach) {
         VolumeGL* outVolumeGL = outport_.getData()->getEditableRepresentation<VolumeGL>();
         fbo_->attachColorTexture(outVolumeGL->getTexture(), 0);

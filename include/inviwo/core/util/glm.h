@@ -43,6 +43,7 @@
 #include <warn/push>
 #include <warn/ignore/shadow>
 #include <warn/ignore/sign-compare>
+#include <warn/ignore/conversion>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>

@@ -225,7 +225,7 @@ void LightVolumeGL::process() {
     //Perform propagation passes
     for (int i=0; i<2; ++i) {
         propParams_[i].fbo->activate();
-        glViewport(0, 0, volumeDimOut_.x, volumeDimOut_.y);
+        glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x), static_cast<GLsizei>(volumeDimOut_.y));
 
         if (reattach)
             propParams_[i].fbo->attachColorTexture(propParams_[i].vol->getTexture(), 0);
@@ -264,7 +264,7 @@ void LightVolumeGL::process() {
     mergeShader_->setUniform("blendingFactor_", blendingFactor_);
     //Perform merge pass
     mergeFBO_->activate();
-    glViewport(0, 0, volumeDimOut_.x, volumeDimOut_.y);
+    glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x), static_cast<GLsizei>(volumeDimOut_.y));
 
     if (reattach)
         mergeFBO_->attachColorTexture(outVolumeGL->getTexture(), 0);

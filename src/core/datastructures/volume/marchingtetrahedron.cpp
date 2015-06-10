@@ -149,18 +149,18 @@ size_t detail::addVertex(K3DTree<size_t> &vertexTree, std::vector<vec3> &positio
 void detail::addTriangle(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
                          std::vector<vec3> &positions, std::vector<vec3> &normals,
                          const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) {
-    unsigned i0 = addVertex(vertexTree, positions, normals, a);
-    unsigned i1 = addVertex(vertexTree, positions, normals, b);
-    unsigned i2 = addVertex(vertexTree, positions, normals, c);
+    size_t i0 = addVertex(vertexTree, positions, normals, a);
+    size_t i1 = addVertex(vertexTree, positions, normals, b);
+    size_t i2 = addVertex(vertexTree, positions, normals, c);
 
     if (i0 == i1 || i0 == i2 || i1 == i2) {
         // triangle is so small so that the vertices are merged.
         return;
     }
 
-    indexBuffer->add(i0);
-    indexBuffer->add(i1);
-    indexBuffer->add(i2);
+    indexBuffer->add(static_cast<uint32_t>(i0));
+    indexBuffer->add(static_cast<uint32_t>(i1));
+    indexBuffer->add(static_cast<uint32_t>(i2));
 
     vec3 e0 = b - a;
     vec3 e1 = c - a;
