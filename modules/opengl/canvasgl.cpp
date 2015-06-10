@@ -119,6 +119,12 @@ void CanvasGL::render(const Image* image, LayerType layerType, size_t idx) {
             checkChannels(image_->getDataFormat()->getComponents());
         }
         renderLayer(idx);
+
+        // Faster async download of textures sampled on interaction
+        /*if (imageGL_->getDepthLayerGL())
+            imageGL_->getDepthLayerGL()->getTexture()->downloadToPBO();
+        if (pickingContainer_->pickingEnabled() && imageGL_->getPickingLayerGL())
+            imageGL_->getPickingLayerGL()->getTexture()->downloadToPBO();*/
     } else {
         imageGL_ = nullptr;
         renderNoise();

@@ -74,7 +74,7 @@ public:
     void unbind() const;
 
     void download(void* data) const;
-
+    void downloadToPBO() const;
     void loadFromPBO(const Texture*);
 
 protected:
@@ -82,8 +82,6 @@ protected:
     void bindToPBO() const;
     void unbindFromPBO() const;
     void unbindToPBO() const;
-
-    void downloadToPBO() const;
 
     void setupAsyncReadBackPBO();
 
