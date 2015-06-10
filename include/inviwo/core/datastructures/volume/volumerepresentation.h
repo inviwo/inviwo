@@ -49,8 +49,6 @@ public:
     virtual VolumeRepresentation* clone() const override = 0;
     virtual ~VolumeRepresentation();
 
-    virtual void performOperation(DataOperation*) const override {};
-
     // Removes old data and reallocate for new dimensions.
     // Needs to be overloaded by child classes.
     virtual void setDimensions(size3_t dimensions) = 0;

@@ -36,7 +36,6 @@
 namespace inviwo {
 
 class DataFormatBase;
-class DataOperation;
 class BaseData;
 
 class IVW_CORE_API DataRepresentation {
@@ -52,7 +51,6 @@ public:
     const DataFormatBase* getDataFormat() const;
     std::string getDataFormatString() const;
     DataFormatEnums::Id getDataFormatId() const;
-    virtual void performOperation(DataOperation*) const = 0;
 
     virtual void setOwner(BaseData*);
     virtual BaseData* getOwner();

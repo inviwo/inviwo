@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MARCHINGTETRAHEDRON_H
@@ -34,234 +34,72 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeoperation.h>
 #include <inviwo/core/datastructures/kdtree.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
-class MarchingTetrahedron : public VolumeOperation {
+class IVW_CORE_API MarchingTetrahedron {
 public:
-    MarchingTetrahedron(const VolumeRepresentation *in, const double &iso, const vec4 &color)
-        : VolumeOperation(in), iso_(iso), color_(color) {}
-    virtual ~MarchingTetrahedron() {}
+    static Mesh *apply(const VolumeRepresentation *in, const double &iso, const vec4 &color);
+};
 
-    template <typename T>
-    void evaluate();
+namespace detail {
 
-    static inline Mesh* apply(const VolumeRepresentation *in, const double &iso,
-                                  const vec4 &color) {
-        MarchingTetrahedron marchingOP = MarchingTetrahedron(in, iso, color);
-        marchingOP.evaluateFor<MarchingTetrahedron>();
-        return marchingOP.getOutput<Mesh>();
-    }
-
-private:
-    double iso_;
-    K3DTree<unsigned> vertexTree_;
-    std::vector<vec3> positions_;
-    std::vector<vec3> normals_;
-    vec4 color_;
-
-    void evaluateTetra(IndexBufferRAM *indexBuffer, const glm::vec3 &p0, const double &v0,
-                       const glm::vec3 &p1, const double &v1, const glm::vec3 &p2, const double &v2,
-                       const glm::vec3 &p3, const double &v3) {
-        int index = 0;
-        if (v0 >= 0) index += 1;
-        if (v1 >= 0) index += 2;
-        if (v2 >= 0) index += 4;
-        if (v3 >= 0) index += 8;
-        glm::vec3 a, b, c, d;
-        if (index == 0 || index == 15) return;
-        if (index == 1 || index == 14) {
-            a = interpolate(p0, v0, p2, v2);
-            b = interpolate(p0, v0, p1, v1);
-            c = interpolate(p0, v0, p3, v3);
-            if (index == 1) {
-                addTriangle(indexBuffer, a, b, c);
-            } else {
-                addTriangle(indexBuffer, a, c, b);
-            }
-        } else if (index == 2 || index == 13) {
-            a = interpolate(p1, v1, p0, v0);
-            b = interpolate(p1, v1, p2, v2);
-            c = interpolate(p1, v1, p3, v3);
-            if (index == 2) {
-                addTriangle(indexBuffer, a, b, c);
-            } else {
-                addTriangle(indexBuffer, a, c, b);
-            }
-
-        } else if (index == 4 || index == 11) {
-            a = interpolate(p2, v2, p0, v0);
-            b = interpolate(p2, v2, p1, v1);
-            c = interpolate(p2, v2, p3, v3);
-            if (index == 4) {
-                addTriangle(indexBuffer, a, c, b);
-            } else {
-                addTriangle(indexBuffer, a, b, c);
-            }
-        } else if (index == 7 || index == 8) {
-            a = interpolate(p3, v3, p0, v0);
-            b = interpolate(p3, v3, p2, v2);
-            c = interpolate(p3, v3, p1, v1);
-            if (index == 7) {
-                addTriangle(indexBuffer, a, b, c);
-            } else {
-                addTriangle(indexBuffer, a, c, b);
-            }
-        } else if (index == 3 || index == 12) {
-            a = interpolate(p0, v0, p2, v2);
-            b = interpolate(p1, v1, p3, v3);
-            c = interpolate(p0, v0, p3, v3);
-            d = interpolate(p1, v1, p2, v2);
-
-            if (index == 3) {
-                addTriangle(indexBuffer, a, b, c);
-                addTriangle(indexBuffer, a, d, b);
-            } else {
-                addTriangle(indexBuffer, a, c, b);
-                addTriangle(indexBuffer, a, b, d);
-            }
-
-        } else if (index == 5 || index == 10) {
-            a = interpolate(p2, v2, p3, v3);
-            b = interpolate(p0, v0, p1, v1);
-            c = interpolate(p0, v0, p3, v3);
-            d = interpolate(p1, v1, p2, v2);
-
-            if (index == 5) {
-                addTriangle(indexBuffer, a, b, c);
-                addTriangle(indexBuffer, a, d, b);
-            } else {
-                addTriangle(indexBuffer, a, c, b);
-                addTriangle(indexBuffer, a, b, d);
-            }
-
-        } else if (index == 6 || index == 9) {
-            a = interpolate(p1, v1, p3, v3);
-            b = interpolate(p0, v0, p2, v2);
-            c = interpolate(p0, v0, p1, v1);
-            d = interpolate(p2, v2, p3, v3);
-
-            if (index == 6) {
-                addTriangle(indexBuffer, a, c, b);
-                addTriangle(indexBuffer, a, b, d);
-            } else {
-                addTriangle(indexBuffer, a, b, c);
-                addTriangle(indexBuffer, a, d, b);
-            }
-        }
-    }
-
-    unsigned addVertex(const vec3 pos) {
-        K3DTree<unsigned>::Node *nearest = vertexTree_.findNearest(vec3(pos));
-        vec3 p;
-        if (nearest) {
-            p.x = nearest->getPosition()[0];
-            p.y = nearest->getPosition()[1];
-            p.z = nearest->getPosition()[2];
-        }
-        if (!nearest || (glm::distance(p, pos) > glm::epsilon<double>() * 5)) {
-            nearest = vertexTree_.insert(vec3(pos), static_cast<unsigned>(positions_.size()));
-            positions_.push_back(pos);
-            normals_.push_back(vec3(0, 0, 0));
-        }
-        return nearest->get();
-    }
-
-    void addTriangle(IndexBufferRAM *indexBuffer, const glm::vec3 &a, const glm::vec3 &b,
-                     const glm::vec3 &c) {
-        unsigned i0 = addVertex(a);
-        unsigned i1 = addVertex(b);
-        unsigned i2 = addVertex(c);
-
-        if (i0 == i1 || i0 == i2 || i1 == i2) {
-            // triangle is so small so that the vertices are merged.
-            return;
-        }
-
-        indexBuffer->add(i0);
-        indexBuffer->add(i1);
-        indexBuffer->add(i2);
-
-        vec3 e0 = b - a;
-        vec3 e1 = c - a;
-        vec3 n = glm::normalize(glm::cross(e0, e1));
-
-        normals_[i0] += n;
-        normals_[i1] += n;
-        normals_[i2] += n;
-    }
-
-    template <typename T>
-    double getValue(const T *src, size3_t pos, size3_t dim);
-
-    template <typename T>
-    static double toSingle(const glm::detail::tvec2<T, glm::defaultp> &v) {
-        return static_cast<double>(v.x);
-    }
-    template <typename T>
-    static double toSingle(const glm::detail::tvec3<T, glm::defaultp> &v) {
-        return static_cast<double>(v.x);
-    }
-    template <typename T>
-    static double toSingle(const glm::detail::tvec4<T, glm::defaultp> &v) {
-        return static_cast<double>(v.x);
-    }
-
-    template <typename T>
-    static double toSingle(const T &v) {
-        return static_cast<double>(v);
-    }
-
-    static glm::vec3 interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
-                                 const double &v1) {
-        double t = 0;
-        
-        if (v0 != v1) 
-            t = v0 / (v0 - v1);
-        
-        float tF = static_cast<float>(t);
-        return tF * p1 + (1.f - tF) * p0;
-    }
+struct IVW_CORE_API MarchingTetrahedronDispatcher {
+    using type = Mesh *;
+    template <class T>
+    Mesh *dispatch(const VolumeRepresentation *in, const double &iso, const vec4 &color);
 };
 
 template <typename T>
-double MarchingTetrahedron::getValue(const T *src, size3_t pos, size3_t dim) {
-    double v = toSingle(src[VolumeRAM::posToIndex(pos, dim)]);
-    return -(v - iso_);
+double getValue(const T *src, size3_t pos, size3_t dim, double iso) {
+    double v = util::glm_convert<double>(src[VolumeRAM::posToIndex(pos, dim)]);
+    return -(v - iso);
 }
 
-template <typename T>
-void MarchingTetrahedron::evaluate() {
-    const VolumeRAMPrecision<T> *volume =
-        dynamic_cast<const VolumeRAMPrecision<T> *>(getInputVolume());
+void evaluateTetra(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
+                   std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
+                   const double &v0, const glm::vec3 &p1, const double &v1, const glm::vec3 &p2,
+                   const double &v2, const glm::vec3 &p3, const double &v3);
 
-    if (!volume) {
-        setOutput(nullptr);
-        return;
-    }
+size_t addVertex(K3DTree<size_t> &vertexTree, std::vector<vec3> &positions,
+                 std::vector<vec3> &normals, const vec3 pos);
 
-    vertexTree_.clear();
-    positions_.clear();
-    normals_.clear();
+void addTriangle(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
+                 std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &a,
+                 const glm::vec3 &b, const glm::vec3 &c);
+
+static glm::vec3 interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
+                             const double &v1);
+
+template <class DataType>
+Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(const VolumeRepresentation *in,
+                                                              const double &iso,
+                                                              const vec4 &color) {
+    using T = typename DataType::type;
+
+    const VolumeRAMPrecision<T> *volume = dynamic_cast<const VolumeRAMPrecision<T> *>(in);
+    if (!volume) return nullptr;
+
+    K3DTree<size_t> vertexTree;
 
     BasicMesh *mesh = new BasicMesh();
-    IndexBufferRAM *indexBuffer =
-        mesh->addIndexBuffer(GeometryEnums::TRIANGLES, GeometryEnums::NONE);
+    auto indexBuffer = mesh->addIndexBuffer(GeometryEnums::TRIANGLES, GeometryEnums::NONE);
+
+    std::vector<vec3> positions;
+    std::vector<vec3> normals;
 
     const Volume *baseVolume = dynamic_cast<const Volume *>(volume->getOwner());
     if (baseVolume) {
         mesh->setModelMatrix(baseVolume->getModelMatrix());
         mesh->setWorldMatrix(baseVolume->getWorldMatrix());
     }
-    setOutput(mesh);
 
-    const T *src = reinterpret_cast<const T *>(volume->getData());
+    const T *src = static_cast<const T *>(volume->getData());
 
-    size3_t dim = volume->getDimensions();
+    const size3_t dim{volume->getDimensions()};
     double x, y, z, dx, dy, dz;
     dx = 1.0f / (dim.x - 1);
     dy = 1.0f / (dim.y - 1);
@@ -269,12 +107,12 @@ void MarchingTetrahedron::evaluate() {
     double v[8];
     glm::vec3 p[8];
 
-    const static unsigned int tetras[6][4] = {
+    const static size_t tetras[6][4] = {
         {0, 1, 3, 5}, {1, 2, 3, 5}, {2, 3, 5, 6}, {0, 3, 4, 5}, {7, 4, 3, 5}, {7, 6, 5, 3}};
 
-    for (unsigned k = 0; k < dim.z - 1; k++) {
-        for (unsigned j = 0; j < dim.y - 1; j++) {
-            for (unsigned i = 0; i < dim.x - 1; i++) {
+    for (size_t k = 0; k < dim.z - 1; k++) {
+        for (size_t j = 0; j < dim.y - 1; j++) {
+            for (size_t i = 0; i < dim.x - 1; i++) {
                 x = dx * i;
                 y = dy * j;
                 z = dz * k;
@@ -288,14 +126,14 @@ void MarchingTetrahedron::evaluate() {
                 p[6] = glm::vec3(x + dx, y + dy, z + dz);
                 p[7] = glm::vec3(x, y + dy, z + dz);
 
-                v[0] = getValue(src, size3_t(i, j, k), dim);
-                v[1] = getValue(src, size3_t(i + 1, j, k), dim);
-                v[2] = getValue(src, size3_t(i + 1, j + 1, k), dim);
-                v[3] = getValue(src, size3_t(i, j + 1, k), dim);
-                v[4] = getValue(src, size3_t(i, j, k + 1), dim);
-                v[5] = getValue(src, size3_t(i + 1, j, k + 1), dim);
-                v[6] = getValue(src, size3_t(i + 1, j + 1, k + 1), dim);
-                v[7] = getValue(src, size3_t(i, j + 1, k + 1), dim);
+                v[0] = getValue(src, size3_t(i, j, k), dim, iso);
+                v[1] = getValue(src, size3_t(i + 1, j, k), dim, iso);
+                v[2] = getValue(src, size3_t(i + 1, j + 1, k), dim, iso);
+                v[3] = getValue(src, size3_t(i, j + 1, k), dim, iso);
+                v[4] = getValue(src, size3_t(i, j, k + 1), dim, iso);
+                v[5] = getValue(src, size3_t(i + 1, j, k + 1), dim, iso);
+                v[6] = getValue(src, size3_t(i + 1, j + 1, k + 1), dim, iso);
+                v[7] = getValue(src, size3_t(i, j + 1, k + 1), dim, iso);
 
                 bool ok = true;
                 for (int ii = 0; ii < 8 && ok; ii++) {
@@ -314,21 +152,25 @@ void MarchingTetrahedron::evaluate() {
                 if (!ok) continue;
 
                 for (int a = 0; a < 6; a++) {
-                    evaluateTetra(indexBuffer, p[tetras[a][0]], v[tetras[a][0]], p[tetras[a][1]],
-                                  v[tetras[a][1]], p[tetras[a][2]], v[tetras[a][2]],
-                                  p[tetras[a][3]], v[tetras[a][3]]);
+                    evaluateTetra(vertexTree, indexBuffer, positions, normals, p[tetras[a][0]],
+                                  v[tetras[a][0]], p[tetras[a][1]], v[tetras[a][1]],
+                                  p[tetras[a][2]], v[tetras[a][2]], p[tetras[a][3]],
+                                  v[tetras[a][3]]);
                 }
             }
         }
     }
 
-    ivwAssert(positions_.size() == normals_.size(), "positions_ and normals_ must be equal");
-    std::vector<vec3>::iterator P = positions_.begin();
-    std::vector<vec3>::iterator N = normals_.begin();
-    for (; P != positions_.end(); ++P, ++N) {
-        mesh->addVertex(*P, glm::normalize(*N), *P, color_);
+    ivwAssert(positions.size() == normals.size(), "positions_ and normals_ must be equal");
+    for (auto pit = positions.begin(), nit = normals.begin(); pit != positions.end();
+         ++pit, ++nit) {
+        mesh->addVertex(*pit, glm::normalize(*nit), *pit, color);
     }
+
+    return mesh;
 }
+
+}  // namespace
 
 }  // namespace
 

@@ -49,8 +49,6 @@ public:
     virtual LayerRepresentation* clone() const = 0;
     virtual ~LayerRepresentation();
 
-    virtual void performOperation(DataOperation*) const {};
-
     size2_t getDimensions() const;
     
     /**

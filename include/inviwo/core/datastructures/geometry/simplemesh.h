@@ -44,8 +44,6 @@ public:
     virtual SimpleMesh* clone() const;
     virtual ~SimpleMesh();
 
-    virtual void performOperation(DataOperation*) const {};
-
     void addVertex(vec3 pos, vec3 texCoord, vec4 color);
     void addIndex(unsigned int idx);
     void setIndicesInfo(GeometryEnums::DrawType, GeometryEnums::ConnectivityType);

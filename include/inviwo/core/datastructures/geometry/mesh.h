@@ -61,8 +61,6 @@ public:
     virtual ~Mesh();
     virtual std::string getDataInfo() const;
 
-    virtual void performOperation(DataOperation*) const {};
-
     /**
      * Add a buffer with rendering data, such as positions/colors/normals.
      *

@@ -24,10 +24,161 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-//#include <inviwo/core/datastructures/volume/marchingtetrahedron.h>
-
+#include <inviwo/core/datastructures/volume/marchingtetrahedron.h>
 namespace inviwo {
+
+Mesh *MarchingTetrahedron::apply(const VolumeRepresentation *in, const double &iso,
+                                 const vec4 &color) {
+    detail::MarchingTetrahedronDispatcher disp;
+    return in->getDataFormat()->dispatch(disp, in, iso, color);
+}
+
+void detail::evaluateTetra(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
+                           std::vector<vec3> &positions, std::vector<vec3> &normals,
+                           const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
+                           const double &v1, const glm::vec3 &p2, const double &v2,
+                           const glm::vec3 &p3, const double &v3) {
+    int index = 0;
+    if (v0 >= 0) index += 1;
+    if (v1 >= 0) index += 2;
+    if (v2 >= 0) index += 4;
+    if (v3 >= 0) index += 8;
+    glm::vec3 a, b, c, d;
+    if (index == 0 || index == 15) return;
+    if (index == 1 || index == 14) {
+        a = interpolate(p0, v0, p2, v2);
+        b = interpolate(p0, v0, p1, v1);
+        c = interpolate(p0, v0, p3, v3);
+        if (index == 1) {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, c);
+        } else {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, c, b);
+        }
+    } else if (index == 2 || index == 13) {
+        a = interpolate(p1, v1, p0, v0);
+        b = interpolate(p1, v1, p2, v2);
+        c = interpolate(p1, v1, p3, v3);
+        if (index == 2) {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, c);
+        } else {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, c, b);
+        }
+
+    } else if (index == 4 || index == 11) {
+        a = interpolate(p2, v2, p0, v0);
+        b = interpolate(p2, v2, p1, v1);
+        c = interpolate(p2, v2, p3, v3);
+        if (index == 4) {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, c, b);
+        } else {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, c);
+        }
+    } else if (index == 7 || index == 8) {
+        a = interpolate(p3, v3, p0, v0);
+        b = interpolate(p3, v3, p2, v2);
+        c = interpolate(p3, v3, p1, v1);
+        if (index == 7) {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, c);
+        } else {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, c, b);
+        }
+    } else if (index == 3 || index == 12) {
+        a = interpolate(p0, v0, p2, v2);
+        b = interpolate(p1, v1, p3, v3);
+        c = interpolate(p0, v0, p3, v3);
+        d = interpolate(p1, v1, p2, v2);
+
+        if (index == 3) {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, c);
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, d, b);
+        } else {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, c, b);
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, d);
+        }
+
+    } else if (index == 5 || index == 10) {
+        a = interpolate(p2, v2, p3, v3);
+        b = interpolate(p0, v0, p1, v1);
+        c = interpolate(p0, v0, p3, v3);
+        d = interpolate(p1, v1, p2, v2);
+
+        if (index == 5) {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, c);
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, d, b);
+        } else {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, c, b);
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, d);
+        }
+
+    } else if (index == 6 || index == 9) {
+        a = interpolate(p1, v1, p3, v3);
+        b = interpolate(p0, v0, p2, v2);
+        c = interpolate(p0, v0, p1, v1);
+        d = interpolate(p2, v2, p3, v3);
+
+        if (index == 6) {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, c, b);
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, d);
+        } else {
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, b, c);
+            addTriangle(vertexTree, indexBuffer, positions, normals, a, d, b);
+        }
+    }
+}
+
+size_t detail::addVertex(K3DTree<size_t> &vertexTree, std::vector<vec3> &positions,
+                         std::vector<vec3> &normals, const vec3 pos) {
+    K3DTree<size_t>::Node *nearest = vertexTree.findNearest(vec3(pos));
+    vec3 p;
+    if (nearest) {
+        p.x = nearest->getPosition()[0];
+        p.y = nearest->getPosition()[1];
+        p.z = nearest->getPosition()[2];
+    }
+    if (!nearest || (glm::distance(p, pos) > glm::epsilon<double>() * 5)) {
+        nearest = vertexTree.insert(pos, positions.size());
+        positions.push_back(pos);
+        normals.push_back(vec3(0, 0, 0));
+    }
+    return nearest->get();
+}
+
+void detail::addTriangle(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
+                         std::vector<vec3> &positions, std::vector<vec3> &normals,
+                         const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) {
+    unsigned i0 = addVertex(vertexTree, positions, normals, a);
+    unsigned i1 = addVertex(vertexTree, positions, normals, b);
+    unsigned i2 = addVertex(vertexTree, positions, normals, c);
+
+    if (i0 == i1 || i0 == i2 || i1 == i2) {
+        // triangle is so small so that the vertices are merged.
+        return;
+    }
+
+    indexBuffer->add(i0);
+    indexBuffer->add(i1);
+    indexBuffer->add(i2);
+
+    vec3 e0 = b - a;
+    vec3 e1 = c - a;
+    vec3 n = glm::normalize(glm::cross(e0, e1));
+
+    normals[i0] += n;
+    normals[i1] += n;
+    normals[i2] += n;
+}
+
+glm::vec3 detail::interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
+                              const double &v1) {
+    double t = 0;
+
+    if (v0 != v1) t = v0 / (v0 - v1);
+
+    float tF = static_cast<float>(t);
+    return tF * p1 + (1.f - tF) * p0;
+}
+
 }  // namespace

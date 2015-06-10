@@ -62,8 +62,6 @@ public:
     virtual DataGroupRepresentation* clone() const = 0;
     virtual ~DataGroupRepresentation();
 
-    virtual void performOperation(DataOperation*) const = 0;
-
     void setAsInvalid();
     bool isValid() const;
 

@@ -32,7 +32,6 @@
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramhistogram.h>
-#include <inviwo/core/datastructures/volume/volumeramoperationexecuter.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/stdextensions.h>
 
@@ -49,8 +48,6 @@ public:
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
     virtual ~VolumeRAMPrecision();
-
-    virtual void performOperation(DataOperation* dop) const override;
 
     virtual void* getData() override;
     virtual const void* getData() const override;
@@ -161,11 +158,6 @@ VolumeRAMPrecision<T>::~VolumeRAMPrecision() {
 template <typename T>
 VolumeRAMPrecision<T>* VolumeRAMPrecision<T>::clone() const {
     return new VolumeRAMPrecision<T>(*this);
-}
-
-template <typename T>
-void VolumeRAMPrecision<T>::performOperation(DataOperation* dop) const {
-    executeOperationOnVolumeRAMPrecision<T>(dop);
 }
 
 template <typename T>

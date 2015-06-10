@@ -46,7 +46,6 @@ public:
     virtual ImageRepresentation* clone() const = 0;
     virtual ~ImageRepresentation();
 
-    virtual void performOperation(DataOperation*) const;
     size2_t getDimensions() const;
 
     /**

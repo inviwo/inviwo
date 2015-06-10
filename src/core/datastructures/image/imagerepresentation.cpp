@@ -45,8 +45,6 @@ ImageRepresentation& ImageRepresentation::operator=(const ImageRepresentation& t
 
 ImageRepresentation::~ImageRepresentation() {}
 
-void ImageRepresentation::performOperation(DataOperation*) const {}
-
 size2_t ImageRepresentation::getDimensions() const { return getOwner()->getDimensions(); }
 
 Image* ImageRepresentation::getOwner() {

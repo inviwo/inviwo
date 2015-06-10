@@ -22,7 +22,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datagroup.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datagrouprepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datamapper.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/dataoperation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datarepresentation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/datasequence.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/diskrepresentation.h
@@ -65,11 +64,9 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volume.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeborder.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumedisk.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeoperation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeram.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramhistogram.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramoperationexecuter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramsubsample.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/volume/volumeramsubset.h
@@ -258,7 +255,6 @@ set(SOURCE_FILES
     datastructures/datagroup.cpp
     datastructures/datagrouprepresentation.cpp
     datastructures/datamapper.cpp
-    datastructures/dataoperation.cpp
     datastructures/datarepresentation.cpp
     datastructures/diskrepresentation.cpp
     datastructures/geometry/basicmesh.cpp
@@ -291,7 +287,6 @@ set(SOURCE_FILES
     datastructures/volume/volume.cpp
     datastructures/volume/volumeborder.cpp
     datastructures/volume/volumedisk.cpp
-    datastructures/volume/volumeoperation.cpp
     datastructures/volume/volumeram.cpp
     datastructures/volume/volumeramconverter.cpp
     datastructures/volume/volumeramprecision.cpp

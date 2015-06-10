@@ -44,8 +44,6 @@ public:
     MeshRepresentation& operator=(const MeshRepresentation& that);
     virtual MeshRepresentation* clone() const override = 0;
     virtual ~MeshRepresentation();
-
-    virtual void performOperation(DataOperation*) const override{};
 };
 
 }  // namespace

@@ -48,7 +48,6 @@ public:
     BufferRepresentation& operator=(const BufferRepresentation& that);
     virtual BufferRepresentation* clone() const = 0;
     virtual ~BufferRepresentation() {};
-    virtual void performOperation(DataOperation*) const {};
     virtual void setSize(size_t size) = 0;
 
     /**

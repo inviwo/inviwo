@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "surfaceextraction.h"
@@ -37,12 +37,13 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(SurfaceExtraction, "org.inviwo.SurfaceExtraction");
-ProcessorDisplayName(SurfaceExtraction,  "Surface Extraction");
+ProcessorDisplayName(SurfaceExtraction, "Surface Extraction");
 ProcessorTags(SurfaceExtraction, Tags::CPU);
 ProcessorCategory(SurfaceExtraction, "Geometry Creation");
 ProcessorCodeState(SurfaceExtraction, CODE_STATE_EXPERIMENTAL);
 
-// TODO make changing color not rerun extraction but only change the color, (and run only exctraction when volume change or iso change)
+// TODO make changing color not rerun extraction but only change the color, (and run only
+// extraction when volume change or iso change)
 
 SurfaceExtraction::SurfaceExtraction()
     : Processor()
@@ -50,8 +51,7 @@ SurfaceExtraction::SurfaceExtraction()
     , mesh_("mesh")
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f)
     , method_("method", "Method")
-    , color_("color", "Triangle Color", vec4(1, 1, 1, 1)) 
-{
+    , color_("color", "Triangle Color", vec4(1, 1, 1, 1)) {
     addPort(volume_);
     addPort(mesh_);
 
@@ -63,7 +63,7 @@ SurfaceExtraction::SurfaceExtraction()
 
     color_.setSemantics(PropertySemantics::Color);
 
-    volume_.onChange(this,&SurfaceExtraction::setMinMax);
+    volume_.onChange(this, &SurfaceExtraction::setMinMax);
 
     method_.setCurrentStateAsDefault();
     color_.setCurrentStateAsDefault();
@@ -73,23 +73,20 @@ SurfaceExtraction::~SurfaceExtraction() {}
 void SurfaceExtraction::process() {
     const VolumeRAM* vol = volume_.getData()->getRepresentation<VolumeRAM>();
 
-
     switch (method_.get()) {
         case TETRA:
-            mesh_.setData(MarchingTetrahedron::apply(vol,isoValue_.get(),color_.get()));
+            mesh_.setData(MarchingTetrahedron::apply(vol, isoValue_.get(), color_.get()));
             break;
         default:
             break;
     }
 
-
     mesh_.getData()->setModelMatrix(volume_.getData()->getModelMatrix());
     mesh_.getData()->setWorldMatrix(volume_.getData()->getWorldMatrix());
-
 }
 
-void SurfaceExtraction::setMinMax(){
-    if(volume_.hasData()){
+void SurfaceExtraction::setMinMax() {
+    if (volume_.hasData()) {
         isoValue_.setMinValue(static_cast<const float>(volume_.getData()->dataMap_.dataRange.x));
         isoValue_.setMaxValue(static_cast<const float>(volume_.getData()->dataMap_.dataRange.y));
     }

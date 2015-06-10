@@ -50,6 +50,7 @@ public:
 
     virtual void* getData() override;
     virtual const void* getData() const override;
+    std::vector<T>* getDataContainer();
     const std::vector<T>* getDataContainer() const;
 
     virtual void setValueFromSingleDouble(size_t index, double val) override;
@@ -126,6 +127,12 @@ void* BufferRAMPrecision<T>::getData() {
 template<typename T>
 const void* BufferRAMPrecision<T>::getData() const {
     return (data_->empty() ? nullptr : data_->data());
+}
+
+
+template <typename T>
+std::vector<T>* inviwo::BufferRAMPrecision<T>::getDataContainer() {
+    return data_.get();
 }
 
 template<typename T>

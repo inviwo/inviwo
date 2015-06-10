@@ -45,8 +45,6 @@ public:
     virtual VolumeRAM* clone() const override = 0;
     virtual ~VolumeRAM();
 
-    virtual void performOperation(DataOperation*) const override = 0;
-
     virtual void* getData() = 0;
     virtual const void* getData() const = 0;
     virtual void* getData(size_t) = 0;
