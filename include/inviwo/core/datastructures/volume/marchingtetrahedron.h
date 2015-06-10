@@ -71,8 +71,8 @@ void addTriangle(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
                  std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &a,
                  const glm::vec3 &b, const glm::vec3 &c);
 
-static glm::vec3 interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
-                             const double &v1);
+glm::vec3 interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
+                      const double &v1);
 
 template <class DataType>
 Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(const VolumeRepresentation *in,

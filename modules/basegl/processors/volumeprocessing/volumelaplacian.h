@@ -120,8 +120,6 @@ Volume* inviwo::VolumeLaplacian::Dispatcher::dispatch(const Volume* volume) {
     T mean(0);
     size_t count = 0;
 
-    typename std::vector<offset<T> >::const_iterator it;
-    typename std::vector<offset<T> >::const_iterator endIt = kernel.end();
     for (pos.z = 0; pos.z < dim.z; pos.z++) {
         for (pos.y = 0; pos.y < dim.y; pos.y++) {
             for (pos.x = 0; pos.x < dim.x; pos.x++) {

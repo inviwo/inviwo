@@ -73,13 +73,13 @@ void testVolumeLoad(std::string filename) {
                  - static_cast<double>(std::numeric_limits<T>::min());
     double min = static_cast<double>(std::numeric_limits<T>::min());
 
-    for (long long z = 0; z < dim.z; z++) {
+    for (long long z = 0; z < static_cast<long long>(dim.z); z++) {
         tz = z*z*z*z*z*z*z*z;
 
-        for (long long y = 0; y < dim.y; y++) {
+        for (long long y = 0; y < static_cast<long long>(dim.y); y++) {
             ty = y*y*y*y;
 
-            for (long long x = 0; x < dim.x; x++) {
+            for (long long x = 0; x < static_cast<long long>(dim.x); x++) {
                 ref0 = x + x*ty + x*ty*tz;
                 ref1 = static_cast<double>(ref0);
                 ref2 = fmod(ref1, mod);
@@ -149,13 +149,13 @@ void testVolumeClone(std::string filename) {
         - static_cast<double>(std::numeric_limits<T>::min());
     double min = static_cast<double>(std::numeric_limits<T>::min());
 
-    for (long long z = 0; z < dim.z; z++) {
+    for (long long z = 0; z < static_cast<long long>(dim.z); z++) {
         tz = z*z*z*z*z*z*z*z;
 
-        for (long long y = 0; y < dim.y; y++) {
+        for (long long y = 0; y < static_cast<long long>(dim.y); y++) {
             ty = y*y*y*y;
 
-            for (long long x = 0; x < dim.x; x++) {
+            for (long long x = 0; x < static_cast<long long>(dim.x); x++) {
                 ref0 = x + x*ty + x*ty*tz;
                 ref1 = static_cast<double>(ref0);
                 ref2 = fmod(ref1, mod);

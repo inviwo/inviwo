@@ -361,7 +361,7 @@ bool LightVolumeGL::lightSourceChanged() {
 bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
     const Volume* input = inport_.getData();
     size3_t inDim = input->getDimensions();
-    size3_t outDim{(inDim.x/volumeSizeOption_.get(), inDim.y/volumeSizeOption_.get(), inDim.z/volumeSizeOption_.get())};
+    size3_t outDim{inDim.x/volumeSizeOption_.get(), inDim.y/volumeSizeOption_.get(), inDim.z/volumeSizeOption_.get()};
 
     if (internalVolumesInvalid_ || (volumeDimOut_ != outDim)) {
         volumeDimOut_ = outDim;

@@ -71,7 +71,6 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
     //get data pointers
     const T* src = static_cast<const T*>(volume->getData());
     T* dst = static_cast<T*>(newVolume->getData());
-    const DataFormatBase* format = volume->getDataFormat();
 
     //Half sampling
     if (factor == VolumeRAMSubSample::FACTOR::HALF) {
