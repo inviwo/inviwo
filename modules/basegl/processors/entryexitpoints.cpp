@@ -102,7 +102,7 @@ void EntryExitPoints::process() {
     glCullFace(GL_FRONT);
     genericShader_->activate();
 
-    mat4 modelMatrix = geom->getCoordinateTransformer(&camera_).getDataToClipMatrix();
+    mat4 modelMatrix = geom->getCoordinateTransformer(camera_.get()).getDataToClipMatrix();
     genericShader_->setUniform("dataToClip_", modelMatrix);
 
     drawer_->draw();
@@ -148,7 +148,7 @@ void EntryExitPoints::process() {
         utilgl::setShaderUniforms(capNearClippingPrg_, exitPort_, "exitParameters_");
         // the rendered plane is specified in camera coordinates
         // thus we must transform from camera to world to texture coordinates
-        mat4 clipToTexMat = geom->getCoordinateTransformer(&camera_).getClipToDataMatrix();       
+        mat4 clipToTexMat = geom->getCoordinateTransformer(camera_.get()).getClipToDataMatrix();       
         capNearClippingPrg_->setUniform("NDCToTextureMat_", clipToTexMat);
         
         capNearClippingPrg_->setUniform("nearDist_", camera_.getNearPlaneDist());

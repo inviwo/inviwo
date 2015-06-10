@@ -166,8 +166,8 @@ size_t Mesh::getNumberOfAttributes() const { return attributes_.size(); }
 size_t Mesh::getNumberOfIndicies() const { return indexAttributes_.size(); }
 
 const SpatialCameraCoordinateTransformer<3>& Mesh::getCoordinateTransformer(
-    const CameraProperty* camera) const {
-    return SpatialEntity<3>::getCoordinateTransformer(Camera<3>(camera));
+    const Camera& camera) const {
+    return SpatialEntity<3>::getCoordinateTransformer(camera);
 }
 
 inviwo::uvec3 Mesh::COLOR_CODE = uvec3(188, 188, 101);

@@ -70,7 +70,7 @@ public:
      * void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);
      * @see CameraTrackball
      */
-    Trackball(T* object, const CameraBase* camera);
+    Trackball(T* object, const Camera* camera);
     virtual ~Trackball();
 
     virtual void invokeEvent(Event* event) override;
@@ -142,7 +142,7 @@ protected:
     void touchGesture(Event* event);
     
     T* object_;
-    const CameraBase* camera_;
+    const Camera* camera_;
     bool isMouseBeingPressedAndHold_;
 
     vec2 lastMousePos_;
@@ -191,7 +191,7 @@ protected:
 };
 
 template <typename T>
-Trackball<T>::Trackball(T* object, const CameraBase* camera)
+Trackball<T>::Trackball(T* object, const Camera* camera)
     : CompositeProperty("trackball", "Trackball")
     , object_(object)
     , camera_(camera)

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUME_H
@@ -42,7 +42,8 @@ class VolumeRepresentation;
 
 class IVW_CORE_API Volume : public Data, public StructuredGridEntity<3> {
 public:
-    Volume(size3_t dimensions = size3_t(128,128,128), const DataFormatBase* format = DataUINT8::get());
+    Volume(size3_t dimensions = size3_t(128, 128, 128),
+           const DataFormatBase* format = DataUINT8::get());
     Volume(const Volume&);
     Volume(VolumeRepresentation*);
     Volume& operator=(const Volume& that);
@@ -65,32 +66,36 @@ public:
     mat4 getWorldMatrix() const;
     void setWorldMatrix(const mat4& mat);
 
-    virtual const StructuredCameraCoordinateTransformer<3>& getCoordinateTransformer(const CameraProperty* camera) const;
+    virtual const StructuredCameraCoordinateTransformer<3>& getCoordinateTransformer(
+        const Camera& camera) const;
     using StructuredGridEntity<3>::getCoordinateTransformer;
 
-    /** 
-     * \brief Computes the spacing to be used for gradient computation. Also works for volume with non-orthogonal basis.
+    /**
+     * \brief Computes the spacing to be used for gradient computation. Also works for volume with
+     * non-orthogonal basis.
      *
-     * Finds the maximum distance we can go from the center of a voxel without ending up outside the voxel.
+     * Finds the maximum distance we can go from the center of a voxel without ending up outside the
+     * voxel.
      * For a volume with orthogonal basis it will be half the minumum voxel spacing in world space.
      *  _____
      * |     |
      * |  .  | <- Computes minimum distance from center point to edges.
      * |_____|
-     *   
-     * To get the spacing in texture space use: getWorldSpaceGradientSpacing()*mat3(worldToTextureMatrix)
+     *
+     * To get the spacing in texture space use:
+     * getWorldSpaceGradientSpacing()*mat3(worldToTextureMatrix)
      * @return Step size for gradient computation in world space.
      */
     float getWorldSpaceGradientSpacing() const;
     DataMapper dataMap_;
 
     static uvec3 COLOR_CODE;
-    static const std::string CLASS_IDENTIFIER; 
+    static const std::string CLASS_IDENTIFIER;
 
 protected:
     virtual DataRepresentation* createDefaultRepresentation();
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VOLUME_H
+#endif  // IVW_VOLUME_H

@@ -96,7 +96,7 @@ void setShaderUniforms(Shader* shader, const CameraProperty& property, std::stri
     shader->setUniform(name + ".farPlane", property.getFarPlaneDist());
 }
 
-void setShaderUniforms(Shader* shader, const CameraBase& property, std::string name) {
+void setShaderUniforms(Shader* shader, const Camera& property, std::string name) {
     shader->setUniform(name + ".worldToView", property.viewMatrix());
     shader->setUniform(name + ".viewToWorld", property.inverseViewMatrix());
     shader->setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());

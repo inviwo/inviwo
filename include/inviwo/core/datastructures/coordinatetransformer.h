@@ -32,7 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/cameraproperty.h>
+#include <inviwo/core/datastructures/camera.h>
 
 namespace inviwo {
 
@@ -42,37 +42,36 @@ class SpatialEntity;
 template <unsigned int N>
 class StructuredGridEntity;
 
-template <unsigned int N>
-class Camera {};
 
-template <>
-class Camera<3> {
+namespace util {
+
+class Camera2D {
 public:
-    Camera<3>(const CameraProperty* camera) : camera_(camera) {}
-
-    const Matrix<4, float> getViewMatrix() const {
-        return camera_->viewMatrix();
-    }
-    const Matrix<4, float> getProjectionMatrix() const {
-        return camera_->projectionMatrix();
-    }
-
+    Camera2D() : view_(1.0f), projection_(1.0f) {}
+    const Matrix<3, float>& viewMatrix() const { return view_; }
+    const Matrix<3, float>& projectionMatrix() const { return projection_; }
 private:
-    const CameraProperty* camera_;
+    Matrix<3, float> view_;
+    Matrix<3, float> projection_;
+};
+
+
+template <unsigned int N>
+struct cameratype {};
+
+template <>
+struct cameratype<2> {
+    typedef Camera2D type;
 };
 
 template <>
-class Camera<2> {
-public:
-    Camera<2>(const CameraProperty* camera) {}
-
-    const Matrix<3, float> getViewMatrix() const {
-        return Matrix<3, float>(1.0f);
-    }
-    const Matrix<3, float> getProjectionMatrix() const {
-        return Matrix<3, float>(1.0f);
-    }
+struct cameratype<3> {
+    typedef Camera type;
 };
+
+}
+template <unsigned int N>
+using CameraND = typename util::cameratype<N>::type;
 
 template<unsigned int N>
 class SpatialCoordinateTransformer {
@@ -592,14 +591,14 @@ private:
 template<unsigned int N>
 class SpatialCameraCoordinateTransformerImpl : public SpatialCameraCoordinateTransformer<N> {
 public:
-    SpatialCameraCoordinateTransformerImpl(const SpatialEntity<N>* entity, Camera<N> camera);
+    SpatialCameraCoordinateTransformerImpl(const SpatialEntity<N>* entity, const CameraND<N>& camera);
     SpatialCameraCoordinateTransformerImpl(const SpatialCameraCoordinateTransformerImpl<N>& rhs);
     SpatialCameraCoordinateTransformerImpl<N>& operator=(const SpatialCameraCoordinateTransformerImpl<N>& that);
     virtual SpatialCameraCoordinateTransformerImpl<N>* clone() const;
     virtual ~SpatialCameraCoordinateTransformerImpl(){}
 
     void setEntity(const SpatialEntity<N>* entity);
-    void setCamera(Camera<N> camera);
+    void setCamera(const CameraND<N>& camera);
 
     virtual const Matrix<N+1, float> getClipToDataMatrix() const;
     virtual const Matrix<N+1, float> getClipToModelMatrix() const;
@@ -630,21 +629,21 @@ protected:
 
 private:
     const SpatialEntity<N>* entity_;
-    Camera<N> camera_;
+    const CameraND<N>* camera_;
 };
 
 
 template<unsigned int N>
 class StructuredCameraCoordinateTransformerImpl : public StructuredCameraCoordinateTransformer<N> {
 public:
-    StructuredCameraCoordinateTransformerImpl(const StructuredGridEntity<N>* entity, Camera<N> camera);
+    StructuredCameraCoordinateTransformerImpl(const StructuredGridEntity<N>* entity, const CameraND<N>& camera);
     StructuredCameraCoordinateTransformerImpl(const StructuredCameraCoordinateTransformerImpl<N>& rhs);
     StructuredCameraCoordinateTransformerImpl<N>& operator=(const StructuredCameraCoordinateTransformerImpl<N>& that);
     virtual StructuredCameraCoordinateTransformerImpl<N>* clone() const;
     virtual ~StructuredCameraCoordinateTransformerImpl(){}
 
     void setEntity(const StructuredGridEntity<N>* entity);
-    void setCamera(Camera<N> camera);
+    void setCamera(const CameraND<N>& camera);
 
     virtual const Matrix<N+1, float> getClipToDataMatrix() const;
     virtual const Matrix<N+1, float> getClipToIndexMatrix() const;
@@ -696,7 +695,7 @@ protected:
 
 private:
     const StructuredGridEntity<N>* entity_;
-    Camera<N> camera_;
+    const CameraND<N>* camera_;
 };
 
 
@@ -893,20 +892,19 @@ const Matrix<N+1, float> StructuredCoordinateTransformerImpl<N>::getWorldToTextu
  *  SpatialCameraCoordinateTransformerImpl
  *********************************************************************************/
 
-template<unsigned int N>
-SpatialCameraCoordinateTransformerImpl<N>::SpatialCameraCoordinateTransformerImpl(const SpatialEntity<N>* entity, Camera<N> camera)
-    : SpatialCameraCoordinateTransformer<N>()
-    , entity_(entity)
-    , camera_(camera) {}
+template <unsigned int N>
+SpatialCameraCoordinateTransformerImpl<N>::SpatialCameraCoordinateTransformerImpl(
+    const SpatialEntity<N>* entity, const CameraND<N>& camera)
+    : SpatialCameraCoordinateTransformer<N>(), entity_(entity), camera_(&camera) {}
 
-template<unsigned int N>
-SpatialCameraCoordinateTransformerImpl<N>::SpatialCameraCoordinateTransformerImpl(const SpatialCameraCoordinateTransformerImpl<N>& rhs)
-    : SpatialCameraCoordinateTransformer<N>(rhs)
-    , entity_(rhs.entity_)
-    , camera_(rhs.camera_) {}
+template <unsigned int N>
+SpatialCameraCoordinateTransformerImpl<N>::SpatialCameraCoordinateTransformerImpl(
+    const SpatialCameraCoordinateTransformerImpl<N>& rhs)
+    : SpatialCameraCoordinateTransformer<N>(rhs), entity_(rhs.entity_), camera_(rhs.camera_) {}
 
-template<unsigned int N>
-SpatialCameraCoordinateTransformerImpl<N>& SpatialCameraCoordinateTransformerImpl<N>::operator=(const SpatialCameraCoordinateTransformerImpl<N>& that) {
+template <unsigned int N>
+SpatialCameraCoordinateTransformerImpl<N>& SpatialCameraCoordinateTransformerImpl<N>::operator=(
+    const SpatialCameraCoordinateTransformerImpl<N>& that) {
     if (this != &that) {
         SpatialCameraCoordinateTransformer<N>::operator=(that);
         entity_ = that.entity_;
@@ -930,11 +928,11 @@ const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldMatr
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getViewMatrix() const {
-    return camera_.getViewMatrix();
+    return camera_->viewMatrix();
 }
 template <unsigned int N>
 const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getProjectionMatrix() const {
-    return camera_.getProjectionMatrix();
+    return camera_->projectionMatrix();
 }
 
 template <unsigned int N>
@@ -942,8 +940,8 @@ void SpatialCameraCoordinateTransformerImpl<N>::setEntity(const SpatialEntity<N>
     entity_ = entity;
 }
 template <unsigned int N>
-void SpatialCameraCoordinateTransformerImpl<N>::setCamera(Camera<N> camera) {
-    camera_ = camera;
+void SpatialCameraCoordinateTransformerImpl<N>::setCamera(const CameraND<N>& camera) {
+    camera_ = &camera;
 }
 
 template <unsigned int N>
@@ -1032,20 +1030,19 @@ const Matrix<N+1, float> SpatialCameraCoordinateTransformerImpl<N>::getWorldToVi
  *  StructuredCameraCoordinateTransformerImpl
  *********************************************************************************/
 
-template<unsigned int N>
-StructuredCameraCoordinateTransformerImpl<N>::StructuredCameraCoordinateTransformerImpl(const StructuredGridEntity<N>* entity, Camera<N> camera)
-    : StructuredCameraCoordinateTransformer<N>()
-    , entity_(entity)
-    , camera_(camera) {}
+template <unsigned int N>
+StructuredCameraCoordinateTransformerImpl<N>::StructuredCameraCoordinateTransformerImpl(
+    const StructuredGridEntity<N>* entity, const CameraND<N>& camera)
+    : StructuredCameraCoordinateTransformer<N>(), entity_(entity), camera_(&camera) {}
 
-template<unsigned int N>
-StructuredCameraCoordinateTransformerImpl<N>::StructuredCameraCoordinateTransformerImpl(const StructuredCameraCoordinateTransformerImpl<N>& rhs)
-    : StructuredCameraCoordinateTransformer<N>(rhs)
-    , entity_(rhs.entity_)
-    , camera_(rhs.camera_) {}
+template <unsigned int N>
+StructuredCameraCoordinateTransformerImpl<N>::StructuredCameraCoordinateTransformerImpl(
+    const StructuredCameraCoordinateTransformerImpl<N>& rhs)
+    : StructuredCameraCoordinateTransformer<N>(rhs), entity_(rhs.entity_), camera_(rhs.camera_) {}
 
-template<unsigned int N>
-StructuredCameraCoordinateTransformerImpl<N>& StructuredCameraCoordinateTransformerImpl<N>::operator=(const StructuredCameraCoordinateTransformerImpl<N>& that) {
+template <unsigned int N>
+StructuredCameraCoordinateTransformerImpl<N>& StructuredCameraCoordinateTransformerImpl<N>::
+operator=(const StructuredCameraCoordinateTransformerImpl<N>& that) {
     if (this != &that) {
         StructuredCameraCoordinateTransformer<N>::operator=(that);
         entity_ = that.entity_;
@@ -1073,11 +1070,11 @@ const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getWorldM
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getViewMatrix() const {
-    return camera_.getViewMatrix();
+    return camera_->viewMatrix();
 }
 template <unsigned int N>
 const Matrix<N+1, float> StructuredCameraCoordinateTransformerImpl<N>::getProjectionMatrix() const {
-    return camera_.getProjectionMatrix();
+    return camera_->projectionMatrix();
 }
 
 template <unsigned int N>
@@ -1085,8 +1082,8 @@ void StructuredCameraCoordinateTransformerImpl<N>::setEntity(const StructuredGri
     entity_ = entity;
 }
 template <unsigned int N>
-void StructuredCameraCoordinateTransformerImpl<N>::setCamera(Camera<N> camera) {
-    camera_ = camera;
+void StructuredCameraCoordinateTransformerImpl<N>::setCamera(const CameraND<N>& camera) {
+    camera_ = &camera;
 }
 
 template <unsigned int N>

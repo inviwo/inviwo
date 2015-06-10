@@ -100,7 +100,7 @@ void MeshPicking::process() {
     shader_->activate();
     shader_->setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
 
-    const auto& ct = meshInport_.getData()->getCoordinateTransformer(&camera_);
+    const auto& ct = meshInport_.getData()->getCoordinateTransformer(camera_.get());
 
     mat4 dataToClip_ =
         ct.getWorldToClipMatrix() * glm::translate(position_.get()) * ct.getDataToWorldMatrix();
