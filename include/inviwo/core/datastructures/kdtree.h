@@ -197,14 +197,11 @@ using K4DTree = KDTreeGlm < 4, T, P >;
 
 
 template <unsigned char N, typename P = double>
-Vector<N, P>  doublePtrToVec(const P* f){ 
+Vector<N, P>  ptrToVec(const P* f){ 
     Vector<N, P> vec;
     for (size_t i = 0; i < N; ++i) vec[i] = f[i];
     return vec; 
 }
-inline glm::vec2 doublePtrToVec2(const double *f) { return glm::vec2(f[0], f[1]); }
-inline glm::vec3 doublePtrToVec3(const double *f) { return glm::vec3(f[0], f[1], f[2]); }
-inline glm::vec4 doublePtrToVec4(const double *f) { return glm::vec4(f[0], f[1], f[2], f[3]); }
 
 // Tree Implementation
 
@@ -368,11 +365,9 @@ KDNode<N, T, P> *KDNode<N, T, P>::clone() {
     newNode->dimmension_ = dimmension_;
     if (leftChild_) {
         newNode->leftChild_ = leftChild_->clone();
-        newNode->leftChild_->parent_ = newNode;
     }
     if (rightChild_) {
         newNode->rightChild_ = rightChild_->clone();
-        newNode->rightChild_->parent_ = newNode;
     }
     return newNode;
 }
@@ -518,8 +513,8 @@ KDNode<N, T, P> *KDNode<N, T, P>::findMax(unsigned int d) {
 
 template <unsigned char N, typename T, typename P>
 KDNode<N, T, P> *KDNode<N, T, P>::find(const P pos[N]) {
-    if (compare_(pos)) return this;
-    if (goRight_(pos)) {
+    if (goRight(pos)) return this;
+    if (goRight(pos)) {
         return isRightLeaf() ? nullptr : rightChild_->find(pos);
     } else {
         return isLeftLeaf() ? nullptr : leftChild_->find(pos);
@@ -532,7 +527,7 @@ template <unsigned char N, typename T, typename P>
 KDNode<N, T, P> *KDNode<N, T, P>::findParent(const KDNode *n) {
     if (leftChild_ == n) return this;
     if (rightChild_ == n) return this;
-    if (goRight_(n->pos_)) {
+    if (goRight(n->pos_)) {
         return isRightLeaf() ? nullptr : rightChild_->findParent(n);
     }
     else {
@@ -625,7 +620,7 @@ void KDNode<N, T, P>::findCloseTo(const P pos[N], const P sqDist, std::vector<KD
     P d;
     bool right = false, left = false;
     // BUG ??
-    if (goRight_(pos)) {
+    if (goRight(pos)) {
         if (!isRightLeaf()) {
             right = true;
         }
