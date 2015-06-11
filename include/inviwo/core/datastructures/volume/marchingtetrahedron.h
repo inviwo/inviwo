@@ -46,7 +46,7 @@ public:
 };
 
 namespace detail {
-
+    using Tree = K3DTree < size_t, float > ;
 struct IVW_CORE_API MarchingTetrahedronDispatcher {
     using type = Mesh *;
     template <class T>
@@ -59,15 +59,15 @@ double getValue(const T *src, size3_t pos, size3_t dim, double iso) {
     return -(v - iso);
 }
 
-void evaluateTetra(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
+void evaluateTetra(Tree &vertexTree, IndexBufferRAM *indexBuffer,
                    std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
                    const double &v0, const glm::vec3 &p1, const double &v1, const glm::vec3 &p2,
                    const double &v2, const glm::vec3 &p3, const double &v3);
 
-size_t addVertex(K3DTree<size_t> &vertexTree, std::vector<vec3> &positions,
+size_t addVertex(Tree &vertexTree, std::vector<vec3> &positions,
                  std::vector<vec3> &normals, const vec3 pos);
 
-void addTriangle(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
+void addTriangle(Tree &vertexTree, IndexBufferRAM *indexBuffer,
                  std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &a,
                  const glm::vec3 &b, const glm::vec3 &c);
 
@@ -83,7 +83,7 @@ Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(const VolumeRepres
     const VolumeRAMPrecision<T> *volume = dynamic_cast<const VolumeRAMPrecision<T> *>(in);
     if (!volume) return nullptr;
 
-    K3DTree<size_t> vertexTree;
+    Tree vertexTree;
 
     BasicMesh *mesh = new BasicMesh();
     auto indexBuffer = mesh->addIndexBuffer(GeometryEnums::TRIANGLES, GeometryEnums::NONE);

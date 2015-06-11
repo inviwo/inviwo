@@ -36,7 +36,7 @@ Mesh *MarchingTetrahedron::apply(const VolumeRepresentation *in, const double &i
     return in->getDataFormat()->dispatch(disp, in, iso, color);
 }
 
-void detail::evaluateTetra(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
+void detail::evaluateTetra(Tree &vertexTree, IndexBufferRAM *indexBuffer,
                            std::vector<vec3> &positions, std::vector<vec3> &normals,
                            const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
                            const double &v1, const glm::vec3 &p2, const double &v2,
@@ -129,9 +129,9 @@ void detail::evaluateTetra(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuf
     }
 }
 
-size_t detail::addVertex(K3DTree<size_t> &vertexTree, std::vector<vec3> &positions,
+size_t detail::addVertex(Tree &vertexTree, std::vector<vec3> &positions,
                          std::vector<vec3> &normals, const vec3 pos) {
-    K3DTree<size_t>::Node *nearest = vertexTree.findNearest(vec3(pos));
+    Tree::Node *nearest = vertexTree.findNearest(vec3(pos));
     vec3 p;
     if (nearest) {
         p.x = nearest->getPosition()[0];
@@ -146,7 +146,7 @@ size_t detail::addVertex(K3DTree<size_t> &vertexTree, std::vector<vec3> &positio
     return nearest->get();
 }
 
-void detail::addTriangle(K3DTree<size_t> &vertexTree, IndexBufferRAM *indexBuffer,
+void detail::addTriangle(Tree &vertexTree, IndexBufferRAM *indexBuffer,
                          std::vector<vec3> &positions, std::vector<vec3> &normals,
                          const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) {
     size_t i0 = addVertex(vertexTree, positions, normals, a);
