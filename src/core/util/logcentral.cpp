@@ -173,8 +173,8 @@ bool LogCentral::getLogStacktrace() const { return logStacktrace_; }
 
 void util::log(ExceptionContext context, std::string message, LogLevel level,
                LogAudience audience) {
-    LogCentral::getPtr()->log(context.caller_, level, audience, context.file_.c_str(),
-                              context.function_.c_str(), context.line_, message);
+    LogCentral::getPtr()->log(context.getCaller(), level, audience, context.getFile().c_str(),
+                              context.getFunction().c_str(), context.getLine(), message);
 }
 
 }  // namespace

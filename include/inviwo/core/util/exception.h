@@ -39,13 +39,21 @@ namespace inviwo {
 
 struct IVW_CORE_API ExceptionContext {
     ExceptionContext(std::string caller = "", std::string file = "", std::string function = "",
-                     int line = 0)
-        : caller_(caller), file_(file), function_(function), line_(line) {}
+                     int line = 0);
 
+    const std::string& getCaller();
+    const std::string& getFile();
+    const std::string& getFunction();
+    const int& getLine();
+
+private:
+    #include <warn/push>
+    #include <warn/ignore/dll-interface>
     std::string caller_;
     std::string file_;
     std::string function_;
     int line_;
+    #include <warn/pop>   
 };
 
 #define IvwContext                                                                             \
