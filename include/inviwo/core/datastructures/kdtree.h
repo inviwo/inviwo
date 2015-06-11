@@ -1,621 +1,558 @@
 /*********************************************************************************
- *
- * Inviwo - Interactive Visualization Workshop
- *
- * Copyright (c) 2014-2015 Inviwo Foundation
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
- *********************************************************************************/
+*
+* Inviwo - Interactive Visualization Workshop
+*
+* Copyright (c) 2014-2015 Inviwo Foundation
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* 1. Redistributions of source code must retain the above copyright notice, this
+* list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation
+* and/or other materials provided with the distribution.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+*********************************************************************************/
 
 #ifndef _KDTREE_H_
 #define _KDTREE_H_
 
 #include <vector>
-#include <inviwo/core/common/inviwo.h>
+#include <sstream>
+#include <algorithm>
 
-#define KD_TYPE dimmensions,dataType,floatPrecision
-#define KD_TEMPLATE template <unsigned int dimmensions , typename dataType,typename floatPrecision>
-#define KD_TREE        KDTree<KD_TYPE>
-#define KD_NODE        KDNode<KD_TYPE>
+#include <inviwo/core/util/glm.h>
 
-namespace inviwo{
+namespace inviwo {
 
-KD_TEMPLATE class KDTree;
-KD_TEMPLATE class KDNode;
+    template <unsigned char N, typename T, typename P>
+class KDTree;
+template <unsigned char N, typename T, typename P>
+class KDNode;
 
-KD_TEMPLATE struct __KD_NEAR_NODE__{
-    KD_NODE *node;
-    float sqDist;
-    bool operator<(const __KD_NEAR_NODE__<KD_TYPE> &rhs) const { return sqDist > rhs.sqDist; }
+template <unsigned char N, typename T, typename P>
+struct KDNodeDistWrapper {
+    KDNode<N, T, P> *node;
+    P sqDist;
+    bool operator<(const KDNodeDistWrapper<N, T, P> &rhs) const { return sqDist > rhs.sqDist; }
 };
 
-template <unsigned int dimmensions, typename dataType = char, typename floatPrecision = double>
-class KDNode {
-    friend class KD_TREE;
-    KDNode *_parent;
-    KDNode *_left;
-    KDNode *_right;
-    dataType _data;
-    unsigned int _dimmension;
-    floatPrecision _pos[dimmensions];
 
-    bool _goRight(const floatPrecision pos[dimmensions])const;
-    bool _compare(const floatPrecision pos[dimmensions])const;
+template <unsigned char N, typename T = char, typename P = double>
+class KDNode {
+    friend class KDTree<N, T, P>;
+
+    KDNode *leftChild_;
+    KDNode *rightChild_;
+    T data_;
+    unsigned char dimmension_;
+    P pos_[N];
+
+    bool goRight(const P pos[N]) const;
+    bool compare(const P pos[N]) const;
+
 public:
-    KDNode(const floatPrecision pos[dimmensions],
-           const dataType &data,KDNode *parent = 0);
+    KDNode(const P pos[N], const T &data, KDNode *parent = 0);
     virtual ~KDNode();
 
-    KDNode* clone();
-    
-    bool isLeaf()const;
-    bool isRightLeaf()const;
-    bool isLeftLeaf()const;
+    KDNode *clone();
 
-    unsigned long depth()const;
-    unsigned long size()const;
+    bool isLeaf() const;
+    bool isRightLeaf() const;
+    bool isLeftLeaf() const;
 
-    dataType &get();
-    const dataType &get()const;
-    dataType *getDataAsPointer(){return &_data;}
-    floatPrecision* getPosition();
+    unsigned long depth() const;
+    unsigned long size() const;
 
-    bool isOk()const;
+    T &get();
+    const T &get() const;
+    T *getDataAsPointer() { return &data_; }
+    P *getPosition();
+
+    bool isOk() const;
 
     KDNode *findMin(unsigned int dim);
     KDNode *findMax(unsigned int dim);
 
-    KDNode *insert(const floatPrecision pos[dimmensions], const dataType &data);
-    KDNode *find(const floatPrecision pos[dimmensions]);
-    
-    KDNode *getRightChild(){return _right;}
-    KDNode *getLeftChild(){return _left;}
-    std::pair<KDNode*,KDNode*> getChilds() {
-        return std::pair<KDNode*, KDNode*>(_left,_right);
+    KDNode *insert(const P pos[N], const T &data);
+    KDNode *find(const P pos[N]);
+    KDNode *findParent(const KDNode *n);
+
+    KDNode *getRightChild() { return rightChild_; }
+    KDNode *getLeftChild() { return leftChild_; }
+    std::pair<KDNode *, KDNode *> getChilds() {
+        return std::pair<KDNode *, KDNode *>(leftChild_, rightChild_);
     }
 
-    KD_NODE* findNearest(const floatPrecision pos[dimmensions], KDNode *nearest);
-    void findNNearest(const floatPrecision pos[dimmensions], 
-                      size_t amount, 
-                      std::vector<__KD_NEAR_NODE__<KD_TYPE> > &current);
-    void findCloseTo(const floatPrecision pos[dimmensions], 
-                     const floatPrecision squaredDistance, 
-                     std::vector<KDNode*> &nodes);
+    KDNode<N, T, P> *findNearest(const P pos[N], KDNode *nearest);
+    void findNNearest(const P pos[N], size_t amount,
+                      std::vector<KDNodeDistWrapper<N, T, P> > &current);
+    void findCloseTo(const P pos[N], const P squaredDistance, std::vector<KDNode *> &nodes);
 
-    static void swap(KD_NODE* n0,KD_NODE* n1);
+    static void swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T, P> *p0, KDNode<N, T, P> *p1);
 
-    void getAsVector(std::vector<KDNode*> &nodes){
+    void getAsVector(std::vector<KDNode *> &nodes) {
         nodes.push_back(this);
-        if(_left) _left->getAsVector(nodes);
-        if(_right) _right->getAsVector(nodes);
+        if (leftChild_) leftChild_->getAsVector(nodes);
+        if (rightChild_) rightChild_->getAsVector(nodes);
     }
-
-    virtual std::string toString() const;
 };
 
-
-//using char as datatype since it is only 8 bit.  
-//the dataType should be optional (eg, if each node has some value in addition to the position) 
-template <unsigned int dimmensions, typename dataType = char, typename floatPrecision = double> 
+// using char as T since it is only 8 bit.
+// the T should be optional (eg, if each node has some value in addition to the position)
+template <unsigned char N, typename T = char, typename P = double>
 class KDTree {
 public:
-    typedef KDNode<KD_TYPE> Node;
+    typedef KDNode<N, T, P> Node;
+
 private:
-    Node *root;
+    Node *root_;
+
 public:
     KDTree();
     virtual ~KDTree();
 
-    KDTree(const KDTree &tree){
-        root = tree.root->clone();
-    }
-    KDTree& operator=( const KDTree& rhs ){
-        if(this != &rhs){
-            delete root;
-            root = rhs.root->clone();
+    KDTree(const KDTree &tree) { root_ = tree.root_->clone(); }
+    KDTree &operator=(const KDTree &rhs) {
+        if (this != &rhs) {
+            delete root_;
+            root_ = rhs.root_->clone();
         }
         return *this;
     }
 
-    void erase(Node *node);
+    void erase(Node *node, KDNode<N, T, P> *parent = nullptr);
 
-    bool isOk()const;
-    bool empty()const{return root==0;}
+    bool isOk() const;
+    bool empty() const { return root_ == nullptr; }
 
     void clear();
 
-    unsigned long depth()const;
-    unsigned long size()const;
-    
-    std::vector<Node*> getAsVector();
+    unsigned long depth() const;
+    unsigned long size() const;
 
-    Node *getRoot(){return root;}
+    std::vector<Node *> getAsVector();
 
-    Node* findMin(unsigned int dim);
-    Node* findMax(unsigned int dim);
+    Node *getRoot() { return root_; }
 
-    Node *insert(const floatPrecision pos[dimmensions], const dataType &data);
-    Node *find(const floatPrecision pos[dimmensions]);
-    
-    Node *findNearest(const floatPrecision pos[dimmensions]);
-    std::vector<Node*> findCloseTo(const floatPrecision pos[dimmensions], const floatPrecision distance);
-    std::vector<Node*> findNNearest(const floatPrecision pos[dimmensions], int amount);
+    Node *findMin(unsigned int dim);
+    Node *findMax(unsigned int dim);
 
-    virtual std::string toString() const;
+    Node *insert(const P pos[N], const T &data);
+    Node *find(const P pos[N]);
+
+    Node *findNearest(const P pos[N]);
+    std::vector<Node *> findCloseTo(const P pos[N], const P distance);
+    std::vector<Node *> findNNearest(const P pos[N], int amount);
 };
 
-
-template <typename dataType = char,typename floatPrecision = float>
-class K2DTree : public KDTree<2, dataType, floatPrecision> {
+template <unsigned char N , typename T = char, typename P = double>
+class KDTreeGlm : public KDTree < N, T, P> {
 public:
-    K2DTree() : KDTree<2, dataType, floatPrecision>() {
-    }
-    virtual ~K2DTree(){}
+    KDTreeGlm() : KDTree<N, T, P>() {}
+    virtual ~KDTreeGlm() {}
 
-    typedef KDNode<2, dataType, floatPrecision> Node;
-    typedef KDTree<2, dataType, floatPrecision> Tree;
+    typedef KDNode<N, T, P> Node;
+    typedef KDTree<N, T, P> Tree;
 
-    Node *insert(const glm::vec2 pos, const dataType &data){
-        return Tree::insert((const float *)glm::value_ptr(pos), data);
+    Node *insert(const Vector<N, P> &pos, const T &data) {
+        return Tree::insert(glm::value_ptr(pos), data);
     }
-    Node *find(const glm::vec2 pos){
-        return Tree::find((const float *)glm::value_ptr(pos));
-    }
-
-    Node *findNearest(const glm::vec2 pos){
-        return Tree::findNearest((const float *)glm::value_ptr(pos));
+    Node *find(const Vector<N, P> &pos) {
+        return Tree::find(glm::value_ptr(pos));
     }
 
-    Node *findNearest(const glm::vec2 pos, const int &amount){
-        return Tree::findNNearest((const float *)glm::value_ptr(pos), amount);
+    Node *findNearest(const Vector<N, P> &pos) {
+        return Tree::findNearest(glm::value_ptr(pos));
     }
 
-    std::vector<Node*> findCloseTo(const glm::vec2 pos, const floatPrecision distance){
-        return Tree::findCloseTo((const float *)glm::value_ptr(pos), distance);
-    }
-};
-
-template <typename dataType = char,typename floatPrecision = float>
-class K3DTree : public KDTree<3,dataType,floatPrecision> {
-public:
-    K3DTree() : KDTree<3,dataType,floatPrecision>() {}
-    virtual ~K3DTree(){}
-    
-    typedef KDNode<3, dataType, floatPrecision> Node;
-    typedef KDTree<3, dataType, floatPrecision> Tree;
-
-    Node *insert(const glm::vec3 pos, const dataType &data){
-        return Tree::insert((const float *)glm::value_ptr(pos), data);
-    }
-    Node *find(const glm::vec3 pos){
-        return Tree::find((const float *)glm::value_ptr(pos));
-    }
-    
-    Node *findNearest(const glm::vec3 pos){
-        return Tree::findNearest((const float *)glm::value_ptr(pos));
+    Node *findNearest(const Vector<N, P> &pos, const int &amount) {
+        return Tree::findNNearest(glm::value_ptr(pos), amount);
     }
 
-    Node *findNearest(const glm::vec3 pos, const int &amount){
-        return Tree::findNNearest((const float *)glm::value_ptr(pos), amount);
-    }
-
-    std::vector<Node*> findCloseTo(const glm::vec3 pos, const floatPrecision distance){
-        return Tree::findCloseTo((const float *)glm::value_ptr(pos), distance);
+    std::vector<Node*> findCloseTo(const Vector<N, P> &pos, const P distance) {
+        return Tree::findCloseTo(glm::value_ptr(pos), distance);
     }
 };
 
-template <typename dataType = char,typename floatPrecision = float>
-class K4DTree : public KDTree<4, dataType, floatPrecision> {
-public:
-    K4DTree() : KDTree<4, dataType, floatPrecision>() {}
-    virtual ~K4DTree(){}
+template <typename T = char, typename P = double>
+using K2DTree = KDTreeGlm < 2, T, P > ;
+template <typename T = char, typename P = double>
+using K3DTree = KDTreeGlm < 3, T, P > ;
+template <typename T = char, typename P = double>
+using K4DTree = KDTreeGlm < 4, T, P >;
 
-    typedef KDNode<4, dataType, floatPrecision> Node;
-    typedef KDTree<4, dataType, floatPrecision> Tree;
 
-    Node *insert(const glm::vec4 pos, const dataType &data){
-        return Tree::insert((const float *)glm::value_ptr(pos), data);
-    }
-    Node *find(const glm::vec4 pos){
-        return Tree::find((const float *)glm::value_ptr(pos));
-    }
-    
-    Node *findNearest(const glm::vec4 pos){
-        return Tree::findNearest((const float *)glm::value_ptr(pos));
-    }
-
-    Node *findNearest(const glm::vec4 pos, const int &amount){
-        return Tree::findNNearest((const float *)glm::value_ptr(pos), amount);
-    }
-
-    std::vector<Node*> findCloseTo(const glm::vec4 pos, const floatPrecision distance){
-        return Tree::findCloseTo((const float *)glm::value_ptr(pos), distance);
-    }
-};
-
-inline glm::vec2 floatPtrToVec2(const float *f){return glm::vec2(f[0],f[1]);}
-inline glm::vec3 floatPtrToVec3(const float *f){return glm::vec3(f[0],f[1],f[2]);}
-inline glm::vec4 floatPtrToVec4(const float *f){return glm::vec4(f[0],f[1],f[2],f[3]);}
-
+template <unsigned char N, typename P = double>
+Vector<N, P>  doublePtrToVec(const P* f){ 
+    Vector<N, P> vec;
+    for (size_t i = 0; i < N; ++i) vec[i] = f[i];
+    return vec; 
 }
+inline glm::vec2 doublePtrToVec2(const double *f) { return glm::vec2(f[0], f[1]); }
+inline glm::vec3 doublePtrToVec3(const double *f) { return glm::vec3(f[0], f[1], f[2]); }
+inline glm::vec4 doublePtrToVec4(const double *f) { return glm::vec4(f[0], f[1], f[2], f[3]); }
 
 // Tree Implementation
 
-#ifndef _KDTREE_IMP_
-#define _KDTREE_IMP_
+template <unsigned char N, typename T, typename P>
+KDTree<N, T, P>::KDTree()
+    : root_(nullptr) {}
 
-#include <inviwo/core/util/logcentral.h>
-
-namespace inviwo{
-
-KD_TEMPLATE KD_TREE::KDTree(){
-    root = 0;
+template <unsigned char N, typename T, typename P>
+KDTree<N, T, P>::~KDTree() {
+    delete root_;
 }
 
-KD_TEMPLATE KD_TREE::~KDTree(){
-    delete root;
+template <unsigned char N, typename T, typename P>
+unsigned long KDTree<N, T, P>::depth() const {
+    if (root_ == 0) return 0;
+    return root_->depth();
 }
 
-KD_TEMPLATE unsigned long KD_TREE::depth()const{
-    if(root == 0)
-        return 0;
-    return root->depth();
+template <unsigned char N, typename T, typename P>
+unsigned long KDTree<N, T, P>::size() const {
+    if (root_ == 0) return 0;
+    return root_->size();
 }
 
-KD_TEMPLATE unsigned long KD_TREE::size()const{
-    if(root == 0)
-        return 0;
-    return root->size();
+template <unsigned char N, typename T, typename P>
+bool KDTree<N, T, P>::isOk() const {
+    if (root_ == 0) return true;
+    return root_->isOk();
 }
 
-KD_TEMPLATE bool KD_TREE::isOk()const{
-    if(root == 0)
-        return true;
-    return root->isOk();
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDTree<N, T, P>::findMin(unsigned int d) {
+    if (root_ == 0) return 0;
+    return root_->findMin(d);
 }
 
-KD_TEMPLATE KD_NODE* KD_TREE::findMin(unsigned int d){
-    if(root == 0)
-        return 0;
-    return root->findMin(d);
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDTree<N, T, P>::findMax(unsigned int d) {
+    if (root_ == 0) return 0;
+    return root_->findMax(d);
 }
 
-KD_TEMPLATE KD_NODE* KD_TREE::findMax(unsigned int d){
-    if(root == 0)
-        return 0;
-    return root->findMax(d);
-}
-
-KD_TEMPLATE KD_NODE* KD_TREE::insert(const floatPrecision pos[dimmensions], const dataType &data){
-    if(root == 0){
-        root = new KD_NODE(pos,data);
-        return root;
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDTree<N, T, P>::insert(const P pos[N], const T &data) {
+    if (root_ == 0) {
+        root_ = new KDNode<N, T, P>(pos, data);
+        return root_;
     }
 
-    return root->insert(pos,data);
+    return root_->insert(pos, data);
 }
 
-KD_TEMPLATE KD_NODE* KD_TREE::find(const floatPrecision pos[dimmensions]){
-    if(root == 0)
-        return 0;
-    return root->find(pos);
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDTree<N, T, P>::find(const P pos[N]) {
+    if (root_ == 0) return 0;
+    return root_->find(pos);
 }
 
-KD_TEMPLATE void KD_TREE::erase(KD_NODE *node){
-    if(node == 0){
+
+template <unsigned char N, typename T, typename P>
+void KDTree<N, T, P>::erase(KDNode<N, T, P> *node, KDNode<N, T, P> *parent) {
+    if (node == 0) {
         std::cerr << "Trying to delete a null node" << std::endl;
-        assert(node != 0);
         return;
     }
 
-    if(node->isLeaf()){
-        KD_NODE* parent = node->_parent;
-        if(parent == 0){ //Root node;
-            root = 0;
+    if (node->isLeaf()) {
+        if (node == root_) {  // Root node;
+            root_ = 0;
         }
-        else if(parent->_left == node){
-            parent->_left = 0;
-        }else if(parent->_right == node){
-            parent->_right = 0;
-        }else{
-            std::cerr << "Incorrect parent or something" << __FILE__ << "@" << __LINE__ << std::endl;
-            assert(false);
-            return;
+        else {
+            if (!parent)
+                parent = root_->findParent(node);
+
+            if (parent->leftChild_ == node) {
+                parent->leftChild_ = 0;
+            }
+            else if (parent->rightChild_ == node) {
+                parent->rightChild_ = 0;
+            }
         }
         delete node;
         return;
     }
-    
-    KD_NODE* max;
-    if(!node->isRightLeaf()){
-        max = node->_right->findMin(node->_dimmension);
-        KD_NODE::swap(node,max);
-        if(root == node) root = max;
+
+    KDNode<N, T, P> *min;
+    if (!parent)
+        parent = root_->findParent(node);
+
+    if (!node->isRightLeaf()) {
+        min = node->rightChild_->findMin(node->dimmension_);
+        KDNode<N, T, P>::swap(node, min, parent, node->findParent(min));
+        if (root_ == node) root_ = min;
         erase(node);
-        return;
-    }
-    else{
-        max = node->_left->findMin(node->_dimmension);
-        KD_NODE::swap(node,max);
-        std::swap(max->_right , max->_left);
-        if(root == node) root = max;
+    } else {
+        min = node->leftChild_->findMin(node->dimmension_);
+        KDNode<N, T, P>::swap(node, min, parent, node->findParent(min));
+        std::swap(min->rightChild_, min->leftChild_);
+        if (root_ == node) root_ = min;
         erase(node);
-        return;
     }
 }
 
-KD_TEMPLATE KD_NODE * KD_TREE::findNearest(const floatPrecision pos[dimmensions]){
-    if(root == 0)
-        return 0;    
-    return root->findNearest(pos,0);
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDTree<N, T, P>::findNearest(const P pos[N]) {
+    if (root_ == 0) return 0;
+    return root_->findNearest(pos, 0);
 }
 
-KD_TEMPLATE std::vector<KD_NODE*> KD_TREE::findCloseTo(const floatPrecision pos[dimmensions],floatPrecision distance){
-    std::vector<KD_NODE*> nodes;
-    if(root == 0)
-        return nodes;
-    root->findCloseTo(pos,distance*distance,nodes);
+template <unsigned char N, typename T, typename P>
+std::vector<KDNode<N, T, P> *> KDTree<N, T, P>::findCloseTo(const P pos[N], P distance) {
+    std::vector<KDNode<N, T, P> *> nodes;
+    if (root_ == 0) return nodes;
+    root_->findCloseTo(pos, distance * distance, nodes);
     return nodes;
 }
 
-KD_TEMPLATE std::string KD_TREE::toString()const{
-    std::stringstream ss;
-    ss << typeid(*this).name() << " " << ((void *)this);
-    return ss.str();
-}
-
-
-KD_TEMPLATE std::vector<KD_NODE*> KD_TREE::getAsVector(){
-    std::vector<Node*> v;
-    if(root) root->getAsVector(v);
+template <unsigned char N, typename T, typename P>
+std::vector<KDNode<N, T, P> *> KDTree<N, T, P>::getAsVector() {
+    std::vector<Node *> v;
+    if (root_) root_->getAsVector(v);
     return v;
 }
 
-
-KD_TEMPLATE void KD_TREE::clear(){
-    if(root == 0) return;
-    delete root;
-    root = 0;
+template <unsigned char N, typename T, typename P>
+void KDTree<N, T, P>::clear() {
+    if (root_ == 0) return;
+    delete root_;
+    root_ = nullptr;
 }
 
-KD_TEMPLATE std::vector<KD_NODE*> KD_TREE::findNNearest(const floatPrecision pos[dimmensions],int amount){
-    std::vector<__KD_NEAR_NODE__<KD_TYPE> > nearnodes;
-    std::vector<Node*> nodes;
-    if(root == 0)
-        return nodes;
-    root->findNNearest(pos,amount,nearnodes);
-    for(size_t i = 0;i<nearnodes.size();++i){
+template <unsigned char N, typename T, typename P>
+std::vector<KDNode<N, T, P> *> KDTree<N, T, P>::findNNearest(const P pos[N], int amount) {
+    std::vector<KDNodeDistWrapper<N, T, P> > nearnodes;
+    std::vector<Node *> nodes;
+    if (root_ == 0) return nodes;
+    root_->findNNearest(pos, amount, nearnodes);
+    for (size_t i = 0; i < nearnodes.size(); ++i) {
         nodes.push_back(nearnodes[i].node);
     }
     return nodes;
 }
 
-
-}
-#endif
-
-// Node Implementation
-
-#ifndef _KDNODE_IMP_
-#define _KDNODE_IMP_
-
-#include <algorithm>
-
-namespace inviwo{
-
-KD_TEMPLATE KD_NODE::KDNode(const floatPrecision pos[dimmensions],const dataType &data,KDNode *parent)
-    : _parent(parent)
-    , _left(0)
-    , _right(0)
-    , _data(data) {
-    
-    for(size_t i = 0;i<dimmensions;i++){
-        _pos[i] = pos[i];
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P>::KDNode(const P pos[N], const T &data, KDNode *parent)
+    : leftChild_(0), rightChild_(0), data_(data) {
+    for (size_t i = 0; i < N; i++) {
+        pos_[i] = pos[i];
     }
-    _dimmension = _parent == 0 ? 0 : (_parent->_dimmension+1)%dimmensions;
+    dimmension_ = parent == 0 ? 0 : (parent->dimmension_ + 1) % N;
 }
 
-KD_TEMPLATE KD_NODE::~KDNode(){
-    delete _left;
-    delete _right;
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P>::~KDNode() {
+    delete leftChild_;
+    delete rightChild_;
 }
-KD_TEMPLATE KD_NODE* KD_NODE::clone(){
-    KD_NODE* newNode = new KD_NODE(_pos,_data,0);
-    newNode->_dimmension = _dimmension;
-    if(_left){
-        newNode->_left = _left->clone();
-        newNode->_left->_parent = newNode;
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDNode<N, T, P>::clone() {
+    KDNode<N, T, P> *newNode = new KDNode<N, T, P>(pos_, data_, 0);
+    newNode->dimmension_ = dimmension_;
+    if (leftChild_) {
+        newNode->leftChild_ = leftChild_->clone();
+        newNode->leftChild_->parent_ = newNode;
     }
-    if(_right){
-        newNode->_right = _right->clone();
-        newNode->_right->_parent = newNode;
+    if (rightChild_) {
+        newNode->rightChild_ = rightChild_->clone();
+        newNode->rightChild_->parent_ = newNode;
     }
     return newNode;
 }
 
-KD_TEMPLATE bool KD_NODE::isOk()const{
-    if(isLeaf())
-        return true;
-    if(!isLeftLeaf() && _goRight(_left->_pos)){
+template <unsigned char N, typename T, typename P>
+bool KDNode<N, T, P>::isOk() const {
+    if (isLeaf()) return true;
+    if (!isLeftLeaf() && goRight(leftChild_->pos_)) {
         std::cout << "This: " << this << std::endl;
-        std::cout << "_left: " << _left << std::endl;
+        std::cout << "leftChild_: " << leftChild_ << std::endl;
         return false;
     }
-    if(!isRightLeaf() && !_goRight(_right->_pos)){
+    if (!isRightLeaf() && !goRight(rightChild_->pos_)) {
         std::cout << "This: " << this << std::endl;
-        std::cout << "_right: " << _right << std::endl;
+        std::cout << "rightChild_: " << rightChild_ << std::endl;
         return false;
     }
 
-    if(!isLeftLeaf() && !_left->isOk())
-        return false;
+    if (!isLeftLeaf() && !leftChild_->isOk()) return false;
 
-    if(!isRightLeaf() && !_right->isOk())
-        return false;
+    if (!isRightLeaf() && !rightChild_->isOk()) return false;
 
     return true;
 }
 
-KD_TEMPLATE bool KD_NODE::isLeaf()const{
+template <unsigned char N, typename T, typename P>
+bool KDNode<N, T, P>::isLeaf() const {
     return isRightLeaf() && isLeftLeaf();
 }
-KD_TEMPLATE bool KD_NODE::isRightLeaf()const{
-    return _right == 0;
+template <unsigned char N, typename T, typename P>
+bool KDNode<N, T, P>::isRightLeaf() const {
+    return rightChild_ == 0;
 }
-KD_TEMPLATE bool KD_NODE::isLeftLeaf()const{
-    return _left == 0;
-}
-
-
-KD_TEMPLATE unsigned long KD_NODE::depth()const{
-    unsigned long l = 0,r = 0;
-    if(!isRightLeaf())
-        r = _right->depth();
-    if(!isLeftLeaf())
-        l = _left->depth();
-    return 1 + std::max(l,r);
-
+template <unsigned char N, typename T, typename P>
+bool KDNode<N, T, P>::isLeftLeaf() const {
+    return leftChild_ == 0;
 }
 
-KD_TEMPLATE unsigned long KD_NODE::size()const{
-    unsigned long l = 0,r = 0;
-    if(!isRightLeaf())
-        r = _right->size();
-    if(!isLeftLeaf())
-        l = _left->size();
+template <unsigned char N, typename T, typename P>
+unsigned long KDNode<N, T, P>::depth() const {
+    unsigned long l = 0, r = 0;
+    if (!isRightLeaf()) r = rightChild_->depth();
+    if (!isLeftLeaf()) l = leftChild_->depth();
+    return 1 + std::max(l, r);
+}
+
+template <unsigned char N, typename T, typename P>
+unsigned long KDNode<N, T, P>::size() const {
+    unsigned long l = 0, r = 0;
+    if (!isRightLeaf()) r = rightChild_->size();
+    if (!isLeftLeaf()) l = leftChild_->size();
     return 1 + l + r;
 }
 
-KD_TEMPLATE dataType &KD_NODE::get(){
-    return _data;
+template <unsigned char N, typename T, typename P>
+T &KDNode<N, T, P>::get() {
+    return data_;
 }
 
-KD_TEMPLATE const dataType &KD_NODE::get()const{
-    return _data;
+template <unsigned char N, typename T, typename P>
+const T &KDNode<N, T, P>::get() const {
+    return data_;
 }
 
-KD_TEMPLATE floatPrecision* KD_NODE::getPosition(){
-    return _pos;
+template <unsigned char N, typename T, typename P>
+P *KDNode<N, T, P>::getPosition() {
+    return pos_;
 }
 
-KD_TEMPLATE
-KD_NODE* KD_NODE::insert(const floatPrecision pos[dimmensions], const dataType &data){
-    bool right = _goRight(pos);
-    if(right){
-        if(_right == 0){
-            _right = new KDNode(pos,data,this);    
-            return _right;
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDNode<N, T, P>::insert(const P pos[N], const T &data) {
+    bool right = goRight(pos);
+    if (right) {
+        if (rightChild_ == 0) {
+            rightChild_ = new KDNode(pos, data, this);
+            return rightChild_;
         }
-        return _right->insert(pos,data);
-    }
-    else{
-        if(_left == 0){
-            _left = new KDNode(pos,data,this);    
-            return _left;
+        return rightChild_->insert(pos, data);
+    } else {
+        if (leftChild_ == 0) {
+            leftChild_ = new KDNode(pos, data, this);
+            return leftChild_;
         }
-        return _left->insert(pos,data);
+        return leftChild_->insert(pos, data);
     }
 }
 
-KD_TEMPLATE bool KD_NODE::_goRight(const floatPrecision pos[dimmensions])const{
-    return pos[_dimmension] >= _pos[_dimmension];
+template <unsigned char N, typename T, typename P>
+bool KDNode<N, T, P>::goRight(const P pos[N]) const {
+    return pos[dimmension_] >= pos_[dimmension_];
 }
 
-KD_TEMPLATE bool KD_NODE::_compare(const floatPrecision pos[dimmensions])const{
-    for(unsigned int i = 0;i<dimmensions;i++){
-        if(pos[i] != _pos[i])
-            return false;
+template <unsigned char N, typename T, typename P>
+bool KDNode<N, T, P>::compare(const P pos[N]) const {
+    for (unsigned int i = 0; i < N; i++) {
+        if (pos[i] != pos_[i]) return false;
     }
     return true;
 }
 
-KD_TEMPLATE KD_NODE* KD_NODE::findMin(unsigned int d){
-    if(_dimmension == d){
-        return isLeftLeaf() ? this : _left->findMin(d);
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDNode<N, T, P>::findMin(unsigned int d) {
+    if (dimmension_ == d) {
+        return isLeftLeaf() ? this : leftChild_->findMin(d);
     }
-    if(isLeaf()) // leaf node
+    if (isLeaf())  // leaf node
         return this;
 
-    KDNode *l,*r,*minChild;
-    if(isLeftLeaf()){ //if left is empty, minimum value of dimensions d is either this node or in right subtree
-        minChild = _right->findMin(d);
-    }else if(isRightLeaf())
-        minChild = _left->findMin(d);
-    else{
-        l = _left->findMin(d);
-        r = _right->findMin(d);
-        minChild = (l->_pos[d] <= r->_pos[d]) ? l : r;
+    KDNode *l, *r, *minChild;
+    if (isLeftLeaf()) {  // if left is empty, minimum value of dimensions d is either this node or
+                         // in right subtree
+        minChild = rightChild_->findMin(d);
+    } else if (isRightLeaf())
+        minChild = leftChild_->findMin(d);
+    else {
+        l = leftChild_->findMin(d);
+        r = rightChild_->findMin(d);
+        minChild = (l->pos_[d] <= r->pos_[d]) ? l : r;
     }
-    return (minChild->_pos[d] <= _pos[d]) ? minChild : this;
+    return (minChild->pos_[d] <= pos_[d]) ? minChild : this;
+}
+
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDNode<N, T, P>::findMax(unsigned int d) {
+    if (dimmension_ == d) {
+        return isRightLeaf() ? this : rightChild_->findMax(d);
+    }
+    if (isLeaf()) return this;
+
+    KDNode *l, *r, *maxChild;
+    if (isLeftLeaf()) {  // if left is empty, minimum value of dimensions d is either this node or
+                         // in right subtree
+        maxChild = rightChild_->findMax(d);
+    } else if (isRightLeaf())
+        maxChild = leftChild_->findMax(d);
+    else {
+        l = leftChild_->findMax(d);
+        r = rightChild_->findMax(d);
+        maxChild = (l->pos_[d] >= r->pos_[d]) ? l : r;
+    }
+    return (maxChild->pos_[d] >= pos_[d]) ? maxChild : this;
+}
+
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDNode<N, T, P>::find(const P pos[N]) {
+    if (compare_(pos)) return this;
+    if (goRight_(pos)) {
+        return isRightLeaf() ? nullptr : rightChild_->find(pos);
+    } else {
+        return isLeftLeaf() ? nullptr : leftChild_->find(pos);
+    }
 }
 
 
-KD_TEMPLATE KD_NODE* KD_NODE::findMax(unsigned int d){
-    if(_dimmension == d){
-        return isRightLeaf() ? this : _right->findMax(d);
-    }
-    if(isLeaf())
-        return this;
-    
 
-    KDNode *l,*r,*maxChild;
-    if(isLeftLeaf()){ //if left is empty, minimum value of dimensions d is either this node or in right subtree
-        maxChild = _right->findMax(d);
-    }else if(isRightLeaf())
-        maxChild = _left->findMax(d);
-    else{
-        l = _left->findMax(d);
-        r = _right->findMax(d);
-        maxChild = (l->_pos[d] >= r->_pos[d]) ? l : r;
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDNode<N, T, P>::findParent(const KDNode *n) {
+    if (leftChild_ == n) return this;
+    if (rightChild_ == n) return this;
+    if (goRight_(n->pos_)) {
+        return isRightLeaf() ? nullptr : rightChild_->findParent(n);
     }
-    return (maxChild->_pos[d] >= _pos[d]) ? maxChild : this;
-}
-
-KD_TEMPLATE KD_NODE* KD_NODE::find(const floatPrecision pos[dimmensions]){
-    if(_compare(pos))
-        return this;
-    if(_goRight(pos)){
-        return isRightLeaf() ? 0 : _right->find(pos);
-    }else{
-        return isLeftLeaf()  ? 0 : _left->find(pos);
+    else {
+        return isLeftLeaf() ? nullptr : leftChild_->findParent(n);
     }
 }
 
-
-KD_TEMPLATE KD_NODE* __closestTo(const floatPrecision pos[dimmensions],KD_NODE *n0,KD_NODE *n1){
-    if(n0 == 0)
-        return n1;
-    if(n1 == 0 || n0 == n1)
-        return n0;
-    float d0 = 0,d1 = 0,dx;
-    for(size_t i = 0;i<dimmensions;i++){
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *__closestTo(const P pos[N], KDNode<N, T, P> *n0, KDNode<N, T, P> *n1) {
+    if (n0 == 0) return n1;
+    if (n1 == 0 || n0 == n1) return n0;
+    P d0 = 0, d1 = 0, dx;
+    for (size_t i = 0; i < N; i++) {
         dx = pos[i] - n0->getPosition()[i];
-        d0 += dx*dx;
-        
+        d0 += dx * dx;
+
         dx = pos[i] - n1->getPosition()[i];
-        d1 += dx*dx;
+        d1 += dx * dx;
     }
-    /* 
+    /*
     this is not needed
     d0 = std::sqrt(d0);
     d1 = std::sqrt(d1);
@@ -623,248 +560,198 @@ KD_TEMPLATE KD_NODE* __closestTo(const floatPrecision pos[dimmensions],KD_NODE *
     return (d0 <= d1) ? n0 : n1;
 }
 
-
-KD_TEMPLATE KD_NODE* KD_NODE::findNearest(const floatPrecision pos[dimmensions],KD_NODE *nearest){
-    if(isLeaf()){
-        nearest = __closestTo<KD_TYPE>(pos,this,nearest);
+template <unsigned char N, typename T, typename P>
+KDNode<N, T, P> *KDNode<N, T, P>::findNearest(const P pos[N], KDNode<N, T, P> *nearest) {
+    if (isLeaf()) {
+        nearest = __closestTo<N, T, P>(pos, this, nearest);
         return nearest;
     }
 
-    float d0,d1;
-    if(_goRight(pos)){  //pos is within right sub tree
-        if(!isRightLeaf()){ //Look forit in right sub tree
-            nearest = __closestTo<KD_TYPE>(pos,nearest,_right->findNearest(pos,nearest));
+    P d0, d1;
+    if (goRight(pos)) {  // pos is within right sub tree
+        if (!isRightLeaf()) {  // Look forit in right sub tree
+            nearest = __closestTo<N, T, P>(pos, nearest, rightChild_->findNearest(pos, nearest));
         }
-        nearest = __closestTo<KD_TYPE>(pos,nearest,this);
-        if(nearest == this && !isLeftLeaf()){//if current node is the closest in 
-            nearest = __closestTo<KD_TYPE>(pos,this,_left->findNearest(pos,nearest));
-        }
-        else if(!isLeftLeaf()){ //can it 
-            d0 = pos[_dimmension] - this->_pos[_dimmension];
-            d1 = pos[_dimmension] - nearest->_pos[_dimmension];
-            d0 = d0*d0;
-            d1 = d1*d1;
+        nearest = __closestTo<N, T, P>(pos, nearest, this);
+        if (nearest == this && !isLeftLeaf()) {  // if current node is the closest in
+            nearest = __closestTo<N, T, P>(pos, this, leftChild_->findNearest(pos, nearest));
+        } else if (!isLeftLeaf()) {  // can it
+            d0 = pos[dimmension_] - this->pos_[dimmension_];
+            d1 = pos[dimmension_] - nearest->pos_[dimmension_];
+            d0 = d0 * d0;
+            d1 = d1 * d1;
 
-            if(d0<=d1){
-                nearest = __closestTo<KD_TYPE>(pos,nearest,_left->findNearest(pos,nearest));
-            }    
+            if (d0 <= d1) {
+                nearest = __closestTo<N, T, P>(pos, nearest, leftChild_->findNearest(pos, nearest));
+            }
         }
-    }
-    else{ 
-        if(!isLeftLeaf()){ //Look forit in right sub tree
-            nearest = __closestTo<KD_TYPE>(pos,nearest,_left->findNearest(pos,nearest));
+    } else {
+        if (!isLeftLeaf()) {  // Look forit in right sub tree
+            nearest = __closestTo<N, T, P>(pos, nearest, leftChild_->findNearest(pos, nearest));
         }
-        nearest = __closestTo<KD_TYPE>(pos,nearest,this);
-        if(nearest == this && !isRightLeaf()){//if current node is the closest in 
-            nearest = __closestTo<KD_TYPE>(pos,this,_right->findNearest(pos,nearest));
-        }
-        else if(!isRightLeaf()){ //can it 
-            d0 = pos[_dimmension] - this->_pos[_dimmension];
-            d1 = pos[_dimmension] - nearest->_pos[_dimmension];
-            d0 = d0*d0;
-            d1 = d1*d1;
+        nearest = __closestTo<N, T, P>(pos, nearest, this);
+        if (nearest == this && !isRightLeaf()) {  // if current node is the closest in
+            nearest = __closestTo<N, T, P>(pos, this, rightChild_->findNearest(pos, nearest));
+        } else if (!isRightLeaf()) {  // can it
+            d0 = pos[dimmension_] - this->pos_[dimmension_];
+            d1 = pos[dimmension_] - nearest->pos_[dimmension_];
+            d0 = d0 * d0;
+            d1 = d1 * d1;
 
-            if(d0<d1){
-                nearest = __closestTo<KD_TYPE>(pos,nearest,_right->findNearest(pos,nearest));
-            }    
+            if (d0 < d1) {
+                nearest =
+                    __closestTo<N, T, P>(pos, nearest, rightChild_->findNearest(pos, nearest));
+            }
         }
     }
     return nearest;
 }
 
-KD_TEMPLATE floatPrecision __sqDist(const floatPrecision p0[dimmensions],const floatPrecision p1[dimmensions]){
-    floatPrecision d = 0,a;
-    for(size_t i = 0;i<dimmensions;i++){
+template <unsigned char N, typename T, typename P>
+P __sqDist(const P p0[N], const P p1[N]) {
+    P d = 0, a;
+    for (size_t i = 0; i < N; i++) {
         a = p0[i] - p1[i];
-        d += a*a;
+        d += a * a;
     }
     return d;
 }
 
-KD_TEMPLATE void KD_NODE::findCloseTo(const floatPrecision pos[dimmensions],const floatPrecision sqDist,std::vector<KDNode*> &nodes){
-    if(__sqDist<KD_TYPE>(pos,_pos) < sqDist){
+template <unsigned char N, typename T, typename P>
+void KDNode<N, T, P>::findCloseTo(const P pos[N], const P sqDist, std::vector<KDNode *> &nodes) {
+    if (__sqDist<N, T, P>(pos, pos_) < sqDist) {
         nodes.push_back(this);
     }
-    float d;
-    bool right = false,left = false;
-//BUG ??
-    if(_goRight(pos)){
-        if(!isRightLeaf()){
+    P d;
+    bool right = false, left = false;
+    // BUG ??
+    if (goRight_(pos)) {
+        if (!isRightLeaf()) {
             right = true;
         }
-        if(!isLeftLeaf()){
-            d = _pos[_dimmension] - pos[_dimmension];
-            if(d*d<=sqDist)
-                left = true;
+        if (!isLeftLeaf()) {
+            d = pos_[dimmension_] - pos[dimmension_];
+            if (d * d <= sqDist) left = true;
         }
-    }else{
-        if(!left && !isLeftLeaf()){
+    } else {
+        if (!left && !isLeftLeaf()) {
             left = true;
         }
-        if(!right && !isRightLeaf()){
-            d = _pos[_dimmension] - pos[_dimmension];
-            if(d*d<=sqDist)
-                right = true;
+        if (!right && !isRightLeaf()) {
+            d = pos_[dimmension_] - pos[dimmension_];
+            if (d * d <= sqDist) right = true;
         }
     }
-    if(right){
-        _right->findCloseTo(pos,sqDist,nodes);
+    if (right) {
+        rightChild_->findCloseTo(pos, sqDist, nodes);
     }
-    if(left){
-        _left->findCloseTo(pos,sqDist,nodes);
+    if (left) {
+        leftChild_->findCloseTo(pos, sqDist, nodes);
     }
 }
-
-
 
 #define __FF__ std::cout << "Failed at " << __FILE__ << "@" << __LINE__ << std::endl
-KD_TEMPLATE void KD_NODE::swap(KD_NODE* n0,KD_NODE* n1){
-    if(n0 == n1  || n0 == 0 || n1 == 0 )
-        return;
+template <unsigned char N, typename T, typename P>
+void KDNode<N, T, P>::swap(KDNode<N, T, P> *n0, KDNode<N, T, P> *n1, KDNode<N, T, P> *p0, KDNode<N, T, P> *p1) {
+    if (n0 == n1 || n0 == 0 || n1 == 0) return;
 
-    KD_NODE* r0 = n0->_right;
-    KD_NODE* l0 = n0->_left;
-    KD_NODE* p0 = n0->_parent;
-    KD_NODE* r1 = n1->_right;
-    KD_NODE* l1 = n1->_left;
-    KD_NODE* p1 = n1->_parent;
+    KDNode<N, T, P> *r0 = n0->rightChild_;
+    KDNode<N, T, P> *l0 = n0->leftChild_;
+    KDNode<N, T, P> *r1 = n1->rightChild_;
+    KDNode<N, T, P> *l1 = n1->leftChild_;
 
-    if(p0 == n1){ //if n0 is a child to n1
-        swap(n1,n0); //swap in "other" direction
+    if (p0 == n1) {  // if n0 is a child to n1
+        swap(n1, n0 , p1 , p0);  // swap in "other" direction
         return;
     }
-    if(p1 == n0){ //n1 is a child to n0
+    if (p1 == n0) {  // n1 is a child to n0
         bool left = l0 == n1;
-        n0->_parent = n1;
-        n0->_left = l1;
-        n0->_right = r1;
+        n0->leftChild_ = l1;
+        n0->rightChild_ = r1;
 
-        n1->_parent = p0;
-        n1->_left  = left ? n0 : l0;
-        n1->_right = left ? r0 : n0;
+        n1->leftChild_ = left ? n0 : l0;
+        n1->rightChild_ = left ? r0 : n0;
 
-        if(r1 != 0) r1->_parent = n0;
-        if(l1 != 0) l1->_parent = n0;
-
-        if(p0 != 0){
-            if(p0->_left  == n0) p0->_left = n1; //
-            if(p0->_right == n0) p0->_right = n1; //
-        }
         
-        if(left && r0 != 0){ //since l0 == n1 we've already set the parent above
-            r0->_parent = n1;
+        if (p0 != 0) {
+            if (p0->leftChild_ == n0) p0->leftChild_ = n1;    //
+            if (p0->rightChild_ == n0) p0->rightChild_ = n1;  //
         }
-        else if(!left && l0 != 0){
-            l0->_parent = n1;
-        }
-        
-    }else{
-        if(r0 != 0) r0->_parent = n1;
-        if(l0 != 0) l0->_parent = n1;
-        if(r1 != 0) r1->_parent = n0;
-        if(l1 != 0) l1->_parent = n0;
-        n0->_left = l1;
-        n0->_right = r1;
-        n0->_parent = p1;
-        n1->_left = l0;
-        n1->_right = r0;
-        n1->_parent = p0;
+    } else {
+        n0->leftChild_ = l1;
+        n0->rightChild_ = r1;
+        n1->leftChild_ = l0;
+        n1->rightChild_ = r0;
 
-        if(p0 != 0 && p0->_left == n0){
-            p0->_left = n1;
-        }else if(p0 != 0 && p0->_right == n0){
-            p0->_right = n1;
-        }else if(p0 != 0){
-            __FF__;    
+        if (p0 != 0 && p0->leftChild_ == n0) {
+            p0->leftChild_ = n1;
+        } else if (p0 != 0 && p0->rightChild_ == n0) {
+            p0->rightChild_ = n1;
+        } else if (p0 != 0) {
+            __FF__;
         }
-            
-        if(p1->_left == n1){
-            p1->_left = n0;
-        }else if(p1->_right == n1){
-            p1->_right = n0;
-        }else{
-            __FF__;    
+
+        if (p1->leftChild_ == n1) {
+            p1->leftChild_ = n0;
+        } else if (p1->rightChild_ == n1) {
+            p1->rightChild_ = n0;
+        } else {
+            __FF__;
         }
     }
 
-    std::swap(n0->_dimmension,n1->_dimmension);
+    std::swap(n0->dimmension_, n1->dimmension_);
 }
 
-
-KD_TEMPLATE std::string KD_NODE::toString()const{
-    std::stringstream ss;
-    ss << typeid(*this).name() << " " << (void*)this << " ";
-    //ss << _tree << " ";
-    //ss << _data << " [";
-    for(size_t i = 0;i<dimmensions;i++){
-        ss << " "<< _pos[i];
-    }
-    ss << " ] " << _dimmension;
-
-    ss << (void*)_parent << " ";
-    ss << (void*)_left << " ";
-    ss << (void*)_right << " ";
-    return ss.str();
-}
-
-KD_TEMPLATE void KD_NODE::findNNearest(const floatPrecision pos[dimmensions],
-                                       size_t amount,
-                                       std::vector<__KD_NEAR_NODE__<KD_TYPE> > &current) {
-    float sqDist = __sqDist<KD_TYPE>(pos,_pos);
-    if(current.size() < amount){
-        __KD_NEAR_NODE__<KD_TYPE> holder;
+template <unsigned char N, typename T, typename P>
+void KDNode<N, T, P>::findNNearest(const P pos[N], size_t amount,
+                                   std::vector<KDNodeDistWrapper<N, T, P> > &current) {
+    P sqDist = __sqDist<N, T, P>(pos, pos_);
+    if (current.size() < amount) {
+        KDNodeDistWrapper<N, T, P> holder;
         holder.node = this;
         holder.sqDist = sqDist;
         current.push_back(holder);
-        std::sort(current.begin(),current.end());
-    }
-    else if(sqDist<=current[0].sqDist){
-        __KD_NEAR_NODE__<KD_TYPE> holder;
+        std::sort(current.begin(), current.end());
+    } else if (sqDist <= current[0].sqDist) {
+        KDNodeDistWrapper<N, T, P> holder;
         holder.node = this;
         holder.sqDist = sqDist;
         current.push_back(holder);
-        std::sort(current.begin(),current.end());
-        while(current.size()>amount){
+        std::sort(current.begin(), current.end());
+        while (current.size() > amount) {
             current.erase(current.begin());
         }
     }
-    
-    float d;
-    bool right = false,left = false;
-    if(current.size()<amount){
+
+    P d;
+    bool right = false, left = false;
+    if (current.size() < amount) {
         left = !isLeftLeaf();
         right = !isRightLeaf();
-    }
-    else if(_goRight(pos)){
-        if(!isRightLeaf()){
+    } else if (goRight(pos)) {
+        if (!isRightLeaf()) {
             right = true;
         }
-        if(!isLeftLeaf()){
-            d = _pos[_dimmension] - pos[_dimmension];
-            if(d*d<=current[0].sqDist)
-                left = true;
+        if (!isLeftLeaf()) {
+            d = pos_[dimmension_] - pos[dimmension_];
+            if (d * d <= current[0].sqDist) left = true;
         }
-    }else{
-        if(!left && !isLeftLeaf()){
+    } else {
+        if (!left && !isLeftLeaf()) {
             left = true;
         }
-        if(!right && !isRightLeaf()){
-            d = _pos[_dimmension] - pos[_dimmension];
-            if(d*d<=current[0].sqDist)
-                right = true;
+        if (!right && !isRightLeaf()) {
+            d = pos_[dimmension_] - pos[dimmension_];
+            if (d * d <= current[0].sqDist) right = true;
         }
     }
-    if(right){
-        _right->findNNearest(pos,amount,current);
+    if (right) {
+        rightChild_->findNNearest(pos, amount, current);
     }
-    if(left){
-        _left->findNNearest(pos,amount,current);
+    if (left) {
+        leftChild_->findNNearest(pos, amount, current);
     }
-
 }
-    
 }
-#endif
-
-
 #endif
