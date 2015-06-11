@@ -83,7 +83,7 @@ protected:
     void unbindFromPBO() const;
     void unbindToPBO() const;
 
-    void setupAsyncReadBackPBO();
+    void setupAsyncReadBackPBO() const;
 
     void setNChannels();
     void setSizeInBytes();
@@ -104,7 +104,8 @@ private:
     GLuint byteSize_;
     GLuint numChannels_;
 
-    mutable bool dataInReadBackPBO_;
+    mutable bool pboBackIsSetup_;
+    mutable bool pboBackHasData_;
 };
 
 } // namespace

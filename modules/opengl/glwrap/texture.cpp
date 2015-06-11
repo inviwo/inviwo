@@ -40,7 +40,8 @@ Texture::Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, 
     , filtering_(filtering)
     , level_(level)
     , texParameterCallback_(new TextureCallback())
-    , dataInReadBackPBO_(false)
+    , pboBackIsSetup_(false)
+    , pboBackHasData_(false)
 {
     glGenTextures(1, &id_);
     numChannels_ = glFormat.channels;
@@ -58,7 +59,8 @@ Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataT
     , filtering_(filtering)
     , level_(level)
     , texParameterCallback_(new TextureCallback())
-    , dataInReadBackPBO_(false)
+    , pboBackIsSetup_(false)
+    , pboBackHasData_(false)
 {
     glGenTextures(1, &id_);
     setNChannels();
@@ -78,7 +80,8 @@ Texture::Texture(const Texture& other)
     , texParameterCallback_(new TextureCallback())
     , byteSize_(other.byteSize_)
     , numChannels_(other.numChannels_)
-    , dataInReadBackPBO_(false)
+    , pboBackIsSetup_(false)
+    , pboBackHasData_(false)
 {
     glGenTextures(1, &id_);
     glGenBuffers(1, &pboBack_);
@@ -157,7 +160,7 @@ void Texture::unbind() const {
 }
 
 void Texture::bindFromPBO() const {
-    if (!dataInReadBackPBO_) {
+    if (!pboBackHasData_) {
         downloadToPBO();
     }
 
@@ -173,7 +176,7 @@ void Texture::bindToPBO() const {
 void Texture::unbindFromPBO() const {
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
     //Invalidate PBO, as error might occur in download() otherwise.
-    dataInReadBackPBO_ = false;
+    pboBackHasData_ = false;
     LGL_ERROR;
 }
 
@@ -183,18 +186,22 @@ void Texture::unbindToPBO() const {
 }
 
 void Texture::download(void* data) const {
-    if (dataInReadBackPBO_) {
+    bool downloadComplete = false;
+    if (pboBackHasData_) {
         // Copy from PBO
         bindToPBO();
         void* mem = glMapBuffer(GL_PIXEL_PACK_BUFFER_ARB, GL_READ_ONLY);
-        assert(mem);
-        memcpy(data, mem, getNumberOfValues()*getSizeInBytes());
+        if (mem){
+            memcpy(data, mem, getNumberOfValues()*getSizeInBytes());
+            downloadComplete = true;
+        }
         //Release PBO data
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER_ARB);
         unbindToPBO();
-        dataInReadBackPBO_ = false;
+        pboBackHasData_ = false;
     }
-    else {
+    
+    if (!downloadComplete) {
         bind();
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
         glGetTexImage(target_, 0, format_, dataType_, data);
@@ -205,13 +212,18 @@ void Texture::download(void* data) const {
 }
 
 void Texture::downloadToPBO() const {
-    if (!dataInReadBackPBO_) {
+    if (!pboBackIsSetup_){
+        setupAsyncReadBackPBO();
+        pboBackIsSetup_ = true;
+    }
+
+    if (!pboBackHasData_) {
         bind();
         bindToPBO();
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
         glGetTexImage(target_, 0, format_, dataType_, nullptr);
         unbindToPBO();
-        dataInReadBackPBO_ = true;
+        pboBackHasData_ = true;
     }
 }
 
@@ -224,14 +236,14 @@ void Texture::loadFromPBO(const Texture* src) {
     LGL_ERROR;
 }
 
-void Texture::setupAsyncReadBackPBO() {
+void Texture::setupAsyncReadBackPBO() const {
     bind();
     glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, pboBack_);
     glBufferDataARB(GL_PIXEL_PACK_BUFFER_ARB, getNumberOfValues() * getSizeInBytes(), nullptr,
                     GL_STREAM_READ_ARB);
     glBindBufferARB(GL_PIXEL_PACK_BUFFER_ARB, 0);
     unbind();
-    dataInReadBackPBO_ = false;
+    pboBackHasData_ = false;
     LGL_ERROR;
 }
 
