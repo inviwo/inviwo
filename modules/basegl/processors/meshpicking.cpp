@@ -32,7 +32,6 @@
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/openglutils.h>
 
@@ -49,32 +48,34 @@ MeshPicking::MeshPicking()
     , meshInport_("geometryInport")
     , imageInport_("imageInport")
     , outport_("outport")
+    , cullFace_("cullFace", "Cull Face")
     , position_("position", "Position", vec3(0.0f), vec3(-100.f), vec3(100.f))
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f))
-    , trackball_(&camera_) {
+    , trackball_(&camera_)
+    , shader_("standard.vert", "picking.frag") {
+
     addPort(meshInport_);
     addPort(imageInport_);
     addPort(outport_);
     outport_.addResizeEventListener(&camera_);
+
+    cullFace_.addOption("culldisable", "Disable", GL_NONE);
+    cullFace_.addOption("cullfront", "Front", GL_FRONT);
+    cullFace_.addOption("cullback", "Back", GL_BACK);
+    cullFace_.addOption("cullfrontback", "Front & Back", GL_FRONT_AND_BACK);
+    cullFace_.set(GL_BACK);
+    addProperty(cullFace_);
+
     addProperty(position_);
     addProperty(camera_);
     addProperty(trackball_);
-}
 
-MeshPicking::~MeshPicking() {}
-
-void MeshPicking::initialize() {
-    CompositeProcessorGL::initialize();
-    shader_ = new Shader("standard.vert", "picking.frag");
     widgetPickingObject_ = PickingManager::getPtr()->registerPickingCallback(
         this, &MeshPicking::updateWidgetPositionFromPicking);
 }
 
-void MeshPicking::deinitialize() {
-    CompositeProcessorGL::deinitialize();
-    delete shader_;
-    shader_ = nullptr;
+MeshPicking::~MeshPicking() {
     PickingManager::getPtr()->unregisterPickingObject(widgetPickingObject_);
 }
 
@@ -97,23 +98,24 @@ void MeshPicking::process() {
     utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
 
     MeshDrawerGL drawer(static_cast<const Mesh*>(meshInport_.getData()));
-    shader_->activate();
-    shader_->setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
+    shader_.activate();
+    shader_.setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
 
     const auto& ct = meshInport_.getData()->getCoordinateTransformer(camera_.get());
 
     mat4 dataToClip_ =
         ct.getWorldToClipMatrix() * glm::translate(position_.get()) * ct.getDataToWorldMatrix();
 
-    shader_->setUniform("dataToClip_", dataToClip_);
+    shader_.setUniform("dataToClip_", dataToClip_);
 
     {
-        utilgl::CullFaceState culling(GL_BACK);
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+        utilgl::CullFaceState culling(cullFace_.get());
         utilgl::DepthFuncState depthfunc(GL_ALWAYS);
         drawer.draw();
     }
 
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
     compositePortsToOutport(outport_, COLOR_DEPTH_PICKING, imageInport_);
 }

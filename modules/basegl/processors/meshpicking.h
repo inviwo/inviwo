@@ -37,11 +37,12 @@
 #include <inviwo/core/ports/meshport.h>
 #include <modules/opengl/image/compositeprocessorgl.h>
 #include <inviwo/core/interaction/pickingobject.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
+#include <modules/opengl/glwrap/shader.h>
 
 namespace inviwo {
-class Shader;
 
 /** \docpage{org.inviwo.GeometryPicking, Mesh Picking}
  * ![](org.inviwo.GeometryPicking.png?classIdentifier=org.inviwo.GeometryPicking)
@@ -74,9 +75,6 @@ public:
     MeshPicking();
     virtual ~MeshPicking();
 
-    void initialize();
-    void deinitialize();
-
     virtual void process();
 
     bool isReady() const { return meshInport_.isReady(); }
@@ -88,6 +86,8 @@ private:
     ImageInport imageInport_;
     ImageOutport outport_;
 
+    OptionPropertyInt cullFace_;
+
     FloatVec3Property position_;
 
     CameraProperty camera_;
@@ -95,7 +95,7 @@ private:
 
     const PickingObject* widgetPickingObject_;
 
-    Shader* shader_;
+    Shader shader_;
 };
 
 }  // namespace
