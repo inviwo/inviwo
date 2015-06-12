@@ -59,6 +59,33 @@ utilgl::DepthFuncState::~DepthFuncState() {
     }
 }
 
+DepthMaskState& utilgl::DepthMaskState::operator=(DepthMaskState&& that) {
+    if (this != &that) {
+        state_ = that.oldState_;
+        std::swap(state_, that.state_);
+        oldState_ = that.oldState_;
+    }
+    return *this;
+}
+
+utilgl::DepthMaskState::DepthMaskState(DepthMaskState&& rhs)
+    : oldState_(rhs.oldState_), state_(rhs.state_) {
+    rhs.state_ = rhs.oldState_;
+}
+
+utilgl::DepthMaskState::DepthMaskState(GLboolean state) : state_(state) {
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &oldState_);
+    if (oldState_ != state_) {
+        glDepthMask(state_);
+    }
+}
+
+utilgl::DepthMaskState::~DepthMaskState() {
+    if (oldState_ != state_) {
+        glDepthMask(oldState_);
+    }
+}
+
 PolygonModeState& utilgl::PolygonModeState::operator=(PolygonModeState&& that) {
     if (this != &that) {
         mode_ = that.mode_;

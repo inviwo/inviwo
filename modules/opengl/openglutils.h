@@ -139,6 +139,23 @@ protected:
     GLint state_;
 };
 
+struct IVW_MODULE_OPENGL_API DepthMaskState  {
+    DepthMaskState() = delete;
+    DepthMaskState(DepthMaskState const&) = delete;
+    DepthMaskState& operator=(DepthMaskState const& that) = delete;
+
+    DepthMaskState(GLboolean state);
+
+    DepthMaskState(DepthMaskState&& rhs);
+    DepthMaskState& operator=(DepthMaskState&& that);
+
+    virtual ~DepthMaskState();
+
+protected:
+    GLboolean oldState_;
+    GLboolean state_;
+};
+
 struct IVW_MODULE_OPENGL_API BlendModeState : public GlBoolState {
     BlendModeState() = delete;
     BlendModeState(BlendModeState const&) = delete;
