@@ -152,6 +152,7 @@ if __name__ == '__main__':
 		
 	for pathname in args.modules:
 		path, name = os.path.split(pathname)
+		if path == "": path = "."
 		make_module(ivwpath, path, name, args.verbose, args.dummy)
 		
 
