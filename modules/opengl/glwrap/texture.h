@@ -84,6 +84,7 @@ protected:
     void unbindToPBO() const;
 
     void setupAsyncReadBackPBO() const;
+    void setPBOAsInvalid();
 
     void setNChannels();
     void setSizeInBytes();

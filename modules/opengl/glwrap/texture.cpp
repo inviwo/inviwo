@@ -247,6 +247,10 @@ void Texture::setupAsyncReadBackPBO() const {
     LGL_ERROR;
 }
 
+void Texture::setPBOAsInvalid() {
+     pboBackIsSetup_ = false;
+}
+
 void Texture::setNChannels() {
     switch (format_) {
         case GL_STENCIL_INDEX:

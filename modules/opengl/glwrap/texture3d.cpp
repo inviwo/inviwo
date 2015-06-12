@@ -122,6 +122,7 @@ void Texture3D::upload(const void* data) {
 
 void Texture3D::uploadAndResize(const void* data, const size3_t& dim) {
     dimensions_ = dim;
+    setPBOAsInvalid();
     initialize(data);
 }
 

@@ -124,6 +124,7 @@ void Texture2DArray::upload(const void* data) {
 
 void Texture2DArray::uploadAndResize(const void* data, const uvec3& dim) {
     dimensions_ = dim;
+    setPBOAsInvalid();
     initialize(data);
 }
 

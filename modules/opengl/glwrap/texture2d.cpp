@@ -123,6 +123,7 @@ void Texture2D::upload(const void* data) {
 
 void Texture2D::resize(uvec2 dimensions) {
     dimensions_ = dimensions;
+    setPBOAsInvalid();
     initialize(nullptr);
 }
 
