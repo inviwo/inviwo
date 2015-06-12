@@ -47,6 +47,7 @@ uniform sampler2D transferFunction;
 uniform ImageParameters entryParameters;
 uniform sampler2D entryColor;
 uniform sampler2D entryDepth;
+uniform sampler2D entryPicking;
 
 uniform ImageParameters exitParameters;
 uniform sampler2D exitColor;
@@ -129,4 +130,5 @@ void main() {
 
     vec4 color = rayTraversal(entryPoint, exitPoint, texCoords);
     FragData0 = color;
+    PickingData = texture(entryPicking, texCoords);
 }
