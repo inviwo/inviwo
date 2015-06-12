@@ -35,30 +35,49 @@ import re
 import subprocess
 import sys
 
+try:
+	import colorama
+	colorama.init()
+	
+	def print_error(mess):
+		print(colorama.Fore.RED + colorama.Style.BRIGHT + mess + colorama.Style.RESET_ALL)
+	def print_warn(mess):
+		print(colorama.Fore.RED + mess + colorama.Style.RESET_ALL)	
+	
+except ImportError:
+	def print_error(mess):
+		print(mess)
+	def print_warn(mess):
+		print(mess)	 
+
+
+def test_for_inviwo(path):
+	return (os.path.exists(os.sep.join([path] + ['modules', 'base'])) 
+		and os.path.exists(os.sep.join([path] + ['include', 'inviwo']))
+		and os.path.exists(os.sep.join([path] + ['tools', 'templates'])))
+
+
 def find_inv_path():
-    path = os.path.abspath(sys.argv[0])
-    print(path)
-    folders=[]
-    while 1:
-        path, folder = os.path.split(path)
-        if folder != "":
-            folders.append(folder)
-        else:
-            if path != "":
-                folders.append(path)
-            break
+	path = os.path.abspath(sys.argv[0])
+	folders=[]
+	while 1:
+		path, folder = os.path.split(path)
+		if folder != "":
+			folders.append(folder)
+		else:
+			if path != "":
+				folders.append(path)
+			break
 
-    folders.reverse()
-    
-    basepath = ""
-    for i in range(len(folders), 0 ,-1):
-        if (os.path.exists(os.sep.join(folders[:i] + ['modules', 'base'])) 
-        and os.path.exists(os.sep.join(folders[:i] + ['include', 'inviwo']))
-        and os.path.exists(os.sep.join(folders[:i] + ['tools', 'templates']))):
-            basepath = os.sep.join(folders[:i])
-            break
+	folders.reverse()
+	
+	basepath = ""
+	for i in range(len(folders), 0 ,-1):
+		if test_for_inviwo(os.sep.join(folders[:i])):
+			basepath = os.sep.join(folders[:i])
+			break
 
-    return basepath
+	return basepath
 
 
 def make_module(ivwpath, path, name, verbose, dummy):
@@ -76,7 +95,7 @@ def make_module(ivwpath, path, name, verbose, dummy):
 	module_dir = os.sep.join([path, lname])
 	
 	if not dummy:
-		print("    Crate dir: " + module_dir)
+		print("... Crate dir: " + module_dir)
 		os.mkdir(module_dir)
 	
 	for prefix, file in zip(prefixes, files):
@@ -100,36 +119,36 @@ def make_module(ivwpath, path, name, verbose, dummy):
 				print("")
 		
 		if not dummy:
-			print("    Write file: " + outfile)
+			print("... Write file: " + outfile)
 			with open(outfile,'w') as f:
 				for line in lines:
 					f.write(line)
 					
-	print("    Done")
+	print("... Done")
 
 				
 if __name__ == '__main__':
-	if os.name == 'posix':
-		CMAKE='cmake'
-	else:
-		CMAKE='cmake.exe'
+	if os.name == 'posix': CMAKE='cmake'
+	else: CMAKE='cmake.exe'
 
-	ivwpath = find_inv_path()
-
-	if ivwpath == "":
-		print("Error could not find inviwo")
-		sys.exit(1)
-	
-	print("Path to inviwo: " + ivwpath)
-	
-		
 	parser = argparse.ArgumentParser(description='Add new modules to inviwo', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument('modules', type=str, nargs='+', action="store", help='Modules to add, form: path/name1 path/name2 ...')
 	parser.add_argument("--dummy", action="store_true", dest="dummy", help="Don't write actual files")
 	parser.add_argument("--verbose", action="store_true", dest="verbose", help="Print extra information")
-
+	parser.add_argument("--inviwo", type=str, default="", dest="ivwpath", help="Path to the inviwo repository. Tries to find it in the current path")
 	args = parser.parse_args()
+
+	if args.ivwpath == "":
+		ivwpath = find_inv_path()
+	else:
+		ivwpath = args.ivwpath
+
+	if not test_for_inviwo(ivwpath):
+		print_error("Error could not find the inviwo repository")
+		parser.print_help()
+		sys.exit(1)
 	
+	print("Path to inviwo: " + ivwpath)
 		
 	for pathname in args.modules:
 		path, name = os.path.split(pathname)

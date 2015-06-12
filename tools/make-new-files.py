@@ -35,12 +35,6 @@ import argparse
 import re
 import subprocess
 
-
-if os.name == 'posix':
-	CMAKE='cmake'
-else:
-	CMAKE='cmake.exe'
-
 try:
 	import colorama
 	colorama.init()
@@ -56,16 +50,11 @@ except ImportError:
 	def print_warn(mess):
 		print(mess)	 		
 
-parser = argparse.ArgumentParser(description='Add new files to Inviwo.\n typical usage: \n python.exe ./make-new-files.py --svn --cmake ../build ../include/inviwo/path/to/h-file/MyNewClass', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('names', type=str, nargs='+', action="store", help='Classes to add, form: path/to/h-file/NewClassName')
-parser.add_argument("--dummy", action="store_true", dest="dummy", help="Write local testfiles instead")
-parser.add_argument("--force", action="store_true", dest="force", help="Overwrite exsting files")
-parser.add_argument("--cmake", type=str, nargs=1, action="store", dest="builddir", help="Rerun cmake in the specified build directory", default="")
-parser.add_argument("--no-header", action="store_false", default=True, dest="header", help="Don't write header file")
-parser.add_argument("--no-source", action="store_false", default=True, dest="source", help="Don't write source file")
-parser.add_argument("--frag", action="store_true", dest="frag", help="Add fragment shader")
-parser.add_argument("--vert", action="store_true", dest="vert", help="Add vertex shader")
-parser.add_argument("--processor", action="store_true", dest="processor", default=False, help="Make a skeleton inviwo processor")
+def test_for_inviwo(path):
+	return (os.path.exists(os.sep.join([path] + ['modules', 'base'])) 
+		and os.path.exists(os.sep.join([path] + ['include', 'inviwo']))
+		and os.path.exists(os.sep.join([path] + ['tools', 'templates'])))
+
 
 def find_inv_path():
 	path = os.path.abspath(sys.argv[0])
@@ -83,9 +72,7 @@ def find_inv_path():
 	
 	basepath = ""
 	for i in range(len(folders), 0 ,-1):
-		if (os.path.exists(os.sep.join(folders[:i] + ['modules', 'base'])) 
-		and os.path.exists(os.sep.join(folders[:i] + ['include', 'inviwo']))
-		and os.path.exists(os.sep.join(folders[:i] + ['tools', 'templates']))):
+		if test_for_inviwo(os.sep.join(folders[:i])):
 			basepath = os.sep.join(folders[:i])
 			break
 
@@ -243,62 +230,89 @@ def write_file(paths, template, file, comment, force=False):
 		print(comment + f.name)
 		f.write(make_template(template, paths.class_name, paths.module_define,  paths.api_def, paths.include_define))
 
-		
-print("Adding files to inwivo")
-
-args = parser.parse_args()
-ivwpath = find_inv_path()
-templates = os.sep.join([ivwpath, 'tools', 'templates'])
 	
-for name in args.names:
-	paths = Paths(name)
-	paths.info()
-		
-	cmakefile = CMakefile(paths.cmake_file)
-		
-	if args.header:
-		cmakefile.add_file("HEADER_FILES", paths.cmake_header_file)
-		write_file(paths,
-				   os.sep.join([templates, "processor.h" if args.processor else "file.h"]), 	
-			       paths.file_name + ".h" if args.dummy else paths.header_file, 
-			       "... Writing header file: ", args.force)
+if __name__ == '__main__':
+	if os.name == 'posix': CMAKE='cmake'
+	else: CMAKE='cmake.exe'
 
-	if args.source:
-		cmakefile.add_file("SOURCE_FILES",  paths.get_cmake_source())
-		write_file(paths,
-				   os.sep.join([templates, "processor.cpp" if args.processor else "file.cpp"]), 	
-			       paths.file_name + ".cpp" if args.dummy else paths.get_source_file(), 
-			       "... Writing source file: ", args.force)
+	parser = argparse.ArgumentParser(description='Add new files to Inviwo.\n typical usage: \n python.exe ./make-new-files.py --svn --cmake ../build ../include/inviwo/path/to/h-file/MyNewClass', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser.add_argument('names', type=str, nargs='+', action="store", help='Classes to add, form: path/to/h-file/NewClassName')
+	parser.add_argument("--dummy", action="store_true", dest="dummy", help="Write local testfiles instead")
+	parser.add_argument("--force", action="store_true", dest="force", help="Overwrite exsting files")
+	parser.add_argument("--cmake", type=str, nargs=1, action="store", dest="builddir", help="Rerun cmake in the specified build directory", default="")
+	parser.add_argument("--no-header", action="store_false", default=True, dest="header", help="Don't write header file")
+	parser.add_argument("--no-source", action="store_false", default=True, dest="source", help="Don't write source file")
+	parser.add_argument("--frag", action="store_true", dest="frag", help="Add fragment shader")
+	parser.add_argument("--vert", action="store_true", dest="vert", help="Add vertex shader")
+	parser.add_argument("--processor", action="store_true", dest="processor", default=False, help="Make a skeleton inviwo processor")
+	parser.add_argument("--inviwo", type=str, default="", dest="ivwpath", help="Path to the inviwo repository. Tries to find it in the current path")
+	
+	print("Adding files to inwivo")
 
-	if args.frag:
-		cmakefile.add_file("SHADER_FILES",  paths.get_cmake_source(".frag"))
-		write_file(paths,
-				   os.sep.join([templates, "fragment.frag"]), 	
-			       paths.file_name + ".frag" if args.dummy else paths.get_source_file(".frag"), 
-			       "... Writing fragment file: ", args.force)
+	args = parser.parse_args()
+
+	if args.ivwpath == "":
+		ivwpath = find_inv_path()
+	else:
+		ivwpath = args.ivwpath
+
+	if not test_for_inviwo(ivwpath):
+		print_error("Error could not find the inviwo repository")
+		parser.print_help()
+		sys.exit(1)
+
+
+	templates = os.sep.join([ivwpath, 'tools', 'templates'])
+		
+	for name in args.names:
+		paths = Paths(name)
+		paths.info()
 			
-	if args.vert:
-		cmakefile.add_file("SHADER_FILES",  paths.get_cmake_source(".vert"))
-		write_file(paths,
-				   os.sep.join([templates, "vertex.vert"]), 	
-			       paths.file_name + ".vert" if args.dummy else paths.get_source_file(".vert"), 
-			       "... Writing vertex file: ", args.force)						 
+		cmakefile = CMakefile(paths.cmake_file)
+			
+		if args.header:
+			cmakefile.add_file("HEADER_FILES", paths.cmake_header_file)
+			write_file(paths,
+					   os.sep.join([templates, "processor.h" if args.processor else "file.h"]), 	
+				       paths.file_name + ".h" if args.dummy else paths.header_file, 
+				       "... Writing header file: ", args.force)
 
-	cmakefile.write("CMakefile.dummy.txt" if args.dummy else paths.cmake_file)
-	
-	
-if args.builddir != "":
-	print("Running cmake:")
-	try:
-		with subprocess.Popen([CMAKE, str(args.builddir[0])], 
-								stdout=subprocess.PIPE, 
-								stderr=subprocess.STDOUT,
-								universal_newlines=True) as proc:
-	
-			for line in proc.stdout:
-				print(line, end='', flush=True)
-	except FileNotFoundError:
-		print_error("... Could not find " + CMAKE + " in the path")
+		if args.source:
+			cmakefile.add_file("SOURCE_FILES",  paths.get_cmake_source())
+			write_file(paths,
+					   os.sep.join([templates, "processor.cpp" if args.processor else "file.cpp"]), 	
+				       paths.file_name + ".cpp" if args.dummy else paths.get_source_file(), 
+				       "... Writing source file: ", args.force)
+
+		if args.frag:
+			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_source(".frag"))
+			write_file(paths,
+					   os.sep.join([templates, "fragment.frag"]), 	
+				       paths.file_name + ".frag" if args.dummy else paths.get_source_file(".frag"), 
+				       "... Writing fragment file: ", args.force)
+				
+		if args.vert:
+			cmakefile.add_file("SHADER_FILES",  paths.get_cmake_source(".vert"))
+			write_file(paths,
+					   os.sep.join([templates, "vertex.vert"]), 	
+				       paths.file_name + ".vert" if args.dummy else paths.get_source_file(".vert"), 
+				       "... Writing vertex file: ", args.force)						 
+
+		cmakefile.write("CMakefile.dummy.txt" if args.dummy else paths.cmake_file)
+		
+		
+	if args.builddir != "":
+		print("Running cmake:")
+		try:
+			with subprocess.Popen([CMAKE, str(args.builddir[0])], 
+									stdout=subprocess.PIPE, 
+									stderr=subprocess.STDOUT,
+									universal_newlines=True) as proc:
+		
+				for line in proc.stdout:
+					print(line, end='', flush=True)
+		except FileNotFoundError:
+			print_error("... Could not find " + CMAKE + " in the path")
 		
 
 
