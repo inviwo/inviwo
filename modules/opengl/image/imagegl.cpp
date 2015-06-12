@@ -117,9 +117,12 @@ void ImageGL::deactivateBuffer() {
 }
 
 bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
+    return copyTo(dynamic_cast<ImageGL*>(targetRep));
+}
+
+bool ImageGL::copyTo(ImageGL* target) const {
     const ImageGL* source = this;
-    ImageGL* target = dynamic_cast<ImageGL*>(targetRep);
-    
+
     TextureUnit colorUnit, depthUnit, pickingUnit;
     source->getColorLayerGL()->bindTexture(colorUnit.getEnum());
     if (source->getDepthLayerGL()) {
