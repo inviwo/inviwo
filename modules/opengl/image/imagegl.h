@@ -56,7 +56,7 @@ public:
     void deactivateBuffer();
 
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
-    bool copyTo(ImageGL* target) const;
+    bool copyRepresentationsTo(ImageGL* target) const;
     bool updateFrom(const ImageGL*);
 
     FrameBufferObject* getFBO();

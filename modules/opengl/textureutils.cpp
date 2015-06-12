@@ -55,8 +55,7 @@ void activateTargetAndCopySource(ImageOutport& outport, ImageInport& inport, Ima
 
     const Image* inImage = inport.getData();
     const ImageGL* inImageGL = inImage->getRepresentation<ImageGL>();
-
-    inImageGL->copyTo(outImageGL);
+    inImageGL->copyRepresentationsTo(outImageGL);
 
     outImageGL->activateBuffer(type);
 }

@@ -117,10 +117,10 @@ void ImageGL::deactivateBuffer() {
 }
 
 bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
-    return copyTo(dynamic_cast<ImageGL*>(targetRep));
+    return copyRepresentationsTo(dynamic_cast<ImageGL*>(targetRep));
 }
 
-bool ImageGL::copyTo(ImageGL* target) const {
+bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     const ImageGL* source = this;
 
     TextureUnit colorUnit, depthUnit, pickingUnit;
