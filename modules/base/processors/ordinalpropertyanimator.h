@@ -35,7 +35,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/timer.h>
 #include <inviwo/core/properties/propertyfactory.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 

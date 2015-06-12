@@ -37,7 +37,7 @@
 #include <inviwo/core/processors/progressbarowner.h>
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 

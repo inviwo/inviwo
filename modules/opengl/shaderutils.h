@@ -37,7 +37,7 @@
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>

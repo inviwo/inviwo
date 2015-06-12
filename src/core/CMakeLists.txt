@@ -156,7 +156,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbar.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbarowner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/advancedmaterialproperty.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/properties/baseoptionproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/boolcompositeproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/buttonproperty.h
@@ -363,7 +363,7 @@ set(SOURCE_FILES
     processors/processorwidgetobserver.cpp
     processors/progressbar.cpp
     properties/advancedmaterialproperty.cpp
-    properties/baseoptionproperty.cpp
+    properties/optionproperty.cpp
     properties/boolcompositeproperty.cpp
     properties/boolproperty.cpp
     properties/buttonproperty.cpp

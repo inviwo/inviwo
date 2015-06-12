@@ -33,7 +33,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 

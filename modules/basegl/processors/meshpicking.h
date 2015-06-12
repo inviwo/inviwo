@@ -38,6 +38,7 @@
 #include <modules/opengl/image/compositeprocessorgl.h>
 #include <inviwo/core/interaction/pickingobject.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <modules/opengl/glwrap/shader.h>

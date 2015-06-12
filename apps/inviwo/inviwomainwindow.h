@@ -39,7 +39,7 @@
 #include <QMenuBar>
 #include <QAction>
 
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/qt/editor/networkeditor.h>
 
 namespace inviwo {

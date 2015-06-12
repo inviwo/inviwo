@@ -31,7 +31,7 @@
 #define IVW_SYSTEMSETTINGS_H
 
 #include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>

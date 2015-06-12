@@ -33,7 +33,7 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 

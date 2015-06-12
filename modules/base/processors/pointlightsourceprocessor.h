@@ -36,11 +36,11 @@
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/base/basemoduledefine.h>
 
 namespace inviwo {

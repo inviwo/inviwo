@@ -31,7 +31,7 @@
 #define IVW_OPENCL_SETTINGS_H
 
 #include <inviwo/core/util/settings/settings.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <modules/opencl/openclmoduledefine.h>

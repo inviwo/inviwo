@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 PropertyClassIdentifier(OptionPropertyString, "org.inviwo.OptionPropertyString");

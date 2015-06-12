@@ -36,7 +36,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 

@@ -38,7 +38,7 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
 namespace inviwo {

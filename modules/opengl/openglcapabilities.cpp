@@ -34,7 +34,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/properties/baseoptionproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <modules/opengl/openglsettings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
