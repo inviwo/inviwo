@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "volumesubsample.h"
-#include <inviwo/core/datastructures/volume/volumeramsubsample.h>
+#include <inviwo/core/algorithm/volume/volumeramsubsample.h>
 #include <glm/gtx/vector_angle.hpp>
 
 namespace inviwo {

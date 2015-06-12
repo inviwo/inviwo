@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/volume/marchingtetrahedron.h>
+#include <inviwo/core/algorithm/volume/marchingtetrahedron.h>
 namespace inviwo {
 
 Mesh *MarchingTetrahedron::apply(const VolumeRepresentation *in, const double &iso,
