@@ -45,10 +45,10 @@ bool PickingContainer::pickingEnabled() {
 }
 
 bool PickingContainer::performMousePick(MouseEvent* e) {
-    if (!pickingEnabled())
+    if (!pickingEnabled() || e->button() != MouseEvent::MOUSE_BUTTON_LEFT)
         return false;
 
-    if (e->button() == MouseEvent::MOUSE_BUTTON_LEFT && e->state() == MouseEvent::MOUSE_STATE_PRESS){
+    if (e->state() == MouseEvent::MOUSE_STATE_PRESS){
         uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
         prevMouseCoord_ = coord;
 
@@ -81,7 +81,7 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
         else
             return false;
     }
-    else if (e->button() == MouseEvent::MOUSE_BUTTON_LEFT && e->state() == MouseEvent::MOUSE_STATE_RELEASE){
+    else if (e->state() == MouseEvent::MOUSE_STATE_RELEASE){
         mousePickingOngoing_ = false;
         return false;
     }
