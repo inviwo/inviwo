@@ -101,7 +101,7 @@ bool GestureEvent::matching(const Event* aEvent) const {
 
 bool GestureEvent::matching(const GestureEvent* aEvent) const {
     return type_ == aEvent->type_
-        && (state_ & aEvent->state_) == aEvent->state_ // aEvent.state equal to any of this.state.
+        && (state_ & aEvent->state_)
         && numFingers_ == aEvent->numFingers_
         && modifiers_ == aEvent->modifiers_;
 }

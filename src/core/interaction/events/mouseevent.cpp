@@ -139,9 +139,9 @@ bool MouseEvent::matching(const Event* aEvent) const {
     }
 }
 bool MouseEvent::matching(const MouseEvent* aEvent) const {
-    return (button_ & aEvent->button_) == aEvent->button_ 
-        && (state_ & aEvent->state_) == aEvent->state_  // aEvent.state equal to any of this.state.
-        && (wheelOrientation_ & aEvent->wheelOrientation_) == aEvent->wheelOrientation_ 
+    return (button_ & aEvent->button_)
+        && (state_ & aEvent->state_)
+        && (wheelOrientation_ & aEvent->wheelOrientation_) 
         && modifiers_ == aEvent->modifiers_;
 }
 
@@ -159,9 +159,9 @@ bool MouseEvent::equalSelectors(const Event* aEvent) const {
 
 std::string MouseEvent::buttonName() const {
     std::vector<std::string> names;
-    if ((button_ & MOUSE_BUTTON_LEFT) == MOUSE_BUTTON_LEFT) names.push_back(buttonNames_[1]);
-    if ((button_ & MOUSE_BUTTON_MIDDLE) == MOUSE_BUTTON_MIDDLE) names.push_back(buttonNames_[2]);
-    if ((button_ & MOUSE_BUTTON_RIGHT) == MOUSE_BUTTON_RIGHT) names.push_back(buttonNames_[3]);
+    if (button_ & MOUSE_BUTTON_LEFT) names.push_back(buttonNames_[1]);
+    if (button_ & MOUSE_BUTTON_MIDDLE) names.push_back(buttonNames_[2]);
+    if (button_ & MOUSE_BUTTON_RIGHT) names.push_back(buttonNames_[3]);
 
     if (!names.empty()) {
         return joinString(names, "+");

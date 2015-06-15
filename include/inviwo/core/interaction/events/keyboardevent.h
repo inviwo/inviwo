@@ -38,10 +38,11 @@ namespace inviwo {
 class IVW_CORE_API KeyboardEvent : public InteractionEvent {
 public:
     enum KeyState { 
-        KEY_STATE_NONE = 0, 
-        KEY_STATE_PRESS = 1, 
-        KEY_STATE_RELEASE = 2,
-        KEY_STATE_ANY = KEY_STATE_NONE | KEY_STATE_PRESS | KEY_STATE_RELEASE
+        KEY_STATE_NONE = 1 << 0,
+        KEY_STATE_PRESS = 1 << 1,
+        KEY_STATE_RELEASE = 1 << 2,
+        KEY_STATE_ANY = KEY_STATE_PRESS | KEY_STATE_RELEASE,
+        KEY_STATE_ANY_AND_NONE = KEY_STATE_NONE | KEY_STATE_ANY
     };
 
     KeyboardEvent(int key = 0,
