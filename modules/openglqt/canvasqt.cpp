@@ -479,13 +479,15 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
             touchState = TouchPoint::TOUCH_STATE_NONE;
         }
 
+        ivec2 pixelCoord = ivec2(static_cast<int>(glm::floor(screenTouchPos.x)),
+            screenSize.y - 1 - static_cast<int>(glm::floor(screenTouchPos.y)));
+
         touchPoints.push_back(
             TouchPoint(touchPoint.id(), screenTouchPos,
             (screenTouchPos + 0.5f) / screenSize,
             prevScreenTouchPos,
             (prevScreenTouchPos + 0.5f) / screenSize,
-            touchState, getDepthValueAtCoord(ivec2(screenTouchPos.x, screenSize.y-1-screenTouchPos.y)
-                                             , depthLayerRAM)));
+            touchState, getDepthValueAtCoord(pixelCoord, depthLayerRAM)));
     }
 
     TouchEvent touchEvent(touchPoints, getScreenDimensions());
