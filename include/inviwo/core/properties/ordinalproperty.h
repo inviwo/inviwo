@@ -102,6 +102,10 @@ typedef OrdinalProperty<ivec2> IntVec2Property;
 typedef OrdinalProperty<ivec3> IntVec3Property;
 typedef OrdinalProperty<ivec4> IntVec4Property;
 
+typedef OrdinalProperty<size2_t> IntSize2Property;
+typedef OrdinalProperty<size3_t> IntSize3Property;
+typedef OrdinalProperty<size4_t> IntSize4Property;
+
 // Matrix properties
 typedef OrdinalProperty<mat2> FloatMat2Property;
 typedef OrdinalProperty<mat3> FloatMat3Property;

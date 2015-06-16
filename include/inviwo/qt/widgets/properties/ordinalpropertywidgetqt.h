@@ -151,11 +151,11 @@ protected:
         return sliders;
     }
 
-    virtual std::string getPropertyText() const { return glm::to_string(ordinalproperty_->get()); }
+    virtual std::string getPropertyText() const { return toString(ordinalproperty_->get()); }
 
     virtual std::string getPropertyToolTip() const {
-        return "Min: " + glm::to_string(ordinalproperty_->getMinValue()) + "  Max: " +
-               glm::to_string(ordinalproperty_->getMaxValue());
+        return "Min: " + toString(ordinalproperty_->getMinValue()) + "  Max: " +
+            toString(ordinalproperty_->getMaxValue());
     }
 
     virtual void showSettings() {
@@ -412,6 +412,10 @@ typedef OrdinalPropertyWidgetQt<int, int> IntPropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<int, ivec2> IntVec2PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<int, ivec3> IntVec3PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<int, ivec4> IntVec4PropertyWidgetQt;
+
+typedef OrdinalPropertyWidgetQt<size_t, size2_t> IntSize2PropertyWidgetQt;
+typedef OrdinalPropertyWidgetQt<size_t, size3_t> IntSize3PropertyWidgetQt;
+typedef OrdinalPropertyWidgetQt<size_t, size4_t> IntSize4PropertyWidgetQt;
 
 typedef OrdinalPropertyWidgetQt<float, mat2> FloatMat2PropertyWidgetQt;
 typedef OrdinalPropertyWidgetQt<float, mat3> FloatMat3PropertyWidgetQt;
