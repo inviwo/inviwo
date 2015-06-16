@@ -70,14 +70,26 @@ void PickingObject::picked() const {
     onPickedCallback_->invoke(this);
 }
 
+PickingObject::InteractionEventType PickingObject::getPickingInteractionType() const {
+    return interactionEventType_;
+}
+
 void PickingObject::setPickingMouseEvent(MouseEvent e){
     mouseEvent_ = e;
     interactionEventType_ = MOUSE_INTERACTION_EVENT;
 }
 
+const MouseEvent& PickingObject::getPickingMouseEvent() const {
+    return mouseEvent_;
+}
+
 void PickingObject::setPickingTouchEvent(TouchEvent e){
     touchEvent_ = e;
     interactionEventType_ = TOUCH_INTERACTION_EVENT;
+}
+
+const TouchEvent& PickingObject::getPickingTouchEvent() const {
+    return touchEvent_;
 }
 
 void PickingObject::setPickingPosition(vec2 pos) {

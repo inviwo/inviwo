@@ -170,6 +170,14 @@ public:
     */
     vec2 getPrevCenterPointNormalized() const;
 
+    /**
+    * \brief Retrieve pointers to the two closest touch points
+    *
+    * @return std::vector<const TouchPoint*>, pointers to the two closest touch points
+    *  vector can have less then two elements, which indicate that not enough points exist
+    */
+    std::vector<const TouchPoint*> findClosestTwoTouchPoints() const;
+
     virtual std::string getClassIdentifier() const { return "org.inviwo.TouchEvent"; }
 
     virtual void serialize(IvwSerializer& s) const;

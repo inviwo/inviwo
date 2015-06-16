@@ -124,6 +124,31 @@ vec2 TouchEvent::getPrevCenterPointNormalized() const {
     }
 }
 
+std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
+    std::vector<const TouchPoint*> returnVec;
+    if (touchPoints_.size() > 1) {
+        const TouchPoint* touchPoint1 = &touchPoints_[0];
+        const TouchPoint* touchPoint2 = &touchPoints_[1];
+        float distance = std::numeric_limits<float>::max();
+        for (size_t i = 0; i < touchPoints_.size() - 1; ++i) {
+            for (size_t j = i + 1; j < touchPoints_.size(); ++j) {
+                float ijDistance = glm::distance2(touchPoints_[i].getPos(), touchPoints_[j].getPos());
+                if (ijDistance < distance) {
+                    distance = ijDistance;
+                    touchPoint1 = &touchPoints_[i];
+                    touchPoint2 = &touchPoints_[j];
+                }
+            }
+        }
+        returnVec.push_back(touchPoint1);
+        returnVec.push_back(touchPoint2);
+    }
+    else if (!touchPoints_.empty())
+        returnVec.push_back(&touchPoints_[0]);
+    
+    return returnVec;
+}
+
 void TouchEvent::serialize(IvwSerializer& s) const {
     s.serialize("touchPoints", touchPoints_, "touchPoint");
     InteractionEvent::serialize(s); 

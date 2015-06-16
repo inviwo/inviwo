@@ -62,8 +62,13 @@ public:
 
     void picked() const;
 
+    InteractionEventType getPickingInteractionType() const;
+
     void setPickingMouseEvent(MouseEvent);
+    const MouseEvent& getPickingMouseEvent() const;
+
     void setPickingTouchEvent(TouchEvent);
+    const TouchEvent& getPickingTouchEvent() const;
 
     void setPickingMove(vec2);
     void setPickingPosition(vec2);

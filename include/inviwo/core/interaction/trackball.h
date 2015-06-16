@@ -350,21 +350,13 @@ template <typename T>
 void Trackball<T>::touchGesture(Event* event) {
     TouchEvent* touchEvent = static_cast<TouchEvent*>(event);
 
-    if (touchEvent->getTouchPoints().size() > 1) {
-        // Use the two closest points to extract translation, scaling and rotation
-        auto touchPoints = touchEvent->getTouchPoints();
-        const TouchPoint* touchPoint1 = &touchPoints[0]; const TouchPoint* touchPoint2 = &touchPoints[1];
-        float distance = std::numeric_limits<float>::max();
-        for (size_t i = 0; i < touchEvent->getTouchPoints().size() - 1; ++i) {
-            for (size_t j = i + 1; j < touchEvent->getTouchPoints().size(); ++j) {
-                float ijDistance = glm::distance2(touchPoints[i].getPos(), touchPoints[j].getPos());
-                if (ijDistance < distance) {
-                    distance = ijDistance;
-                    touchPoint1 = &touchPoints[i];
-                    touchPoint2 = &touchPoints[j];
-                }
-            }
-        }
+    // Use the two closest points to extract translation, scaling and rotation
+    std::vector<const TouchPoint*> twoClosestsPoints = touchEvent->findClosestTwoTouchPoints();
+
+    if (twoClosestsPoints.size() > 1) {
+        const TouchPoint* touchPoint1 = twoClosestsPoints[0];
+        const TouchPoint* touchPoint2 = twoClosestsPoints[1];
+
         // Flip y-position to get coordinate system
         // (0, 1)--(1, 1)
         //   |        |
