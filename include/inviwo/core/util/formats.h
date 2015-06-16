@@ -651,6 +651,7 @@ DEFAULTVALUES(float, uvec2(1, 1), "Float", 0.0f, 0.0f, 1.0f, 0.01f)
 DEFAULTVALUES(double, uvec2(1, 1), "Double", 0.0, 0.0, 1.0, 0.01)
 DEFAULTVALUES(int, uvec2(1, 1), "Int", 0, -100, 100, 1)
 DEFAULTVALUES(unsigned int, uvec2(1, 1), "UInt", 0, 0, 100, 1)
+DEFAULTVALUES(size_t, uvec2(1, 1), "Size_t", 0, 0, 100, 1)
 DEFAULTVALUES(glm::i64, uvec2(1, 1), "Int64", 0, 0, 1024, 1)
 
 DEFAULTVALUES(vec2, uvec2(2, 1), "FloatVec2", vec2(0.f), vec2(0.f), vec2(1.f), vec2(0.01f))
@@ -664,6 +665,10 @@ DEFAULTVALUES(dvec4, uvec2(4, 1), "DoubleVec4", dvec4(0.), dvec4(0.), dvec4(1.),
 DEFAULTVALUES(ivec2, uvec2(2, 1), "IntVec2", ivec2(0), ivec2(0), ivec2(10), ivec2(1))
 DEFAULTVALUES(ivec3, uvec2(3, 1), "IntVec3", ivec3(0), ivec3(0), ivec3(10), ivec3(1))
 DEFAULTVALUES(ivec4, uvec2(4, 1), "IntVec4", ivec4(0), ivec4(0), ivec4(10), ivec4(1))
+
+DEFAULTVALUES(size2_t, uvec2(2, 1), "IntSize2", size2_t(0), size2_t(0), size2_t(10), size2_t(1))
+DEFAULTVALUES(size3_t, uvec2(3, 1), "IntSize3", size3_t(0), size3_t(0), size3_t(10), size3_t(1))
+DEFAULTVALUES(size4_t, uvec2(4, 1), "IntSize4", size4_t(0), size4_t(0), size4_t(10), size4_t(1))
 
 DEFAULTVALUES(uvec2, uvec2(2, 1), "UIntVec2", uvec2(0), uvec2(0), uvec2(10), uvec2(1))
 DEFAULTVALUES(uvec3, uvec2(3, 1), "UIntVec3", uvec3(0), uvec3(0), uvec3(10), uvec3(1))
