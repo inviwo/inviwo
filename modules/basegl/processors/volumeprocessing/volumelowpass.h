@@ -51,7 +51,7 @@ namespace inviwo {
  *   * __Kernel size__ ...
  *
  */
-class IVW_MODULE_BASEGL_API VolumeLowPass : public VolumeGLProcessor , public ProgressBarOwner { 
+class IVW_MODULE_BASEGL_API VolumeLowPass : public VolumeGLProcessor { 
 public:
     VolumeLowPass();
     virtual ~VolumeLowPass();
