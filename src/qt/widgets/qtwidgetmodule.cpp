@@ -144,12 +144,6 @@ QtWidgetModule::QtWidgetModule() : InviwoModule() {
     registerPropertyWidget(IntVec3PropertyWidgetQt, IntVec3Property, "Text");
     registerPropertyWidget(IntVec4PropertyWidgetQt, IntVec4Property, "Default");
     registerPropertyWidget(IntVec4PropertyWidgetQt, IntVec4Property, "Text");
-    registerPropertyWidget(IntSize2PropertyWidgetQt, IntSize2Property, "Default");
-    registerPropertyWidget(IntSize2PropertyWidgetQt, IntSize2Property, "Text");
-    registerPropertyWidget(IntSize3PropertyWidgetQt, IntSize3Property, "Default");
-    registerPropertyWidget(IntSize3PropertyWidgetQt, IntSize3Property, "Text");
-    registerPropertyWidget(IntSize4PropertyWidgetQt, IntSize4Property, "Default");
-    registerPropertyWidget(IntSize4PropertyWidgetQt, IntSize4Property, "Text");
     registerPropertyWidget(Int64PropertyWidgetQt, Int64Property, "Default");
     registerPropertyWidget(Int64PropertyWidgetQt, Int64Property, "Text");
     
