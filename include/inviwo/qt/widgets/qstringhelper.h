@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,39 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETMODULE_H
-#define IVW_QTWIDGETMODULE_H
+#ifndef IVW_QSTRINGHELPER_H
+#define IVW_QSTRINGHELPER_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
+
+#include <QString>
+#include <QLocale>
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API QtWidgetModule : public InviwoModule {
+template <typename T>
+class QStringHelper {
 public:
-    QtWidgetModule();
-    virtual ~QtWidgetModule() {}
+    static QString toLocaleString(QLocale locale, T value) { return locale.toString(value); }
+};
+
+template <>
+class QStringHelper<long int> {
+public:
+    static QString toLocaleString(QLocale locale, long int value) {
+        return locale.toString(static_cast<long long>(value));
+    }
+};
+
+template <>
+class QStringHelper<unsigned long int> {
+public:
+    static QString toLocaleString(QLocale locale, unsigned long int value) {
+        return locale.toString(static_cast<unsigned long long>(value));
+    }
 };
 
 }  // namespace
 
-#endif  // IVW_QTWIDGETMODULE_H
+#endif  // IVW_QSTRINGHELPER_H

@@ -34,7 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/widgets/sliderwidgetqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-#include <inviwo/qt/widgets/qtwidgetmodule.h>
+#include <inviwo/qt/widgets/qstringhelper.h>
 
 namespace inviwo {
 
