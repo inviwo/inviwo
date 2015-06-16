@@ -76,6 +76,7 @@ bool OpenGLCapabilities::GLSLShaderVersion::hasProfile() {
 OpenGLCapabilities::OpenGLCapabilities()
     : shadersAreSupported_(false)
     , shadersAreSupportedARB_(false)
+    , geometryShsadersAreSupported_(false)
     , maxProgramLoopCount_(-1)
     , texSupported_(false)
     , tex3DSupported_(false)
@@ -139,7 +140,7 @@ void OpenGLCapabilities::printDetailedInfo() {
     if (isShadersSupported()) {
         LogInfoCustom("OpenGLInfo","GLSL version: " << glslVersionStr_);
         LogInfoCustom("OpenGLInfo","Current set global GLSL version: " << getCurrentShaderVersion().getVersionAndProfileAsString());
-        LogInfoCustom("OpenGLInfo","Shaders supported: YES");
+        LogInfoCustom("OpenGLInfo", "Shaders supported: YES");
     }
     else if (isShadersSupportedARB()) {
         LogInfoCustom("OpenGLInfo","GLSL version: " << glslVersionStr_);
@@ -148,6 +149,17 @@ void OpenGLCapabilities::printDetailedInfo() {
     }
     else
         LogInfoCustom("OpenGLInfo","Shaders supported: NO");
+
+    if (isGeometryShsadersAreSupported()){
+        LogInfoCustom("OpenGLInfo", "Geometry Shaders supported: YES");
+        
+        LogInfoCustom("OpenGLInfo", "Geometry Shaders: Max output vertices : " << geometryShadersMaxVertices_);
+        LogInfoCustom("OpenGLInfo", "Geometry Shaders: Max output components: " << geometryShadersMaxOutputComponents_);
+        LogInfoCustom("OpenGLInfo", "Geometry Shaders: Max total output components: " << geometryShadersMaxTotalOutputComponents_);
+    }
+    else{
+        LogInfoCustom("OpenGLInfo", "Geometry Shaders supported: NO");
+    }
 
     LogInfoCustom("OpenGLInfo","Framebuffer objects supported: " << (isFboSupported() ? "YES" : "NO "));
     // Texturing
@@ -178,6 +190,8 @@ void OpenGLCapabilities::printDetailedInfo() {
         glm::u64 curMem = getCurrentAvailableTextureMem();
         LogInfoCustom("OpenGLInfo","Current available texture memory: " << (curMem>0 ? formatBytesToString(curMem) : "UNKNOWN"));
     }
+
+
 }
 
 bool OpenGLCapabilities::canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory) {
@@ -278,6 +292,10 @@ bool OpenGLCapabilities::isShadersSupported() {
 
 bool OpenGLCapabilities::isShadersSupportedARB() {
     return shadersAreSupportedARB_;
+}
+
+bool OpenGLCapabilities::isGeometryShsadersAreSupported() {
+    return geometryShsadersAreSupported_;
 }
 
 OpenGLCapabilities::GLSLShaderVersion OpenGLCapabilities::getCurrentShaderVersion() {
@@ -455,6 +473,8 @@ void OpenGLCapabilities::retrieveStaticInfo() {
     //GLSL
     shadersAreSupported_ = (glVersion_ >= 200);
     shadersAreSupportedARB_ = isExtensionSupported("GL_EXT_ARB_fragment_program");
+    geometryShsadersAreSupported_ = isExtensionSupported("GL_EXT_ARB_geometry_shader4");
+
     GLint numberOfSupportedVersions = 0;
     const GLubyte* glslStrByte = nullptr;
 #ifdef GL_VERSION_4_3
@@ -546,6 +566,12 @@ void OpenGLCapabilities::retrieveStaticInfo() {
             //Restrict cycles to realistic samplingRate*maximumDimension, 20*(10 000) slices = 200 000
             maxProgramLoopCount_ = std::min<int>(static_cast<int>(i), 200000);
         }
+    }
+
+    if (isGeometryShsadersAreSupported()){
+        glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES, static_cast<GLint*>(&geometryShadersMaxVertices_));
+        glGetIntegerv(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS, static_cast<GLint*>(&geometryShadersMaxOutputComponents_));
+        glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, static_cast<GLint*>(&geometryShadersMaxTotalOutputComponents_));
     }
 
     //Texturing

@@ -93,6 +93,7 @@ public:
     bool isFboSupported();
     bool isShadersSupported();
     bool isShadersSupportedARB();
+    bool isGeometryShsadersAreSupported();
 
     GLSLShaderVersion getCurrentShaderVersion();
     std::string getCurrentGlobalGLSLHeader();
@@ -142,7 +143,11 @@ private:
     //GLSL
     bool shadersAreSupported_;
     bool shadersAreSupportedARB_;
+    bool geometryShsadersAreSupported_;
     int maxProgramLoopCount_;
+    int geometryShadersMaxVertices_;
+    int geometryShadersMaxOutputComponents_;
+    int geometryShadersMaxTotalOutputComponents_;
 
     size_t currentGlobalGLSLVersionIdx_;
     std::string currentGlobalGLSLHeader_;
