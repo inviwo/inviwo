@@ -122,6 +122,12 @@ void MeshClipping::process() {
                     camera_.getLookTo() + lookOffset, camera_.getLookUp());
             }
             previousPointPlaneMove_ = pointPlaneMove_.get();
+
+            // If pointPlaneMove_ zero i.e. no clipping, so output same mesh
+            if (pointPlaneMove_ <= 0.f + EPSILON){
+                outport_.setConstData(inport_.getData());
+                return;
+            }
         }
 
         // LogInfo("Calling clipping method.");
