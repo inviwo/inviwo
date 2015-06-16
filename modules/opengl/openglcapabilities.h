@@ -93,7 +93,7 @@ public:
     bool isFboSupported();
     bool isShadersSupported();
     bool isShadersSupportedARB();
-    bool isGeometryShsadersAreSupported();
+    bool isGeometryShadersSupported();
 
     GLSLShaderVersion getCurrentShaderVersion();
     std::string getCurrentGlobalGLSLHeader();

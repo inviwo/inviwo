@@ -150,15 +150,15 @@ void OpenGLCapabilities::printDetailedInfo() {
     else
         LogInfoCustom("OpenGLInfo","Shaders supported: NO");
 
-    if (isGeometryShsadersAreSupported()){
-        LogInfoCustom("OpenGLInfo", "Geometry Shaders supported: YES");
+    if (isGeometryShadersSupported()){
+        LogInfoCustom("OpenGLInfo", "Geometry shaders supported: YES");
         
-        LogInfoCustom("OpenGLInfo", "Geometry Shaders: Max output vertices : " << geometryShadersMaxVertices_);
-        LogInfoCustom("OpenGLInfo", "Geometry Shaders: Max output components: " << geometryShadersMaxOutputComponents_);
-        LogInfoCustom("OpenGLInfo", "Geometry Shaders: Max total output components: " << geometryShadersMaxTotalOutputComponents_);
+        LogInfoCustom("OpenGLInfo", "Geometry shaders: Max output vertices : " << geometryShadersMaxVertices_);
+        LogInfoCustom("OpenGLInfo", "Geometry shaders: Max output components: " << geometryShadersMaxOutputComponents_);
+        LogInfoCustom("OpenGLInfo", "Geometry shaders: Max total output components: " << geometryShadersMaxTotalOutputComponents_);
     }
     else{
-        LogInfoCustom("OpenGLInfo", "Geometry Shaders supported: NO");
+        LogInfoCustom("OpenGLInfo", "Geometry shaders supported: NO");
     }
 
     LogInfoCustom("OpenGLInfo","Framebuffer objects supported: " << (isFboSupported() ? "YES" : "NO "));
@@ -294,7 +294,7 @@ bool OpenGLCapabilities::isShadersSupportedARB() {
     return shadersAreSupportedARB_;
 }
 
-bool OpenGLCapabilities::isGeometryShsadersAreSupported() {
+bool OpenGLCapabilities::isGeometryShadersSupported() {
     return geometryShsadersAreSupported_;
 }
 
@@ -568,7 +568,7 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         }
     }
 
-    if (isGeometryShsadersAreSupported()){
+    if (isGeometryShadersSupported()){
         glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES, static_cast<GLint*>(&geometryShadersMaxVertices_));
         glGetIntegerv(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS, static_cast<GLint*>(&geometryShadersMaxOutputComponents_));
         glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, static_cast<GLint*>(&geometryShadersMaxTotalOutputComponents_));
