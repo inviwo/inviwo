@@ -58,10 +58,12 @@ SimpleMesh::~SimpleMesh() {
     deinitialize();
 }
 
-void SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
-    static_cast<Position3dBuffer*>(attributes_[0])->getEditableRepresentation<Position3dBufferRAM>()->add(pos);
+unsigned int SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
+    auto posBuffer = static_cast<Position3dBuffer*>(attributes_[0])->getEditableRepresentation<Position3dBufferRAM>();
+    posBuffer->add(pos);
     static_cast<TexCoord3dBuffer*>(attributes_[1])->getEditableRepresentation<TexCoord3dBufferRAM>()->add(texCoord);
     static_cast<ColorBuffer*>(attributes_[2])->getEditableRepresentation<ColorBufferRAM>()->add(color);
+    return static_cast<unsigned int>(posBuffer->getSize() - 1);
 }
 
 void SimpleMesh::addIndex(unsigned int idx) {
