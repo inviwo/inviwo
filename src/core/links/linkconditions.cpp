@@ -64,8 +64,10 @@ bool PartiallyMatchingIdCondition::canLink(const Property* src, const Property* 
 bool AutoLinker::canLink(const Property* src,const Property* dst, LinkingConditions givenConditions) {
     int satisfiedConditions = 0;
 
+
+
     //does properties have same class names
-    if ((givenConditions&LinkMatchingTypes) && SimpleCondition::canLink(src, dst))
+    if ((givenConditions&LinkMatchingTypes) && dst->CLASS_IDENTIFIER == src->CLASS_IDENTIFIER)
         satisfiedConditions |= ((int) LinkMatchingTypes);
 
     //does partially matching identifier strings
