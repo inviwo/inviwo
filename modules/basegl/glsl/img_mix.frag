@@ -31,9 +31,13 @@
 
 uniform ImageParameters outportParameters_;
 
-uniform sampler2D inport0_;
-uniform sampler2D inport1_;
-uniform float weight_ = 0.5;
+uniform sampler2D inport0Color;
+uniform sampler2D inport0Depth;
+
+uniform sampler2D inport1Color;
+uniform sampler2D inport1Depth;
+
+uniform float weight_;
 
 // make sure there is a fall-back if COLOR_BLENDING wasn't set before
 #ifndef COLOR_BLENDING
@@ -57,12 +61,12 @@ vec4 over(vec4 colorB, vec4 colorA) {
 
 vec4 multiply(vec4 colorA, vec4 colorB) {
     // f(a,b) = a * b
-    return vec4(colorA.rgb * colorB.rgb, 1.0);
+    return vec4(colorA.rgb * colorB.rgb, max(colorA.a,colorB.a));
 }
 
 vec4 screen(vec4 colorA, vec4 colorB) {
     // f(a,b) = 1 - (1 - a) * (1 - b)
-    return vec4(1.0 - (1.0 - colorA.rgb) * (1.0 - colorB.rgb), 1.0);
+    return vec4(1.0 - (1.0 - colorA.rgb) * (1.0 - colorB.rgb), max(colorA.a,colorB.a));
 }
 
 vec4 overlay(vec4 colorA, vec4 colorB) {
@@ -72,46 +76,47 @@ vec4 overlay(vec4 colorA, vec4 colorB) {
     vec3 high =  1.0 - 2.0 * (1.0 - colorA.rgb) * (1.0 - colorB.rgb);
     vec3 low = 2.0 * colorA.rgb * colorB.rgb;
 
-    return vec4(mix(high, low, less), 1.0);
+    return vec4(mix(high, low, less), max(colorA.a,colorB.a));
 }
 
 vec4 divide(vec4 colorA, vec4 colorB) {
     // f(a,b) = a/b
-    return vec4(colorA.rgb / colorB.rgb, 1.0);
+    return vec4(colorA.rgb / colorB.rgb, max(colorA.a,colorB.a));
 }
 
 vec4 addition(vec4 colorA, vec4 colorB) {
     // f(a,b) = a + b, clamped to [0,1]
-    return vec4(min(colorA.rgb + colorB.rgb, 1.0), 1.0);
+    return vec4(min(colorA.rgb + colorB.rgb, 1.0), max(colorA.a,colorB.a));
 }
 
 vec4 subtraction(vec4 colorA, vec4 colorB) {
     // f(a,b) = a - b, clamped to [0,1]
-    return vec4(max(colorA.rgb - colorB.rgb, 0.0), 1.0);
+    return vec4(max(colorA.rgb - colorB.rgb, 0.0), max(colorA.a,colorB.a));
 }
 
 vec4 difference(vec4 colorA, vec4 colorB) {
     //  f(a,b) = |a - b|
-    return vec4(abs(colorA.rgb - colorB.rgb), 1.0);
+    return vec4(abs(colorA.rgb - colorB.rgb), max(colorA.a,colorB.a));
 }
 
 vec4 darkenOnly(vec4 colorA, vec4 colorB) {
     //  f(a,b) = min(a, b), per component
-    return vec4(min(colorA.rgb, colorB.rgb), 1.0);
+    return vec4(min(colorA.rgb, colorB.rgb), max(colorA.a,colorB.a));
 }
 
 vec4 brightenOnly(vec4 colorA, vec4 colorB) {
     //  f(a,b) = max(a, b), per component
-    return vec4(max(colorA.rgb, colorB.rgb), 1.0);
+    return vec4(max(colorA.rgb, colorB.rgb), max(colorA.a,colorB.a));
 }
 
 
 void main() {
     vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec4 color0 = texture(inport0_, texCoords);
-    vec4 color1 = texture(inport1_, texCoords);
+    vec4 color0 = texture(inport0Color, texCoords);
+    vec4 color1 = texture(inport1Color, texCoords);
     vec4 result = COLOR_BLENDING(color0, color1);
     // mix result with original color,
     // if (weight_ == 1) the final color will be the result of the blending operation
     FragData0 = mix(color0, result, weight_);
+	gl_FragDepth = min(texture(inport0Depth, texCoords).r,texture(inport1Depth, texCoords).r);
 }

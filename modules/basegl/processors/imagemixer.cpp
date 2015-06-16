@@ -97,16 +97,14 @@ void ImageMixer::process() {
         }
     }
 
-    TextureUnit imgUnit0, imgUnit1;
-    utilgl::bindColorTexture(inport0_, imgUnit0);
-    utilgl::bindColorTexture(inport1_, imgUnit1);
-
     utilgl::activateAndClearTarget(outport_);
     shader_->activate();
 
+    TextureUnitContainer texUnits;
+    utilgl::bindAndSetUniforms(shader_, texUnits, inport0_, COLOR_DEPTH);
+    utilgl::bindAndSetUniforms(shader_, texUnits, inport1_, COLOR_DEPTH);
+
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-    shader_->setUniform("inport0_", imgUnit0.getUnitNumber());
-    shader_->setUniform("inport1_", imgUnit1.getUnitNumber());
     shader_->setUniform("weight_", weight_.get());
 
     utilgl::singleDrawImagePlaneRect();
