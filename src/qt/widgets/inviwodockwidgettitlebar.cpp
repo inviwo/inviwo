@@ -46,8 +46,8 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     , parent_(dynamic_cast<QDockWidget *>(parent))
     , allowedDockAreas_(parent_->allowedAreas())
 {
-    QLabel *label = new QLabel(parent->windowTitle());
-    label->setStyleSheet("QWidget { padding-left: 5px; background-color: 'transparent'; }");
+    label_ = new QLabel(parent->windowTitle());
+    label_->setStyleSheet("QWidget { padding-left: 5px; background-color: 'transparent'; }");
 
     stickyBtn_ = new QToolButton();
     QIcon icon;
@@ -72,7 +72,7 @@ InviwoDockWidgetTitleBar::InviwoDockWidgetTitleBar(QWidget *parent)
     closeBtn->setObjectName("dockBtn");
 
     QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->addWidget(label, 1);
+    layout->addWidget(label_, 1);
     layout->addWidget(stickyBtn_);
     layout->addWidget(floatBtn_);
     layout->addWidget(closeBtn);
@@ -94,6 +94,10 @@ void InviwoDockWidgetTitleBar::paintEvent(QPaintEvent *) {
     QPainter p(this);
     //style()->drawControl(QStyle::CE_DockWidgetTitle, &opt, &p, this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+void InviwoDockWidgetTitleBar::setLabel(const QString &str) {
+    label_->setText(str);
 }
 
 void InviwoDockWidgetTitleBar::stickyBtnToggled(bool toggle) {

@@ -36,6 +36,7 @@
 class QPaintEvent;
 class QDockWidget;
 class QToolButton;
+class QLabel;
 
 namespace inviwo {
 
@@ -58,6 +59,9 @@ public:
 
     virtual void paintEvent(QPaintEvent *) override;
     
+
+    void setLabel(const QString &str);
+
     void setSticky(bool toggle);
     bool isSticky() const;
 
@@ -70,6 +74,7 @@ protected slots:
 private:
     QDockWidget *parent_;
 
+    QLabel* label_;
     QToolButton *stickyBtn_;
     QToolButton *floatBtn_;
     Qt::DockWidgetAreas allowedDockAreas_;

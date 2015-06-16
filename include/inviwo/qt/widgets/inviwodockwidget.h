@@ -39,6 +39,8 @@ class QLayout;
 
 namespace inviwo {
 
+    class InviwoDockWidgetTitleBar;
+
 class IVW_QTWIDGETS_API InviwoDockWidget : public QDockWidget {
     Q_OBJECT
 
@@ -53,6 +55,12 @@ public:
 
     void setContents(QWidget *widget);
     void setContents(QLayout *layout);
+
+    virtual void setWindowTitle(const QString &str);
+
+
+private:
+    InviwoDockWidgetTitleBar* dockWidgetTitleBar_;
 };
 
 } // namespace

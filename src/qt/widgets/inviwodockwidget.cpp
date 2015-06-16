@@ -36,14 +36,14 @@ namespace inviwo {
 InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
     : QDockWidget(title, parent) {
 #ifdef __APPLE__
-    this->setStyleSheet("QDockWidget::title {padding-left: 45px; }");
+    setStyleSheet("QDockWidget::title {padding-left: 45px; }");
 #endif
 
     // adding custom title bar to dock widget
-    this->setTitleBarWidget(new InviwoDockWidgetTitleBar(this));
+    dockWidgetTitleBar_ = new InviwoDockWidgetTitleBar(this);
+    setTitleBarWidget(dockWidgetTitleBar_);
 
-    QObject::connect(this, SIGNAL(topLevelChanged(bool)),
-        this->titleBarWidget(), SLOT(floating(bool)));
+    QObject::connect(this, SIGNAL(topLevelChanged(bool)), titleBarWidget(), SLOT(floating(bool)));
 }
 
 InviwoDockWidget::~InviwoDockWidget() {}
@@ -93,6 +93,11 @@ void InviwoDockWidget::setContents(QLayout *layout) {
     QWidget *centralWidget = new QWidget();
     centralWidget->setLayout(layout);
     this->setWidget(centralWidget);
+}
+
+void InviwoDockWidget::setWindowTitle(const QString &str) {
+    QDockWidget::setWindowTitle(str);
+    dockWidgetTitleBar_->setLabel(str);
 }
 
 } // namespace

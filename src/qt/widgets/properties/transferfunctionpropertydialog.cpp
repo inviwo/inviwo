@@ -46,7 +46,7 @@ namespace inviwo {
 
 TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionProperty* tfProperty,
                                                                QWidget* parent)
-    : PropertyEditorWidgetQt("Transfer Function", parent)
+    : PropertyEditorWidgetQt("Transfer Function Editor", parent)
     , TransferFunctionObserver()
     , sliderRange_(1000)
     , tfProperty_(tfProperty)
@@ -56,6 +56,10 @@ TransferFunctionPropertyDialog::TransferFunctionPropertyDialog(TransferFunctionP
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     generateWidget();
     tfProperty_->get().addObserver(this);
+
+    std::stringstream ss;
+    ss << "Transfer Function Editor - " << tfProperty_->getDisplayName() << "("<<tfProperty_->getOwner()->getProcessor() << ")"; 
+    setWindowTitle(ss.str().c_str());
 
     if (!tfProperty_->getVolumeInport()) chkShowHistogram_->setVisible(false);
 
