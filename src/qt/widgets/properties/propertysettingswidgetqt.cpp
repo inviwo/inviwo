@@ -52,6 +52,10 @@ PropertySettingsWidgetQt::~PropertySettingsWidgetQt() {
     if (gridLayout_ && (gridLayout_->parent() == nullptr)) {
         delete gridLayout_;
     }
+
+    for (auto s : settings_){
+        delete s;
+    }
 }
 
 void PropertySettingsWidgetQt::keyPressEvent(QKeyEvent * event) {
