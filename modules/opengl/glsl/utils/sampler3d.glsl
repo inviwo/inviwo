@@ -56,11 +56,9 @@ vec4 getSignNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, vec
 // Return a the raw texture
 vec4 getVoxel(sampler3D volume, VolumeParameters volumeParams, ivec3 samplePos) {
 #ifdef GLSL_VERSION_140
-    return (texelFetch(volume, samplePos, 0) + volumeParams.formatOffset)
-               * (1.0-volumeParams.formatScaling);
+    return texelFetch(volume, samplePos, 0);
 #else
-    return (texture(volume, samplePos) + volumeParams.formatOffset)
-               * (1.0-volumeParams.formatScaling);
+    return texture(volume, samplePos);
 #endif
 }
 // Return a value mapped from data range [min,max] to [0,1]
