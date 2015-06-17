@@ -87,6 +87,8 @@ namespace inviwo {
  *      m[0][3]=0  m[1][3]=0  m[2][3]=0  m[3][3]=1
  *
  *  This means that they have the same representation as on the gpu.
+ *  
+ *  ![](coordinate-spaces.png)
  */
 
 template <unsigned int N>
