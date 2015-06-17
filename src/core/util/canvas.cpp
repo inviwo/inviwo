@@ -123,6 +123,7 @@ void Canvas::resize(uvec2 canvasSize) {
     screenDimensions_ = canvasSize;
 
     if (propagator_) {
+        NetworkLock lock;
         RenderContext::getPtr()->activateDefaultRenderContext();
         ResizeEvent* resizeEvent = new ResizeEvent(screenDimensions_);
         resizeEvent->setPreviousSize(previousScreenDimensions_);
