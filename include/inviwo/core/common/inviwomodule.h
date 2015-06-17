@@ -171,7 +171,7 @@ private:
 
 #define registerPropertyConverter(T) {PropertyConverterManager::getPtr()->registerConvert< T >();}
 #define registerProcessor(T) { registerProcessorObject(new ProcessorFactoryObjectTemplate<T>()); }
-#define registerProperty(T) { registerPropertyObject(new PropertyFactoryObjectTemplate<T>());  registerPropertyConverter(DefaultPropertyConverter< T >); }
+#define registerProperty(T) { registerPropertyObject(new PropertyFactoryObjectTemplate<T>()); }
 #define registerPropertyWidget(T, P, semantics) { registerPropertyWidgetObject(new PropertyWidgetFactoryObjectTemplate<T,P>(PropertySemantics(semantics))); }
 #define registerPort(T) { registerPortObject(new PortFactoryObjectTemplate<T>(#T)); }
 #define registerDialog(P, T) { registerDialogObject(new DialogFactoryObjectTemplate<T>(P)); }

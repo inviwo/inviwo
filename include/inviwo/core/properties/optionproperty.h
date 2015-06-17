@@ -175,8 +175,8 @@ public:
      * Adds a option to the property and stores it as a struct in the options_
      * The option name is the name of the option that will be displayed in the widget.
      *
-     * @param std::string identifier identifier name
-     * @param T value the value of the option
+     * @param identifier identifier name
+     * @param value the value of the option
      */
     virtual void addOption(std::string identifier, std::string displayName, T value);
     virtual void removeOption(size_t index);
@@ -215,6 +215,7 @@ public:
     virtual void setCurrentStateAsDefault();
     virtual void resetToDefaultState();
 
+    virtual std::string getClassIdentifierForWidget() const;
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
 
@@ -226,7 +227,6 @@ private:
     size_t defaultSelectedIndex_;
     std::vector<Option<T> > defaultOptions_;
 };
-
 
 template<typename T>
 class TemplateOptionProperty : public BaseTemplateOptionProperty<T> {
@@ -244,7 +244,7 @@ public:
     
 };
 
-namespace utils {
+namespace detail {
 template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
 std::string getOptionPropertyClassIdentifier() {
     return "org.inviwo.OptionProperty" + Defaultvalues<T>::getName();
@@ -252,11 +252,28 @@ std::string getOptionPropertyClassIdentifier() {
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
 std::string getOptionPropertyClassIdentifier() {
     using ET = typename std::underlying_type<T>::type;
-    return "org.inviwo.OptionProperty" + Defaultvalues<ET>::getName();
-}
+    return "org.inviwo.OptionPropertyEnum" + Defaultvalues<ET>::getName();
 }
 
-template <typename T> PropertyClassIdentifier(TemplateOptionProperty<T>, utils::getOptionPropertyClassIdentifier<T>());
+template <typename T, typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
+std::string getClassIdentifierForWidget() {
+    return getOptionPropertyClassIdentifier<T>();
+}
+template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+std::string getClassIdentifierForWidget() {
+    using ET = typename std::underlying_type<T>::type;
+    return getOptionPropertyClassIdentifier<ET>();
+}
+
+}
+
+template <typename T> PropertyClassIdentifier(TemplateOptionProperty<T>, detail::getOptionPropertyClassIdentifier<T>());
+
+
+template<typename T>
+std::string inviwo::BaseTemplateOptionProperty<T>::getClassIdentifierForWidget() const {
+    return detail::getClassIdentifierForWidget<T>();
+}
 
 
 // Specialization for strings.

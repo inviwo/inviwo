@@ -45,4 +45,8 @@ std::string PropertyConverter::getDestinationPropertyClassIdenetifier() const {
     return dstClassIdentifier_;
 }
 
+void PropertyConverter::convert(const Property *srcProperty, Property *dstProperty) const {
+    dstProperty->set(srcProperty);
+}
+
 }  // namespace

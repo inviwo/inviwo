@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/propertyconvertermanager.h>
@@ -33,14 +33,10 @@
 
 namespace inviwo {
 
-PropertyConverterManager::PropertyConverterManager() {}
+PropertyConverterManager::PropertyConverterManager() : identityConverter_("", "") {}
 
 PropertyConverterManager::~PropertyConverterManager() {
-
-    std::map<std::pair<std::string, std::string>, PropertyConverter *>::iterator converter;
-    for (converter = converters_.begin(); converter != converters_.end(); ++converter){
-        delete converter->second;
-    }
+    for (auto converter : converters_) delete converter.second;
     converters_.clear();
 }
 
@@ -55,17 +51,19 @@ bool PropertyConverterManager::canConvert(const Property *srcProperty,
            nullptr;
 }
 
-PropertyConverter *PropertyConverterManager::getConverter(
+const PropertyConverter *PropertyConverterManager::getConverter(
     const std::string &srcClassIdentifier, const std::string &dstClassIdentifier) const {
-    std::map<std::pair<std::string, std::string>, PropertyConverter *>::const_iterator converter;
-    converter = converters_.find(std::make_pair(srcClassIdentifier, dstClassIdentifier));
+    
+    if (srcClassIdentifier == dstClassIdentifier) return &identityConverter_;
+
+    auto converter = converters_.find(std::make_pair(srcClassIdentifier, dstClassIdentifier));
     if (converter != converters_.end()) {
         return converter->second;
     }
     return nullptr;
 }
 
-PropertyConverter *PropertyConverterManager::getConverter(const Property *srcProperty,
+const PropertyConverter *PropertyConverterManager::getConverter(const Property *srcProperty,
                                                           const Property *dstProperty) const {
     return getConverter(srcProperty->getClassIdentifier(), dstProperty->getClassIdentifier());
 }

@@ -229,6 +229,17 @@ struct hash<glm::detail::tvec2<T, P>> {
     }
 };
 
+template <typename T, typename U>
+struct hash<std::pair<T, U>> {
+    size_t operator()(const std::pair<T, U>& p) const {
+        size_t h = 0;
+        inviwo::util::hash_combine(h, p.first);
+        inviwo::util::hash_combine(h, p.second);
+        return h;
+    }
+};
+
+
 }  // namespace std
 
 #endif  // IVW_STDEXTENSIONS_H

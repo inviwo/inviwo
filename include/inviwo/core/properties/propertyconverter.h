@@ -46,7 +46,7 @@ public:
     std::string getSourcePropertyClassIdenetifier() const;
     std::string getDestinationPropertyClassIdenetifier() const;
 
-    virtual void convert(const Property *srcProperty, Property *dstProperty) const = 0;
+    virtual void convert(const Property *srcProperty, Property *dstProperty) const;
 
 protected:
     std::string srcClassIdentifier_;
@@ -60,18 +60,19 @@ public:
         : PropertyConverter(srcProperty::CLASS_IDENTIFIER, dstProperty::CLASS_IDENTIFIER) {}
     virtual ~TemplatePropertyConverter() {}
 
-    virtual void convert(const Property *src, Property *dst) const {
+    virtual void convert(const Property *src, Property *dst) const override {
         const srcProperty *s = dynamic_cast<const srcProperty *>(src);
         dstProperty *d = dynamic_cast<dstProperty *>(dst);
         if (s && d) {
-            convert(s, d);
+            convertimpl(s, d);
         } else {
             LogWarn("Cant convert from " << src->getClassIdentifier() << " to "
                                          << dst->getClassIdentifier() << " using this convert");
         }
     }
 
-    virtual void convert(const srcProperty *src, dstProperty *dst) const = 0;
+protected:
+    virtual void convertimpl(const srcProperty *src, dstProperty *dst) const = 0;
 };
 
 template <typename srcProperty, typename dstProperty>
@@ -80,7 +81,9 @@ public:
     OrdinalPropertyConverter() : TemplatePropertyConverter<srcProperty, dstProperty>() {}
     virtual ~OrdinalPropertyConverter() {}
 
-    virtual void convert(const srcProperty *src, dstProperty *dst) const {
+
+protected:
+    virtual void convertimpl(const srcProperty *src, dstProperty *dst) const override {
         dst->setMinValue(static_cast<typename dstProperty::value_type>(src->getMinValue()));
         dst->setMaxValue(static_cast<typename dstProperty::value_type>(src->getMaxValue()));
         dst->setIncrement(static_cast<typename dstProperty::value_type>(src->getIncrement()));
@@ -89,20 +92,13 @@ public:
 };
 
 template <typename srcProperty>
-class DefaultPropertyConverter : public TemplatePropertyConverter<srcProperty, srcProperty> {
-public:
-    DefaultPropertyConverter() : TemplatePropertyConverter<srcProperty, srcProperty>() {}
-
-    virtual void convert(const srcProperty *src, srcProperty *dst) const { dst->set(src); }
-};
-
-template <typename srcProperty>
 class ScalarToStringConverter : public TemplatePropertyConverter<srcProperty, StringProperty> {
 public:
     ScalarToStringConverter() : TemplatePropertyConverter<srcProperty, StringProperty>() {}
     virtual ~ScalarToStringConverter() {}
 
-    virtual void convert(const srcProperty *src, StringProperty *dst) const {
+protected:
+    virtual void convertimpl(const srcProperty *src, StringProperty *dst) const override {
         dst->set(toString(src->get()));
     }
 };
@@ -113,7 +109,8 @@ public:
     VectorToStringConverter() : TemplatePropertyConverter<srcProperty, StringProperty>() {}
     virtual ~VectorToStringConverter() {}
 
-    virtual void convert(const srcProperty *src, StringProperty *dst) const {
+protected:
+    virtual void convertimpl(const srcProperty *src, StringProperty *dst) const override {
         dst->set(glm::to_string(src->get()));
     }
 };
