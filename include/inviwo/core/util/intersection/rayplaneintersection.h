@@ -39,13 +39,13 @@ namespace inviwo {
  * \brief Intersection test of a ray with a plane. If intersecting, t1 is the point of intersection along the ray
  *
  * 
- * @param const vec3 & planePos Point in the plane
- * @param const vec3 & planeNormal Plane normal
- * @param const vec3 & o Ray origin
- * @param const vec3 & d Ray direction
- * @param float * __restrict t0 Parameterized start position along ray
- * @param float * __restrict t1 Parameterized end position along ray
- * @return IVW_CORE_API bool True if intersecting, otherwise false. t1 will contain the point of intersection along the ray if intersecting.
+ * @param planePos Point in the plane
+ * @param planeNormal Plane normal
+ * @param o Ray origin
+ * @param d Ray direction
+ * @param t0 Parameterized start position along ray
+ * @param t1 Parameterized end position along ray
+ * @return True if intersecting, otherwise false. t1 will contain the point of intersection along the ray if intersecting.
  */
 IVW_CORE_API bool rayPlaneIntersection(const vec3& planePos, const vec3& planeNormal, const vec3& o, const vec3& d, float * __restrict t0, float* __restrict t1);
 

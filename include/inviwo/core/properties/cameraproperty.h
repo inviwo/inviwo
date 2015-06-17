@@ -120,16 +120,16 @@ public:
     /** 
      * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
      * 
-     * @param vec3 ndcCoords Coordinates in [-1 1]
-     * @return vec3 World space position
+     * @param ndcCoords Coordinates in [-1 1]
+     * @return World space position
      */
     vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
     /**
     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
     *
-    * @param vec4 ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for perspective division.   
-    * @return vec4 Clip space position
+    * @param ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for perspective division.   
+    * @return Clip space position
     */
     vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 

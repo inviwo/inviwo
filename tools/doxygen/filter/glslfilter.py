@@ -52,8 +52,8 @@ re_blockcode_start = re.compile('(?<=[\*]class\s)\w+', re.I | re.VERBOSE)
 #   - set doxygen name for class name -> defaults to filename
 #   - set doxygen namespace for namespace (pseudo category) -> defaults to GLSL
 # - doxygen file:
-#   - add FILE_PATTERNS: *.frag, *.vert
-#   - add FILTER_PATTERNS: "*.frag=glslfilter.py", "*.vert=glslfilter.py"
+#   - add FILE_PATTERNS: *.frag, *.vert, *.geom, *.glsl
+#   - add FILTER_PATTERNS: "*.frag=glslfilter.py", "*.vert=glslfilter.py", "*.geom=glslfilter.py", "*.glsl=glslfilter.py"
 # latest version on <a href="http://www.grasmo.de">www.grasmo.de</a>
 
 ##run regex on a single line
@@ -148,6 +148,10 @@ def filter(filename):
       parseShader(filename, txt, "Fragment-Shader")
     elif (ext.lower() == ".vert"):
       parseShader(filename, txt, "Vertex-Shader")
+    elif (ext.lower() == ".geom"):
+      parseShader(filename, txt, "Geometry-Shader")
+    elif (ext.lower() == ".glsl"):
+      parseShader(filename, txt, "GLSL-Shader")
     else:
       showLines(txt)
   except IOError as e:

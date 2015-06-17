@@ -92,7 +92,7 @@ protected:
      * \brief Get depth layer RAM representation. Will return nullptr if depth layer does not exist.
      *
      * 
-     * @return const LayerRAM* Depth layer RAM representation if existing, nullptr otherwise.
+     * @return Depth layer RAM representation if existing, nullptr otherwise.
      */
     const LayerRAM* getDepthLayerRAM() const;
     /** 
@@ -101,8 +101,8 @@ protected:
      * Depth is defined in [-1 1], where -1 is the near plane and 1 is the far plane.
      * Will be 1 if no depth value is available.
      * 
-     * @param ivec2 screenCoordinate Screen coordinates [0 dim-1]^2
-     * @return double NDC depth in [-1 1], 1 if no depth value exist.
+     * @param screenCoordinate Screen coordinates [0 dim-1]^2
+     * @return NDC depth in [-1 1], 1 if no depth value exist.
      */
     double getDepthValueAtCoord(ivec2 screenCoordinate, const LayerRAM* depthLayerRAM = nullptr) const;
 

@@ -72,9 +72,9 @@ public:
     /**
      * Replaces buffer at index with new buffer and deletes old one if it has ownership of it.
      * Does nothing if index out of range.
-     * @param size_t idx Index of buffer to replace
-     * @param Buffer * att New buffer
-     * @param bool takeOwnership True if new buffer should be owned.
+     * @param idx Index of buffer to replace
+     * @param att New buffer
+     * @param takeOwnership True if new buffer should be owned.
      */
     void setAttribute(size_t idx, Buffer* att, bool takeOwnership = true);
 

@@ -67,10 +67,10 @@ protected:
 
 /** \brief Return string representation of  device info and corresponding value
  * @note Added
- * @param cl_device_info info OpenCL device info identifier.
- * @param const T & value
- * @param bool is_cl_bool Necessary since cl_bool is a cl_uint
- * @return string representation of device info and corresponding value
+ * @param info OpenCL device info identifier.
+ * @param value
+ * @param is_cl_bool Necessary since cl_bool is a cl_uint
+ * @return representation of device info and corresponding value
  */
 template< typename T >
 std::string deviceInfoToString(cl_device_info info, const T& value, bool is_cl_bool) {

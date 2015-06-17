@@ -58,13 +58,13 @@ public:
     /**
      * \brief Perform volume rendering on the input volume.
      *
-     * @param const Volume * volume
-     * @param const Layer * entryPoints Start point of ray in texture space.
-     * @param const Layer * exitPoints End point of ray in texture space.
-     * @param const Layer * transferFunction Transfer function, mapping value to color and opacity.
-     * @param Layer * outImage Output image
-     * @param const VECTOR_CLASS<cl::Event> * waitForEvents
-     * @param cl::Event * event
+     * @param volume
+     * @param entryPoints Start point of ray in texture space.
+     * @param exitPoints End point of ray in texture space.
+     * @param transferFunction Transfer function, mapping value to color and opacity.
+     * @param outImage Output image
+     * @param waitForEvents
+     * @param event
      */
     void volumeRaycast(const Volume* volume, const Layer* entryPoints, const Layer* exitPoints,
                        const Layer* transferFunction, Layer* outImage,
@@ -98,7 +98,7 @@ public:
      * \brief Set background to use in the rendering.
      *
      * The default background, black, will be used if layer is a nullptr.
-     * @param Layer * val Layer to use as background. Will not take ownership.
+     * @param val Layer to use as background. Will not take ownership.
      */
     void setBackground(const Layer* val) { background_ = val; }
     /**

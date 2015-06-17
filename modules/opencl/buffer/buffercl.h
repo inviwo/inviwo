@@ -67,8 +67,8 @@ public:
     /**
      * \brief Copies data from RAM to OpenCL.
      *
-     * @param const void * data Pointer to data
-     * @param size_t size Size in bytes to copy
+     * @param data Pointer to data
+     * @param size Size in bytes to copy
      */
     void upload(const void* data, size_t size);
     /**
@@ -77,7 +77,7 @@ public:
      * Copies getSize()*getSizeOfElement() bytes into data.
      * Pointer needs to be allocated beforehand.
      *
-     * @param void * data Pointer to data
+     * @param data Pointer to data
      */
     void download(void* data) const;
 

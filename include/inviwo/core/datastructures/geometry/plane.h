@@ -90,12 +90,12 @@ struct IntersectionResult {
  * Computes ray-plane intersection point and 
  * returns true if the ray hit the plane.
  * 
- * @param const vec3 & origin Ray origin
- * @param const vec3 & dir Ray direction
- * @param const vec3 & pointInPlane Point on the plane
- * @param const vec3 & planeNormal Normalized plane normal
- * @param float & tHit Distance to hit point along ray direction if hit, otherwise undefined
- * @return bool True if ray hit the plane, false otherwise
+ * @param origin Ray origin
+ * @param dir Ray direction
+ * @param pointInPlane Point on the plane
+ * @param planeNormal Normalized plane normal
+ * @param tHit Distance to hit point along ray direction if hit, otherwise undefined
+ * @return True if ray hit the plane, false otherwise
  */
 IVW_CORE_API bool rayPlaneIntersection(const vec3& origin, const vec3& dir, const vec3& pointInPlane, const vec3& planeNormal, float& tHit);
 

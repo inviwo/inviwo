@@ -65,9 +65,9 @@ public:
     /**
 
      *
-     * @param fileName (const std::string &) File name
-     * @param defines (const std::string &) Compiler defines
-     * @return (cl::Program*) Pointer to a program no matter if it was succesfully built or not.
+     * @param fileName File name
+     * @param defines Compiler defines
+     * @return Pointer to a program no matter if it was succesfully built or not.
      */
     /** 
      * Creates and builds an OpenCL program. Will automatically reload the program and
@@ -76,10 +76,10 @@ public:
      * The KernelManager will make sure that the processor is not evaluated if building fails.
      * @note KernelManager manages pointer memory, do not delete it.
      *
-     * @param const std::string & fileName Name of file. Added search paths will be used to find the file
-     * @param bool & wasBuilt Outputs true if program was built, false if a previously built (cached) program is used.
-     * @param const std::string & defines Compiler defines
-     * @return cl::Program*  Pointer to a program no matter if it was succesfully built or not. Do not delete it.
+     * @param fileName Name of file. Added search paths will be used to find the file
+     * @param wasBuilt Outputs true if program was built, false if a previously built (cached) program is used.
+     * @param defines Compiler defines
+     * @return Pointer to a program no matter if it was succesfully built or not. Do not delete it.
      */
     cl::Program* buildProgram(const std::string& fileName, const std::string& defines, bool& wasBuilt);
     cl::Program* buildProgram(const std::string& fileName, const std::string& defines = "") { bool wasBuilt; return buildProgram(fileName, defines, wasBuilt); }

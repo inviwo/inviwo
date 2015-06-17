@@ -62,7 +62,7 @@ public:
     /**
      * Set normal of area light.
      *
-     * @param direction Normal of light source.
+     * @param direction normal of light source.
      */
     void setNormal(const vec3& normal) { normal_ = normal; }
 

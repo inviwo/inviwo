@@ -106,8 +106,8 @@ public:
     /**
     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
     *
-    * @param vec3 ndcCoords Coordinates in [-1 1]
-    * @return vec3 World space position
+    * @param ndcCoords Coordinates in [-1 1]
+    * @return World space position
     */
     vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
@@ -116,8 +116,8 @@ public:
     * where z value of -1 correspond to the near plane and 1 to the far plane. 
     * Coordinates outside of the [-1 1]^3 range will be clipped.
     *
-    * @param vec4 ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for perspective division.
-    * @return vec4 Clip space position
+    * @param ndcCoords xyz clip-coordinates in [-1 1]^3, and the clip w-coordinate used for perspective division.
+    * @return Clip space position
     */
     vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 

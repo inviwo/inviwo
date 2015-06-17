@@ -125,7 +125,7 @@ function(make_doxy_target OUTPUT_DIR DOXY_NAME IMAGE_PATH_LIST)
         COMMENT "Generating ${DOXY_NAME} API documentation with Doxygen"
         VERBATIM
     )
-    set_target_properties("DOXY-${DOXY_NAME}" PROPERTIES FOLDER "doc")
+    set_target_properties("DOXY-${DOXY_NAME}" PROPERTIES FOLDER "doc" EXCLUDE_FROM_DEFAULT_BUILD 1)
 endfunction()
 
 function(make_documentation OUTPUT_DIR DOXY_NAME BRIEF INPUT_LIST TAGFILE INPUT_TAG_LIST 
@@ -228,7 +228,7 @@ function(make_help INPUT_DIR SOURCE_LIST IMAGE_PATH_LIST)
         VERBATIM
     )
     add_dependencies("DOXY-QCH" "DOXY-Help")
-    set_target_properties("DOXY-QCH" PROPERTIES FOLDER "doc")
+    set_target_properties("DOXY-QCH" PROPERTIES FOLDER "doc" EXCLUDE_FROM_DEFAULT_BUILD 1)
 
 endfunction()
 
@@ -254,10 +254,10 @@ if(${IVW_DOXYGEN_PROJECT})
 
 	if(PYTHONINTERP_FOUND)
 		set(FILER_PATTERNS_LIST
-			"\"*.frag=${PYTHON_EXECUTABLE} ${IVW_DOXY_DIR}/filter/glslfilter.py\""
-            "\"*.vert=${PYTHON_EXECUTABLE} ${IVW_DOXY_DIR}/filter/glslfilter.py\""
-            "\"*.geom=${PYTHON_EXECUTABLE} ${IVW_DOXY_DIR}/filter/glslfilter.py\""
-            "\"*.glsl=${PYTHON_EXECUTABLE} ${IVW_DOXY_DIR}/filter/glslfilter.py\""
+			"\"*.frag=${IVW_DOXY_DIR}/filter/glslfilter.py\""
+            "\"*.vert=${IVW_DOXY_DIR}/filter/glslfilter.py\""
+            "\"*.geom=${IVW_DOXY_DIR}/filter/glslfilter.py\""
+            "\"*.glsl=${IVW_DOXY_DIR}/filter/glslfilter.py\""
          )
         string(REGEX REPLACE ";" " \\\\\n                         " FILER_PATTERNS "${FILER_PATTERNS_LIST}")
 		set(FILER_PATTERNS ${FILER_PATTERNS})

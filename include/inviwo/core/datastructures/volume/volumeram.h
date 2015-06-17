@@ -53,7 +53,8 @@ public:
     /**
      * \brief Takes ownership of data pointer
      *
-     * @param void * data is raw volume data pointer
+     * @param data is raw volume data pointer
+     * @param dimensions is the dimensions of the data.
      * @return void none
      */
     virtual void setData(void* data, size3_t dimensions) = 0;
