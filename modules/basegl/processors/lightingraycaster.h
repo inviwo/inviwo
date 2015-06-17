@@ -40,10 +40,9 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <modules/opengl/glwrap/shader.h>
 
 namespace inviwo {
-
-class Shader;
 
 /** \docpage{org.inviwo.LightingRaycaster, Lighting Raycaster}
  * ![](org.inviwo.LightingRaycaster.png?classIdentifier=org.inviwo.LightingRaycaster)
@@ -74,8 +73,6 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initialize();
-    virtual void deinitialize();
     virtual void initializeResources();
 
     virtual void deserialize(IvwDeserializer& d); 
@@ -83,11 +80,11 @@ public:
 protected:
     virtual void process();
 
+    Shader shader_;
+
 private:
     void onVolumeChange();
     bool fixNetwork(TxElement*);
-    
-    Shader* shader_;
 
     VolumeInport volumePort_;
     ImageInport entryPort_;

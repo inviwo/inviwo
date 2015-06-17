@@ -49,6 +49,7 @@ ProcessorCodeState(LightingRaycaster, CODE_STATE_EXPERIMENTAL);
 
 LightingRaycaster::LightingRaycaster()
     : Processor()
+    , shader_("lighting/lightingraycasting.frag", false)
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")
@@ -81,32 +82,18 @@ LightingRaycaster::LightingRaycaster()
     addProperty(transferFunction_);
 }
 
-void LightingRaycaster::initialize() {
-    Processor::initialize();
-    shader_ = new Shader("lighting/lightingraycasting.frag", false);
-    initializeResources();
-}
-
-void LightingRaycaster::deinitialize() {
-    if (shader_) delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
-}
-
 void LightingRaycaster::initializeResources() {
-    utilgl::addShaderDefines(shader_, raycasting_);
-    utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_);
-    
-    shader_->build();
+    utilgl::addShaderDefines(&shader_, raycasting_);
+    utilgl::addShaderDefines(&shader_, camera_);
+    utilgl::addShaderDefines(&shader_, lighting_);
+
     if (enableLightColor_.get())
-        shader_->getFragmentShaderObject()->addShaderDefine("LIGHT_COLOR_ENABLED");
+        shader_.getFragmentShaderObject()->addShaderDefine("LIGHT_COLOR_ENABLED");
     else
-        shader_->getFragmentShaderObject()->removeShaderDefine("LIGHT_COLOR_ENABLED");
+        shader_.getFragmentShaderObject()->removeShaderDefine("LIGHT_COLOR_ENABLED");
 
-    shader_->build();
+    shader_.build();
 }
-
 
 void LightingRaycaster::onVolumeChange() {
     if (volumePort_.hasData()) {
@@ -127,36 +114,20 @@ void LightingRaycaster::onVolumeChange() {
 
 
 void LightingRaycaster::process() {
-    TextureUnit tfUnit, entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit, volUnit;
-    utilgl::bindTexture(transferFunction_, tfUnit);
-    utilgl::bindTextures(entryPort_, entryColorUnit, entryDepthUnit);
-    utilgl::bindTextures(exitPort_, exitColorUnit, exitDepthUnit);
-    utilgl::bindTexture(volumePort_, volUnit);
-    TextureUnit lightVolUnit;
-    utilgl::bindTexture(lightVolumePort_, lightVolUnit);
-    
-    utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
-    shader_->activate();
+    utilgl::activateAndClearTarget(outport_);
+    shader_.activate();
 
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-    shader_->setUniform("transferFunc_", tfUnit.getUnitNumber());
-    shader_->setUniform("entryColorTex_", entryColorUnit.getUnitNumber());
-    shader_->setUniform("entryDepthTex_", entryDepthUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, entryPort_, "entryParameters_");
-    shader_->setUniform("exitColorTex_", exitColorUnit.getUnitNumber());
-    shader_->setUniform("exitDepthTex_", exitDepthUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, exitPort_, "exitParameters_");
-    shader_->setUniform("volume_", volUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, volumePort_, "volumeParameters_");
-    shader_->setUniform("lightVolume_", lightVolUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, lightVolumePort_, "lightVolumeParameters_");
-    utilgl::setShaderUniforms(shader_, raycasting_);
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-    utilgl::setShaderUniforms(shader_, lighting_, "light_");
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(&shader_, units, volumePort_);
+    utilgl::bindAndSetUniforms(&shader_, units, lightVolumePort_);
+    utilgl::bindAndSetUniforms(&shader_, units, transferFunction_);
+    utilgl::bindAndSetUniforms(&shader_, units, entryPort_.getData(), "entry", COLOR_DEPTH_PICKING);
+    utilgl::bindAndSetUniforms(&shader_, units, exitPort_.getData(), "exit", COLOR_DEPTH);
+    utilgl::setUniforms(&shader_, outport_, camera_, lighting_, raycasting_, channel_);
 
     utilgl::singleDrawImagePlaneRect();
-    
-    shader_->deactivate();
+
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 

@@ -46,7 +46,6 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/glwrap/shader.h>
 
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeRaycaster, Volume Raycaster}
@@ -86,6 +85,7 @@ public:
 
 protected:
     virtual void process();
+
     Shader shader_;
 
 private:

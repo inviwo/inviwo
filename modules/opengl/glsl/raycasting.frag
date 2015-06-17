@@ -38,7 +38,6 @@
 #include "utils/shading.glsl"
 #include "utils/raycastgeometry.glsl"
 
-
 uniform VolumeParameters volumeParameters;
 uniform sampler3D volume;
 
@@ -117,8 +116,6 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     gl_FragDepth = tDepth;
     return result;
 }
-
-
 
 
 void main() {
