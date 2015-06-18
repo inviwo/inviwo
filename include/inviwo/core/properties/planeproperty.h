@@ -61,7 +61,6 @@ public:
     PlaneProperty& operator=(const PlaneProperty& that);
     virtual PlaneProperty* clone() const;
     virtual ~PlaneProperty();
-    virtual std::string getClassIdentifierForWidget() const;
 
     BoolProperty enable_;
     OptionPropertyInt mode_;

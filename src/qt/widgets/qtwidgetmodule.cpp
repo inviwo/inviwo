@@ -41,12 +41,6 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/simplelightingproperty.h>
-#include <inviwo/core/properties/simpleraycastingproperty.h>
-#include <inviwo/core/properties/advancedmaterialproperty.h>
-
-#include <inviwo/core/interaction/cameratrackball.h>
-#include <inviwo/core/interaction/trackball.h>
 
 #include <inviwo/qt/widgets/properties/anglepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/boolpropertywidgetqt.h>
@@ -68,7 +62,6 @@
 #include <inviwo/qt/widgets/properties/texteditorwidgetqt.h>
 #include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
 
-
 #include <inviwo/core/io/rawvolumereader.h>
 #include <inviwo/qt/widgets/rawdatareaderdialogqt.h>
 
@@ -79,13 +72,6 @@ QtWidgetModule::QtWidgetModule() : InviwoModule() {
     registerPropertyWidget(BoolPropertyWidgetQt, BoolProperty, "Default");
     registerPropertyWidget(ButtonPropertyWidgetQt, ButtonProperty, "Default");
     registerPropertyWidget(BoolCompositePropertyWidgetQt, BoolCompositeProperty, "Default");
-    
-    registerPropertyWidget(CompositePropertyWidgetQt, CameraProperty, "Default");
-    registerPropertyWidget(CompositePropertyWidgetQt, SimpleLightingProperty, "Default");
-    registerPropertyWidget(CompositePropertyWidgetQt, SimpleRaycastingProperty, "Default");
-    registerPropertyWidget(CompositePropertyWidgetQt, AdvancedMaterialProperty, "Default");
-
-    registerPropertyWidget(CompositePropertyWidgetQt, CameraTrackball, "Default");
 
     registerPropertyWidget(ColorPropertyWidgetQt, IntVec3Property, "Color");
     registerPropertyWidget(ColorPropertyWidgetQt, IntVec4Property, "Color");
@@ -95,8 +81,6 @@ QtWidgetModule::QtWidgetModule() : InviwoModule() {
     registerPropertyWidget(DirectoryPropertyWidgetQt, DirectoryProperty, "Default");
     registerPropertyWidget(EventPropertyWidgetQt, EventProperty, "Default");
     registerPropertyWidget(FilePropertyWidgetQt, FileProperty, "Default");
-
-
 
     registerPropertyWidget(FloatMat2PropertyWidgetQt, FloatMat2Property, "Default");
     registerPropertyWidget(FloatMat3PropertyWidgetQt, FloatMat3Property, "Default");

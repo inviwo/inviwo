@@ -47,6 +47,7 @@ public:
     
     virtual BoolCompositeProperty* clone() const;
     virtual ~BoolCompositeProperty();
+    virtual std::string getClassIdentifierForWidget() const;
 
     virtual bool isChecked() const;
     virtual void setChecked(bool checked);

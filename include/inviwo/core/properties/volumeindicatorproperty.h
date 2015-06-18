@@ -58,7 +58,6 @@ public:
     VolumeIndicatorProperty& operator=(const VolumeIndicatorProperty& that);
     virtual VolumeIndicatorProperty* clone() const;
     virtual ~VolumeIndicatorProperty();
-    virtual std::string getClassIdentifierForWidget() const;
 
     BoolProperty enable_;
 

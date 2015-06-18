@@ -62,6 +62,9 @@ CompositeProperty* CompositeProperty::clone() const {
 
 CompositeProperty::~CompositeProperty() {}
 
+std::string CompositeProperty::getClassIdentifierForWidget() const {
+    return CompositeProperty::CLASS_IDENTIFIER;
+}
 
 void CompositeProperty::setOwner(PropertyOwner* owner) {
     Property::setOwner(owner);

@@ -89,8 +89,4 @@ PlaneProperty::~PlaneProperty() {}
 
 void PlaneProperty::onModeChange() {}
 
-std::string PlaneProperty::getClassIdentifierForWidget() const {
-    return CompositeProperty::CLASS_IDENTIFIER;
-}
-
 }  // namespace

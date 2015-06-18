@@ -50,6 +50,7 @@ public:
     CompositeProperty& operator=(const CompositeProperty& that);
     virtual CompositeProperty* clone() const;
     virtual ~CompositeProperty();
+    virtual std::string getClassIdentifierForWidget() const;
 
     virtual bool isCollapsed() const;
     virtual void setCollapsed(bool value);

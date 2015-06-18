@@ -55,6 +55,10 @@ BoolCompositeProperty* BoolCompositeProperty::clone() const {
 
 BoolCompositeProperty::~BoolCompositeProperty() {}
 
+std::string BoolCompositeProperty::getClassIdentifierForWidget() const{
+    return getClassIdentifier();
+}
+
 bool BoolCompositeProperty::isChecked() const {
     return checked_.get();
 }

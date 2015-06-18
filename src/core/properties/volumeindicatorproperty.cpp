@@ -87,8 +87,4 @@ VolumeIndicatorProperty::~VolumeIndicatorProperty() {}
 
 void VolumeIndicatorProperty::onModeChange() {}
 
-std::string VolumeIndicatorProperty::getClassIdentifierForWidget() const {
-    return CompositeProperty::CLASS_IDENTIFIER;
-}
-
 }  // namespace
