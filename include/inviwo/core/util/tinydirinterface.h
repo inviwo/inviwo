@@ -42,7 +42,7 @@ namespace inviwo {
 /** \class TinyDirInteface
  *
  * Interface for tinydir responsible for listing files in a directory. Depending
- * on the list mode, the result contains files, directories or both.
+ * on the list mode (default ListMode::FilesOnly), the result contains files, directories or both.
  */
 class IVW_CORE_API TinyDirInterface {
 public:

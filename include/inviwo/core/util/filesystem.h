@@ -33,6 +33,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <vector>
+
 namespace inviwo {
 
 namespace filesystem {
@@ -63,6 +65,14 @@ IVW_CORE_API bool fileExists(const std::string& filePath);
  */
 IVW_CORE_API bool directoryExists(const std::string& path);
 
+/**
+ * Returns the file listing of a directory
+ *
+ * @param path Files are listed for this directory
+ * @return List of files residing in the given path
+ */
+IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path);
+
 
 /** 
  * Checks whether a given string matches a pattern. The pattern
@@ -71,7 +81,7 @@ IVW_CORE_API bool directoryExists(const std::string& path);
  * 
  * @param std::string pattern  The pattern used for matching, might contain '*' and '?'
  * @param std::string str      String which needs to be checked
- * @return bool True if the given string matches the pattern, false otherwise.
+ * @return True if the given string matches the pattern, false otherwise.
  */
 IVW_CORE_API bool wildcardStringMatch(const std::string &pattern, const std::string &str);
 
@@ -99,7 +109,7 @@ IVW_CORE_API bool wildcardStringMatch(const std::string &pattern, const std::str
 *             digit sequence indicated by '#'
 * @param bool matchLess   allows to match digit sequences shorter than defined by the number of '#' (default false)
 * @param bool matchMore   allows to match longer digit sequences (default true)
-* @return bool True if the given string matches the pattern, false otherwise.
+* @return True if the given string matches the pattern, false otherwise.
 */
 IVW_CORE_API bool wildcardStringMatchDigits(const std::string &pattern, const std::string &str,
                                             int &index, bool matchLess=false, bool matchMore=true);

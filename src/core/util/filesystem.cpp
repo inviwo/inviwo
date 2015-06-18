@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/tinydirinterface.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 // For directory exists
@@ -79,6 +80,15 @@ bool directoryExists(const std::string& path) {
     return (stat(path.c_str(), &buffer) == 0 && (buffer.st_mode & S_IFDIR));
 }
 
+std::vector<std::string> getDirectoryContents(const std::string& path) {
+    if (path.empty()) {
+        return{};
+    }
+    TinyDirInterface tinydir;
+    tinydir.open(path);
+    return tinydir.getContents();
+}
+
 bool wildcardStringMatch(const std::string &pattern, const std::string &str) {
     const char* patternPtr = pattern.c_str();
     const char* strPtr = str.c_str();
@@ -122,7 +132,7 @@ bool wildcardStringMatch(const std::string &pattern, const std::string &str) {
 }
 
 bool wildcardStringMatchDigits(const std::string &pattern, const std::string &str,
-    int &index, bool matchLess=false, bool matchMore=true) {
+    int &index, bool matchLess, bool matchMore) {
 
     const char* patternPtr = pattern.c_str();
     const char* strPtr = str.c_str();

@@ -35,6 +35,7 @@ namespace inviwo {
 
 TinyDirInterface::TinyDirInterface() 
     : isOpen_(false)
+    , mode_(ListMode::FilesOnly)
     , path_() 
 {
     // initialize tinydir struct
