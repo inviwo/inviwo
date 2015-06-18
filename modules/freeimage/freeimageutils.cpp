@@ -33,6 +33,8 @@
 #include <warn/push>
 #include <warn/ignore/switch-enum>
 
+namespace inviwo {
+
 bool FreeImageUtils::loader_initialized = false;
 
 inline DataFormatEnums::Id getDataFormatFromBitmap(FIBITMAP* bitmap) {
@@ -609,6 +611,8 @@ std::vector<unsigned char>* FreeImageUtils::saveLayerToBuffer(const char* type,
     }
     return nullptr;
 }
+
+}  // namespace
 
 #include <warn/pop>
 

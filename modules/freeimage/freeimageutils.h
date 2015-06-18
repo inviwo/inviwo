@@ -36,7 +36,7 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <modules/freeimage/ext/freeimage/FreeImage.h>
 
-using namespace inviwo;
+namespace inviwo {
 
 class IVW_MODULE_FREEIMAGE_API FreeImageUtils {
 public:
@@ -160,4 +160,7 @@ private:
 
     static bool loader_initialized;
 };
+
+}  // namespace
+
 #endif  // IVW_FREEIMAGEUTILS_H
