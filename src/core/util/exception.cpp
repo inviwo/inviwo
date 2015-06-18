@@ -48,6 +48,9 @@ IgnoreException::IgnoreException(const std::string& message, ExceptionContext co
 AbortException::AbortException(const std::string& message, ExceptionContext context)
     : Exception(message, context) {}
 
+FileException::FileException(const std::string& message, ExceptionContext context)
+    : Exception(message, context) {}
+
 void StandardExceptionHandler::operator()(ExceptionContext context) {
     try {
         throw;

@@ -93,6 +93,12 @@ public:
     virtual ~AbortException() throw() {}
 };
 
+class IVW_CORE_API FileException : public Exception {
+public:
+    FileException(const std::string& message = "", ExceptionContext context = ExceptionContext());
+    virtual ~FileException() throw() {}
+};
+
 struct IVW_CORE_API StandardExceptionHandler {
     void operator()(ExceptionContext);
 };
