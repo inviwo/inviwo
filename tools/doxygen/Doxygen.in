@@ -9,7 +9,7 @@ WARNINGS               = YES
 WARN_NO_PARAMDOC       = NO
 WARN_IF_UNDOCUMENTED   = NO
 WARN_FORMAT            = @WARN_FORMAT@
-QUIET                  = YES
+QUIET                  = NO
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = YES
 JAVADOC_AUTOBRIEF      = YES
@@ -25,7 +25,16 @@ CASE_SENSE_NAMES       = YES
 
 INPUT                  = @INPUTS@ 
 
+ENABLE_PREPROCESSING   = YES
+SEARCH_INCLUDES        = YES
+INCLUDE_FILE_PATTERNS  = *
+INCLUDE_PATH           = @IVW_ROOT_DIR@/ext \
+                         @IVW_ROOT_DIR@/include \
+                         @SHADER_INC_PATH@
+
 IMAGE_PATH             = @IMAGE_PATH@
+
+EXTENSION_MAPPING      = no_extension=C++ frag=C++ vert=C++ geom=C++ glsl=C++
 
 FILE_PATTERNS          = *.c \
                          *.cpp \
@@ -39,7 +48,7 @@ FILE_PATTERNS          = *.c \
 
 RECURSIVE              = YES
 EXCLUDE                =
-EXCLUDE_PATTERNS       = */ext/* \
+EXCLUDE_PATTERNS       = */modules/*/ext/* \
                          */moc_* \
                          */qrc_*
 

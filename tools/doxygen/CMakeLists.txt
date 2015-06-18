@@ -252,6 +252,9 @@ if(${IVW_DOXYGEN_PROJECT})
 	set(IVW_DOXY_TAG_FILES "")
 	set(IVW_DOXY_DEPENDS "")
 
+	string(REGEX REPLACE ";" " \\\\\n                         " SHADER_INC_PATH "${IVW_SHADER_INCLUDE_PATHS}")
+	set(SHADER_INC_PATH ${SHADER_INC_PATH})
+
 	if(PYTHONINTERP_FOUND)
 		set(FILER_PATTERNS_LIST
 			"\"*.frag=${IVW_DOXY_DIR}/filter/glslfilter.py\""

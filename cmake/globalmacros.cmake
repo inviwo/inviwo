@@ -731,6 +731,8 @@ endmacro()
 #--------------------------------------------------------------------
 # Add folder to module pack
 macro(ivw_add_to_module_pack folder)
+    set(IVW_SHADER_INCLUDE_PATHS "${IVW_SHADER_INCLUDE_PATHS};${folder}" PARENT_SCOPE)
+    
     if(IVW_PACKAGE_PROJECT)
         get_filename_component(FOLDER_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
         if(APPLE)
