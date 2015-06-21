@@ -30,23 +30,24 @@
 #ifndef IVW_MARCHINGTETRAHEDRON_H
 #define IVW_MARCHINGTETRAHEDRON_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/kdtree.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
+#include <modules/base/datastructures/kdtree.h>
+
 namespace inviwo {
 
-class IVW_CORE_API MarchingTetrahedron {
+class IVW_MODULE_BASE_API MarchingTetrahedron {
 public:
     static Mesh *apply(const VolumeRepresentation *in, const double &iso, const vec4 &color);
 };
 
 namespace detail {
-struct IVW_CORE_API MarchingTetrahedronDispatcher {
+struct IVW_MODULE_BASE_API MarchingTetrahedronDispatcher {
     using type = Mesh *;
     template <class T>
     Mesh *dispatch(const VolumeRepresentation *in, const double &iso, const vec4 &color);

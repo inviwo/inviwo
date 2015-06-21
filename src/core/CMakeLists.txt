@@ -5,9 +5,6 @@ ivw_project(inviwo-core)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/volume/marchingtetrahedron.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/volume/volumeramsubsample.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/algorithm/volume/volumeramsubset.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwoapplication.h
     ${IVW_INCLUDE_DIR}/inviwo/core/common/inviwocore.h
@@ -52,7 +49,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerramprecision.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/image/layerrepresentation.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/kdtree.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/baselightsource.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/diffuselight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/directionallight.h
@@ -243,9 +239,6 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    algorithm/volume/marchingtetrahedron.cpp
-    algorithm/volume/volumeramsubsample.cpp
-    algorithm/volume/volumeramsubset.cpp
     common/inviwoapplication.cpp
     common/inviwocore.cpp
     common/inviwomodule.cpp

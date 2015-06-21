@@ -30,12 +30,13 @@
 #ifndef IVW_VOLUMERAMSUBSET_H
 #define IVW_VOLUMERAMSUBSET_H
 
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumeborder.h>
 
 namespace inviwo {
 
-class IVW_CORE_API VolumeRAMSubSet {
+class IVW_MODULE_BASE_API VolumeRAMSubSet {
 public:
     static VolumeRAM* apply(const VolumeRepresentation* in, size3_t dim, size3_t offset,
                             const VolumeBorders& border = VolumeBorders(),
@@ -44,7 +45,7 @@ public:
 
 namespace detail {
 
-struct IVW_CORE_API VolumeRAMSubSetDispatcher {
+struct IVW_MODULE_BASE_API VolumeRAMSubSetDispatcher {
     using type = VolumeRAM*;
     template <class T>
     VolumeRAM* dispatch(const VolumeRepresentation* in, size3_t dim, size3_t offset,

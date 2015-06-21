@@ -30,11 +30,12 @@
 #ifndef IVW_VOLUMERAMSUBSAMPLE_H
 #define IVW_VOLUMERAMSUBSAMPLE_H
 
+#include <modules/base/basemoduledefine.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 
-class IVW_CORE_API VolumeRAMSubSample {
+class IVW_MODULE_BASE_API VolumeRAMSubSample {
 public:
     enum class FACTOR : size_t { HALF = 2 };
     static VolumeRAM* apply(const VolumeRepresentation* in, FACTOR factor);
@@ -42,7 +43,7 @@ public:
 
 namespace detail {
 
-struct IVW_CORE_API VolumeRAMSubSampleDispatcher {
+struct IVW_MODULE_BASE_API VolumeRAMSubSampleDispatcher {
     using type = VolumeRAM*;
     template <class T>
     VolumeRAM* dispatch(const VolumeRepresentation* in, VolumeRAMSubSample::FACTOR factor);

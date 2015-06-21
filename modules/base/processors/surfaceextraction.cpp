@@ -30,7 +30,7 @@
 #include "surfaceextraction.h"
 
 #include <inviwo/core/properties/propertysemantics.h>
-#include <inviwo/core/algorithm/volume/marchingtetrahedron.h>
+#include <modules/base/algorithm/volume/marchingtetrahedron.h>
 
 #define TETRA 1
 

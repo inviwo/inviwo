@@ -27,15 +27,13 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/algorithm/volume/volumeramsubset.h>
+#include "volumeramsubsample.h"
 
 namespace inviwo {
 
-VolumeRAM* VolumeRAMSubSet::apply(const VolumeRepresentation* in, size3_t dim, size3_t offset,
-                                  const VolumeBorders& border /*= VolumeBorders()*/,
-                                  bool clampBorderOutsideVolume /*= true*/) {
-    detail::VolumeRAMSubSetDispatcher disp;
-    return in->getDataFormat()->dispatch(disp, in, dim, offset, border, clampBorderOutsideVolume);
+VolumeRAM* VolumeRAMSubSample::apply(const VolumeRepresentation* in, FACTOR factor) {
+    detail::VolumeRAMSubSampleDispatcher disp;
+    return in->getDataFormat()->dispatch(disp, in, factor);
 }
 
 }  // namespace
