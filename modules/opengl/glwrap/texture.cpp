@@ -217,14 +217,12 @@ void Texture::downloadToPBO() const {
         pboBackIsSetup_ = true;
     }
 
-    if (!pboBackHasData_) {
-        bind();
-        bindToPBO();
-        glPixelStorei(GL_PACK_ALIGNMENT, 1);
-        glGetTexImage(target_, 0, format_, dataType_, nullptr);
-        unbindToPBO();
-        pboBackHasData_ = true;
-    }
+    bind();
+    bindToPBO();
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glGetTexImage(target_, 0, format_, dataType_, nullptr);
+    unbindToPBO();
+    pboBackHasData_ = true;
 }
 
 void Texture::loadFromPBO(const Texture* src) {
