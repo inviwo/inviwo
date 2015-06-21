@@ -66,11 +66,10 @@ private:
 
 class PickingCallback {
 public:
-    PickingCallback() : callBack_(0) {}
+    PickingCallback() : callBack_(nullptr) {}
     virtual ~PickingCallback() {
-        delete callBack_;
+        deleteCallback();
     }
-
 
     void invoke(const PickingObject* p) const {
         if (callBack_)
@@ -79,10 +78,13 @@ public:
 
     template <typename T>
     void addMemberFunction(T* o, void (T::*m)(const PickingObject*)) {
-        if (callBack_)
-            delete callBack_;
-
+        deleteCallback();
         callBack_ = new MemberFunctionPickingCallback<T>(o,m);
+    }
+
+    void deleteCallback() {
+        delete callBack_;
+        callBack_ = nullptr;
     }
 
 private:

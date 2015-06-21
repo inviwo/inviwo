@@ -67,6 +67,7 @@ private:
     PickingObject* mousePickObj_;
     uvec2 prevMouseCoord_;
     bool mousePickingOngoing_;
+    bool mouseIsDown_;
 
     std::unordered_map<int, PickingObject*> touchPickObjs_;
     std::unordered_map<PickingObject*, std::vector<TouchPoint>> pickedTouchPoints_;

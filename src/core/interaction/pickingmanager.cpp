@@ -47,6 +47,7 @@ bool PickingManager::unregisterPickingObject(const PickingObject* p) {
         it = std::find(pickingObjects_.begin(), pickingObjects_.end(), p);
 
         if (it != pickingObjects_.end()) {
+            (*it)->getCallbackContainer()->deleteCallback();
             unRegisteredPickingObjects_.push_back(*it);
             return true;
         }

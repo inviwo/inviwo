@@ -36,7 +36,12 @@
 namespace inviwo {
 
 PickingContainer::PickingContainer()
-    : src_(nullptr), mousePickObj_(nullptr), prevMouseCoord_(uvec2(0, 0)), mousePickingOngoing_(false){}
+    : src_(nullptr)
+    , mousePickObj_(nullptr)
+    , prevMouseCoord_(uvec2(0, 0))
+    , mousePickingOngoing_(false)
+    , mouseIsDown_(false) 
+{}
 
 PickingContainer::~PickingContainer() {}
 
@@ -45,10 +50,17 @@ bool PickingContainer::pickingEnabled() {
 }
 
 bool PickingContainer::performMousePick(MouseEvent* e) {
-    if (!pickingEnabled() || e->button() != MouseEvent::MOUSE_BUTTON_LEFT)
+    if (!pickingEnabled() || e->button() == MouseEvent::MOUSE_BUTTON_NONE)
         return false;
 
-    if (e->state() == MouseEvent::MOUSE_STATE_PRESS){
+    if (e->state() == MouseEvent::MOUSE_STATE_RELEASE){
+        mouseIsDown_ = false;
+        mousePickingOngoing_ = false;
+        return false;
+    }
+    else if (!mouseIsDown_ || e->state() == MouseEvent::MOUSE_STATE_PRESS){
+        mouseIsDown_ = true;
+
         uvec2 coord = mousePosToPixelCoordinates(e->pos(), e->canvasSize());
         prevMouseCoord_ = coord;
 
@@ -80,10 +92,6 @@ bool PickingContainer::performMousePick(MouseEvent* e) {
         }
         else
             return false;
-    }
-    else if (e->state() == MouseEvent::MOUSE_STATE_RELEASE){
-        mousePickingOngoing_ = false;
-        return false;
     }
 
     return false;
@@ -129,6 +137,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
         else if (touchPoint->state() == TouchPoint::TOUCH_STATE_ENDED) {
             // Erase touch point from TouchIDPickingMap
             touchPickObjs_.erase(touchPoint->getId());
+            isAssociated = true;
         }
         else {
             // Find out if touch point is in the TouchIDPickingMap
