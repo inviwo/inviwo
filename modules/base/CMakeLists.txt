@@ -67,5 +67,12 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
+# Unit tests
+set(TEST_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/kdtree-test.cpp
+)
+ivw_add_unittest(${TEST_FILES})
+
+#--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${MOC_FILES} ${HEADER_FILES})
