@@ -44,6 +44,7 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
     setTitleBarWidget(dockWidgetTitleBar_);
 
     QObject::connect(this, SIGNAL(topLevelChanged(bool)), titleBarWidget(), SLOT(floating(bool)));
+    QObject::connect(this, SIGNAL(windowTitleChanged(const QString &)), this, SLOT(updateWindowTitle(const QString &)));
 }
 
 InviwoDockWidget::~InviwoDockWidget() {}
@@ -95,8 +96,7 @@ void InviwoDockWidget::setContents(QLayout *layout) {
     this->setWidget(centralWidget);
 }
 
-void InviwoDockWidget::setWindowTitle(const QString &str) {
-    QDockWidget::setWindowTitle(str);
+void InviwoDockWidget::updateWindowTitle(const QString &str) {
     dockWidgetTitleBar_->setLabel(str);
 }
 
