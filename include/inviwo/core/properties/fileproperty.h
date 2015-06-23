@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/templateproperty.h>
 
 namespace inviwo {
+
 /** class FileProperty
  *  A class for file representations.
  *  Holds the value of the path to a file as a string.
@@ -44,8 +45,8 @@ namespace inviwo {
 class IVW_CORE_API FileProperty : public TemplateProperty<std::string> {
 public:
     InviwoPropertyInfo();
-    enum AcceptMode { AcceptOpen, AcceptSave };
-    enum FileMode { AnyFile, ExistingFile, Directory, ExistingFiles, DirectoryOnly };
+    enum class AcceptMode { Open, Save };
+    enum class FileMode { AnyFile, ExistingFile, Directory, ExistingFiles, DirectoryOnly };
 
     /**
      * \brief Constructor for the FileProperty

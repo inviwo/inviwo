@@ -60,11 +60,12 @@ ImageSourceSeries::ImageSourceSeries()
 
     validExtensions_ = DataReaderFactory::getPtr()->getExtensionsForType<Layer>();
 
-    imageFileDirectory_.registerFileIndexingHandle(&currentImageIndex_);
     imageFileDirectory_.onChange(this, &ImageSourceSeries::onFindFiles);
     findFilesButton_.onChange(this, &ImageSourceSeries::onFindFiles);
 
     imageFileName_.setReadOnly(true);
+
+    this->onFindFiles();
 }
 
 ImageSourceSeries::~ImageSourceSeries() {}
@@ -77,8 +78,12 @@ void ImageSourceSeries::deinitialize() {
     Processor::deinitialize();
 }
 
+void ImageSourceSeries::deserialize(IvwDeserializer& d) {
+    Processor::deserialize(d);
+}
+
 void ImageSourceSeries::onFindFiles() {
-    std::vector<std::string> files = imageFileDirectory_.getFiles();
+    std::vector<std::string> files = filesystem::getDirectoryContents(imageFileDirectory_.get());
     currentImageIndex_.setReadOnly(files.empty());
     if(files.empty())
         return;
@@ -110,7 +115,8 @@ void ImageSourceSeries::process() {
     Image* outImage = outport_.getData();
 
     if (outImage) {
-        std::vector<std::string> filesInDirectory = imageFileDirectory_.getFiles();
+        std::string basePath{ imageFileDirectory_.get() };
+        std::vector<std::string> filesInDirectory = filesystem::getDirectoryContents(basePath);
         std::vector<std::string> fileNames;
 
         if(filesInDirectory.empty()){
@@ -140,7 +146,7 @@ void ImageSourceSeries::process() {
             return;
         }
 
-        std::string currentFileName = fileNames[currentIndex - 1];
+        std::string currentFileName{ basePath + "/" + fileNames[currentIndex - 1] };
         imageFileName_.set(filesystem::getFileNameWithExtension(currentFileName));
 
         std::string fileExtension = filesystem::getFileExtension(currentFileName);

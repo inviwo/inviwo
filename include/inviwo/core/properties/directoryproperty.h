@@ -31,17 +31,32 @@
 #define IVW_DIRECTORY_PROPERTY_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/properties/templateproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 namespace inviwo {
+
 /** class DirectoryProperty
  *  A class for file representations.
  *  Holds the value of the path to a file as a string.
  *
  * @see FileProperty, StringProperty
  */
+class IVW_CORE_API DirectoryProperty : public FileProperty {
+public:
+    InviwoPropertyInfo();
+    DirectoryProperty(
+        std::string identifier,
+        std::string displayName,
+        std::string value = "",
+        std::string contentType = "default",
+        InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+        PropertySemantics semantics = PropertySemantics::Default);
+    virtual ~DirectoryProperty();
 
+    virtual std::string getClassIdentifierForWidget() const override;
+};
+
+    /*
 class IVW_CORE_API DirectoryProperty : public TemplateProperty<std::string> {
 public:
     InviwoPropertyInfo();
@@ -82,6 +97,7 @@ protected:
     IntProperty* fileIndexingHandle_; // Owning!?! //Peter
     std::string contentType_;
 };
+*/
 
 }  // namespace
 

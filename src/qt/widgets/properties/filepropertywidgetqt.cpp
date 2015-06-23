@@ -111,41 +111,42 @@ void FilePropertyWidgetQt::setPropertyValue() {
 
 
     switch (property_->getAcceptMode()) {
-        case FileProperty::AcceptSave:
-            importFileDialog.setAcceptMode(QFileDialog::AcceptSave);
-            break;
+    case FileProperty::AcceptMode::Save:
+        importFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+        break;
 
-        case FileProperty::AcceptOpen:
-            importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
-            break;
+    case FileProperty::AcceptMode::Open:
+        importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
+        break;
 
-        default:
-            importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
+    default:
+        importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
     }
 
     switch (property_->getFileMode()) {
-        case FileProperty::AnyFile:
-            importFileDialog.setFileMode(QFileDialog::AnyFile);
-            break;
+    case FileProperty::FileMode::AnyFile:
+        importFileDialog.setFileMode(QFileDialog::AnyFile);
+        break;
 
-        case FileProperty::ExistingFile:
-            importFileDialog.setFileMode(QFileDialog::ExistingFile);
-            break;
+    case FileProperty::FileMode::ExistingFile:
+        importFileDialog.setFileMode(QFileDialog::ExistingFile);
+        break;
 
-        case FileProperty::Directory:
-            importFileDialog.setFileMode(QFileDialog::Directory);
-            break;
+    case FileProperty::FileMode::Directory:
+        importFileDialog.setFileMode(QFileDialog::Directory);
+        break;
 
-        case FileProperty::ExistingFiles:
-            importFileDialog.setFileMode(QFileDialog::ExistingFiles);
-            break;
+    case FileProperty::FileMode::ExistingFiles:
+        importFileDialog.setFileMode(QFileDialog::ExistingFiles);
+        break;
 
-        case FileProperty::DirectoryOnly:
-            importFileDialog.setFileMode(QFileDialog::DirectoryOnly);
-            break;
+    case FileProperty::FileMode::DirectoryOnly:
+        importFileDialog.setFileMode(QFileDialog::DirectoryOnly);
+        break;
 
-        default:
-            importFileDialog.setFileMode(QFileDialog::AnyFile);
+    default:
+        importFileDialog.setFileMode(QFileDialog::AnyFile);
+        break;
     }
 
     if (importFileDialog.exec()) {

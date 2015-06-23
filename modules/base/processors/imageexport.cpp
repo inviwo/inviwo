@@ -61,7 +61,7 @@ ImageExport::ImageExport()
 
     addPort(imagePort_);
     addProperty(imageFile_);
-    imageFile_.setAcceptMode(FileProperty::AcceptSave);
+    imageFile_.setAcceptMode(FileProperty::AcceptMode::Save);
     exportImageButton_.onChange(this, &ImageExport::exportImage);
     addProperty(exportImageButton_);
     addProperty(overwrite_);

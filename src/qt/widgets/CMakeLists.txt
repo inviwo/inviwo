@@ -27,7 +27,6 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/colorpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/compositepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/directorypropertywidgetqt.h       
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/eventpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/filepropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/ordinalpropertywidgetqt.h
@@ -91,7 +90,6 @@ set(SOURCE_FILES
     properties/collapsiblegroupboxwidgetqt.cpp
     properties/colorpropertywidgetqt.cpp
     properties/compositepropertywidgetqt.cpp
-    properties/directorypropertywidgetqt.cpp    
     properties/eventpropertywidgetqt.cpp
     properties/filepropertywidgetqt.cpp
     properties/glslsyntaxhighlighter.cpp

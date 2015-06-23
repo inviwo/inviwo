@@ -61,7 +61,7 @@ VolumeExport::VolumeExport()
 
     addPort(volumePort_);
     addProperty(volumeFile_);
-    volumeFile_.setAcceptMode(FileProperty::AcceptSave);
+    volumeFile_.setAcceptMode(FileProperty::AcceptMode::Save);
     exportVolumeButton_.onChange(this, &VolumeExport::exportVolume);
     addProperty(exportVolumeButton_);
     addProperty(overwrite_);

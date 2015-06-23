@@ -29,12 +29,29 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
 PropertyClassIdentifier(DirectoryProperty, "org.inviwo.DirectoryProperty");
+
+DirectoryProperty::DirectoryProperty(
+    std::string identifier, std::string displayName,
+    std::string value, std::string contentType,
+    InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics)
+{
+    this->setAcceptMode(FileProperty::AcceptMode::Open);
+    this->setFileMode(FileProperty::FileMode::DirectoryOnly);
+}
+
+DirectoryProperty::~DirectoryProperty() {
+}
+
+std::string DirectoryProperty::getClassIdentifierForWidget() const {
+    return "org.inviwo.FileProperty";
+}
+
+#if 0
 
 DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
                                      std::string value, std::string contentType,
@@ -66,11 +83,19 @@ DirectoryProperty* DirectoryProperty::clone() const {
 
 DirectoryProperty::~DirectoryProperty() {}
 
-std::vector<std::string> DirectoryProperty::getDirectoryTree() const { return directoryTree_; }
+std::vector<std::string> DirectoryProperty::getDirectoryTree() const { 
+    return directoryTree_; 
+}
 
-void DirectoryProperty::updateDirectoryTree() { updateWidgets(); }
+void DirectoryProperty::updateDirectoryTree() { 
+    LogError("deprecated function!");
+
+    updateWidgets(); 
+}
 
 std::vector<std::string> DirectoryProperty::getFiles(std::string filters) const {
+    LogError("deprecated function!");
+
     std::vector<std::string> validFilesWithExtension;
     std::string filterName = filesystem::getFileNameWithoutExtension(filters);
     std::string filterExt = filesystem::getFileExtension(filters);
@@ -107,6 +132,8 @@ std::vector<std::string> DirectoryProperty::getFiles(std::string filters) const 
 }
 
 void DirectoryProperty::setDirectoryTree(std::vector<std::string> dirTree) {
+    LogError("deprecated function!");
+
     directoryTree_ = dirTree;
     propertyModified();
 }
@@ -131,6 +158,8 @@ void DirectoryProperty::serialize(IvwSerializer& s) const {
 }
 
 void DirectoryProperty::deserialize(IvwDeserializer& d) {
+    LogError("deprecated function!");
+
     Property::deserialize(d);
     std::string serializePath;
     d.deserialize("directory", serializePath);
@@ -153,5 +182,5 @@ void DirectoryProperty::setContentType(const std::string& contentType) {
 }
 
 std::string DirectoryProperty::getContentType() const { return contentType_; }
-
+#endif
 }  // namespace
