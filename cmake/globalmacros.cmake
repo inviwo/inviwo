@@ -815,6 +815,21 @@ macro(ivw_set_pch_disabled_for_module)
     set(_pchDisabledForThisModule TRUE)
 endmacro()
 
+
+#--------------------------------------------------------------------
+# Set header ignore paths for cotire
+macro(cotire_ignore)
+    get_target_property(COTIRE_PREFIX_HEADER_IGNORE_PATH ${_projectName} COTIRE_PREFIX_HEADER_IGNORE_PATH)
+    if(NOT COTIRE_PREFIX_HEADER_IGNORE_PATH)
+        set(COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
+    
+    list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH $IVW_COTIRE_EXCLUDES})
+    list(REMOVE_DUPLICATES COTIRE_PREFIX_HEADER_IGNORE_PATH)
+
+    set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}")  
+endmacro()
+
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers from inviwo core
 macro(ivw_compile_optimize_inviwo_core)
@@ -823,8 +838,8 @@ macro(ivw_compile_optimize_inviwo_core)
 			set_target_properties(${_projectName} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 		endif()
 
-        set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH 
-            "${COTIRE_PREFIX_HEADER_IGNORE_PATH};$IVW_COTIRE_EXCLUDES}")
+        cotire_ignore()
+
         set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
         get_target_property(_prefixHeader inviwo-core COTIRE_CXX_PREFIX_HEADER)
         set_target_properties(${_projectName} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${_prefixHeader}")
@@ -836,8 +851,7 @@ endmacro()
 # Optimize compilation with pre-compilied headers
 macro(ivw_compile_optimize)
     if(PRECOMPILED_HEADERS)
-        set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH 
-            "${COTIRE_PREFIX_HEADER_IGNORE_PATH};${IVW_COTIRE_EXCLUDES}")
+        cotire_ignore()
         set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
 		list(APPEND _allPchDirs ${IVW_EXTENSIONS_DIR})
 		set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${_allPchDirs}")
