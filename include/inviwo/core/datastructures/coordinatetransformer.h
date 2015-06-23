@@ -109,48 +109,41 @@ public:
      */
     virtual const Matrix<N+1, float> getWorldToDataMatrix() const = 0;
 
-
-    //AUTO GENERATED CODE STARTS HERE
-    enum class SPACES{
+    enum class Space{
         Data, Model, World
     };
-public:
-    const Matrix <N + 1, float> getMatrix(SPACES from, SPACES to)const{
-        switch (from){
-        case SPACES::Data:
-            switch (to){
-            case SPACES::Data:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Model:
-                return getDataToModelMatrix();
-            case SPACES::World:
-                return getDataToWorldMatrix();
-            }
-        case SPACES::Model:
-            switch (to){
-            case SPACES::Data:
-                return getModelToDataMatrix();
-            case SPACES::Model:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::World:
-                return getModelToWorldMatrix();
-            }
-        case SPACES::World:
-            switch (to){
-            case SPACES::Data:
-                return getWorldToDataMatrix();
-            case SPACES::Model:
-                return getWorldToModelMatrix();
-            case SPACES::World:
-                return Matrix<N + 1, float>(1.0f);
-            }
+    const Matrix<N + 1, float> getMatrix(Space from, Space to) const {
+        switch (from) {
+            case Space::Data:
+                switch (to) {
+                    case Space::Data:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Model:
+                        return getDataToModelMatrix();
+                    case Space::World:
+                        return getDataToWorldMatrix();
+                }
+            case Space::Model:
+                switch (to) {
+                    case Space::Data:
+                        return getModelToDataMatrix();
+                    case Space::Model:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::World:
+                        return getModelToWorldMatrix();
+                }
+            case Space::World:
+                switch (to) {
+                    case Space::Data:
+                        return getWorldToDataMatrix();
+                    case Space::Model:
+                        return getWorldToModelMatrix();
+                    case Space::World:
+                        return Matrix<N + 1, float>(1.0f);
+                }
         }
-        throw std::exception("getMatrix is not implatemented for the given spaces");
+        throw Exception("getMatrix is not implatemented for the given spaces", IvwContext);
     }
-    //AUTO GENERATED CODE ENDS HERE
-
-
-
 };
 
 template<unsigned int N>
@@ -249,84 +242,80 @@ public:
      */
     virtual const Matrix<N+1, float> getWorldToIndexMatrix() const = 0;
 
-
-    //AUTO GENERATED CODE STARTS HERE
-    enum class SPACES{
+    enum class Space {
         Data, Model, World, Texture, Index
     };
-public:
-    const Matrix <N + 1, float> getMatrix(SPACES from, SPACES to)const{
-        switch (from){
-        case SPACES::Data:
-            switch (to){
-            case SPACES::Data:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Model:
-                return getDataToModelMatrix();
-            case SPACES::World:
-                return getDataToWorldMatrix();
-            case SPACES::Texture:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Index:
-                return getDataToIndexMatrix();
-            }
-        case SPACES::Model:
-            switch (to){
-            case SPACES::Data:
-                return getModelToDataMatrix();
-            case SPACES::Model:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::World:
-                return getModelToWorldMatrix();
-            case SPACES::Texture:
-                return getModelToTextureMatrix();
-            case SPACES::Index:
-                return getModelToIndexMatrix();
-            }
-        case SPACES::World:
-            switch (to){
-            case SPACES::Data:
-                return getWorldToDataMatrix();
-            case SPACES::Model:
-                return getWorldToModelMatrix();
-            case SPACES::World:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Texture:
-                return getWorldToTextureMatrix();
-            case SPACES::Index:
-                return getWorldToIndexMatrix();
-            }
-        case SPACES::Texture:
-            switch (to){
-            case SPACES::Data:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Model:
-                return getTextureToModelMatrix();
-            case SPACES::World:
-                return getTextureToWorldMatrix();
-            case SPACES::Texture:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Index:
-                return getTextureToIndexMatrix();
-            }
-        case SPACES::Index:
-            switch (to){
-            case SPACES::Data:
-                return getIndexToDataMatrix();
-            case SPACES::Model:
-                return getIndexToModelMatrix();
-            case SPACES::World:
-                return getIndexToWorldMatrix();
-            case SPACES::Texture:
-                return getIndexToTextureMatrix();
-            case SPACES::Index:
-                return Matrix<N + 1, float>(1.0f);
-            }
-        }
-        throw std::exception("getMatrix is not implatemented for the given spaces");
-    }
-    //AUTO GENERATED CODE ENDS HERE
 
+    const Matrix<N + 1, float> getMatrix(Space from, Space to) const {
+        switch (from) {
+            case Space::Data:
+                switch (to) {
+                    case Space::Data:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Model:
+                        return getDataToModelMatrix();
+                    case Space::World:
+                        return getDataToWorldMatrix();
+                    case Space::Texture:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Index:
+                        return getDataToIndexMatrix();
+                }
+            case Space::Model:
+                switch (to) {
+                    case Space::Data:
+                        return getModelToDataMatrix();
+                    case Space::Model:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::World:
+                        return getModelToWorldMatrix();
+                    case Space::Texture:
+                        return getModelToTextureMatrix();
+                    case Space::Index:
+                        return getModelToIndexMatrix();
+                }
+            case Space::World:
+                switch (to) {
+                    case Space::Data:
+                        return getWorldToDataMatrix();
+                    case Space::Model:
+                        return getWorldToModelMatrix();
+                    case Space::World:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Texture:
+                        return getWorldToTextureMatrix();
+                    case Space::Index:
+                        return getWorldToIndexMatrix();
+                }
+            case Space::Texture:
+                switch (to) {
+                    case Space::Data:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Model:
+                        return getTextureToModelMatrix();
+                    case Space::World:
+                        return getTextureToWorldMatrix();
+                    case Space::Texture:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Index:
+                        return getTextureToIndexMatrix();
+                }
+            case Space::Index:
+                switch (to) {
+                    case Space::Data:
+                        return getIndexToDataMatrix();
+                    case Space::Model:
+                        return getIndexToModelMatrix();
+                    case Space::World:
+                        return getIndexToWorldMatrix();
+                    case Space::Texture:
+                        return getIndexToTextureMatrix();
+                    case Space::Index:
+                        return Matrix<N + 1, float>(1.0f);
+                }
+        }
+        throw Exception("getMatrix is not implatemented for the given spaces", IvwContext);
+    }
 };
 
 template<unsigned int N>
@@ -435,84 +424,80 @@ public:
      */
     virtual const Matrix<N+1, float> getWorldToViewMatrix() const = 0;
 
-
-    //AUTO GENERATED CODE STARTS HERE
-    enum class SPACES{
+    enum class Space {
         Data, Model, World, Clip, View
     };
-public:
-    const Matrix <N + 1, float> getMatrix(SPACES from, SPACES to)const{
-        switch (from){
-        case SPACES::Data:
-            switch (to){
-            case SPACES::Data:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Model:
-                return getDataToModelMatrix();
-            case SPACES::World:
-                return getDataToWorldMatrix();
-            case SPACES::Clip:
-                return getDataToClipMatrix();
-            case SPACES::View:
-                return getDataToViewMatrix();
-            }
-        case SPACES::Model:
-            switch (to){
-            case SPACES::Data:
-                return getModelToDataMatrix();
-            case SPACES::Model:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::World:
-                return getModelToWorldMatrix();
-            case SPACES::Clip:
-                return getModelToClipMatrix();
-            case SPACES::View:
-                return getModelToViewMatrix();
-            }
-        case SPACES::World:
-            switch (to){
-            case SPACES::Data:
-                return getWorldToDataMatrix();
-            case SPACES::Model:
-                return getWorldToModelMatrix();
-            case SPACES::World:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Clip:
-                return getWorldToClipMatrix();
-            case SPACES::View:
-                return getWorldToViewMatrix();
-            }
-        case SPACES::Clip:
-            switch (to){
-            case SPACES::Data:
-                return getClipToDataMatrix();
-            case SPACES::Model:
-                return getClipToModelMatrix();
-            case SPACES::World:
-                return getClipToWorldMatrix();
-            case SPACES::Clip:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::View:
-                return getClipToViewMatrix();
-            }
-        case SPACES::View:
-            switch (to){
-            case SPACES::Data:
-                return getViewToDataMatrix();
-            case SPACES::Model:
-                return getViewToModelMatrix();
-            case SPACES::World:
-                return getViewToWorldMatrix();
-            case SPACES::Clip:
-                return getViewToClipMatrix();
-            case SPACES::View:
-                return Matrix<N + 1, float>(1.0f);
-            }
-        }
-        throw std::exception("getMatrix is not implatemented for the given spaces");
-    }
-    //AUTO GENERATED CODE ENDS HERE
 
+    const Matrix<N + 1, float> getMatrix(Space from, Space to) const {
+        switch (from) {
+            case Space::Data:
+                switch (to) {
+                    case Space::Data:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Model:
+                        return getDataToModelMatrix();
+                    case Space::World:
+                        return getDataToWorldMatrix();
+                    case Space::Clip:
+                        return getDataToClipMatrix();
+                    case Space::View:
+                        return getDataToViewMatrix();
+                }
+            case Space::Model:
+                switch (to) {
+                    case Space::Data:
+                        return getModelToDataMatrix();
+                    case Space::Model:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::World:
+                        return getModelToWorldMatrix();
+                    case Space::Clip:
+                        return getModelToClipMatrix();
+                    case Space::View:
+                        return getModelToViewMatrix();
+                }
+            case Space::World:
+                switch (to) {
+                    case Space::Data:
+                        return getWorldToDataMatrix();
+                    case Space::Model:
+                        return getWorldToModelMatrix();
+                    case Space::World:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Clip:
+                        return getWorldToClipMatrix();
+                    case Space::View:
+                        return getWorldToViewMatrix();
+                }
+            case Space::Clip:
+                switch (to) {
+                    case Space::Data:
+                        return getClipToDataMatrix();
+                    case Space::Model:
+                        return getClipToModelMatrix();
+                    case Space::World:
+                        return getClipToWorldMatrix();
+                    case Space::Clip:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::View:
+                        return getClipToViewMatrix();
+                }
+            case Space::View:
+                switch (to) {
+                    case Space::Data:
+                        return getViewToDataMatrix();
+                    case Space::Model:
+                        return getViewToModelMatrix();
+                    case Space::World:
+                        return getViewToWorldMatrix();
+                    case Space::Clip:
+                        return getViewToClipMatrix();
+                    case Space::View:
+                        return Matrix<N + 1, float>(1.0f);
+                }
+        }
+        throw Exception("getMatrix is not implatemented for the given spaces", IvwContext);
+    }
 };
 
 template<unsigned int N>
@@ -721,137 +706,134 @@ public:
      */
     virtual const Matrix<N + 1, float> getWorldToIndexMatrix() const = 0;
 
-
-    //AUTO GENERATED CODE STARTS HERE
-    enum class SPACES{
+    enum class Space {
         Data, Model, World, Texture, Index, Clip, View
     };
-public:
-    const Matrix <N + 1, float> getMatrix(SPACES from, SPACES to)const{
-        switch (from){
-        case SPACES::Data:
-            switch (to){
-            case SPACES::Data:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Model:
-                return getDataToModelMatrix();
-            case SPACES::World:
-                return getDataToWorldMatrix();
-            case SPACES::Texture:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Index:
-                return getDataToIndexMatrix();
-            case SPACES::Clip:
-                return getDataToClipMatrix();
-            case SPACES::View:
-                return getDataToViewMatrix();
-            }
-        case SPACES::Model:
-            switch (to){
-            case SPACES::Data:
-                return getModelToDataMatrix();
-            case SPACES::Model:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::World:
-                return getModelToWorldMatrix();
-            case SPACES::Texture:
-                return getModelToTextureMatrix();
-            case SPACES::Index:
-                return getModelToIndexMatrix();
-            case SPACES::Clip:
-                return getModelToClipMatrix();
-            case SPACES::View:
-                return getModelToViewMatrix();
-            }
-        case SPACES::World:
-            switch (to){
-            case SPACES::Data:
-                return getWorldToDataMatrix();
-            case SPACES::Model:
-                return getWorldToModelMatrix();
-            case SPACES::World:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Texture:
-                return getWorldToTextureMatrix();
-            case SPACES::Index:
-                return getWorldToIndexMatrix();
-            case SPACES::Clip:
-                return getWorldToClipMatrix();
-            case SPACES::View:
-                return getWorldToViewMatrix();
-            }
-        case SPACES::Texture:
-            switch (to){
-            case SPACES::Data:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Model:
-                return getTextureToModelMatrix();
-            case SPACES::World:
-                return getTextureToWorldMatrix();
-            case SPACES::Texture:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Index:
-                return getTextureToIndexMatrix();
-            case SPACES::Clip:
-                return getTextureToClipMatrix();
-            case SPACES::View:
-                return getTextureToViewMatrix();
-            }
-        case SPACES::Index:
-            switch (to){
-            case SPACES::Data:
-                return getIndexToDataMatrix();
-            case SPACES::Model:
-                return getIndexToModelMatrix();
-            case SPACES::World:
-                return getIndexToWorldMatrix();
-            case SPACES::Texture:
-                return getIndexToTextureMatrix();
-            case SPACES::Index:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::Clip:
-                return getIndexToClipMatrix();
-            case SPACES::View:
-                return getIndexToViewMatrix();
-            }
-        case SPACES::Clip:
-            switch (to){
-            case SPACES::Data:
-                return getClipToDataMatrix();
-            case SPACES::Model:
-                return getClipToModelMatrix();
-            case SPACES::World:
-                return getClipToWorldMatrix();
-            case SPACES::Texture:
-                return getClipToTextureMatrix();
-            case SPACES::Index:
-                return getClipToIndexMatrix();
-            case SPACES::Clip:
-                return Matrix<N + 1, float>(1.0f);
-            case SPACES::View:
-                return getClipToViewMatrix();
-            }
-        case SPACES::View:
-            switch (to){
-            case SPACES::Data:
-                return getViewToDataMatrix();
-            case SPACES::Model:
-                return getViewToModelMatrix();
-            case SPACES::World:
-                return getViewToWorldMatrix();
-            case SPACES::Texture:
-                return getViewToTextureMatrix();
-            case SPACES::Index:
-                return getViewToIndexMatrix();
-            case SPACES::Clip:
-                return getViewToClipMatrix();
-            case SPACES::View:
-                return Matrix<N + 1, float>(1.0f);
-            }
+
+    const Matrix<N + 1, float> getMatrix(Space from, Space to) const {
+        switch (from) {
+            case Space::Data:
+                switch (to) {
+                    case Space::Data:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Model:
+                        return getDataToModelMatrix();
+                    case Space::World:
+                        return getDataToWorldMatrix();
+                    case Space::Texture:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Index:
+                        return getDataToIndexMatrix();
+                    case Space::Clip:
+                        return getDataToClipMatrix();
+                    case Space::View:
+                        return getDataToViewMatrix();
+                }
+            case Space::Model:
+                switch (to) {
+                    case Space::Data:
+                        return getModelToDataMatrix();
+                    case Space::Model:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::World:
+                        return getModelToWorldMatrix();
+                    case Space::Texture:
+                        return getModelToTextureMatrix();
+                    case Space::Index:
+                        return getModelToIndexMatrix();
+                    case Space::Clip:
+                        return getModelToClipMatrix();
+                    case Space::View:
+                        return getModelToViewMatrix();
+                }
+            case Space::World:
+                switch (to) {
+                    case Space::Data:
+                        return getWorldToDataMatrix();
+                    case Space::Model:
+                        return getWorldToModelMatrix();
+                    case Space::World:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Texture:
+                        return getWorldToTextureMatrix();
+                    case Space::Index:
+                        return getWorldToIndexMatrix();
+                    case Space::Clip:
+                        return getWorldToClipMatrix();
+                    case Space::View:
+                        return getWorldToViewMatrix();
+                }
+            case Space::Texture:
+                switch (to) {
+                    case Space::Data:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Model:
+                        return getTextureToModelMatrix();
+                    case Space::World:
+                        return getTextureToWorldMatrix();
+                    case Space::Texture:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Index:
+                        return getTextureToIndexMatrix();
+                    case Space::Clip:
+                        return getTextureToClipMatrix();
+                    case Space::View:
+                        return getTextureToViewMatrix();
+                }
+            case Space::Index:
+                switch (to) {
+                    case Space::Data:
+                        return getIndexToDataMatrix();
+                    case Space::Model:
+                        return getIndexToModelMatrix();
+                    case Space::World:
+                        return getIndexToWorldMatrix();
+                    case Space::Texture:
+                        return getIndexToTextureMatrix();
+                    case Space::Index:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::Clip:
+                        return getIndexToClipMatrix();
+                    case Space::View:
+                        return getIndexToViewMatrix();
+                }
+            case Space::Clip:
+                switch (to) {
+                    case Space::Data:
+                        return getClipToDataMatrix();
+                    case Space::Model:
+                        return getClipToModelMatrix();
+                    case Space::World:
+                        return getClipToWorldMatrix();
+                    case Space::Texture:
+                        return getClipToTextureMatrix();
+                    case Space::Index:
+                        return getClipToIndexMatrix();
+                    case Space::Clip:
+                        return Matrix<N + 1, float>(1.0f);
+                    case Space::View:
+                        return getClipToViewMatrix();
+                }
+            case Space::View:
+                switch (to) {
+                    case Space::Data:
+                        return getViewToDataMatrix();
+                    case Space::Model:
+                        return getViewToModelMatrix();
+                    case Space::World:
+                        return getViewToWorldMatrix();
+                    case Space::Texture:
+                        return getViewToTextureMatrix();
+                    case Space::Index:
+                        return getViewToIndexMatrix();
+                    case Space::Clip:
+                        return getViewToClipMatrix();
+                    case Space::View:
+                        return Matrix<N + 1, float>(1.0f);
+                }
         }
-        throw std::exception("getMatrix is not implatemented for the given spaces");
+        throw Exception("getMatrix is not implatemented for the given spaces", IvwContext);
     }
-    //AUTO GENERATED CODE ENDS HERE
 };
 
 template<unsigned int N>
