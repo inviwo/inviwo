@@ -117,17 +117,6 @@ struct port_traits<std::vector<T*>> {
             (!data->empty() ? " with " + port_traits<T>::data_info(data->front()) : " "); 
     }
 };
-template <typename T, typename D, typename A>
-struct port_traits<std::vector<std::unique_ptr<T, D>, A>> {
-    static std::string class_identifier() { return port_traits<T>::class_identifier() + "UniquePtrVector"; }
-    static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
-    static std::string data_info(const std::vector<std::unique_ptr<T, D>, A>* data) { 
-        return "Vector of size " + toString(data->size()) +
-            (!data->empty() ? " with " + port_traits<T>::data_info(data->front().get()) : " "); 
-    }
-};
-
-
 }  // namespace
 
 #endif  // IVW_PORT_H
