@@ -97,7 +97,11 @@ std::string TinyDirInterface::getNextEntryWithBasePath() {
 std::vector<std::string> TinyDirInterface::getContents() {
     std::vector<std::string> files;
     while (isNextEntryAvailable()) {
-        files.push_back(getNextEntry(false));
+        std::string entry{ getNextEntry(false) };
+        // getNextEntry might return an empty string depending on the ListMode setting
+        if (!entry.empty()) {
+            files.push_back(entry);
+        }
     }
     return files;
 }
