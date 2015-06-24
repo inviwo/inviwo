@@ -59,13 +59,14 @@ public:
     virtual T& get();
     virtual const T& get() const;
     virtual void set(const T& value);
-    virtual void set(const Property* srcProperty);
+    void set(const TemplateProperty<T>* srcProperty);
+    virtual void set(const Property* srcProperty) override;
 
-    virtual void setCurrentStateAsDefault();
-    virtual void resetToDefaultState();
+    virtual void setCurrentStateAsDefault() override;
+    virtual void resetToDefaultState() override;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
 protected:
     ValueWrapper<T> value_;
@@ -160,13 +161,15 @@ void TemplateProperty<T>::set(const T& value) {
 
 template <typename T>
 void TemplateProperty<T>::set(const Property* srcProperty) {
-    const TemplateProperty<T>* templatedSrcProp =
-        dynamic_cast<const TemplateProperty<T>*>(srcProperty);
-    if (templatedSrcProp) {
-        if (this->value_.value == templatedSrcProp->value_.value) return; 
-        this->value_.value = templatedSrcProp->value_.value;
+    if (auto prop = dynamic_cast<const TemplateProperty<T>*>(srcProperty)) {
+        set(prop);
     }
+}
 
+template <typename T>
+void inviwo::TemplateProperty<T>::set(const TemplateProperty<T>* srcProperty) {
+    if (this->value_.value == srcProperty->value_.value) return;
+    this->value_.value = srcProperty->value_.value;
     Property::set(srcProperty);
 }
 

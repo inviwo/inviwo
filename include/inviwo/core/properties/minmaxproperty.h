@@ -184,14 +184,12 @@ void MinMaxProperty<T>::set(const range_type& value) {
 
 template <typename T>
 void inviwo::MinMaxProperty<T>::set(const Property* srcProperty) {
-    const MinMaxProperty<T>* templatedSrcProp = dynamic_cast<const MinMaxProperty<T>*>(srcProperty);
-    if (templatedSrcProp) {
-        this->range_.value = templatedSrcProp->range_.value;
-        this->increment_.value = templatedSrcProp->increment_.value;
-        this->minSeparation_.value = templatedSrcProp->minSeparation_.value;
+    if (auto prop = dynamic_cast<const MinMaxProperty<T>*>(srcProperty)) {
+        this->range_.value = prop->range_.value;
+        this->increment_.value = prop->increment_.value;
+        this->minSeparation_.value = prop->minSeparation_.value;
+        TemplateProperty<range_type>::set(prop);
     }
-
-    TemplateProperty<range_type>::set(srcProperty);
 }
 
 template <typename T>

@@ -97,7 +97,6 @@ protected:
     Processor* processor_;  //< non-owning reference
 };
 
-
 // Specialization for vectors.
 template <typename T, typename Alloc>
 struct port_traits<std::vector<T, Alloc>> {
@@ -105,25 +104,36 @@ struct port_traits<std::vector<T, Alloc>> {
     static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
     static std::string data_info(const std::vector<T, Alloc>* data) {
         return "Vector of size " + toString(data->size()) +
-            (!data->empty() ? "<br/>with elements of:<br/>" + port_traits<T>::data_info(&(data->front())) : " ");
+               (!data->empty()
+                    ? "<br/>with elements of:<br/>" + port_traits<T>::data_info(&(data->front()))
+                    : " ");
     }
 };
 template <typename T, typename Alloc>
 struct port_traits<std::vector<T*, Alloc>> {
-    static std::string class_identifier() { return port_traits<T>::class_identifier() + "PtrVector"; }
+    static std::string class_identifier() {
+        return port_traits<T>::class_identifier() + "PtrVector";
+    }
     static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
     static std::string data_info(const std::vector<T*, Alloc>* data) {
         return "Vector of size " + toString(data->size()) +
-            (!data->empty() ? "<br/>with pointers to:<br/>" + port_traits<T>::data_info(data->front()) : " ");
+               (!data->empty()
+                    ? "<br/>with pointers to:<br/>" + port_traits<T>::data_info(data->front())
+                    : " ");
     }
 };
 template <typename T, typename D, typename A>
 struct port_traits<std::vector<std::unique_ptr<T, D>, A>> {
-    static std::string class_identifier() { return port_traits<T>::class_identifier() + "UniquePtrVector"; }
+    static std::string class_identifier() {
+        return port_traits<T>::class_identifier() + "UniquePtrVector";
+    }
     static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
-    static std::string data_info(const std::vector<std::unique_ptr<T, D>, A>* data) { 
+    static std::string data_info(const std::vector<std::unique_ptr<T, D>, A>* data) {
         return "Vector of size " + toString(data->size()) +
-            (!data->empty() ? "<br/>with unique pointers to:<br/> " + port_traits<T>::data_info(data->front().get()) : " ");
+               (!data->empty()
+                    ? "<br/>with unique pointers to:<br/> " +
+                          port_traits<T>::data_info(data->front().get())
+                    : " ");
     }
 };
 

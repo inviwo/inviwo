@@ -71,15 +71,15 @@ public:
     CameraProperty& operator=(const PerspectiveCamera& value);
 
     //virtual operator PerspectiveCamera&() { return value_; }; // Do not allow user to get non-const reference since no notification mechanism exist.
-    virtual operator const PerspectiveCamera&() const { return value_; }
+    virtual operator const PerspectiveCamera&() const;
 
     virtual CameraProperty* clone() const;
     virtual ~CameraProperty() = default;
 
-    virtual PerspectiveCamera& get() { return value_; }
-    virtual const PerspectiveCamera& get() const { return value_; }
+    virtual PerspectiveCamera& get();
+    virtual const PerspectiveCamera& get() const;
     virtual void set(const PerspectiveCamera& value);
-    virtual void set(const Property* srcProperty);
+    virtual void set(const Property* srcProperty) override;
 
     virtual void resetToDefaultState() override;
 
@@ -111,11 +111,11 @@ public:
     void setNearPlaneDist(float v);
     void setFarPlaneDist(float v);
 
-    vec3 getLookFromMinValue() const { return lookFrom_.getMinValue(); }
-    vec3 getLookFromMaxValue() const { return lookFrom_.getMaxValue(); }
+    vec3 getLookFromMinValue() const;
+    vec3 getLookFromMaxValue() const;
 
-    vec3 getLookToMinValue() const { return lookTo_.getMinValue(); }
-    vec3 getLookToMaxValue() const { return lookTo_.getMaxValue(); }
+    vec3 getLookToMinValue() const;
+    vec3 getLookToMaxValue() const;
 
     /** 
      * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
@@ -167,6 +167,8 @@ private:
     void aspectRatioChangedFromProperty();
     void nearPlaneChangedFromProperty();
     void farPlaneChangedFromProperty();
+
+    void updatePropertyFromValue();
 
     PerspectiveCamera value_;
     // These properties enable linking of individual 

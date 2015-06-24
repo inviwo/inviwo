@@ -1,7 +1,7 @@
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
- *
+ * 
  * Copyright (c) 2012-2015 Inviwo Foundation
  * All rights reserved.
  *
@@ -133,6 +133,7 @@
 #undef IVW_WARN_WEAK_VTABLES_
 #undef IVW_WARN_DLL_INTERFACE_
 #undef IVW_WARN_DLL_INTERFACE_BASE_
+#undef IVW_WARN_HIDE_VIRTUAL_FUNC_
 #undef IVW_WARN_ARC_BRIDGE_CASTS_DISALLOWED_IN_NONARC_
 #undef IVW_WARN_ARC_REPEATED_USE_OF_WEAK_
 #undef IVW_WARN_DEPRECATED_IMPLEMENTATIONS_

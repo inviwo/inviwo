@@ -59,6 +59,7 @@ public:
     virtual void setOwner(PropertyOwner* owner) override;
 
     virtual void set(const Property* src) override;
+    void set(const CompositeProperty* src);
     virtual void setPropertyModified(bool modified) override;
     virtual bool isPropertyModified() const override;
     virtual InvalidationLevel getInvalidationLevel() const override;

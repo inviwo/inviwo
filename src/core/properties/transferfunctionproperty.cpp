@@ -163,11 +163,10 @@ void TransferFunctionProperty::set(const TransferFunction& value) {
 }
 
 void TransferFunctionProperty::set(const Property *property) {
-    const TransferFunctionProperty *tfp = dynamic_cast<const TransferFunctionProperty*>(property);
-    if (tfp){
+    if (auto tfp = dynamic_cast<const TransferFunctionProperty*>(property)) {
         set(tfp->get());
+        TemplateProperty<TransferFunction>::set(tfp);
     }
-    TemplateProperty<TransferFunction>::set(property);
 }
 
 void TransferFunctionProperty::onControlPointAdded(TransferFunctionDataPoint* p) {

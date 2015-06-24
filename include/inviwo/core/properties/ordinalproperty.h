@@ -61,18 +61,18 @@ public:
     T getMaxValue() const;
     T getIncrement() const;
 
-    virtual void set(const T& value);  // Need to reimplement this to avoid compiler confusion with
-                                       // set(const Property*)
-    virtual void set(const Property* src);
+    virtual void set(const T& value) override;
+    virtual void set(const Property* src) override;
+
     void setMinValue(const T& value);
     void setMaxValue(const T& value);
     void setIncrement(const T& value);
 
-    virtual void setCurrentStateAsDefault();
-    virtual void resetToDefaultState();
+    virtual void setCurrentStateAsDefault() override;
+    virtual void resetToDefaultState() override;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
     static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
 
@@ -174,15 +174,12 @@ void OrdinalProperty<T>::set(const T& value) {
 
 template <typename T>
 void OrdinalProperty<T>::set(const Property* srcProperty) {
-    const OrdinalProperty<T>* templatedSrcProp =
-        dynamic_cast<const OrdinalProperty<T>*>(srcProperty);
-    if (templatedSrcProp) {
-        this->minValue_.value = templatedSrcProp->minValue_.value;
-        this->maxValue_.value = templatedSrcProp->maxValue_.value;
-        this->increment_.value = templatedSrcProp->increment_.value;
+    if (auto prop = dynamic_cast<const OrdinalProperty<T>*>(srcProperty)) {
+        this->minValue_.value = prop->minValue_.value;
+        this->maxValue_.value = prop->maxValue_.value;
+        this->increment_.value = prop->increment_.value;
+        TemplateProperty<T>::set(prop);
     }
-
-    TemplateProperty<T>::set(srcProperty);
 }
 
 template <typename T>

@@ -78,6 +78,7 @@
  weak-vtables                          | **same**     | *no*         | *no* |
  dll-interface                         | *no*         | *no*         | 4251 |
  dll-interface-base                    | *no*         | *no*         | 4275 |
+ hide-virtual-func                     | *no*         | *no*         | 4263 |
  arc-bridge-casts-disallowed-in-nonarc | **same**     | *no*         | *no* |
  arc-repeated-use-of-weak              | **same**     | *no*         | *no* |
  deprecated-implementations            | **same**     | *no*         | *no* |
@@ -102,13 +103,6 @@
  not-inlined         | *no*  | *no* | 4710 |
  unreferenced-inline | *no*  | *no* | 4514 |
 
-### Table for group: `compatibility-c++98`
-
- Name                  | Clang    | GCC  | MSVC |
------------------------|----------|------|------|
- c++98-compat          | **same** | *no* | *no* |
- c++98-compat-pedantic | **same** | *no* | *no* |
-
 ### Table for group: `special-members`
 
  Name                             | Clang | GCC  | MSVC |
@@ -119,6 +113,13 @@
  dflt-ctor-base-inaccessible      | *no*  | *no* | 4623 |
  dflt-ctor-could-not-be-generated | *no*  | *no* | 4510 |
  user-ctor-required               | *no*  | *no* | 4610 |
+
+### Table for group: `compatibility-c++98`
+
+ Name                  | Clang    | GCC  | MSVC |
+-----------------------|----------|------|------|
+ c++98-compat          | **same** | *no* | *no* |
+ c++98-compat-pedantic | **same** | *no* | *no* |
 
 
 ### Xcode/Clang table

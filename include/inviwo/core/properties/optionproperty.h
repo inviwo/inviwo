@@ -24,12 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BASEOPTIONPROPERTY_H
 #define IVW_BASEOPTIONPROPERTY_H
-
 
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/common/inviwocoredefine.h>
@@ -40,16 +39,14 @@
 namespace inviwo {
 
 /** \class BaseOptionProperty
- *  Base class for the option properties 
+ *  Base class for the option properties
  *  @see TemplateOptionProperty
  */
 class IVW_CORE_API BaseOptionProperty : public Property {
 public:
-
-    BaseOptionProperty(std::string identifier,
-                       std::string displayName,
-                       InvalidationLevel invalidationLevel=INVALID_OUTPUT,
-                       PropertySemantics semantics=PropertySemantics::Default);
+    BaseOptionProperty(std::string identifier, std::string displayName,
+                       InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                       PropertySemantics semantics = PropertySemantics::Default);
 
     BaseOptionProperty(const BaseOptionProperty& rhs);
     virtual ~BaseOptionProperty();
@@ -73,20 +70,7 @@ public:
     virtual bool isSelectedIdentifier(std::string identifier) const = 0;
     virtual bool isSelectedDisplayName(std::string name) const = 0;
 
-    virtual void set(const Property* srcProperty) {
-        const BaseOptionProperty* optionSrcProp = dynamic_cast<const BaseOptionProperty*>(srcProperty);
-
-        if(optionSrcProp) {
-            size_t option = optionSrcProp->getSelectedIndex();
-
-            if(option < size()) {
-                setSelectedIndex(option);
-            } else {
-                setSelectedIndex(size() - 1);
-            }
-        }
-        propertyModified();
-    }
+    virtual void set(const Property* srcProperty);
 };
 
 /** \class TemplateOptionProperty
@@ -94,10 +78,9 @@ public:
  *  @see OptionProperties
  *  @see BaseOptionProperty
  */
-template<typename T>
+template <typename T>
 class BaseTemplateOptionProperty : public BaseOptionProperty {
 public:
-    
     template <typename U>
     struct Option : public IvwSerializable {
         Option() {}
@@ -122,51 +105,45 @@ public:
         bool operator==(const Option<U>& rhs) const {
             return id_ == rhs.id_ && name_ == rhs.name_ && value_ == rhs.value_;
         }
-        bool operator!=(const Option<U>& rhs) const {
-            return !operator==(rhs);
-        }
+        bool operator!=(const Option<U>& rhs) const { return !operator==(rhs); }
     };
 
 private:
     template <typename U>
     struct MatchId {
         MatchId(const std::string& s) : s_(s) {}
-        bool operator()(const Option<U>& obj) const {
-            return obj.id_ == s_;
-        }
+        bool operator()(const Option<U>& obj) const { return obj.id_ == s_; }
+
     private:
         const std::string& s_;
     };
     template <typename U>
     struct MatchName {
         MatchName(const std::string& s) : s_(s) {}
-        bool operator()(const Option<U>& obj) const {
-            return obj.name_ == s_;
-        }
+        bool operator()(const Option<U>& obj) const { return obj.name_ == s_; }
+
     private:
         const std::string& s_;
     };
     template <typename U>
     struct MatchValue {
         MatchValue(const T& s) : s_(s) {}
-        bool operator()(const Option<U>& obj) const {
-            return obj.value_ == s_;
-        }
+        bool operator()(const Option<U>& obj) const { return obj.value_ == s_; }
+
     private:
         const U& s_;
     };
 
-public: 
+public:
     typedef T valueType;
 
-    BaseTemplateOptionProperty(std::string identifier, 
-                               std::string displayName,
-                               InvalidationLevel invalidationLevel=INVALID_OUTPUT,
-                               PropertySemantics semantics=PropertySemantics::Default);
-    
+    BaseTemplateOptionProperty(std::string identifier, std::string displayName,
+                               InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                               PropertySemantics semantics = PropertySemantics::Default);
+
     BaseTemplateOptionProperty(const BaseTemplateOptionProperty<T>& rhs);
     BaseTemplateOptionProperty<T>& operator=(const BaseTemplateOptionProperty<T>& that);
-    //virtual BaseTemplateOptionProperty<T>* clone() const = 0;
+    // virtual BaseTemplateOptionProperty<T>* clone() const = 0;
     virtual ~BaseTemplateOptionProperty();
 
     /**
@@ -195,9 +172,10 @@ public:
     virtual bool setSelectedIdentifier(std::string identifier);
     virtual bool setSelectedDisplayName(std::string name);
     virtual bool setSelectedValue(T val);
-    virtual void replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames, std::vector<T> values);
+    virtual void replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames,
+                                std::vector<T> values);
     virtual void replaceOptions(std::vector<Option<T>> options);
-    
+
     virtual bool isSelectedIndex(size_t index) const;
     virtual bool isSelectedIdentifier(std::string identifier) const;
     virtual bool isSelectedDisplayName(std::string name) const;
@@ -221,27 +199,24 @@ public:
 
 protected:
     size_t selectedIndex_;
-    std::vector<Option<T> > options_;
+    std::vector<Option<T>> options_;
 
-private: 
+private:
     size_t defaultSelectedIndex_;
-    std::vector<Option<T> > defaultOptions_;
+    std::vector<Option<T>> defaultOptions_;
 };
 
-template<typename T>
+template <typename T>
 class TemplateOptionProperty : public BaseTemplateOptionProperty<T> {
-
 public:
     InviwoPropertyInfo();
-    TemplateOptionProperty(std::string identifier,
-                           std::string displayName,
+    TemplateOptionProperty(std::string identifier, std::string displayName,
                            InvalidationLevel invalidationLevel = INVALID_OUTPUT,
                            PropertySemantics semantics = PropertySemantics::Default);
     TemplateOptionProperty(const TemplateOptionProperty<T>& rhs);
     TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that);
-//    virtual TemplateOptionProperty<T>* clone() const;
+    //    virtual TemplateOptionProperty<T>* clone() const;
     virtual ~TemplateOptionProperty();
-    
 };
 
 namespace detail {
@@ -264,26 +239,23 @@ std::string getClassIdentifierForWidget() {
     using ET = typename std::underlying_type<T>::type;
     return getOptionPropertyClassIdentifier<ET>();
 }
-
 }
 
-template <typename T> PropertyClassIdentifier(TemplateOptionProperty<T>, detail::getOptionPropertyClassIdentifier<T>());
+template <typename T>
+PropertyClassIdentifier(TemplateOptionProperty<T>, detail::getOptionPropertyClassIdentifier<T>());
 
-
-template<typename T>
+template <typename T>
 std::string inviwo::BaseTemplateOptionProperty<T>::getClassIdentifierForWidget() const {
     return detail::getClassIdentifierForWidget<T>();
 }
-
 
 // Specialization for strings.
 class IVW_CORE_API OptionPropertyString : public TemplateOptionProperty<std::string> {
 public:
     InviwoPropertyInfo();
-    OptionPropertyString(
-        std::string identifier, std::string displayName,
-        InvalidationLevel invalidationLevel = INVALID_OUTPUT,
-        PropertySemantics semantics = PropertySemantics::Default);
+    OptionPropertyString(std::string identifier, std::string displayName,
+                         InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                         PropertySemantics semantics = PropertySemantics::Default);
 
     OptionPropertyString(const OptionPropertyString& rhs);
     OptionPropertyString& operator=(const OptionPropertyString& that);
@@ -305,26 +277,25 @@ typedef OptionPropertyString::Option<std::string> OptionPropertyStringOption;
 
 template <typename T>
 BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(std::string identifier,
-                                                  std::string displayName,
-                                                  InvalidationLevel invalidationLevel,
-                                                  PropertySemantics semantics)
+                                                          std::string displayName,
+                                                          InvalidationLevel invalidationLevel,
+                                                          PropertySemantics semantics)
     : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
     , selectedIndex_(0)
-    , defaultSelectedIndex_(0) {
-}
+    , defaultSelectedIndex_(0) {}
 
-
-template<typename T>
-inviwo::BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(const BaseTemplateOptionProperty<T>& rhs) 
+template <typename T>
+inviwo::BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(
+    const BaseTemplateOptionProperty<T>& rhs)
     : BaseOptionProperty(rhs)
     , selectedIndex_(rhs.selectedIndex_)
     , options_(rhs.options_)
     , defaultSelectedIndex_(rhs.defaultSelectedIndex_)
-    , defaultOptions_(rhs.defaultOptions_) {
-}
+    , defaultOptions_(rhs.defaultOptions_) {}
 
-template<typename T>
-BaseTemplateOptionProperty<T>& BaseTemplateOptionProperty<T>::operator=(const BaseTemplateOptionProperty<T>& that) {
+template <typename T>
+BaseTemplateOptionProperty<T>& BaseTemplateOptionProperty<T>::operator=(
+    const BaseTemplateOptionProperty<T>& that) {
     if (this != &that) {
         BaseOptionProperty::operator=(that);
         selectedIndex_ = that.selectedIndex_;
@@ -332,27 +303,29 @@ BaseTemplateOptionProperty<T>& BaseTemplateOptionProperty<T>::operator=(const Ba
         options_.clear();
         options_.insert(options_.end(), that.options_.begin(), that.options_.end());
         defaultOptions_.clear();
-        defaultOptions_.insert(defaultOptions_.end(), that.defaultOptions_.begin(), that.defaultOptions_.end());
+        defaultOptions_.insert(defaultOptions_.end(), that.defaultOptions_.begin(),
+                               that.defaultOptions_.end());
     }
     return *this;
 }
 
-template<typename T>
+template <typename T>
 BaseTemplateOptionProperty<T>::~BaseTemplateOptionProperty() {}
 
-template<typename T>
-void BaseTemplateOptionProperty<T>::addOption(std::string identifier, std::string displayName, T value) {
+template <typename T>
+void BaseTemplateOptionProperty<T>::addOption(std::string identifier, std::string displayName,
+                                              T value) {
     options_.push_back(Option<T>(identifier, displayName, value));
 
     // in case we add the first option, we also select it
-    if(options_.size() == 1) {
+    if (options_.size() == 1) {
         selectedIndex_ = 0;
-    } 
-    
+    }
+
     propertyModified();
 }
 
-template<typename T>
+template <typename T>
 void inviwo::BaseTemplateOptionProperty<T>::removeOption(size_t index) {
     std::string id = getSelectedIdentifier();
     options_.erase(options_.begin() + index);
@@ -362,73 +335,71 @@ void inviwo::BaseTemplateOptionProperty<T>::removeOption(size_t index) {
     propertyModified();
 }
 
-template<typename T>
+template <typename T>
 void BaseTemplateOptionProperty<T>::clearOptions() {
     options_.clear();
     selectedIndex_ = 0;
 }
 
-
 // Getters
-template<typename T>
+template <typename T>
 size_t BaseTemplateOptionProperty<T>::size() const {
     return options_.size();
 }
 
-template<typename T>
+template <typename T>
 size_t BaseTemplateOptionProperty<T>::getSelectedIndex() const {
     return selectedIndex_;
 }
 
-template<typename T>
+template <typename T>
 std::string inviwo::BaseTemplateOptionProperty<T>::getSelectedIdentifier() const {
     return options_[selectedIndex_].id_;
 }
 
-template<typename T>
+template <typename T>
 std::string inviwo::BaseTemplateOptionProperty<T>::getSelectedDisplayName() const {
     return options_[selectedIndex_].name_;
 }
 
-template<typename T>
+template <typename T>
 T inviwo::BaseTemplateOptionProperty<T>::getSelectedValue() const {
     return options_[selectedIndex_].value_;
 }
 
-template<typename T>
+template <typename T>
 std::vector<std::string> BaseTemplateOptionProperty<T>::getIdentifiers() const {
     std::vector<std::string> result;
-    for(size_t i = 0; i < options_.size(); i++) {
+    for (size_t i = 0; i < options_.size(); i++) {
         result.push_back(options_[i].id_);
     }
     return result;
 }
 
-template<typename T>
+template <typename T>
 std::vector<std::string> BaseTemplateOptionProperty<T>::getDisplayNames() const {
     std::vector<std::string> result;
-    for(size_t i = 0; i < options_.size(); i++) {
+    for (size_t i = 0; i < options_.size(); i++) {
         result.push_back(options_[i].name_);
     }
     return result;
 }
 
-template<typename T>
+template <typename T>
 std::vector<T> BaseTemplateOptionProperty<T>::getValues() const {
     std::vector<T> result;
-    for(size_t i = 0; i < options_.size(); i++) {
+    for (size_t i = 0; i < options_.size(); i++) {
         result.push_back(options_[i].value_);
     }
     return result;
 }
 
-
 // Setters
-template<typename T>
+template <typename T>
 bool BaseTemplateOptionProperty<T>::setSelectedIndex(size_t option) {
-    if(selectedIndex_ == option){
+    if (selectedIndex_ == option) {
         return true;
-    } else if(option < options_.size()) {
+    } else if (option < options_.size()) {
         selectedIndex_ = option;
         propertyModified();
         return true;
@@ -437,12 +408,13 @@ bool BaseTemplateOptionProperty<T>::setSelectedIndex(size_t option) {
     }
 }
 
-template<typename T>
+template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::setSelectedIdentifier(std::string identifier) {
-    typename std::vector<Option<T> >::iterator it = std::find_if(options_.begin(), options_.end(), MatchId<T>(identifier));
+    typename std::vector<Option<T>>::iterator it =
+        std::find_if(options_.begin(), options_.end(), MatchId<T>(identifier));
     if (it != options_.end()) {
         size_t dist = std::distance(options_.begin(), it);
-        if(selectedIndex_ != dist){
+        if (selectedIndex_ != dist) {
             selectedIndex_ = dist;
             propertyModified();
         }
@@ -452,10 +424,11 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedIdentifier(std::string id
     }
 }
 
-template<typename T>
+template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::setSelectedDisplayName(std::string name) {
-    typename std::vector<Option<T> >::iterator it = std::find_if(options_.begin(), options_.end(), MatchName<T>(name));
-    if(it != options_.end()) {
+    typename std::vector<Option<T>>::iterator it =
+        std::find_if(options_.begin(), options_.end(), MatchName<T>(name));
+    if (it != options_.end()) {
         size_t dist = std::distance(options_.begin(), it);
         if (selectedIndex_ != dist) {
             selectedIndex_ = dist;
@@ -467,10 +440,11 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedDisplayName(std::string n
     }
 }
 
-template<typename T>
+template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::setSelectedValue(T val) {
-    typename std::vector<Option<T> >::iterator it = std::find_if(options_.begin(), options_.end(), MatchValue<T>(val));
-    if(it != options_.end()) {
+    typename std::vector<Option<T>>::iterator it =
+        std::find_if(options_.begin(), options_.end(), MatchValue<T>(val));
+    if (it != options_.end()) {
         size_t dist = std::distance(options_.begin(), it);
         if (selectedIndex_ != dist) {
             selectedIndex_ = dist;
@@ -482,15 +456,17 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedValue(T val) {
     }
 }
 
-template<typename T>
-void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames, std::vector<T> values) {
+template <typename T>
+void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<std::string> ids,
+                                                           std::vector<std::string> displayNames,
+                                                           std::vector<T> values) {
     std::string selectId{};
     if (!options_.empty()) selectId = getSelectedIdentifier();
 
     options_.clear();
-    for (size_t i=0; i<ids.size(); i++)
+    for (size_t i = 0; i < ids.size(); i++)
         options_.emplace_back(ids[i], displayNames[i], values[i]);
-    
+
     auto it = std::find_if(options_.begin(), options_.end(), MatchId<T>(selectId));
     if (it != options_.end())
         selectedIndex_ = std::distance(options_.begin(), it);
@@ -500,11 +476,11 @@ void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<std::stri
     propertyModified();
 }
 
-template<typename T>
+template <typename T>
 void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<Option<T>> options) {
     std::string selectId{};
     if (!options_.empty()) selectId = getSelectedIdentifier();
-    
+
     options_.clear();
     std::copy(options.begin(), options.end(), std::back_inserter(options_));
 
@@ -518,38 +494,38 @@ void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<Option<T>
 }
 
 // Is...
-template<typename T>
+template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::isSelectedIndex(size_t index) const {
     return index == selectedIndex_;
 }
 
-template<typename T>
+template <typename T>
 bool BaseTemplateOptionProperty<T>::isSelectedIdentifier(std::string identifier) const {
     return identifier == options_[selectedIndex_].id_;
 }
 
-template<typename T>
+template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::isSelectedDisplayName(std::string name) const {
     return name == options_[selectedIndex_].name_;
 }
 
-template<typename T>
+template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::isSelectedValue(T val) const {
     return val == options_[selectedIndex_].value_;
 }
 
-// Convenience 
-template<typename T>
+// Convenience
+template <typename T>
 T BaseTemplateOptionProperty<T>::get() const {
     return options_[selectedIndex_].value_;
 }
 
-template<typename T>
+template <typename T>
 void BaseTemplateOptionProperty<T>::set(const T& value) {
     setSelectedValue(value);
 }
 
-template<typename T>
+template <typename T>
 void BaseTemplateOptionProperty<T>::set(const Property* srcProperty) {
     BaseOptionProperty::set(srcProperty);
 }
@@ -568,7 +544,7 @@ void inviwo::BaseTemplateOptionProperty<T>::resetToDefaultState() {
     Property::resetToDefaultState();
 }
 
-template<typename T>
+template <typename T>
 void inviwo::BaseTemplateOptionProperty<T>::setCurrentStateAsDefault() {
     Property::setCurrentStateAsDefault();
     defaultSelectedIndex_ = selectedIndex_;
@@ -587,10 +563,10 @@ void BaseTemplateOptionProperty<T>::serialize(IvwSerializer& s) const {
     }
 }
 
-template<typename T>
+template <typename T>
 void BaseTemplateOptionProperty<T>::deserialize(IvwDeserializer& d) {
-    BaseOptionProperty::deserialize(d) ;
-    
+    BaseOptionProperty::deserialize(d);
+
     d.deserialize("options", options_, "option");
 
     if (!options_.empty()) {
@@ -612,9 +588,8 @@ TemplateOptionProperty<T>::TemplateOptionProperty(
     : BaseTemplateOptionProperty<T>(identifier, displayName, invalidationLevel, semantics) {}
 
 template <typename T>
-TemplateOptionProperty<T>::TemplateOptionProperty(const TemplateOptionProperty<T>& rhs) 
-    : BaseTemplateOptionProperty<T>(rhs) {
-}
+TemplateOptionProperty<T>::TemplateOptionProperty(const TemplateOptionProperty<T>& rhs)
+    : BaseTemplateOptionProperty<T>(rhs) {}
 
 template <typename T>
 TemplateOptionProperty<T>& TemplateOptionProperty<T>::operator=(
@@ -630,11 +605,9 @@ TemplateOptionProperty<T>& TemplateOptionProperty<T>::operator=(
 //     return new TemplateOptionProperty<T>(*this);
 // }
 
-
-
 template <typename T>
 TemplateOptionProperty<T>::~TemplateOptionProperty() {}
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_BASEOPTIONPROPERTY_H
+#endif  // IVW_BASEOPTIONPROPERTY_H

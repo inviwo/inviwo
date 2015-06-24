@@ -72,4 +72,17 @@ BaseOptionProperty::BaseOptionProperty(std::string identifier, std::string displ
 
 BaseOptionProperty::~BaseOptionProperty() {}
 
+void BaseOptionProperty::set(const Property* srcProperty) {
+    if (auto optionSrcProp = dynamic_cast<const BaseOptionProperty*>(srcProperty)) {
+        size_t option = optionSrcProp->getSelectedIndex();
+
+        if (option < size()) {
+            setSelectedIndex(option);
+        } else {
+            setSelectedIndex(size() - 1);
+        }
+        propertyModified();
+    }
+}
+
 }  // namespace

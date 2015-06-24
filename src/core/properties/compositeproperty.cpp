@@ -110,23 +110,22 @@ bool CompositeProperty::isPropertyModified() const {
 }
 
 void CompositeProperty::set(const Property* srcProperty) {
+    if (const auto compositeSrcProp = dynamic_cast<const CompositeProperty*>(srcProperty)) {
+        set(compositeSrcProp);
+    }
+}
+
+void CompositeProperty::set(const CompositeProperty* src) {
     NetworkLock lock;
-    
-    const CompositeProperty* compositeSrcProp = dynamic_cast<const CompositeProperty*>(srcProperty);
-
-    if (compositeSrcProp) {
-        std::vector<Property*> subProperties = compositeSrcProp->getProperties();
-
-        if (subProperties.size() == this->properties_.size()) {
-            for (size_t i = 0; i < subProperties.size(); i++) {
-                this->properties_[i]->set(subProperties[i]);
-            }
-
-            propertyModified();
-        } else {
-            LogWarn("CompositeProperty mismatch. Unable to link");
+    auto subProperties = src->getProperties();
+    if (subProperties.size() == this->properties_.size()) {
+        for (size_t i = 0; i < subProperties.size(); i++) {
+            this->properties_[i]->set(subProperties[i]);
         }
-    } 
+        propertyModified();
+    } else {
+        LogWarn("CompositeProperty mismatch. Unable to link");
+    }
 }
 
 inviwo::InvalidationLevel CompositeProperty::getInvalidationLevel() const  {
