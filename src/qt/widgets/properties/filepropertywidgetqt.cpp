@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -87,23 +88,26 @@ void FilePropertyWidgetQt::generateWidget() {
     connect(openButton_, SIGNAL(pressed()), this, SLOT(setPropertyValue()));
 }
 
-void FilePropertyWidgetQt::setPropertyValue() {
-    
-    QString dataDir_ = QString::fromStdString(
-        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA));
-    
-    // Setup default path
-    QString path;
-
-    if (property_->get() != "")
-        path = QDir(QString::fromStdString(property_->get())).absolutePath();
-    else
-        path = QDir(dataDir_).absolutePath();
+void FilePropertyWidgetQt::setPropertyValue() {    
+    std::string path{ property_->get() };
+    if (!path.empty()) {
+        // only accept path if it exists
+        if (filesystem::directoryExists(path)) {
+            // TODO: replace with filesystem:: functionality!            
+            path = QDir(QString::fromStdString(path)).absolutePath().toStdString();
+        }
+        else {
+            path.clear();
+            // update property
+            property_->set("");
+        }
+    }
 
     // Setup Extensions
     std::vector<std::string> filters = property_->getNameFilters();
     InviwoFileDialog importFileDialog(this, property_->getDisplayName(),
-                                      property_->getContentType());
+                                      property_->getContentType(),
+                                      path);
     
 
     for (std::vector<std::string>::const_iterator it = filters.begin(); it != filters.end(); ++it)
@@ -151,7 +155,7 @@ void FilePropertyWidgetQt::setPropertyValue() {
 
     if (importFileDialog.exec()) {
         QString path = importFileDialog.selectedFiles().at(0);
-        property_->set(path.toLocal8Bit().constData());
+        property_->set(path.toStdString());
     }
 
     updateFromProperty();

@@ -56,49 +56,6 @@ public:
     virtual std::string getClassIdentifierForWidget() const override;
 };
 
-    /*
-class IVW_CORE_API DirectoryProperty : public TemplateProperty<std::string> {
-public:
-    InviwoPropertyInfo();
-    DirectoryProperty(
-        std::string identifier, 
-        std::string displayName, 
-        std::string value = "",
-        std::string contentType = "default",
-        InvalidationLevel invalidationLevel = INVALID_OUTPUT,
-        PropertySemantics semantics = PropertySemantics::Default);
-    
-    DirectoryProperty(const DirectoryProperty& rhs);
-    DirectoryProperty& operator=(const DirectoryProperty& that);
-    virtual DirectoryProperty* clone() const;
-    virtual ~DirectoryProperty();
-
-    virtual std::vector<std::string> getDirectoryTree() const;
-    virtual std::vector<std::string> getFiles(std::string filters = "*.*") const;
-    virtual void setDirectoryTree(std::vector<std::string> dirTree);
-    void updateDirectoryTree();
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
-    virtual void registerFileIndexingHandle(IntProperty* indexHandle) {
-        // TODO: use composite property if possible.
-        fileIndexingHandle_ = indexHandle;
-    }
-    virtual IntProperty* getFileIndexingHandle() {
-        // TODO: use composite property if possible.
-        return fileIndexingHandle_;
-    }
-
-    void setContentType(const std::string& contentType);
-    std::string getContentType() const;
-
-protected:
-    // TODO: currently tree contains file names only.
-    std::vector<std::string> directoryTree_;
-    IntProperty* fileIndexingHandle_; // Owning!?! //Peter
-    std::string contentType_;
-};
-*/
-
 }  // namespace
 
 #endif  // IVW_DIRECTORY_PROPERTY_H

@@ -43,7 +43,7 @@ FileProperty::FileProperty(std::string identifier, std::string displayName, std:
     , acceptMode_(AcceptMode::Open)
     , fileMode_(FileMode::AnyFile)
     , contentType_(contentType) {
-    addNameFilter("All Files (*.*)");
+    addNameFilter("All Files (*)");
 }
 
 FileProperty::FileProperty(const FileProperty& rhs  )
