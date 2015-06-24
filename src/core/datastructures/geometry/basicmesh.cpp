@@ -610,46 +610,32 @@ BasicMesh* BasicMesh::cube(const mat4& m, const vec4 &color){
     return mesh;
 }
 
-BasicMesh* BasicMesh::coordindicator(const vec3& center,
-                                     const float& size) {
-
+BasicMesh* BasicMesh::coordindicator(const vec3& center, const float& size) {
     size_t segments = 16;
-    float bsize = size*1.0f;
-    float fsize = size*1.2f;
-    float radius = size*0.08f;
+    float bsize = size * 1.0f;
+    float fsize = size * 1.2f;
+    float radius = size * 0.08f;
     float arrowpart = 0.12f;
-    float arrowRadius = 2.0f*radius;
+    float arrowRadius = 2.0f * radius;
     BasicMesh* mesh = new BasicMesh();
     mesh->setModelMatrix(mat4(1.f));
-   
-    BasicMesh* xarrow = arrow(center - vec3(bsize, 0.0f, 0.0f),
-                              center + vec3(fsize, 0.0f, 0.0f),
-                              vec4(1.0f, 0.0f, 0.0f, 1.0f),
-                              radius,
-                              arrowpart,
-                              arrowRadius,
-                              segments);
-    BasicMesh* yarrow = arrow(center - vec3(0.0f, bsize, 0.0f),
-                              center + vec3(0.0f, fsize, 0.0f),
-                              vec4(0.0f, 1.0f, 0.0f, 1.0f),
-                              radius,
-                              arrowpart,
-                              arrowRadius,
-                              segments);
-    BasicMesh* zarrow = arrow(center - vec3(0.0f, 0.0f, bsize),
-                              center + vec3(0.0f, 0.0f, fsize),
-                              vec4(0.0f, 0.0f, 1.0f, 1.0f),
-                              radius,
-                              arrowpart,
-                              arrowRadius,
-                              segments);
 
-    BasicMesh* sphere = colorsphere(center, 0.7f*size);
+    std::unique_ptr<BasicMesh> xarrow{
+        arrow(center - vec3(bsize, 0.0f, 0.0f), center + vec3(fsize, 0.0f, 0.0f),
+              vec4(1.0f, 0.0f, 0.0f, 1.0f), radius, arrowpart, arrowRadius, segments)};
+    std::unique_ptr<BasicMesh> yarrow{
+        arrow(center - vec3(0.0f, bsize, 0.0f), center + vec3(0.0f, fsize, 0.0f),
+              vec4(0.0f, 1.0f, 0.0f, 1.0f), radius, arrowpart, arrowRadius, segments)};
+    std::unique_ptr<BasicMesh> zarrow{
+        arrow(center - vec3(0.0f, 0.0f, bsize), center + vec3(0.0f, 0.0f, fsize),
+              vec4(0.0f, 0.0f, 1.0f, 1.0f), radius, arrowpart, arrowRadius, segments)};
 
-    mesh->append(sphere);
-    mesh->append(xarrow);
-    mesh->append(yarrow);
-    mesh->append(zarrow);
+    std::unique_ptr<BasicMesh> sphere{colorsphere(center, 0.7f * size)};
+
+    mesh->append(sphere.get());
+    mesh->append(xarrow.get());
+    mesh->append(yarrow.get());
+    mesh->append(zarrow.get());
 
     return mesh;
 }
