@@ -181,9 +181,8 @@ std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N, Flat>::getSo
         // Safe to static cast since we are unable to connect other outport types.
         
         if (Flat) {
-            auto oi = dynamic_cast<OutportIterable<T>*>(outport);
-            if (oi) {
-                for (auto& elem : *oi) res.emplace_back(outport, &elem);
+            if(auto iterable = dynamic_cast<OutportIterable<T>*>(outport)) {
+                for (auto& elem : *iterable) res.emplace_back(outport, &elem);
             }
         } else {
             auto dataport = static_cast<DataOutport<T>*>(outport);
