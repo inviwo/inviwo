@@ -75,6 +75,9 @@ protected:
 
     bool isValidImageFile(std::string);
 
+    void updateProperties();
+    void updateFileName();
+
 private:
     ImageOutport outport_;
     ButtonProperty findFilesButton_;
@@ -83,6 +86,8 @@ private:
     StringProperty imageFileName_;
 
     std::vector<FileExtension> validExtensions_;
+
+    std::vector<std::string> fileList_;
 };
 
 } // namespace

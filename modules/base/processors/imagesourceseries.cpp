@@ -47,7 +47,7 @@ ImageSourceSeries::ImageSourceSeries()
     : Processor()
     , outport_("image.outport")
     , findFilesButton_("findFiles", "Update File List")
-    , imageFileDirectory_("imageFileDirectory", "Image file directory", "image" ,
+    , imageFileDirectory_("imageFileDirectory", "Image file directory", "" ,
                           InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES,"images"))
     , currentImageIndex_("currentImageIndex", "Image index", 1, 1, 1, 1)
     , imageFileName_("imageFileName", "Image file name") {
@@ -79,28 +79,21 @@ void ImageSourceSeries::deinitialize() {
 
 void ImageSourceSeries::onFindFiles() {
     std::vector<std::string> files = imageFileDirectory_.getFiles();
-    currentImageIndex_.setReadOnly(files.empty());
-    if(files.empty())
-        return;
-
-    std::vector<std::string> ids;
-    std::vector<std::string> displayNames;
-
-    for (size_t i=0; i<files.size(); i++) {
+        
+    fileList_.clear();
+    
+    for (std::size_t i=0; i<files.size(); i++) {
         if (isValidImageFile(files[i])) {
-            std::string displayName = filesystem::getFileNameWithExtension(files[i]);
-            ids.push_back(displayName+"_id");
-            displayNames.push_back(displayName);
+            std::string fileName = filesystem::getFileNameWithExtension(files[i]);
+            fileList_.push_back(fileName);
         }
     }
-
-    if (ids.size()){
-        currentImageIndex_.setMaxValue(static_cast<const int>(ids.size()));
-        imageFileName_.set(displayNames[0]);
+    
+    if (fileList_.empty()) {
+        LogWarn("No images found in \"" << imageFileDirectory_.get() << "\"");
     }
 
-    if(ids.size() < static_cast<size_t>(currentImageIndex_.get()))
-        currentImageIndex_.set(1);
+    updateProperties();
 }
 
 /**
@@ -109,39 +102,20 @@ void ImageSourceSeries::onFindFiles() {
 void ImageSourceSeries::process() {
     Image* outImage = outport_.getData();
 
+    if (fileList_.empty()) {
+        return;
+    }
+
     if (outImage) {
-        std::vector<std::string> filesInDirectory = imageFileDirectory_.getFiles();
-        std::vector<std::string> fileNames;
-
-        if(filesInDirectory.empty()){
+        std::string basePath{ imageFileDirectory_.get() };
+        int currentIndex = currentImageIndex_.get() - 1;
+        if ((currentIndex < 0) || (currentIndex >= fileList_.size())) {
+            LogError("Invalid image index. Exceeded number of files.");
             return;
         }
 
-        for (size_t i=0; i<filesInDirectory.size(); i++) {
-            if (isValidImageFile(filesInDirectory[i])) {
-                fileNames.push_back(filesInDirectory[i]);
-            }
-        }
-
-        size_t currentIndex = currentImageIndex_.get();
-
-        if (!fileNames.size()) {
-            LogWarn("No image found in the directory.");
-            return;
-        }
-
-        if (currentIndex > fileNames.size()) {
-            LogWarn("Current index exceeded the number of files.");
-            return;
-        }
-
-        if (currentIndex==0) {
-            LogWarn("Invalid index");
-            return;
-        }
-
-        std::string currentFileName = fileNames[currentIndex - 1];
-        imageFileName_.set(filesystem::getFileNameWithExtension(currentFileName));
+        std::string currentFileName{ basePath + "/" + fileList_[currentIndex] };
+        imageFileName_.set(fileList_[currentIndex]);
 
         std::string fileExtension = filesystem::getFileExtension(currentFileName);
         DataReaderType<Layer>* reader =
@@ -158,7 +132,6 @@ void ImageSourceSeries::process() {
                 newOutImage->getRepresentation<ImageRAM>();
 
                 outport_.setData(newOutImage);
-
             }
             catch (DataReaderException const& e) {
                 util::log(e.getContext(), "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(), LogLevel::Error);
@@ -166,8 +139,34 @@ void ImageSourceSeries::process() {
             delete reader;
         }
         else {
-            LogError("Could not find a data reader for file: " << currentFileName);
+            LogWarn("Could not find a data reader for file: " << currentFileName);
+            // remove file from list
+            fileList_.erase(fileList_.begin() + currentIndex);
+            // adjust index property
+            updateProperties();
         }
+    }
+}
+
+void ImageSourceSeries::updateProperties() {
+    currentImageIndex_.setReadOnly(fileList_.empty());
+
+    if (fileList_.size() < static_cast<std::size_t>(currentImageIndex_.get()))
+        currentImageIndex_.set(1);
+
+    // clamp the number of files since setting the maximum to 0 will reset the min value to 0
+    int numFiles = std::max(static_cast<const int>(fileList_.size()), 1);
+    currentImageIndex_.setMaxValue(numFiles);
+    updateFileName();
+}
+
+void ImageSourceSeries::updateFileName() {
+    int index = currentImageIndex_.get() - 1;
+    if ((index < 0) || (static_cast<std::size_t>(index) >= fileList_.size())) {
+        imageFileName_.set("<no images found>");
+    }
+    else {
+        imageFileName_.set(fileList_[index]);
     }
 }
 
