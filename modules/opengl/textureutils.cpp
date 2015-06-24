@@ -334,21 +334,21 @@ void multiDrawImagePlaneRect(int instances) {
     disableImagePlaneRect(rectArray);
 }
 
-void bindTexture(Texture* const texture, GLenum texUnit) {
+void bindTexture(const Texture* texture, GLenum texUnit) {
     glActiveTexture(texUnit);
     texture->bind();
     glActiveTexture(GL_TEXTURE0);
 }
 
 
-void bindTexture(Texture* const texture, const TextureUnit& texUnit) {
+void bindTexture(const Texture* texture, const TextureUnit& texUnit) {
     glActiveTexture(texUnit.getEnum());
     texture->bind();
     glActiveTexture(GL_TEXTURE0);
 }
 
 void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
-    Texture* const texture, const std::string samplerID) {
+    const Texture* texture, const std::string samplerID) {
     TextureUnit unit;
     bindTexture(texture, unit);
     shader->setUniform(samplerID, unit.getUnitNumber());

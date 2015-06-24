@@ -56,8 +56,8 @@ public:
     void setContents(QWidget *widget);
     void setContents(QLayout *layout);
 
-    virtual void setWindowTitle(const QString &str);
-
+protected slots:
+    void updateWindowTitle(const QString &string);
 
 private:
     InviwoDockWidgetTitleBar* dockWidgetTitleBar_;
