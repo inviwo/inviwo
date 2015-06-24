@@ -498,7 +498,6 @@ void InviwoMainWindow::openWorkspace() {
         InviwoFileDialog openFileDialog(this, "Open Workspace ...", "workspace");
 
         openFileDialog.addSidebarPath(InviwoApplication::PATH_WORKSPACES);
-        openFileDialog.addSidebarPath(InviwoApplication::PATH_WORKSPACES);
         openFileDialog.addSidebarPath(workspaceFileDir_);
 
         openFileDialog.addExtension("inv", "Inviwo File");
@@ -557,7 +556,6 @@ void InviwoMainWindow::saveWorkspaceAs() {
     saveFileDialog.setConfirmOverwrite(true);
 
     saveFileDialog.addSidebarPath(InviwoApplication::PATH_WORKSPACES);
-    saveFileDialog.addSidebarPath(InviwoApplication::PATH_WORKSPACES);
     saveFileDialog.addSidebarPath(workspaceFileDir_);
 
     saveFileDialog.addExtension("inv", "Inviwo File");
@@ -580,7 +578,6 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
     saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
     saveFileDialog.setConfirmOverwrite(true);
 
-    saveFileDialog.addSidebarPath(InviwoApplication::PATH_WORKSPACES);
     saveFileDialog.addSidebarPath(InviwoApplication::PATH_WORKSPACES);
     saveFileDialog.addSidebarPath(workspaceFileDir_);
 

@@ -44,5 +44,45 @@ FileExtension::FileExtension(std::string extension, std::string description)
     
 };
 
+FileExtension FileExtension::createFileExtensionFromString(const std::string &str) {
+    // try to split extension string
+    std::size_t extStart = str.find('(');
+    if (extStart == std::string::npos) {
+        // could not find extension inside ()
+        return{};
+    }
+
+    std::size_t extEnd = str.rfind(')');
+    if (extEnd == std::string::npos) {
+        // not matching ')' for extension string
+        return{};
+    }
+    std::string desc{ str.substr(0, extStart) };
+    // trim trailing white spaces
+    std::size_t whiteSpacePos = desc.find_last_not_of(" \t\n\r(");
+    if (whiteSpacePos != std::string::npos) {
+        desc = desc.substr(0, whiteSpacePos + 1);
+    }
+    else {
+        // description only consisted of whitespace characters
+        desc.clear();
+    }
+
+    std::string ext = toLower(str.substr(extStart + 1, extEnd - extStart - 1));
+    // '*.*' should not be used as it is not platform-independent
+    // ('*' should be used instead of '*.*')
+    
+    // special case '*', i.e. '*.*', this should result in an empty string
+    if ((ext == "*") || (ext == "*.*")) {
+        ext.clear();
+    }
+    // get rid of '*.'
+    if (ext.compare(0, 2, "*.") == 0) {
+        ext.erase(0, 2);
+    }
+
+    return{ ext, desc };
+}
+
 } // namespace
 
