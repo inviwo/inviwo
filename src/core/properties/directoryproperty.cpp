@@ -29,129 +29,26 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/directoryproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
 PropertyClassIdentifier(DirectoryProperty, "org.inviwo.DirectoryProperty");
 
-DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
-                                     std::string value, std::string contentType,
-                                     InvalidationLevel invalidationLevel,
-                                     PropertySemantics semantics)
-    : TemplateProperty<std::string>(identifier, displayName, value, invalidationLevel, semantics)
-    , fileIndexingHandle_(nullptr)
-    , contentType_(contentType) {}
-
-DirectoryProperty::DirectoryProperty(const DirectoryProperty& rhs)
-    : TemplateProperty<std::string>(rhs)
-    , directoryTree_(rhs.directoryTree_)
-    , fileIndexingHandle_(nullptr)  // Fix?
-    , contentType_(rhs.contentType_) {}
-
-DirectoryProperty& DirectoryProperty::operator=(const DirectoryProperty& that) {
-    if (this != &that) {
-        TemplateProperty<std::string>::operator=(that);
-        directoryTree_ = that.directoryTree_;
-        fileIndexingHandle_ = nullptr;  // Fix?
-        contentType_ = that.contentType_;
-    }
-    return *this;
+DirectoryProperty::DirectoryProperty(
+    std::string identifier, std::string displayName,
+    std::string value, std::string contentType,
+    InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics)
+{
+    this->setAcceptMode(FileProperty::AcceptMode::Open);
+    this->setFileMode(FileProperty::FileMode::DirectoryOnly);
 }
 
-DirectoryProperty* DirectoryProperty::clone() const {
-    return new DirectoryProperty(*this);
+DirectoryProperty::~DirectoryProperty() {
 }
 
-DirectoryProperty::~DirectoryProperty() {}
-
-std::vector<std::string> DirectoryProperty::getDirectoryTree() const { return directoryTree_; }
-
-void DirectoryProperty::updateDirectoryTree() { updateWidgets(); }
-
-std::vector<std::string> DirectoryProperty::getFiles(std::string filters) const {
-    std::vector<std::string> validFilesWithExtension;
-    std::string filterName = filesystem::getFileNameWithoutExtension(filters);
-    std::string filterExt = filesystem::getFileExtension(filters);
-    bool arbitaryName = (filterName == "*");
-    bool arbitaryExt = (filterExt == "*");
-
-    // Matching with star as part of name or ext is not implemented at the moment.
-    // Only: *.*, *.ext, name.*, name.ext
-    for (auto& elem : directoryTree_) {
-        std::string file = get() + "/";
-        file = filesystem::getFileDirectory(file) + elem;
-
-        if (arbitaryName && arbitaryExt) {
-            validFilesWithExtension.push_back(file);
-            continue;
-        }
-
-        std::string fileExt = filesystem::getFileExtension(elem);
-
-        if (arbitaryName && fileExt == filterExt) {
-            validFilesWithExtension.push_back(file);
-            continue;
-        }
-
-        std::string fileName = filesystem::getFileNameWithoutExtension(elem);
-
-        if (fileName == filterName && fileExt == filterExt) {
-            validFilesWithExtension.push_back(file);
-            continue;
-        }
-    }
-
-    return validFilesWithExtension;
+std::string DirectoryProperty::getClassIdentifierForWidget() const {
+    return FileProperty::getClassIdentifier();
 }
-
-void DirectoryProperty::setDirectoryTree(std::vector<std::string> dirTree) {
-    directoryTree_ = dirTree;
-    propertyModified();
-}
-
-void DirectoryProperty::serialize(IvwSerializer& s) const {
-    Property::serialize(s);
-    std::string basePath = s.getFileName();
-    std::string absoluteFilePath = get();
-
-    if (basePath.empty())
-        basePath = InviwoApplication::getPtr()->getPath(
-            InviwoApplication::PATH_DATA);  // why workspaces
-
-    std::string serializePath;
-
-    if (!absoluteFilePath.empty() && filesystem::sameDrive(basePath, absoluteFilePath))
-        serializePath = filesystem::getRelativePath(basePath, absoluteFilePath);
-    else
-        serializePath = absoluteFilePath;
-
-    s.serialize("directory", serializePath);
-}
-
-void DirectoryProperty::deserialize(IvwDeserializer& d) {
-    Property::deserialize(d);
-    std::string serializePath;
-    d.deserialize("directory", serializePath);
-
-    if (!filesystem::isAbsolutePath(serializePath) && !serializePath.empty()) {
-        std::string basePath = d.getFileName();
-
-        if (basePath.empty())
-            basePath = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA);
-
-        basePath = filesystem::getFileDirectory(basePath);
-        set(basePath + serializePath);
-    } else {
-        set(serializePath);
-    }
-}
-
-void DirectoryProperty::setContentType(const std::string& contentType) {
-    contentType_ = contentType;
-}
-
-std::string DirectoryProperty::getContentType() const { return contentType_; }
 
 }  // namespace

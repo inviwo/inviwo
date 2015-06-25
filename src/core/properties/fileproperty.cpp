@@ -40,10 +40,10 @@ FileProperty::FileProperty(std::string identifier, std::string displayName, std:
                            InvalidationLevel invalidationLevel,
                            PropertySemantics semantics)
     : TemplateProperty<std::string>(identifier, displayName, value, invalidationLevel, semantics)
-    , acceptMode_(AcceptOpen)
-    , fileMode_(AnyFile)
+    , acceptMode_(AcceptMode::Open)
+    , fileMode_(FileMode::AnyFile)
     , contentType_(contentType) {
-    addNameFilter("All Files (*.*)");
+    addNameFilter("All Files (*)");
 }
 
 FileProperty::FileProperty(const FileProperty& rhs  )
@@ -129,22 +129,40 @@ void FileProperty::deserialize(IvwDeserializer& d) {
     }
 }
 
-void FileProperty::addNameFilter(std::string filter) { nameFilters_.push_back(filter); }
+void FileProperty::addNameFilter(std::string filter) { 
+    nameFilters_.push_back(filter); 
+}
 
-void FileProperty::clearNameFilters() { nameFilters_.clear(); }
+void FileProperty::clearNameFilters() { 
+    nameFilters_.clear(); 
+}
 
-std::vector<std::string> FileProperty::getNameFilters() { return nameFilters_; }
+std::vector<std::string> FileProperty::getNameFilters() { 
+    return nameFilters_; 
+}
 
-void FileProperty::setAcceptMode(AcceptMode mode) { acceptMode_ = mode; }
+void FileProperty::setAcceptMode(AcceptMode mode) { 
+    acceptMode_ = mode; 
+}
+
 FileProperty::AcceptMode FileProperty::getAcceptMode() const {
     return acceptMode_;
-};
+}
 
-void FileProperty::setFileMode(FileMode mode) { fileMode_ = mode; }
-FileProperty::FileMode FileProperty::getFileMode() const { return fileMode_; }
+void FileProperty::setFileMode(FileMode mode) { 
+    fileMode_ = mode; 
+}
 
-void FileProperty::setContentType(const std::string& contentType) { contentType_ = contentType; }
+FileProperty::FileMode FileProperty::getFileMode() const {
+    return fileMode_; 
+}
 
-std::string FileProperty::getContentType() const { return contentType_; }
+void FileProperty::setContentType(const std::string& contentType) { 
+    contentType_ = contentType; 
+}
+
+std::string FileProperty::getContentType() const { 
+    return contentType_; 
+}
 
 }  // namespace

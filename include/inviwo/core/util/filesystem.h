@@ -33,6 +33,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 
+#include <vector>
+
 namespace inviwo {
 
 namespace filesystem {
@@ -62,6 +64,55 @@ IVW_CORE_API bool fileExists(const std::string& filePath);
  * @return bool True if directory exists, false otherwise
  */
 IVW_CORE_API bool directoryExists(const std::string& path);
+
+/**
+ * Returns the file listing of a directory
+ *
+ * @param path Files are listed for this directory
+ * @return List of files residing in the given path
+ */
+IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path);
+
+
+/** 
+ * Checks whether a given string matches a pattern. The pattern
+ * might contain '*' matching any string including the empty string
+ * and '?' matching a single character.
+ * 
+ * @param std::string pattern  The pattern used for matching, might contain '*' and '?'
+ * @param std::string str      String which needs to be checked
+ * @return True if the given string matches the pattern, false otherwise.
+ */
+IVW_CORE_API bool wildcardStringMatch(const std::string &pattern, const std::string &str);
+
+/**
+* Checks whether a given string matches a pattern including digits. 
+* The pattern might contain a single sequence of '#' for indicating a number
+* besides '*' matching any string including the empty string and '?' matching a 
+* single character.
+*
+* The digit sequence indicated by '#' is extracted and returned. Depending on the 
+* flags, the number have to exactly match sequence or might be shorter (matchLess)
+* or longer (matchMore). For example, the sequence '###' matches only a three-digit
+* number. Enabling 'matchLess' also matches one-digit and two-digit numbers whereas
+* 'matchMore' allows for numbers with more digits.
+*
+* Examples:
+*  * '###*.jpg' will match all jpeg files starting with a 3-digit sequence. Setting 
+*       'matchMore = true' matches the same files, but might extract longer numbers.
+*  * 'myfile#.png' matches all files containing exactly one digit with 'matchMore = false'.
+*
+* @param std::string pattern  The pattern used for matching, might contain a single 
+*             sequence of '#' besides '*', and '?'
+* @param std::string str      String which needs to be checked
+* @param int index  if the match is successful, this index contains the extracted 
+*             digit sequence indicated by '#'
+* @param bool matchLess   allows to match digit sequences shorter than defined by the number of '#' (default false)
+* @param bool matchMore   allows to match longer digit sequences (default true)
+* @return True if the given string matches the pattern, false otherwise.
+*/
+IVW_CORE_API bool wildcardStringMatchDigits(const std::string &pattern, const std::string &str,
+                                            int &index, bool matchLess=false, bool matchMore=true);
 
 /**
  * Searches all parent folders of path and looks for parentFolder.

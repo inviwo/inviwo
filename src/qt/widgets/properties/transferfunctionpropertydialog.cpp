@@ -31,11 +31,12 @@
 #include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h>
+#include <inviwo/qt/widgets/inviwofiledialog.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datawriterfactory.h>
-#include <QFileDialog>
+
 #include <QImage>
 #include <QDockWidget>
 #include <QGraphicsItem>
@@ -398,14 +399,17 @@ void TransferFunctionPropertyDialog::changeMask(int maskMin, int maskMax) {
 }
 
 void TransferFunctionPropertyDialog::importTransferFunction() {
-    QFileDialog importFileDialog(this, QString::fromStdString("Import transfer function"));
-    importFileDialog.setDirectory(InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_TRANSFERFUNCTIONS).c_str());
+    InviwoFileDialog importFileDialog(this, "Import transfer function",
+        "default",
+        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_TRANSFERFUNCTIONS)
+        );
     importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
     importFileDialog.setFileMode(QFileDialog::ExistingFile);
-    importFileDialog.setNameFilter("*.itf");
+    importFileDialog.addExtension("itf", "Inviwo Transfer Function");
 
     if (importFileDialog.exec()) {
         QString file = importFileDialog.selectedFiles().at(0);
+        // TODO: we need to check whether it is a valid itf file!
         IvwDeserializer deserializer(file.toLocal8Bit().constData());
         TransferFunction tf;
         tf.deserialize(deserializer);
@@ -415,22 +419,33 @@ void TransferFunctionPropertyDialog::importTransferFunction() {
 }
 
 void TransferFunctionPropertyDialog::exportTransferFunction() {
-    QFileDialog exportFileDialog(this, QString::fromStdString("Export transfer function"));
-    exportFileDialog.setDirectory(InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_TRANSFERFUNCTIONS).c_str());
+    InviwoFileDialog exportFileDialog(this, "Export transfer function",
+        "default",
+        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_TRANSFERFUNCTIONS)
+    );    
     exportFileDialog.setAcceptMode(QFileDialog::AcceptSave);
     exportFileDialog.setFileMode(QFileDialog::AnyFile);
-    exportFileDialog.setNameFilter("Inviwo Transfer Function (*.itf);;TF Image (*.png)"); // ;;All files (*.*)
+    exportFileDialog.addExtension("itf", "Inviwo Transfer Function");
+    exportFileDialog.addExtension("png", "Transfer Function Image");
+    exportFileDialog.addExtension("", "All files"); // this will add "All files (*)"
 
     if (exportFileDialog.exec()) {
         std::string file = exportFileDialog.selectedFiles().at(0).toLocal8Bit().constData();
         std::string extension = filesystem::getFileExtension(file);
 
-        if (extension == "") {
+        FileExtension fileExt = exportFileDialog.getSelectedFileExtension();
+
+        if (fileExt.extension_.empty()) {
             // fall-back to standard inviwo TF format
-            file.append(".itf");
+            fileExt.extension_ = "itf";
         }
 
-        if (extension == "png") {
+        // check whether file extension matches the selected one
+        if (fileExt.extension_ != extension) {
+            file.append(fileExt.extension_);
+        }
+
+        if (fileExt.extension_ == "png") {
             TransferFunction &tf = tfProperty_->get();
             const Layer* layer = tf.getData();
             vec2 texSize(tf.getTextureSize(), 1);
@@ -457,7 +472,8 @@ void TransferFunctionPropertyDialog::exportTransferFunction() {
             } else {
                 LogError("Error: Cound not find a writer for the specified extension and data type");
             }
-        } else if (extension == "itf") {
+        }
+        else if (fileExt.extension_ == "itf") {
             IvwSerializer serializer(file);
             tfProperty_->get().serialize(serializer);
             serializer.writeFile();

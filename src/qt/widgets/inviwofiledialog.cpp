@@ -35,13 +35,18 @@
 #include <QDesktopServices>
 #endif
 
+#include <QDir>
+
 namespace inviwo {
 
 InviwoFileDialog::InviwoFileDialog(QWidget *parent, const std::string &title,
-                                   const std::string &pathType)
-    : QFileDialog(parent, title.c_str(), 
-      getPreviousPath(QString(pathType.c_str())))
-    , pathType_(QString(pathType.c_str())) {
+                                   const std::string &pathType,
+                                   const std::string &path)
+    : QFileDialog(parent, QString::fromStdString(title))
+    , pathType_(QString::fromStdString(pathType))
+    , currentPath_()
+{
+    setCurrentDirectory(path);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     sidebarURLs_ << QUrl::fromLocalFile(
         QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
@@ -57,41 +62,81 @@ InviwoFileDialog::InviwoFileDialog(QWidget *parent, const std::string &title,
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     QFileDialog::setOption(QFileDialog::DontUseCustomDirectoryIcons);
 #endif
+
+    QObject::connect(this, SIGNAL(filterSelected(const QString &)),
+        this, SLOT(filterSelectionChanged(const QString &)));
 }
 
 void InviwoFileDialog::useNativeDialog(const bool &use) {
     QFileDialog::setOption(QFileDialog::DontUseNativeDialog, !use);
 }
 
-void InviwoFileDialog::setNameFilter(const QString &filter) {
-    LogWarn(
-        "Use of QT function setNameFilter should not be used on InviwoFileDialog: use addExtension "
-        "instead");
-    QFileDialog::setNameFilter(filter);
+void InviwoFileDialog::setCurrentDirectory(const std::string &path) {
+    currentPath_ = QString::fromStdString(path);
+    QFileDialog::setDirectory(currentPath_);
 }
 
-void InviwoFileDialog::setNameFilters(const QStringList &filters) {
-    LogWarn(
-        "Use of QT function setNameFilters should not be used on InviwoFileDialog: use "
-        "addExtension instead");
-    QFileDialog::setNameFilters(filters);
+void InviwoFileDialog::setCurrentDirectory(const QString &path) {
+    if (!path.isEmpty()) {
+        currentPath_ = path;
+    }
+    else {
+        // use default path based on pathType
+        currentPath_ = getPreviousPath(pathType_);
+    }
+    QFileDialog::setDirectory(currentPath_);
 }
 
-void InviwoFileDialog::setSidebarUrls(const QList<QUrl> &urls) {
-    LogWarn(
-        "Use of QT function setSidebarUrls should not be used on InviwoFileDialog: use "
-        "addSidebarPath instead");
-    QFileDialog::setSidebarUrls(urls);
+void InviwoFileDialog::addExtension(const FileExtension &fileExt) {
+    // create Qt compatible string
+    std::stringstream ss;
+    ss << fileExt.description_ << " (*";
+    // consider the special case when the extension is empty, i.e. the file selector is '*'
+    if (!fileExt.extension_.empty()) {
+        ss << "." << fileExt.extension_;
+    }
+    ss << ")";
+    std::string str{ ss.str() };
+
+    // add entry to the extension map
+    auto retval = extmap_.emplace(str, fileExt);
+    if (retval.second) {
+        // insert successful
+        extension_ << QString::fromStdString(str);
+    }
+    else {
+        LogError("Extension already registered: " << str);
+    }
 }
 
 void InviwoFileDialog::addExtension(const std::string &ext, const std::string &description) {
-    std::stringstream ss;
-    ss << description << "(*." << ext << ")";
-    addExtension(ss.str());
+    FileExtension fileExt{ ext, description };
+    addExtension(fileExt);
 }
 
 void InviwoFileDialog::addExtension(const std::string &extString) {
-    extension_ << extString.c_str();
+    FileExtension fileExt{ FileExtension::createFileExtensionFromString(extString) };
+    addExtension(fileExt);
+}
+
+void InviwoFileDialog::filterSelectionChanged(const QString &filter) {
+    // try to find matching filter in extension map
+    selectedFilter_ = getMatchingFileExtension(filter);
+}
+
+FileExtension InviwoFileDialog::getSelectedFileExtension() const {
+    return selectedFilter_;
+}
+
+FileExtension InviwoFileDialog::getMatchingFileExtension(const QString &extStr) {
+    // try to find matching filter in extension map
+    auto it = extmap_.find(extStr.toStdString());
+    if (it != extmap_.end()) {
+        return it->second;
+    }
+    else {
+        return FileExtension::createFileExtensionFromString(extStr.toStdString());
+    }
 }
 
 void InviwoFileDialog::addSidebarPath(const InviwoApplication::PathType &path) {
@@ -109,14 +154,20 @@ void InviwoFileDialog::addSidebarPath(const QString &path) {
 int InviwoFileDialog::exec() {
     QFileDialog::setNameFilters(extension_);
     QFileDialog::setSidebarUrls(sidebarURLs_);
-    QFileDialog::selectNameFilter(getPreviousExtension(pathType_));
+    // use filter used for this path type last time 
+    QString filter{ getPreviousExtension(pathType_) };
+    QFileDialog::selectNameFilter(filter);
+    // initialize selected filter
+    selectedFilter_ = getMatchingFileExtension(filter);
+
+    if (!currentPath_.isEmpty()) {
+        QFileDialog::setDirectory(currentPath_);
+    }
 
     int ret = QFileDialog::exec();
     if (ret == QDialog::Accepted) {
         setPreviousPath(pathType_, directory().absolutePath());
         setPreviousExtension(pathType_, selectedNameFilter());
-        
-
     }
 
     return ret;

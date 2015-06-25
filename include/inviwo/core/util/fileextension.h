@@ -41,6 +41,15 @@ public:
     FileExtension(std::string extension, std::string description);
     virtual ~FileExtension() {};
 
+    /** 
+     * \brief extracts a FileExtension object from a string. This function assumes
+     * that the extension is given within the right most parentheses.
+     * 
+     * @param str Input string  formed like "Text files (*.txt)".
+     * @return FileExtension object created from the information given in the input string.
+     */
+    static FileExtension createFileExtensionFromString(const std::string &str);
+
     std::string extension_; ///< File extension in lower case letters.
     std::string description_;
 };

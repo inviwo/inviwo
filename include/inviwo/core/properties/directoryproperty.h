@@ -31,56 +31,29 @@
 #define IVW_DIRECTORY_PROPERTY_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/properties/templateproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 namespace inviwo {
+
 /** class DirectoryProperty
  *  A class for file representations.
  *  Holds the value of the path to a file as a string.
  *
  * @see FileProperty, StringProperty
  */
-
-class IVW_CORE_API DirectoryProperty : public TemplateProperty<std::string> {
+class IVW_CORE_API DirectoryProperty : public FileProperty {
 public:
     InviwoPropertyInfo();
     DirectoryProperty(
-        std::string identifier, 
-        std::string displayName, 
+        std::string identifier,
+        std::string displayName,
         std::string value = "",
         std::string contentType = "default",
         InvalidationLevel invalidationLevel = INVALID_OUTPUT,
         PropertySemantics semantics = PropertySemantics::Default);
-    
-    DirectoryProperty(const DirectoryProperty& rhs);
-    DirectoryProperty& operator=(const DirectoryProperty& that);
-    virtual DirectoryProperty* clone() const;
     virtual ~DirectoryProperty();
 
-    virtual std::vector<std::string> getDirectoryTree() const;
-    virtual std::vector<std::string> getFiles(std::string filters = "*.*") const;
-    virtual void setDirectoryTree(std::vector<std::string> dirTree);
-    void updateDirectoryTree();
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
-    virtual void registerFileIndexingHandle(IntProperty* indexHandle) {
-        // TODO: use composite property if possible.
-        fileIndexingHandle_ = indexHandle;
-    }
-    virtual IntProperty* getFileIndexingHandle() {
-        // TODO: use composite property if possible.
-        return fileIndexingHandle_;
-    }
-
-    void setContentType(const std::string& contentType);
-    std::string getContentType() const;
-
-protected:
-    // TODO: currently tree contains file names only.
-    std::vector<std::string> directoryTree_;
-    IntProperty* fileIndexingHandle_; // Owning!?! //Peter
-    std::string contentType_;
+    virtual std::string getClassIdentifierForWidget() const override;
 };
 
 }  // namespace

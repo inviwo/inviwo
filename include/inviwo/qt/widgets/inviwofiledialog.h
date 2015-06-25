@@ -32,19 +32,24 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/core/util/fileextension.h>
 #include <string>
 #include <QFileDialog>
 #include <QUrl>
-#include <QDir>
 #include <QSettings>
+
+#include <unordered_map>
 
 namespace inviwo {
 
 class IVW_QTWIDGETS_API InviwoFileDialog : public QFileDialog {
+    Q_OBJECT
 public:
     InviwoFileDialog(QWidget *parent, const std::string &title,
-                     const std::string &pathType = "default");
+        const std::string &pathType = "default",
+        const std::string &path="");
 
+    void addExtension(const FileExtension &fileExt);
     void addExtension(const std::string &ext, const std::string &description);
     void addExtension(const std::string &extString);
 
@@ -54,12 +59,12 @@ public:
 
     void useNativeDialog(const bool &use = true);
 
-    // overrides
-    virtual void setNameFilter(const QString &filters);
-    virtual void setNameFilters(const QStringList &filters);
-    virtual void setSidebarUrls(const QList<QUrl> &urls);
+    void setCurrentDirectory(const std::string &path);
+    void setCurrentDirectory(const QString &path);
 
-    virtual int exec();
+    FileExtension getSelectedFileExtension() const;
+
+    virtual int exec() override;
 
     static QString getPreviousPath(const QString &pathType);
     static void setPreviousPath(const QString &pathType, const QString &path);
@@ -67,11 +72,22 @@ public:
     static QString getPreviousExtension(const QString &pathType);
     static void setPreviousExtension(const QString &pathType, const QString &path);
 
+protected slots:
+    void filterSelectionChanged(const QString &filter);
+
 protected:
+    FileExtension getMatchingFileExtension(const QString &extStr);
+
     QList<QUrl> sidebarURLs_;
     QStringList extension_;
     QString selectedExtension_;
     QString pathType_;
+    QString currentPath_;
+
+    FileExtension selectedFilter_;
+
+    using FileExtMap = std::unordered_map<std::string, FileExtension>;
+    FileExtMap extmap_;
 
     static QSettings globalSettings_;
 };

@@ -60,11 +60,12 @@ ImageSourceSeries::ImageSourceSeries()
 
     validExtensions_ = DataReaderFactory::getPtr()->getExtensionsForType<Layer>();
 
-    imageFileDirectory_.registerFileIndexingHandle(&currentImageIndex_);
     imageFileDirectory_.onChange(this, &ImageSourceSeries::onFindFiles);
     findFilesButton_.onChange(this, &ImageSourceSeries::onFindFiles);
 
     imageFileName_.setReadOnly(true);
+
+    this->onFindFiles();
 }
 
 ImageSourceSeries::~ImageSourceSeries() {}
@@ -78,7 +79,7 @@ void ImageSourceSeries::deinitialize() {
 }
 
 void ImageSourceSeries::onFindFiles() {
-    std::vector<std::string> files = imageFileDirectory_.getFiles();
+    std::vector<std::string> files = filesystem::getDirectoryContents(imageFileDirectory_.get());
         
     fileList_.clear();
     

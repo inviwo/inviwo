@@ -49,7 +49,6 @@
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <inviwo/qt/widgets/properties/colorpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/compositepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/directorypropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/eventpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/imageeditorwidgetqt.h>
@@ -78,7 +77,6 @@ QtWidgetModule::QtWidgetModule() : InviwoModule() {
     registerPropertyWidget(ColorPropertyWidgetQt, FloatVec3Property, "Color");
     registerPropertyWidget(ColorPropertyWidgetQt, FloatVec4Property, "Color");
     registerPropertyWidget(CompositePropertyWidgetQt, CompositeProperty, "Default");
-    registerPropertyWidget(DirectoryPropertyWidgetQt, DirectoryProperty, "Default");
     registerPropertyWidget(EventPropertyWidgetQt, EventProperty, "Default");
     registerPropertyWidget(FilePropertyWidgetQt, FileProperty, "Default");
 

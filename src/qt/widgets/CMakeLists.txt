@@ -13,6 +13,7 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoapplicationqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwodockwidgettitlebar.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwofiledialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/lightpositionwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/ordinaleditorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/propertylistwidget.h
@@ -27,7 +28,6 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/colorpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/compositepropertywidgetqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/directorypropertywidgetqt.h       
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/eventpropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/filepropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/ordinalpropertywidgetqt.h
@@ -54,7 +54,6 @@ set(MOC_FILES
 # Add header files
 set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/eventconverterqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwofiledialog.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtutils.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/inviwoqtwidgetsdefine.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/labelgraphicsitem.h
@@ -91,7 +90,6 @@ set(SOURCE_FILES
     properties/collapsiblegroupboxwidgetqt.cpp
     properties/colorpropertywidgetqt.cpp
     properties/compositepropertywidgetqt.cpp
-    properties/directorypropertywidgetqt.cpp    
     properties/eventpropertywidgetqt.cpp
     properties/filepropertywidgetqt.cpp
     properties/glslsyntaxhighlighter.cpp

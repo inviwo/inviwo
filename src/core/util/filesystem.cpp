@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/tinydirinterface.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 // For directory exists
@@ -36,6 +37,8 @@
 
 // For working directory
 #include <stdio.h>  // FILENAME_MAX
+
+#include <cctype> // isdigit()
 
 #ifdef WIN32
 #include <windows.h>
@@ -75,6 +78,134 @@ bool fileExists(const std::string& filePath) {
 bool directoryExists(const std::string& path) {
     struct stat buffer;
     return (stat(path.c_str(), &buffer) == 0 && (buffer.st_mode & S_IFDIR));
+}
+
+std::vector<std::string> getDirectoryContents(const std::string& path) {
+    if (path.empty()) {
+        return{};
+    }
+    TinyDirInterface tinydir;
+    tinydir.open(path);
+    return tinydir.getContents();
+}
+
+bool wildcardStringMatch(const std::string &pattern, const std::string &str) {
+    const char* patternPtr = pattern.c_str();
+    const char* strPtr = str.c_str();
+
+    const char* patternPtrSave = nullptr;
+    const char* strPtrSave = nullptr;
+
+    while (*strPtr != '\0') {
+        if (*patternPtr == '*') {
+            // wildcard detected
+            ++patternPtr; // remove wildcard from pattern
+            if (*patternPtr == '\0') {
+                // wildcard at the end of the pattern matches remaining string
+                return true;
+            }
+            patternPtrSave = patternPtr; // save position after wildcard for roll-back
+            strPtrSave = strPtr + 1;
+        }
+        else if ((*patternPtr == '?') || (*patternPtr == *strPtr)) {
+            // single character match or single character wildcard
+            ++patternPtr;
+            ++strPtr;
+        }
+        else if (strPtrSave == '\0') {
+            // early exit if the next string character is at the end
+            return false;
+        }
+        else {
+            // roll-back in case read for next character after wildcard was not successful
+            patternPtr = patternPtrSave;
+            // gobble up current character and consider it being part of the wildcard
+            strPtr = strPtrSave++;
+        }
+    }
+    // account for wildcards at the end of the pattern
+    while (*patternPtr == '*') {
+        ++patternPtr;
+    }
+    // pattern only matches if nothing of it is left
+    return (*patternPtr == '\0');
+}
+
+bool wildcardStringMatchDigits(const std::string &pattern, const std::string &str,
+    int &index, bool matchLess, bool matchMore) {
+
+    const char* patternPtr = pattern.c_str();
+    const char* strPtr = str.c_str();
+
+    const char* patternPtrSave = nullptr;
+    const char* strPtrSave = nullptr;
+
+    int result = 0;
+
+    while (*strPtr != '\0') {
+        if ((*patternPtr == '#') && (isdigit(*strPtr))) {
+            // digit detected
+            result = result * 10 + static_cast<int>(*strPtr - '0');
+
+            ++patternPtr;
+            ++strPtr;
+
+            if (matchMore) {
+                // more digits (eat up all digits)
+                while ((*strPtr != '\0') && (*patternPtr != '#') && (isdigit(*strPtr))) {
+                    result = result * 10 + static_cast<int>(*strPtr - '0');
+                    ++strPtr;
+                }
+            }
+            if (matchLess) {
+                // less digits (eat up all '#')
+                while ((*patternPtr != '\0') && (*patternPtr == '#') && (!isdigit(*strPtr))) {
+                    ++patternPtr;
+                }
+            }
+            if (*patternPtr != '#' && isdigit(*strPtr)) {
+                // run out of '#' but there are still digits left
+                strPtrSave = nullptr; // reset wildcard mode for regular pattern matching
+            }
+        }
+        else if (*patternPtr == '*') {
+            // wildcard detected
+            ++patternPtr; // remove wildcard from pattern
+            if (*patternPtr == '\0') {
+                // wildcard at the end of the pattern matches remaining string
+                index = result;
+                return true;
+            }
+            patternPtrSave = patternPtr; // save position after wildcard for roll-back
+            strPtrSave = strPtr + 1;
+        }
+        else if ((*patternPtr == '?') || (*patternPtr == *strPtr)) {
+            // single character match or single character wildcard
+            ++patternPtr;
+            ++strPtr;
+        }
+        else if (strPtrSave == '\0') {
+            // early exit if the next string character is at the end
+            return false;
+        }
+        else {
+            // roll-back in case read for next character after wildcard was not successful
+            patternPtr = patternPtrSave;
+            // gobble up current character and consider it being part of the wildcard
+            strPtr = strPtrSave++;
+        }
+    }
+    // account for wildcards at the end of the pattern
+    while (*patternPtr == '*') {
+        ++patternPtr;
+    }
+    // pattern matches only if nothing of it is left
+    if (*patternPtr == '\0') {
+        index = result;
+        return true;
+    }
+
+    return false;
 }
 
 std::string getParentFolderPath(const std::string& basePath, const std::string& parentFolder) {

@@ -231,6 +231,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/stringconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/systemcapabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/timer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
 )
@@ -416,6 +417,7 @@ set(SOURCE_FILES
     util/stringconversion.cpp
     util/systemcapabilities.cpp
     util/timer.cpp
+    util/tinydirinterface.cpp
     util/utilities.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
