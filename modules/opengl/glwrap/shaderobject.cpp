@@ -396,18 +396,23 @@ std::string ShaderObject::print(bool showSource) const {
     if (showSource) {
         std::string::size_type width = 0;
         for (auto l : lineNumberResolver_) {
-            std::string file = splitString(l.first,'/').back();
+            std::string file = splitString(l.first, '/').back();
             width = std::max(width, file.length());
         }
-        
+
         size_t i = 0;
         std::string line;
         std::stringstream out;
         std::istringstream in(sourceProcessed_);
         while (std::getline(in, line)) {
-            std::string file = splitString(lineNumberResolver_[i].first,'/').back();
-            out << std::left << std::setw(width+1) << file << std::right << std::setw(4)
-                << lineNumberResolver_[i].second << ": " << std::left << line << "\n";
+            std::string file = i < lineNumberResolver_.size()
+                                   ? splitString(lineNumberResolver_[i].first, '/').back()
+                                   : "";
+            unsigned int lineNumber =
+                i < lineNumberResolver_.size() ? lineNumberResolver_[i].second : 0;
+
+            out << std::left << std::setw(width + 1) << file << std::right << std::setw(4)
+                << lineNumber << ": " << std::left << line << "\n";
             ++i;
         }
         return out.str();
@@ -415,6 +420,5 @@ std::string ShaderObject::print(bool showSource) const {
         return sourceProcessed_;
     }
 }
-
 
 } // namespace
