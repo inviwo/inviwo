@@ -43,6 +43,8 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 #include <inviwo/core/ports/port.h>
+#include <modules/opengl/textureutils.h>
+#include <modules/opengl/volumeutils.h>
 
 namespace inviwo {
 

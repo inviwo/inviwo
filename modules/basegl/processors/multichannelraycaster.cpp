@@ -28,14 +28,14 @@
  *********************************************************************************/
 
 #include "multichannelraycaster.h"
-#include <modules/opengl/shaderutils.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/glwrap/textureunit.h>
+#include <modules/opengl/shaderutils.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/volumeutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
-
 
 namespace inviwo {
 
@@ -125,7 +125,7 @@ void MultichannelRaycaster::process() {
 
     auto tfs = transferFunctions_.getPropertiesByType<TransferFunctionProperty>();
     size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
-    for (int channel = 0; channel < channels; channel++) {
+    for (size_t channel = 0; channel < channels; channel++) {
         utilgl::bindAndSetUniforms(&shader_, units, *tfs[channel]);
     }
     utilgl::setUniforms(&shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_);
