@@ -143,7 +143,7 @@ if(IVW_PACKAGE_PROJECT)
 	set(CPACK_PACKAGE_EXECUTABLES ${IVW_EXECUTABLES}) 
 
 	option(IVW_PACKAGE_INSTALLER "Use NSIS to create installer" OFF)
-
+    
 	if(WIN32)
 		if(IVW_PACKAGE_INSTALLER)
 			set(CPACK_GENERATOR "ZIP;NSIS")
@@ -179,12 +179,16 @@ if(IVW_PACKAGE_PROJECT)
 
 	elseif(APPLE)
 		if(IVW_PACKAGE_INSTALLER)
+            configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/info_plist_template.txt
+               ${CMAKE_BINARY_DIR}/Info.plist
+               @ONLY IMMEDIATE)
+        
 			set(CPACK_MONOLITHIC_INSTALL 1) #Can't get components to work with DragNDrop
 			#http://www.cmake.org/cmake/help/v3.2/module/CPackBundle.html
 			set(CPACK_GENERATOR "DragNDrop")
 			set(CPACK_BUNDLE_NAME "Inviwo")
 			set(CPACK_BUNDLE_ICON "${IVW_ROOT_DIR}/Resources/icons/inviwo_light.icns")
-			set(CPACK_BUNDLE_PLIST "${IVW_ROOT_DIR}/Resources/Info.plist")
+			set(CPACK_BUNDLE_PLIST "${CMAKE_BINARY_DIR}/Info.plist")
 			set(CPACK_DMG_DS_STORE "${IVW_ROOT_DIR}/Resources/DS_mapp")
 			set(CPACK_DMG_VOLUME_NAME "Inviwo ${IVW_VERSION}")
 			set(CPACK_OSX_PACKAGE_VERSION 10.10)

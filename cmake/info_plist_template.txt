@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>inviwo</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Inviwo 0.9.2dev, Copyright (c) 2012-2015 Inviwo Foundation</string>
+	<string>Inviwo @IVW_VERSION@, Copyright (c) 2012-2015 Inviwo Foundation</string>
 	<key>CFBundleIconFile</key>
 	<string>inviwo_light.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -17,17 +17,17 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleLongVersionString</key>
-	<string>0.9.2dev.</string>
+	<string>@IVW_VERSION@.</string>
 	<key>CFBundleName</key>
 	<string>Inviwo</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.9.2dev</string>
+	<string>@IVW_VERSION@</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.9.2dev</string>
+	<string>@IVW_VERSION@</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>DTCompiler</key>
