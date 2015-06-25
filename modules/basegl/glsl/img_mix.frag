@@ -33,9 +33,11 @@ uniform ImageParameters outportParameters_;
 
 uniform sampler2D inport0Color;
 uniform sampler2D inport0Depth;
+uniform sampler2D inport0Picking;
 
 uniform sampler2D inport1Color;
 uniform sampler2D inport1Depth;
+uniform sampler2D inport1Picking;
 
 uniform float weight_;
 
@@ -118,5 +120,9 @@ void main() {
     // mix result with original color,
     // if (weight_ == 1) the final color will be the result of the blending operation
     FragData0 = mix(color0, result, weight_);
-	gl_FragDepth = min(texture(inport0Depth, texCoords).r,texture(inport1Depth, texCoords).r);
+    gl_FragDepth = min(texture(inport0Depth, texCoords).r,texture(inport1Depth, texCoords).r);
+
+    vec4 picking0 = texture(inport0Picking, texCoords);
+    vec4 picking1 = texture(inport1Picking, texCoords);
+    PickingData = (picking0.a > 0.0 ? picking0 : picking1);
 }

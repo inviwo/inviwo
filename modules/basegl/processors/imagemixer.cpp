@@ -101,8 +101,8 @@ void ImageMixer::process() {
     shader_->activate();
 
     TextureUnitContainer texUnits;
-    utilgl::bindAndSetUniforms(shader_, texUnits, inport0_, COLOR_DEPTH);
-    utilgl::bindAndSetUniforms(shader_, texUnits, inport1_, COLOR_DEPTH);
+    utilgl::bindAndSetUniforms(shader_, texUnits, inport0_, COLOR_DEPTH_PICKING);
+    utilgl::bindAndSetUniforms(shader_, texUnits, inport1_, COLOR_DEPTH_PICKING);
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
     shader_->setUniform("weight_", weight_.get());
