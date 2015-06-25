@@ -78,13 +78,13 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initializeResources();
+    virtual void initializeResources() override;
 
     // override to do member renaming.
     virtual void deserialize(IvwDeserializer& d) override;
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
     Shader shader_;
 

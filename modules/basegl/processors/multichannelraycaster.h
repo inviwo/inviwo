@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MULTICHANNELRAYCASTER_H
@@ -38,27 +38,26 @@
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/volumeindicatorproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
-
+#include <modules/opengl/glwrap/shader.h>
 
 namespace inviwo {
-
-class Shader;
 
 /** \docpage{org.inviwo.MultichannelRaycaster, Multichannel Raycaster}
  * ![](org.inviwo.MultichannelRaycaster.png?classIdentifier=org.inviwo.MultichannelRaycaster)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __volume__ ...
  *   * __exit-points__ ...
  *   * __entry-points__ ...
- * 
+ *
  * ### Outports
  *   * __outport__ ...
- * 
+ *
  * ### Properties
  *   * __Raycasting__ ...
  *   * __transferFunctions___ ...
@@ -66,23 +65,21 @@ class Shader;
  *   * __Camera__ ...
  *
  */
-class IVW_MODULE_BASEGL_API MultichannelRaycaster  : public Processor {
+class IVW_MODULE_BASEGL_API MultichannelRaycaster : public Processor {
 public:
+    InviwoProcessorInfo();
+
     MultichannelRaycaster();
     virtual ~MultichannelRaycaster();
 
-    InviwoProcessorInfo();
+    virtual void initializeResources() override;
+    virtual void process() override;
 
-    virtual void initialize();
-    virtual void deinitialize();
-    virtual void initializeResources();
-
-protected:
-    virtual void process();
-
+    // override to do member renaming.
+    virtual void deserialize(IvwDeserializer& d) override;
 private:
-    Shader* shader_;
-    std::string shaderFileName_;
+    bool updateNetwork(TxElement* node);
+    Shader shader_;
 
     VolumeInport volumePort_;
     ImageInport entryPort_;
@@ -94,9 +91,9 @@ private:
     SimpleRaycastingProperty raycasting_;
     CameraProperty camera_;
     SimpleLightingProperty lighting_;
+    VolumeIndicatorProperty positionIndicator_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_MULTICHANNELRAYCASTER_H
-
+#endif  // IVW_MULTICHANNELRAYCASTER_H

@@ -36,33 +36,32 @@
 #include "utils/depth.glsl"
 #include "utils/gradients.glsl"
 #include "utils/shading.glsl"
+#include "utils/raycastgeometry.glsl"
 
 
-uniform VolumeParameters volumeParameters_;
-uniform sampler3D volume_;
+uniform VolumeParameters volumeParameters;
+uniform sampler3D volume;
 
-uniform sampler2D transferFunc_;
+uniform ImageParameters entryParameters;
+uniform sampler2D entryColor;
+uniform sampler2D entryDepth;
+uniform sampler2D entryPicking;
 
-uniform ImageParameters entryParameters_;
-uniform sampler2D entryColorTex_;
-uniform sampler2D entryDepthTex_;
+uniform ImageParameters exitParameters;
+uniform sampler2D exitColor;
+uniform sampler2D exitDepth;
 
-uniform ImageParameters exitParameters_;
-uniform sampler2D exitColorTex_;
-uniform sampler2D exitDepthTex_;
+uniform ImageParameters outportParameters;
 
-uniform ImageParameters outportParameters_;
+uniform LightParameters lighting;
+uniform CameraParameters camera;
+uniform VolumeIndicatorParameters positionindicator;
+uniform RaycastingParameters raycaster;
 
-uniform LightParameters light_;
-uniform CameraParameters camera_;
-
-uniform float samplingRate_;
-uniform float isoValue_;
-
-uniform sampler2D transferFuncC1_;
-uniform sampler2D transferFuncC2_;
-uniform sampler2D transferFuncC3_;
-uniform sampler2D transferFuncC4_;
+uniform sampler2D transferFunction1;
+uniform sampler2D transferFunction2;
+uniform sampler2D transferFunction3;
+uniform sampler2D transferFunction4;
 
 #define ERT_THRESHOLD 0.99 // threshold for early ray termination
 
@@ -71,26 +70,39 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
     float tIncr =
-        min(tEnd, tEnd / (samplingRate_ * length(rayDirection * volumeParameters_.dimensions)));
+        min(tEnd, tEnd / (raycaster.samplingRate * length(rayDirection * volumeParameters.dimensions)));
     float samples = ceil(tEnd / tIncr);
     tIncr = tEnd / samples;
     float t = 0.5f * tIncr;
     rayDirection = normalize(rayDirection);
     float tDepth = -1.0;
-    vec4 color;
+    mat4 color;
     vec4 voxel;
     vec3 samplePos;
     mat4x3 gradients;
-    vec3 toCameraDir = normalize(camera_.position - (volumeParameters_.textureToWorld * vec4(entryPoint, 1.0)).xyz);
+    vec3 toCameraDir = normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
     while (t < tEnd) {
         samplePos = entryPoint + t * rayDirection;
-        voxel = getNormalizedVoxel(volume_, volumeParameters_, samplePos);
+        voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
         
-        gradients = COMPUTE_ALL_GRADIENTS(voxel, volume_, volumeParameters_, samplePos);
-        // World space position
-        vec3 worldSpacePosition = (volumeParameters_.textureToWorld * vec4(samplePos, 1.0)).xyz;
-        // macro defined in MultichannelRaycaster::initializeResources()            
-        SAMPLE_CHANNELS
+        // macro defined in MultichannelRaycaster::initializeResources()
+        // sets colors;
+        SAMPLE_CHANNELS;
+
+        if (color[0].a > 0 || color[1].a > 0 || color[2].a > 0 || color[3].a > 0) {
+            // World space position
+            vec3 worldSpacePosition = (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz;
+            gradients = COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParameters, samplePos);
+            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
+            for (int i = 0; i < NUMBER_OF_CHANNELS; ++i) {
+                color[i].rgb = APPLY_LIGHTING(lighting, color[i].rgb, color[i].rgb, vec3(1.0),
+                    worldSpacePosition, normalize(-gradients[i]), toCameraDir);
+                result = APPLY_COMPOSITING(result, color[i], samplePos, voxel,
+                    gradients[i], camera, raycaster.isoValue, t, tDepth, tIncr);
+            }
+        } else {
+            result = DRAW_PLANES(result, samplePos, rayDirection, tIncr, positionindicator);
+        }
 
         // early ray termination
         if (result.a > ERT_THRESHOLD) {
@@ -101,8 +113,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     }
 
     if (tDepth != -1.0) {
-        tDepth = calculateDepthValue(camera_, tDepth, texture(entryDepthTex_, texCoords).z,
-                                     texture(exitDepthTex_, texCoords).z);
+        tDepth = calculateDepthValue(camera, tDepth, texture(entryDepth, texCoords).x,
+                                     texture(exitDepth, texCoords).x);
     } else {
         tDepth = 1.0;
     }
@@ -112,12 +124,13 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
 }
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec3 entryPoint = texture(entryColorTex_, texCoords).rgb;
-    vec3 exitPoint = texture(exitColorTex_, texCoords).rgb;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec3 entryPoint = texture(entryColor, texCoords).rgb;
+    vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
     if (entryPoint == exitPoint) discard;
 
     vec4 color = rayTraversal(entryPoint, exitPoint, texCoords);
     FragData0 = color;
+    PickingData = texture(entryPicking, texCoords);
 }

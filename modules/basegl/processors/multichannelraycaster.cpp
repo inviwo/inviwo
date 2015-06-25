@@ -35,7 +35,7 @@
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/volumeutils.h>
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <modules/opengl/glwrap/shader.h>
+
 
 namespace inviwo {
 
@@ -47,16 +47,16 @@ ProcessorCodeState(MultichannelRaycaster, CODE_STATE_EXPERIMENTAL);
 
 MultichannelRaycaster::MultichannelRaycaster()
     : Processor()
-    , shader_(nullptr)
-    , shaderFileName_("multichannelraycaster.frag")
+    , shader_("multichannelraycaster.frag", false)
     , volumePort_("volume")
-    , entryPort_("entry-points")
-    , exitPort_("exit-points")
+    , entryPort_("entry")
+    , exitPort_("exit")
     , outport_("outport")
     , transferFunctions_("transfer-functions", "Transfer functions")
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera")
-    , lighting_("lighting", "Lighting", &camera_) {
+    , lighting_("lighting", "Lighting", &camera_)
+    , positionIndicator_("positionindicator", "Position Indicator") {
     transferFunctions_.addProperty(new TransferFunctionProperty(
         "transferFunction1", "Channel 1", TransferFunction(), &volumePort_), false);
     transferFunctions_.addProperty(new TransferFunctionProperty(
@@ -74,110 +74,83 @@ MultichannelRaycaster::MultichannelRaycaster()
     addProperty(raycasting_);
     addProperty(camera_);
     addProperty(lighting_);
-
+    addProperty(positionIndicator_);
     addProperty(transferFunctions_);
     
     volumePort_.onChange(this, &MultichannelRaycaster::initializeResources);
 }
 
-
 MultichannelRaycaster::~MultichannelRaycaster() {
-    std::vector<Property*> tfs = transferFunctions_.getProperties();
-    while (!tfs.empty()) {
-        delete tfs.back();
-        tfs.pop_back();
+    for (auto tf : transferFunctions_.getProperties()) {
+        delete tf;
     }
 }
 
-void MultichannelRaycaster::initialize() {
-    Processor::initialize();
-    shader_ = new Shader(shaderFileName_, false);
-    initializeResources();
-}
-
-void MultichannelRaycaster::deinitialize() {
-    delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
-}
-
 void MultichannelRaycaster::initializeResources() {
-    utilgl::addShaderDefines(shader_, raycasting_);
-    utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_);
+    utilgl::addShaderDefines(&shader_, raycasting_);
+    utilgl::addShaderDefines(&shader_, camera_);
+    utilgl::addShaderDefines(&shader_, lighting_);
+    utilgl::addShaderDefines(&shader_, positionIndicator_);
 
     if (volumePort_.hasData()) {
-        int channels = static_cast<int>(volumePort_.getData()->getDataFormat()->getComponents());
+        size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
         
-        std::vector<Property*> tfs = transferFunctions_.getProperties();
-        for (int i = 0; i < static_cast<int>(tfs.size()); i++) {
+        auto tfs = transferFunctions_.getPropertiesByType<TransferFunctionProperty>();
+        for (size_t i = 0; i < tfs.size(); i++) {
             tfs[i]->setVisible(i < channels ? true : false);
         }
         
         std::stringstream ss;
         ss << channels;
-        shader_->getFragmentShaderObject()->addShaderDefine("NUMBER_OF_CHANNELS", ss.str());
+        shader_.getFragmentShaderObject()->addShaderDefine("NUMBER_OF_CHANNELS", ss.str());
 
         std::stringstream ss2;
-        for (int i = 0; i < channels; ++i) {
-            ss2 << "color = APPLY_CLASSIFICATION(transferFuncC" << i+1 << "_, voxel[" << i << "])"         
-                << "color.rgb = APPLY_LIGHTING(light_, color.rgb, color.rgb, vec3(1.0), "
-                << "worldSpacePosition, normalize(-gradients[" << i <<"]), toCameraDir);"
-                << "result = APPLY_COMPOSITING(result, color, samplePos, voxel, "
-                << "gradients[" << i <<"], camera_, isoValue_, t, tDepth, tIncr);";
+        for (size_t i = 0; i < channels; ++i) {
+            ss2 << "color["<< i <<"] = APPLY_CLASSIFICATION(transferFunction" << i+1 << ", voxel[" << i << "]);";
         }
-        shader_->getFragmentShaderObject()->addShaderDefine("SAMPLE_CHANNELS", ss2.str());
-        shader_->build();
+        shader_.getFragmentShaderObject()->addShaderDefine("SAMPLE_CHANNELS", ss2.str());
+        shader_.build();
     }
 }
 
-void MultichannelRaycaster::process() {   
+void MultichannelRaycaster::process() {
     LGL_ERROR;
-    TextureUnit entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit, volUnit;
-    utilgl::bindTextures(entryPort_, entryColorUnit.getEnum(), entryDepthUnit.getEnum());
-    utilgl::bindTextures(exitPort_, exitColorUnit.getEnum(), exitDepthUnit.getEnum());
-    utilgl::bindTexture(volumePort_, volUnit);
+    utilgl::activateAndClearTarget(outport_);
+    shader_.activate();
 
-    std::vector<Property*> tfs = transferFunctions_.getProperties();
-    int channels = static_cast<int>(volumePort_.getData()->getDataFormat()->getComponents());
-    TextureUnit* transFuncUnits = new TextureUnit[channels];
-    GLint* tfUnitNumbers = new GLint[channels];
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(&shader_, units, volumePort_);
+    utilgl::bindAndSetUniforms(&shader_, units, entryPort_, COLOR_DEPTH_PICKING);
+    utilgl::bindAndSetUniforms(&shader_, units, exitPort_, COLOR_DEPTH);
+
+    auto tfs = transferFunctions_.getPropertiesByType<TransferFunctionProperty>();
+    size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
     for (int channel = 0; channel < channels; channel++) {
-        utilgl::bindTexture(*static_cast<TransferFunctionProperty*>(tfs[channel]), 
-                            transFuncUnits[channel]);
-        tfUnitNumbers[channel] = transFuncUnits[channel].getUnitNumber();
+        utilgl::bindAndSetUniforms(&shader_, units, *tfs[channel]);
     }
-    
-    utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
-    utilgl::clearCurrentTarget();
-    shader_->activate();
-    
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
+    utilgl::setUniforms(&shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_);
 
-    for (int channel = 0; channel < channels; channel++)
-        shader_->setUniform("transferFuncC" + toString<int>(channel+1) + "_", tfUnitNumbers[channel]);
-
-    shader_->setUniform("entryColorTex_", entryColorUnit.getUnitNumber());
-    shader_->setUniform("entryDepthTex_", entryDepthUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, entryPort_, "entryParameters_");
-    shader_->setUniform("exitColorTex_", exitColorUnit.getUnitNumber());
-    shader_->setUniform("exitDepthTex_", exitDepthUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, exitPort_, "exitParameters_");    
-    shader_->setUniform("volume_", volUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, volumePort_, "volumeParameters_");
-    utilgl::setShaderUniforms(shader_, raycasting_);
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-    utilgl::setShaderUniforms(shader_, lighting_, "light_");
-    
     utilgl::singleDrawImagePlaneRect();
 
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
     LGL_ERROR;
-
-    delete[] transFuncUnits;
-    delete[] tfUnitNumbers;
 }
 
+void MultichannelRaycaster::deserialize(IvwDeserializer& d) {
+    NodeVersionConverter<MultichannelRaycaster> vc(this, &MultichannelRaycaster::updateNetwork);
+    d.convertVersion(&vc);
+    Processor::deserialize(d);
+}
+
+bool MultichannelRaycaster::updateNetwork(TxElement* node) {
+    TxElement* p1 = util::xmlGetElement(
+        node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=entry-points");
+    if (p1) p1->SetAttribute("identifier", "entry");
+    TxElement* p2 = util::xmlGetElement(
+        node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=exit-points");
+    if (p2) p2->SetAttribute("identifier", "exit");
+    return true;
+}
 
 }  // namespace
