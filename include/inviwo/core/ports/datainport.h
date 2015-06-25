@@ -85,9 +85,9 @@ template <typename T, size_t N, bool Flat>
 std::string inviwo::DataInport<T, N, Flat>::getClassIdentifier() const {
     switch (N) {
         case 0:
-            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + "Inport";
-        case 1:
             return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + "MultiInport";
+        case 1:
+            return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + "Inport";
         default:
             return port_traits<T>::class_identifier() + (Flat ? "Flat" : "") + toString(N) +
                    "Inport";
