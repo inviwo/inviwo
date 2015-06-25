@@ -84,7 +84,6 @@ protected:
 
 private:
     void onVolumeChange();
-    bool fixNetwork(TxElement*);
 
     VolumeInport volumePort_;
     ImageInport entryPort_;

@@ -199,7 +199,7 @@ void PropertyOwner::serialize(IvwSerializer& s) const {
 void PropertyOwner::deserialize(IvwDeserializer& d) {
 
     // This is for finding renamed composites, and moving old properties to new composites.
-    NodeVersionConverter<PropertyOwner> tvc(this, &PropertyOwner::findPropsForComposites);
+    NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);
     d.convertVersion(&tvc);
 
     std::vector<std::string> identifers;

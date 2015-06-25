@@ -136,20 +136,18 @@ void VolumeRaycaster::toggleShading(Event*) {
 
 // override to do member renaming.
 void VolumeRaycaster::deserialize(IvwDeserializer& d) {
-    NodeVersionConverter<VolumeRaycaster> vc(this, &VolumeRaycaster::updateNetwork);
+    NodeVersionConverter vc([](TxElement* node) {
+        TxElement* p1 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=entry-points");
+        if (p1) p1->SetAttribute("identifier", "entry");
+        TxElement* p2 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=exit-points");
+        if (p2) p2->SetAttribute("identifier", "exit");
+        return true;
+    });
+
     d.convertVersion(&vc);
     Processor::deserialize(d);
 }
-bool VolumeRaycaster::updateNetwork(TxElement* node) {
-    TxElement* p1 = util::xmlGetElement(
-        node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=entry-points");
-    if (p1) p1->SetAttribute("identifier", "entry");
-    TxElement* p2 = util::xmlGetElement(
-        node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=exit-points");
-    if (p2) p2->SetAttribute("identifier", "exit");
-    return true;
-}
-
-
 
 } // namespace

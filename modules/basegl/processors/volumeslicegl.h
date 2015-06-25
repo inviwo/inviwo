@@ -140,8 +140,6 @@ private:
     void eventStepSliceDown(Event*);
     void eventGestureShiftSlice(Event*);
 
-    bool updateNetwork(TxElement* node);
-
     VolumeInport inport_;
     ImageOutport outport_;
     Shader shader_;

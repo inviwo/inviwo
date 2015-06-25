@@ -33,6 +33,26 @@
 namespace inviwo {
 VersionConverter::VersionConverter() {}
 
+NodeVersionConverter::NodeVersionConverter(std::function<bool(TxElement*)> fun)
+    : VersionConverter(), fun_(fun) {}
+
+bool NodeVersionConverter::convert(TxElement* root) { return fun_(root); }
+
+TraversingVersionConverter::TraversingVersionConverter(std::function<bool(TxElement*)> fun)  
+    : VersionConverter(), fun_(fun) {}
+
+bool TraversingVersionConverter::convert(TxElement* root) { return traverseNodes(root); }
+
+bool TraversingVersionConverter::traverseNodes(TxElement* node) {
+    bool res = true;
+    res = res && fun_(node);
+    ticpp::Iterator<ticpp::Element> child;
+    for (child = child.begin(node); child != child.end(); child++) {
+        res = res && traverseNodes(child.Get());
+    }
+    return res;
+}
+
 bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const CompositeProperty& prop) {
     TxElement propitem("Property");
     propitem.SetAttribute("type", prop.getClassIdentifier());

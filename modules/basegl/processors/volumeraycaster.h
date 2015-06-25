@@ -89,7 +89,6 @@ protected:
     Shader shader_;
 
 private:
-    bool updateNetwork(TxElement* node);
     void onVolumeChange();
     void toggleShading(Event*);
     

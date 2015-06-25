@@ -669,18 +669,17 @@ void VolumeSliceGL::rotationModeChange() {
 
 // override to do member renaming.
 void VolumeSliceGL::deserialize(IvwDeserializer& d) {
-    NodeVersionConverter<VolumeSliceGL> vc(this, &VolumeSliceGL::updateNetwork);
+    NodeVersionConverter vc([](TxElement* node) {
+        TxElement* p1 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.VolumeInport&identifier=volume.inport");
+        if (p1) p1->SetAttribute("identifier", "volume");
+        TxElement* p2 = util::xmlGetElement(
+            node, "OutPorts/OutPort&type=org.inviwo.ImageOutport&identifier=image.outport");
+        if (p2) p2->SetAttribute("identifier", "outport");
+        return true;
+    });
     d.convertVersion(&vc);
     Processor::deserialize(d);
-}
-bool VolumeSliceGL::updateNetwork(TxElement* node) {
-    TxElement* p1 = util::xmlGetElement(
-        node, "InPorts/InPort&type=org.inviwo.VolumeInport&identifier=volume.inport");
-    if (p1) p1->SetAttribute("identifier", "volume");
-    TxElement* p2 = util::xmlGetElement(
-        node, "OutPorts/OutPort&type=org.inviwo.ImageOutport&identifier=image.outport");
-    if (p2) p2->SetAttribute("identifier", "outport");
-    return true;
 }
 
 }  // inviwo namespace

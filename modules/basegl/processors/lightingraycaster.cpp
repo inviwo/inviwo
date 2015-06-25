@@ -132,16 +132,14 @@ void LightingRaycaster::process() {
 }
 
 void LightingRaycaster::deserialize(IvwDeserializer& d) {
-    NodeVersionConverter<LightingRaycaster> tvc(this, &LightingRaycaster::fixNetwork);
+    NodeVersionConverter tvc([](TxElement* node) {
+        TxElement* p = util::xmlGetElement(
+            node, "Properties/Property&type=OptionPropertyString&identifier=shadingMode");
+        if (p) p->SetAttribute("type", "OptionPropertyInt");
+        return true;
+    });
     d.convertVersion(&tvc);
     Processor::deserialize(d);
 }
-
-bool LightingRaycaster::fixNetwork(TxElement* node) {
-    TxElement* p = util::xmlGetElement(node, "Properties/Property&type=OptionPropertyString&identifier=shadingMode");
-    if (p) p->SetAttribute("type", "OptionPropertyInt");
-    return true;
-}
-
 
 } // namespace

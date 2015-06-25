@@ -138,19 +138,19 @@ void MultichannelRaycaster::process() {
 }
 
 void MultichannelRaycaster::deserialize(IvwDeserializer& d) {
-    NodeVersionConverter<MultichannelRaycaster> vc(this, &MultichannelRaycaster::updateNetwork);
+    NodeVersionConverter vc([](TxElement* node) {
+        TxElement* p1 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=entry-points");
+        if (p1) p1->SetAttribute("identifier", "entry");
+        TxElement* p2 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=exit-points");
+        if (p2) p2->SetAttribute("identifier", "exit");
+        return true;
+
+    });
+
     d.convertVersion(&vc);
     Processor::deserialize(d);
-}
-
-bool MultichannelRaycaster::updateNetwork(TxElement* node) {
-    TxElement* p1 = util::xmlGetElement(
-        node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=entry-points");
-    if (p1) p1->SetAttribute("identifier", "entry");
-    TxElement* p2 = util::xmlGetElement(
-        node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=exit-points");
-    if (p2) p2->SetAttribute("identifier", "exit");
-    return true;
 }
 
 }  // namespace

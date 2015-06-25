@@ -78,7 +78,6 @@ public:
     // override to do member renaming.
     virtual void deserialize(IvwDeserializer& d) override;
 private:
-    bool updateNetwork(TxElement* node);
     Shader shader_;
 
     VolumeInport volumePort_;
