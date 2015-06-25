@@ -57,7 +57,7 @@ public:
     void clear();
 
 private:
-    size_t findView(ivec2 pos) const;
+    int findView(ivec2 pos) const;
     static ivec2 flipY(ivec2 pos, ivec2 size);
     static bool inView(const ivec4& view, const ivec2& pos);
 

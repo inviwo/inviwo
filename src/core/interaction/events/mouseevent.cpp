@@ -86,7 +86,8 @@ MouseEvent::MouseEvent(const MouseEvent& rhs)
     , wheelOrientation_(rhs.wheelOrientation_)
     , position_(rhs.position_)
     , wheelSteps_(rhs.wheelSteps_)
-    , canvasSize_(rhs.canvasSize_) {}
+    , canvasSize_(rhs.canvasSize_)
+    , depth_(rhs.depth_) {}
 
 MouseEvent& MouseEvent::operator=(const MouseEvent& that) {
     if (this != &that) {
@@ -97,6 +98,7 @@ MouseEvent& MouseEvent::operator=(const MouseEvent& that) {
         position_ = that.position_;
         wheelSteps_ = that.wheelSteps_;
         canvasSize_ = that.canvasSize_;
+        depth_ = that.depth_;
     }
     return *this;
 }
