@@ -53,6 +53,8 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , lightPosition_("lightPosition", "Light Source Position", vec3(-2.f, -50.f, 90.f),
                      vec3(-100.f), vec3(100.f))
     , lightEnabled_("lightEnabled", "Enabled", true)
+    , lightScreenPosEnabled_("lightScreenPosEnabled", "Screen Pos Enabled", false)
+    , lightScreenPos_("lightScreenPos", "Light Screen Pos", vec2(0.7f), vec2(0.f), vec2(1.f))
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
     , interactionEvents_("interactionEvents", "Interaction Events") 
@@ -63,7 +65,14 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     lighting_.addProperty(lightPowerProp_);
     lighting_.addProperty(lightSize_);
     lighting_.addProperty(lightEnabled_);
+    lighting_.addProperty(lightScreenPosEnabled_);
+    lighting_.addProperty(lightScreenPos_);
     addProperty(lighting_);
+
+    lightScreenPos_.setVisible(false);
+    lightScreenPosEnabled_.onChange([this](){
+        lightScreenPos_.setVisible(lightScreenPosEnabled_.get());
+    });
     
     addProperty(camera_);
     camera_.setVisible(false);
@@ -71,7 +80,11 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     lightPosition_.setSemantics(PropertySemantics::LightPosition);
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightSource_ = new PointLight();
-    lightInteractionHandler_ = new PointLightInteractionHandler(&lightPosition_, &camera_);
+    lightInteractionHandler_ = new PointLightInteractionHandler(&lightPosition_, &camera_, &lightScreenPosEnabled_, &lightScreenPos_);
+
+    lightScreenPos_.onChange([this](){
+        lightInteractionHandler_->setLightPosFromScreenCoords(lightScreenPos_.get());
+    });
 
     interactionEvents_.addOption("off", "Handle None", 0);
     interactionEvents_.addOption("on", "Handle All", 1);
@@ -121,10 +134,12 @@ void PointLightSourceProcessor::handleInteractionEventsChanged() {
     lightInteractionHandler_->setHandleEventsOptions(interactionEvents_.get());
 }
 
-PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl, CameraProperty* cam) 
+PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl, CameraProperty* cam, BoolProperty* screenPosEnabled, FloatVec2Property* screenPos)
     : InteractionHandler()
     , lightPosition_(pl)
-    , camera_(cam)    
+    , camera_(cam)
+    , screenPosEnabled_(screenPosEnabled)
+    , screenPos_(screenPos)
     , lookUp_(camera_->getLookUp())
     , lookTo_(0.f)
     , trackball_(this)
@@ -142,6 +157,9 @@ void PointLightInteractionHandler::invokeEvent(Event* event) {
     //if(event->hasBeenUsed())
     //    return;
 
+    if (screenPosEnabled_->get())
+        setLightPosFromScreenCoords(screenPos_->get());
+
     if (interactionEventOption_ == 1 || interactionEventOption_ == 3){
         GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
         if (gestureEvent) {
@@ -155,8 +173,9 @@ void PointLightInteractionHandler::invokeEvent(Event* event) {
         if (mouseEvent) {
             int button = mouseEvent->button();
             if (button == MouseEvent::MOUSE_BUTTON_MIDDLE) {
-                setLightPosFromScreenCoords(mouseEvent->posNormalized());
+                //setLightPosFromScreenCoords(mouseEvent->posNormalized());
                 mouseEvent->markAsUsed();
+                screenPos_->set(mouseEvent->posNormalized());
                 return;
             }
         }

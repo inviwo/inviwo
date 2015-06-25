@@ -62,7 +62,7 @@ public:
 */
 class IVW_MODULE_BASE_API PointLightInteractionHandler : public InteractionHandler {
 public:
-    PointLightInteractionHandler(FloatVec3Property*, CameraProperty*);
+    PointLightInteractionHandler(FloatVec3Property*, CameraProperty*, BoolProperty*, FloatVec2Property*);
     ~PointLightInteractionHandler(){};
 
     virtual std::string getClassIdentifier() const { return "org.inviwo.PointLightInteractionHandler"; }
@@ -111,6 +111,8 @@ public:
 private:
     FloatVec3Property* lightPosition_;
     CameraProperty* camera_;
+    BoolProperty* screenPosEnabled_;
+    FloatVec2Property* screenPos_;
     vec3 lookUp_; ///< Necessary for trackball
     vec3 lookTo_; ///< Necessary for trackball
     PointLightTrackball trackball_;
@@ -167,6 +169,8 @@ private:
     FloatVec4Property lightDiffuse_;
     FloatVec3Property lightPosition_;
     BoolProperty lightEnabled_;
+    BoolProperty lightScreenPosEnabled_;
+    FloatVec2Property lightScreenPos_;
     CameraProperty camera_;
     OptionPropertyInt interactionEvents_;
     PointLightInteractionHandler* lightInteractionHandler_;
