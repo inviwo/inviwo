@@ -52,9 +52,9 @@ CommandLineParser::CommandLineParser(int argc, char** argv) try
     , quitArg_("q", "quit", "Pass this flag if you want to close inviwo after startup.") {
       
     cmd_.add(workspaceValueArg_);
-    //#if defined(IVW_PYTHON_AVAILABLE)
+#if defined(IVW_MODULE_PYTHON3)
     cmd_.add(pythonScriptArg_);
-    //#endif
+#endif
     cmd_.add(outputValueArg_);
     cmd_.add(snapshotArg_);
     cmd_.add(screenGrabArg_);
