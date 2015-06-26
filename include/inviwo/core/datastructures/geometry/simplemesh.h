@@ -46,12 +46,34 @@ public:
 
     unsigned int addVertex(vec3 pos, vec3 texCoord, vec4 color);
     void addIndex(unsigned int idx);
+
+    template<typename... Args> void addIndices(Args&&...);
     void setIndicesInfo(GeometryEnums::DrawType, GeometryEnums::ConnectivityType);
     const Position3dBuffer* getVertexList() const;
     const TexCoord3dBuffer* getTexCoordList() const;
     const ColorBuffer* getColorList() const;
     const IndexBuffer* getIndexList() const;
 };
+
+namespace detail{
+   
+    template<typename T>
+    void addIndices(SimpleMesh* mesh, T index) {
+        mesh->addIndex(index);
+    }
+
+    template<typename T, typename... Args>
+    void addIndices(SimpleMesh* mesh, T index, Args... args) {
+        mesh->addIndex(index);
+        addIndices(mesh, args...);
+    }
+
+
+}
+
+template<typename... Args> void SimpleMesh::addIndices(Args&&...args){
+    detail::addIndices<Args...>(this, args...);
+}
 
 }  // namespace
 
