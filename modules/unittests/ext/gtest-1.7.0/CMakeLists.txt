@@ -44,7 +44,7 @@ if (COMMAND set_up_hermetic_build)
 endif()
 
 if(CMAKE_VERSION VERSION_GREATER "3.0.0")
-	cmake_policy(SET CMP0042 OLD) # MacOSX rpath policy.
+    cmake_policy(SET CMP0042 OLD) # MacOSX rpath policy.
 endif()
 
 # Define helper functions and macros used by Google Test.
@@ -69,9 +69,9 @@ include_directories(
 # are used for other targets, to ensure that gtest can be compiled by a user
 # aggressive about warnings.
 if(BUILD_SHARED_LIBS)
-	cxx_shared_library(gtest "${cxx_strict}" src/gtest-all.cc)
+    cxx_shared_library(gtest "${cxx_strict}" src/gtest-all.cc)
 else()
-	cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
+    cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 endif()
 
 ivw_folder(gtest ext)

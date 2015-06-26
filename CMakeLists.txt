@@ -28,11 +28,11 @@
  #################################################################################
  
 if(DESIRED_QT_VERSION MATCHES 5)
-	cmake_minimum_required(VERSION 2.8.11)
-	cmake_policy(VERSION 2.8.11)
+    cmake_minimum_required(VERSION 2.8.11)
+    cmake_policy(VERSION 2.8.11)
 else()
-	cmake_minimum_required(VERSION 2.8.4)
-	cmake_policy(VERSION 2.8.4)
+    cmake_minimum_required(VERSION 2.8.4)
+    cmake_policy(VERSION 2.8.4)
 endif()
 
 if(POLICY CMP0046)
@@ -73,9 +73,9 @@ build_module(PVM)
 
 # OpenGL Context created with GLFW or Qt within Inviwo by default
 if(IVW_USE_GLFW_NOT_OPENGLQT)
-	build_module(GLFW)
+    build_module(GLFW)
 else()
-	build_module(OpenGLQt)
+    build_module(OpenGLQt)
 endif()
 
 #--------------------------------------------------------------------
@@ -92,13 +92,13 @@ option(IVW_UNIT_TEST_APPLICATION "Build Inviwo Unit tests Application" OFF)
 # Add externals
 add_subdirectory(ext/ticpp)
 if(IVW_SIGAR)
-	add_subdirectory(ext/sigar)
+    add_subdirectory(ext/sigar)
 endif()
 
 #--------------------------------------------------------------------
 # Add stackwalker for windows for stack traces in the log
 if(WIN32)
-	add_subdirectory(ext/stackwalker)
+    add_subdirectory(ext/stackwalker)
 endif()
 
 #--------------------------------------------------------------------

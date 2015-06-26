@@ -1,7 +1,7 @@
 # FindOpenCL - attempts to locate the OpenCL library.
 #
 # This module defines the following variables:
-#   OPENCL_FOUND		- Module was found
+#   OPENCL_FOUND        - Module was found
 #   OPENCL_INCLUDE_DIR - Directory where cl.h is located
 #   OPENCL_LIBRARIES    - Libraries necessary to compile 
 #
@@ -19,15 +19,15 @@ SET(OPENCL_LIB_SEARCH_DIR ${OPENCL_LIB_SEARCH_DIR}
     
 # Find out build target 
 IF(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32-bit
-	SET(OPENCL_LIB_SEARCH_DIR ${OPENCL_LIB_SEARCH_DIR}
-	    "$ENV{AMDAPPSDKROOT}/lib/x86" 	 # AMD
-	    "$ENV{CUDA_PATH}/lib/Win32"      # NVIDIA
-	    "$ENV{INTELOCLSDKROOT}/lib/x86") # INTEL
+    SET(OPENCL_LIB_SEARCH_DIR ${OPENCL_LIB_SEARCH_DIR}
+        "$ENV{AMDAPPSDKROOT}/lib/x86"      # AMD
+        "$ENV{CUDA_PATH}/lib/Win32"      # NVIDIA
+        "$ENV{INTELOCLSDKROOT}/lib/x86") # INTEL
 ELSE(CMAKE_SIZEOF_VOID_P EQUAL 4) # 64-bit
-	SET(OPENCL_LIB_SEARCH_DIR ${OPENCL_LIB_SEARCH_DIR}
-	    "$ENV{AMDAPPSDKROOT}/lib/x86_64" # AMD
-	    "$ENV{CUDA_PATH}/lib/x64"        # NVIDIA
-	    "$ENV{INTELOCLSDKROOT}/lib/x64") # INTEL	    
+    SET(OPENCL_LIB_SEARCH_DIR ${OPENCL_LIB_SEARCH_DIR}
+        "$ENV{AMDAPPSDKROOT}/lib/x86_64" # AMD
+        "$ENV{CUDA_PATH}/lib/x64"        # NVIDIA
+        "$ENV{INTELOCLSDKROOT}/lib/x64") # INTEL        
 ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 4)
 
 FIND_LIBRARY(OPENCL_LIBRARIES 
@@ -51,10 +51,10 @@ FIND_PATH(OPENCL_INCLUDE_DIR
                 "/opt/AMDAPP/include"           # Linux AMD 
           DOC "Include directory for OpenCL")
           
-	
+    
 # Add quotes to paths to make sure it works on windows (at least Visual Studio complains)
 #string(REPLACE " " "\\ " OPENCL_LIBRARIES ${OPENCL_LIBRARIES})
-	
+    
 
 
 INCLUDE(FindPackageHandleStandardArgs)

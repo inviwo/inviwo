@@ -26,17 +26,17 @@ if(WIN32)
    #set(MATLAB_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.13;MATLABROOT]/extern/lib/win32/microsoft/msvc60")
     message(STATUS "CMAKE_GENERATOR: " ${CMAKE_GENERATOR})
     if (${CMAKE_GENERATOR} MATCHES "Visual Studio 11 Win64")
-	  set(MATLAB_ROOT "C:/Program Files/MATLAB/R2011b")
+      set(MATLAB_ROOT "C:/Program Files/MATLAB/R2011b")
       # Assume people are generally using 7.1,
-      # if using 7.0 need to link to: ../extern/lib/win32/microsoft/msvc70	  
+      # if using 7.0 need to link to: ../extern/lib/win32/microsoft/msvc70      
       set(MATLAB_LIB_PATH "${MATLAB_ROOT}/extern/lib/win64/microsoft")
-	  message(STATUS "MATLAB_ROOT: " ${MATLAB_ROOT})
+      message(STATUS "MATLAB_ROOT: " ${MATLAB_ROOT})
     elseif ( ${CMAKE_GENERATOR} MATCHES "Visual Studio 9 2008")
-	  set(MATLAB_ROOT "C:/Program Files (x86)/MATLAB/R2011b")
+      set(MATLAB_ROOT "C:/Program Files (x86)/MATLAB/R2011b")
       # Assume people are generally using 7.1,
-      # if using 7.0 need to link to: ../extern/lib/win32/microsoft/msvc70	  
+      # if using 7.0 need to link to: ../extern/lib/win32/microsoft/msvc70      
       set(MATLAB_LIB_PATH "${MATLAB_ROOT}/extern/lib/win32/microsoft")
-	  message(STATUS "MATLAB_ROOT: " ${MATLAB_ROOT})
+      message(STATUS "MATLAB_ROOT: " ${MATLAB_ROOT})
     else()
         if(CUSTOM_MATLAB_FIND_REQUIRED)
           message(FATAL_ERROR "Generator not compatible: ${CMAKE_GENERATOR}")
@@ -55,7 +55,7 @@ if(WIN32)
     libeng
     ${MATLAB_LIB_PATH}
     )
-	
+    
  find_library(MATLAB_MAT_LIBRARY
     libmat
     ${MATLAB_LIB_PATH}
@@ -65,10 +65,10 @@ if(WIN32)
     libemlrt
     ${MATLAB_LIB_PATH}
     )   
-	
+    
   find_path(MATLAB_INCLUDE_DIR
     "mex.h"
-    "${MATLAB_ROOT}/extern/include" 	
+    "${MATLAB_ROOT}/extern/include"     
     )
 endif()
 

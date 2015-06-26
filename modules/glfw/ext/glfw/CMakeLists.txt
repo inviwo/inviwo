@@ -55,7 +55,7 @@ endif()
 if (UNIX AND NOT APPLE)
     option(GLFW_USE_WAYLAND "Use Wayland for context creation (implies EGL as well)" OFF)
     option(GLFW_USE_MIR     "Use Mir for context creation (implies EGL as well)" OFF)
-	mark_as_advanced(GLFW_USE_WAYLAND)
+    mark_as_advanced(GLFW_USE_WAYLAND)
     mark_as_advanced(GLFW_USE_MIR)
 endif()
 

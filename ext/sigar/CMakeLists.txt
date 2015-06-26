@@ -5,13 +5,13 @@ ivw_project(sigar)
 #--------------------------------------------------------------------
 # Define defintions
 if(WIN32) 
-	## make sure we only use the smallest set of 
-	## headers on win32. Otherwise we get clashes 
-	## between winsock2.h and winsock.h
-	add_definitions(-DWIN32_LEAN_AND_MEAN)
+    ## make sure we only use the smallest set of 
+    ## headers on win32. Otherwise we get clashes 
+    ## between winsock2.h and winsock.h
+    add_definitions(-DWIN32_LEAN_AND_MEAN)
 
-	# force the correct version for the redist manifest
-	#add_definitions(-D_BIND_TO_CURRENT_MFC_VERSION=1 -D_BIND_TO_CURRENT_CRT_VERSION=1)
+    # force the correct version for the redist manifest
+    #add_definitions(-D_BIND_TO_CURRENT_MFC_VERSION=1 -D_BIND_TO_CURRENT_CRT_VERSION=1)
     
     #disable useless warning
     add_definitions( "/wd4013 /wd4018 /wd4244 /wd4267 /wd4293 /wd4307 /wd4996 /nologo" )
@@ -23,13 +23,13 @@ ivw_add_definition(IVW_SIGAR)
 source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 
 set(HEADER_FILES include/sigar.h 
-	include/sigar_fileinfo.h 
-	include/sigar_format.h 
-	include/sigar_getline.h 
-	include/sigar_log.h 
-	include/sigar_private.h 
-	include/sigar_ptql.h 
-	include/sigar_util.h
+    include/sigar_fileinfo.h 
+    include/sigar_format.h 
+    include/sigar_getline.h 
+    include/sigar_log.h 
+    include/sigar_private.h 
+    include/sigar_ptql.h 
+    include/sigar_util.h
 )
 
 include_directories(include/)
@@ -58,10 +58,10 @@ endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
 ## solaris
 if(CMAKE_SYSTEM_NAME MATCHES "(Solaris|SunOS)" )
   set(SIGAR_SRC
-	src/os/solaris/solaris_sigar.c
-	src/os/solaris/get_mib2.c
-	src/os/solaris/kstats.c
-	src/os/solaris/procfs.c
+    src/os/solaris/solaris_sigar.c
+    src/os/solaris/get_mib2.c
+    src/os/solaris/kstats.c
+    src/os/solaris/procfs.c
   )
 
   include_directories(src/os/solaris/)
@@ -110,7 +110,7 @@ set(SIGAR_SRC ${SIGAR_SRC}
 add_library(sigar ${SIGAR_SRC} ${HEADER_FILES})
 
 if(WIN32)
-	ivw_add_dependency_libraries(ws2_32 netapi32 version)
+    ivw_add_dependency_libraries(ws2_32 netapi32 version)
 endif(WIN32)
 
 if(SIGAR_LINK_FLAGS)

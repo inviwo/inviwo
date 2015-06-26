@@ -70,21 +70,21 @@ endmacro()
 # Add cmake moudle path
 macro(ivw_add_cmake_find_package_path)
     foreach(item ${ARGN})
-		set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${item})
+        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${item})
     endforeach()
 endmacro()
 
 #--------------------------------------------------------------------
 # Add unittests
 macro(ivw_add_unittest)
-	if(IVW_MODULE_UNITTESTS)
+    if(IVW_MODULE_UNITTESTS)
         foreach(item ${ARGN})
             #file(APPEND ${CMAKE_BINARY_DIR}/modules/_generated/unittests_temp.h "\"${item}\"\n")
             set(unittest_files ${unittest_files};${item} CACHE INTERNAL "Unit test files")
         endforeach()
         list(REMOVE_DUPLICATES unittest_files)
         set(unittest_files ${unittest_files} CACHE INTERNAL "Unit test files")
-	endif()
+    endif()
 endmacro()
 
 #--------------------------------------------------------------------
@@ -230,7 +230,7 @@ endmacro()
 # Clean duplicates from list subdirectories
 macro(remove_duplicates retval)
     set(list_of_dirs ${ARGN})
-	if(list_of_dirs)
+    if(list_of_dirs)
         list(REMOVE_DUPLICATES list_of_dirs)
     endif()
     set(${retval} ${list_of_dirs})
@@ -355,42 +355,42 @@ endmacro()
 # Create CMAKE file for pre-process 
 macro(ivw_generate_shader_resource parent_path)
     set(output "include(${IVW_ROOT_DIR}/cmake/txt2h.cmake)\n")
-	set(shaders "")
-	foreach(current_path ${ARGN})
-		file(RELATIVE_PATH filepath0 ${parent_path} ${current_path})
-		string(REPLACE "/" "_" filepath1 ${filepath0})
-		string(REPLACE "." "_" outname ${filepath1})
-		#get_filename_component(filename ${current_path} NAME_WE)
-		#get_filename_component(extension ${current_path} EXT)
-		#string(REPLACE "." "" extension_no_point ${extension})
-		#set(outname "${filename}_${extension_no_point}")
-		set(outname_with_dollar "\${${outname}}")
-		
-		set(shaders "${shaders} ${outname}")
-				
-		#Add: file(READ outname variable)
-		set(output "${output}file(READ ${current_path} ${outname})\n")
-		
-		set(output "${output}string(REPLACE \"\;\" \"?????\" ${outname} \"${outname_with_dollar}\")\n")
-		
-		set(output "${output}ivw_text_to_header(${outname} ${outname}_header ${outname_with_dollar})\n")
-		set(outname_header_with_dollar "\${${outname}_header}")
-		
-		set(output "${output}string(REPLACE \"?????\" \"\;\" ${outname}_header \"${outname_header_with_dollar}\")\n")
-		
-		#Add: file(WRITE outname variable)
-		#string(REPLACE ${CMAKE_CURRENT_SOURCE_DIR} "" parent_relative_path ${parent_path})
-		#string(REPLACE "." "_" current_relative_path_underscore ${current_relative_path})
-		set(output "${output}file(WRITE ${CMAKE_BINARY_DIR}/modules/_generated/modules/${_projectName}/glsl/${outname}.h \"${outname_header_with_dollar}\")\n")
+    set(shaders "")
+    foreach(current_path ${ARGN})
+        file(RELATIVE_PATH filepath0 ${parent_path} ${current_path})
+        string(REPLACE "/" "_" filepath1 ${filepath0})
+        string(REPLACE "." "_" outname ${filepath1})
+        #get_filename_component(filename ${current_path} NAME_WE)
+        #get_filename_component(extension ${current_path} EXT)
+        #string(REPLACE "." "" extension_no_point ${extension})
+        #set(outname "${filename}_${extension_no_point}")
+        set(outname_with_dollar "\${${outname}}")
+        
+        set(shaders "${shaders} ${outname}")
+                
+        #Add: file(READ outname variable)
+        set(output "${output}file(READ ${current_path} ${outname})\n")
+        
+        set(output "${output}string(REPLACE \"\;\" \"?????\" ${outname} \"${outname_with_dollar}\")\n")
+        
+        set(output "${output}ivw_text_to_header(${outname} ${outname}_header ${outname_with_dollar})\n")
+        set(outname_header_with_dollar "\${${outname}_header}")
+        
+        set(output "${output}string(REPLACE \"?????\" \"\;\" ${outname}_header \"${outname_header_with_dollar}\")\n")
+        
+        #Add: file(WRITE outname variable)
+        #string(REPLACE ${CMAKE_CURRENT_SOURCE_DIR} "" parent_relative_path ${parent_path})
+        #string(REPLACE "." "_" current_relative_path_underscore ${current_relative_path})
+        set(output "${output}file(WRITE ${CMAKE_BINARY_DIR}/modules/_generated/modules/${_projectName}/glsl/${outname}.h \"${outname_header_with_dollar}\")\n")
     endforeach()
-	string(STRIP ${shaders} shaders)
-	string(TOUPPER ${_projectName} u_project_name)
-	string(TOLOWER ${_projectName} l_project_name)
-	add_definitions(-D${u_project_name}_INCLUDE_SHADER_RESOURCES)
-	set(output "${output}ivw_create_shader_resource_header(${_projectName} shader_resource ${shaders})\n")
-	set(output "${output}file(WRITE ${CMAKE_BINARY_DIR}/modules/_generated/modules/${_projectName}/shader_resources.h \${shader_resource})\n")
-	file(WRITE ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake ${output})
-	add_custom_command(TARGET inviwo-module-${_projectName} PRE_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake)
+    string(STRIP ${shaders} shaders)
+    string(TOUPPER ${_projectName} u_project_name)
+    string(TOLOWER ${_projectName} l_project_name)
+    add_definitions(-D${u_project_name}_INCLUDE_SHADER_RESOURCES)
+    set(output "${output}ivw_create_shader_resource_header(${_projectName} shader_resource ${shaders})\n")
+    set(output "${output}file(WRITE ${CMAKE_BINARY_DIR}/modules/_generated/modules/${_projectName}/shader_resources.h \${shader_resource})\n")
+    file(WRITE ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake ${output})
+    add_custom_command(TARGET inviwo-module-${_projectName} PRE_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake)
 endmacro()
 
 #--------------------------------------------------------------------
@@ -399,7 +399,7 @@ endmacro()
 macro(generate_unset_mod_options_and_depend_sort module_root_path retval)
     file(GLOB sub-dir RELATIVE ${module_root_path} ${module_root_path}/*)
     list(REMOVE_ITEM sub-dir .svn)
-	set(sorted_dirs ${sub-dir})
+    set(sorted_dirs ${sub-dir})
     foreach(dir ${sub-dir})
         if(IS_DIRECTORY ${module_root_path}/${dir})
             if(EXISTS "${module_root_path}/${dir}/depends.cmake")
@@ -434,7 +434,7 @@ macro(begin_add_modules)
     set(IVW_MODULE_CLASSES "")
     set(IVW_MODULE_CLASS_PATHS "")
     set(IVW_MODULE_PACKAGE_NAMES "")
-	set(IVW_MODULE_PATHS "")
+    set(IVW_MODULE_PATHS "")
     set(IVW_MODULE_CLASS "")
     set(IVW_MODULE_CLASS_PATH "")
     set(IVW_MODULE_PACKAGE_NAME "")
@@ -443,9 +443,9 @@ endmacro()
 #--------------------------------------------------------------------
 # End add modules
 macro(end_add_modules)
-	list(REMOVE_DUPLICATES IVW_MODULE_CLASSES)
-	list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
-	list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
+    list(REMOVE_DUPLICATES IVW_MODULE_CLASSES)
+    list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
+    list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
     #Generate module registration file
     generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
     create_module_package_list(${IVW_MODULE_CLASSES})
@@ -471,7 +471,7 @@ endmacro()
 macro(add_minimal_applications)
     file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/minimals ${CMAKE_CURRENT_SOURCE_DIR}/minimals/*)
     list(REMOVE_ITEM sub-dir .svn)
-	set(sorted_dirs ${sub-dir})
+    set(sorted_dirs ${sub-dir})
     foreach(dir ${sub-dir})
         if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
             string(TOUPPER ${dir} u_dir)
@@ -504,8 +504,8 @@ macro(add_internal_modules)
             find_package(Qt QUIET REQUIRED)
         endif()
     endif()
-	
-	if(IVW_MODULE_OPENGLQT)
+    
+    if(IVW_MODULE_OPENGLQT)
         set(QT_USE_QTOPENGL TRUE)    
     endif()
 
@@ -636,9 +636,9 @@ endmacro()
 # Specify console as target
 macro(ivw_define_standard_properties project_name)
     if(NOT MSVC)
-		set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 11)
-		set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
-	endif()
+        set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 11)
+        set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
+    endif()
 
     #--------------------------------------------------------------------
     # Specify warnings
@@ -684,22 +684,22 @@ macro(ivw_define_standard_definitions project_name)
     add_definitions(-DGLM_EXPORTS)
 
     if(WIN32)          
-	    #--------------------------------------------------------------------          
-	    # Large memory support
-	    if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
-	        if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-	          set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE ")
-	        endif()
-	        if(NOT CMAKE_SHARED_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-	          set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
-	        endif()
-	        if(NOT CMAKE_MODULE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-	          set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-	        endif()
-	    endif()
+        #--------------------------------------------------------------------          
+        # Large memory support
+        if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
+            if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
+              set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE ")
+            endif()
+            if(NOT CMAKE_SHARED_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
+              set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
+            endif()
+            if(NOT CMAKE_MODULE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
+              set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+            endif()
+        endif()
 
     else(WIN32)
-    	add_definitions(-DHAVE_CONFIG_H)
+        add_definitions(-DHAVE_CONFIG_H)
     endif(WIN32)
     
     add_definitions(-DUNICODE)
@@ -711,7 +711,7 @@ endmacro()
 #--------------------------------------------------------------------
 # Define QT definitions
 macro(ivw_define_qt_definitions)
-	add_definitions(-DQT_CORE_LIB
+    add_definitions(-DQT_CORE_LIB
                     -DQT_GUI_LIB)
 endmacro()
 
@@ -834,9 +834,9 @@ endmacro()
 # Optimize compilation with pre-compilied headers from inviwo core
 macro(ivw_compile_optimize_inviwo_core)
     if(PRECOMPILED_HEADERS)
-		if(_pchDisabledForThisModule)
-			set_target_properties(${_projectName} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
-		endif()
+        if(_pchDisabledForThisModule)
+            set_target_properties(${_projectName} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
+        endif()
 
         cotire_ignore()
 
@@ -853,9 +853,9 @@ macro(ivw_compile_optimize)
     if(PRECOMPILED_HEADERS)
         cotire_ignore()
         set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
-		list(APPEND _allPchDirs ${IVW_EXTENSIONS_DIR})
-		set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${_allPchDirs}")
-		cotire(${_projectName})
+        list(APPEND _allPchDirs ${IVW_EXTENSIONS_DIR})
+        set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${_allPchDirs}")
+        cotire(${_projectName})
     endif()
 endmacro()
 
@@ -882,7 +882,7 @@ macro(ivw_make_package package_name project_name)
             install(TARGETS ${project_name}
                     RUNTIME DESTINATION bin
                     BUNDLE DESTINATION bin
-        	        ARCHIVE DESTINATION lib
+                    ARCHIVE DESTINATION lib
                     LIBRARY DESTINATION lib
                     COMPONENT ${_cpackName})
         endif()
@@ -904,7 +904,7 @@ macro(ivw_make_package package_name project_name)
             optimized ${IVW_LIBRARY_DIR}/Release/${project_name}.lib 
             debug ${IVW_LIBRARY_DIR}/Debug/${project_name}${CMAKE_DEBUG_POSTFIX}.lib)
     else()
-	   set(PROJECT_LIBRARIES 
+       set(PROJECT_LIBRARIES 
            optimized ${project_name} 
            debug ${project_name}${CMAKE_DEBUG_POSTFIX})
     endif()
@@ -1042,49 +1042,49 @@ macro(ivw_add_dependencies)
         endif()
       endif()
            
-	  #--------------------------------------------------------------------
-	  # Append library directories to project list
-	  set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
-	  remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
-	  list(APPEND _allLibsDir ${${u_package}_LIBRARY_DIR})
-	  
-	  foreach (libDir ${${u_package}_LIBRARY_DIRS})
-		remove_from_list(uniqueNewLibDirs ${libDir} ${_allLibsDir})
-		list(APPEND _allLibsDir ${libDir})
-	  endforeach()
-	  
-	  set(${u_package}_LIBRARY_DIRS ${uniqueNewLibDirs})
-	  
-	  #--------------------------------------------------------------------
-	  # Append includes to project list
-	  if(NOT DEFINED ${u_package}_LIBRARIES  AND DEFINED ${u_package}_LIBRARY)
-		if(DEFINED ${u_package}_LIBRARY_DEBUG)
-			set(${u_package}_LIBRARIES optimized "${${u_package}_LIBRARY}" debug "${${u_package}_LIBRARY_DEBUG}")
-		else()
-			set(${u_package}_LIBRARIES "${${u_package}_LIBRARY}")
-		endif()
-	  endif()
-	  
-	  set(uniqueNewLibs ${${u_package}_LIBRARIES})
-	  remove_library_list(uniqueNewLibs "${${u_package}_LIBRARIES}" ${_allLibs})
-	  set(${u_package}_LIBRARIES ${uniqueNewLibs})
-	  list (APPEND _allLibs ${${u_package}_LIBRARIES})
-	  
-	  #--------------------------------------------------------------------
-	  # Append definitions to project list
-	  set(uniqueNewDefs ${${u_package}_DEFINITIONS})
-	  remove_from_list(uniqueNewDefs "${${u_package}_DEFINITIONS}" ${_allDefinitions})
-	  set(${u_package}_DEFINITIONS ${uniqueNewDefs})
-	  list (APPEND _allDefinitions ${${u_package}_DEFINITIONS})
+      #--------------------------------------------------------------------
+      # Append library directories to project list
+      set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
+      remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
+      list(APPEND _allLibsDir ${${u_package}_LIBRARY_DIR})
+      
+      foreach (libDir ${${u_package}_LIBRARY_DIRS})
+        remove_from_list(uniqueNewLibDirs ${libDir} ${_allLibsDir})
+        list(APPEND _allLibsDir ${libDir})
+      endforeach()
+      
+      set(${u_package}_LIBRARY_DIRS ${uniqueNewLibDirs})
+      
+      #--------------------------------------------------------------------
+      # Append includes to project list
+      if(NOT DEFINED ${u_package}_LIBRARIES  AND DEFINED ${u_package}_LIBRARY)
+        if(DEFINED ${u_package}_LIBRARY_DEBUG)
+            set(${u_package}_LIBRARIES optimized "${${u_package}_LIBRARY}" debug "${${u_package}_LIBRARY_DEBUG}")
+        else()
+            set(${u_package}_LIBRARIES "${${u_package}_LIBRARY}")
+        endif()
+      endif()
+      
+      set(uniqueNewLibs ${${u_package}_LIBRARIES})
+      remove_library_list(uniqueNewLibs "${${u_package}_LIBRARIES}" ${_allLibs})
+      set(${u_package}_LIBRARIES ${uniqueNewLibs})
+      list (APPEND _allLibs ${${u_package}_LIBRARIES})
+      
+      #--------------------------------------------------------------------
+      # Append definitions to project list
+      set(uniqueNewDefs ${${u_package}_DEFINITIONS})
+      remove_from_list(uniqueNewDefs "${${u_package}_DEFINITIONS}" ${_allDefinitions})
+      set(${u_package}_DEFINITIONS ${uniqueNewDefs})
+      list (APPEND _allDefinitions ${${u_package}_DEFINITIONS})
 
-	  #--------------------------------------------------------------------
-	  # Append link flags to project list
-	  set(uniqueNewLinkFlags ${${u_package}_LINK_FLAGS})
-	  remove_from_list(uniqueNewLinkFlags "${${u_package}_LINK_FLAGS}" ${_allLinkFlags})
-	  set(${u_package}_LINK_FLAGS ${uniqueNewLinkFlags})
-	  if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
-		  list (APPEND _allLinkFlags "\"${${u_package}_LINK_FLAGS}\"")
-	  endif()
+      #--------------------------------------------------------------------
+      # Append link flags to project list
+      set(uniqueNewLinkFlags ${${u_package}_LINK_FLAGS})
+      remove_from_list(uniqueNewLinkFlags "${${u_package}_LINK_FLAGS}" ${_allLinkFlags})
+      set(${u_package}_LINK_FLAGS ${uniqueNewLinkFlags})
+      if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
+          list (APPEND _allLinkFlags "\"${${u_package}_LINK_FLAGS}\"")
+      endif()
 
       #--------------------------------------------------------------------
       # Set includes and append to list
@@ -1095,7 +1095,7 @@ macro(ivw_add_dependencies)
 
       #--------------------------------------------------------------------
       # Set directory links
-	  link_directories(${${u_package}_LIBRARY_DIRS})
+      link_directories(${${u_package}_LIBRARY_DIRS})
 
       #--------------------------------------------------------------------
       # Set directory links
@@ -1134,7 +1134,7 @@ macro(ivw_add_dependencies)
       #--------------------------------------------------------------------
       # Link flags
       if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
-      	set_target_properties(${_projectName} PROPERTIES LINK_FLAGS "${${u_package}_LINK_FLAGS}")
+          set_target_properties(${_projectName} PROPERTIES LINK_FLAGS "${${u_package}_LINK_FLAGS}")
       endif()
       
       #--------------------------------------------------------------------

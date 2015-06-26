@@ -54,11 +54,11 @@ public:
     const Image* getImage(const size2_t dimensions) const;
 
     /**
-     *	Remove all cached images except those in dimensions
+     *    Remove all cached images except those in dimensions
      */
     void prune(const std::vector<size2_t>& dimensions) const;
     /**
-     *	Make sure there is a cached version for all images sizes in dimensions
+     *    Make sure there is a cached version for all images sizes in dimensions
      */
     void update(std::vector<size2_t> dimensions);
     void setInvalid() const;

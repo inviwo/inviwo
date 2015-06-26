@@ -35,45 +35,45 @@ namespace inviwo {
 
 AssimpModule::AssimpModule() : InviwoModule() {
     setIdentifier("assimp");
-	
-	// Add a directory to the search path of the Shadermanager
-	//ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "assimp/glsl");
-	
-	// Register objects that can be shared with the rest of inviwo here:
-	
-	// Processors
-	// registerProcessor(assimp);
-	
-	// Properties
-	// registerProperty(assimpProperty);
-	
-	// Readers and writes
+    
+    // Add a directory to the search path of the Shadermanager
+    //ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "assimp/glsl");
+    
+    // Register objects that can be shared with the rest of inviwo here:
+    
+    // Processors
+    // registerProcessor(assimp);
+    
+    // Properties
+    // registerProperty(assimpProperty);
+    
+    // Readers and writes
     registerDataReader(new AssimpReader());
-	// registerDataWriter(new assimpWriter());
-	
-	// Data converters
-	// registerRepresentationConverter(new assimpDisk2RAMConverter());
+    // registerDataWriter(new assimpWriter());
+    
+    // Data converters
+    // registerRepresentationConverter(new assimpDisk2RAMConverter());
 
-	// Ports
-	// registerPort(assimpOutport);
-	// registerPort(assimpInport);
+    // Ports
+    // registerPort(assimpOutport);
+    // registerPort(assimpInport);
 
-	// PropertyWidgets
-	// registerPropertyWidget(assimpPropertyWidgetQt, assimpProperty, "Default");
-	
-	// Dialogs
-	// registerDialog("assimp", assimpDialogQt);
-	
-	// Other varius things
-	// registerCapabilities(Capabilities* info);
+    // PropertyWidgets
+    // registerPropertyWidget(assimpPropertyWidgetQt, assimpProperty, "Default");
+    
+    // Dialogs
+    // registerDialog("assimp", assimpDialogQt);
+    
+    // Other varius things
+    // registerCapabilities(Capabilities* info);
     // registerData(Data* data);
     // registerDataRepresentation(DataRepresentation* dataRepresentation);
-	// registerSettings(new SystemSettings());
-	// registerMetaData(MetaData* meta);   
+    // registerSettings(new SystemSettings());
+    // registerMetaData(MetaData* meta);   
     // registerPortInspector(PortInspector* portInspector);
     // registerProcessorWidget(std::string processorClassName, ProcessorWidget* processorWidget);
     // registerRenderer(GeometryRenderer* renderer);
-    // registerResource(Resource* resource);	
+    // registerResource(Resource* resource);    
 }
 
 } // namespace

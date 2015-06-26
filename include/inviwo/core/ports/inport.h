@@ -95,8 +95,8 @@ public:
     const BaseCallBack* onChange(std::function<void()> lambda) const;
 
     /**
-     *	the onInvalid callback is called directly after the port has been invalidated. It's only
-     *	called once for each transition from valid to invalid.
+     *    the onInvalid callback is called directly after the port has been invalidated. It's only
+     *    called once for each transition from valid to invalid.
      */
     template <typename T>
     const BaseCallBack* onInvalid(T* o, void (T::*m)()) const;
@@ -120,13 +120,13 @@ protected:
     Inport(std::string identifier = "");
     
     /**
-     *	Called by Outport::invalidate on its connected inports, which is call by
-     *	Processor::invalidate. Will by default invalidate its processor. From above in the network.
+     *    Called by Outport::invalidate on its connected inports, which is call by
+     *    Processor::invalidate. Will by default invalidate its processor. From above in the network.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
     /**
-     *	Called by Outport::setValid, which is call by Processor::setValid, which is called after
-     *	Processor:process. From above in the network.
+     *    Called by Outport::setValid, which is call by Processor::setValid, which is called after
+     *    Processor:process. From above in the network.
      */
     virtual void setValid(const Outport* source);
     

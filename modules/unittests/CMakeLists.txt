@@ -9,7 +9,7 @@ add_subdirectory(ext/gtest-1.7.0)
 
 
 if(BUILD_SHARED_LIBS)
-	add_definitions(-DGTEST_LINKED_AS_SHARED_LIBRARY=1)
+    add_definitions(-DGTEST_LINKED_AS_SHARED_LIBRARY=1)
 endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/gtest-1.7.0/include)
@@ -31,7 +31,7 @@ foreach(module ${package_list})
         list(REMOVE_ITEM package_list ${module})
     else()
         ivw_mod_name_to_dir(libraryname ${module})
-		add_dependency_libs_to_module(inviwo-module-${libraryname})
+        add_dependency_libs_to_module(inviwo-module-${libraryname})
     endif()
 endforeach()
 list(APPEND package_list InviwoCore)
@@ -87,7 +87,7 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 if(IVW_MODULE_OPENCL)
-	ivw_add_definition(__CL_ENABLE_EXCEPTIONS)
+    ivw_add_definition(__CL_ENABLE_EXCEPTIONS)
 endif()
 
 

@@ -138,19 +138,19 @@ file(GLOB_RECURSE Metadata_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Metadata/*.h
 
 
 set(General_HEADER_FILES 
-				CacheFile.h
-				FreeImage.h
-				FreeImageIO.h
-				Plugin.h
-				Quantizers.h
-				ToneMapping.h
-				Utilities.h)
+                CacheFile.h
+                FreeImage.h
+                FreeImageIO.h
+                Plugin.h
+                Quantizers.h
+                ToneMapping.h
+                Utilities.h)
 
-LIST(APPEND HEADER_FILES 	${DeprecationManager_HEADER_FILES} 
-							${FreeImage_HEADER_FILES} 
-							${FreeImageToolkit_HEADER_FILES} 
-							${Metadata_HEADER_FILES}
-							${General_HEADER_FILES}	)
+LIST(APPEND HEADER_FILES     ${DeprecationManager_HEADER_FILES} 
+                            ${FreeImage_HEADER_FILES} 
+                            ${FreeImageToolkit_HEADER_FILES} 
+                            ${Metadata_HEADER_FILES}
+                            ${General_HEADER_FILES}    )
 
 
 ivw_group("Header Files" ${HEADER_FILES} ${LIBJPEG_HEADER_FILES} ${LIBOPENJPEG_HEADER_FILES} ${LIBPNG_HEADER_FILES} ${LIBRAWLITE_HEADER_FILES} ${LIBTIFF4_HEADER_FILES} ${OPENEXR_HEADER_FILES} ${ZLIB_HEADER_FILES})
@@ -165,11 +165,11 @@ file(GLOB_RECURSE Metadata_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Metadata/*.c
 
 
 LIST(APPEND SOURCE_FILES  
-					${DeprecationManager_SOURCE_FILES} 
-					${FreeImage_SOURCE_FILES}
-					${FreeImageToolkit_SOURCE_FILES}
-					${Metadata_SOURCE_FILES}
-		)
+                    ${DeprecationManager_SOURCE_FILES} 
+                    ${FreeImage_SOURCE_FILES}
+                    ${FreeImageToolkit_SOURCE_FILES}
+                    ${Metadata_SOURCE_FILES}
+        )
 
 ivw_group("Source Files" ${SOURCE_FILES} ${LIBJPEG_SOURCE_FILES} ${LIBOPENJPEG_SOURCE_FILES} ${LIBPNG_SOURCE_FILES} ${LIBRAWLITE_SOURCE_FILES} ${LIBTIFF4_SOURCE_FILES} ${OPENEXR_SOURCE_FILES} ${ZLIB_SOURCE_FILES})
 
@@ -202,14 +202,14 @@ add_library(freeimage ${SOURCE_FILES} ${LIBJPEG_SOURCE_FILES} ${LIBOPENJPEG_SOUR
 #--------------------------------------------------------------------
 # Add dependencies
 #ivw_add_dependencies(
-#	LibJPEG
-#	LibOpenJPEG
-#	InternalLibPNG  
-#	LibRawLite 
-#	LibTiff4
-#	OpenEXR
-#	InternalZLib
-#	)
+#    LibJPEG
+#    LibOpenJPEG
+#    InternalLibPNG  
+#    LibRawLite 
+#    LibTiff4
+#    OpenEXR
+#    InternalZLib
+#    )
 
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/FreeImage)
@@ -233,7 +233,7 @@ ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/zlib)
 # ivw_add_dependency_libraries(FreeImage)
 
 # SET_TARGET_PROPERTIES( freeimage PROPERTIES LINK_FLAGS
-# 					"/LIBPATH:${CMAKE_CURRENT_SOURCE_DIR}/FreeImageLib/" )
+#                     "/LIBPATH:${CMAKE_CURRENT_SOURCE_DIR}/FreeImageLib/" )
 
 # LIST(APPEND _allLibsDir "${CMAKE_CURRENT_SOURCE_DIR}/FreeImageLib" )
 
@@ -262,4 +262,4 @@ if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD|Linux)")
   set (CMAKE_CXX_FLAGS "-fexceptions -fvisibility=hidden -fPIC")
   set (CMAKE_C_FLAGS "-fexceptions -fvisibility=hidden -fPIC")
 endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD|Linux)")
-	
+    

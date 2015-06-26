@@ -60,10 +60,10 @@ namespace inviwo {
  */
 class <api> <name> : public Processor { 
 public:
-	InviwoProcessorInfo();
+    InviwoProcessorInfo();
     <name>();
     virtual ~<name>(){}
-	 
+     
 protected:
     virtual void process();
 

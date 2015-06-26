@@ -103,17 +103,17 @@ BaseGLModule::BaseGLModule() : InviwoModule() {
     registerProcessor(ImageGrayscale);
     registerProcessor(ImageInvert);
     registerProcessor(ImageMapping);
-	registerProcessor(ImageResample);
+    registerProcessor(ImageResample);
 
-	//volume processing
-	registerProcessor(VectorMagnitudeProcessor);
-	registerProcessor(VolumeCombiner);
-	registerProcessor(VolumeDiff);;
-	registerProcessor(VolumeGradientMagnitude);
-	registerProcessor(VolumeGradientProcessor);
-	registerProcessor(VolumeLaplacian);
-	registerProcessor(VolumeLowPass);
-	registerProcessor(VolumeMapping);
+    //volume processing
+    registerProcessor(VectorMagnitudeProcessor);
+    registerProcessor(VolumeCombiner);
+    registerProcessor(VolumeDiff);;
+    registerProcessor(VolumeGradientMagnitude);
+    registerProcessor(VolumeGradientProcessor);
+    registerProcessor(VolumeLaplacian);
+    registerProcessor(VolumeLowPass);
+    registerProcessor(VolumeMapping);
 
 }
 

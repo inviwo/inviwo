@@ -171,9 +171,9 @@ void TransferFunctionEditorView::updateHistogram() {
     QRectF sRect = sceneRect();
 
     const HistogramContainer* histCont = getNormalizedHistograms();
-	if (histCont == nullptr) {
-		return;
-	}
+    if (histCont == nullptr) {
+        return;
+    }
     for(size_t channel = 0; channel <  histCont->size(); ++channel) {
 
         histograms_.push_back(QPolygonF());        

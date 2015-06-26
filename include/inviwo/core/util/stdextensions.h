@@ -190,8 +190,8 @@ public:
 };
 
 /**
- *	Function to combine several hash values
- *	http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
+ *    Function to combine several hash values
+ *    http://stackoverflow.com/questions/2590677/how-do-i-combine-hash-values-in-c0x
  */
 template <class T>
 inline void hash_combine(std::size_t& seed, const T& v) {

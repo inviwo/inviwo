@@ -39,10 +39,10 @@ ProcessorCategory(<name>, "Undefined");
 ProcessorCodeState(<name>, CODE_STATE_EXPERIMENTAL);
 
 <name>::<name>()
-	: Processor() {
-	
+    : Processor() {
+    
 }
-	
+    
 void <name>::process() {
 
 }

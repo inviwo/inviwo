@@ -109,9 +109,9 @@ public:
     virtual void initialize();
 
     /*
-     *	Deinitialize is called once before the processor is deleted by the processor network
-     *	Override to delete resources allocated in initialize. Make sure to call the base class 
-     *	deinitialize last.
+     *    Deinitialize is called once before the processor is deleted by the processor network
+     *    Override to delete resources allocated in initialize. Make sure to call the base class 
+     *    deinitialize last.
      */  
     virtual void deinitialize();
     bool isInitialized() const;
@@ -142,22 +142,22 @@ public:
     virtual bool isReady() const;
 
     /**
-     *	Called when the network is evaluated and the processor is ready and not valid.
-     *	The work of the processor should be done here.
+     *    Called when the network is evaluated and the processor is ready and not valid.
+     *    The work of the processor should be done here.
      */
     virtual void process() {}
 
     /**
-     *	Called when the network is evaluated and the processor is neither ready or valid.
+     *    Called when the network is evaluated and the processor is neither ready or valid.
      */
     virtual void doIfNotReady() {}
 
     /**
-     *	Called by the network after Processor::process has been called.
-     *	This will set the following to valid 
-     *	* The processor
-     *	* All properties
-     *	* All outports and their connected inports.
+     *    Called by the network after Processor::process has been called.
+     *    This will set the following to valid 
+     *    * The processor
+     *    * All properties
+     *    * All outports and their connected inports.
      * It will also set is't inports "changed" to false.
      */
     virtual void setValid();

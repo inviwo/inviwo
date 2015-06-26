@@ -58,7 +58,7 @@ public:
     virtual bool isReady() const override = 0;
 
     /**
-     *	Called by Processor::invalidate, will invalidate its connected inports.
+     *    Called by Processor::invalidate, will invalidate its connected inports.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel);
     virtual InvalidationLevel getInvalidationLevel() const;
@@ -74,7 +74,7 @@ public:
 protected:
     Outport(std::string identifier = "");
     /**
-    *	Called by Processor::setValid, will call setValid its connected inports.
+    *    Called by Processor::setValid, will call setValid its connected inports.
     */
     virtual void setValid();
 
