@@ -83,22 +83,13 @@ void ImageSourceSeries::onFindFiles() {
     if (!path.empty()) {
         std::vector<std::string> files = filesystem::getDirectoryContents(path);
 
-        LogInfo("Contents of: " << path);
-        for (auto elem : files) {
-            LogInfo(elem);
-        }
-        LogInfo("");
-
         fileList_.clear();
-
         for (std::size_t i=0; i<files.size(); i++) {
             if (isValidImageFile(files[i])) {
-                LogInfo("valid image: " << files[i]);
                 std::string fileName = filesystem::getFileNameWithExtension(files[i]);
                 fileList_.push_back(fileName);
             }
         }
-
         if (fileList_.empty()) {
             LogWarn("No images found in \"" << imageFileDirectory_.get() << "\"");
         }
