@@ -149,7 +149,10 @@ std::string ShaderObject::embeddOutDeclarations(std::string source) {
     std::ostringstream result;
 
     for (auto curDeclaration : outDeclarations_) {
-        result << "out vec4 " << curDeclaration << ";\n";
+        if (curDeclaration.second > -1) {
+            result << "layout(location = " << curDeclaration.second << ") ";
+        }
+        result << "out vec4 " << curDeclaration.first << ";\n";
         lineNumberResolver_.emplace_back("Out Declaration", 0);
     }
 
@@ -382,14 +385,24 @@ void ShaderObject::clearShaderExtensions() {
     shaderExtensions_.clear();
 }
 
-void ShaderObject::addOutDeclaration(std::string name) {
+void ShaderObject::addOutDeclaration(std::string name, int location) {
     bool outExists = false;
 
-    for (auto& elem : outDeclarations_)
-        if (elem == name) outExists = true;
+    for (auto& elem : outDeclarations_) {
+        if (elem.first == name) {
+            // updating location
+            elem.second = location;
+            outExists = true;
+            break;
+        }
+    }
+    if (!outExists) {
+        outDeclarations_.push_back({name, location});
+    }
+}
 
-    if (!outExists)
-        outDeclarations_.push_back(name);
+void ShaderObject::clearOutDeclarations() {
+    outDeclarations_.clear();
 }
 
 std::string ShaderObject::print(bool showSource) const {

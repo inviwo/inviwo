@@ -118,7 +118,7 @@ protected:
     BoolProperty colorLayer_;
     BoolProperty texCoordLayer_;
     BoolProperty normalsLayer_;
-    BoolProperty veiwNormalsLayer_;
+    BoolProperty viewNormalsLayer_;
 
     Shader shader_;
 

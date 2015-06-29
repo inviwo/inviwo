@@ -682,8 +682,8 @@ void OpenGLCapabilities::rebuildGLSLFragmentDefines() {
     currentGlobalGLSLFragmentDefines_ = "";
     // layout locations for GLSL >= 3.30 are now handled via glFragDataLocation
     if (supportedShaderVersions_[currentGlobalGLSLVersionIdx_].getVersion() >= 130) {
-        currentGlobalGLSLFragmentDefines_ += "out vec4 FragData0;\n";
-        currentGlobalGLSLFragmentDefines_ += "out vec4 PickingData;\n";
+        currentGlobalGLSLFragmentDefines_ += "layout(location = 0) out vec4 FragData0;\n";
+        currentGlobalGLSLFragmentDefines_ += "layout(location = 1) out vec4 PickingData;\n";
     } 
     else {
         currentGlobalGLSLFragmentDefines_ += "#define FragData0 gl_FragColor\n";

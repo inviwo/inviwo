@@ -72,7 +72,26 @@ public:
     bool hasShaderExtension(const std::string& extName) const;
     void clearShaderExtensions();
 
-    void addOutDeclaration(std::string name);
+    /** 
+     * \brief adds an additional output specifier to the fragment shader
+     *  The given name will be added as 
+     *  \code{.cpp}
+     *     out vec4 <name>;
+     *  \encode
+     *  If location index is positive, the output will be 
+     *  \code{.cpp}
+     *     layout(location = <location>) out vec4 <name>;
+     *  \encode
+     *
+     *  Location indices can be reused several times unless more than 
+     *  one output specifier is used.
+     * 
+     * @param name      identifier of the output specifier
+     * @param location  index location of the output (< MAX_RENDER_TARGETS)
+     */
+    void addOutDeclaration(std::string name, int location=-1);
+
+    void clearOutDeclarations();
 
     std::string print(bool showSource = false) const;
 
@@ -97,7 +116,7 @@ private:
     std::string source_;
     std::string sourceProcessed_;
 
-    std::vector<std::string> outDeclarations_;
+    std::vector<std::pair<std::string, int> > outDeclarations_;
     typedef std::map<std::string, std::string> ShaderDefineContainer;
     ShaderDefineContainer shaderDefines_;
 

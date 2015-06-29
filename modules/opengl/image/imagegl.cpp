@@ -85,12 +85,17 @@ void ImageGL::reAttachAllLayers(ImageType type) {
 void ImageGL::activateBuffer(ImageType type) {
     frameBufferObject_.activate();
 
-    const std::vector<GLenum>& drawBuffers = frameBufferObject_.getDrawBuffers();
+    std::vector<GLenum> drawBuffers{ frameBufferObject_.getDrawBuffers() };
     if (!drawBuffers.empty()) {
         GLsizei numBuffersToDrawTo = static_cast<GLsizei>(drawBuffers.size());
 
-        // Don't draw picking if type is none picking
-        if (!typeContainsPicking(type)) numBuffersToDrawTo--;
+        // remove second render target (location = 1) when picking is disabled
+        if (!typeContainsPicking(type) 
+            && (numBuffersToDrawTo > 1) 
+            && (drawBuffers[1] == GL_COLOR_ATTACHMENT7)) {
+            drawBuffers.erase(drawBuffers.begin() + 1);
+            --numBuffersToDrawTo;
+        }
 
         glDrawBuffers(numBuffersToDrawTo, &drawBuffers[0]);
         LGL_ERROR;
