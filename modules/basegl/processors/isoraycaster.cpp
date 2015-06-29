@@ -52,9 +52,10 @@ ISORaycaster::ISORaycaster()
     , outport_("outport")
     , channel_("channel", "Render Channel")
     , raycasting_("raycasting", "Raycasting")
-    , lighting_("lighting", "Lighting")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, 3.5f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f)) {
+              vec3(0.0f, 1.0f, 0.0f)) 
+    , lighting_("lighting", "Lighting", &camera_)
+{
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");

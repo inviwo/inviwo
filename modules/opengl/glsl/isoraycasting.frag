@@ -100,7 +100,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             vec3 worldSpacePosition = (volumeParameters_.textureToWorld*vec4(samplePos, 1.0)).xyz;
             // Note that the gradient is reversed since we define the normal of a surface as
             // the direction towards a lower intensity medium (gradient points in the inreasing direction)
-            result.rgb = APPLY_LIGHTING(light_, color.rgb, color.rgb, vec3(1.0), worldSpacePosition, -gradient, toCameraDir);
+            result.rgb = APPLY_LIGHTING(light_, vec3(1.0), vec3(1.0), vec3(1.0), worldSpacePosition, -gradient, toCameraDir);
             result.a = 1.0;
             t += tEnd;
             break;
