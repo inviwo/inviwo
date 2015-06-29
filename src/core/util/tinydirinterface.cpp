@@ -29,6 +29,7 @@
 
 #include <inviwo/core/util/tinydirinterface.h>
 #include <inviwo/core/util/exception.h>
+#include <algorithm>
 #include <cerrno>
 
 namespace inviwo {
