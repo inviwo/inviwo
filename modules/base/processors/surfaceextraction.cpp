@@ -51,44 +51,85 @@ SurfaceExtraction::SurfaceExtraction()
     , mesh_("mesh")
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f)
     , method_("method", "Method")
-    , color_("color", "Triangle Color", vec4(1, 1, 1, 1)) {
+    , colors_("meshColors","Mesh Colors"){
     addPort(volume_);
     addPort(mesh_);
 
     addProperty(method_);
     addProperty(isoValue_);
-    addProperty(color_);
+    addProperty(colors_);
 
     method_.addOption("marchingtetrahedra", "Marching Tetrahedra", TETRA);
 
-    color_.setSemantics(PropertySemantics::Color);
+    
 
     volume_.onChange(this, &SurfaceExtraction::setMinMax);
+    volume_.onChange(this, &SurfaceExtraction::updateColors);
 
     method_.setCurrentStateAsDefault();
-    color_.setCurrentStateAsDefault();
 }
 SurfaceExtraction::~SurfaceExtraction() {}
 
 void SurfaceExtraction::process() {
-    const VolumeRAM* vol = volume_.getData()->getRepresentation<VolumeRAM>();
+    auto meshList = new std::vector<std::unique_ptr<Mesh>>();
+    int i = 0;
+    for (auto &v : volume_){
 
-    switch (method_.get()) {
+        const VolumeRAM* vol = v.getRepresentation<VolumeRAM>();
+
+        std::unique_ptr<Mesh> m = nullptr;
+
+        switch (method_.get()) {
         case TETRA:
-            mesh_.setData(MarchingTetrahedron::apply(vol, isoValue_.get(), color_.get()));
+            m = std::unique_ptr<Mesh>(MarchingTetrahedron::apply(vol, isoValue_.get(), static_cast<FloatVec4Property*>(colors_.getProperties()[i++])->get()));
             break;
         default:
             break;
-    }
+        }
 
-    mesh_.getData()->setModelMatrix(volume_.getData()->getModelMatrix());
-    mesh_.getData()->setWorldMatrix(volume_.getData()->getWorldMatrix());
+
+
+        m->setModelMatrix(volume_.getData()->getModelMatrix());
+        m->setWorldMatrix(volume_.getData()->getWorldMatrix());
+        meshList->push_back(std::move(m));
+    }
+    mesh_.setData(meshList);
 }
 
 void SurfaceExtraction::setMinMax() {
     if (volume_.hasData()) {
         isoValue_.setMinValue(static_cast<const float>(volume_.getData()->dataMap_.dataRange.x));
         isoValue_.setMaxValue(static_cast<const float>(volume_.getData()->dataMap_.dataRange.y));
+    }
+}
+
+void SurfaceExtraction::updateColors() {
+    const static vec4 defaultColor[10] = {
+        vec4(0x1f, 0x77, 0xb4, 255) / vec4(255, 255, 255, 255),
+        vec4(0xff, 0x7f, 0x0e, 255) / vec4(255, 255, 255, 255),
+        vec4(0x2c, 0xa0, 0x2c, 255) / vec4(255, 255, 255, 255),
+        vec4(0xd6, 0x27, 0x28, 255) / vec4(255, 255, 255, 255),
+        vec4(0x94, 0x67, 0xbd, 255) / vec4(255, 255, 255, 255),
+        vec4(0x8c, 0x56, 0x4b, 255) / vec4(255, 255, 255, 255),
+        vec4(0xe3, 0x77, 0xc2, 255) / vec4(255, 255, 255, 255),
+        vec4(0x7f, 0x7f, 0x7f, 255) / vec4(255, 255, 255, 255),
+        vec4(0xbc, 0xbd, 0x22, 255) / vec4(255, 255, 255, 255),
+        vec4(0x17, 0xbe, 0xcf, 255) / vec4(255, 255, 255, 255)
+    };
+        
+    auto properties = colors_.getProperties();
+    auto numConnections = volume_.getNumberOfConnections();
+
+    for (int i = 0; i < properties.size(); i++){
+        properties[i]->setVisible(i < numConnections);
+    }
+
+    for (int i = properties.size(); i < numConnections; i++){
+        FloatVec4Property *color = new FloatVec4Property("color" + i , "Color for Volume " + (i+1) , defaultColor[i%10]);
+        color->setCurrentStateAsDefault();
+        color->setSemantics(PropertySemantics::Color);
+        color->setSerializationMode(ALL);
+        colors_.addProperty(color);
     }
 }
 
