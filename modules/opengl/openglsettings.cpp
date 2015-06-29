@@ -50,9 +50,9 @@ OpenGLSettings::OpenGLSettings(OpenGLCapabilities* openglInfo)
     selectedOpenGLProfile_.setSelectedIdentifier(OpenGLCapabilities::getPreferredProfile());
     selectedOpenGLProfile_.setCurrentStateAsDefault();
 
-    uniformWarnings_.addOption("ignore", "Ignore missing locations", Shader::UniformWarning::IGNORE);
-    uniformWarnings_.addOption("warn", "Print warning", Shader::UniformWarning::WARN);
-    uniformWarnings_.addOption("throw", "Throw error", Shader::UniformWarning::THROW);
+    uniformWarnings_.addOption("ignore", "Ignore missing locations", Shader::UniformWarning::Ignore);
+    uniformWarnings_.addOption("warn", "Print warning", Shader::UniformWarning::Warn);
+    uniformWarnings_.addOption("throw", "Throw error", Shader::UniformWarning::Throw);
     uniformWarnings_.setSelectedIndex(0);
     uniformWarnings_.setCurrentStateAsDefault();
 

@@ -34,7 +34,7 @@
 namespace inviwo {
 
 Shader::Shader(std::string fragmentFilename, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::IGNORE} {
+    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
     createAndAddShader(GL_VERTEX_SHADER, "img_identity.vert", linkShader);
     createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
     attachAllShaderObjects();
@@ -42,7 +42,7 @@ Shader::Shader(std::string fragmentFilename, bool linkShader)
 }
 
 Shader::Shader(std::string vertexFilename, std::string fragmentFilename, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::IGNORE} {
+    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
     createAndAddShader(GL_VERTEX_SHADER, vertexFilename, linkShader);
     createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
     attachAllShaderObjects();
@@ -51,7 +51,7 @@ Shader::Shader(std::string vertexFilename, std::string fragmentFilename, bool li
 
 Shader::Shader(std::string vertexFilename, std::string geometryFilename,
                std::string fragmentFilename, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::IGNORE} {
+    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
     createAndAddShader(GL_VERTEX_SHADER, vertexFilename, linkShader);
     createAndAddShader(GL_GEOMETRY_SHADER, geometryFilename, linkShader);
     createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
@@ -60,7 +60,7 @@ Shader::Shader(std::string vertexFilename, std::string geometryFilename,
 }
 
 Shader::Shader(const char *fragmentFilename, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::IGNORE} {
+    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
     createAndAddShader(GL_VERTEX_SHADER, "img_identity.vert", linkShader);
     createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
     attachAllShaderObjects();
@@ -68,7 +68,7 @@ Shader::Shader(const char *fragmentFilename, bool linkShader)
 }
 
 Shader::Shader(const char *vertexFilename, const char *fragmentFilename, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::IGNORE} {
+    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
     createAndAddShader(GL_VERTEX_SHADER, vertexFilename, linkShader);
     createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
     attachAllShaderObjects();
@@ -77,7 +77,7 @@ Shader::Shader(const char *vertexFilename, const char *fragmentFilename, bool li
 
 Shader::Shader(const char *vertexFilename, const char *geometryFilename,
                const char *fragmentFilename, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::IGNORE} {
+    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
     createAndAddShader(GL_VERTEX_SHADER, vertexFilename, linkShader);
     createAndAddShader(GL_GEOMETRY_SHADER, geometryFilename, linkShader);
     createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
@@ -86,7 +86,7 @@ Shader::Shader(const char *vertexFilename, const char *geometryFilename,
 }
 
 Shader::Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::IGNORE} {
+    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
     for (auto &shaderObject : shaderObjects)
         shaderObjects_[shaderObject->getShaderType()].reset(shaderObject);
 
@@ -208,10 +208,10 @@ GLint Shader::findUniformLocation(const std::string &name) const {
         GLint location = glGetUniformLocation(id_, name.c_str());
         uniformLookup_[name] = location;
 
-        if (warningLevel_ == UniformWarning::THROW && location == -1) {
+        if (warningLevel_ == UniformWarning::Throw && location == -1) {
             throw OpenGLException("Unable to set uniform " + name + " in shader " + shaderNames(),
                                   IvwContext);
-        } else if (warningLevel_ == UniformWarning::WARN && location == -1) {
+        } else if (warningLevel_ == UniformWarning::Warn && location == -1) {
             LogWarn("Unable to set uniform " + name + " in shader " + shaderNames());
         }
 

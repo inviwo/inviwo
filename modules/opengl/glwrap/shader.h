@@ -42,7 +42,7 @@ class IVW_MODULE_OPENGL_API Shader {
 public:
     using ShaderObjectPtr = std::unique_ptr<ShaderObject, std::function<void(ShaderObject *)>>;
     using ShaderObjectMap = std::unordered_map<GLenum, ShaderObjectPtr>;
-    enum class UniformWarning { IGNORE, WARN, THROW };
+    enum class UniformWarning { Ignore, Warn, Throw };
 
     Shader(std::string fragmentFilename, bool linkShader = true);
     Shader(std::string vertexFilename, std::string fragmentFilename, bool linkShader = true);
