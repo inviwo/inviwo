@@ -104,7 +104,8 @@ void SurfaceExtraction::setMinMax() {
 }
 
 void SurfaceExtraction::updateColors() {
-    const static vec4 defaultColor[10] = {
+    const static vec4 defaultColor[11] = {
+        vec4(1.0f),
         vec4(0x1f, 0x77, 0xb4, 255) / vec4(255, 255, 255, 255),
         vec4(0xff, 0x7f, 0x0e, 255) / vec4(255, 255, 255, 255),
         vec4(0x2c, 0xa0, 0x2c, 255) / vec4(255, 255, 255, 255),
@@ -120,16 +121,18 @@ void SurfaceExtraction::updateColors() {
     auto properties = colors_.getProperties();
     auto numConnections = volume_.getNumberOfConnections();
 
-    for (int i = 0; i < properties.size(); i++){
+    for (size_t i = 0; i < properties.size(); i++){
         properties[i]->setVisible(i < numConnections);
     }
 
-    for (int i = properties.size(); i < numConnections; i++){
-        FloatVec4Property *color = new FloatVec4Property("color" + i , "Color for Volume " + (i+1) , defaultColor[i%10]);
-        color->setCurrentStateAsDefault();
-        color->setSemantics(PropertySemantics::Color);
-        color->setSerializationMode(ALL);
-        colors_.addProperty(color);
+    for (size_t i = properties.size(); i < numConnections; i++){
+        const static std::string color = "color";
+        const static std::string dispName = "Color for Volume ";
+        FloatVec4Property *colorProp = new FloatVec4Property(color + toString(i), dispName + toString(i + 1), defaultColor[i % 11]);
+        colorProp->setCurrentStateAsDefault();
+        colorProp->setSemantics(PropertySemantics::Color);
+        colorProp->setSerializationMode(ALL);
+        colors_.addProperty(colorProp);
     }
 }
 
