@@ -34,6 +34,7 @@
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/clock.h>
 
 namespace inviwo {
 
