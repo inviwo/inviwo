@@ -42,6 +42,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/intersection/raysphereintersection.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/datastructures/camera.h>
