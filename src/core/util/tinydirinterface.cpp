@@ -103,6 +103,24 @@ std::vector<std::string> TinyDirInterface::getContents() {
             files.push_back(entry);
         }
     }
+
+    // ascending sort based on file name and then on the extension
+    std::sort(files.begin(), files.end(), [](const std::string &a, const std::string &b) {
+        std::size_t pos = a.rfind(".");
+        bool extFound = (pos != std::string::npos);
+        std::string filenameA{ extFound ? a.substr(0, pos) : a };
+        std::string extA{ extFound ? a.substr(pos + 1, std::string::npos) : "" };
+
+        pos = b.rfind(".");
+        extFound = (pos != std::string::npos);
+        std::string filenameB{ extFound ? b.substr(0, pos) : b };
+        std::string extB{ extFound ? b.substr(pos + 1, std::string::npos) : "" };
+
+        int nameComp = filenameA.compare(filenameB);
+        // file a is to be sorted before b, if the file name is 'smaller' in 
+        // lexical order or if the file names are identical and the extension is 'smaller'
+        return ((nameComp < 0) || ((nameComp == 0) && (extA.compare(extB) < 0)));
+    });
     return files;
 }
 
