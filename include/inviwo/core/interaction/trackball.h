@@ -148,10 +148,6 @@ protected:
     vec2 lastMousePos_;
     double gestureStartNDCDepth_;
     float trackBallWorldSpaceRadius_;
-
-    vec3* lookFrom_;
-    vec3* lookTo_;
-    vec3* lookUp_;
     
     // Interaction restrictions
     BoolProperty handleInteractionEvents_;
@@ -160,6 +156,7 @@ protected:
     BoolProperty allowVerticalPanning_;   ///< Enable/disable vertical panning
     BoolProperty allowZooming_;           ///< Enable/disable zooming
 
+    DoubleProperty maxZoomInDistance_; ///< Cannot zoom in closer than this distance
     // Options to restrict rotation around view-space axes.
     BoolProperty allowHorizontalRotation_;    ///< Enable/disable rotation around horizontal axis
     BoolProperty allowVerticalRotation_;      ///< Enable/disable rotation around vertical axis
@@ -204,6 +201,7 @@ Trackball<T>::Trackball(T* object, const Camera* camera)
     , allowHorizontalPanning_("allowHorizontalPanning", "Horizontal panning enabled", true)
     , allowVerticalPanning_("allowVerticalPanning", "Vertical panning enabled", true)
     , allowZooming_("allowZoom", "Zoom enabled", true)
+    , maxZoomInDistance_("minDistanceToLookAtPoint", "Minimum zoom distance", 0., 0, 1000)
 
     , allowHorizontalRotation_("allowHorziontalRotation", "Rotation around horizontal axis", true)
     , allowVerticalRotation_("allowVerticalRotation", "Rotation around vertical axis", true)
@@ -283,6 +281,7 @@ Trackball<T>::Trackball(T* object, const Camera* camera)
     addProperty(allowHorizontalPanning_);
     addProperty(allowVerticalPanning_);
     addProperty(allowZooming_);
+    addProperty(maxZoomInDistance_);
 
     addProperty(allowHorizontalRotation_);
     addProperty(allowVerticalRotation_);
@@ -753,7 +752,7 @@ double inviwo::Trackball<T>::getBoundedZoom(const dvec3& lookFrom, const dvec3& 
 
     // Clamp so that the user does not zoom outside of the bounds and not
     // further than, or onto, the lookTo point.
-    zoom = glm::clamp(zoom, maxZoomOut, directionLength - camera_->getNearPlaneDist());
+    zoom = glm::clamp(zoom, maxZoomOut, directionLength - std::max(maxZoomInDistance_.get(), static_cast<double>(camera_->getNearPlaneDist())));
     return zoom;
 
 
