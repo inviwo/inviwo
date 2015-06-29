@@ -37,6 +37,7 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 /** \docpage{org.inviwo.SurfaceExtraction, Surface Extraction}
