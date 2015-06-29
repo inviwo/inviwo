@@ -81,6 +81,10 @@ OpenGLModule::OpenGLModule() :
     registerSettings(new OpenGLSettings(openGLCap));
 }
 
+void OpenGLModule::initialize() {
+    InviwoModule::initialize();
+    ShaderManager::getPtr()->setUniformWarningLevel();
+}
 
 
 OpenGLModule::~OpenGLModule() {

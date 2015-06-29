@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <modules/opengl/glwrap/shader.h>
 
 namespace inviwo {
 
@@ -50,6 +51,7 @@ public:
     BoolProperty shaderReloadingProperty_;
     ButtonProperty btnOpenGLInfo_;
     OptionPropertyString selectedOpenGLProfile_;
+    TemplateOptionProperty<Shader::UniformWarning> uniformWarnings_;
 
 protected:
     void updateProfile();

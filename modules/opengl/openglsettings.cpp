@@ -41,6 +41,7 @@ OpenGLSettings::OpenGLSettings(OpenGLCapabilities* openglInfo)
     , shaderReloadingProperty_("shaderReloading", "Automatically reload shaders", true)
     , btnOpenGLInfo_("printOpenGLInfo", "Print OpenGL Info")
     , selectedOpenGLProfile_("selectedOpenGLProfile", "OpenGL Profile")
+    , uniformWarnings_("uniformWarnings", "Uniform Warnings")
     , openGlCap_(openglInfo)
     , hasOutputedGLSLVersionOnce_(false) {
     
@@ -49,11 +50,19 @@ OpenGLSettings::OpenGLSettings(OpenGLCapabilities* openglInfo)
     selectedOpenGLProfile_.setSelectedIdentifier(OpenGLCapabilities::getPreferredProfile());
     selectedOpenGLProfile_.setCurrentStateAsDefault();
 
+    uniformWarnings_.addOption("ignore", "Ignore missing locations", Shader::UniformWarning::IGNORE);
+    uniformWarnings_.addOption("warn", "Print warning", Shader::UniformWarning::WARN);
+    uniformWarnings_.addOption("throw", "Throw error", Shader::UniformWarning::THROW);
+    uniformWarnings_.setSelectedIndex(0);
+    uniformWarnings_.setCurrentStateAsDefault();
+
     contextMode_ = OpenGLCapabilities::getPreferredProfile();
 
     addProperty(shaderReloadingProperty_);
     addProperty(btnOpenGLInfo_);
     addProperty(selectedOpenGLProfile_);
+    addProperty(uniformWarnings_);
+    
     selectedOpenGLProfile_.onChange(this, &OpenGLSettings::updateProfile);
 
     if (openGlCap_) {

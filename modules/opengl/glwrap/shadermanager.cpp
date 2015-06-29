@@ -38,9 +38,23 @@
 
 namespace inviwo {
 
-ShaderManager::ShaderManager() : FileObserver() {
+ShaderManager::ShaderManager() : FileObserver(), uniformWarnings_(nullptr) {
     InviwoApplication::getPtr()->registerFileObserver(this);
     openGLInfoRef_ = nullptr;
+}
+
+void ShaderManager::setUniformWarningLevel() {
+    OpenGLSettings* settings = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
+    uniformWarnings_ = &(settings->uniformWarnings_);
+
+    for (auto shader : shaders_) {
+        shader->setUniformWarningLevel(uniformWarnings_->get());
+    }
+    uniformWarnings_->onChange([this]() {
+        for (auto shader : shaders_) {
+            shader->setUniformWarningLevel(uniformWarnings_->get());
+        }
+    });
 }
 
 void ShaderManager::registerShader(Shader* shader) {
@@ -53,6 +67,8 @@ void ShaderManager::registerShader(Shader* shader) {
 
         for (auto& shaderInclude : shaderIncludes) startFileObservation(shaderInclude);
     }
+
+    if (uniformWarnings_) shader->setUniformWarningLevel(uniformWarnings_->get());
 }
 
 void ShaderManager::unregisterShader(Shader* shader) {

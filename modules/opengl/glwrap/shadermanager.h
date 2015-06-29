@@ -69,6 +69,8 @@ public:
     const std::vector<Shader*> getShaders() const;
     void rebuildAllShaders();
 
+    void setUniformWarningLevel();
+
 protected:
     OpenGLCapabilities* getOpenGLCapabilitiesObject();
 
@@ -78,6 +80,8 @@ private:
     OpenGLCapabilities* openGLInfoRef_;
     std::vector<std::string> shaderSearchPaths_;
     std::map<std::string, std::string> shaderResources_;
+    
+    TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_; // non-owning reference
 };
 
 } // namespace
