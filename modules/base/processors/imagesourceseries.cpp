@@ -79,19 +79,29 @@ void ImageSourceSeries::deinitialize() {
 }
 
 void ImageSourceSeries::onFindFiles() {
-    std::vector<std::string> files = filesystem::getDirectoryContents(imageFileDirectory_.get());
-        
-    fileList_.clear();
-    
-    for (std::size_t i=0; i<files.size(); i++) {
-        if (isValidImageFile(files[i])) {
-            std::string fileName = filesystem::getFileNameWithExtension(files[i]);
-            fileList_.push_back(fileName);
+    std::string path{ imageFileDirectory_.get() };
+    if (!path.empty()) {
+        std::vector<std::string> files = filesystem::getDirectoryContents(path);
+
+        LogInfo("Contents of: " << path);
+        for (auto elem : files) {
+            LogInfo(elem);
         }
-    }
-    
-    if (fileList_.empty()) {
-        LogWarn("No images found in \"" << imageFileDirectory_.get() << "\"");
+        LogInfo("");
+
+        fileList_.clear();
+
+        for (std::size_t i=0; i<files.size(); i++) {
+            if (isValidImageFile(files[i])) {
+                LogInfo("valid image: " << files[i]);
+                std::string fileName = filesystem::getFileNameWithExtension(files[i]);
+                fileList_.push_back(fileName);
+            }
+        }
+
+        if (fileList_.empty()) {
+            LogWarn("No images found in \"" << imageFileDirectory_.get() << "\"");
+        }
     }
 
     updateProperties();
