@@ -479,14 +479,15 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
             touchState = TouchPoint::TOUCH_STATE_NONE;
         }
 
-        ivec2 pixelCoord = ivec2(static_cast<int>(glm::floor(screenTouchPos.x)),
-            screenSize.y - 1 - static_cast<int>(glm::floor(screenTouchPos.y)));
-
+        ivec2 pixelCoord = ivec2(static_cast<int>(screenTouchPos.x),
+            screenSize.y - 1 - static_cast<int>(screenTouchPos.y));
+        // Note that screenTouchPos/prevScreenTouchPos are in [0 screenDim] and does not need to be 
+        // adjusted to become centered in the pixel (+0.5) 
         touchPoints.push_back(
             TouchPoint(touchPoint.id(), screenTouchPos,
-            (screenTouchPos + 0.5f) / screenSize,
+            (screenTouchPos) / screenSize, 
             prevScreenTouchPos,
-            (prevScreenTouchPos + 0.5f) / screenSize,
+            (prevScreenTouchPos) / screenSize,
             touchState, getDepthValueAtCoord(pixelCoord, depthLayerRAM)));
     }
 
@@ -501,7 +502,7 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
 #if defined(USING_QT5) && (QT_VERSION < QT_VERSION_CHECK(5, 3, 0))
     if(touch->touchPoints().size() == 1 && lastNumFingers_ < 2){
         MouseEvent* mouseEvent = nullptr;
-        ivec2 pos = ivec2(static_cast<int>(glm::floor(firstPoint.pos().x())), static_cast<int>(glm::floor(firstPoint.pos().y())));
+        ivec2 pos = ivec2(static_cast<int>(firstPoint.pos().x()), static_cast<int>(firstPoint.pos().y()));
         uvec2 screenPosInvY(static_cast<unsigned int>(pos.x), static_cast<unsigned int>(getScreenDimensions().y-1-pos.y));
         double depth = getDepthValueAtCoord(screenPosInvY);
         switch (touchPoints.front().state())

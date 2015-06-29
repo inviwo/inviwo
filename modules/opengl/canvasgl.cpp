@@ -258,15 +258,15 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM
         dlr = getDepthLayerRAM();
 
     if (dlr) {
-        uvec2 screenDims = getScreenDimensions();
-        uvec2 depthDims = dlr->getDimensions();
+        auto screenDims(getScreenDimensions());
+        auto depthDims = dlr->getDimensions();
         coord = glm::max(coord, ivec2(0));
 
-        float depthScreenRatioX = glm::floor(static_cast<float>(depthDims.x) / static_cast<float>(screenDims.x));
-        float depthScreenRatioY = glm::floor(static_cast<float>(depthDims.y) / static_cast<float>(screenDims.y));
-        uvec2 coordDepth;
-        coordDepth.x = static_cast<unsigned int>(depthScreenRatioX*static_cast<float>(coord.x));
-        coordDepth.y = static_cast<unsigned int>(depthScreenRatioY*static_cast<float>(coord.y));
+        double depthScreenRatioX = static_cast<double>(depthDims.x) / static_cast<double>(screenDims.x);
+        double depthScreenRatioY = static_cast<double>(depthDims.y) / static_cast<double>(screenDims.y);
+        size2_t coordDepth;
+        coordDepth.x = static_cast<size_t>(depthScreenRatioX*static_cast<double>(coord.x));
+        coordDepth.y = static_cast<size_t>(depthScreenRatioY*static_cast<double>(coord.y));
         depthDims -= 1;
         coordDepth = glm::min(coordDepth, depthDims);
 
