@@ -139,12 +139,23 @@ void MultichannelRaycaster::process() {
 
 void MultichannelRaycaster::deserialize(IvwDeserializer& d) {
     NodeVersionConverter vc([](TxElement* node) {
-        TxElement* p1 = util::xmlGetElement(
-            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=entry-points");
-        if (p1) p1->SetAttribute("identifier", "entry");
-        TxElement* p2 = util::xmlGetElement(
-            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=exit-points");
-        if (p2) p2->SetAttribute("identifier", "exit");
+        if (TxElement* p1 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=entry-points")) {
+            p1->SetAttribute("identifier", "entry");
+        } else if (TxElement* p2 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=entry-points")) {
+            p2->SetAttribute("identifier", "entry");
+        }
+        
+        
+        if (TxElement* p1 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=exit-points")) {
+            p1->SetAttribute("identifier", "exit");
+        } else if (TxElement* p2 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=exit-points")) {
+            p2->SetAttribute("identifier", "exit");
+        }
+        
         return true;
 
     });
