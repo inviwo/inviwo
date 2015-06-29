@@ -290,6 +290,7 @@ void ProcessorNetworkEvaluator::evaluate() {
                 #endif
 
                 try {
+                    IVW_CPU_PROFILING_IF(500, "Processed " << processor->getDisplayName());
                     // do the actual processing
                     processor->process();
                 } catch (Exception&) {
