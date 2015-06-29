@@ -109,8 +109,8 @@ void ImageSourceSeries::process() {
 
     if (outImage) {
         std::string basePath{ imageFileDirectory_.get() };
-        int currentIndex = currentImageIndex_.get() - 1;
-        if ((currentIndex < 0) || (currentIndex >= fileList_.size())) {
+        long currentIndex = currentImageIndex_.get() - 1;
+        if ((currentIndex < 0) || (currentIndex >= static_cast<long>(fileList_.size()))) {
             LogError("Invalid image index. Exceeded number of files.");
             return;
         }
