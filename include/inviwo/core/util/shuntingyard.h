@@ -64,6 +64,8 @@ THE SOFTWARE.
 #include <map>
 #include <stack>
 #include <string>
+#include <iostream>
+#include <sstream>
 #include <queue>
 
 namespace inviwo {
@@ -86,8 +88,23 @@ using TokenQueue = std::queue<TokenBase*>;
 class IVW_CORE_API Calculator {
 public:
     static double calculate(const char* expr, std::map<std::string, double>* vars = 0);
+    static std::string shaderCode(const char* expr, std::map<std::string, double>* vars = 0);
 
 private:
+    inline static bool isvariablechar(char c) {return isalpha(c) || c == '_';}
+
+    inline static std::string getVariable(const char* expr) {
+        std::stringstream ss;
+        ss << *expr;
+        ++expr;
+        while (isvariablechar(*expr)) {
+            ss << *expr;
+            ++expr;
+        }
+        std::string key = ss.str();
+        return key;
+    }
+
     static TokenQueue toRPN(const char* expr, std::map<std::string, double>* vars,
                               std::map<std::string, int> opPrecedence);
 };

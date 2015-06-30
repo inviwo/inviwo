@@ -33,6 +33,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 
@@ -74,6 +75,7 @@ protected:
 
     FloatProperty scaleVol1_;
     FloatProperty scaleVol2_;
+    StringProperty eqn_;
 };
 
 } // namespace

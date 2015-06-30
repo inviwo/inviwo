@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "volumecombiner.h"
@@ -32,6 +32,7 @@
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/volumeutils.h>
+#include <inviwo/core/util/shuntingyard.h>
 
 namespace inviwo {
 
@@ -41,20 +42,25 @@ ProcessorTags(VolumeCombiner, Tags::GL);
 ProcessorCategory(VolumeCombiner, "Volume Operation");
 ProcessorCodeState(VolumeCombiner, CODE_STATE_EXPERIMENTAL);
 
-VolumeCombiner::VolumeCombiner() 
+VolumeCombiner::VolumeCombiner()
     : VolumeGLProcessor("volume_combiner.frag")
-    , vol2_("vol2") 
+    , vol2_("vol2")
     , scaleVol1_("scaleVol1", "Volume 1 data scaling", 1.0f, 0.0f, 100.0f)
     , scaleVol2_("scaleVol2", "Volume 2 data scaling", 1.0f, 0.0f, 100.0f)
-{
+    , eqn_("eqn", "Equation", "1+1") {
     addPort(vol2_);
     addProperty(scaleVol1_);
     addProperty(scaleVol2_);
+    addProperty(eqn_);
 }
 
 VolumeCombiner::~VolumeCombiner() {}
 
 void VolumeCombiner::preProcess() {
+    std::map<std::string, double> vars;
+    vars["pi"] = 3.14;
+    LogInfo("Res: " << shuntingyard::Calculator::calculate(eqn_.get().c_str(), &vars));
+
     TextureUnit vol2Unit;
 
     const VolumeGL* volGL = vol2_.getData()->getRepresentation<VolumeGL>();

@@ -59,15 +59,14 @@ THE SOFTWARE.
 #include <inviwo/core/util/shuntingyard.h>
 
 #include <cstdlib>
-#include <iostream>
-#include <sstream>
 #include <stdexcept>
 #include <math.h>
 
 namespace inviwo {
 namespace shuntingyard {
 
-#define isvariablechar(c) (isalpha(c) || c == '_')
+
+
 TokenQueue Calculator::toRPN(const char* expr, std::map<std::string, double>* vars,
                              std::map<std::string, int> opPrecedence) {
     TokenQueue rpnQueue;
@@ -86,27 +85,11 @@ TokenQueue Calculator::toRPN(const char* expr, std::map<std::string, double>* va
             rpnQueue.push(new Token<double>(digit));
             expr = nextChar;
             lastTokenWasOp = false;
+        
         } else if (isvariablechar(*expr)) {
-            // If the function is a variable, resolve it and
-            // add the parsed number to the output queue.
-            if (!vars) throw std::domain_error("Detected variable, but the variable map is null.");
-
-            std::stringstream ss;
-            ss << *expr;
-            ++expr;
-            while (isvariablechar(*expr)) {
-                ss << *expr;
-                ++expr;
-            }
-            std::string key = ss.str();
-            auto it = vars->find(key);
-            if (it == vars->end()) {
-                throw std::domain_error("Unable to find the variable '" + key + "'.");
-            }
-            double val = vars->find(key)->second;
-
-            rpnQueue.push(new Token<double>(val));
+            rpnQueue.push(new Token<std::string>(getVariable(expr)));
             lastTokenWasOp = false;
+            
         } else {
             // Otherwise, the variable is an operator or paranthesis.
             switch (*expr) {
@@ -197,29 +180,33 @@ double Calculator::calculate(const char* expr, std::map<std::string, double>* va
         Token<double>* doubleTok = dynamic_cast<Token<double>*>(base);
         if (strTok) {
             std::string str = strTok->val;
-            if (evaluation.size() < 2) {
+            auto it = vars->find(str);
+            if (it != vars->end()) {
+                evaluation.push(it->second);
+            } else if (evaluation.size() < 2) {
                 throw std::domain_error("Invalid equation.");
-            }
-            double right = evaluation.top();
-            evaluation.pop();
-            double left = evaluation.top();
-            evaluation.pop();
-            if (!str.compare("+")) {
-                evaluation.push(left + right);
-            } else if (!str.compare("*")) {
-                evaluation.push(left * right);
-            } else if (!str.compare("-")) {
-                evaluation.push(left - right);
-            } else if (!str.compare("/")) {
-                evaluation.push(left / right);
-            } else if (!str.compare("<<")) {
-                evaluation.push((int)left << (int)right);
-            } else if (!str.compare("^")) {
-                evaluation.push(pow(left, right));
-            } else if (!str.compare(">>")) {
-                evaluation.push((int)left >> (int)right);
             } else {
-                throw std::domain_error("Unknown operator: '" + str + "'.");
+                double right = evaluation.top();
+                evaluation.pop();
+                double left = evaluation.top();
+                evaluation.pop();
+                if (!str.compare("+")) {
+                    evaluation.push(left + right);
+                } else if (!str.compare("*")) {
+                    evaluation.push(left * right);
+                } else if (!str.compare("-")) {
+                    evaluation.push(left - right);
+                } else if (!str.compare("/")) {
+                    evaluation.push(left / right);
+                } else if (!str.compare("<<")) {
+                    evaluation.push((int)left << (int)right);
+                } else if (!str.compare("^")) {
+                    evaluation.push(pow(left, right));
+                } else if (!str.compare(">>")) {
+                    evaluation.push((int)left >> (int)right);
+                } else {
+                    throw std::domain_error("Unknown operator: '" + str + "'.");
+                }
             }
         } else if (doubleTok) {
             evaluation.push(doubleTok->val);
@@ -229,6 +216,17 @@ double Calculator::calculate(const char* expr, std::map<std::string, double>* va
         delete base;
     }
     return evaluation.top();
+}
+
+std::string Calculator::shaderCode(const char* expr, std::map<std::string, double>* vars) {
+    std::string res = "";
+    
+    
+    
+    
+    
+    
+    return res;
 }
 
 }  // namespace
