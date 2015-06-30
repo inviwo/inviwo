@@ -34,6 +34,8 @@
 #include <QTextEdit>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QThread>
+#include <QCoreApplication>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/editor/consolewidget.h>
@@ -100,6 +102,9 @@ ConsoleWidget::ConsoleWidget(QWidget* parent)
     w->setLayout(layout);
     setWidget(w);
 
+
+    connect(this, SIGNAL(logMessageSignal(LogLevel, QString)), this, SLOT(logMessage(LogLevel, QString)));
+    connect(this, SIGNAL(cleartSignal()), this, SLOT(clear()));
 }
 
 ConsoleWidget::~ConsoleWidget() {
@@ -113,17 +118,31 @@ void ConsoleWidget::showContextMenu(const QPoint& pos) {
     QAction* result = menu->exec(QCursor::pos());
 
     if (result == clearAction) {
-        textField_->clear();
-        errorsLabel_->setText("0");
-        warningsLabel_->setText("0");
-        infoLabel_->setText("0");
-        numErrors_ = numWarnings_ = numInfos_ = 0;
+        clear();
     }
 
     delete menu;
 }
 
+void ConsoleWidget::clear(){
+    if (QThread::currentThread() != QCoreApplication::instance()->thread()){
+        emit clearSignal();
+        return;
+    }
+
+    textField_->clear();
+    errorsLabel_->setText("0");
+    warningsLabel_->setText("0");
+    infoLabel_->setText("0");
+    numErrors_ = numWarnings_ = numInfos_ = 0;
+}
+
 void ConsoleWidget::logMessage(LogLevel level, QString message) {
+    if (QThread::currentThread() != QCoreApplication::instance()->thread()){
+        emit logMessageSignal(level, message);
+        return; 
+    }
+
     switch (level) {
         case LogLevel::Error: {
             textField_->setTextColor(errorTextColor_);
