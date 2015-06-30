@@ -60,7 +60,6 @@ public:
     void useNativeDialog(const bool &use = true);
 
     void setCurrentDirectory(const std::string &path);
-    void setCurrentDirectory(const QString &path);
 
     FileExtension getSelectedFileExtension() const;
 

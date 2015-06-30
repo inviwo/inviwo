@@ -72,13 +72,8 @@ void InviwoFileDialog::useNativeDialog(const bool &use) {
 }
 
 void InviwoFileDialog::setCurrentDirectory(const std::string &path) {
-    currentPath_ = QString::fromStdString(path);
-    QFileDialog::setDirectory(currentPath_);
-}
-
-void InviwoFileDialog::setCurrentDirectory(const QString &path) {
-    if (!path.isEmpty()) {
-        currentPath_ = path;
+    if (!path.empty()) {
+        currentPath_ = QString::fromStdString(path);;
     }
     else {
         // use default path based on pathType
