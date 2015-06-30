@@ -188,11 +188,14 @@ void Canvas::gestureEvent(GestureEvent* e) {
     interactionEvent(e);
 }
 
-void Canvas::touchEvent(TouchEvent* e){
+void Canvas::touchEvent(TouchEvent* e) {
     NetworkLock lock;
     bool picked = pickingContainer_->performTouchPick(e);
     if (!picked){
-        interactionEvent(e);
+        // One single touch point is already sent out as mouse event
+        if (e->getTouchPoints().size() > 1){
+            interactionEvent(e);
+        }
     }
     else if (e->hasTouchPoints()){
         // As one touch point is handle as mouse event

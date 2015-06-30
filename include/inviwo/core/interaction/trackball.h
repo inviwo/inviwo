@@ -351,20 +351,20 @@ void Trackball<T>::touchGesture(Event* event) {
     TouchEvent* touchEvent = static_cast<TouchEvent*>(event);
 
     // Use the two closest points to extract translation, scaling and rotation
-    std::vector<const TouchPoint*> twoClosestsPoints = touchEvent->findClosestTwoTouchPoints();
+    const std::vector<TouchPoint> touchPoints = touchEvent->getTouchPoints();
 
-    if (twoClosestsPoints.size() > 1) {
-        const TouchPoint* touchPoint1 = twoClosestsPoints[0];
-        const TouchPoint* touchPoint2 = twoClosestsPoints[1];
+    if (touchPoints.size() > 1) {
+        const TouchPoint touchPoint1 = touchPoints[0];
+        const TouchPoint touchPoint2 = touchPoints[1];
 
         // Flip y-position to get coordinate system
         // (0, 1)--(1, 1)
         //   |        |
         // (0, 0)--(1, 0)
-        dvec2 prevPos1 = touchPoint1->getPrevPosNormalized(); prevPos1.y = 1. - prevPos1.y;
-        dvec2 prevPos2 = touchPoint2->getPrevPosNormalized(); prevPos2.y = 1. - prevPos2.y;
-        dvec2 pos1 = touchPoint1->getPosNormalized(); pos1.y = 1. - pos1.y;
-        dvec2 pos2 = touchPoint2->getPosNormalized(); pos2.y = 1. - pos2.y;
+        dvec2 prevPos1 = touchPoint1.getPrevPosNormalized(); prevPos1.y = 1. - prevPos1.y;
+        dvec2 prevPos2 = touchPoint2.getPrevPosNormalized(); prevPos2.y = 1. - prevPos2.y;
+        dvec2 pos1 = touchPoint1.getPosNormalized(); pos1.y = 1. - pos1.y;
+        dvec2 pos2 = touchPoint2.getPosNormalized(); pos2.y = 1. - pos2.y;
 
         auto v1(prevPos2 - prevPos1);
         auto v2(pos2 - pos1);
@@ -390,8 +390,8 @@ void Trackball<T>::touchGesture(Event* event) {
         auto prevCenterPoint = glm::mix(prevPos1, prevPos2, 0.5);
         auto centerPoint = glm::mix(pos1, pos2, 0.5);
 
-        if (touchPoint1->state() == TouchPoint::TOUCH_STATE_STATIONARY || touchPoint2->state() == TouchPoint::TOUCH_STATE_STATIONARY) {
-            gestureStartNDCDepth_ = std::min(touchPoint1->getDepth(), touchPoint2->getDepth());
+        if (touchPoint1.state() == TouchPoint::TOUCH_STATE_STATIONARY || touchPoint2.state() == TouchPoint::TOUCH_STATE_STATIONARY) {
+            gestureStartNDCDepth_ = std::min(touchPoint1.getDepth(), touchPoint2.getDepth());
             if (gestureStartNDCDepth_ >= 1.) {
                 gestureStartNDCDepth_ = getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(pos1).z;
             }
@@ -409,7 +409,7 @@ void Trackball<T>::touchGesture(Event* event) {
         
         // Zoom based on the closest point to the object
         // Use the look at point if the closest point is unknown
-        auto depth = std::min(touchPoint1->getDepth(), touchPoint2->getDepth());
+        auto depth = std::min(touchPoint1.getDepth(), touchPoint2.getDepth());
         if (depth <= -1 || depth >= 1) {
             // Get NDC depth of the lookTo position
             depth = getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(vec2(0.f)).z;

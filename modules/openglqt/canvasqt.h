@@ -136,6 +136,7 @@ private:
     bool gestureMode_;
     Qt::GestureType lastType_;
     int lastNumFingers_;
+    std::vector<int> lastTouchIds_;
     vec2 screenPositionNormalized_;
 #endif
 };
