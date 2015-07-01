@@ -44,7 +44,7 @@ BoolCompositePropertyWidgetQt::BoolCompositePropertyWidgetQt(BoolCompositeProper
         addProperty(subPropertie);
     }
 
-    property->addObserver(this);
+    property->PropertyOwner::addObserver(this);
     updateFromProperty();
 }          
 

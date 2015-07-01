@@ -64,9 +64,8 @@ void TransferFunctionPropertyWidgetQt::generateWidget() {
 
     btnOpenTF_ = new TFPushButton(property_, transferFunctionDialog_, this);
 
-    label_ = new EditableLabelQt(this, property_->getDisplayName());
+    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
-    connect(label_, SIGNAL(textChanged()), this, SLOT(setPropertyDisplayName()));
 
     connect(btnOpenTF_, SIGNAL(clicked()), this, SLOT(openTransferFunctionDialog()));
 
@@ -107,18 +106,11 @@ void TransferFunctionPropertyWidgetQt::openTransferFunctionDialog() {
     transferFunctionDialog_->setVisible(true);
 }
 
-void TransferFunctionPropertyWidgetQt::setPropertyDisplayName() {
-    property_->setDisplayName(label_->getText());
-}
-
-
-
-TFPushButton::TFPushButton(Property *property, TransferFunctionPropertyDialog *tfDialog, QWidget *parent)
+TFPushButton::TFPushButton(Property* property, TransferFunctionPropertyDialog* tfDialog,
+                           QWidget* parent)
     : IvwPushButton(parent)
     , tfProperty_(static_cast<TransferFunctionProperty*>(property))
-    , tfDialog_(tfDialog)
-{
-}
+    , tfDialog_(tfDialog) {}
 
 void TFPushButton::updateFromProperty() {
     QSize gradientSize = this->size() - QSize(2, 2);

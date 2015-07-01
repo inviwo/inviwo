@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <inviwo/qt/widgets/tooltiphelper.h>
 #include <inviwo/core/common/moduleaction.h>
 #include <QDesktopWidget>
 
@@ -103,6 +104,9 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
     , semanicsMenuItem_(nullptr)
     , semanticsActionGroup_(nullptr)
     , contextMenu_(nullptr) {
+
+    property_->addObserver(this);
+
     this->setObjectName("PropertyWidget");
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this,
@@ -117,6 +121,10 @@ void PropertyWidgetQt::setVisible(bool visible) {
     } else {
         QWidget::setVisible(false);
     }
+}
+
+bool PropertyWidgetQt::getVisible() const {
+    return property_->getVisible();
 }
 
 void PropertyWidgetQt::showWidget() {
@@ -279,12 +287,11 @@ void PropertyWidgetQt::generateContextMenu() {
     }
 }
 
+
+// connected to the semanticsActionGroup_
 void PropertyWidgetQt::changeSemantics(QAction* action) {
     PropertySemantics semantics(action->data().toString().toUtf8().constData());
-    if (property_) {
-        property_->setSemantics(semantics);
-        emit updateSemantics(this);
-    }
+    if (property_) property_->setSemantics(semantics);
 }
     
 void PropertyWidgetQt::showContextMenu(const QPoint& pos) {
@@ -365,20 +372,19 @@ UsageMode PropertyWidgetQt::getUsageMode() const {
     return property_->getUsageMode();
 };
 
-bool PropertyWidgetQt::getVisible() const {
-    return property_->getVisible();
+void PropertyWidgetQt::onSetUsageMode(UsageMode usageMode) {
+    updateContextMenu();
+    emit usageModeChanged(); // will trigger a updateContextMenu on the parent container
 }
 
+// connected to developerUsageModeAction_
 void PropertyWidgetQt::setDeveloperUsageMode(bool value) {
     property_->setUsageMode(DEVELOPMENT);
-    updateContextMenu();
-    emit usageModeChanged();
 }
 
+// connected to applicationUsageModeAction_
 void PropertyWidgetQt::setApplicationUsageMode(bool value) {
     property_->setUsageMode(APPLICATION);
-    updateContextMenu();
-    emit usageModeChanged();
 }
 
 UsageMode PropertyWidgetQt::getApplicationUsageMode() {
@@ -434,73 +440,27 @@ bool PropertyWidgetQt::event(QEvent* event) {
     return QWidget::event(event);
 }
 
-std::string PropertyWidgetQt::makeToolTipTop(std::string item) const {
-    return "<html><head>\
-            <style>\
-            table { border-color:white;white-space:pre;margin-top:5px;margin-bottom:5px; }\
-            table > tr > td { padding-left:5px; padding-right:5px; }\
-            </style><head/><body>\
-            <b style='color:white;'>" + item + "</b>";
-}
-
-std::string PropertyWidgetQt::makeToolTipTableTop() const {
-    return "<table border='0' cellspacing='0' cellpadding='0'\
-            style='border-color:white;white-space:pre;margin: 5px 0;'>";
-}
-
-std::string PropertyWidgetQt::makeToolTipRow(std::string item, std::string val, bool tablehead) const {
-    std::stringstream ss;
-    std::string td = (tablehead ? "th" : "td");
-    ss << "<tr><" << td << " style='color:#bbb;padding-right:8px;'>" << item << "</" << td << ">";
-    ss << "<" << td << "><nobr>" + val + "</nobr></" << td << ">";
-    ss << "</tr>" << std::endl;
-    
-    return ss.str();
-}
-
-std::string PropertyWidgetQt::makeToolTipRow(std::string item, std::vector<std::string> vals, bool tablehead) const {
-    std::stringstream ss;
-    std::string td = (tablehead ? "th" : "td");
-    ss << "<tr><" << td << " style='color:#bbb;padding-right:8px;'>" << item << "</" << td << ">";
-
-    for (auto& val : vals) {
-        ss << "<" << td << " align=center><nobr>" + val + "</nobr></" << td << ">";
-    }
-    ss << "</tr>" << std::endl;
-    
-    return ss.str();
-}
-
-std::string PropertyWidgetQt::makeToolTipTableBottom() const {
-    return "</table>";
-}
-
-std::string PropertyWidgetQt::makeToolTipBottom() const {
-    return "</body></html>";
-}
-
 std::string PropertyWidgetQt::getToolTipText() {
     if (property_) {
-        std::stringstream ss;
-        utilqt::localizeStream(ss);
-
-        ss << makeToolTipTop(property_->getDisplayName());
-        ss << makeToolTipTableTop();
-        ss << makeToolTipRow("Identifier", property_->getIdentifier());
-        ss << makeToolTipRow("Path", joinString(property_->getPath(),"."));
-        ss << makeToolTipRow("Semantics", property_->getSemantics().getString());
-        ss << makeToolTipRow("Validation Level", PropertyOwner::invalidationLevelToString(
-                                                     property_->getInvalidationLevel()));
-        ss << makeToolTipTableBottom();
-        ss << makeToolTipBottom();
-
-        return ss.str();
+        ToolTipHelper t(property_->getDisplayName());
+        t.tableTop();
+        t.row("Identifier", property_->getIdentifier());
+        t.row("Path", joinString(property_->getPath(), "."));
+        t.row("Semantics", property_->getSemantics().getString());
+        t.row("Validation Level",
+              PropertyOwner::invalidationLevelToString(property_->getInvalidationLevel()));
+        t.tableBottom();
+        return t;
     } else {
         return "";
     }
 }
 
-void PropertyWidgetQt::setProperty(Property* property) { PropertyWidget::setProperty(property); }
+void PropertyWidgetQt::setProperty(Property* property) {
+    if (property_) property_->removeObserver(this);
+    PropertyWidget::setProperty(property); 
+    property_->addObserver(this);
+}
 
 void PropertyWidgetQt::resetPropertyToDefaultState() { property_->resetToDefaultState(); }
 
@@ -509,29 +469,24 @@ void PropertyWidgetQt::setSpacingAndMargins(QLayout* layout) {
     layout->setSpacing(SPACING);
 }
 
-QSize PropertyWidgetQt::sizeHint() const {
-    return layout()->sizeHint();
+void PropertyWidgetQt::onSetSemantics(const PropertySemantics& semantics) {
+    emit updateSemantics(this);
 }
 
-QSize PropertyWidgetQt::minimumSizeHint() const {
-    return layout()->sizeHint();
-}
+QSize PropertyWidgetQt::sizeHint() const { return layout()->sizeHint(); }
+QSize PropertyWidgetQt::minimumSizeHint() const { return layout()->sizeHint(); }
 
-void PropertyWidgetQt::copy() {
-    copySource = property_;
-}
-
+void PropertyWidgetQt::copy() { copySource = property_; }
 void PropertyWidgetQt::paste() {
-    if(copySource) {
+    if (copySource) {
         property_->set(copySource);
     }
 }
 
 void PropertyWidgetQt::copyPath() {
-    if (property_ == nullptr) {
-        return;
-    }
-    std::string path = joinString(property_->getPath(),".");
+    if (!property_) return;
+ 
+    std::string path = joinString(property_->getPath(), ".");
     QApplication::clipboard()->setText(path.c_str());
 }
 

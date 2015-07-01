@@ -87,9 +87,7 @@ void CompositeProperty::updateVisibility() {
 }
 
 bool CompositeProperty::getVisible() {
-    bool visible = false;
-    for (Property* property : properties_) visible = visible || property->getVisible();
-    return visible;
+    return util::any_of(properties_, [](Property* p){return p->getVisible();});
 }
 
 void CompositeProperty::setVisible(bool val) {

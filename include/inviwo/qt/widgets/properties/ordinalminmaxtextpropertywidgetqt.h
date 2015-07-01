@@ -55,8 +55,6 @@ public slots:
     virtual void updateFromMin() = 0;
     virtual void updateFromMax() = 0;
     
-    void setPropertyDisplayName();
-
 protected:
     void generateWidget();
     
@@ -192,27 +190,26 @@ void OrdinalMinMaxTextPropertyWidgetQt<T>::updateFromMax() {
 
 template <typename T>
 std::string OrdinalMinMaxTextPropertyWidgetQt<T>::getToolTipText() {
-    std::stringstream ss;
-    utilqt::localizeStream(ss);
 
-    ss << this->makeToolTipTop(this->minMaxProperty_->getDisplayName());
-    ss << this->makeToolTipTableTop();
-    ss << this->makeToolTipRow("Identifier", this->minMaxProperty_->getIdentifier());
-    ss << this->makeToolTipRow("Path", joinString(this->minMaxProperty_->getPath(),"."));
-    ss << this->makeToolTipRow("Semantics", this->minMaxProperty_->getSemantics().getString());
-    ss << makeToolTipRow("Validation Level", PropertyOwner::invalidationLevelToString(
+    ToolTipHelper t(this->minMaxProperty_->getDisplayName());
+
+    t.tableTop();
+    t.row("Identifier", this->minMaxProperty_->getIdentifier());
+    t.row("Path", joinString(this->minMaxProperty_->getPath(),"."));
+    t.row("Semantics", this->minMaxProperty_->getSemantics().getString());
+    t.row("Validation Level", PropertyOwner::invalidationLevelToString(
                                              this->minMaxProperty_->getInvalidationLevel()));
 
-    ss << this->makeToolTipRow("Minimum", toString(minMaxProperty_->get().x));
-    ss << this->makeToolTipRow("Maximum", toString(minMaxProperty_->get().y));
-    ss << this->makeToolTipRow("Range min", toString(minMaxProperty_->getRangeMin()));
-    ss << this->makeToolTipRow("Range max", toString(minMaxProperty_->getRangeMax()));
-    ss << this->makeToolTipRow("Increment", toString(minMaxProperty_->getIncrement()));
-    ss << this->makeToolTipRow("Separation", toString(minMaxProperty_->getMinSeparation()));
+    t.row("Minimum", minMaxProperty_->get().x);
+    t.row("Maximum", minMaxProperty_->get().y);
+    t.row("Range min", minMaxProperty_->getRangeMin());
+    t.row("Range max", minMaxProperty_->getRangeMax());
+    t.row("Increment", minMaxProperty_->getIncrement());
+    t.row("Separation", minMaxProperty_->getMinSeparation());
 
-    ss << this->makeToolTipTableBottom();
-    ss << this->makeToolTipBottom();
-    return ss.str();
+    t.tableBottom();
+
+    return t;
 }
 
 } // namespace

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYWIDGETQT_H
@@ -41,6 +41,7 @@
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/properties/propertyobserver.h>
 #include <inviwo/core/util/observer.h>
 
 namespace inviwo {
@@ -82,8 +83,9 @@ public:
     QSize minimumSizeHint() const;
 };
 
-
-class IVW_QTWIDGETS_API PropertyWidgetQt : public QWidget, public PropertyWidget {
+class IVW_QTWIDGETS_API PropertyWidgetQt : public QWidget,
+                                           public PropertyWidget,
+                                           public PropertyObserver {
     Q_OBJECT
 
 public:
@@ -91,7 +93,7 @@ public:
     PropertyWidgetQt(Property* property);
     virtual ~PropertyWidgetQt();
     PropertyWidgetQt* create();
-    
+
     virtual UsageMode getUsageMode() const;
     virtual bool getVisible() const;
     virtual void setVisible(bool visible);
@@ -108,7 +110,11 @@ public:
     static int SPACING;
     static int MARGIN;
     static void setSpacingAndMargins(QLayout* layout);
-    
+
+    // PropertyObservable overrides
+    virtual void onSetSemantics(const PropertySemantics& semantics) override;
+    virtual void onSetUsageMode(UsageMode usageMode) override;
+
 public slots:
     virtual void updateContextMenu();
     virtual void resetPropertyToDefaultState();
@@ -135,17 +141,11 @@ protected:
     void updateModuleMenuActions();
     virtual void initializeEditorWidgetsMetaData();
 
-    virtual bool event(QEvent *event); //< for custom tooltips.
+    virtual bool event(QEvent* event);  //< for custom tooltips.
     virtual std::string getToolTipText();
-    std::string makeToolTipTop(std::string item) const;
-    std::string makeToolTipTableTop() const;
-    std::string makeToolTipRow(std::string item, std::vector<std::string> vals, bool tablehead=false) const;
-    std::string makeToolTipRow(std::string item, std::string val, bool tablehead=false) const;
-    std::string makeToolTipTableBottom() const;
-    std::string makeToolTipBottom() const;
-    
-    void paintEvent(QPaintEvent *pe);
-    
+
+    void paintEvent(QPaintEvent* pe);
+
     // Actions
     QMenu* usageModeItem_;
     QActionGroup* usageModeActionGroup_;
@@ -157,7 +157,7 @@ protected:
 
     QMenu* semanicsMenuItem_;
     QActionGroup* semanticsActionGroup_;
-      
+
 private:
     QMenu* contextMenu_;
     QMap<QString, QMenu*> moduleSubMenus_;
@@ -165,8 +165,9 @@ private:
     static const Property* copySource;
 };
 
-//PropertyEditorWidget owned by PropertyWidget
-class IVW_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget, public PropertyEditorWidget {
+// PropertyEditorWidget owned by PropertyWidget
+class IVW_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
+                                                 public PropertyEditorWidget {
     Q_OBJECT
 public:
     PropertyEditorWidgetQt(std::string widgetName, QWidget* parent);
@@ -175,7 +176,6 @@ public:
     virtual void deinitialize();
 };
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_PROPERTYWIDGETQT_H
+#endif  // IVW_PROPERTYWIDGETQT_H

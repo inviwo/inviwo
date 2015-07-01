@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
@@ -38,7 +38,6 @@ namespace inviwo {
 class EditableLabelQt;
 class TransferFunctionPropertyDialog;
 class TransferFunctionProperty;
-
 class TFPushButton;
 
 class IVW_QTWIDGETS_API TransferFunctionPropertyWidgetQt : public PropertyWidgetQt {
@@ -54,34 +53,29 @@ private:
     EditableLabelQt* label_;
     TFPushButton* btnOpenTF_;
     TransferFunctionPropertyDialog* transferFunctionDialog_;
-    
+
     void generateWidget();
 
 public slots:
     void setPropertyValue();
     void openTransferFunctionDialog();
-    void setPropertyDisplayName();
 };
-
-
 
 class IVW_QTWIDGETS_API TFPushButton : public IvwPushButton {
     Q_OBJECT
 public:
-    TFPushButton(Property *property, TransferFunctionPropertyDialog *tfDialog, QWidget *parent=nullptr);
+    TFPushButton(Property* property, TransferFunctionPropertyDialog* tfDialog,
+                 QWidget* parent = nullptr);
     virtual ~TFPushButton() {}
     void updateFromProperty();
 
 private:
-    void resizeEvent(QResizeEvent * event) override;
+    void resizeEvent(QResizeEvent* event) override;
 
-    TransferFunctionProperty *tfProperty_;
-    TransferFunctionPropertyDialog *tfDialog_;
+    TransferFunctionProperty* tfProperty_;
+    TransferFunctionPropertyDialog* tfDialog_;
 };
 
+}  // namespace
 
-
-
-}//namespace
-
-#endif //IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H
+#endif  // IVW_TRANSFERFUNCTIONPROPERTYWIDGET_H

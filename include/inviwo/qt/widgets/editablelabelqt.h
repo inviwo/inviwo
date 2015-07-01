@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef EDITABLELABELQT_H
@@ -32,6 +32,7 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <inviwo/core/properties/propertyobserver.h>
 #include <QLabel>
 #include <QLineEdit>
 #include <QHBoxLayout>
@@ -39,42 +40,45 @@
 #include <QMenu>
 namespace inviwo {
 
-class IVW_QTWIDGETS_API EditableLabelQt: public QWidget {
+class IVW_QTWIDGETS_API EditableLabelQt : public QWidget, public PropertyObserver {
     Q_OBJECT
 public:
-    EditableLabelQt(QWidget* parent, std::string text, bool shortenText=true);
-    EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText=true);
-    std::string getText() {return text_;};
+    EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText = true);
+    EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText = true);
+    std::string getText() { return text_; };
     void setText(std::string txt);
-    void setContextMenu(QMenu* menu) {contextMenu_ = menu;};
+    void setContextMenu(QMenu* menu) { contextMenu_ = menu; };
     void setShortenText(bool shorten);
-    
+
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
-    
+
 public slots:
     void edit();
     void finishEditing();
     void showContextMenu(const QPoint& pos);
 
 protected:
-    virtual void resizeEvent(QResizeEvent *);
+    virtual void resizeEvent(QResizeEvent*);
 
 private:
+    void generateWidget();
+    void mouseDoubleClickEvent(QMouseEvent* e);
+    virtual void onSetDisplayName(const std::string& displayName) override;
+    QString shortenText();
+
     QLabel* label_;
     QLineEdit* lineEdit_;
     std::string text_;
-    void generateWidget();
+    Property* property_;
     PropertyWidgetQt* propertyWidget_;
     QMenu* contextMenu_;
     QAction* renameAction_;
-    void mouseDoubleClickEvent(QMouseEvent* e);
-    QString shortenText();
     bool shortenText_;
 
 signals:
     void textChanged();
 };
-}//namespace
+}  // namespace
 
-#endif //EDITABLELABELQT_H
+#endif  // EDITABLELABELQT_H

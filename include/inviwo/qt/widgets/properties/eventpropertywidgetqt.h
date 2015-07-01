@@ -59,7 +59,6 @@ protected:
 
 public slots:
     void clickedSlot();
-    void setPropertyDisplayName();
 
 private:
     void generateWidget();

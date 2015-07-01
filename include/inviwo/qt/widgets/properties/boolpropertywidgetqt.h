@@ -57,7 +57,6 @@ private:
 
 public slots:
     void setPropertyValue();
-    void setPropertyDisplayName();
 };
 
 } // namespace

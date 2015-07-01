@@ -63,7 +63,6 @@ private:
 public slots:
     void onPositionLightWidgetChanged();
     void onRadiusSpinBoxChanged(double radius);
-    void setPropertyDisplayName();
 };
 
 } // namespace

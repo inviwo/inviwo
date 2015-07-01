@@ -64,7 +64,7 @@ void ColorPropertyWidgetQt::generateWidget() {
 
     connect(btnColor_, SIGNAL(clicked()), this, SLOT(openColorDialog()));
     connect(colorDialog_, SIGNAL(currentColorChanged(QColor)), this, SLOT(setPropertyValue()));
-    label_ = new EditableLabelQt(this, property_->getDisplayName());
+    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
     
     {
@@ -80,12 +80,7 @@ void ColorPropertyWidgetQt::generateWidget() {
         vLayout->addWidget(btnColor_);
         hLayout->addWidget(widget);
     }
-    
-    
-    connect(label_, SIGNAL(textChanged()), this, SLOT(setPropertyDisplayName()));
-
-    
-    
+   
     setFixedHeight(sizeHint().height());
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
@@ -138,27 +133,29 @@ QColor ColorPropertyWidgetQt::getCurrentColor() {
 
 void ColorPropertyWidgetQt::setPropertyValue() {
     if (dynamic_cast<IntVec3Property*>(property_)) {
-        dynamic_cast<IntVec3Property*>(property_)->set(ivec3(colorDialog_->currentColor().red(),
-                colorDialog_->currentColor().green(),
-                colorDialog_->currentColor().blue()));
+        dynamic_cast<IntVec3Property*>(property_)
+            ->set(ivec3(colorDialog_->currentColor().red(), colorDialog_->currentColor().green(),
+                        colorDialog_->currentColor().blue()));
     } else if (dynamic_cast<IntVec4Property*>(property_)) {
-        dynamic_cast<IntVec4Property*>(property_)->set(ivec4(colorDialog_->currentColor().red(),
-                colorDialog_->currentColor().green(),
-                colorDialog_->currentColor().blue(),
-                colorDialog_->currentColor().alpha()));
+        dynamic_cast<IntVec4Property*>(property_)
+            ->set(ivec4(colorDialog_->currentColor().red(), colorDialog_->currentColor().green(),
+                        colorDialog_->currentColor().blue(), colorDialog_->currentColor().alpha()));
     } else if (dynamic_cast<FloatVec3Property*>(property_)) {
-        dynamic_cast<FloatVec3Property*>(property_)->set(vec3(static_cast<float>(colorDialog_->currentColor().red())/255,
-                static_cast<float>(colorDialog_->currentColor().green())/255,
-                static_cast<float>(colorDialog_->currentColor().blue())/255));
+        dynamic_cast<FloatVec3Property*>(property_)
+            ->set(vec3(static_cast<float>(colorDialog_->currentColor().red()) / 255,
+                       static_cast<float>(colorDialog_->currentColor().green()) / 255,
+                       static_cast<float>(colorDialog_->currentColor().blue()) / 255));
     } else if (dynamic_cast<FloatVec4Property*>(property_)) {
-        dynamic_cast<FloatVec4Property*>(property_)->set(vec4(static_cast<float>(colorDialog_->currentColor().red())/255,
-                static_cast<float>(colorDialog_->currentColor().green())/255,
-                static_cast<float>(colorDialog_->currentColor().blue())/255,
-                static_cast<float>(colorDialog_->currentColor().alpha())/255));
+        dynamic_cast<FloatVec4Property*>(property_)
+            ->set(vec4(static_cast<float>(colorDialog_->currentColor().red()) / 255,
+                       static_cast<float>(colorDialog_->currentColor().green()) / 255,
+                       static_cast<float>(colorDialog_->currentColor().blue()) / 255,
+                       static_cast<float>(colorDialog_->currentColor().alpha()) / 255));
     }
 
     QColor topColor = currentColor_->lighter();
     QColor bottomColor = currentColor_->darker();
+
     btnColor_->setStyleSheet("QPushButton { background: qlineargradient( \
                                             x1:0, y1:0, x2:0, y2:1, \
                                             stop:0 "+topColor.name()+", \
@@ -171,10 +168,6 @@ void ColorPropertyWidgetQt::openColorDialog() {
     colorDialog_->hide(); // OSX Bug workaround
     updateFromProperty();
     colorDialog_->show();
-}
-
-void ColorPropertyWidgetQt::setPropertyDisplayName() {
-    property_->setDisplayName(label_->getText());
 }
 
 }//namespace

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYOWNEROBSERVER_H
@@ -40,34 +40,31 @@ class Property;
 
 class IVW_CORE_API PropertyOwnerObserver : public Observer {
 public:
-    PropertyOwnerObserver() : Observer() {};
-    virtual ~PropertyOwnerObserver(){}
-    
+    PropertyOwnerObserver() = default;
+    virtual ~PropertyOwnerObserver() = default;
+
     /**
     * This methods will be called when observed object changes.
     * Override it to add behavior.
     */
-    virtual void onWillAddProperty(Property* property, size_t index) {};
-    virtual void onDidAddProperty(Property* property, size_t index) {};
+    virtual void onWillAddProperty(Property* property, size_t index){};
+    virtual void onDidAddProperty(Property* property, size_t index){};
 
-    virtual void onWillRemoveProperty(Property* property, size_t index) {};
-    virtual void onDidRemoveProperty(Property* property, size_t index) {};
-    
+    virtual void onWillRemoveProperty(Property* property, size_t index){};
+    virtual void onDidRemoveProperty(Property* property, size_t index){};
 };
 
-class IVW_CORE_API PropertyOwnerObservable: public Observable<PropertyOwnerObserver> {
+class IVW_CORE_API PropertyOwnerObservable : public Observable<PropertyOwnerObserver> {
 public:
-    PropertyOwnerObservable(): Observable<PropertyOwnerObserver>() {};
+    PropertyOwnerObservable() = default;
 
     void notifyObserversWillAddProperty(Property* property, size_t index) const;
     void notifyObserversDidAddProperty(Property* property, size_t index) const;
-    
+
     void notifyObserversWillRemoveProperty(Property* property, size_t index) const;
     void notifyObserversDidRemoveProperty(Property* property, size_t index) const;
 };
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_PROPERTYOWNEROBSERVER_H
-
+#endif  // IVW_PROPERTYOWNEROBSERVER_H

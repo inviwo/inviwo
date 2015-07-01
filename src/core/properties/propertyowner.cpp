@@ -99,7 +99,7 @@ void PropertyOwner::addProperty(Property& property) {
 Property* PropertyOwner::removeProperty(const std::string& identifier) {
     std::vector<Property*>::iterator it =
         std::find_if(properties_.begin(), properties_.end(), property_has_identifier(identifier));
-    return removeProperty(it);;
+    return removeProperty(it);
 }
 
 Property* PropertyOwner::removeProperty(Property* property) {  

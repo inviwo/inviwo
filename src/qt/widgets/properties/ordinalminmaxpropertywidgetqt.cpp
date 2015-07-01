@@ -41,7 +41,7 @@ BaseOrdinalMinMaxPropertyWidgetQt::~BaseOrdinalMinMaxPropertyWidgetQt(){
 void BaseOrdinalMinMaxPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
-    label_ = new EditableLabelQt(this, property_->getDisplayName());
+    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
     
     QHBoxLayout* hSliderLayout = new QHBoxLayout();
@@ -69,17 +69,10 @@ void BaseOrdinalMinMaxPropertyWidgetQt::generateWidget() {
     slidersPol.setHorizontalStretch(3);
     sliderWidget->setSizePolicy(slidersPol);
     
-    connect(label_, SIGNAL(textChanged()),this, SLOT(setPropertyDisplayName()));
-    
     connect(slider_, SIGNAL(valuesChanged(int,int)), this, SLOT(updateFromSlider(int,int)));
     connect(spinBoxMin_, SIGNAL(valueChanged(double)), this, SLOT(updateFromSpinBoxMin(double)));
     connect(spinBoxMax_, SIGNAL(valueChanged(double)), this, SLOT(updateFromSpinBoxMax(double)));
 }
-
-void BaseOrdinalMinMaxPropertyWidgetQt::setPropertyDisplayName() {
-    this->property_->setDisplayName(label_->getText());
-}
-
 
 } // namespace
 

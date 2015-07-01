@@ -38,7 +38,8 @@ PropertyClassIdentifier(Property, "org.inviwo.undefined");
 
 Property::Property(const std::string& identifier, const std::string& displayName,
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : IvwSerializable()
+    : PropertyObservable()
+    , IvwSerializable()
     , MetaDataOwner()
     , serializationMode_(DEFAULT)
     , identifier_(identifier)
@@ -53,7 +54,8 @@ Property::Property(const std::string& identifier, const std::string& displayName
     , initiatingWidget_(nullptr) {}
 
 Property::Property(const Property& rhs)
-    : IvwSerializable()
+    : PropertyObservable(rhs)
+    , IvwSerializable(rhs)
     , MetaDataOwner(rhs)
     , serializationMode_(rhs.serializationMode_)
     , identifier_(rhs.identifier_)
@@ -70,6 +72,8 @@ Property::Property(const Property& rhs)
 
 Property& Property::operator=(const Property& that) {
     if (this != &that) {
+        PropertyObservable::operator=(that);
+        IvwSerializable::operator=(that);
         MetaDataOwner::operator=(that);
         serializationMode_ = that.serializationMode_;
         identifier_ = that.identifier_;
@@ -83,7 +87,6 @@ Property& Property::operator=(const Property& that) {
         owner_ = that.owner_;
         initiatingWidget_ = that.initiatingWidget_;
     }
-
     return *this;
 }
 
@@ -91,8 +94,7 @@ Property* Property::clone() const {
     return new Property(*this);
 }
 
-Property::~Property() {
-}
+Property::~Property() {}
 
 std::string Property::getIdentifier() const {
     return identifier_;
@@ -106,35 +108,30 @@ std::vector<std::string> Property::getPath() const {
     return path;
 }
 
-
 void Property::setIdentifier(const std::string& identifier) {
     identifier_ = identifier;
+    notifyObserversOnSetIdentifier(identifier_);
 }
 
-std::string Property::getDisplayName() const {
-    return displayName_;
-}
+std::string Property::getDisplayName() const { return displayName_; }
 
 void Property::setDisplayName(const std::string& displayName) {
     displayName_ = displayName;
-    updateWidgets();
+    notifyObserversOnSetDisplayName(displayName_);
 }
 
-PropertySemantics Property::getSemantics()const {
-    return semantics_;
-}
-
-std::string Property::getClassIdentifierForWidget()const{
-    return getClassIdentifier();
-}
+PropertySemantics Property::getSemantics() const { return semantics_; }
 
 void Property::setSemantics(const PropertySemantics& semantics) {
     semantics_ = semantics;
+    notifyObserversOnSetSemantics(semantics_);
 }
 
+std::string Property::getClassIdentifierForWidget() const { return getClassIdentifier(); }
 
 void Property::setReadOnly(const bool& value) {
     readOnly_ = value;
+    notifyObserversOnSetReadOnly(readOnly_);
     updateWidgets();
 }
 
@@ -248,8 +245,9 @@ void Property::deserialize(IvwDeserializer& d) {
     MetaDataOwner::deserialize(d);
 }
 
-void Property::setUsageMode(UsageMode visibilityMode) {
-    this->usageMode_ = visibilityMode;
+void Property::setUsageMode(UsageMode usageMode) {
+    usageMode_ = usageMode;
+    notifyObserversOnSetUsageMode(usageMode_);
     updateVisibility();
 }
 
@@ -270,11 +268,11 @@ void Property::updateVisibility() {
     } else if (mode == DEVELOPMENT && appMode == APPLICATION) {
         for (auto& elem : propertyWidgets_) elem->hideWidget();
     }
-
 }
 
 void Property::setVisible(bool val) {
     visible_ = val;
+    notifyObserversOnSetVisible(visible_);
     updateVisibility();
 }
 bool Property::getVisible() {

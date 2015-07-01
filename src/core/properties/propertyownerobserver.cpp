@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/propertyownerobserver.h>
@@ -33,28 +33,28 @@ namespace inviwo {
 
 void PropertyOwnerObservable::notifyObserversWillAddProperty(Property* property,
                                                              size_t index) const {
-    for (ObserverSet::reverse_iterator it = observers_->rbegin(); it != observers_->rend(); ++it) {
+    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
         static_cast<PropertyOwnerObserver*>(*it)->onWillAddProperty(property, index);
     }
 }
 
 void PropertyOwnerObservable::notifyObserversDidAddProperty(Property* property,
                                                             size_t index) const {
-    for (ObserverSet::reverse_iterator it = observers_->rbegin(); it != observers_->rend(); ++it) {
+    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
         static_cast<PropertyOwnerObserver*>(*it)->onDidAddProperty(property, index);
     }
 }
 
 void PropertyOwnerObservable::notifyObserversWillRemoveProperty(Property* property,
                                                                 size_t index) const {
-    for (ObserverSet::reverse_iterator it = observers_->rbegin(); it != observers_->rend(); ++it) {
+    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
         static_cast<PropertyOwnerObserver*>(*it)->onWillRemoveProperty(property, index);
     }
 }
 
 void PropertyOwnerObservable::notifyObserversDidRemoveProperty(Property* property,
                                                                size_t index) const {
-    for (ObserverSet::reverse_iterator it = observers_->rbegin(); it != observers_->rend(); ++it) {
+    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
         static_cast<PropertyOwnerObserver*>(*it)->onDidRemoveProperty(property, index);
     }
 }

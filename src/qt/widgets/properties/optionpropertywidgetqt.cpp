@@ -57,8 +57,7 @@ void OptionPropertyWidgetQt::generateWidget() {
     slidersPol.setHorizontalStretch(3);
     comboBox_->setSizePolicy(slidersPol);
     
-    label_ = new EditableLabelQt(this, property_->getDisplayName());
-    
+    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
     
     {
@@ -76,7 +75,6 @@ void OptionPropertyWidgetQt::generateWidget() {
     }
     
     connect(comboBox_, SIGNAL(currentIndexChanged(int)),this, SLOT(optionChanged()));
-    connect(label_, SIGNAL(textChanged()),this, SLOT(setPropertyDisplayName()));   
 }
 
 void OptionPropertyWidgetQt::optionChanged() {
@@ -102,10 +100,6 @@ void OptionPropertyWidgetQt::updateFromProperty() {
     comboBox_->blockSignals(false);
 
     comboBox_->setDisabled(property_->getReadOnly());
-}
-
-void OptionPropertyWidgetQt::setPropertyDisplayName() {
-    property_->setDisplayName(label_->getText());
 }
 
 } // namespace

@@ -53,8 +53,7 @@ void inviwo::EventPropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     
-    label_ = new EditableLabelQt(this, eventproperty_->getDisplayName());
-    connect(label_, SIGNAL(textChanged()), this, SLOT(setPropertyDisplayName()));
+    label_ = new EditableLabelQt(this, eventproperty_);
 
     button_ = new IvwPushButton(this);
     connect(button_, SIGNAL(clicked()), this, SLOT(clickedSlot()));
@@ -137,10 +136,6 @@ void EventPropertyWidgetQt::keyReleaseEvent(QKeyEvent* event) {
     } else {
         QWidget::keyReleaseEvent(event);
     }
-}
-
-void EventPropertyWidgetQt::setPropertyDisplayName() {
-    property_->setDisplayName(label_->getText());
 }
 
 void EventPropertyWidgetQt::setButtonText() {

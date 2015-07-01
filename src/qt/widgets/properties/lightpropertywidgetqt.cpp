@@ -46,8 +46,7 @@ void LightPropertyWidgetQt::generateWidget() {
     hLayout->setContentsMargins(0, 0, 0, 0);
     hLayout->setSpacing(7);
 
-    label_ = new EditableLabelQt(this, property_->getDisplayName());
-    connect(label_, SIGNAL(textChanged()), this, SLOT(setPropertyDisplayName()));
+    label_ = new EditableLabelQt(this, property_);
     
     lightWidget_ = new LightPositionWidgetQt();
     connect(lightWidget_,SIGNAL(positionChanged()), this, SLOT(onPositionLightWidgetChanged()));
@@ -126,10 +125,6 @@ void LightPropertyWidgetQt::updateFromProperty() {
 
     lightWidget_->setDisabled(property_->getReadOnly());
     radiusSpinBox_->setDisabled(property_->getReadOnly());
-}
-
-void LightPropertyWidgetQt::setPropertyDisplayName() {
-    property_->setDisplayName(label_->getText());
 }
 
 } // namespace

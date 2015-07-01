@@ -45,7 +45,7 @@ void StringPropertyWidgetQt::generateWidget() {
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
 
-    label_ = new EditableLabelQt(this, property_->getDisplayName());
+    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
 
     lineEdit_ = new QLineEdit;
@@ -60,7 +60,6 @@ void StringPropertyWidgetQt::generateWidget() {
     hLayout->addWidget(lineEdit_);
     
     connect(lineEdit_, SIGNAL(editingFinished()), this, SLOT(setPropertyValue()));
-    connect(label_, SIGNAL(textChanged()),this, SLOT(setPropertyDisplayName()));
 }
 
 void StringPropertyWidgetQt::setPropertyValue() {
@@ -72,10 +71,6 @@ void StringPropertyWidgetQt::updateFromProperty() {
     lineEdit_->setText(QString::fromStdString(property_->get()));
     lineEdit_->setCursorPosition(0);
     lineEdit_->setDisabled(property_->getReadOnly());
-}
-
-void StringPropertyWidgetQt::setPropertyDisplayName() {
-    property_->setDisplayName(label_->getText());
 }
 
 } // namespace

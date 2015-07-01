@@ -43,7 +43,7 @@ void BaseOrdinalMinMaxTextPropertyWidgetQt::generateWidget() {
     
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
-    label_ = new EditableLabelQt(this, property_->getDisplayName());
+    label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
     
     QHBoxLayout* textLayout = new QHBoxLayout();
@@ -71,7 +71,6 @@ void BaseOrdinalMinMaxTextPropertyWidgetQt::generateWidget() {
     textsp.setHorizontalStretch(3);
     textWidget->setSizePolicy(textsp);
     
-    connect(label_, SIGNAL(textChanged()),this, SLOT(setPropertyDisplayName()));
     connect(min_, SIGNAL(valueChanged()), this, SLOT(updateFromMin()));
     connect(max_, SIGNAL(valueChanged()), this, SLOT(updateFromMax()));
     
@@ -79,10 +78,6 @@ void BaseOrdinalMinMaxTextPropertyWidgetQt::generateWidget() {
     sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
     setSizePolicy(sp);
-}
-
-void BaseOrdinalMinMaxTextPropertyWidgetQt::setPropertyDisplayName() {
-    this->property_->setDisplayName(label_->getText());
 }
 
 } // namespace

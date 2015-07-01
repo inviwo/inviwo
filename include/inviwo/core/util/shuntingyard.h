@@ -71,7 +71,6 @@ THE SOFTWARE.
 namespace inviwo {
 namespace shuntingyard {
 
-
 struct IVW_CORE_API TokenBase {
     virtual ~TokenBase() {}
 };

@@ -63,7 +63,6 @@ private:
 public slots:
     void setPropertyValue();
     void openColorDialog();
-    void setPropertyDisplayName();
 };
 
 }  // namespace

@@ -49,9 +49,8 @@ void BaseAnglePropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     // Label showing the display name of the property
     setSpacingAndMargins(hLayout);
-    displayName_ = new EditableLabelQt(this, property_->getDisplayName());
+    displayName_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(displayName_);
-    connect(displayName_, SIGNAL(textChanged()),this, SLOT(setPropertyDisplayName()));
 
     // Angle widget
     angleWidget_ = new AngleRadiusWidget(this);
@@ -92,11 +91,6 @@ void BaseAnglePropertyWidgetQt::generatesSettingsWidget() {
     contextMenu_->addAction(minAction_);
     contextMenu_->addAction(maxAction_);
 }
-
-void BaseAnglePropertyWidgetQt::setPropertyDisplayName() {
-    property_->setDisplayName(displayName_->getText());
-}
-
 
 
 }  // namespace

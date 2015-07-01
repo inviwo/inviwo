@@ -67,7 +67,6 @@ public slots:
      */
     virtual void setCurrentAsMax() = 0;
     virtual void showSettings() = 0;
-    void setPropertyDisplayName();
 
 protected:
 

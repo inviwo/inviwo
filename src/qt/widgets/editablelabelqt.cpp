@@ -33,21 +33,25 @@
 
 namespace inviwo {
 
-EditableLabelQt::EditableLabelQt(QWidget* parent, std::string text, bool shortenText)
+
+EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText)
     : QWidget(parent)
     , text_(text)
-    , propertyWidget_(nullptr)
+    , property_(nullptr)
+    , propertyWidget_(parent)
     , contextMenu_(nullptr)
     , shortenText_(shortenText) {
     generateWidget();
 }
 
-EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText)
+EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText)
     : QWidget(parent)
-    , text_(text)
+    , text_(property->getDisplayName())
+    , property_(property)
     , propertyWidget_(parent)
     , contextMenu_(nullptr)
     , shortenText_(shortenText) {
+    property->addObserver(this);
     generateWidget();
 }
 
@@ -123,6 +127,11 @@ void EditableLabelQt::finishEditing() {
     }
 
     label_->show();
+
+    if (property_) {
+        property_->setDisplayName(text_);
+    }
+
     emit textChanged();
 }
 
@@ -151,6 +160,15 @@ void EditableLabelQt::showContextMenu(const QPoint& pos) {
 QString EditableLabelQt::shortenText() {
     QFontMetrics fm = label_->fontMetrics();
     return fm.elidedText(QString::fromStdString(text_.c_str()), Qt::ElideRight, width());
+}
+
+void EditableLabelQt::onSetDisplayName(const std::string& displayName) {
+    text_ = displayName;
+    if (shortenText_){
+        label_->setText(shortenText());
+    } else {
+        label_->setText(QString::fromStdString(text_.c_str()));
+    }
 }
 
 void EditableLabelQt::setShortenText(bool shorten) {
