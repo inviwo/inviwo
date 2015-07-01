@@ -98,8 +98,6 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mix.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_resample.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/multichannelraycaster.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumeslice.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightingraycasting.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightpropagation.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightpropagation.geom
@@ -107,6 +105,18 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightvolumeblend.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightvolumeblend.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightvolumeblend.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/multichannelraycaster.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectormagnitudeprocessor.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_combiner.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_difference.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_gpu.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_gpu.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_gradient.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_laplacian.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_lowpass.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_mapping.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumegradientmagnitude.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumeslice.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
