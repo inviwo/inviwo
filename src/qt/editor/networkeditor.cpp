@@ -359,7 +359,7 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, 
         PortInspectorFactory::getPtr()->getPortInspectorForPortClass(port->getClassIdentifier());
 
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
-    std::vector<unsigned char>* data = nullptr;
+    std::unique_ptr<std::vector<unsigned char>> data;
 
     if (portInspector && !portInspector->isActive()) {
         portInspector->setActive(true);
@@ -409,7 +409,7 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, 
             canvasProcessor->setCanvasSize(ivec2(size, size));
         } // Network will unlock and evaluate here.
 
-        data = canvasProcessor->getVisibleLayerAsCodedBuffer(type);
+        data.reset(canvasProcessor->getVisibleLayerAsCodedBuffer(type));
 
         // remove the network...
         NetworkLock lock;
@@ -417,7 +417,7 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, 
         wm->setVisibile(true);
         portInspector->setActive(false);
     }
-    return data;
+    return data.release();
 }
 
 bool NetworkEditor::isModified() const { return modified_; }
