@@ -358,45 +358,40 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
     
     bool visible = widget->isVisible();
     
-    std::vector<Property*>::iterator pit =
-        std::find(properties_.begin(), properties_.end(), prop);
-    
-    std::vector<PropertyWidgetQt*>::iterator wit =
-        std::find(propertyWidgets_.begin(), propertyWidgets_.end(), widget);
+    auto pit = std::find(properties_.begin(), properties_.end(), prop);
+    auto wit = std::find(propertyWidgets_.begin(), propertyWidgets_.end(), widget);
     
     if (pit != properties_.end() && wit != propertyWidgets_.end()) {
         
-        PropertyWidgetQt* propertyWidget =
+        PropertyWidgetQt* newWidget =
             static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
         
-        if (propertyWidget) {
+        if (newWidget) {
             // set visibility first
             if (visible) {
-                propertyWidget->showWidget();
-            }
-            else{
-                propertyWidget->hideWidget();
+                newWidget->showWidget();
+            } else {
+                newWidget->hideWidget();
             }
 
+            widget->hideWidget();
+            prop->deregisterWidget(widget);
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-            propertyWidgetGroupLayout_->replaceWidget(widget, propertyWidget, Qt::FindDirectChildrenOnly);
+            propertyWidgetGroupLayout_->replaceWidget(widget, newWidget, Qt::FindDirectChildrenOnly);
 #else 
             int layoutPosition = propertyWidgetGroupLayout_->indexOf(widget);
             propertyWidgetGroupLayout_->removeWidget(widget);
-            propertyWidgetGroupLayout_->addWidget(propertyWidget, layoutPosition, 0);
-#endif // QT_VERSION >= 5.2
-            
-            prop->deregisterWidget(widget);
-            prop->registerWidget(propertyWidget);
-            widget->hideWidget();
-            // TODO: do we need to clean up this widget? It is no longer part of the layout and not 
-            //       parented to this container
-                        
+            propertyWidgetGroupLayout_->addWidget(newWidget, layoutPosition, 0);
+#endif // QT_VERSION >= 5.2           
+            widget->deleteLater();
+
+            prop->registerWidget(newWidget);                        
             // Replace the item in propertyWidgets_;
-            *wit = propertyWidget;
+            *wit = newWidget;
             
-            connect(propertyWidget, SIGNAL(usageModeChanged()), this, SLOT(updateContextMenu()));
-            connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)),
+            connect(newWidget, SIGNAL(usageModeChanged()), this, SLOT(updateContextMenu()));
+            connect(newWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)),
                     this, SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
         } else {
             LogWarn("Could not change semantic for property: " << prop->getClassIdentifier());
@@ -414,8 +409,6 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
         static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
 
     if (propertyWidget) {
-        propertyWidget->showWidget();
-
         const int insertPos = static_cast<int>(index) + 1;
         auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt *>(propertyWidget);
         if (collapsibleWidget) {
@@ -451,7 +444,7 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* prop, size_t in
     propertyWidgetGroupLayout_->removeWidget(propertyWidget);
     propertyWidgets_.erase(propertyWidgets_.begin()+index);
     properties_.erase(properties_.begin()+index);
-    
+    propertyWidget->deleteLater();
     updateVisibility();
 }
 
