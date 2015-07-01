@@ -688,6 +688,10 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) {
         clear();
         throw AbortException("DeSerialization exception " + exception.getMessage(),
                              exception.getContext());
+    } catch (Exception& exception) {
+        clear();
+        throw AbortException("Error deserializing network " + exception.getMessage(), 
+                             exception.getContext());
     } catch (...) {
         clear();
         throw AbortException("Unknown Exception.", IvwContext);
