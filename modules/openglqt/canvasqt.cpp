@@ -457,6 +457,9 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
     // Fetch layer before loop (optimization)
     const LayerRAM* depthLayerRAM = getDepthLayerRAM();
     vec2 screenSize(getScreenDimensions());
+
+    std::vector<int> endedTouchIds;
+
     for (auto& touchPoint : touch->touchPoints()) {
         vec2 screenTouchPos(touchPoint.pos().x(), touchPoint.pos().y());
         vec2 prevScreenTouchPos(touchPoint.lastPos().x(), touchPoint.lastPos().y());
@@ -481,14 +484,42 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
 
         ivec2 pixelCoord = ivec2(static_cast<int>(screenTouchPos.x),
             screenSize.y - 1 - static_cast<int>(screenTouchPos.y));
+        
         // Note that screenTouchPos/prevScreenTouchPos are in [0 screenDim] and does not need to be 
-        // adjusted to become centered in the pixel (+0.5) 
-        touchPoints.push_back(
-            TouchPoint(touchPoint.id(), screenTouchPos,
-            (screenTouchPos) / screenSize, 
-            prevScreenTouchPos,
-            (prevScreenTouchPos) / screenSize,
-            touchState, getDepthValueAtCoord(pixelCoord, depthLayerRAM)));
+        // adjusted to become centered in the pixel (+0.5)
+        
+        // Saving id order to preserve order of touch points at next touch event
+        
+        std::vector<int>::iterator lastIdIdx = std::find(lastTouchIds_.begin(), lastTouchIds_.end(), touchPoint.id());
+
+        if (lastIdIdx != lastTouchIds_.end()) {
+            touchPoints.insert(touchPoints.begin() + (lastIdIdx - lastTouchIds_.begin()),
+                TouchPoint(touchPoint.id(), screenTouchPos,
+                (screenTouchPos) / screenSize,
+                prevScreenTouchPos,
+                (prevScreenTouchPos) / screenSize,
+                touchState, getDepthValueAtCoord(pixelCoord, depthLayerRAM)));
+
+            if (touchState == TouchPoint::TOUCH_STATE_ENDED){
+                endedTouchIds.push_back(touchPoint.id());
+            }
+        }
+        else{
+            lastTouchIds_.push_back(touchPoint.id());
+
+            touchPoints.push_back(
+                TouchPoint(touchPoint.id(), screenTouchPos,
+                (screenTouchPos) / screenSize,
+                prevScreenTouchPos,
+                (prevScreenTouchPos) / screenSize,
+                touchState, getDepthValueAtCoord(pixelCoord, depthLayerRAM)));
+        }
+    }
+
+    for (auto& endedId : endedTouchIds) {
+        std::vector<int>::iterator foundIdx = std::find(lastTouchIds_.begin(), lastTouchIds_.end(), endedId);
+        if (foundIdx != lastTouchIds_.end())
+            lastTouchIds_.erase(foundIdx);
     }
 
     TouchEvent touchEvent(touchPoints, getScreenDimensions());

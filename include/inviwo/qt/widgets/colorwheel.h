@@ -43,6 +43,7 @@
 #include <QImage>
 #include <QPixmap>
 #include <QColor>
+#include <QPainter>
 
 class QMouseEvent;
 class QResizeEvent;
@@ -71,30 +72,32 @@ protected:
     void mouseReleaseEvent(QMouseEvent* e);
     void resizeEvent(QResizeEvent* event);
     void paintEvent(QPaintEvent*);
-private:
-    QSize initSize;
-    QImage wheelImage;
-    QImage squareImage;
-    QPixmap wheel;
-    bool mouseDown;
-    QPoint lastPos;
-    int margin;
-    int wheelWidth;
-    QRegion wheelRegion;
-    QRegion squareRegion;
-    QColor current;
-    bool inWheel;
-    bool inSquare;
-    QColor posColor(const QPoint& point);
-    void drawWheelImage(const QSize& newSize);
-    void drawIndicator(const int& hue);
-    void drawPicker(const QColor& color);
-    void drawSquareImage(const int& hue);
-    void composeWheel();
 
-private slots:
+protected slots:
     void hueChanged(const int& hue);
     void svChanged(const QColor& newcolor);
+
+private:
+    QColor posColor(const QPoint& point);
+    void drawOuterRing(QPainter &painter);
+    void drawIndicator(QPainter &painter);
+    void drawPicker(QPainter &painter);
+    
+    void updateSquareImage(const int& hue);
+
+    const QSize initSize_;
+    QImage squareImage_;
+    bool mouseDown_;
+    QPoint lastPos_;
+    int margin_;
+    int wheelWidth_;
+    QRegion wheelRegion_;
+    QRegion squareRegion_;
+    QColor currentColor_;
+    bool inWheel_;
+    bool inSquare_;
 };
+
 } //namespace
+
 #endif // IVW_COLORWHEEL_H
