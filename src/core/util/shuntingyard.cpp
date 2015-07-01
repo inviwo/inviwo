@@ -65,45 +65,42 @@ THE SOFTWARE.
 namespace inviwo {
 namespace shuntingyard {
 
-
-
-TokenQueue Calculator::toRPN(const char* expr, std::map<std::string, double>* vars,
-                             std::map<std::string, int> opPrecedence) {
+TokenQueue Calculator::toRPN(std::string expression, std::map<std::string, int> opPrecedence) {
     TokenQueue rpnQueue;
     std::stack<std::string> operatorStack;
     bool lastTokenWasOp = true;
 
+    std::stringstream expr(expression);
+    char c;
+
     // In one pass, ignore whitespace and parse the expression into RPN
     // using Dijkstra's Shunting-yard algorithm.
-    while (*expr && isspace(*expr)) ++expr;
-    while (*expr) {
-        if (isdigit(*expr)) {
+    while (!expr.eof() && isspace(expr.peek())) expr.get(c);
+    while (!expr.eof()) {
+        if (isdigit(expr.peek())) {
             // If the token is a number, add it to the output queue.
-            char* nextChar = 0;
-            double digit = strtod(expr, &nextChar);
+            double digit;
+            expr >> digit;
+            rpnQueue.push(util::make_unique<Token<double>>(digit));
+            lastTokenWasOp = false;
 
-            rpnQueue.push(new Token<double>(digit));
-            expr = nextChar;
+        } else if (isvariablechar(expr.peek())) {
+            rpnQueue.push(util::make_unique<Token<std::string>>(getVariable(expr)));
             lastTokenWasOp = false;
-        
-        } else if (isvariablechar(*expr)) {
-            rpnQueue.push(new Token<std::string>(getVariable(expr)));
-            lastTokenWasOp = false;
-            
+
         } else {
             // Otherwise, the variable is an operator or paranthesis.
-            switch (*expr) {
+            expr.get(c);
+            switch (c) {
                 case '(':
                     operatorStack.push("(");
-                    ++expr;
                     break;
                 case ')':
                     while (operatorStack.top().compare("(")) {
-                        rpnQueue.push(new Token<std::string>(operatorStack.top()));
+                        rpnQueue.push(util::make_unique<Token<std::string>>(operatorStack.top()));
                         operatorStack.pop();
                     }
                     operatorStack.pop();
-                    ++expr;
                     break;
                 default: {
                     // The token is an operator.
@@ -116,12 +113,12 @@ TokenQueue Calculator::toRPN(const char* expr, std::map<std::string, double>* va
                     //     pop o2 off the stack onto the output queue.
                     //   Push o1 on the stack.
                     std::stringstream ss;
-                    ss << *expr;
-                    ++expr;
-                    while (*expr && !isspace(*expr) && !isdigit(*expr) && !isvariablechar(*expr) &&
-                           *expr != '(' && *expr != ')') {
-                        ss << *expr;
-                        ++expr;
+                    ss << c;
+                    while (!expr.eof() && !isspace(expr.peek()) && !isdigit(expr.peek()) &&
+                           !isvariablechar(expr.peek()) && expr.peek() != '(' &&
+                           expr.peek() != ')') {
+                        expr.get(c);
+                        ss << c;
                     }
                     ss.clear();
                     std::string str;
@@ -130,15 +127,15 @@ TokenQueue Calculator::toRPN(const char* expr, std::map<std::string, double>* va
                     if (lastTokenWasOp) {
                         // Convert unary operators to binary in the RPN.
                         if (!str.compare("-") || !str.compare("+")) {
-                            rpnQueue.push(new Token<double>(0));
+                            rpnQueue.push(util::make_unique<Token<double>>(0));
                         } else {
-                            throw std::domain_error("Unrecognized unary operator: '" + str + "'.");
+                            throw Exception("Unrecognized unary operator: '" + str + "'.");
                         }
                     }
 
                     while (!operatorStack.empty() &&
                            opPrecedence[str] <= opPrecedence[operatorStack.top()]) {
-                        rpnQueue.push(new Token<std::string>(operatorStack.top()));
+                        rpnQueue.push(util::make_unique<Token<std::string>>(operatorStack.top()));
                         operatorStack.pop();
                     }
                     operatorStack.push(str);
@@ -146,45 +143,37 @@ TokenQueue Calculator::toRPN(const char* expr, std::map<std::string, double>* va
                 }
             }
         }
-        while (*expr && isspace(*expr)) ++expr;
+        while (!expr.eof() && isspace(expr.peek())) expr.get(c);
     }
     while (!operatorStack.empty()) {
-        rpnQueue.push(new Token<std::string>(operatorStack.top()));
+        rpnQueue.push(util::make_unique<Token<std::string>>(operatorStack.top()));
         operatorStack.pop();
     }
     return rpnQueue;
 }
 
-double Calculator::calculate(const char* expr, std::map<std::string, double>* vars) {
+double Calculator::calculate(std::string expression, std::map<std::string, double>& vars) {
     // 1. Create the operator precedence map.
-    std::map<std::string, int> opPrecedence;
-    opPrecedence["("] = -1;
-    opPrecedence["<<"] = 1;
-    opPrecedence[">>"] = 1;
-    opPrecedence["+"] = 2;
-    opPrecedence["-"] = 2;
-    opPrecedence["*"] = 3;
-    opPrecedence["/"] = 3;
-    opPrecedence["^"] = 4;
+    auto opPrecedence = getOpeatorPrecedence();
 
     // 2. Convert to RPN with Dijkstra's Shunting-yard algorithm.
-    TokenQueue rpn = toRPN(expr, vars, opPrecedence);
+    TokenQueue rpn = toRPN(expression, opPrecedence);
 
     // 3. Evaluate the expression in RPN form.
     std::stack<double> evaluation;
     while (!rpn.empty()) {
-        TokenBase* base = rpn.front();
+        std::unique_ptr<TokenBase> base{std::move(rpn.front())};
         rpn.pop();
 
-        Token<std::string>* strTok = dynamic_cast<Token<std::string>*>(base);
-        Token<double>* doubleTok = dynamic_cast<Token<double>*>(base);
+        Token<std::string>* strTok = dynamic_cast<Token<std::string>*>(base.get());
+        Token<double>* doubleTok = dynamic_cast<Token<double>*>(base.get());
         if (strTok) {
             std::string str = strTok->val;
-            auto it = vars->find(str);
-            if (it != vars->end()) {
+            auto it = vars.find(str);
+            if (it != vars.end()) {
                 evaluation.push(it->second);
             } else if (evaluation.size() < 2) {
-                throw std::domain_error("Invalid equation.");
+                throw Exception("Invalid equation.");
             } else {
                 double right = evaluation.top();
                 evaluation.pop();
@@ -198,35 +187,76 @@ double Calculator::calculate(const char* expr, std::map<std::string, double>* va
                     evaluation.push(left - right);
                 } else if (!str.compare("/")) {
                     evaluation.push(left / right);
-                } else if (!str.compare("<<")) {
-                    evaluation.push((int)left << (int)right);
                 } else if (!str.compare("^")) {
                     evaluation.push(pow(left, right));
-                } else if (!str.compare(">>")) {
-                    evaluation.push((int)left >> (int)right);
+
                 } else {
-                    throw std::domain_error("Unknown operator: '" + str + "'.");
+                    throw Exception("Unknown operator: '" + str + "'.");
                 }
             }
         } else if (doubleTok) {
             evaluation.push(doubleTok->val);
         } else {
-            throw std::domain_error("Invalid token.");
+            throw Exception("Invalid token.");
         }
-        delete base;
     }
+   
     return evaluation.top();
 }
 
-std::string Calculator::shaderCode(const char* expr, std::map<std::string, double>* vars) {
-    std::string res = "";
-    
-    
-    
-    
-    
-    
-    return res;
+std::string Calculator::shaderCode(std::string expression, std::map<std::string, double>& vars,
+                                   std::map<std::string, std::string>& symbols) {
+    // 1. Create the operator precedence map.
+    auto opPrecedence = getOpeatorPrecedence();
+
+    // 2. Convert to RPN with Dijkstra's Shunting-yard algorithm.
+    TokenQueue rpn = toRPN(expression, opPrecedence);
+
+    // 3. Evaluate the expression in RPN form.
+    std::stack<std::string> evaluation;
+    while (!rpn.empty()) {
+        std::unique_ptr<TokenBase> base{std::move(rpn.front())};
+        rpn.pop();
+
+        Token<std::string>* strTok = dynamic_cast<Token<std::string>*>(base.get());
+        Token<double>* doubleTok = dynamic_cast<Token<double>*>(base.get());
+        if (strTok) {
+            std::string str = strTok->val;
+            auto it1 = vars.find(str);
+            auto it2 = symbols.find(str);
+            if (it1 != vars.end()) {
+                evaluation.push(toString(it1->second));
+            } else if(it2 != symbols.end()) {
+                evaluation.push(it2->second);
+            } else if (evaluation.size() < 2) {
+                throw Exception("Invalid equation.");
+            } else {
+                std::string right = evaluation.top();
+                evaluation.pop();
+                std::string left = evaluation.top();
+                evaluation.pop();
+                if (!str.compare("+")) {
+                    evaluation.push("(" + left + " + " + right + ")");
+                } else if (!str.compare("*")) {
+                    evaluation.push("(" + left + " * " + right + ")");
+                } else if (!str.compare("-")) {
+                    evaluation.push("(" + left + " - " + right + ")");
+                } else if (!str.compare("/")) {
+                    evaluation.push("(" + left + " / " + right + ")");
+                } else if (!str.compare("^")) {
+                    evaluation.push("pow(" + left + ", " + right + ")");
+                } else {
+                    throw Exception("Unknown operator: '" + str + "'.");
+                }
+            }
+        } else if (doubleTok) {
+            evaluation.push("vec4(" + toString(doubleTok->val) + ")");
+        } else {
+            throw Exception("Invalid token.");
+        }
+    }
+
+    return evaluation.top();
 }
 
 }  // namespace

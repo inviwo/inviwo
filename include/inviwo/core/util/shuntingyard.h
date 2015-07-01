@@ -82,30 +82,43 @@ public:
     T val;
 };
 
-using TokenQueue = std::queue<TokenBase*>;
+using TokenQueue = std::queue<std::unique_ptr<TokenBase>>;
 
 class IVW_CORE_API Calculator {
 public:
-    static double calculate(const char* expr, std::map<std::string, double>* vars = 0);
-    static std::string shaderCode(const char* expr, std::map<std::string, double>* vars = 0);
+    static double calculate(std::string expression, std::map<std::string, double>& vars);
+    static std::string shaderCode(std::string expression, std::map<std::string, double>& vars,
+                                  std::map<std::string, std::string>& symbols);
 
 private:
-    inline static bool isvariablechar(char c) {return isalpha(c) || c == '_';}
+    inline static bool isvariablechar(char c) { return isalpha(c) || c == '_'; }
 
-    inline static std::string getVariable(const char* expr) {
+    inline static std::string getVariable(std::stringstream& expr) {
         std::stringstream ss;
-        ss << *expr;
-        ++expr;
-        while (isvariablechar(*expr)) {
-            ss << *expr;
-            ++expr;
+        char c;
+        expr.get(c);
+        ss << c;
+        while (isvariablechar(expr.peek()) || isdigit(expr.peek())) {
+            expr.get(c);
+            ss << c;
         }
         std::string key = ss.str();
         return key;
     }
 
-    static TokenQueue toRPN(const char* expr, std::map<std::string, double>* vars,
-                              std::map<std::string, int> opPrecedence);
+    static TokenQueue toRPN(std::string expression, std::map<std::string, int> opPrecedence);
+
+    static std::map<std::string, int> getOpeatorPrecedence() {
+        std::map<std::string, int> opPrecedence;
+        opPrecedence["("] = -1;
+        opPrecedence["+"] = 2;
+        opPrecedence["-"] = 2;
+        opPrecedence["*"] = 3;
+        opPrecedence["/"] = 3;
+        opPrecedence["^"] = 4;
+
+        return opPrecedence;
+    }
 };
 
 }  // namespace
