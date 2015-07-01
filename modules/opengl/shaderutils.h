@@ -50,6 +50,16 @@ namespace inviwo {
 
 namespace utilgl {
 
+// TemplateProperty
+template<typename T>
+void setShaderUniforms(Shader* shader, const TemplateProperty<T>& property, std::string name) {
+    shader->setUniform(name property.get());
+}
+template<typename T>
+void setShaderUniforms(Shader* shader, const TemplateProperty<T>& property) {
+    setShaderUniforms(shader, property, property->getIdentifier());
+}
+
 // SimpleLightingProperty
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader* shader, const SimpleLightingProperty& property);
 IVW_MODULE_OPENGL_API void addShaderDefines(Shader* shader, const ShadingMode::Modes& mode);
@@ -109,7 +119,6 @@ void setUniforms(Shader* shader, const T& elem, const Ts&... elements) {
     setUniforms(shader, elem);
     setUniforms(shader, elements...);
 }
-
 
 }  // namspace utilgl
 
