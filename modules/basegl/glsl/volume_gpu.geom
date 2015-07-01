@@ -33,19 +33,18 @@
 layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
-uniform VolumeParameters volumeParameters_;
+uniform VolumeParameters volumeParameters;
 
 in int instanceID_[3];
 in vec2 texCoord2D_[3];
 
 out vec4 texCoord_;
-
 out vec4 permutedPosInv_;
 out vec4 permutedPosInvSec_;
 
 void main() {
-    texCoord_.z = (instanceID_[0] * volumeParameters_.reciprocalDimensions.z)
-        + (0.5 * volumeParameters_.reciprocalDimensions.z);
+    texCoord_.z = (instanceID_[0] * volumeParameters.reciprocalDimensions.z)
+        + (0.5 * volumeParameters.reciprocalDimensions.z);
 
     texCoord_.w = 1.f;
     gl_Layer = instanceID_[0];

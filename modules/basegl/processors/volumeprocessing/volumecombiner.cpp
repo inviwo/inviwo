@@ -30,9 +30,10 @@
 #include "volumecombiner.h"
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/glwrap/textureunit.h>
-#include <modules/opengl/glwrap/shader.h>
-#include <modules/opengl/volumeutils.h>
 #include <inviwo/core/util/shuntingyard.h>
+#include <modules/opengl/textureutils.h>
+#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/volumeutils.h>
 
 namespace inviwo {
 
@@ -43,34 +44,137 @@ ProcessorCategory(VolumeCombiner, "Volume Operation");
 ProcessorCodeState(VolumeCombiner, CODE_STATE_EXPERIMENTAL);
 
 VolumeCombiner::VolumeCombiner()
-    : VolumeGLProcessor("volume_combiner.frag")
-    , vol2_("vol2")
-    , scaleVol1_("scaleVol1", "Volume 1 data scaling", 1.0f, 0.0f, 100.0f)
-    , scaleVol2_("scaleVol2", "Volume 2 data scaling", 1.0f, 0.0f, 100.0f)
-    , eqn_("eqn", "Equation", "1+1") {
-    addPort(vol2_);
-    addProperty(scaleVol1_);
-    addProperty(scaleVol2_);
+    : Processor()
+    , inport_("inport")
+    , outport_("outport")
+    , eqn_("eqn", "Equation", "s1*v1")
+    , scales_("scales", "Scale factors")
+    , shader_("volume_gpu.vert", "volume_gpu.geom", "volume_combiner.frag", false)
+    , fbo_()
+    , validEquation_(false) {
+
+    addPort(inport_);
+    addPort(outport_);
     addProperty(eqn_);
+    addProperty(scales_);
+
+    inport_.onChange([this]() {
+        int i = 0;
+        for (const auto& item : inport_.getSourceVectorData()) {
+            if (scales_.getProperties().size() <= i) {
+                auto p = new FloatProperty(
+                    "scale" + (i == 0 ? "" : toString(i)),
+                    "s" + toString(i + 1) + ", " + item.first->getProcessor()->getIdentifier(),
+                    1.0f, -2.f, 2.f, 0.01f);
+                p->setSerializationMode(PropertySerializationMode::ALL);
+                scales_.addProperty(p);
+            } else {
+                scales_.getProperties()[i]->setDisplayName(
+                    "s" + toString(i + 1) + ", " + item.first->getProcessor()->getIdentifier());
+            }
+            i++;
+        }
+        while (scales_.getProperties().size() > i) {
+            auto p = scales_.removeProperty(scales_.getProperties().back());
+            delete p;
+        }
+        buildEquation();
+    });
+
+    eqn_.onChange([this]() { 
+        if (Processor::isReady()) {
+            buildEquation(); 
+        }
+    });
 }
 
-VolumeCombiner::~VolumeCombiner() {}
-
-void VolumeCombiner::preProcess() {
-    std::map<std::string, double> vars;
-    vars["pi"] = 3.14;
-    LogInfo("Res: " << shuntingyard::Calculator::calculate(eqn_.get().c_str(), &vars));
-
-    TextureUnit vol2Unit;
-
-    const VolumeGL* volGL = vol2_.getData()->getRepresentation<VolumeGL>();
-    volGL->bindTexture(vol2Unit.getEnum());
-
-    shader_->setUniform("volume2_", vol2Unit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, vol2_, "volume2Parameters_");
-
-    shader_->setUniform("scaleVol1_", scaleVol1_.get());
-    shader_->setUniform("scaleVol2_", scaleVol2_.get());
+void VolumeCombiner::initialize() {
+    Processor::initialize();
+    buildEquation();
 }
+
+bool VolumeCombiner::isReady() const  {
+    return Processor::isReady() && validEquation_;
+}
+
+void VolumeCombiner::buildEquation() {
+    try {
+        std::map<std::string, double> vars = {};
+        std::map<std::string, std::string> symbols;
+        std::stringstream uniforms;
+        std::stringstream sample;
+        
+        int i = 0;
+        for (const auto& vol : inport_) {
+            const std::string id(i == 0 ? "" : toString(i));
+            
+            symbols["s" + toString(i + 1)] = "scale" + id;
+            symbols["v" + toString(i + 1)] = "vol" + id;
+
+            uniforms << "uniform sampler3D volume" << id << ";";
+            uniforms << "uniform VolumeParameters volume" << id << "Parameters;";
+            uniforms << "uniform float scale" << id << ";";
+
+            sample << "vec4 vol" << id << "= getNormalizedVoxel(volume" << id << ", volume" << id
+                   << "Parameters, texCoord_.xyz);";
+            i++;
+        }
+
+        std::string eqn = shuntingyard::Calculator::shaderCode(eqn_.get(), vars, symbols);
+
+        shader_.getFragmentShaderObject()->addShaderDefine("GEN_UNIFORMS", uniforms.str());
+        shader_.getFragmentShaderObject()->addShaderDefine("GEN_SAMPLING", sample.str());
+        shader_.getFragmentShaderObject()->addShaderDefine("EQUATION", eqn);
+        shader_.build();
+        validEquation_ = true;
+
+    } catch (Exception& e) {
+        validEquation_ = false;
+        LogProcessorError("Error: " << e.getMessage());
+    }
+}
+
+void VolumeCombiner::process() {
+    if (inport_.isChanged()) {
+        const DataFormatBase* format = inport_.getData()->getDataFormat();
+        Volume* volume = new Volume(inport_.getData()->getDimensions(), format);
+        volume->setModelMatrix(inport_.getData()->getModelMatrix());
+        volume->setWorldMatrix(inport_.getData()->getWorldMatrix());
+        // pass on metadata
+        volume->copyMetaDataFrom(*inport_.getData());
+        volume->dataMap_.dataRange = inport_.getData()->dataMap_.dataRange;
+        volume->dataMap_.valueRange = inport_.getData()->dataMap_.valueRange;
+        outport_.setData(volume);
+    }
+    shader_.activate();
+
+    TextureUnitContainer cont;
+    int i = 0;
+    for (const auto& vol : inport_) {
+        utilgl::bindAndSetUniforms(&shader_, cont, &vol, "volume" + (i == 0 ? "" : toString(i)));
+        i++;
+    }
+
+    for (auto prop : scales_.getProperties()) {
+        const FloatProperty& prop2 = *static_cast<FloatProperty*>(prop);
+        utilgl::setUniforms(&shader_, prop2);
+    }
+
+    const size3_t dim{inport_.getData()->getDimensions()};
+    fbo_.activate();
+    glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
+
+    if (inport_.isChanged()) {
+        VolumeGL* outVolumeGL = outport_.getData()->getEditableRepresentation<VolumeGL>();
+        fbo_.attachColorTexture(outVolumeGL->getTexture(), 0);
+    }
+
+    utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
+
+    shader_.deactivate();
+    fbo_.deactivate();
+}
+
+
 
 }  // namespace
