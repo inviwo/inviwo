@@ -50,6 +50,9 @@ IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const VolumeInport&
 
 IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
                                               VolumeInport& volume);
+
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
+                                              const Volume* volume, const std::string& samplerID);
 }
 
 }  // namespace
