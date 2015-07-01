@@ -96,30 +96,33 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     bool portinfo = settings->enablePortInformationProperty_.get();
     bool inspector = settings->enablePortInspectorsProperty_.get();
 
-    if(!inspector && !portinfo) return;
+    if (!inspector && !portinfo) return;
 
-    std::vector<unsigned char>* data = nullptr;
+    std::unique_ptr<std::vector<unsigned char>> data;
     int size = settings->portInspectorSize_.get();
 
     QString info("<html><head/><body style=''>");
     info.append("<table>");
 
     if (inspector) {
-        data = NetworkEditor::getPtr()->renderPortInspectorImage(port, "png");
+        data.reset(NetworkEditor::getPtr()->renderPortInspectorImage(port, "png"));
     }
 
     if (portinfo) {
         info.append(QString("<tr><td><b style='color:white;'>%1</b></td></tr>")
-                    .arg(port->getIdentifier().c_str()));
+                        .arg(port->getIdentifier().c_str()));
     }
 
     if (data) {
         QByteArray byteArray;
-        byteArray.setRawData(reinterpret_cast<const char*>(&data->front()), static_cast<unsigned int>(data->size()));
+        byteArray.setRawData(reinterpret_cast<const char*>(&(data->front())),
+                             static_cast<unsigned int>(data->size()));
 
-        QString url(QString("<tr><td><img width='%1' height='%1' src=\"data:image/png;base64,%2\"/></td></tr>")
-                    .arg(size)
-                    .arg(QString(byteArray.toBase64())));
+        QString url(
+            QString(
+                "<tr><td><img width='%1' height='%1' src=\"data:image/png;base64,%2\"/></td></tr>")
+                .arg(size)
+                .arg(QString(byteArray.toBase64())));
 
         info.append(url);
     }
@@ -130,8 +133,6 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     info.append("</table>");
     info.append("</body></html>");
     showToolTipHelper(e, info);
-    
-    delete data;
 }
 
 } // namespace
