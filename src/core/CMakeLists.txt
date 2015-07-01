@@ -171,6 +171,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconvertermanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyfactory.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyfactoryobject.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyowner.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyownerobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertysemantics.h
@@ -374,6 +375,7 @@ set(SOURCE_FILES
     properties/propertyconvertermanager.cpp
     properties/propertyfactory.cpp
     properties/propertyfactoryobject.cpp
+    properties/propertyobserver.cpp
     properties/propertyowner.cpp
     properties/propertyownerobserver.cpp
     properties/propertysemantics.cpp
