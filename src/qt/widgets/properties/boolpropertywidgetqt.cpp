@@ -62,7 +62,6 @@ void BoolPropertyWidgetQt::setPropertyValue() {
 
 void BoolPropertyWidgetQt::updateFromProperty() {
     checkBox_->setChecked(property_->get());
-    checkBox_->setDisabled(property_->getReadOnly());
 }
 
 } // namespace

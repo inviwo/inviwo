@@ -86,38 +86,31 @@ protected:
 template <typename T>
 class AnglePropertyWidgetQt : public BaseAnglePropertyWidgetQt {
 public:
-    AnglePropertyWidgetQt(OrdinalProperty<T>* property): BaseAnglePropertyWidgetQt(property) {
+    AnglePropertyWidgetQt(OrdinalProperty<T>* property) : BaseAnglePropertyWidgetQt(property) {
         // Set values
         updateFromProperty();
     }
 
-    virtual ~AnglePropertyWidgetQt() {};
+    virtual ~AnglePropertyWidgetQt(){};
 
     void updateFromProperty() {
         angleWidget_->blockSignals(true);
-        angleWidget_->setMinMaxAngle(static_cast<double>(getProperty()->getMinValue()), static_cast<double>(getProperty()->getMaxValue()));
-        angleWidget_->blockSignals(false);
+        angleWidget_->setMinMaxAngle(static_cast<double>(getProperty()->getMinValue()),
+                                     static_cast<double>(getProperty()->getMaxValue()));
         angleWidget_->setAngle(static_cast<double>(getProperty()->get()));
-        angleWidget_->setDisabled(getProperty()->getReadOnly());
+        angleWidget_->blockSignals(false);
     }
-    void onAngleChanged() {
-        getProperty()->set(static_cast<T>(angleWidget_->getAngle()));
-    }
+    void onAngleChanged() { getProperty()->set(static_cast<T>(angleWidget_->getAngle())); }
     void onAngleMinMaxChanged() {
         getProperty()->setMinValue(static_cast<T>(angleWidget_->getMinAngle()));
         getProperty()->setMaxValue(static_cast<T>(angleWidget_->getMaxAngle()));
     }
-    void setCurrentAsMin() {
-        getProperty()->setMinValue(static_cast<T>(getProperty()->get()));
-    }
-    void setCurrentAsMax() {
-        getProperty()->setMaxValue(static_cast<T>(getProperty()->get()));
-    }
+    void setCurrentAsMin() { getProperty()->setMinValue(static_cast<T>(getProperty()->get())); }
+    void setCurrentAsMax() { getProperty()->setMaxValue(static_cast<T>(getProperty()->get())); }
 
     void showSettings() {
         if (!this->settingsWidget_) {
-            this->settingsWidget_ =
-                new TemplatePropertySettingsWidgetQt<T, T>(getProperty(), this);
+            this->settingsWidget_ = new TemplatePropertySettingsWidgetQt<T, T>(getProperty(), this);
         }
         this->settingsWidget_->reload();
         this->settingsWidget_->show();

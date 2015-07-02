@@ -90,7 +90,6 @@ void BaseOrdinalPropertyWidgetQt::generateWidget() {
             this,
             SLOT(setPropertyValue(int)));
 
-    this->setEnabled(!property_->getReadOnly());
     setLayout(hLayout);
 
     setFixedHeight(sizeHint().height());

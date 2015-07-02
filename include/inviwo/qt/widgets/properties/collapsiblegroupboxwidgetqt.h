@@ -114,12 +114,12 @@ protected:
     std::string displayName_;
     bool collapsed_;
     bool checked_;
+    EditableLabelQt* label_;
 
     std::vector<Property*> properties_;
     std::vector<PropertyWidgetQt*> propertyWidgets_;
 
 private:
-    EditableLabelQt* label_;
     QToolButton* btnCollapse_;
     QWidget* propertyWidgetGroup_;
     QGridLayout* propertyWidgetGroupLayout_;

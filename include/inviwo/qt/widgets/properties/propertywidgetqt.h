@@ -113,6 +113,7 @@ public:
 
     // PropertyObservable overrides
     virtual void onSetSemantics(const PropertySemantics& semantics) override;
+    virtual void onSetReadOnly(bool readonly) override;
     virtual void onSetUsageMode(UsageMode usageMode) override;
 
 public slots:
@@ -145,6 +146,8 @@ protected:
     virtual std::string getToolTipText();
 
     void paintEvent(QPaintEvent* pe);
+
+
 
     // Actions
     QMenu* usageModeItem_;

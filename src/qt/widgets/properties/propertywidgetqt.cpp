@@ -108,6 +108,7 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
     property_->addObserver(this);
 
     this->setObjectName("PropertyWidget");
+    this->setDisabled(property_->getReadOnly());
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(showContextMenu(const QPoint&)));
@@ -201,6 +202,10 @@ void PropertyWidgetQt::paintEvent(QPaintEvent* pe) {
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 };
+
+void PropertyWidgetQt::onSetReadOnly(bool readonly) {
+    this->setDisabled(readonly);
+}
 
 void PropertyWidgetQt::generateContextMenu() {
     if (!contextMenu_) {

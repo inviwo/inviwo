@@ -212,10 +212,6 @@ void OrdinalMinMaxPropertyWidgetQt<T>::updateFromProperty() {
     this->spinBoxMin_->blockSignals(true);
     this->spinBoxMax_->blockSignals(true);
     this->slider_->blockSignals(true);
-
-    this->spinBoxMin_->setDisabled(minMaxProperty_->getReadOnly());
-    this->spinBoxMax_->setDisabled(minMaxProperty_->getReadOnly());
-    this->slider_->setDisabled(minMaxProperty_->getReadOnly());
     
     this->spinBoxMin_->setRange(
         Transformer<T>::valueToSpinbox(minMaxProperty_, range.x),

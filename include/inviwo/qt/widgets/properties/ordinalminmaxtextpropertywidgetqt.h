@@ -35,6 +35,7 @@
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/ordinaleditorwidget.h>
+#include <inviwo/qt/widgets/tooltiphelper.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -138,9 +139,6 @@ void OrdinalMinMaxTextPropertyWidgetQt<T>::updateFromProperty() {
 
     min_->blockSignals(false);
     max_->blockSignals(false);
-
-    min_->setDisabled(minMaxProperty_->getReadOnly());
-    max_->setDisabled(minMaxProperty_->getReadOnly());
 }
 
 

@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/properties/compositepropertywidgetqt.h>
-
+#include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/core/properties/property.h>
 
 namespace inviwo {
@@ -44,19 +44,23 @@ CompositePropertyWidgetQt::CompositePropertyWidgetQt(CompositeProperty* property
     }
 
     property->PropertyOwner::addObserver(this);
+    this->setDisabled(property_->getReadOnly());
     updateFromProperty();
 }                           
 
 void CompositePropertyWidgetQt::updateFromProperty() {
-    for (auto& elem : propertyWidgets_) elem->updateFromProperty();
-    this->setDisabled(property_->getReadOnly());
-    
+    for (auto& elem : propertyWidgets_) elem->updateFromProperty();  
     setCollapsed(property_->isCollapsed());
 }
 
 void CompositePropertyWidgetQt::labelDidChange() {
     CollapsibleGroupBoxWidgetQt::labelDidChange();
     property_->setDisplayName(getDisplayName());
+}
+
+void CompositePropertyWidgetQt::onSetDisplayName(const std::string& displayName) {
+    displayName_ = displayName;
+    label_->setText(displayName);
 }
 
 void CompositePropertyWidgetQt::setDeveloperUsageMode(bool value) {

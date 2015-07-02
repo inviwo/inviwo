@@ -97,7 +97,6 @@ void TransferFunctionPropertyWidgetQt::generateWidget() {
 
 void TransferFunctionPropertyWidgetQt::updateFromProperty() {
     btnOpenTF_->updateFromProperty();
-    this->setDisabled(property_->getReadOnly());
 }
 
 void TransferFunctionPropertyWidgetQt::setPropertyValue() {}

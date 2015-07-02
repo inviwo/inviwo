@@ -82,7 +82,6 @@ void FilePropertyWidgetQt::generateWidget() {
     widget->setSizePolicy(sp);
     
     hLayout->addWidget(widget);
-
     connect(openButton_, SIGNAL(pressed()), this, SLOT(setPropertyValue()));
 }
 
@@ -161,7 +160,6 @@ void FilePropertyWidgetQt::setPropertyValue() {
 
 void FilePropertyWidgetQt::updateFromProperty() {
     lineEdit_->setText(QFileInfo(QString::fromStdString(property_->get())).fileName());
-    lineEdit_->setDisabled(property_->getReadOnly());
 }
 
 }  // namespace

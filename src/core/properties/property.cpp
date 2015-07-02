@@ -132,7 +132,6 @@ std::string Property::getClassIdentifierForWidget() const { return getClassIdent
 void Property::setReadOnly(const bool& value) {
     readOnly_ = value;
     notifyObserversOnSetReadOnly(readOnly_);
-    updateWidgets();
 }
 
 bool Property::getReadOnly()const {

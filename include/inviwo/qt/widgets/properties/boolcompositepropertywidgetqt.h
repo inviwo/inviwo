@@ -59,6 +59,8 @@ protected slots:
     virtual void setApplicationUsageMode(bool value);
     virtual void labelDidChange();
 
+    virtual void onSetDisplayName(const std::string& displayName) override;
+
 private:
     BoolCompositeProperty* property_;
 };

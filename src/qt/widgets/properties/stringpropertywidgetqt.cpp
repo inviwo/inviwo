@@ -70,7 +70,6 @@ void StringPropertyWidgetQt::setPropertyValue() {
 void StringPropertyWidgetQt::updateFromProperty() {
     lineEdit_->setText(QString::fromStdString(property_->get()));
     lineEdit_->setCursorPosition(0);
-    lineEdit_->setDisabled(property_->getReadOnly());
 }
 
 } // namespace

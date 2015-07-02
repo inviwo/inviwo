@@ -29,7 +29,7 @@
 
 #include <inviwo/qt/widgets/properties/boolcompositepropertywidgetqt.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
-
+#include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/core/properties/property.h>
 
 namespace inviwo {
@@ -49,9 +49,7 @@ BoolCompositePropertyWidgetQt::BoolCompositePropertyWidgetQt(BoolCompositeProper
 }          
 
 void BoolCompositePropertyWidgetQt::updateFromProperty() {
-    for (auto& elem : propertyWidgets_) elem->updateFromProperty();
-    this->setDisabled(property_->getReadOnly());
-    
+    for (auto& elem : propertyWidgets_) elem->updateFromProperty();    
     setChecked(property_->isChecked());
     setCollapsed(property_->isCollapsed());
 }
@@ -59,6 +57,11 @@ void BoolCompositePropertyWidgetQt::updateFromProperty() {
 void BoolCompositePropertyWidgetQt::labelDidChange() {
     CollapsibleGroupBoxWidgetQt::labelDidChange();
     property_->setDisplayName(getDisplayName());
+}
+
+void BoolCompositePropertyWidgetQt::onSetDisplayName(const std::string& displayName) {
+    displayName_ = displayName;
+    label_->setText(displayName);
 }
 
 void BoolCompositePropertyWidgetQt::setDeveloperUsageMode(bool value) {
