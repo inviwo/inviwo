@@ -45,12 +45,43 @@ Observer::Observer(const Observer& other) {
 }
 
 
+Observer::Observer(Observer&& other) 
+    : observables_(other.observables_) {
+    // Remove observations from other 
+    // and replace them with this object
+    for (const auto& elem : *other.observables_) {
+        elem->removeObserver(&other);
+    }
+    for (const auto& elem : *other.observables_) {
+        elem->addObserver(this);
+    }
+    other.observables_ = nullptr;
+}
+
 Observer& Observer::operator=(const Observer& other) {
     if (this != &other) {
         removeObservations();
         for (const auto& elem : *other.observables_) {
             addObservation(elem);
         }
+    }
+    return *this;
+}
+
+Observer& Observer::operator=(Observer&& other) {
+    if (this != &other) {
+        removeObservations();
+        delete observables_;
+        observables_ = other.observables_;
+        // Remove observable from other 
+        // and replace them with this object
+        for (const auto& elem : *other.observables_) {
+            elem->removeObserver(&other);
+        }
+        for (const auto& elem : *other.observables_) {
+            elem->addObserver(this);
+        }
+        other.observables_ = nullptr;
     }
     return *this;
 }
@@ -95,12 +126,44 @@ ObservableInterface::ObservableInterface(const ObservableInterface& other) {
     *this = other;
 }
 
+ObservableInterface::ObservableInterface(ObservableInterface&& other)
+    : observers_(other.observers_) {
+    // Remove observations from other 
+    // and replace them with this object
+    for (const auto& elem : *other.observers_) {
+        elem->removeObservation(&other);
+    }
+    for (const auto& elem : *other.observers_) {
+        elem->addObservation(this);
+    }
+    other.observers_ = nullptr;
+}
+
 ObservableInterface& ObservableInterface::operator=(const ObservableInterface& other) {
     if (this != &other) {
         removeObservers();
+
         for (const auto& elem : *other.observers_) {
             addObserver(elem);
         }
+    }
+    return *this;
+}
+
+ObservableInterface& ObservableInterface::operator=(ObservableInterface&& other) {
+    if (this != &other) {
+        removeObservers();
+        delete observers_;
+        observers_ = other.observers_;
+        // Remove observations from other 
+        // and replace them with this object
+        for (const auto& elem : *other.observers_) {
+            elem->removeObservation(&other);
+        }
+        for (const auto& elem : *other.observers_) {
+            elem->addObservation(this);
+        }
+        other.observers_ = nullptr;
     }
     return *this;
 }

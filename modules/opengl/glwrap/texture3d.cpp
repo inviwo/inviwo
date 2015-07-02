@@ -58,6 +58,11 @@ Texture3D::Texture3D(const Texture3D& rhs) : Texture(rhs), dimensions_(rhs.dimen
     }
 }
 
+Texture3D::Texture3D(Texture3D&& rhs) 
+    : Texture(std::move(rhs))
+    , dimensions_(std::move(rhs.dimensions_)) {
+}
+
 Texture3D& Texture3D::operator=(const Texture3D& rhs) {
     if (this != &rhs) {
         Texture::operator=(rhs);
@@ -76,6 +81,14 @@ Texture3D& Texture3D::operator=(const Texture3D& rhs) {
         }
     }
 
+    return *this;
+}
+
+Texture3D& Texture3D::operator=(Texture3D&& rhs) {
+    if (this != &rhs) {
+        Texture::operator=(std::move(rhs));
+        dimensions_ = std::move(rhs.dimensions_);
+    }
     return *this;
 }
 

@@ -35,15 +35,16 @@
 namespace inviwo {
 
 VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, bool initializeTexture)
-    : VolumeRepresentation(format), dimensions_(dimensions), volumeTexture_(nullptr) {
-    GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
-    volumeTexture_ = new Texture3D(dimensions_, glFormat, GL_LINEAR);
+    : VolumeRepresentation(format), dimensions_(dimensions)
+    , volumeTexture_(std::make_shared<Texture3D>(Texture3D(dimensions_, getGLFormats()->getGLFormat(format->getId()), GL_LINEAR))) {
+    //GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
+    //volumeTexture_ = std::make_shared<Texture3D>(Texture3D(dimensions_, glFormat, GL_LINEAR));
     if (initializeTexture) {
         volumeTexture_->initialize(nullptr);
     }
 }
 
-VolumeGL::VolumeGL(Texture3D* tex, const DataFormatBase* format)
+VolumeGL::VolumeGL(std::shared_ptr<Texture3D> tex, const DataFormatBase* format)
     : VolumeRepresentation(format), dimensions_(tex->getDimensions()), volumeTexture_(tex) {}
 
 VolumeGL::VolumeGL(const VolumeGL& rhs)
@@ -55,15 +56,12 @@ VolumeGL& VolumeGL::operator=(const VolumeGL& rhs) {
     if (this != &rhs) {
         VolumeRepresentation::operator=(rhs);
         dimensions_ = rhs.dimensions_;
-        volumeTexture_ = rhs.volumeTexture_->clone();
+        volumeTexture_ = std::shared_ptr<Texture3D>(rhs.volumeTexture_->clone());
     }
     return *this;
 }
 
 VolumeGL::~VolumeGL() {
-    if (volumeTexture_ && volumeTexture_->decreaseRefCount() <= 0) {
-        delete volumeTexture_;
-    }
 }
 
 VolumeGL* VolumeGL::clone() const { return new VolumeGL(*this); }
@@ -82,9 +80,5 @@ void VolumeGL::setDimensions(size3_t dimensions) {
     dimensions_ = dimensions;
     volumeTexture_->uploadAndResize(nullptr, dimensions_);
 }
-
-Texture3D* VolumeGL::getTexture() { return volumeTexture_; }
-
-const Texture3D* VolumeGL::getTexture() const { return volumeTexture_; }
 
 }  // namespace

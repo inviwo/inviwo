@@ -38,13 +38,16 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API Texture: public Observable<TextureObserver>, public ReferenceCounter {
+class IVW_MODULE_OPENGL_API Texture: public Observable<TextureObserver> {
 
 public:
     Texture(GLenum, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
     Texture(GLenum, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
     Texture(const Texture& other);
+    Texture(Texture&& other); // move constructor
     Texture& operator=(const Texture& other);
+    Texture& operator=(Texture&& other);
+
     virtual ~Texture();
 
     virtual Texture* clone() const = 0;

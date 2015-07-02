@@ -61,19 +61,19 @@ void ImageGL::reAttachAllLayers(ImageType type) {
 
     for (auto layer : colorLayersGL_) {
         layer->getTexture()->bind();
-        frameBufferObject_.attachColorTexture(layer->getTexture());
+        frameBufferObject_.attachColorTexture(layer->getTexture().get());
     }
 
     if (depthLayerGL_ && typeContainsDepth(type)) {
         depthLayerGL_->getTexture()->bind();
-        frameBufferObject_.attachTexture(depthLayerGL_->getTexture(),
+        frameBufferObject_.attachTexture(depthLayerGL_->getTexture().get(),
                                           static_cast<GLenum>(GL_DEPTH_ATTACHMENT));
     }
 
     if (pickingLayerGL_ && typeContainsPicking(type)) {
         pickingLayerGL_->getTexture()->bind();
         pickingAttachmentID_ =
-            frameBufferObject_.attachColorTexture(pickingLayerGL_->getTexture(), 0, true, 1);
+            frameBufferObject_.attachColorTexture(pickingLayerGL_->getTexture().get(), 0, true, 1);
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -175,8 +175,8 @@ bool ImageGL::updateFrom(const ImageGL* source) {
     // Primarily Copy by FBO blitting, all from source FBO to target FBO
     const FrameBufferObject* srcFBO = source->getFBO();
     FrameBufferObject* tgtFBO = target->getFBO();
-    const Texture2D* sTex = source->getColorLayerGL()->getTexture();
-    Texture2D* tTex = target->getColorLayerGL()->getTexture();
+    const Texture2D* sTex = source->getColorLayerGL()->getTexture().get();
+    Texture2D* tTex = target->getColorLayerGL()->getTexture().get();
 
     const std::vector<bool>& srcBuffers = srcFBO->getDrawBuffersInUse();
     const std::vector<bool>& targetBuffers = tgtFBO->getDrawBuffersInUse();
@@ -216,8 +216,8 @@ bool ImageGL::updateFrom(const ImageGL* source) {
 
     // Depth texture
     if ((mask & GL_DEPTH_BUFFER_BIT) == 0) {
-        sTex = source->getDepthLayerGL()->getTexture();
-        tTex = target->getDepthLayerGL()->getTexture();
+        sTex = source->getDepthLayerGL()->getTexture().get();
+        tTex = target->getDepthLayerGL()->getTexture().get();
 
         if (sTex && tTex) tTex->loadFromPBO(sTex);
     }
@@ -226,8 +226,8 @@ bool ImageGL::updateFrom(const ImageGL* source) {
 
     // Picking texture
     if (!pickingCopied && pickingAttachmentID_ != 0) {
-        sTex = source->getPickingLayerGL()->getTexture();
-        tTex = target->getPickingLayerGL()->getTexture();
+        sTex = source->getPickingLayerGL()->getTexture().get();
+        tTex = target->getPickingLayerGL()->getTexture().get();
 
         if (sTex && tTex) tTex->loadFromPBO(sTex);
     }

@@ -35,51 +35,41 @@
 
 namespace inviwo {
 
-LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* format, Texture2D* tex)
+LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* format, std::shared_ptr<Texture2D> tex)
     : LayerRepresentation(dimensions, type, format), texture_(tex) {
-    initialize();
+    if (!texture_) {
+        GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
+
+        if (getLayerType() == DEPTH_LAYER) {
+            texture_ = std::make_shared<Texture2D>(Texture2D(getDimensions(), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
+                glFormat.type, GL_NEAREST));
+        } else {
+            texture_ = std::make_shared<Texture2D>(Texture2D(getDimensions(), glFormat, GL_LINEAR));
+        }
+    }
 }
 
-LayerGL::LayerGL(const LayerGL& rhs) : LayerRepresentation(rhs) {
-    texture_ = rhs.texture_->clone();
+LayerGL::LayerGL(const LayerGL& rhs) : LayerRepresentation(rhs), texture_(rhs.texture_->clone()) {
+    //texture_ = rhs.texture_->clone();
 }
 
 LayerGL& LayerGL::operator=(const LayerGL& rhs) {
     if (this != &rhs) {
         LayerRepresentation::operator=(rhs);
-        texture_ = rhs.texture_->clone();
+        texture_ = std::shared_ptr<Texture2D>(rhs.texture_->clone());
     }
 
     return *this;
 }
 
-LayerGL::~LayerGL() { deinitialize(); }
+LayerGL::~LayerGL() { }
 
 LayerGL* LayerGL::clone() const { return new LayerGL(*this); }
 
-void LayerGL::initialize() {
-    if (!texture_) {
-        GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
-
-        if (getLayerType() == DEPTH_LAYER) {
-            texture_ = new Texture2D(getDimensions(), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
-                                     glFormat.type, GL_NEAREST);
-        } else {
-            texture_ = new Texture2D(getDimensions(), glFormat, GL_LINEAR);
-        }
-    }
-}
-
-void LayerGL::deinitialize() {
-    if (texture_ && texture_->decreaseRefCount() <= 0) {
-        delete texture_;
-        texture_ = nullptr;
-    }
-}
 
 void LayerGL::bindTexture(GLenum texUnit) const {
     texUnit_ = texUnit;
-    utilgl::bindTexture(texture_, texUnit);
+    utilgl::bindTexture(texture_.get(), texUnit);
 }
 
 void LayerGL::unbindTexture() const {
@@ -96,8 +86,8 @@ bool LayerGL::copyRepresentationsTo(DataRepresentation* targetLayerGL) const {
         LogError("Target representation missing.");
     }
 
-    const Texture2D* sTex = source->getTexture();
-    Texture2D* tTex = target->getTexture();
+    const Texture2D* sTex = source->getTexture().get();
+    Texture2D* tTex = target->getTexture().get();
     tTex->uploadFromPBO(sTex);
     LGL_ERROR;*/
     return false;
@@ -112,9 +102,5 @@ void LayerGL::setDimensions(size2_t dimensions) {
         texture_->bind();
     }
 }
-
-Texture2D* LayerGL::getTexture() { return texture_; }
-
-const Texture2D* LayerGL::getTexture() const { return texture_; }
 
 }  // namespace

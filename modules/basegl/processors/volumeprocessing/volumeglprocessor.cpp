@@ -106,7 +106,7 @@ void VolumeGLProcessor::process() {
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
     if (reattach) {
         VolumeGL* outVolumeGL = outport_.getData()->getEditableRepresentation<VolumeGL>();
-        fbo_->attachColorTexture(outVolumeGL->getTexture(), 0);
+        fbo_->attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));

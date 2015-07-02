@@ -1578,7 +1578,7 @@ private:
 			return;
 		}
 
-		const Texture* const tex = (*it).second->getTexture();
+		const Texture* const tex = (*it).second->getTexture().get();
 
 		aiString path;
 		path.Set(tex->RelativeFilename());

@@ -63,6 +63,11 @@ Texture2D::Texture2D(const Texture2D& rhs)
     }
 }
 
+Texture2D::Texture2D(Texture2D&& rhs)
+    : Texture(std::move(rhs))
+    , dimensions_(std::move(rhs.dimensions_)) {
+}
+
 Texture2D& Texture2D::operator=(const Texture2D& rhs) {
     if (this != &rhs) {
         Texture::operator=(rhs);
@@ -81,6 +86,14 @@ Texture2D& Texture2D::operator=(const Texture2D& rhs) {
         }
     }
 
+    return *this;
+}
+
+Texture2D& Texture2D::operator=(Texture2D&& rhs) {
+    if (this != &rhs) {
+        Texture::operator=(std::move(rhs));
+        dimensions_ = std::move(rhs.dimensions_);
+    }
     return *this;
 }
 

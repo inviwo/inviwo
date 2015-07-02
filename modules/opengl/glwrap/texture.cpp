@@ -32,7 +32,7 @@
 namespace inviwo {
 
 Texture::Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
-    : Observable<TextureObserver>(), ReferenceCounter()
+    : Observable<TextureObserver>()
     , target_(target)
     , format_(glFormat.format)
     , internalformat_(glFormat.internalFormat)
@@ -51,7 +51,7 @@ Texture::Texture(GLenum target, GLFormats::GLFormat glFormat, GLenum filtering, 
 }
 
 Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level)
-    : Observable<TextureObserver>(), ReferenceCounter()
+    : Observable<TextureObserver>()
     , target_(target)
     , format_(format)
     , internalformat_(internalformat)
@@ -70,7 +70,7 @@ Texture::Texture(GLenum target, GLint format, GLint internalformat, GLenum dataT
 }
 
 Texture::Texture(const Texture& other)
-    : Observable<TextureObserver>(), ReferenceCounter()
+    : Observable<TextureObserver>()
     , target_(other.target_)
     , format_(other.format_)
     , internalformat_(other.internalformat_)
@@ -88,13 +88,31 @@ Texture::Texture(const Texture& other)
     LGL_ERROR_SUPPRESS;
 }
 
+Texture::Texture(Texture&& other) 
+    : Observable<TextureObserver>(std::move(other))
+    , target_(other.target_)
+    , format_(other.format_)
+    , internalformat_(other.internalformat_)
+    , dataType_(other.dataType_)
+    , filtering_(other.filtering_)
+    , level_(other.level_)
+    , texParameterCallback_(other.texParameterCallback_)
+    , byteSize_(other.byteSize_)
+    , numChannels_(other.numChannels_)
+    , pboBackIsSetup_(false)
+    , pboBackHasData_(false)
+    // Steal texture
+    , id_(other.id_) 
+    , pboBack_(other.pboBack_)
+{
+    // Free resources from other
+    other.texParameterCallback_ = nullptr;
+    other.id_ = 0;
+    other.pboBack_ = 0;
+}
+
 Texture& Texture::operator=(const Texture& rhs) {
     if (this != &rhs) {
-        // Check if this object is shared with OpenCL/CUDA/DirectX
-        if (getRefCount() > 1) {
-            LogError("This object is shared and cannot changed (size/format etc.) until the shared object has been released");
-        }
-
         target_ = rhs.target_;
         format_ = rhs.format_;
         internalformat_ = rhs.internalformat_;
@@ -107,9 +125,43 @@ Texture& Texture::operator=(const Texture& rhs) {
     return *this;
 }
 
+Texture& Texture::operator=(Texture&& rhs) {
+    if (this != &rhs) {
+        // Free existing resources
+        glDeleteTextures(1, &id_);
+        glDeleteBuffers(1, &pboBack_);
+        delete texParameterCallback_;
+
+        // Steal resources
+        Observable<TextureObserver>::operator=(std::move(rhs));
+        target_ = rhs.target_;
+        format_ = rhs.format_;
+        internalformat_ = rhs.internalformat_;
+        dataType_ = rhs.dataType_;
+        filtering_ = rhs.filtering_;
+        numChannels_ = rhs.numChannels_;
+        byteSize_ = rhs.byteSize_;
+
+        texParameterCallback_ = rhs.texParameterCallback_;
+        id_ = rhs.id_;
+        pboBack_ = rhs.pboBack_;
+
+        // Release resources from source object
+        rhs.texParameterCallback_ = nullptr;
+        rhs.id_ = 0;
+        rhs.pboBack_ = 0;
+    }
+
+    return *this;
+}
+
 Texture::~Texture() {
-    glDeleteTextures(1, &id_);
-    glDeleteBuffers(1, &pboBack_);
+    if (id_ != 0 || pboBack_ != 0) {
+        // These functions silently ignores zeros, 
+        // which happens when move operations has been used
+        glDeleteTextures(1, &id_); 
+        glDeleteBuffers(1, &pboBack_);
+    }
     delete texParameterCallback_;
 }
 

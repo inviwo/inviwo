@@ -52,8 +52,8 @@ class IVW_MODULE_OPENCL_API LayerCLGL : public LayerCLBase,
                                         public LayerRepresentation,
                                         public TextureObserver {
 public:
-    LayerCLGL(size2_t dimensions = size2_t(64), LayerType type = COLOR_LAYER,
-              const DataFormatBase* format = DataFormatBase::get(), Texture2D* data = nullptr);
+    LayerCLGL(size2_t dimensions, LayerType type,
+        const DataFormatBase* format, std::shared_ptr<Texture2D> data);
     virtual ~LayerCLGL();
     LayerCLGL(const LayerCLGL& rhs);
     virtual LayerCLGL* clone() const;
@@ -68,8 +68,7 @@ public:
     virtual const cl::Image2D& get() const {
         return *const_cast<const cl::Image2D*>(static_cast<const cl::Image2D*>(clImage_));
     }
-    const Texture2D* getTexture() const { return texture_; }
-
+    std::shared_ptr<Texture2D> getTexture() const { return texture_; }
     /**
     * This method will be called before the texture is initialized.
     * Override it to add behavior.
@@ -93,7 +92,7 @@ public:
     }
 
 protected:
-    Texture2D* texture_;
+    std::shared_ptr<Texture2D> texture_; ///< Shared with LayerGL
 };
 
 }  // namespace

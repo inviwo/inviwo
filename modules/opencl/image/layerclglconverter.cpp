@@ -51,11 +51,10 @@ DataRepresentation* LayerCLGL2RAMConverter::createFrom(const DataRepresentation*
     const LayerCLGL* layerCLGL = static_cast<const LayerCLGL*>(source);
     uvec2 dimensions = layerCLGL->getDimensions();
     destination = createLayerRAM(dimensions, layerCLGL->getLayerType(), layerCLGL->getDataFormat());
-    const Texture2D* texture = layerCLGL->getTexture();
 
     if (destination) {
         LayerRAM* layerRAM = static_cast<LayerRAM*>(destination);
-        texture->download(layerRAM->getData());
+        layerCLGL->getTexture()->download(layerRAM->getData());
         //const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue();
         //queue.enqueueReadLayer(layerCL->getLayer(), true, glm::size3_t(0), glm::size3_t(dimensions, 1), 0, 0, layerRAM->getData());
     } else {
@@ -82,12 +81,7 @@ LayerCLGL2GLConverter::LayerCLGL2GLConverter(): RepresentationConverterType<Laye
 DataRepresentation* LayerCLGL2GLConverter::createFrom(const DataRepresentation* source) {
     DataRepresentation* destination = 0;
     const LayerCLGL* src = static_cast<const LayerCLGL*>(source);
-    // TODO: Do we need to check if the LayerCLGL texture is valid to use?
-    // It should not have been deleted since no LayerGL representation existed.
-    Texture2D* tex = const_cast<Texture2D*>(src->getTexture());
-    destination = new LayerGL(src->getDimensions(), src->getLayerType(), src->getDataFormat(), const_cast<Texture2D*>(src->getTexture()));
-    // Increase reference count to indicate that LayerGL is also using the texture
-    tex->increaseRefCount();
+    destination = new LayerGL(src->getDimensions(), src->getLayerType(), src->getDataFormat(), src->getTexture());
     return destination;
 }
 
@@ -131,7 +125,7 @@ DataRepresentation* LayerGL2CLGLConverter::createFrom(const DataRepresentation* 
     DataRepresentation* destination = 0;
     const LayerGL* layerGL = static_cast<const LayerGL*>(source);
     destination = new LayerCLGL(layerGL->getDimensions(), layerGL->getLayerType(), layerGL->getDataFormat(),
-                                const_cast<Texture2D*>(layerGL->getTexture()));
+        layerGL->getTexture());
     return destination;
 }
 
