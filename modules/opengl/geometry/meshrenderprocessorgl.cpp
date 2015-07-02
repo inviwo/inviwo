@@ -126,7 +126,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
 MeshRenderProcessorGL::~MeshRenderProcessorGL() {}
 
 void MeshRenderProcessorGL::initializeResources() {
-    addCommonShaderDefines(&shader_);
+    addCommonShaderDefines(shader_);
 }
 
 void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
