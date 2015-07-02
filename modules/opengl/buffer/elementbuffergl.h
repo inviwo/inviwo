@@ -49,9 +49,11 @@ public:
                     const DataFormatBase* format,
                     BufferType type,
                     BufferUsage usage,
-                    ElementBufferObject* data = nullptr);
+                    std::shared_ptr<ElementBufferObject> data = std::shared_ptr<ElementBufferObject>(nullptr));
     
     virtual ~ElementBufferGL();
+
+    std::shared_ptr<ElementBufferObject> getElementBufferObject() const { return std::static_pointer_cast<ElementBufferObject>(buffer_); }
 
     virtual ElementBufferGL* clone() const;
 

@@ -46,7 +46,7 @@ class IVW_MODULE_OPENCL_API BufferCLGL : public BufferCLBase,
                                          public BufferObjectObserver {
 public:
     BufferCLGL(size_t size, const DataFormatBase* format, BufferType type,
-               BufferUsage usage = STATIC, BufferObject* data = nullptr,
+        BufferUsage usage, std::shared_ptr<BufferObject> data,
                cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     BufferCLGL(const BufferCLGL& rhs);
     virtual ~BufferCLGL();
@@ -56,7 +56,7 @@ public:
     virtual void setSize(size_t size) override;
 
     const cl::Buffer& getBuffer() const { return *(clBuffer_); }
-    BufferObject* getBufferGL() const { return bufferObject_; }
+    std::shared_ptr<BufferObject> getBufferGL() const { return bufferObject_; }
 
     void aquireGLObject(std::vector<cl::Event>* syncEvents = nullptr) const {
         std::vector<cl::Memory> syncBuffers(1, *clBuffer_);
@@ -79,7 +79,7 @@ public:
     void onAfterBufferInitialization();
 
 protected:
-    BufferObject* bufferObject_;
+    std::shared_ptr<BufferObject> bufferObject_;
     cl_mem_flags readWriteFlag_;
     size_t size_;
 };

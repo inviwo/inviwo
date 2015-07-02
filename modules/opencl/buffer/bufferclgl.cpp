@@ -34,23 +34,21 @@
 namespace inviwo {
 
 BufferCLGL::BufferCLGL(size_t size, const DataFormatBase* format, BufferType type,
-                       BufferUsage usage, BufferObject* data, cl_mem_flags readWriteFlag)
+    BufferUsage usage, std::shared_ptr<BufferObject> data, cl_mem_flags readWriteFlag)
     : BufferCLBase()
     , BufferRepresentation(format, type, usage)
     , bufferObject_(data)
     , readWriteFlag_(readWriteFlag)
     , size_(size) {
     
-    if (data) {
-        data->increaseRefCount();
-        
-        auto it = OpenCLBufferSharing::clBufferSharingMap_.find(data);
+    if (data) {       
+        auto it = OpenCLBufferSharing::clBufferSharingMap_.find(data.get());
 
         if (it == OpenCLBufferSharing::clBufferSharingMap_.end()) {
             clBuffer_ =
                 new cl::BufferGL(OpenCL::getPtr()->getContext(), readWriteFlag_, data->getId());
             OpenCLBufferSharing::clBufferSharingMap_.insert(
-                BufferSharingPair(data, new OpenCLBufferSharing(clBuffer_)));
+                BufferSharingPair(data.get(), new OpenCLBufferSharing(clBuffer_)));
         } else {
             clBuffer_ = static_cast<cl::BufferGL*>(it->second->sharedMemory_);
             it->second->increaseRefCount();
@@ -66,14 +64,13 @@ BufferCLGL::BufferCLGL(const BufferCLGL& rhs)
     , readWriteFlag_(rhs.readWriteFlag_)
     , size_(rhs.size_) {
     
-    bufferObject_->increaseRefCount();
-    CLBufferSharingMap::iterator it = OpenCLBufferSharing::clBufferSharingMap_.find(bufferObject_);
+    CLBufferSharingMap::iterator it = OpenCLBufferSharing::clBufferSharingMap_.find(bufferObject_.get());
 
     if (it == OpenCLBufferSharing::clBufferSharingMap_.end()) {
         clBuffer_ = new cl::BufferGL(OpenCL::getPtr()->getContext(), readWriteFlag_,
                                      bufferObject_->getId());
         OpenCLBufferSharing::clBufferSharingMap_.insert(
-            BufferSharingPair(bufferObject_, new OpenCLBufferSharing(clBuffer_)));
+            BufferSharingPair(bufferObject_.get(), new OpenCLBufferSharing(clBuffer_)));
     } else {
         clBuffer_ = static_cast<cl::BufferGL*>(it->second->sharedMemory_);
         it->second->increaseRefCount();
@@ -83,7 +80,7 @@ BufferCLGL::BufferCLGL(const BufferCLGL& rhs)
 }
 
 BufferCLGL::~BufferCLGL() {
-    CLBufferSharingMap::iterator it = OpenCLBufferSharing::clBufferSharingMap_.find(bufferObject_);
+    CLBufferSharingMap::iterator it = OpenCLBufferSharing::clBufferSharingMap_.find(bufferObject_.get());
     if (it != OpenCLBufferSharing::clBufferSharingMap_.end()) {
         if (it->second->decreaseRefCount() == 0) {
             delete it->second->sharedMemory_;
@@ -91,11 +88,6 @@ BufferCLGL::~BufferCLGL() {
             delete it->second;
             OpenCLBufferSharing::clBufferSharingMap_.erase(it);
         }
-    }
-
-    if (bufferObject_ && bufferObject_->decreaseRefCount() <= 0) {
-        delete bufferObject_;
-        bufferObject_ = nullptr;
     }
 }
 
@@ -118,7 +110,7 @@ void BufferCLGL::setSize(size_t size) {
 }
 
 void BufferCLGL::onBeforeBufferInitialization() {
-    auto it = OpenCLBufferSharing::clBufferSharingMap_.find(bufferObject_);
+    auto it = OpenCLBufferSharing::clBufferSharingMap_.find(bufferObject_.get());
 
     if (it != OpenCLBufferSharing::clBufferSharingMap_.end()) {
         if (it->second->decreaseRefCount() == 0) {
@@ -131,7 +123,7 @@ void BufferCLGL::onBeforeBufferInitialization() {
 }
 
 void BufferCLGL::onAfterBufferInitialization() {
-    auto it = OpenCLBufferSharing::clBufferSharingMap_.find(bufferObject_);
+    auto it = OpenCLBufferSharing::clBufferSharingMap_.find(bufferObject_.get());
 
     if (it != OpenCLBufferSharing::clBufferSharingMap_.end()) {
         if (it->second->getRefCount() == 0) {

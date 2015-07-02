@@ -34,6 +34,8 @@
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>
 
+#include <modules/opengl/buffer/elementbuffergl.h>
+
 namespace inviwo {
 /** \class ElementBufferCLGL
  *
@@ -45,10 +47,12 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API ElementBufferCLGL : public BufferCLGL {
 
 public:
-    ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, BufferObject* data = nullptr,
+    ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, std::shared_ptr<ElementBufferObject> data,
                cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     ElementBufferCLGL(const ElementBufferCLGL& rhs);
     virtual ~ElementBufferCLGL();
+
+    std::shared_ptr<ElementBufferObject> getElementBufferObject() const { return std::static_pointer_cast<ElementBufferObject>(bufferObject_); }
 
 protected:
 

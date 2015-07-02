@@ -38,12 +38,14 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API BufferObject : public Observable<BufferObjectObserver>,
-                                           public ReferenceCounter {
+class IVW_MODULE_OPENGL_API BufferObject : public Observable<BufferObjectObserver> {
 public:
     BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferType type,
                  BufferUsage usage, GLenum target = GL_ARRAY_BUFFER);
     BufferObject(const BufferObject& rhs);
+    BufferObject(BufferObject&& rhs);
+    BufferObject& operator=(const BufferObject& other);
+    BufferObject& operator=(BufferObject&& other);
     virtual ~BufferObject();
     virtual BufferObject* clone() const;
 

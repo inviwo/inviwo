@@ -83,13 +83,13 @@ void MeshGL::update(bool editable) {
         for (Buffer* buf : owner->getBuffers()) {
             BufferGL* bufGL = buf->getEditableRepresentation<BufferGL>();
             attributesGL_.push_back(bufGL);
-            attributesArray_->attachBufferObject(bufGL->getBufferObject());
+            attributesArray_->attachBufferObject(bufGL->getBufferObject().get());
         }
     } else {
         for (Buffer* buf : owner->getBuffers()) {
             const BufferGL* bufGL = buf->getRepresentation<BufferGL>();
             attributesGL_.push_back(bufGL);
-            attributesArray_->attachBufferObject(bufGL->getBufferObject());
+            attributesArray_->attachBufferObject(bufGL->getBufferObject().get());
         }
     }
     attributesArray_->unbind();
