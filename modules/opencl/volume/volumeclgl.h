@@ -44,7 +44,7 @@ class IVW_MODULE_OPENCL_API VolumeCLGL : public VolumeCLBase,
                                          public TextureObserver {
 public:
     VolumeCLGL(const DataFormatBase* format = DataFormatBase::get(), Texture3D* data = nullptr);
-    VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format, Texture3D* data);
+    VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format, std::shared_ptr<Texture3D> data);
     VolumeCLGL(const VolumeCLGL& rhs);
 
     virtual VolumeCLGL* clone() const;
@@ -58,7 +58,7 @@ public:
 
     virtual cl::Image3D& getEditable();
     virtual const cl::Image3D& get() const;
-    const Texture3D* getTexture() const;
+    std::shared_ptr<Texture3D> getTexture() const;
 
     /**
     * This method will be called before the texture is initialized.
@@ -79,7 +79,7 @@ public:
 
 protected:
     size3_t dimensions_;
-    Texture3D* texture_;
+    std::shared_ptr<Texture3D> texture_;
 };
 
 }  // namespace

@@ -44,7 +44,9 @@ public:
     Texture2D(uvec2 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
     Texture2D(uvec2 dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
     Texture2D(const Texture2D& other);
+    Texture2D(Texture2D&& other); // move constructor
     Texture2D& operator=(const Texture2D& other);
+    Texture2D& operator=(Texture2D&& other);
     virtual ~Texture2D();
 
     Texture2D* clone() const;

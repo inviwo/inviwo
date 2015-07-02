@@ -43,7 +43,9 @@ public:
     Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
     Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
     Texture3D(const Texture3D& other);
+    Texture3D(Texture3D&& other); // move constructor
     Texture3D& operator=(const Texture3D& other);
+    Texture3D& operator=(Texture3D&& other);
     virtual ~Texture3D();
 
     Texture3D* clone() const;

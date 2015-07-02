@@ -228,7 +228,7 @@ void LightVolumeGL::process() {
         glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x), static_cast<GLsizei>(volumeDimOut_.y));
 
         if (reattach)
-            propParams_[i].fbo->attachColorTexture(propParams_[i].vol->getTexture(), 0);
+            propParams_[i].fbo->attachColorTexture(propParams_[i].vol->getTexture().get(), 0);
 
         propagationShader_->setUniform("lightVolume_", lightVolUnit[i].getUnitNumber());
         propagationShader_->setUniform("permutationMatrix_", propParams_[i].axisPermutation);
@@ -267,7 +267,7 @@ void LightVolumeGL::process() {
     glViewport(0, 0, static_cast<GLsizei>(volumeDimOut_.x), static_cast<GLsizei>(volumeDimOut_.y));
 
     if (reattach)
-        mergeFBO_->attachColorTexture(outVolumeGL->getTexture(), 0);
+        mergeFBO_->attachColorTexture(outVolumeGL->getTexture().get(), 0);
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(volumeDimOut_.z));
     mergeShader_->deactivate();

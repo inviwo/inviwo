@@ -53,11 +53,10 @@ DataRepresentation* VolumeCLGL2RAMConverter::createFrom(const DataRepresentation
     const VolumeCLGL* volumeCLGL = static_cast<const VolumeCLGL*>(source);
     const size3_t dimensions{volumeCLGL->getDimensions()};
     destination = createVolumeRAM(dimensions, volumeCLGL->getDataFormat());
-    const Texture3D* texture = volumeCLGL->getTexture();
 
     if (destination) {
         VolumeRAM* volumeRAM = static_cast<VolumeRAM*>(destination);
-        texture->download(volumeRAM->getData());
+        volumeCLGL->getTexture()->download(volumeRAM->getData());
         //const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue();
         //queue.enqueueReadVolume(volumeCL->get(), true, glm::size3_t(0), glm::size3_t(dimensions, 1), 0, 0, volumeRAM->getData());
     } else {
@@ -85,7 +84,7 @@ void VolumeCLGL2RAMConverter::update(const DataRepresentation* source, DataRepre
 DataRepresentation* VolumeGL2CLGLConverter::createFrom(const DataRepresentation* source) {
     DataRepresentation* destination = 0;
     const VolumeGL* volumeGL = static_cast<const VolumeGL*>(source);
-    destination = new VolumeCLGL(volumeGL->getDimensions(), volumeGL->getDataFormat(), const_cast<Texture3D*>(volumeGL->getTexture()));
+    destination = new VolumeCLGL(volumeGL->getDimensions(), volumeGL->getDataFormat(), volumeGL->getTexture());
     return destination;
 }
 
@@ -135,10 +134,7 @@ void VolumeCLGL2CLConverter::update(const DataRepresentation* source, DataRepres
 DataRepresentation* VolumeCLGL2GLConverter::createFrom(const DataRepresentation* source) {
     DataRepresentation* destination = 0;
     const VolumeCLGL* src = static_cast<const VolumeCLGL*>(source);
-    Texture3D* tex = const_cast<Texture3D*>(src->getTexture());
-    destination = new VolumeGL(const_cast<Texture3D*>(src->getTexture()), src->getDataFormat());
-    // Increase reference count to indicate that LayerGL is also using the texture
-    tex->increaseRefCount();
+    destination = new VolumeGL(src->getTexture(), src->getDataFormat());
     return destination;
 }
 

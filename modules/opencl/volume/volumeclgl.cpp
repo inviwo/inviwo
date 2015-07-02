@@ -43,29 +43,28 @@ VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
     }
 }
 
-VolumeCLGL::VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format, Texture3D* data)
+VolumeCLGL::VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format, std::shared_ptr<Texture3D> data)
     : VolumeRepresentation(format), dimensions_(dimensions), texture_(data) {
-    initialize(data);
+    initialize(data.get());
 }
 
 VolumeCLGL::VolumeCLGL(const VolumeCLGL& rhs)
     : VolumeRepresentation(rhs), dimensions_(rhs.dimensions_) {
-    initialize(rhs.texture_);
+    initialize(rhs.texture_.get());
 }
 
 VolumeCLGL::~VolumeCLGL() { deinitialize(); }
 
 void VolumeCLGL::initialize(Texture3D* texture) {
     ivwAssert(texture != 0, "Cannot initialize with null OpenGL texture");
-    // Indicate that the texture should not be deleted.
-    texture->increaseRefCount();
+
     CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture);
 
     if (it == OpenCLImageSharing::clImageSharingMap_.end()) {
         clImage_ = new cl::Image3DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
                                      GL_TEXTURE_3D, 0, texture->getID());
         OpenCLImageSharing::clImageSharingMap_.insert(
-            TextureCLImageSharingPair(texture_, new OpenCLImageSharing(clImage_)));
+            TextureCLImageSharingPair(texture_.get(), new OpenCLImageSharing(clImage_)));
     } else {
         clImage_ = it->second->sharedMemory_;
         it->second->increaseRefCount();
@@ -81,7 +80,7 @@ VolumeCLGL* VolumeCLGL::clone() const { return new VolumeCLGL(*this); }
 
 void VolumeCLGL::deinitialize() {
     // Delete OpenCL image before texture
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_);
+    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_.get());
 
     if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
         if (it->second->decreaseRefCount() == 0) {
@@ -91,15 +90,10 @@ void VolumeCLGL::deinitialize() {
             OpenCLImageSharing::clImageSharingMap_.erase(it);
         }
     }
-
-    if (texture_ && texture_->decreaseRefCount() <= 0) {
-        delete texture_;
-        texture_ = nullptr;
-    }
 }
 
 void VolumeCLGL::notifyBeforeTextureInitialization() {
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_);
+    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_.get());
 
     if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
         if (it->second->decreaseRefCount() == 0) {
@@ -112,7 +106,7 @@ void VolumeCLGL::notifyBeforeTextureInitialization() {
 }
 
 void VolumeCLGL::notifyAfterTextureInitialization() {
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_);
+    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_.get());
 
     if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
         if (it->second->getRefCount() == 0) {
@@ -149,7 +143,7 @@ void VolumeCLGL::setDimensions(size3_t dimensions) {
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.
-    const_cast<Texture3D*>(texture_)->uploadAndResize(nullptr, dimensions);
+    texture_->uploadAndResize(nullptr, dimensions);
 }
 
 cl::Image3D& VolumeCLGL::getEditable() { return *static_cast<cl::Image3D*>(clImage_); }
@@ -158,7 +152,9 @@ const cl::Image3D& VolumeCLGL::get() const {
     return *const_cast<const cl::Image3D*>(static_cast<const cl::Image3D*>(clImage_));
 }
 
-const Texture3D* VolumeCLGL::getTexture() const { return texture_; }
+std::shared_ptr<Texture3D> VolumeCLGL::getTexture() const {
+    return texture_;
+}
 
 }  // namespace
 

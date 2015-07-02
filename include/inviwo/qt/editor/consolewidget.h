@@ -59,6 +59,7 @@ public:
 private:
     void keyPressEvent(QKeyEvent* keyEvent) override;
 
+    void clear();
     void logMessage(LogLevel level, QString message);
 
     QTextEdit* textField_;
@@ -76,6 +77,10 @@ private:
 
 public slots:
     void showContextMenu(const QPoint& pos);
+
+signals:
+    void logMessageSignal(LogLevel logLevel, QString message);
+    void clearSignal();
 };
 
 }  // namespace

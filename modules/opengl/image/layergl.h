@@ -43,7 +43,7 @@ class Texture2D;
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
     LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = COLOR_LAYER,
-            const DataFormatBase* format = DataVec4UINT8::get(), Texture2D* tex = nullptr);
+        const DataFormatBase* format = DataVec4UINT8::get(), std::shared_ptr<Texture2D> tex = std::shared_ptr<Texture2D>(nullptr));
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
     virtual ~LayerGL();
@@ -56,15 +56,10 @@ public:
 
     virtual bool copyRepresentationsTo(DataRepresentation*) const override;
 
-    Texture2D* getTexture();
-    const Texture2D* getTexture() const;
-
-protected:
-    void initialize();
-    void deinitialize();
+    std::shared_ptr<Texture2D> getTexture() const { return texture_; }
 
 private:
-    Texture2D* texture_;
+    std::shared_ptr<Texture2D> texture_; // Can be share
     mutable GLenum texUnit_;
 };
 
