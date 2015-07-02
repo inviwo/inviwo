@@ -166,7 +166,7 @@ void VolumeCombiner::process() {
 
     if (inport_.isChanged()) {
         VolumeGL* outVolumeGL = outport_.getData()->getEditableRepresentation<VolumeGL>();
-        fbo_.attachColorTexture(outVolumeGL->getTexture(), 0);
+        fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
