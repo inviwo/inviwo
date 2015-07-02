@@ -96,7 +96,7 @@ protected:
     void setNearFarPlane();
     void changeRenderMode();
     void updateDrawers();
-    void addCommonShaderDefines(Shader* shader);
+    void addCommonShaderDefines(Shader& shader);
 
     MeshFlatMultiInport inport_;
     ImageOutport outport_;
