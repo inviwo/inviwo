@@ -33,7 +33,6 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/glwrap/texturecallback.h>
-#include <inviwo/core/util/referencecounter.h>
 #include <modules/opengl/textureobserver.h>
 
 namespace inviwo {

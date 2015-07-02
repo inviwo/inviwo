@@ -42,12 +42,12 @@ BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferType type, B
     if (data != nullptr) {
         // CL_MEM_COPY_HOST_PTR can be used with CL_MEM_ALLOC_HOST_PTR to initialize the contents of
         // the cl_mem object allocated using host-accessible (e.g. PCIe) memory.
-        clBuffer_ = new cl::Buffer(OpenCL::getPtr()->getContext(),
+        clBuffer_ = std::make_unique<cl::Buffer>(cl::Buffer(OpenCL::getPtr()->getContext(),
                                    readWriteFlag_ | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
-                                   getSize() * getSizeOfElement(), const_cast<void*>(data));
+                                   getSize() * getSizeOfElement(), const_cast<void*>(data)));
     } else {
-        clBuffer_ = new cl::Buffer(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                   getSize() * getSizeOfElement());
+        clBuffer_ = std::make_unique<cl::Buffer>(cl::Buffer(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                   getSize() * getSizeOfElement()));
     }
 }
 
@@ -56,35 +56,31 @@ BufferCL::BufferCL(const BufferCL& rhs)
     , readWriteFlag_(rhs.readWriteFlag_)
     , size_(rhs.size_) {
     
-    clBuffer_ = new cl::Buffer(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                   getSize() * getSizeOfElement());
+    clBuffer_ = std::make_unique<cl::Buffer>(cl::Buffer(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                   getSize() * getSizeOfElement()));
 
-    OpenCL::getPtr()->getQueue().enqueueCopyBuffer(rhs.getBuffer(), *clBuffer_, 0, 0,
+    OpenCL::getPtr()->getQueue().enqueueCopyBuffer(rhs.get(), *clBuffer_, 0, 0,
                                                    getSize() * getSizeOfElement());
 }
 
 BufferCL* BufferCL::clone() const { return new BufferCL(*this); }
 
 BufferCL::~BufferCL() {
-    delete clBuffer_;
-    clBuffer_ = nullptr;
 }
 
 void BufferCL::setSize(size_t size) {
     size_ = size;
-    delete clBuffer_;
-    clBuffer_ = new cl::Buffer(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                   getSize() * getSizeOfElement());
+    clBuffer_ = std::make_unique<cl::Buffer>(cl::Buffer(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                   getSize() * getSizeOfElement()));
 }
 size_t BufferCL::getSize() const { return size_; }
 
 void BufferCL::upload(const void* data, size_t size) {
     // Resize buffer if necessary
     if (size > size_ * getSizeOfElement()) {
-        delete clBuffer_;
-        clBuffer_ = new cl::Buffer(OpenCL::getPtr()->getContext(),
+        clBuffer_ = std::make_unique<cl::Buffer>(cl::Buffer(OpenCL::getPtr()->getContext(),
                                    readWriteFlag_ | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
-                                   getSize() * getSizeOfElement(), const_cast<void*>(data));
+                                   getSize() * getSizeOfElement(), const_cast<void*>(data)));
     } else {
         OpenCL::getPtr()->getQueue().enqueueWriteBuffer(*clBuffer_, true, 0, size,
                                                         const_cast<void*>(data));
@@ -108,12 +104,12 @@ namespace cl {
 
 template <>
 cl_int Kernel::setArg(cl_uint index, const inviwo::BufferCL& value) {
-    return setArg(index, value.getBuffer());
+    return setArg(index, value.get());
 }
 
 template <>
 cl_int Kernel::setArg(cl_uint index, const inviwo::Buffer& value) {
-    return setArg(index, value.getRepresentation<inviwo::BufferCL>()->getBuffer());
+    return setArg(index, value.getRepresentation<inviwo::BufferCL>()->get());
 }
 
 }  // namespace cl

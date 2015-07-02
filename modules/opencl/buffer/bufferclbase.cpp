@@ -32,7 +32,6 @@
 namespace inviwo {
 
 BufferCLBase::BufferCLBase()
-    : clBuffer_(nullptr)
 {
 }
 

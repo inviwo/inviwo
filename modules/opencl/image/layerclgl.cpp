@@ -28,23 +28,36 @@
  *********************************************************************************/
 
 #include <modules/opencl/image/layerclgl.h>
-#include <modules/opencl/openclsharing.h>
 #include <inviwo/core/util/assertion.h>
 #include <modules/opencl/image/layerclresizer.h>
 #include <modules/opencl/syncclgl.h>
 
 namespace inviwo {
+CLTextureSharingMap LayerCLGL::clImageSharingMap_;
 
 LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
     std::shared_ptr<Texture2D> data)
     : LayerRepresentation(dimensions, type, format), texture_(data) {
     if (data) {
         initialize(data.get());
+        CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
+
+        if (it == LayerCLGL::clImageSharingMap_.end()) {
+            clImage_ = std::make_shared<cl::Image2DGL>(cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                GL_TEXTURE_2D, 0, texture_->getID()));
+            LayerCLGL::clImageSharingMap_.insert(
+                TextureCLImageSharingPair(texture_, clImage_));
+        } else {
+            clImage_ = it->second;
+        }
+
+        texture_->addObserver(this);
     }
 }
 
 LayerCLGL::LayerCLGL(const LayerCLGL& rhs)
-    : LayerRepresentation(rhs), texture_(rhs.texture_->clone()) {
+    : LayerRepresentation(rhs),
+    texture_(rhs.texture_->clone()) {
     initialize(texture_.get());
 }
 
@@ -54,18 +67,18 @@ LayerCLGL::~LayerCLGL() {
 
 void LayerCLGL::initialize(Texture2D* texture) {
     ivwAssert(texture != 0, "Cannot initialize with null OpenGL texture");
-    // Indicate that the texture should not be deleted.
-    //texture->increaseRefCount();
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture);
 
-    if (it == OpenCLImageSharing::clImageSharingMap_.end()) {
-        clImage_ = new cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                                     GL_TEXTURE_2D, 0, texture->getID());
-        OpenCLImageSharing::clImageSharingMap_.insert(
-            TextureCLImageSharingPair(texture_.get(), new OpenCLImageSharing(clImage_)));
+    //const auto it = std::find_if(LayerCLGL::clImageSharingMap_.begin(), LayerCLGL::clImageSharingMap_.end(), 
+    //    [texture](const TextureCLImageSharingPair& o) { return  o.first.get() == texture; });
+    CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
+
+    if (it == LayerCLGL::clImageSharingMap_.end()) {
+        clImage_ = std::make_shared<cl::Image2DGL>(cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                     GL_TEXTURE_2D, 0, texture->getID()));
+        LayerCLGL::clImageSharingMap_.insert(
+            TextureCLImageSharingPair(texture_, clImage_));
     } else {
-        clImage_ = it->second->sharedMemory_;
-        it->second->increaseRefCount();
+        clImage_ = it->second;
     }
 
     texture->addObserver(this);
@@ -73,21 +86,14 @@ void LayerCLGL::initialize(Texture2D* texture) {
 
 void LayerCLGL::deinitialize() {
     // Delete OpenCL image before texture
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_.get());
-
-    if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
-        if (it->second->decreaseRefCount() == 0) {
-            delete it->second->sharedMemory_;
-            it->second->sharedMemory_ = 0;
-            delete it->second;
-            OpenCLImageSharing::clImageSharingMap_.erase(it);
+    const auto it = LayerCLGL::clImageSharingMap_.find(texture_);
+     // Release reference
+    clImage_.reset();
+    if (it != LayerCLGL::clImageSharingMap_.end()) {
+        if (it->second.use_count() == 1) {
+            LayerCLGL::clImageSharingMap_.erase(it);
         }
     }
-
-    //if (texture_ && texture_->decreaseRefCount() <= 0) {
-    //    delete texture_;
-    //    texture_ = nullptr;
-    //}
 }
 
 LayerCLGL* LayerCLGL::clone() const { return new LayerCLGL(*this); }
@@ -101,7 +107,6 @@ void LayerCLGL::setDimensions(size2_t dimensions) {
     // Make sure that the OpenCL layer is deleted before resizing the texture
     // By observing the texture we will make sure that the OpenCL layer is
     // deleted and reattached after resizing is done.
-    //const_cast<Texture2D*>(texture_)->resize(dimensions);
     texture_->resize(dimensions);
 }
 
@@ -125,34 +130,32 @@ bool LayerCLGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
 }
 
 void LayerCLGL::notifyBeforeTextureInitialization() {
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_.get());
-
-    if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
-        if (it->second->decreaseRefCount() == 0) {
-            delete it->second->sharedMemory_;
-            it->second->sharedMemory_ = 0;
+    const auto it = LayerCLGL::clImageSharingMap_.find(texture_);
+    clImage_.reset();
+    if (it != LayerCLGL::clImageSharingMap_.end()) {
+        if (it->second.use_count() == 1) {
+            LayerCLGL::clImageSharingMap_.erase(it);
         }
     }
 
-    clImage_ = 0;
+    
 }
 
 void LayerCLGL::notifyAfterTextureInitialization() {
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_.get());
+    const auto it = LayerCLGL::clImageSharingMap_.find(texture_);
 
-    if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
-        if (it->second->getRefCount() == 0) {
-            try {
-                it->second->sharedMemory_ =
-                    new cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                                      GL_TEXTURE_2D, 0, texture_->getID());
-            } catch (cl::Error& err) {
-                LogOpenCLError(err.err());
-            }
+    if (it != LayerCLGL::clImageSharingMap_.end()) {
+        clImage_ = std::static_pointer_cast<cl::Image2DGL>(it->second);
+    } else {
+        try {
+            clImage_ = std::make_shared<cl::Image2DGL>(cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                GL_TEXTURE_2D, 0, texture_->getID()));
+            LayerCLGL::clImageSharingMap_.insert(
+                TextureCLImageSharingPair(texture_, clImage_));
+        } catch (cl::Error& err) {
+            LogOpenCLError(err.err());
+            throw err;
         }
-
-        clImage_ = it->second->sharedMemory_;
-        it->second->increaseRefCount();
     }
 }
 

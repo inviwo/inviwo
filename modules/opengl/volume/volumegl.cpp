@@ -37,8 +37,6 @@ namespace inviwo {
 VolumeGL::VolumeGL(size3_t dimensions, const DataFormatBase* format, bool initializeTexture)
     : VolumeRepresentation(format), dimensions_(dimensions)
     , volumeTexture_(std::make_shared<Texture3D>(Texture3D(dimensions_, getGLFormats()->getGLFormat(format->getId()), GL_LINEAR))) {
-    //GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
-    //volumeTexture_ = std::make_shared<Texture3D>(Texture3D(dimensions_, glFormat, GL_LINEAR));
     if (initializeTexture) {
         volumeTexture_->initialize(nullptr);
     }

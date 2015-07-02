@@ -34,11 +34,10 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <inviwo/core/util/referencecounter.h>
 
 namespace inviwo {
 
-class BufferGLObjectId: public ReferenceCounter {
+class BufferGLObjectId {
 public:
 
     BufferGLObjectId(): object_(0) {};

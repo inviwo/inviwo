@@ -44,11 +44,10 @@ public:
     BufferCLBase(const BufferCLBase& other);
     virtual ~BufferCLBase();
 
-    virtual cl::Buffer& getEditable() { return *clBuffer_; }
-    virtual const cl::Buffer& get() const { return *const_cast<const cl::Buffer*>(clBuffer_); }
+    virtual cl::Buffer& getEditable() = 0;
+    virtual const cl::Buffer& get() const = 0;
 
-protected:
-    cl::Buffer* clBuffer_;  // Derived class is responsible for allocating and deallocating this
+
 };
 
 }  // namespace

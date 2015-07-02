@@ -34,7 +34,6 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/buffer/bufferobjectobserver.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/util/referencecounter.h>
 
 namespace inviwo {
 

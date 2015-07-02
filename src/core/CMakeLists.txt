@@ -220,7 +220,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/raiiutils.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/referencecounter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/rendercontext.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/linksettings.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/settings/settings.h
@@ -406,7 +405,6 @@ set(SOURCE_FILES
     util/logcentral.cpp
     util/observer.cpp    
     util/raiiutils.cpp
-    util/referencecounter.cpp
     util/rendercontext.cpp
     util/settings/linksettings.cpp    
     util/settings/settings.cpp    

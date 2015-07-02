@@ -53,7 +53,7 @@ namespace cl {
 template <>
 cl_int Kernel::setArg(cl_uint index, const inviwo::ElementBufferCLGL& value)
 {
-    return setArg(index, value.getBuffer());
+    return setArg(index, value.get());
 }
 
 

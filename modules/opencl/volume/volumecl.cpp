@@ -53,32 +53,27 @@ VolumeCL::VolumeCL(const VolumeCL& rhs)
                                                   glm::size3_t(0), glm::size3_t(dimensions_));
 }
 
-VolumeCL::~VolumeCL() { deinitialize(); }
+VolumeCL::~VolumeCL() { }
 
 void VolumeCL::initialize(const void* voxels) {
-    clImage_ = new cl::Image3D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
-                               dimensions_.x, dimensions_.y, dimensions_.z);
+    clImage_ = std::make_unique<cl::Image3D>(cl::Image3D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
+                               dimensions_.x, dimensions_.y, dimensions_.z));
 
     if (voxels) {
         OpenCL::getPtr()->getQueue().enqueueWriteImage(*clImage_, true, glm::size3_t(0),
                                                        glm::size3_t(dimensions_), 0, 0,
                                                        const_cast<void*>(voxels));
     }
-
-    VolumeCL::initialize();
 }
 
 const size3_t& VolumeCL::getDimensions() const { return dimensions_; }
 
 void VolumeCL::setDimensions(size3_t dimensions) {
     dimensions_ = dimensions;
-    deinitialize();
-    initialize();
+    initialize(nullptr);
 }
 
 VolumeCL* VolumeCL::clone() const { return new VolumeCL(*this); }
-
-void VolumeCL::deinitialize() { delete clImage_; }
 
 void VolumeCL::upload(const void* data) {
     OpenCL::getPtr()->getQueue().enqueueWriteImage(
@@ -92,10 +87,10 @@ void VolumeCL::download(void* data) const {
 
 cl::ImageFormat VolumeCL::getFormat() const { return imageFormat_; }
 
-cl::Image3D& VolumeCL::getEditable() { return *static_cast<cl::Image3D*>(clImage_); }
+cl::Image3D& VolumeCL::getEditable() { return *clImage_; }
 
 const cl::Image3D& VolumeCL::get() const {
-    return *const_cast<const cl::Image3D*>(static_cast<const cl::Image3D*>(clImage_));
+    return *clImage_;
 }
 
 }  // namespace

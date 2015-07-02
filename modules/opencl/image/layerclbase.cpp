@@ -31,16 +31,6 @@
 
 namespace inviwo {
 
-LayerCLBase::LayerCLBase()
-    : clImage_(nullptr)
-{
-}
-
-LayerCLBase::LayerCLBase(const LayerCLBase& rhs) {
-}
-
-LayerCLBase::~LayerCLBase() {
-}
 
 } // namespace
 

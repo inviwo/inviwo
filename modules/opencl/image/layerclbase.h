@@ -36,20 +36,20 @@
 #include <modules/opencl/openclmoduledefine.h>
 
 namespace inviwo {
-// Parent classes are responsible for creating the appropriate cl::Image type (Image2D, Image3D, Image2DGL/ImageGL and so forth)
+
 // This class enables inviwo to use cl::Image(s) in a generic way (i.e. not caring if it is an Image2D or Image2DGL/ImageGL).
 class IVW_MODULE_OPENCL_API LayerCLBase {
 
 public:
-    LayerCLBase();
-    LayerCLBase(const LayerCLBase& other);
-    virtual ~LayerCLBase();
+    LayerCLBase() = default;
+    LayerCLBase(const LayerCLBase& other) = default;
+    virtual ~LayerCLBase() {};
 
-    virtual cl::Image& getEditable() { return *clImage_; }
-    virtual const cl::Image& get() const { return *const_cast<const cl::Image*>(clImage_); }
+    virtual cl::Image& getEditable() = 0;
+    virtual const cl::Image& get() const = 0;
 
 protected:
-    cl::Image* clImage_; // Derived class are responsible for allocating and deallocating this
+    
 };
 
 } // namespace
