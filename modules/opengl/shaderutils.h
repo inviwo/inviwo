@@ -53,7 +53,7 @@ namespace utilgl {
 // TemplateProperty
 template<typename T>
 void setShaderUniforms(Shader* shader, const TemplateProperty<T>& property, std::string name) {
-    shader->setUniform(name property.get());
+    shader->setUniform(name, property.get());
 }
 template<typename T>
 void setShaderUniforms(Shader* shader, const TemplateProperty<T>& property) {
