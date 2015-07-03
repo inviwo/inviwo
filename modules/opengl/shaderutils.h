@@ -95,6 +95,14 @@ void setShaderUniforms(Shader* shader, const TemplateOptionProperty<T>& property
     shader->setUniform(name, property.get());
 }
 
+// MinMax Property
+template <typename T>
+void setShaderUniforms(Shader* shader, const MinMaxProperty<T>& property, std::string name) {
+    shader->setUniform(name, property.get());
+}
+
+
+
 // Template magic...
 template <typename T, typename std::enable_if<std::is_base_of<Property, T>::value, int>::type = 0>
 void setUniforms(Shader* shader, const T& property) {
