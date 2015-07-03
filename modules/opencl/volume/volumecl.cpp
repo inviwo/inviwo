@@ -29,6 +29,7 @@
 
 #include <modules/opencl/volume/volumecl.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/stdextensions.h> // make_unique is c++14 but works on some compilers
 
 namespace inviwo {
 
@@ -56,7 +57,7 @@ VolumeCL::VolumeCL(const VolumeCL& rhs)
 VolumeCL::~VolumeCL() { }
 
 void VolumeCL::initialize(const void* voxels) {
-    clImage_ = std::make_unique<cl::Image3D>(cl::Image3D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
+    clImage_ = util::make_unique<cl::Image3D>(cl::Image3D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
                                dimensions_.x, dimensions_.y, dimensions_.z));
 
     if (voxels) {
