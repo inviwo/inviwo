@@ -29,6 +29,7 @@
 
 #include <modules/opencl/buffer/buffercl.h>
 
+
 namespace inviwo {
 
 BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage,

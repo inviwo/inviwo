@@ -35,6 +35,7 @@
 #include <modules/opencl/inviwoopencl.h>
 
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
+#include <memory>
 
 namespace inviwo {
 
