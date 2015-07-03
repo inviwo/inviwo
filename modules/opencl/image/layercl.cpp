@@ -63,10 +63,10 @@ void LayerCL::initialize(const void* texels) {
         // OpenCL::getPtr()->getQueue().enqueueUnmapMemObject(pinnedMem, mappedMem);
         // This should also use pinned memory...
         clImage_ =
-            util::make_unique<cl::Image2D>(cl::Image2D(OpenCL::getPtr()->getContext(),
+            util::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(),
                             CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
                             getFormat(), static_cast<size_t>(dimensions_.x),
-                            static_cast<size_t>(dimensions_.y), 0, const_cast<void*>(texels)));
+                            static_cast<size_t>(dimensions_.y), 0, const_cast<void*>(texels));
         // Alternatively first allocate memory on device and then transfer
         // layer2D_ = new cl::Layer2D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
         // getFormat(), dimensions_.x, dimensions_.y);
@@ -74,8 +74,8 @@ void LayerCL::initialize(const void* texels) {
         // glm::size3_t(dimensions_, 1), 0, 0, texels);
     } else {
         clImage_ =
-            util::make_unique<cl::Image2D>(cl::Image2D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
-                            static_cast<size_t>(dimensions_.x), static_cast<size_t>(dimensions_.y)));
+            util::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
+                            static_cast<size_t>(dimensions_.x), static_cast<size_t>(dimensions_.y));
     }
 }
 

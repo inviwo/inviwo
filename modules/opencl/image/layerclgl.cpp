@@ -43,8 +43,8 @@ LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* f
         CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
 
         if (it == LayerCLGL::clImageSharingMap_.end()) {
-            clImage_ = std::make_shared<cl::Image2DGL>(cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                GL_TEXTURE_2D, 0, texture_->getID()));
+            clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                GL_TEXTURE_2D, 0, texture_->getID());
             LayerCLGL::clImageSharingMap_.insert(
                 TextureCLImageSharingPair(texture_, clImage_));
         } else {
@@ -73,8 +73,8 @@ void LayerCLGL::initialize(Texture2D* texture) {
     CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
 
     if (it == LayerCLGL::clImageSharingMap_.end()) {
-        clImage_ = std::make_shared<cl::Image2DGL>(cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                                     GL_TEXTURE_2D, 0, texture->getID()));
+        clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                     GL_TEXTURE_2D, 0, texture->getID());
         LayerCLGL::clImageSharingMap_.insert(
             TextureCLImageSharingPair(texture_, clImage_));
     } else {
@@ -148,8 +148,8 @@ void LayerCLGL::notifyAfterTextureInitialization() {
         clImage_ = std::static_pointer_cast<cl::Image2DGL>(it->second);
     } else {
         try {
-            clImage_ = std::make_shared<cl::Image2DGL>(cl::Image2DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                GL_TEXTURE_2D, 0, texture_->getID()));
+            clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                GL_TEXTURE_2D, 0, texture_->getID());
             LayerCLGL::clImageSharingMap_.insert(
                 TextureCLImageSharingPair(texture_, clImage_));
         } catch (cl::Error& err) {

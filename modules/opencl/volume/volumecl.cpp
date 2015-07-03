@@ -57,8 +57,8 @@ VolumeCL::VolumeCL(const VolumeCL& rhs)
 VolumeCL::~VolumeCL() { }
 
 void VolumeCL::initialize(const void* voxels) {
-    clImage_ = util::make_unique<cl::Image3D>(cl::Image3D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
-                               dimensions_.x, dimensions_.y, dimensions_.z));
+    clImage_ = util::make_unique<cl::Image3D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
+                               dimensions_.x, dimensions_.y, dimensions_.z);
 
     if (voxels) {
         OpenCL::getPtr()->getQueue().enqueueWriteImage(*clImage_, true, glm::size3_t(0),

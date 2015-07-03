@@ -57,8 +57,8 @@ void VolumeCLGL::initialize() {
         const auto it = VolumeCLGL::clVolumeSharingMap_.find(texture_);
 
         if (it == VolumeCLGL::clVolumeSharingMap_.end()) {
-            clImage_ = std::make_shared<cl::Image3DGL>(cl::Image3DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                GL_TEXTURE_3D, 0, texture_->getID()));
+            clImage_ = std::make_shared<cl::Image3DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                GL_TEXTURE_3D, 0, texture_->getID());
             VolumeCLGL::clVolumeSharingMap_.insert(
                 Texture3DCLImageSharingPair(texture_, clImage_));
         } else {
@@ -102,8 +102,8 @@ void VolumeCLGL::notifyAfterTextureInitialization() {
         clImage_ = it->second;
     } else {
         try {
-            clImage_ = std::make_shared<cl::Image3DGL>(cl::Image3DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_3D,
-                0, texture_->getID()));
+            clImage_ = std::make_shared<cl::Image3DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_3D,
+                0, texture_->getID());
             VolumeCLGL::clVolumeSharingMap_.insert(
                 Texture3DCLImageSharingPair(texture_, clImage_));
         } catch (cl::Error& err) {

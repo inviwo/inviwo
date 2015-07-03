@@ -45,7 +45,7 @@ BufferCLGL::BufferCLGL(size_t size, const DataFormatBase* format, BufferType typ
 
         if (it == BufferCLGL::clBufferSharingMap_.end()) {
             clBuffer_ =
-                std::make_shared<cl::BufferGL>(cl::BufferGL(OpenCL::getPtr()->getContext(), readWriteFlag_, data->getId()));
+                std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_, data->getId());
             BufferCLGL::clBufferSharingMap_.insert(
                 BufferSharingPair(data, clBuffer_));
         } else {
@@ -65,8 +65,8 @@ BufferCLGL::BufferCLGL(const BufferCLGL& rhs)
     CLBufferSharingMap::iterator it = BufferCLGL::clBufferSharingMap_.find(bufferObject_);
 
     if (it == BufferCLGL::clBufferSharingMap_.end()) {
-        clBuffer_ = std::make_shared<cl::BufferGL>(cl::BufferGL(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                     bufferObject_->getId()));
+        clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+                                     bufferObject_->getId());
         BufferCLGL::clBufferSharingMap_.insert(
             BufferSharingPair(bufferObject_, clBuffer_));
     } else {
@@ -122,8 +122,8 @@ void BufferCLGL::onAfterBufferInitialization() {
     if (it != BufferCLGL::clBufferSharingMap_.end()) {
         clBuffer_ = it->second;
     } else {
-        clBuffer_ = std::make_shared<cl::BufferGL>(cl::BufferGL(OpenCL::getPtr()->getContext(), readWriteFlag_,
-            bufferObject_->getId()));
+        clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+            bufferObject_->getId());
         BufferCLGL::clBufferSharingMap_.insert(
             BufferSharingPair(bufferObject_, clBuffer_));
     }
