@@ -490,16 +490,9 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
         
         // Saving id order to preserve order of touch points at next touch event
         
-        std::vector<int>::iterator lastIdIdx = std::find(lastTouchIds_.begin(), lastTouchIds_.end(), touchPoint.id());
+        const auto lastIdIdx = std::find(lastTouchIds_.begin(), lastTouchIds_.end(), touchPoint.id());
 
         if (lastIdIdx != lastTouchIds_.end()) {
-            touchPoints.insert(touchPoints.begin() + (lastIdIdx - lastTouchIds_.begin()),
-                TouchPoint(touchPoint.id(), screenTouchPos,
-                (screenTouchPos) / screenSize,
-                prevScreenTouchPos,
-                (prevScreenTouchPos) / screenSize,
-                touchState, getDepthValueAtCoord(pixelCoord, depthLayerRAM)));
-
             if (touchState == TouchPoint::TOUCH_STATE_ENDED){
                 endedTouchIds.push_back(touchPoint.id());
             }
@@ -507,13 +500,23 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
         else{
             lastTouchIds_.push_back(touchPoint.id());
 
-            touchPoints.push_back(
-                TouchPoint(touchPoint.id(), screenTouchPos,
-                (screenTouchPos) / screenSize,
-                prevScreenTouchPos,
-                (prevScreenTouchPos) / screenSize,
-                touchState, getDepthValueAtCoord(pixelCoord, depthLayerRAM)));
+
         }
+        touchPoints.emplace_back(touchPoint.id(), screenTouchPos,
+            (screenTouchPos) / screenSize,
+            prevScreenTouchPos,
+            (prevScreenTouchPos) / screenSize,
+            touchState, getDepthValueAtCoord(pixelCoord, depthLayerRAM));
+    }
+    // Ensure that the order to the touch points are the same as last touch event
+    auto touchIndex = 0;
+    for (const auto& lastTouchPointId : lastTouchIds_) {
+        const auto touchPointIt = std::find_if(touchPoints.begin(), touchPoints.end(), [lastTouchPointId](const TouchPoint& p) { return p.getId() == lastTouchPointId; });
+        // Swap current location in the container with the location it was last touch event.
+        if (touchPointIt != touchPoints.end() && std::distance(touchPoints.begin(), touchPointIt) != touchIndex) {
+            std::swap(*(touchPoints.begin() + touchIndex), *touchPointIt);
+        }
+        ++touchIndex;
     }
 
     for (auto& endedId : endedTouchIds) {
