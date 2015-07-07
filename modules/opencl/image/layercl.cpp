@@ -29,7 +29,8 @@
 
 #include <modules/opencl/image/layercl.h>
 #include <modules/opencl/image/layerclresizer.h>
-#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/stdextensions.h> // make_unique is c++14 but works on some compilers
+
 namespace inviwo {
 
 LayerCL::LayerCL(size2_t dimensions, LayerType type, const DataFormatBase* format, const void* data)
@@ -44,7 +45,7 @@ LayerCL::LayerCL(const LayerCL& rhs) : LayerRepresentation(rhs), layerFormat_(rh
                                                   glm::size3_t(0), glm::size3_t(dimensions_, 1));
 }
 
-LayerCL::~LayerCL() {delete clImage_; }
+LayerCL::~LayerCL() { }
 
 void LayerCL::initialize(const void* texels) {
     if (texels != nullptr) {
@@ -62,7 +63,7 @@ void LayerCL::initialize(const void* texels) {
         // OpenCL::getPtr()->getQueue().enqueueUnmapMemObject(pinnedMem, mappedMem);
         // This should also use pinned memory...
         clImage_ =
-            new cl::Image2D(OpenCL::getPtr()->getContext(),
+            util::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(),
                             CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
                             getFormat(), static_cast<size_t>(dimensions_.x),
                             static_cast<size_t>(dimensions_.y), 0, const_cast<void*>(texels));
@@ -73,7 +74,7 @@ void LayerCL::initialize(const void* texels) {
         // glm::size3_t(dimensions_, 1), 0, 0, texels);
     } else {
         clImage_ =
-            new cl::Image2D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
+            util::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
                             static_cast<size_t>(dimensions_.x), static_cast<size_t>(dimensions_.y));
     }
 }
@@ -107,8 +108,7 @@ void LayerCL::setDimensions(size2_t dimensions) {
     cl::Image2D* resizedLayer2D = new cl::Image2D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
                                                   getFormat(), dimensions.x, dimensions.y);
     LayerCLResizer::resize(*clImage_, *resizedLayer2D, dimensions);
-    delete clImage_;
-    clImage_ = resizedLayer2D;
+    clImage_ = std::unique_ptr<cl::Image2D>(resizedLayer2D);
 }
 
 }  // namespace

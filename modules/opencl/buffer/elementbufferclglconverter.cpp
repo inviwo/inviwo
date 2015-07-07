@@ -46,10 +46,7 @@ ElementBufferRAM2CLGLConverter::ElementBufferRAM2CLGLConverter()
 DataRepresentation* ElementBufferCLGL2GLConverter::createFrom(const DataRepresentation* source) {
     DataRepresentation* destination = 0;
     const ElementBufferCLGL* src = static_cast<const ElementBufferCLGL*>(source);
-    ElementBufferObject* data = const_cast<ElementBufferObject*>(static_cast<ElementBufferObject*>(src->getBufferGL()));
-    destination = new ElementBufferGL(src->getSize(), src->getDataFormat(), src->getBufferType(), src->getBufferUsage(), data);
-    // Increase reference count to indicate that ElementBufferGL is also using the buffer
-    data->increaseRefCount();
+    destination = new ElementBufferGL(src->getSize(), src->getDataFormat(), src->getBufferType(), src->getBufferUsage(), src->getElementBufferObject());
     return destination;
 }
 
@@ -62,7 +59,7 @@ DataRepresentation* ElementBufferGL2CLGLConverter::createFrom(const DataRepresen
     DataRepresentation* destination = 0;
     const ElementBufferGL* src = static_cast<const ElementBufferGL*>(source);
     destination = new ElementBufferCLGL(src->getSize(), src->getDataFormat(), src->getBufferType(), src->getBufferUsage(),
-                                 const_cast<ElementBufferGL*>(src)->getBufferObject());
+        src->getElementBufferObject());
     return destination;
 }
 

@@ -112,7 +112,7 @@ bool wildcardStringMatch(const std::string &pattern, const std::string &str) {
             ++patternPtr;
             ++strPtr;
         }
-        else if (*strPtrSave == '\0') {
+        else if (!strPtrSave) {
             // early exit if the next string character is at the end
             return false;
         }
@@ -184,7 +184,7 @@ bool wildcardStringMatchDigits(const std::string &pattern, const std::string &st
             ++patternPtr;
             ++strPtr;
         }
-        else if (*strPtrSave == '\0') {
+        else if (!strPtrSave) {
             // early exit if the next string character is at the end
             return false;
         }

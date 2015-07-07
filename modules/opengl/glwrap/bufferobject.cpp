@@ -34,7 +34,6 @@ namespace inviwo {
 BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, BufferType type,
                            BufferUsage usage, GLenum target /*= GL_ARRAY_BUFFER*/)
     : Observable<BufferObjectObserver>()
-    , ReferenceCounter()
     , target_(target)
     , glFormat_(getGLFormats()->getGLFormat(format->getId()))
     , type_(type) {
@@ -58,20 +57,65 @@ BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, Buf
 
 BufferObject::BufferObject(const BufferObject& rhs)
     : Observable<BufferObjectObserver>()
-    , ReferenceCounter()
     , usageGL_(rhs.usageGL_)
     , target_(rhs.target_)
     , glFormat_(rhs.glFormat_)
     , type_(rhs.type_) {
     glGenBuffers(1, &id_);
+    *this = rhs;
+}
 
-    // TODO: Verify that data copying works. What about backwards compability?
-    // Initialize size of buffer
-    initialize(nullptr, rhs.sizeInBytes_);
-    // Now bind the second buffer, this buffer is already bound
-    glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
-    // Copy data (OpenGL 3.1 functionality...)
-    glCopyBufferSubData(GL_COPY_READ_BUFFER, target_, 0, 0, sizeInBytes_);
+BufferObject::BufferObject(BufferObject&& rhs)
+    : Observable<BufferObjectObserver>(std::move(rhs))
+    , usageGL_(rhs.usageGL_)
+    , target_(rhs.target_)
+    , glFormat_(rhs.glFormat_)
+    , type_(rhs.type_)
+    // Steal buffer
+    , id_(rhs.id_)
+{
+    // Free resources from other
+    rhs.id_ = 0;
+}
+
+BufferObject& BufferObject::operator=(const BufferObject& rhs) {
+    if (this != &rhs) {
+        Observable<BufferObjectObserver>::operator=(rhs);
+        usageGL_ = rhs.usageGL_;
+        target_ = rhs.target_;
+        glFormat_ = rhs.glFormat_;
+        type_ = rhs.type_;
+        
+        // TODO: Verify that data copying works. What about backwards compability?
+        // Initialize size of buffer
+        initialize(nullptr, rhs.sizeInBytes_);
+        // Now bind the second buffer, this buffer is already bound
+        glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
+        // Copy data (OpenGL 3.1 functionality...)
+        glCopyBufferSubData(GL_COPY_READ_BUFFER, target_, 0, 0, sizeInBytes_);
+    }
+    return *this;
+}
+
+BufferObject& BufferObject::operator=(BufferObject&& rhs) {
+    if (this != &rhs) {
+        // Free existing resources
+        glDeleteBuffers(1, &id_);
+
+        // Steal resources
+        Observable<BufferObjectObserver>::operator=(std::move(rhs));
+
+        id_ = rhs.id_;
+        target_ = rhs.target_;
+        usageGL_ = rhs.usageGL_;
+        glFormat_ = rhs.glFormat_;
+        type_ = rhs.type_;
+        sizeInBytes_ = rhs.sizeInBytes_;
+
+        // Release resources from source object
+        rhs.id_ = 0;
+    }
+    return *this;
 }
 
 BufferObject::~BufferObject() { glDeleteBuffers(1, &id_); }

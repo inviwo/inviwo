@@ -32,9 +32,9 @@
 namespace inviwo {
 
 BufferGL::BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage,
-                   BufferObject* data)
+                   std::shared_ptr<BufferObject> data)
     : BufferRepresentation(format, type, usage)
-    , buffer_(data ? data : new BufferObject(size * format->getSize(), format, type, usage))
+    , buffer_(data ? data : std::make_shared<BufferObject>(size * format->getSize(), format, type, usage))
     , bufferArray_(nullptr)
     , size_(size) {
     LGL_ERROR_SUPPRESS;
@@ -47,9 +47,6 @@ BufferGL::BufferGL(const BufferGL& rhs)
     , size_(rhs.size_) {}
 
 BufferGL::~BufferGL() {
-    if (buffer_ && buffer_->decreaseRefCount() <= 0) {
-        delete buffer_;
-    }
     delete bufferArray_;
 }
 
@@ -81,7 +78,7 @@ void BufferGL::enable() const {
     if (!bufferArray_) {
         bufferArray_ = new BufferObjectArray();
         bufferArray_->bind();
-        bufferArray_->attachBufferObject(buffer_, 0);
+        bufferArray_->attachBufferObject(buffer_.get(), 0);
     } else {
         bufferArray_->bind();
     }

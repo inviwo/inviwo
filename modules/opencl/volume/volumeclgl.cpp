@@ -28,50 +28,45 @@
  *********************************************************************************/
 
 #include <modules/opencl/volume/volumeclgl.h>
-#include <modules/opencl/openclsharing.h>
-#include <inviwo/core/util/assertion.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
+CLTexture3DSharingMap VolumeCLGL::clVolumeSharingMap_;
 
 VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
     : VolumeRepresentation(format)
     , dimensions_(data != nullptr ? data->getDimensions() : size3_t(64))
     , texture_(data) {
-    if (data) {
-        initialize(data);
-    }
+    initialize();
 }
 
 VolumeCLGL::VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format, std::shared_ptr<Texture3D> data)
     : VolumeRepresentation(format), dimensions_(dimensions), texture_(data) {
-    initialize(data.get());
+    initialize();
 }
 
 VolumeCLGL::VolumeCLGL(const VolumeCLGL& rhs)
-    : VolumeRepresentation(rhs), dimensions_(rhs.dimensions_) {
-    initialize(rhs.texture_.get());
+    : VolumeRepresentation(rhs), dimensions_(rhs.dimensions_), texture_(rhs.texture_->clone()) {
+    initialize();
 }
 
 VolumeCLGL::~VolumeCLGL() { deinitialize(); }
 
-void VolumeCLGL::initialize(Texture3D* texture) {
-    ivwAssert(texture != 0, "Cannot initialize with null OpenGL texture");
+void VolumeCLGL::initialize() {
+    if (texture_) {
+        const auto it = VolumeCLGL::clVolumeSharingMap_.find(texture_);
 
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture);
+        if (it == VolumeCLGL::clVolumeSharingMap_.end()) {
+            clImage_ = std::make_shared<cl::Image3DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                GL_TEXTURE_3D, 0, texture_->getID());
+            VolumeCLGL::clVolumeSharingMap_.insert(
+                Texture3DCLImageSharingPair(texture_, clImage_));
+        } else {
+            clImage_ = it->second;
+        }
 
-    if (it == OpenCLImageSharing::clImageSharingMap_.end()) {
-        clImage_ = new cl::Image3DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                                     GL_TEXTURE_3D, 0, texture->getID());
-        OpenCLImageSharing::clImageSharingMap_.insert(
-            TextureCLImageSharingPair(texture_.get(), new OpenCLImageSharing(clImage_)));
-    } else {
-        clImage_ = it->second->sharedMemory_;
-        it->second->increaseRefCount();
+        texture_->addObserver(this);
     }
-
-    texture->addObserver(this);
-    VolumeCLGL::initialize();
 }
 
 const size3_t& VolumeCLGL::getDimensions() const { return dimensions_; }
@@ -80,43 +75,41 @@ VolumeCLGL* VolumeCLGL::clone() const { return new VolumeCLGL(*this); }
 
 void VolumeCLGL::deinitialize() {
     // Delete OpenCL image before texture
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_.get());
-
-    if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
-        if (it->second->decreaseRefCount() == 0) {
-            delete it->second->sharedMemory_;
-            it->second->sharedMemory_ = 0;
-            delete it->second;
-            OpenCLImageSharing::clImageSharingMap_.erase(it);
+    const auto it = VolumeCLGL::clVolumeSharingMap_.find(texture_);
+    clImage_.reset();
+    if (it != VolumeCLGL::clVolumeSharingMap_.end()) {
+        if (it->second.use_count() == 1) {
+            VolumeCLGL::clVolumeSharingMap_.erase(it);
         }
     }
 }
 
 void VolumeCLGL::notifyBeforeTextureInitialization() {
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_.get());
-
-    if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
-        if (it->second->decreaseRefCount() == 0) {
-            delete it->second->sharedMemory_;
-            it->second->sharedMemory_ = 0;
+    const auto it = VolumeCLGL::clVolumeSharingMap_.find(texture_);
+    // Release reference
+    clImage_.reset();
+    if (it != VolumeCLGL::clVolumeSharingMap_.end()) {
+        if (it->second.use_count() == 1) {
+            VolumeCLGL::clVolumeSharingMap_.erase(it);
         }
     }
-
-    clImage_ = 0;
 }
 
 void VolumeCLGL::notifyAfterTextureInitialization() {
-    CLTextureSharingMap::iterator it = OpenCLImageSharing::clImageSharingMap_.find(texture_.get());
+    const auto it = VolumeCLGL::clVolumeSharingMap_.find(texture_);
 
-    if (it != OpenCLImageSharing::clImageSharingMap_.end()) {
-        if (it->second->getRefCount() == 0) {
-            it->second->sharedMemory_ =
-                new cl::Image3DGL(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_3D,
-                                  0, texture_->getID());
+    if (it != VolumeCLGL::clVolumeSharingMap_.end()) {
+        clImage_ = it->second;
+    } else {
+        try {
+            clImage_ = std::make_shared<cl::Image3DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_3D,
+                0, texture_->getID());
+            VolumeCLGL::clVolumeSharingMap_.insert(
+                Texture3DCLImageSharingPair(texture_, clImage_));
+        } catch (cl::Error& err) {
+            LogOpenCLError(err.err());
+            throw err;
         }
-
-        clImage_ = it->second->sharedMemory_;
-        it->second->increaseRefCount();
     }
 }
 
@@ -146,10 +139,10 @@ void VolumeCLGL::setDimensions(size3_t dimensions) {
     texture_->uploadAndResize(nullptr, dimensions);
 }
 
-cl::Image3D& VolumeCLGL::getEditable() { return *static_cast<cl::Image3D*>(clImage_); }
+cl::Image3DGL& VolumeCLGL::getEditable() { return *clImage_; }
 
-const cl::Image3D& VolumeCLGL::get() const {
-    return *const_cast<const cl::Image3D*>(static_cast<const cl::Image3D*>(clImage_));
+const cl::Image3DGL& VolumeCLGL::get() const {
+    return *clImage_;
 }
 
 std::shared_ptr<Texture3D> VolumeCLGL::getTexture() const {

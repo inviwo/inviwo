@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-// Parent classes are responsible for creating the appropriate cl::Image type (Image2D, Image3D, Image2DGL/ImageGL and so forth)
+
 // This class enables inviwo to use cl::Image(s) in a generic way (i.e. not caring if it is an Image2D or Image2DGL/ImageGL).
 class IVW_MODULE_OPENCL_API VolumeCLBase {
 
@@ -64,8 +64,8 @@ public:
     VolumeCLBase(const VolumeCLBase& other);
     virtual ~VolumeCLBase();
 
-    virtual cl::Image& getEditable() { return *clImage_; }
-    virtual const cl::Image& get() const { return *const_cast<const cl::Image*>(clImage_); }
+    virtual cl::Image& getEditable() = 0;
+    virtual const cl::Image& get() const = 0;
 
     /** 
      * \brief Calculates scaling for 12-bit data dependent on internal OpenCL format.
@@ -75,8 +75,7 @@ public:
     virtual vec2 getVolumeDataOffsetAndScaling(const Volume* volume) const;
     const Buffer& getVolumeStruct(const Volume* volume) const;
 protected:
-    cl::Image* clImage_;
-    Buffer volumeStruct_;
+    Buffer volumeStruct_; // Contains VolumeParameters
 };
 
 } // namespace

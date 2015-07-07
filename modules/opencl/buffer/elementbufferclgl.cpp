@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-ElementBufferCLGL::ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, BufferObject* data,
+ElementBufferCLGL::ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, std::shared_ptr<ElementBufferObject> data,
                        cl_mem_flags readWriteFlag)
     : BufferCLGL(size, format, type, usage, data, readWriteFlag)
 {
@@ -53,7 +53,7 @@ namespace cl {
 template <>
 cl_int Kernel::setArg(cl_uint index, const inviwo::ElementBufferCLGL& value)
 {
-    return setArg(index, value.getBuffer());
+    return setArg(index, value.get());
 }
 
 

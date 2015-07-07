@@ -36,7 +36,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/kernelowner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openclcapabilities.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openclmodule.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/openclsharing.h
     ${CMAKE_CURRENT_SOURCE_DIR}/syncclgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utilcl.h
 )
@@ -76,7 +75,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/kernelowner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openclmodule.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openclcapabilities.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/openclsharing.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/syncclgl.cpp
 
 )

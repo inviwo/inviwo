@@ -52,11 +52,10 @@ DataRepresentation* BufferCLGL2RAMConverter::createFrom(const DataRepresentation
     const BufferCLGL* src = static_cast<const BufferCLGL*>(source);
     size_t size = src->getSize();
     destination = createBufferRAM(size, src->getDataFormat(), src->getBufferType(), src->getBufferUsage());
-    BufferObject* buffer = src->getBufferGL();
 
     if (destination) {
         BufferRAM* dst = static_cast<BufferRAM*>(destination);
-        buffer->download(dst->getData());
+        src->getBufferGL()->download(dst->getData());
     } else {
         LogError("Invalid conversion or not implemented");
     }
@@ -78,10 +77,7 @@ void BufferCLGL2RAMConverter::update(const DataRepresentation* source, DataRepre
 DataRepresentation* BufferCLGL2GLConverter::createFrom(const DataRepresentation* source) {
     DataRepresentation* destination = 0;
     const BufferCLGL* src = static_cast<const BufferCLGL*>(source);
-    BufferObject* data = const_cast<BufferObject*>(src->getBufferGL());
-    destination = new BufferGL(src->getSize(), src->getDataFormat(), src->getBufferType(), src->getBufferUsage(), data);
-    // Increase reference count to indicate that BufferGL is also using the buffer
-    data->increaseRefCount();
+    destination = new BufferGL(src->getSize(), src->getDataFormat(), src->getBufferType(), src->getBufferUsage(), src->getBufferGL());
     return destination;
 }
 
@@ -94,7 +90,7 @@ DataRepresentation* BufferGL2CLGLConverter::createFrom(const DataRepresentation*
     DataRepresentation* destination = 0;
     const BufferGL* src = static_cast<const BufferGL*>(source);
     destination = new BufferCLGL(src->getSize(), src->getDataFormat(), src->getBufferType(), src->getBufferUsage(),
-                                 const_cast<BufferGL*>(src)->getBufferObject());
+                                 src->getBufferObject());
     return destination;
 }
 
@@ -105,8 +101,6 @@ void BufferGL2CLGLConverter::update(const DataRepresentation* source, DataRepres
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }
-
-    // FIXME: Do we need to recreate shared CLGL buffer?
 }
 
 DataRepresentation* BufferCLGL2CLConverter::createFrom(const DataRepresentation* source)
@@ -118,7 +112,7 @@ DataRepresentation* BufferCLGL2CLConverter::createFrom(const DataRepresentation*
     {SyncCLGL glSync;
     glSync.addToAquireGLObjectList(src);
     glSync.aquireAllObjects();
-    OpenCL::getPtr()->getQueue().enqueueCopyBuffer(src->getBuffer(), static_cast<BufferCL*>(destination)->getBuffer(), 0, 0, src->getSize()*src->getSizeOfElement());
+    OpenCL::getPtr()->getQueue().enqueueCopyBuffer(src->get(), static_cast<BufferCL*>(destination)->get(), 0, 0, src->getSize()*src->getSizeOfElement());
     }
     return destination;
 }
@@ -134,7 +128,7 @@ void BufferCLGL2CLConverter::update(const DataRepresentation* source, DataRepres
     {SyncCLGL glSync;
     glSync.addToAquireGLObjectList(src);
     glSync.aquireAllObjects();
-    OpenCL::getPtr()->getQueue().enqueueCopyBuffer(src->getBuffer(), dst->getBuffer(), 0, 0, src->getSize()*src->getSizeOfElement());
+    OpenCL::getPtr()->getQueue().enqueueCopyBuffer(src->get(), dst->get(), 0, 0, src->getSize()*src->getSizeOfElement());
     }
 }
 

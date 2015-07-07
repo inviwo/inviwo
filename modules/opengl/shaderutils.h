@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -104,6 +105,14 @@ template <typename T>
 void setShaderUniforms(Shader* shader, const TemplateOptionProperty<T>& property, std::string name) {
     shader->setUniform(name, property.get());
 }
+
+// MinMax Property
+template <typename T>
+void setShaderUniforms(Shader* shader, const MinMaxProperty<T>& property, std::string name) {
+    shader->setUniform(name, property.get());
+}
+
+
 
 // Template magic...
 template <typename T, typename std::enable_if<std::is_base_of<Property, T>::value, int>::type = 0>

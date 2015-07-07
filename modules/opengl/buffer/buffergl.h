@@ -41,8 +41,18 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API BufferGL : public BufferRepresentation {
 public:
+    /** 
+     * \brief Create a buffer stored on the GPU.
+     * 
+     * @param size_t size Size in bytes.
+     * @param const DataFormatBase * format Data format 
+     * @param BufferType type What kind of data is stored (positions, normals...) ? Will determine location in shader. 
+     * @param BufferUsage usage STATIC if not changing all the time, else DYNAMIC.
+     * @param std::shared_ptr<BufferObject> data Will be created if nullptr.
+     * @return  
+     */
     BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage,
-             BufferObject* data = nullptr);
+        std::shared_ptr<BufferObject> data = std::shared_ptr<BufferObject>(nullptr));
     BufferGL(const BufferGL& rhs);
     virtual ~BufferGL();
     virtual BufferGL* clone() const;
@@ -53,8 +63,7 @@ public:
     GLenum getFormatType() const;
     GLuint getId() const;
 
-    BufferObject* getBufferObject() { return buffer_; }
-    const BufferObject* getBufferObject() const { return buffer_; }
+    virtual std::shared_ptr<BufferObject> getBufferObject() const { return buffer_; }
 
     void bind() const;
 
@@ -65,8 +74,8 @@ public:
     void enable() const;
     void disable() const;
 
-private:
-    BufferObject* buffer_;
+protected:
+    std::shared_ptr<BufferObject> buffer_;
     mutable BufferObjectArray* bufferArray_;
     size_t size_;
 };

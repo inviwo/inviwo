@@ -41,10 +41,10 @@ LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* forma
         GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
 
         if (getLayerType() == DEPTH_LAYER) {
-            texture_ = std::make_shared<Texture2D>(Texture2D(getDimensions(), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
-                glFormat.type, GL_NEAREST));
+            texture_ = std::make_shared<Texture2D>(getDimensions(), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
+                glFormat.type, GL_NEAREST);
         } else {
-            texture_ = std::make_shared<Texture2D>(Texture2D(getDimensions(), glFormat, GL_LINEAR));
+            texture_ = std::make_shared<Texture2D>(getDimensions(), glFormat, GL_LINEAR);
         }
     }
 }

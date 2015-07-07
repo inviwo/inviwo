@@ -41,12 +41,16 @@
 
 namespace inviwo {
 
+typedef std::pair< std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL> > BufferSharingPair;
+typedef std::map< std::shared_ptr<BufferObject>, std::shared_ptr<cl::BufferGL> > CLBufferSharingMap;
+
+
 class IVW_MODULE_OPENCL_API BufferCLGL : public BufferCLBase,
                                          public BufferRepresentation,
                                          public BufferObjectObserver {
 public:
     BufferCLGL(size_t size, const DataFormatBase* format, BufferType type,
-               BufferUsage usage = STATIC, BufferObject* data = nullptr,
+        BufferUsage usage, std::shared_ptr<BufferObject> data,
                cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     BufferCLGL(const BufferCLGL& rhs);
     virtual ~BufferCLGL();
@@ -56,7 +60,10 @@ public:
     virtual void setSize(size_t size) override;
 
     const cl::Buffer& getBuffer() const { return *(clBuffer_); }
-    BufferObject* getBufferGL() const { return bufferObject_; }
+    std::shared_ptr<BufferObject> getBufferGL() const { return bufferObject_; }
+
+    cl::Buffer& getEditable() { return *clBuffer_; }
+    const cl::Buffer& get() const { return *clBuffer_; }
 
     void aquireGLObject(std::vector<cl::Event>* syncEvents = nullptr) const {
         std::vector<cl::Memory> syncBuffers(1, *clBuffer_);
@@ -79,9 +86,12 @@ public:
     void onAfterBufferInitialization();
 
 protected:
-    BufferObject* bufferObject_;
+    static CLBufferSharingMap clBufferSharingMap_;
+
+    std::shared_ptr<BufferObject> bufferObject_;
     cl_mem_flags readWriteFlag_;
     size_t size_;
+    std::shared_ptr<cl::BufferGL> clBuffer_; ///< Potentially shared with other BufferCLGL
 };
 
 }  // namespace

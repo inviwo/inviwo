@@ -126,46 +126,50 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
 MeshRenderProcessorGL::~MeshRenderProcessorGL() {}
 
 void MeshRenderProcessorGL::initializeResources() {
+    addCommonShaderDefines(shader_);
+}
+
+void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     // shading defines
-    utilgl::addShaderDefines(&shader_, lightingProperty_);
+    utilgl::addShaderDefines(&shader, lightingProperty_);
     int layerID = 0;
 
     if (colorLayer_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
+        shader.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
         layerID++;
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
+        shader.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
     }
 
     if (texCoordLayer_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("TEXCOORD_LAYER");
-        shader_.getFragmentShaderObject()->addOutDeclaration("tex_coord_out", layerID);
+        shader.getFragmentShaderObject()->addShaderDefine("TEXCOORD_LAYER");
+        shader.getFragmentShaderObject()->addOutDeclaration("tex_coord_out", layerID);
         layerID++;
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("TEXCOORD_LAYER");
+        shader.getFragmentShaderObject()->removeShaderDefine("TEXCOORD_LAYER");
     }
 
     if (normalsLayer_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
-        shader_.getFragmentShaderObject()->addOutDeclaration("normals_out", layerID);
+        shader.getFragmentShaderObject()->addShaderDefine("NORMALS_LAYER");
+        shader.getFragmentShaderObject()->addOutDeclaration("normals_out", layerID);
         layerID++;
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
+        shader.getFragmentShaderObject()->removeShaderDefine("NORMALS_LAYER");
     }
 
     if (viewNormalsLayer_.get()) {
-        shader_.getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
-        shader_.getFragmentShaderObject()->addOutDeclaration("view_normals_out", layerID);
+        shader.getFragmentShaderObject()->addShaderDefine("VIEW_NORMALS_LAYER");
+        shader.getFragmentShaderObject()->addOutDeclaration("view_normals_out", layerID);
         layerID++;
     } else {
-        shader_.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
+        shader.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
     }
 
     for (std::size_t i = outport_.getData()->getNumberOfColorLayers(); i < static_cast<std::size_t>(layerID); i++) {
         outport_.getData()->addColorLayer(outport_.getData()->getColorLayer(0)->clone());
     }
 
-    shader_.build();
+    shader.build();
 }
 
 void MeshRenderProcessorGL::changeRenderMode() {

@@ -45,11 +45,8 @@ public:
              const void* data = nullptr);
     virtual ~VolumeCL();
     VolumeCL(const VolumeCL& rhs);
-    virtual void initialize(){};
-    virtual void deinitialize();
-    virtual VolumeCL* clone() const;
 
-    void initialize(const void* voxels);
+    virtual VolumeCL* clone() const;
 
     virtual const size3_t& getDimensions() const override;
     virtual void setDimensions(size3_t dimensions) override;
@@ -68,8 +65,10 @@ public:
     virtual const cl::Image3D& get() const;
 
 protected:
+    void initialize(const void* voxels);
     size3_t dimensions_;
     cl::ImageFormat imageFormat_;
+    std::unique_ptr<cl::Image3D> clImage_;
 };
 
 }  // namespace

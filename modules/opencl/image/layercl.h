@@ -60,13 +60,12 @@ public:
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
     cl::ImageFormat getFormat() const { return layerFormat_; }
 
-    virtual cl::Image2D& getEditable() { return *static_cast<cl::Image2D*>(clImage_); }
-    virtual const cl::Image2D& get() const {
-        return *const_cast<const cl::Image2D*>(static_cast<const cl::Image2D*>(clImage_));
-    }
+    virtual cl::Image2D& getEditable() {    return *clImage_;   }
+    virtual const cl::Image2D& get() const {    return *clImage_;   }
 
 protected:
     cl::ImageFormat layerFormat_;
+    std::unique_ptr<cl::Image2D> clImage_; 
 };
 
 }  // namespace

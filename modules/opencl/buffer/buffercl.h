@@ -35,6 +35,7 @@
 #include <modules/opencl/inviwoopencl.h>
 
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
+#include <memory>
 
 namespace inviwo {
 
@@ -61,8 +62,8 @@ public:
 
     const Buffer* getAttribute() const;
 
-    cl::Buffer getEditableBuffer() { return *clBuffer_; }
-    const cl::Buffer& getBuffer() const { return *const_cast<const cl::Buffer*>(clBuffer_); }
+    cl::Buffer& getEditable() { return *clBuffer_; }
+    const cl::Buffer& get() const { return *clBuffer_; }
 
     /**
      * \brief Copies data from RAM to OpenCL.
@@ -84,6 +85,7 @@ public:
 protected:
     cl_mem_flags readWriteFlag_;
     size_t size_;
+    std::unique_ptr<cl::Buffer> clBuffer_;  
 };
 
 }  // namespace
