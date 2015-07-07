@@ -104,7 +104,7 @@ ConsoleWidget::ConsoleWidget(QWidget* parent)
 
 
     connect(this, SIGNAL(logMessageSignal(LogLevel, QString)), this, SLOT(logMessage(LogLevel, QString)));
-    connect(this, SIGNAL(cleartSignal()), this, SLOT(clear()));
+    connect(this, SIGNAL(clearSignal()), this, SLOT(clear()));
 }
 
 ConsoleWidget::~ConsoleWidget() {
