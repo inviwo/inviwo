@@ -57,6 +57,9 @@ THE SOFTWARE.
 // Modifications: Brandon Amos
 
 #include <inviwo/core/util/shuntingyard.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/exception.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <cstdlib>
 #include <stdexcept>

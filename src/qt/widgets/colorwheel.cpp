@@ -42,6 +42,7 @@
 #include <QtCore/qmath.h> 
 
 #include <algorithm>
+#include <cmath>
 
 namespace inviwo {
 

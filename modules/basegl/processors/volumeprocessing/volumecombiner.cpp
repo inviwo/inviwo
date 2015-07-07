@@ -59,7 +59,7 @@ VolumeCombiner::VolumeCombiner()
     addProperty(scales_);
 
     inport_.onChange([this]() {
-        int i = 0;
+        size_t i = 0;
         for (const auto& item : inport_.getSourceVectorData()) {
             if (scales_.getProperties().size() <= i) {
                 auto p = new FloatProperty(
@@ -105,7 +105,7 @@ void VolumeCombiner::buildEquation() {
         std::stringstream sample;
         
         int i = 0;
-        for (const auto& vol : inport_) {
+        for (const auto& dummy : inport_) {
             const std::string id(i == 0 ? "" : toString(i));
             
             symbols["s" + toString(i + 1)] = "scale" + id;
