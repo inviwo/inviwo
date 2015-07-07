@@ -41,7 +41,7 @@ Property::Property(const std::string& identifier, const std::string& displayName
     : PropertyObservable()
     , IvwSerializable()
     , MetaDataOwner()
-    , serializationMode_(DEFAULT)
+    , serializationMode_(PropertySerializationMode::DEFAULT)
     , identifier_(identifier)
     , displayName_("displayName", displayName)
     , readOnly_("readonly", false)
@@ -215,7 +215,7 @@ bool Property::isPropertyModified() const {
 void Property::serialize(IvwSerializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("identifier", identifier_, true);
-    if (serializationMode_ == ALL || !displayName_.isDefault()) {
+    if (serializationMode_ == PropertySerializationMode::ALL || !displayName_.isDefault()) {
         s.serialize(displayName_.name, displayName_.value, true);
     }
     semantics_.serialize(s, serializationMode_);

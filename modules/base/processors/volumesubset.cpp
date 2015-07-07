@@ -59,9 +59,9 @@ VolumeSubset::VolumeSubset() : Processor()
 
     // Since the ranges depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
-    rangeX_.setSerializationMode(ALL);
-    rangeY_.setSerializationMode(ALL);
-    rangeZ_.setSerializationMode(ALL);
+    rangeX_.setSerializationMode(PropertySerializationMode::ALL);
+    rangeY_.setSerializationMode(PropertySerializationMode::ALL);
+    rangeZ_.setSerializationMode(PropertySerializationMode::ALL);
 
     inport_.onChange(this, &VolumeSubset::onVolumeChange);
 }

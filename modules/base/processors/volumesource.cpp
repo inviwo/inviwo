@@ -83,9 +83,9 @@ VolumeSource::VolumeSource()
     format_.setReadOnly(true);
     dimensions_.setCurrentStateAsDefault();
     format_.setCurrentStateAsDefault();
-    dataRange_.setSerializationMode(ALL);
-    valueRange_.setSerializationMode(ALL);
-    valueUnit_.setSerializationMode(ALL);
+    dataRange_.setSerializationMode(PropertySerializationMode::ALL);
+    valueRange_.setSerializationMode(PropertySerializationMode::ALL);
+    valueUnit_.setSerializationMode(PropertySerializationMode::ALL);
     
     information_.addProperty(dimensions_);
     information_.addProperty(format_);
@@ -95,21 +95,21 @@ VolumeSource::VolumeSource()
     addProperty(information_);
 
     a_.setReadOnly(true);
-    a_.setSerializationMode(ALL);
+    a_.setSerializationMode(PropertySerializationMode::ALL);
     b_.setReadOnly(true);
-    b_.setSerializationMode(ALL);
+    b_.setSerializationMode(PropertySerializationMode::ALL);
     c_.setReadOnly(true);
-    c_.setSerializationMode(ALL);
+    c_.setSerializationMode(PropertySerializationMode::ALL);
     offset_.setReadOnly(true);
-    offset_.setSerializationMode(ALL);
+    offset_.setSerializationMode(PropertySerializationMode::ALL);
     
-    overrideA_.setSerializationMode(ALL);
+    overrideA_.setSerializationMode(PropertySerializationMode::ALL);
     overrideA_.setVisible(false);
-    overrideB_.setSerializationMode(ALL);
+    overrideB_.setSerializationMode(PropertySerializationMode::ALL);
     overrideB_.setVisible(false);
-    overrideC_.setSerializationMode(ALL);
+    overrideC_.setSerializationMode(PropertySerializationMode::ALL);
     overrideC_.setVisible(false);
-    overrideOffset_.setSerializationMode(ALL);
+    overrideOffset_.setSerializationMode(PropertySerializationMode::ALL);
     overrideOffset_.setVisible(false);
     
     overRideDefaults_.onChange(this, &VolumeSource::onOverrideChange);
@@ -126,7 +126,7 @@ VolumeSource::VolumeSource()
         
     playSequence_.onChange(this, &VolumeSource::onPlaySequenceToggled);
     selectedSequenceIndex_.onChange(this, &VolumeSource::onSequenceIndexChanged);
-    selectedSequenceIndex_.setSerializationMode(ALL);
+    selectedSequenceIndex_.setSerializationMode(PropertySerializationMode::ALL);
     volumeSequence_.addProperty(selectedSequenceIndex_);
     volumeSequence_.addProperty(playSequence_);
     volumeSequence_.addProperty(volumesPerSecond_);

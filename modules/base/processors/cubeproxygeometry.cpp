@@ -57,9 +57,9 @@ CubeProxyGeometry::CubeProxyGeometry()
 
     // Since the clips depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
-    clipX_.setSerializationMode(ALL);
-    clipY_.setSerializationMode(ALL);
-    clipZ_.setSerializationMode(ALL);
+    clipX_.setSerializationMode(PropertySerializationMode::ALL);
+    clipY_.setSerializationMode(PropertySerializationMode::ALL);
+    clipZ_.setSerializationMode(PropertySerializationMode::ALL);
 
     inport_.onChange(this, &CubeProxyGeometry::onVolumeChange);
 }

@@ -131,7 +131,7 @@ void SurfaceExtraction::updateColors() {
         FloatVec4Property *colorProp = new FloatVec4Property(color + toString(i), dispName + toString(i + 1), defaultColor[i % 11]);
         colorProp->setCurrentStateAsDefault();
         colorProp->setSemantics(PropertySemantics::Color);
-        colorProp->setSerializationMode(ALL);
+        colorProp->setSerializationMode(PropertySerializationMode::ALL);
         colors_.addProperty(colorProp);
     }
 }

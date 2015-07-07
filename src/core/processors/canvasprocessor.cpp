@@ -93,7 +93,7 @@ CanvasProcessor::CanvasProcessor()
     saveLayerButton_.onChange(this, &CanvasProcessor::saveImageLayer);
     addProperty(saveLayerButton_);
 
-    colorLayer_.setSerializationMode(ALL);
+    colorLayer_.setSerializationMode(PropertySerializationMode::ALL);
 
     visibleLayer_.onChange([&](){
         colorLayer_.setVisible(visibleLayer_.get() == COLOR_LAYER);
