@@ -52,7 +52,6 @@ public:
     ProcessorObserver() : Observer(){};
     // TODO: Use separate class for property observation if necessary
     virtual void onAboutPropertyChange(Property*){};
-    virtual void onProcessorChanged(Processor*){};
     virtual void onProcessorInvalidationBegin(Processor*){};
     virtual void onProcessorInvalidationEnd(Processor*){};
     virtual void onProcessorRequestEvaluate(Processor*){};
@@ -75,14 +74,6 @@ public:
 class IVW_CORE_API ProcessorObservable : public Observable<ProcessorObserver> {
 public:
     ProcessorObservable() : Observable<ProcessorObserver>(){};
-
-    void notifyObservers(Processor* p) const {
-        ObserverSet localObservers = *observers_;
-
-        for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-            static_cast<ProcessorObserver*>(*it)->onProcessorChanged(p);
-        }
-    }
 
     // TODO: Use separate class for property observation if necessary
     void notifyObserversAboutPropertyChange(Property* p) const {

@@ -102,6 +102,7 @@ std::string Property::getIdentifier() const {
 void Property::setIdentifier(const std::string& identifier) {
     identifier_ = identifier;
     notifyObserversOnSetIdentifier(identifier_);
+    notifyAboutChange();
 }
 std::vector<std::string> Property::getPath() const {
     std::vector<std::string> path;
@@ -117,6 +118,7 @@ std::string Property::getDisplayName() const { return displayName_; }
 void Property::setDisplayName(const std::string& displayName) {
     displayName_ = displayName;
     notifyObserversOnSetDisplayName(displayName_);
+    notifyAboutChange();
 }
 
 PropertySemantics Property::getSemantics() const { return semantics_; }
@@ -124,6 +126,7 @@ PropertySemantics Property::getSemantics() const { return semantics_; }
 void Property::setSemantics(const PropertySemantics& semantics) {
     semantics_ = semantics;
     notifyObserversOnSetSemantics(semantics_);
+    notifyAboutChange();
 }
 
 std::string Property::getClassIdentifierForWidget() const { return getClassIdentifier(); }
@@ -134,6 +137,7 @@ bool Property::getReadOnly()const {
 void Property::setReadOnly(const bool& value) {
     readOnly_ = value;
     notifyObserversOnSetReadOnly(readOnly_);
+    notifyAboutChange();
 }
 
 InvalidationLevel Property::getInvalidationLevel() const {
@@ -253,14 +257,30 @@ inviwo::UsageMode Property::getUsageMode() const {
 void Property::setUsageMode(UsageMode usageMode) {
     usageMode_ = usageMode;
     notifyObserversOnSetUsageMode(usageMode_);
+    notifyAboutChange();
 }
 
 bool Property::getVisible() {
     return visible_;
 }
+
 void Property::setVisible(bool val) {
     visible_ = val;
     notifyObserversOnSetVisible(visible_);
+    notifyAboutChange();
+}
+
+// Call this when a property has changed in a way not related to it's "value"
+// When for example semantics have changed, i.e. for stuff where property 
+// modified is __not__ called. This state changes should not effect the outcome of a 
+// network evaluation. 
+void Property::notifyAboutChange() {     
+    if (PropertyOwner* owner = getOwner()) { 
+        if (Processor* processor = owner->getProcessor()) {
+            // By putting a nullptr here we will avoid evaluation links.
+            processor->notifyObserversAboutPropertyChange(nullptr);
+        }
+    }
 }
 
 void Property::setCurrentStateAsDefault() {

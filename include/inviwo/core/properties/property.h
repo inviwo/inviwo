@@ -180,6 +180,7 @@ public:
     virtual bool getVisible();
 
 protected:
+    void notifyAboutChange();
 
     CallBackList onChangeCallback_;
     PropertySerializationMode serializationMode_;
