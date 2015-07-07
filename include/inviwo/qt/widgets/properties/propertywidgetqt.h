@@ -43,6 +43,7 @@
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertyobserver.h>
 #include <inviwo/core/util/observer.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
@@ -52,7 +53,9 @@ enum IVW_QTWIDGETS_API InviwoWidgetGraphicsItemType {
     Number_of_InviwoWidgetGraphicsItemTypes
 };
 
+class PropertyListWidget;
 class Property;
+class BaseCallBack;
 
 class IVW_QTWIDGETS_API IvwLineEdit : public QLineEdit {
     Q_OBJECT
@@ -94,27 +97,34 @@ public:
     virtual ~PropertyWidgetQt();
     PropertyWidgetQt* create();
 
-    virtual UsageMode getUsageMode() const;
-    virtual bool getVisible() const;
-    virtual void setVisible(bool visible);
-
-    virtual void showWidget();
-    virtual void hideWidget();
-
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
-
     virtual QMenu* getContextMenu();
+
+    // Should be called first thing after the property has been added to a layout.
+    virtual void initState(); 
 
     static int MINIMUM_WIDTH;
     static int SPACING;
     static int MARGIN;
     static void setSpacingAndMargins(QLayout* layout);
 
+    virtual void onChildVisibilityChange(PropertyWidgetQt* child);
+
     // PropertyObservable overrides
     virtual void onSetSemantics(const PropertySemantics& semantics) override;
     virtual void onSetReadOnly(bool readonly) override;
+    virtual void onSetVisible(bool visible) override;
     virtual void onSetUsageMode(UsageMode usageMode) override;
+
+    // QWidget overrides
+    virtual QSize sizeHint() const override;
+    virtual QSize minimumSizeHint() const override;
+
+    void setNestedDepth(int depth);
+    int getNestedDepth() const;
+
+    PropertyWidgetQt* getParentPropertyWidget() const;
+    InviwoDockWidget* getBaseContainer() const;
+    void setParentPropertyWidget(PropertyWidgetQt* parent, InviwoDockWidget* widget);
 
 public slots:
     virtual void updateContextMenu();
@@ -129,11 +139,10 @@ public slots:
 
     void moduleAction();
 signals:
-    void usageModeChanged();
     void updateSemantics(PropertyWidgetQt*);
 
 protected:
-    void setProperty(Property* property);
+    virtual void setVisible(bool visible);
     UsageMode getApplicationUsageMode();
 
     // Context menu
@@ -146,8 +155,6 @@ protected:
     virtual std::string getToolTipText();
 
     void paintEvent(QPaintEvent* pe);
-
-
 
     // Actions
     QMenu* usageModeItem_;
@@ -162,10 +169,17 @@ protected:
     QActionGroup* semanticsActionGroup_;
 
 private:
+    PropertyWidgetQt* parent_;
+    InviwoDockWidget* baseContainer_;
+
+    OptionPropertyInt* applicationUsageMode_;
+    const BaseCallBack* appModeCallback_;
     QMenu* contextMenu_;
     QMap<QString, QMenu*> moduleSubMenus_;
 
     static const Property* copySource;
+    const int maxNumNestedShades_; //< This number has do match the number of shades in the qss. 
+    int nestedDepth_;
 };
 
 // PropertyEditorWidget owned by PropertyWidget

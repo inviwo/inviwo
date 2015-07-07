@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,35 +27,29 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_BOOLCOMPOSITEPROPERTY_H
-#define IVW_BOOLCOMPOSITEPROPERTY_H
+#ifndef IVW_COMPOSITEPROPERTYOBSERVER_H
+#define IVW_COMPOSITEPROPERTYOBSERVER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/util/observer.h>
 
 namespace inviwo {
 
-class IVW_CORE_API BoolCompositeProperty : public CompositeProperty {
+class IVW_CORE_API CompositePropertyObserver : public Observer {
 public:
-    InviwoPropertyInfo();
+    CompositePropertyObserver() = default;
+    virtual ~CompositePropertyObserver() = default;
 
-    BoolCompositeProperty(std::string identifier, std::string displayName, bool checked = false,
-                          InvalidationLevel invalidationLevel = INVALID_RESOURCES,
-                          PropertySemantics semantics = PropertySemantics::Default);
+    virtual void onSetCollapsed(bool value) {}
+};
 
-    virtual BoolCompositeProperty* clone() const;
-    virtual ~BoolCompositeProperty();
-    virtual std::string getClassIdentifierForWidget() const;
-
-    virtual bool isChecked() const;
-    virtual void setChecked(bool checked);
-
-private:
-    BoolProperty checked_;
+class IVW_CORE_API CompositePropertyObservable : public Observable<CompositePropertyObserver> {
+protected:
+    CompositePropertyObservable() = default;
+    void notifyObserversOnSetCollapsed(bool collapsed) const;
 };
 
 }  // namespace
 
-#endif  // IVW_BOOLCOMPOSITEPROPERTY_H
+#endif  // IVW_COMPOSITEPROPERTYOBSERVER_H

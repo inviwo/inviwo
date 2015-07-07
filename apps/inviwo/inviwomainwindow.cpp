@@ -75,7 +75,7 @@ namespace inviwo {
 InviwoMainWindow::InviwoMainWindow()
     : QMainWindow()
     , ProcessorNetworkObserver()
-    , visibilityModeProperty_(nullptr) {
+    , appUsageModeProp_(nullptr) {
     NetworkEditor::init();
     networkEditor_ = NetworkEditor::getPtr();
     // initialize console widget first to receive log messages
@@ -335,10 +335,10 @@ void InviwoMainWindow::addMenuActions() {
     visibilityModeAction_->setIcon(visibilityModeIcon);
     viewMenuItem_->addAction(visibilityModeAction_);
 
-    visibilityModeProperty_ = &InviwoApplication::getPtr()
+    appUsageModeProp_ = &InviwoApplication::getPtr()
                                    ->getSettingsByType<SystemSettings>()
                                    ->applicationUsageModeProperty_;
-    visibilityModeProperty_->onChange(this, &InviwoMainWindow::visibilityModeChangedInSettings);
+    appUsageModeProp_->onChange(this, &InviwoMainWindow::visibilityModeChangedInSettings);
 
     connect(visibilityModeAction_, SIGNAL(triggered(bool)), this, SLOT(setVisibilityMode(bool)));
 
@@ -622,20 +622,18 @@ void InviwoMainWindow::showAboutBox() {
 }
 
 void InviwoMainWindow::visibilityModeChangedInSettings() {
-    if (visibilityModeProperty_) {
-        size_t selectedIdx = visibilityModeProperty_->getSelectedIndex();
+    if (appUsageModeProp_) {
+        size_t selectedIdx = appUsageModeProp_->getSelectedIndex();
         if (selectedIdx == DEVELOPMENT) {
             if (visibilityModeAction_->isChecked()) {
                 visibilityModeAction_->setChecked(false);
             }
-            propertyListWidget_->setUsageMode(DEVELOPMENT);
-            setVisibilityMode(false);
+            networkEditorView_->hideNetwork(false);
         } else if (selectedIdx == APPLICATION) {
             if (!visibilityModeAction_->isChecked()) {
                 visibilityModeAction_->setChecked(true);
             }
-            propertyListWidget_->setUsageMode(APPLICATION);
-            setVisibilityMode(true);
+            networkEditorView_->hideNetwork(true);
         }
         updateWindowTitle();
     }
@@ -643,16 +641,12 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
 
 // False == Development, True = Application
 void InviwoMainWindow::setVisibilityMode(bool applicationView) {
-    size_t selectedIdx = visibilityModeProperty_->getSelectedIndex();
+    size_t selectedIdx = appUsageModeProp_->getSelectedIndex();
     if (applicationView) {
-        if (selectedIdx != APPLICATION) visibilityModeProperty_->setSelectedIndex(APPLICATION);
+        if (selectedIdx != APPLICATION) appUsageModeProp_->setSelectedIndex(APPLICATION);
     } else {
-        if (selectedIdx != DEVELOPMENT) visibilityModeProperty_->setSelectedIndex(DEVELOPMENT);
+        if (selectedIdx != DEVELOPMENT) appUsageModeProp_->setSelectedIndex(DEVELOPMENT);
     }
-
-    networkEditorView_->hideNetwork(applicationView);
-
-    updateWindowTitle();
 }
 
 void InviwoMainWindow::exitInviwo() {

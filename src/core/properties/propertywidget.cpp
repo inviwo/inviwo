@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/properties/propertywidget.h>
@@ -37,13 +37,7 @@ PropertyWidget::PropertyWidget() : property_(nullptr), propertyEditor_(nullptr) 
 PropertyWidget::PropertyWidget(Property* property)
     : property_(property), propertyEditor_(nullptr) {}
 
-PropertyWidget::~PropertyWidget() {}
-
 Property* PropertyWidget::getProperty() { return property_; }
-
-void PropertyWidget::setProperty(Property* property) {
-    property_ = property;
-}
 
 void PropertyWidget::setEditorWidget(PropertyEditorWidget* propertyEditorWidget) {
     propertyEditor_ = propertyEditorWidget;
@@ -64,7 +58,8 @@ PropertyEditorWidget::PropertyEditorWidget() : metaData_(nullptr) {}
 PropertyEditorWidget::~PropertyEditorWidget() {}
 
 void PropertyEditorWidget::initialize(Property* property) {
-    metaData_ = property->createMetaData<PropertyEditorWidgetMetaData>(PropertyEditorWidgetMetaData::CLASS_IDENTIFIER);
+    metaData_ = property->createMetaData<PropertyEditorWidgetMetaData>(
+        PropertyEditorWidgetMetaData::CLASS_IDENTIFIER);
 }
 
 void PropertyEditorWidget::deinitialize() {}
@@ -75,20 +70,24 @@ void PropertyEditorWidget::showEditor() { metaData_->setVisibile(true); }
 
 void PropertyEditorWidget::hideEditor() { metaData_->setVisibile(false); }
 
-void PropertyEditorWidget::setEditorDimensions(const ivec2 &dimensions) {
+void PropertyEditorWidget::setEditorDimensions(const ivec2& dimensions) {
     metaData_->setDimensions(dimensions);
 }
 
-void PropertyEditorWidget::moveEditor(const ivec2 &pos) { metaData_->setWidgetPosition(pos); }
+void PropertyEditorWidget::moveEditor(const ivec2& pos) { metaData_->setWidgetPosition(pos); }
 
 void PropertyEditorWidget::setDockStatus(PropertyEditorWidgetDockStatus dockStatus) {
     metaData_->setDockStatus(dockStatus);
 }
 bool PropertyEditorWidget::getEditorVisibilityMetaData() const { return metaData_->isVisible(); }
 
-ivec2 PropertyEditorWidget::getEditorPositionMetaData() const { return metaData_->getWidgetPosition(); }
+ivec2 PropertyEditorWidget::getEditorPositionMetaData() const {
+    return metaData_->getWidgetPosition();
+}
 
-ivec2 PropertyEditorWidget::getEditorDimensionMetaData() const { return metaData_->getDimensions(); }
+ivec2 PropertyEditorWidget::getEditorDimensionMetaData() const {
+    return metaData_->getDimensions();
+}
 
 PropertyEditorWidgetDockStatus PropertyEditorWidget::getEditorDockStatus() const {
     return metaData_->getDocStatus();

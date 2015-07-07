@@ -163,11 +163,12 @@ public:
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
 
-    void onChange(std::function<void()> callback);
+    const BaseCallBack* onChange(std::function<void()> callback);
+    void removeOnChange(const BaseCallBack* callback);
     template <typename T>
-    void onChange(T* o, void (T::*m)());
+    const BaseCallBack* onChange(T* object, void (T::*method)());
     template <typename T>
-    void removeOnChange(T* o);
+    void removeOnChange(T* object);
 
     virtual void setUsageMode(UsageMode usageMode);
     virtual UsageMode getUsageMode() const;
@@ -177,8 +178,6 @@ public:
 
     virtual void setVisible(bool val);
     virtual bool getVisible();
-
-    virtual void updateVisibility();
 
 protected:
 
@@ -209,8 +208,8 @@ void inviwo::Property::removeOnChange(T* o) {
 }
 
 template <typename T>
-void Property::onChange(T* o, void (T::*m)()) {
-    onChangeCallback_.addMemberFunction(o, m);
+const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
+    return onChangeCallback_.addMemberFunction(o, m);
 }
 
 }  // namespace

@@ -75,6 +75,9 @@ void SettingsWidget::updateSettingsWidget() {
 
     for (auto& setting : settings) {
         CollapsibleGroupBoxWidgetQt* settingsGroup = new CollapsibleGroupBoxWidgetQt(setting->getIdentifier());
+        settingsGroup->setParentPropertyWidget(nullptr, this);
+        layout_->addWidget(settingsGroup);
+        settingsGroup->initState();
 
         std::vector<Property*> props = setting->getProperties();
 
@@ -86,11 +89,9 @@ void SettingsWidget::updateSettingsWidget() {
             }
         }
 
-        layout_->addWidget(settingsGroup);
         if (!settingsGroup->isCollapsed()){
             settingsGroup->toggleCollapsed();
         }
-        settingsGroup->updateVisibility();
     }
     layout_->addStretch();
 }
@@ -105,7 +106,6 @@ void SettingsWidget::saveSettings() {
 void SettingsWidget::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
     Property* prop = widget->getProperty();
 
-    bool visible = widget->isVisible();
     QVBoxLayout* listLayout = static_cast<QVBoxLayout*>(widget->parentWidget()->layout());
     int layoutPosition = listLayout->indexOf(widget);
     PropertyWidgetQt* propertyWidget =
@@ -113,7 +113,7 @@ void SettingsWidget::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
 
     if (propertyWidget) {
         prop->deregisterWidget(widget);
-        widget->hideWidget();
+
         listLayout->removeWidget(widget);
         listLayout->insertWidget(layoutPosition, propertyWidget);
         prop->registerWidget(propertyWidget);
@@ -121,11 +121,7 @@ void SettingsWidget::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
         connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
                 SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
 
-        if (visible) {
-            propertyWidget->showWidget();
-        } else {
-            propertyWidget->hideWidget();
-        }
+        propertyWidget->initState();
 
     } else {
         LogWarn("Could not change semantic for property: " << prop->getClassIdentifier());

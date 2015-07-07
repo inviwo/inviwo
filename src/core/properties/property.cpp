@@ -99,6 +99,10 @@ Property::~Property() {}
 std::string Property::getIdentifier() const {
     return identifier_;
 }
+void Property::setIdentifier(const std::string& identifier) {
+    identifier_ = identifier;
+    notifyObserversOnSetIdentifier(identifier_);
+}
 std::vector<std::string> Property::getPath() const {
     std::vector<std::string> path;
     if(owner_) {
@@ -106,11 +110,6 @@ std::vector<std::string> Property::getPath() const {
     } 
     path.push_back(identifier_);
     return path;
-}
-
-void Property::setIdentifier(const std::string& identifier) {
-    identifier_ = identifier;
-    notifyObserversOnSetIdentifier(identifier_);
 }
 
 std::string Property::getDisplayName() const { return displayName_; }
@@ -129,13 +128,12 @@ void Property::setSemantics(const PropertySemantics& semantics) {
 
 std::string Property::getClassIdentifierForWidget() const { return getClassIdentifier(); }
 
+bool Property::getReadOnly()const {
+    return readOnly_;
+}
 void Property::setReadOnly(const bool& value) {
     readOnly_ = value;
     notifyObserversOnSetReadOnly(readOnly_);
-}
-
-bool Property::getReadOnly()const {
-    return readOnly_;
 }
 
 InvalidationLevel Property::getInvalidationLevel() const {
@@ -148,7 +146,6 @@ void Property::setInvalidationLevel(InvalidationLevel invalidationLevel) {
 PropertyOwner* Property::getOwner() {
     return owner_;
 }
-
 
 const PropertyOwner* Property::getOwner() const {
     return owner_;
@@ -230,61 +227,50 @@ void Property::deserialize(IvwDeserializer& d) {
     std::string className;
     d.deserialize("type", className, true);
     d.deserialize("identifier", identifier_, true);
+    notifyObserversOnSetIdentifier(identifier_);
+
     d.deserialize(displayName_.name, displayName_.value, true);
+    notifyObserversOnSetDisplayName(displayName_);
+
     semantics_.deserialize(d);
+    notifyObserversOnSetSemantics(semantics_);
 
     int mode = usageMode_;
     d.deserialize(usageMode_.name, mode);
     usageMode_ = static_cast<UsageMode>(mode);
+    notifyObserversOnSetUsageMode(usageMode_);
 
     visible_.deserialize(d);
+    notifyObserversOnSetVisible(visible_);
     readOnly_.deserialize(d);
+    notifyObserversOnSetReadOnly(readOnly_);
 
-    updateVisibility();
     MetaDataOwner::deserialize(d);
 }
 
+inviwo::UsageMode Property::getUsageMode() const {
+    return usageMode_;
+}
 void Property::setUsageMode(UsageMode usageMode) {
     usageMode_ = usageMode;
     notifyObserversOnSetUsageMode(usageMode_);
-    updateVisibility();
 }
 
-void Property::updateVisibility() {
-    UsageMode appMode =
-        InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->getApplicationUsageMode();
-
-    UsageMode mode = getUsageMode();
-
-    if (getVisible() == false) {
-        for (auto& elem : propertyWidgets_) elem->hideWidget();
-    }
-
-    if (mode == APPLICATION) {
-        for (auto& elem : propertyWidgets_) elem->showWidget();
-    } else if (mode == DEVELOPMENT && appMode == DEVELOPMENT) {
-        for (auto& elem : propertyWidgets_) elem->showWidget();
-    } else if (mode == DEVELOPMENT && appMode == APPLICATION) {
-        for (auto& elem : propertyWidgets_) elem->hideWidget();
-    }
+bool Property::getVisible() {
+    return visible_;
 }
-
 void Property::setVisible(bool val) {
     visible_ = val;
     notifyObserversOnSetVisible(visible_);
-    updateVisibility();
-}
-bool Property::getVisible() {
-    return visible_;
 }
 
 void Property::setCurrentStateAsDefault() {
     readOnly_.setAsDefault();
     semantics_.setAsDefault();
 }
-
 void Property::resetToDefaultState() {
     readOnly_.reset();
+    notifyObserversOnSetReadOnly(readOnly_);
     propertyModified();
 }
 
@@ -292,26 +278,23 @@ void Property::set(const Property* src) {
     propertyModified();
 }
 
-inviwo::UsageMode Property::getUsageMode() const {
-    return usageMode_;
-}
-
 const std::vector<PropertyWidget*>& Property::getWidgets() const {
     return propertyWidgets_;
-}
-
-void Property::setSerializationMode(PropertySerializationMode mode) {
-    serializationMode_ = mode;
 }
 
 PropertySerializationMode Property::getSerializationMode() const {
     return serializationMode_;
 }
-
-void Property::onChange(std::function<void()> callback) {
-    onChangeCallback_.addLambdaCallback(callback);   
+void Property::setSerializationMode(PropertySerializationMode mode) {
+    serializationMode_ = mode;
 }
 
+const BaseCallBack* Property::onChange(std::function<void()> callback) {
+    return onChangeCallback_.addLambdaCallback(callback);   
+}
 
+void Property::removeOnChange(const BaseCallBack* callback) {
+    onChangeCallback_.remove(callback);
+}
 
 } // namespace

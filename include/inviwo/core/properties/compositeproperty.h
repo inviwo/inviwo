@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_COMPOSITEPROPERTY_H
@@ -35,17 +35,20 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/observer.h>
+#include <inviwo/core/properties/compositepropertyobserver.h>
 
 namespace inviwo {
 
-class IVW_CORE_API CompositeProperty : public Property, public PropertyOwner {
+class IVW_CORE_API CompositeProperty : public Property,
+                                       public PropertyOwner,
+                                       public CompositePropertyObservable {
 public:
     InviwoPropertyInfo();
 
     CompositeProperty(std::string identifier, std::string displayName,
                       InvalidationLevel invalidationLevel = INVALID_RESOURCES,
                       PropertySemantics semantics = PropertySemantics::Default);
-    
+
     CompositeProperty(const CompositeProperty& rhs);
     CompositeProperty& operator=(const CompositeProperty& that);
     virtual CompositeProperty* clone() const;
@@ -66,30 +69,23 @@ public:
 
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
-    
-    virtual UsageMode getUsageMode() const override; // returns the lowest mode of all sub properties
-    virtual void setUsageMode(UsageMode visibilityMode) override;
-    virtual bool getVisible() override; // returns true if any sub property is visible 
-    virtual void setVisible(bool val) override;
 
-    virtual void updateVisibility() override;
-       
     // Override from the PropertyOwner
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty = 0) override;
-    void setValid() override; 
+    void setValid() override;
     virtual Processor* getProcessor() override;
     virtual const Processor* getProcessor() const override;
     virtual std::vector<std::string> getPath() const override;
 
     virtual void serialize(IvwSerializer& s) const override;
     virtual void deserialize(IvwDeserializer& d) override;
-    
+
 private:
     bool collapsed_;
     InvalidationLevel subPropertyInvalidationLevel_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_COMPOSITEPROPERTY_H
+#endif  // IVW_COMPOSITEPROPERTY_H

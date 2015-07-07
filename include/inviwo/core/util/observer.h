@@ -53,7 +53,7 @@ public:
      */
     Observer();
     /**
-     * Copy constructor. Copies observervables from other  
+     * Copy constructor. Copies observerables from other  
      */
     Observer(const Observer& other);
 
@@ -68,7 +68,7 @@ public:
     Observer& operator=(Observer&& other);
 
     /**
-     * Copies observervables from other and returns this.
+     * Copies observerables from other and returns this.
      */
     Observer& operator=(const Observer& other);
 

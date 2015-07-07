@@ -1236,10 +1236,6 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
                       LogLevel::Error);
         }
 
-        propertyListWidget_->setUsageMode(InviwoApplication::getPtr()
-                                              ->getSettingsByType<SystemSettings>()
-                                              ->getApplicationUsageMode());
-
         InviwoApplication::getPtr()->getProcessorNetwork()->setModified(true);
     }
 

@@ -54,6 +54,7 @@ class IVW_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,
                                                       public ProcessorObserver {
     Q_OBJECT
 public:
+    CollapsibleGroupBoxWidgetQt(Property* property, bool isCheckable=false);
     CollapsibleGroupBoxWidgetQt(std::string displayName = "", bool isCheckable=false);
     virtual std::string getDisplayName() const;
     virtual void setDisplayName(const std::string& displayName);
@@ -68,46 +69,38 @@ public:
     void setShowIfEmpty(bool val);
     
     virtual bool isCollapsed() const;
-    virtual void setCollapsed(bool value);
-
     virtual bool isChecked() const;
-    virtual void setChecked(bool checked);
 
     bool isCheckable() const;
     void setCheckable(bool checkable);
 
     // Overridden from PropertyWidget
-    virtual void showWidget();
-    virtual void hideWidget();
-    bool getVisible() const;
-    virtual UsageMode getUsageMode() const;
-    virtual void updateFromProperty(){};
+    virtual void updateFromProperty() override {} 
 
     // Overridden from PropertyOwnerObserver to add and remove properties dynamically
-    virtual void onDidAddProperty(Property* property, size_t index);
-    virtual void onWillRemoveProperty(Property* property, size_t index);
+    virtual void onDidAddProperty(Property* property, size_t index) override;
+    virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
     // Override ProcessorObserver
-    void onProcessorIdentifierChange(Processor*);
+    void onProcessorIdentifierChange(Processor*) override;
 
-    // Overridden from QWidget
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
-
-    void setNestedDepth(int depth);
-    int getNestedDepth() const;
+    // Overridden from PropertyWidgetQt/QWidget
+    virtual QSize sizeHint() const override;
+    virtual QSize minimumSizeHint() const override;
 
 public slots:
     void toggleCollapsed();
-    void updateVisibility();
+
     void checkedStateChanged();
-    virtual void setDeveloperUsageMode(bool value);
-    virtual void setApplicationUsageMode(bool value);
     virtual void labelDidChange();
     virtual void resetPropertyToDefaultState();
     void updatePropertyWidgetSemantics(PropertyWidgetQt*);
 
 protected:
+    virtual void setVisible(bool visible);
+    virtual void setCollapsed(bool value);
+    virtual void setChecked(bool checked);
+
     void generateWidget();
     void updateWidgets();
 
@@ -128,8 +121,6 @@ private:
     PropertyOwner* propertyOwner_;
     bool showIfEmpty_;
     bool checkable_;
-    const int maxNumNestedShades_;
-    int nestedDepth_;
 };
 
 

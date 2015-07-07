@@ -34,28 +34,25 @@
 namespace inviwo {
 
 CompositePropertyWidgetQt::CompositePropertyWidgetQt(CompositeProperty* property)
-    : CollapsibleGroupBoxWidgetQt(property->getDisplayName())
-    , property_(property) {
+    : CollapsibleGroupBoxWidgetQt(property)
+    , compProperty_(property) {
+    
     setPropertyOwner(property);
-    PropertyWidget::setProperty(property);
-    std::vector<Property*> subProperties = property_->getProperties();
-    for (auto& subPropertie : subProperties) {
-        addProperty(subPropertie);
-    }
-
-    property->PropertyOwner::addObserver(this);
-    this->setDisabled(property_->getReadOnly());
-    updateFromProperty();
+    compProperty_->PropertyOwnerObservable::addObserver(this);
+    compProperty_->CompositePropertyObservable::addObserver(this);
 }                           
 
 void CompositePropertyWidgetQt::updateFromProperty() {
     for (auto& elem : propertyWidgets_) elem->updateFromProperty();  
-    setCollapsed(property_->isCollapsed());
 }
 
 void CompositePropertyWidgetQt::labelDidChange() {
     CollapsibleGroupBoxWidgetQt::labelDidChange();
-    property_->setDisplayName(getDisplayName());
+    compProperty_->setDisplayName(getDisplayName());
+}
+
+void CompositePropertyWidgetQt::setCollapsed(bool value) {
+    compProperty_->setCollapsed(value);
 }
 
 void CompositePropertyWidgetQt::onSetDisplayName(const std::string& displayName) {
@@ -63,24 +60,22 @@ void CompositePropertyWidgetQt::onSetDisplayName(const std::string& displayName)
     label_->setText(displayName);
 }
 
-void CompositePropertyWidgetQt::setDeveloperUsageMode(bool value) {
-    CollapsibleGroupBoxWidgetQt::setDeveloperUsageMode(value);
-    property_->setUsageMode(DEVELOPMENT);
+void CompositePropertyWidgetQt::onSetCollapsed(bool value) {
+    CollapsibleGroupBoxWidgetQt::setCollapsed(value);
 }
 
-void CompositePropertyWidgetQt::setApplicationUsageMode(bool value) {
-    CollapsibleGroupBoxWidgetQt::setApplicationUsageMode(value);
-    property_->setUsageMode(APPLICATION);
+void CompositePropertyWidgetQt::initState() {
+    CollapsibleGroupBoxWidgetQt::initState();
+    CollapsibleGroupBoxWidgetQt::setCollapsed(compProperty_->isCollapsed());
+
+    for (auto& prop : compProperty_->getProperties()) {
+        addProperty(prop);
+    }
+    updateFromProperty();
 }
 
 bool CompositePropertyWidgetQt::isCollapsed() const {
-    return property_->isCollapsed();
-}
-void CompositePropertyWidgetQt::setCollapsed(bool value) {
-    CollapsibleGroupBoxWidgetQt::setCollapsed(value);
-    if (property_->isCollapsed() != value) {
-        property_->setCollapsed(value);
-    }
+    return compProperty_->isCollapsed();
 }
 
 } // namespace

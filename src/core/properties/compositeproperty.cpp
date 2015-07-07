@@ -71,30 +71,6 @@ void CompositeProperty::setOwner(PropertyOwner* owner) {
     for (Property* property: properties_) property->setOwner(this);
 }
 
-UsageMode CompositeProperty::getUsageMode() const {
-    UsageMode mode = DEVELOPMENT;
-    for (Property* property : properties_) mode = std::min(mode, property->getUsageMode());
-    return mode;
-}
-void CompositeProperty::setUsageMode(UsageMode usageMode) {
-    for (Property* property : properties_) property->setUsageMode(usageMode);
-    Property::setUsageMode(usageMode);
-}
-
-void CompositeProperty::updateVisibility() {
-    Property::updateVisibility();
-    for (Property* property : properties_) property->updateVisibility();
-}
-
-bool CompositeProperty::getVisible() {
-    return util::any_of(properties_, [](Property* p){return p->getVisible();});
-}
-
-void CompositeProperty::setVisible(bool val) {
-    for (Property* property : properties_) property->setVisible(val);
-    Property::setVisible(val);
-}
-
 void CompositeProperty::setPropertyModified(bool modified) {
     for (Property* property: properties_) property->setPropertyModified(modified);
     Property::setPropertyModified(modified);
@@ -126,7 +102,7 @@ void CompositeProperty::set(const CompositeProperty* src) {
     }
 }
 
-inviwo::InvalidationLevel CompositeProperty::getInvalidationLevel() const  {
+InvalidationLevel CompositeProperty::getInvalidationLevel() const  {
     return std::min(subPropertyInvalidationLevel_, Property::getInvalidationLevel());
 }
 
@@ -202,7 +178,7 @@ bool CompositeProperty::isCollapsed() const {
 void CompositeProperty::setCollapsed(bool value) {
     if (collapsed_ != value) {
         collapsed_ = value;
-        Property::propertyModified();
+        notifyObserversOnSetCollapsed(collapsed_);
     }
 }
 

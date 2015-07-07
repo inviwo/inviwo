@@ -44,28 +44,22 @@ public:
     PropertyWidget();
     PropertyWidget(Property* property);
 
-    virtual ~PropertyWidget();
-
+    virtual ~PropertyWidget() = default;
 
     // Overload this function to update the widget after property modified has been called.
     virtual void updateFromProperty() = 0;
-    virtual void showWidget() = 0;
-    virtual void hideWidget() = 0;
 
     void setEditorWidget(PropertyEditorWidget* processorWidget);
     PropertyEditorWidget* getEditorWidget() const;
     bool hasEditorWidget() const;
-
     virtual Property* getProperty();
-    virtual void setProperty(Property* property);
-    virtual UsageMode getUsageMode() const = 0;
-    virtual bool getVisible() const = 0;
 
 protected:
     virtual void initializeEditorWidgetsMetaData() = 0;
-    Property* property_;  //< Non owning reference to a property.
-    PropertyEditorWidget*
-        propertyEditor_;  //< Reference to additional widgets (not necessarily owned always)
+    Property* property_;  //< Non owning reference, can be null
+
+    // Reference to additional widget (not necessarily owned always)
+    PropertyEditorWidget* propertyEditor_;  
 };
 
 // Additional widget owned by property widget
@@ -90,8 +84,8 @@ public:
     virtual PropertyEditorWidgetDockStatus getEditorDockStatus() const;
 
 protected:
-    PropertyEditorWidgetMetaData*
-        metaData_;  //< Non owning reference to a metadata that belongs to property.
+    // Non owning reference to a metadata that belongs to property.
+    PropertyEditorWidgetMetaData* metaData_;  
 };
 
 }  // namespace

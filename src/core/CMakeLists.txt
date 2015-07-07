@@ -157,6 +157,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/buttonproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/cameraproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/compositeproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/compositepropertyobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/directoryproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/eventproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/fileproperty.h
@@ -364,6 +365,7 @@ set(SOURCE_FILES
     properties/buttonproperty.cpp
     properties/cameraproperty.cpp
     properties/compositeproperty.cpp
+    properties/compositepropertyobserver.cpp
     properties/directoryproperty.cpp    
     properties/eventproperty.cpp
     properties/fileproperty.cpp

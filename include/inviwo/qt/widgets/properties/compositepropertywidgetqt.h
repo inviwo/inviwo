@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_COMPOSITEPROPERTYWIDGETQT_H
@@ -38,29 +38,36 @@
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/compositepropertyobserver.h>
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API CompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt {
+class IVW_QTWIDGETS_API CompositePropertyWidgetQt : public CollapsibleGroupBoxWidgetQt,
+                                                    public CompositePropertyObserver {
     Q_OBJECT
 
 public:
     CompositePropertyWidgetQt(CompositeProperty* property);
     virtual void updateFromProperty();
-    
-    virtual bool isCollapsed() const;
-    virtual void setCollapsed(bool value);
 
-protected slots:
-    virtual void setDeveloperUsageMode(bool value);
-    virtual void setApplicationUsageMode(bool value);
-    virtual void labelDidChange();
+    virtual bool isCollapsed() const;
 
     virtual void onSetDisplayName(const std::string& displayName) override;
+    virtual void onSetCollapsed(bool value) override;
+
+    virtual void initState() override; 
+
+protected slots:
+    virtual void labelDidChange();
+
+protected:
+    // override from CollapsibleGroupBoxWidgetQt
+    virtual void setCollapsed(bool value) override;
+
 private:
-    CompositeProperty* property_;
+    CompositeProperty* compProperty_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_COMPOSITEPROPERTYWIDGETQT_H
+#endif  // IVW_COMPOSITEPROPERTYWIDGETQT_H

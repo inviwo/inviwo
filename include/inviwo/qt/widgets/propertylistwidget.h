@@ -35,7 +35,7 @@
 #include <inviwo/core/properties/propertyvisibility.h>
 #include <QWidget>
 #include <QEvent>
-#include <map>
+#include <unordered_map>
 
 class QVBoxLayout;
 class QScrollArea;
@@ -78,7 +78,7 @@ private:
 class IVW_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget {
     Q_OBJECT
 public:
-    typedef std::map<Processor*, CollapsibleGroupBoxWidgetQt*> WidgetMap;
+    typedef std::unordered_map<Processor*, CollapsibleGroupBoxWidgetQt*> WidgetMap;
 
     PropertyListWidget(QWidget* parent);
     ~PropertyListWidget();
@@ -90,9 +90,6 @@ public:
     // Override QWidget
     virtual bool event(QEvent* e);
 
-public slots:
-    void setUsageMode(UsageMode viewMode);
-
 protected:
     mutable WidgetMap widgetMap_;
 
@@ -101,7 +98,6 @@ private:
     CollapsibleGroupBoxWidgetQt* createPropertiesForProcessor(Processor* processor);
 
     QVBoxLayout* listLayout_;
-    WidgetMap devWidgets_;
     QWidget* listWidget_;
     QScrollArea* scrollArea_;
 };

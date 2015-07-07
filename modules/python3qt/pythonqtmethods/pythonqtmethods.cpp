@@ -175,7 +175,6 @@ PyObject* py_showTransferFunctionEditor(PyObject* /*self*/, PyObject* args) {
         if (tfw){
             tfw->openTransferFunctionDialog();
         }
-        w->showWidget();
     }
     Py_RETURN_NONE;
 }
