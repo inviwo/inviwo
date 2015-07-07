@@ -424,9 +424,9 @@ bool NetworkEditor::isModified() const { return modified_; }
 void NetworkEditor::setModified(const bool modified) {
     if (modified != modified_) {
         modified_ = modified;
-        for (ObserverSet::reverse_iterator it = observers_->rbegin(); it != observers_->rend();
-             ++it)
+        for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
             static_cast<NetworkEditorObserver*>(*it)->onModifiedStatusChanged(modified);
+        }
     }
 }
 

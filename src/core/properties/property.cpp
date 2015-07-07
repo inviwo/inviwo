@@ -186,9 +186,8 @@ void Property::propertyModified() {
 
     PropertyOwner* owner = getOwner();
     if (owner) {
-        // Evaluate property links
-        Processor* processor = owner->getProcessor();
-        if (processor) {
+        // Evaluate property links       
+        if (Processor* processor = owner->getProcessor()) {
              processor->notifyObserversAboutPropertyChange(this);
         }
 

@@ -74,7 +74,6 @@ namespace inviwo {
 
 InviwoMainWindow::InviwoMainWindow()
     : QMainWindow()
-    , ProcessorNetworkObserver()
     , appUsageModeProp_(nullptr) {
     NetworkEditor::init();
     networkEditor_ = NetworkEditor::getPtr();
@@ -123,34 +122,33 @@ void InviwoMainWindow::initialize() {
     QSize newSize = settings.value("size", size()).toSize();
     maximized_ = settings.value("maximized", true).toBool();
     QDesktopWidget* desktop = QApplication::desktop();
-    QRect wholeScreenGeometry = desktop->screenGeometry(0);
+    
+    // Collect the whole screen geometry
+    QRect screen = desktop->screenGeometry(0);
+    for (int i = 1; i < desktop->screenCount(); i++) {
+        screen = screen.united(desktop->screenGeometry(i));
+    }
 
-    for (int i = 1; i < desktop->screenCount(); i++)
-        wholeScreenGeometry = wholeScreenGeometry.united(desktop->screenGeometry(i));
-
-    wholeScreenGeometry.setRect(wholeScreenGeometry.x() - 10, wholeScreenGeometry.y() - 10,
-                                wholeScreenGeometry.width() + 20,
-                                wholeScreenGeometry.height() + 20);
+    screen.setRect(screen.x() - 10, screen.y() - 10, screen.width() + 20, screen.height() + 20);
     QPoint bottomRight = QPoint(newPos.x() + newSize.width(), newPos.y() + newSize.height());
 
-    if (!wholeScreenGeometry.contains(newPos) || !wholeScreenGeometry.contains(bottomRight)) {
+    if (!screen.contains(newPos) || !screen.contains(bottomRight)) {
         move(QPoint(0, 0));
-        resize(wholeScreenGeometry.width() - 20, wholeScreenGeometry.height() - 20);
+        resize(screen.width() - 20, screen.height() - 20);
     } else {
         move(newPos);
         resize(newSize);
     }
 
+    auto app = InviwoApplication::getPtr();
+
     recentFileList_ = settings.value("recentFileList").toStringList();
-    QString firstWorkspace = InviwoApplication::getPtr()
-                                 ->getPath(InviwoApplication::PATH_WORKSPACES, "boron.inv")
-                                 .c_str();
+    QString firstWorkspace = app->getPath(InviwoApplication::PATH_WORKSPACES, "boron.inv").c_str();
     workspaceOnLastSucessfullExit_ = settings.value("workspaceOnLastSucessfullExit",
                                                     QVariant::fromValue(firstWorkspace)).toString();
     settings.setValue("workspaceOnLastSucessfullExit", "");
     settings.endGroup();
-    rootDir_ =
-        QString::fromStdString(InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA));
+    rootDir_ = QString::fromStdString(app->getPath(InviwoApplication::PATH_DATA));
     workspaceFileDir_ = rootDir_ + "workspaces/";
     settingsWidget_->updateSettingsWidget();
 
@@ -163,10 +161,11 @@ void InviwoMainWindow::initialize() {
 #ifdef WIN32
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     // Fix window offset when restoring old position for correct positioning
-    // The frame size should be determined only once before starting up the 
+    // The frame size should be determined only once before starting up the
     // main application and stored in InviwoApplicationQt
-    // determine size of window border (frame size) 
-    // as long as widget is not shown, no border exists, i.e. this->pos() == this->geometry().topLeft()
+    // determine size of window border (frame size)
+    // as long as widget is not shown, no border exists, i.e. this->pos() ==
+    // this->geometry().topLeft()
 
     QWidget* w = new QWidget();
     w->move(-5000, -5000);
@@ -177,33 +176,22 @@ void InviwoMainWindow::initialize() {
     w->hide();
     delete w;
 
-    static_cast<InviwoApplicationQt*>(InviwoApplicationQt::getPtr())
-        ->setWindowDecorationOffset(offset);
+    static_cast<InviwoApplicationQt*>(app)->setWindowDecorationOffset(offset);
 #endif
 #endif
 }
 
 void InviwoMainWindow::showWindow() {
-    if (maximized_)
-        showMaximized();
-    else
-        show();
+    if (maximized_) showMaximized();
+    else show();
 };
 
 void InviwoMainWindow::deinitialize() {}
-
-void InviwoMainWindow::initializeWorkspace() {
-    ProcessorNetwork* processorNetwork =
-        inviwo::InviwoApplicationQt::getPtr()->getProcessorNetwork();
-    ProcessorNetworkObserver::addObservation(processorNetwork);
-    processorNetwork->addObserver(this);
-}
-
-void InviwoMainWindow::onProcessorNetworkChange() { updateWindowTitle(); }
+void InviwoMainWindow::initializeWorkspace() {}
 
 bool InviwoMainWindow::processCommandLineArgs() {
-    const CommandLineParser* cmdparser =
-        inviwo::InviwoApplicationQt::getPtr()->getCommandLineParser();
+    auto app = InviwoApplication::getPtr();    
+    const auto cmdparser = app->getCommandLineParser();
 #ifdef IVW_PYTHON_QT
 
     if (cmdparser->getRunPythonScriptAfterStartup()) {
@@ -216,8 +204,7 @@ bool InviwoMainWindow::processCommandLineArgs() {
     if (cmdparser->getScreenGrabAfterStartup()) {
         std::string path = cmdparser->getOutputPath();
 
-        if (path.empty())
-            path = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES);
+        if (path.empty()) path = app->getPath(InviwoApplication::PATH_IMAGES);
 
         repaint();
         int curScreen = QApplication::desktop()->screenNumber(this);
@@ -234,17 +221,14 @@ bool InviwoMainWindow::processCommandLineArgs() {
     }
 
     if (cmdparser->getCaptureAfterStartup()) {
-        ProcessorNetworkEvaluator* networkEvaluator =
-            inviwo::InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator();
+        auto networkEvaluator = app->getProcessorNetworkEvaluator();
         networkEvaluator->requestEvaluate();
         std::string path = cmdparser->getOutputPath();
         
-        if (path.empty())
-            path = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES);
+        if (path.empty()) path = app->getPath(InviwoApplication::PATH_IMAGES);
         
         repaint();
-        util::saveAllCanvases(InviwoApplication::getPtr()->getProcessorNetwork(), 
-                              path, cmdparser->getSnapshotName());
+        util::saveAllCanvases(app->getProcessorNetwork(), path, cmdparser->getSnapshotName());
     }
 
     if (cmdparser->getQuitApplicationAfterStartup()) {
@@ -482,15 +466,15 @@ void InviwoMainWindow::onModifiedStatusChanged(const bool& newStatus) { updateWi
 void InviwoMainWindow::openLastWorkspace() {
     // if a workspace is defined by an argument, that workspace is opened, otherwise, the last
     // opened workspace is used
-    const CommandLineParser* cmdparser =
-        inviwo::InviwoApplicationQt::getPtr()->getCommandLineParser();
+    const auto cmdparser = InviwoApplicationQt::getPtr()->getCommandLineParser();
 
-    if (cmdparser->getLoadWorkspaceFromArg())
+    if (cmdparser->getLoadWorkspaceFromArg()) {
         openWorkspace(static_cast<const QString>(cmdparser->getWorkspacePath().c_str()));
-    else if (!workspaceOnLastSucessfullExit_.isEmpty())
+    } else if (!workspaceOnLastSucessfullExit_.isEmpty()) {
         openWorkspace(workspaceOnLastSucessfullExit_);
-    else
+    } else {
         newWorkspace();
+    }
 }
 
 void InviwoMainWindow::openWorkspace() {
@@ -512,9 +496,7 @@ void InviwoMainWindow::openWorkspace() {
 }
 
 void InviwoMainWindow::openRecentWorkspace() {
-    QAction* action = qobject_cast<QAction*>(sender());
-
-    if (action) {
+    if (QAction* action = qobject_cast<QAction*>(sender())) {
         if (askToSaveWorkspaceChanges()) openWorkspace(action->data().toString());
     }
 }
@@ -595,10 +577,11 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
 }
 
 void InviwoMainWindow::disableEvaluation(bool disable) {
-    if (disable)
-        inviwo::InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->disableEvaluation();
-    else
-        inviwo::InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->enableEvaluation();
+    if (disable) {
+        InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->disableEvaluation();
+    } else {
+        InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->enableEvaluation();
+    }
 }
 
 void InviwoMainWindow::showAboutBox() {
@@ -680,10 +663,11 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
 
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("mainwindow");
-    if (!loadedNetwork.contains("untitled.inv"))
+    if (!loadedNetwork.contains("untitled.inv")) {
         settings.setValue("workspaceOnLastSucessfullExit", loadedNetwork);
-    else
+    } else {
         settings.setValue("workspaceOnLastSucessfullExit", "");
+    }
     settings.endGroup();
 
     QMainWindow::closeEvent(event);
@@ -721,13 +705,13 @@ void InviwoMainWindow::reloadStyleSheet() {
     // The following code snippet allows to reload the Qt style sheets during runtime,
     // which is handy while we change them. once the style sheets have been finalized,
     // this code should be removed.
-    QString resourcePath = InviwoApplication::getPtr()
-        ->getPath(InviwoApplication::PATH_RESOURCES)
-        .c_str();
+    
+    auto app = InviwoApplication::getPtr();
+    QString resourcePath = app->getPath(InviwoApplication::PATH_RESOURCES).c_str();
     QFile styleSheetFile(resourcePath + "/stylesheets/inviwo.qss");
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
-    dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->setStyleSheet(styleSheet);
+    dynamic_cast<InviwoApplicationQt*>(app)->setStyleSheet(styleSheet);
     styleSheetFile.close();
 }
 

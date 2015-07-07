@@ -312,7 +312,7 @@ void ProcessorNetwork::removeFromPrimaryCache(PropertyLink* propertyLink) {
     Processor* p1 = srcProperty->getOwner()->getProcessor();
     Processor* p2 = dstProperty->getOwner()->getProcessor();
 
-    ProcessorLinkMap::iterator it = processorLinksCache_.find(ProcessorPair(p1, p2));
+    auto it = processorLinksCache_.find(ProcessorPair(p1, p2));
     if (it != processorLinksCache_.end()) {
         it->second.erase(std::remove(it->second.begin(), it->second.end(), propertyLink),
                          it->second.end());
@@ -321,9 +321,7 @@ void ProcessorNetwork::removeFromPrimaryCache(PropertyLink* propertyLink) {
 
     // Update primary cache
     std::vector<Property*>& cachelist = propertyLinkPrimaryCache_[srcProperty];
-    std::vector<Property*>::iterator sIt =
-        std::find(cachelist.begin(), cachelist.end(), dstProperty);
-
+    auto sIt = std::find(cachelist.begin(), cachelist.end(), dstProperty);
     if (sIt != cachelist.end()) cachelist.erase(sIt);
 
     if (cachelist.empty()) propertyLinkPrimaryCache_.erase(srcProperty);
@@ -372,7 +370,7 @@ std::vector<Property*> ProcessorNetwork::getLinkedProperties(Property* property)
 
 std::vector<PropertyLink>& ProcessorNetwork::addToSecondaryCache(Property* src) {
     std::vector<PropertyLink> links;
-    std::vector<Property*> dest = propertyLinkPrimaryCache_[src];
+    std::vector<Property*>& dest = propertyLinkPrimaryCache_[src];
     for (auto& elem : dest) {
         if (src != elem) secondaryCacheHelper(links, src, elem);
     }
@@ -391,19 +389,18 @@ void ProcessorNetwork::secondaryCacheHelper(std::vector<PropertyLink>& links, Pr
         for (Property* newSrc = dst; newSrc != nullptr;
              newSrc = dynamic_cast<Property*>(newSrc->getOwner())) {
             // Recurse over outgoing links.
-            std::vector<Property*> dest = propertyLinkPrimaryCache_[newSrc];
+            std::vector<Property*>& dest = propertyLinkPrimaryCache_[newSrc];
             for (auto& elem : dest) {
                 if (newSrc != elem) secondaryCacheHelper(links, newSrc, elem);
             }
         }
 
-        // If we link to a CompositeProperty, make sure to evaluate sublinks.
-        CompositeProperty* cp = dynamic_cast<CompositeProperty*>(dst);
-        if (cp) {
+        // If we link to a CompositeProperty, make sure to evaluate sub-links.
+        if (CompositeProperty* cp = dynamic_cast<CompositeProperty*>(dst)) {
             std::vector<Property*> srcProps = cp->getProperties();
             for (auto& srcProp : srcProps) {
                 // Recurse over outgoing links.
-                std::vector<Property*> dest = propertyLinkPrimaryCache_[srcProp];
+                std::vector<Property*>& dest = propertyLinkPrimaryCache_[srcProp];
                 for (auto& elem : dest) {
                     if (srcProp != elem) secondaryCacheHelper(links, srcProp, elem);
                 }
@@ -610,20 +607,14 @@ Processor* ProcessorNetwork::getInvalidationInitiator() {
 //linking helpers
 
 void ProcessorNetwork::onAboutPropertyChange(Property* modifiedProperty) {
-    performLinkingOnPropertyChange(modifiedProperty);
+    if (modifiedProperty) evaluatePropertyLinks(modifiedProperty);
     notifyObserversProcessorNetworkChanged();
 }
-
-void ProcessorNetwork::performLinkingOnPropertyChange(Property* modifiedProperty) {
-    if (modifiedProperty)
-        evaluatePropertyLinks(modifiedProperty);
-}
-
 
 void ProcessorNetwork::evaluatePropertyLinks(Property* modifiedProperty) {
     if (isLinking()) return;
 
-    lock();
+    NetworkLock lock(this);
     linking_ = true;
 
     const std::vector<PropertyLink>& links = getTriggerdLinksForProperty(modifiedProperty);
@@ -632,7 +623,6 @@ void ProcessorNetwork::evaluatePropertyLinks(Property* modifiedProperty) {
     }
    
     if (isLinking()) linking_ = false; 
-    unlock();
 }
 
 void ProcessorNetwork::serialize(IvwSerializer& s) const {

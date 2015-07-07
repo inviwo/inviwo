@@ -360,7 +360,6 @@ private:
     };
 
     //Property Linking support
-    void performLinkingOnPropertyChange(Property* modifiedProperty);
     void addToPrimaryCache(PropertyLink* propertyLink);
     void removeFromPrimaryCache(PropertyLink* propertyLink);
     std::vector<PropertyLink>& addToSecondaryCache(Property* property);

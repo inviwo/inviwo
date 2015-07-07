@@ -54,14 +54,13 @@ class SettingsWidget;
 class HelpWidget;
 
 class InviwoMainWindow : public QMainWindow,
-    public NetworkEditorObserver,
-    public ProcessorNetworkObserver {
+    public NetworkEditorObserver {
     Q_OBJECT
 public:
     static const unsigned int maxNumRecentFiles_ = 10;
 
     InviwoMainWindow();
-    ~InviwoMainWindow();
+    virtual ~InviwoMainWindow();
 
     virtual void initialize();
     virtual void showWindow();
@@ -74,9 +73,8 @@ public:
 
     bool processCommandLineArgs();
 
-    virtual void onProcessorNetworkChange() override;
-    virtual void onNetworkEditorFileChanged(const std::string& filename);
-    virtual void onModifiedStatusChanged(const bool &newStatus);
+    virtual void onNetworkEditorFileChanged(const std::string& filename) override;
+    virtual void onModifiedStatusChanged(const bool &newStatus) override;
 
     void visibilityModeChangedInSettings();
 
