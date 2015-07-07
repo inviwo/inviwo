@@ -31,7 +31,16 @@
 #define IVW_TIMER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <functional>
+#include <iostream>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <chrono>
+#include <condition_variable>
+#include <thread>
+#include <mutex>
+#include <memory>
+#include <utility>
+#include <warn/pop>
 
 #ifdef WIN32
 // For WindowsTimer
@@ -114,8 +123,60 @@ protected:
     HANDLE timer_;
 };
 
-
 #endif // WIN32
+
+class IVW_CORE_API IvwTimer {
+public:
+    using duration_t = std::chrono::milliseconds;
+
+    IvwTimer(size_t interval, std::function<void()> fun) :
+        IvwTimer(std::chrono::milliseconds(interval), fun) {}
+    
+    IvwTimer(duration_t interval, std::function<void()> fun)
+        : fun_{std::move(fun)}, interval_{interval}, enabled_{false} {}
+
+    ~IvwTimer() {
+        stop();
+    }
+    void start() {
+        if (!enabled_) {
+            enabled_ = true;
+            thread_ = std::thread(&IvwTimer::timer, this);
+        }
+    }
+    void stop() {
+        if (enabled_) {
+            {
+                std::lock_guard<std::mutex> _{mutex_};
+                enabled_ = false;
+            }
+            cvar_.notify_one();
+            thread_.join();
+        }
+    }
+
+private:
+    void timer() {
+        auto deadline = std::chrono::steady_clock::now() + interval_;
+        std::unique_lock<std::mutex> lock{mutex_};
+        while (enabled_) {
+            if (cvar_.wait_until(lock, deadline) == std::cv_status::timeout) {
+                lock.unlock();
+                fun_();
+                deadline += interval_;
+                lock.lock();
+            }
+        }
+    }
+
+    std::function<void()> fun_;
+    const duration_t interval_;
+    
+    bool enabled_;
+    std::thread thread_;
+    std::mutex mutex_;
+    std::condition_variable cvar_;
+};
 
 }; // namespace inviwo
 
