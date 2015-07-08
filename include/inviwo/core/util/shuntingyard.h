@@ -67,6 +67,7 @@ THE SOFTWARE.
 #include <iostream>
 #include <sstream>
 #include <queue>
+#include <memory>
 
 namespace inviwo {
 namespace shuntingyard {
