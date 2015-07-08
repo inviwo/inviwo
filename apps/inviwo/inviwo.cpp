@@ -83,9 +83,9 @@ int main(int argc, char** argv) {
 #endif
 
     // process last arguments
-    if (mainWin.processCommandLineArgs())
+    if (mainWin.processCommandLineArgs()) {
         return inviwoApp.exec();
-    else{
+    } else {
         mainWin.exitInviwo();
         return  0;
     }

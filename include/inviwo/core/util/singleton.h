@@ -49,6 +49,10 @@ protected:
 template <class T>
 class Singleton : public SingletonBase {
 public:
+    
+    Singleton<T>() {};
+    Singleton<T>(Singleton<T> const&) = delete;
+    void operator=(Singleton<T> const&) = delete;
 
     /**
      * For Singletons in the inviwo::core init should be called in
@@ -74,10 +78,8 @@ public:
 
     static void deleteInstance() {
         delete instance_;
-        instance_ = 0;
+        instance_ = nullptr;
     };
-
-    Singleton<T>() {};
 
     virtual ~Singleton() {
         Singleton<T>::resetInstance();
@@ -85,18 +87,13 @@ public:
 
 private:
     static void resetInstance() {
-        instance_ = 0;
+        instance_ = nullptr;
     };
-
-    // no implementation for copy functionalities by making the following two methods
-    // unaccessible. Otherwise unwanted Singleton copies might appear.
-    Singleton<T>(Singleton<T> const&);
-    void operator=(Singleton<T> const&);
 
     static T* instance_;
 };
 
-template <class T> T* Singleton<T>::instance_ = 0;
+template <class T> T* Singleton<T>::instance_ = nullptr;
 
 } // end of namespace
 
