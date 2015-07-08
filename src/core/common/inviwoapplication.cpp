@@ -54,28 +54,27 @@ void getInviwoUserSettingsPath();
 
 // TODO: are the first two constructors needed? Otherwise remove.
 InviwoApplication::InviwoApplication()
-    : displayName_("Inviwo"), basePath_(""), commandLineParser_(nullptr) {
+    : displayName_("Inviwo"), basePath_(""), commandLineParser_(), initialized_(false), pool_(4) {
     processorNetwork_ = new ProcessorNetwork();
     processorNetworkEvaluator_ = new ProcessorNetworkEvaluator(processorNetwork_);
     init(this);
 }
 
 InviwoApplication::InviwoApplication(std::string displayName, std::string basePath)
-    : displayName_(displayName), basePath_(basePath), commandLineParser_(nullptr) {
+    : displayName_(displayName), basePath_(basePath), commandLineParser_(), initialized_(false), pool_(4) {
     processorNetwork_ = new ProcessorNetwork();
     processorNetworkEvaluator_ = new ProcessorNetworkEvaluator(processorNetwork_);
     init(this);
 }
 
-InviwoApplication::InviwoApplication(int argc, char** argv,
-                                     std::string displayName,
+InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName,
                                      std::string basePath)
-    : displayName_(displayName)
-    , basePath_(basePath) {
-    commandLineParser_ = new CommandLineParser(argc, argv);
-    commandLineParser_->parse();
-    if (commandLineParser_->getLogToFile()){
-        LogCentral::getPtr()->registerLogger(new FileLogger(commandLineParser_->getLogToFileFileName()));
+    : displayName_(displayName), basePath_(basePath), commandLineParser_(argc, argv), initialized_(false), pool_(4) {
+    
+    commandLineParser_.parse();
+    if (commandLineParser_.getLogToFile()) {
+        LogCentral::getPtr()->registerLogger(
+            new FileLogger(commandLineParser_.getLogToFileFileName()));
     }
     processorNetwork_ = new ProcessorNetwork();
     processorNetworkEvaluator_ = new ProcessorNetworkEvaluator(processorNetwork_);
@@ -100,7 +99,6 @@ InviwoApplication::~InviwoApplication() {
     delete processorNetwork_;
     delete processorNetworkEvaluator_;
 
-    delete commandLineParser_;
     SingletonBase::deleteAllSingeltons();
     DataFormatBase::cleanDataFormatBases();
 }
@@ -181,6 +179,10 @@ void InviwoApplication::deinitialize() {
     initialized_ = false;
 }
 
+const std::string& InviwoApplication::getBasePath() const {
+    return basePath_;
+}
+
 std::string InviwoApplication::getPath(PathType pathType, const std::string& suffix,
                                        const bool& createFolder) {
     std::string result = getBasePath();
@@ -244,6 +246,26 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
     return result + suffix;
 }
 
+void InviwoApplication::registerModule(InviwoModule* module) {
+    modules_.push_back(module);
+}
+
+const std::vector<InviwoModule*>& InviwoApplication::getModules() const {
+    return modules_;
+}
+
+ProcessorNetwork* InviwoApplication::getProcessorNetwork() {
+    return processorNetwork_;
+}
+
+ProcessorNetworkEvaluator* InviwoApplication::getProcessorNetworkEvaluator() {
+    return processorNetworkEvaluator_;
+}
+
+const CommandLineParser* InviwoApplication::getCommandLineParser() const {
+    return &commandLineParser_;
+}
+
 void InviwoApplication::printApplicationInfo() {
     LogInfoCustom("InviwoInfo", "Inviwo Version: " << IVW_VERSION);
     LogInfoCustom("InviwoInfo", "Base Path: " << getBasePath());
@@ -259,6 +281,14 @@ void InviwoApplication::printApplicationInfo() {
 
     if (config != "")
         LogInfoCustom("InviwoInfo", "Config: " << config);
+}
+
+void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
+    queue_.postEnqueue = std::move(func);
+}
+
+std::string InviwoApplication::getDisplayName() const {
+    return displayName_;
 }
 
 Timer* InviwoApplication::createTimer() const {
@@ -297,6 +327,21 @@ void InviwoApplication::addNonSupportedTags(const Tags t){
 
 bool InviwoApplication::checkIfAllTagsAreSupported(const Tags t) const{
     return (nonSupportedTags_.getMatches(t) == 0);
+}
+
+void InviwoApplication::processFront() {
+    NetworkLock netlock(processorNetwork_);
+    std::function<void()> task;
+    while (true) {     
+        {
+            std::unique_lock<std::mutex> lock{queue_.mutex};
+            if (queue_.tasks.empty()) return;
+            task = std::move(queue_.tasks.front());
+            queue_.tasks.pop();
+        }
+        task();
+    }
+
 }
 
 } // namespace

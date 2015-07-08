@@ -46,6 +46,9 @@
 
 namespace inviwo {
 
+
+
+
 InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string basePath, int& argc,
                                          char** argv)
     : QApplication(argc, argv)
@@ -55,6 +58,11 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string ba
     QCoreApplication::setOrganizationName("Inviwo Foundation");
     QCoreApplication::setOrganizationDomain("inviwo.org");
     QCoreApplication::setApplicationName(displayName.c_str());
+
+    setPostEnqueueFront([this](){
+        postEvent(this, new InviwoQtEvent());
+    });
+
     fileWatcher_ = new QFileSystemWatcher(this);
     connect(fileWatcher_, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
 
@@ -250,5 +258,18 @@ QPoint InviwoApplicationQt::offsetWidget() {
     }
     return QPoint(pos.x, pos.y);
 }
+
+bool InviwoApplicationQt::event(QEvent* e) {
+ if (e->type() == InviwoQtEvent::type()) {
+        e->accept();
+        processFront();
+        return true;
+    } else {
+        return QApplication::event(e);
+    }
+}
+
+
+QEvent::Type InviwoQtEvent::INVIWO_QT_EVENT = QEvent::None;
 
 }  // namespace

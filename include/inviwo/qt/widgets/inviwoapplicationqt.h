@@ -35,39 +35,53 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QFileSystemWatcher>
+#include <QEvent>
 
 #include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
+
+class IVW_QTWIDGETS_API InviwoQtEvent : public QEvent {
+    Q_GADGET
+public:
+    InviwoQtEvent() : QEvent(INVIWO_QT_EVENT) {}
+    static QEvent::Type type() {
+        if (INVIWO_QT_EVENT == QEvent::None) {
+            INVIWO_QT_EVENT = static_cast<QEvent::Type>(QEvent::registerEventType());
+        }
+        return INVIWO_QT_EVENT;
+    }
+
+private:
+    static QEvent::Type INVIWO_QT_EVENT;
+};
 
 class IVW_QTWIDGETS_API InviwoApplicationQt : public QApplication, public InviwoApplication {
     Q_OBJECT
 
 public:
     InviwoApplicationQt(std::string displayName_, std::string basePath_, int& argc, char** argv);
-
     virtual ~InviwoApplicationQt();
 
+    virtual void initialize(registerModuleFuncPtr) override;
+    
+    virtual void registerFileObserver(FileObserver* fileObserver) override;
+    virtual void startFileObservation(std::string fileName) override;
+    virtual void stopFileObservation(std::string fileName) override;
+    virtual void closeInviwoApplication() override;
     virtual void playSound(Message soundID) override;
+    virtual Timer* createTimer() const override;
+
     void setMainWindow(QMainWindow* mainWindow);
     QMainWindow* getMainWindow() { return mainWindow_; }
-
-    virtual void registerFileObserver(FileObserver* fileObserver);
-    virtual void startFileObservation(std::string fileName);
-    virtual void stopFileObservation(std::string fileName);
-
-    virtual void closeInviwoApplication();
-
-
-    virtual void initialize(registerModuleFuncPtr);
-
-    virtual Timer* createTimer() const;
 
     QPoint getWindowDecorationOffset() const;
     void setWindowDecorationOffset(QPoint windowDecorationOffset);
 
     QPoint movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorationOffset=true);
     QPoint offsetWidget();
+
+    virtual bool event(QEvent* e) override;
 
 public slots:
     void fileChanged(QString fileName);

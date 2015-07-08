@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWOAPPLICATION_H
@@ -43,7 +43,16 @@
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/timer.h>
+#include <inviwo/core/util/threadpool.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <queue>
+#include <memory>
+#include <mutex>
+#include <condition_variable>
+#include <future>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -54,10 +63,10 @@ class ProcessorNetworkEvaluator;
  *
  * \brief The main application which holds the instances of all modules.
  *
- * All modules should be owned and accessed trough this singleton, as well as the processor network and the evaluator.
+ * All modules should be owned and accessed trough this singleton, as well as the processor network
+ *and the evaluator.
  */
 class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
-
 public:
     typedef void (*registerModuleFuncPtr)(InviwoApplication*);
 
@@ -85,14 +94,18 @@ public:
         PATH_HELP                // data/help
     };
 
-    virtual void closeInviwoApplication() {LogWarn("this application have not implemented close inviwo function");}
+    virtual void closeInviwoApplication() {
+        LogWarn("this application have not implemented close inviwo function");
+    }
 
     /**
      * Get the base path of the application.
      *
      * @return
      */
-    const std::string& getBasePath() const { return basePath_; }
+    const std::string& getBasePath() const;
+
+    std::string getDisplayName() const;
 
     /**
      * Get basePath +  pathType + suffix.
@@ -101,27 +114,25 @@ public:
      * @param suffix Path extension
      * @return basePath +  pathType + suffix
      */
-    std::string getPath(PathType pathType, const std::string& suffix = "", const bool &createFolder = false);
+    std::string getPath(PathType pathType, const std::string& suffix = "",
+                        const bool& createFolder = false);
 
-    void registerModule(InviwoModule* module) { modules_.push_back(module); }
-    const std::vector<InviwoModule*> &getModules() const { return modules_; }
+    void registerModule(InviwoModule* module);
+    const std::vector<InviwoModule*>& getModules() const;
 
-    ProcessorNetwork* getProcessorNetwork() { return processorNetwork_; }
-    ProcessorNetworkEvaluator* getProcessorNetworkEvaluator() { return processorNetworkEvaluator_; }
+    ProcessorNetwork* getProcessorNetwork();
+    ProcessorNetworkEvaluator* getProcessorNetworkEvaluator();
 
-    template<class T> T* getSettingsByType();
+    template <class T>
+    T* getSettingsByType();
 
-    const CommandLineParser* getCommandLineParser() const { return commandLineParser_; }
-    template<class T> T* getModuleByType();
+    const CommandLineParser* getCommandLineParser() const;
+    template <class T>
+    T* getModuleByType();
 
-    virtual void registerFileObserver(FileObserver* fileObserver) { //LogWarn("This Inviwo application does not support FileObservers."); 
-    }
-    virtual void startFileObservation(std::string fileName) { //LogWarn("This Inviwo application does not support FileObservers."); 
-    }
-    virtual void stopFileObservation(std::string fileName) {// LogWarn("This Inviwo application does not support FileObservers."); 
-    }
-
-    std::string getDisplayName()const {return displayName_;}
+    virtual void registerFileObserver(FileObserver* fileObserver) {}
+    virtual void startFileObservation(std::string fileName) {}
+    virtual void stopFileObservation(std::string fileName) {}
 
     enum class Message { Ok, Error };
     virtual void playSound(Message soundID) {}
@@ -134,49 +145,91 @@ public:
     virtual Timer* createTimer() const;
 
     virtual void addCallbackAction(ModuleCallbackAction* callbackAction);
-
     virtual std::vector<ModuleCallbackAction*> getCallbackActions();
-
     std::vector<Settings*> getModuleSettings(size_t startIdx = 0);
 
     void addNonSupportedTags(const Tags);
     bool checkIfAllTagsAreSupported(const Tags) const;
 
+    template <class F, class... Args>
+    auto enqueuePool(F&& f, Args&&... args)
+        -> std::future<typename std::result_of<F(Args...)>::type>;
+
+    template <class F, class... Args>
+    auto enqueueFront(F&& f, Args&&... args)
+        -> std::future<typename std::result_of<F(Args...)>::type>;
+
+    virtual void processFront();
+
+
 protected:
     void printApplicationInfo();
+    void setPostEnqueueFront(std::function<void()> func);
 
 private:
-    std::string displayName_;
+    struct Queue {
+        // Task queue
+        std::queue<std::function<void()> > tasks;
+        // synchronization
+        std::mutex mutex;
 
+        // This is called after putting a task in the queue.
+        std::function<void()> postEnqueue;
+    };
+
+
+    std::string displayName_;
     std::string basePath_;
 
-    std::vector<InviwoModule*> modules_;
+    CommandLineParser commandLineParser_;
+    bool initialized_;
+    ThreadPool pool_;
+    Queue queue_; // "Interaction/GUI" queue
 
     ProcessorNetwork* processorNetwork_;
-
     ProcessorNetworkEvaluator* processorNetworkEvaluator_;
 
-    CommandLineParser* commandLineParser_;
-
     Tags nonSupportedTags_;
-
-    bool initialized_;
-
+    std::vector<InviwoModule*> modules_;
     std::vector<ModuleCallbackAction*> moudleCallbackActions_;
 };
 
-template<class T>
+template <class T>
 T* InviwoApplication::getSettingsByType() {
     T* settings = getTypeFromVector<T>(getModuleSettings());
     return settings;
 }
 
-template<class T>
+template <class T>
 T* InviwoApplication::getModuleByType() {
     T* module = getTypeFromVector<T>(getModules());
     return module;
 }
 
-} // namespace
+template <class F, class... Args>
+auto InviwoApplication::enqueuePool(F&& f, Args&&... args)
+    -> std::future<typename std::result_of<F(Args...)>::type> {
+    return pool_.enqueue(std::forward<F>(f), std::forward<Args>(args)...);
+}
 
-#endif // IVW_INVIWOAPPLICATION_H
+template <class F, class... Args>
+auto InviwoApplication::enqueueFront(F&& f, Args&&... args)
+    -> std::future<typename std::result_of<F(Args...)>::type> {
+    using return_type = typename std::result_of<F(Args...)>::type;
+
+    auto task = std::make_shared<std::packaged_task<return_type()> >(
+        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+
+    std::future<return_type> res = task->get_future();
+    {
+        std::unique_lock<std::mutex> lock(queue_.mutex);
+        queue_.tasks.emplace([task]() { (*task)(); });
+    }
+
+    if(queue_.postEnqueue) queue_.postEnqueue();
+    return res;
+}
+
+}  // namespace
+
+#endif  // IVW_INVIWOAPPLICATION_H
