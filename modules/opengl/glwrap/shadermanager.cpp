@@ -110,7 +110,7 @@ void ShaderManager::fileChanged(std::string shaderFilename) {
                 }
 
                 LogInfo(shaderFilename + " successfuly reloaded");
-                InviwoApplication::getPtr()->playSound(InviwoApplication::IVW_OK);
+                InviwoApplication::getPtr()->playSound(InviwoApplication::Message::Ok);
                 // TODO: Don't invalidate all processors when shader change, invalidate only
                 // owners if shader has one.
                 std::vector<Processor*> processors =
@@ -123,7 +123,7 @@ void ShaderManager::fileChanged(std::string shaderFilename) {
 
             } catch (OpenGLException& e) {
                 util::log(e.getContext(), e.getMessage(), LogLevel::Error);
-                InviwoApplication::getPtr()->playSound(InviwoApplication::IVW_ERROR);
+                InviwoApplication::getPtr()->playSound(InviwoApplication::Message::Error);
             }
         }
     }

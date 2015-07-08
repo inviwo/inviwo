@@ -48,6 +48,7 @@ public:
 
     virtual ~InviwoApplicationQt();
 
+    virtual void playSound(Message soundID) override;
     void setMainWindow(QMainWindow* mainWindow);
     QMainWindow* getMainWindow() { return mainWindow_; }
 
@@ -57,7 +58,6 @@ public:
 
     virtual void closeInviwoApplication();
 
-    virtual void playSound(unsigned int soundID);
 
     virtual void initialize(registerModuleFuncPtr);
 

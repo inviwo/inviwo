@@ -123,11 +123,8 @@ public:
 
     std::string getDisplayName()const {return displayName_;}
 
-    enum MessageType {
-        IVW_OK,
-        IVW_ERROR
-    };
-    virtual void playSound(unsigned int soundID) { /*LogWarn("This Inviwo application does not support sound feedback.");*/ }
+    enum class Message { Ok, Error };
+    virtual void playSound(Message soundID) {}
 
     /**
      * Creates a timer. Caller is responsible for deleting returned object.
