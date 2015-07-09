@@ -152,11 +152,11 @@ public:
     bool checkIfAllTagsAreSupported(const Tags) const;
 
     template <class F, class... Args>
-    auto enqueuePool(F&& f, Args&&... args)
+    auto dispatchPool(F&& f, Args&&... args)
         -> std::future<typename std::result_of<F(Args...)>::type>;
 
     template <class F, class... Args>
-    auto enqueueFront(F&& f, Args&&... args)
+    auto dispatchFront(F&& f, Args&&... args)
         -> std::future<typename std::result_of<F(Args...)>::type>;
 
     virtual void processFront();
@@ -207,13 +207,13 @@ T* InviwoApplication::getModuleByType() {
 }
 
 template <class F, class... Args>
-auto InviwoApplication::enqueuePool(F&& f, Args&&... args)
+auto InviwoApplication::dispatchPool(F&& f, Args&&... args)
     -> std::future<typename std::result_of<F(Args...)>::type> {
     return pool_.enqueue(std::forward<F>(f), std::forward<Args>(args)...);
 }
 
 template <class F, class... Args>
-auto InviwoApplication::enqueueFront(F&& f, Args&&... args)
+auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     -> std::future<typename std::result_of<F(Args...)>::type> {
     using return_type = typename std::result_of<F(Args...)>::type;
 
@@ -228,6 +228,35 @@ auto InviwoApplication::enqueueFront(F&& f, Args&&... args)
 
     if(queue_.postEnqueue) queue_.postEnqueue();
     return res;
+}
+
+template <class F, class... Args>
+auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
+    return InviwoApplication::getPtr()->dispatchPool(std::forward<F>(f),
+                                                     std::forward<Args>(args)...);
+}
+
+template <class F, class... Args>
+auto dispatchPoolAndInvalidate(Processor* p, F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
+    using return_type = typename std::result_of<F(Args...)>::type;
+    auto task = std::make_shared<std::packaged_task<return_type()> >(
+        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
+    
+    std::future<return_type> res = task->get_future();
+    
+    InviwoApplication::getPtr()->dispatchPool([task, p](){
+        (*task)();
+        dispatchFront([p](){if(p) p->invalidate(INVALID_OUTPUT); });
+    });
+    
+    return res;
+}
+
+template <class F, class... Args>
+auto dispatchFront(F&& f, Args&&... args)
+    -> std::future<typename std::result_of<F(Args...)>::type> {
+    return InviwoApplication::getPtr()->dispatchFront(std::forward<F>(f),
+                                                      std::forward<Args>(args)...);
 }
 
 }  // namespace
