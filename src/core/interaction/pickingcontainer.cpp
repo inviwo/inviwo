@@ -40,7 +40,8 @@ PickingContainer::PickingContainer()
     , mousePickObj_(nullptr)
     , prevMouseCoord_(uvec2(0, 0))
     , mousePickingOngoing_(false)
-    , mouseIsDown_(false) 
+    , mouseIsDown_(false)
+    , touchPickingOn_(false)
 {}
 
 PickingContainer::~PickingContainer() {}
@@ -52,6 +53,9 @@ bool PickingContainer::pickingEnabled() {
 bool PickingContainer::performMousePick(MouseEvent* e) {
     if (!pickingEnabled() || e->button() == MouseEvent::MOUSE_BUTTON_NONE)
         return false;
+
+    if (touchPickingOn_)
+        return true;
 
     if (e->state() == MouseEvent::MOUSE_STATE_RELEASE){
         mouseIsDown_ = false;
@@ -105,6 +109,11 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
 
     // Clear the picked touch point map
     pickedTouchPoints_.clear();
+
+    if (touchPoints.size() > 1 || touchPoints[0].state() != TouchPoint::TOUCH_STATE_ENDED)
+        touchPickingOn_ = true;
+    else
+        touchPickingOn_ = false;
 
     std::unordered_map<int, PickingObject*>::iterator touchPickObjs_it;
     std::unordered_map<PickingObject*, std::vector<TouchPoint>>::iterator pickedTouchPoints_it;
@@ -169,7 +178,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
         // Treat one touch point the same as mouse event, for now
         if (pickedTouchPoints_it->second.size() == 1){
             uvec2 coord = mousePosToPixelCoordinates(pickedTouchPoints_it->second[0].getPos(), e->canvasSize());
-            if (pickedTouchPoints_it->second[0].state() == TouchPoint::TOUCH_STATE_STARTED){
+            if (pickedTouchPoints_it->second[0].state() & TouchPoint::TOUCH_STATE_STARTED){
                 pickedTouchPoints_it->first->setPickingPosition(normalizedCoordinates(coord));
                 pickedTouchPoints_it->first->setPickingDepth(pickedTouchPoints_it->second[0].getDepth());
                 pickedTouchPoints_it->first->setPickingMove(vec2(0.f, 0.f));
@@ -192,6 +201,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
     // So prepare for that
     if (touchPoints.size() == 1){
         prevMouseCoord_ = mousePosToPixelCoordinates(touchPoints[0].getPos(), e->canvasSize());
+        touchPickingOn_ = false;
     }
 
     // Mark all picking objects in TouchIDPickingMap as picked.
