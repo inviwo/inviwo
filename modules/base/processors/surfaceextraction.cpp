@@ -31,6 +31,7 @@
 
 #include <inviwo/core/properties/propertysemantics.h>
 #include <modules/base/algorithm/volume/marchingtetrahedron.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #define TETRA 1
 

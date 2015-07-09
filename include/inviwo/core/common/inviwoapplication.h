@@ -229,13 +229,17 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
     if(queue_.postEnqueue) queue_.postEnqueue();
     return res;
 }
-
+template <class F, class... Args>
+auto dispatchFront(F&& f, Args&&... args)
+    -> std::future<typename std::result_of<F(Args...)>::type> {
+    return InviwoApplication::getPtr()->dispatchFront(std::forward<F>(f),
+                                                      std::forward<Args>(args)...);
+}
 template <class F, class... Args>
 auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
     return InviwoApplication::getPtr()->dispatchPool(std::forward<F>(f),
                                                      std::forward<Args>(args)...);
 }
-
 template <class F, class... Args>
 auto dispatchPoolAndInvalidate(Processor* p, F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
     using return_type = typename std::result_of<F(Args...)>::type;
@@ -252,12 +256,7 @@ auto dispatchPoolAndInvalidate(Processor* p, F&& f, Args&&... args) -> std::futu
     return res;
 }
 
-template <class F, class... Args>
-auto dispatchFront(F&& f, Args&&... args)
-    -> std::future<typename std::result_of<F(Args...)>::type> {
-    return InviwoApplication::getPtr()->dispatchFront(std::forward<F>(f),
-                                                      std::forward<Args>(args)...);
-}
+
 
 }  // namespace
 
