@@ -43,14 +43,16 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API MarchingTetrahedron {
 public:
-    static Mesh *apply(const VolumeRepresentation *in, const double &iso, const vec4 &color);
+    static Mesh *apply(const VolumeRepresentation *in, const double &iso, const vec4 &color,
+                       std::function<void(float)> progressCallback = std::function<void(float)>());
 };
 
 namespace detail {
 struct IVW_MODULE_BASE_API MarchingTetrahedronDispatcher {
     using type = Mesh *;
     template <class T>
-    Mesh *dispatch(const VolumeRepresentation *in, const double &iso, const vec4 &color);
+    Mesh *dispatch(const VolumeRepresentation *in, const double &iso, const vec4 &color,
+                   std::function<void(float)> progressCallback);
 };
 
 template <typename T>
@@ -71,13 +73,15 @@ void addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer
                  std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &a,
                  const glm::vec3 &b, const glm::vec3 &c);
 
-glm::vec3 interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
-                      const double &v1);
+glm::vec3 interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1, const double &v1);
 
 template <class DataType>
-Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(const VolumeRepresentation *in,
-                                                              const double &iso,
-                                                              const vec4 &color) {
+Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
+    const VolumeRepresentation *in, const double &iso, const vec4 &color,
+    std::function<void(float)> progressCallback) {
+
+    if (progressCallback) progressCallback(0.0f);
+
     using T = typename DataType::type;
 
     const VolumeRAMPrecision<T> *volume = dynamic_cast<const VolumeRAMPrecision<T> *>(in);
@@ -159,6 +163,7 @@ Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(const VolumeRepres
                 }
             }
         }
+        if (progressCallback) progressCallback(static_cast<float>(k)/static_cast<float>(dim.z-1));
     }
 
     ivwAssert(positions.size() == normals.size(), "positions_ and normals_ must be equal");
@@ -166,6 +171,8 @@ Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(const VolumeRepres
          ++pit, ++nit) {
         mesh->addVertex(*pit, glm::normalize(*nit), *pit, color);
     }
+
+    if (progressCallback) progressCallback(1.0f);
 
     return mesh;
 }

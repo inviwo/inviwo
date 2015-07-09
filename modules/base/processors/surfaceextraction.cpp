@@ -51,7 +51,7 @@ SurfaceExtraction::SurfaceExtraction()
     , mesh_("mesh")
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f)
     , method_("method", "Method")
-    , colors_("meshColors","Mesh Colors"){
+    , colors_("meshColors", "Mesh Colors") {
     addPort(volume_);
     addPort(mesh_);
 
@@ -59,9 +59,9 @@ SurfaceExtraction::SurfaceExtraction()
     addProperty(isoValue_);
     addProperty(colors_);
 
-    method_.addOption("marchingtetrahedra", "Marching Tetrahedra", TETRA);
+    getProgressBar().hide();
 
-    
+    method_.addOption("marchingtetrahedra", "Marching Tetrahedra", TETRA);
 
     volume_.onChange(this, &SurfaceExtraction::setMinMax);
     volume_.onChange(this, &SurfaceExtraction::updateColors);
@@ -71,29 +71,60 @@ SurfaceExtraction::SurfaceExtraction()
 SurfaceExtraction::~SurfaceExtraction() {}
 
 void SurfaceExtraction::process() {
-    auto meshList = new std::vector<std::unique_ptr<Mesh>>();
-    int i = 0;
-    for (auto &v : volume_){
+    auto meshList = mesh_.getData();
+    if (!meshList) {
+        meshList = new std::vector<std::unique_ptr<Mesh>>();
+        mesh_.setData(meshList);
+    }
 
-        const VolumeRAM* vol = v.getRepresentation<VolumeRAM>();
+    auto data = volume_.getSourceVectorData();
+    auto changed = volume_.getChangedOutports();
+    result_.resize(data.size());
+    meshList->resize(data.size());
 
-        std::unique_ptr<Mesh> m = nullptr;
+    for (size_t i = 0; i < data.size(); ++i) {
+        const VolumeRAM* vol = data[i].second->getRepresentation<VolumeRAM>();
 
         switch (method_.get()) {
-        case TETRA:
-            m = std::unique_ptr<Mesh>(MarchingTetrahedron::apply(vol, isoValue_.get(), static_cast<FloatVec4Property*>(colors_.getProperties()[i++])->get()));
-            break;
-        default:
-            break;
+            case TETRA: {
+                if (result_[i].result.valid() &&
+                    result_[i].result.wait_for(std::chrono::duration<int, std::milli>(0)) ==
+                        std::future_status::ready) {
+                    (*meshList)[i] = std::move(result_[i].result.get());
+                    result_[i].status = 1.0f;
+                }
+
+                float iso = isoValue_.get();
+                vec4 color = static_cast<FloatVec4Property*>(colors_.getProperties()[i])->get();
+                if (!result_[i].result.valid() && (util::contains(changed, data[i].first) ||
+                                            result_[i].iso != iso || result_[i].color != color)) {
+                    result_[i].iso = iso;
+                    result_[i].color = color;
+                    result_[i].status = 0.0f;
+                    result_[i].result =
+                        dispatchPoolAndInvalidate(this, [this, vol, iso, color, i]() -> std::unique_ptr<Mesh> {
+                            auto m = std::unique_ptr<Mesh>(
+                                MarchingTetrahedron::apply(vol, iso, color, [this, i](float s) {
+                                    this->result_[i].status = s;
+                                    float status = 0;
+                                    for (const auto& e : this->result_) status += e.status;
+                                    status /= result_.size();
+                                    dispatchFront([status](ProgressBar& pb) {
+                                        if (status < 1.0f) pb.show();
+                                        else pb.hide();
+                                        pb.updateProgress(status);
+                                    }, std::ref(this->getProgressBar()));
+
+                                }));
+                            return std::move(m);
+                        });
+                }
+                break;
+            }
+            default:
+                break;
         }
-
-
-
-        m->setModelMatrix(volume_.getData()->getModelMatrix());
-        m->setWorldMatrix(volume_.getData()->getWorldMatrix());
-        meshList->push_back(std::move(m));
     }
-    mesh_.setData(meshList);
 }
 
 void SurfaceExtraction::setMinMax() {
@@ -104,36 +135,53 @@ void SurfaceExtraction::setMinMax() {
 }
 
 void SurfaceExtraction::updateColors() {
-    const static vec4 defaultColor[11] = {
-        vec4(1.0f),
-        vec4(0x1f, 0x77, 0xb4, 255) / vec4(255, 255, 255, 255),
-        vec4(0xff, 0x7f, 0x0e, 255) / vec4(255, 255, 255, 255),
-        vec4(0x2c, 0xa0, 0x2c, 255) / vec4(255, 255, 255, 255),
-        vec4(0xd6, 0x27, 0x28, 255) / vec4(255, 255, 255, 255),
-        vec4(0x94, 0x67, 0xbd, 255) / vec4(255, 255, 255, 255),
-        vec4(0x8c, 0x56, 0x4b, 255) / vec4(255, 255, 255, 255),
-        vec4(0xe3, 0x77, 0xc2, 255) / vec4(255, 255, 255, 255),
-        vec4(0x7f, 0x7f, 0x7f, 255) / vec4(255, 255, 255, 255),
-        vec4(0xbc, 0xbd, 0x22, 255) / vec4(255, 255, 255, 255),
-        vec4(0x17, 0xbe, 0xcf, 255) / vec4(255, 255, 255, 255)
-    };
-        
+    const static vec4 defaultColor[11] = {vec4(1.0f),
+                                          vec4(0x1f, 0x77, 0xb4, 255) / vec4(255, 255, 255, 255),
+                                          vec4(0xff, 0x7f, 0x0e, 255) / vec4(255, 255, 255, 255),
+                                          vec4(0x2c, 0xa0, 0x2c, 255) / vec4(255, 255, 255, 255),
+                                          vec4(0xd6, 0x27, 0x28, 255) / vec4(255, 255, 255, 255),
+                                          vec4(0x94, 0x67, 0xbd, 255) / vec4(255, 255, 255, 255),
+                                          vec4(0x8c, 0x56, 0x4b, 255) / vec4(255, 255, 255, 255),
+                                          vec4(0xe3, 0x77, 0xc2, 255) / vec4(255, 255, 255, 255),
+                                          vec4(0x7f, 0x7f, 0x7f, 255) / vec4(255, 255, 255, 255),
+                                          vec4(0xbc, 0xbd, 0x22, 255) / vec4(255, 255, 255, 255),
+                                          vec4(0x17, 0xbe, 0xcf, 255) / vec4(255, 255, 255, 255)};
+
     auto properties = colors_.getProperties();
     auto numConnections = volume_.getNumberOfConnections();
 
-    for (size_t i = 0; i < properties.size(); i++){
+    for (size_t i = 0; i < properties.size(); i++) {
         properties[i]->setVisible(i < numConnections);
     }
 
-    for (size_t i = properties.size(); i < numConnections; i++){
+    for (size_t i = properties.size(); i < numConnections; i++) {
         const static std::string color = "color";
         const static std::string dispName = "Color for Volume ";
-        FloatVec4Property *colorProp = new FloatVec4Property(color + toString(i), dispName + toString(i + 1), defaultColor[i % 11]);
+        FloatVec4Property* colorProp = new FloatVec4Property(
+            color + toString(i), dispName + toString(i + 1), defaultColor[i % 11]);
         colorProp->setCurrentStateAsDefault();
         colorProp->setSemantics(PropertySemantics::Color);
         colorProp->setSerializationMode(PropertySerializationMode::ALL);
         colors_.addProperty(colorProp);
     }
+}
+
+SurfaceExtraction::task::task(task&& rhs)
+    : result(std::move(rhs.result))
+    , iso(rhs.iso)
+    , color(std::move(rhs.color))
+    , status(rhs.status) {
+}
+
+SurfaceExtraction::task& SurfaceExtraction::task::operator=(task&& that) {
+    if (this != &that) {
+        result = std::move(that.result);
+        iso = that.iso;
+        color = std::move(that.color);
+        status = that.status;
+    }
+
+    return *this;
 }
 
 }  // namespace
