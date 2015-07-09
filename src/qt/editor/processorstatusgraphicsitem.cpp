@@ -111,8 +111,7 @@ void ProcessorStatusGraphicsItem::onProcessorWidgetShow(ProcessorWidget*) { upda
 void ProcessorStatusGraphicsItem::onProcessorWidgetHide(ProcessorWidget*) { update(); }
 
 void ProcessorStatusGraphicsItem::update(const QRectF& rect) {
-    if (processor_->isReady() != ready_)
-        EditorGraphicsItem::update(rect); 
+    if (processor_->isReady() != ready_) EditorGraphicsItem::update(rect); 
 }
 
 }  // namespace

@@ -87,18 +87,12 @@ void ProcessorProgressGraphicsItem::paint(QPainter* p, const QStyleOptionGraphic
 void ProcessorProgressGraphicsItem::progressChanged() {
     // mark item as dirty to force an redraw
     this->update();
-    // let Qt take care of events like update for 25ms, but exclude user input (we do not want
-    // any interference)
-    qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 25);
 }
 
 void ProcessorProgressGraphicsItem::progressBarVisibilityChanged() {
     setVisible(progressBar_->isVisible());
     // mark item as dirty to force an redraw
     this->update();
-    // let Qt take care of events like update for 25ms, but exclude user input (we do not want
-    // any interference)
-    qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 25);
 }
 
 }  // namespace
