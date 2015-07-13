@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMESUBSAMPLE_H
@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <modules/base/algorithm/volume/volumeramsubsample.h>
 
 namespace inviwo {
 
@@ -43,13 +44,13 @@ namespace inviwo {
  * ![](org.inviwo.VolumeSubsample.png?classIdentifier=org.inviwo.VolumeSubsample)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __volume.inport__ ...
- * 
+ *
  * ### Outports
  *   * __volume.outport__ ...
- * 
+ *
  * ### Properties
  *   * __Enable Operation__ ...
  *   * __Adjust Basis and Offset__ ...
@@ -58,26 +59,27 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API VolumeSubsample : public Processor {
 public:
+    InviwoProcessorInfo();
+
     VolumeSubsample();
     ~VolumeSubsample();
 
-    InviwoProcessorInfo();
-
-    void initialize();
-    void deinitialize();
-
 protected:
     virtual void process();
+
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* modifiedProperty = nullptr) override;
 
 private:
     VolumeInport inport_;
     VolumeOutport outport_;
 
     BoolProperty enabled_;
-    BoolProperty adjustBasisAndOffset_;
-    OptionPropertyInt subSampleFactor_;
-};
+    TemplateOptionProperty<VolumeRAMSubSample::Factor> subSampleFactor_;
 
+    std::future<std::unique_ptr<Volume>> result_;
+    bool dirty_;
+};
 }
 
-#endif //IVW_VOLUMESUBSAMPLE_H
+#endif  // IVW_VOLUMESUBSAMPLE_H

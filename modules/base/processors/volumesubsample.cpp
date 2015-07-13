@@ -24,35 +24,34 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "volumesubsample.h"
-#include <modules/base/algorithm/volume/volumeramsubsample.h>
-#include <glm/gtx/vector_angle.hpp>
 
 namespace inviwo {
 
 ProcessorClassIdentifier(VolumeSubsample, "org.inviwo.VolumeSubsample");
-ProcessorDisplayName(VolumeSubsample,  "Volume Subsample");
+ProcessorDisplayName(VolumeSubsample, "Volume Subsample");
 ProcessorTags(VolumeSubsample, Tags::CPU);
 ProcessorCategory(VolumeSubsample, "Volume Operation");
 ProcessorCodeState(VolumeSubsample, CODE_STATE_EXPERIMENTAL);
 
-VolumeSubsample::VolumeSubsample() : Processor()
-      , inport_("volume.inport")
-      , outport_("volume.outport")
-      , enabled_("enabled", "Enable Operation", true)
-      , adjustBasisAndOffset_("adjustBasisAndOffset", "Adjust Basis and Offset", false)
-      , subSampleFactor_("subSampleFacor", "Factor")
-{
+VolumeSubsample::VolumeSubsample()
+    : Processor()
+    , inport_("volume.inport")
+    , outport_("volume.outport")
+    , enabled_("enabled", "Enable Operation", true)
+    , subSampleFactor_("subSampleFacor", "Factor")
+    , dirty_(false) {
     addPort(inport_);
     addPort(outport_);
     addProperty(enabled_);
-    addProperty(adjustBasisAndOffset_);
 
-    subSampleFactor_.addOption("none", "None", 0);
-    subSampleFactor_.addOption("half", "Half", 2);
+    subSampleFactor_.addOption("none", "None", VolumeRAMSubSample::Factor::None);
+    subSampleFactor_.addOption("half", "Half", VolumeRAMSubSample::Factor::Half);
+    subSampleFactor_.addOption("third", "Third", VolumeRAMSubSample::Factor::Third);
+    subSampleFactor_.addOption("fourth", "Fourth", VolumeRAMSubSample::Factor::Fourth);
     subSampleFactor_.setSelectedIdentifier("half");
     subSampleFactor_.setCurrentStateAsDefault();
     addProperty(subSampleFactor_);
@@ -60,74 +59,53 @@ VolumeSubsample::VolumeSubsample() : Processor()
 
 VolumeSubsample::~VolumeSubsample() {}
 
-void VolumeSubsample::initialize() {
-    Processor::initialize();
-}
-
-void VolumeSubsample::deinitialize() {
-    Processor::deinitialize();
-}
-
 void VolumeSubsample::process() {
-    if (enabled_.get() && subSampleFactor_.get() > 0) {
-        const VolumeRAM* vol = inport_.getData()->getRepresentation<VolumeRAM>();
+    if (enabled_.get() && subSampleFactor_.get() != VolumeRAMSubSample::Factor::None) {
+        if (result_.valid() &&
+            result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
+                std::future_status::ready) {
+            outport_.setData(result_.get().release());
+            dirty_ = false;
 
-        Volume* volume = nullptr;
+        } else if (!result_.valid()) {
+            result_ = dispatchPool(
+                [this](const Volume* data, VolumeRAMSubSample::Factor f)
+                    -> std::unique_ptr<Volume> {
+                    const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
+                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(vol, f));
 
-        if(subSampleFactor_.get() == 2)
-            volume = new Volume(VolumeRAMSubSample::apply(vol, VolumeRAMSubSample::FACTOR::HALF));
-        
-        if(!volume) {
-            outport_.setConstData(inport_.getData());
-            return;
+                    // pass meta data on
+                    if (!volume) return volume;
+                    volume->copyMetaDataFrom(*data);
+                    volume->dataMap_ = data->dataMap_;
+                    volume->setModelMatrix(data->getModelMatrix());
+                    volume->setWorldMatrix(data->getWorldMatrix());
+
+                    dispatchFront([this]() {
+                        dirty_ = true;
+                        invalidate(INVALID_OUTPUT);
+                    });
+
+                    return volume;
+
+                },
+                inport_.getData(), subSampleFactor_.get());
         }
-
-        size3_t dim = volume->getDimensions();
-        size3_t offset = size3_t(0);
-
-        // pass meta data on
-        volume->copyMetaDataFrom(*inport_.getData());
-        volume->dataMap_.dataRange = inport_.getData()->dataMap_.dataRange;
-
-        if (adjustBasisAndOffset_.get()) {
-            vec3 volOffset = inport_.getData()->getOffset() + vec3(offset) / vec3(inport_.getData()->getDimensions());
-            mat3 volBasis = inport_.getData()->getBasis();
-
-            vec3 aVec(volBasis[0]);
-            vec3 bVec(volBasis[1]);
-            vec3 cVec(volBasis[2]);
-
-            float alpha = glm::angle(bVec, cVec);
-            float beta = glm::angle(cVec, aVec);
-            float gamma = glm::angle(aVec, bVec);
-
-            vec3 volLength(glm::length(aVec), glm::length(bVec), glm::length(cVec));
-            // adjust volLength
-            volLength *= vec3(dim) / vec3(inport_.getData()->getDimensions());
-
-            float a = volLength.x;
-            float b = volLength.y;
-            float c = volLength.z;
-
-            float v = std::sqrt(1 - std::cos(alpha)*std::cos(alpha) - std::cos(beta)*std::cos(beta) - std::cos(gamma)*std::cos(gamma)
-                - 2 * std::cos(alpha)*std::cos(beta)*std::cos(gamma));
-            mat4 newBasisAndOffset(
-                a, b*std::cos(gamma), c*std::cos(beta), volOffset[0],
-                0.0f, b*std::sin(gamma), c*(std::cos(alpha) - std::cos(beta)*std::cos(gamma)) / std::sin(gamma), volOffset[1],
-                0.0f, 0.0f, c*v / std::sin(gamma), volOffset[2],
-                0.0f, 0.0f, 0.0f, 1.0f
-                );
-            volume->setModelMatrix(glm::transpose(newBasisAndOffset));
-        }
-        else {
-            // copy basis and offset
-            volume->setModelMatrix(inport_.getData()->getModelMatrix());
-        }
-        outport_.setData(volume);
-    }
-    else {
+    } else {
         outport_.setConstData(inport_.getData());
     }
 }
 
-} // inviwo namespace
+void VolumeSubsample::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
+    notifyObserversInvalidationBegin(this);
+    PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
+
+    if (dirty_ || inport_.isChanged() ||
+        !enabled_.get() && subSampleFactor_.get() == VolumeRAMSubSample::Factor::None) {
+        outport_.invalidate(INVALID_OUTPUT);
+    }
+
+    notifyObserversInvalidationEnd(this);
+}
+
+}  // inviwo namespace
