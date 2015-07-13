@@ -37,8 +37,8 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API VolumeRAMSubSample {
 public:
-    enum class FACTOR : size_t { HALF = 2 };
-    static VolumeRAM* apply(const VolumeRepresentation* in, FACTOR factor);
+    enum class Factor : size_t {None = 1, Half = 2, Third = 3, Fourth = 4 };
+    static VolumeRAM* apply(const VolumeRepresentation* in, Factor factor);
 };
 
 namespace detail {
@@ -46,60 +46,60 @@ namespace detail {
 struct IVW_MODULE_BASE_API VolumeRAMSubSampleDispatcher {
     using type = VolumeRAM*;
     template <class T>
-    VolumeRAM* dispatch(const VolumeRepresentation* in, VolumeRAMSubSample::FACTOR factor);
+    VolumeRAM* dispatch(const VolumeRepresentation* in, VolumeRAMSubSample::Factor factor);
 };
 
 template <class DataType>
-VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in,  VolumeRAMSubSample::FACTOR factor) {
+VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in, 
+                                                  VolumeRAMSubSample::Factor factor) {
     using T = typename DataType::type;
     using P = typename util::same_extent<T, double>::type;
 
     const VolumeRAMPrecision<T>* volume = dynamic_cast<const VolumeRAMPrecision<T>*>(in);
     if (!volume) return nullptr;
  
+    // calculate new size
     const size3_t dataDims{volume->getDimensions()};
-    const size_t sXY{dataDims.x*dataDims.y};
-    const size_t sX{dataDims.x};
+    const size_t f{static_cast<size_t>(factor)};
+    const size3_t newDims{dataDims / f};
 
-    //calculate new size
-    const size3_t newDims{dataDims / static_cast<size_t>(factor)};
-    const size_t dXY{newDims.x*newDims.y};
-    const size_t dX{newDims.x};
-
-    //allocate space
+    // allocate space
     VolumeRAMPrecision<T>* newVolume = new VolumeRAMPrecision<T>(newDims);
 
-    //get data pointers
+    // get data pointers
     const T* src = static_cast<const T*>(volume->getData());
     T* dst = static_cast<T*>(newVolume->getData());
 
-    //Half sampling
-    if (factor == VolumeRAMSubSample::FACTOR::HALF) {
-        for (long long z=0; z < static_cast<long long>(newDims.z); ++z) {
-            for (long long y=0; y < static_cast<long long>(newDims.y); ++y) {
-                #pragma omp parallel for
-                for (long long x=0; x < static_cast<long long>(newDims.x); ++x) {
-                    const long long px{x*2};
-                    const long long py{y*2};
-                    const long long pz{z*2};
-                    P val{0.0};
-                    val += src[(pz*sXY) + (py*sX) + px];
-                    val += src[(pz*sXY) + (py*sX) + (px+1)];
-                    val += src[(pz*sXY) + ((py+1)*sX) + px];
-                    val += src[(pz*sXY) + ((py+1)*sX) + (px+1)];
-                    val += src[((pz+1)*sXY) + (py*sX) + px];
-                    val += src[((pz+1)*sXY) + (py*sX) + (px+1)];
-                    val += src[((pz+1)*sXY) + ((py+1)*sX) + px];
-                    val += src[((pz+1)*sXY) + ((py+1)*sX) + (px+1)];
+    util::IndexMapper o(dataDims);
+    util::IndexMapper n(newDims);
 
-                    #include <warn/push>
-                    #include <warn/ignore/conversion>
-                    dst[(z*dXY) + (y*dX) + x] = static_cast<T>(val*0.125);
-                    #include <warn/pop>
+    const double samplesInv = 1.0/(f*f*f);
+    for (size_t z=0; z < newDims.z; ++z) {
+        for (size_t y=0; y < newDims.y; ++y) {
+            #pragma omp parallel for
+            for (long long xomp=0; xomp < static_cast<long long>(newDims.x); ++xomp) {
+                const size_t x{static_cast<size_t>(xomp)}; // OpenMP need signed integral type.
+                const size_t px{x*f};
+                const size_t py{y*f};
+                const size_t pz{z*f};
+                P val{0.0};
+
+                for (size_t oz = 0; oz < f; ++oz) {
+                    for (size_t oy = 0; oy < f; ++oy) {
+                        for (size_t ox = 0; ox < f; ++ox) {
+                            val += src[o(px + ox, py + oy, pz + oz)];
+                        }
+                    }
                 }
+ 
+                #include <warn/push>
+                #include <warn/ignore/conversion>
+                dst[n(x,y,z)] = static_cast<T>(val*samplesInv);
+                #include <warn/pop>
             }
         }
     }
+
     return newVolume;
 }
 
