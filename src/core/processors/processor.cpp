@@ -177,17 +177,12 @@ void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifi
 
     notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
-
-    if (PropertyOwner::isValid()) {
-        notifyObserversInvalidationEnd(this);
-        return;
+    if (!isValid()) {
+        for (auto& port : outports_) port->invalidate(INVALID_OUTPUT);
     }
-
-    for (auto& port : outports_) port->invalidate(INVALID_OUTPUT);
-
     notifyObserversInvalidationEnd(this);
 
-    if (isEndProcessor()) {
+    if (!isValid() && isEndProcessor()) {
         performEvaluateRequest();
     }
 }
