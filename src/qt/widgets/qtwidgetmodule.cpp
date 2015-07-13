@@ -137,6 +137,7 @@ QtWidgetModule::QtWidgetModule() : InviwoModule() {
     
     registerPropertyWidget(LightPropertyWidgetQt, FloatVec3Property, "LightPosition");
     registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyInt, "Default");
+    registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertySize_t, "Default");
     registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyFloat, "Default");
     registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyDouble, "Default");
     registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyString, "Default");

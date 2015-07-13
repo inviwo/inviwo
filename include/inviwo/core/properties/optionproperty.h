@@ -267,10 +267,12 @@ public:
 };
 
 typedef TemplateOptionProperty<int> OptionPropertyInt;
+typedef TemplateOptionProperty<size_t> OptionPropertySize_t;
 typedef TemplateOptionProperty<float> OptionPropertyFloat;
 typedef TemplateOptionProperty<double> OptionPropertyDouble;
 
 typedef TemplateOptionProperty<int>::Option<int> OptionPropertyIntOption;
+typedef TemplateOptionProperty<size_t>::Option<size_t> OptionPropertySize_tOption;
 typedef TemplateOptionProperty<float>::Option<float> OptionPropertyFloatOption;
 typedef TemplateOptionProperty<double>::Option<double> OptionPropertyDoubleOption;
 typedef OptionPropertyString::Option<std::string> OptionPropertyStringOption;
