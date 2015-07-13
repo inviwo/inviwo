@@ -63,18 +63,20 @@ namespace inviwo {
 class IVW_MODULE_BASE_API SurfaceExtraction : public Processor, public ProgressBarOwner {
 public:
     InviwoProcessorInfo();
-    
+
     SurfaceExtraction();
     virtual ~SurfaceExtraction();
 
     SurfaceExtraction(const SurfaceExtraction&) = delete;
     SurfaceExtraction& operator=(const SurfaceExtraction&) = delete;
 
-
 protected:
     virtual void process();
     void setMinMax();
     void updateColors();
+
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* modifiedProperty = nullptr) override;
 
     struct task {
         task() = default;
@@ -97,6 +99,7 @@ protected:
     CompositeProperty colors_;
 
     std::vector<task> result_;
+    bool dirty_;
 };
 
 }  // namespace
