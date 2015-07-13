@@ -47,6 +47,9 @@ class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
                                    public IvwSerializable,
                                    public EventListener {
 public:
+    using iterator = std::vector<Property*>::iterator;
+    using const_iterator = std::vector<Property*>::const_iterator;
+
     PropertyOwner();
     PropertyOwner(const PropertyOwner& rhs);
     PropertyOwner& operator=(const PropertyOwner& that);
@@ -61,23 +64,32 @@ public:
 
     virtual std::vector<std::string> getPath() const;
 
-    std::vector<Property*> getProperties(bool recursive = false) const;
+    const std::vector<Property*>& getProperties() const;
+    std::vector<Property*> getPropertiesRecursive() const;
     Property* getPropertyByIdentifier(const std::string& identifier, bool recursiveSearch = false) const;
     Property* getPropertyByPath(const std::vector<std::string>& path) const;
     template <class T>
     std::vector<T*> getPropertiesByType(bool recursiveSearch = false) const;
 
-    bool isValid() const { return invalidationLevel_ == VALID; }
+    size_t size() const;
+    Property* operator[](size_t);
+    const Property* operator[](size_t) const;
+    iterator begin();
+    iterator end();
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+
+    virtual bool isValid() const;
     virtual void setValid();
-    InvalidationLevel getInvalidationLevel() const { return invalidationLevel_; }
+    InvalidationLevel getInvalidationLevel() const;
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty = nullptr);
 
     // Should return the processor that the owner belongs or is.
     // This should be overridden by all subclasses.
     // It is used by the linking.
-    virtual Processor* getProcessor() { return nullptr; }
-    virtual const Processor* getProcessor() const { return nullptr; }
+    virtual Processor* getProcessor();
+    virtual const Processor* getProcessor() const;
 
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
@@ -100,14 +112,7 @@ protected:
 private:
     Property* removeProperty(std::vector<Property*>::iterator it);
     bool findPropsForComposites(TxElement*);
-    InvalidationLevel invalidationLevel_;
-    
-    struct property_has_identifier {
-        property_has_identifier(std::string const& n) : id_(n) { }
-        bool operator () (const Property* p);
-    private:
-        std::string id_;
-    }; 
+    InvalidationLevel invalidationLevel_; 
 };
 
 template <class T>

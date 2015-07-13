@@ -97,15 +97,13 @@ void PropertyOwner::addProperty(Property& property) {
 }
 
 Property* PropertyOwner::removeProperty(const std::string& identifier) {
-    std::vector<Property*>::iterator it =
-        std::find_if(properties_.begin(), properties_.end(), property_has_identifier(identifier));
-    return removeProperty(it);
+    return removeProperty(
+        std::find_if(properties_.begin(), properties_.end(),
+                     [&identifier](Property* p) { return p->getIdentifier() == identifier; }));
 }
 
 Property* PropertyOwner::removeProperty(Property* property) {  
-    std::vector<Property*>::iterator it =
-        std::find(properties_.begin(), properties_.end(), property);
-    return removeProperty(it);
+    return removeProperty(std::find(properties_.begin(), properties_.end(), property));
 }
 
 Property* PropertyOwner::removeProperty(Property& property) {
@@ -119,13 +117,9 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
         size_t index = std::distance(properties_.begin(), it);
         notifyObserversWillRemoveProperty(prop, index);
 
-        ownedProperties_.erase(std::remove(ownedProperties_.begin(), ownedProperties_.end(), *it),
-                               ownedProperties_.end());
-        eventProperties_.erase(std::remove(eventProperties_.begin(), eventProperties_.end(), *it),
-                               eventProperties_.end());
-        compositeProperties_.erase(
-            std::remove(compositeProperties_.begin(), compositeProperties_.end(), *it),
-            compositeProperties_.end());
+        util::erase_remove(ownedProperties_, *it);
+        util::erase_remove(eventProperties_, *it);
+        util::erase_remove(compositeProperties_, *it);
 
         prop->setOwner(nullptr);
         properties_.erase(it);
@@ -134,20 +128,18 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
     return prop;
 }
 
-std::vector<Property*> PropertyOwner::getProperties(bool recursive) const {
-    if (!recursive) {
-        return properties_;
-    } else {
-        std::vector<Property*> result;
-        result.reserve(properties_.size());
-        result.insert(result.end(), properties_.begin(), properties_.end());
+const std::vector<Property*>& PropertyOwner::getProperties() const { return properties_; }
 
-        for (auto comp : compositeProperties_) {
-            std::vector<Property*> subprops = comp->getProperties(true);
-            result.insert(result.end(), subprops.begin(), subprops.end());
-        }
-        return result;
+std::vector<Property*> PropertyOwner::getPropertiesRecursive() const {
+    std::vector<Property*> result;
+    result.reserve(properties_.size());
+    result.insert(result.end(), properties_.begin(), properties_.end());
+
+    for (auto comp : compositeProperties_) {
+        std::vector<Property*> subprops = comp->getPropertiesRecursive();
+        result.insert(result.end(), subprops.begin(), subprops.end());
     }
+    return result;
 }
 
 Property* PropertyOwner::getPropertyByIdentifier(const std::string& identifier,
@@ -183,13 +175,57 @@ Property* PropertyOwner::getPropertyByPath(const std::vector<std::string>& path)
     return nullptr;
 }
 
+size_t PropertyOwner::size() const {
+    return properties_.size();
+}
+
+Property* PropertyOwner::operator[](size_t i) {
+    return properties_[i];
+}
+
+const Property* PropertyOwner::operator[](size_t i) const {
+    return properties_[i];
+}
+
+PropertyOwner::iterator PropertyOwner::begin() {
+    return properties_.begin();
+}
+
+PropertyOwner::iterator PropertyOwner::end() {
+    return properties_.end();
+}
+
+PropertyOwner::const_iterator PropertyOwner::cbegin() const {
+    return properties_.cbegin();
+}
+
+PropertyOwner::const_iterator PropertyOwner::cend() const {
+    return properties_.cend();
+}
+
+bool PropertyOwner::isValid() const {
+    return invalidationLevel_ == VALID;
+}
+
 void PropertyOwner::setValid() {
     for (auto& elem : properties_) elem->setPropertyModified(false);
     invalidationLevel_ = VALID;
 }
 
+inviwo::InvalidationLevel PropertyOwner::getInvalidationLevel() const {
+    return invalidationLevel_;
+}
+
 void PropertyOwner::invalidate(InvalidationLevel invalidationLevel, Property*) {
     invalidationLevel_ = std::max(invalidationLevel_, invalidationLevel);
+}
+
+Processor* PropertyOwner::getProcessor() {
+    return nullptr;
+}
+
+const Processor* PropertyOwner::getProcessor() const {
+    return nullptr;
 }
 
 void PropertyOwner::serialize(IvwSerializer& s) const {
@@ -251,10 +287,6 @@ void PropertyOwner::setAllPropertiesCurrentStateAsDefault(){
 
 void PropertyOwner::resetAllPoperties(){
     for (auto& elem : properties_) (elem)->resetToDefaultState();
-}
-
-bool PropertyOwner::property_has_identifier::operator () (const Property* p) {
-    return p->getIdentifier() == id_;
 }
 
 std::string PropertyOwner::invalidationLevelToString(InvalidationLevel level) {

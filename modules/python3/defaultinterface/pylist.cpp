@@ -67,7 +67,7 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
         errStr << "listProperties(): no processor with name " << processorName << " could be found";
         PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
     } else {
-        std::vector<Property*> props = processor->getProperties(true);
+        std::vector<Property*> props = processor->getPropertiesRecursive();
 
         PyObject *lst = PyList_New(props.size());
         if (!lst) Py_RETURN_NONE;
