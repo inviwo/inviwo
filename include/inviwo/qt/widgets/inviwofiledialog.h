@@ -67,7 +67,7 @@ public:
     virtual int exec() override;
 #else
     virtual int exec();
-#end
+#endif
 
     static QString getPreviousPath(const QString &pathType);
     static void setPreviousPath(const QString &pathType, const QString &path);
