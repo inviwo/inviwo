@@ -282,18 +282,18 @@ int TransferFunction::getNumPoints() const {
 }
 
 void TransferFunctionObservable::notifyControlPointAdded(TransferFunctionDataPoint* p) const {
-    for (ObserverSet::reverse_iterator it = observers_->rbegin(); it != observers_->rend(); ++it)
-        static_cast<TransferFunctionObserver*>(*it)->onControlPointAdded(p);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it)
+        (*it)->onControlPointAdded(p);
 }
 
 void TransferFunctionObservable::notifyControlPointRemoved(TransferFunctionDataPoint* p) const {
-    for (ObserverSet::reverse_iterator it = observers_->rbegin(); it != observers_->rend(); ++it)
-        static_cast<TransferFunctionObserver*>(*it)->onControlPointRemoved(p);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it)
+       (*it)->onControlPointRemoved(p);
 }
 
 void TransferFunctionObservable::notifyControlPointChanged(const TransferFunctionDataPoint* p) const {
-    for (ObserverSet::reverse_iterator it = observers_->rbegin(); it != observers_->rend(); ++it)
-        static_cast<TransferFunctionObserver*>(*it)->onControlPointChanged(p);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it)
+        (*it)->onControlPointChanged(p);
 }
 
 bool operator==(const TransferFunction& lhs, const TransferFunction& rhs) {

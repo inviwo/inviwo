@@ -62,7 +62,7 @@ public:
         ProcessorNetwork* network);
 
 private:
-    using ProcessorList = std::set<Processor*>;
+    using ProcessorList = std::unordered_set<Processor*>;
 
     void evaluate();
 

@@ -105,22 +105,14 @@ Texture2D* Texture2D::clone() const {
 
 void Texture2D::initialize(const void* data) {
     // Notify observers
-    ObserverSet::iterator endIt = observers_->end();
-
-    for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-        // static_cast can be used since only template class objects can be added
-        static_cast<TextureObserver*>(*it)->notifyBeforeTextureInitialization();
-    }
+    for (auto o : observers_) o->notifyBeforeTextureInitialization();
 
     bind();
     texParameterCallback_->invoke(this);
     glTexImage2D(GL_TEXTURE_2D, level_, internalformat_, dimensions_.x, dimensions_.y, 0, format_, dataType_, data);
     LGL_ERROR;
 
-    for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-        // static_cast can be used since only template class objects can be added
-        static_cast<TextureObserver*>(*it)->notifyAfterTextureInitialization();
-    }
+    for (auto o : observers_) o->notifyAfterTextureInitialization();
 }
 
 size_t Texture2D::getNumberOfValues() const {

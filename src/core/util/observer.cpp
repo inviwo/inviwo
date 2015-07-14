@@ -24,178 +24,71 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/observer.h>
-#include <inviwo/core/util/assertion.h>
-#include <sstream>
 
 namespace inviwo {
 
-////////////////////////////// Observer ////////////////////////////////////////////
-
-Observer::Observer() {
-    observables_ = new ObservableSet();
+Observer::Observer(const Observer& rhs) {
+    for (auto observable : rhs.observables_) addObservation(observable);
 }
 
-Observer::Observer(const Observer& other) {
-    observables_ = new ObservableSet();
-    *this = other;
+Observer::Observer(Observer&& rhs) {
+    for (auto observable : rhs.observables_) addObservation(observable);
+    rhs.removeObservations();
 }
 
-
-Observer::Observer(Observer&& other) 
-    : observables_(other.observables_) {
-    // Remove observations from other 
-    // and replace them with this object
-    for (const auto& elem : *other.observables_) {
-        elem->removeObserver(&other);
-    }
-    for (const auto& elem : *other.observables_) {
-        elem->addObserver(this);
-    }
-    other.observables_ = nullptr;
-}
-
-Observer& Observer::operator=(const Observer& other) {
-    if (this != &other) {
+Observer& Observer::operator=(const Observer& that) {
+    if (this != &that) {
         removeObservations();
-        for (const auto& elem : *other.observables_) {
-            addObservation(elem);
-        }
+        for (auto observable : that.observables_) addObservation(observable);
     }
     return *this;
 }
 
-Observer& Observer::operator=(Observer&& other) {
-    if (this != &other) {
+Observer& Observer::operator=(Observer&& that) {
+    if (this != &that) {
         removeObservations();
-        delete observables_;
-        observables_ = other.observables_;
-        // Remove observable from other 
-        // and replace them with this object
-        for (const auto& elem : *other.observables_) {
-            elem->removeObserver(&other);
-        }
-        for (const auto& elem : *other.observables_) {
-            elem->addObserver(this);
-        }
-        other.observables_ = nullptr;
+        for (auto observable : that.observables_) addObservation(observable);
+        that.removeObservations();
     }
     return *this;
 }
 
-Observer::~Observer() {
-    removeObservations();
-    delete observables_;
-}
+Observer::~Observer() { removeObservations(); }
 
 void Observer::removeObservation(ObservableInterface* observable) {
-    ObservableSet::iterator it = observables_->find(observable);
-
-    // Remove from list and observed object if observing it
-    if (it != observables_->end()) {
-        observables_->erase(it);
-        // Remove from observable
-        observable->removeObserver(this);
+    if (observables_.erase(observable) > 0) {
+        observable->removeObserverInternal(this);
     }
 }
 
 void Observer::removeObservations() {
-    while (!observables_->empty())
-        removeObservation(*observables_->begin());
+    for (auto o : observables_) o->removeObserverInternal(this);
+    observables_.clear();
 }
 
 void Observer::addObservation(ObservableInterface* observed) {
-    ivwAssert(observed!=nullptr, "Tried to add null Observable");
-    std::pair<ObservableSet::iterator, bool> inserted = observables_->insert(observed);
-
-    if (inserted.second)
-        observed->addObserver(this);
+    std::pair<ObservableSet::iterator, bool> inserted = observables_.insert(observed);
+    if (inserted.second) observed->addObserverInternal(this);
 }
 
-////////////////////////////// ObservableInterface ////////////////////////////////////////////
-
-ObservableInterface::ObservableInterface() {
-    observers_ = new ObserverSet();
+void Observer::addObservationInternal(ObservableInterface* observed) {
+    observables_.insert(observed);
 }
 
-ObservableInterface::ObservableInterface(const ObservableInterface& other) {
-    observers_ = new ObserverSet();
-    *this = other;
+void Observer::removeObservationInternal(ObservableInterface* observable) {
+    observables_.erase(observable);
 }
 
-ObservableInterface::ObservableInterface(ObservableInterface&& other)
-    : observers_(other.observers_) {
-    // Remove observations from other 
-    // and replace them with this object
-    for (const auto& elem : *other.observers_) {
-        elem->removeObservation(&other);
-    }
-    for (const auto& elem : *other.observers_) {
-        elem->addObservation(this);
-    }
-    other.observers_ = nullptr;
+void ObservableInterface::addObservationHelper(Observer* observer) {
+    observer->addObservationInternal(this);
 }
 
-ObservableInterface& ObservableInterface::operator=(const ObservableInterface& other) {
-    if (this != &other) {
-        removeObservers();
-
-        for (const auto& elem : *other.observers_) {
-            addObserver(elem);
-        }
-    }
-    return *this;
+void ObservableInterface::removeObservationHelper(Observer* observer) {
+    observer->removeObservationInternal(this);
 }
 
-ObservableInterface& ObservableInterface::operator=(ObservableInterface&& other) {
-    if (this != &other) {
-        removeObservers();
-        delete observers_;
-        observers_ = other.observers_;
-        // Remove observations from other 
-        // and replace them with this object
-        for (const auto& elem : *other.observers_) {
-            elem->removeObservation(&other);
-        }
-        for (const auto& elem : *other.observers_) {
-            elem->addObservation(this);
-        }
-        other.observers_ = nullptr;
-    }
-    return *this;
-}
-
-ObservableInterface::~ObservableInterface() {
-    removeObservers();
-    delete observers_;
-}
-void ObservableInterface::addObserver(Observer* observer) {
-    ivwAssert(observer!=nullptr, "Tried to add null Observer");
-    std::pair<ObserverSet::iterator, bool> inserted = observers_->insert(observer);
-
-    if (inserted.second)
-        observer->addObservation(this);
-}
-
-void ObservableInterface::removeObserver(Observer* observer) {
-    ObserverSet::iterator it = observers_->find(observer);
-
-    // Remove from list and observer if observed by it
-    if (it != observers_->end()) {
-        observers_->erase(it);
-        // Remove from observer
-        observer->removeObservation(this);
-    }
-}
-
-void ObservableInterface::removeObservers() {
-    while (!observers_->empty())
-        removeObserver(*observers_->begin());
-}
-
-
-} // namespace
-
+}  // namespace

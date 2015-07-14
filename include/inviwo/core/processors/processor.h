@@ -226,7 +226,7 @@ private:
     std::vector<InteractionHandler*> interactionHandlers_;
 
     Group<std::string, Port*> portDependencySets_;
-    static std::set<std::string> usedIdentifiers_;
+    static std::unordered_set<std::string> usedIdentifiers_;
 
     bool initialized_;
     bool invalidationEnabled_;

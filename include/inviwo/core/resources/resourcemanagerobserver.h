@@ -68,29 +68,16 @@ public:
  *
  * @see Observable
  */
-class IVW_CORE_API ResourceManagerObservable: public Observable<ResourceManagerObserver> {
+class IVW_CORE_API ResourceManagerObservable : public Observable<ResourceManagerObserver> {
 public:
-    ResourceManagerObservable(): Observable<ResourceManagerObserver>() {};
-
+    ResourceManagerObservable() : Observable<ResourceManagerObserver>(){};
 
     void notifyResourceAdded(const Resource* item) const {
-        // Notify observers
-        ObserverSet::iterator endIt = observers_->end();
-
-        for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-            // static_cast can be used since only template class objects can be added
-            static_cast<ResourceManagerObserver*>(*it)->resourceAdded(item);
-        }
+        for (auto o : observers_) o->resourceAdded(item);
     }
 
     void notifyResourceRemoved(const Resource* item) const {
-        // Notify observers
-        ObserverSet::iterator endIt = observers_->end();
-
-        for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-            // static_cast can be used since only template class objects can be added
-            static_cast<ResourceManagerObserver*>(*it)->resourceRemoved(item);
-        }
+        for (auto o : observers_) o->resourceRemoved(item);
     }
 };
 

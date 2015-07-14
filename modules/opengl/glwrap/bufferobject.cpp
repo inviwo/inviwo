@@ -134,16 +134,16 @@ void BufferObject::initialize(const void* data, GLsizeiptr sizeInBytes) {
     sizeInBytes_ = sizeInBytes;
 
     // Notify observers
-    for (auto observer : *observers_) {
-        static_cast<BufferObjectObserver*>(observer)->onBeforeBufferInitialization();
+    for (auto observer : observers_) {
+        observer->onBeforeBufferInitialization();
     }
 
     bind();
     // Allocate and transfer possible data
     glBufferData(target_, sizeInBytes, data, usageGL_);
 
-    for (auto observer : *observers_) {
-        static_cast<BufferObjectObserver*>(observer)->onAfterBufferInitialization();
+    for (auto observer : observers_) {
+        observer->onAfterBufferInitialization();
     }
 }
 

@@ -24,91 +24,72 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_OBSERVER_H
 #define IVW_OBSERVER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <set>
+#include <unordered_set>
 #include <functional>
 #include <algorithm>
 
 namespace inviwo {
-// Forward declaration
+
 class ObservableInterface;
 
 /** \class Observer
- *
  * Class to support observer pattern. An example of usage is given in the Observable class.
  * @see Observable
  */
 class IVW_CORE_API Observer {
-
     friend class ObservableInterface;
+
 public:
-    /**
-     * Allocates Observable set.
-     */
-    Observer();
-    /**
-     * Copy constructor. Copies observerables from other  
-     */
+    Observer() = default;
     Observer(const Observer& other);
-
-    /**
-    * Move constructor. Steals resources from other
-    */
-    Observer(Observer&& other); 
-
-    /**
-    * Move assignment. Steals resources from other
-    */
+    Observer(Observer&& other);
     Observer& operator=(Observer&& other);
-
-    /**
-     * Copies observerables from other and returns this.
-     */
     Observer& operator=(const Observer& other);
 
     /**
-     * Removes the observer from all observable objects. Makes sure that it cannot be called when destroyed.
-     *
+     * Removes the observer from all observable objects. Makes sure that it cannot
+     * be called when destroyed.
      */
     virtual ~Observer();
 
     /**
      * Stop observing object by removing it from observation list.
-     *
      * @param observable (ObservableInterface *) The observable to stop observing.
      */
     void removeObservation(ObservableInterface* observable);
 
-    /**
-     * Stops observing all objects by removing them from observation list.
-     *
-     */
+    // Stops observing all objects by removing them from observation list.
     void removeObservations();
 
 protected:
     /**
      * Add an object to observe.
-     *
      * @param observable The observable to add.
      */
     void addObservation(ObservableInterface* observable);
 
-
     // Storing observables connected to this observer enables removal upon destruction.
-    typedef std::set<ObservableInterface*> ObservableSet;
-    ObservableSet* observables_;
+    typedef std::unordered_set<ObservableInterface*> ObservableSet;
+    ObservableSet observables_;
+
+private:
+    // The internal ones will not call observable->add/remove
+    // Should only be called by ObservableInterface.
+    void addObservationInternal(ObservableInterface* observable);
+    void removeObservationInternal(ObservableInterface* observable);
 };
 
 /** \class ObservableInterface
- *
  * Class to support observer pattern.
- * This is an interface only, inherit from Observable<DerivedObserver> to define your own "notify()" method.
+ * This is an interface only, inherit from Observable<DerivedObserver> to define your
+ * own "notify()" method.
  * An example of usage is given in the Observable class.
  * @see Observable
  * @see Observer
@@ -116,54 +97,23 @@ protected:
 class IVW_CORE_API ObservableInterface {
     friend class Observer;
 public:
-    /**
-     * Allocates Observer set.
-     */
-    ObservableInterface();
-    /**
-     * Copy constructor. Copies observers from other  
-     */
-    ObservableInterface(const ObservableInterface& other);
-
-    /** 
-     * Move constructor. Steals resources from other
-     */
-    ObservableInterface(ObservableInterface&& other); 
-
-    /**
-    * Move assignment. Steals resources from other
-    */
-    ObservableInterface& operator=(ObservableInterface&& other);
-    /**
-     * Copies observers from other and returns this.
-     */
-    ObservableInterface& operator=(const ObservableInterface& other);
-    /*
-     * Removes all observers.
-     */
-    virtual ~ObservableInterface();
+    virtual ~ObservableInterface() = default;
 
 protected:
-    /**
-     * Add an observer.
-     *
-     * @param observer The observer to add.
-     */
-    void addObserver(Observer* observer);
-    /**
-     * Remove an observer.
-     *
-     * @param observer The observer to remove.
-     */
-    void removeObserver(Observer* observer);
-    /**
-     * Remove all observers.
-     */
-    void removeObservers();
+    virtual void addObserver(Observer* observer) = 0;
+    virtual void removeObserver(Observer* observer) = 0;
+    virtual void removeObservers() = 0;
 
-    typedef std::set<Observer*> ObserverSet;
-    ObserverSet* observers_;
+    // Helper functions in base class since derived template
+    // classes aren't friends with Observer.
+    void addObservationHelper(Observer* observer);
+    void removeObservationHelper(Observer* observer);
 
+private:
+    // The internal ones will not call observer->add/remove
+    // Should only be called by Observer.
+    virtual void addObserverInternal(Observer* observer) = 0;
+    virtual void removeObserverInternal(Observer* observer) = 0;
 };
 
 /** \class Observable
@@ -186,53 +136,112 @@ protected:
  *        void pressButton() {
  *            // Do stuff
  *            // Notify observers
- *            ObserverSet::iterator endIt = observers_->end();
- *            for(ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
- *               // static_cast can be used since only template class objects can be added
- *               static_cast<ButtonObserver*>(*it)->buttonPressed();
- *            }
+ *            for (auto o : observers_) o->buttonPressed();
  *        }
  *    };
  * @endcode
  * @see Observer
  * @see VoidObserver
  */
-template<typename T>
-class Observable: public ObservableInterface {
+template <typename T>
+class Observable : public ObservableInterface {
 public:
-    Observable(): ObservableInterface() {};
-    /**
-     * Removes all observers
-     */
-    virtual ~Observable() {};
-    /**
-     * Add an observer.
-     *
-     * @param observer The observer to add.
-     */
-    virtual void addObserver(T* observer) {
-        ObservableInterface::addObserver(observer);
-    }
-    /**
-     * Remove an observer.
-     *
-     * @param observer The observer to remove.
-     */
-    virtual void removeObserver(T* observer) {
-        ObservableInterface::removeObserver(observer);
-    }
+    Observable() = default;
+    Observable(const Observable<T>& other);
+    Observable(Observable<T>&& other);
+    Observable<T>& operator=(Observable<T>&& other);
+    Observable<T>& operator=(const Observable<T>& other);
+    virtual ~Observable();
 
-    /**
-    * Calls the lambda function func on all registered observers.
-    *
-    * @param func the lambda function that will be called.
-    */
-    virtual void forEach(std::function<void(T*)> func) {
-        std::for_each(observers_->begin(), observers_->end(),
-            [&](Observer* o) { func(dynamic_cast<T*>(o)); });
-    }
+    void addObserver(T* observer);
+    void removeObserver(T* observer);
+
+protected:
+    typedef std::unordered_set<T*> ObserverSet;
+    ObserverSet observers_;
+
+private:
+    virtual void addObserver(Observer* observer) override;
+    virtual void removeObserver(Observer* observer) override;
+    virtual void removeObservers() override;
+    virtual void addObserverInternal(Observer* observer) override;
+    virtual void removeObserverInternal(Observer* observer) override;
 };
 
-} // namespace
+template <typename T>
+Observable<T>::Observable(const Observable<T>& rhs) {
+    for (auto elem : rhs.observers_) addObserver(elem);
+}
 
-#endif // IVW_OBSERVER_H
+template <typename T>
+Observable<T>::Observable(Observable<T>&& rhs) {
+    for (auto elem : rhs.observers_) addObserver(elem);
+    rhs.removeObservers();
+}
+
+template <typename T>
+Observable<T>& inviwo::Observable<T>::operator=(const Observable<T>& that) {
+    if (this != &that) {
+        removeObservers();
+        for (auto elem : that.observers_) addObserver(elem);
+    }
+    return *this;
+}
+
+template <typename T>
+Observable<T>& inviwo::Observable<T>::operator=(Observable<T>&& that) {
+    if (this != &that) {
+        removeObservers();
+        for (auto elem : that.observers_) addObserver(elem);
+        that.removeObservers();
+    }
+    return *this;
+}
+
+template <typename T>
+Observable<T>::~Observable() {
+    removeObservers();
+}
+
+template <typename T>
+void Observable<T>::removeObservers() {
+    for (auto o : observers_) removeObservationHelper(o);
+    observers_.clear();
+}
+
+template <typename T>
+void Observable<T>::addObserver(T* observer) {
+    auto inserted = observers_.insert(observer);
+    if (inserted.second) addObservationHelper(observer);
+}
+
+template <typename T>
+void Observable<T>::removeObserver(T* observer) {
+    if (observers_.erase(observer) > 0) {
+        removeObservationHelper(observer);
+    }
+}
+
+template <typename T>
+void Observable<T>::addObserver(Observer* observer) {
+    addObserver(static_cast<T*>(observer));
+}
+
+template <typename T>
+void Observable<T>::removeObserver(Observer* observer) {
+    removeObserver(static_cast<T*>(observer));
+}
+
+template <typename T>
+void inviwo::Observable<T>::addObserverInternal(Observer* observer) {
+    observers_.insert(static_cast<T*>(observer));
+}
+
+template <typename T>
+void inviwo::Observable<T>::removeObserverInternal(Observer* observer) {
+    observers_.erase(static_cast<T*>(observer));
+}
+
+}  // namespace
+
+#endif  // IVW_OBSERVER_H

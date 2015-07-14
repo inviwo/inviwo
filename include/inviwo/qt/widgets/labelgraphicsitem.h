@@ -51,10 +51,8 @@ public:
     LabelGraphicsItemObservable(): Observable<LabelGraphicsItemObserver>() {};
 
     void notifyLabelGraphicsItemObservers() const {
-        // Notify observers
-        for (ObserverSet::reverse_iterator it = observers_->rbegin(); it != observers_->rend(); ++it) {
-            // static_cast can be used since only template class objects can be added
-            static_cast<LabelGraphicsItemObserver*>(*it)->onLabelGraphicsItemChange();
+        for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
+           (*it)->onLabelGraphicsItemChange();
         }
     }
 };

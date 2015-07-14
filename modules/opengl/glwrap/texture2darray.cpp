@@ -91,12 +91,7 @@ Texture2DArray* Texture2DArray::clone() const {
 
 void Texture2DArray::initialize(const void* data) {
     // Notify observers
-    ObserverSet::iterator endIt = observers_->end();
-
-    for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-        // static_cast can be used since only template class objects can be added
-        static_cast<TextureObserver*>(*it)->notifyBeforeTextureInitialization();
-    }
+    for (auto o : observers_) o->notifyBeforeTextureInitialization();
 
     // Allocate data
     bind();
@@ -105,10 +100,7 @@ void Texture2DArray::initialize(const void* data) {
     glTexImage3D(GL_TEXTURE_2D_ARRAY, level_, internalformat_, dimensions_.x, dimensions_.y, dimensions_.z, 0, format_, dataType_, data);
     LGL_ERROR;
 
-    for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-        // static_cast can be used since only template class objects can be added
-        static_cast<TextureObserver*>(*it)->notifyAfterTextureInitialization();
-    }
+    for (auto o : observers_) o->notifyAfterTextureInitialization();
 }
 
 size_t Texture2DArray::getNumberOfValues() const {

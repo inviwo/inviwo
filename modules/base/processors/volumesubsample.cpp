@@ -64,32 +64,32 @@ void VolumeSubsample::process() {
         if (result_.valid() &&
             result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
                 std::future_status::ready) {
-            outport_.setData(result_.get().release());
+            std::unique_ptr<Volume> volume = std::move(result_.get());
+
+            // pass meta data on
+            const Volume* data = inport_.getData();
+            volume->copyMetaDataFrom(*data);
+            volume->dataMap_ = data->dataMap_;
+            volume->setModelMatrix(data->getModelMatrix());
+            volume->setWorldMatrix(data->getWorldMatrix());
+            outport_.setData(volume.release());
             dirty_ = false;
 
         } else if (!result_.valid()) {
+            const Volume* data = inport_.getData();
+            const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
+
             result_ = dispatchPool(
-                [this](const Volume* data, VolumeRAMSubSample::Factor f)
+                [this](const VolumeRAM* vol, VolumeRAMSubSample::Factor f)
                     -> std::unique_ptr<Volume> {
-                    const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
                     auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(vol, f));
-
-                    // pass meta data on
-                    if (!volume) return volume;
-                    volume->copyMetaDataFrom(*data);
-                    volume->dataMap_ = data->dataMap_;
-                    volume->setModelMatrix(data->getModelMatrix());
-                    volume->setWorldMatrix(data->getWorldMatrix());
-
                     dispatchFront([this]() {
                         dirty_ = true;
                         invalidate(INVALID_OUTPUT);
                     });
-
                     return volume;
-
                 },
-                inport_.getData(), subSampleFactor_.get());
+                vol, subSampleFactor_.get());
         }
     } else {
         outport_.setConstData(inport_.getData());

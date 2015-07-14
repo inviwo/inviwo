@@ -32,8 +32,8 @@
 namespace inviwo {
 
 void CompositePropertyObservable::notifyObserversOnSetCollapsed(bool collapsed) const {
-    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
-        static_cast<CompositePropertyObserver*>(*it)->onSetCollapsed(collapsed);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
+        (*it)->onSetCollapsed(collapsed);
     }
 }
 

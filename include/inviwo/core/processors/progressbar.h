@@ -46,8 +46,6 @@ namespace inviwo {
  */
 class IVW_CORE_API ProgressBarObserver: public Observer {
 public:
-    ProgressBarObserver(): Observer() {};
-
     /**
     * This method will be called when observed object changes.
     * Override it to add behavior.
@@ -63,34 +61,18 @@ public:
 
 
 /** \class ProgressBarObservable
- *
  * Observable for ProgressBar.
- *
  * @see ProgressBar
  * @see ProgressBarObserver
  */
 class IVW_CORE_API ProgressBarObservable: public Observable<ProgressBarObserver> {
 public:
-    ProgressBarObservable(): Observable<ProgressBarObserver>() {};
-
     void notifyProgressChanged() const {
-        // Notify observers
-        ObserverSet::iterator endIt = observers_->end();
-
-        for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-            // static_cast can be used since only template class objects can be added
-            static_cast<ProgressBarObserver*>(*it)->progressChanged();
-        }
+        for (auto o : observers_) o->progressChanged();
     }
 
     void notifyVisibilityChanged() const {
-        // Notify observers
-        ObserverSet::iterator endIt = observers_->end();
-
-        for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-            // static_cast can be used since only template class objects can be added
-            static_cast<ProgressBarObserver*>(*it)->progressBarVisibilityChanged();
-        }
+        for (auto o : observers_) o->progressBarVisibilityChanged();
     }
 };
 

@@ -32,38 +32,38 @@
 namespace inviwo {
 
 void PropertyObservable::notifyObserversOnSetIdentifier(const std::string& identifier) const {
-    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
-        static_cast<PropertyObserver*>(*it)->onSetIdentifier(identifier);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
+        (*it)->onSetIdentifier(identifier);
     }
 }
 
 void PropertyObservable::notifyObserversOnSetDisplayName(const std::string& displayName) const {
-    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
-        static_cast<PropertyObserver*>(*it)->onSetDisplayName(displayName);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
+        (*it)->onSetDisplayName(displayName);
     }
 }
 
 void PropertyObservable::notifyObserversOnSetSemantics(const PropertySemantics& semantics) const {
-    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
-        static_cast<PropertyObserver*>(*it)->onSetSemantics(semantics);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
+        (*it)->onSetSemantics(semantics);
     }
 }
 
 void PropertyObservable::notifyObserversOnSetReadOnly(bool readonly) const {
-    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
-        static_cast<PropertyObserver*>(*it)->onSetReadOnly(readonly);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
+        (*it)->onSetReadOnly(readonly);
     }
 }
 
 void PropertyObservable::notifyObserversOnSetVisible(bool visible) const {
-    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
-        static_cast<PropertyObserver*>(*it)->onSetVisible(visible);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
+        (*it)->onSetVisible(visible);
     }
 }
 
 void PropertyObservable::notifyObserversOnSetUsageMode(UsageMode usageMode) const {
-    for (auto it = observers_->rbegin(); it != observers_->rend(); ++it) {
-        static_cast<PropertyObserver*>(*it)->onSetUsageMode(usageMode);
+    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
+        (*it)->onSetUsageMode(usageMode);
     }
 }
 

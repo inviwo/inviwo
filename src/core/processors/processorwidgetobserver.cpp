@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/processors/processorwidgetobserver.h>
@@ -33,29 +33,27 @@
 
 namespace inviwo {
 
-ProcessorWidgetObserver::ProcessorWidgetObserver() : Observer() {};
-ProcessorWidgetObserver::~ProcessorWidgetObserver() {};
+ProcessorWidgetObserver::ProcessorWidgetObserver() : Observer(){};
+ProcessorWidgetObserver::~ProcessorWidgetObserver(){};
 
-void ProcessorWidgetObserver::onProcessorWidgetShow(ProcessorWidget*) {};
-void ProcessorWidgetObserver::onProcessorWidgetHide(ProcessorWidget*) {};
+void ProcessorWidgetObserver::onProcessorWidgetShow(ProcessorWidget*){};
+void ProcessorWidgetObserver::onProcessorWidgetHide(ProcessorWidget*){};
 
 ProcessorWidgetObservable::ProcessorWidgetObservable() : Observable<ProcessorWidgetObserver>() {}
-ProcessorWidgetObservable::~ProcessorWidgetObservable() {};
+ProcessorWidgetObservable::~ProcessorWidgetObservable(){};
 
 void ProcessorWidgetObservable::notifyObserversAboutShow(ProcessorWidget* p) const {
-    ObserverSet localObservers = *observers_;
+    ObserverSet localObservers = observers_;
 
-    for (ObserverSet::reverse_iterator it = localObservers.rbegin(); it != localObservers.rend();
-         ++it) {
-        static_cast<ProcessorWidgetObserver*>(*it)->onProcessorWidgetShow(p);
+    for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
+        (*it)->onProcessorWidgetShow(p);
     }
 }
 void ProcessorWidgetObservable::notifyObserversAboutHide(ProcessorWidget* p) const {
-    ObserverSet localObservers = *observers_;
+    ObserverSet localObservers = observers_;
 
-    for (ObserverSet::reverse_iterator it = localObservers.rbegin(); it != localObservers.rend();
-         ++it) {
-        static_cast<ProcessorWidgetObserver*>(*it)->onProcessorWidgetHide(p);
+    for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
+        (*it)->onProcessorWidgetHide(p);
     }
 }
 

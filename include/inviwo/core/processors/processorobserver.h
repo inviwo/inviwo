@@ -77,39 +77,39 @@ public:
 
     // TODO: Use separate class for property observation if necessary
     void notifyObserversAboutPropertyChange(Property* p) const {
-        ObserverSet localObservers = *observers_;
+        ObserverSet localObservers = observers_;
 
         for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-            static_cast<ProcessorObserver*>(*it)->onAboutPropertyChange(p);
+            (*it)->onAboutPropertyChange(p);
         }
     }
 
     void notifyObserversInvalidationBegin(Processor* p) const {
-        ObserverSet localObservers = *observers_;
+        ObserverSet localObservers = observers_;
 
         for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-            static_cast<ProcessorObserver*>(*it)->onProcessorInvalidationBegin(p);
+            (*it)->onProcessorInvalidationBegin(p);
         }
     }
 
     void notifyObserversInvalidationEnd(Processor* p) const {
-        ObserverSet localObservers = *observers_;
+        ObserverSet localObservers = observers_;
 
         for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-            static_cast<ProcessorObserver*>(*it)->onProcessorInvalidationEnd(p);
+            (*it)->onProcessorInvalidationEnd(p);
         }
     }
 
     void notifyObserversRequestEvaluate(Processor* p) const {
-        ObserverSet localObservers = *observers_;
+        ObserverSet localObservers = observers_;
 
         for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-            static_cast<ProcessorObserver*>(*it)->onProcessorRequestEvaluate(p);
+            (*it)->onProcessorRequestEvaluate(p);
         }
     }
 
     void notifyObserversIdentifierChange(Processor* p) const {
-        ObserverSet localObservers = *observers_;
+        ObserverSet localObservers = observers_;
 
         for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
             static_cast<ProcessorObserver*>(*it)->onProcessorIdentifierChange(p);
@@ -117,26 +117,26 @@ public:
     }
 
     void notifyObserversProcessorPortAdded(Processor* p, Port* port) const {
-        ObserverSet localObservers = *observers_;
+        ObserverSet localObservers = observers_;
 
         for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-            static_cast<ProcessorObserver*>(*it)->onProcessorPortAdded(p, port);
+            (*it)->onProcessorPortAdded(p, port);
         }
     }
 
 #if IVW_PROFILING
     void notifyObserversAboutToProcess(Processor* p) const {
-        ObserverSet localObservers = *observers_;
+        ObserverSet localObservers = observers_;
 
         for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-            static_cast<ProcessorObserver*>(*it)->onProcessorAboutToProcess(p);
+            (*it)->onProcessorAboutToProcess(p);
         }
     }
     void notifyObserversFinishedProcess(Processor* p) const {
-        ObserverSet localObservers = *observers_;
+        ObserverSet localObservers = observers_;
 
         for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-            static_cast<ProcessorObserver*>(*it)->onProcessorFinishedProcess(p);
+            (*it)->onProcessorFinishedProcess(p);
         }
     }
 #endif

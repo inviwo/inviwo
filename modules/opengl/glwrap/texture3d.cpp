@@ -98,12 +98,8 @@ Texture3D* Texture3D::clone() const { return new Texture3D(*this); }
 
 void Texture3D::initialize(const void* data) {
     // Notify observers
-    ObserverSet::iterator endIt = observers_->end();
+    for (auto o : observers_) o->notifyBeforeTextureInitialization();
 
-    for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-        // static_cast can be used since only template class objects can be added
-        static_cast<TextureObserver*>(*it)->notifyBeforeTextureInitialization();
-    }
 
     // Allocate data
     bind();
@@ -114,10 +110,7 @@ void Texture3D::initialize(const void* data) {
                  format_, dataType_, data);
     LGL_ERROR;
 
-    for (ObserverSet::iterator it = observers_->begin(); it != endIt; ++it) {
-        // static_cast can be used since only template class objects can be added
-        static_cast<TextureObserver*>(*it)->notifyAfterTextureInitialization();
-    }
+    for (auto o : observers_) o->notifyAfterTextureInitialization();  
 }
 
 size_t Texture3D::getNumberOfValues() const {
