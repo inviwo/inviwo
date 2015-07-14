@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <modules/base/algorithm/volume/volumeramsubsample.h>
+#include <inviwo/core/processors/activityindicator.h>
 
 namespace inviwo {
 
@@ -57,7 +58,7 @@ namespace inviwo {
  *   * __Factor__ ...
  *
  */
-class IVW_MODULE_BASE_API VolumeSubsample : public Processor {
+class IVW_MODULE_BASE_API VolumeSubsample : public Processor, public ActivityIndicatorOwner {
 public:
     InviwoProcessorInfo();
 

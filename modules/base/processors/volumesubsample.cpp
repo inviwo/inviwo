@@ -73,12 +73,13 @@ void VolumeSubsample::process() {
             volume->setModelMatrix(data->getModelMatrix());
             volume->setWorldMatrix(data->getWorldMatrix());
             outport_.setData(volume.release());
+            getActivityIndicator().setActive(false);
             dirty_ = false;
 
         } else if (!result_.valid()) {
             const Volume* data = inport_.getData();
             const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
-
+            getActivityIndicator().setActive(true);
             result_ = dispatchPool(
                 [this](const VolumeRAM* vol, VolumeRAMSubSample::Factor f)
                     -> std::unique_ptr<Volume> {

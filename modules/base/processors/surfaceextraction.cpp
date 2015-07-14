@@ -114,9 +114,9 @@ void SurfaceExtraction::process() {
                                     for (const auto& e : this->result_) status += e.status;
                                     status /= result_.size();
                                     dispatchFront([status](ProgressBar& pb) {
+                                        pb.updateProgress(status);
                                         if (status < 1.0f) pb.show();
                                         else pb.hide();
-                                        pb.updateProgress(status);
                                     }, std::ref(this->getProgressBar()));
 
                                 }));
