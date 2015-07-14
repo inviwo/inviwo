@@ -43,8 +43,8 @@ ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* pare
     , processor_(processor)
     , size_(10.0f)
     , lineWidth_(3.0f)
-    , ready_(false)
-    , running_(false) {
+    , state_(State::Invalid)
+    , current_(State::Invalid) {
     setRect(-0.5f * size_ - lineWidth_, -0.5f * size_ - lineWidth_, size_ + 2.0 * lineWidth_,
             size_ + 2.0 * lineWidth_);
 
@@ -52,8 +52,14 @@ ProcessorStatusGraphicsItem::ProcessorStatusGraphicsItem(QGraphicsRectItem* pare
     setPos(QPointF(64.0f, -15.0f));
 }
 
-void ProcessorStatusGraphicsItem::setRunning(bool val) {
-    running_ = val;
+void ProcessorStatusGraphicsItem::setRunning(bool running) {
+    if (running) {
+        state_ = State::Running;
+    } else if (processor_->isReady()) {
+        state_ = State::Ready;
+    } else {
+        state_ = State::Invalid;
+    }
     update();
 }
 
@@ -65,19 +71,21 @@ void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
     QColor ledColor;
     QColor borderColor;
 
-
-    ready_ = false;
-    if (processor_->isReady()) {
-        ledColor = baseColor;
-        borderColor = QColor(124, 124, 124);
-        ready_ = true;
-    } else if (running_) {
-        ledColor = Qt::yellow;
-        borderColor = QColor(124, 124, 124);
-    } else {
-        ledColor = baseColor.dark(400);
-        borderColor = QColor(64, 64, 64);
+    switch (state_) {
+        case State::Ready:
+            ledColor = baseColor;
+            borderColor = QColor(124, 124, 124);
+            break;
+        case State::Running:
+            ledColor = Qt::yellow;
+            borderColor = QColor(124, 124, 124);
+            break;
+        case State::Invalid:
+            ledColor = baseColor.dark(400);
+            borderColor = QColor(64, 64, 64);
+            break;
     }
+    current_ = state_;
 
     // initialize painter
     p->save();
@@ -107,11 +115,22 @@ void ProcessorStatusGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsI
     p->restore();
 }
 
+void ProcessorStatusGraphicsItem::activityIndicatorChanged(bool active) {
+    setRunning(active);
+}
+
 void ProcessorStatusGraphicsItem::onProcessorWidgetShow(ProcessorWidget*) { update(); }
 void ProcessorStatusGraphicsItem::onProcessorWidgetHide(ProcessorWidget*) { update(); }
 
 void ProcessorStatusGraphicsItem::update(const QRectF& rect) {
-    if (processor_->isReady() != ready_) EditorGraphicsItem::update(rect); 
+    if (state_ != State::Running) {
+        if (processor_->isReady()) {
+            state_ = State::Ready;
+        } else {
+            state_ = State::Invalid;
+        }
+    }
+    if (current_ != state_) EditorGraphicsItem::update(rect);
 }
 
 }  // namespace

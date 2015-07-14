@@ -40,6 +40,7 @@
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/progressbarowner.h>
+#include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/clock.h>
@@ -54,6 +55,7 @@
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/widgets/processors/processorwidgetqt.h>
+
 
 namespace inviwo {
 
@@ -135,13 +137,19 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     }
 
     statusItem_ = new ProcessorStatusGraphicsItem(this, processor_);
-
-    ProgressBarOwner* progressBarOwner = dynamic_cast<ProgressBarOwner*>(processor_);
-    if ((progressBarOwner != nullptr)) {
+    if (auto progressBarOwner = dynamic_cast<ProgressBarOwner*>(processor_)) {
         progressItem_ =
             new ProcessorProgressGraphicsItem(this, &(progressBarOwner->getProgressBar()));
+
+        progressBarOwner->getProgressBar().ActivityIndicator::addObserver(statusItem_);
     }
         
+    
+    
+    if (auto activityInd = dynamic_cast<ActivityIndicatorOwner*>(processor_)){
+        activityInd->getActivityIndicator().addObserver(statusItem_);
+    }
+
     #if IVW_PROFILING
     countLabel_ = new LabelGraphicsItem(this);
     countLabel_->setCrop(9,8);

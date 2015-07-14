@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROGRESSBAR_H
@@ -33,9 +33,9 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/observer.h>
+#include <inviwo/core/processors/activityindicator.h>
 
 namespace inviwo {
-
 
 /** \class ProgressBarObserver
  *
@@ -44,36 +44,30 @@ namespace inviwo {
  * @see ProgressBar
  * @see ProgressBarObservable
  */
-class IVW_CORE_API ProgressBarObserver: public Observer {
+class IVW_CORE_API ProgressBarObserver : public Observer {
 public:
     /**
     * This method will be called when observed object changes.
     * Override it to add behavior.
     */
-    virtual void progressChanged() {};
+    virtual void progressChanged(){};
 
     /**
     * This method will be called when observed object changes.
     * Override it to add behavior.
     */
-    virtual void progressBarVisibilityChanged() {};
+    virtual void progressBarVisibilityChanged(){};
 };
-
 
 /** \class ProgressBarObservable
  * Observable for ProgressBar.
  * @see ProgressBar
  * @see ProgressBarObserver
  */
-class IVW_CORE_API ProgressBarObservable: public Observable<ProgressBarObserver> {
-public:
-    void notifyProgressChanged() const {
-        for (auto o : observers_) o->progressChanged();
-    }
-
-    void notifyVisibilityChanged() const {
-        for (auto o : observers_) o->progressBarVisibilityChanged();
-    }
+class IVW_CORE_API ProgressBarObservable : public Observable<ProgressBarObserver> {
+protected:
+    void notifyProgressChanged() const;
+    void notifyVisibilityChanged() const;
 };
 
 /** \class ProgressBar
@@ -84,22 +78,23 @@ public:
  * @see ProgressBarOwner
  * @see ProgressBarObserver
  */
-class IVW_CORE_API ProgressBar : public IvwSerializable, public ProgressBarObservable {
-
+class IVW_CORE_API ProgressBar : public ActivityIndicator,
+                                 public ProgressBarObservable,
+                                 public IvwSerializable {
 public:
     ProgressBar();
     virtual ~ProgressBar();
 
-    float getProgress() const { return progress_; }
-    void resetProgress() { progress_ = 0.0f; notifyProgressChanged(); }
-    void finishProgress() { progress_ = 1.0f; notifyProgressChanged(); }
+    float getProgress() const;
+    void resetProgress();
+    void finishProgress();
 
     void updateProgress(float progress);
     void updateProgressLoop(size_t loopVar, size_t maxLoopVar, float endProgress);
 
-    void show() { visible_ = true; notifyVisibilityChanged(); }
-    void hide() { visible_ = false; notifyVisibilityChanged(); }
-    bool isVisible() const { return visible_; }
+    void show();
+    void hide();
+    bool isVisible() const;
 
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
@@ -108,9 +103,8 @@ private:
     float progress_;
     float beginLoopProgress_;
     bool visible_;
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROGRESSBAR_H
+#endif  // IVW_PROGRESSBAR_H

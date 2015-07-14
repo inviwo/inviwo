@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/core/processors/processorwidgetobserver.h>
+#include <inviwo/core/processors/activityindicator.h>
 #include <QEvent>
 #include <QRectF>
 
@@ -41,7 +42,8 @@ namespace inviwo {
 class Processor;
 
 class IVW_QTEDITOR_API ProcessorStatusGraphicsItem : public EditorGraphicsItem,
-                                                     public ProcessorWidgetObserver {
+                                                     public ProcessorWidgetObserver,
+                                                     public ActivityIndicatorObserver{
 public:
     ProcessorStatusGraphicsItem(QGraphicsRectItem* parent, Processor* processor);
     virtual ~ProcessorStatusGraphicsItem() {}
@@ -53,21 +55,24 @@ public:
     int type() const { return Type; }
 
     // ProcessorWidgetObserver overrides
-    virtual void onProcessorWidgetShow(ProcessorWidget*);
-    virtual void onProcessorWidgetHide(ProcessorWidget*);
+    virtual void onProcessorWidgetShow(ProcessorWidget*) override;
+    virtual void onProcessorWidgetHide(ProcessorWidget*) override;
 
     virtual void update(const QRectF& rect = QRectF());
 
 protected:
-    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
+    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
+    virtual void activityIndicatorChanged(bool active) override;
 
 private:
+    enum class State {Invalid, Running, Ready};
+
     Processor* processor_;
     float size_;
     float lineWidth_;
 
-    bool ready_;
-    bool running_;
+    State state_;
+    State current_;
 };
 
 }  // namespace

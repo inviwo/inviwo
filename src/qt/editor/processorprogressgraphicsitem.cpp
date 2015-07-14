@@ -46,7 +46,7 @@ ProcessorProgressGraphicsItem::ProcessorProgressGraphicsItem(QGraphicsRectItem* 
     setPos(QPointF(0.0f, 9.0f));
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setVisible(progressBar_->isVisible());
-    progressBar_->addObserver(this);
+    progressBar_->ProgressBarObservable::addObserver(this);
 
 }
 

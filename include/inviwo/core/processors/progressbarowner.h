@@ -63,14 +63,14 @@ namespace inviwo {
  */
 class IVW_CORE_API ProgressBarOwner  {
 public:
-    ProgressBarOwner() {};
-    virtual ~ProgressBarOwner() {};
+    ProgressBarOwner() = default;
+    virtual ~ProgressBarOwner() = default;
 
-    ProgressBar& getProgressBar() { return progressBar_; };
-    const ProgressBar& getProgressBar() const { return progressBar_; };
+    inline ProgressBar& getProgressBar() { return progressBar_; };
+    inline const ProgressBar& getProgressBar() const { return progressBar_; };
 
     // Helper function
-    void updateProgress(float progress) { progressBar_.updateProgress(progress); }
+    inline void updateProgress(float progress) { progressBar_.updateProgress(progress); }
 
 protected:
     ProgressBar progressBar_;

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/processors/progressbar.h>
@@ -33,15 +33,27 @@
 
 namespace inviwo {
 
-ProgressBar::ProgressBar() :
-    progress_(0.0f), beginLoopProgress_(-1.0f)
-{}
+ProgressBar::ProgressBar() : progress_(0.0f), beginLoopProgress_(-1.0f) {}
 
 ProgressBar::~ProgressBar() {}
 
+float ProgressBar::getProgress() const { return progress_; }
+
+void ProgressBar::resetProgress() {
+    setActive(false);
+    progress_ = 0.0f;
+    notifyProgressChanged();
+}
+
+void ProgressBar::finishProgress() {
+    setActive(false);
+    progress_ = 1.0f;
+    notifyProgressChanged();
+}
+
 void ProgressBar::updateProgress(float progress) {
+    setActive(progress>0.0f && progress<1.0f);
     if (visible_) {
-        //ivwAssert(progress>=0.0f&&progress<=1.0, "Progress out of bounds.");
         progress_ = progress;
         notifyProgressChanged();
     }
@@ -49,25 +61,44 @@ void ProgressBar::updateProgress(float progress) {
 
 void ProgressBar::updateProgressLoop(size_t loopVar, size_t maxLoopVar, float endLoopProgress) {
     if (visible_) {
-        if (beginLoopProgress_<=0.0f)
-            beginLoopProgress_ = progress_;
+        if (beginLoopProgress_ <= 0.0f) beginLoopProgress_ = progress_;
 
-        float normalizedLoopVar = static_cast<float>(loopVar)/static_cast<float>(maxLoopVar);
-        progress_ = beginLoopProgress_+normalizedLoopVar*(endLoopProgress-beginLoopProgress_);
+        float normalizedLoopVar = static_cast<float>(loopVar) / static_cast<float>(maxLoopVar);
+        progress_ = beginLoopProgress_ + normalizedLoopVar * (endLoopProgress - beginLoopProgress_);
 
-        if (loopVar == maxLoopVar)
-            beginLoopProgress_ = -1.0f;
+        if (loopVar == maxLoopVar) beginLoopProgress_ = -1.0f;
 
         notifyProgressChanged();
     }
 }
 
-void ProgressBar::serialize(IvwSerializer& s) const {
-    s.serialize("visible", visible_);
+void ProgressBar::show() {
+    visible_ = true;
+    setActive(true);
+    notifyVisibilityChanged();
 }
+
+void ProgressBar::hide() {
+    visible_ = false;
+    setActive(false);
+    notifyVisibilityChanged();
+}
+
+bool ProgressBar::isVisible() const { return visible_; }
+
+void ProgressBar::serialize(IvwSerializer& s) const { s.serialize("visible", visible_); }
 
 void ProgressBar::deserialize(IvwDeserializer& d) {
     d.deserialize("visible", visible_);
+    notifyVisibilityChanged();
 }
 
-} // namespace
+void ProgressBarObservable::notifyProgressChanged() const {
+    for (auto o : observers_) o->progressChanged();
+}
+
+void ProgressBarObservable::notifyVisibilityChanged() const {
+    for (auto o : observers_) o->progressBarVisibilityChanged();
+}
+
+}  // namespace
