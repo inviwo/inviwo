@@ -63,7 +63,11 @@ public:
 
     FileExtension getSelectedFileExtension() const;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     virtual int exec() override;
+#else
+    virtual int exec();
+#endif
 
     static QString getPreviousPath(const QString &pathType);
     static void setPreviousPath(const QString &pathType, const QString &path);
