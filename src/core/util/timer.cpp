@@ -75,9 +75,9 @@ void Timer::timer() {
     while (enabled_) {
         if (cvar_.wait_until(lock, deadline) == std::cv_status::timeout) {
             lock.unlock();
-
+            if (result_.valid()) result_.get(); // Block until previous call is done.
             auto tmp = callback_;
-            dispatchFront([tmp]() { (*tmp)(); });
+            result_ = dispatchFront([tmp]() { (*tmp)(); });
 
             deadline += interval_;
             lock.lock();

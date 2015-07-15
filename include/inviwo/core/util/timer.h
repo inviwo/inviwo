@@ -39,6 +39,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <thread>
+#include <future>
 #include <mutex>
 #include <memory>
 #include <utility>
@@ -69,6 +70,7 @@ private:
     void timer();
 
     std::shared_ptr<std::function<void()>> callback_;
+    std::future<void> result_;
     duration_t interval_;
 
     bool enabled_;
