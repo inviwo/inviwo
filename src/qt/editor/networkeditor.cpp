@@ -1137,6 +1137,7 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor, Processor
 
     // remove old processor
     network->removeProcessor(oldProcessor);
+    delete oldProcessor;
 
     // create all new connections
     for (auto& newConnection : newConnections)
