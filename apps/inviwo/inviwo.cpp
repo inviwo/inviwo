@@ -75,9 +75,10 @@ int main(int argc, char** argv) {
     splashScreen.showMessage("Loading workspace...");
     mainWin.initializeWorkspace();
     mainWin.showWindow();
-    // open last workspace
-    mainWin.openLastWorkspace();
+    inviwoApp.processEvents();   // Make sure the gui is done loading before loading workspace
+    mainWin.openLastWorkspace(); // open last workspace
     splashScreen.finish(&mainWin);
+
 #if defined(REG_INVIWOUNITTESTSMODULE) && defined(IVW_RUN_UNITTEST_ON_STARTUP)
     inviwo::UnitTestsModule::runAllTests();
 #endif
