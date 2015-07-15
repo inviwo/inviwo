@@ -108,9 +108,7 @@ void PyInviwo::registerPyModule(PyModule* pyModule) {
         pyModule->setPyObject(obj);
         registeredModules_.push_back(pyModule);
 
-        for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
-            (*it)->onModuleRegistered(pyModule);
-        }
+        for (auto o : observers_) o->onModuleRegistered(pyModule);
     } else {
         LogError("Python environment not initialized");
     }

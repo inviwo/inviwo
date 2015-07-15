@@ -51,9 +51,7 @@ public:
     LabelGraphicsItemObservable(): Observable<LabelGraphicsItemObserver>() {};
 
     void notifyLabelGraphicsItemObservers() const {
-        for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
-           (*it)->onLabelGraphicsItemChange();
-        }
+        for (auto o : observers_) o->onLabelGraphicsItemChange();
     }
 };
 

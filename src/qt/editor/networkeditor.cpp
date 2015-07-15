@@ -424,9 +424,7 @@ bool NetworkEditor::isModified() const { return modified_; }
 void NetworkEditor::setModified(const bool modified) {
     if (modified != modified_) {
         modified_ = modified;
-        for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
-            (*it)->onModifiedStatusChanged(modified);
-        }
+        for (auto o : observers_) o->onModifiedStatusChanged(modified);
     }
 }
 
@@ -1205,9 +1203,7 @@ bool NetworkEditor::loadNetwork(std::string fileName) {
     bool loaded = loadNetwork(fileStream, fileName);
     fileStream.close();
     if (loaded) {
-        for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
-            (*it)->onNetworkEditorFileChanged(fileName);
-        }
+        for (auto o : observers_) o->onNetworkEditorFileChanged(fileName);
     }
 
     return loaded;

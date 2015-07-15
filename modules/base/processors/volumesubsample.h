@@ -39,6 +39,8 @@
 #include <modules/base/algorithm/volume/volumeramsubsample.h>
 #include <inviwo/core/processors/activityindicator.h>
 
+#include <future>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeSubsample, Volume Subsample}

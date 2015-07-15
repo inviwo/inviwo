@@ -44,17 +44,11 @@ ProcessorWidgetObservable::~ProcessorWidgetObservable(){};
 
 void ProcessorWidgetObservable::notifyObserversAboutShow(ProcessorWidget* p) const {
     ObserverSet localObservers = observers_;
-
-    for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-        (*it)->onProcessorWidgetShow(p);
-    }
+    for (auto o : localObservers) o->onProcessorWidgetShow(p);
 }
 void ProcessorWidgetObservable::notifyObserversAboutHide(ProcessorWidget* p) const {
     ObserverSet localObservers = observers_;
-
-    for (auto it = localObservers.rbegin(); it != localObservers.rend(); ++it) {
-        (*it)->onProcessorWidgetHide(p);
-    }
+    for (auto o : localObservers) o->onProcessorWidgetHide(p);
 }
 
 }  // namespace

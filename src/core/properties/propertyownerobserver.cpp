@@ -33,30 +33,22 @@ namespace inviwo {
 
 void PropertyOwnerObservable::notifyObserversWillAddProperty(Property* property,
                                                              size_t index) const {
-    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
-        (*it)->onWillAddProperty(property, index);
-    }
+    for (auto o : observers_) o->onWillAddProperty(property, index);
 }
 
 void PropertyOwnerObservable::notifyObserversDidAddProperty(Property* property,
                                                             size_t index) const {
-    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
-        (*it)->onDidAddProperty(property, index);
-    }
+    for (auto o : observers_) o->onDidAddProperty(property, index);
 }
 
 void PropertyOwnerObservable::notifyObserversWillRemoveProperty(Property* property,
                                                                 size_t index) const {
-    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
-        (*it)->onWillRemoveProperty(property, index);
-    }
+    for (auto o : observers_) o->onWillRemoveProperty(property, index);
 }
 
 void PropertyOwnerObservable::notifyObserversDidRemoveProperty(Property* property,
                                                                size_t index) const {
-    for (auto it = observers_.rbegin(); it != observers_.rend(); ++it) {
-        (*it)->onDidRemoveProperty(property, index);
-    }
+    for (auto o : observers_) o->onDidRemoveProperty(property, index);
 }
 
 }  // namespace

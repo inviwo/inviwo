@@ -35,6 +35,8 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/observer.h>
 
+#include <set>
+
 namespace inviwo {
 
 

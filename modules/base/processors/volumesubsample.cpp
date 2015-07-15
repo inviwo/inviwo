@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "volumesubsample.h"
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -81,9 +82,9 @@ void VolumeSubsample::process() {
             const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
             getActivityIndicator().setActive(true);
             result_ = dispatchPool(
-                [this](const VolumeRAM* vol, VolumeRAMSubSample::Factor f)
+                [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f)
                     -> std::unique_ptr<Volume> {
-                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(vol, f));
+                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
                     dispatchFront([this]() {
                         dirty_ = true;
                         invalidate(INVALID_OUTPUT);
@@ -102,7 +103,7 @@ void VolumeSubsample::invalidate(InvalidationLevel invalidationLevel, Property* 
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
 
     if (dirty_ || inport_.isChanged() ||
-        !enabled_.get() && subSampleFactor_.get() == VolumeRAMSubSample::Factor::None) {
+        !enabled_.get() || subSampleFactor_.get() == VolumeRAMSubSample::Factor::None) {
         outport_.invalidate(INVALID_OUTPUT);
     }
 

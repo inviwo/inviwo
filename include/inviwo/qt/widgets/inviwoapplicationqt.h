@@ -31,7 +31,6 @@
 #define IVW_INVIWOAPPLICATIONQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <inviwo/qt/widgets/timerqt.h>
 #include <QApplication>
 #include <QMainWindow>
 #include <QFileSystemWatcher>
