@@ -957,10 +957,10 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
             if (processorItem && !oldProcessorTarget_) {  //< New processor found
                 QString className;
                 ProcessorDragObject::decode(e->mimeData(), className);
-                processorItem->setSelected(true);
+                processorItem->setHighlight(true);
                 oldProcessorTarget_ = processorItem;
             } else if (!processorItem && oldProcessorTarget_) {  // processor no longer targeted
-                oldProcessorTarget_->setSelected(false);
+                oldProcessorTarget_->setHighlight(false);
                 oldProcessorTarget_ = nullptr;
             }
         }

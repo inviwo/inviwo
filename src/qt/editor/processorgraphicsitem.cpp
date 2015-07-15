@@ -77,6 +77,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     , progressItem_(nullptr)
     , statusItem_(nullptr)
     , linkItem_(nullptr)
+    , highlight_(false)
     #if IVW_PROFILING
     , processCount_(0)
     , countLabel_(nullptr)
@@ -277,10 +278,9 @@ void ProcessorGraphicsItem::setIdentifier(QString text) {
         nameLabel_->setText(updatedNewName.c_str());
     }
 
-    ProcessorWidgetQt* processorWidgetQt =
-        dynamic_cast<ProcessorWidgetQt*>(getProcessor()->getProcessorWidget());
-
-    if (processorWidgetQt) processorWidgetQt->setWindowTitle(updatedNewName.c_str());
+    if (auto* widget = dynamic_cast<ProcessorWidgetQt*>(getProcessor()->getProcessorWidget())) {
+        widget->setWindowTitle(updatedNewName.c_str());
+    }
 }
 
 void ProcessorGraphicsItem::snapToGrid() {
@@ -300,12 +300,12 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         case QGraphicsItem::ItemSelectedHasChanged:
             if (isSelected()) {
                 setZValue(SELECTED_PROCESSORGRAPHICSITEM_DEPTH);
-                NetworkEditor::getPtr()->addPropertyWidgets(getProcessor());
+                if (!highlight_) NetworkEditor::getPtr()->addPropertyWidgets(getProcessor());
             } else {
                 setZValue(PROCESSORGRAPHICSITEM_DEPTH);
                 NetworkEditor::getPtr()->removePropertyWidgets(getProcessor());
             }
-            if (processorMeta_) processorMeta_->setSelected(isSelected());
+            if (!highlight_ && processorMeta_) processorMeta_->setSelected(isSelected());
             break;
         case QGraphicsItem::ItemVisibleHasChanged:
             if (processorMeta_) processorMeta_->setVisibile(isVisible());
@@ -422,6 +422,11 @@ void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
 #endif
 
     showToolTipHelper(e, str);
+}
+
+void ProcessorGraphicsItem::setHighlight(bool val) {
+    highlight_ = val;
+    setSelected(val);
 }
 
 }  // namespace

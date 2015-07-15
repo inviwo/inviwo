@@ -87,6 +87,8 @@ public:
     void resetTimeMeasurements();
     #endif
 
+    void setHighlight(bool val);
+
 protected:
     void setIdentifier(QString text);
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
@@ -107,6 +109,7 @@ private:
     std::map<Inport*, ProcessorInportGraphicsItem*> inportItems_;
     std::map<Outport*, ProcessorOutportGraphicsItem*> outportItems_;
     
+    bool highlight_;
     qreal inportX,inportY;
     qreal outportX,outportY;
     
