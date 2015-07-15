@@ -110,7 +110,7 @@ private:
     BoolProperty playSequence_;
     IntProperty volumesPerSecond_;
 
-    Timer* sequenceTimer_;
+    Timer sequenceTimer_;
 };
 
 template<typename T, typename U>

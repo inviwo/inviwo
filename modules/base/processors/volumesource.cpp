@@ -75,7 +75,8 @@ VolumeSource::VolumeSource()
     , playSequence_("playSequence", "Play Sequence", false)
     , volumesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, VALID)
 
-    , sequenceTimer_(nullptr) {
+    , sequenceTimer_(1000 / volumesPerSecond_.get(), [this](){onSequenceTimerEvent();}) {
+
     DataSource<Volume, VolumeOutport>::file_.setContentType("volume");
     DataSource<Volume, VolumeOutport>::file_.setDisplayName("Volume file");
 
@@ -132,16 +133,9 @@ VolumeSource::VolumeSource()
     volumeSequence_.addProperty(volumesPerSecond_);
     volumeSequence_.setVisible(false);
     addProperty(volumeSequence_);
-        
-    sequenceTimer_ = InviwoApplication::getPtr()->createTimer();
-    if (sequenceTimer_) {
-        sequenceTimer_->setElapsedTimeCallback(this, &VolumeSource::onSequenceTimerEvent);
-    }
 }
 
-VolumeSource::~VolumeSource() {
-    delete sequenceTimer_;
-}
+VolumeSource::~VolumeSource() {}
 
 void VolumeSource::onOverrideChange() {
     if (this->isDeserializing()) return;
@@ -274,11 +268,11 @@ void VolumeSource::dataLoaded(Volume* volume) {
 void VolumeSource::onPlaySequenceToggled() {
     if (port_.hasDataSequence()) {
         if (playSequence_.get()) {
-            sequenceTimer_->start(1000 / volumesPerSecond_.get());
+            sequenceTimer_.start(1000 / volumesPerSecond_.get());
             selectedSequenceIndex_.setReadOnly(true);
             volumesPerSecond_.setReadOnly(false);
         } else {
-            sequenceTimer_->stop();
+            sequenceTimer_.stop();
             selectedSequenceIndex_.setReadOnly(false);
             volumesPerSecond_.setReadOnly(true);
         }
@@ -295,15 +289,11 @@ void VolumeSource::onSequenceIndexChanged() {
 
 void VolumeSource::onSequenceTimerEvent() {
     if (port_.hasDataSequence()) {
-        sequenceTimer_->stop();
-        sequenceTimer_->start(1000 / volumesPerSecond_.get());
-        
-        selectedSequenceIndex_ =
-            (selectedSequenceIndex_ < selectedSequenceIndex_.getMaxValue()
-                 ? selectedSequenceIndex_ + 1 : 1);
+        selectedSequenceIndex_ = (selectedSequenceIndex_ < selectedSequenceIndex_.getMaxValue()
+                                      ? selectedSequenceIndex_ + 1
+                                      : 1);
     }
 }
-
 
 void VolumeSource::process() {
     if (this->isDeserializing()) return;

@@ -30,23 +30,18 @@
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/qt/widgets/qtwidgetmodule.h>
+
+#include <thread>
+
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QFile>
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QSound>
 #endif
 
-#ifdef Q_OS_WIN
-#include <windows.h>  // for Sleep
-#else
-#include <time.h>
-#endif
-
-#include <QApplication>
-#include <QDesktopWidget>
-
 namespace inviwo {
-
-
 
 
 InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string basePath, int& argc,
@@ -55,6 +50,7 @@ InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string ba
     , InviwoApplication(argc, argv, displayName, basePath)
     , mainWindow_(nullptr) 
     , windowDecorationOffset_(0, 0) {
+
     QCoreApplication::setOrganizationName("Inviwo Foundation");
     QCoreApplication::setOrganizationDomain("inviwo.org");
     QCoreApplication::setApplicationName(displayName.c_str());
@@ -145,17 +141,9 @@ void InviwoApplicationQt::initialize(registerModuleFuncPtr regModuleFunc) {
     module->initialize();
 }
 
-Timer* InviwoApplicationQt::createTimer() const { return new TimerQt(); }
-
 void InviwoApplicationQt::wait(int ms) {
     if (ms <= 0) return;
-
-#ifdef Q_OS_WIN
-    Sleep(uint(ms));
-#else
-    struct timespec ts = {ms / 1000, (ms % 1000) * 1000 * 1000};
-    nanosleep(&ts, nullptr);
-#endif
+    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -207,7 +195,8 @@ void InviwoApplicationQt::setWindowDecorationOffset(QPoint windowDecorationOffse
     windowDecorationOffset_ = windowDecorationOffset;
 }
 
-QPoint InviwoApplicationQt::movePointOntoDesktop(const QPoint& point, const QSize& size, bool decorationOffset) {
+QPoint InviwoApplicationQt::movePointOntoDesktop(const QPoint& point, const QSize& size,
+                                                 bool decorationOffset) {
     QPoint pos(point);
     QDesktopWidget* desktop = QApplication::desktop();
     int primaryScreenIndex = desktop->primaryScreen();
@@ -260,7 +249,7 @@ QPoint InviwoApplicationQt::offsetWidget() {
 }
 
 bool InviwoApplicationQt::event(QEvent* e) {
- if (e->type() == InviwoQtEvent::type()) {
+    if (e->type() == InviwoQtEvent::type()) {
         e->accept();
         processFront();
         return true;
@@ -268,7 +257,6 @@ bool InviwoApplicationQt::event(QEvent* e) {
         return QApplication::event(e);
     }
 }
-
 
 QEvent::Type InviwoQtEvent::INVIWO_QT_EVENT = QEvent::None;
 

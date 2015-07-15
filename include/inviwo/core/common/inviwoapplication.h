@@ -137,13 +137,6 @@ public:
     enum class Message { Ok, Error };
     virtual void playSound(Message soundID) {}
 
-    /**
-     * Creates a timer. Caller is responsible for deleting returned object.
-     * @see Timer
-     * @return new Timer
-     */
-    virtual Timer* createTimer() const;
-
     virtual void addCallbackAction(ModuleCallbackAction* callbackAction);
     virtual std::vector<ModuleCallbackAction*> getCallbackActions();
     std::vector<Settings*> getModuleSettings(size_t startIdx = 0);

@@ -24,46 +24,108 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/timer.h>
 
 namespace inviwo {
 
-#ifdef WIN32
+Timer::Timer(duration_t interval, std::function<void()> callback)
+    : callback_{std::make_shared<std::function<void()>>(std::move(callback))}
+    , interval_{interval}
+    , enabled_{false} {}
 
-void CALLBACK TimerCallback(void* param, bool timerOrWaitFired) {
-    WindowsTimer* timer = static_cast<WindowsTimer*>(param);
-    timer->onIntervalEvent();
+Timer::Timer(size_t interval, std::function<void()> callback)
+    : Timer(std::chrono::milliseconds(interval), std::move(callback)) {}
+
+Timer::~Timer() { stop(); }
+
+
+void Timer::start(size_t interval) {
+    start(std::chrono::milliseconds(interval));
 }
 
-WindowsTimer::WindowsTimer() :Timer(), timer_(nullptr) {
+void Timer::start(duration_t interval) {
+    interval_ = interval; 
+    start();
 }
 
-WindowsTimer::~WindowsTimer() {
-    stop();
+void Timer::start() {
+    if (!enabled_) {
+        enabled_ = true;
+        thread_ = std::thread(&Timer::timer, this);
+    }
 }
 
-void WindowsTimer::start(unsigned int intervalInMilliseconds, bool once /*= false*/) {
-    if (timer_)
-        return;
-
-    CreateTimerQueueTimer(&timer_,
-                          nullptr,
-                          (WAITORTIMERCALLBACK)TimerCallback,
-                          this,
-                          0,
-                          once ? 0 : intervalInMilliseconds,
-                          WT_EXECUTEINTIMERTHREAD);
+void Timer::stop() {
+    if (enabled_) {
+        {
+            std::lock_guard<std::mutex> _{mutex_};
+            enabled_ = false;
+        }
+        cvar_.notify_one();
+        thread_.join();
+    }
 }
 
-void WindowsTimer::stop() {
-    DeleteTimerQueueTimer(nullptr, timer_, nullptr);
-    timer_ = nullptr ;
+void Timer::timer() {
+    auto deadline = std::chrono::steady_clock::now() + interval_;
+    std::unique_lock<std::mutex> lock{mutex_};
+    while (enabled_) {
+        if (cvar_.wait_until(lock, deadline) == std::cv_status::timeout) {
+            lock.unlock();
+
+            auto tmp = callback_;
+            dispatchFront([tmp]() { (*tmp)(); });
+
+            deadline += interval_;
+            lock.lock();
+        }
+    }
 }
 
-#endif // WIN32
+Delay::Delay(duration_t interval, std::function<void()> callback)
+    : callback_{std::make_shared<std::function<void()>>(std::move(callback))}
+    , interval_{interval}
+    , enabled_{false} {}
 
-} // namespace inviwo
+Delay::Delay(size_t interval, std::function<void()> callback)
+    : Delay(std::chrono::milliseconds(interval), std::move(callback)) {}
 
+Delay::~Delay() { stop(); }
+
+void Delay::start() {
+    if (!enabled_) {
+        enabled_ = true;
+        thread_ = std::thread(&Delay::delay, this);
+    }
+}
+
+void Delay::stop() {
+    if (enabled_) {
+        {
+            std::lock_guard<std::mutex> _{mutex_};
+            enabled_ = false;
+        }
+        cvar_.notify_one();
+        thread_.join();
+    }
+}
+
+void Delay::delay() {
+    auto deadline = std::chrono::steady_clock::now() + interval_;
+    std::unique_lock<std::mutex> lock{mutex_};
+    while (enabled_) {
+        if (cvar_.wait_until(lock, deadline) == std::cv_status::timeout) {
+            lock.unlock();
+            auto tmp = callback_;
+            dispatchFront([tmp]() { (*tmp)(); });
+
+            lock.lock();
+            enabled_ = false;
+        }
+    }
+}
+
+}  // namespace inviwo

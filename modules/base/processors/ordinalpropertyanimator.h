@@ -63,11 +63,8 @@ public:
     InviwoProcessorInfo();
 
     void initialize();
-    void deinitialize();
 
 protected:
-    virtual void process();
-
     void updateTimerInterval();
     void timerEvent();
     void changeProperty();
@@ -123,7 +120,7 @@ private:
     IntProperty delay_;
     BoolProperty pbc_;
     BoolProperty active_;
-    Timer* timer_;
+    Timer timer_;
 
     std::vector<BaseProp*> properties_;
 };

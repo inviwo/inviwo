@@ -291,15 +291,6 @@ std::string InviwoApplication::getDisplayName() const {
     return displayName_;
 }
 
-Timer* InviwoApplication::createTimer() const {
-#ifdef WIN32
-    return new WindowsTimer();
-#else
-    LogWarn("This application has not implemented any timer");
-    return nullptr;
-#endif
-}
-
 void InviwoApplication::addCallbackAction(ModuleCallbackAction* callbackAction) {
     moudleCallbackActions_.push_back(callbackAction);
 }

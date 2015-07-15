@@ -70,7 +70,6 @@ public:
     virtual void stopFileObservation(std::string fileName) override;
     virtual void closeInviwoApplication() override;
     virtual void playSound(Message soundID) override;
-    virtual Timer* createTimer() const override;
 
     void setMainWindow(QMainWindow* mainWindow);
     QMainWindow* getMainWindow() { return mainWindow_; }

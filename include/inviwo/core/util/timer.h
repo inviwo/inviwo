@@ -31,6 +31,8 @@
 #define IVW_TIMER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwoapplication.h>
+
 #include <iostream>
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,136 +44,55 @@
 #include <utility>
 #include <warn/pop>
 
-#ifdef WIN32
-// For WindowsTimer
-#include <windows.h>
-#endif
-
 namespace inviwo {
 
 /** \class Timer
  *
- * Interface for Timer classes.
- * A class deriving from Timer should execute onIntervalEvent() when the interval has passed.
+ * A Timer class. Will evaluate it's callback in the front thread.
  */
+
 class IVW_CORE_API Timer {
-public:
-    Timer() {};
-    virtual ~Timer() { }
-
-    /**
-     * Start the timer.
-     *
-     * @param intervalInMilliseconds The time interval until the added callback will be called.
-     * @param once Should the callback only be called the first time the interval has been reached?
-     */
-    virtual void start(unsigned int intervalInMilliseconds, bool once = false) = 0;
-
-    /**
-     * Stop the timer from calling the callback.
-     *
-     * @return
-     */
-    virtual void stop() = 0;
-
-    /**
-     * Set a callback that will be called when the time interval has passed.
-     * Only one callback may be set.
-     */
-    template <typename T>
-    void setElapsedTimeCallback(T* o, void (T::*m)()) {
-        callback_ = std::bind(m, o);
-    }
-    /**
-     * This function will be called when the time has elapsed.
-     * Callbacks will then be executed.
-     *
-     * @note Derived classes should call this function when the time has elapsed.
-     */
-    void onIntervalEvent() const {
-        callback_();
-    }
-protected:
-    std::function<void()> callback_;
-};
-
-#ifdef WIN32
-/**
- * Will be called when WindowsTimer reaches time interval.
- *
- * @param param Will be a pointer to WindowsTimer
- * @param timerOrWaitFired
- */
-static void CALLBACK TimerCallback(void* param, bool timerOrWaitFired);
-
-/** \class WindowsTimer
- *
- * Windows only timer. Uses the Windows API to create a timed event. Typically millisecond resolution.
- * @note Does not work when used with Qt together with OpenGL (probably due to OpenGL context and parallel execution)
- * @see Timer
- */
-class IVW_CORE_API WindowsTimer: public Timer {
-public:
-    WindowsTimer();
-    virtual ~WindowsTimer();
-
-    virtual void start(unsigned int intervalInMilliseconds, bool once = false);
-    virtual void stop();
-
-
-protected:
-    HANDLE timer_;
-};
-
-#endif // WIN32
-
-class IVW_CORE_API IvwTimer {
 public:
     using duration_t = std::chrono::milliseconds;
 
-    IvwTimer(size_t interval, std::function<void()> fun) :
-        IvwTimer(std::chrono::milliseconds(interval), fun) {}
-    
-    IvwTimer(duration_t interval, std::function<void()> fun)
-        : fun_{std::move(fun)}, interval_{interval}, enabled_{false} {}
+    Timer(size_t interval, std::function<void()> callback);
+    Timer(duration_t interval, std::function<void()> callback);
+    ~Timer();
 
-    ~IvwTimer() {
-        stop();
-    }
-    void start() {
-        if (!enabled_) {
-            enabled_ = true;
-            thread_ = std::thread(&IvwTimer::timer, this);
-        }
-    }
-    void stop() {
-        if (enabled_) {
-            {
-                std::lock_guard<std::mutex> _{mutex_};
-                enabled_ = false;
-            }
-            cvar_.notify_one();
-            thread_.join();
-        }
-    }
+    void start();
+    void start(size_t interval);
+    void start(duration_t interval);
+
+    void stop();
 
 private:
-    void timer() {
-        auto deadline = std::chrono::steady_clock::now() + interval_;
-        std::unique_lock<std::mutex> lock{mutex_};
-        while (enabled_) {
-            if (cvar_.wait_until(lock, deadline) == std::cv_status::timeout) {
-                lock.unlock();
-                fun_();
-                deadline += interval_;
-                lock.lock();
-            }
-        }
-    }
+    void timer();
 
-    std::function<void()> fun_;
+    std::shared_ptr<std::function<void()>> callback_;
+    duration_t interval_;
+
+    bool enabled_;
+    std::thread thread_;
+    std::mutex mutex_;
+    std::condition_variable cvar_;
+};
+
+class IVW_CORE_API Delay {
+public:
+    using duration_t = std::chrono::milliseconds;
+    Delay(size_t interval, std::function<void()> callback);
+    Delay(duration_t interval, std::function<void()> callback);
+    ~Delay();
+
+    void start();
+    void stop();
+
+private:
+    void delay();
+
+    std::shared_ptr<std::function<void()>> callback_;
     const duration_t interval_;
-    
+
     bool enabled_;
     std::thread thread_;
     std::mutex mutex_;
