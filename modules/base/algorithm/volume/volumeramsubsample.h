@@ -60,7 +60,7 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
  
     // calculate new size
     const size3_t dataDims{volume->getDimensions()};
-    const size_t f{static_cast<size_t>(factor)};
+    const size_t f = static_cast<size_t>(factor);
     const size3_t newDims{dataDims / f};
 
     // allocate space
@@ -78,7 +78,7 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
         for (size_t y=0; y < newDims.y; ++y) {
             #pragma omp parallel for
             for (long long xomp=0; xomp < static_cast<long long>(newDims.x); ++xomp) {
-                const size_t x{static_cast<size_t>(xomp)}; // OpenMP need signed integral type.
+                const size_t x = static_cast<size_t>(xomp); // OpenMP need signed integral type.
                 const size_t px{x*f};
                 const size_t py{y*f};
                 const size_t pz{z*f};
