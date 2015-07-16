@@ -44,8 +44,18 @@ void activateTarget(ImageOutport& outport, ImageType type) {
     outImageGL->activateBuffer(type);
 }
 
+void activateTarget(Image* image, ImageType type) {
+    ImageGL* outImageGL = image->getEditableRepresentation<ImageGL>();
+    outImageGL->activateBuffer(type);
+}
+
 void activateAndClearTarget(ImageOutport& outport, ImageType type) {
     activateTarget(outport, type);
+    clearCurrentTarget();
+}
+
+void activateAndClearTarget(Image* image, ImageType type) {
+    activateTarget(image, type);
     clearCurrentTarget();
 }
 

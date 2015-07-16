@@ -48,9 +48,13 @@ class Shader;
 
 namespace utilgl {
 
+IVW_MODULE_OPENGL_API void activateTarget(Image* image, ImageType type = ALL_LAYERS);
 IVW_MODULE_OPENGL_API void activateTarget(ImageOutport& outport, ImageType type = ALL_LAYERS);
+IVW_MODULE_OPENGL_API void activateAndClearTarget(Image* image,
+                                                  ImageType type = ALL_LAYERS);
 IVW_MODULE_OPENGL_API void activateAndClearTarget(ImageOutport& outport,
                                                   ImageType type = ALL_LAYERS);
+
 IVW_MODULE_OPENGL_API void activateTargetAndCopySource(ImageOutport& outport, ImageInport& inport,
                                                        ImageType type = ALL_LAYERS);
 
