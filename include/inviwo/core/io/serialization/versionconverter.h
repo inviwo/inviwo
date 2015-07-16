@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VERSIONCONVERTER_H
@@ -34,24 +34,24 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/ports/port.h>
 
 namespace inviwo {
 
-class IVW_CORE_API VersionConverter { 
+class IVW_CORE_API VersionConverter {
 public:
     VersionConverter();
-    virtual ~VersionConverter(){}
+    virtual ~VersionConverter() {}
     virtual bool convert(TxElement* root) = 0;
 };
-
 
 class IVW_CORE_API NodeVersionConverter : public VersionConverter {
 public:
     template <typename T>
-    NodeVersionConverter(T* obj, bool(T::*fPtr)(TxElement*));
+    NodeVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
     NodeVersionConverter(std::function<bool(TxElement*)> fun);
 
-    virtual ~NodeVersionConverter(){}
+    virtual ~NodeVersionConverter() {}
     virtual bool convert(TxElement* root);
 
 private:
@@ -59,15 +59,15 @@ private:
 };
 
 template <typename T>
-inviwo::NodeVersionConverter::NodeVersionConverter(T* obj, bool(T::*fPtr)(TxElement*))
+inviwo::NodeVersionConverter::NodeVersionConverter(T* obj, bool (T::*fPtr)(TxElement*))
     : VersionConverter(), fun_(std::bind(fPtr, obj, std::placeholders::_1)) {}
 
 class IVW_CORE_API TraversingVersionConverter : public VersionConverter {
 public:
     template <typename T>
-    TraversingVersionConverter(T* obj, bool(T::*fPtr)(TxElement*));
+    TraversingVersionConverter(T* obj, bool (T::*fPtr)(TxElement*));
     TraversingVersionConverter(std::function<bool(TxElement*)> fun);
-    virtual ~TraversingVersionConverter(){}
+    virtual ~TraversingVersionConverter() {}
     virtual bool convert(TxElement* root);
 
 private:
@@ -76,10 +76,8 @@ private:
 };
 
 template <typename T>
-TraversingVersionConverter::TraversingVersionConverter(T* obj, bool(T::*fPtr)(TxElement*)) 
-    : VersionConverter(),  fun_(std::bind(fPtr, obj, std::placeholders::_1)) {
-}
-
+TraversingVersionConverter::TraversingVersionConverter(T* obj, bool (T::*fPtr)(TxElement*))
+    : VersionConverter(), fun_(std::bind(fPtr, obj, std::placeholders::_1)) {}
 
 namespace util {
 IVW_CORE_API bool xmlCopyMatchingSubPropsIntoComposite(TxElement* node,
@@ -92,9 +90,15 @@ IVW_CORE_API bool xmlFindMatchingSubPropertiesForComposites(
 IVW_CORE_API TxElement* xmlGetElement(TxElement* node, std::string path);
 
 IVW_CORE_API bool xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProperty& prop);
-}  // namespace
+
+IVW_CORE_API void renamePort(IvwDeserializer& d,
+                std::initializer_list<std::pair<const Port*, std::string>> rules);
+
+IVW_CORE_API void renameProperty(IvwDeserializer& d,
+                    std::initializer_list<std::pair<const Property*, std::string>> rules);
 
 }  // namespace
 
-#endif // IVW_VERSIONCONVERTER_H
+}  // namespace
 
+#endif  // IVW_VERSIONCONVERTER_H

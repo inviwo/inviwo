@@ -194,4 +194,35 @@ bool util::xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProp
     return false;
 }
 
+void util::renamePort(IvwDeserializer& d, std::initializer_list<std::pair<const Port*, std::string>> rules) {
+    NodeVersionConverter vc([&rules](TxElement* node) {
+        for (auto rule : rules) {
+            TxElement* elem = nullptr;
+            if (auto p = dynamic_cast<const Outport*>(rule.first)) {
+                elem = util::xmlGetElement(node, "OutPorts/OutPort&type=" + p->getClassIdentifier() +
+                                           "&identifier=" + rule.second);
+            } else if (auto p = dynamic_cast<const Inport*>(rule.first)) {
+                elem = util::xmlGetElement(node, "InPorts/InPort&type=" + p->getClassIdentifier() +
+                                           "&identifier=" + rule.second);
+            }
+            if (elem) elem->SetAttribute("identifier", rule.first->getIdentifier());
+        }
+        return true;
+    });
+    d.convertVersion(&vc);
+}
+
+void util::renameProperty(IvwDeserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules) {
+    NodeVersionConverter vc([&rules](TxElement* node) {
+        for (auto rule : rules) {
+            TxElement* p = util::xmlGetElement(node, "Properties/Property&type=" +
+                                               rule.first->getClassIdentifier() +
+                                               "&identifier=" + rule.second);
+            if (p) p->SetAttribute("identifier", rule.first->getIdentifier());
+        }
+        return true;
+    });
+    d.convertVersion(&vc);
+}
+
 }  // namespace
