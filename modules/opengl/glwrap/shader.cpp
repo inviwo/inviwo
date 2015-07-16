@@ -140,12 +140,14 @@ void Shader::createAndAddShader(GLenum shaderType, std::string fileName, bool li
                                                  });
 }
 
-void Shader::link() {
+void Shader::link(bool notifyRebuild) {
     uniformLookup_.clear();  // clear uniform location cache.
     ShaderManager::getPtr()->bindCommonAttributes(id_);
 
     glLinkProgram(id_);
     LGL_ERROR;
+
+    if (notifyRebuild) onReloadCallback_.invokeAll();
 }
 
 void Shader::build() {
@@ -191,6 +193,14 @@ void Shader::detachAllShaderObject() {
 }
 
 void Shader::setUniformWarningLevel(UniformWarning level) { warningLevel_ = level; }
+
+const BaseCallBack* Shader::onReload(std::function<void()> callback) {
+    return onReloadCallback_.addLambdaCallback(callback); 
+}
+
+void Shader::removeOnReload(const BaseCallBack* callback) {
+    onReloadCallback_.remove(callback);
+}
 
 std::string Shader::shaderNames() const {
     std::vector<std::string> names;

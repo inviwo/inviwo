@@ -59,9 +59,9 @@ void ShaderManager::setUniformWarningLevel() {
 
 void ShaderManager::registerShader(Shader* shader) {
     shaders_.push_back(shader);
-    const Shader::ShaderObjectMap* shaderObjects = shader->getShaderObjects();
+    const Shader::ShaderObjectMap& shaderObjects = shader->getShaderObjects();
 
-    for (const auto& shaderObject : *shaderObjects) {
+    for (const auto& shaderObject : shaderObjects) {
         startFileObservation(shaderObject.second->getAbsoluteFileName());
         std::vector<std::string> shaderIncludes = shaderObject.second->getIncludeFileNames();
 
@@ -73,9 +73,9 @@ void ShaderManager::registerShader(Shader* shader) {
 
 void ShaderManager::unregisterShader(Shader* shader) {
     shaders_.erase(std::remove(shaders_.begin(), shaders_.end(), shader), shaders_.end());
-    const Shader::ShaderObjectMap* shaderObjects = shader->getShaderObjects();
+    const Shader::ShaderObjectMap& shaderObjects = shader->getShaderObjects();
 
-    for (const auto& shaderObject : *shaderObjects) {
+    for (const auto& shaderObject : shaderObjects) {
         if (shaderObject.second != nullptr) {
             stopFileObservation(shaderObject.second->getAbsoluteFileName());
             std::vector<std::string> shaderIncludes = shaderObject.second->getIncludeFileNames();
@@ -92,34 +92,24 @@ void ShaderManager::fileChanged(std::string shaderFilename) {
     if (shaderReloadProp) {
         if (isObserved(shaderFilename)) {
             try {
-                for (auto& elem : shaders_) {
+                for (auto shader : shaders_) {
                     bool relink = false;
-                    const Shader::ShaderObjectMap* shaderObjects = elem->getShaderObjects();
+                    const Shader::ShaderObjectMap& shaderObjects = shader->getShaderObjects();
 
-                    for (const auto& shaderObject : *shaderObjects) {
-                        std::vector<std::string>& shaderIncludes = shaderObject.second->getIncludeFileNames();
+                    for (const auto& shaderObject : shaderObjects) {
+                        const auto& shaderIncludes = shaderObject.second->getIncludeFileNames();
 
                         if (shaderObject.second->getAbsoluteFileName() == shaderFilename ||
-                            std::find(shaderIncludes.begin(), shaderIncludes.end(),
-                                      shaderFilename) != shaderIncludes.end()) {
+                            util::contains(shaderIncludes, shaderFilename)) {
                             shaderObject.second->rebuild();
                             relink = true;
                         }
                     }
-                    if (relink) elem->link();
+                    if (relink) shader->link(true);  // Link and notifyRebuild.
                 }
 
-                LogInfo(shaderFilename + " successfuly reloaded");
+                LogInfo(shaderFilename + " successfully reloaded");
                 InviwoApplication::getPtr()->playSound(InviwoApplication::Message::Ok);
-                // TODO: Don't invalidate all processors when shader change, invalidate only
-                // owners if shader has one.
-                std::vector<Processor*> processors =
-                    InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
-                for (auto& processor : processors) {
-                    std::string tags = processor->getTags().getString();
-                    if (tags.find_first_of(Tags::GL.getString()) != std::string::npos)
-                        processor->invalidate(INVALID_RESOURCES);
-                }
 
             } catch (OpenGLException& e) {
                 util::log(e.getContext(), e.getMessage(), LogLevel::Error);

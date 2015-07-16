@@ -31,9 +31,10 @@
 #define IVW_SHADER_H
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
-#include "shaderobject.h"
+#include <modules/opengl/glwrap/shaderobject.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/callback.h>
 #include <unordered_map>
 
 namespace inviwo {
@@ -63,12 +64,12 @@ public:
 
     Shader *clone(bool linkShader = true);
 
-    void link();
+    void link(bool notifyRebuild = false);
     void build();
     void rebuild();
 
     unsigned int getID() const { return id_; }
-    const ShaderObjectMap *getShaderObjects() { return &shaderObjects_; }
+    const ShaderObjectMap& getShaderObjects() { return shaderObjects_; }
 
     ShaderObject *getVertexShaderObject() const;
     ShaderObject *getGeometryShaderObject() const;
@@ -92,6 +93,10 @@ public:
 
     void setUniformWarningLevel(UniformWarning level);
 
+    // Callback when the shader is reloaded. A reload can for example be triggered by a file change.
+    const BaseCallBack* onReload(std::function<void()> callback);
+    void removeOnReload(const BaseCallBack* callback);
+
 private:
     void linkAndRegister(bool linkShader);
 
@@ -112,6 +117,9 @@ private:
     UniformWarning warningLevel_;
     // Uniform location cache. Clear after linking.
     mutable std::unordered_map<std::string, GLint> uniformLookup_;
+
+    // Callback on reload.
+    CallBackList onReloadCallback_;
 };
 
 }  // namespace
