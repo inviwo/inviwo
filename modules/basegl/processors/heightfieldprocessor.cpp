@@ -50,6 +50,7 @@ HeightFieldProcessor::HeightFieldProcessor()
     , terrainShadingMode_("terrainShadingMode", "Terrain Shading")
 {
     shader_ = Shader("heightfield.vert", "heightfield.frag", false);
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 
     inportHeightfield_.onChange(this, &HeightFieldProcessor::heightfieldChanged);
     addPort(inportHeightfield_);

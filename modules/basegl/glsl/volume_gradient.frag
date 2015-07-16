@@ -24,24 +24,25 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/sampler3d.glsl"
 #include "utils/gradients.glsl"
 
-uniform VolumeParameters volumeParameters_;
-uniform sampler3D volume_;
+uniform VolumeParameters volumeParameters;
+uniform sampler3D volume;
 
-uniform int channel_ = 0;
+uniform int channel = 0;
 
 in vec4 texCoord_;
 
 void main() {
 #ifdef ADD_DATA_CHANNEL
-    float v = getVoxel(volume_ , volumeParameters_ , texCoord_.xyz)[channel_];
+    float v = getVoxel(volume, volumeParameters, texCoord_.xyz)[channel];
 #else
     float v = 1.0f;
 #endif
-    FragData0 = vec4(gradientCentralDiff(vec4(1.0f),volume_,volumeParameters_,texCoord_.xyz,channel_),v);
+    FragData0 =
+        vec4(gradientCentralDiff(vec4(1.0f), volume, volumeParameters, texCoord_.xyz, channel), v);
 }

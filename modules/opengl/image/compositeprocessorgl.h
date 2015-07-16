@@ -35,19 +35,15 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
+#include <modules/opengl/glwrap/shader.h>
 
 namespace inviwo {
-
-class Shader;
 
 class IVW_MODULE_OPENGL_API CompositeProcessorGL : public Processor {
 public:
     CompositeProcessorGL();
     CompositeProcessorGL(std::string programFileName);
     virtual ~CompositeProcessorGL() {}
-
-    void initialize();
-    void deinitialize();
 
     // overloaded method called when INVALID_RESOURCE property is set
     virtual void initializeResources();
@@ -56,7 +52,7 @@ public:
 
 protected:
     std::string shaderFileName_;
-    Shader* shader_;
+    Shader shader_;
 };
 
 }  // namespace

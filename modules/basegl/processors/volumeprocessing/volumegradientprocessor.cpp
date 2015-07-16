@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/glwrap/shader.h>
@@ -40,7 +40,8 @@ ProcessorCodeState(VolumeGradientProcessor, CODE_STATE_STABLE);
 VolumeGradientProcessor::VolumeGradientProcessor()
     : VolumeGLProcessor("volume_gradient.frag")
     , channel_("channel", "Render Channel")
-    , dataInChannel4_("dataInChannel4_","Stored voxel values in 4th channel",false,INVALID_RESOURCES){
+    , dataInChannel4_("dataInChannel4_", "Stored voxel values in 4th channel", false,
+                      INVALID_RESOURCES) {
     this->dataFormat_ = DataVec3FLOAT32::get();
 
     channel_.addOption("Channel 1", "Channel 1", 0);
@@ -55,38 +56,36 @@ VolumeGradientProcessor::VolumeGradientProcessor()
 VolumeGradientProcessor::~VolumeGradientProcessor() {}
 
 void VolumeGradientProcessor::preProcess() {
-    shader_->setUniform("channel_", channel_.getSelectedValue());
+    shader_.setUniform("channel", channel_.getSelectedValue());
 }
 
 void VolumeGradientProcessor::postProcess() {
     outport_.getData()->dataMap_.dataRange = dvec2(-1.0, 1.0);
 }
 
-void VolumeGradientProcessor::initializeResources(){
-    if (dataInChannel4_.get()){
-        shader_->getFragmentShaderObject()->addShaderDefine("ADD_DATA_CHANNEL");
+void VolumeGradientProcessor::initializeResources() {
+    if (dataInChannel4_.get()) {
+        shader_.getFragmentShaderObject()->addShaderDefine("ADD_DATA_CHANNEL");
         this->dataFormat_ = DataVec4FLOAT32::get();
-    }
-    else{
-        shader_->getFragmentShaderObject()->removeShaderDefine("ADD_DATA_CHANNEL");
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("ADD_DATA_CHANNEL");
         this->dataFormat_ = DataVec3FLOAT32::get();
     }
-    shader_->build();
+    shader_.build();
     internalInvalid_ = true;
 }
 
 void VolumeGradientProcessor::onVolumeChange() {
-    if (inport_.hasData()){
+    if (inport_.hasData()) {
         int channels = static_cast<int>(inport_.getData()->getDataFormat()->getComponents());
 
-        if(channels == static_cast<int>(channel_.size()))
-            return;
+        if (channels == static_cast<int>(channel_.size())) return;
 
         channel_.clearOptions();
         for (int i = 0; i < channels; i++) {
             std::stringstream ss;
             ss << "Channel " << i;
-            channel_.addOption(ss.str() , ss.str(), i);
+            channel_.addOption(ss.str(), ss.str(), i);
         }
         channel_.setCurrentStateAsDefault();
     }

@@ -38,10 +38,9 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <modules/opengl/glwrap/shader.h>
 
 namespace inviwo {
-
-class Shader;
 
 
 /** \docpage{org.inviwo.DrawLines, Draw Lines}
@@ -70,21 +69,18 @@ class Shader;
 */
 class IVW_MODULE_BASEGL_API DrawLines : public CompositeProcessorGL {
 public:
+    InviwoProcessorInfo();
+
     DrawLines();
     ~DrawLines();
 
-    InviwoProcessorInfo();
-
-    void initialize();
-    void deinitialize();
-
-    bool isReady() const { return true; }
+    bool isReady() const override { return true; }
 
 protected:
     void addPoint(vec2);
     void clearLines();
 
-    void process();
+    virtual void process() override;
 
 private:
     void eventDraw(Event*);
@@ -100,10 +96,10 @@ private:
     EventProperty mouseDraw_;
     EventProperty keyEnableDraw_;
 
-    Mesh* lines_;
-    MeshDrawerGL* lineDrawer_;
+    Mesh lines_;
+    MeshDrawerGL lineDrawer_;
 
-    Shader* lineShader_;
+    Shader lineShader_;
 
     bool drawModeEnabled_;
 };

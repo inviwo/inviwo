@@ -142,8 +142,7 @@ void VolumeCombiner::process() {
         volume->setWorldMatrix(inport_.getData()->getWorldMatrix());
         // pass on metadata
         volume->copyMetaDataFrom(*inport_.getData());
-        volume->dataMap_.dataRange = inport_.getData()->dataMap_.dataRange;
-        volume->dataMap_.valueRange = inport_.getData()->dataMap_.valueRange;
+        volume->dataMap_ = inport_.getData()->dataMap_;
         outport_.setData(volume);
     }
     shader_.activate();

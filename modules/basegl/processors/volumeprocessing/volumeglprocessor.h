@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEGLPROCESSOR_H
@@ -34,11 +34,10 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
+#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/glwrap/framebufferobject.h>
 
 namespace inviwo {
-
-class Shader;
-class FrameBufferObject;
 
 /*! \class VolumeGLProcessor
  *
@@ -52,34 +51,29 @@ class FrameBufferObject;
  *
  * \see VolumeGLProcessor
  */
-class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor { 
+class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor {
 public:
     VolumeGLProcessor(std::string fragmentShader);
     virtual ~VolumeGLProcessor();
 
-    void initialize();
-    void deinitialize();
+    virtual void process() override;
 
-    virtual void process();
 protected:
-    void markInvalid() { internalInvalid_ = true; }
+    void markInvalid();
 
-    /*! \brief this function gets called right before the actual processing but 
-     *         after the shader has been activated
-     *
-     * overwrite this function in the derived class to perform things like custom shader setup
+    /*! \brief this function gets called right before the actual processing but
+     * after the shader has been activated.
+     * Overwrite this function in the derived class to perform things like custom shader setup
      */
-    virtual void preProcess(){}
+    virtual void preProcess() {}
 
     /*! \brief this function gets called at the end of the process function
-     *
-     * overwrite this function in the derived class to perform post-processing
+     * Overwrite this function in the derived class to perform post-processing
      */
-    virtual void postProcess(){}
+    virtual void postProcess() {}
 
     /*! \brief this function gets called whenever the inport changes
-     *
-     * overwrite this function in the derived class to be notified of inport onChange events
+     * Overwrite this function in the derived class to be notified of inport onChange events
      */
     virtual void afterInportChanged() {}
 
@@ -87,24 +81,16 @@ protected:
     VolumeOutport outport_;
 
     const DataFormatBase* dataFormat_;
-
     bool internalInvalid_;
-
     std::string fragmentShader_;
+    Shader shader_;
+    FrameBufferObject fbo_;
 
-    Shader* shader_;
-    FrameBufferObject* fbo_;
-
-private: 
-    /*! \brief call-back function for onChange events of the inport
-     */
-    void inportChanged() {
-        markInvalid();
-        afterInportChanged();
-    }
+private:
+    // \brief call-back function for onChange events of the inport
+    void inportChanged();
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VOLUMEGLPROCESSOR_H
-
+#endif  // IVW_VOLUMEGLPROCESSOR_H

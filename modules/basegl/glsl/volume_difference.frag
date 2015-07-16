@@ -30,18 +30,18 @@
 #include "utils/structs.glsl"
 #include "utils/sampler3d.glsl"
 
-uniform sampler3D volume_;
-uniform VolumeParameters volumeParameters_;
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
 
-uniform sampler3D volume2_;
-uniform VolumeParameters volume2Parameters_;
+uniform sampler3D volume2;
+uniform VolumeParameters volume2Parameters;
 
 in vec4 texCoord_;
 
 
 void main() {
-    vec4 v1 = getNormalizedVoxel(volume_, volumeParameters_, texCoord_.xyz);
-    vec4 v2 = getNormalizedVoxel(volume2_, volume2Parameters_, texCoord_.xyz);
+    vec4 v1 = getNormalizedVoxel(volume, volumeParameters, texCoord_.xyz);
+    vec4 v2 = getNormalizedVoxel(volume2, volume2Parameters, texCoord_.xyz);
     FragData0 = ((v1 - v2) + 1.0) /  2.0;
     gl_FragDepth = 1.0;
 }

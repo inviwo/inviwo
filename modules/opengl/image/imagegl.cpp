@@ -157,7 +157,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     if (source->getPickingLayerGL()) {
         shader_.setUniform("picking_", pickingUnit.getUnitNumber());
     }
-    shader_.setUniform("dataToClip_", scale);
+    shader_.setUniform("dataToClip", scale);
 
     LGL_ERROR;
     target->renderImagePlaneRect();

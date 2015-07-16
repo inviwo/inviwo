@@ -77,7 +77,7 @@ private:
     Position2dBuffer* triangle_;
     const BufferGL* triangleGL_;
 
-    Shader* shader_;
+    Shader shader_;
 };
 
 } // namespace

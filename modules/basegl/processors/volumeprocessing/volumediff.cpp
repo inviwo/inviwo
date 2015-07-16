@@ -31,6 +31,9 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/textureutils.h>
+#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/volumeutils.h>
 
 namespace inviwo {
 
@@ -47,17 +50,10 @@ VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("v
 VolumeDiff::~VolumeDiff() {}
 
 void VolumeDiff::preProcess() {
-    TextureUnit volBlurUnit;
 
-    const VolumeGL* volGL = vol2_.getData()->getRepresentation<VolumeGL>();
-    volGL->bindTexture(volBlurUnit.getEnum());
-    const size3_t dim{volGL->getDimensions()};
+    TextureUnitContainer cont;
+    utilgl::bindAndSetUniforms(&shader_, cont, vol2_.getData(), "volume2");
 
-    shader_->setUniform("volume2_", volBlurUnit.getUnitNumber());
-    shader_->setUniform("volume2Parameters_.dimensions", vec3(dim));
-    shader_->setUniform("volume2Parameters_.reciprocalDimensions", vec3(1.0) / vec3(dim));
-    shader_->setUniform("volume2Parameters_.volumeToWorldTransform_",
-                        vol2_.getData()->getWorldMatrix());
 }
 
 }  // namespace

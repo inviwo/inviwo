@@ -52,16 +52,13 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API RedGreenProcessor : public Processor {
 public:
-    RedGreenProcessor();
-    ~RedGreenProcessor();
-
     InviwoProcessorInfo();
 
-    void initialize();
-    void deinitialize();
+    RedGreenProcessor();
+    virtual ~RedGreenProcessor();
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
 private:
     ImageOutport outportRed_;

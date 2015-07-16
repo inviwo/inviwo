@@ -45,9 +45,10 @@ ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     addPort(inport_);
     addPort(outport_);
 
-    inport_.onChange(this,&ImageGLProcessor::inportChanged);
+    inport_.onChange(this, &ImageGLProcessor::inportChanged);
     inport_.setOutportDeterminesSize(true);
     outport_.setHandleResizeEvents(false);
+    shader_.onReload([this](){invalidate(INVALID_RESOURCES);});
 }
 
 ImageGLProcessor::~ImageGLProcessor() {}

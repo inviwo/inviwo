@@ -153,6 +153,9 @@ void LightVolumeGL::initialize() {
     mergeShader_ = new Shader("lighting/lightvolumeblend.vert", "lighting/lightvolumeblend.geom",
                               "lighting/lightvolumeblend.frag", true);
 
+    propagationShader_->onReload([this]() { invalidate(INVALID_RESOURCES); });
+    mergeShader_->onReload([this]() { invalidate(INVALID_RESOURCES); });
+
     for (auto& elem : propParams_) {
         elem.fbo = new FrameBufferObject();
     }

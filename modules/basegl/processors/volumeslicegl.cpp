@@ -171,6 +171,8 @@ VolumeSliceGL::VolumeSliceGL()
         shader_.build();
     });
     shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    indicatorShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 
     imageRotation_.setVisible(false);
 
@@ -408,7 +410,7 @@ void VolumeSliceGL::process() {
     utilgl::setUniforms(&shader_, tfAlphaOffset_, fillColor_);
     shader_.setUniform("sliceRotation", sliceRotation_);
     shader_.setUniform("slice", (inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f)).z);
-    shader_.setUniform("dataToClip_", mat4(1.0f));
+    shader_.setUniform("dataToClip", mat4(1.0f));
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
@@ -439,7 +441,7 @@ void VolumeSliceGL::renderPositionIndicator() {
     glLineWidth(width);
 
     indicatorShader_.activate();
-    indicatorShader_.setUniform("dataToClip_", mat4(1.0f));
+    indicatorShader_.setUniform("dataToClip", mat4(1.0f));
 
     glDepthFunc(GL_ALWAYS);
     drawer.draw();
@@ -669,16 +671,7 @@ void VolumeSliceGL::rotationModeChange() {
 
 // override to do member renaming.
 void VolumeSliceGL::deserialize(IvwDeserializer& d) {
-    NodeVersionConverter vc([](TxElement* node) {
-        TxElement* p1 = util::xmlGetElement(
-            node, "InPorts/InPort&type=org.inviwo.VolumeInport&identifier=volume.inport");
-        if (p1) p1->SetAttribute("identifier", "volume");
-        TxElement* p2 = util::xmlGetElement(
-            node, "OutPorts/OutPort&type=org.inviwo.ImageOutport&identifier=image.outport");
-        if (p2) p2->SetAttribute("identifier", "outport");
-        return true;
-    });
-    d.convertVersion(&vc);
+    util::renamePort(d, {{&inport_, "volume.inport"}, {&outport_, "image.outport"}});
     Processor::deserialize(d);
 }
 

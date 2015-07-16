@@ -43,14 +43,17 @@ ProcessorCodeState(FirstIvwProcessor, CODE_STATE_STABLE);
 FirstIvwProcessor::FirstIvwProcessor()
     : Processor()
     , color_("color", "Color", vec3(1.0f), vec3(0.0f), vec3(1.0f), vec3(0.1f))
-    , outport_("outport") {
+    , outport_("outport")
+    , shader_("minimal.vert", "img_color.frag") {
+
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+
     addProperty(color_);
     addPort(outport_);
 }
 
 void FirstIvwProcessor::initialize() {
     Processor::initialize();
-    shader_ = new Shader("minimal.vert", "img_color.frag");
 
     quad_ = new Position2dBuffer();
     Position2dBufferRAM* quadRAM = quad_->getEditableRepresentation<Position2dBufferRAM>();
@@ -69,7 +72,6 @@ void FirstIvwProcessor::initialize() {
 }
 
 void FirstIvwProcessor::deinitialize() {
-    delete shader_;
     delete quad_;
     delete triangle_;
     Processor::deinitialize();
@@ -77,21 +79,21 @@ void FirstIvwProcessor::deinitialize() {
 
 void FirstIvwProcessor::process() {
     utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
-    shader_->activate();
+    shader_.activate();
 
     //Render Quad
-    shader_->setUniform("color_", vec4(color_.get().x, color_.get().y, color_.get().z, 1.f));
+    shader_.setUniform("color", vec4(color_.get().x, color_.get().y, color_.get().z, 1.f));
     quadGL_->enable();
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     quadGL_->disable();
 
     //Render Triangle
-    shader_->setUniform("color_", vec4(0.f, 1.f, 0.f, 1.f));
+    shader_.setUniform("color", vec4(0.f, 1.f, 0.f, 1.f));
     triangleGL_->enable();
     glDrawArrays(GL_TRIANGLES, 0, 3);
     triangleGL_->disable();
 
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 

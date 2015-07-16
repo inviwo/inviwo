@@ -29,7 +29,6 @@
 
 #include "isoraycaster.h"
 #include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/shaderutils.h>
 #include <modules/opengl/textureutils.h>
@@ -45,10 +44,10 @@ ProcessorCodeState(ISORaycaster, CODE_STATE_STABLE);
 
 ISORaycaster::ISORaycaster()
     : Processor()
-    , shader_(nullptr)
+    , shader_("isoraycasting.frag", false)
     , volumePort_("volume")
-    , entryPort_("entry-points")
-    , exitPort_("exit-points")
+    , entryPort_("entry")
+    , exitPort_("exit")
     , outport_("outport")
     , channel_("channel", "Render Channel")
     , raycasting_("raycasting", "Raycasting")
@@ -56,6 +55,8 @@ ISORaycaster::ISORaycaster()
               vec3(0.0f, 1.0f, 0.0f)) 
     , lighting_("lighting", "Lighting", &camera_)
 {
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -68,7 +69,6 @@ ISORaycaster::ISORaycaster()
     addProperty(camera_);
     addProperty(lighting_);
 
-
     std::stringstream ss;
     ss << "Channel " << 0;
     channel_.addOption(ss.str() , ss.str(), 0);
@@ -78,26 +78,11 @@ ISORaycaster::ISORaycaster()
 }
 
 
-void ISORaycaster::initialize() {
-    Processor::initialize();
-    shader_ = new Shader("isoraycasting.frag", false);
-    initializeResources();
-}
-
-void ISORaycaster::deinitialize() {
-    if (shader_) delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
-}
-
-
-void ISORaycaster::initializeResources(){
-    
-    utilgl::addShaderDefines(shader_, raycasting_);
-    utilgl::addShaderDefines(shader_, camera_);
-    utilgl::addShaderDefines(shader_, lighting_);
-  
-    shader_->build();
+void ISORaycaster::initializeResources(){    
+    utilgl::addShaderDefines(&shader_, raycasting_);
+    utilgl::addShaderDefines(&shader_, camera_);
+    utilgl::addShaderDefines(&shader_, lighting_);
+    shader_.build();
 }
     
 void ISORaycaster::onVolumeChange(){
@@ -118,32 +103,24 @@ void ISORaycaster::onVolumeChange(){
 }
 
 void ISORaycaster::process() {
-    TextureUnit entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit, volUnit;
-    utilgl::bindTextures(entryPort_, entryColorUnit.getEnum(), entryDepthUnit.getEnum());
-    utilgl::bindTextures(exitPort_, exitColorUnit.getEnum(), exitDepthUnit.getEnum());
-    utilgl::bindTexture(volumePort_, volUnit);
+    utilgl::activateAndClearTarget(outport_);
+    shader_.activate();
 
-    utilgl::activateTargetAndCopySource(outport_, entryPort_, COLOR_DEPTH);
-    utilgl::clearCurrentTarget();
-    shader_->activate();
-    
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-    shader_->setUniform("entryColorTex_", entryColorUnit.getUnitNumber());
-    shader_->setUniform("entryDepthTex_", entryDepthUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, entryPort_, "entryParameters_");
-    shader_->setUniform("exitColorTex_", exitColorUnit.getUnitNumber());
-    shader_->setUniform("exitDepthTex_", exitDepthUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, exitPort_, "exitParameters_");
-    shader_->setUniform("channel_", channel_.getSelectedValue());
-    shader_->setUniform("volume_", volUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, volumePort_, "volumeParameters_");
-    utilgl::setShaderUniforms(shader_, raycasting_);
-    utilgl::setShaderUniforms(shader_, camera_, "camera_");
-    utilgl::setShaderUniforms(shader_, lighting_, "light_");
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(&shader_, units, volumePort_);
+    utilgl::bindAndSetUniforms(&shader_, units, entryPort_, COLOR_DEPTH_PICKING);
+    utilgl::bindAndSetUniforms(&shader_, units, exitPort_, COLOR_DEPTH);
+
+    utilgl::setUniforms(&shader_, outport_, camera_, lighting_, raycasting_, channel_);
 
     utilgl::singleDrawImagePlaneRect();
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
+}
+
+void ISORaycaster::deserialize(IvwDeserializer& d) {
+    util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit"}});
+    Processor::deserialize(d);
 }
 
 } // namespace

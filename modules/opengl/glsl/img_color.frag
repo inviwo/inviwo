@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-uniform vec4 color_;
+uniform vec4 color;
 
 void main() {
-    FragData0 = color_;
+    FragData0 = color;
 }

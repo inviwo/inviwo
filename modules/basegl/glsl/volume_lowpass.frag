@@ -30,21 +30,18 @@
 #include "utils/structs.glsl"
 #include "utils/sampler3d.glsl"
 
-uniform sampler3D volume_;
-
-uniform VolumeParameters volumeParameters_;
-
-uniform int kernelSize_;
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
+uniform int kernelSize;
 
 in vec4 texCoord_;
 
-
 void main() {
-    int k2 = kernelSize_ / 2;
+    int k2 = kernelSize / 2;
     vec4 value = vec4(0,0,0,0);
     float w = 0;
     for(int z = -k2;z < k2;z++)for(int y = -k2;y < k2;y++)for(int x = -k2;x < k2;x++){
-        value += getVoxel(volume_, volumeParameters_, texCoord_.xyz + (vec3(x, y, z) * volumeParameters_.reciprocalDimensions));
+        value += getVoxel(volume, volumeParameters, texCoord_.xyz + (vec3(x, y, z) * volumeParameters.reciprocalDimensions));
         w += 1.0;
     }
     vec4 voxel = value / w;

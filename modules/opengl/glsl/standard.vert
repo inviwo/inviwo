@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-uniform mat4 dataToClip_;
+uniform mat4 dataToClip;
 
 out vec4 color_;
 out vec3 texCoord_;
@@ -35,5 +35,5 @@ out vec3 texCoord_;
 void main() {
     color_ = in_Color;
     texCoord_ = in_TexCoord;
-    gl_Position = dataToClip_ * in_Vertex;
+    gl_Position = dataToClip * in_Vertex;
 }

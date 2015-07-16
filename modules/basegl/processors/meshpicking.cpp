@@ -71,6 +71,8 @@ MeshPicking::MeshPicking()
     addProperty(camera_);
     addProperty(trackball_);
 
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+
     widgetPickingObject_ = PickingManager::getPtr()->registerPickingCallback(
         this, &MeshPicking::updateWidgetPositionFromPicking);
 }
@@ -103,10 +105,10 @@ void MeshPicking::process() {
 
     const auto& ct = meshInport_.getData()->getCoordinateTransformer(camera_.get());
 
-    mat4 dataToClip_ =
+    mat4 dataToClip =
         ct.getWorldToClipMatrix() * glm::translate(position_.get()) * ct.getDataToWorldMatrix();
 
-    shader_.setUniform("dataToClip_", dataToClip_);
+    shader_.setUniform("dataToClip", dataToClip);
 
     {
         utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);

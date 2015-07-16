@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <modules/opengl/glwrap/shader.h>
 
 namespace inviwo {
 
@@ -67,19 +68,16 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API DrawPoints : public CompositeProcessorGL {
 public:
-    DrawPoints();
-    ~DrawPoints();
-
     InviwoProcessorInfo();
 
-    void initialize();
-    void deinitialize();
+    DrawPoints();
+    virtual ~DrawPoints();
 
 protected:
     void addPoint(vec2);
     void clearPoints();
 
-    void process();
+    virtual void process() override;
 
 private:
     void eventDraw(Event*);
@@ -95,11 +93,9 @@ private:
     EventProperty mouseDraw_;
     EventProperty keyEnableDraw_;
 
-
-    Mesh* points_;
-    MeshDrawerGL* pointDrawer_;
-
-    Shader* pointShader_;
+    Mesh points_;
+    MeshDrawerGL pointDrawer_;
+    Shader pointShader_;
 
     bool drawModeEnabled_;
 };

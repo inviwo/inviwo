@@ -24,18 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "background.h"
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/shaderutils.h>
 
 namespace inviwo {
 
 ProcessorClassIdentifier(Background, "org.inviwo.Background");
-ProcessorDisplayName(Background,  "Background");
+ProcessorDisplayName(Background, "Background");
 ProcessorTags(Background, Tags::GL);
 ProcessorCategory(Background, "Image Operation");
 ProcessorCodeState(Background, CODE_STATE_STABLE);
@@ -50,7 +51,7 @@ Background::Background()
     , checkerBoardSize_("checkerBoardSize", "Checker Board Size", ivec2(10, 10), ivec2(1, 1),
                         ivec2(256, 256))
     , switchColors_("Switch colors", "switch colors", VALID)
-    , shader_(nullptr) {
+    , shader_("background.frag", false) {
     addPort(inport_);
     addPort(outport_);
     backgroundStyle_.addOption("linearGradient", "Linear gradient", 0);
@@ -65,29 +66,16 @@ Background::Background()
     addProperty(checkerBoardSize_);
     addProperty(switchColors_);
     switchColors_.onChange(this, &Background::switchColors);
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 }
 
-Background::~Background() {
-}
+Background::~Background() {}
 
 void Background::switchColors() {
     vec4 tmp = color1_.get();
     color1_.set(color2_.get());
     color2_.set(tmp);
 }
-
-void Background::initialize() {
-    Processor::initialize();
-    shader_ = new Shader("background.frag", false);
-    initializeResources();
-}
-
-void Background::deinitialize() {
-    delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
-}
-
 
 bool Background::isReady() const {
     if (inport_.isConnected()) return Processor::isReady();
@@ -99,56 +87,49 @@ void Background::initializeResources() {
     checkerBoardSize_.setVisible(false);
 
     switch (backgroundStyle_.get()) {
-        case 0 : // linear gradient
+        case 0:  // linear gradient
             shaderDefine = "linearGradient(texCoords)";
             break;
 
-        case 1 : // uniform color
-            shaderDefine = "color1_";
+        case 1:  // uniform color
+            shaderDefine = "color1";
             break;
 
-        case 2 : // checker board
+        case 2:  // checker board
             shaderDefine = "checkerBoard(texCoords)";
             checkerBoardSize_.setVisible(true);
             break;
     }
 
-    shader_->getFragmentShaderObject()->addShaderDefine("BACKGROUND_STYLE_FUNCTION", shaderDefine);
+    shader_.getFragmentShaderObject()->addShaderDefine("BACKGROUND_STYLE_FUNCTION", shaderDefine);
 
     if (inport_.hasData()) {
-        shader_->getFragmentShaderObject()->addShaderDefine("SRC_COLOR", "texture(inputTex_, texCoords)");
+        shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR",
+                                                           "texture(inportColor, texCoords)");
         hadData_ = true;
     } else {
-        shader_->getFragmentShaderObject()->addShaderDefine("SRC_COLOR", "vec4(0.0,0.0,0.0,0.0)");
+        shader_.getFragmentShaderObject()->addShaderDefine("SRC_COLOR", "vec4(0.0,0.0,0.0,0.0)");
         hadData_ = false;
     }
 
-    shader_->build();
+    shader_.build();
 }
 
 void Background::process() {
     if (inport_.hasData() != hadData_) initializeResources();
-
-    if (inport_.hasData())
+    if (inport_.hasData()) {
         utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
-    else
+    } else {
         utilgl::activateTarget(outport_, COLOR_ONLY);
-
-    TextureUnit srcColorUnit, srcDepthUnit;
-    if (inport_.hasData()) utilgl::bindColorTexture(inport_, srcColorUnit);
-    
-    shader_->activate();
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-    shader_->setUniform("inputTex_", srcColorUnit.getUnitNumber());
-    shader_->setUniform("color1_", color1_.get());
-    shader_->setUniform("color2_", color2_.get());
-    shader_->setUniform("checkerBoardSize_", checkerBoardSize_.get());
-    
+    }
+    shader_.activate();
+    TextureUnitContainer units;
+    if (inport_.hasData()) utilgl::bindAndSetUniforms(&shader_, units, inport_, COLOR_ONLY);
+   
+    utilgl::setUniforms(&shader_, outport_, color1_, color2_, checkerBoardSize_);
     utilgl::singleDrawImagePlaneRect();
-    
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
-
-} // namespace
+}  // namespace

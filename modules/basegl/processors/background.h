@@ -76,8 +76,6 @@ public:
     Background();
     virtual ~Background();
 
-    virtual void initialize();
-    virtual void deinitialize();
     virtual void initializeResources();
 
 protected:
@@ -95,7 +93,7 @@ private:
     FloatVec4Property color2_;
     IntVec2Property checkerBoardSize_;
     ButtonProperty switchColors_;
-    Shader* shader_;
+    Shader shader_;
     bool hadData_;
 };
 

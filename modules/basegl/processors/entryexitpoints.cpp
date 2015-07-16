@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "entryexitpoints.h"
@@ -34,6 +34,8 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/clockgl.h>
 #include <modules/opengl/textureutils.h>
+#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -46,16 +48,16 @@ ProcessorCodeState(EntryExitPoints, CODE_STATE_STABLE);
 EntryExitPoints::EntryExitPoints()
     : Processor()
     , inport_("geometry")
-    , entryPort_("entry-points", DataVec4UINT16::get())
-    , exitPort_("exit-points", DataVec4UINT16::get())
+    , entryPort_("entry", DataVec4UINT16::get())
+    , exitPort_("exit", DataVec4UINT16::get())
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)
     , trackball_(&camera_)
-    , genericShader_(nullptr)
-    , capNearClippingPrg_(nullptr)
-    , tmpEntryPoints_(nullptr)
-    , drawer_(nullptr) {
+    , shader_("standard.vert", "standard.frag")
+    , clipping_("img_identity.vert", "capnearclipping.frag")
+    , tmpEntry_()
+    , drawer_() {
     addPort(inport_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -63,109 +65,80 @@ EntryExitPoints::EntryExitPoints()
     addProperty(camera_);
     addProperty(trackball_);
     entryPort_.addResizeEventListener(&camera_);
-    inport_.onChange(this, &EntryExitPoints::onGeometryChange);
+
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    clipping_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 }
 
 EntryExitPoints::~EntryExitPoints() {}
 
-void EntryExitPoints::initialize() {
-    Processor::initialize();
-    genericShader_ = new Shader("standard.vert", "standard.frag");
-    capNearClippingPrg_ = new Shader("img_identity.vert", "capnearclipping.frag");
-}
-
-void EntryExitPoints::deinitialize() {
-    delete tmpEntryPoints_;
-    tmpEntryPoints_ = nullptr;
-    delete genericShader_;
-    genericShader_ = nullptr;
-    delete capNearClippingPrg_;
-    capNearClippingPrg_ = nullptr;
-    delete drawer_;
-    drawer_ = nullptr;
-    Processor::deinitialize();
-}
-
 void EntryExitPoints::process() {
-    const Mesh* geom = inport_.getData();
-
     // Check if no renderer exist or if geometry changed
-    if (!drawer_) onGeometryChange();
-
+    if (inport_.isChanged() && inport_.hasData()) {
+        drawer_.reset(MeshDrawerFactory::getPtr()->create(inport_.getData()));
+    }
     if (!drawer_) return;
 
-    glEnable(GL_CULL_FACE);
-    glDepthFunc(GL_ALWAYS);
-    // generate exit points
-    utilgl::activateAndClearTarget(exitPort_, COLOR_DEPTH);
-    glPointSize(1.f);
-    glCullFace(GL_FRONT);
-    genericShader_->activate();
+    utilgl::DepthFuncState depthfunc(GL_ALWAYS);
+    utilgl::PointSizeState pointsize(1.0f);
 
+    shader_.activate();
+    const Mesh* geom = inport_.getData();
     mat4 modelMatrix = geom->getCoordinateTransformer(camera_.get()).getDataToClipMatrix();
-    genericShader_->setUniform("dataToClip_", modelMatrix);
+    shader_.setUniform("dataToClip", modelMatrix);
 
-    drawer_->draw();
-    utilgl::deactivateCurrentTarget();
-    // generate entry points
-    ImageGL* tmpEntryPointsGL = nullptr;
-
-    if (capNearClipping_.get()) {
-        if (tmpEntryPoints_ == nullptr ||
-            tmpEntryPoints_->getDimensions() != entryPort_.getDimensions() ||
-            tmpEntryPoints_->getDataFormat() != entryPort_.getData()->getDataFormat()) {
-            delete tmpEntryPoints_;
-            tmpEntryPoints_ =
-                new Image(entryPort_.getDimensions(), entryPort_.getData()->getDataFormat());
-        }
-        tmpEntryPointsGL = tmpEntryPoints_->getEditableRepresentation<ImageGL>();
-        tmpEntryPointsGL->activateBuffer();
-        utilgl::clearCurrentTarget();
-
-    } else {
-        utilgl::activateAndClearTarget(entryPort_, COLOR_DEPTH);
-    }
-
-    glCullFace(GL_BACK);
-    drawer_->draw();
-    genericShader_->deactivate();
-    utilgl::deactivateCurrentTarget();
-
-    if (capNearClipping_.get() && tmpEntryPointsGL) {
-        // render an image plane aligned quad to cap the proxy geometry
-        utilgl::activateAndClearTarget(entryPort_, COLOR_DEPTH);
-        TextureUnit entryColorUnit, entryDepthUnit, exitColorUnit, exitDepthUnit;
-        tmpEntryPointsGL->getColorLayerGL()->bindTexture(entryColorUnit.getEnum());
-        tmpEntryPointsGL->getDepthLayerGL()->bindTexture(entryDepthUnit.getEnum());
-        utilgl::bindTextures(exitPort_, exitColorUnit.getEnum(), exitDepthUnit.getEnum());
-        capNearClippingPrg_->activate();
-
-        capNearClippingPrg_->setUniform("entryColorTex_", entryColorUnit.getUnitNumber());
-        capNearClippingPrg_->setUniform("entryDepthTex_", entryDepthUnit.getUnitNumber());
-        utilgl::setShaderUniforms(capNearClippingPrg_, entryPort_, "entryParameters_");
-        capNearClippingPrg_->setUniform("exitColorTex_", exitColorUnit.getUnitNumber());
-        capNearClippingPrg_->setUniform("exitDepthTex_", exitDepthUnit.getUnitNumber());
-        utilgl::setShaderUniforms(capNearClippingPrg_, exitPort_, "exitParameters_");
-        // the rendered plane is specified in camera coordinates
-        // thus we must transform from camera to world to texture coordinates
-        mat4 clipToTexMat = geom->getCoordinateTransformer(camera_.get()).getClipToDataMatrix();       
-        capNearClippingPrg_->setUniform("NDCToTextureMat_", clipToTexMat);
-        
-        capNearClippingPrg_->setUniform("nearDist_", camera_.getNearPlaneDist());
-        utilgl::singleDrawImagePlaneRect();
-        capNearClippingPrg_->deactivate();
+    {
+        // generate exit points
+        utilgl::activateAndClearTarget(exitPort_, COLOR_DEPTH);
+        utilgl::CullFaceState cull(GL_FRONT);
+        drawer_->draw();
         utilgl::deactivateCurrentTarget();
     }
 
-    glDepthFunc(GL_LESS);
-    glDisable(GL_CULL_FACE);
+    {
+        // generate entry points
+        if (capNearClipping_) {
+            if (!tmpEntry_ ||
+                tmpEntry_->getDimensions() != entryPort_.getDimensions() ||
+                tmpEntry_->getDataFormat() != entryPort_.getData()->getDataFormat()) {
+                tmpEntry_.reset(
+                    new Image(entryPort_.getDimensions(), entryPort_.getData()->getDataFormat()));
+            }
+            utilgl::activateAndClearTarget(tmpEntry_.get());
+        } else {
+            utilgl::activateAndClearTarget(entryPort_, COLOR_DEPTH);
+        }
+
+        utilgl::CullFaceState cull(GL_BACK);
+        drawer_->draw();
+        shader_.deactivate();
+        utilgl::deactivateCurrentTarget();
+    }
+
+    if (capNearClipping_ && tmpEntry_) {
+        // render an image plane aligned quad to cap the proxy geometry
+        utilgl::activateAndClearTarget(entryPort_, COLOR_DEPTH);
+        clipping_.activate();
+
+        TextureUnitContainer units;
+        utilgl::bindAndSetUniforms(&clipping_, units, tmpEntry_.get(), "entry", COLOR_DEPTH);
+        utilgl::bindAndSetUniforms(&clipping_, units, exitPort_, COLOR_DEPTH);
+
+        // the rendered plane is specified in camera coordinates
+        // thus we must transform from camera to world to texture coordinates
+        mat4 clipToTexMat = geom->getCoordinateTransformer(camera_.get()).getClipToDataMatrix();
+        clipping_.setUniform("NDCToTextureMat", clipToTexMat);
+        clipping_.setUniform("nearDist", camera_.getNearPlaneDist());
+
+        utilgl::singleDrawImagePlaneRect();
+        clipping_.deactivate();
+        utilgl::deactivateCurrentTarget();
+    }
 }
 
-void EntryExitPoints::onGeometryChange() {
-    delete drawer_;
-    drawer_ = nullptr;
-    if (inport_.hasData())
-        drawer_ = MeshDrawerFactory::getPtr()->create(inport_.getData());
+void EntryExitPoints::deserialize(IvwDeserializer& d) {
+    util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
+    Processor::deserialize(d);
 }
 
 }  // namespace

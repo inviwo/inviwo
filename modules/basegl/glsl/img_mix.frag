@@ -29,7 +29,7 @@
 
 #include "utils/structs.glsl"
 
-uniform ImageParameters outportParameters_;
+uniform ImageParameters outportParameters;
 
 uniform sampler2D inport0Color;
 uniform sampler2D inport0Depth;
@@ -39,7 +39,7 @@ uniform sampler2D inport1Color;
 uniform sampler2D inport1Depth;
 uniform sampler2D inport1Picking;
 
-uniform float weight_;
+uniform float weight;
 
 // make sure there is a fall-back if COLOR_BLENDING wasn't set before
 #ifndef COLOR_BLENDING
@@ -113,13 +113,13 @@ vec4 brightenOnly(vec4 colorA, vec4 colorB) {
 
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     vec4 color0 = texture(inport0Color, texCoords);
     vec4 color1 = texture(inport1Color, texCoords);
     vec4 result = COLOR_BLENDING(color0, color1);
     // mix result with original color,
     // if (weight_ == 1) the final color will be the result of the blending operation
-    FragData0 = mix(color0, result, weight_);
+    FragData0 = mix(color0, result, weight);
     gl_FragDepth = min(texture(inport0Depth, texCoords).r,texture(inport1Depth, texCoords).r);
 
     vec4 picking0 = texture(inport0Picking, texCoords);

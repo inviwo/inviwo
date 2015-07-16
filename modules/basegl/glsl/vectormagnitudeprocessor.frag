@@ -29,14 +29,14 @@
 
 #include "utils/sampler3d.glsl"
 
-uniform sampler3D volume_;
-uniform VolumeParameters volumeParameters_;
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
 
 in vec4 texCoord_;
 
 
 void main() {
-    vec4 v1 = getVoxel(volume_ , volumeParameters_ , texCoord_.xyz);
+    vec4 v1 = getVoxel(volume , volumeParameters , texCoord_.xyz);
     float m = length(v1.xyz);
     FragData0 = vec4(m,m,m,m);
 }

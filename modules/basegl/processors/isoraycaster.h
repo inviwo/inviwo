@@ -40,11 +40,10 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {
-
-class Shader;
 
 /** \docpage{org.inviwo.ISORaycaster, ISO Raycaster}
  * ![](org.inviwo.ISORaycaster.png?classIdentifier=org.inviwo.ISORaycaster)
@@ -72,16 +71,13 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initialize();
-    virtual void deinitialize();
     virtual void initializeResources();
-
-
+    
+    // override to do member renaming.
+    virtual void deserialize(IvwDeserializer& d) override;
 protected:
     virtual void process();
-
-    Shader* shader_;
-
+    Shader shader_;
 
 private:
     void onVolumeChange();

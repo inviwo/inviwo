@@ -30,35 +30,35 @@
 #include "utils/structs.glsl"
 #include "utils/sampler2d.glsl"
 
-uniform sampler2D entryColorTex_;
-uniform sampler2D entryDepthTex_;
-uniform ImageParameters entryParameters_;
-uniform sampler2D exitColorTex_;
-uniform sampler2D exitDepthTex_;
-uniform ImageParameters exitParameters_;
+uniform sampler2D entryColor;
+uniform sampler2D entryDepth;
+uniform ImageParameters entryParameters;
+uniform sampler2D exitColor;
+uniform sampler2D exitDepth;
+uniform ImageParameters exitParameters;
 
-uniform mat4 NDCToTextureMat_; // Normalized device coordinates to volume texture coordinates
-uniform float nearDist_;
+uniform mat4 NDCToTextureMat; // Normalized device coordinates to volume texture coordinates
+uniform float nearDist;
 
 in vec3 texCoord_;
 
 void main() {
-    float entryDepth = texture(entryDepthTex_, texCoord_.xy).r;
-    float exitDepth = texture(exitDepthTex_, texCoord_.xy).r;
-    vec4 entryColor;
+    float entry = texture(entryDepth, texCoord_.xy).r;
+    float exit = texture(exitDepth, texCoord_.xy).r;
+    vec4 color;
 
-    if (entryDepth > exitDepth) {
+    if (entry > exit) {
         // entry points are clipped by near plane
         // Convert texture coordinates to normalized device coordinates (ndc).
         // The z value will always be -1 on the clipping plane
         vec4 cameraCoordinates = vec4(2.0f*texCoord_.xy-1.0f, -1.0f, 1.0f);
         // convert the ndc back to the volume texture coordinates
-        entryColor = NDCToTextureMat_ * cameraCoordinates * nearDist_;
-        entryDepth = 0.0f;
+        color = NDCToTextureMat * cameraCoordinates * nearDist;
+        entry = 0.0f;
     } else {
-        entryColor = texture(entryColorTex_, texCoord_.xy);
+        color = texture(entryColor, texCoord_.xy);
     }
 
-    FragData0 = entryColor;
-    gl_FragDepth = entryDepth;
+    FragData0 = color;
+    gl_FragDepth = entry;
 }

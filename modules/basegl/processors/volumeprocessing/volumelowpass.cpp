@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "volumelowpass.h"
@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shaderutils.h>
 
 namespace inviwo {
 
@@ -43,16 +44,12 @@ ProcessorCategory(VolumeLowPass, "Volume Operation");
 ProcessorCodeState(VolumeLowPass, CODE_STATE_EXPERIMENTAL);
 
 VolumeLowPass::VolumeLowPass()
-    : VolumeGLProcessor("volume_lowpass.frag")
-    , kernelSize_("kernelSize", "Kernel size", 3, 2, 27)
-{
+    : VolumeGLProcessor("volume_lowpass.frag"), kernelSize_("kernelSize", "Kernel size", 3, 2, 27) {
     addProperty(kernelSize_);
 }
 
 VolumeLowPass::~VolumeLowPass() {}
 
-void VolumeLowPass::preProcess() { 
-    shader_->setUniform("kernelSize_", kernelSize_.get()); 
-}
+void VolumeLowPass::preProcess() { utilgl::setUniforms(&shader_, kernelSize_); }
 
 }  // namespace

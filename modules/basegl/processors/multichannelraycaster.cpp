@@ -66,6 +66,8 @@ MultichannelRaycaster::MultichannelRaycaster()
     transferFunctions_.addProperty(new TransferFunctionProperty(
         "transferFunction4", "Channel 4", TransferFunction(), &volumePort_), false);
 
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -138,26 +140,18 @@ void MultichannelRaycaster::process() {
 }
 
 void MultichannelRaycaster::deserialize(IvwDeserializer& d) {
-    NodeVersionConverter vc([](TxElement* node) {
-        if (TxElement* p1 = util::xmlGetElement(
-            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=entry-points")) {
-            p1->SetAttribute("identifier", "entry");
-        } else if (TxElement* p2 = util::xmlGetElement(
-            node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=entry-points")) {
-            p2->SetAttribute("identifier", "entry");
-        }
-        
-        
+    util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
+
+    NodeVersionConverter vc([](TxElement* node) {      
         if (TxElement* p1 = util::xmlGetElement(
             node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=exit-points")) {
             p1->SetAttribute("identifier", "exit");
-        } else if (TxElement* p2 = util::xmlGetElement(
-            node, "InPorts/InPort&type=org.inviwo.ImageInport&identifier=exit-points")) {
-            p2->SetAttribute("identifier", "exit");
+        } 
+        if (TxElement* p2 = util::xmlGetElement(
+            node, "InPorts/InPort&type=org.inviwo.ImageMultiInport&identifier=entry-points")) {
+            p2->SetAttribute("identifier", "entry");
         }
-        
         return true;
-
     });
 
     d.convertVersion(&vc);

@@ -47,10 +47,6 @@ RedGreenProcessor::RedGreenProcessor()
 
 RedGreenProcessor::~RedGreenProcessor() {}
 
-void RedGreenProcessor::initialize() { Processor::initialize(); }
-
-void RedGreenProcessor::deinitialize() { Processor::deinitialize(); }
-
 void RedGreenProcessor::process() {
     utilgl::activateTarget(outportRed_);
     glClearColor(1.0, 0.0, 0.0, 1.0);

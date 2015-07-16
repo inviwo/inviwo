@@ -52,7 +52,7 @@ VolumeGradientMagnitude::VolumeGradientMagnitude()
 VolumeGradientMagnitude::~VolumeGradientMagnitude() {}
 
 void VolumeGradientMagnitude::preProcess() {
-    shader_->setUniform("channel_", channel_.getSelectedValue());
+    shader_.setUniform("channel", channel_.getSelectedValue());
 }
 
 void VolumeGradientMagnitude::postProcess() {

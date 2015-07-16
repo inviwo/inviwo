@@ -36,11 +36,10 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/opengl/glwrap/shader.h>
 
 namespace inviwo {
-
-class Shader;
-
+    
 namespace BlendModes {
     enum Mode {
         Mix, //!< f(a,b) = a * (1 - alpha) + b * alpha
@@ -99,17 +98,15 @@ namespace BlendModes {
  */
 class IVW_MODULE_BASEGL_API ImageMixer : public Processor {
 public:
-    ImageMixer();
-    ~ImageMixer();
     InviwoProcessorInfo();
 
-    virtual void initialize();
-    virtual void deinitialize();
+    ImageMixer();
+    virtual ~ImageMixer();
 
-    virtual void process();
+    virtual void process() override;
 
 protected:
-    virtual void initializeResources();
+    virtual void initializeResources() override;
     
 private:
     ImageInport inport0_; //!< first input image
@@ -119,7 +116,7 @@ private:
 
     OptionPropertyInt blendingMode_; //!< blend mode from BlendModes::Mode
     FloatProperty weight_; //!< weighting factor
-    Shader* shader_;
+    Shader shader_;
 };
 
 } // namespace

@@ -31,8 +31,9 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
-#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/shaderutils.h>
 
 namespace inviwo {
 
@@ -57,9 +58,9 @@ DrawPoints::DrawPoints()
           "keyEnableDraw", "Enable Draw",
           new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
           new Action(this, &DrawPoints::eventEnableDraw))
-    , points_(nullptr)
-    , pointDrawer_(nullptr)
-    , pointShader_(nullptr)
+    , points_(GeometryEnums::POINTS, GeometryEnums::NONE)
+    , pointDrawer_(&points_)
+    , pointShader_("img_color.frag")
     , drawModeEnabled_(false) {
     addPort(inport_);
     addPort(outport_);
@@ -72,48 +73,32 @@ DrawPoints::DrawPoints()
 
     addProperty(mouseDraw_);
     addProperty(keyEnableDraw_);
+
+    pointShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    points_.addAttribute(new Position2dBuffer());
 }
 
 DrawPoints::~DrawPoints() {}
 
-void DrawPoints::initialize() {
-    CompositeProcessorGL::initialize();
-    pointShader_ = new Shader("img_color.frag");
-    points_ = new Mesh(GeometryEnums::POINTS, GeometryEnums::NONE);
-    points_->addAttribute(new Position2dBuffer());
-    pointDrawer_ = new MeshDrawerGL(points_);
-}
-
-void DrawPoints::deinitialize() {
-    CompositeProcessorGL::deinitialize();
-    delete pointShader_;
-    pointShader_ = nullptr;
-    delete pointDrawer_;
-    pointDrawer_ = nullptr;
-    delete points_;
-    pointDrawer_ = nullptr;
-}
-
 void DrawPoints::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
-    glPointSize(static_cast<float>(pointSize_.get()));
-    pointShader_->activate();
-    pointShader_->setUniform("color_", pointColor_.get());
-    pointDrawer_->draw();
-    pointShader_->deactivate();
-    glPointSize(1.f);
+    {
+        utilgl::PointSizeState pointsize(static_cast<GLfloat>(pointSize_));
+        pointShader_.activate();
+        pointShader_.setUniform("color", pointColor_);
+        pointDrawer_.draw();
+        pointShader_.deactivate();
+    }
     utilgl::deactivateCurrentTarget();
     compositePortsToOutport(outport_, COLOR_ONLY, inport_);
 }
 
 void DrawPoints::addPoint(vec2 p) {
-    if (points_)
-        points_->getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->add(p);
+    points_.getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->add(p);
 }
 
 void DrawPoints::clearPoints() {
-    if (points_)
-        points_->getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->clear();
+    points_.getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->clear();
 }
 
 void DrawPoints::eventDraw(Event* event){

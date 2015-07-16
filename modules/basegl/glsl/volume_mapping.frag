@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/structs.glsl"
@@ -32,20 +32,15 @@
 #include "utils/sampler3d.glsl"
 #include "utils/classification.glsl"
 
-uniform sampler3D volume_;
-uniform VolumeParameters volumeParameters_;
-
-uniform sampler3D volume2_;
-uniform VolumeParameters volume2Parameters_;
-
-uniform sampler2D transferFunc_;
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
+uniform sampler2D transferFunction;
 
 in vec4 texCoord_;
 
-
 void main() {
-    vec4 v1 = getNormalizedVoxel(volume_, volumeParameters_, texCoord_.xyz);
-    float a = applyTF(transferFunc_,v1).a;
-    FragData0 = vec4(a,a,a,a);
+    vec4 v1 = getNormalizedVoxel(volume, volumeParameters, texCoord_.xyz);
+    float a = applyTF(transferFunction, v1).a;
+    FragData0 = vec4(a, a, a, a);
     gl_FragDepth = 1.0;
 }

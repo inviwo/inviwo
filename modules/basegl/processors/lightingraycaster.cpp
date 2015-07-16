@@ -63,6 +63,8 @@ LightingRaycaster::LightingRaycaster()
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting") {
 
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+
     addPort(volumePort_);
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");

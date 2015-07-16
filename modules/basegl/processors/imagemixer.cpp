@@ -29,8 +29,8 @@
 
 #include "imagemixer.h"
 #include <modules/opengl/glwrap/textureunit.h>
-#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
+#include <modules/opengl/shaderutils.h>
 
 namespace inviwo {
 
@@ -47,8 +47,10 @@ ImageMixer::ImageMixer()
     , outport_("outport")
     , blendingMode_("blendMode", "Blend Mode", INVALID_RESOURCES)
     , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
-    , shader_(nullptr) {
+    , shader_("img_mix.frag", false) {
     
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+
     addPort(inport0_);
     addPort(inport1_);
     addPort(outport_);
@@ -74,17 +76,6 @@ ImageMixer::ImageMixer()
 
 ImageMixer::~ImageMixer() {}
 
-void ImageMixer::initialize() {
-    Processor::initialize();
-    delete shader_;
-    shader_ = new Shader("img_mix.frag", true);
-}
-
-void ImageMixer::deinitialize() {
-    Processor::deinitialize();
-    delete shader_;
-}
-
 void ImageMixer::process() {
     if (inport0_.isChanged()) {
         const DataFormatBase* format = inport0_.getData()->getDataFormat();
@@ -98,17 +89,13 @@ void ImageMixer::process() {
     }
 
     utilgl::activateAndClearTarget(outport_);
-    shader_->activate();
-
-    TextureUnitContainer texUnits;
-    utilgl::bindAndSetUniforms(shader_, texUnits, inport0_, COLOR_DEPTH_PICKING);
-    utilgl::bindAndSetUniforms(shader_, texUnits, inport1_, COLOR_DEPTH_PICKING);
-
-    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
-    shader_->setUniform("weight_", weight_.get());
-
+    shader_.activate();
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(&shader_, units, inport0_, COLOR_DEPTH_PICKING);
+    utilgl::bindAndSetUniforms(&shader_, units, inport1_, COLOR_DEPTH_PICKING);
+    utilgl::setUniforms(&shader_, outport_, weight_);
     utilgl::singleDrawImagePlaneRect();
-    shader_->deactivate();
+    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
@@ -158,10 +145,8 @@ void ImageMixer::initializeResources() {
             break;
     }
 
-    if (!shader_) return;
-
-    shader_->getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
-    shader_->build();
+    shader_.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
+    shader_.build();
 }
 
 }  // namespace

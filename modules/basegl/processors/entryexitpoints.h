@@ -66,14 +66,12 @@ public:
     InviwoProcessorInfo();
     
     EntryExitPoints();
-    ~EntryExitPoints();
+    virtual ~EntryExitPoints();
 
-    virtual void process();
-    void initialize();
-    void deinitialize();
+    virtual void process() override;
 
-protected:
-    void onGeometryChange();
+    // override to do member renaming.
+    virtual void deserialize(IvwDeserializer& d) override;
 
 private:
     MeshInport inport_;
@@ -84,10 +82,10 @@ private:
     BoolProperty capNearClipping_;
     CameraTrackball trackball_;
     
-    Shader* genericShader_;
-    Shader* capNearClippingPrg_;
-    Image* tmpEntryPoints_;
-    MeshDrawer* drawer_;
+    Shader shader_;
+    Shader clipping_;
+    std::unique_ptr<Image> tmpEntry_;
+    std::unique_ptr<MeshDrawer> drawer_;
 };
 
 } // namespace

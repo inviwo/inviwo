@@ -31,8 +31,8 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
-#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -57,9 +57,10 @@ DrawLines::DrawLines()
           "keyEnableDraw", "Enable Draw",
           new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
           new Action(this, &DrawLines::eventEnableDraw))
-    , lines_(nullptr)
-    , lineDrawer_(nullptr)
-    , lineShader_(nullptr) {
+    , lines_(GeometryEnums::LINES, GeometryEnums::STRIP)
+    , lineDrawer_(&lines_)
+    , lineShader_("img_color.frag") {
+
     addPort(inport_);
     addPort(outport_);
 
@@ -71,12 +72,9 @@ DrawLines::DrawLines()
 
     addProperty(mouseDraw_);
     addProperty(keyEnableDraw_);
-}
+    lineShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 
-DrawLines::~DrawLines() {}
-
-void DrawLines::initialize() {
-    CompositeProcessorGL::initialize();
+    lines_.addAttribute(new Position2dBuffer());
 
     GLint aliasRange[2];
     glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, aliasRange);
@@ -86,50 +84,32 @@ void DrawLines::initialize() {
 
     if (aliasRange[0] == aliasRange[1])
         lineSize_.setVisible(false);
-
-    lineShader_ = new Shader("img_color.frag");
-    lines_ = new Mesh(GeometryEnums::LINES, GeometryEnums::STRIP);
-    lines_->addAttribute(new Position2dBuffer());
-    lineDrawer_ = new MeshDrawerGL(lines_);
 }
 
-void DrawLines::deinitialize() {
-    CompositeProcessorGL::deinitialize();
-    delete lineShader_;
-    lineShader_ = nullptr;
-    delete lineDrawer_;
-    lineDrawer_ = nullptr;
-    delete lines_;
-    lines_ = nullptr;
-}
+DrawLines::~DrawLines() {}
 
 void DrawLines::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
-    bool reEnableLineSmooth = false;
-    if (glIsEnabled(GL_LINE_SMOOTH)) {
-        glDisable(GL_LINE_SMOOTH);
-        reEnableLineSmooth = true;
+    {
+        utilgl::GlBoolState linesmooth(GL_LINE_SMOOTH, false);
+        utilgl::LineWidthState linewidth(lineSize_);
+
+        lineShader_.activate();
+        lineShader_.setUniform("color", lineColor_);
+        lineDrawer_.draw();
+        lineShader_.deactivate();
     }
-    glLineWidth(static_cast<GLfloat>(lineSize_.get()));
-    lineShader_->activate();
-    lineShader_->setUniform("color_", lineColor_.get());
-    lineDrawer_->draw();
-    lineShader_->deactivate();
-    glLineWidth(1.f);
-    if (reEnableLineSmooth)
-        glEnable(GL_LINE_SMOOTH);
     utilgl::deactivateCurrentTarget();
+
     compositePortsToOutport(outport_, COLOR_ONLY, inport_);
 }
 
 void DrawLines::addPoint(vec2 p) {
-    if (lines_)
-        lines_->getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->add(p);
+    lines_.getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->add(p);
 }
 
 void DrawLines::clearLines() {
-    if (lines_)
-        lines_->getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->clear();
+    lines_.getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->clear();
 }
 
 void DrawLines::eventDraw(Event* event){

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "utils/structs.glsl"
@@ -37,74 +37,80 @@
 #include "utils/gradients.glsl"
 #include "utils/shading.glsl"
 
-uniform VolumeParameters volumeParameters_;
-uniform sampler3D volume_;
+uniform VolumeParameters volumeParameters;
+uniform sampler3D volume;
 
-uniform sampler2D transferFunc_;
+uniform sampler2D entryColor;
+uniform sampler2D entryDepth;
+uniform sampler2D entryPicking;
+uniform ImageParameters entryParameters;
 
-uniform sampler2D entryColorTex_;
-uniform sampler2D entryDepthTex_;
-uniform ImageParameters entryParameters_;
+uniform sampler2D exitColor;
+uniform sampler2D exitDepth;
+uniform ImageParameters exitParameters;
 
-uniform sampler2D exitColorTex_;
-uniform sampler2D exitDepthTex_;
-uniform ImageParameters exitParameters_;
+uniform ImageParameters outportParameters;
 
-uniform ImageParameters outportParameters_;
+uniform LightParameters lighting;
+uniform CameraParameters camera;
+uniform RaycastingParameters raycaster;
 
-uniform LightParameters light_;
-uniform CameraParameters camera_;
-uniform int channel_;
+uniform int channel;
 
-uniform float samplingRate_;
-uniform float isoValue_;
-
-#define ERT_THRESHOLD 0.95 // set threshold for early ray termination
+#define ERT_THRESHOLD 0.95  // set threshold for early ray termination
 
 vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec4 result = vec4(0.0);
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
-    float tIncr = min(tEnd, tEnd / (samplingRate_*length(rayDirection*volumeParameters_.dimensions)));
-    float samples = ceil(tEnd/tIncr);
-    tIncr = tEnd/samples;
-    float t = 0.5f*tIncr; 
+    float tIncr = min(
+        tEnd, tEnd / (raycaster.samplingRate * length(rayDirection * volumeParameters.dimensions)));
+    float samples = ceil(tEnd / tIncr);
+    tIncr = tEnd / samples;
+    float t = 0.5f * tIncr;
     rayDirection = normalize(rayDirection);
     float tDepth = -1.0;
-    vec4 color; vec4 voxel;
-    vec3 samplePos; vec3 gradient;
+    vec4 color;
+    vec4 voxel;
+    vec3 samplePos;
+    vec3 gradient;
     float prevS = 0;
-    
-    if(t >= tEnd){
+
+    if (t >= tEnd) {
         gl_FragDepth = tDepth;
-        return result; 
+        return result;
     }
 
     samplePos = entryPoint + t * rayDirection;
-    bool outside = getNormalizedVoxel(volume_, volumeParameters_, samplePos)[channel_] < isoValue_;
+    bool outside =
+        getNormalizedVoxel(volume, volumeParameters, samplePos)[channel] < raycaster.isoValue;
     t += tIncr;
-    vec3 toCameraDir = normalize(camera_.position - (volumeParameters_.textureToWorld*vec4(entryPoint, 1.0)).xyz);
+    vec3 toCameraDir =
+        normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
     int stop = 1000;
     while (t < tEnd && stop-- > 0) {
         samplePos = entryPoint + t * rayDirection;
-        voxel = getNormalizedVoxel(volume_, volumeParameters_, samplePos);
-        
-        float diff = voxel[channel_] - isoValue_;
-        bool sampOutside = voxel[channel_] < isoValue_;
+        voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
+
+        float diff = voxel[channel] - raycaster.isoValue;
+        bool sampOutside = voxel[channel_] < raycaster.isoValue;
         float th = 0.001;
-        if (abs(diff) < th) { //close enough to the surface
-            gradient = COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume_, volumeParameters_, samplePos, channel_);
+        if (abs(diff) < th) {  // close enough to the surface
+            gradient =
+                COMPUTE_GRADIENT_FOR_CHANNEL(voxel, volume, volumeParameters, samplePos, channel);
             gradient = normalize(gradient);
 
             // World space position
-            vec3 worldSpacePosition = (volumeParameters_.textureToWorld*vec4(samplePos, 1.0)).xyz;
+            vec3 worldSpacePosition = (volumeParameters.textureToWorld * vec4(samplePos, 1.0)).xyz;
             // Note that the gradient is reversed since we define the normal of a surface as
-            // the direction towards a lower intensity medium (gradient points in the inreasing direction)
-            result.rgb = APPLY_LIGHTING(light_, vec3(1.0), vec3(1.0), vec3(1.0), worldSpacePosition, -gradient, toCameraDir);
+            // the direction towards a lower intensity medium (gradient points in the inreasing
+            // direction)
+            result.rgb = APPLY_LIGHTING(lighting, vec3(1.0), vec3(1.0), vec3(1.0),
+                                        worldSpacePosition, -gradient, toCameraDir);
             result.a = 1.0;
             t += tEnd;
             break;
-        } else if(sampOutside != outside) {
+        } else if (sampOutside != outside) {
             t -= tIncr;
             tIncr /= 2.0;
         }
@@ -117,8 +123,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     }
 
     if (tDepth != -1.0) {
-        tDepth = calculateDepthValue(camera_, tDepth, texture(entryDepthTex_, texCoords).z,
-                                     texture(exitDepthTex_, texCoords).z);
+        tDepth = calculateDepthValue(camera, tDepth, texture(entryDepth, texCoords).z,
+                                     texture(exitDepth, texCoords).z);
     } else {
         tDepth = 1.0;
     }
@@ -128,12 +134,13 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
 }
 
 void main() {
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
-    vec3 entryPoint = texture(entryColorTex_, texCoords).rgb;
-    vec3 exitPoint = texture(exitColorTex_, texCoords).rgb;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
+    vec3 entryPoint = texture(entryColor, texCoords).rgb;
+    vec3 exitPoint = texture(exitColor, texCoords).rgb;
 
     if (entryPoint == exitPoint) discard;
 
     vec4 color = rayTraversal(entryPoint, exitPoint, texCoords);
     FragData0 = color;
+    PickingData = texture(entryPicking, texCoords);
 }

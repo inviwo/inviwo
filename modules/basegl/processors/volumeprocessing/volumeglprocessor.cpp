@@ -24,18 +24,16 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/shaderutils.h>
 #include <modules/opengl/volumeutils.h>
-#include <modules/opengl/glwrap/framebufferobject.h>
 
 namespace inviwo {
 
@@ -44,32 +42,18 @@ VolumeGLProcessor::VolumeGLProcessor(std::string fragmentShader)
     , inport_(fragmentShader + "inport")
     , outport_(fragmentShader + "outport")
     , dataFormat_(nullptr)
-    , internalInvalid_(false)
+    , internalInvalid_(true)
     , fragmentShader_(fragmentShader)
-    , shader_(nullptr)
-    , fbo_(nullptr) {
+    , shader_("volume_gpu.vert", "volume_gpu.geom", fragmentShader_, true)
+    , fbo_() {
     addPort(inport_);
     addPort(outport_);
 
     inport_.onChange(this, &VolumeGLProcessor::inportChanged);
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 }
 
 VolumeGLProcessor::~VolumeGLProcessor() {}
-
-void VolumeGLProcessor::initialize() {
-    Processor::initialize();
-    delete shader_;
-    delete fbo_;
-    shader_ = new Shader("volume_gpu.vert", "volume_gpu.geom", fragmentShader_, true);
-    fbo_ = new FrameBufferObject();
-    internalInvalid_ = true;
-}
-
-void VolumeGLProcessor::deinitialize() {
-    Processor::deinitialize();
-    delete shader_;
-    delete fbo_;
-}
 
 void VolumeGLProcessor::process() {
     bool reattach = false;
@@ -77,44 +61,44 @@ void VolumeGLProcessor::process() {
     if (internalInvalid_) {
         reattach = true;
         internalInvalid_ = false;
-        const DataFormatBase* format = dataFormat_;
-        if (format == nullptr) {
-            format = inport_.getData()->getDataFormat();
-        }
+        const DataFormatBase* format = dataFormat_?dataFormat_:inport_.getData()->getDataFormat();
         Volume* volume = new Volume(inport_.getData()->getDimensions(), format);
         volume->setModelMatrix(inport_.getData()->getModelMatrix());
         volume->setWorldMatrix(inport_.getData()->getWorldMatrix());
         // pass meta data on
         volume->copyMetaDataFrom(*inport_.getData());
-        volume->dataMap_.dataRange = inport_.getData()->dataMap_.dataRange;
-        volume->dataMap_.valueRange = inport_.getData()->dataMap_.valueRange;
+        volume->dataMap_ = inport_.getData()->dataMap_;
         outport_.setData(volume);
     }
 
-    TextureUnit volUnit;    
-    utilgl::bindTexture(inport_, volUnit);
+    shader_.activate();
 
-    shader_->activate();
-
-    shader_->setUniform("volume_", volUnit.getUnitNumber());
-    utilgl::setShaderUniforms(shader_, inport_, "volumeParameters_");
+    TextureUnitContainer cont;
+    utilgl::bindAndSetUniforms(&shader_, cont, inport_.getData(), "volume");
 
     preProcess();
 
     const size3_t dim{inport_.getData()->getDimensions()};
-    fbo_->activate();
+    fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
     if (reattach) {
         VolumeGL* outVolumeGL = outport_.getData()->getEditableRepresentation<VolumeGL>();
-        fbo_->attachColorTexture(outVolumeGL->getTexture().get(), 0);
+        fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }
 
     utilgl::multiDrawImagePlaneRect(static_cast<int>(dim.z));
 
-    shader_->deactivate();
-    fbo_->deactivate();
+    shader_.deactivate();
+    fbo_.deactivate();
 
     postProcess();
+}
+
+void VolumeGLProcessor::markInvalid() { internalInvalid_ = true; }
+
+void VolumeGLProcessor::inportChanged() {
+    markInvalid();
+    afterInportChanged();
 }
 
 }  // namespace

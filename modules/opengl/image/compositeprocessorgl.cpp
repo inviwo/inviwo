@@ -29,7 +29,6 @@
 
 #include "compositeprocessorgl.h"
 #include <modules/opengl/glwrap/textureunit.h>
-#include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/shaderutils.h>
@@ -37,38 +36,27 @@
 namespace inviwo {
 
 CompositeProcessorGL::CompositeProcessorGL()
-    : Processor(), shaderFileName_("composite.frag"), shader_(nullptr) {}
+    : Processor(), shaderFileName_("composite.frag"), shader_(shaderFileName_) {}
 
 CompositeProcessorGL::CompositeProcessorGL(std::string programFileName)
-    : Processor(), shaderFileName_(programFileName), shader_(nullptr) {}
-
-void CompositeProcessorGL::initialize() {
-    Processor::initialize();
-    shader_ = new Shader(shaderFileName_);
-}
-
-void CompositeProcessorGL::deinitialize() {
-    delete shader_;
-    shader_ = nullptr;
-    Processor::deinitialize();
-}
+    : Processor(), shaderFileName_(programFileName), shader_(shaderFileName_) {}
 
 void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageType type, ImageInport& inport) {
     if (inport.isReady() && outport.hasData()) {        
         utilgl::activateTarget(outport, type);
-        shader_->activate();
+        shader_.activate();
 
         TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader_, units, inport.getData(),  "tex0", COLOR_DEPTH_PICKING);
-        utilgl::bindAndSetUniforms(shader_, units, outport.getData(), "tex1", COLOR_DEPTH_PICKING);
-        utilgl::setShaderUniforms(shader_, outport, "outportParameters");
+        utilgl::bindAndSetUniforms(&shader_, units, inport.getData(),  "tex0", COLOR_DEPTH_PICKING);
+        utilgl::bindAndSetUniforms(&shader_, units, outport.getData(), "tex1", COLOR_DEPTH_PICKING);
+        utilgl::setShaderUniforms(&shader_, outport, "outportParameters");
         utilgl::singleDrawImagePlaneRect();
 
-        shader_->deactivate();
+        shader_.deactivate();
         utilgl::deactivateCurrentTarget();
     }
 }
 
-void CompositeProcessorGL::initializeResources() { shader_->rebuild(); }
+void CompositeProcessorGL::initializeResources() { shader_.rebuild(); }
 
 }  // namespace

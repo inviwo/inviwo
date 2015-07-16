@@ -87,6 +87,9 @@ ImageOverlayGL::ImageOverlayGL()
     , shader_("img_texturequad.vert", "img_copy.frag")
     , viewManager_()
     , currentDim_(0u, 0u) {
+
+    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+
     addPort(inport_);
     addPort(overlayPort_);
 

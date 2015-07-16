@@ -29,34 +29,32 @@
 
 #include "utils/structs.glsl"
 
-uniform sampler2D inputTex_;
-//uniform sampler2D inputDepth_;
-uniform ImageParameters outportParameters_;
+uniform sampler2D inportColor;
 
-uniform ivec2 checkerBoardSize_;
-uniform vec4 color1_;
-uniform vec4 color2_;
+uniform ImageParameters outportParameters;
+
+uniform ivec2 checkerBoardSize;
+uniform vec4 color1;
+uniform vec4 color2;
 
 vec4 checkerBoard(vec2 texCoords) {
-    int a = int(gl_FragCoord.x) / checkerBoardSize_.x;
-    int b = int(outportParameters_.dimensions.y - gl_FragCoord.y) / checkerBoardSize_.y;
+    int a = int(gl_FragCoord.x) / checkerBoardSize.x;
+    int b = int(outportParameters.dimensions.y - gl_FragCoord.y) / checkerBoardSize.y;
     
-    return  (((a + 1) % 2)*((b + 1) % 2) + (a % 2)*(b % 2)) * color1_ +
-            (((a + 1) % 2)*(b % 2) + (a % 2)*((b + 1) % 2)) * color2_;
+    return  (((a + 1) % 2)*((b + 1) % 2) + (a % 2)*(b % 2)) * color1 +
+            (((a + 1) % 2)*(b % 2) + (a % 2)*((b + 1) % 2)) * color2;
 }
 
 vec4 linearGradient(vec2 texCoords) {
-    return texCoords.y * color1_ + (1.0 - texCoords.y) * color2_;
+    return texCoords.y * color1 + (1.0 - texCoords.y) * color2;
 }
 
 void main() {  
-    vec2 texCoords = gl_FragCoord.xy * outportParameters_.reciprocalDimensions;
+    vec2 texCoords = gl_FragCoord.xy * outportParameters.reciprocalDimensions;
     vec4 srcColor = SRC_COLOR;
     vec4 backgroundColor = BACKGROUND_STYLE_FUNCTION;
     vec4 resultColor;
     resultColor.rgb = srcColor.rgb + backgroundColor.rgb * backgroundColor.a * (1.0 - srcColor.a);
     resultColor.a = srcColor.a + backgroundColor.a * (1.0 - srcColor.a);
     FragData0 = resultColor;
-    //gl_FragDepth = texture(inputDepth_, texCoords).x;
-
 }

@@ -35,6 +35,8 @@
 #include <modules/opengl/glwrap/textureunit.h>
 #include <modules/opengl/glwrap/shader.h>
 #include <modules/opengl/image/layergl.h>
+#include <modules/opengl/textureutils.h>
+#include <modules/opengl/shaderutils.h>
 
 namespace inviwo {
 
@@ -53,13 +55,8 @@ VolumeMapping::VolumeMapping()
 VolumeMapping::~VolumeMapping() {}
 
 void VolumeMapping::preProcess() {
-    TextureUnit transFuncUnit;
-
-    const Layer* tfLayer = tfProperty_.get().getData();
-    const LayerGL* transferFunctionGL = tfLayer->getRepresentation<LayerGL>();
-    transferFunctionGL->bindTexture(transFuncUnit.getEnum());
-
-    shader_->setUniform("transferFunc_", transFuncUnit.getUnitNumber());
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(&shader_, units, tfProperty_);
 }
 
 }  // namespace
