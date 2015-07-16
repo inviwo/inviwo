@@ -122,40 +122,6 @@ protected:
     GLfloat oldPointSize_;
 };
 
-struct IVW_MODULE_OPENGL_API DepthFuncState  {
-    DepthFuncState() = delete;
-    DepthFuncState(DepthFuncState const&) = delete;
-    DepthFuncState& operator=(DepthFuncState const& that) = delete;
-
-    DepthFuncState(GLenum state);
-
-    DepthFuncState(DepthFuncState&& rhs);
-    DepthFuncState& operator=(DepthFuncState&& that);
-
-    virtual ~DepthFuncState();
-
-protected:
-    GLint oldState_;
-    GLint state_;
-};
-
-struct IVW_MODULE_OPENGL_API DepthMaskState  {
-    DepthMaskState() = delete;
-    DepthMaskState(DepthMaskState const&) = delete;
-    DepthMaskState& operator=(DepthMaskState const& that) = delete;
-
-    DepthMaskState(GLboolean state);
-
-    DepthMaskState(DepthMaskState&& rhs);
-    DepthMaskState& operator=(DepthMaskState&& that);
-
-    virtual ~DepthMaskState();
-
-protected:
-    GLboolean oldState_;
-    GLboolean state_;
-};
-
 struct IVW_MODULE_OPENGL_API BlendModeState : public GlBoolState {
     BlendModeState() = delete;
     BlendModeState(BlendModeState const&) = delete;
@@ -174,8 +140,69 @@ protected:
     GLint olddMode_;
 };
 
+template <typename T1, typename T2, GLenum Entity, void (*Getter)(GLenum, T1*),
+          void (*Setter)(T2)>
+struct SimpleState {
+    SimpleState() = delete;
+    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter> const&) = delete;
+    SimpleState<T1, T2, Entity, Getter, Setter>& operator=(
+        SimpleState<T1, T2, Entity, Getter, Setter> const& that) = delete;
 
+    SimpleState(T1 value);
+    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter>&& rhs);
+    SimpleState<T1, T2, Entity, Getter, Setter>& operator=(
+        SimpleState<T1, T2, Entity, Getter, Setter>&& that);
 
+    operator T1();
+    virtual ~SimpleState();
+
+protected:
+    T1 oldState_;
+    T1 state_;
+};
+
+template <typename T1, typename T2, GLenum Entity, void (*Getter)(GLenum, T1*), void (*Setter)(T2)>
+SimpleState<T1, T2, Entity, Getter, Setter>::SimpleState(T1 value)
+    : state_(value) {
+    Getter(Entity, &oldState_);
+    if (oldState_ != state_) {
+        Setter(state_);
+    }
+}
+
+template <typename T1, typename T2, GLenum Entity, void (*Getter)(GLenum, T1*), void (*Setter)(T2)>
+SimpleState<T1, T2, Entity, Getter, Setter>::~SimpleState() {
+    if (state_ != oldState_) {
+        Setter(static_cast<T2>(oldState_));
+    }
+}
+
+template <typename T1, typename T2, GLenum Entity, void (*Getter)(GLenum, T1*), void (*Setter)(T2)>
+SimpleState<T1, T2, Entity, Getter, Setter>::operator T1() {
+    return state_;
+}
+
+template <typename T1, typename T2, GLenum Entity, void (*Getter)(GLenum, T1*), void (*Setter)(T2)>
+SimpleState<T1, T2, Entity, Getter, Setter>& SimpleState<T1, T2, Entity, Getter, Setter>::operator=(
+    SimpleState<T1, T2, Entity, Getter, Setter>&& that) {
+    if (this != &that) {
+        state_ = that.oldState_;
+        std::swap(state_, that.state_);
+        oldState_ = that.oldState_;
+    }
+    return *this;
+}
+template <typename T1, typename T2, GLenum Entity, void (*Getter)(GLenum, T1*), void (*Setter)(T2)>
+SimpleState<T1, T2, Entity, Getter, Setter>::SimpleState(
+    SimpleState<T1, T2, Entity, Getter, Setter>&& rhs)
+    : oldState_(rhs.oldState_), state_(rhs.state_) {
+    rhs.state_ = rhs.oldState_;
+}
+
+using DepthFuncState = SimpleState<GLint, GLenum, GL_DEPTH_FUNC, glGetIntegerv, glDepthFunc>;
+using DepthMaskState = SimpleState<GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glGetBooleanv, glDepthMask>;
+using LineWidthState = SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth>;
+using PointSizeState = SimpleState<GLfloat, GLfloat, GL_POINT_SIZE, glGetFloatv, glPointSize>;
 
 }  // namespace
 
