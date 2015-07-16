@@ -1203,9 +1203,6 @@ bool NetworkEditor::loadNetwork(std::string fileName) {
     }
     bool loaded = loadNetwork(fileStream, fileName);
     fileStream.close();
-    if (loaded) {
-        for (auto o : observers_) o->onNetworkEditorFileChanged(fileName);
-    }
 
     return loaded;
 }
@@ -1213,6 +1210,7 @@ bool NetworkEditor::loadNetwork(std::string fileName) {
 bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
     // Clean the current network
     clearNetwork();
+    InviwoApplicationQt::processEvents();
     {
         // Lock the network that so no evaluations are triggered during the de-serialization
         NetworkLock lock;
@@ -1232,8 +1230,9 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
                       "Incomplete network loading " + path + " due to " + exception.getMessage(),
                       LogLevel::Error);
         }
-
         InviwoApplication::getPtr()->getProcessorNetwork()->setModified(true);
+        for (auto o : observers_) o->onNetworkEditorFileChanged(path);
+        InviwoApplicationQt::processEvents(); // make sure the gui is ready before we unlock.
     }
 
     setModified(false);
