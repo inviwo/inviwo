@@ -281,6 +281,14 @@ void SystemCapabilities::printInfo() {
     }  //*/
 }
 
+int SystemCapabilities::numberOfCores() const {
+     if (successCPUInfo_) {
+        return static_cast<int>(infoCPUs_.size());
+     } else {
+        return -1;
+     }
+}
+
 glm::u64 SystemCapabilities::getAvailableMemory() {
     successMemoryInfo_ = lookupMemoryInfo();
 

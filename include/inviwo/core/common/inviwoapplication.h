@@ -153,11 +153,13 @@ public:
         -> std::future<typename std::result_of<F(Args...)>::type>;
 
     virtual void processFront();
-
+    void setProgressCallback(std::function<void(std::string)> progressCallback);
 
 protected:
     void printApplicationInfo();
+    void postProgress(std::string progress);
     void setPostEnqueueFront(std::function<void()> func);
+
 
 private:
     struct Queue {
@@ -170,14 +172,13 @@ private:
         std::function<void()> postEnqueue;
     };
 
-
     std::string displayName_;
     std::string basePath_;
 
     CommandLineParser commandLineParser_;
     bool initialized_;
     ThreadPool pool_;
-    Queue queue_; // "Interaction/GUI" queue
+    Queue queue_;  // "Interaction/GUI" queue
 
     ProcessorNetwork* processorNetwork_;
     ProcessorNetworkEvaluator* processorNetworkEvaluator_;
@@ -185,6 +186,8 @@ private:
     Tags nonSupportedTags_;
     std::vector<InviwoModule*> modules_;
     std::vector<ModuleCallbackAction*> moudleCallbackActions_;
+
+    std::function<void(std::string)> progressCallback_;
 };
 
 template <class T>
@@ -219,7 +222,7 @@ auto InviwoApplication::dispatchFront(F&& f, Args&&... args)
         queue_.tasks.emplace([task]() { (*task)(); });
     }
 
-    if(queue_.postEnqueue) queue_.postEnqueue();
+    if (queue_.postEnqueue) queue_.postEnqueue();
     return res;
 }
 template <class F, class... Args>
@@ -234,22 +237,23 @@ auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<
                                                      std::forward<Args>(args)...);
 }
 template <class F, class... Args>
-auto dispatchPoolAndInvalidate(Processor* p, F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
+auto dispatchPoolAndInvalidate(Processor* p, F&& f, Args&&... args)
+    -> std::future<typename std::result_of<F(Args...)>::type> {
     using return_type = typename std::result_of<F(Args...)>::type;
     auto task = std::make_shared<std::packaged_task<return_type()> >(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-    
+
     std::future<return_type> res = task->get_future();
-    
-    InviwoApplication::getPtr()->dispatchPool([task, p](){
+
+    InviwoApplication::getPtr()->dispatchPool([task, p]() {
         (*task)();
-        dispatchFront([p](){if(p) p->invalidate(INVALID_OUTPUT); });
+        dispatchFront([p]() {
+            if (p) p->invalidate(INVALID_OUTPUT);
+        });
     });
-    
+
     return res;
 }
-
-
 
 }  // namespace
 

@@ -37,6 +37,7 @@ namespace inviwo {
 SystemSettings::SystemSettings()
     : Settings("System Settings")
     , applicationUsageModeProperty_("applicationUsageMode", "Application usage mode")
+    , poolSize_("poolSize", "Pool Size", 4, 0, 32)
     , txtEditorProperty_("txtEditor", "Use system text editor", true)
     , enablePortInformationProperty_("enablePortInformation", "Enable port information", true)
     , enablePortInspectorsProperty_("enablePortInspectors", "Enable port inspectors", true)
@@ -95,6 +96,7 @@ SystemSettings::SystemSettings()
     applicationUsageModeProperty_.setSelectedIndex(1);
     applicationUsageModeProperty_.setCurrentStateAsDefault();
     addProperty(applicationUsageModeProperty_);
+    addProperty(poolSize_);
     addProperty(txtEditorProperty_);
     addProperty(enablePortInformationProperty_);
     addProperty(enablePortInspectorsProperty_);
@@ -139,6 +141,12 @@ void SystemSettings::initialize() {
         if (sysInfo) {
             btnSysInfoProperty_.onChange(sysInfo, &SystemCapabilities::printInfo);
             addProperty(btnSysInfoProperty_);
+
+            isDeserializing_ = true;
+            poolSize_.setMaxValue(sysInfo->numberOfCores());
+            poolSize_.set(static_cast<int>(0.5*sysInfo->numberOfCores()));
+            poolSize_.setCurrentStateAsDefault();
+            isDeserializing_ = false;
         }
     }
 }

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
@@ -37,22 +37,27 @@
 #include <QTextDocument>
 #include <QTextBlock>
 
-static const char* python_keywords[] = {"\\band\\b", "\\bas\\b", "\\bassert\\b", "\\bbreak\\b", "\\bclass\\b", "\\bcontinue\\b", "\\bdef\\b", "\\bdel\\b", "\\belif\\b", "\\belse\\b", "\\bexcept\\b", "\\bexec\\b", "\\bfinally\\b", "\\bfor\\b", "\\bfrom\\b", "\\bglobal\\b", "\\bif\\b", "\\bimport\\b", "\\bin\\b", "\\bis\\b", "\\blambda\\b", "\\bnot\\b", "\\bor\\b", "\\bpass\\b", "\\bprint\\b", "\\braise\\b", "\\breturn\\b", "\\btry\\b", "\\bwhile\\b", "\\bwith\\b", "\\byield\\b"};
+static const char* python_keywords[] = {
+    "\\band\\b",      "\\bas\\b",     "\\bassert\\b",  "\\bbreak\\b", "\\bclass\\b",
+    "\\bcontinue\\b", "\\bdef\\b",    "\\bdel\\b",     "\\belif\\b",  "\\belse\\b",
+    "\\bexcept\\b",   "\\bexec\\b",   "\\bfinally\\b", "\\bfor\\b",   "\\bfrom\\b",
+    "\\bglobal\\b",   "\\bif\\b",     "\\bimport\\b",  "\\bin\\b",    "\\bis\\b",
+    "\\blambda\\b",   "\\bnot\\b",    "\\bor\\b",      "\\bpass\\b",  "\\bprint\\b",
+    "\\braise\\b",    "\\breturn\\b", "\\btry\\b",     "\\bwhile\\b", "\\bwith\\b",
+    "\\byield\\b"};
 
 namespace inviwo {
 
 class PythonCommentFormater : public SyntaxFormater {
 public:
     PythonCommentFormater(const QTextCharFormat& format)
-        : format_(format)
-        , oneLineComment_("^[\\s]*\\#")
-    { }
+        : format_(format), oneLineComment_("^[\\s]*\\#") {}
 
     virtual Result eval(const QString& text, const int& previousBlockState) override {
         Result res;
         res.format = &format_;
 
-        if (oneLineComment_.indexIn(text)!=-1) {
+        if (oneLineComment_.indexIn(text) != -1) {
             res.start.push_back(0);
             res.length.push_back(text.size());
             return res;
@@ -68,8 +73,6 @@ private:
     QRegExp blockEnd_;
 };
 
-
-
 class PythonKeywordFormater : public SyntaxFormater {
 public:
     virtual Result eval(const QString& text, const int& previousBlockState) override {
@@ -80,9 +83,9 @@ public:
         for (reg = regexps_.begin(); reg != regexps_.end(); ++reg) {
             int pos = 0;
 
-            while ((pos = reg->indexIn(text,pos))!=-1) {
+            while ((pos = reg->indexIn(text, pos)) != -1) {
                 result.start.push_back(pos);
-                pos += std::max(1,reg->matchedLength());
+                pos += std::max(1, reg->matchedLength());
                 result.length.push_back(reg->matchedLength());
             }
         }
@@ -90,11 +93,10 @@ public:
         return result;
     }
 
-    PythonKeywordFormater(const QTextCharFormat& format,const char** keywords):format_(format) {
+    PythonKeywordFormater(const QTextCharFormat& format, const char** keywords) : format_(format) {
         int i = -1;
 
-        while (keywords[++i])
-            regexps_.push_back(QRegExp(keywords[i]));
+        while (keywords[++i]) regexps_.push_back(QRegExp(keywords[i]));
     }
 
 private:
@@ -102,38 +104,31 @@ private:
     std::vector<QRegExp> regexps_;
 };
 
+static inline QColor ivec4toQtColor(const ivec4& i) { return QColor(i.r, i.g, i.b, i.a); }
 
-static inline QColor ivec4toQtColor(const ivec4 &i){
-    return QColor(i.r, i.g, i.b, i.a);
-}
-
-template<>
+template <>
 void SyntaxHighligther::loadConfig<Python>() {
     auto sysSettings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-    
+
     QColor textColor = ivec4toQtColor(sysSettings->pyTextColor_.get());
     QColor bgColor = ivec4toQtColor(sysSettings->pyBGColor_.get());
     defaultFormat_.setBackground(bgColor);
     defaultFormat_.setForeground(textColor);
-    QTextCharFormat typeformat,commentformat;
+    QTextCharFormat typeformat, commentformat;
     typeformat.setBackground(bgColor);
     typeformat.setForeground(ivec4toQtColor(sysSettings->pyTypeColor_.get()));
     commentformat.setBackground(bgColor);
     commentformat.setForeground(ivec4toQtColor(sysSettings->pyCommentsColor_.get()));
     if (formaters_.empty())
         sysSettings->pythonSyntax_.onChange(this, &SyntaxHighligther::loadConfig<Python>);
-    else{
+    else {
         while (!formaters_.empty()) {
             delete formaters_.back();
             formaters_.pop_back();
         }
     }
-    formaters_.push_back(new PythonKeywordFormater(typeformat,python_keywords));
+    formaters_.push_back(new PythonKeywordFormater(typeformat, python_keywords));
     formaters_.push_back(new PythonCommentFormater(commentformat));
 }
 
-
-
-} // namespace
-
-
+}  // namespace

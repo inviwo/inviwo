@@ -38,7 +38,7 @@ class InviwoSplashScreen : public QSplashScreen {
     Q_OBJECT
 public:
 
-    InviwoSplashScreen();
+    InviwoSplashScreen(QWidget* parent, bool enable = true);
     ~InviwoSplashScreen();
 
     virtual void show();

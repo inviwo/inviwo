@@ -60,7 +60,6 @@
 
 #ifdef IVW_PYTHON2_QT
 #define IVW_PYTHON_QT
-//#include <modules/python2qt/pythoneditorwidget.h>
 #include <modules/pythonqt/pythoneditorwidget.h>
 #elif IVW_PYTHON3_QT
 #define IVW_PYTHON_QT
@@ -118,27 +117,7 @@ void InviwoMainWindow::initialize() {
     settings.beginGroup("mainwindow");
     restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
     restoreState(settings.value("state", saveState()).toByteArray());
-    QPoint newPos = settings.value("pos", pos()).toPoint();
-    QSize newSize = settings.value("size", size()).toSize();
-    maximized_ = settings.value("maximized", true).toBool();
-    QDesktopWidget* desktop = QApplication::desktop();
-    
-    // Collect the whole screen geometry
-    QRect screen = desktop->screenGeometry(0);
-    for (int i = 1; i < desktop->screenCount(); i++) {
-        screen = screen.united(desktop->screenGeometry(i));
-    }
-
-    screen.setRect(screen.x() - 10, screen.y() - 10, screen.width() + 20, screen.height() + 20);
-    QPoint bottomRight = QPoint(newPos.x() + newSize.width(), newPos.y() + newSize.height());
-
-    if (!screen.contains(newPos) || !screen.contains(bottomRight)) {
-        move(QPoint(0, 0));
-        resize(screen.width() - 20, screen.height() - 20);
-    } else {
-        move(newPos);
-        resize(newSize);
-    }
+    maximized_ = settings.value("maximized", false).toBool();
 
     auto app = InviwoApplication::getPtr();
 
@@ -190,7 +169,7 @@ void InviwoMainWindow::deinitialize() {}
 void InviwoMainWindow::initializeWorkspace() {}
 
 bool InviwoMainWindow::processCommandLineArgs() {
-    auto app = InviwoApplication::getPtr();    
+    auto app = static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());    
     const auto cmdparser = app->getCommandLineParser();
 #ifdef IVW_PYTHON_QT
 
@@ -200,34 +179,29 @@ bool InviwoMainWindow::processCommandLineArgs() {
     }
 
 #endif
+    
 
     if (cmdparser->getScreenGrabAfterStartup()) {
         std::string path = cmdparser->getOutputPath();
-
         if (path.empty()) path = app->getPath(InviwoApplication::PATH_IMAGES);
 
         repaint();
-        int curScreen = QApplication::desktop()->screenNumber(this);
+        app->processEvents();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(
-            QApplication::desktop()->screen(curScreen)->winId());
+        QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(this->winId());
 #else
-        QPixmap screenGrab =
-            QPixmap::grabWindow(QApplication::desktop()->screen(curScreen)->winId());
+        QPixmap screenGrab = QPixmap::grabWindow(this->winId());
 #endif
-        // QPixmap screenGrab = QPixmap::grabWindow(winId());
         std::string fileName = cmdparser->getScreenGrabName();
         screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
     }
 
     if (cmdparser->getCaptureAfterStartup()) {
-        auto networkEvaluator = app->getProcessorNetworkEvaluator();
-        networkEvaluator->requestEvaluate();
         std::string path = cmdparser->getOutputPath();
-        
         if (path.empty()) path = app->getPath(InviwoApplication::PATH_IMAGES);
         
         repaint();
+        app->processEvents();
         util::saveAllCanvases(app->getProcessorNetwork(), path, cmdparser->getSnapshotName());
     }
 
@@ -250,7 +224,6 @@ void InviwoMainWindow::addMenus() {
 
     menuBar_->insertMenu(first, fileMenuItem_);
     menuBar_->insertMenu(first, viewMenuItem_);
-
 
     helpMenuItem_ = menuBar_->addMenu(tr("&Help"));
 }
@@ -643,8 +616,6 @@ void InviwoMainWindow::saveWindowState() {
     settings.setValue("geometry", saveGeometry());
     settings.setValue("state", saveState());
     settings.setValue("maximized", isMaximized());
-    settings.setValue("pos", pos());
-    settings.setValue("size", size());
     settings.setValue("recentFileList", recentFileList_);
     settings.endGroup();
 }

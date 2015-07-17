@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "inviwosplashscreen.h"
@@ -33,25 +33,21 @@
 #include <QPainter>
 #include <QSplashScreen>
 #include <QTextStream>
+#include <QDesktopWidget>
 
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 
 namespace inviwo {
 
-InviwoSplashScreen::InviwoSplashScreen()
-    : QSplashScreen(dynamic_cast<InviwoApplicationQt*>(inviwo::InviwoApplicationQt::getPtr())->getMainWindow(),
-                    QPixmap(":/images/splashscreen.png") /*,Qt::WindowStaysOnTopHint*/)
-{
-    const CommandLineParser* cmdparser = inviwo::InviwoApplicationQt::getPtr()->getCommandLineParser();
-    showSplashScreen_ = cmdparser->getShowSplashScreen();
-}
+InviwoSplashScreen::InviwoSplashScreen(QWidget* parent, bool enable)
+    : QSplashScreen(parent, QPixmap(":/images/splashscreen.png"))
+    , showSplashScreen_(enable) {}
 
 InviwoSplashScreen::~InviwoSplashScreen() {}
 
 void InviwoSplashScreen::show() {
-    if (showSplashScreen_)
-        QSplashScreen::show();
+    if (showSplashScreen_) QSplashScreen::show();
 }
 
 void InviwoSplashScreen::drawContents(QPainter* painter) {
@@ -65,12 +61,12 @@ void InviwoSplashScreen::drawContents(QPainter* painter) {
 void InviwoSplashScreen::showMessage(std::string message) {
     // show message and add whitespace to match layout
     if (showSplashScreen_)
-        QSplashScreen::showMessage(QString::fromStdString("   "+message), Qt::AlignLeft|Qt::AlignBottom, Qt::white);
+        QSplashScreen::showMessage(QString::fromStdString("   " + message),
+                                   Qt::AlignLeft | Qt::AlignBottom, Qt::white);
 }
 
 void InviwoSplashScreen::finish(QWidget* mainWindow) {
-    if (showSplashScreen_)
-        QSplashScreen::finish(mainWindow);
+    if (showSplashScreen_) QSplashScreen::finish(mainWindow);
 }
 
-} // namespace
+}  // namespace

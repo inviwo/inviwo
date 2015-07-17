@@ -47,31 +47,21 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 // Helper function to retriever user settings path
 void getInviwoUserSettingsPath();
 
-// TODO: are the first two constructors needed? Otherwise remove.
-InviwoApplication::InviwoApplication()
-    : displayName_("Inviwo"), basePath_(""), commandLineParser_(), initialized_(false), pool_(4) {
-    processorNetwork_ = new ProcessorNetwork();
-    processorNetworkEvaluator_ = new ProcessorNetworkEvaluator(processorNetwork_);
-    init(this);
-}
-
-InviwoApplication::InviwoApplication(std::string displayName, std::string basePath)
-    : displayName_(displayName), basePath_(basePath), commandLineParser_(), initialized_(false), pool_(4) {
-    processorNetwork_ = new ProcessorNetwork();
-    processorNetworkEvaluator_ = new ProcessorNetworkEvaluator(processorNetwork_);
-    init(this);
-}
-
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName,
                                      std::string basePath)
-    : displayName_(displayName), basePath_(basePath), commandLineParser_(argc, argv), initialized_(false), pool_(4) {
-    
-    commandLineParser_.parse();
+    : displayName_(displayName)
+    , basePath_(basePath)
+    , commandLineParser_(argc, argv)
+    , initialized_(false)
+    , pool_(0)
+    , progressCallback_() {
+
     if (commandLineParser_.getLogToFile()) {
         LogCentral::getPtr()->registerLogger(
             new FileLogger(commandLineParser_.getLogToFileFileName()));
@@ -81,20 +71,19 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     init(this);
 }
 
-InviwoApplication::~InviwoApplication() {
-    if (initialized_)
-        deinitialize();
+InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo", "") {}
 
-    for (auto module : modules_) {
-        delete module;
-    }
+InviwoApplication::InviwoApplication(std::string displayName, std::string basePath)
+    : InviwoApplication(0, nullptr, displayName, basePath) {}
+
+InviwoApplication::~InviwoApplication() {
+    if (initialized_) deinitialize();
+
+    for (auto module : modules_) delete module;
     modules_.clear();
 
-    for (auto callback : moudleCallbackActions_){
-        delete callback;
-    }
+    for (auto callback : moudleCallbackActions_) delete callback;
     moudleCallbackActions_.clear();
-
 
     delete processorNetwork_;
     delete processorNetworkEvaluator_;
@@ -106,6 +95,7 @@ InviwoApplication::~InviwoApplication() {
 void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
     printApplicationInfo();
     // initialize singletons 
+    postProgress("Initializing singletons");
     RenderContext::init();
     ResourceManager::init();
     DataReaderFactory::init();
@@ -131,22 +121,28 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
     ivwCore->initialize();
     
     //Load settings from core
-    const std::vector<Settings*> coreSettings = ivwCore->getSettings();
-    for (const auto& coreSetting : coreSettings) {
-        (coreSetting)->loadFromDisk();
-    }
+    auto coreSettings = ivwCore->getSettings();
+    for (auto setting : coreSettings) setting->loadFromDisk();
     
     //Create and register other modules
     (*regModuleFunc)(this);
 
     //Initialize other modules
-    for (size_t i = 1; i < modules_.size(); i++)
+    for (size_t i = 1; i < modules_.size(); i++) {
+        postProgress("Initializing module: " + modules_[i]->getIdentifier());
         modules_[i]->initialize();
+    }
 
     //Load settings from other modules
-    std::vector<Settings*> settings = getModuleSettings(1);
-    for (auto& setting : settings) {
-        (setting)->loadFromDisk();
+    postProgress("Loading settings...");
+    auto settings = getModuleSettings(1);
+    for (auto setting : settings) setting->loadFromDisk();
+
+    auto sys = getSettingsByType<SystemSettings>();
+    if (sys && !commandLineParser_.getQuitApplicationAfterStartup()) {
+        pool_.setSize(static_cast<size_t>(sys->poolSize_.get()));
+        sys->poolSize_.onChange(
+            [this, sys]() { pool_.setSize(static_cast<size_t>(sys->poolSize_.get())); });
     }
 
     initialized_ = true;
@@ -247,6 +243,7 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
 }
 
 void InviwoApplication::registerModule(InviwoModule* module) {
+    postProgress("Loaded module: " + module->getIdentifier());
     modules_.push_back(module);
 }
 
@@ -283,6 +280,10 @@ void InviwoApplication::printApplicationInfo() {
         LogInfoCustom("InviwoInfo", "Config: " << config);
 }
 
+void InviwoApplication::postProgress(std::string progress) {
+    if(progressCallback_) progressCallback_(progress);
+}
+
 void InviwoApplication::setPostEnqueueFront(std::function<void()> func) {
     queue_.postEnqueue = std::move(func);
 }
@@ -303,7 +304,7 @@ std::vector<Settings*> InviwoApplication::getModuleSettings(size_t startIdx) {
     std::vector<Settings*> allModuleSettings;
 
     for (size_t i=startIdx; i<modules_.size(); i++) {
-        const std::vector<Settings*> modSettings = modules_[i]->getSettings();
+        auto modSettings = modules_[i]->getSettings();
         allModuleSettings.insert(allModuleSettings.end(), modSettings.begin(), modSettings.end());
     }
 
@@ -333,6 +334,10 @@ void InviwoApplication::processFront() {
         task();
     }
 
+}
+
+void InviwoApplication::setProgressCallback(std::function<void(std::string)> progressCallback) {
+    progressCallback_ = progressCallback;
 }
 
 } // namespace

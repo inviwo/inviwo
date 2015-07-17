@@ -49,7 +49,7 @@
  *
  *    3. This notice may not be removed or altered from any source
  *    distribution.
- * 
+ *
  *********************************************************************************/
 
 // following https://github.com/progschj/ThreadPool
@@ -79,39 +79,71 @@ public:
     ThreadPool(size_t);
     template <class F, class... Args>
     auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
+    void setSize(size_t size);
     ~ThreadPool();
 
 private:
+    struct Worker {
+        Worker(const Worker&) = delete;
+        Worker(Worker&& rhs) : thread(std::move(rhs.thread)), stop(rhs.stop) {};
+        Worker& operator=(const Worker&) = delete;
+        Worker& operator=(Worker&&) = delete;
+
+        template <typename... T>
+        Worker(T&&... args) : thread(std::forward<T>(args)...), stop(false) {}
+
+        std::thread thread;
+        bool stop;
+    };
+    void addWorker();
+    void removeWorker();
+
     // need to keep track of threads so we can join them
-    std::vector<std::thread> workers;
+    std::vector<Worker> workers;
     // the task queue
-    std::queue<std::function<void()> > tasks;
+    std::queue<std::function<void()>> tasks;
 
     // synchronization
     std::mutex queue_mutex;
     std::condition_variable condition;
-    bool stop;
 };
 
 // the constructor just launches some amount of workers
-inline ThreadPool::ThreadPool(size_t threads) : stop(false) {
-    for (size_t i = 0; i < threads; ++i)
-        workers.emplace_back([this] {
-            for (;;) {
-                std::function<void()> task;
+inline ThreadPool::ThreadPool(size_t threads) {
+    for (size_t i = 0; i < threads; ++i) addWorker();
+}
 
-                {
-                    std::unique_lock<std::mutex> lock(this->queue_mutex);
-                    this->condition.wait(lock,
-                                         [this] { return this->stop || !this->tasks.empty(); });
-                    if (this->stop && this->tasks.empty()) return;
-                    task = std::move(this->tasks.front());
-                    this->tasks.pop();
-                }
+inline void ThreadPool::addWorker() {
+    size_t i = workers.size();
+    std::unique_lock<std::mutex> lock(this->queue_mutex);
+    workers.emplace_back([this, i] {
+        for (;;) {
+            std::function<void()> task;
 
-                task();
+            {
+                std::unique_lock<std::mutex> lock(this->queue_mutex);
+                this->condition.wait(
+                    lock, [this, i] { return this->workers[i].stop || !this->tasks.empty(); });
+                if (this->workers[i].stop) return;
+                task = std::move(this->tasks.front());
+                this->tasks.pop();
             }
-        });
+
+            task();
+        }
+    });
+}
+
+inline void ThreadPool::removeWorker() {
+    if (workers.size() > 0) {
+        {
+            std::unique_lock<std::mutex> lock(queue_mutex);
+            workers.back().stop = true;
+        }
+        condition.notify_all();
+        workers.back().thread.join();
+        workers.pop_back();
+    }
 }
 
 // add new work item to the pool
@@ -120,30 +152,34 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
     -> std::future<typename std::result_of<F(Args...)>::type> {
     using return_type = typename std::result_of<F(Args...)>::type;
 
-    auto task = std::make_shared<std::packaged_task<return_type()> >(
+    auto task = std::make_shared<std::packaged_task<return_type()>>(
         std::bind(std::forward<F>(f), std::forward<Args>(args)...));
 
     std::future<return_type> res = task->get_future();
-    {
+
+    if (workers.size() == 0) {
+        (*task)();  // No worker threads, just run the task.
+    } else {
         std::unique_lock<std::mutex> lock(queue_mutex);
-
-        // don't allow enqueueing after stopping the pool
-        if (stop) throw std::runtime_error("enqueue on stopped ThreadPool");
-
         tasks.emplace([task]() { (*task)(); });
     }
     condition.notify_one();
     return res;
 }
 
+inline void ThreadPool::setSize(size_t size) {
+    while (workers.size() < size) addWorker();
+    while (workers.size() > size) removeWorker();
+}
+
 // the destructor joins all threads
 inline ThreadPool::~ThreadPool() {
     {
         std::unique_lock<std::mutex> lock(queue_mutex);
-        stop = true;
+        for (auto& worker : workers) worker.stop = true;
     }
     condition.notify_all();
-    for (std::thread& worker : workers) worker.join();
+    for (auto& worker : workers) worker.thread.join();
 }
 
 }  // namespace

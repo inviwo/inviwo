@@ -49,6 +49,7 @@ public:
     UsageMode getApplicationUsageMode() const;
 
     OptionPropertyInt applicationUsageModeProperty_;
+    IntProperty poolSize_;
     BoolProperty txtEditorProperty_;
     BoolProperty enablePortInformationProperty_;
     BoolProperty enablePortInspectorsProperty_;

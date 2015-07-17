@@ -45,38 +45,42 @@
 
 int main(int argc, char** argv) {
     std::string basePath = inviwo::filesystem::findBasePath();
-    
+
     inviwo::LogCentral::init();
     inviwo::LogCentral::getPtr()->registerLogger(new inviwo::FileLogger(basePath));
-    inviwo::InviwoApplicationQt inviwoApp("Inviwo v"+IVW_VERSION, basePath, argc, argv);
+    inviwo::InviwoApplicationQt inviwoApp("Inviwo v" + IVW_VERSION, basePath, argc, argv);
     inviwoApp.setWindowIcon(QIcon(":/icons/inviwo_light.png"));
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
     QFile styleSheetFile(":/stylesheets/inviwo.qss");
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
     inviwoApp.setStyleSheet(styleSheet);
-    
+    styleSheetFile.close();
+
     inviwo::InviwoMainWindow mainWin;
     // setup core application
     inviwoApp.setMainWindow(&mainWin);
     // initialize and show splash screen
-    inviwo::InviwoSplashScreen splashScreen;
-    bool showSplashScreen = inviwoApp.getCommandLineParser()->getShowSplashScreen();
-    if (showSplashScreen) {
-        splashScreen.show();
-        splashScreen.showMessage("Loading application...");
-    }
-    styleSheetFile.close();
-    //Initialize application and register modules
+    inviwo::InviwoSplashScreen splashScreen(
+        &mainWin, inviwoApp.getCommandLineParser()->getShowSplashScreen());
+    inviwoApp.setProgressCallback([&splashScreen](std::string s){splashScreen.showMessage(s);});
+
+    splashScreen.show();
+    splashScreen.showMessage("Loading application...");
+    
+    // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
     inviwoApp.initialize(&inviwo::registerAllModules);
+    inviwoApp.processEvents();
     // setup main window
     mainWin.initialize();
+    inviwoApp.processEvents();
     splashScreen.showMessage("Loading workspace...");
     mainWin.initializeWorkspace();
+    inviwoApp.processEvents();
     mainWin.showWindow();
-    inviwoApp.processEvents();   // Make sure the gui is done loading before loading workspace
-    mainWin.openLastWorkspace(); // open last workspace
+    inviwoApp.processEvents();    // Make sure the gui is done loading before loading workspace
+    mainWin.openLastWorkspace();  // open last workspace
     splashScreen.finish(&mainWin);
 
 #if defined(REG_INVIWOUNITTESTSMODULE) && defined(IVW_RUN_UNITTEST_ON_STARTUP)
@@ -88,6 +92,6 @@ int main(int argc, char** argv) {
         return inviwoApp.exec();
     } else {
         mainWin.exitInviwo();
-        return  0;
+        return 0;
     }
 }
