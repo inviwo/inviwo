@@ -37,8 +37,8 @@
 #include "utils/gradients.glsl"
 #include "utils/shading.glsl"
 
-uniform VolumeParameters volumeParameters;
 uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
 
 uniform sampler2D entryColor;
 uniform sampler2D entryDepth;
@@ -53,7 +53,7 @@ uniform ImageParameters outportParameters;
 
 uniform LightParameters lighting;
 uniform CameraParameters camera;
-uniform RaycastingParameters raycaster;
+uniform RaycastingParameters raycasting;
 
 uniform int channel;
 
@@ -64,7 +64,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
     vec3 rayDirection = exitPoint - entryPoint;
     float tEnd = length(rayDirection);
     float tIncr = min(
-        tEnd, tEnd / (raycaster.samplingRate * length(rayDirection * volumeParameters.dimensions)));
+        tEnd, tEnd / (raycasting.samplingRate * length(rayDirection * volumeParameters.dimensions)));
     float samples = ceil(tEnd / tIncr);
     tIncr = tEnd / samples;
     float t = 0.5f * tIncr;
@@ -83,7 +83,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
 
     samplePos = entryPoint + t * rayDirection;
     bool outside =
-        getNormalizedVoxel(volume, volumeParameters, samplePos)[channel] < raycaster.isoValue;
+        getNormalizedVoxel(volume, volumeParameters, samplePos)[channel] < raycasting.isoValue;
     t += tIncr;
     vec3 toCameraDir =
         normalize(camera.position - (volumeParameters.textureToWorld * vec4(entryPoint, 1.0)).xyz);
@@ -92,8 +92,8 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
         samplePos = entryPoint + t * rayDirection;
         voxel = getNormalizedVoxel(volume, volumeParameters, samplePos);
 
-        float diff = voxel[channel] - raycaster.isoValue;
-        bool sampOutside = voxel[channel_] < raycaster.isoValue;
+        float diff = voxel[channel] - raycasting.isoValue;
+        bool sampOutside = voxel[channel] < raycasting.isoValue;
         float th = 0.001;
         if (abs(diff) < th) {  // close enough to the surface
             gradient =

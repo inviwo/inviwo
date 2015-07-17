@@ -119,7 +119,7 @@ void ISORaycaster::process() {
 }
 
 void ISORaycaster::deserialize(IvwDeserializer& d) {
-    util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit"}});
+    util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
     Processor::deserialize(d);
 }
 
