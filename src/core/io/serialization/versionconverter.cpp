@@ -29,6 +29,9 @@
 
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/outport.h>
+
 
 namespace inviwo {
 VersionConverter::VersionConverter() {}

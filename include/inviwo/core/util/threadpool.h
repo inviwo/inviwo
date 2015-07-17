@@ -115,7 +115,7 @@ inline ThreadPool::ThreadPool(size_t threads) {
 
 inline void ThreadPool::addWorker() {
     size_t i = workers.size();
-    std::unique_lock<std::mutex> lock(this->queue_mutex);
+    std::unique_lock<std::mutex> lock1(this->queue_mutex);
     workers.emplace_back([this, i] {
         for (;;) {
             std::function<void()> task;

@@ -33,7 +33,7 @@
 #include <modules/opengl/shaderutils.h>
 #include <modules/opengl/textureutils.h>
 #include <modules/opengl/volumeutils.h>
-
+#include <inviwo/core/io/serialization/versionconverter.h>
 namespace inviwo {
 
 ProcessorClassIdentifier(ISORaycaster, "org.inviwo.ISORaycaster");
