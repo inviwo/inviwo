@@ -134,20 +134,13 @@ void SystemSettings::initialize() {
     pythonSyntax_.setVisible(false);
     glslSyntax_.setVisible(false);
 
-    InviwoCore* module = InviwoApplication::getPtr()->getModuleByType<InviwoCore>();
-    if (module) {
-        SystemCapabilities* sysInfo =
-            getTypeFromVector<SystemCapabilities>(module->getCapabilities());
-        if (sysInfo) {
-            btnSysInfoProperty_.onChange(sysInfo, &SystemCapabilities::printInfo);
-            addProperty(btnSysInfoProperty_);
-
-            isDeserializing_ = true;
-            poolSize_.setMaxValue(sysInfo->numberOfCores());
-            poolSize_.set(static_cast<int>(0.5*sysInfo->numberOfCores()));
-            poolSize_.setCurrentStateAsDefault();
-            isDeserializing_ = false;
-        }
+    auto cores = std::thread::hardware_concurrency();
+    if (cores > 0) {
+        isDeserializing_ = true;
+        poolSize_.setMaxValue(cores);
+        poolSize_.set(static_cast<int>(0.5 * cores));
+        poolSize_.setCurrentStateAsDefault();
+        isDeserializing_ = false;
     }
 }
 
