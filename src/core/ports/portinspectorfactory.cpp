@@ -32,57 +32,36 @@
 
 namespace inviwo {
 
-PortInspectorFactory::PortInspectorFactory() {}
-
-PortInspectorFactory::~PortInspectorFactory() {
-    for (auto& elem : cache_) {
-        for (std::vector<PortInspector*>::iterator vit = elem.second.begin();
-             vit != elem.second.end(); ++vit) {
-            delete *vit;
-        }
+    bool PortInspectorFactory::registerObject(PortInspectorFactoryObject* port) {
+    if (!util::insert_unique(portInspectors_, port->getClassIdentifier(), port)) {
+        LogWarn("PortInspector for " << port->getClassIdentifier() << " already registered");
+        return false;
     }
+    return false;
 }
 
-void PortInspectorFactory::registerObject(PortInspectorFactoryObject* portInspectorObj) {
-    std::string className = portInspectorObj->getClassIdentifier();
-
-    if (portInspectors_.find(className) == portInspectors_.end())
-        portInspectors_.insert(std::make_pair(className, portInspectorObj));
-    else
-        LogWarn("PortInspector for " << className << " already registered");
-}
-
-PortInspector* PortInspectorFactory::getPortInspectorForPortClass(const std::string &className) {
-    // Look in cache for an inactive port insepctor.
-    PortInsectorCache::iterator cit = cache_.find(className);
+PortInspector* PortInspectorFactory::create(const std::string &className) const {
+    // Look in cache for an inactive port inspector.
+    auto cit = cache_.find(className);
     if (cit != cache_.end()) {
         for (auto& elem : cit->second) {
-            if (!(elem)->isActive()) {
-                return elem;
-            }
+            if (!elem->isActive()) return elem.get();
         }
     }
     
     // Create a new port inspector
-    PortInspectorMap::iterator it = portInspectors_.find(className);
+    auto it = portInspectors_.find(className);
     if (it != portInspectors_.end()) {
         PortInspector* p = it->second->create();
-        cache_[className].push_back(p);
+        cache_[className].push_back(std::unique_ptr<PortInspector>(p));
         return p;
     }
     return nullptr;
 }
 
-bool PortInspectorFactory::isValidType(const std::string &className) const {
-    PortInspectorMap::const_iterator it = portInspectors_.find(className);
-
-    if (it != portInspectors_.end())
-        return true;
-    else
-        return false;
+bool PortInspectorFactory::hasKey(const std::string& className) const {
+    return util::has_key(portInspectors_, className);
 }
-
-
 
 } // namespace
 

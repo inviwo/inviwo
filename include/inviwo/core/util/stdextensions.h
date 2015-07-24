@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include <type_traits>
 
 namespace inviwo {
 
@@ -102,6 +103,58 @@ bool contains(T& cont, const V& elem) {
     using std::begin;
     using std::end;
     return std::find(begin(cont), end(cont), elem) != end(cont);
+}
+
+template <typename T, typename V>
+auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
+    using std::begin;
+    using std::end;
+
+    auto it = std::find(begin(cont), end(cont), elem);
+    if (it != end(cont)) {
+        return *it;
+    } else {
+        return nullptr;
+    }
+}
+
+template <typename T, typename V, typename Callable>
+auto find_or_null(T& cont, const V& elem, Callable f) ->  typename T::value_type {
+    using std::begin;
+    using std::end;
+
+    auto it = std::find(begin(cont), end(cont), elem);
+    if (it != end(cont)) {
+        return f(*it);
+    } else {
+        return nullptr;
+    }
+}
+
+template <typename T>
+bool has_key(T& map, const typename T::key_type& key) {
+    return map.find(key) != map.end();
+}
+template <typename T>
+bool insert_unique(T& map, typename T::key_type& key, typename T::mapped_type& value) {
+    auto it = map.find(key);
+    if (it == map.end()) {
+        map.insert(it, std::make_pair(key, value));
+        return true;
+    } else {
+        return false;
+    };
+}
+
+template <typename T, typename V, typename Callable>
+auto map_find_or_null(T& cont, const V& elem, Callable f)
+    -> typename std::result_of<Callable(typename T::mapped_type)>::type {
+    auto it = cont.find(elem);
+    if (it != end(cont)) {
+        return f(it->second);
+    } else {
+        return nullptr;
+    }
 }
 
 template <typename T, typename UnaryPredicate>

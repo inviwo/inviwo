@@ -273,7 +273,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
     PortInspector* portInspector =
-        PortInspectorFactory::getPtr()->getPortInspectorForPortClass(port->getClassIdentifier());
+        PortInspectorFactory::getPtr()->create(port->getClassIdentifier());
 
     portInspectors_[port] = portInspector;
 
@@ -356,7 +356,7 @@ void NetworkEditor::removePortInspector(Outport* port) {
 
 std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, std::string type) {
     PortInspector* portInspector =
-        PortInspectorFactory::getPtr()->getPortInspectorForPortClass(port->getClassIdentifier());
+        PortInspectorFactory::getPtr()->create(port->getClassIdentifier());
 
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
     std::unique_ptr<std::vector<unsigned char>> data;

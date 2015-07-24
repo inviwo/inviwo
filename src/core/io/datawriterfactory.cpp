@@ -24,26 +24,29 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
-DataWriterFactory::DataWriterFactory() {
-}
-
-void DataWriterFactory::registerObject(DataWriter* writer) {
-  for (auto it = writer->getExtensions().begin();
-       it != writer->getExtensions().end(); ++it) {
-        if (writerForExtension_.find(it->extension_) == writerForExtension_.end())
-            writerForExtension_.insert(std::make_pair(it->extension_, writer));
+bool DataWriterFactory::registerObject(DataWriter* writer) {
+    for (auto& ext : writer->getExtensions()) {
+        auto lext = toLower(ext.extension_);
+        util::insert_unique(map_, lext, writer);
     }
+    return true;
 }
 
-} // namespace
+DataWriter* DataWriterFactory::create(const std::string& key) const {
+    return util::map_find_or_null(map_, key, [](DataWriter* o) { return o->clone(); });
+}
 
+bool DataWriterFactory::hasKey(const std::string& key) const { return util::has_key(map_, key); }
+
+}  // namespace

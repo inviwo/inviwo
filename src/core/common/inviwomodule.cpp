@@ -220,7 +220,7 @@ void InviwoModule::registerMetaData(MetaData* meta) {
 }
 void InviwoModule::registerPortObject(PortFactoryObject* port) {
     ports_.push_back(port);
-    PortFactory::getPtr()->registeryObject(port);
+    PortFactory::getPtr()->registerObject(port);
 }
 void InviwoModule::registerPortInspectorObject(PortInspectorFactoryObject* portInspector) {
     portInspectors_.push_back(portInspector);
@@ -238,7 +238,7 @@ void InviwoModule::registerProcessorWidget(std::string processorClassName,
 }
 void InviwoModule::registerPropertyObject(PropertyFactoryObject* property) {
     properties_.push_back(property);
-    PropertyFactory::getPtr()->registeryObject(property);
+    PropertyFactory::getPtr()->registerObject(property);
 }
 void InviwoModule::registerPropertyWidgetObject(PropertyWidgetFactoryObject* propertyWidget) {
     propertyWidgets_.push_back(propertyWidget);

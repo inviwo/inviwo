@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -38,8 +38,7 @@ PropertyWidgetFactory::PropertyWidgetFactory() {}
 
 PropertyWidgetFactory::~PropertyWidgetFactory() {}
 
-
-void PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* propertyWidget) {
+bool PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* propertyWidget) {
     std::string className = propertyWidget->getClassIdentifier();
     PropertySemantics sematics = propertyWidget->getSematics();
     std::pair<WidgetMap::const_iterator, WidgetMap::const_iterator> sameKeys;
@@ -47,51 +46,47 @@ void PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* property
 
     for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
         if (sematics == it->second->getSematics()) {
-            LogWarn("Adding a PropertyWidget for a Property (" << className
-                    << ") and semantics (" << sematics << ") that is already registed.");
+            LogWarn("Adding a PropertyWidget for a Property (" << className << ") and semantics ("
+                                                               << sematics
+                                                               << ") that is already registered.");
+            return false;
         }
     }
 
     widgetMap_.insert(std::make_pair(className, propertyWidget));
+    return true;
 }
 
-PropertyWidget* PropertyWidgetFactory::create(Property* property) {
+PropertyWidget* PropertyWidgetFactory::create(Property* property) const {
     PropertySemantics sematics = property->getSemantics();
     std::pair<WidgetMap::const_iterator, WidgetMap::const_iterator> sameKeys;
-    sameKeys = widgetMap_.equal_range(property->getClassIdentifierForWidget()); 
+    sameKeys = widgetMap_.equal_range(property->getClassIdentifierForWidget());
 
     for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
-        if (sematics == it->second->getSematics())
-            return it->second->create(property);
+        if (sematics == it->second->getSematics()) return it->second->create(property);
     }
 
     for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
         if (PropertySemantics::Default == it->second->getSematics()) {
-            LogWarn("Requested property widget semantics ("<< sematics <<") for property ("
-                    <<property->getClassIdentifier()<<") does not exist, returning default semantics.");
+            LogWarn("Requested property widget semantics ("
+                    << sematics << ") for property (" << property->getClassIdentifier()
+                    << ") does not exist, returning default semantics.");
             return it->second->create(property);
         }
     }
 
-    LogWarn("Can not find a property widget for property: " << property->getClassIdentifier() << "("<< sematics <<")");
+    LogWarn("Can not find a property widget for property: " << property->getClassIdentifier() << "("
+                                                            << sematics << ")");
     return nullptr;
 }
 
-IvwSerializable* PropertyWidgetFactory::create(const std::string &className) const {
-    // Widgets are not serializable...
-    return nullptr;
+
+bool PropertyWidgetFactory::hasKey(Property* property) const {
+    return util::has_key(widgetMap_, property->getClassIdentifierForWidget());
 }
 
-bool PropertyWidgetFactory::isValidType(const std::string &className) const {
-    WidgetMap::const_iterator it = widgetMap_.find(className);
-
-    if (it != widgetMap_.end())
-        return true;
-    else
-        return false;
-}
-
-std::vector<PropertySemantics> PropertyWidgetFactory::getSupportedSemanicsForProperty(Property* property) {
+std::vector<PropertySemantics> PropertyWidgetFactory::getSupportedSemanicsForProperty(
+    Property* property) {
     std::pair<WidgetMap::const_iterator, WidgetMap::const_iterator> sameKeys;
     sameKeys = widgetMap_.equal_range(property->getClassIdentifier());
     std::vector<PropertySemantics> semantics;
@@ -102,4 +97,4 @@ std::vector<PropertySemantics> PropertyWidgetFactory::getSupportedSemanicsForPro
     return semantics;
 }
 
-} // namespace
+}  // namespace

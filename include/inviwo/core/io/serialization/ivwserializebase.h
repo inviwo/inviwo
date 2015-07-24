@@ -230,7 +230,7 @@ public:
 protected:
     friend class NodeSwitch;
 
-    std::vector<Factory*> registeredFactories_;
+    std::vector<FactoryBase*> registeredFactories_;
     std::string fileName_;
     TxDocument doc_;
     TxElement* rootElement_;
@@ -239,17 +239,14 @@ protected:
     ReferenceDataContainer refDataContainer_;
 };
 
-
 template <typename T>
 T* IvwSerializeBase::getRegisteredType(const std::string& className) {
-    T* data = nullptr;
-    std::vector<Factory*>::iterator it;
-
-    for (it = registeredFactories_.begin(); it != registeredFactories_.end(); it++) {
-        data = dynamic_cast<T*>((*it)->create(className));
-        if (data) break;
+    for (auto base : registeredFactories_) {
+        if (auto factory = dynamic_cast<Factory<T>*>(base)) {
+            if (auto data = factory->create(className)) return data;
+        }
     }
-    return data;
+    return nullptr;
 }
 
 template <typename T, typename std::enable_if<

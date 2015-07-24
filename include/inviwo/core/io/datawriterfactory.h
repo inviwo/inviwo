@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAWRITERFACTORY_H
@@ -33,63 +33,60 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
-
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
-template<typename T> class DataWriterType;
-class IVW_CORE_API DataWriterFactory : public Factory, public Singleton<DataWriterFactory> {
+template <typename T>
+class DataWriterType;
+class IVW_CORE_API DataWriterFactory : public Factory<DataWriter>,
+                                       public Singleton<DataWriterFactory> {
 public:
-    DataWriterFactory();
-    virtual ~DataWriterFactory() {}
+    using Map = std::unordered_map<std::string, DataWriter*>;
+    DataWriterFactory() = default;
+    virtual ~DataWriterFactory() = default;
 
-    void registerObject(DataWriter* reader);
-
-    template <typename T>
-    std::vector<FileExtension> getExtensionsForType() {
-        std::vector<FileExtension> ext;
-
-        for (ExtensionMap::const_iterator it = writerForExtension_.begin();
-             it != writerForExtension_.end(); ++it) {
-            DataWriterType<T>* r = dynamic_cast<DataWriterType<T>* >(it->second);
-
-            if (r) {
-                std::vector<FileExtension> writerExt = r->getExtensions();
-
-                for (std::vector<FileExtension>::const_iterator e = writerExt.begin();
-                     e != writerExt.end(); ++e)
-                    ext.push_back(*e);
-            }
-        }
-
-        return ext;
-    }
+    bool registerObject(DataWriter* reader);
+    virtual DataWriter* create(const std::string& key) const override;
+    virtual bool hasKey(const std::string& key) const override;
 
     template <typename T>
-    DataWriterType<T>* getWriterForTypeAndExtension(const std::string &ext) {
-        ExtensionMap::iterator it = writerForExtension_.find(ext);
+    std::vector<FileExtension> getExtensionsForType();
 
-        if (it != writerForExtension_.end()) {
-            DataWriterType<T>* r = dynamic_cast<DataWriterType<T>* >(it->second);
+    template <typename T>
+    DataWriterType<T>* getWriterForTypeAndExtension(const std::string& ext);
 
-            if (r)
-                return r->clone();
-        }
-
-        return nullptr;
-    }
-
-    typedef std::map<std::string, DataWriter*> ExtensionMap;
-
-private:
-    ExtensionMap writerForExtension_;
-
-
+protected:
+    Map map_;
 };
 
-} // namespace
+template <typename T>
+inline std::vector<FileExtension> DataWriterFactory::getExtensionsForType() {
+    std::vector<FileExtension> ext;
 
-#endif // IVW_DATAWRITERFACTORY_H
+    for (auto& writer : map_) {
+        if (auto r = dynamic_cast<DataWriterType<T>*>(writer.second)) {
+            auto rext = r->getExtensions();
+            ext.insert(ext.end(), rext.begin(), rext.end());
+        }
+    }
 
+    return ext;
+}
+
+template <typename T>
+inline DataWriterType<T>* DataWriterFactory::getWriterForTypeAndExtension(const std::string& ext) {
+    auto it = map_.find(toLower(ext));
+
+    if (it != map_.end()) {
+        if (auto r = dynamic_cast<DataWriterType<T>*>(it->second)) return r->clone();
+    }
+
+    return nullptr;
+}
+
+}  // namespace
+
+#endif  // IVW_DATAWRITERFACTORY_H

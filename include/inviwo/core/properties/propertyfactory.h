@@ -38,26 +38,23 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PropertyFactory : public Factory, public Singleton<PropertyFactory> {
+class IVW_CORE_API PropertyFactory : public Factory<Property>,
+                                     public Singleton<PropertyFactory> {
 public:
-    PropertyFactory();
-    ~PropertyFactory();
+    using Map = std::unordered_map<std::string, PropertyFactoryObject*>;
 
-    void registeryObject(PropertyFactoryObject *property);
+    PropertyFactory() = default;
+    virtual ~PropertyFactory() = default;
 
-    virtual IvwSerializable *create(const std::string &className) const;
-
-    virtual Property *getProperty(const std::string &className, const std::string &identifier,
+    virtual bool registerObject(PropertyFactoryObject *property);
+    virtual Property *create(const std::string &className) const override;
+    virtual Property *create(const std::string &className, const std::string &identifier,
                                   const std::string &displayName) const;
+    virtual bool hasKey(const std::string& className) const override;
+    virtual std::vector<std::string> getKeys() const;
 
-    virtual bool isValidType(const std::string &className) const;
-
-    std::vector<std::string> getRegistedPropertyClassNames() const;
-
-    typedef std::map<std::string, PropertyFactoryObject *> PropertyClassMap;
-
-private:
-    mutable PropertyClassMap propertyClassMap_;
+protected:
+    Map map_;
 };
 
 }  // namespace

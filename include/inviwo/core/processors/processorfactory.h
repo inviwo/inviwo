@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORFACTORY_H
@@ -37,22 +37,13 @@
 
 namespace inviwo {
 
-class IVW_CORE_API ProcessorFactory : public Factory,
-    public Singleton<ProcessorFactory>  {
-
+class IVW_CORE_API ProcessorFactory : public StandardFactory<Processor, ProcessorFactoryObject>, public Singleton<ProcessorFactory> {
 public:
-    ProcessorFactory();
-    virtual ~ProcessorFactory();
-
-    void registerObject(ProcessorFactoryObject* processor);
-    virtual IvwSerializable* create(const std::string &classIdentifier) const;
-    virtual bool isValidType(const std::string &classIdentifier) const;
-
-    typedef std::map<std::string, ProcessorFactoryObject*> ProcessorClassMap;
-private:
-    mutable ProcessorClassMap processorClassMap_;
+    ProcessorFactory() = default;
+    virtual ~ProcessorFactory() = default;
+    bool registerObject(ProcessorFactoryObject* processor) override;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROCESSORFACTORY_H
+#endif  // IVW_PROCESSORFACTORY_H

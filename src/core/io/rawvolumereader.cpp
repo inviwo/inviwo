@@ -93,7 +93,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
     if (!parametersSet_) {
         // TODO use uniqe pointer here. //Peter
         DataReaderDialog* readerDialog =
-            dynamic_cast<DataReaderDialog*>(DialogFactory::getPtr()->getDialog("RawVolumeReader"));
+            dynamic_cast<DataReaderDialog*>(DialogFactory::getPtr()->create("RawVolumeReader"));
         if (!readerDialog) {
             throw DataReaderException("No data reader dialog found.", IvwContext);
         }

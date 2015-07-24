@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTYWIDGETFACTORY_H
@@ -36,29 +36,27 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/singleton.h>
 
-
 namespace inviwo {
 
-class IVW_CORE_API PropertyWidgetFactory : public Factory,
-    public Singleton<PropertyWidgetFactory> {
-
+class IVW_CORE_API PropertyWidgetFactory
+    : public Factory<PropertyWidget, Property*>,
+      public Singleton<PropertyWidgetFactory> {
 public:
     PropertyWidgetFactory();
     virtual ~PropertyWidgetFactory();
 
-    PropertyWidget* create(Property* property);
-
-    void registerObject(PropertyWidgetFactoryObject* propertyWidget);
-    virtual IvwSerializable* create(const std::string &className) const;
-    virtual bool isValidType(const std::string &className) const;
+    virtual bool registerObject(PropertyWidgetFactoryObject* propertyWidget);
+    PropertyWidget* create(Property* property) const override;
+    virtual bool hasKey(Property* property) const override;
 
     std::vector<PropertySemantics> getSupportedSemanicsForProperty(Property* property);
 
-    typedef std::multimap<std::string, PropertyWidgetFactoryObject*> WidgetMap;
+    using WidgetMap = std::multimap<std::string, PropertyWidgetFactoryObject*>;
+
 private:
     mutable WidgetMap widgetMap_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROPERTYWIDGETFACTORY_H
+#endif  // IVW_PROPERTYWIDGETFACTORY_H

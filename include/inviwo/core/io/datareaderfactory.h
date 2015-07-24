@@ -40,12 +40,17 @@
 
 namespace inviwo {
 
-class IVW_CORE_API DataReaderFactory : public Factory, public Singleton<DataReaderFactory> {
+class IVW_CORE_API DataReaderFactory : public Factory<DataReader>,
+                                       public Singleton<DataReaderFactory> {
 public:
-    DataReaderFactory();
-    virtual ~DataReaderFactory() {}
+    using Map = std::unordered_map<std::string, DataReader*>;
 
-    void registerObject(DataReader* reader);
+    DataReaderFactory() = default;
+    virtual ~DataReaderFactory() = default;
+
+    bool registerObject(DataReader* reader);
+    virtual DataReader* create(const std::string& key) const override;
+    virtual bool hasKey(const std::string& key) const override;
 
     template <typename T>
     std::vector<FileExtension> getExtensionsForType();
@@ -53,22 +58,16 @@ public:
     template <typename T>
     DataReaderType<T>* getReaderForTypeAndExtension(const std::string& ext);
 
-    typedef std::map<std::string, DataReader*> ExtensionMap;
-
-private:
-    std::vector<DataReader*> readers_;
-    ExtensionMap readerForExtension_;
+protected:
+    Map map_;
 };
 
-
 template <typename T>
-std::vector<FileExtension>
-DataReaderFactory::getExtensionsForType() {
+std::vector<FileExtension> DataReaderFactory::getExtensionsForType() {
     std::vector<FileExtension> ext;
 
-    for (auto reader : readers_) {
-        DataReaderType<T>* r = dynamic_cast<DataReaderType<T>*>(reader);
-        if (r) {
+    for (auto reader : map_) {
+        if (auto r = dynamic_cast<DataReaderType<T>*>(reader.second)) {
             auto rext = r->getExtensions();
             ext.insert(ext.end(), rext.begin(), rext.end());
         }
@@ -77,18 +76,15 @@ DataReaderFactory::getExtensionsForType() {
 }
 
 template <typename T>
-DataReaderType<T>
-* DataReaderFactory::getReaderForTypeAndExtension(const std::string& ext) {
-    ExtensionMap::iterator it = readerForExtension_.find(toLower(ext));
+DataReaderType<T>* DataReaderFactory::getReaderForTypeAndExtension(const std::string& ext) {
+    auto it = map_.find(toLower(ext));
 
-    if (it != readerForExtension_.end()) {
-        DataReaderType<T>* r = dynamic_cast<DataReaderType<T>*>(it->second);
-        if (r) return r->clone();
+    if (it != map_.end()) {
+        if (auto r = dynamic_cast<DataReaderType<T>*>(it->second)) return r->clone();
     }
+
     return nullptr;
 }
-
-
 
 }  // namespace
 

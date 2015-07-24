@@ -48,7 +48,7 @@ LinkSettings::~LinkSettings() {
 
 void LinkSettings::initialize() {
     std::vector<std::string> properties =
-        PropertyFactory::getPtr()->getRegistedPropertyClassNames();
+        PropertyFactory::getPtr()->getKeys();
     std::sort(properties.begin(), properties.end());
 
     CameraProperty cam("", "");

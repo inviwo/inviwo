@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -35,49 +35,20 @@
 
 namespace inviwo {
 
-ProcessorFactory::ProcessorFactory() {}
-
-ProcessorFactory::~ProcessorFactory() {}
-
-void ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
-    if (processorClassMap_.find(processor->getClassIdentifier()) == processorClassMap_.end())
-        processorClassMap_.insert(std::make_pair(processor->getClassIdentifier(), processor));
-    else
-        LogWarn("Processor with class name: " << processor->getClassIdentifier() << " is already registerd");
-
-    if(splitString(processor->getClassIdentifier(), '.').size()<3){
-        LogWarn("All processor classIdentifiers should be named using reverse DNS (org.inviwo.processor) not like: " << processor->getClassIdentifier())
+bool ProcessorFactory::registerObject(ProcessorFactoryObject* processor) {
+    if (!StandardFactory<Processor, ProcessorFactoryObject>::registerObject(processor)) {
+        LogWarn("Processor with class name: " << processor->getClassIdentifier()
+                                              << " is already registerd");
+        return false;
     }
+
+    if (splitString(processor->getClassIdentifier(), '.').size() < 3) {
+        LogWarn(
+            "All processor classIdentifiers should be named using reverse DNS "
+            "(org.inviwo.processor) not like: "
+            << processor->getClassIdentifier())
+    }
+    return true;
 }
 
-IvwSerializable* ProcessorFactory::create(const std::string &classIdentifier) const {
-    std::map<std::string, ProcessorFactoryObject*>::iterator it = processorClassMap_.find(classIdentifier);
-
-    if (it != processorClassMap_.end()) {
-        return it->second->create();
-    } 
-    // Temp fallback
-    std::vector<std::string> list = splitString(classIdentifier, '.');
-    it = processorClassMap_.find(list[list.size()-1]);
-    if (it != processorClassMap_.end())
-        return it->second->create();
-
-    return nullptr;
-}
-
-bool ProcessorFactory::isValidType(const std::string &classIdentifier) const {
-    std::map<std::string, ProcessorFactoryObject*>::iterator it = processorClassMap_.find(classIdentifier);
-
-    if (it != processorClassMap_.end())
-        return true;
-    
-    // Temp fallback
-    std::vector<std::string> list = splitString(classIdentifier, '.');
-    it = processorClassMap_.find(list[list.size() - 1]);
-    if (it != processorClassMap_.end())
-       return true;
-
-    return false;
-}
-
-} // namespace
+}  // namespace

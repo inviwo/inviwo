@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PORTFACTORY_H
@@ -37,30 +37,24 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PortFactory : public Factory,
-    public Singleton<PortFactory> {
+class IVW_CORE_API PortFactory : public Factory<Port>,
+                                 public Singleton<PortFactory> {
 public:
-    PortFactory();
-    virtual ~PortFactory();
+    using Map = std::unordered_map<std::string, PortFactoryObject*>;
+    PortFactory() = default;
+    virtual ~PortFactory() = default;
 
-    void registeryObject(PortFactoryObject* property);
+    virtual bool registerObject(PortFactoryObject* property);
 
-    virtual IvwSerializable* create(const std::string &classIdentifier) const;
+    virtual Port* create(const std::string& className) const override;
+    virtual Port* create(const std::string& className, const std::string& identifier) const;
+    virtual bool hasKey(const std::string& className) const override;
+    virtual std::vector<std::string> getKeys() const;
 
-    virtual Port* getPort(const std::string &className,
-                          const std::string &identifier);
-
-    virtual bool isValidType(const std::string &classIdentifier) const;
-
-    std::vector<std::string> getRegistedPortClassNames();
-
-    typedef std::map<std::string, PortFactoryObject*> PortClassMap;
-
-private:
-    mutable PortClassMap portClassMap_;
+protected:
+    Map map_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PORTFACTORY_H
-
+#endif  // IVW_PORTFACTORY_H

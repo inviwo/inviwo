@@ -24,55 +24,37 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/ports/portfactory.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
-PortFactory::PortFactory() {}
-
-PortFactory::~PortFactory() {}
-
-
-void PortFactory::registeryObject(PortFactoryObject* port) {
-    std::string className = port->getClassIdentifier();
-    PortClassMap::const_iterator it = portClassMap_.find(className);
-
-    if (it == portClassMap_.end())
-        portClassMap_.insert(std::make_pair(className, port));
-    else
-        LogWarn("Port with class name: " << className << " already registed");
-}
-
-IvwSerializable *PortFactory::create(const std::string &className) const { return nullptr; }
-
-bool PortFactory::isValidType(const std::string &className) const {
-    PortClassMap::const_iterator it = portClassMap_.find(className);
-
-    if (it != portClassMap_.end())
-        return true;
-    else
+bool PortFactory::registerObject(PortFactoryObject *port) {
+    if (!util::insert_unique(map_, port->getClassIdentifier(), port)) {
+        LogWarn("Port with class name: " << port->getClassIdentifier() << " already registered");
         return false;
+    }
+    return true;
 }
 
-Port* PortFactory::getPort(const std::string &className,const std::string &identifier) {
-    PortClassMap::const_iterator it = portClassMap_.find(className);
+Port *PortFactory::create(const std::string &className) const { return create(className, ""); }
 
-    if (it != portClassMap_.end())
-        return it->second->create(identifier);
-    else
-        return nullptr;
+Port *PortFactory::create(const std::string &className, const std::string &identifier) const {
+    return util::map_find_or_null(
+        map_, className, [&identifier](PortFactoryObject *o) { return o->create(identifier); });
 }
 
-std::vector<std::string> PortFactory::getRegistedPortClassNames() {
-    std::vector<std::string> classNames;
-
-    for (auto &elem : portClassMap_) classNames.push_back(elem.first);
-
-    return classNames;
+bool PortFactory::hasKey(const std::string &className) const {
+    return util::has_key(map_, className);
 }
 
-} // namespace
+std::vector<std::string> PortFactory::getKeys() const {
+    auto res = std::vector<std::string>();
+    for (auto &elem : map_) res.push_back(elem.first);
+    return res;
+}
 
+}  // namespace

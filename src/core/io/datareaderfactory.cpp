@@ -1,3 +1,5 @@
+#include "..\..\..\include\inviwo\core\io\datareaderfactory.h"
+#include "..\..\..\include\inviwo\core\io\datareaderfactory.h"
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -32,15 +34,18 @@
 
 namespace inviwo {
 
-DataReaderFactory::DataReaderFactory() {}
-
-void DataReaderFactory::registerObject(DataReader* reader) {
-    readers_.push_back(reader);
-
+bool DataReaderFactory::registerObject(DataReader* reader) {
     for (const auto& ext : reader->getExtensions()) {
-        if (readerForExtension_.find(toLower(ext.extension_)) == readerForExtension_.end())
-            readerForExtension_.insert(std::make_pair(toLower(ext.extension_), reader));
+        auto lext = toLower(ext.extension_);
+        util::insert_unique(map_, lext, reader);
     }
+    return true;
 }
+
+DataReader* DataReaderFactory::create(const std::string& key) const {
+    return util::map_find_or_null(map_, key, [](DataReader* o) { return o->clone(); });
+}
+
+bool DataReaderFactory::hasKey(const std::string& key) const { return util::has_key(map_, key); }
 
 }  // namespace

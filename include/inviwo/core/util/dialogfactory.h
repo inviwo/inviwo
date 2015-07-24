@@ -40,21 +40,12 @@
 
 namespace inviwo {
 
-class IVW_CORE_API DialogFactory : public Factory,
+class IVW_CORE_API DialogFactory : public StandardFactory<Dialog, DialogFactoryObject>,
     public Singleton<DialogFactory> {
 public:
-    DialogFactory();
-    virtual ~DialogFactory();
-
-    virtual Dialog* getDialog(const std::string &className) const;
-
-    void registerObject(DialogFactoryObject* dialog);
-    virtual IvwSerializable* create(const std::string &classIdentifier) const;
-    virtual bool isValidType(const std::string &classIdentifier) const;
-
-    typedef std::multimap<std::string, DialogFactoryObject*> DialogMap;
-private:
-    mutable DialogMap map_;
+    DialogFactory() = default;
+    virtual ~DialogFactory() = default;
+    bool registerObject(DialogFactoryObject* dialog) override;
 };
 
 } // namespace

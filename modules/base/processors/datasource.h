@@ -84,12 +84,10 @@ DataSource<DataType, PortType>::DataSource()
     
     addPort(port_);
     file_.onChange(this, &DataSource::load);
-    std::vector<FileExtension> ext = DataReaderFactory::getPtr()->getExtensionsForType<DataType>();
+    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<DataType>();
 
-    for (std::vector<FileExtension>::const_iterator it = ext.begin(); it != ext.end(); ++it) {
-        std::stringstream ss;
-        ss << it->description_ << " (*." << it->extension_ << ")";
-        file_.addNameFilter(ss.str());
+    for (auto& ext : extensions) {
+        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
     }
 
     reload_.onChange(this, &DataSource::load);
@@ -130,11 +128,8 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
         return;
     }
 
-    std::string fileExtension = filesystem::getFileExtension(file_.get());
-    DataReaderType<DataType>* reader =
-        DataReaderFactory::getPtr()->getReaderForTypeAndExtension<DataType>(fileExtension);
-
-    if (reader) {
+    std::string ext = filesystem::getFileExtension(file_.get());  
+    if (auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<DataType>(ext)) {
         try {
             DataType* data = reader->readMetaData(file_.get());
             port_.setData(data, true);

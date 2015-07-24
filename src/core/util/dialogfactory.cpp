@@ -24,49 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/dialogfactory.h>
 
 namespace inviwo {
 
-DialogFactory::DialogFactory() {}
-
-DialogFactory::~DialogFactory() {}
-
-void DialogFactory::registerObject(DialogFactoryObject* dialog) {
-    std::string className = dialog->getClassIdentifier();
-
-    if (map_.find(className) != map_.end()) {
-        LogWarn("Dialog already registed: " << className);
-    }
-
-    map_.insert(std::make_pair(className, dialog));
-}
-
-
-Dialog* DialogFactory::getDialog(const std::string &className) const {
-    DialogMap::const_iterator it = map_.find(className);
-
-    if (it != map_.end()) {
-        return it->second->create();
-    } else {
-        return nullptr;
-    }
-}
-
-IvwSerializable* DialogFactory::create(const std::string &className) const {
-    // Dialogs are not serializable...
-    return nullptr;
-}
-
-bool DialogFactory::isValidType(const std::string &className) const {
-    if (map_.find(className) != map_.end())
-        return true;
-    else
+bool DialogFactory::registerObject(DialogFactoryObject *dialog) {
+    if (!StandardFactory<Dialog, DialogFactoryObject>::registerObject(dialog)) {
+        LogWarn("Dialog already registered: " << dialog->getClassIdentifier());
         return false;
+    }
+    return true;
 }
 
-} // namespace
-
+}  // namespace

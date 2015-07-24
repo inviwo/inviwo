@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_METADATA_FACTORY_H
@@ -37,23 +37,20 @@
 
 namespace inviwo {
 
-class IVW_CORE_API MetaDataFactory : public Factory,
-    public Singleton<MetaDataFactory>  {
-
+class IVW_CORE_API MetaDataFactory : public Factory<MetaData>, public Singleton<MetaDataFactory> {
 public:
-    MetaDataFactory();
-    virtual ~MetaDataFactory();
+    using Map = std::unordered_map<std::string, MetaData*>;
+    MetaDataFactory() = default;
+    virtual ~MetaDataFactory() = default;
 
-    void registerObject(MetaData* meta);
-    virtual IvwSerializable* create(const std::string &className) const;
-    virtual bool isValidType(const std::string &className) const;
+    virtual bool registerObject(MetaData* obj);
+    virtual MetaData* create(const std::string& className) const;
+    virtual bool hasKey(const std::string& className) const override;
 
-    typedef std::map<std::string, MetaData*> MetaDataClassMap;
-
-private:
-    mutable MetaDataClassMap metaDataClassMap_;
+protected:
+    Map map_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROCESSORFACTORY_H
+#endif  // IVW_PROCESSORFACTORY_H

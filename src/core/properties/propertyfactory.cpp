@@ -33,49 +33,35 @@
 
 namespace inviwo {
 
-PropertyFactory::PropertyFactory() {}
-
-PropertyFactory::~PropertyFactory() {}
-
-void PropertyFactory::registeryObject(PropertyFactoryObject *property) {
-    std::string className = property->getClassIdentifier();
-    PropertyClassMap::const_iterator it = propertyClassMap_.find(className);
-
-    if (it == propertyClassMap_.end())
-        propertyClassMap_.insert(std::make_pair(className, property));
-    else
-        LogWarn("Property with class name: " << className << " already registed");
-}
-
-IvwSerializable *PropertyFactory::create(const std::string &className) const {
-    return getProperty(className, "", "");
-}
-
-bool PropertyFactory::isValidType(const std::string &className) const {
-    PropertyClassMap::const_iterator it = propertyClassMap_.find(className);
-
-    if (it != propertyClassMap_.end())
-        return true;
-    else
+bool PropertyFactory::registerObject(PropertyFactoryObject *property) {
+    if (!util::insert_unique(map_, property->getClassIdentifier(), property)) {
+        LogWarn("Property with class name: " << property->getClassIdentifier()
+                                             << " already registed");
         return false;
+    }
+    return true;
 }
 
-Property *PropertyFactory::getProperty(const std::string &className, const std::string &identifier,
-                                       const std::string &displayName) const {
-    PropertyClassMap::const_iterator it = propertyClassMap_.find(className);
-
-    if (it != propertyClassMap_.end())
-        return it->second->create(identifier, displayName);
-    else
-        return nullptr;
+Property *PropertyFactory::create(const std::string &className) const {
+    return create(className, "", "");
 }
 
-std::vector<std::string> PropertyFactory::getRegistedPropertyClassNames() const {
-    std::vector<std::string> classNames;
+Property *PropertyFactory::create(const std::string &className, const std::string &identifier,
+                                  const std::string &displayName) const {
+    return util::map_find_or_null(map_, className,
+                                  [&identifier, &displayName](PropertyFactoryObject *o) {
+                                      return o->create(identifier, displayName);
+                                  });
+}
 
-    for (auto &elem : propertyClassMap_) classNames.push_back(elem.first);
+bool PropertyFactory::hasKey(const std::string &className) const {
+    return util::has_key(map_, className);
+}
 
-    return classNames;
+std::vector<std::string> PropertyFactory::getKeys() const {
+    auto res = std::vector<std::string>();
+    for (auto &elem : map_) res.push_back(elem.first);
+    return res;
 }
 
 }  // namespace

@@ -56,7 +56,7 @@ public:
 
     virtual ~DialogFactoryObjectTemplate() {}
 
-    virtual Dialog* create() {
+    virtual Dialog* create() override {
         return static_cast<Dialog*>(new T());
     }
 };
