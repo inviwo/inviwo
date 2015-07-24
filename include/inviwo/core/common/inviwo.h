@@ -38,7 +38,8 @@
 #pragma warning(3: 4061) // enumerator 'identifier' in a switch of enum 'enumeration' is not explicitly handled by a case label
 #pragma warning(3: 4062) // enumerator 'identifier' in a switch of enum 'enumeration' is not handled
 #pragma warning(3: 4263) // warn for virtual functions that do not overide something in baseclass
-#pragma warning(3: 4265) // warn if non-virtual destructor
+// removed warning since <functional> has to many...
+// #pragma warning(3: 4265) // warn if non-virtual destructor
 #pragma warning(3: 4266) // warn if no overide of function in baseclass
 #pragma warning(3: 4289) // loop control variable declared in the for-loop is used outside the for-loop scope
 #pragma warning(3: 4296) // expression is always false
