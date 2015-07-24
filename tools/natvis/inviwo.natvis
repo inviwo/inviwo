@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Inviwo visualizers for Visual Studio 2015 -->
+<!-- Put them into My Documents/Visual Studio 2015/Visualizers/ -->
+
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" MenuName="Add to Image Watch"/>
+
+  <Type Name="inviwo::DataFormat&lt;*&gt;">
+    <DisplayString>{{DataFormat={formatStr_}, n={components_}}}}</DisplayString>
+    <Expand>
+      <Item Name="Id">formatId_</Item>
+      <Item Name="Components">components_</Item>
+      <Item Name="Size">size_</Item>
+      <Item Name="NumericType">numericType_</Item>
+      <Item Name="Min">min_</Item>
+      <Item Name="Max">max_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::DataRepresentation">
+    <DisplayString>{{Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::VolumeRepresentation">
+    <DisplayString>{{VolumeRepresentation, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::VolumeDisk">
+    <DisplayString>{{VolumeDisk, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="File">sourceFile_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::VolumeRAMPrecision&lt;*&gt;">
+    <DisplayString>{{VolumeRAM, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="DataOwner">ownsDataPtr_</Item>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::VolumeGL">
+    <DisplayString>{{VolumeGL, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::SpatialEntity&lt;*&gt;">
+    <DisplayString>{modelMatrix_}</DisplayString>
+    <Expand>
+      <Item Name="ModelMatrix">modelMatrix_</Item>
+      <Item Name="WorldMatrix">worldMatrix_</Item>
+    </Expand>
+  </Type>
+  
+  <Type Name="inviwo::StructuredGridEntity&lt;*&gt;">
+    <DisplayString>{modelMatrix_}</DisplayString>
+    <Expand>
+      <Item Name="ModelMatrix">modelMatrix_</Item>
+      <Item Name="WorldMatrix">worldMatrix_</Item>
+      <Item Name="Dimension">dimensions_</Item>
+    </Expand>
+  </Type>
+
+
+  <Type Name="inviwo::Volume">
+    <DisplayString>{{Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="ModelMatrix">modelMatrix_</Item>
+      <Item Name="WorldMatrix">worldMatrix_</Item>
+      <Item Name="Representations">representations_</Item>
+      <Item Name="MetaData">metaData_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::Image">
+    <DisplayString>{colorLayers_[0]}</DisplayString>
+    <Expand>
+      <Item Name="Color Layers">colorLayers_</Item>
+      <Item Name="Depth Layer">depthLayer_</Item>
+      <Item Name="Picking Layer">pickingLayer_</Item>
+      <Item Name="Representations">representations_</Item>
+      <Item Name="MetaData">metaData_</Item>
+    </Expand>
+  </Type>
+
+
+
+  <Type Name="inviwo::Layer">
+    <DisplayString>{{Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="Representations">representations_</Item>
+      <Item Name="MetaData">metaData_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::LayerDisk">
+    <DisplayString>{{LayerDisk, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="LayerType">layerType_</Item>
+      <Item Name="File">sourceFile_</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="inviwo::LayerGL">
+    <DisplayString>{{LayerGL, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="Dimension">dimensions_</Item>
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="LayerType">layerType_</Item>
+    </Expand>
+  </Type>
+
+
+  <Type Name="inviwo::LayerRAMPrecision&lt;*&gt;">
+    <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" />
+  </Type>
+   
+  <Type Name="inviwo::LayerRAMPrecision&lt;*&gt;">
+    <DisplayString>{{LayerRAM, Dim={dimensions_}, Format={dataFormatBase_-&gt;formatStr_}}}</DisplayString>
+    <Expand>
+      <Item Name="[width]">dimensions_.x</Item>
+      <Item Name="[height]">dimensions_.y</Item>
+      <Item Name="[channels]">dataFormatBase_->components_</Item>
+
+      <Item Name="Owner">*owner_</Item>
+      <Item Name="Format">*dataFormatBase_</Item>
+      <Item Name="LayerType">layerType_</Item>
+      
+      <Synthetic Name="[type]">
+        <DisplayString>UINT8</DisplayString>
+      </Synthetic>
+      <Item Name="[data]">data_._Mypair._Myval2</Item>
+      <Item Name="[stride]">dimensions_.x*dataFormatBase_->components_</Item>
+ 
+    </Expand>
+  </Type>
+
+
+  <Type Name="QImage">
+    <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" />
+  </Type>
+
+  <Type Name="QImage">
+    <DisplayString>{{QImage {((Qt5Guid.dll!QImageData*)d)->width}x{((Qt5Guid.dll!QImageData*)d)->height}}}</DisplayString>
+    <Expand>
+      <Synthetic Name="[type]">
+        <DisplayString>UINT8</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[channels]" Condition="(*(int*)(((char*)d)+48))==4">
+        <DisplayString>4</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[channels]" Condition="(*(int*)(((char*)d)+48))==5">
+        <DisplayString>4</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[channels]" Condition="(*(int*)(((char*)d)+48))==6">
+        <DisplayString>4</DisplayString>
+      </Synthetic>
+      <Item Name="[width]">((Qt5Guid.dll!QImageData*)d)->width</Item>
+      <Item Name="[height]">((Qt5Guid.dll!QImageData*)d)->height</Item>
+      <Item Name="[depth]">((Qt5Guid.dll!QImageData*)d)->depth</Item>
+      <Item Name="[nbytes]">((Qt5Guid.dll!QImageData*)d)->nbytes</Item>
+      <Item Name="[devicePixelRatio]">((Qt5Guid.dll!QImageData*)d)->devicePixelRatio</Item>
+      <Item Name="[data]">((Qt5Guid.dll!QImageData*)d)->data</Item>
+      <Item Name="[stride]">((Qt5Guid.dll!QImageData*)d)->bytes_per_line</Item>
+    </Expand>
+  </Type>
+
+
+  <Type Name="inviwo::DataInport&lt;*,*,*&gt;">
+    <DisplayString>{identifier_}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Owner">processor_-&gt;identifier_</Item>
+      <Item Name="Changed">changed_</Item>
+      <Item Name="Connected Outports">connectedOutports_</Item>
+    </Expand>
+  </Type>
+  <Type Name="inviwo::DataOutport&lt;*&gt;">
+    <DisplayString>{identifier_}</DisplayString>
+    <Expand>
+      <Item Name="Identifier">identifier_</Item>
+      <Item Name="Owner">processor_-&gt;identifier_</Item>
+      <Item Name="Connected Inports">connectedInports_</Item>
+      <Item Name="Data">data_</Item>
+    </Expand>
+  </Type>
+  
+</AutoVisualizer>
