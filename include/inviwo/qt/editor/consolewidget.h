@@ -75,11 +75,12 @@ private:
 
 public slots:
     void logMessage(LogLevel level, QString message);
+    void logMessage(int level, QString message);
     void showContextMenu(const QPoint& pos);
     void clear();
 
 signals:
-    void logMessageSignal(LogLevel logLevel, QString message);
+    void logMessageSignal(int logLevel, QString message);
     void clearSignal();
 };
 

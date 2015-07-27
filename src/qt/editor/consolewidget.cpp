@@ -103,7 +103,7 @@ ConsoleWidget::ConsoleWidget(QWidget* parent)
     setWidget(w);
 
 
-    connect(this, SIGNAL(logMessageSignal(LogLevel, QString)), this, SLOT(logMessage(LogLevel, QString)));
+    connect(this, SIGNAL(logMessageSignal(int, QString)), this, SLOT(logMessage(int, QString)));
     connect(this, SIGNAL(clearSignal()), this, SLOT(clear()));
 }
 
@@ -137,9 +137,13 @@ void ConsoleWidget::clear(){
     numErrors_ = numWarnings_ = numInfos_ = 0;
 }
 
+void ConsoleWidget::logMessage(int level, QString message){
+    ConsoleWidget::logMessage(static_cast<LogLevel>(level), message);
+}
+
 void ConsoleWidget::logMessage(LogLevel level, QString message) {
     if (QThread::currentThread() != QCoreApplication::instance()->thread()){
-        emit logMessageSignal(level, message);
+        emit logMessageSignal(static_cast<int>(level), message);
         return; 
     }
 
