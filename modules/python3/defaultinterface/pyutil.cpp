@@ -41,6 +41,15 @@
 
 namespace inviwo {
 
+    PyObject* py_wait(PyObject* /*self*/, PyObject* args) {
+        static PyWaitMethod p;
+
+        if (!p.testParams(args)) return nullptr;
+
+        InviwoApplication::getPtr()->waitForPool();
+        
+        Py_RETURN_NONE;
+}
 PyObject* py_snapshot(PyObject* /*self*/, PyObject* args) {
     static PySnapshotMethod p;
 

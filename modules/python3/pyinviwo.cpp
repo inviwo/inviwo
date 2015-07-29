@@ -198,6 +198,7 @@ void PyInviwo::initDefaultInterfaces() {
     inviwoPyModule_->addMethod(new PyListProcessorsMethod());
     inviwoPyModule_->addMethod(new PyCanvasCountMethod());
     inviwoPyModule_->addMethod(new PyResizeCanvasMethod());
+    inviwoPyModule_->addMethod(new PyWaitMethod());
     inviwoPyModule_->addMethod(new PySnapshotMethod());
     inviwoPyModule_->addMethod(new PySnapshotCanvasMethod());
     inviwoPyModule_->addMethod(new PyGetBasePathMethod());

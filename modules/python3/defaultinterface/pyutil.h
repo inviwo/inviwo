@@ -36,6 +36,7 @@
 
 namespace inviwo {
 
+PyObject* py_wait(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_snapshot(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_snapshotCanvas(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_getBasePath(PyObject* /*self*/, PyObject* /*args*/);
@@ -51,7 +52,25 @@ PyObject* py_clearResourceManager(PyObject* /*self*/, PyObject* /*args*/);
 
 PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_enableEvaluation(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_snapshot(PyObject* /*self*/, PyObject* /*args*/);
 
+
+PyObject* py_snapshot(PyObject* /*self*/, PyObject* /*args*/);
+
+
+
+class IVW_MODULE_PYTHON3_API PyWaitMethod : public PyMethod {
+public:
+    PyWaitMethod(){}
+    virtual ~PyWaitMethod() {}
+    virtual std::string getName() const { return "wait"; }
+    virtual std::string getDesc() const {
+        return "Make the script wait for all processors in the network to finish their work.";
+    }
+    virtual PyCFunction getFunc() {
+        return py_wait;
+    }
+};
 
 class IVW_MODULE_PYTHON3_API PySnapshotMethod : public PyMethod {
 public:
