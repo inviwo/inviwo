@@ -382,7 +382,7 @@ void PropertyWidgetQt::moduleAction() {
 }
 
 void PropertyWidgetQt::updateContextMenu() {
-    if (usageModeItem_) {
+    if (usageModeItem_ && property_) {
         // Update the current selection.
         if (property_->getUsageMode() == DEVELOPMENT)
             developerUsageModeAction_->setChecked(true);
