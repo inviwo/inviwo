@@ -56,7 +56,6 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Enable Operation__ ...
- *   * __Adjust Basis and Offset__ ...
  *   * __Factor__ ...
  *
  */
@@ -78,6 +77,7 @@ private:
     VolumeOutport outport_;
 
     BoolProperty enabled_;
+    BoolProperty waitForCompletion_;
     TemplateOptionProperty<VolumeRAMSubSample::Factor> subSampleFactor_;
 
     std::future<std::unique_ptr<Volume>> result_;

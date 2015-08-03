@@ -43,11 +43,13 @@ VolumeSubsample::VolumeSubsample()
     , inport_("volume.inport")
     , outport_("volume.outport")
     , enabled_("enabled", "Enable Operation", true)
+    , waitForCompletion_("waitForCompletion", "Wait For Subsample Completion", false)
     , subSampleFactor_("subSampleFacor", "Factor")
     , dirty_(false) {
     addPort(inport_);
     addPort(outport_);
     addProperty(enabled_);
+    addProperty(waitForCompletion_);
 
     subSampleFactor_.addOption("none", "None", VolumeRAMSubSample::Factor::None);
     subSampleFactor_.addOption("half", "Half", VolumeRAMSubSample::Factor::Half);
@@ -62,9 +64,31 @@ VolumeSubsample::~VolumeSubsample() {}
 
 void VolumeSubsample::process() {
     if (enabled_.get() && subSampleFactor_.get() != VolumeRAMSubSample::Factor::None) {
+        if (!result_.valid()) {
+            const Volume* data = inport_.getData();
+            const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
+            getActivityIndicator().setActive(true);
+            result_ = dispatchPool(
+                [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f)
+                    -> std::unique_ptr<Volume> {
+                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
+                    if (!waitForCompletion_.get()){
+                        dispatchFront([this]() {
+                            dirty_ = true;
+                            invalidate(INVALID_OUTPUT);
+                        });
+                    }
+                    return volume;
+                },
+                vol, subSampleFactor_.get());
+        }
+
+        if (waitForCompletion_.get())
+            result_.wait();
+
         if (result_.valid() &&
             result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
-                std::future_status::ready) {
+            std::future_status::ready) {
             std::unique_ptr<Volume> volume = std::move(result_.get());
 
             // pass meta data on
@@ -77,21 +101,6 @@ void VolumeSubsample::process() {
             getActivityIndicator().setActive(false);
             dirty_ = false;
 
-        } else if (!result_.valid()) {
-            const Volume* data = inport_.getData();
-            const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
-            getActivityIndicator().setActive(true);
-            result_ = dispatchPool(
-                [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f)
-                    -> std::unique_ptr<Volume> {
-                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
-                    dispatchFront([this]() {
-                        dirty_ = true;
-                        invalidate(INVALID_OUTPUT);
-                    });
-                    return volume;
-                },
-                vol, subSampleFactor_.get());
         }
     } else {
         outport_.setConstData(inport_.getData());
