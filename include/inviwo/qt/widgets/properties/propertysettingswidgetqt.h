@@ -45,6 +45,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/qt/widgets/qstringhelper.h>
 
 namespace inviwo {
