@@ -84,6 +84,8 @@ public:
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& s);
 
+    static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
+
 protected:
     void validateValues();
 

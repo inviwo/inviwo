@@ -32,7 +32,14 @@
 namespace inviwo {
 
 BaseOrdinalMinMaxPropertyWidgetQt::BaseOrdinalMinMaxPropertyWidgetQt(Property* property)
-    : PropertyWidgetQt(property) {
+    : PropertyWidgetQt(property),
+    settingsWidget_(nullptr),
+    slider_(nullptr),
+    spinBoxMin_(nullptr),
+    spinBoxMax_(nullptr),
+    label_(nullptr),
+    contextMenu_(nullptr),
+    settingsAction_(nullptr) {
 }
     
 BaseOrdinalMinMaxPropertyWidgetQt::~BaseOrdinalMinMaxPropertyWidgetQt(){
@@ -72,6 +79,61 @@ void BaseOrdinalMinMaxPropertyWidgetQt::generateWidget() {
     connect(slider_, SIGNAL(valuesChanged(int,int)), this, SLOT(updateFromSlider(int,int)));
     connect(spinBoxMin_, SIGNAL(valueChanged(double)), this, SLOT(updateFromSpinBoxMin(double)));
     connect(spinBoxMax_, SIGNAL(valueChanged(double)), this, SLOT(updateFromSpinBoxMax(double)));
+}
+
+
+
+void BaseOrdinalMinMaxPropertyWidgetQt::generatesSettingsWidget() {
+
+    settingsAction_ = new QAction(tr("&Property settings..."), this);
+    settingsAction_->setToolTip(tr("&Open the property settings dialog to adjust min bound, start, end, max bound, minSepration and increment values"));
+
+    connect(settingsAction_,
+        SIGNAL(triggered()),
+        this,
+        SLOT(showSettings()));
+
+    contextMenu_ = new QMenu(this);
+    contextMenu_->addActions(PropertyWidgetQt::getContextMenu()->actions());
+    contextMenu_->addAction(settingsAction_);
+}
+
+
+
+QMenu* BaseOrdinalMinMaxPropertyWidgetQt::getContextMenu() {
+    if (!contextMenu_) {
+        generatesSettingsWidget();
+    }
+    return contextMenu_;
+}
+
+/****************************************************************************/
+// Slots:
+
+void BaseOrdinalMinMaxPropertyWidgetQt::showContextMenu(const QPoint& pos) {
+
+    if (!contextMenu_) {
+        generatesSettingsWidget();
+    }
+
+    PropertyWidgetQt::updateContextMenu();
+    UsageMode appVisibilityMode = getApplicationUsageMode();
+
+    if (appVisibilityMode == DEVELOPMENT) {
+        settingsAction_->setVisible(true);
+    }
+    else {
+        settingsAction_->setVisible(false);
+    }
+
+    if (property_->getReadOnly()) {
+        settingsAction_->setEnabled(false);
+    }
+    else {
+        settingsAction_->setEnabled(true);
+    }
+    contextMenu_->exec(QCursor::pos());
+
 }
 
 } // namespace

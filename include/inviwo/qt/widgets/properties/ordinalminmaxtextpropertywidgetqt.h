@@ -33,6 +33,7 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <inviwo/qt/widgets/properties/propertysettingswidgetqt.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/ordinaleditorwidget.h>
 #include <inviwo/qt/widgets/tooltiphelper.h>
@@ -51,24 +52,32 @@ public:
     virtual ~BaseOrdinalMinMaxTextPropertyWidgetQt();
     
     virtual void updateFromProperty() = 0;
+    virtual QMenu* getContextMenu();
     
 public slots:
     virtual void updateFromMin() = 0;
     virtual void updateFromMax() = 0;
+    virtual void showSettings() = 0;
+    virtual void showContextMenu(const QPoint& pos);    
     
 protected:
     void generateWidget();
-    
-    virtual void makeEditorWidgets() = 0;
+    virtual void makeEditorWidgets() = 0;    
+
+    PropertySettingsWidgetQt* settingsWidget_;    
     
     BaseOrdinalEditorWidget* min_;
     BaseOrdinalEditorWidget* max_;
     EditableLabelQt* label_;
+
+    QMenu* contextMenu_;
+    QAction* settingsAction_;
+    void generatesSettingsWidget();
 };
 
 
 
-template <typename T>
+template <typename BT, typename T>
 class OrdinalMinMaxTextPropertyWidgetQt : public BaseOrdinalMinMaxTextPropertyWidgetQt {
 
 public:
@@ -84,6 +93,14 @@ public:
 protected:
     virtual void makeEditorWidgets();
     virtual std::string getToolTipText();
+
+    virtual void showSettings() {
+        if (!this->settingsWidget_) {
+            this->settingsWidget_ =
+                new TemplateMinMaxPropertySettingsWidgetQt<BT, T>(minMaxProperty_, this);
+        }
+        this->settingsWidget_->showWidget();
+    }
     
     MinMaxProperty<T>* minMaxProperty_;
     
@@ -91,13 +108,13 @@ protected:
     OrdinalEditorWidget<T>* max_;
 };
 
-typedef OrdinalMinMaxTextPropertyWidgetQt<double> DoubleMinMaxTextPropertyWidgetQt;
-typedef OrdinalMinMaxTextPropertyWidgetQt<float> FloatMinMaxTextPropertyWidgetQt;
-typedef OrdinalMinMaxTextPropertyWidgetQt<int> IntMinMaxTextPropertyWidgetQt;
+typedef OrdinalMinMaxTextPropertyWidgetQt<double, double> DoubleMinMaxTextPropertyWidgetQt;
+typedef OrdinalMinMaxTextPropertyWidgetQt<double, float> FloatMinMaxTextPropertyWidgetQt;
+typedef OrdinalMinMaxTextPropertyWidgetQt<int, int> IntMinMaxTextPropertyWidgetQt;
 
 
-template<typename T>
-OrdinalMinMaxTextPropertyWidgetQt<T>::OrdinalMinMaxTextPropertyWidgetQt(MinMaxProperty<T>* property)
+template <typename BT, typename T>
+OrdinalMinMaxTextPropertyWidgetQt<BT, T>::OrdinalMinMaxTextPropertyWidgetQt(MinMaxProperty<T>* property)
     : BaseOrdinalMinMaxTextPropertyWidgetQt(property)
     , minMaxProperty_(property) {
     
@@ -105,12 +122,12 @@ OrdinalMinMaxTextPropertyWidgetQt<T>::OrdinalMinMaxTextPropertyWidgetQt(MinMaxPr
     updateFromProperty();
 }
 
-template<typename T>
-OrdinalMinMaxTextPropertyWidgetQt<T>::~OrdinalMinMaxTextPropertyWidgetQt() {
+template <typename BT, typename T>
+OrdinalMinMaxTextPropertyWidgetQt<BT, T>::~OrdinalMinMaxTextPropertyWidgetQt() {
 }
 
-template<typename T>
-void OrdinalMinMaxTextPropertyWidgetQt<T>::makeEditorWidgets(){
+template <typename BT, typename T>
+void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::makeEditorWidgets(){
     min_ = new OrdinalEditorWidget<T>();
     max_ = new OrdinalEditorWidget<T>();
     
@@ -118,8 +135,8 @@ void OrdinalMinMaxTextPropertyWidgetQt<T>::makeEditorWidgets(){
     BaseOrdinalMinMaxTextPropertyWidgetQt::max_ = max_;
 }
 
-template<typename T>
-void OrdinalMinMaxTextPropertyWidgetQt<T>::updateFromProperty() {
+template <typename BT, typename T>
+void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromProperty() {
     V val = minMaxProperty_->get();
     V range = minMaxProperty_->getRange();
     T inc = minMaxProperty_->getIncrement();
@@ -142,8 +159,8 @@ void OrdinalMinMaxTextPropertyWidgetQt<T>::updateFromProperty() {
 }
 
 
-template<typename T>
-void OrdinalMinMaxTextPropertyWidgetQt<T>::updateFromMin() {
+template <typename BT, typename T>
+void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMin() {
     T min = min_->getValue();
     T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
@@ -164,8 +181,8 @@ void OrdinalMinMaxTextPropertyWidgetQt<T>::updateFromMin() {
     }
 }
 
-template<typename T>
-void OrdinalMinMaxTextPropertyWidgetQt<T>::updateFromMax() {
+template <typename BT, typename T>
+void OrdinalMinMaxTextPropertyWidgetQt<BT, T>::updateFromMax() {
     T max = max_->getValue();
     T sep = minMaxProperty_->getMinSeparation();
     V range = minMaxProperty_->get();
@@ -186,8 +203,8 @@ void OrdinalMinMaxTextPropertyWidgetQt<T>::updateFromMax() {
     }
 }
 
-template <typename T>
-std::string OrdinalMinMaxTextPropertyWidgetQt<T>::getToolTipText() {
+template <typename BT, typename T>
+std::string OrdinalMinMaxTextPropertyWidgetQt<BT, T>::getToolTipText() {
 
     ToolTipHelper t(this->minMaxProperty_->getDisplayName());
 
@@ -198,10 +215,10 @@ std::string OrdinalMinMaxTextPropertyWidgetQt<T>::getToolTipText() {
     t.row("Validation Level", PropertyOwner::invalidationLevelToString(
                                              this->minMaxProperty_->getInvalidationLevel()));
 
-    t.row("Minimum", minMaxProperty_->get().x);
-    t.row("Maximum", minMaxProperty_->get().y);
-    t.row("Range min", minMaxProperty_->getRangeMin());
-    t.row("Range max", minMaxProperty_->getRangeMax());
+    t.row("Minimum Bound", minMaxProperty_->getRangeMin());
+    t.row("Start", minMaxProperty_->get().x);
+    t.row("End", minMaxProperty_->get().y);
+    t.row("Maximum Bound", minMaxProperty_->getRangeMax());
     t.row("Increment", minMaxProperty_->getIncrement());
     t.row("Separation", minMaxProperty_->getMinSeparation());
 

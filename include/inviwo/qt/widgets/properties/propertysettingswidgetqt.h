@@ -51,38 +51,25 @@ namespace inviwo {
 
 struct SinglePropertySetting {
     SinglePropertySetting(QWidget* widget, std::string label)
-        : label_(new QLabel(QString::fromStdString(label), widget))
-        , min_(new QLineEdit(widget))
-        , val_(new QLineEdit(widget))
-        , max_(new QLineEdit(widget))
-        , inc_(new QLineEdit(widget)) {
-        min_->setValidator(new QDoubleValidator(widget));
-        val_->setValidator(new QDoubleValidator(widget));
-        max_->setValidator(new QDoubleValidator(widget));
-        inc_->setValidator(new QDoubleValidator(widget));
-    }
+        : label_(new QLabel(QString::fromStdString(label), widget)), widget_(widget) {}
 
     QLabel* label_;
-    QLineEdit* min_;
-    QLineEdit* val_;
-    QLineEdit* max_;
-    QLineEdit* inc_;
+    QWidget* widget_;
+    std::vector<QLineEdit*> additionalFields_;
 
-    double getMinAsDouble() const {
-        QLocale locale = min_->locale();
-        return locale.toDouble(min_->text().remove(QChar(' ')));
+    QLineEdit* addField() {
+        QLineEdit* ext = new QLineEdit(widget_);
+        ext->setValidator(new QDoubleValidator(widget_));
+        additionalFields_.push_back(ext);
+        return ext;
     }
-    double getValAsDouble() const {
-        QLocale locale = val_->locale();
-        return locale.toDouble(val_->text().remove(QChar(' ')));
-    }
-    double getMaxAsDouble() const {
-        QLocale locale = max_->locale();
-        return locale.toDouble(max_->text().remove(QChar(' ')));
-    }
-    double getIncAsDouble() const {
-        QLocale locale = inc_->locale();
-        return locale.toDouble(inc_->text().remove(QChar(' ')));
+
+    double getFieldAsDouble(int i) {
+        if (i >= 0 && i < additionalFields_.size()) {
+            QLocale locale = additionalFields_[i]->locale();
+            return locale.toDouble(additionalFields_[i]->text().remove(QChar(' ')));
+        }
+        return DataFLOAT64::minToDouble();
     }
 };
 
@@ -115,7 +102,7 @@ public slots:
 protected:
     virtual void generateWidget() = 0;
 
-    QGridLayout *gridLayout_;
+    QGridLayout* gridLayout_;
     QPushButton btnApply_;
     QPushButton btnOk_;
     QPushButton btnCancel_;
@@ -163,11 +150,16 @@ public:
                 std::stringstream ss;
                 ss << desc[i] << (components.y == 1 ? "" : ", " + desc[j]);
                 settings_.push_back(new SinglePropertySetting(this, ss.str()));
-                gridLayout_->addWidget(settings_[count]->label_, count + 1, 0);
-                gridLayout_->addWidget(settings_[count]->min_, count + 1, 1);
-                gridLayout_->addWidget(settings_[count]->val_, count + 1, 2);
-                gridLayout_->addWidget(settings_[count]->max_, count + 1, 3);
-                gridLayout_->addWidget(settings_[count]->inc_, count + 1, 4);
+                QLineEdit* min = settings_[count]->addField();
+                QLineEdit* val = settings_[count]->addField();
+                QLineEdit* max = settings_[count]->addField();
+                QLineEdit* inc = settings_[count]->addField();
+                int t = 0;
+                gridLayout_->addWidget(settings_[count]->label_, count + 1, t++);
+                gridLayout_->addWidget(min, count + 1, t++);
+                gridLayout_->addWidget(val, count + 1, t++);
+                gridLayout_->addWidget(max, count + 1, t++);
+                gridLayout_->addWidget(inc, count + 1, t++);
                 count++;
             }
         }
@@ -193,7 +185,7 @@ public:
 
         uvec2 components = OrdinalProperty<T>::getDim();
         size_t count = 0;
-        
+
         T min = property_->getMinValue();
         T val = property_->get();
         T max = property_->getMaxValue();
@@ -206,10 +198,15 @@ public:
 
         for (size_t i = 0; i < components.x; i++) {
             for (size_t j = 0; j < components.y; j++) {
-                util::glmcomp(min, count) = static_cast<BT>(settings_[count]->getMinAsDouble());
-                util::glmcomp(val, count) = static_cast<BT>(settings_[count]->getValAsDouble());
-                util::glmcomp(max, count) = static_cast<BT>(settings_[count]->getMaxAsDouble());
-                util::glmcomp(inc, count) = static_cast<BT>(settings_[count]->getIncAsDouble());
+                int t = 0;
+                util::glmcomp(min, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
+                util::glmcomp(val, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
+                util::glmcomp(max, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
+                util::glmcomp(inc, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
                 count++;
             }
         }
@@ -230,17 +227,18 @@ public:
         T max = property_->getMaxValue();
         T inc = property_->getIncrement();
 
-        QLocale locale = settings_[0]->min_->locale();
+        QLocale locale = settings_[0]->additionalFields_[0]->locale();
 
         for (size_t i = 0; i < components.x; i++) {
             for (size_t j = 0; j < components.y; j++) {
-                settings_[count]->min_->setText(
+                int t = 0;
+                settings_[count]->additionalFields_[t++]->setText(
                     QStringHelper<BT>::toLocaleString(locale, util::glmcomp(min, count)));
-                settings_[count]->val_->setText(
+                settings_[count]->additionalFields_[t++]->setText(
                     QStringHelper<BT>::toLocaleString(locale, util::glmcomp(val, count)));
-                settings_[count]->max_->setText(
+                settings_[count]->additionalFields_[t++]->setText(
                     QStringHelper<BT>::toLocaleString(locale, util::glmcomp(max, count)));
-                settings_[count]->inc_->setText(
+                settings_[count]->additionalFields_[t++]->setText(
                     QStringHelper<BT>::toLocaleString(locale, util::glmcomp(inc, count)));
                 count++;
             }
@@ -253,6 +251,174 @@ public:
 
 private:
     OrdinalProperty<T>* property_;
+};
+
+template <typename BT, typename T>
+class TemplateMinMaxPropertySettingsWidgetQt : public PropertySettingsWidgetQt {
+public:
+    TemplateMinMaxPropertySettingsWidgetQt(MinMaxProperty<T>* property, QWidget* widget)
+        : PropertySettingsWidgetQt(property, widget), property_(property) {
+        generateWidget();
+    }
+
+    virtual ~TemplateMinMaxPropertySettingsWidgetQt() {}
+
+    typedef glm::detail::tvec2<T, glm::defaultp> V;
+
+    virtual void generateWidget() {
+        connect(&btnApply_, SIGNAL(clicked()), this, SLOT(apply()));
+        connect(&btnOk_, SIGNAL(clicked()), this, SLOT(save()));
+        connect(&btnCancel_, SIGNAL(clicked()), this, SLOT(cancel()));
+
+        gridLayout_->setContentsMargins(10, 10, 10, 10);
+        gridLayout_->setSpacing(10);
+
+        gridLayout_->addWidget(new QLabel("Component", this), 0, 0);
+        gridLayout_->addWidget(new QLabel("Min Bound", this), 0, 1);
+        gridLayout_->addWidget(new QLabel("Start", this), 0, 2);
+        gridLayout_->addWidget(new QLabel("End", this), 0, 3);
+        gridLayout_->addWidget(new QLabel("Max Bound", this), 0, 4);
+        gridLayout_->addWidget(new QLabel("MinSeparation", this), 0, 5);
+        gridLayout_->addWidget(new QLabel("Increment", this), 0, 6);
+
+        uvec2 components = MinMaxProperty<T>::getDim();
+
+        std::string desc[4];
+        desc[0] = "x";
+        desc[1] = "y";
+        desc[2] = "z";
+        desc[3] = "w";
+
+        int count = 0;
+        for (size_t i = 0; i < components.x; i++) {
+            for (size_t j = 0; j < components.y; j++) {
+                std::stringstream ss;
+                ss << desc[i] << (components.y == 1 ? "" : ", " + desc[j]);
+                settings_.push_back(new SinglePropertySetting(this, ss.str()));
+                QLineEdit* rangeMin = settings_[count]->addField();
+                QLineEdit* min = settings_[count]->addField();
+                QLineEdit* max = settings_[count]->addField();
+                QLineEdit* rangeMax = settings_[count]->addField();
+                QLineEdit* minSep = settings_[count]->addField();
+                QLineEdit* inc = settings_[count]->addField();
+                int t = 0;
+                gridLayout_->addWidget(settings_[count]->label_, count + 1, t++);
+                gridLayout_->addWidget(rangeMin, count + 1, t++);
+                gridLayout_->addWidget(min, count + 1, t++);
+                gridLayout_->addWidget(max, count + 1, t++); 
+                gridLayout_->addWidget(rangeMax, count + 1, t++);
+                gridLayout_->addWidget(minSep, count + 1, t++);
+                gridLayout_->addWidget(inc, count + 1, t++);
+                count++;
+            }
+        }
+
+        gridLayout_->addWidget(&btnApply_, count + 1, 0, 1, 1);
+        gridLayout_->addWidget(&btnOk_, count + 1, 1, 1, 2);
+        gridLayout_->addWidget(&btnCancel_, count + 1, 3, 1, 2);
+        gridLayout_->setColumnStretch(2, 2);
+
+        setLayout(gridLayout_);
+
+        reload();
+        setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
+    }
+
+    virtual void save() {
+        hideWidget();
+        apply();
+    }
+
+    virtual void apply() {
+        NetworkLock lock;
+
+        uvec2 components = MinMaxProperty<T>::getDim();
+        size_t count = 0;
+
+        V range = property_->get();
+        T min = range.x;
+        T rangeMin = property_->getRangeMin();
+        T rangeMax = property_->getRangeMax();
+        T max = range.y;
+        T minSep = property_->getMinSeparation();
+        T inc = property_->getIncrement();
+
+        T minOrg = range.x;
+        T rangeMinOrg = property_->getRangeMin();
+        T rangeMaxOrg = property_->getRangeMax();
+        T maxOrg = range.y;
+        T minSepOrg = property_->getMinSeparation();
+        T incOrg = property_->getIncrement();
+
+        for (size_t i = 0; i < components.x; i++) {
+            for (size_t j = 0; j < components.y; j++) {
+                int t = 0;
+                util::glmcomp(rangeMin, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
+                util::glmcomp(min, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
+                util::glmcomp(max, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
+                util::glmcomp(rangeMax, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
+                util::glmcomp(minSep, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
+                util::glmcomp(inc, count) =
+                    static_cast<BT>(settings_[count]->getFieldAsDouble(t++));
+                count++;
+            }
+        }
+        range.x = min;
+        range.y = max;
+        property_->setInitiatingWidget(this);
+        if (min != minOrg || max != maxOrg) property_->set(range);
+        if (rangeMin != rangeMinOrg) property_->setRangeMin(rangeMin);
+        if (rangeMax != rangeMaxOrg) property_->setRangeMax(rangeMax);
+        if (minSep != minSepOrg) property_->setMinSeparation(minSep);
+        if (inc != incOrg) property_->setIncrement(inc);
+        property_->clearInitiatingWidget();
+    }
+
+    virtual void reload() {
+        uvec2 components = MinMaxProperty<T>::getDim();
+        size_t count = 0;
+
+        V range = property_->get();
+        T min = range.x;
+        T rangeMin = property_->getRangeMin();
+        T rangeMax = property_->getRangeMax();
+        T max = range.y;
+        T minSep = property_->getMinSeparation();
+        T inc = property_->getIncrement();
+
+        QLocale locale = settings_[0]->additionalFields_[0]->locale();
+
+        for (size_t i = 0; i < components.x; i++) {
+            for (size_t j = 0; j < components.y; j++) {
+                int t = 0;
+                settings_[count]->additionalFields_[t++]->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(rangeMin, count)));
+                settings_[count]->additionalFields_[t++]->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(min, count)));
+                settings_[count]->additionalFields_[t++]->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(max, count)));
+                settings_[count]->additionalFields_[t++]->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(rangeMax, count)));
+                settings_[count]->additionalFields_[t++]->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(minSep, count)));
+                settings_[count]->additionalFields_[t++]->setText(
+                    QStringHelper<BT>::toLocaleString(locale, util::glmcomp(inc, count)));
+                count++;
+            }
+        }
+    }
+    virtual void cancel() {
+        hideWidget();
+        reload();
+    }
+
+private:
+    MinMaxProperty<T>* property_;
 };
 
 }  // namespace
