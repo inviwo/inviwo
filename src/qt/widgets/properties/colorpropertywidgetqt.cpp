@@ -31,6 +31,8 @@
 
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <QHBoxLayout>
+#include "inviwo/qt/widgets/inviwoapplicationqt.h"
+#include "inviwo/core/common/inviwoapplication.h"
 
 namespace inviwo {
 
@@ -59,6 +61,9 @@ void ColorPropertyWidgetQt::generateWidget() {
     colorDialog_->setOption(QColorDialog::NoButtons, true);
     colorDialog_->setWindowTitle(QString::fromStdString(property_->getDisplayName().c_str()));
     colorDialog_->setWindowModality(Qt::NonModal);
+
+    offsetColorDialog();
+
     btnColor_ = new IvwPushButton(this);
     btnColor_->setEnabled(!property_->getReadOnly());
 
@@ -85,6 +90,27 @@ void ColorPropertyWidgetQt::generateWidget() {
     QSizePolicy sp = sizePolicy();
     sp.setVerticalPolicy(QSizePolicy::Fixed);
     setSizePolicy(sp);
+}
+
+void ColorPropertyWidgetQt::offsetColorDialog() {
+    const static int rightOffset = 200;
+    const static int topOffset = 100;
+    const static int bottomOffset = 100;
+    const static int leftOffset = 200;
+    static int offsetX = 0;
+    static int offsetY = 0;
+
+    QRect mainFrame = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())
+                          ->getMainWindow()
+                          ->frameGeometry();
+
+    int x = mainFrame.left() + rightOffset;
+    int y = mainFrame.top() + topOffset;
+    colorDialog_->move(x + offsetX, y + offsetY);
+    offsetX += 150;
+    offsetY += 50;
+    offsetX %= mainFrame.width() - rightOffset - leftOffset  - 538;
+    offsetY %= mainFrame.height() - topOffset - bottomOffset - 418;
 }
 
 void ColorPropertyWidgetQt::updateFromProperty() {

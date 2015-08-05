@@ -59,6 +59,7 @@ private:
     EditableLabelQt* label_;
 
     void generateWidget();
+    void offsetColorDialog();
 
 public slots:
     void setPropertyValue();
