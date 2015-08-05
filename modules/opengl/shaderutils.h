@@ -58,7 +58,7 @@ void setShaderUniforms(Shader* shader, const TemplateProperty<T>& property, std:
 }
 template<typename T>
 void setShaderUniforms(Shader* shader, const TemplateProperty<T>& property) {
-    setShaderUniforms(shader, property, property->getIdentifier());
+    setShaderUniforms(shader, property, property.getIdentifier());
 }
 
 // SimpleLightingProperty
