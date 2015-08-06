@@ -59,7 +59,7 @@ class IVW_QTWIDGETS_API InviwoApplicationQt : public QApplication, public Inviwo
     Q_OBJECT
 
 public:
-    InviwoApplicationQt(std::string displayName_, std::string basePath_, int& argc, char** argv);
+    InviwoApplicationQt(std::string displayName_, std::string basePath_, int& argc, char** argv, bool movePointsOn = true);
     virtual ~InviwoApplicationQt();
 
     virtual void initialize(registerModuleFuncPtr) override;
@@ -93,6 +93,7 @@ private:
                               const QString& msg);
     #endif
 
+    bool movePointsOn_;
     QMainWindow* mainWindow_;
     std::vector<FileObserver*> fileObservers_;
     QFileSystemWatcher* fileWatcher_;

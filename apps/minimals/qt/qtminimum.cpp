@@ -31,11 +31,7 @@
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
-#include <QApplication>
-#include <QMainWindow>
-
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/util/canvas.h>
@@ -43,23 +39,18 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
+#include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <moduleregistration.h>
 
 using namespace inviwo;
 
 int main(int argc, char** argv) {
-    std::string appName = "Inviwo v" + IVW_VERSION + " - QtApp";
-
-    QApplication app(argc, argv);
-    app.setOrganizationName("Inviwo Foundation");
-    app.setOrganizationDomain("inviwo.org");
-    app.setApplicationName(QString::fromStdString(appName));
-    app.setAttribute(Qt::AA_NativeWindows);
-
     LogCentral::init();
-    // LogCentral::getPtr()->registerLogger(new ConsoleLogger());
+    LogCentral::getPtr()->registerLogger(new ConsoleLogger());
 
-    InviwoApplication inviwoApp(argc, argv, appName, inviwo::filesystem::findBasePath());
+    std::string appName = "Inviwo v" + IVW_VERSION + " - QtApp";
+    InviwoApplicationQt inviwoApp(appName, inviwo::filesystem::findBasePath(), argc, argv, false);
+    inviwoApp.setAttribute(Qt::AA_NativeWindows);
 
     // Initialize all modules
     inviwoApp.initialize(&inviwo::registerAllModules);
@@ -130,9 +121,9 @@ int main(int argc, char** argv) {
 
     if (cmdparser->getQuitApplicationAfterStartup()) {
         inviwoApp.closeInviwoApplication();
-        app.quit();
+        inviwoApp.quit();
         return 0;
     }
 
-    return app.exec();
+    return inviwoApp.exec();
 }

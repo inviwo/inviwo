@@ -45,9 +45,10 @@ namespace inviwo {
 
 
 InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string basePath, int& argc,
-                                         char** argv)
+    char** argv, bool movePointsOn)
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName, basePath)
+    , movePointsOn_(movePointsOn)
     , mainWindow_(nullptr) 
     , windowDecorationOffset_(0, 0) {
 
@@ -198,32 +199,33 @@ void InviwoApplicationQt::setWindowDecorationOffset(QPoint windowDecorationOffse
 QPoint InviwoApplicationQt::movePointOntoDesktop(const QPoint& point, const QSize& size,
                                                  bool decorationOffset) {
     QPoint pos(point);
-    QDesktopWidget* desktop = QApplication::desktop();
-    int primaryScreenIndex = desktop->primaryScreen();
-    QRect wholeScreen = desktop->screenGeometry(primaryScreenIndex);
+    if (movePointsOn_) {
+        QDesktopWidget* desktop = QApplication::desktop();
+        int primaryScreenIndex = desktop->primaryScreen();
+        QRect wholeScreen = desktop->screenGeometry(primaryScreenIndex);
 
-    for (int i = 0; i < desktop->screenCount(); i++) {
-        if (i != primaryScreenIndex) wholeScreen = wholeScreen.united(desktop->screenGeometry(i));
-    }
+        for (int i = 0; i < desktop->screenCount(); i++) {
+            if (i != primaryScreenIndex) wholeScreen = wholeScreen.united(desktop->screenGeometry(i));
+        }
 
-    wholeScreen.setRect(wholeScreen.x() - 10, wholeScreen.y() - 10, wholeScreen.width() + 20,
-                        wholeScreen.height() + 20);
-    QPoint bottomRight = QPoint(point.x() + size.width(), point.y() + size.height());
-    QPoint appPos = getMainWindow()->pos();
+        wholeScreen.setRect(wholeScreen.x() - 10, wholeScreen.y() - 10, wholeScreen.width() + 20,
+            wholeScreen.height() + 20);
+        QPoint bottomRight = QPoint(point.x() + size.width(), point.y() + size.height());
+        QPoint appPos = getMainWindow()->pos();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    if (decorationOffset) {
-        QPoint offset = getWindowDecorationOffset();
-        pos -= offset;
-    }
+        if (decorationOffset) {
+            QPoint offset = getWindowDecorationOffset();
+            pos -= offset;
+        }
 #endif
 
-    if (!wholeScreen.contains(pos) || !wholeScreen.contains(bottomRight)) {
-        // If the widget is outside visible screen
-        pos = appPos;
-        pos += offsetWidget();
+        if (!wholeScreen.contains(pos) || !wholeScreen.contains(bottomRight)) {
+            // If the widget is outside visible screen
+            pos = appPos;
+            pos += offsetWidget();
+        }
     }
-
     return pos;
 }
 
