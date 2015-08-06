@@ -96,11 +96,14 @@ CanvasProcessor::CanvasProcessor()
     colorLayer_.setSerializationMode(PropertySerializationMode::ALL);
 
     visibleLayer_.onChange([&](){
-        colorLayer_.setVisible(visibleLayer_.get() == COLOR_LAYER);
+        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
+        colorLayer_.setVisible(layers != 0 && visibleLayer_.get() == COLOR_LAYER);
     });
 
     inport_.onChange([&](){
-        colorLayer_.setMaxValue(static_cast<int>(inport_.getData()->getNumberOfColorLayers() - 1));
+        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
+        colorLayer_.setVisible(layers != 0 && visibleLayer_.get() == COLOR_LAYER);
+        colorLayer_.setMaxValue(layers - 1);
     });
 
 
