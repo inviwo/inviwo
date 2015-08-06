@@ -37,7 +37,6 @@
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
-#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -89,10 +88,6 @@ private:
 
     FrameBufferObject frameBufferObject_;
     GLenum pickingAttachmentID_;
-    
-    std::unique_ptr<utilgl::DepthMaskState> depthMaskState_;
-    std::unique_ptr<utilgl::GlBoolState> depthTestState_;
-
     mutable Shader shader_;
 };
 

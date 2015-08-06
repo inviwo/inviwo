@@ -37,18 +37,13 @@ namespace inviwo {
 ImageGL::ImageGL()
     : ImageRepresentation()
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag")
-    , depthMaskState_(nullptr)
-    , depthTestState_(nullptr)
-{
+    , shader_("standard.vert", "img_copy.frag") {
 }
 
 ImageGL::ImageGL(const ImageGL& rhs)
     : ImageRepresentation(rhs)
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag")
-    , depthMaskState_(nullptr)
-    , depthTestState_(nullptr) {
+    , shader_("standard.vert", "img_copy.frag") {
 }
 
 ImageGL::~ImageGL() {
@@ -105,12 +100,13 @@ void ImageGL::activateBuffer(ImageType type) {
         glDrawBuffers(numBuffersToDrawTo, &drawBuffers[0]);
         LGL_ERROR;
     }
-    
+
     if (!typeContainsDepth(type)) {
-        depthTestState_ = util::make_unique<utilgl::GlBoolState>(GL_DEPTH_TEST, false);
-        depthMaskState_ = util::make_unique<utilgl::DepthMaskState>(false);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
     } else {
-        depthMaskState_ = util::make_unique<utilgl::DepthMaskState>(true);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
     }
 
     uvec2 dim = getDimensions();
@@ -120,8 +116,9 @@ void ImageGL::activateBuffer(ImageType type) {
 void ImageGL::deactivateBuffer() { 
     frameBufferObject_.deactivate();
 
-    depthTestState_ = nullptr;
-    depthMaskState_ = nullptr;
+    // Depth writing might have been disabled, enable it again just in case
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
 }
 
 bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
@@ -350,11 +347,12 @@ void ImageGL::renderImagePlaneRect() const {
     BufferObjectArray rectArray{};
     CanvasGL::attachImagePlanRect(&rectArray);
     LGL_ERROR;
-    utilgl::DepthFuncState(GL_ALWAYS);
+    glDepthFunc(GL_ALWAYS);
     rectArray.bind();
     LGL_ERROR;
     CanvasGL::singleDrawImagePlaneRect();
     rectArray.unbind();
+    glDepthFunc(GL_LESS);
     LGL_ERROR;
 }
 
