@@ -90,7 +90,8 @@ private:
     FrameBufferObject frameBufferObject_;
     GLenum pickingAttachmentID_;
     
-    std::unique_ptr<utilgl::DepthFuncState> depthFuncState_;
+    std::unique_ptr<utilgl::DepthMaskState> depthMaskState_;
+    std::unique_ptr<utilgl::GlBoolState> depthTestState_;
 
     mutable Shader shader_;
 };
