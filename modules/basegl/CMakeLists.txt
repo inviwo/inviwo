@@ -11,6 +11,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpoints.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagecompositeprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagelayoutgl.h
@@ -52,6 +53,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/entryexitpoints.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/firstivwprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagecompositeprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagelayoutgl.cpp

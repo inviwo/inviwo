@@ -36,7 +36,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/datastructures/light/baselightsource.h>
 
-#include <modules/opengl/geometry/meshrenderprocessorgl.h>
+#include <modules/basegl/processors/meshrenderprocessorgl.h>
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/templateproperty.h>

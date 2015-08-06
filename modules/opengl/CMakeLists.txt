@@ -17,7 +17,6 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshrenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glformats.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/compositeprocessorgl.h
@@ -64,7 +63,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshrenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/compositeprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.cpp
