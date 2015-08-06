@@ -38,7 +38,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 

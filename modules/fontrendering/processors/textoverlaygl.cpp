@@ -30,7 +30,7 @@
 #include "textoverlaygl.h"
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 

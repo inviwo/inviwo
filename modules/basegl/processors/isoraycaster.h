@@ -40,7 +40,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/simpleraycastingproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/inviwoopengl.h>
 
 namespace inviwo {

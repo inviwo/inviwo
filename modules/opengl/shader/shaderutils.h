@@ -31,7 +31,7 @@
 #define IVW_SHADERUTILS_H
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/camera.h>
@@ -44,8 +44,8 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/volumeindicatorproperty.h>
 #include <inviwo/core/ports/port.h>
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/volumeutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumeutils.h>
 
 namespace inviwo {
 

@@ -28,11 +28,11 @@
  *********************************************************************************/
 
 #include "imageoverlaygl.h"
-#include <modules/opengl/glwrap/textureunit.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/interactionhandler.h>
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 
 namespace inviwo {

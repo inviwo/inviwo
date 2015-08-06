@@ -29,7 +29,7 @@
 
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/glwrap/textureunit.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/canvasgl.h>
 
 namespace inviwo {

@@ -40,7 +40,7 @@
 #include <inviwo/core/interaction/interactionhandler.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include <modules/basegl/viewmanager.h>
 
 namespace inviwo {

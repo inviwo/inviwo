@@ -40,7 +40,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 

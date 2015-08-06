@@ -28,8 +28,8 @@
  *********************************************************************************/
 
 #include "imagegrayscale.h"
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 

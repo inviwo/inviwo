@@ -34,9 +34,9 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/image/imagerepresentation.h>
 #include <modules/opengl/image/layergl.h>
-#include <modules/opengl/glwrap/bufferobjectarray.h>
-#include <modules/opengl/glwrap/framebufferobject.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/openglutils.h>
 
 namespace inviwo {

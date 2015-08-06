@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "findedges.h"
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 

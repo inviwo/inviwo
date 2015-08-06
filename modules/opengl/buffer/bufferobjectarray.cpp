@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#include <modules/opengl/glwrap/bufferobjectarray.h>
-#include <modules/opengl/glwrap/bufferobject.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
+#include <modules/opengl/buffer/bufferobject.h>
 
 namespace inviwo {
 

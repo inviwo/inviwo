@@ -27,28 +27,29 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_TEXTURE3D_H
-#define IVW_TEXTURE3D_H
+#ifndef IVW_TEXTURE2D_H
+#define IVW_TEXTURE2D_H
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/texture.h>
+#include <modules/opengl/texture/texture.h>
+#include <inviwo/core/util/observer.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API Texture3D : public Texture {
+class IVW_MODULE_OPENGL_API Texture2D : public Texture {
 
 public:
-    Texture3D(size3_t dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
-    Texture3D(size3_t dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
-    Texture3D(const Texture3D& other);
-    Texture3D(Texture3D&& other); // move constructor
-    Texture3D& operator=(const Texture3D& other);
-    Texture3D& operator=(Texture3D&& other);
-    virtual ~Texture3D();
+    Texture2D(uvec2 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
+    Texture2D(uvec2 dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
+    Texture2D(const Texture2D& other);
+    Texture2D(Texture2D&& other); // move constructor
+    Texture2D& operator=(const Texture2D& other);
+    Texture2D& operator=(Texture2D&& other);
+    virtual ~Texture2D();
 
-    Texture3D* clone() const;
+    Texture2D* clone() const;
 
     void initialize(const void* data);
 
@@ -56,17 +57,18 @@ public:
 
     void upload(const void* data);
 
-    void uploadAndResize(const void* data, const size3_t& dim);
-
-    const size3_t& getDimensions() const { return dimensions_; }
+    const uvec2& getDimensions() const { return dimensions_;}
+    int getWidth() const { return dimensions_.x; }
+    int getHeight() const { return dimensions_.y; }
+    void resize(uvec2 dimensions);
 
 protected:
-    void default3DTextureParameterFunction(Texture*);
+    void default2DTextureParameterFunction(Texture*);
 
 private:
-    size3_t dimensions_;
+    uvec2 dimensions_;
 };
 
 } // namespace
 
-#endif // IVW_TEXTURE3D_H
+#endif // IVW_TEXTURE2D_H

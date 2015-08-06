@@ -29,11 +29,11 @@
 
 #include "lightvolumegl.h"
 #include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/glwrap/framebufferobject.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/image/layergl.h>
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/volumeutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumeutils.h>
 #include <inviwo/core/datastructures/light/pointlight.h>
 #include <inviwo/core/datastructures/light/directionallight.h>
 

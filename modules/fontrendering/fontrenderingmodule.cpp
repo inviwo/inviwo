@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/fontrendering/fontrenderingmodule.h>
-#include <modules/opengl/glwrap/shadermanager.h>
+#include <modules/opengl/shader/shadermanager.h>
 #include <modules/fontrendering/processors/textoverlaygl.h>
 #ifdef FONTRENDERING_INCLUDE_SHADER_RESOURCES
 #include <modules/fontrendering/shader_resources.h>

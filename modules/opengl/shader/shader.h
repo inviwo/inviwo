@@ -32,7 +32,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/shaderobject.h>
+#include <modules/opengl/shader/shaderobject.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/callback.h>
 #include <unordered_map>

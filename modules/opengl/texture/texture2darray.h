@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2014-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,63 +27,44 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_SHADERMANAGER_H
-#define IVW_SHADERMANAGER_H
+#ifndef IVW_TEXTURE2DARRAY_H
+#define IVW_TEXTURE2DARRAY_H
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/openglcapabilities.h>
-#include <modules/opengl/glwrap/shader.h>
-#include <inviwo/core/util/fileobserver.h>
-#include <inviwo/core/util/singleton.h>
+#include <modules/opengl/texture/texture.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API ShaderManager : public Singleton<ShaderManager>, public FileObserver {
+class IVW_MODULE_OPENGL_API Texture2DArray : public Texture {
 
 public:
-    ShaderManager();
+    Texture2DArray(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
+    Texture2DArray(uvec3 dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
+    Texture2DArray(const Texture2DArray& other);
+    Texture2DArray& operator=(const Texture2DArray& other);
+    virtual ~Texture2DArray();
 
-    void registerShader(Shader* shader);
-    void unregisterShader(Shader* shader);
+    Texture2DArray* clone() const;
 
-    virtual void fileChanged(std::string shaderFilename);
+    void initialize(const void* data);
 
-    std::string getGlobalGLSLHeader();
-    std::string getGlobalGLSLVertexDefines();
-    std::string getGlobalGLSLFragmentDefines();
-    int getGlobalGLSLVersion();
+    size_t getNumberOfValues() const;
 
-    void bindCommonAttributes(unsigned int);
+    void upload(const void* data);
 
-    std::vector<std::string> getShaderSearchPaths();
+    void uploadAndResize(const void* data, const uvec3& dim);
 
-    void addShaderSearchPath(std::string);
-    void addShaderSearchPath(InviwoApplication::PathType, std::string);
-
-    void addShaderResource(std::string, std::string);
-
-    std::string getShaderResource(std::string);
-    const std::vector<Shader*> getShaders() const;
-    void rebuildAllShaders();
-
-    void setUniformWarningLevel();
+    const uvec3& getDimensions() const { return dimensions_; }
 
 protected:
-    OpenGLCapabilities* getOpenGLCapabilitiesObject();
+    void default2DArrayTextureParameterFunction(Texture*);
 
 private:
-    bool addShaderSearchPathImpl(const std::string &);
-    std::vector<Shader*> shaders_;
-    OpenGLCapabilities* openGLInfoRef_;
-    std::vector<std::string> shaderSearchPaths_;
-    std::map<std::string, std::string> shaderResources_;
-    
-    TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_; // non-owning reference
+    uvec3 dimensions_;
 };
 
 } // namespace
 
-#endif // IVW_SHADERMANAGER_H
+#endif // IVW_TEXTURE2DARRAY_H

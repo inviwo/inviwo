@@ -37,7 +37,7 @@
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>
 #include <modules/opengl/buffer/bufferobjectobserver.h>
-#include <modules/opengl/glwrap/bufferobject.h>
+#include <modules/opengl/buffer/bufferobject.h>
 
 namespace inviwo {
 

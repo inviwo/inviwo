@@ -29,7 +29,7 @@
 
 #include "volumegl.h"
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include <algorithm>
 
 namespace inviwo {

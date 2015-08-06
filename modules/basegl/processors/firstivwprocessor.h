@@ -37,7 +37,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/ports/imageport.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/buffer/buffergl.h>
 
 namespace inviwo {

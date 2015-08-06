@@ -29,7 +29,7 @@
 
 #include "openglqtmenu.h"
 
-#include <modules/opengl/glwrap/shadermanager.h>
+#include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <QTextBrowser>
 #include <QDialog>

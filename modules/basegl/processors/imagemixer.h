@@ -36,7 +36,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
     

@@ -40,7 +40,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/interaction/cameratrackball.h>
 

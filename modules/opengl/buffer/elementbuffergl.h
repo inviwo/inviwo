@@ -32,9 +32,9 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/textureobserver.h>
+#include <modules/opengl/texture/textureobserver.h>
 #include <modules/opengl/buffer/buffergl.h>
-#include <modules/opengl/glwrap/elementbufferobject.h>
+#include <modules/opengl/buffer/elementbufferobject.h>
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <modules/opengl/buffer/buffergl.h>

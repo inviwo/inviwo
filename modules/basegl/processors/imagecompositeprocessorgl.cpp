@@ -29,7 +29,7 @@
 
 #include "imagecompositeprocessorgl.h"
 #include <modules/opengl/image/imagegl.h>
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 

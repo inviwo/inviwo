@@ -28,10 +28,10 @@
  *********************************************************************************/
 
 #include "imagemapping.h"
-#include <modules/opengl/glwrap/textureunit.h>
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/image/layergl.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 

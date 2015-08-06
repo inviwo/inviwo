@@ -34,7 +34,7 @@
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>
-#include <modules/opengl/glwrap/texture2d.h>
+#include <modules/opengl/texture/texture2d.h>
 #include <modules/opencl/image/layerclbase.h>
 
 namespace inviwo {

@@ -34,7 +34,7 @@
 
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/filesystem.h>
-#include <modules/opengl/glwrap/shadermanager.h>
+#include <modules/opengl/shader/shadermanager.h>
 #include <modules/opengl/openglexception.h>
 
 namespace inviwo {

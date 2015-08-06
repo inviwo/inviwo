@@ -30,7 +30,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/openglmodule.h>
 #include <modules/opengl/openglsettings.h>
-#include <modules/opengl/glwrap/shadermanager.h>
+#include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/vectoroperations.h>
 

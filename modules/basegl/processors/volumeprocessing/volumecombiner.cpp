@@ -29,11 +29,11 @@
 
 #include "volumecombiner.h"
 #include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/glwrap/textureunit.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/util/shuntingyard.h>
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/shaderutils.h>
-#include <modules/opengl/volumeutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/volume/volumeutils.h>
 
 namespace inviwo {
 

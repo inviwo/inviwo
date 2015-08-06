@@ -41,7 +41,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 

@@ -33,8 +33,8 @@
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/clockgl.h>
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
 
 namespace inviwo {

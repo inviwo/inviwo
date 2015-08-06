@@ -27,44 +27,27 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_TEXTURE2DARRAY_H
-#define IVW_TEXTURE2DARRAY_H
-
-#include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/texture.h>
+#include <modules/opengl/buffer/elementbufferobject.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API Texture2DArray : public Texture {
+ElementBufferObject::ElementBufferObject(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage)
+    : BufferObject(size, format, type, usage, GL_ELEMENT_ARRAY_BUFFER) {
+}
 
-public:
-    Texture2DArray(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
-    Texture2DArray(uvec3 dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
-    Texture2DArray(const Texture2DArray& other);
-    Texture2DArray& operator=(const Texture2DArray& other);
-    virtual ~Texture2DArray();
+ElementBufferObject::~ElementBufferObject() {
+}
 
-    Texture2DArray* clone() const;
+void ElementBufferObject::enable() const {
+    bind();
+}
 
-    void initialize(const void* data);
+void ElementBufferObject::disable() const {
+}
 
-    size_t getNumberOfValues() const;
-
-    void upload(const void* data);
-
-    void uploadAndResize(const void* data, const uvec3& dim);
-
-    const uvec3& getDimensions() const { return dimensions_; }
-
-protected:
-    void default2DArrayTextureParameterFunction(Texture*);
-
-private:
-    uvec3 dimensions_;
-};
+ElementBufferObject* ElementBufferObject::clone() const {
+    return new ElementBufferObject(*this);
+}
 
 } // namespace
 
-#endif // IVW_TEXTURE2DARRAY_H

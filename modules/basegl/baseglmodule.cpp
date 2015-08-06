@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/basegl/baseglmodule.h>
-#include <modules/opengl/glwrap/shadermanager.h>
+#include <modules/opengl/shader/shadermanager.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/basegl/processors/drawlines.h>
 #include <modules/basegl/processors/drawpoints.h>

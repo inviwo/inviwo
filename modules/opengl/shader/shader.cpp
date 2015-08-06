@@ -29,7 +29,7 @@
 
 #include "shader.h"
 
-#include <modules/opengl/glwrap/shadermanager.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 

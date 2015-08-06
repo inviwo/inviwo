@@ -31,9 +31,9 @@
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
-#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 

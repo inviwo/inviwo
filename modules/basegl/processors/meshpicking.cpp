@@ -32,7 +32,7 @@
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 
 namespace inviwo {

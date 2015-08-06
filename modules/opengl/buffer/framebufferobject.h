@@ -32,9 +32,9 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
-#include "texture2d.h"
-#include "texture2darray.h"
-#include "texture3d.h"
+#include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/texture/texture2darray.h>
+#include <modules/opengl/texture/texture3d.h>
 #include <vector>
 
 namespace inviwo {

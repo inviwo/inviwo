@@ -36,9 +36,9 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/shader.h>
-#include <modules/opengl/glwrap/texture.h>
-#include <modules/opengl/glwrap/textureunit.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/texture.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
 namespace inviwo {

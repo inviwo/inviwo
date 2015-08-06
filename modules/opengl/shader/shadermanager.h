@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2013-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,44 +27,63 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_REDGREENPROCESSOR_H
-#define IVW_REDGREENPROCESSOR_H
+#ifndef IVW_SHADERMANAGER_H
+#define IVW_SHADERMANAGER_H
 
-#include <modules/basegl/baseglmoduledefine.h>
+#include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/inviwoopengl.h>
+#include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/shader/shader.h>
+#include <inviwo/core/util/fileobserver.h>
+#include <inviwo/core/util/singleton.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.RedGreenProcessor, Red Green Processor}
- * ![](org.inviwo.RedGreenProcessor.png?classIdentifier=org.inviwo.RedGreenProcessor)
- *
- * ...
- * 
- * ### Outports
- *   * __outportGreen__ ...
- *   * __outportRed__
- *
- */
-class IVW_MODULE_BASEGL_API RedGreenProcessor : public Processor {
-public:
-    InviwoProcessorInfo();
+class IVW_MODULE_OPENGL_API ShaderManager : public Singleton<ShaderManager>, public FileObserver {
 
-    RedGreenProcessor();
-    virtual ~RedGreenProcessor();
+public:
+    ShaderManager();
+
+    void registerShader(Shader* shader);
+    void unregisterShader(Shader* shader);
+
+    virtual void fileChanged(std::string shaderFilename);
+
+    std::string getGlobalGLSLHeader();
+    std::string getGlobalGLSLVertexDefines();
+    std::string getGlobalGLSLFragmentDefines();
+    int getGlobalGLSLVersion();
+
+    void bindCommonAttributes(unsigned int);
+
+    std::vector<std::string> getShaderSearchPaths();
+
+    void addShaderSearchPath(std::string);
+    void addShaderSearchPath(InviwoApplication::PathType, std::string);
+
+    void addShaderResource(std::string, std::string);
+
+    std::string getShaderResource(std::string);
+    const std::vector<Shader*> getShaders() const;
+    void rebuildAllShaders();
+
+    void setUniformWarningLevel();
 
 protected:
-    virtual void process() override;
+    OpenGLCapabilities* getOpenGLCapabilitiesObject();
 
 private:
-    ImageOutport outportRed_;
-    ImageOutport outportGreen_;
+    bool addShaderSearchPathImpl(const std::string &);
+    std::vector<Shader*> shaders_;
+    OpenGLCapabilities* openGLInfoRef_;
+    std::vector<std::string> shaderSearchPaths_;
+    std::map<std::string, std::string> shaderResources_;
+    
+    TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_; // non-owning reference
 };
 
 } // namespace
 
-#endif // IVW_REDGREENPROCESSOR_H
+#endif // IVW_SHADERMANAGER_H

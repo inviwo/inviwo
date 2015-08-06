@@ -32,7 +32,7 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/opengl/glwrap/textureunit.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/volumeport.h>
 

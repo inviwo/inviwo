@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include "volumegradientprocessor.h"
 
 namespace inviwo {

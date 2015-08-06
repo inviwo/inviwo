@@ -37,7 +37,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H

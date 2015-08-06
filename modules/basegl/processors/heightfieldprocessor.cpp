@@ -30,8 +30,8 @@
 #include "heightfieldprocessor.h"
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
 #include <inviwo/core/datastructures/light/directionallight.h>
-#include <modules/opengl/glwrap/textureunit.h>
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 

@@ -35,7 +35,7 @@
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/openclmoduledefine.h>
 #include <modules/opencl/volume/volumeclbase.h>
-#include <modules/opengl/glwrap/texture3d.h>
+#include <modules/opengl/texture/texture3d.h>
 
 namespace inviwo {
 

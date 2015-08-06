@@ -29,7 +29,7 @@
 
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/textureunit.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/stringconversion.h>

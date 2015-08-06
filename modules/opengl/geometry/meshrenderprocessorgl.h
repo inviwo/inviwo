@@ -43,7 +43,7 @@
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/openglmoduledefine.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include <vector>
 
 namespace inviwo {

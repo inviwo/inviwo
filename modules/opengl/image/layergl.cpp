@@ -29,9 +29,9 @@
 
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/image/layergl.h>
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/glwrap/texture.h>
-#include <modules/opengl/glwrap/texture2d.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/texture.h>
+#include <modules/opengl/texture/texture2d.h>
 
 namespace inviwo {
 

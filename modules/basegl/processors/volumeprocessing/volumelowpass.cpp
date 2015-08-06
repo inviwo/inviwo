@@ -32,8 +32,8 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <modules/opengl/volume/volumegl.h>
-#include <modules/opengl/glwrap/shader.h>
-#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 

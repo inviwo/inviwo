@@ -28,10 +28,10 @@
  *********************************************************************************/
 
 #include "imageglprocessor.h"
-#include <modules/opengl/glwrap/shader.h>
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/shaderutils.h>
-#include <modules/opengl/glwrap/framebufferobject.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/opengl/buffer/framebufferobject.h>
 
 namespace inviwo {
 

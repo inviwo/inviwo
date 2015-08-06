@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#include "textureutils.h"
-#include "canvasgl.h"
+#include <modules/opengl/canvasgl.h>
+#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/image/layergl.h>
-#include <modules/opengl/glwrap/bufferobjectarray.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
 
 namespace inviwo {
 

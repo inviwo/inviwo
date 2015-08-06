@@ -34,9 +34,9 @@
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <inviwo/core/processors/processor.h>
-#include <modules/opengl/glwrap/shader.h>
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
 
 #include <limits>

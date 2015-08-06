@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2014-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,51 +24,30 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_TEXTURE2D_H
-#define IVW_TEXTURE2D_H
+#ifndef IVW_ELEMENT_BUFFER_OBJECT_H
+#define IVW_ELEMENT_BUFFER_OBJECT_H
 
 #include <modules/opengl/openglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/texture.h>
-#include <inviwo/core/util/observer.h>
+#include <modules/opengl/buffer/bufferobject.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API Texture2D : public Texture {
-
+class IVW_MODULE_OPENGL_API ElementBufferObject : public BufferObject {
 public:
-    Texture2D(uvec2 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
-    Texture2D(uvec2 dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
-    Texture2D(const Texture2D& other);
-    Texture2D(Texture2D&& other); // move constructor
-    Texture2D& operator=(const Texture2D& other);
-    Texture2D& operator=(Texture2D&& other);
-    virtual ~Texture2D();
+    ElementBufferObject(size_t size, const DataFormatBase* format, BufferType type,
+                        BufferUsage usage);
+    virtual ~ElementBufferObject();
 
-    Texture2D* clone() const;
+    virtual ElementBufferObject* clone() const;
 
-    void initialize(const void* data);
-
-    size_t getNumberOfValues() const;
-
-    void upload(const void* data);
-
-    const uvec2& getDimensions() const { return dimensions_;}
-    int getWidth() const { return dimensions_.x; }
-    int getHeight() const { return dimensions_.y; }
-    void resize(uvec2 dimensions);
-
-protected:
-    void default2DTextureParameterFunction(Texture*);
-
-private:
-    uvec2 dimensions_;
+    virtual void enable() const;
+    virtual void disable() const;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_TEXTURE2D_H
+#endif  // IVW_ELEMENT_BUFFER_OBJECT_H

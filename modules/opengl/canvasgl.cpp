@@ -32,12 +32,12 @@
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/geometry/meshgl.h>
-#include <modules/opengl/glwrap/bufferobjectarray.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/buffer/buffergl.h>
-#include <modules/opengl/glwrap/textureunit.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/openglcapabilities.h>
 

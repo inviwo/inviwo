@@ -29,7 +29,7 @@
 
 #include "firstivwprocessor.h"
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 

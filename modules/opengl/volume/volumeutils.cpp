@@ -27,11 +27,10 @@
  * 
  *********************************************************************************/
 
-#include "volumeutils.h"
-#include "glformats.h"
-
-#include <modules/opengl/glwrap/shader.h>
-#include <modules/opengl/textureutils.h>
+#include <modules/opengl/glformats.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumeutils.h>
 
 namespace inviwo {
 

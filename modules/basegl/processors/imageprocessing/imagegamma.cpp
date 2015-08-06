@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "imagegamma.h"
-#include <modules/opengl/glwrap/shader.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 

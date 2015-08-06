@@ -7,28 +7,19 @@ ivw_module(OpenGL)
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/buffergl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferglconverter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferobject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferobjectarray.h
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbuffergl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferglconverter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferobject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/framebufferobject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/renderbufferobject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshrenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glformats.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/bufferobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/bufferobjectarray.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/elementbufferobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/framebufferobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/renderbufferobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/shader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/shadermanager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/shaderobject.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/texture.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/texture2d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/texture2darray.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/texture3d.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/texturecallback.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/textureunit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/compositeprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.h
@@ -40,12 +31,21 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshdrawergl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/shaderutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/textureobserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/textureutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadermanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderobject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2darray.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture3d.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texturecallback.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureobserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureunit.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumegl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeglconverter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/volumeutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -54,26 +54,18 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/buffergl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferglconverter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferobject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/bufferobjectarray.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbuffergl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferglconverter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferobject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/framebufferobject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/buffer/renderbufferobject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clockgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshrenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/geometry/meshgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/bufferobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/bufferobjectarray.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/elementbufferobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/framebufferobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/renderbufferobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/shader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/shadermanager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/shaderobject.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/texture.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/texture2d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/texture2darray.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/texture3d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glwrap/textureunit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/compositeprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagegl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layergl.cpp
@@ -85,11 +77,19 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglsettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rendering/meshdrawergl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/shaderutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/textureutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shadermanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderobject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shader/shaderutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture2darray.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/texture3d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureunit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/texture/textureutils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumegl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeglconverter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volumeutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -30,11 +30,11 @@
 
 #include "textrenderer.h"
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <modules/opengl/glwrap/bufferobjectarray.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/buffer/buffergl.h>
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 

@@ -32,8 +32,8 @@
 
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
-#include <modules/opengl/glwrap/texturecallback.h>
-#include <modules/opengl/textureobserver.h>
+#include <modules/opengl/texture/texturecallback.h>
+#include <modules/opengl/texture/textureobserver.h>
 
 namespace inviwo {
 

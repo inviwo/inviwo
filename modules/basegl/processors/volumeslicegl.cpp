@@ -31,10 +31,10 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/image/layergl.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
-#include <modules/opengl/glwrap/textureunit.h>
-#include <modules/opengl/textureutils.h>
-#include <modules/opengl/volumeutils.h>
-#include <modules/opengl/shaderutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/plane.h>

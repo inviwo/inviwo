@@ -33,8 +33,8 @@
 #include <modules/opengl/openglmoduledefine.h>
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/buffer/bufferglobjectid.h>
-#include <modules/opengl/glwrap/bufferobject.h>
-#include <modules/opengl/glwrap/bufferobjectarray.h>
+#include <modules/opengl/buffer/bufferobject.h>
+#include <modules/opengl/buffer/bufferobjectarray.h>
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 
 namespace inviwo {

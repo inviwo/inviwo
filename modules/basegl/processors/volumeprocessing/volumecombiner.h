@@ -37,8 +37,8 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <modules/opengl/glwrap/shader.h>
-#include <modules/opengl/glwrap/framebufferobject.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/buffer/framebufferobject.h>
 
 namespace inviwo {
 
