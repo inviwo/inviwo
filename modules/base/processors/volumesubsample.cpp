@@ -64,43 +64,50 @@ VolumeSubsample::~VolumeSubsample() {}
 
 void VolumeSubsample::process() {
     if (enabled_.get() && subSampleFactor_.get() != VolumeRAMSubSample::Factor::None) {
-        if (!result_.valid()) {
+        if (waitForCompletion_.get()){
             const Volume* data = inport_.getData();
             const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
-            getActivityIndicator().setActive(true);
-            result_ = dispatchPool(
-                [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f)
-                    -> std::unique_ptr<Volume> {
-                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
-                    if (!waitForCompletion_.get()){
-                        dispatchFront([this]() {
-                            dirty_ = true;
-                            invalidate(INVALID_OUTPUT);
-                        });
-                    }
-                    return volume;
-                },
-                vol, subSampleFactor_.get());
-        }
-
-        if (waitForCompletion_.get())
-            result_.wait();
-
-        if (result_.valid() &&
-            result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
-            std::future_status::ready) {
-            std::unique_ptr<Volume> volume = std::move(result_.get());
-
-            // pass meta data on
-            const Volume* data = inport_.getData();
+            Volume* volume = new Volume(VolumeRAMSubSample::apply(vol, subSampleFactor_.get()));
             volume->copyMetaDataFrom(*data);
             volume->dataMap_ = data->dataMap_;
             volume->setModelMatrix(data->getModelMatrix());
             volume->setWorldMatrix(data->getWorldMatrix());
-            outport_.setData(volume.release());
-            getActivityIndicator().setActive(false);
-            dirty_ = false;
+            outport_.setData(volume);
+        }
+        else{
+            if (!result_.valid()) {
+                const Volume* data = inport_.getData();
+                const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
+                getActivityIndicator().setActive(true);
+                result_ = dispatchPool(
+                    [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f)
+                    -> std::unique_ptr < Volume > {
+                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
+                    dispatchFront([this]() {
+                        dirty_ = true;
+                        invalidate(INVALID_OUTPUT);
+                    });
+                    return volume;
+                },
+                    vol, subSampleFactor_.get());
+            }
 
+            if (result_.valid() &&
+                result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
+                std::future_status::ready) {
+                std::unique_ptr<Volume> volume = std::move(result_.get());
+
+                // pass meta data on
+                const Volume* data = inport_.getData();
+                volume->copyMetaDataFrom(*data);
+                volume->dataMap_ = data->dataMap_;
+                volume->setModelMatrix(data->getModelMatrix());
+                volume->setWorldMatrix(data->getWorldMatrix());
+                outport_.setData(volume.release());
+                getActivityIndicator().setActive(false);
+                dirty_ = false;
+
+            }
         }
     } else {
         outport_.setConstData(inport_.getData());
