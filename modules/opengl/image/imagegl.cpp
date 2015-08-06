@@ -37,13 +37,16 @@ namespace inviwo {
 ImageGL::ImageGL()
     : ImageRepresentation()
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag") {
+    , shader_("standard.vert", "img_copy.frag")
+    , depthFuncState_(nullptr)
+{
 }
 
 ImageGL::ImageGL(const ImageGL& rhs)
     : ImageRepresentation(rhs)
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag") {
+    , shader_("standard.vert", "img_copy.frag")
+    , depthFuncState_(nullptr) {
 }
 
 ImageGL::~ImageGL() {
@@ -100,8 +103,9 @@ void ImageGL::activateBuffer(ImageType type) {
         glDrawBuffers(numBuffersToDrawTo, &drawBuffers[0]);
         LGL_ERROR;
     }
-
+    
     if (!typeContainsDepth(type)) {
+        depthFuncState_ = util::make_unique<utilgl::DepthFuncState>(GL_ALWAYS);
         glDepthMask(GL_FALSE);
     } else {
         glDepthMask(GL_TRUE);
@@ -114,6 +118,7 @@ void ImageGL::activateBuffer(ImageType type) {
 void ImageGL::deactivateBuffer() { 
     frameBufferObject_.deactivate();
 
+    depthFuncState_ = nullptr;
     // Depth writing might have been disabled, enable it again just in case
     glDepthMask(GL_TRUE);
 }
