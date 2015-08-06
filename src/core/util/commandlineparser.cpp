@@ -83,7 +83,9 @@ const std::string CommandLineParser::getWorkspacePath() const {
 
 void CommandLineParser::parse(int argc, char** argv) {
     try {
-        cmd_.parse(argc, argv);
+        if (argc > 0){
+            cmd_.parse(argc, argv);
+        }
     } catch (TCLAP::ArgException& e) {
         std::cerr << "error: " << e.error() << " for arg " << e.argId()
                   << std::endl;  // catch exceptions
