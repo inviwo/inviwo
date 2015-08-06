@@ -102,10 +102,8 @@ void ImageGL::activateBuffer(ImageType type) {
     }
 
     if (!typeContainsDepth(type)) {
-        glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
     } else {
-        glEnable(GL_DEPTH_TEST);
         glDepthMask(GL_TRUE);
     }
 
@@ -117,7 +115,6 @@ void ImageGL::deactivateBuffer() {
     frameBufferObject_.deactivate();
 
     // Depth writing might have been disabled, enable it again just in case
-    glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
 }
 
