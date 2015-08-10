@@ -66,6 +66,10 @@ void Timer::stop() {
         }
         cvar_.notify_one();
         thread_.join();
+        // FIXME: Temporary solution for ticket #927
+        // Flush the cue so that callbacks in the cue are not called after stop() has been called.
+        // A better solution would be to remove cued callbacks.
+        InviwoApplication::getPtr()->processFront();
     }
 }
 
