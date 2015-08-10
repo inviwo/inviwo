@@ -76,6 +76,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/planeproperty.h>
+#include <inviwo/core/properties/positionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/advancedmaterialproperty.h>
@@ -200,6 +201,7 @@ InviwoCore::InviwoCore() : InviwoModule() {
     registerProperty(OptionPropertyInt);
     registerProperty(OptionPropertyString);
     registerProperty(PlaneProperty);
+    registerProperty(PositionProperty);
     registerProperty(SimpleLightingProperty);
     registerProperty(SimpleRaycastingProperty);
     registerProperty(StringProperty);

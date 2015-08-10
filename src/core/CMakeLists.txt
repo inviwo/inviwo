@@ -168,6 +168,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/optionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/ordinalproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/planeproperty.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/properties/positionproperty.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/property.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/properties/propertyconvertermanager.h
@@ -374,6 +375,7 @@ set(SOURCE_FILES
     properties/imageeditorproperty.cpp
     properties/optionproperty.cpp
     properties/planeproperty.cpp
+    properties/positionproperty.cpp
     properties/property.cpp
     properties/propertyconverter.cpp
     properties/propertyconvertermanager.cpp
