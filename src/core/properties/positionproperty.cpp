@@ -65,7 +65,7 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
     addProperty(position_);
 }
 
-PositionProperty::operator const vec3&() const {
+PositionProperty::operator vec3() const {
     return get();
 }
 
@@ -73,7 +73,7 @@ PositionProperty* PositionProperty::clone() const {
     return new PositionProperty(*this);
 }
 
-inviwo::vec3 PositionProperty::get() const {
+vec3 PositionProperty::get() const {
     switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
     case Space::VIEW:
         return camera_ ? vec3(camera_->inverseViewMatrix() * vec4(position_.get(), 1.0f))

@@ -68,7 +68,7 @@ public:
     *
     * @return vec3 World space position.
     */
-    virtual operator const vec3&() const;
+    virtual operator vec3() const;
     /** 
      * \brief Get position in world space.
      *
