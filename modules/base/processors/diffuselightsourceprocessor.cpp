@@ -47,17 +47,23 @@ DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))
     , lightDiffuse_("lightDiffuse", "Color", vec4(1.0f, 1.0f, 1.0f, 1.f))
-    , lightPosition_("lightPosition", "Light Source Position", vec3(1.f, 0.65f, 0.65f), vec3(-1.f), vec3(1.f)) {
+    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
+    vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
+    , lightPosition_("lightPosition", "Light Source Position",
+    FloatVec3Property("position", "Position", vec3(1.f, 0.65f, 0.65f), vec3(-10.f), vec3(10.f))
+    , &camera_.get())
+{
 
     addPort(outport_);
-
-    lighting_.addProperty(lightPosition_);
+    addProperty(lightPosition_);
+    //lighting_.addProperty(lightPosition_);
     lighting_.addProperty(lightDiffuse_);
     lighting_.addProperty(lightPowerProp_);
     lighting_.addProperty(lightSize_);
     addProperty(lighting_);
+    addProperty(camera_);
 
-    lightPosition_.setSemantics(PropertySemantics::LightPosition);
+    //lightPosition_.setSemantics(PropertySemantics::LightPosition);
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightSource_ = new DiffuseLight();
 }
@@ -73,7 +79,15 @@ void DiffuseLightSourceProcessor::process() {
 
 void DiffuseLightSourceProcessor::updateLightSource(DiffuseLight* lightSource) {
     vec3 lightPos = lightPosition_.get();
-    vec3 dir = glm::normalize(vec3(0.f)-lightPos);
+    vec3 dir;
+    switch (static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
+    case PositionProperty::Space::VIEW:
+        dir = glm::normalize(camera_.getLookTo() - lightPos);
+    case PositionProperty::Space::WORLD:
+    default:
+        dir = glm::normalize(vec3(0.f) - lightPos);
+    }
+    
     mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
     // Offset by 0.5 to get to texture coordinates
     lightSource->setModelMatrix(glm::translate(vec3(0.5f)));

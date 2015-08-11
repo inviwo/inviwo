@@ -33,13 +33,13 @@ namespace inviwo {
 PropertyClassIdentifier(PositionProperty, "org.inviwo.PositionProperty");
 
 PositionProperty::PositionProperty(std::string identifier, std::string displayName,
+    FloatVec3Property position,
     const Camera* camera,
     InvalidationLevel invalidationLevel,
     PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , referenceFrame_("referenceFrame", "Space")
-    , position_("position", "Position", vec3(0.0f, 0.0f, 0.0f), vec3(-10, -10, -10),
-    vec3(10, 10, 10))
+    , position_(position)
     , camera_(camera) {
 
     referenceFrame_.addOption("world", "World", static_cast<int>(Space::WORLD));

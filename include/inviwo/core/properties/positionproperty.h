@@ -52,10 +52,12 @@ public:
     InviwoPropertyInfo();
     enum class Space : int { WORLD, VIEW };
 
-    PositionProperty(std::string identifier, std::string displayName,
-        const Camera* camera = nullptr,
-        InvalidationLevel = INVALID_RESOURCES,
-        PropertySemantics semantics = PropertySemantics::Default);
+    PositionProperty(std::string identifier, std::string displayName
+        , FloatVec3Property position = FloatVec3Property("position", "Position", vec3(0.0f, 0.0f, 0.0f), vec3(-10, -10, -10),
+        vec3(10, 10, 10))
+        , const Camera* camera = nullptr
+        , InvalidationLevel = INVALID_RESOURCES
+        , PropertySemantics semantics = PropertySemantics::Default);
     PositionProperty(const PositionProperty& rhs);
     PositionProperty& operator=(const PositionProperty& that);
     virtual PositionProperty* clone() const;

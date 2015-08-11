@@ -41,6 +41,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/positionproperty.h>
 #include <modules/base/basemoduledefine.h>
 
 namespace inviwo {

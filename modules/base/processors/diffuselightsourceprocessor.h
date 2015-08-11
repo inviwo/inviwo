@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/positionproperty.h>
 #include <modules/base/basemoduledefine.h>
 
 namespace inviwo {
@@ -45,16 +46,16 @@ class DiffuseLight;
 /** \docpage{org.inviwo.Diffuselightsource, Diffuse light source}
  * ![](org.inviwo.Diffuselightsource.png?classIdentifier=org.inviwo.Diffuselightsource)
  *
- * ...
+ * Produces a planar area light source, spreading light in all directions from the plane.
  * 
  * ### Outports
- *   * __DiffuseLightSource__ ...
+ *   * __DiffuseLightSource__ Planar area light source
  * 
  * ### Properties
- *   * __Light power__ ...
- *   * __Light size__ ...
- *   * __Color__ ...
- *   * __Light Source Position__ ...
+ *   * __Light power__ Radiant flux in watt ( intensity * area * M_PI ).
+ *   * __Light size__ Width and height in world space
+ *   * __Color__ Flux density per solid angle, W*s*r^-1 (intensity)
+ *   * __Light Source Position__ Center point of the plane
  */
 class IVW_MODULE_BASE_API DiffuseLightSourceProcessor : public Processor {
 public:
@@ -77,11 +78,13 @@ protected:
 private:
     DataOutport<LightSource> outport_;
 
+    PositionProperty lightPosition_;
     CompositeProperty lighting_;
     FloatProperty lightPowerProp_;
     FloatVec2Property lightSize_;
     FloatVec4Property lightDiffuse_;
-    FloatVec3Property lightPosition_;
+    CameraProperty camera_;
+    
 
     DiffuseLight* lightSource_;
 };
