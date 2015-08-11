@@ -63,12 +63,6 @@ public:
     virtual PositionProperty* clone() const;
     virtual ~PositionProperty(){}
 
-    /**
-    * \brief Get position in world space.
-    *
-    * @return vec3 World space position.
-    */
-    virtual operator vec3() const;
     /** 
      * \brief Get position in world space.
      *

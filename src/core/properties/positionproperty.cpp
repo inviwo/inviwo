@@ -65,10 +65,6 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
     addProperty(position_);
 }
 
-PositionProperty::operator vec3() const {
-    return get();
-}
-
 PositionProperty* PositionProperty::clone() const {
     return new PositionProperty(*this);
 }
