@@ -129,13 +129,12 @@ private:
  * 
  * ### Properties
  *   * __Light power (%)__ Increases/decreases light strength
- *   * __Light radius__ Radius of the sphere that the point light source con
- *   * __Interaction Events__ ...
- *   * __Camera__ ...
- *   * __Light Parameters__ ...
- *   * __Color__ ...
- *   * __Light Source Position__ ...
- *   * __Enabled__ ...
+ *   * __Light radius__ Radius of the sphere used to determine the size of the point light
+ *   * __Interaction Events__ Allow light source to be moved using interaction events
+ *   * __Camera__  Link camera in order to specify position in view space and perform interaction
+ *   * __Color__ RGB color
+ *   * __Light Source Position__ Center point of light source
+ *   * __Enabled__ Turn light on or off
  *
  */
 class IVW_MODULE_BASE_API PointLightSourceProcessor : public Processor {
