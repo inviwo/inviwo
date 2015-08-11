@@ -54,7 +54,7 @@ class DirectionalLight;
  *   * __DirectionalLightSource__ Directional light source
  * 
  * ### Properties
- *   * __Light power__ Radiant flux in watt ( intensity * area * M_PI ), where area = 1.
+ *   * __Light power__ Increases/decreases light strength
  *   * __Color__ Flux density per solid angle, W*s*r^-1 (intensity)
  *   * __Light Source Position__ Origin of the light source
  *   * __Enabled__ Turns light on or off

@@ -45,18 +45,20 @@ class SpotLight;
 /** \docpage{org.inviwo.Spotlightsource, Spot light source}
  * ![](org.inviwo.Spotlightsource.png?classIdentifier=org.inviwo.Spotlightsource)
  *
- * ...
+ * Produces a spot light source, spreading light in the shape of a cone.
+ * The direction of the cone will be computed as glm::normalize(vec3(0) - lightPos)
+ * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in view space.
+ *
  * 
  * 
  * 
  * ### Properties
- *   * __Light power (%)__ ...
+ *   * __Light Source Position__ Start point of the cone.
+ *   * __Light power (%)__ Increases/decreases light strength.
  *   * __Light size__ ...
- *   * __Light Parameters__ ...
- *   * __Light Cone Radius Angle__ ...
- *   * __Color__ ...
- *   * __Light Source Position__ ...
- *   * __Light Fall Off Angle__ ...
+ *   * __Light Cone Radius Angle__ Cone radius angle of the light source
+ *   * __Color__ Flux density per solid angle, W*s*r^-1 (intensity)
+ *   * __Light Fall Off Angle__ Fall off angle of the light source
  *
  */
 class IVW_MODULE_BASE_API SpotLightSourceProcessor : public Processor {
@@ -80,11 +82,12 @@ protected:
 private:
     DataOutport<LightSource> outport_;
 
+    CameraProperty camera_; //< Link camera in order to specify position in view space.
+    PositionProperty lightPosition_;
     CompositeProperty lighting_;
     FloatProperty lightPowerProp_;
     FloatVec2Property lightSize_;
     FloatVec4Property lightDiffuse_;
-    FloatVec3Property lightPosition_;
     FloatProperty lightConeRadiusAngle_;
     FloatProperty lightFallOffAngle_;
 

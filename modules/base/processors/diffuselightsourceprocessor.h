@@ -55,7 +55,7 @@ class DiffuseLight;
  * 
  * ### Properties
  *   * __Light Source Position__ Center point of the plane
- *   * __Light power__ Radiant flux in watt ( intensity * area * M_PI ).
+ *   * __Light power__ Increases/decreases light strength
  *   * __Light size__ Width and height in world space
  *   * __Color__ Flux density per solid angle, W*s*r^-1 (intensity)
  */
