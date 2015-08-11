@@ -363,14 +363,20 @@
                 <OutPort type="Outport" identifier="PointLightSource" id="ref17" />
             </OutPorts>
             <Properties>
-                <Property type="org.inviwo.CompositeProperty" identifier="lighting">
+                <Property type="org.inviwo.PositionProperty" identifier="lightPosition">
                     <Properties>
-                        <Property type="org.inviwo.FloatVec3Property" identifier="lightPosition" id="ref18">
+                        <Property type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" />
+                        <Property type="org.inviwo.FloatVec3Property" identifier="position">
                             <minvalue x="-300" y="-300" z="-300" />
                             <maxvalue x="300" y="300" z="300" />
                             <semantics semantics="LightPosition" />
                             <value x="-568.7691" y="-642.69568" z="457.52008" />
                         </Property>
+                    </Properties>
+                    <collapsed content="0" />
+                </Property>
+                <Property type="org.inviwo.CompositeProperty" identifier="lighting">
+                    <Properties>
                         <Property type="org.inviwo.FloatVec4Property" identifier="lightDiffuse">
                             <semantics semantics="Color" />
                         </Property>

@@ -46,21 +46,22 @@ ProcessorCodeState(PointLightSourceProcessor, CODE_STATE_EXPERIMENTAL);
 PointLightSourceProcessor::PointLightSourceProcessor()
     : Processor()
     , outport_("PointLightSource")
+    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
+    vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
+    , lightPosition_("lightPosition", "Light Source Position",
+    FloatVec3Property("position", "Position", vec3(-2.f, -50.f, 90.f), vec3(-100.f), vec3(100.f)), &camera_.get())
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light radius", 1.5f, 0.0f, 3.0f)
     , lightDiffuse_("lightDiffuse", "Color", vec4(1.0f))
-    , lightPosition_("lightPosition", "Light Source Position", vec3(-2.f, -50.f, 90.f),
-                     vec3(-100.f), vec3(100.f))
     , lightEnabled_("lightEnabled", "Enabled", true)
     , lightScreenPosEnabled_("lightScreenPosEnabled", "Screen Pos Enabled", false)
     , lightScreenPos_("lightScreenPos", "Light Screen Pos", vec2(0.7f), vec2(0.f), vec2(1.f))
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
+
     , interactionEvents_("interactionEvents", "Interaction Events") 
 {
     addPort(outport_);
-    lighting_.addProperty(lightPosition_);
+    addProperty(lightPosition_);
     lighting_.addProperty(lightDiffuse_);
     lighting_.addProperty(lightPowerProp_);
     lighting_.addProperty(lightSize_);
@@ -77,10 +78,11 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     addProperty(camera_);
     camera_.setVisible(false);
     
-    lightPosition_.setSemantics(PropertySemantics::LightPosition);
     lightDiffuse_.setSemantics(PropertySemantics::Color);
+    lightDiffuse_.setCurrentStateAsDefault();
+
     lightSource_ = new PointLight();
-    lightInteractionHandler_ = new PointLightInteractionHandler(&lightPosition_, &camera_, &lightScreenPosEnabled_, &lightScreenPos_);
+    lightInteractionHandler_ = new PointLightInteractionHandler(&lightPosition_.position_, &camera_, &lightScreenPosEnabled_, &lightScreenPos_);
 
     lightScreenPos_.onChange([this](){
         lightInteractionHandler_->setLightPosFromScreenCoords(lightScreenPos_.get());
@@ -110,7 +112,14 @@ void PointLightSourceProcessor::process() {
 
 void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) {
     vec3 lightPos = lightPosition_.get();
-    vec3 dir = glm::normalize(camera_.getLookTo()-lightPos);
+    vec3 dir;
+    switch (static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
+    case PositionProperty::Space::VIEW:
+        dir = glm::normalize(camera_.getLookTo() - lightPos);
+    case PositionProperty::Space::WORLD:
+    default:
+        dir = glm::normalize(vec3(0.f) - lightPos);
+    }
     mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
     // Offset by 0.5 to get to texture coordinates
     lightSource->setModelMatrix(glm::translate(vec3(0.5f)));
