@@ -50,7 +50,7 @@ PositionProperty::PositionProperty(std::string identifier, std::string displayNa
     referenceFrame_.setCurrentStateAsDefault();
 
     position_.setSemantics(PropertySemantics::LightPosition);
-
+    position_.setCurrentStateAsDefault();
     // add properties
     addProperty(referenceFrame_);
     addProperty(position_);

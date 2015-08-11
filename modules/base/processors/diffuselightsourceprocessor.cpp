@@ -43,27 +43,26 @@ ProcessorCodeState(DiffuseLightSourceProcessor, CODE_STATE_EXPERIMENTAL);
 DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     : Processor()
     , outport_("DiffuseLightSource")
+    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
+    vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
+    , lightPosition_("lightPosition", "Light Source Position",
+    FloatVec3Property("position", "Position", vec3(1.f, 0.65f, 0.65f), vec3(-10.f), vec3(10.f)), &camera_.get())
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))
     , lightDiffuse_("lightDiffuse", "Color", vec4(1.0f, 1.0f, 1.0f, 1.f))
-    , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-    vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
-    , lightPosition_("lightPosition", "Light Source Position",
-    FloatVec3Property("position", "Position", vec3(1.f, 0.65f, 0.65f), vec3(-10.f), vec3(10.f))
-    , &camera_.get())
+
+    
 {
 
     addPort(outport_);
     addProperty(lightPosition_);
-    //lighting_.addProperty(lightPosition_);
     lighting_.addProperty(lightDiffuse_);
     lighting_.addProperty(lightPowerProp_);
     lighting_.addProperty(lightSize_);
     addProperty(lighting_);
     addProperty(camera_);
 
-    //lightPosition_.setSemantics(PropertySemantics::LightPosition);
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightSource_ = new DiffuseLight();
 }

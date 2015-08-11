@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/positionproperty.h>
 #include <modules/base/basemoduledefine.h>
 
 namespace inviwo {
@@ -45,16 +46,18 @@ class DirectionalLight;
 /** \docpage{org.inviwo.Directionallightsource, Directional light source}
  * ![](org.inviwo.Directionallightsource.png?classIdentifier=org.inviwo.Directionallightsource)
  *
- * ...
+ * Produces a light source with parallel light rays, spreading light in the direction from an infinite plane.
+ * The direction of the plane will be computed as glm::normalize(vec3(0) - lightPos)
+ * when specified in world space and normalize(camera_.getLookTo() - lightPos) when specified in view space.
  * 
  * ### Outports
- *   * __DirectionalLightSource__ ...
+ *   * __DirectionalLightSource__ Directional light source
  * 
  * ### Properties
- *   * __Light power__ ...
- *   * __Color__ ...
- *   * __Light Source Position__ ...
- *   * __Enabled__ ...
+ *   * __Light power__ Radiant flux in watt ( intensity * area * M_PI ), where area = 1.
+ *   * __Color__ Flux density per solid angle, W*s*r^-1 (intensity)
+ *   * __Light Source Position__ Origin of the light source
+ *   * __Enabled__ Turns light on or off
  */
 class IVW_MODULE_BASE_API DirectionalLightSourceProcessor : public Processor {
 public:
@@ -77,11 +80,13 @@ protected:
 private:
     DataOutport<LightSource> outport_;
 
+    CameraProperty camera_; //< Link camera in order to specify position in view space.
+    PositionProperty lightPosition_;
     CompositeProperty lighting_;
     FloatProperty lightPowerProp_;
     FloatVec4Property lightDiffuse_;
-    FloatVec3Property lightPosition_;
     BoolProperty lightEnabled_;
+    
     
     DirectionalLight* lightSource_;
 };
