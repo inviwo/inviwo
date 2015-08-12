@@ -44,12 +44,35 @@ ProcessorCategory(VolumeLowPass, "Volume Operation");
 ProcessorCodeState(VolumeLowPass, CODE_STATE_EXPERIMENTAL);
 
 VolumeLowPass::VolumeLowPass()
-    : VolumeGLProcessor("volume_lowpass.frag"), kernelSize_("kernelSize", "Kernel size", 3, 2, 27) {
+    : VolumeGLProcessor("volume_lowpass.frag")
+    , kernelSize_("kernelSize", "Kernel size", 3, 2, 27)
+    , useGaussianWeights_("useGaussianWeights", "Use Gaussian Weights")
+    , sigma_("sigma", "Sigma", 1, 0.001, 2, 0.001) {
     addProperty(kernelSize_);
+    addProperty(useGaussianWeights_);
+    useGaussianWeights_.addProperty(sigma_);
+    useGaussianWeights_.getBoolProperty()->setInvalidationLevel(INVALID_RESOURCES);
+
+    setAllPropertiesCurrentStateAsDefault();
 }
 
 VolumeLowPass::~VolumeLowPass() {}
 
-void VolumeLowPass::preProcess() { utilgl::setUniforms(&shader_, kernelSize_); }
+void VolumeLowPass::preProcess() { 
+    utilgl::setUniforms(&shader_, kernelSize_); 
+    shader_.setUniform("inv2Sigma", 1.0f / (sigma_.get() * 2.0f));
+}
+
+void VolumeLowPass::initializeResources() {
+    VolumeGLProcessor::initializeResources();
+
+    if (useGaussianWeights_.isChecked()) {
+        shader_.getFragmentShaderObject()->addShaderDefine("GAUSSIAN");
+    } else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("GAUSSIAN");
+    }
+
+    shader_.build();
+}
 
 }  // namespace
