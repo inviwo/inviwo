@@ -52,6 +52,8 @@ public:
     virtual bool isChecked() const;
     virtual void setChecked(bool checked);
 
+    virtual BoolProperty* getBoolProperty(){ return &checked_; }
+
 private:
     BoolProperty checked_;
 };
