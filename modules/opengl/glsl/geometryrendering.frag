@@ -32,6 +32,8 @@
 uniform LightParameters light_;
 uniform CameraParameters camera_;
 
+uniform vec4 overrideColor;
+
 in vec4 worldPosition_;
 in vec3 normal_;
 in vec3 viewNormal_;
@@ -41,7 +43,13 @@ in vec4 color_;
 void main() {
     vec4 fragColor = vec4(1.0);
     vec3 toCameraDir_ = camera_.position - worldPosition_.xyz;
-    fragColor.rgb = APPLY_LIGHTING(light_, color_.rgb, color_.rgb, vec3(1.0f), worldPosition_.xyz,
+	#ifdef OVERRIDE_COLOR_BUFFER
+	vec4 color = overrideColor;
+	#else
+	vec4 color = color_;
+	#endif
+
+    fragColor.rgb = APPLY_LIGHTING(light_, color.rgb, color.rgb, vec3(1.0f), worldPosition_.xyz,
                                    normalize(normal_), normalize(toCameraDir_));
 
 #ifdef COLOR_LAYER

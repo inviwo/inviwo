@@ -107,6 +107,9 @@ protected:
     ButtonProperty resetViewParams_;
     CameraTrackball trackball_;
     
+    BoolProperty overrideColorBuffer_;
+    FloatVec4Property overrideColor_;
+
     CompositeProperty geomProperties_;
     OptionPropertyInt cullFace_;
     OptionPropertyInt polygonMode_;

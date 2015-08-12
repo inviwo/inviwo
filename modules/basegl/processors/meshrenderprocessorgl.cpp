@@ -55,9 +55,11 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , outport_("image.outport")
     , camera_("camera", "Camera")
     , centerViewOnGeometry_("centerView", "Center view on geometry")
-    , setNearFarPlane_("setNearFarPlane","Calculate Near and Far Plane")
+    , setNearFarPlane_("setNearFarPlane", "Calculate Near and Far Plane")
     , resetViewParams_("resetView", "Reset Camera")
     , trackball_(&camera_)
+    , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false , INVALID_RESOURCES)
+    , overrideColor_("overrideColor", "Override Color", vec4(0.75f, 0.75f, 0.75f, 1.0f), vec4(0.0f), vec4(1.0f))
     , geomProperties_("geometry", "Geometry Rendering Properties")
     , cullFace_("cullFace", "Cull Face")
     , polygonMode_("polygonMode", "Polygon Mode")
@@ -99,6 +101,12 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     geomProperties_.addProperty(renderPointSize_);
     geomProperties_.addProperty(renderLineWidth_);
 
+    geomProperties_.addProperty(overrideColorBuffer_);
+    geomProperties_.addProperty(overrideColor_);
+    overrideColor_.setSemantics(PropertySemantics::Color);
+    overrideColor_.setVisible(false);
+    overrideColorBuffer_.onChange([&](){overrideColor_.setVisible(overrideColorBuffer_.get()); });
+
     float lineWidthRange[2];
     float increment;
     glGetFloatv(GL_LINE_WIDTH_RANGE, lineWidthRange);
@@ -133,6 +141,13 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     // shading defines
     utilgl::addShaderDefines(&shader, lightingProperty_);
     int layerID = 0;
+
+    if (overrideColorBuffer_.get()){
+        shader.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
+    }
+    else{
+        shader.getFragmentShaderObject()->removeShaderDefine("OVERRIDE_COLOR_BUFFER");
+    }
 
     if (colorLayer_.get()) {
         shader.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
@@ -198,6 +213,7 @@ void MeshRenderProcessorGL::process() {
 
     utilgl::setShaderUniforms(&shader_, camera_, "camera_");
     utilgl::setShaderUniforms(&shader_, lightingProperty_, "light_");
+    utilgl::setShaderUniforms(&shader_, overrideColor_);
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::CullFaceState culling(cullFace_.get());
