@@ -146,7 +146,7 @@ void InviwoMainWindow::initialize() {
     // as long as widget is not shown, no border exists, i.e. this->pos() ==
     // this->geometry().topLeft()
 
-    QWidget* w = new QWidget();
+    QWidget* w = new QWidget(nullptr, Qt::Tool);
     w->move(-5000, -5000);
     w->show();
     QPoint widgetPos = w->pos();
