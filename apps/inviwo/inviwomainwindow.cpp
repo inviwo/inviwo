@@ -121,11 +121,10 @@ void InviwoMainWindow::initialize() {
 
     auto app = InviwoApplication::getPtr();
 
-    recentFileList_ = settings.value("recentFileList").toStringList();
     QString firstWorkspace = app->getPath(InviwoApplication::PATH_WORKSPACES, "boron.inv").c_str();
-    workspaceOnLastSucessfullExit_ = settings.value("workspaceOnLastSucessfullExit",
+    workspaceOnLastSuccessfulExit_ = settings.value("workspaceOnLastSuccessfulExit",
                                                     QVariant::fromValue(firstWorkspace)).toString();
-    settings.setValue("workspaceOnLastSucessfullExit", "");
+    settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
     rootDir_ = QString::fromStdString(app->getPath(InviwoApplication::PATH_DATA));
     workspaceFileDir_ = rootDir_ + "workspaces/";
@@ -135,7 +134,7 @@ void InviwoMainWindow::initialize() {
     addMenus();
     addMenuActions();
     addToolBars();
-    updateRecentWorkspaces();
+    updateRecentWorkspaceMenu();
 
 #ifdef WIN32
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -363,28 +362,49 @@ void InviwoMainWindow::updateWindowTitle() {
     setWindowTitle(windowTitle);
 }
 
-void InviwoMainWindow::updateRecentWorkspaces() {
-    for (int i = 0; i < recentFileList_.size(); i++) {
-        if (!recentFileList_[i].isEmpty()) {
+void InviwoMainWindow::updateRecentWorkspaceMenu() {
+    QStringList recentFiles{ getRecentWorkspaceList() };
+
+    for (int i = 0; i < recentFiles.size(); i++) {
+        if (!recentFiles[i].isEmpty()) {
             QString menuEntry =
-                tr("&%1 %2").arg(i + 1).arg(QFileInfo(recentFileList_[i]).fileName());
+                tr("&%1 %2").arg(i + 1).arg(QFileInfo(recentFiles[i]).fileName());
             workspaceActionRecent_[i]->setText(menuEntry);
-            workspaceActionRecent_[i]->setData(recentFileList_[i]);
+            workspaceActionRecent_[i]->setData(recentFiles[i]);
             workspaceActionRecent_[i]->setVisible(true);
         } else
             workspaceActionRecent_[i]->setVisible(false);
     }
 
-    recentFileSeparator_->setVisible(recentFileList_.size() > 0);
+    recentFileSeparator_->setVisible(!recentFiles.isEmpty());
 }
 
 void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
-    recentFileList_.removeAll(workspaceFileName);
-    recentFileList_.prepend(workspaceFileName);
+    QStringList recentFiles{ getRecentWorkspaceList() };
 
-    if (recentFileList_.size() > static_cast<int>(maxNumRecentFiles_)) recentFileList_.removeLast();
+    recentFiles.removeAll(workspaceFileName);
+    recentFiles.prepend(workspaceFileName);
 
-    updateRecentWorkspaces();
+    if (recentFiles.size() > static_cast<int>(maxNumRecentFiles_)) recentFiles.removeLast();
+    saveRecentWorkspaceList(recentFiles);
+
+    updateRecentWorkspaceMenu();
+}
+
+QStringList InviwoMainWindow::getRecentWorkspaceList() const {
+    QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("mainwindow");
+    QStringList list{ settings.value("recentFileList").toStringList() };
+    settings.endGroup();
+
+    return list;
+}
+
+void InviwoMainWindow::saveRecentWorkspaceList(const QStringList &list) {
+    QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("mainwindow");
+    settings.setValue("recentFileList", list);
+    settings.endGroup();
 }
 
 void InviwoMainWindow::setCurrentWorkspace(QString workspaceFileName) {
@@ -443,8 +463,8 @@ void InviwoMainWindow::openLastWorkspace() {
 
     if (cmdparser->getLoadWorkspaceFromArg()) {
         openWorkspace(static_cast<const QString>(cmdparser->getWorkspacePath().c_str()));
-    } else if (!workspaceOnLastSucessfullExit_.isEmpty()) {
-        openWorkspace(workspaceOnLastSucessfullExit_);
+    } else if (!workspaceOnLastSuccessfulExit_.isEmpty()) {
+        openWorkspace(workspaceOnLastSuccessfulExit_);
     } else {
         newWorkspace();
     }
@@ -616,7 +636,7 @@ void InviwoMainWindow::saveWindowState() {
     settings.setValue("geometry", saveGeometry());
     settings.setValue("state", saveState());
     settings.setValue("maximized", isMaximized());
-    settings.setValue("recentFileList", recentFileList_);
+    //settings.setValue("recentFileList", recentFileList_);
     settings.endGroup();
 }
 void InviwoMainWindow::loadWindowState() {}
@@ -635,9 +655,9 @@ void InviwoMainWindow::closeEvent(QCloseEvent* event) {
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("mainwindow");
     if (!loadedNetwork.contains("untitled.inv")) {
-        settings.setValue("workspaceOnLastSucessfullExit", loadedNetwork);
+        settings.setValue("workspaceOnLastSuccessfulExit", loadedNetwork);
     } else {
-        settings.setValue("workspaceOnLastSucessfullExit", "");
+        settings.setValue("workspaceOnLastSuccessfulExit", "");
     }
     settings.endGroup();
 

@@ -111,7 +111,18 @@ private:
     bool askToSaveWorkspaceChanges();
 
     void addToRecentWorkspaces(QString workspaceFileName);
-    void updateRecentWorkspaces();
+    /**
+    * \brief update the recent file list in the menu based on the internal status
+    */
+    void updateRecentWorkspaceMenu();
+    /**
+    * \brief query the Qt settings for recent workspaces and update internal status
+    */
+    QStringList getRecentWorkspaceList() const;
+    /** 
+     * \brief update Qt settings for recent workspaces with internal status
+     */
+    void saveRecentWorkspaceList(const QStringList &list);
     void setCurrentWorkspace(QString workspaceFileName);
 
     void updateWindowTitle();
@@ -163,8 +174,7 @@ private:
     QString rootDir_;
     QString workspaceFileDir_;
     QString currentWorkspaceFileName_;
-    QString workspaceOnLastSucessfullExit_;
-    QStringList recentFileList_;
+    QString workspaceOnLastSuccessfulExit_;
 };
 
 } // namespace
