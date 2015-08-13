@@ -96,6 +96,7 @@ TransferFunctionEditor::~TransferFunctionEditor() {
 }
 
 void TransferFunctionEditor::resetTransferFunction() {
+    NetworkLock lock;
     transferFunction_->clearPoints();
     addControlPoint(QPointF(0.0 * (width() - 1), 0.0 * (height() - 1)), vec4(0.0f));
     addControlPoint(QPointF(1.0 * (width() - 1), 1.0 * (height() - 1)), vec4(1.0f));
