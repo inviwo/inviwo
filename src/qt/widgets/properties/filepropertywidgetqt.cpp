@@ -93,11 +93,6 @@ void FilePropertyWidgetQt::setPropertyValue() {
             // TODO: replace with filesystem:: functionality!            
             path = QDir(QString::fromStdString(path)).absolutePath().toStdString();
         }
-        else {
-            path.clear();
-            // update property
-            property_->set("");
-        }
     }
 
     // Setup Extensions
