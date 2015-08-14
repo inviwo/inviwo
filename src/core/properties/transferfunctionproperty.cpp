@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 
