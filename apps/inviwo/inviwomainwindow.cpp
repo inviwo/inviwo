@@ -443,10 +443,18 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
         return;
     }
 
-    getNetworkEditor()->loadNetwork(workspaceFileName.toLocal8Bit().constData());
-    onNetworkEditorFileChanged(workspaceFileName.toLocal8Bit().constData());
-    addToRecentWorkspaces(workspaceFileName);
-    saveWindowState();
+    bool loaded = getNetworkEditor()->loadNetwork(workspaceFileName.toLocal8Bit().constData());
+
+    if (loaded){
+        onNetworkEditorFileChanged(workspaceFileName.toLocal8Bit().constData());
+        addToRecentWorkspaces(workspaceFileName);
+        saveWindowState();
+    }
+    else{
+        setCurrentWorkspace(rootDir_ + "workspaces/untitled.inv");
+        getNetworkEditor()->setModified(false);
+        updateWindowTitle();
+    }
 }
 
 void InviwoMainWindow::onNetworkEditorFileChanged(const std::string& filename) {
