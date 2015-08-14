@@ -1229,6 +1229,10 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
             util::log(exception.getContext(),
                       "Incomplete network loading " + path + " due to " + exception.getMessage(),
                       LogLevel::Error);
+        } catch (const ticpp::Exception& exception) {
+            LogError("Unable to load network " + path + " due to deserialization error: " + exception.what());
+            clearNetwork();
+            return false;
         }
         InviwoApplication::getPtr()->getProcessorNetwork()->setModified(true);
         for (auto o : observers_) o->onNetworkEditorFileChanged(path);
