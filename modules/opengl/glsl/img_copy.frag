@@ -26,14 +26,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *********************************************************************************/
+#ifdef ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS
+ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS
+#endif
 
 uniform sampler2D color_;
 uniform sampler2D depth_;
 uniform sampler2D picking_;
-
-#ifdef ADDITIONAL_COLOR_LAYER_UNIFORMS
-ADDITIONAL_COLOR_LAYER_UNIFORMS
-#endif
 
 in vec3 texCoord_;
 

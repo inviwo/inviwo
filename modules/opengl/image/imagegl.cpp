@@ -135,9 +135,12 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         if (colorLayersGL_.size() > 1){
             std::stringstream ssUniform;
             for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
+                ssUniform << "layout(location = " << i+1 << ") out vec4 FragData" << i << ";";
+            }
+            for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
                 ssUniform << "uniform sampler2D color" << i << ";";
             }
-            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_UNIFORMS", ssUniform.str());
+            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS", ssUniform.str());
 
             std::stringstream ssWrite;
             for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
