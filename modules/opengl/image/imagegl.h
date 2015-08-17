@@ -89,6 +89,7 @@ private:
     FrameBufferObject frameBufferObject_;
     GLenum pickingAttachmentID_;
     mutable Shader shader_;
+    mutable size_t colorLayerCopyCount_;
 };
 
 } // namespace

@@ -37,13 +37,15 @@ namespace inviwo {
 ImageGL::ImageGL()
     : ImageRepresentation()
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag") {
+    , shader_("standard.vert", "img_copy.frag")
+    , colorLayerCopyCount_(1) {
 }
 
 ImageGL::ImageGL(const ImageGL& rhs)
     : ImageRepresentation(rhs)
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag") {
+    , shader_("standard.vert", "img_copy.frag")
+    , colorLayerCopyCount_(1) {
 }
 
 ImageGL::~ImageGL() {
@@ -128,6 +130,31 @@ bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
 bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     const ImageGL* source = this;
 
+    // Set shader to copy all color layers 
+    if (colorLayerCopyCount_ != colorLayersGL_.size()){
+        if (colorLayersGL_.size() > 1){
+            std::stringstream ssUniform;
+            for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
+                ssUniform << "uniform sampler2D color" << i << ";";
+            }
+            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_UNIFORMS", ssUniform.str());
+
+            std::stringstream ssWrite;
+            for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
+                ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord_.xy);";
+            }
+            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE", ssWrite.str());
+        }
+        else{
+            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_UNIFORMS");
+            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE");
+        }
+
+        colorLayerCopyCount_ = colorLayersGL_.size();
+
+        shader_.build();
+    }
+
     TextureUnit colorUnit, depthUnit, pickingUnit;
     source->getColorLayerGL()->bindTexture(colorUnit.getEnum());
     if (source->getDepthLayerGL()) {
@@ -136,6 +163,13 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     if (source->getPickingLayerGL()) {
         source->getPickingLayerGL()->bindTexture(pickingUnit.getEnum());
     }
+    TextureUnitContainer additionalColorUnits;
+    for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
+        TextureUnit unit;
+        source->getColorLayerGL(i)->bindTexture(colorUnit.getEnum());
+        additionalColorUnits.push_back(std::move(unit));
+    }
+
     // Render to FBO, with correct scaling
     target->activateBuffer(ALL_LAYERS);
 
@@ -156,6 +190,9 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     }
     if (source->getPickingLayerGL()) {
         shader_.setUniform("picking_", pickingUnit.getUnitNumber());
+    }
+    for (size_t i = 0; i < additionalColorUnits.size(); ++i) {
+        shader_.setUniform("color" + toString<size_t>(i + 1), additionalColorUnits[i].getUnitNumber());
     }
     shader_.setUniform("dataToClip", scale);
 
