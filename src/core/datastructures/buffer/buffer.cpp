@@ -83,11 +83,17 @@ void Buffer::setSize(size_t size) {
                 representations_.erase(eraseFrom, representations_.end());
             }
 
-            // and then erase the ones infront of the valid representation
+            //// and then erase the ones infront of the valid representation
             if (representations_.begin() != it)
                 representations_.erase(representations_.begin(), it);
-        }
-        setAllRepresentationsAsInvalid();
+
+            setAllRepresentationsAsInvalid();
+            // Set the remaining representation as valid.
+            // Solves issue where the buffer will try to update 
+            // the remaining representation with itself when getRepresentation of the same type is called
+            setRepresentationAsValid(0);
+        } 
+        
     }
 }
 
