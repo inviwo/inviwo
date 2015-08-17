@@ -169,7 +169,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     TextureUnitContainer additionalColorUnits;
     for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
         TextureUnit unit;
-        source->getColorLayerGL(i)->bindTexture(colorUnit.getEnum());
+        source->getColorLayerGL(i)->bindTexture(unit.getEnum());
         additionalColorUnits.push_back(std::move(unit));
     }
 
