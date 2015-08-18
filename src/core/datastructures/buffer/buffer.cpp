@@ -64,28 +64,18 @@ void Buffer::setSize(size_t size) {
         size_ = size;
 
         if (lastValidRepresentation_) {
-            // Resize last valid representation and remove the other ones
+            // Resize last valid representation 
             static_cast<BufferRepresentation*>(lastValidRepresentation_)->setSize(size);
-            std::vector<DataRepresentation*>::iterator it = std::find(
-                representations_.begin(), representations_.end(), lastValidRepresentation_);
 
-            // First delete the representations before erasing them from the vector
-            for (auto& elem : representations_) {
-                if (elem != lastValidRepresentation_) {
-                    delete elem;
-                    elem = nullptr;
+            // and remove the other ones
+            util::erase_remove_if(representations_, [this](DataRepresentation* repr) {
+                if (repr != lastValidRepresentation_) {
+                    delete repr;
+                    return true;
+                } else {
+                    return false;
                 }
-            }
-
-            // Erasing representations: start from the back
-            if (it != --representations_.end()) {
-                std::vector<DataRepresentation*>::iterator eraseFrom = it + 1;
-                representations_.erase(eraseFrom, representations_.end());
-            }
-
-            //// and then erase the ones infront of the valid representation
-            if (representations_.begin() != it)
-                representations_.erase(representations_.begin(), it);
+            });
 
             setAllRepresentationsAsInvalid();
             // Set the remaining representation as valid.

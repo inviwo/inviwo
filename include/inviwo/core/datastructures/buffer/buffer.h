@@ -59,6 +59,13 @@ public:
     void resizeBufferRepresentations(Buffer* targetBuffer, size_t targetSize);
 
     size_t getSize() const;
+
+    /**
+     * Set the number of elements in the buffer. This is destructive, the data will not be
+     * preserved.
+     * @note Resizes the last valid representation and erases all representations.
+     * Last valid representation will remain valid after changing the size.
+     */
     void setSize(size_t size);
 
     size_t getSizeInBytes();
