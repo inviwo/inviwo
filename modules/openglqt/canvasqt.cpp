@@ -508,15 +508,29 @@ void CanvasQt::touchEvent(QTouchEvent* touch) {
             (prevScreenTouchPos) / screenSize,
             touchState, getDepthValueAtCoord(pixelCoord, depthLayerRAM));
     }
-    // Ensure that the order to the touch points are the same as last touch event
-    auto touchIndex = 0;
+    // Ensure that the order to the touch points are the same as last touch event.
+    // Note that the ID of a touch point is always the same but the order in which
+    // they are given can vary.
+    // Example
+    // lastTouchIds_    touchPoints
+    //     0                 0
+    //     3                 1 
+    //     2                 2
+    //     4
+    // Will result in:
+    //                  touchPoints
+    //                       0 (no swap)
+    //                       2 (2 will swap with 1)
+    //                       1
+
+    auto touchIndex = 0; // Index to first unsorted element in touchPoints array
     for (const auto& lastTouchPointId : lastTouchIds_) {
         const auto touchPointIt = std::find_if(touchPoints.begin(), touchPoints.end(), [lastTouchPointId](const TouchPoint& p) { return p.getId() == lastTouchPointId; });
-        // Swap current location in the container with the location it was last touch event.
+        // Swap current location in the container with the location it was in last touch event.
         if (touchPointIt != touchPoints.end() && std::distance(touchPoints.begin(), touchPointIt) != touchIndex) {
             std::swap(*(touchPoints.begin() + touchIndex), *touchPointIt);
+            ++touchIndex;
         }
-        ++touchIndex;
     }
 
     for (auto& endedId : endedTouchIds) {
