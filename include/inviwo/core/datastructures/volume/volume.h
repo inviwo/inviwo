@@ -51,8 +51,15 @@ public:
     virtual ~Volume();
     virtual std::string getDataInfo() const;
 
-    size3_t getDimensions() const;
-    void setDimensions(const size3_t& dim);
+    size3_t getDimensions() const override;
+    
+    /**
+     * Resize to dimension. This is destructive, the data will not be
+     * preserved. 
+     * @note Resizes the last valid representation and erases all representations.
+     * Last valid representation will remain valid after changing the dimension.
+     */
+    void setDimensions(const size3_t& dim) override;
 
     void setOffset(const vec3& offset);
     vec3 getOffset() const;

@@ -104,8 +104,38 @@ std::string Volume::getDataInfo() const {
     return ss.str();
 }
 
-size3_t Volume::getDimensions() const { return StructuredGridEntity<3>::getDimensions(); }
-void Volume::setDimensions(const size3_t& dim) { StructuredGridEntity<3>::setDimensions(dim); }
+size3_t Volume::getDimensions() const { 
+    return StructuredGridEntity<3>::getDimensions(); 
+    if (hasRepresentations() && lastValidRepresentation_) {
+        size3_t dim = static_cast<VolumeRepresentation*>(lastValidRepresentation_)->getDimensions();
+        return dim;
+    }
+    return StructuredGridEntity<3>::getDimensions();
+}
+
+void Volume::setDimensions(const size3_t& dim) { 
+    StructuredGridEntity<3>::setDimensions(dim); 
+
+    if (lastValidRepresentation_) {
+        // Resize last valid representation
+        static_cast<VolumeRepresentation*>(lastValidRepresentation_)->setDimensions(dim);
+
+        // and remove the other ones
+        util::erase_remove_if(representations_, [this](DataRepresentation* repr) {
+            if (repr != lastValidRepresentation_) {
+                delete repr;
+                return true;
+            } else {
+                return false;
+            }
+        });
+        setAllRepresentationsAsInvalid();
+        // Set the remaining representation as valid.
+        // Solves issue where the volume will try to update 
+        // the remaining representation with itself when getRepresentation of the same type is called
+        setRepresentationAsValid(0);
+    }
+}
 
 void Volume::setOffset(const vec3& offset) {
     SpatialEntity<3>::setOffset(Vector<3, float>(offset));
