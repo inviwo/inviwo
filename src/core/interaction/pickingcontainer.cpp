@@ -118,8 +118,8 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
     std::unordered_map<int, PickingObject*>::iterator touchPickObjs_it;
     std::unordered_map<PickingObject*, std::vector<TouchPoint>>::iterator pickedTouchPoints_it;
 
-    auto touchPoint = std::begin(touchPoints);
-    while (touchPoint != std::end(touchPoints)) {
+    auto touchPoint = touchPoints.begin();
+    while (touchPoint != touchPoints.end()) {
         bool isAssociated = false;
         if (touchPoint->state() == TouchPoint::TOUCH_STATE_STARTED) {
             // Find out if new touch point is touching inside a picking object
@@ -145,8 +145,8 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
         }
         else if (touchPoint->state() == TouchPoint::TOUCH_STATE_ENDED) {
             // Erase touch point from TouchIDPickingMap
-            touchPickObjs_.erase(touchPoint->getId());
-            isAssociated = true;
+            size_t numberOfErasedElements = touchPickObjs_.erase(touchPoint->getId());
+            isAssociated = (numberOfErasedElements > 0);
         }
         else {
             // Find out if touch point is in the TouchIDPickingMap
