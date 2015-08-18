@@ -52,8 +52,10 @@ public:
     virtual size2_t getDimensions() const override;
     
     /**
-     * Resize all representation to dimension. This is destructive, the data will not be
+     * Resize to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
+     * @note Resizes the last valid representation and erases all other representations. 
+     * Last valid representation will remain valid after changing the dimension.
      */
     virtual void setDimensions(const size2_t& dim) override;
 

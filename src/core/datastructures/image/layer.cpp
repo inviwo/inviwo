@@ -88,9 +88,12 @@ void Layer::setDimensions(const size2_t& dim) {
                 return false;
             }
         });
+        setAllRepresentationsAsInvalid();
+        // Set the remaining representation as valid.
+        // Solves issue where the layer will try to update 
+        // the remaining representation with itself when getRepresentation of the same type is called
+        setRepresentationAsValid(0);
     }
-
-    setAllRepresentationsAsInvalid();
 }
 
 void Layer::copyRepresentationsTo(Layer* targetLayer) {
