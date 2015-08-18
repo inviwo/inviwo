@@ -77,7 +77,18 @@ bool fileExists(const std::string& filePath) {
 
 bool directoryExists(const std::string& path) {
     struct stat buffer;
-    return (stat(path.c_str(), &buffer) == 0 && (buffer.st_mode & S_IFDIR));
+    // If path contains the location of a directory, it cannot contain a trailing backslash. 
+    // If it does, -1 will be returned and errno will be set to ENOENT.
+    // https://msdn.microsoft.com/en-us/library/14h5k7ff.aspx
+    // We therefore check if path ends with a backslash
+    if (path.size() > 1 && (path.back() == '/' || path.back() == '\\')) {
+        // Remove trailing backslash
+        std::string pathWithoutSlash = path.substr(0, path.size() - 1);
+        return (stat(pathWithoutSlash.c_str(), &buffer) == 0 && (buffer.st_mode & S_IFDIR));
+    } else {
+        // No need to modify path
+        return (stat(path.c_str(), &buffer) == 0 && (buffer.st_mode & S_IFDIR));
+    }
 }
 
 std::vector<std::string> getDirectoryContents(const std::string& path) {
