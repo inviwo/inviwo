@@ -105,7 +105,6 @@ std::string Volume::getDataInfo() const {
 }
 
 size3_t Volume::getDimensions() const { 
-    return StructuredGridEntity<3>::getDimensions(); 
     if (hasRepresentations() && lastValidRepresentation_) {
         size3_t dim = static_cast<VolumeRepresentation*>(lastValidRepresentation_)->getDimensions();
         return dim;
