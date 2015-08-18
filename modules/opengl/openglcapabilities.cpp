@@ -73,6 +73,10 @@ bool OpenGLCapabilities::GLSLShaderVersion::hasProfile() {
     return (profile_ != "");
 }
 
+bool OpenGLCapabilities::GLSLShaderVersion::sortHighestFirst(GLSLShaderVersion i, GLSLShaderVersion j) {
+	return (i.getVersion()>j.getVersion()); 
+}
+
 OpenGLCapabilities::OpenGLCapabilities()
     : shadersAreSupported_(false)
     , shadersAreSupportedARB_(false)
@@ -491,6 +495,8 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         for (int i=0; i<numberOfSupportedVersions; i++) {
             parseAndAddShaderVersion(toString<const GLubyte*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)), glslVersion);
         }
+
+		std::sort(supportedShaderVersions_.begin(), supportedShaderVersions_.end(), &GLSLShaderVersion::sortHighestFirst);
     }
 #endif
 
@@ -703,9 +709,13 @@ void OpenGLCapabilities::addShaderVersionIfEqualOrLower(GLSLShaderVersion versio
 void OpenGLCapabilities::parseAndAddShaderVersion(std::string versionStr, int compVersion) {
     //Assumes <version><space><profile> or <version>, example 420 core or 140
     if (!versionStr.empty()) {
+		//Remove all non-alphanumeric characters, but keep spaces
+		versionStr.erase(std::remove_if(versionStr.begin(), versionStr.end(),
+			[](char c) { return !(std::isspace(c) || std::isalnum(c)); }),
+			versionStr.end());
         std::vector<std::string> versionSplit = splitString(versionStr);
 
-        if (versionSplit.size() > 1)
+		if (versionSplit.size() > 1 && (versionSplit[1].compare("core") == 0 || versionSplit[1].compare("compatibility") == 0))
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(stringTo<int>(versionSplit[0]), versionSplit[1]), compVersion);
         else
             addShaderVersionIfEqualOrLower(GLSLShaderVersion(stringTo<int>(versionSplit[0])), compVersion);

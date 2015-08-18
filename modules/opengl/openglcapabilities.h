@@ -53,6 +53,8 @@ public:
 
         bool hasProfile();
 
+		static bool sortHighestFirst(GLSLShaderVersion i, GLSLShaderVersion j);
+
     private:
         int number_;
         std::string profile_;
