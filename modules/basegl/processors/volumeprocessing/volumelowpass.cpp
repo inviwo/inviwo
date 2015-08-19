@@ -47,7 +47,7 @@ VolumeLowPass::VolumeLowPass()
     : VolumeGLProcessor("volume_lowpass.frag")
     , kernelSize_("kernelSize", "Kernel size", 3, 2, 27)
     , useGaussianWeights_("useGaussianWeights", "Use Gaussian Weights")
-    , sigma_("sigma", "Sigma", 1, 0.001, 2, 0.001) {
+    , sigma_("sigma", "Sigma", 1.f, 0.001f, 2.f, 0.001f) {
     addProperty(kernelSize_);
     addProperty(useGaussianWeights_);
     useGaussianWeights_.addProperty(sigma_);
