@@ -90,7 +90,6 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/intersection/rayplaneintersection.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/intersection/raysphereintersection.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/intersection/raytriangleintersection.cl
-    ${CMAKE_CURRENT_SOURCE_DIR}/cl/light/light.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/shading/abcbrdf.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/shading/ashikiminbrdf.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/shading/blinnphongbrdf.cl
