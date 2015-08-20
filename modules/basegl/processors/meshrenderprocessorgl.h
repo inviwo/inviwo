@@ -77,7 +77,7 @@ namespace inviwo {
  *   * __Normals (World Space)__ ...
  *
  */
-class IVW_MODULE_BASEGL_API MeshRenderProcessorGL : public Processor {
+    class IVW_MODULE_BASEGL_API MeshRenderProcessorGL : public Processor {
 public:
     MeshRenderProcessorGL();
 
@@ -91,6 +91,8 @@ public:
     virtual void initializeResources();
     virtual void process(); 
 
+    virtual bool isReady()const override;
+
 protected:
     void centerViewOnGeometry();
     void setNearFarPlane();
@@ -99,6 +101,7 @@ protected:
     void addCommonShaderDefines(Shader& shader);
 
     MeshFlatMultiInport inport_;
+    ImageInport imageInport_;
     ImageOutport outport_;
 
     CameraProperty camera_;

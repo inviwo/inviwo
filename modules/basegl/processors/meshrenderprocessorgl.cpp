@@ -52,6 +52,7 @@ ProcessorCodeState(MeshRenderProcessorGL, CODE_STATE_STABLE);
 MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()
     , inport_("geometry.inport")
+    , imageInport_("imageInport")
     , outport_("image.outport")
     , camera_("camera", "Camera")
     , centerViewOnGeometry_("centerView", "Center view on geometry")
@@ -74,6 +75,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , shader_("geometryrendering.vert", "geometryrendering.frag", false) {
 
     addPort(inport_);
+    addPort(imageInport_);
     addPort(outport_);
     addProperty(camera_);
     centerViewOnGeometry_.onChange(this, &MeshRenderProcessorGL::centerViewOnGeometry);
@@ -208,7 +210,14 @@ void MeshRenderProcessorGL::changeRenderMode() {
 }
 
 void MeshRenderProcessorGL::process() {
-    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
+
+    if (imageInport_.isConnected()){
+        utilgl::activateTargetAndCopySource(outport_, imageInport_);
+    }
+    else{
+        utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
+    }
+    
     shader_.activate();
 
     utilgl::setShaderUniforms(&shader_, camera_, "camera_");
@@ -226,6 +235,14 @@ void MeshRenderProcessorGL::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
+}
+
+bool MeshRenderProcessorGL::isReady() const {
+    if (imageInport_.isConnected()) {
+        return Processor::isReady();
+    } else {
+        inport_.isReady();
+    }
 }
 
 void MeshRenderProcessorGL::centerViewOnGeometry() {
