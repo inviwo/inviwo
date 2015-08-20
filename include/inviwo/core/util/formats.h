@@ -36,6 +36,24 @@
 #include <limits>
 #include <string>
 
+// Check windows
+#if _WIN32 || _WIN64
+#if _WIN64
+#define ENVIRONMENT64
+#else
+#define ENVIRONMENT32
+#endif
+#endif
+
+// Check GCC
+#if __GNUC__
+#if __x86_64__ || __ppc64__
+#define ENVIRONMENT64
+#else
+#define ENVIRONMENT32
+#endif
+#endif
+
 /*! \brief Defines general useful formats and new data types
  * Non-virtual, meaning no dynamic_cast as string comparison is as fast/faster
  */
@@ -647,40 +665,39 @@ struct Defaultvalues {};
         static std::string getName() { return name; }      \
     };
 
-DEFAULTVALUES(float, uvec2(1, 1), "Float", 0.0f, 0.0f, 1.0f, 0.01f)
-DEFAULTVALUES(double, uvec2(1, 1), "Double", 0.0, 0.0, 1.0, 0.01)
 DEFAULTVALUES(int, uvec2(1, 1), "Int", 0, -100, 100, 1)
-DEFAULTVALUES(unsigned int, uvec2(1, 1), "UInt", 0, 0, 100, 1)
-DEFAULTVALUES(size_t, uvec2(1, 1), "Size_t", 0, 0, 100, 1)
 DEFAULTVALUES(glm::i64, uvec2(1, 1), "Int64", 0, 0, 1024, 1)
-
-DEFAULTVALUES(vec2, uvec2(2, 1), "FloatVec2", vec2(0.f), vec2(0.f), vec2(1.f), vec2(0.01f))
-DEFAULTVALUES(vec3, uvec2(3, 1), "FloatVec3", vec3(0.f), vec3(0.f), vec3(1.f), vec3(0.01f))
-DEFAULTVALUES(vec4, uvec2(4, 1), "FloatVec4", vec4(0.f), vec4(0.f), vec4(1.f), vec4(0.01f))
-
-DEFAULTVALUES(dvec2, uvec2(2, 1), "DoubleVec2", dvec2(0.), dvec2(0.), dvec2(1.), dvec2(0.01))
-DEFAULTVALUES(dvec3, uvec2(3, 1), "DoubleVec3", dvec3(0.), dvec3(0.), dvec3(1.), dvec3(0.01))
-DEFAULTVALUES(dvec4, uvec2(4, 1), "DoubleVec4", dvec4(0.), dvec4(0.), dvec4(1.), dvec4(0.01))
-
 DEFAULTVALUES(ivec2, uvec2(2, 1), "IntVec2", ivec2(0), ivec2(0), ivec2(10), ivec2(1))
 DEFAULTVALUES(ivec3, uvec2(3, 1), "IntVec3", ivec3(0), ivec3(0), ivec3(10), ivec3(1))
 DEFAULTVALUES(ivec4, uvec2(4, 1), "IntVec4", ivec4(0), ivec4(0), ivec4(10), ivec4(1))
 
-DEFAULTVALUES(size2_t, uvec2(2, 1), "IntSize2", size2_t(0), size2_t(0), size2_t(10), size2_t(1))
-DEFAULTVALUES(size3_t, uvec2(3, 1), "IntSize3", size3_t(0), size3_t(0), size3_t(10), size3_t(1))
-DEFAULTVALUES(size4_t, uvec2(4, 1), "IntSize4", size4_t(0), size4_t(0), size4_t(10), size4_t(1))
-
+DEFAULTVALUES(unsigned int, uvec2(1, 1), "UInt", 0, 0, 100, 1)
 DEFAULTVALUES(uvec2, uvec2(2, 1), "UIntVec2", uvec2(0), uvec2(0), uvec2(10), uvec2(1))
 DEFAULTVALUES(uvec3, uvec2(3, 1), "UIntVec3", uvec3(0), uvec3(0), uvec3(10), uvec3(1))
 DEFAULTVALUES(uvec4, uvec2(4, 1), "UIntVec4", uvec4(0), uvec4(0), uvec4(10), uvec4(1))
 
-DEFAULTVALUES(mat2, uvec2(2, 2), "FloatMat2", mat2(0.f), mat2(0.f), mat2(0.f)+1.0f, mat2(0.f)+0.01f)
-DEFAULTVALUES(mat3, uvec2(3, 3), "FloatMat3", mat3(0.f), mat3(0.f), mat3(0.f)+1.0f, mat3(0.f)+0.01f)
-DEFAULTVALUES(mat4, uvec2(4, 4), "FloatMat4", mat4(0.f), mat4(0.f), mat4(0.f)+1.0f, mat4(0.f)+0.01f)
+#if !defined(ENVIRONMENT32)
+DEFAULTVALUES(size_t, uvec2(1, 1), "Size_t", 0, 0, 100, 1)
+DEFAULTVALUES(size2_t, uvec2(2, 1), "IntSize2", size2_t(0), size2_t(0), size2_t(10), size2_t(1))
+DEFAULTVALUES(size3_t, uvec2(3, 1), "IntSize3", size3_t(0), size3_t(0), size3_t(10), size3_t(1))
+DEFAULTVALUES(size4_t, uvec2(4, 1), "IntSize4", size4_t(0), size4_t(0), size4_t(10), size4_t(1))
+#endif
 
-DEFAULTVALUES(dmat2, uvec2(2, 2), "DoubleMat2", dmat2(0.), dmat2(0.), dmat2(0.)+1.0, dmat2(0.)+0.01)
-DEFAULTVALUES(dmat3, uvec2(3, 3), "DoubleMat3", dmat3(0.), dmat3(0.), dmat3(0.)+1.0, dmat3(0.)+0.01)
-DEFAULTVALUES(dmat4, uvec2(4, 4), "DoubleMat4", dmat4(0.), dmat4(0.), dmat4(0.)+1.0, dmat4(0.)+0.01)
+DEFAULTVALUES(float, uvec2(1, 1), "Float", 0.0f, 0.0f, 1.0f, 0.01f)
+DEFAULTVALUES(vec2, uvec2(2, 1), "FloatVec2", vec2(0.f), vec2(0.f), vec2(1.f), vec2(0.01f))
+DEFAULTVALUES(vec3, uvec2(3, 1), "FloatVec3", vec3(0.f), vec3(0.f), vec3(1.f), vec3(0.01f))
+DEFAULTVALUES(vec4, uvec2(4, 1), "FloatVec4", vec4(0.f), vec4(0.f), vec4(1.f), vec4(0.01f))
+DEFAULTVALUES(mat2, uvec2(2, 2), "FloatMat2", mat2(0.f), mat2(0.f), mat2(0.f) + 1.0f, mat2(0.f) + 0.01f)
+DEFAULTVALUES(mat3, uvec2(3, 3), "FloatMat3", mat3(0.f), mat3(0.f), mat3(0.f) + 1.0f, mat3(0.f) + 0.01f)
+DEFAULTVALUES(mat4, uvec2(4, 4), "FloatMat4", mat4(0.f), mat4(0.f), mat4(0.f) + 1.0f, mat4(0.f) + 0.01f)
+
+DEFAULTVALUES(double, uvec2(1, 1), "Double", 0.0, 0.0, 1.0, 0.01)
+DEFAULTVALUES(dvec2, uvec2(2, 1), "DoubleVec2", dvec2(0.), dvec2(0.), dvec2(1.), dvec2(0.01))
+DEFAULTVALUES(dvec3, uvec2(3, 1), "DoubleVec3", dvec3(0.), dvec3(0.), dvec3(1.), dvec3(0.01))
+DEFAULTVALUES(dvec4, uvec2(4, 1), "DoubleVec4", dvec4(0.), dvec4(0.), dvec4(1.), dvec4(0.01))
+DEFAULTVALUES(dmat2, uvec2(2, 2), "DoubleMat2", dmat2(0.), dmat2(0.), dmat2(0.) + 1.0, dmat2(0.) + 0.01)
+DEFAULTVALUES(dmat3, uvec2(3, 3), "DoubleMat3", dmat3(0.), dmat3(0.), dmat3(0.) + 1.0, dmat3(0.) + 0.01)
+DEFAULTVALUES(dmat4, uvec2(4, 4), "DoubleMat4", dmat4(0.), dmat4(0.), dmat4(0.) + 1.0, dmat4(0.) + 0.01)
 
 DEFAULTVALUES(std::string, uvec2(1, 1), "String", "", "", "", "")
 DEFAULTVALUES(bool, uvec2(1, 1), "Bool", false, false, true, true)
