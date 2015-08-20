@@ -241,7 +241,7 @@ bool MeshRenderProcessorGL::isReady() const {
     if (imageInport_.isConnected()) {
         return Processor::isReady();
     } else {
-        inport_.isReady();
+        return inport_.isReady();
     }
 }
 
