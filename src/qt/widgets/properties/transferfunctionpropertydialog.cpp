@@ -400,7 +400,7 @@ void TransferFunctionPropertyDialog::changeMask(int maskMin, int maskMax) {
 
 void TransferFunctionPropertyDialog::importTransferFunction() {
     InviwoFileDialog importFileDialog(this, "Import transfer function",
-        "default",
+        "transferfunction",
         InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_TRANSFERFUNCTIONS)
         );
     importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
@@ -420,7 +420,7 @@ void TransferFunctionPropertyDialog::importTransferFunction() {
 
 void TransferFunctionPropertyDialog::exportTransferFunction() {
     InviwoFileDialog exportFileDialog(this, "Export transfer function",
-        "default",
+        "transferfunction",
         InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_TRANSFERFUNCTIONS)
     );    
     exportFileDialog.setAcceptMode(QFileDialog::AcceptSave);
