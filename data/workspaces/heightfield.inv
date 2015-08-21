@@ -82,14 +82,14 @@
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.FileProperty" identifier="imageFileName">
-                    <url content="../images/canyon7.tga" />
+                    <url content="../images/canyon7.png" />
                     <nameFilter>
                         <filter content="All Files (*.*)" />
                         <filter content="Portable Network Graphics (*.png)" />
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -97,7 +97,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -105,7 +105,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -113,7 +113,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -121,7 +121,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -129,7 +129,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -137,7 +137,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -145,7 +145,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -330,7 +330,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -338,7 +338,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -346,7 +346,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -354,7 +354,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -362,7 +362,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -370,7 +370,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -378,7 +378,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -386,7 +386,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -445,7 +445,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -453,7 +453,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -461,7 +461,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -469,7 +469,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -477,7 +477,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -485,7 +485,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -493,7 +493,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
@@ -501,7 +501,7 @@
                         <filter content="Joint Photographic Experts Group (*.jpg)" />
                         <filter content="Joint Photographic Experts Group (*.jpeg)" />
                         <filter content="Tagged Image File Format (*.tiff)" />
-                        <filter content="Truevision TGA (*.tga)" />
+                        <filter content="Truevision TGA (*.png)" />
                         <filter content="Windows bitmap (*.bmp)" />
                         <filter content="OpenEXR (*.exr)" />
                         <filter content="High dynamic range (*.hdr)" />
