@@ -219,8 +219,8 @@ inline float4 scaleShadingParameter(float4 material, const ShadingType shadingTy
     return scaledMaterial;
 }
 
-void sampleShadingFunction(read_only image3d_t volumeTex, float volumeSample, const float3 voxelSpacing, float4 material,
-                 float3 sample, 
+void sampleShadingFunction(read_only image3d_t volumeTex, __constant VolumeParameters* volumeParams, float volumeSample, float4 material,
+                 float3 pos, 
                  float3* direction, float2 rnd, const ShadingType shadingType) {
 
     // Material properties: 
@@ -233,42 +233,42 @@ void sampleShadingFunction(read_only image3d_t volumeTex, float volumeSample, co
     } else if ( shadingType == SCHLICK ) { 
          *direction = SchlickSample(-*direction, material.z, rnd); 
     } else if ( shadingType == BLINN_PHONG ) {
-        float3 gradient = normalize(calcGradient(as_float4(sample), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*direction;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
         wo = worldToShading(Nu, Nv, gradient, wo); 
         *direction = shadingToWorld(Nu, Nv, gradient, BlinnSample(wo, gradient, material.y, rnd));
     } else if ( shadingType == WARD ) {
-        float3 gradient = normalize(calcGradient(as_float4(sample), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*direction;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
         wo = worldToShading(Nu, Nv, gradient, wo); 
         *direction = shadingToWorld(Nu, Nv, gradient, WardSample(wo, gradient, material.y,material.y, rnd));
     } else if ( shadingType == COOK_TORRANCE ) {
-        float3 gradient = normalize(calcGradient(as_float4(sample), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*direction;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
         wo = worldToShading(Nu, Nv, gradient, wo); 
         *direction = shadingToWorld(Nu, Nv, gradient, CookTorranceSample(wo, material.y, rnd));
     } else if ( shadingType == ABC_MICROFACET ) {
-        float3 gradient = normalize(calcGradient(as_float4(sample), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*direction;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
         wo = worldToShading(Nu, Nv, gradient, wo); 
         *direction = shadingToWorld(Nu, Nv, gradient, ABCMicrofacetSample(wo, material.z, material.w, rnd));
     } else if ( shadingType == ASHIKHMIN ) {
-        float3 gradient = normalize(calcGradient(as_float4(sample), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*direction;
         float3 Nu = normalize(cross(gradient, wo)); 
         float3 Nv = normalize(cross(gradient, Nu));
         wo = worldToShading(Nu, Nv, gradient, wo); 
         *direction = shadingToWorld(Nu, Nv, gradient, AshikhminSample(wo, gradient, material.y, rnd));
     } else if ( shadingType == MIX ) {
-        float3 gradient = (calcGradient(as_float4(sample), volumeTex, as_float4(voxelSpacing)).xyz); 
+        float3 gradient = (gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float gradientMagnitude = length(gradient);      
         if(material.w < gradientMagnitude) {    
             *direction = uniformSampleSphere(rnd);   
@@ -287,7 +287,7 @@ void sampleShadingFunction(read_only image3d_t volumeTex, float volumeSample, co
 }
 
 // directionInOut should contain toCameraDirection upon input and will contain toLightDirection upon output.
-void sampleShadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample, const float3 voxelSpacing, float4 material, float3 pos, 
+void sampleShadingFunctionPdf(read_only image3d_t volumeTex, __constant VolumeParameters* volumeParams, float volumeSample, float4 material, float3 pos,
                  float3* directionInOut, float *pdf, float2 rnd, const ShadingType shadingType) {
     // directionInOut : A direction towards light source or camera upon input. Will be overwritten to new sample direction
     if ( shadingType == HENYEY_GREENSTEIN ) {
@@ -299,7 +299,7 @@ void sampleShadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample,
           *pdf = SchlickPhaseFunction(-*directionInOut, newDir, material.z); 
           *directionInOut = newDir;
     } else if ( shadingType == BLINN_PHONG ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*directionInOut;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -308,7 +308,7 @@ void sampleShadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample,
         *pdf = BlinnPdf(wo, wi, material.y);
         *directionInOut = shadingToWorld(Nu, Nv, gradient, wi);
     } else if ( shadingType == WARD ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*directionInOut;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -317,7 +317,7 @@ void sampleShadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample,
         *pdf = WardPdf(wo, wi, gradient, material.y, material.y);
         *directionInOut = shadingToWorld(Nu, Nv, gradient, wi);
     } else if ( shadingType == COOK_TORRANCE ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*directionInOut;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -326,7 +326,7 @@ void sampleShadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample,
         *pdf = CookTorrancePdf(wo, wi, gradient, material.y);
         *directionInOut = shadingToWorld(Nu, Nv, gradient, wi);
     } else if ( shadingType == ABC_MICROFACET ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*directionInOut;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -336,7 +336,7 @@ void sampleShadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample,
         *pdf = CookTorrancePdf(wo, wi, gradient, material.w);
         *directionInOut = shadingToWorld(Nu, Nv, gradient, wi);
     } else if ( shadingType == ASHIKHMIN ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = -*directionInOut;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -345,7 +345,7 @@ void sampleShadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample,
         *pdf = AshikhminPdf(wo, wi, material.y);
         *directionInOut = shadingToWorld(Nu, Nv, gradient, wi);
     } else if ( shadingType == MIX ) {
-        float3 gradient = (calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz); 
+        float3 gradient = (gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float gradientMagnitude = length(gradient);
         if(material.w < gradientMagnitude) {    
             *directionInOut = uniformSampleSphere(rnd);   
@@ -366,7 +366,7 @@ void sampleShadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample,
     }
 
 }
-float shadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample, const float3 voxelSpacing, float4 material,
+float shadingFunctionPdf(read_only image3d_t volumeTex, __constant VolumeParameters* volumeParams, float volumeSample, float4 material,
                  float3 pos, float3 toCameraDir,
                  float3 toLightDirection, const ShadingType shadingType) {
 
@@ -376,7 +376,7 @@ float shadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample, cons
     } else if ( shadingType == SCHLICK ) { 
         pdf = SchlickPhaseFunction(-toCameraDir, toLightDirection, material.z); 
     } else if ( shadingType == BLINN_PHONG ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = toCameraDir;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -384,7 +384,7 @@ float shadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample, cons
         float3 wi = worldToShading(Nu, Nv, gradient, toLightDirection);
         pdf = BlinnPdf(wo, wi, material.y);
     } else if ( shadingType == WARD ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = toCameraDir;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -392,7 +392,7 @@ float shadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample, cons
         float3 wi = worldToShading(Nu, Nv, gradient, toLightDirection);
         pdf = WardPdf(wo, wi, gradient, material.y, material.y);
     } else if ( shadingType == COOK_TORRANCE ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = toCameraDir;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -400,7 +400,7 @@ float shadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample, cons
         float3 wi = worldToShading(Nu, Nv, gradient, toLightDirection);
         pdf = CookTorrancePdf(wo, wi, gradient, material.y);
     } else if ( shadingType == ABC_MICROFACET ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = toCameraDir;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -409,7 +409,7 @@ float shadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample, cons
         // TODO: Implement ABC pdf
         pdf = CookTorrancePdf(wo, wi, gradient, material.w);
     } else if ( shadingType == ASHIKHMIN ) {
-        float3 gradient = normalize(calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz);
+        float3 gradient = normalize(gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float3 wo = toCameraDir;
         float3 Nu = normalize(cross(gradient, wo));
         float3 Nv = normalize(cross(gradient, Nu));
@@ -417,7 +417,7 @@ float shadingFunctionPdf(read_only image3d_t volumeTex, float volumeSample, cons
         float3 wi = worldToShading(Nu, Nv, gradient, toLightDirection);
         pdf = AshikhminPdf(wo, wi, material.y);
     } else if ( shadingType == MIX ) {
-        float3 gradient = (calcGradient(as_float4(pos), volumeTex, as_float4(voxelSpacing)).xyz); 
+        float3 gradient = (gradientCentralDiff(volumeTex, volumeParams, as_float4(pos)));
         float gradientMagnitude = length(gradient);
         if(material.w < gradientMagnitude) {      
             pdf = uniformSpherePdf();
