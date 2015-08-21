@@ -36,8 +36,8 @@ namespace inviwo {
 
 ViewManager::ViewManager() : viewportActive_(false), activePosition_(ivec2(0)), activeView_(-1) {}
 
-Event* ViewManager::registerEvent(Event* event) {
-    if (MouseEvent* mouseEvent = dynamic_cast<MouseEvent*>(event)) {
+Event* ViewManager::registerEvent(const Event* event) {
+    if (const MouseEvent* mouseEvent = dynamic_cast<const MouseEvent*>(event)) {
         activePosition_ = flipY(mouseEvent->pos(), mouseEvent->canvasSize());
         if (!viewportActive_ && mouseEvent->state() == MouseEvent::MOUSE_STATE_PRESS) {
             viewportActive_ = true;
@@ -56,7 +56,7 @@ Event* ViewManager::registerEvent(Event* event) {
             return nullptr;
         }
 
-    } else if (GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event)) {
+    } else if (const GestureEvent* gestureEvent = dynamic_cast<const GestureEvent*>(event)) {
         activePosition_ = flipY(gestureEvent->canvasSize() * gestureEvent->screenPosNormalized(),
                                 gestureEvent->canvasSize());
         if (!viewportActive_ && gestureEvent->state() == GestureEvent::GESTURE_STATE_STARTED) {
@@ -77,8 +77,7 @@ Event* ViewManager::registerEvent(Event* event) {
             return nullptr;
         }
 
-    } else if (TouchEvent* touchEvent = dynamic_cast<TouchEvent*>(event)) {
-        // TODO fix TouchEvents
+    } else if (const TouchEvent* touchEvent = dynamic_cast<const TouchEvent*>(event)) {
         activePosition_ = flipY(touchEvent->getCenterPoint(), touchEvent->canvasSize());
         if (!viewportActive_ && touchEvent->getTouchPoints().front().state() == TouchPoint::TOUCH_STATE_STARTED) {
             viewportActive_ = true;
@@ -98,9 +97,17 @@ Event* ViewManager::registerEvent(Event* event) {
             modifiedTouchPoints.reserve(touchPoints.size());
             // Loop over all touch points and modify their positions
             for (auto elem : touchPoints) {
-                vec2 pos = flipY(elem.getPos() - viewportOffset, viewportSize);
+                // Switch to the same coordinate system as ViewManager:
+                // y ^
+                //   |
+                //   --> x
+                vec2 flippedPos = flipY(elem.getPos(), touchEvent->canvasSize());
+                vec2 flippedPrevPos = flipY(elem.getPrevPos(), touchEvent->canvasSize());
+                // Translate position to viewport and 
+                // convert back to event coordinate system by flipping y.
+                vec2 pos = flipY(flippedPos - viewportOffset, viewportSize);
                 vec2 posNormalized = pos / viewportSize;
-                vec2 prevPos = flipY(elem.getPrevPos() - viewportOffset, viewportSize);
+                vec2 prevPos = flipY(flippedPrevPos - viewportOffset, viewportSize);
                 vec2 prevPosNormalized = prevPos / viewportSize;
                 modifiedTouchPoints.push_back(TouchPoint(elem.getId(), pos, posNormalized, prevPos, prevPosNormalized, elem.state()));
             }

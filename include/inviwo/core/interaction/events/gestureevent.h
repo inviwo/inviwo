@@ -65,9 +65,9 @@ public:
     inline double deltaDistance() const { return deltaDistance_; }
     inline GestureEvent::GestureType type() const { return type_; }
     inline int state() const { return state_; }
-    inline int numFingers() { return numFingers_; }
-    inline vec2 screenPosNormalized() { return screenPosNorm_; }
-    inline vec2 canvasSize() { return canvasSize_; }
+    inline int numFingers() const { return numFingers_; }
+    inline vec2 screenPosNormalized() const { return screenPosNorm_; }
+    inline vec2 canvasSize() const { return canvasSize_; }
 
     void modify(vec2);
 
