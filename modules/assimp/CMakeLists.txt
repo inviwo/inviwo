@@ -18,7 +18,7 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-include_directories(ext/assimp/include)
+ivw_include_directories(ext/assimp/include)
 
 #--------------------------------------------------------------------
 # Create module
