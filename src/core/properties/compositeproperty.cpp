@@ -91,24 +91,15 @@ void CompositeProperty::set(const Property* srcProperty) {
 
 void CompositeProperty::set(const CompositeProperty* src) {
     NetworkLock lock;
-    auto subProperties = src->getPropertiesRecursive();
-    auto properties = this->getPropertiesRecursive();
-    if (subProperties.size() == properties.size()) {
+    auto subProperties = src->getProperties();
+    if (subProperties.size() == this->properties_.size()) {
         for (size_t i = 0; i < subProperties.size(); i++) {
-            properties[i]->set(subProperties[i]);
+            this->properties_[i]->set(subProperties[i]);
         }
         propertyModified();
-    } else {
-        auto subProperties = src->getProperties();
-        if (subProperties.size() == this->properties_.size()) {
-            for (size_t i = 0; i < subProperties.size(); i++) {
-                this->properties_[i]->set(subProperties[i]);
-            }
-            propertyModified();
-        }
-        else {
-            LogWarn("CompositeProperty mismatch. Unable to link");
-        }
+    }
+    else {
+        LogWarn("CompositeProperty mismatch. Unable to link");
     }
 }
 
