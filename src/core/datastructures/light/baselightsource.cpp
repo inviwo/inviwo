@@ -68,10 +68,15 @@ uvec2 getSamplesPerLight(uvec2 nSamples, int nLightSources) {
 mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
     vec3 A = vec3(0, 0, 1);
     vec3 B = dir;  // B(0,1,0);
-    float angle = std::acos(glm::dot(A, B));
-    if (glm::all(glm::equal(A, B))) {
+    // Check if the two directions are parallel and switch axis in that case
+    if (glm::all(glm::lessThan(glm::abs(glm::cross(A, B)), vec3(glm::epsilon<float>())))) {
         A = vec3(0, 1, 0);
     }
+    float angle = std::acos(glm::dot(A, B));
+
+    //if ( glm::all(glm::lessThan(glm::abs(A.xy() - B.xy()), vec2(glm::epsilon<float>()))) ) {
+    //    A = vec3(0, 1, 0);
+    //}
     vec3 rotationAxis = glm::normalize(glm::cross(A, B));
 #ifndef GLM_FORCE_RADIANS
     angle = glm::degrees(angle);
