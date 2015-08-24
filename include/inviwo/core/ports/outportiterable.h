@@ -176,10 +176,12 @@ struct OutportIterableImpl<std::vector<T, Alloc>> : public OutportIterable<T> {
 
     virtual const_iterator begin() const override {
         auto data = port_->getConstData();
+        if (!data) return const_iterator(Wrapper());
         return const_iterator(Wrapper(data->begin(), data->end()));
     };
     virtual const_iterator end() const override {
         auto data = port_->getConstData();
+        if (!data) return const_iterator(Wrapper());
         return const_iterator(Wrapper(data->end(), data->end()));
     };
 
