@@ -14,30 +14,31 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclconverter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclglconverter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cl.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/clockcl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/glmcl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imageclgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layercl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclbase.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclconverter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclglconverter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclresizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopencl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/kernelmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/kernelowner.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/light/packedlightsource.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/openclcapabilities.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/openclmodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/settings/openclsettings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/syncclgl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilcl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumecl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclbase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclconverter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclglconverter.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/cl.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/clockcl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/glmcl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopencl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/kernelmanager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/kernelowner.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/openclcapabilities.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/openclmodule.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/syncclgl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/utilcl.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -53,30 +54,30 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclconverter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclglconverter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/clockcl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/glmcl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imageclgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layercl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclbase.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclconverter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclglconverter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/layerclresizer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/settings/openclsettings.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumecl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclbase.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclconverter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclglconverter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclgl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/cl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/clockcl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/glmcl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/inviwoopencl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/kernelmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/kernelowner.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/openclmodule.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/light/packedlightsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openclcapabilities.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/openclmodule.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/settings/openclsettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/syncclgl.cpp
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumecl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclbase.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclconverter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclgl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/volume/volumeclglconverter.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

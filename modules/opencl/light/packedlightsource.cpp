@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,39 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/light/baselightsource.h>
+#include "packedlightsource.h"
 
 namespace inviwo {
 
-mat4 getLightTransformationMatrix(vec3 pos, vec3 dir) {
-    vec3 A = vec3(0, 0, 1);
-    vec3 B = dir;  
-    mat4 transformationMatrix;
-    // Check if the direction is parallel to the z-axis
-    // to avoid division by zero in glm::normalize(glm::cross(A, B)). 
-    if (glm::all(glm::lessThan(glm::abs(glm::cross(A, B)), vec3(glm::epsilon<float>())))) {
-        // Direction is parallel to z-axis. 
-        // Apply rotation by 180 degrees if the direction is along negative z-axis
-        float angle = dir.z < 0 ? -static_cast<float>(M_PI) : 0;
-        transformationMatrix = glm::translate(pos) * glm::rotate(angle, vec3(0.f, 1.f, 0.f));
-    } else {
-        float angle = std::acos(glm::dot(A, B));
-        vec3 rotationAxis = glm::normalize(glm::cross(A, B));
-#ifndef GLM_FORCE_RADIANS
-        angle = glm::degrees(angle);
-#endif  // GLM_FORCE_RADIANS
-        transformationMatrix = glm::translate(pos) * glm::rotate(angle, rotationAxis);
-    }
-    return transformationMatrix;
+PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float radianceScale) {
+    PackedLightSource light;
+    light.tm = lightsource->getCoordinateTransformer().getModelToWorldMatrix();
+    light.radiance = vec4(radianceScale * lightsource->getIntensity(), 1.f);
+    light.type = lightsource->getLightSourceType();
+    light.area = lightsource->getArea();
+    light.cosFOV = std::cos(glm::radians(lightsource->getFieldOfView() / 2.f));
+    light.size = lightsource->getSize();
+    return light;
 }
 
-inviwo::uvec3 LightSource::COLOR_CODE = uvec3(128,64,196);
 
+PackedLightSource baseLightToPackedLight(const LightSource* lightsource, float radianceScale,
+    const mat4& transformLightMat) {
+    PackedLightSource light;
+    light.tm = transformLightMat * lightsource->getCoordinateTransformer().getModelToWorldMatrix();
+    light.radiance = vec4(radianceScale * lightsource->getIntensity(), 1.f);
+    light.type = lightsource->getLightSourceType();
+    light.area = lightsource->getArea();
+    light.cosFOV = std::cos(glm::radians(lightsource->getFieldOfView() / 2.f));
+    // Transform width and height.
+    mat4 invTransform = glm::inverse(light.tm);
+    vec4 transformedWidth = invTransform*vec4(lightsource->getSize().x, 0.f, 0.f, 0.f);
+    vec4 transformedHeight = invTransform*vec4(0.f, lightsource->getSize().y, 0.f, 0.f);
+    light.size.x = glm::length((transformedWidth).xyz());
+    light.size.y = glm::length((transformedHeight).xyz());
+
+    return light;
 }
+
+} // namespace
+

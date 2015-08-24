@@ -121,37 +121,17 @@ protected:
     bool enabled_;
 };
 
-// Data type that can be transfered to OpenCL device
-// Must be same as modules/opencl/cl/light.cl
-// Note that largest variables should be placed first
-// in order to ensure struct size
-typedef struct {
-    mat4 tm;        // Transformation matrix from local to world coordinates
-    vec4 radiance;  // cl_float3 == cl_float4
-    vec2 size;      // width, height
-    int type;       // LightSourceType, use integer to handle size of struct easier
-    float area;     // area of light source
-    float cosFOV;   // cos( (field of view)/2 ), used by cone light
-
-    int padding[7];  // OpenCL requires sizes that are power of two (32, 64, 128 and so on)
-} PackedLightSource;
-
-// Transform a BaseLightSource to PackedLightSource
-IVW_CORE_API PackedLightSource
-baseLightToPackedLight(const LightSource* lightsource, float radianceScale);
-
-// Transform a BaseLightSource to PackedLightSource and apply the transformation matrix to the light
-// source transformation matrix
-IVW_CORE_API PackedLightSource baseLightToPackedLight(const LightSource* lightsource,
-                                                      float radianceScale,
-                                                      const mat4& transformLightMat);
-
-// Calculate how many samples to take from each light source.
-// x component contains the amount of samples to take in x and y dimensions
-// y component is the number of samples taken for each light source (x*x)
-IVW_CORE_API uvec2 getSamplesPerLight(uvec2 nSamples, int nLightSources);
-
-// Calculate the object to texture transformation matrix for the light
+/** 
+ * \brief Encodes the position and direction in a matrix.
+ * 
+ * Light source position is extracted using:
+ * p = M * vec4(0, 0, 0, 1) 
+ * And the light source direction using:
+ * d = normalize(M * vec4(0, 0, 1, 0)) 
+ * @param vec3 pos Light source position.
+ * @param vec3 dir Light source direction.
+ * @return IVW_CORE_API mat4 Transformation from light source model space to world space.
+ */
 IVW_CORE_API mat4 getLightTransformationMatrix(vec3 pos, vec3 dir);
 
 }  // namespace inviwo
