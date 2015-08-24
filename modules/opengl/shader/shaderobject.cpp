@@ -253,13 +253,16 @@ void ShaderObject::loadSource(std::string fileName) {
                 TextFileReader fileReader(absoluteFileName_);
                 source_ = fileReader.read();
             } catch (std::ifstream::failure&) {
-                throw OpenGLException("Cound not read shader file: " + fileName, IvwContext);
+                throw OpenGLException("Could not read shader file: " + fileName, IvwContext);
             }
         } else { // try finding a Shader Resource
             std::string fileresourcekey = fileName;
             std::replace(fileresourcekey.begin(), fileresourcekey.end(), '/', '_');
             std::replace(fileresourcekey.begin(), fileresourcekey.end(), '.', '_');
             source_ = ShaderManager::getPtr()->getShaderResource(fileresourcekey);
+            if (source_.empty()){
+                throw OpenGLException("Shader file: " + fileName + " not found in shader search paths or shader resources.", IvwContext);
+            }
         }
     } else {
         throw OpenGLException("Shader file: " + fileName + " not found in shader search paths.", IvwContext);
