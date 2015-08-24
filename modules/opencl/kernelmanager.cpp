@@ -176,8 +176,6 @@ void KernelManager::fileChanged(std::string fileName) {
 
             InviwoApplication::getPtr()->playSound(InviwoApplication::Message::Ok);
 
-            std::vector<Processor*> processors = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
-
         } catch (cl::Error& err) {
             LogError(fileName << " Failed to create kernels, error:" << err.what() << "(" << err.err() << "), " << errorCodeToString(
                          err.err()) << std::endl);
