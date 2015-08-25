@@ -42,6 +42,8 @@
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 
+#include <pathsexternalmodules.h>
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QStandardPaths>
 #include <QScreen>
