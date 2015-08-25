@@ -31,6 +31,7 @@
 #define IVW_INVIWOFACTORYBASE_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <string>
 #include <memory>
 #include <unordered_map>
