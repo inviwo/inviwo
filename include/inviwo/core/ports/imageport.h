@@ -132,7 +132,6 @@ public:
     void setHandleResizeEvents(bool handleResizeEvents);
     bool isHandlingResizeEvents() const;
 
-protected:
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
 private:
