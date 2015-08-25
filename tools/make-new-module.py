@@ -95,7 +95,7 @@ def make_module(ivwpath, path, name, verbose, dummy):
 	module_dir = os.sep.join([path, lname])
 	
 	if not dummy:
-		print("... Crate dir: " + module_dir)
+		print("... Create dir: " + module_dir)
 		os.mkdir(module_dir)
 	
 	for prefix, file in zip(prefixes, files):
