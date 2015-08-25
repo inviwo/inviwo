@@ -91,7 +91,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
     rawFile_ = filePath;
 
     if (!parametersSet_) {
-        // TODO use uniqe ponter here. //Peter
+        // TODO use uniqe pointer here. //Peter
         DataReaderDialog* readerDialog =
             dynamic_cast<DataReaderDialog*>(DialogFactory::getPtr()->getDialog("RawVolumeReader"));
         if (!readerDialog) {
