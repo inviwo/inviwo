@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_REPRESENTATIONCONVERTERFACTORY_H
@@ -38,82 +38,96 @@
 
 namespace inviwo {
 
-class IVW_CORE_API RepresentationConverterFactory : public Singleton<RepresentationConverterFactory>  {
-
+class IVW_CORE_API RepresentationConverterFactory
+    : public Singleton<RepresentationConverterFactory> {
 public:
-    RepresentationConverterFactory();
-    virtual ~RepresentationConverterFactory();
+    RepresentationConverterFactory() = default;
+    virtual ~RepresentationConverterFactory() = default;
 
     void registerObject(RepresentationConverter* representationConverter);
 
-    //Get best converter that can convert from the source to T
+    // Get best converter that can convert from the source to T
     template <typename T>
-    RepresentationConverter* getRepresentationConverter(DataRepresentation* source) {
-        // TODO: optimize performance, e.g., by using a hash table
-        for (size_t i=0; i<representationConverters_.size(); i++) {
-            RepresentationConverterType<T>* repConverterTyped = dynamic_cast<RepresentationConverterType<T>*>(representationConverters_[i]);
+    RepresentationConverter* getRepresentationConverter(DataRepresentation* source);
 
-            if (repConverterTyped) {
-                if (repConverterTyped->canConvertFrom(source))
-                    return representationConverters_[i];
-            }
-        }
-
-        return nullptr;
-    }
-
-    //Get best converter package that can convert from the source to T
+    // Get best converter package that can convert from the source to T
     template <typename T>
-    RepresentationConverterPackage<T>* getRepresentationConverterPackage(DataRepresentation* source) {
-        // TODO: optimize performance, e.g., by using a hash table
-        RepresentationConverterPackage<T>* currentConverterPackage = nullptr;
+    RepresentationConverterPackage<T>* getRepresentationConverterPackage(
+        DataRepresentation* source);
 
-        for (size_t i=0; i<representationConverters_.size(); i++) {
-            RepresentationConverterPackage<T>* repConverterPackage = dynamic_cast<RepresentationConverterPackage<T>*>(representationConverters_[i]);
+    // Get all converters that can convert from the source
+    std::vector<RepresentationConverter*> getRepresentationConvertersFrom(
+        DataRepresentation* source);
 
-            if (repConverterPackage) {
-                if (repConverterPackage->canConvertFrom(source)) {
-                    if (currentConverterPackage)
-                        currentConverterPackage = (repConverterPackage->getNumberOfConverters() < currentConverterPackage->getNumberOfConverters() ?
-                                                   repConverterPackage : currentConverterPackage);
-                    else
-                        currentConverterPackage = repConverterPackage;
-                }
-            }
-        }
-
-        return currentConverterPackage;
-    }
-
-    //Get all converters that can convert from the source
-    std::vector<RepresentationConverter*> getRepresentationConvertersFrom(DataRepresentation* source) {
-        std::vector<RepresentationConverter*> srcConverters;
-        for (size_t i=0; i<representationConverters_.size(); i++) {
-            if (representationConverters_[i]->canConvertFrom(source)){
-                srcConverters.push_back(representationConverters_[i]);
-            }
-        }
-
-        return srcConverters;
-    }
-
-    //Get best converter that can convert to T
+    // Get best converter that can convert to T
     template <typename T>
-    std::vector<RepresentationConverter*> getRepresentationConvertersTo() {
-        std::vector<RepresentationConverter*> tConverters;
-        for (size_t i=0; i<representationConverters_.size(); i++) {
-            if (dynamic_cast<RepresentationConverterType<T>*>(representationConverters_[i])){
-                tConverters.push_back(representationConverters_[i]);
-            }
-        }
-
-        return tConverters;
-    }
+    std::vector<RepresentationConverter*> getRepresentationConvertersTo();
 
 private:
     std::vector<RepresentationConverter*> representationConverters_;
 };
 
-} // namespace
+// Get all converters that can convert from the source
+inline std::vector<RepresentationConverter*>
+RepresentationConverterFactory::getRepresentationConvertersFrom(DataRepresentation* source) {
+    std::vector<RepresentationConverter*> srcConverters;
+    for (auto converter : representationConverters_) {
+        if (converter->canConvertFrom(source)) {
+            srcConverters.push_back(converter);
+        }
+    }
+    return srcConverters;
+}
 
-#endif // IVW_REPRESENTATIONCONVERTERFACTORY_H
+template <typename T>
+std::vector<RepresentationConverter*>
+RepresentationConverterFactory::getRepresentationConvertersTo() {
+    std::vector<RepresentationConverter*> tConverters;
+    for (auto converter : representationConverters_) {
+        if (dynamic_cast<RepresentationConverterType<T>*>(converter)) {
+            tConverters.push_back(converter);
+        }
+    }
+    return tConverters;
+}
+
+template <typename T>
+RepresentationConverter* RepresentationConverterFactory::getRepresentationConverter(
+    DataRepresentation* source) {
+    // TODO: optimize performance, e.g., by using a hash table
+    for (auto converter : representationConverters_) {
+        if (auto converterTyped = dynamic_cast<RepresentationConverterType<T>*>(converter)) {
+            if (converterTyped->canConvertFrom(source)) return converter;
+        }
+    }
+    return nullptr;
+}
+
+// Get best converter package that can convert from the source to T
+
+template <typename T>
+inline RepresentationConverterPackage<T>*
+RepresentationConverterFactory::getRepresentationConverterPackage(DataRepresentation* source) {
+    // TODO: optimize performance, e.g., by using a hash table
+    RepresentationConverterPackage<T>* result = nullptr;
+
+    for (auto converter : representationConverters_) {
+        if (auto package = dynamic_cast<RepresentationConverterPackage<T>*>(converter)) {
+            if (package->canConvertFrom(source)) {
+                if (result) {
+                    result = (package->getNumberOfConverters() < result->getNumberOfConverters()
+                                  ? package
+                                  : result);
+                } else {
+                    result = package;
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+}  // namespace
+
+#endif  // IVW_REPRESENTATIONCONVERTERFACTORY_H

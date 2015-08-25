@@ -32,28 +32,24 @@
 
 namespace inviwo {
 
-struct CanDrawMesh {
-public:
-    CanDrawMesh(const Mesh* geom) : geom_(geom){};
-    bool operator()(const MeshDrawer* drawer) { return drawer->canDraw(geom_); }
+void MeshDrawerFactory::registerObject(MeshDrawer* drawer) { drawers_.insert(drawer); }
 
-private:
-    const Mesh* geom_;
-};
+std::unique_ptr<MeshDrawer> MeshDrawerFactory::create(const Mesh* geom) const {
+    auto it = std::find_if(drawers_.begin(), drawers_.end(),
+                           [geom](MeshDrawer* d) { return d->canDraw(geom); });
 
-MeshDrawerFactory::MeshDrawerFactory() {}
-
-void MeshDrawerFactory::registerObject(MeshDrawer* drawer) {
-    drawers_.insert(drawer);
+    if (it != drawers_.end()) {
+        return std::unique_ptr<MeshDrawer>((*it)->create(geom));
+    } else {
+        return std::unique_ptr<MeshDrawer>();
+    }
 }
 
-MeshDrawer* MeshDrawerFactory::create(const Mesh* geom) const {
-    auto it = std::find_if(drawers_.begin(), drawers_.end(), CanDrawMesh(geom));
+bool MeshDrawerFactory::hasKey(const Mesh* geom) const {
+    auto it = std::find_if(drawers_.begin(), drawers_.end(),
+                           [geom](MeshDrawer* d) { return d->canDraw(geom); });
 
-    if (it != drawers_.end())
-        return (*it)->create(geom);
-    else
-        return nullptr;
-};
+    return (it != drawers_.end());
+}
 
 }  // namespace

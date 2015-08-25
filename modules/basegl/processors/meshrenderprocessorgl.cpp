@@ -337,11 +337,9 @@ void MeshRenderProcessorGL::updateDrawers() {
             static_cast<long>(elem.second.size()) != std::distance(ibegin, iend)) {  // data is changed or new.
 
             for (auto geo : elem.second) {
-                MeshDrawer* renderer = MeshDrawerFactory::getPtr()->create(geo);
-                if (renderer) {
-                    drawers_.emplace(
-                        std::make_pair(elem.first, std::unique_ptr<MeshDrawer>(renderer)));
-                }
+                if (auto renderer = MeshDrawerFactory::getPtr()->create(geo)) {
+                    drawers_.emplace(std::make_pair(elem.first, std::move(renderer)));
+                } 
             }
         } else {  // reuse the old data.
             drawers_.insert(std::make_move_iterator(ibegin), std::make_move_iterator(iend));

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -33,17 +33,15 @@
 
 namespace inviwo {
 
-RepresentationConverterFactory::RepresentationConverterFactory() {}
-
-RepresentationConverterFactory::~RepresentationConverterFactory() {}
-
-void RepresentationConverterFactory::registerObject(RepresentationConverter* representationConverter) {
-    if (std::find(representationConverters_.begin(),
-                  representationConverters_.end(),
+void RepresentationConverterFactory::registerObject(
+    RepresentationConverter* representationConverter) {
+    if (std::find(representationConverters_.begin(), representationConverters_.end(),
                   representationConverter) == representationConverters_.end())
         representationConverters_.push_back(representationConverter);
     else
-        LogWarn("Could not add a RepresentationConverter becouse it was already added");
+        LogWarn("Could not add a RepresentationConverter because it was already added");
 }
 
-} // namespace
+
+
+}  // namespace

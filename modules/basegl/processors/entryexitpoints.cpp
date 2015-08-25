@@ -75,7 +75,7 @@ EntryExitPoints::~EntryExitPoints() {}
 void EntryExitPoints::process() {
     // Check if no renderer exist or if geometry changed
     if (inport_.isChanged() && inport_.hasData()) {
-        drawer_.reset(MeshDrawerFactory::getPtr()->create(inport_.getData()));
+        drawer_ = MeshDrawerFactory::getPtr()->create(inport_.getData());
     }
     if (!drawer_) return;
 

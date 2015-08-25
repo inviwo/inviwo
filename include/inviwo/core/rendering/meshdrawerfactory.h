@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_GEOMETRY_DRAWER_FACTORY_H
@@ -39,19 +39,20 @@
 
 namespace inviwo {
 
-class IVW_CORE_API MeshDrawerFactory : public Singleton<MeshDrawerFactory>  {
+class IVW_CORE_API MeshDrawerFactory
+    : public Factory<MeshDrawer, const Mesh*>, public Singleton<MeshDrawerFactory> {
 public:
-    MeshDrawerFactory();
-    virtual ~MeshDrawerFactory() {}
+    MeshDrawerFactory() = default;
+    virtual ~MeshDrawerFactory() = default;
 
     void registerObject(MeshDrawer* drawer);
-    virtual MeshDrawer* create(const Mesh* geom) const;
-
+    virtual std::unique_ptr<MeshDrawer> create(const Mesh* geom) const override;
+    virtual bool hasKey(const Mesh* geom) const override;
 
 private:
     std::set<MeshDrawer*> drawers_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_GEOMETRY_DRAWER_FACTORY_H
+#endif  // IVW_GEOMETRY_DRAWER_FACTORY_H

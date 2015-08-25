@@ -211,12 +211,8 @@ const T* Data::createNewRepresentationUsingConverters() const {
 
     // A one-2-one converter could not be found, thus we want to find the smallest package of
     // converters to get to our destination
-    auto package = findRepresentationConverterPackage<T>(lastValidRepresentation_, factory);
-
-    if (package) {
-        const std::vector<RepresentationConverter*>* converters = package->getConverters();
-
-        for (auto pkgconverter : *converters) {
+    if (auto package = findRepresentationConverterPackage<T>(lastValidRepresentation_, factory)) {
+        for (auto pkgconverter : package->getConverters()) {
             // Check if we already have the destination representation
             // and can update to it instead of creating a new
             bool updatedRepresentation = false;
@@ -254,9 +250,7 @@ void Data::updateRepresentation(T* representation, int index) const {
     auto factory = RepresentationConverterFactory::getPtr();
 
     if (lastValidRepresentation_) {
-        auto converter = factory->getRepresentationConverter<T>(lastValidRepresentation_);
-
-        if (converter) {
+        if (auto converter = factory->getRepresentationConverter<T>(lastValidRepresentation_)) {
             converter->update(lastValidRepresentation_, representation);
             setRepresentationAsValid(index);
             lastValidRepresentation_ = representation;
@@ -265,16 +259,12 @@ void Data::updateRepresentation(T* representation, int index) const {
 
         // A one-2-one converter could not be found, thus we want to find the smallest package of
         // converters to get to our destination
-        auto package = findRepresentationConverterPackage<T>(lastValidRepresentation_, factory);
-
         // Go-through the conversion package
-        if (package) {
-            auto converters = package->getConverters();
-
-            for (int j = 0; j < static_cast<int>(converters->size()); ++j) {
+        if (auto package = findRepresentationConverterPackage<T>(lastValidRepresentation_, factory)) {
+            for (auto pkgconverter : package->getConverters()) {
                 for (int k = 0; k < static_cast<int>(representations_.size()); ++k) {
-                    if (converters->at(j)->canConvertTo(representations_[k])) {
-                        converters->at(j)->update(lastValidRepresentation_, representations_[k]);
+                    if (pkgconverter->canConvertTo(representations_[k])) {
+                        pkgconverter->update(lastValidRepresentation_, representations_[k]);
                         setRepresentationAsValid(k);
                         lastValidRepresentation_ = representations_[k];
                         break;

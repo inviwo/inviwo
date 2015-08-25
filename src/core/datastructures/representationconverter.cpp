@@ -24,14 +24,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/representationconverter.h>
 
 namespace inviwo {
 
-RepresentationConverter::RepresentationConverter() {}
-RepresentationConverter::~RepresentationConverter() {}
+bool RepresentationConverter::isConverterReverse(RepresentationConverter*) { return false; }
 
-} // namespace
+}  // namespace
