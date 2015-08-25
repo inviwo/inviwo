@@ -340,4 +340,11 @@ void InviwoApplication::setProgressCallback(std::function<void(std::string)> pro
     progressCallback_ = progressCallback;
 }
 
+void InviwoApplication::waitForPool() {
+    size_t old_size = pool_.getSize();
+    pool_.setSize(0); // This will wait until all tasks are done;
+    processFront();
+    pool_.setSize(old_size);
+}
+
 } // namespace

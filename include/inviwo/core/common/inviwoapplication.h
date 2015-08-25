@@ -155,6 +155,8 @@ public:
     virtual void processFront();
     void setProgressCallback(std::function<void(std::string)> progressCallback);
 
+    void waitForPool();
+
 protected:
     void printApplicationInfo();
     void postProgress(std::string progress);

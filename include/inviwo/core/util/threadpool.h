@@ -80,20 +80,23 @@ public:
     template <class F, class... Args>
     auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
     void setSize(size_t size);
+    size_t getSize() const;
     ~ThreadPool();
 
 private:
     struct Worker {
         Worker(const Worker&) = delete;
-        Worker(Worker&& rhs) : thread(std::move(rhs.thread)), stop(rhs.stop) {};
+        Worker(Worker&& rhs) : thread(std::move(rhs.thread)), stop(rhs.stop), abort(rhs.abort){};
         Worker& operator=(const Worker&) = delete;
         Worker& operator=(Worker&&) = delete;
 
         template <typename... T>
-        Worker(T&&... args) : thread(std::forward<T>(args)...), stop(false) {}
+        Worker(T&&... args)
+            : thread(std::forward<T>(args)...), stop(false), abort(false) {}
 
         std::thread thread;
-        bool stop;
+        bool stop;   //< stop after all tasks are done
+        bool abort;  //< stop as soon as possible, no matter if there are more tasks
     };
     void addWorker();
     void removeWorker();
@@ -122,9 +125,11 @@ inline void ThreadPool::addWorker() {
 
             {
                 std::unique_lock<std::mutex> lock(this->queue_mutex);
-                this->condition.wait(
-                    lock, [this, i] { return this->workers[i].stop || !this->tasks.empty(); });
-                if (this->workers[i].stop) return;
+                this->condition.wait(lock, [this, i] {
+                    return this->workers[i].abort || this->workers[i].stop || !this->tasks.empty();
+                });
+                if (this->workers[i].abort || (this->workers[i].stop && this->tasks.empty()))
+                    return;
                 task = std::move(this->tasks.front());
                 this->tasks.pop();
             }
@@ -172,11 +177,15 @@ inline void ThreadPool::setSize(size_t size) {
     while (workers.size() > size) removeWorker();
 }
 
+inline size_t ThreadPool::getSize() const {
+    return workers.size();
+}
+
 // the destructor joins all threads
 inline ThreadPool::~ThreadPool() {
     {
         std::unique_lock<std::mutex> lock(queue_mutex);
-        for (auto& worker : workers) worker.stop = true;
+        for (auto& worker : workers) worker.abort = true;
     }
     condition.notify_all();
     for (auto& worker : workers) worker.thread.join();

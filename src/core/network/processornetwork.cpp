@@ -521,7 +521,10 @@ std::vector<Property*> ProcessorNetwork::getPropertiesRecursive(PropertyOwner* o
 
 void ProcessorNetwork::clear() {
     NetworkLock lock(this);
-    
+
+    // make sure the pool is not doing any work.
+    InviwoApplication::getPtr()->waitForPool();
+
     std::vector<Processor*> processors = getProcessors();
     //Invalidate inports to alert processors that they should stop their calculations.
     for (auto processor : processors) {
