@@ -91,9 +91,8 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
     rawFile_ = filePath;
 
     if (!parametersSet_) {
-        // TODO use uniqe pointer here. //Peter
-        DataReaderDialog* readerDialog =
-            dynamic_cast<DataReaderDialog*>(DialogFactory::getPtr()->create("RawVolumeReader"));
+        auto readerDialog = util::dynamic_unique_ptr_cast<DataReaderDialog>(
+            DialogFactory::getPtr()->create("RawVolumeReader"));
         if (!readerDialog) {
             throw DataReaderException("No data reader dialog found.", IvwContext);
         }
@@ -103,9 +102,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
             dimensions_ = readerDialog->getDimensions();
             littleEndian_ = readerDialog->getEndianess();
             spacing_ = static_cast<glm::vec3>(readerDialog->getSpacing());
-            delete readerDialog;
         } else {
-            delete readerDialog;
             throw DataReaderException("Raw data import terminated by user", IvwContext);
         }
     }
