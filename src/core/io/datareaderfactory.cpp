@@ -1,5 +1,3 @@
-#include "..\..\..\include\inviwo\core\io\datareaderfactory.h"
-#include "..\..\..\include\inviwo\core\io\datareaderfactory.h"
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
