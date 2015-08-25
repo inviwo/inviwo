@@ -186,7 +186,7 @@ template <typename T>
 OrdinalPropertyAnimator::VecProp<T>::VecProp(std::string classname, std::string displayName)
     : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
     prop_ = dynamic_cast<OrdinalProperty<T>*>(
-        PropertyFactory::getPtr()->create(classname, classname, displayName));
+        PropertyFactory::getPtr()->create(classname, classname, displayName).release());
 
     std::stringstream ss1;
     ss1 << classname << "-"
@@ -194,7 +194,7 @@ OrdinalPropertyAnimator::VecProp<T>::VecProp(std::string classname, std::string 
     std::string identifier = ss1.str();
 
     delta_ = dynamic_cast<OrdinalProperty<T>*>(
-        PropertyFactory::getPtr()->create(classname, identifier, "Delta"));
+        PropertyFactory::getPtr()->create(classname, identifier, "Delta").release());
 
     prop_->onChange(this, &VecProp<T>::setLimits);
 }
@@ -258,7 +258,7 @@ template <typename T>
 OrdinalPropertyAnimator::PrimProp<T>::PrimProp(std::string classname, std::string displayName)
     : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
     prop_ = dynamic_cast<OrdinalProperty<T>*>(
-        PropertyFactory::getPtr()->create(classname, classname, displayName));
+        PropertyFactory::getPtr()->create(classname, classname, displayName).release());
 
     std::stringstream ss1;
     ss1 << classname << "-"
@@ -266,7 +266,7 @@ OrdinalPropertyAnimator::PrimProp<T>::PrimProp(std::string classname, std::strin
     std::string identifier = ss1.str();
 
     delta_ = dynamic_cast<OrdinalProperty<T>*>(
-        PropertyFactory::getPtr()->create(classname, identifier, "Delta"));
+        PropertyFactory::getPtr()->create(classname, identifier, "Delta").release());
 
     prop_->onChange(this, &PrimProp<T>::setLimits);
 }

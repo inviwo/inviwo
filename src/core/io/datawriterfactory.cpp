@@ -43,8 +43,9 @@ bool DataWriterFactory::registerObject(DataWriter* writer) {
     return true;
 }
 
-DataWriter* DataWriterFactory::create(const std::string& key) const {
-    return util::map_find_or_null(map_, key, [](DataWriter* o) { return o->clone(); });
+std::unique_ptr<DataWriter> DataWriterFactory::create(const std::string& key) const {
+    return std::unique_ptr<DataWriter>(
+        util::map_find_or_null(map_, key, [](DataWriter* o) { return o->clone(); }));
 }
 
 bool DataWriterFactory::hasKey(const std::string& key) const { return util::has_key(map_, key); }

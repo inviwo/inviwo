@@ -104,19 +104,17 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorRepresentations(Processor* pro
     ProcessorGraphicsItem* ret =
         addProcessorGraphicsItem(processor, pos, showProcessor, selectProcessor);
 
-    ProcessorWidget* processorWidget = ProcessorWidgetFactory::getPtr()->create(processor);
-    if (processorWidget) {
+    if (auto processorWidget = ProcessorWidgetFactory::getPtr()->create(processor).release()) {
         processorWidget->setProcessor(processor);
         processor->setProcessorWidget(processorWidget);
 
-        QWidget* widget = dynamic_cast<QWidget*>(processorWidget);
-        if (widget) {
+        if (auto widget = dynamic_cast<QWidget*>(processorWidget)) {
             InviwoApplicationQt* app =
                 dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
             widget->setParent(app->getMainWindow());
         }
         processorWidget->initialize();
-        processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible()); 
+        processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
         processorWidget->addObserver(ret->getStatusItem());
     }
     return ret;
@@ -273,7 +271,7 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
 
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
     PortInspector* portInspector =
-        PortInspectorFactory::getPtr()->create(port->getClassIdentifier());
+        PortInspectorFactory::getPtr()->createAndCache(port->getClassIdentifier());
 
     portInspectors_[port] = portInspector;
 
@@ -356,7 +354,7 @@ void NetworkEditor::removePortInspector(Outport* port) {
 
 std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, std::string type) {
     PortInspector* portInspector =
-        PortInspectorFactory::getPtr()->create(port->getClassIdentifier());
+        PortInspectorFactory::getPtr()->createAndCache(port->getClassIdentifier());
 
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
     std::unique_ptr<std::vector<unsigned char>> data;
@@ -919,8 +917,8 @@ void NetworkEditor::dragMoveEvent(QGraphicsSceneDragDropEvent* e) {
             ProcessorDragObject::decode(e->mimeData(), className);
 
             try {
-                std::unique_ptr<Processor> processor{static_cast<Processor*>(
-                    ProcessorFactory::getPtr()->create(className.toLocal8Bit().constData()))};
+                auto processor = 
+                    ProcessorFactory::getPtr()->create(className.toLocal8Bit().constData());
 
                 bool inputmatch =
                     util::any_of(processor->getInports(), [&connectionItem](Inport* inport) {
@@ -980,7 +978,7 @@ void NetworkEditor::dropEvent(QGraphicsSceneDragDropEvent* e) {
             try {
                 // create processor, add it to processor network, and generate it's widgets
                 Processor* processor =
-                    static_cast<Processor*>(ProcessorFactory::getPtr()->create(className));
+                    ProcessorFactory::getPtr()->create(className).release();
 
                 clearSelection();
 

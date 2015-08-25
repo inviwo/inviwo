@@ -38,19 +38,19 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PropertyFactory : public Factory<Property>,
-                                     public Singleton<PropertyFactory> {
+class IVW_CORE_API PropertyFactory : public Factory<Property>, public Singleton<PropertyFactory> {
 public:
-    using Map = std::unordered_map<std::string, PropertyFactoryObject*>;
+    using Map = std::unordered_map<std::string, PropertyFactoryObject *>;
 
     PropertyFactory() = default;
     virtual ~PropertyFactory() = default;
 
     virtual bool registerObject(PropertyFactoryObject *property);
-    virtual Property *create(const std::string &className) const override;
-    virtual Property *create(const std::string &className, const std::string &identifier,
-                                  const std::string &displayName) const;
-    virtual bool hasKey(const std::string& className) const override;
+    virtual std::unique_ptr<Property> create(const std::string &className) const override;
+    virtual std::unique_ptr<Property> create(const std::string &className,
+                                             const std::string &identifier,
+                                             const std::string &displayName) const;
+    virtual bool hasKey(const std::string &className) const override;
     virtual std::vector<std::string> getKeys() const;
 
 protected:

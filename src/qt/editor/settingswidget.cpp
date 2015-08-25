@@ -109,7 +109,7 @@ void SettingsWidget::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
     QVBoxLayout* listLayout = static_cast<QVBoxLayout*>(widget->parentWidget()->layout());
     int layoutPosition = listLayout->indexOf(widget);
     PropertyWidgetQt* propertyWidget =
-        static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
+        static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop).release());
 
     if (propertyWidget) {
         prop->deregisterWidget(widget);

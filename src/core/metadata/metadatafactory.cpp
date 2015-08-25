@@ -34,15 +34,5 @@
 #include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
-bool MetaDataFactory::registerObject(MetaData* obj) {
-    return util::insert_unique(map_, obj->getClassIdentifier(), obj);
-}
-MetaData* MetaDataFactory::create(const std::string& className) const {
-    return util::map_find_or_null(map_, className, [](MetaData* m) { return m->clone(); });
-}
-
-bool MetaDataFactory::hasKey(const std::string& className) const {
-    return util::has_key(map_, className);
-}
 
 }  // namespace

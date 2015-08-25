@@ -82,7 +82,7 @@ void VolumeExport::exportVolume() {
 
     if (volume && !volumeFile_.get().empty()) {
         std::string fileExtension = filesystem::getFileExtension(volumeFile_.get());
-        DataWriterType<Volume>* writer =
+        auto writer =
             DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Volume>(fileExtension);
 
         if (writer) {

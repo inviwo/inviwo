@@ -459,7 +459,7 @@ void TransferFunctionPropertyDialog::exportTransferFunction() {
                 }
             }
 
-            DataWriterType<Layer>* writer =
+            auto writer =
                 DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(extension);
 
             if (writer) {

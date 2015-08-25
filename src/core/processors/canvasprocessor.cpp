@@ -224,7 +224,7 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
                 deleteWriter = false;
             } else {
                 writer =
-                    DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(fileExtension);
+                    DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(fileExtension).release();
             }
 
             if (writer) {
@@ -259,14 +259,11 @@ std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType lay
     const Layer* layer = image->getLayer(layerType, idx);
 
     if (layer) {
-        std::unique_ptr<DataWriterType<Layer>> writer{
-            DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(type)};
-
+        auto writer = DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(type);
         if (writer) {
             try {
                 return writer->writeDataToBuffer(layer, type);
-            }
-            catch (DataWriterException const& e) {
+            } catch (DataWriterException const& e) {
                 LogError(e.getMessage());
             }
         } else {

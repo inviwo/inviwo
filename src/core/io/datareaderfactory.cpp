@@ -42,8 +42,9 @@ bool DataReaderFactory::registerObject(DataReader* reader) {
     return true;
 }
 
-DataReader* DataReaderFactory::create(const std::string& key) const {
-    return util::map_find_or_null(map_, key, [](DataReader* o) { return o->clone(); });
+std::unique_ptr<DataReader> DataReaderFactory::create(const std::string& key) const {
+    return std::unique_ptr<DataReader>(
+        util::map_find_or_null(map_, key, [](DataReader* o) { return o->clone(); }));
 }
 
 bool DataReaderFactory::hasKey(const std::string& key) const { return util::has_key(map_, key); }

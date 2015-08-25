@@ -34,6 +34,11 @@
 #include <iostream>
 #include <string>
 #include <functional>
+#include <stdexcept>
+
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>
+#include <warn/ignore/dll-interface>
 
 namespace inviwo {
 
@@ -47,13 +52,10 @@ struct IVW_CORE_API ExceptionContext {
     const int& getLine();
 
 private:
-    #include <warn/push>
-    #include <warn/ignore/dll-interface>
     std::string caller_;
     std::string file_;
     std::string function_;
     int line_;
-    #include <warn/pop>   
 };
 
 #define IvwContext                                                                             \
@@ -74,11 +76,8 @@ public:
     virtual const ExceptionContext& getContext() const;
 
 private:
-    #include <warn/push>
-    #include <warn/ignore/dll-interface>
     std::string message_;
     ExceptionContext context_;
-    #include <warn/pop>
 };
 
 class IVW_CORE_API IgnoreException : public Exception {
@@ -106,5 +105,7 @@ struct IVW_CORE_API StandardExceptionHandler {
 
 
 }  // namespace
+
+#include <warn/pop> 
 
 #endif  // IVW_EXCEPTION_H

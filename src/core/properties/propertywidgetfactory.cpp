@@ -57,13 +57,15 @@ bool PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* property
     return true;
 }
 
-PropertyWidget* PropertyWidgetFactory::create(Property* property) const {
+std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property) const {
     PropertySemantics sematics = property->getSemantics();
     std::pair<WidgetMap::const_iterator, WidgetMap::const_iterator> sameKeys;
     sameKeys = widgetMap_.equal_range(property->getClassIdentifierForWidget());
 
     for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
-        if (sematics == it->second->getSematics()) return it->second->create(property);
+        if (sematics == it->second->getSematics()) {
+            return std::unique_ptr<PropertyWidget>(it->second->create(property));
+        }
     }
 
     for (WidgetMap::const_iterator it = sameKeys.first; it != sameKeys.second; ++it) {
@@ -71,13 +73,13 @@ PropertyWidget* PropertyWidgetFactory::create(Property* property) const {
             LogWarn("Requested property widget semantics ("
                     << sematics << ") for property (" << property->getClassIdentifier()
                     << ") does not exist, returning default semantics.");
-            return it->second->create(property);
+            return std::unique_ptr<PropertyWidget>(it->second->create(property));
         }
     }
 
     LogWarn("Can not find a property widget for property: " << property->getClassIdentifier() << "("
                                                             << sematics << ")");
-    return nullptr;
+    return std::unique_ptr<PropertyWidget>();
 }
 
 

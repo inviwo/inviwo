@@ -38,21 +38,16 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PortInspectorFactory : public Factory<PortInspector>, public Singleton<PortInspectorFactory> {
+class IVW_CORE_API PortInspectorFactory
+    : public StandardFactory<PortInspector, PortInspectorFactoryObject>,
+      public Singleton<PortInspectorFactory> {
 public:
     PortInspectorFactory() = default;
     virtual ~PortInspectorFactory() = default;
-
-    bool registerObject(PortInspectorFactoryObject* portInspector);
-
-    virtual PortInspector* create(const std::string& className) const override;
-    virtual bool hasKey(const std::string& className) const override;
-
-    using PortInspectorMap = std::map<std::string, PortInspectorFactoryObject*>;
+    virtual PortInspector* createAndCache(const std::string& className) const;
     using PortInsectorCache = std::map<std::string, std::vector<std::unique_ptr<PortInspector>>>;
 
 private:
-    PortInspectorMap portInspectors_;
     mutable PortInsectorCache cache_;
 };
 

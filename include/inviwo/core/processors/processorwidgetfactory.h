@@ -37,20 +37,22 @@
 
 namespace inviwo {
 
-class IVW_CORE_API ProcessorWidgetFactory : public Singleton<ProcessorWidgetFactory> {
+class IVW_CORE_API ProcessorWidgetFactory : 
+    public Factory<ProcessorWidget>, 
+    public Singleton<ProcessorWidgetFactory> {
 
 public:
-    ProcessorWidgetFactory();
-    ~ProcessorWidgetFactory();
+    ProcessorWidgetFactory() = default;
+    virtual ~ProcessorWidgetFactory() = default;
 
-    void registerObject(std::pair<std::string, ProcessorWidget* >);
-    ProcessorWidget* create(std::string processorClassName) const;
-    ProcessorWidget* create(Processor* processor) const;
-    bool isValidType(std::string className) const;
+    bool registerObject(std::pair<std::string, ProcessorWidget*>);
+    std::unique_ptr<ProcessorWidget> create(const std::string& processorClassName) const override;
+    std::unique_ptr<ProcessorWidget> create(Processor* processor) const;
+    bool hasKey(const std::string& className) const override;
 
-    typedef std::map<std::string, ProcessorWidget*> ProcessorWidgetMap;
+    using Map = std::unordered_map<std::string, ProcessorWidget*>;
 private:
-    mutable ProcessorWidgetMap processorWidgetMap_;
+    mutable Map map_;
 };
 
 } // namespace

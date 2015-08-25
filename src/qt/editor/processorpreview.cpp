@@ -42,10 +42,9 @@ namespace inviwo {
 QImage utilqt::generatePreview(const QString& classIdentifier) {
     std::string cid = classIdentifier.toLocal8Bit().constData();
 
-    Processor* processor =
-        static_cast<Processor*>(ProcessorFactory::getPtr()->create(cid));
-    auto item = new ProcessorGraphicsItem(processor);
-    auto scene = new QGraphicsScene(nullptr);
+    auto processor = ProcessorFactory::getPtr()->create(cid);
+    auto item = new ProcessorGraphicsItem(processor.get());
+    auto scene = util::make_unique<QGraphicsScene>(nullptr);
     scene->addItem(item);
 
     scene->clearSelection();  // Selections would also render to the file
@@ -58,9 +57,6 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
 
     QPainter painter(&image);
     scene->render(&painter);
-
-    delete scene;
-    delete processor;
 
     return image;
 }

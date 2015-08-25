@@ -59,10 +59,10 @@ TEST(ImageTests,ImageLoadWhite) {
     EXPECT_EQ(ext, "bmp");
 
 
-    DataReader* reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
 
-    disk->setDataReader(reader);
+    disk->setDataReader(reader.release());
 
     Image img;
     img.getColorLayer()->addRepresentation(disk);
@@ -107,10 +107,10 @@ TEST(ImageTests, ImageLoadRGB) {
     EXPECT_EQ(ext, "bmp");
 
 
-    DataReader* reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
 
-    disk->setDataReader(reader);
+    disk->setDataReader(reader.release());
 
     Image img;
     img.getColorLayer()->addRepresentation(disk);
@@ -154,10 +154,10 @@ TEST(ImageTests, ImageLoadRange) {
     EXPECT_EQ(ext, "bmp");
 
 
-    DataReader* reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
 
-    disk->setDataReader(reader);
+    disk->setDataReader(reader.release());
 
     Image img;
     img.getColorLayer()->addRepresentation(disk);
@@ -191,10 +191,10 @@ TEST(ImageTests, ImageResize) {
     EXPECT_EQ(ext, "bmp");
 
 
-    DataReader* reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
 
-    disk->setDataReader(reader);
+    disk->setDataReader(reader.release());
 
     Image img;
     img.getColorLayer()->addRepresentation(disk);

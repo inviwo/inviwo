@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/ports/portinspectorfactory.h>
@@ -32,15 +32,7 @@
 
 namespace inviwo {
 
-    bool PortInspectorFactory::registerObject(PortInspectorFactoryObject* port) {
-    if (!util::insert_unique(portInspectors_, port->getClassIdentifier(), port)) {
-        LogWarn("PortInspector for " << port->getClassIdentifier() << " already registered");
-        return false;
-    }
-    return false;
-}
-
-PortInspector* PortInspectorFactory::create(const std::string &className) const {
+PortInspector* PortInspectorFactory::createAndCache(const std::string& className) const {
     // Look in cache for an inactive port inspector.
     auto cit = cache_.find(className);
     if (cit != cache_.end()) {
@@ -48,10 +40,10 @@ PortInspector* PortInspectorFactory::create(const std::string &className) const 
             if (!elem->isActive()) return elem.get();
         }
     }
-    
+
     // Create a new port inspector
-    auto it = portInspectors_.find(className);
-    if (it != portInspectors_.end()) {
+    auto it = map_.find(className);
+    if (it != map_.end()) {
         PortInspector* p = it->second->create();
         cache_[className].push_back(std::unique_ptr<PortInspector>(p));
         return p;
@@ -59,9 +51,5 @@ PortInspector* PortInspectorFactory::create(const std::string &className) const 
     return nullptr;
 }
 
-bool PortInspectorFactory::hasKey(const std::string& className) const {
-    return util::has_key(portInspectors_, className);
-}
 
-} // namespace
-
+}  // namespace

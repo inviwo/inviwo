@@ -98,7 +98,7 @@ void ImageExport::processExport(){
         const Layer* layer = image->getColorLayer();
         if (layer){
             std::string fileExtension = filesystem::getFileExtension(imageFile_.get());
-            DataWriterType<Layer>* writer =
+            auto writer = 
                 DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(fileExtension);
 
             if (writer) {
@@ -109,7 +109,6 @@ void ImageExport::processExport(){
                 } catch (DataWriterException const& e) {
                     util::log(e.getContext(), e.getMessage(), LogLevel::Error);
                 }
-                delete writer;
             } else {
                 LogError("Error: Could not find a writer for the specified extension and data type");
             }

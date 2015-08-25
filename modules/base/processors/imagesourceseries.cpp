@@ -120,7 +120,7 @@ void ImageSourceSeries::process() {
         imageFileName_.set(fileList_[currentIndex]);
 
         std::string fileExtension = filesystem::getFileExtension(currentFileName);
-        DataReaderType<Layer>* reader =
+        auto reader =
             DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(fileExtension);
 
         if (reader) {
@@ -138,7 +138,6 @@ void ImageSourceSeries::process() {
             catch (DataReaderException const& e) {
                 util::log(e.getContext(), "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(), LogLevel::Error);
             }
-            delete reader;
         }
         else {
             LogWarn("Could not find a data reader for file: " << currentFileName);

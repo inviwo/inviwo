@@ -84,7 +84,7 @@ Canvas::Canvas(uvec2 dimensions)
     }
 
     if(!generalLayerWriter_){
-        generalLayerWriter_ = DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>("png");
+        generalLayerWriter_ = DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>("png").release();
     }
 }
 

@@ -71,10 +71,10 @@ protected:
         size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
         size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
 
-        IvwSerializable *s = ProcessorFactory::getPtr()->create(GetParam());
-        ASSERT_TRUE(s != nullptr);
+        auto s = ProcessorFactory::getPtr()->create(GetParam());
+        ASSERT_TRUE(s.get() != nullptr);
 
-        p = dynamic_cast<Processor *>(s);
+        p = dynamic_cast<Processor *>(s.get());
         ASSERT_TRUE(p != nullptr);
 
         EXPECT_EQ(warnCount, LogErrorCounter::getPtr()->getWarnCount());

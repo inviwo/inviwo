@@ -37,8 +37,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PortFactory : public Factory<Port>,
-                                 public Singleton<PortFactory> {
+class IVW_CORE_API PortFactory : public Factory<Port>, public Singleton<PortFactory> {
 public:
     using Map = std::unordered_map<std::string, PortFactoryObject*>;
     PortFactory() = default;
@@ -46,8 +45,9 @@ public:
 
     virtual bool registerObject(PortFactoryObject* property);
 
-    virtual Port* create(const std::string& className) const override;
-    virtual Port* create(const std::string& className, const std::string& identifier) const;
+    virtual std::unique_ptr<Port> create(const std::string& className) const override;
+    virtual std::unique_ptr<Port> create(const std::string& className,
+                                         const std::string& identifier) const;
     virtual bool hasKey(const std::string& className) const override;
     virtual std::vector<std::string> getKeys() const;
 

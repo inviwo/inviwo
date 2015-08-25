@@ -37,18 +37,11 @@
 
 namespace inviwo {
 
-class IVW_CORE_API MetaDataFactory : public Factory<MetaData>, public Singleton<MetaDataFactory> {
+class IVW_CORE_API MetaDataFactory : public CloningFactory<MetaData>,
+                                     public Singleton<MetaDataFactory> {
 public:
-    using Map = std::unordered_map<std::string, MetaData*>;
     MetaDataFactory() = default;
     virtual ~MetaDataFactory() = default;
-
-    virtual bool registerObject(MetaData* obj);
-    virtual MetaData* create(const std::string& className) const;
-    virtual bool hasKey(const std::string& className) const override;
-
-protected:
-    Map map_;
 };
 
 }  // namespace

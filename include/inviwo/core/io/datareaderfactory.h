@@ -49,14 +49,14 @@ public:
     virtual ~DataReaderFactory() = default;
 
     bool registerObject(DataReader* reader);
-    virtual DataReader* create(const std::string& key) const override;
+    virtual std::unique_ptr<DataReader> create(const std::string& key) const override;
     virtual bool hasKey(const std::string& key) const override;
 
     template <typename T>
     std::vector<FileExtension> getExtensionsForType();
 
     template <typename T>
-    DataReaderType<T>* getReaderForTypeAndExtension(const std::string& ext);
+    std::unique_ptr<DataReaderType<T>> getReaderForTypeAndExtension(const std::string& ext);
 
 protected:
     Map map_;
@@ -76,14 +76,17 @@ std::vector<FileExtension> DataReaderFactory::getExtensionsForType() {
 }
 
 template <typename T>
-DataReaderType<T>* DataReaderFactory::getReaderForTypeAndExtension(const std::string& ext) {
+std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
+    const std::string& ext) {
     auto it = map_.find(toLower(ext));
 
     if (it != map_.end()) {
-        if (auto r = dynamic_cast<DataReaderType<T>*>(it->second)) return r->clone();
+        if (auto r = dynamic_cast<DataReaderType<T>*>(it->second)) {
+            return std::unique_ptr<DataReaderType<T>>(r->clone());
+        }
     }
 
-    return nullptr;
+    return std::unique_ptr<DataReaderType<T>>();
 }
 
 }  // namespace

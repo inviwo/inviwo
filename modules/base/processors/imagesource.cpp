@@ -79,8 +79,7 @@ void ImageSource::load() {
     }
 
     std::string fileExtension = filesystem::getFileExtension(imageFileName_.get());
-    DataReaderType<Layer>* reader =
-        DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(fileExtension);
+    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(fileExtension);
 
     if (reader) {
         try {
@@ -101,7 +100,6 @@ void ImageSource::load() {
                       LogLevel::Error);
             imageFileName_.set("");
         }
-        delete reader;
     } else {
         LogError("Could not find a data reader for file: " << imageFileName_.get());
         imageFileName_.set("");

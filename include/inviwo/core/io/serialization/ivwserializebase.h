@@ -243,7 +243,7 @@ template <typename T>
 T* IvwSerializeBase::getRegisteredType(const std::string& className) {
     for (auto base : registeredFactories_) {
         if (auto factory = dynamic_cast<Factory<T>*>(base)) {
-            if (auto data = factory->create(className)) return data;
+            if (auto data = factory->create(className)) return data.release();
         }
     }
     return nullptr;

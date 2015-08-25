@@ -162,7 +162,7 @@ void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
     properties_.push_back(prop);
 
     PropertyWidgetQt* propertyWidget =
-        static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
+        static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop).release());
 
     if (propertyWidget) {
         auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget);
@@ -292,7 +292,7 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
     if (pit != properties_.end() && wit != propertyWidgets_.end()) {
         
         PropertyWidgetQt* newWidget =
-            static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
+            static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop).release());
         
         if (newWidget) {
             prop->deregisterWidget(widget);
@@ -332,7 +332,7 @@ void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index)
     properties_.insert(insertPoint, prop);
 
     PropertyWidgetQt* propertyWidget =
-        static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop));
+        static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop).release());
 
     if (propertyWidget) {
         const int insertPos = static_cast<int>(index) + 1;

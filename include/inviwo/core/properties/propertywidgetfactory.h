@@ -46,7 +46,7 @@ public:
     virtual ~PropertyWidgetFactory();
 
     virtual bool registerObject(PropertyWidgetFactoryObject* propertyWidget);
-    PropertyWidget* create(Property* property) const override;
+    std::unique_ptr<PropertyWidget> create(Property* property) const override;
     virtual bool hasKey(Property* property) const override;
 
     std::vector<PropertySemantics> getSupportedSemanicsForProperty(Property* property);

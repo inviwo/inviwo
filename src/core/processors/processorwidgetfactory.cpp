@@ -34,37 +34,26 @@
 
 namespace inviwo {
 
-ProcessorWidgetFactory::ProcessorWidgetFactory() {}
-
-ProcessorWidgetFactory::~ProcessorWidgetFactory() {}
-
-void ProcessorWidgetFactory::registerObject(std::pair<std::string, ProcessorWidget* > widget) {
-    if (processorWidgetMap_.find(widget.first) == processorWidgetMap_.end())
-        processorWidgetMap_.insert(widget);
-    else
+bool ProcessorWidgetFactory::registerObject(std::pair<std::string, ProcessorWidget* > widget) {
+    if (util::insert_unique(map_, widget.first, widget.second)) {
+        return true;
+    } else {
         LogWarn("Processor Widget for class name: " << widget.first << " is already registerd");
+        return false;
+    }        
 }
 
-ProcessorWidget* ProcessorWidgetFactory::create(std::string processorClassName) const {
-    ProcessorWidgetMap::iterator it = processorWidgetMap_.find(processorClassName);
-
-    if (it != processorWidgetMap_.end())
-        return it->second->create();
-    else
-        return nullptr;
+std::unique_ptr<ProcessorWidget> ProcessorWidgetFactory::create(const std::string& key) const {
+    return std::unique_ptr<ProcessorWidget>(
+        util::map_find_or_null(map_, key, [](ProcessorWidget* o) { return o->create(); }));
 }
 
-ProcessorWidget* ProcessorWidgetFactory::create(Processor* processor) const {
+std::unique_ptr<ProcessorWidget> ProcessorWidgetFactory::create(Processor* processor) const {
     return ProcessorWidgetFactory::create(processor->getClassIdentifier());
 }
 
-bool ProcessorWidgetFactory::isValidType(std::string processorClassName) const {
-    ProcessorWidgetMap::iterator it = processorWidgetMap_.find(processorClassName);
-
-    if (it != processorWidgetMap_.end())
-        return true;
-    else
-        return false;
+bool ProcessorWidgetFactory::hasKey(const std::string& processorClassName) const {
+    return util::has_key(map_, processorClassName);
 }
 
 

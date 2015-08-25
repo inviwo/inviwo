@@ -40,11 +40,14 @@ bool PortFactory::registerObject(PortFactoryObject *port) {
     return true;
 }
 
-Port *PortFactory::create(const std::string &className) const { return create(className, ""); }
+std::unique_ptr<Port> PortFactory::create(const std::string &className) const {
+    return create(className, "");
+}
 
-Port *PortFactory::create(const std::string &className, const std::string &identifier) const {
-    return util::map_find_or_null(
-        map_, className, [&identifier](PortFactoryObject *o) { return o->create(identifier); });
+std::unique_ptr<Port> PortFactory::create(const std::string &className,
+                                          const std::string &identifier) const {
+    return std::unique_ptr<Port>(util::map_find_or_null(
+        map_, className, [&identifier](PortFactoryObject *o) { return o->create(identifier); }));
 }
 
 bool PortFactory::hasKey(const std::string &className) const {
