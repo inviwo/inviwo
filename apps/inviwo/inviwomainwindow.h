@@ -84,6 +84,11 @@ public slots:
     void newWorkspace();
     void openWorkspace();
     void openRecentWorkspace();
+    /**
+    * \brief clear the recent file list in the menu
+    */
+    void clearRecentWorkspaceMenu();
+    void openExampleWorkspace();
     void saveWorkspace();
     void saveWorkspaceAs();
 
@@ -127,6 +132,16 @@ private:
 
     void updateWindowTitle();
 
+    /** 
+     * \brief compile a list of example workspaces and update the menu
+     */
+    void fillExampleWorkspaceMenu();
+    /**
+    * \brief compile a list of test workspaces from inviwo-dev and external 
+    * modules and update the menu
+    */
+    void fillTestWorkspaceMenu();
+
     NetworkEditor* networkEditor_;
     NetworkEditorView* networkEditorView_;
     OptionPropertyInt* appUsageModeProp_;
@@ -148,15 +163,19 @@ private:
     QMenu* viewMenuItem_;
     QMenu* helpMenuItem_;
 
-    // mainwindow menuactions
+    QMenu* recentWorkspaceMenu_;
+    QMenu* testWorkspaceMenu_;
+    QMenu* exampleWorkspaceMenu_;
+
+    // mainwindow menu actions
     QAction* workspaceActionNew_;
     QAction* workspaceActionOpen_;
     QAction* workspaceActionSave_;
     QAction* workspaceActionSaveAs_;
     QAction* workspaceActionSaveAsCopy_;
     QAction* exitAction_;
-    QAction* recentFileSeparator_;
-    QAction* workspaceActionRecent_[maxNumRecentFiles_];
+    std::vector<QAction*> workspaceActionRecent_;
+    QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
     QAction* aboutBoxAction_;
     QToolButton* enableDisableEvaluationButton_;
@@ -169,6 +188,7 @@ private:
 
     // settings
     bool maximized_;
+    bool exampleWorkspaceOpen_;
 
     // paths
     QString rootDir_;
