@@ -80,17 +80,16 @@ int main(int argc, char** argv) {
         workspace = "";
 #endif
 
-    if (!workspace.empty()){
+    if (!workspace.empty()) {
         IvwDeserializer xmlDeserializer(workspace);
         inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
         std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
 
-        for (std::vector<Processor*>::iterator it = processors.begin(); it != processors.end(); ++it) {
-            Processor* processor = *it;
+        for (auto processor : processors) {
             processor->invalidate(INVALID_RESOURCES);
 
-            ProcessorWidget* processorWidget = ProcessorWidgetFactory::getPtr()->create(processor).release();
-            if (processorWidget) {
+            if (auto processorWidget =
+                    ProcessorWidgetFactory::getPtr()->create(processor).release()) {
                 processorWidget->setProcessor(processor);
                 processorWidget->initialize();
                 processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
