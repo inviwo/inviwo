@@ -3685,6 +3685,20 @@ int sigar_os_sys_info_get(sigar_t *sigar,
             }
         }
     }
+    else if (version.dwMajorVersion == 10) {
+        if (version.sigar_wProductType == VER_NT_WORKSTATION) {
+            if (version.dwMinorVersion == 0) {
+                vendor_name = "Windows 10";
+                vendor_version = "10";
+                code_name = "Windows 10";
+            }
+            else {
+                vendor_name = "Newer than Windows 10";
+                vendor_version = "Unknown";
+                code_name = "";
+            }
+        }
+    }
 
     SIGAR_SSTRCPY(sysinfo->name, "Win32");
     SIGAR_SSTRCPY(sysinfo->vendor, "Microsoft");
