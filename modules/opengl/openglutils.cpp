@@ -258,5 +258,32 @@ utilgl::BlendModeState::~BlendModeState() {
     }
 }
 
+
+ViewportState& utilgl::ViewportState::operator=(ViewportState&& that) {
+    if (this != &that) {
+        coords_ = { { 0, 0, 0, 0 } };
+        std::swap(coords_, that.coords_);
+        oldCoords_ = { { 0, 0, 0, 0 } };
+        std::swap(oldCoords_, that.oldCoords_);
+    }
+    return *this;
+}
+
+utilgl::ViewportState::ViewportState(ViewportState&& rhs)
+    : coords_(rhs.coords_), oldCoords_(rhs.oldCoords_) {
+}
+
+utilgl::ViewportState::ViewportState(GLint x, GLint y, GLsizei width, GLsizei height)
+    : coords_({ x, y, width, height }), oldCoords_{} {
+    glGetIntegerv(GL_VIEWPORT, &oldCoords_.front());
+    glViewport(coords_[0], coords_[1], coords_[2], coords_[3]);
+}
+
+utilgl::ViewportState::~ViewportState() {
+    if (coords_ != oldCoords_) {
+        glViewport(oldCoords_[0], oldCoords_[1], oldCoords_[2], oldCoords_[3]);
+    }
+}
+
 }  // namespace
 }  // namespace

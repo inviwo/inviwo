@@ -35,6 +35,7 @@
 #include <modules/opengl/texture/textureunit.h>
 
 #include <functional>
+#include <array>
 
 namespace inviwo {
 
@@ -138,6 +139,24 @@ protected:
     GLint dmode_;
     GLint oldsMode_;
     GLint olddMode_;
+};
+
+struct IVW_MODULE_OPENGL_API ViewportState {
+    ViewportState() = delete;
+    ViewportState(ViewportState const&) = delete;
+    ViewportState& operator=(ViewportState const& that) = delete;
+
+    ViewportState(GLint x, GLint y, GLsizei width, GLsizei height);
+    ViewportState(const ivec4 &coords);
+
+    ViewportState(ViewportState&& rhs);
+    ViewportState& operator=(ViewportState&& that);
+
+    ~ViewportState();
+
+private:
+    std::array<GLint, 4> coords_;
+    std::array<GLint, 4> oldCoords_;
 };
 
 template <typename T1, typename T2, GLenum Entity, void (GLAPIENTRY *Getter)(GLenum, T1*),
