@@ -46,7 +46,7 @@ public:
     virtual void deinitialize();
 
 private:
-    PyInviwo* pyInviwo_;
+    std::unique_ptr<PyInviwo> pyInviwo_;
 };
 
 }  // namespace

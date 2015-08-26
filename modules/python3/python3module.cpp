@@ -37,17 +37,17 @@ namespace inviwo {
 
 Python3Module::Python3Module() : InviwoModule() {
     setIdentifier("Python3");
+    PythonExecutionOutputObservable::init();
 }
 
 Python3Module::~Python3Module() {
-    delete pyInviwo_;
+    pyInviwo_ = nullptr; //issue destruction before PythonExecutionOutputObservable
     PythonExecutionOutputObservable::deleteInstance();
 }
 
 void Python3Module::initialize() {
     InviwoModule::initialize();
-    PythonExecutionOutputObservable::init();
-    pyInviwo_ = new PyInviwo();
+    pyInviwo_ = util::make_unique<PyInviwo>();
 }
 
 void Python3Module::deinitialize() {
