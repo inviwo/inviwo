@@ -72,6 +72,8 @@ public:
      * @see CameraTrackball
      */
     Trackball(T* object, const Camera* camera);
+    Trackball(const Trackball& rhs);
+    Trackball<T>& operator=(const Trackball<T>& that);
     virtual ~Trackball();
 
     virtual void invokeEvent(Event* event) override;
@@ -141,6 +143,7 @@ protected:
      * @param Event * event TouchEvent
      */
     void touchGesture(Event* event);
+    void animate();
     
     T* object_;
     const Camera* camera_;
@@ -163,6 +166,7 @@ protected:
     BoolProperty allowVerticalRotation_;      ///< Enable/disable rotation around vertical axis
     BoolProperty allowViewDirectionRotation_; ///< Enable/disable rotation around view direction axis
 
+    BoolProperty animate_;
 
     // Event Properties.
     EventProperty mouseRotate_;
@@ -186,6 +190,11 @@ protected:
 
     float RADIUS = 0.5f; ///< Radius in normalized screen space [0 1]^2
     float STEPSIZE = 0.05f;
+
+    glm::quat lastRot_;
+    std::chrono::system_clock::time_point lastRotTime_;
+    bool evaluated_;
+    Timer timer_;
 };
 
 template <typename T>
@@ -196,8 +205,7 @@ Trackball<T>::Trackball(T* object, const Camera* camera)
     , isMouseBeingPressedAndHold_(false)
     , lastMousePos_(ivec2(0))
     , gestureStartNDCDepth_(-1)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
-    VALID)
+    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, VALID)
 
     , allowHorizontalPanning_("allowHorizontalPanning", "Horizontal panning enabled", true)
     , allowVerticalPanning_("allowVerticalPanning", "Vertical panning enabled", true)
@@ -207,72 +215,79 @@ Trackball<T>::Trackball(T* object, const Camera* camera)
     , allowHorizontalRotation_("allowHorziontalRotation", "Rotation around horizontal axis", true)
     , allowVerticalRotation_("allowVerticalRotation", "Rotation around vertical axis", true)
     , allowViewDirectionRotation_("allowViewAxisRotation", "Rotation around view axis", true)
-
+    , animate_("animate", "Animate rotations", false)
     , mouseRotate_("trackballRotate", "Rotate",
-    new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
-    MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
-    new Action(this, &Trackball<T>::rotate))
+                   new MouseEvent(MouseEvent::MOUSE_BUTTON_LEFT, InteractionEvent::MODIFIER_NONE,
+                                  MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
+                   new Action(this, &Trackball<T>::rotate))
 
     , mouseZoom_("trackballZoom", "Zoom",
-    new MouseEvent(MouseEvent::MOUSE_BUTTON_RIGHT, InteractionEvent::MODIFIER_NONE,
-    MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
-    new Action(this, &Trackball<T>::zoom))
+                 new MouseEvent(MouseEvent::MOUSE_BUTTON_RIGHT, InteractionEvent::MODIFIER_NONE,
+                                MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
+                 new Action(this, &Trackball<T>::zoom))
 
     , mousePan_("trackballPan", "Pan",
-    new  MouseEvent(MouseEvent::MOUSE_BUTTON_MIDDLE, InteractionEvent::MODIFIER_NONE,
-    MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
-    new Action(this, &Trackball<T>::pan))
+                new MouseEvent(MouseEvent::MOUSE_BUTTON_MIDDLE, InteractionEvent::MODIFIER_NONE,
+                               MouseEvent::MOUSE_STATE_PRESS | MouseEvent::MOUSE_STATE_MOVE),
+                new Action(this, &Trackball<T>::pan))
 
     , mouseReset_("mouseReset", "Reset",
-    new  MouseEvent(MouseEvent::MOUSE_BUTTON_ANY, InteractionEvent::MODIFIER_NONE,
-    MouseEvent::MOUSE_STATE_RELEASE),
-    new Action(this, &Trackball<T>::reset))
+                  new MouseEvent(MouseEvent::MOUSE_BUTTON_ANY, InteractionEvent::MODIFIER_NONE,
+                                 MouseEvent::MOUSE_STATE_RELEASE),
+                  new Action(this, &Trackball<T>::reset))
 
-    , stepRotateUp_("stepRotateUp", "Rotate up",
-    new KeyboardEvent('W', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::rotateUp))
+    , stepRotateUp_(
+          "stepRotateUp", "Rotate up",
+          new KeyboardEvent('W', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &Trackball<T>::rotateUp))
 
-    , stepRotateLeft_("stepRotateLeft", "Rotate left",
-    new KeyboardEvent('A', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::rotateLeft))
+    , stepRotateLeft_(
+          "stepRotateLeft", "Rotate left",
+          new KeyboardEvent('A', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &Trackball<T>::rotateLeft))
 
-    , stepRotateDown_("stepRotateDown", "Rotate down",
-    new KeyboardEvent('S', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::rotateDown))
+    , stepRotateDown_(
+          "stepRotateDown", "Rotate down",
+          new KeyboardEvent('S', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &Trackball<T>::rotateDown))
 
-    , stepRotateRight_("stepRotateRight", "Rotate right",
-    new KeyboardEvent('D', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::rotateRight))
+    , stepRotateRight_(
+          "stepRotateRight", "Rotate right",
+          new KeyboardEvent('D', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &Trackball<T>::rotateRight))
 
-    , stepZoomIn_("stepZoomIn", "Zoom in",
-    new KeyboardEvent('R', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::zoomIn))
+    , stepZoomIn_("stepZoomIn", "Zoom in", new KeyboardEvent('R', InteractionEvent::MODIFIER_NONE,
+                                                             KeyboardEvent::KEY_STATE_PRESS),
+                  new Action(this, &Trackball<T>::zoomIn))
 
-    , stepZoomOut_("stepZoomOut", "Zoom out",
-    new KeyboardEvent('F', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::zoomOut))
+    , stepZoomOut_(
+          "stepZoomOut", "Zoom out",
+          new KeyboardEvent('F', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &Trackball<T>::zoomOut))
 
-    , stepPanUp_("stepPanUp", "Pan up",
-    new KeyboardEvent('W', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::panUp))
+    , stepPanUp_("stepPanUp", "Pan up", new KeyboardEvent('W', InteractionEvent::MODIFIER_SHIFT,
+                                                          KeyboardEvent::KEY_STATE_PRESS),
+                 new Action(this, &Trackball<T>::panUp))
 
-    , stepPanLeft_("stepPanLeft", "Pan left",
-    new KeyboardEvent('A', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::panLeft))
+    , stepPanLeft_(
+          "stepPanLeft", "Pan left",
+          new KeyboardEvent('A', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &Trackball<T>::panLeft))
 
-    , stepPanDown_("stepPanDown", "Pan down",
-    new KeyboardEvent('S', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::panDown))
+    , stepPanDown_(
+          "stepPanDown", "Pan down",
+          new KeyboardEvent('S', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &Trackball<T>::panDown))
 
-    , stepPanRight_("stepPanRight", "Pan right",
-    new KeyboardEvent('D', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
-    new Action(this, &Trackball<T>::panRight))
+    , stepPanRight_(
+          "stepPanRight", "Pan right",
+          new KeyboardEvent('D', InteractionEvent::MODIFIER_SHIFT, KeyboardEvent::KEY_STATE_PRESS),
+          new Action(this, &Trackball<T>::panRight))
 
-    , touchGesture_("touchGesture", "Touch",
-    new TouchEvent(),
-    new Action(this, &Trackball<T>::touchGesture))
-{
-
+    , touchGesture_("touchGesture", "Touch", new TouchEvent(),
+                    new Action(this, &Trackball<T>::touchGesture))
+    , evaluated_(true)
+    , timer_(30, [this]() { animate(); }) {
 
     mouseReset_.setVisible(false);
     mouseReset_.setCurrentStateAsDefault();
@@ -282,11 +297,11 @@ Trackball<T>::Trackball(T* object, const Camera* camera)
     addProperty(allowHorizontalPanning_);
     addProperty(allowVerticalPanning_);
     addProperty(allowZooming_);
-    addProperty(maxZoomInDistance_);
 
     addProperty(allowHorizontalRotation_);
     addProperty(allowVerticalRotation_);
     addProperty(allowViewDirectionRotation_);
+    addProperty(animate_);
 
     addProperty(mouseRotate_);
     addProperty(mouseZoom_);
@@ -304,9 +319,115 @@ Trackball<T>::Trackball(T* object, const Camera* camera)
     addProperty(stepPanRight_);
 
     addProperty(touchGesture_);
-    touchGesture_.setVisible(false); // No options to change button combination to trigger event
+    touchGesture_.setVisible(false);  // No options to change button combination to trigger event
 
     setCollapsed(true);
+}
+
+template <typename T>
+inviwo::Trackball<T>::Trackball(const Trackball& rhs)
+    : CompositeProperty(rhs)
+    , object_(rhs.object_)
+    , camera_(rhs.camera_)
+    , isMouseBeingPressedAndHold_(false)
+    , lastMousePos_(ivec2(0))
+    , gestureStartNDCDepth_(-1)
+    , handleInteractionEvents_(rhs.handleInteractionEvents_)
+    , allowHorizontalPanning_(rhs.allowHorizontalPanning_)
+    , allowVerticalPanning_(rhs.allowVerticalPanning_)
+    , allowZooming_(rhs.allowZooming_)
+    , maxZoomInDistance_(rhs.maxZoomInDistance_)
+    , allowHorizontalRotation_(rhs.allowHorizontalRotation_)
+    , allowVerticalRotation_(rhs.allowVerticalRotation_)
+    , allowViewDirectionRotation_(rhs.allowViewDirectionRotation_)
+    , animate_(rhs.animate_)
+    , mouseRotate_(rhs.mouseRotate_)
+    , mouseZoom_(rhs.mouseZoom_)
+    , mousePan_(rhs.mousePan_)
+    , mouseReset_(rhs.mouseReset_)
+    , stepRotateUp_(rhs.stepRotateUp_)
+    , stepRotateLeft_(rhs.stepRotateLeft_)
+    , stepRotateDown_(rhs.stepRotateDown_)
+    , stepRotateRight_(rhs.stepRotateRight_)
+    , stepZoomIn_(rhs.stepZoomIn_)
+    , stepZoomOut_(rhs.stepZoomOut_)
+    , stepPanUp_(rhs.stepPanUp_)
+    , stepPanLeft_(rhs.stepPanLeft_)
+    , stepPanDown_(rhs.stepPanDown_)
+    , stepPanRight_(rhs.stepPanRight_)
+    , touchGesture_(rhs.touchGesture_)
+    , evaluated_(true)
+    , timer_(30, [this]() { animate(); }) {
+    mouseReset_.setVisible(false);
+    mouseReset_.setCurrentStateAsDefault();
+
+    addProperty(handleInteractionEvents_);
+
+    addProperty(allowHorizontalPanning_);
+    addProperty(allowVerticalPanning_);
+    addProperty(allowZooming_);
+    addProperty(maxZoomInDistance_);
+
+    addProperty(allowHorizontalRotation_);
+    addProperty(allowVerticalRotation_);
+    addProperty(allowViewDirectionRotation_);
+    addProperty(animate_);
+
+    addProperty(mouseRotate_);
+    addProperty(mouseZoom_);
+    addProperty(mousePan_);
+    addProperty(mouseReset_);
+    addProperty(stepRotateUp_);
+    addProperty(stepRotateLeft_);
+    addProperty(stepRotateDown_);
+    addProperty(stepRotateRight_);
+    addProperty(stepZoomIn_);
+    addProperty(stepZoomOut_);
+    addProperty(stepPanUp_);
+    addProperty(stepPanLeft_);
+    addProperty(stepPanDown_);
+    addProperty(stepPanRight_);
+
+    addProperty(touchGesture_);
+    touchGesture_.setVisible(false);  // No options to change button combination to trigger event
+
+    setCollapsed(true);
+}
+
+template< typename T>
+Trackball<T>& Trackball<T>::operator=(const Trackball<T>& that) {
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        object_ = that.object_;
+        camera_ = that.camera_;
+        isMouseBeingPressedAndHold_ = false;
+        lastMousePos_ = ivec2(0);
+        gestureStartNDCDepth_ = -1;
+        handleInteractionEvents_ = that.handleInteractionEvents_;
+        allowHorizontalPanning_ = that.allowHorizontalPanning_;
+        allowVerticalPanning_ = that.allowVerticalPanning_;
+        allowZooming_ = that.allowZooming_;
+        allowHorizontalRotation_ = that.allowHorizontalRotation_;
+        allowVerticalRotation_ = that.allowVerticalRotation_;
+        allowViewDirectionRotation_ = that.allowViewDirectionRotation_;
+        animate_ = that.animate_;
+        mouseRotate_ = that.mouseRotate_;
+        mouseZoom_ = that.mouseZoom_;
+        mousePan_ = that.mousePan_;
+        mouseReset_ = that.mouseReset_;
+        stepRotateUp_ = that.stepRotateUp_;
+        stepRotateLeft_ = that.stepRotateLeft_;
+        stepRotateDown_ = that.stepRotateDown_;
+        stepRotateRight_ = that.stepRotateRight_;
+        stepZoomIn_ = that.stepZoomIn_;
+        stepZoomOut_ = that.stepZoomOut_;
+        stepPanUp_ = that.stepPanUp_;
+        stepPanLeft_ = that.stepPanLeft_;
+        stepPanDown_ = that.stepPanDown_;
+        stepPanRight_ = that.stepPanRight_;
+        touchGesture_ = that.touchGesture_;     
+    }
+    return *this;
 }
 
 template <typename T>
@@ -444,6 +565,7 @@ void Trackball<T>::touchGesture(Event* event) {
 
 template <typename T>
 void Trackball<T>::rotate(Event* event) {
+    timer_.stop();
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
 
     vec2 curMousePos = mouseEvent->posNormalized();
@@ -499,6 +621,8 @@ void Trackball<T>::rotate(Event* event) {
             vec3 Pa = prevTrackballWorldPos - getLookTo();
             vec3 Pc = trackballWorldPos - getLookTo();
             glm::quat quaternion = glm::quat(glm::normalize(Pc), glm::normalize(Pa));
+            lastRot_ = quaternion;
+            lastRotTime_ = std::chrono::system_clock::now();
             setLook(getLookTo() + glm::rotate(quaternion, getLookFrom() - getLookTo()), getLookTo(), glm::rotate(quaternion, getLookUp()));
         } else {
             
@@ -510,6 +634,8 @@ void Trackball<T>::rotate(Event* event) {
 
             vec3 Pc = glm::rotate(glm::rotate(Pa, rotationAroundHorizontalAxis, glm::cross(getLookUp(), glm::normalize(getLookFrom() - getLookTo()))), rotationAroundVerticalAxis, getLookUp());
             glm::quat quaternion = glm::quat(glm::normalize(Pc), glm::normalize(Pa));
+            lastRot_ = quaternion;
+            lastRotTime_ = std::chrono::system_clock::now();
             setLook(getLookTo() + glm::rotate(quaternion, getLookFrom() - getLookTo()), getLookTo(), glm::rotate(quaternion, getLookUp()));
             
             
@@ -523,6 +649,7 @@ void Trackball<T>::rotate(Event* event) {
 
 template <typename T>
 void Trackball<T>::zoom(Event* event) {
+    timer_.stop();
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
 
     vec2 curMousePos = mouseEvent->posNormalized();
@@ -552,6 +679,7 @@ void Trackball<T>::zoom(Event* event) {
 
 template <typename T>
 void Trackball<T>::pan(Event* event) {
+    timer_.stop();
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
 
     vec2 curMousePos = mouseEvent->posNormalized();
@@ -823,7 +951,40 @@ void Trackball<T>::zoomOut(Event* event) {
 template <typename T>
 void Trackball<T>::reset(Event* event) {
     isMouseBeingPressedAndHold_ = false;
+    if (animate_) {
+        if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() -
+                                                                  lastRotTime_)
+                .count() < 100) {
+            timer_.start();
+        }
+    }
 }
+
+template< typename T>
+void inviwo::Trackball<T>::animate() {
+    if (this->evaluated_) {
+        this->evaluated_ = false;
+        dispatchFront([this]() {
+            const glm::quat identity(1.0f, 0.0f, 0.0f, 0.0f);
+            const float t = 0.1f;
+            const float dot = glm::dot(lastRot_, identity);
+            const float theta = std::acos(dot);
+            const float sintheta = std::sin(theta);
+            lastRot_ = lastRot_ * (std::sin((1.0f - t) * theta) / sintheta) +
+                identity * (std::sin(t * theta) / sintheta);
+            setLook(getLookTo() + glm::rotate(lastRot_, getLookFrom() - getLookTo()),
+                    getLookTo(), glm::rotate(lastRot_, getLookUp()));
+
+            if ((lastRot_.x - identity.x)*(lastRot_.x - identity.x) +
+                (lastRot_.y - identity.y)*(lastRot_.y - identity.y) +
+                (lastRot_.z - identity.z)*(lastRot_.z - identity.z) +
+                (lastRot_.w - identity.w)*(lastRot_.w - identity.w) < 0.000001f) timer_.stop();
+            this->evaluated_ = true;
+        });
+    }
+}
+
+
 
 }
 
