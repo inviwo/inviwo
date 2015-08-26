@@ -33,8 +33,7 @@ namespace inviwo {
 
 Timer::Timer(duration_t interval, std::function<void()> callback)
     : callback_{std::make_shared<Callback>(std::move(callback))}
-    , interval_{interval}
-    , enabled_{false} {}
+    , interval_{interval} {}
 
 Timer::Timer(size_t interval, std::function<void()> callback)
     : Timer(std::chrono::milliseconds(interval), std::move(callback)) {}
@@ -52,9 +51,8 @@ void Timer::start(duration_t interval) {
 }
 
 void Timer::start() {
-    if (!enabled_) {
-        enabled_ = true;
-        callback_->valid = true;
+    if (!callback_->enabled) {
+        callback_->enabled = true;
         thread_ = std::thread(&Timer::timer, this);
     }
 }
@@ -64,36 +62,32 @@ void Timer::setInterval(size_t interval) {
 }
 
 void Timer::setInterval(duration_t interval) {
-    std::lock_guard<std::mutex> lock{ mutex_ };
+    std::lock_guard<std::mutex> lock{callback_->mutex};
     interval_ = interval;
 }
 
 Timer::duration_t Timer::getInterval() const {
-    std::lock_guard<std::mutex> lock{mutex_};
+    std::lock_guard<std::mutex> lock{callback_->mutex};
     return interval_;
 }
 
 void Timer::stop() {
-    if (enabled_) {
+    if (callback_->enabled) {
         {
-            std::lock_guard<std::mutex> lock{mutex_};
-            enabled_ = false;
+            std::unique_lock<std::mutex> l(callback_->mutex);
+            callback_->enabled = false;
         }
-        {
-            std::unique_lock<std::mutex> l(callback_->m);
-            callback_->valid = false;
-        }
-        cvar_.notify_one();
+        callback_->cvar.notify_one();
         thread_.join();
     }
 }
 
 void Timer::timer() {
     auto deadline = std::chrono::steady_clock::now() + interval_;
-    std::unique_lock<std::mutex> lock{mutex_};
+    std::unique_lock<std::mutex> lock{callback_->mutex};
     
-    while (enabled_) {
-        if (cvar_.wait_until(lock, deadline) == std::cv_status::timeout) {
+    while (callback_->enabled) {
+        if (callback_->cvar.wait_until(lock, deadline) == std::cv_status::timeout) {
             lock.unlock();
             // skip if previous not done.
             if (!result_.valid() ||
@@ -101,8 +95,8 @@ void Timer::timer() {
                     std::future_status::ready) {
                 auto tmp = callback_;
                 result_ = dispatchFront([tmp]() { 
-                    std::unique_lock<std::mutex> l(tmp->m, std::try_to_lock);
-                    if (l && tmp->valid) (tmp->callback)();                     
+                    std::unique_lock<std::mutex> l(tmp->mutex, std::try_to_lock);
+                    if (l && tmp->enabled) (tmp->callback)();                     
                 }
                 );
             }

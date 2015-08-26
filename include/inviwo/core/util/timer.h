@@ -72,10 +72,11 @@ public:
 
 private:
     struct Callback {
-        Callback(std::function<void()>&& fun) : callback(std::move(fun)), valid(true) {}
+        Callback(std::function<void()>&& fun) : callback(std::move(fun)), enabled(false) {}
         std::function<void()> callback;
-        std::mutex m;
-        bool valid;
+        mutable std::mutex mutex;
+        std::condition_variable cvar;
+        bool enabled;
     };
 
     void timer();
@@ -83,11 +84,7 @@ private:
     std::shared_ptr<Callback> callback_;
     std::future<void> result_;
     duration_t interval_;
-
-    bool enabled_;
-    std::thread thread_;
-    mutable std::mutex mutex_;
-    std::condition_variable cvar_;
+    std::thread thread_;   
 };
 
 class IVW_CORE_API Delay {
