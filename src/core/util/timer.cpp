@@ -54,6 +54,7 @@ void Timer::start(duration_t interval) {
 void Timer::start() {
     if (!enabled_) {
         enabled_ = true;
+        callback_->valid = true;
         thread_ = std::thread(&Timer::timer, this);
     }
 }
