@@ -127,6 +127,10 @@ VolumeSource::VolumeSource()
         
     playSequence_.onChange(this, &VolumeSource::onPlaySequenceToggled);
     selectedSequenceIndex_.onChange(this, &VolumeSource::onSequenceIndexChanged);
+
+    volumesPerSecond_.onChange(
+        [this]() { sequenceTimer_.setInterval(1000 / volumesPerSecond_.get()); });
+
     selectedSequenceIndex_.setSerializationMode(PropertySerializationMode::ALL);
     volumeSequence_.addProperty(selectedSequenceIndex_);
     volumeSequence_.addProperty(playSequence_);
