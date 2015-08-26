@@ -153,14 +153,14 @@ public:
         -> std::future<typename std::result_of<F(Args...)>::type>;
 
     virtual void processFront();
-    void setProgressCallback(std::function<void(std::string)> progressCallback);
 
     void waitForPool();
+    void setPostEnqueueFront(std::function<void()> func);
+    void setProgressCallback(std::function<void(std::string)> progressCallback);
 
 protected:
     void printApplicationInfo();
     void postProgress(std::string progress);
-    void setPostEnqueueFront(std::function<void()> func);
 
 
 private:
