@@ -347,6 +347,9 @@ void InviwoMainWindow::addMenuActions() {
     connect(resetTimeMeasurementsButton_, SIGNAL(clicked()), networkEditor_, SLOT(resetAllTimeMeasurements()));
 #endif
 
+
+    helpMenuItem_->addAction(helpWidget_->toggleViewAction());
+
     aboutBoxAction_ = new QAction(QIcon(":/icons/about.png"), tr("&About"), this);
     connect(aboutBoxAction_, SIGNAL(triggered()), this, SLOT(showAboutBox()));
     helpMenuItem_->addAction(aboutBoxAction_);
