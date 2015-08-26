@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
             Processor* processor = *it;
             processor->invalidate(INVALID_RESOURCES);
 
-            ProcessorWidget* processorWidget = ProcessorWidgetFactory::getPtr()->create(processor);
+            ProcessorWidget* processorWidget = ProcessorWidgetFactory::getPtr()->create(processor).release();
             if (processorWidget) {
                 processorWidget->setProcessor(processor);
                 processorWidget->initialize();
