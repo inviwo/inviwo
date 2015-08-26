@@ -279,6 +279,12 @@ utilgl::ViewportState::ViewportState(GLint x, GLint y, GLsizei width, GLsizei he
     glViewport(coords_[0], coords_[1], coords_[2], coords_[3]);
 }
 
+utilgl::ViewportState::ViewportState(const ivec4 &coords)
+    : coords_({ coords.x, coords.y, coords.z, coords.w }), oldCoords_{} {
+    glGetIntegerv(GL_VIEWPORT, &oldCoords_.front());
+    glViewport(coords_[0], coords_[1], coords_[2], coords_[3]);
+}
+
 utilgl::ViewportState::~ViewportState() {
     if (coords_ != oldCoords_) {
         glViewport(oldCoords_[0], oldCoords_[1], oldCoords_[2], oldCoords_[3]);
