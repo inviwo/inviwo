@@ -64,18 +64,29 @@ public:
     void start(size_t interval);
     void start(duration_t interval);
 
+    void setInterval(size_t interval);
+    void setInterval(duration_t interval);
+    duration_t getInterval() const;
+    
     void stop();
 
 private:
+    struct Callback {
+        Callback(std::function<void()>&& fun) : callback(std::move(fun)), valid(true) {}
+        std::function<void()> callback;
+        std::mutex m;
+        bool valid;
+    };
+
     void timer();
 
-    std::shared_ptr<std::function<void()>> callback_;
+    std::shared_ptr<Callback> callback_;
     std::future<void> result_;
     duration_t interval_;
 
     bool enabled_;
     std::thread thread_;
-    std::mutex mutex_;
+    mutable std::mutex mutex_;
     std::condition_variable cvar_;
 };
 

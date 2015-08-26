@@ -32,7 +32,7 @@
 namespace inviwo {
 
 Timer::Timer(duration_t interval, std::function<void()> callback)
-    : callback_{std::make_shared<std::function<void()>>(std::move(callback))}
+    : callback_{std::make_shared<Callback>(std::move(callback))}
     , interval_{interval}
     , enabled_{false} {}
 
@@ -58,34 +58,52 @@ void Timer::start() {
     }
 }
 
+void Timer::setInterval(size_t interval) {
+    setInterval(std::chrono::milliseconds(interval));
+}
+
+void Timer::setInterval(duration_t interval) {
+    std::lock_guard<std::mutex> lock{ mutex_ };
+    interval_ = interval;
+}
+
+Timer::duration_t Timer::getInterval() const {
+    std::lock_guard<std::mutex> lock{mutex_};
+    return interval_;
+}
+
 void Timer::stop() {
     if (enabled_) {
         {
-            std::lock_guard<std::mutex> _{mutex_};
+            std::lock_guard<std::mutex> lock{mutex_};
             enabled_ = false;
+        }
+        {
+            std::unique_lock<std::mutex> l(callback_->m);
+            callback_->valid = false;
         }
         cvar_.notify_one();
         thread_.join();
-        // FIXME: Temporary solution for ticket #927
-        // Flush the cue so that callbacks in the cue are not called after stop() has been called.
-        // A better solution would be to remove cued callbacks.
-        InviwoApplication::getPtr()->processFront();
     }
 }
 
 void Timer::timer() {
     auto deadline = std::chrono::steady_clock::now() + interval_;
     std::unique_lock<std::mutex> lock{mutex_};
+    
     while (enabled_) {
         if (cvar_.wait_until(lock, deadline) == std::cv_status::timeout) {
             lock.unlock();
-
             // skip if previous not done.
             if (!result_.valid() ||
                 result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
                     std::future_status::ready) {
                 auto tmp = callback_;
-                result_ = dispatchFront([tmp]() { (*tmp)(); });
+                result_ = dispatchFront([tmp]() { 
+                    std::unique_lock<std::mutex> l(tmp->m, std::try_to_lock);
+                    if (l && tmp->valid) (tmp->callback)();                     
+                }
+                );
             }
             deadline += interval_;
             lock.lock();
