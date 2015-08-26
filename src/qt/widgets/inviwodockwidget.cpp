@@ -49,9 +49,9 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
 
 InviwoDockWidget::~InviwoDockWidget() {}
 
-void InviwoDockWidget::show(){
+void InviwoDockWidget::showEvent(QShowEvent* showEvent){
     raise();
-    QDockWidget::show();
+    QDockWidget::showEvent(showEvent);
 }
 
 void InviwoDockWidget::keyPressEvent(QKeyEvent* keyEvent) {
