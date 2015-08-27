@@ -352,7 +352,7 @@ void NetworkEditor::removePortInspector(Outport* port) {
     }
 }
 
-std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, std::string type) {
+std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, std::string& type) {
     PortInspector* portInspector =
         PortInspectorFactory::getPtr()->createAndCache(port->getClassIdentifier());
 

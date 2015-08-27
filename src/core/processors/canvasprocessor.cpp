@@ -252,7 +252,7 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
 }
 
 std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType layerType,
-                                                                   const std::string& type,
+                                                                   std::string& type,
                                                                    size_t idx) {
     if (!inport_.hasData()) return nullptr;
     const Image* image = inport_.getData();
@@ -276,20 +276,20 @@ std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType lay
     return nullptr;
 }
 
-std::vector<unsigned char>* CanvasProcessor::getColorLayerAsCodedBuffer(const std::string& type,
+std::vector<unsigned char>* CanvasProcessor::getColorLayerAsCodedBuffer(std::string& type,
                                                                         size_t idx) {
     return getLayerAsCodedBuffer(LayerType::COLOR_LAYER, type, idx);
 }
 
-std::vector<unsigned char>* CanvasProcessor::getDepthLayerAsCodedBuffer(const std::string& type) {
+std::vector<unsigned char>* CanvasProcessor::getDepthLayerAsCodedBuffer(std::string& type) {
     return getLayerAsCodedBuffer(LayerType::DEPTH_LAYER, type);
 }
 
-std::vector<unsigned char>* CanvasProcessor::getPickingLayerAsCodedBuffer(const std::string& type) {
+std::vector<unsigned char>* CanvasProcessor::getPickingLayerAsCodedBuffer(std::string& type) {
     return getLayerAsCodedBuffer(LayerType::PICKING_LAYER, type);
 }
 
-std::vector<unsigned char>* CanvasProcessor::getVisibleLayerAsCodedBuffer(const std::string& type) {
+std::vector<unsigned char>* CanvasProcessor::getVisibleLayerAsCodedBuffer(std::string& type) {
     if (visibleLayer_.get() == COLOR_LAYER){
         getColorLayerAsCodedBuffer(type, colorLayer_.get());
     }

@@ -103,9 +103,10 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     QString info("<html><head/><body style=''>");
     info.append("<table>");
+    std::string imageType = "png";
 
     if (inspector) {
-        data.reset(NetworkEditor::getPtr()->renderPortInspectorImage(port, "png"));
+        data.reset(NetworkEditor::getPtr()->renderPortInspectorImage(port, imageType));
     }
 
     if (portinfo) {
@@ -115,14 +116,34 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     if (data) {
         QByteArray byteArray;
-        byteArray.setRawData(reinterpret_cast<const char*>(&(data->front())),
-                             static_cast<unsigned int>(data->size()));
+
+        if (imageType != "png"){
+            QImage::Format format = QImage::Format_Invalid;
+            if (data->size() == size*size){
+                format = QImage::Format_Indexed8;
+            }
+            else if (data->size() == size*size * 3){
+                format = QImage::Format_RGB888;
+            }
+            else if (data->size() == size*size * 4){
+                format = QImage::Format_RGBA8888;
+            }
+
+            QImage image(reinterpret_cast<const unsigned char*>(&(data->front())), size, size, format);
+            QBuffer buffer(&byteArray);
+            image.save(&buffer, "PNG");
+        }
+        else{
+            byteArray.setRawData(reinterpret_cast<const char*>(&(data->front())),
+                static_cast<unsigned int>(data->size()));
+        }
+        QString imageBase64 = QString::fromLatin1(byteArray.toBase64().data());
 
         QString url(
             QString(
                 "<tr><td><img width='%1' height='%1' src=\"data:image/png;base64,%2\"/></td></tr>")
                 .arg(size)
-                .arg(QString(byteArray.toBase64())));
+                .arg(imageBase64));
 
         info.append(url);
     }

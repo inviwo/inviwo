@@ -573,10 +573,10 @@ void FreeImageUtils::initLoader() {
     }
 }
 
-std::vector<unsigned char>* FreeImageUtils::saveLayerToBuffer(const char* type,
+std::vector<unsigned char>* FreeImageUtils::saveLayerToBuffer(std::string& fileType,
                                                               const Layer* inputLayer) {
     initLoader();
-    FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFIFFromFilename(type);
+    FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFIFFromFilename(fileType.c_str());
 
     if (imageFormat != FIF_UNKNOWN && inputLayer != nullptr) {
         const LayerRAM* imageRam = inputLayer->getRepresentation<LayerRAM>();

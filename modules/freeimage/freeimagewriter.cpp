@@ -62,8 +62,8 @@ void FreeImageWriter::writeData(const Layer* data, const std::string filePath) c
     FreeImageUtils::saveLayer(filePath.c_str(), data);
 }
 
-std::vector<unsigned char>* FreeImageWriter::writeDataToBuffer(const Layer* data, const std::string fileType) const {
-    return FreeImageUtils::saveLayerToBuffer(fileType.c_str(), data);
+std::vector<unsigned char>* FreeImageWriter::writeDataToBuffer(const Layer* data, std::string& fileType) const {
+    return FreeImageUtils::saveLayerToBuffer(fileType, data);
 }
 
 bool FreeImageWriter::writeDataToRepresentation(const DataRepresentation* src, DataRepresentation* dst) const {
