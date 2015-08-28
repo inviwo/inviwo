@@ -35,6 +35,7 @@ namespace inviwo {
 
 InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
     : QDockWidget(title, parent) {
+    setObjectName(title);
 #ifdef __APPLE__
     setStyleSheet("QDockWidget::title {padding-left: 45px; }");
 #endif
