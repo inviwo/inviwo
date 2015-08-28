@@ -132,7 +132,7 @@ IVW_CORE_API std::string getParentFolderPath(const std::string& path,
  */
 IVW_CORE_API std::string findBasePath();
 
-IVW_CORE_API void createDirectoryRecursivly(std::string path);
+IVW_CORE_API void createDirectoryRecursively(std::string path);
 
 /**
  * Get inviwo settings folder for current user

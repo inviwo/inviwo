@@ -163,7 +163,7 @@ void ShaderManager::addShaderSearchPath(std::string shaderSearchPath) {
 }
 
 void ShaderManager::addShaderSearchPath(InviwoApplication::PathType pathType, std::string relativeShaderSearchPath) {
-    bool added = addShaderSearchPathImpl(InviwoApplication::getPtr()->getPath(pathType) + relativeShaderSearchPath);
+    bool added = addShaderSearchPathImpl(InviwoApplication::getPtr()->getPath(pathType) + "/" + relativeShaderSearchPath);
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
     if(!added && pathType == InviwoApplication::PATH_MODULES){
         for (int i = 0; !added && i < IVW_EXTERNAL_MODULES_PATH_COUNT; ++i){

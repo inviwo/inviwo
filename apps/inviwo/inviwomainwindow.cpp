@@ -134,7 +134,7 @@ void InviwoMainWindow::initialize() {
     settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
     rootDir_ = QString::fromStdString(app->getPath(InviwoApplication::PATH_DATA));
-    workspaceFileDir_ = rootDir_ + "workspaces/";
+    workspaceFileDir_ = rootDir_ + "/workspaces";
     settingsWidget_->updateSettingsWidget();
 
     // initialize menus
@@ -470,7 +470,7 @@ void InviwoMainWindow::fillExampleWorkspaceMenu() {
         if (filesystem::getFileExtension(item) == "inv") {
             QString filename(QString::fromStdString(item));
             QAction *action = exampleWorkspaceMenu_->addAction(filename);
-            QString path(QString("%1%2").arg(QString::fromStdString(workspacePath)).arg(filename));
+            QString path(QString("%1/%2").arg(QString::fromStdString(workspacePath)).arg(filename));
             action->setData(path);
 
             QObject::connect(action, SIGNAL(triggered()), this, SLOT(openExampleWorkspace()));

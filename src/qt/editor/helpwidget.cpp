@@ -144,7 +144,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
 
         auto imageCache = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_SETTINGS);
         imageCache += "image-cache";
-        filesystem::createDirectoryRecursivly(imageCache);
+        filesystem::createDirectoryRecursively(imageCache);
 
         QString imgname(QString::fromStdString(imageCache) + "/" + cid + ".png");
         QImageReader reader(imgname);

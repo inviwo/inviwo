@@ -185,43 +185,43 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
 
     switch (pathType) {
         case inviwo::InviwoApplication::PATH_DATA:
-            result += "/data/";
+            result += "/data";
             break;
 
         case inviwo::InviwoApplication::PATH_VOLUMES:
-            result += "/data/volumes/";
+            result += "/data/volumes";
             break;
 
         case inviwo::InviwoApplication::PATH_MODULES:
-            result += "/modules/";
+            result += "/modules";
             break;
 
         case inviwo::InviwoApplication::PATH_WORKSPACES:
-            result += "/data/workspaces/";
+            result += "/data/workspaces";
             break;
 
         case inviwo::InviwoApplication::PATH_PORTINSPECTORS:
-            result += "/data/workspaces/portinspectors/";
+            result += "/data/workspaces/portinspectors";
             break;
 
         case inviwo::InviwoApplication::PATH_SCRIPTS:
-            result += "/data/scripts/";
+            result += "/data/scripts";
             break;
 
         case inviwo::InviwoApplication::PATH_IMAGES:
-            result += "/data/images/";
+            result += "/data/images";
             break;
 
         case inviwo::InviwoApplication::PATH_DATABASES:
-            result += "/data/databases/";
+            result += "/data/databases";
             break;
 
         case inviwo::InviwoApplication::PATH_RESOURCES:
-            result += "/resources/";
+            result += "/resources";
             break;
 
         case inviwo::InviwoApplication::PATH_TRANSFERFUNCTIONS:
-            result += "/data/transferfunctions/";
+            result += "/data/transferfunctions";
             break;
 
         case inviwo::InviwoApplication::PATH_SETTINGS:
@@ -229,7 +229,7 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
             break;
 
         case inviwo::InviwoApplication::PATH_HELP:
-            result += "/data/help/";
+            result += "/data/help";
             break;
 
         default:
@@ -237,7 +237,7 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
     }
 
     if (createFolder) {
-        filesystem::createDirectoryRecursivly(result);
+        filesystem::createDirectoryRecursively(result);
     }
     return result + suffix;
 }

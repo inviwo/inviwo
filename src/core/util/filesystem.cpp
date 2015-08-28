@@ -258,7 +258,7 @@ std::string findBasePath() {
             // remove "data"
             auto path = splitString(macPath, '/');
             path.pop_back();
-            return joinString(path, "/");
+            return path;
         }
     }
     #endif
@@ -276,7 +276,7 @@ std::string findBasePath() {
     return basePath;
 }
 
-void createDirectoryRecursivly(std::string path) {
+void createDirectoryRecursively(std::string path) {
     replaceInString(path, "\\", "/");
     std::vector<std::string> v = splitString(path, '/');
 
@@ -296,7 +296,7 @@ void createDirectoryRecursivly(std::string path) {
 #elif defined(__APPLE__)
         mkdir(pathPart.c_str(), 0755);
 #else
-        LogWarnCustom("", "createDirectoryRecursivly is not implemented for current system");
+        LogWarnCustom("", "createDirectoryRecursively is not implemented for current system");
 #endif
     }
 }
@@ -326,10 +326,10 @@ std::string getInviwoUserSettingsPath() {
     std::stringstream ss;
 #ifdef _WIN32
     ss << helperSHGetKnownFolderPath(FOLDERID_RoamingAppData);
-    ss << "/Inviwo/";
+    ss << "/Inviwo";
 #elif defined(__unix__)
     ss << std::getenv("HOME");
-    ss << "/.inviwo/";
+    ss << "/.inviwo";
 #elif defined(__APPLE__)
     // Taken from:
     // http://stackoverflow.com/questions/5123361/finding-library-application-support-from-c?rq=1
@@ -345,7 +345,7 @@ std::string getInviwoUserSettingsPath() {
     FSFindFolder(kUserDomain, folderType, kCreateFolder, &ref);
     FSRefMakePath(&ref, (UInt8*)&path, MAX_PATH);
     #include <warn/pop>
-    ss << path << "/org.inviwo.network-editor/";
+    ss << path << "/org.inviwo.network-editor";
 
 #else
     LogWarnCustom("", "Get User Setting Path is not implemented for current system");
@@ -354,6 +354,7 @@ std::string getInviwoUserSettingsPath() {
 }
 
 std::string addBasePath(const std::string& url) {
+    if (url.empty()) return InviwoApplication::getPtr()->getBasePath();
     return InviwoApplication::getPtr()->getBasePath() + "/" + url;
 }
 
@@ -443,6 +444,14 @@ std::string getRelativePath(const std::string& bPath, const std::string& absolut
 
     for (auto& absolutePathToken : absolutePathTokens)
         if (absolutePathToken != "") relativePath += (absolutePathToken + "/");
+
+    if (fileName.empty() && !relativePath.empty()) {
+        // remove trailing '/' from path
+        std::size_t pathLen{ relativePath.size() };
+        if (relativePath[pathLen - 1] == '/') {
+            return relativePath.substr(0, pathLen);
+        }
+    }
 
     return relativePath + fileName;
 }
