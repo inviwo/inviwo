@@ -109,7 +109,7 @@ void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience audie
 
 LogCentral::LogCentral() : 
     logLevel_(LogLevel::Info),  
-    logStacktrace_(true) {}
+    logStacktrace_(false) {}
 
 LogCentral::~LogCentral() {
     for (auto& logger : loggers_) delete logger;
