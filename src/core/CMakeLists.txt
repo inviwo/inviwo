@@ -217,6 +217,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/glm.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/group.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/interpolation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/rayplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/introspection.h
@@ -239,6 +240,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tinydirinterface.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -428,6 +430,7 @@ set(SOURCE_FILES
     util/timer.cpp
     util/tinydirinterface.cpp
     util/utilities.cpp
+    util/volumesampler.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
