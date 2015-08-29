@@ -45,7 +45,7 @@ public:
     virtual BasicMesh* clone() const;
     virtual ~BasicMesh();
     
-    void addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
+    size_t addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
     void setVertex(size_t index, vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
     void setVertexPosition(size_t index, vec3 pos);
     void setVertexNormal(size_t index, vec3 normal);

@@ -62,10 +62,10 @@ BasicMesh* BasicMesh::clone() const {
 BasicMesh::~BasicMesh() {
 }
 
-void BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
-    static_cast<Position3dBuffer*>(attributes_[0])
-        ->getEditableRepresentation<Position3dBufferRAM>()
-        ->add(pos);
+size_t BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
+    auto posBuf = static_cast<Position3dBuffer*>(attributes_[0]);
+    posBuf->getEditableRepresentation<Position3dBufferRAM>()
+          ->add(pos);
     static_cast<TexCoord3dBuffer*>(attributes_[1])
         ->getEditableRepresentation<TexCoord3dBufferRAM>()
         ->add(texCoord);
@@ -73,6 +73,7 @@ void BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
         color);
     static_cast<NormalBuffer*>(attributes_[3])->getEditableRepresentation<NormalBufferRAM>()->add(
         normal);
+    return posBuf->getSize() - 1;
 }
 
 void BasicMesh::setVertex(size_t index, vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
