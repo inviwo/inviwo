@@ -35,6 +35,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 

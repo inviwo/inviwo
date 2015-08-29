@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/io/serialization/ivwserializable.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <iterator>
 
 namespace inviwo {
 
