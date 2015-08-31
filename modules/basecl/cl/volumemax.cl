@@ -28,25 +28,10 @@
  *********************************************************************************/
 
 #include "samplers.cl" 
-
-//#define VOLUME_OUTPUT_UINT_TYPE
-
-#ifdef SUPPORTS_VOLUME_WRITE
-#pragma OPENCL_EXTENSION cl_khr_3d_image_writes : enable
-#endif
+#include "image3d_write.cl" 
 
 __kernel void volumeMaxKernel(read_only image3d_t volumeIn, __constant VolumeParameters* volumeParams
-#ifdef SUPPORTS_VOLUME_WRITE
-    , write_only image3d_t volumeOut
-#else
-#ifdef VOLUME_OUTPUT_UINT_TYPE
-    , __global uint* volumeOut
-#else
-    , __global uchar* volumeOut
-#endif
-    //, __global float* volumeOut
-#endif    
-    
+    , image_3d_write_uint8_t volumeOut    
     , int4 outDim
     , int4 region
     ) 
@@ -80,20 +65,7 @@ __kernel void volumeMaxKernel(read_only image3d_t volumeIn, __constant VolumePar
     //if (any(globalId>=get_image_dim(volumeOut).xyz) || any(globalId<(int3)(0))) {
     //    return;
     //}
-#ifdef SUPPORTS_VOLUME_WRITE
-    #ifdef VOLUME_UINT_TYPE
-        write_imageui(volumeOut, (int4)(globalId, 0), (uint4)(maxVal)); 
-    #else
-        write_imagef(volumeOut, (int4)(globalId/4, 0), (float4)(maxVal)); 
-    #endif
-#else
-    int threadId = get_global_id(0) + get_global_id(1)*outDim.x+get_global_id(2)*outDim.x*outDim.y;
-    //volumeOut[threadId] = maxVal;
-    #ifdef VOLUME_OUTPUT_UINT_TYPE
-        volumeOut[threadId] = convert_uint_sat_rte(maxVal*4294967295.f);
-    #else
-        // The preferred method for conversions from floating-point values to normalized integer
-        volumeOut[threadId] = convert_uchar_sat_rte(maxVal*255.f);
-    #endif
-#endif
+
+    writeImageUInt8f(volumeOut, as_int4(globalId), outDim, maxVal);
+
 }

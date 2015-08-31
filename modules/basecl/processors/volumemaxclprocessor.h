@@ -94,6 +94,7 @@ private:
 
     bool supportsVolumeWrite_;  // Does the OpenCL device support volume writes?
     Buffer* tmpVolume_;         // Used if writing to a volume is not supported
+    std::unique_ptr<Volume> volumeOut_;
     cl::Kernel* kernel_;
 };
 }

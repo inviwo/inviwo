@@ -86,15 +86,14 @@ void VolumeMaxCLProcessor::process() {
     // const DataFormatBase* volFormat = inport_.getData()->getDataFormat(); // Not used
 
     if (!outport_.hasData() || outport_.getData()->getDimensions() != outDim) {
-        Volume* volumeOut = new Volume(outDim, DataUINT8::get());
-        // volumeOut = new Volume(outDim, DataUINT32::get());
-        // volumeOut = new Volume(outDim, DataFLOAT32::get());
+        volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataUINT8::get()));
+        // volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataUINT32::get()) );
+        // volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataFLOAT32::get()) );
         // Use same transformation to make sure that they are render at the same location
-        volumeOut->setModelMatrix(volume->getModelMatrix());
-        volumeOut->setWorldMatrix(volume->getWorldMatrix());
-        outport_.setData(volumeOut);
+        volumeOut_->setModelMatrix(volume->getModelMatrix());
+        volumeOut_->setWorldMatrix(volume->getWorldMatrix());
+        outport_.setData(volumeOut_.get(), false);
     }
-    Volume* volumeOut = outport_.getData();
 
     size3_t localWorkGroupSize(workGroupSize_.get());
     size3_t globalWorkGroupSize(getGlobalWorkGroupSize(outDim.x, localWorkGroupSize.x),
@@ -104,7 +103,7 @@ void VolumeMaxCLProcessor::process() {
     if (useGLSharing_.get()) {
         SyncCLGL glSync;
         const VolumeCLGL* volumeCL = volume->getRepresentation<VolumeCLGL>();
-        VolumeCLGL* volumeOutCL = volumeOut->getEditableRepresentation<VolumeCLGL>();
+        VolumeCLGL* volumeOutCL = volumeOut_->getEditableRepresentation<VolumeCLGL>();
 
         glSync.addToAquireGLObjectList(volumeCL);
         glSync.addToAquireGLObjectList(volumeOutCL);
@@ -114,7 +113,7 @@ void VolumeMaxCLProcessor::process() {
                                localWorkGroupSize);
     } else {
         const VolumeCL* volumeCL = volume->getRepresentation<VolumeCL>();
-        VolumeCL* volumeOutCL = volumeOut->getEditableRepresentation<VolumeCL>();
+        VolumeCL* volumeOutCL = volumeOut_->getEditableRepresentation<VolumeCL>();
         executeVolumeOperation(volume, volumeCL, volumeOutCL, outDim, globalWorkGroupSize,
                                localWorkGroupSize);
     }
@@ -183,11 +182,10 @@ void VolumeMaxCLProcessor::buildKernel() {
     std::string extensions = OpenCL::getPtr()->getDevice().getInfo<CL_DEVICE_EXTENSIONS>();
     if (extensions.find("cl_khr_3d_image_writes") != std::string::npos) {
         supportsVolumeWrite_ = true;
-        defines << " -D SUPPORTS_VOLUME_WRITE ";
     } else {
         supportsVolumeWrite_ = false;
     }
-    kernel_ = addKernel("volumemax.cl", "volumeMaxKernel", defines.str());
+    kernel_ = addKernel("volumemax.cl", "volumeMaxKernel");
 }
 
 }  // inviwo namespace
