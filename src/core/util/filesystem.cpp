@@ -258,7 +258,7 @@ std::string findBasePath() {
             // remove "data"
             auto path = splitString(macPath, '/');
             path.pop_back();
-            return path;
+            return joinString(path, "/");
         }
     }
     #endif
