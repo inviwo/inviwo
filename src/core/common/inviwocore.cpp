@@ -163,9 +163,9 @@ InviwoCore::InviwoCore() : InviwoModule() {
     registerPort(VolumeInport);
     registerPort(VolumeOutport);
     // Register PortInspectors
-    registerPortInspector("org.inviwo.ImageOutport", InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_PORTINSPECTORS, "imageportinspector.inv"));
-    registerPortInspector("org.inviwo.VolumeOutport", InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_PORTINSPECTORS, "volumeportinspector.inv"));
-    registerPortInspector("org.inviwo.GeometryOutport", InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_PORTINSPECTORS, "geometryportinspector.inv"));
+    registerPortInspector("org.inviwo.ImageOutport", InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_PORTINSPECTORS, "/imageportinspector.inv"));
+    registerPortInspector("org.inviwo.VolumeOutport", InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_PORTINSPECTORS, "/volumeportinspector.inv"));
+    registerPortInspector("org.inviwo.GeometryOutport", InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_PORTINSPECTORS, "/geometryportinspector.inv"));
     
     //registerProperty(EventProperty); TODO fix "default" contructor with 2 args...
     registerProperty(CompositeProperty);

@@ -80,18 +80,18 @@ public:
     virtual bool isInitialized() { return initialized_; }
 
     enum PathType {
-        PATH_DATA,               // data/
-        PATH_VOLUMES,            // data/volumes/
-        PATH_MODULES,            // modules/
-        PATH_WORKSPACES,         // data/workspaces/
-        PATH_SCRIPTS,            // data/workspaces/
-        PATH_PORTINSPECTORS,     // data/workspaces/portinspectors/
-        PATH_IMAGES,             // data/images/
-        PATH_DATABASES,          // data/databases/
-        PATH_RESOURCES,          // resources/
-        PATH_TRANSFERFUNCTIONS,  // data/transferfunctions/
+        PATH_DATA,               // /data
+        PATH_VOLUMES,            // /data/volumes
+        PATH_MODULES,            // /modules
+        PATH_WORKSPACES,         // /data/workspaces
+        PATH_SCRIPTS,            // /data/workspaces
+        PATH_PORTINSPECTORS,     // /data/workspaces/portinspectors
+        PATH_IMAGES,             // /data/images
+        PATH_DATABASES,          // /data/databases
+        PATH_RESOURCES,          // /resources
+        PATH_TRANSFERFUNCTIONS,  // /data/transferfunctions
         PATH_SETTINGS,           //
-        PATH_HELP                // data/help
+        PATH_HELP                // /data/help
     };
 
     virtual void closeInviwoApplication() {
