@@ -34,6 +34,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Add OpenCL files
 set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/entryexitpoints.cl
+	${CMAKE_CURRENT_SOURCE_DIR}/cl/intersection/raymeshintersection.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/grayscale.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/statistics/runningmeanandstandarddeviation.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/statistics/runningmeanandstandarddeviationkernel.cl

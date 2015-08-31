@@ -29,7 +29,7 @@
 
 #include "samplers.cl"
 #include "transformations.cl"
-#include "intersection/raytriangleintersection.cl"
+#include "intersection/raymeshintersection.cl"
 
 __kernel void entryExitPointsKernel(float16 NDCToTextureMat
     , float16 worldToTextureMat
@@ -53,35 +53,13 @@ __kernel void entryExitPointsKernel(float16 NDCToTextureMat
     float3 entry = (transformPointW(NDCToTextureMat, normalizedDeviceCoordNear));
     float3 exit = (transformPointW(NDCToTextureMat, normalizedDeviceCoordFar));
     float3 dir = exit-entry;
-    float t = FLT_MAX;
-    bool iSect = false;
-    float t0 = FLT_MAX; float t1 = 0.f;
-    for (int i = 0; i < nIndices-2; i +=1) {
-        // Triangle strip
-        int3 triangle = 3*(int3)(*indices, *(indices+1), *(indices+2));
-        float3 v0 = (float3)(vertices[triangle.x], vertices[triangle.x+1], vertices[triangle.x+2]);
-        float3 v1 = (float3)(vertices[triangle.y], vertices[triangle.y+1], vertices[triangle.y+2]);
-        float3 v2 = (float3)(vertices[triangle.z], vertices[triangle.z+1], vertices[triangle.z+2]);
-        float tt;
-        iSect = rayTriangleIntersection(entry, dir, v0, v1, v2, &tt);
-        if (iSect) {
-            t0 = min(tt, t0);
-            t1 = max(tt, t1);
-        }
-        indices+=1;
-    }
-
-    if(t1 != 0.f) {  
-        // We are inside the geometry if the
-        // closest hit point is equal
-        // to the farthest
-        if (t0 == t1) {
-            t0 = 0.f;
-        }
-        write_imagef(entryPoints, globalId,  (float4)(entry.xyz+t0*dir, 1.f));     
-        write_imagef(exitPoints, globalId,  (float4)(entry.xyz+t1*dir,1.f)); 
+    float t0 = 0; float t1 = FLT_MAX;
+    bool iSect = rayMeshIntersection(vertices, indices, nIndices, entry, dir, &t0, &t1);
+    if (iSect) {
+        write_imagef(entryPoints, globalId, (float4)(entry.xyz + t0*dir, 1.f));
+        write_imagef(exitPoints, globalId, (float4)(entry.xyz + t1*dir, 1.f));
     } else {
-        write_imagef(entryPoints, globalId,  (float4)(0.f));     
-        write_imagef(exitPoints, globalId,  (float4)(0.f));    
-    } 
+        write_imagef(entryPoints, globalId, (float4)(0.f));
+        write_imagef(exitPoints, globalId, (float4)(0.f));
+    }
 }

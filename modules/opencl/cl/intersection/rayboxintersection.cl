@@ -32,11 +32,19 @@
 
 #include "datastructures/bbox.cl"
 
-// Test intersection between ray and axis-aligned bounding box.
-// Returns distance to first intersection in t0 and second intersection in t1
-// If ray is inside the box, t0 will be 0 if initial value is 0, if it is negative it may contain
-// the first hit point on the line (along the negative direction);
-// t1 will contain the hitpoint 
+/**
+* Test intersection between ray and axis-aligned bounding box.
+* If intersecting, t0 will contain the first point of intersection along the ray and t1 the last.
+* If ray is inside the box, t0 will be set to 0.
+* If t0 is negative it may contain the first hit point on the line (along the negative direction).
+*
+* @param BBox Axis-aligned bounding box
+* @param o    Ray origin
+* @param d    Ray direction (not normalized)
+* @param t0   Start point along ray
+* @param t1   End point along ray
+* @return true if an intersection is found, false otherwise.
+*/
 bool rayBoxIntersection(const BBox bbox, const float3 o, const float3 d, float * __restrict t0, float* __restrict t1) {
     //*t0 = 0.f; // set to -FLT_MAX to get first hit on line (also in negative direction, i.e. behind the origin)
     //*t1 = MAXFLOAT;
