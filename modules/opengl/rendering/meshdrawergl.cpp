@@ -36,20 +36,37 @@ MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh)
     : meshToDraw_(mesh) {
-        
+
     initialize(mesh->getDefaultAttributesInfo());
 }
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, Mesh::AttributesInfo ai)
     : meshToDraw_(mesh) {
-        
+
     initialize(ai);
 }
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct)
     : meshToDraw_(mesh) {
-        
+
     initialize(Mesh::AttributesInfo(dt, ct));
+}
+
+MeshDrawerGL::MeshDrawerGL(MeshDrawerGL&& other)
+        : MeshDrawer(std::move(other))
+        , meshToDraw_{ other.meshToDraw_ }
+{
+    // move each element 
+    std::move(std::begin(other.drawMethods_), std::end(other.drawMethods_), &drawMethods_[0]);
+    other.meshToDraw_ = nullptr;
+}
+
+MeshDrawerGL& MeshDrawerGL::operator=(const MeshDrawerGL& rhs) {
+    if (this != &rhs) {
+        meshToDraw_ = rhs.meshToDraw_;
+        std::copy(std::begin(rhs.drawMethods_), std::end(rhs.drawMethods_), &drawMethods_[0]);
+    }
+    return *this;
 }
 
 MeshDrawerGL::~MeshDrawerGL() {

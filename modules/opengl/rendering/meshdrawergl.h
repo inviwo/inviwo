@@ -45,6 +45,8 @@ public:
     MeshDrawerGL(const Mesh* mesh);
     MeshDrawerGL(const Mesh* mesh, Mesh::AttributesInfo);
     MeshDrawerGL(const Mesh* mesh, GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
+    MeshDrawerGL& operator=(const MeshDrawerGL& other);
+    MeshDrawerGL(MeshDrawerGL&& other); // move constructor
     virtual ~MeshDrawerGL();
 
     virtual void draw();
