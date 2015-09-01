@@ -30,7 +30,11 @@
 #ifndef IVW_IMAGE3D_WRITE_CL
 #define IVW_IMAGE3D_WRITE_CL
 
-#ifdef cl_khr_3d_image_writes
+// cl_khr_3d_image_writes is defined but not supported
+// on some NVIDIA drivers (355.82 for example)
+// This means that we cannot rely on cl_khr_3d_image_writes
+// being correctly defined and must use our own define.
+#ifdef SUPPORTS_VOLUME_WRITE //cl_khr_3d_image_writes 
     #pragma OPENCL_EXTENSION cl_khr_3d_image_writes : enable
     #define image_3d_write_uint8_t __write_only image_3d_t
     #define image_3d_write_uint16_t __write_only image_3d_t
@@ -47,7 +51,7 @@
 
 
 void writeImageUInt8f(image_3d_write_uint8_t image, int4 coord, int4 dimension, float val) {
-#ifdef cl_khr_3d_image_writes
+#ifdef SUPPORTS_VOLUME_WRITE
     write_imagef(image, coord, (uint4)(val));
 #else
     // The preferred method for conversions from floating-point values to normalized integer
@@ -56,7 +60,7 @@ void writeImageUInt8f(image_3d_write_uint8_t image, int4 coord, int4 dimension, 
 }
 
 void write_imageUInt8(image_3d_write_uint8_t image, int4 coord, int4 dimension, uchar val) {
-#ifdef cl_khr_3d_image_writes
+#ifdef SUPPORTS_VOLUME_WRITE
     write_imageui(image, coord, (uint4)(val));
 #else
     image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = val;

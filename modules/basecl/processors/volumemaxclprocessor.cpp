@@ -182,10 +182,11 @@ void VolumeMaxCLProcessor::buildKernel() {
     std::string extensions = OpenCL::getPtr()->getDevice().getInfo<CL_DEVICE_EXTENSIONS>();
     if (extensions.find("cl_khr_3d_image_writes") != std::string::npos) {
         supportsVolumeWrite_ = true;
+        defines << " -D SUPPORTS_VOLUME_WRITE ";
     } else {
         supportsVolumeWrite_ = false;
     }
-    kernel_ = addKernel("volumemax.cl", "volumeMaxKernel");
+    kernel_ = addKernel("volumemax.cl", "volumeMaxKernel", defines.str());
 }
 
 }  // inviwo namespace

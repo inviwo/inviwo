@@ -106,8 +106,8 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
         }
     } 
     float4 backgroundColor = read_imagef(background, smpNormClampEdgeLinear, (convert_float2(outputRegionOffset+globalId)+0.5f)/convert_float2(get_image_dim(output))); 
-    result.xyz += backgroundColor.xyz * backgroundColor.w * (1.0 - result.w);
-    result.w += backgroundColor.w * (1.0 - result.w);
+    result.xyz += backgroundColor.xyz * backgroundColor.w * (1.0f - result.w);
+    result.w += backgroundColor.w * (1.0f - result.w);
     write_imagef(output, outputRegionOffset+globalId,  result);     
   
 }
