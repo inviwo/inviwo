@@ -31,6 +31,7 @@
 #include <modules/opencl/cl.hpp>
 #include <modules/opencl/glmcl.h>
 #include <modules/opencl/openclcapabilities.h>
+#include <modules/opencl/openclformatexception.h>
 #include <modules/opencl/syncclgl.h>
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/logcentral.h>
@@ -808,7 +809,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
 
     switch (format) {
         case DataFormatEnums::NOT_SPECIALIZED:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: NOT_SPECIALIZED", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::FLOAT16:
@@ -820,7 +821,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::FLOAT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::INT8:
@@ -836,7 +837,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::INT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: INT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::UINT8:
@@ -852,7 +853,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::UINT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec2FLOAT16:
@@ -864,7 +865,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::Vec2FLOAT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec2FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec2INT8:
@@ -880,7 +881,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::Vec2INT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec2INT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec2UINT8:
@@ -896,51 +897,51 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::Vec2UINT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec2UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3FLOAT16:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT16", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3FLOAT32:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT32", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3FLOAT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3INT8:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3INT8", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3INT16:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3INT16", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3INT32:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3INT32", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3INT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3INT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3UINT8:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3UINT8", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3UINT16:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3UINT16", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3UINT32:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3UINT32", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec3UINT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec3UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec4FLOAT16:
@@ -952,7 +953,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::Vec4FLOAT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec4FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec4INT8:
@@ -968,7 +969,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::Vec4INT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec4INT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::Vec4UINT8:
@@ -984,13 +985,13 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
             break;
 
         case DataFormatEnums::Vec4UINT64:
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Invalid conversion");
+            throw OpenCLFormatException("Unsupported data format: Vec4UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
         case DataFormatEnums::NUMBER_OF_FORMATS:
         default:
             // Should not be able to reach here
-            LogErrorCustom("cl::ImageFormat typeToImageFormat", "Format not implmented yet");
+            throw OpenCLFormatException("cl::ImageFormat typeToImageFormat. Format not implmented yet");
             break;
     }
 
@@ -1027,6 +1028,19 @@ size2_t getGlobalWorkGroupSize(size2_t nItems, glm::size2_t localWorkGroupSize)
 size3_t getGlobalWorkGroupSize(size3_t nItems, glm::size3_t localWorkGroupSize)
 {
     return localWorkGroupSize*size3_t(glm::ceil(vec3(nItems) / vec3(localWorkGroupSize)));
+}
+
+inviwo::CLFormats::CLFormat CLFormats::getCLFormat(DataFormatEnums::Id id) const {
+    if (CLFormatArray_[static_cast<int>(id)].valid) {
+        return CLFormatArray_[static_cast<int>(id)];
+    } else {
+        std::stringstream error;
+        error << "Format not supported by OpenCL. Data type: "
+            << CLFormatArray_[static_cast<int>(id)].format.image_channel_data_type
+            << " Channel order: "
+            << CLFormatArray_[static_cast<int>(id)].format.image_channel_order;
+        throw OpenCLFormatException(error.str(), IvwContext);
+    }
 }
 
 }

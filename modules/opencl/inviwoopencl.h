@@ -365,10 +365,7 @@ public:
         CLFormatArray_[DataFormatEnums::Vec4UINT32]  = CLFormat(CL_RGBA, CL_UNSIGNED_INT32, NONE);
     };
 
-    CLFormat getCLFormat(DataFormatEnums::Id id) const {
-        ivwAssert(CLFormatArray_[static_cast<int>(id)].valid, "Accessing invalid CLFormat");
-        return CLFormatArray_[static_cast<int>(id)];
-    };
+    CLFormat getCLFormat(DataFormatEnums::Id id) const;;
 
 private:
     CLFormat CLFormatArray_[DataFormatEnums::NUMBER_OF_FORMATS];
