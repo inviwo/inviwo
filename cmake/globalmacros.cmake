@@ -1140,11 +1140,23 @@ macro(ivw_add_dependencies)
       #--------------------------------------------------------------------
       # Qt5
        if(DESIRED_QT_VERSION MATCHES 5)
-           if(${package} STREQUAL "InviwoOpenGLQtModule")
-                qt5_use_modules(${_projectName} OpenGL)
-           endif()
+            set(Qt5DependLibs "")
+            foreach (package_lib ${${u_package}_LIBRARIES})
+               string(LENGTH "${package_lib}" package_lib_length)
+                if(${package_lib_length} GREATER 5)
+                    string(SUBSTRING "${package_lib}" 0 5 package_lib_start)
+                    string(SUBSTRING "${package_lib}" 5 -1 package_lib_end)
+                    if(${package_lib_start} STREQUAL "Qt5::")
+                         list(APPEND Qt5DependLibs ${package_lib_end})
+                    endif()
+                endif()
+            endforeach()
+            remove_duplicates(uniqueQt5DependLibs ${Qt5DependLibs})
+            foreach (uniqueQt5Lib ${uniqueQt5DependLibs})
+               qt5_use_modules(${_projectName} ${uniqueQt5Lib})
+            endforeach()
        endif()
-      
+    
     endforeach()
 endmacro()
 
