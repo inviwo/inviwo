@@ -35,8 +35,8 @@
 
 namespace inviwo {
 
-    class Volume;
-    class VolumeRAM;
+class Volume;
+class VolumeRAM;
 
 /**
  * \class VolumeSampler
@@ -45,23 +45,20 @@ namespace inviwo {
  *
  * DESCRIBE_THE_CLASS
  */
-class IVW_CORE_API VolumeSampler { 
+class IVW_CORE_API VolumeSampler {
 public:
     VolumeSampler(const VolumeRAM *ram);
     VolumeSampler(const Volume *vol);
     virtual ~VolumeSampler();
 
     dvec4 sample(const dvec3 &pos) const;
-
+    dvec4 sample(const vec3 &pos) const { return sample(dvec3(pos)); }
 
 private:
     const VolumeRAM *vol_;
     size3_t dims_;
-
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VOLUMESAMPLER_H
-
+#endif  // IVW_VOLUMESAMPLER_H

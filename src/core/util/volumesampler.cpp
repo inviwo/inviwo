@@ -35,42 +35,30 @@
 
 namespace inviwo {
 
+VolumeSampler::VolumeSampler(const VolumeRAM *ram) : vol_(ram), dims_(ram->getDimensions()) {}
 
-    VolumeSampler::VolumeSampler(const VolumeRAM *ram) :vol_(ram), dims_(ram->getDimensions())
-    {
+VolumeSampler::VolumeSampler(const Volume *vol)
+    : VolumeSampler(vol->getRepresentation<VolumeRAM>()) {}
 
-    }
+VolumeSampler::~VolumeSampler() {}
 
-    VolumeSampler::VolumeSampler(const Volume *vol) : VolumeSampler(vol->getRepresentation<VolumeRAM>())
-    {
+inviwo::dvec4 VolumeSampler::sample(const dvec3 &pos) const {
+    dvec3 samplePos = pos * dvec3(dims_);
+    size3_t indexPos = size3_t(samplePos);
+    dvec3 interpolants = samplePos - dvec3(indexPos);
 
-    }
+    dvec4 samples[8];
+    samples[0] = vol_->getValueAsVec4Double(indexPos);
+    samples[1] = vol_->getValueAsVec4Double(indexPos + size3_t(1, 0, 0));
+    samples[2] = vol_->getValueAsVec4Double(indexPos + size3_t(0, 1, 0));
+    samples[3] = vol_->getValueAsVec4Double(indexPos + size3_t(1, 1, 0));
 
-    VolumeSampler::~VolumeSampler()
-    {
+    samples[4] = vol_->getValueAsVec4Double(indexPos + size3_t(0, 0, 1));
+    samples[5] = vol_->getValueAsVec4Double(indexPos + size3_t(1, 0, 1));
+    samples[6] = vol_->getValueAsVec4Double(indexPos + size3_t(0, 1, 1));
+    samples[7] = vol_->getValueAsVec4Double(indexPos + size3_t(1, 1, 1));
 
-    }
+    return Interpolation::trilinear(samples, interpolants);
+}
 
-    inviwo::dvec4 VolumeSampler::sample(const dvec3 &pos) const
-    {
-        dvec3 samplePos = pos * dvec3(dims_);
-        size3_t indexPos = size3_t(samplePos);
-        dvec3 interpolants = samplePos - dvec3(indexPos);
-
-
-        dvec4 samples[8];
-        samples[0] = vol_->getValueAsVec4Double(indexPos);
-        samples[1] = vol_->getValueAsVec4Double(indexPos + size3_t(1, 0, 0));
-        samples[2] = vol_->getValueAsVec4Double(indexPos + size3_t(0, 1, 0));
-        samples[3] = vol_->getValueAsVec4Double(indexPos + size3_t(1, 1, 0));
-
-        samples[4] = vol_->getValueAsVec4Double(indexPos + size3_t(0, 0, 1));
-        samples[5] = vol_->getValueAsVec4Double(indexPos + size3_t(1, 0, 1));
-        samples[6] = vol_->getValueAsVec4Double(indexPos + size3_t(0, 1, 1));
-        samples[7] = vol_->getValueAsVec4Double(indexPos + size3_t(1, 1, 1));
-
-        return Interpolation::trilinear(samples, interpolants);
-    }
-
-} // namespace
-
+}  // namespace
