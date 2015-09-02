@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/indexcalculator.h>
 
+#include <inviwo/core/util/interpolation.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <inviwo/core/datastructures/image/image.h>
