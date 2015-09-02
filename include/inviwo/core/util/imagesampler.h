@@ -89,7 +89,7 @@ public:
 
         T samples[4];
         samples[0] = data_[ic_(i)];
-        samples[1] = data_[ic_(i size3_t(1, 0, 0))];
+        samples[1] = data_[ic_(i + size3_t(1, 0, 0))];
         samples[2] = data_[ic_(i + size3_t(0, 1, 0))];
         samples[3] = data_[ic_(i + size3_t(1, 1, 0))];
 
