@@ -84,8 +84,8 @@ DataSource<DataType, PortType>::DataSource()
     
     addPort(port_);
     file_.onChange(this, &DataSource::load);
-    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<DataType>();
 
+    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<DataType>();
     for (auto& ext : extensions) {
         file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
     }
@@ -158,6 +158,11 @@ template <typename DataType, typename PortType>
 void inviwo::DataSource<DataType, PortType>::deserialize(IvwDeserializer& d) {
     isDeserializing_ = true;
     Processor::deserialize(d);
+    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<DataType>();
+    file_.clearNameFilters();
+    for (auto& ext : extensions) {
+        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
+    }
     isDeserializing_ = false;
     load(true);
 }

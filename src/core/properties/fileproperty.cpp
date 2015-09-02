@@ -117,15 +117,14 @@ void FileProperty::deserialize(IvwDeserializer& d) {
     try {
         nameFilters_.clear();
         d.deserialize("nameFilter", nameFilters_, "filter");
-        int acceptMode = (int)acceptMode_;
+        int acceptMode = static_cast<int>(acceptMode_);
         d.deserialize("acceptMode", acceptMode);
-        acceptMode_ = (AcceptMode)acceptMode;
-        int fileMode = (int)fileMode_;
+        acceptMode_ = static_cast<AcceptMode>(acceptMode);
+        int fileMode = static_cast<int>(fileMode_);
         d.deserialize("fileMode", fileMode);
-        fileMode_ = (FileMode)fileMode;
-    }
-    catch (SerializationException& e) {
-        LogInfo("Problem deserializing fileproperty: " << e.getMessage());
+        fileMode_ = static_cast<FileMode>(fileMode);
+    } catch (SerializationException& e) {
+        LogInfo("Problem deserializing file Property: " << e.getMessage());
     }
 }
 
