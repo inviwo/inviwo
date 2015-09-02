@@ -87,10 +87,10 @@ public:
         size3_t i(indexPos.x, indexPos.y, 0);
 
         T samples[4];
-        T[0] = data_[ic_.index(i)];
-        T[1] = data_[ic_.index(i + size3_t(1, 0, 0))];
-        T[2] = data_[ic_.index(i + size3_t(0, 1, 0))];
-        T[3] = data_[ic_.index(i + size3_t(1, 1, 0))];
+        samples[0] = data_[ic_.index(i)];
+        samples[1] = data_[ic_.index(i + size3_t(1, 0, 0))];
+        samples[2] = data_[ic_.index(i + size3_t(0, 1, 0))];
+        samples[3] = data_[ic_.index(i + size3_t(1, 1, 0))];
 
         return Interpolation::bilinear(samples, interpolants);
     }
