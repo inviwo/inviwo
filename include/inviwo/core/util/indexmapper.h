@@ -27,32 +27,37 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INDEXCALCULATOR_H
-#define IVW_INDEXCALCULATOR_H
+#ifndef IVW_INDEXMAPPER_H
+#define IVW_INDEXMAPPER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
 
 namespace inviwo {
+    namespace util {
+        /**
+         * \class IndexMapper
+         *
+         * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+         *
+         * DESCRIBE_THE_CLASS
+         */
+        struct IndexMapper {
+            inline IndexMapper(const size3_t &dim) : dimx(dim.x), dimxy(dim.x * dim.y) {};
+            inline size_t operator() (size_t x, size_t y, size_t z) {
+                return x + y * dimx + z * dimxy;
+            }
+            inline size_t operator() (long long x, long long y, long long z) {
+                return static_cast<size_t>(x + y * dimx + z * dimxy);
+            }
+            inline size_t operator() (const size3_t &pos) { return pos.x + pos.y * dimx + pos.z * dimxy; }
 
-/**
- * \class IndexCalculator
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
-class IVW_CORE_API IndexCalculator {
-public:
-        IndexCalculator(const size3_t& dim);
-        size_t index(const size_t& x, const size_t& y, const size_t& z)const;
-        size_t index(const size3_t& pos) const { return pos.z * (dims_.y * dims_.x) + pos.y * dims_.x + pos.x; }
-        vec3 posFromIndex(size_t i) const;
-    private:
-        size3_t dims_;
-    };
+        private:
+            const size_t dimx;
+            const size_t dimxy;
+        };
+    } //namespace util
+}  // namespace
 
-} // namespace
-
-#endif // IVW_INDEXCALCULATOR_H
-
+#endif  // IVW_INDEXMAPPER_H

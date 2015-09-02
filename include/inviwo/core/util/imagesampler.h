@@ -32,7 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/indexcalculator.h>
+#include <inviwo/core/util/indexmapper.h>
 
 #include <inviwo/core/util/interpolation.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -88,10 +88,10 @@ public:
         size3_t i(indexPos.x, indexPos.y, 0);
 
         T samples[4];
-        samples[0] = data_[ic_.index(i)];
-        samples[1] = data_[ic_.index(i + size3_t(1, 0, 0))];
-        samples[2] = data_[ic_.index(i + size3_t(0, 1, 0))];
-        samples[3] = data_[ic_.index(i + size3_t(1, 1, 0))];
+        samples[0] = data_[ic_(i)];
+        samples[1] = data_[ic_(i size3_t(1, 0, 0))];
+        samples[2] = data_[ic_(i + size3_t(0, 1, 0))];
+        samples[3] = data_[ic_(i + size3_t(1, 1, 0))];
 
         return Interpolation::bilinear(samples, interpolants);
     }
@@ -99,7 +99,7 @@ public:
 private:
     const T *data_;
     size2_t dims_;
-    IndexCalculator ic_;
+    util::IndexMapper ic_;
 };
 
 }  // namespace

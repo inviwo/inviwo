@@ -32,6 +32,7 @@
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/util/indexmapper.h>
 
 namespace inviwo {
 

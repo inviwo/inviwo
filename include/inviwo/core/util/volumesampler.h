@@ -32,7 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/indexcalculator.h>
+#include <inviwo/core/util/indexmapper.h>
 
 
 #include <inviwo/core/util/interpolation.h>
@@ -83,14 +83,14 @@ public:
         dvec3 interpolants = samplePos - dvec3(indexPos);
 
         T samples[8];
-        samples[0] = data_[ic_.index(indexPos)];
-        samples[1] = data_[ic_.index(indexPos + size3_t(1, 0, 0))];
-        samples[2] = data_[ic_.index(indexPos + size3_t(0, 1, 0))];
-        samples[3] = data_[ic_.index(indexPos + size3_t(1, 1, 0))];
-        samples[4] = data_[ic_.index(indexPos + size3_t(0, 0, 1))];
-        samples[5] = data_[ic_.index(indexPos + size3_t(1, 0, 1))];
-        samples[6] = data_[ic_.index(indexPos + size3_t(0, 1, 1))];
-        samples[7] = data_[ic_.index(indexPos + size3_t(1, 1, 1))];
+        samples[0] = data_[ic_(indexPos)];
+        samples[1] = data_[ic_(indexPos + size3_t(1, 0, 0))];
+        samples[2] = data_[ic_(indexPos + size3_t(0, 1, 0))];
+        samples[3] = data_[ic_(indexPos + size3_t(1, 1, 0))];
+        samples[4] = data_[ic_(indexPos + size3_t(0, 0, 1))];
+        samples[5] = data_[ic_(indexPos + size3_t(1, 0, 1))];
+        samples[6] = data_[ic_(indexPos + size3_t(0, 1, 1))];
+        samples[7] = data_[ic_(indexPos + size3_t(1, 1, 1))];
 
         return Interpolation::trilinear(samples, interpolants);
     }
@@ -98,7 +98,7 @@ public:
 private:
     const T *data_;
     size3_t dims_;
-    IndexCalculator ic_;
+    util::IndexMapper ic_;
 };
 
 }  // namespace

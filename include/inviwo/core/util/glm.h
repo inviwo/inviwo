@@ -466,25 +466,6 @@ auto glmcomp(T& elem, size_t i, size_t j) -> typename T::value_type&{
 }
 
 
-struct IndexMapper {
-    inline IndexMapper(size3_t dim) : dimx(dim.x), dimxy(dim.x*dim.y) {};
-    inline size_t operator()(size_t x, size_t y, size_t z) {
-        return x + y*dimx + z * dimxy;
-    }
-    inline size_t operator()(long long x, long long y, long long z) {
-        return static_cast<size_t>(x + y*dimx + z * dimxy);
-    }
-    inline size_t operator()(size3_t pos) {
-        return pos.x + pos.y*dimx + pos.z * dimxy;
-    }
-private:
-    size_t dimx;
-    size_t dimxy;
-};
-
-
-
-
 
 
 } // namespace util

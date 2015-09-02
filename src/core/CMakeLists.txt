@@ -218,7 +218,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/group.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagecache.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/imagesampler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/indexcalculator.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/indexmapper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/interpolation.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/rayplaneintersection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/intersection/raysphereintersection.h
@@ -413,7 +413,6 @@ set(SOURCE_FILES
     util/formats.cpp
     util/imagecache.cpp
     util/imagesampler.cpp
-    util/indexcalculator.cpp
     util/intersection/rayplaneintersection.cpp
     util/intersection/raysphereintersection.cpp
     util/introspection.cpp
