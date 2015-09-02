@@ -70,6 +70,16 @@ std::unique_ptr<Derived, Del> dynamic_unique_ptr_cast(std::unique_ptr<Base, Del>
     return std::unique_ptr<Derived, Del>(nullptr, p.get_deleter());
 }
 
+template <typename Derived, typename Base>
+std::unique_ptr<Derived> dynamic_unique_ptr_cast(
+    std::unique_ptr<Base, std::default_delete<Base>>&& p) {
+    if (Derived* result = dynamic_cast<Derived*>(p.get())) {
+        p.release();
+        return std::unique_ptr<Derived>(result);
+    }
+    return std::unique_ptr<Derived>(nullptr);
+}
+
 // type trait to check if T is derived from std::basic_string
 namespace detail {
 template <typename T, class Enable = void>
