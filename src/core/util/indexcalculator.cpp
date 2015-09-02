@@ -32,18 +32,15 @@
 namespace inviwo {
 
 
-    IndexCalculator::IndexCalculator(const size3_t& dim) : dims_(dim)
-    {
+    IndexCalculator::IndexCalculator(const size3_t& dim) : dims_(dim) {
 
     }
 
-    size_t IndexCalculator::index(const size_t& x, const size_t& y, const size_t& z)
-    {
+    size_t IndexCalculator::index(const size_t& x, const size_t& y, const size_t& z) const {
         return index(size3_t(x, y, z));
     }
 
-    vec3 IndexCalculator::posFromIndex(size_t i)
-    {
+    vec3 IndexCalculator::posFromIndex(size_t i) const {
         vec3 pos;
 
         pos.z = i / (dims_.y * dims_.x);

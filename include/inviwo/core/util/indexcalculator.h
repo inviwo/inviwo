@@ -45,9 +45,9 @@ namespace inviwo {
 class IVW_CORE_API IndexCalculator {
 public:
         IndexCalculator(const size3_t& dim);
-        size_t index(const size_t& x, const size_t& y, const size_t& z);
-        size_t index(const size3_t& pos) { return pos.z * (dims_.y * dims_.x) + pos.y * dims_.x + pos.x; }
-        vec3 posFromIndex(size_t i);
+        size_t index(const size_t& x, const size_t& y, const size_t& z)const;
+        size_t index(const size3_t& pos) const { return pos.z * (dims_.y * dims_.x) + pos.y * dims_.x + pos.x; }
+        vec3 posFromIndex(size_t i) const;
     private:
         size3_t dims_;
     };
