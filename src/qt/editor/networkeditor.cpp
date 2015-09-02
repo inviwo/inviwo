@@ -352,70 +352,76 @@ void NetworkEditor::removePortInspector(Outport* port) {
     }
 }
 
-std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Port* port, std::string& type) {
-    PortInspector* portInspector =
-        PortInspectorFactory::getPtr()->createAndCache(port->getClassIdentifier());
+std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Outport* outport,
+                                                                    std::string& type) {
+    try {
+        auto portInspector =
+            PortInspectorFactory::getPtr()->createAndCache(outport->getClassIdentifier());
 
-    ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
-    std::unique_ptr<std::vector<unsigned char>> data;
+        auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+        std::unique_ptr<std::vector<unsigned char>> data;
 
-    if (portInspector && !portInspector->isActive()) {
-        portInspector->setActive(true);
+        if (portInspector && !portInspector->isActive()) {
+            portInspector->setActive(true);
 
-        CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
-        ProcessorWidgetMetaData* wm = canvasProcessor->createMetaData<ProcessorWidgetMetaData>(
-            ProcessorWidgetMetaData::CLASS_IDENTIFIER);
-        wm->setVisibile(false);
-        std::vector<Processor*> processors = portInspector->getProcessors();
+            auto canvasProcessor = portInspector->getCanvasProcessor();
+            auto wm = canvasProcessor->createMetaData<ProcessorWidgetMetaData>(
+                ProcessorWidgetMetaData::CLASS_IDENTIFIER);
+            wm->setVisibile(false);
+            {
+                NetworkLock lock;
+                // Add processors to the network
+                for (auto& processor : portInspector->getProcessors()) {
+                    network->addProcessor(processor);
+                }
 
-        {
+                // This is needed since, we need to call initialize after we
+                // add the canvas to the processor.
+                canvasProcessor->initialize();
+
+                // Connect the port to inspect to the inports of the inspector network
+                for (auto inport : portInspector->getInports()) {
+                    network->addConnection(outport, inport);
+                }
+
+                // Add connections to the network
+                for (auto connection : portInspector->getConnections()) {
+                    network->addConnection(connection->getOutport(), connection->getInport());
+                }
+
+                // Add links to the network
+                for (auto& link : portInspector->getPropertyLinks()) {
+                    network->addLink(link->getSourceProperty(), link->getDestinationProperty());
+                }
+
+                // Do auto-linking.
+                for (auto processor : portInspector->getProcessors()) {
+                    network->autoLinkProcessor(processor);
+                }
+
+                int size = InviwoApplication::getPtr()
+                               ->getSettingsByType<SystemSettings>()
+                               ->portInspectorSize_.get();
+                canvasProcessor->setCanvasSize(ivec2(size, size));
+            }  // Network will unlock and evaluate here.
+
+            data.reset(canvasProcessor->getVisibleLayerAsCodedBuffer(type));
+
+            // remove the network...
             NetworkLock lock;
-            // Add processors to the network
-            for (auto& processor : processors) {
-                network->addProcessor(processor);
-            }
+            for (auto processor : portInspector->getProcessors())
+                network->removeProcessor(processor);
+            wm->setVisibile(true);
+            portInspector->setActive(false);
+        }
+        return data.release();
 
-            canvasProcessor
-                ->initialize();  // This is needed since, we need to call initialize after we
-                                 // add the canvas to the processor.
-
-            // Connect the port to inspect to the inports of the inspector network
-            Outport* outport = dynamic_cast<Outport*>(port);
-            std::vector<Inport*> inports = portInspector->getInports();
-            for (auto& inport : inports) network->addConnection(outport, inport);
-
-            // Add connections to the network
-            std::vector<PortConnection*> connections = portInspector->getConnections();
-            for (auto& connection : connections) {
-                network->addConnection(connection->getOutport(), connection->getInport());
-            }
-
-            // Add links to the network
-            std::vector<PropertyLink*> links = portInspector->getPropertyLinks();
-            for (auto& link : links) {
-                network->addLink(link->getSourceProperty(), link->getDestinationProperty());
-            }
-
-            // Do auto-linking.
-            for (auto& processor : processors) {
-                network->autoLinkProcessor(processor);
-            }
-
-            int size = InviwoApplication::getPtr()
-                           ->getSettingsByType<SystemSettings>()
-                           ->portInspectorSize_.get();
-            canvasProcessor->setCanvasSize(ivec2(size, size));
-        } // Network will unlock and evaluate here.
-
-        data.reset(canvasProcessor->getVisibleLayerAsCodedBuffer(type));
-
-        // remove the network...
-        NetworkLock lock;
-        for (auto& processor : processors) network->removeProcessor(processor);
-        wm->setVisibile(true);
-        portInspector->setActive(false);
+    } catch (Exception& exception) {
+        util::log(exception.getContext(), exception.getMessage(), LogLevel::Error);
+    } catch (...) {
+        util::log(IvwContext, "Problem using port inspector", LogLevel::Error);
     }
-    return data.release();
+    return nullptr;
 }
 
 bool NetworkEditor::isModified() const { return modified_; }

@@ -51,11 +51,11 @@ public:
     void setActive(bool val);
     bool isActive();
 
-    std::vector<Processor*> getProcessors();
-    std::vector<Inport*> getInports();
+    std::vector<Processor*>& getProcessors();
+    std::vector<Inport*>& getInports();
     CanvasProcessor* getCanvasProcessor();
-    std::vector<PortConnection*> getConnections();
-    std::vector<PropertyLink*> getPropertyLinks();
+    std::vector<PortConnection*>& getConnections();
+    std::vector<PropertyLink*>& getPropertyLinks();
 
 private:
     void initialize();
@@ -64,7 +64,7 @@ private:
     std::string portClassIdentifier_;
     bool active_;
     bool needsUpdate_;
-    ProcessorNetwork* inspectorNetwork_;
+    std::unique_ptr<ProcessorNetwork> inspectorNetwork_;
 
     std::vector<Processor*> processors_;
     std::vector<Inport*> inPorts_;

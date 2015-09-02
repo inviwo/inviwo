@@ -106,7 +106,9 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     std::string imageType = "png";
 
     if (inspector) {
-        data.reset(NetworkEditor::getPtr()->renderPortInspectorImage(port, imageType));
+        if (auto outport = dynamic_cast<Outport*>(port)) {
+            data.reset(NetworkEditor::getPtr()->renderPortInspectorImage(outport, imageType));
+        }
     }
 
     if (portinfo) {

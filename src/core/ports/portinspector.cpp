@@ -39,17 +39,14 @@ PortInspector::PortInspector(std::string portClassIdentifier,
     , portClassIdentifier_(portClassIdentifier)
     , active_(false)
     , needsUpdate_(false)
-    , inspectorNetwork_(nullptr) {
+    , inspectorNetwork_() {
     InviwoApplication::getPtr()->registerFileObserver(this);
+    initialize();
 }
 
-PortInspector::~PortInspector() {
-    if (inspectorNetwork_)
-        delete inspectorNetwork_;
-}
+PortInspector::~PortInspector() {}
 
 void PortInspector::setActive(bool val) {
-    initialize();
     active_ = val;
 }
 
@@ -65,26 +62,21 @@ std::string PortInspector::getPortClassName() {
     return portClassIdentifier_;
 }
 
-std::vector<Inport*> PortInspector::getInports() {
-    initialize();
+std::vector<Inport*>& PortInspector::getInports() {
     return inPorts_;
 }
 
 CanvasProcessor* PortInspector::getCanvasProcessor() {
-    initialize();
     return canvasProcessor_;
 }
 
-std::vector<PortConnection*>  PortInspector::getConnections() {
-    initialize();
+std::vector<PortConnection*>&  PortInspector::getConnections() {
     return connections_;
 }
-std::vector<PropertyLink*> PortInspector::getPropertyLinks() {
-    initialize();
+std::vector<PropertyLink*>& PortInspector::getPropertyLinks() {
     return propertyLinks_;
 }
-std::vector<Processor*> PortInspector::getProcessors() {
-    initialize();
+std::vector<Processor*>& PortInspector::getProcessors() {
     return processors_;
 }
 
@@ -95,8 +87,7 @@ void PortInspector::fileChanged(std::string fileName) {
 void PortInspector::initialize() {
     if (active_ == false && needsUpdate_) {
         if (inspectorNetwork_) {
-            delete inspectorNetwork_;
-            inspectorNetwork_ = nullptr;
+            inspectorNetwork_.reset();
             processors_.clear();
             inPorts_.clear();
             connections_.clear();
@@ -117,7 +108,7 @@ void PortInspector::initialize() {
     try {
         // Deserialize the network
         IvwDeserializer xmlDeserializer(inspectorNetworkFileName_);
-        inspectorNetwork_ = new ProcessorNetwork();
+        inspectorNetwork_ = util::make_unique<ProcessorNetwork>();
         inspectorNetwork_->deserialize(xmlDeserializer);
         processors_ = inspectorNetwork_->getProcessors();
 
