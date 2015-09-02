@@ -78,7 +78,7 @@ namespace inviwo {
         std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
 
         if (!filesystem::fileExists(filename)) {
-            filename = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + filename;
+            filename = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + "/" + filename;
 
             if (!filesystem::fileExists(filename)) {
                 std::string msg = std::string("loadWorkspace() could not find file") + filename;

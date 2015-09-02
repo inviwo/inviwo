@@ -47,7 +47,7 @@ void util::saveAllCanvases(ProcessorNetwork* network, std::string dir,
         else
             ss << default_name << i + 1;
 
-        std::string path(dir + ss.str() + ext);
+        std::string path(dir + "/" + ss.str() + ext);
         LogInfoCustom("Inviwo", "Saving canvas to: " + path);
         cp->saveImageLayer(path);
         i++;

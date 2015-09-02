@@ -75,31 +75,50 @@ int main(int argc, char** argv) {
     else
 #ifdef REG_INVIWOBASEGLMODULE
         workspace =
-        inviwoApp.getPath(InviwoApplication::PATH_WORKSPACES, "boron.inv");
+        inviwoApp.getPath(InviwoApplication::PATH_WORKSPACES, "/boron.inv");
 #else
         workspace = "";
 #endif
 
-    if (!workspace.empty()) {
-        IvwDeserializer xmlDeserializer(workspace);
-        inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
-        std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
+    try
+    {
+        if (!workspace.empty()) {
+            IvwDeserializer xmlDeserializer(workspace);
+            inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
+            std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
 
-        for (auto processor : processors) {
-            processor->invalidate(INVALID_RESOURCES);
+            for (auto processor : processors) {
+                processor->invalidate(INVALID_RESOURCES);
 
-            if (auto processorWidget =
+                if (auto processorWidget =
                     ProcessorWidgetFactory::getPtr()->create(processor).release()) {
-                processorWidget->setProcessor(processor);
-                processorWidget->initialize();
-                processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
-                processor->setProcessorWidget(processorWidget);
+                    processorWidget->setProcessor(processor);
+                    processorWidget->initialize();
+                    processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());
+                    processor->setProcessorWidget(processorWidget);
 
-                if (!mainWin.centralWidget()) {
-                    mainWin.setCentralWidget(dynamic_cast<QWidget*>(processorWidget));
+                    if (!mainWin.centralWidget()) {
+                        mainWin.setCentralWidget(dynamic_cast<QWidget*>(processorWidget));
+                    }
                 }
             }
         }
+    }
+    catch (const AbortException& exception) {
+        util::log(exception.getContext(),
+            "Unable to load network " + workspace + " due to " + exception.getMessage(),
+            LogLevel::Error);
+        return 1;
+    }
+    catch (const IgnoreException& exception) {
+        util::log(exception.getContext(),
+            "Incomplete network loading " + workspace + " due to " + exception.getMessage(),
+            LogLevel::Error);
+        return 1;
+    }
+    catch (const ticpp::Exception& exception) {
+        LogErrorCustom("qtminimum", "Unable to load network " + workspace + " due to deserialization error: " + exception.what());
+        return 1;
     }
 
     inviwoApp.getProcessorNetwork()->setModified(true);

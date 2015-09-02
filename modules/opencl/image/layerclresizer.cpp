@@ -36,7 +36,7 @@ namespace inviwo {
 
 LayerCLResizer::LayerCLResizer() {
     try {
-        cl::Program program = OpenCL::buildProgram(InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES)+"opencl/cl/img_resize.cl");
+        cl::Program program = OpenCL::buildProgram(InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES)+"/opencl/cl/img_resize.cl");
         resizeKernel_ = cl::Kernel(program, "resizeLayer");
     } catch (cl::Error&) {
     }

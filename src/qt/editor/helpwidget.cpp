@@ -81,7 +81,7 @@ HelpWidget::HelpWidget(QWidget* parent)
     vLayout->setContentsMargins(0, 0, 0, 0);
 
     std::string helpfile =
-        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_HELP, "inviwo.qhc");
+        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_HELP, "/inviwo.qhc");
 
     helpEngine_ = new QHelpEngineCore(QString::fromStdString(helpfile), this);
 
