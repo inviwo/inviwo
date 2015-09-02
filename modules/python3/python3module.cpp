@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-Python3Module::Python3Module() : InviwoModule() {
+Python3Module::Python3Module() : InviwoModule() , pyInviwo_(nullptr){
     setIdentifier("Python3");
     PythonExecutionOutputObservable::init();
 }
