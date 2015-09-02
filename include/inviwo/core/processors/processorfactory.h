@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/singleton.h>
 
