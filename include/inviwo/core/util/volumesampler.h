@@ -32,6 +32,12 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/indexcalculator.h>
+
+
+#include <inviwo/core/util/interpolation.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {
 
@@ -57,6 +63,43 @@ public:
 private:
     const VolumeRAM *vol_;
     size3_t dims_;
+};
+
+
+template<typename T>
+class IVW_CORE_API TemplateVolumeSampler {
+public:
+    TemplateVolumeSampler(const VolumeRAM *ram) : data_(static_cast<T*>(ram->getData())), dims_(ram->getDimensions()) , ic_(dims_) {
+    }
+
+    TemplateVolumeSampler(const Volume *vol)
+        : TemplateVolumeSampler(vol->getRepresentation<VolumeRAM>()) {}
+
+    virtual ~TemplateVolumeSampler();
+
+    T sample(const vec3 &pos) const { return sample(dvec3(pos)); }
+    T sample(const dvec3 &pos) const {
+        dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
+        size3_t indexPos = size3_t(samplePos);
+        dvec3 interpolants = samplePos - dvec3(indexPos);
+
+        T samples[8];
+        T[0] = data_[ic_.index(indexPos)];
+        T[1] = data_[ic_.index(indexPos + size3_t(1, 0, 0))];
+        T[2] = data_[ic_.index(indexPos + size3_t(0, 1, 0))];
+        T[3] = data_[ic_.index(indexPos + size3_t(1, 1, 0))];
+        T[4] = data_[ic_.index(indexPos + size3_t(0, 0, 1))];
+        T[5] = data_[ic_.index(indexPos + size3_t(1, 0, 1))];
+        T[6] = data_[ic_.index(indexPos + size3_t(0, 1, 1))];
+        T[7] = data_[ic_.index(indexPos + size3_t(1, 1, 1))];
+
+        return Interpolation::trilinear(samples, interpolants);
+    }
+
+private:
+    const T *data_;
+    size3_t dims_;
+    IndexCalculator ic_;
 };
 
 }  // namespace

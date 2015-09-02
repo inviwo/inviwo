@@ -31,10 +31,6 @@
 
 #include <inviwo/core/util/interpolation.h>
 
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-#include <inviwo/core/datastructures/image/image.h>
-
 namespace inviwo {
 
 ImageSampler::ImageSampler(const LayerRAM *ram) : layer_(ram), dims_(layer_->getDimensions()) {}
@@ -47,7 +43,7 @@ ImageSampler::ImageSampler(const Image *img) : ImageSampler(img->getColorLayer()
 ImageSampler::~ImageSampler() {}
 
 inviwo::dvec4 ImageSampler::sample(const dvec2 &pos) const {
-    dvec2 samplePos = pos * dvec2(dims_);
+    dvec2 samplePos = pos * dvec2(dims_-size2_t(1));
     size2_t indexPos = size2_t(samplePos);
     dvec2 interpolants = samplePos - dvec2(indexPos);
 

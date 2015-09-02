@@ -29,10 +29,6 @@
 
 #include <inviwo/core/util/volumesampler.h>
 
-#include <inviwo/core/util/interpolation.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-
 namespace inviwo {
 
 VolumeSampler::VolumeSampler(const VolumeRAM *ram) : vol_(ram), dims_(ram->getDimensions()) {}
@@ -43,7 +39,7 @@ VolumeSampler::VolumeSampler(const Volume *vol)
 VolumeSampler::~VolumeSampler() {}
 
 inviwo::dvec4 VolumeSampler::sample(const dvec3 &pos) const {
-    dvec3 samplePos = pos * dvec3(dims_);
+    dvec3 samplePos = pos * dvec3(dims_-size3_t(1));
     size3_t indexPos = size3_t(samplePos);
     dvec3 interpolants = samplePos - dvec3(indexPos);
 
