@@ -37,23 +37,36 @@ namespace inviwo {
 
 IvwDeserializer::IvwDeserializer(IvwDeserializer& s, bool allowReference)
     : IvwSerializeBase(s.getFileName(), allowReference) {
-    doc_.LoadFile();
-    rootElement_ = doc_.FirstChildElement();
-    storeReferences(rootElement_);
+    try {
+        doc_.LoadFile();
+        rootElement_ = doc_.FirstChildElement();
+        storeReferences(rootElement_);
+    } catch (TxException& e) {
+        throw AbortException(e.what(), IvwContext);
+    }
 }
 
 IvwDeserializer::IvwDeserializer(std::string fileName, bool allowReference)
     : IvwSerializeBase(fileName, allowReference) {
-    doc_.LoadFile();
-    rootElement_ = doc_.FirstChildElement();
-    storeReferences(rootElement_);
+    try {
+        doc_.LoadFile();
+        rootElement_ = doc_.FirstChildElement();
+        storeReferences(rootElement_);
+    } catch (TxException& e) {
+        throw AbortException(e.what(), IvwContext);
+    }
 }
 
 IvwDeserializer::IvwDeserializer(std::istream& stream, const std::string& path, bool allowReference)
     : IvwSerializeBase(stream, path, allowReference) {
-    // Base streamed in the xml data. Get the first node.
-    rootElement_ = doc_.FirstChildElement();
-    storeReferences(rootElement_);
+    try {
+        // Base streamed in the xml data. Get the first node.
+        rootElement_ = doc_.FirstChildElement();
+        storeReferences(rootElement_);
+
+    } catch (TxException& e) {
+        throw AbortException(e.what(), IvwContext);
+    }
 }
 
 IvwDeserializer::~IvwDeserializer() {}

@@ -1097,17 +1097,17 @@ void NetworkEditor::placeProcessorOnProcessor(Processor* newProcessor, Processor
 
     std::map<Property*, Property*> propertymap;
 
-    for (auto& newProp : newProps) {
-        for (auto& oldProp : oldProps) {
-            if ((newProp)->getIdentifier() == (oldProp)->getIdentifier() &&
-                (newProp)->getClassIdentifier() == (oldProp)->getClassIdentifier()) {
-                (newProp)->set(oldProp);
-                propertymap[(oldProp)] = (newProp);
+    for (auto newProp : newProps) {
+        for (auto oldProp : oldProps) {
+            if (newProp->getIdentifier() == oldProp->getIdentifier() &&
+                newProp->getClassIdentifier() == oldProp->getClassIdentifier()) {
+                newProp->set(oldProp);
+                propertymap[oldProp] = newProp;
             }
         }
     }
 
-    // Move propertylinks to the new processor
+    // Move property links to the new processor
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
     std::vector<PropertyLink*> links = network->getLinks();
     std::map<Property*, Property*>::iterator match;
@@ -1233,10 +1233,6 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
             util::log(exception.getContext(),
                       "Incomplete network loading " + path + " due to " + exception.getMessage(),
                       LogLevel::Error);
-        } catch (const ticpp::Exception& exception) {
-            LogError("Unable to load network " + path + " due to deserialization error: " + exception.what());
-            clearNetwork();
-            return false;
         }
         InviwoApplication::getPtr()->getProcessorNetwork()->setModified(true);
         for (auto o : observers_) o->onNetworkEditorFileChanged(path);
