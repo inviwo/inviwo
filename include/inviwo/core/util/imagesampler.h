@@ -67,24 +67,18 @@ private:
     size2_t dims_;
 };
 
-
-template<typename T>
+template <typename T>
 class IVW_CORE_API TemplateImageSampler {
 public:
-    TemplateImageSampler(const LayerRAM *ram): 
-        vol_(ram), dims_(ram->getDimensions()) , ic_(dims_)
-    {
-
-    }
+    TemplateImageSampler(const LayerRAM *ram)
+        : data_(static_cast<T *>(ram->getData())), dims_(ram->getDimensions()), ic_(dims_) {}
     TemplateImageSampler(const Layer *layer)
         : TemplateImageSampler(layer->getRepresentation<LayerRAM>()) {}
 
     TemplateImageSampler(const Image *img) : TemplateImageSampler(img->getColorLayer()) {}
     virtual ~TemplateImageSampler();
 
-    T sample(const vec2 &pos) const {
-        return sample(dvec2(pos));
-    }
+    T sample(const vec2 &pos) const { return sample(dvec2(pos)); }
     T sample(const dvec2 &pos) const {
         dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
         size2_t indexPos = size2_t(samplePos);

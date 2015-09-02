@@ -65,12 +65,11 @@ private:
     size3_t dims_;
 };
 
-
-template<typename T>
+template <typename T>
 class IVW_CORE_API TemplateVolumeSampler {
 public:
-    TemplateVolumeSampler(const VolumeRAM *ram) : data_(static_cast<T*>(ram->getData())), dims_(ram->getDimensions()) , ic_(dims_) {
-    }
+    TemplateVolumeSampler(const VolumeRAM *ram)
+        : data_(static_cast<T*>(ram->getData())), dims_(ram->getDimensions()), ic_(dims_) {}
 
     TemplateVolumeSampler(const Volume *vol)
         : TemplateVolumeSampler(vol->getRepresentation<VolumeRAM>()) {}
@@ -84,14 +83,14 @@ public:
         dvec3 interpolants = samplePos - dvec3(indexPos);
 
         T samples[8];
-        T[0] = data_[ic_.index(indexPos)];
-        T[1] = data_[ic_.index(indexPos + size3_t(1, 0, 0))];
-        T[2] = data_[ic_.index(indexPos + size3_t(0, 1, 0))];
-        T[3] = data_[ic_.index(indexPos + size3_t(1, 1, 0))];
-        T[4] = data_[ic_.index(indexPos + size3_t(0, 0, 1))];
-        T[5] = data_[ic_.index(indexPos + size3_t(1, 0, 1))];
-        T[6] = data_[ic_.index(indexPos + size3_t(0, 1, 1))];
-        T[7] = data_[ic_.index(indexPos + size3_t(1, 1, 1))];
+        samples[0] = data_[ic_.index(indexPos)];
+        samples[1] = data_[ic_.index(indexPos + size3_t(1, 0, 0))];
+        samples[2] = data_[ic_.index(indexPos + size3_t(0, 1, 0))];
+        samples[3] = data_[ic_.index(indexPos + size3_t(1, 1, 0))];
+        samples[4] = data_[ic_.index(indexPos + size3_t(0, 0, 1))];
+        samples[5] = data_[ic_.index(indexPos + size3_t(1, 0, 1))];
+        samples[6] = data_[ic_.index(indexPos + size3_t(0, 1, 1))];
+        samples[7] = data_[ic_.index(indexPos + size3_t(1, 1, 1))];
 
         return Interpolation::trilinear(samples, interpolants);
     }
