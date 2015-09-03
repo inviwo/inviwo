@@ -105,10 +105,10 @@ public:
 
     void updateMax(size_t max);
 
-    IntProperty selectedSequenceIndex_;
-    BoolProperty playSequence_;
-    IntProperty volumesPerSecond_;
-    Timer sequenceTimer_;
+    IntProperty index_;
+    BoolProperty play_;
+    IntProperty framesPerSecond_;
+    Timer timer_;
 
 private:
     void onTimerEvent();

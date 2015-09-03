@@ -42,7 +42,7 @@ namespace inviwo {
  *  The following tags are supported:
  *   - Rawfile :: The name of the raw data file, should be in the same directory (Mandatory).
  *   - ByteOrder :: the byte order in the raw data file. (Optional, LittleEndian|BigEndian,
- *     defualt: LittleEndian).
+ *     default: LittleEndian).
  *   - Resolution | Dimension ::The size of the data grid: nx,ny,nz (Mandatory).
  *   - Format :: The type of values in the raw file. (Mandatory)
  *   - Spacing | SliceThickness :: The size of the voxels in the data. (Optional)
@@ -53,16 +53,19 @@ namespace inviwo {
  *     the data in world space. (Optional, default: IdentityMatrix)
  *
  *  The tag names are case insensitive and should always be followed by a ":"
+ *  Anything after a '#' will be considered a comment.
  */
-class IVW_CORE_API DatVolumeReader : public DataReaderType<Volume> {
+class IVW_CORE_API DatVolumeReader : public DataReaderType<std::vector<std::unique_ptr<Volume>>> {
 public:
+    using VolumeVector = std::vector<std::unique_ptr<Volume>>;
+
     DatVolumeReader();
     DatVolumeReader(const DatVolumeReader& rhs);
     DatVolumeReader& operator=(const DatVolumeReader& that);
     virtual DatVolumeReader* clone() const;
     virtual ~DatVolumeReader() {}
 
-    virtual Volume* readMetaData(const std::string filePath);
+    virtual VolumeVector* readMetaData(const std::string filePath);
     virtual void* readData() const;
     virtual void readDataInto(void* dest) const;
 

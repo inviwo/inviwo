@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "volumesource.h"
@@ -42,7 +42,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(VolumeSource, "org.inviwo.VolumeSource");
-ProcessorDisplayName(VolumeSource,  "Volume Source");
+ProcessorDisplayName(VolumeSource, "Volume Source");
 ProcessorTags(VolumeSource, Tags::CPU);
 ProcessorCategory(VolumeSource, "Data Input");
 ProcessorCodeState(VolumeSource, CODE_STATE_STABLE);
@@ -56,14 +56,13 @@ VolumeSource::VolumeSource()
     , information_("Information", "Data information")
     , volumeSequence_("Sequence", "Sequence")
     , isDeserializing_(false) {
-
     file_.setContentType("volume");
     file_.setDisplayName("Volume file");
 
     file_.onChange([this]() { load(); });
     reload_.onChange([this]() { load(); });
 
-    volumeSequence_.setVisible(false);
+    volumeSequence_.setVisible(true);
 
     addFileNameFilters();
 
@@ -111,16 +110,16 @@ void VolumeSource::load(bool deserialize) {
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
         basis_.updateForNewVolume(*(*volumes_)[0], deserialize);
         information_.updateForNewVolume(*(*volumes_)[0], deserialize);
-        
+
         volumeSequence_.updateMax(volumes_->size());
         volumeSequence_.setVisible(volumes_->size() > 1);
-        invalidate(INVALID_OUTPUT);
     }
 }
 
 void VolumeSource::addFileNameFilters() {
     auto rf = DataReaderFactory::getPtr();
     auto extensions = rf->getExtensionsForType<Volume>();
+    file_.clearNameFilters();
     for (auto& ext : extensions) {
         file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
     }
@@ -132,10 +131,11 @@ void VolumeSource::addFileNameFilters() {
 
 void VolumeSource::process() {
     if (!isDeserializing_ && volumes_ && !volumes_->empty()) {
-        size_t index = std::min(volumes_->size()-1, static_cast<size_t>(volumeSequence_.selectedSequenceIndex_.get()));
-        
+        size_t index =
+            std::min(volumes_->size() - 1, static_cast<size_t>(volumeSequence_.index_.get()-1));
+
         if (!(*volumes_)[index]) return;
-        
+
         basis_.updateVolume(*(*volumes_)[index]);
         information_.updateVolume(*(*volumes_)[index]);
 
@@ -143,9 +143,7 @@ void VolumeSource::process() {
     }
 }
 
-void VolumeSource::serialize(IvwSerializer& s) const {
-    Processor::serialize(s);
-}
+void VolumeSource::serialize(IvwSerializer& s) const { Processor::serialize(s); }
 
 void VolumeSource::deserialize(IvwDeserializer& d) {
     {
@@ -171,7 +169,6 @@ VolumeBasisProperty::VolumeBasisProperty(std::string identifier, std::string dis
     , overrideB_("overrideB", "B", vec3(0.0f, 1.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
     , overrideC_("overrideC", "C", vec3(0.0f, 0.0f, 1.0f), vec3(-10.0f), vec3(10.0f))
     , overrideOffset_("overrideOffset", "Offset", vec3(0.0f), vec3(-10.0f), vec3(10.0f)) {
-
     a_.setReadOnly(true);
     a_.setSerializationMode(PropertySerializationMode::NONE);
     b_.setReadOnly(true);
@@ -199,8 +196,8 @@ VolumeBasisProperty::VolumeBasisProperty(std::string identifier, std::string dis
     addProperty(overrideB_);
     addProperty(overrideC_);
     addProperty(overrideOffset_);
-    
-    overRideDefaults_.onChange([this](){onOverrideChange();});
+
+    overRideDefaults_.onChange([this]() { onOverrideChange(); });
 }
 
 VolumeBasisProperty::VolumeBasisProperty(const VolumeBasisProperty& rhs)
@@ -214,7 +211,6 @@ VolumeBasisProperty::VolumeBasisProperty(const VolumeBasisProperty& rhs)
     , overrideB_(rhs.overrideB_)
     , overrideC_(rhs.overrideC_)
     , overrideOffset_(rhs.overrideOffset_) {
-
     addProperty(overRideDefaults_);
     addProperty(a_);
     addProperty(b_);
@@ -225,7 +221,7 @@ VolumeBasisProperty::VolumeBasisProperty(const VolumeBasisProperty& rhs)
     addProperty(overrideC_);
     addProperty(overrideOffset_);
 
-    overRideDefaults_.onChange([this]() {onOverrideChange();});
+    overRideDefaults_.onChange([this]() { onOverrideChange(); });
 }
 
 void VolumeBasisProperty::updateForNewVolume(const Volume& volume, bool deserialize) {
@@ -238,7 +234,6 @@ void VolumeBasisProperty::updateForNewVolume(const Volume& volume, bool deserial
     b_.setCurrentStateAsDefault();
     c_.setCurrentStateAsDefault();
     offset_.setCurrentStateAsDefault();
-
 
     if (deserialize) {
         Property::setStateAsDefault(overrideA_, volume.getBasis()[0]);
@@ -325,8 +320,6 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
     , valueRange_("valueRange", "Value range", 0., 255.0, -DataFLOAT64::max(), DataFLOAT64::max(),
                   0.0, 0.0, INVALID_OUTPUT, PropertySemantics("Text"))
     , valueUnit_("valueUnit", "Value unit", "arb. unit.") {
-
-
     dimensions_.setReadOnly(true);
     format_.setReadOnly(true);
     dimensions_.setSerializationMode(PropertySerializationMode::NONE);
@@ -343,7 +336,6 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
     addProperty(dataRange_);
     addProperty(valueRange_);
     addProperty(valueUnit_);
-
 }
 
 VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProperty& rhs)
@@ -353,7 +345,6 @@ VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProp
     , dataRange_(rhs.dataRange_)
     , valueRange_(rhs.valueRange_)
     , valueUnit_(rhs.valueUnit_) {
-
     addProperty(dimensions_);
     addProperty(format_);
     addProperty(dataRange_);
@@ -384,7 +375,8 @@ void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool de
     }
 }
 
-VolumeInformationProperty& VolumeInformationProperty::operator=(const VolumeInformationProperty& that) {
+VolumeInformationProperty& VolumeInformationProperty::operator=(
+    const VolumeInformationProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
         dimensions_ = that.dimensions_;
@@ -397,8 +389,7 @@ VolumeInformationProperty& VolumeInformationProperty::operator=(const VolumeInfo
 }
 
 void inviwo::VolumeInformationProperty::updateVolume(Volume& volume) {
-    if (volume.dataMap_.dataRange != dataRange_.get() &&
-        volume.hasRepresentation<VolumeRAM>()) {
+    if (volume.dataMap_.dataRange != dataRange_.get() && volume.hasRepresentation<VolumeRAM>()) {
         auto volumeRAM = volume.getEditableRepresentation<VolumeRAM>();
         if (volumeRAM->hasHistograms()) {
             volumeRAM->getHistograms()->setValid(false);
@@ -414,69 +405,62 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
                                              InvalidationLevel invalidationLevel,
                                              PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , selectedSequenceIndex_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1, VALID)
-    , playSequence_("playSequence", "Play Sequence", false)
-    , volumesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, VALID)
-    , sequenceTimer_(1000 / volumesPerSecond_.get(), [this]() { onTimerEvent(); }) {
+    , index_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1)
+    , play_("playSequence", "Play Sequence", false)
+    , framesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, VALID)
+    , timer_(1000 / framesPerSecond_.get(), [this]() { onTimerEvent(); }) {
+    play_.onChange(this, &SequenceTimerProperty::onPlaySequenceToggled);
 
-    playSequence_.onChange(this, &SequenceTimerProperty::onPlaySequenceToggled);
-
-    volumesPerSecond_.onChange(
-        [this]() { sequenceTimer_.setInterval(1000 / volumesPerSecond_.get()); });
-    selectedSequenceIndex_.setSerializationMode(PropertySerializationMode::ALL);
-    addProperty(selectedSequenceIndex_);
-    addProperty(playSequence_);
-    addProperty(volumesPerSecond_);
+    framesPerSecond_.onChange([this]() { timer_.setInterval(1000 / framesPerSecond_.get()); });
+    index_.setSerializationMode(PropertySerializationMode::ALL);
+    addProperty(index_);
+    addProperty(play_);
+    addProperty(framesPerSecond_);
 }
 
-SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs) 
+SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs)
     : CompositeProperty(rhs)
-    , selectedSequenceIndex_(rhs.selectedSequenceIndex_)
-    , playSequence_(rhs.playSequence_)
-    , volumesPerSecond_(rhs.volumesPerSecond_)
-    , sequenceTimer_(1000 / volumesPerSecond_.get(), [this]() { onTimerEvent(); }) {
-
-
-    volumesPerSecond_.onChange(
-        [this]() { sequenceTimer_.setInterval(1000 / volumesPerSecond_.get()); });
-    selectedSequenceIndex_.setSerializationMode(PropertySerializationMode::ALL);
-    addProperty(selectedSequenceIndex_);
-    addProperty(playSequence_);
-    addProperty(volumesPerSecond_);
-
+    , index_(rhs.index_)
+    , play_(rhs.play_)
+    , framesPerSecond_(rhs.framesPerSecond_)
+    , timer_(1000 / framesPerSecond_.get(), [this]() { onTimerEvent(); }) {
+    framesPerSecond_.onChange([this]() { timer_.setInterval(1000 / framesPerSecond_.get()); });
+    index_.setSerializationMode(PropertySerializationMode::ALL);
+    addProperty(index_);
+    addProperty(play_);
+    addProperty(framesPerSecond_);
 }
+
 SequenceTimerProperty& SequenceTimerProperty::operator=(const SequenceTimerProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
-        selectedSequenceIndex_ = that.selectedSequenceIndex_;
-        playSequence_ = that.playSequence_;
-        volumesPerSecond_ = that.volumesPerSecond_;    
+        index_ = that.index_;
+        play_ = that.play_;
+        framesPerSecond_ = that.framesPerSecond_;
     }
     return *this;
 }
 
 void SequenceTimerProperty::updateMax(size_t max) {
-    selectedSequenceIndex_.setMaxValue(static_cast<int>(max));
-    selectedSequenceIndex_.set(1);
-    selectedSequenceIndex_.setCurrentStateAsDefault();
+    index_.setMaxValue(static_cast<int>(max));
+    index_.set(1);
+    index_.setCurrentStateAsDefault();
 }
 
 void inviwo::SequenceTimerProperty::onTimerEvent() {
-    selectedSequenceIndex_ =
-        (selectedSequenceIndex_ < selectedSequenceIndex_.getMaxValue() ? selectedSequenceIndex_ + 1
-                                                                       : 1);
+    index_ = (index_ < index_.getMaxValue() ? index_ + 1 : 1);
 }
 
 void inviwo::SequenceTimerProperty::onPlaySequenceToggled() {
-    if (selectedSequenceIndex_.getMaxValue() > 1) {
-        if (playSequence_.get()) {
-            sequenceTimer_.start(1000 / volumesPerSecond_.get());
-            selectedSequenceIndex_.setReadOnly(true);
-            volumesPerSecond_.setReadOnly(false);
+    if (index_.getMaxValue() > 1) {
+        if (play_.get()) {
+            timer_.start(1000 / framesPerSecond_.get());
+            index_.setReadOnly(true);
+            framesPerSecond_.setReadOnly(false);
         } else {
-            sequenceTimer_.stop();
-            selectedSequenceIndex_.setReadOnly(false);
-            volumesPerSecond_.setReadOnly(true);
+            timer_.stop();
+            index_.setReadOnly(false);
+            framesPerSecond_.setReadOnly(true);
         }
     }
 }
