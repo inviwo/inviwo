@@ -31,12 +31,12 @@
 #include <inviwo/core/resources/resourcemanager.h>
 #include <inviwo/core/resources/templateresource.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/rawvolumereader.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <glm/gtx/vector_angle.hpp>
 #include <math.h>
 
 namespace inviwo {
@@ -48,15 +48,119 @@ ProcessorCategory(VolumeSource, "Data Input");
 ProcessorCodeState(VolumeSource, CODE_STATE_STABLE);
 
 VolumeSource::VolumeSource()
-    : DataSource<Volume, VolumeOutport>()
+    : Processor()
+    , outport_("data")
+    , file_("filename", "File")
+    , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
     , volumeSequence_("Sequence", "Sequence")
-    , dataRange_("dataRange", "Data range", 0., 255.0, -DataFLOAT64::max(), DataFLOAT64::max(), 0.0,
-                 0.0, INVALID_OUTPUT, PropertySemantics("Text"))
-    , valueRange_("valueRange", "Value range", 0., 255.0, -DataFLOAT64::max(), DataFLOAT64::max(),
-                  0.0, 0.0, INVALID_OUTPUT, PropertySemantics("Text"))
-    , valueUnit_("valueUnit", "Value unit", "arb. unit.")
+    , isDeserializing_(false) {
+
+    file_.setContentType("volume");
+    file_.setDisplayName("Volume file");
+
+    file_.onChange([this]() { load(); });
+    reload_.onChange([this]() { load(); });
+
+    volumeSequence_.setVisible(false);
+
+    addFileNameFilters();
+
+    addPort(outport_);
+
+    addProperty(file_);
+    addProperty(reload_);
+    addProperty(information_);
+    addProperty(basis_);
+    addProperty(volumeSequence_);
+}
+
+VolumeSource::~VolumeSource() {}
+
+void VolumeSource::load(bool deserialize) {
+    if (isDeserializing_ || file_.get().empty()) return;
+
+    auto rf = DataReaderFactory::getPtr();
+
+    std::unique_ptr<VolumeVector> volumes;
+
+    std::string ext = filesystem::getFileExtension(file_.get());
+    if (auto reader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
+        try {
+            volumes.reset(reader->readMetaData(file_.get()));
+
+            std::swap(volumes, volumes_);
+        } catch (DataReaderException const& e) {
+            LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
+        }
+    } else if (auto reader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
+        try {
+            std::unique_ptr<Volume> volume(reader->readMetaData(file_.get()));
+            volumes = util::make_unique<VolumeVector>();
+            volumes->push_back(std::move(volume));
+
+            std::swap(volumes, volumes_);
+        } catch (DataReaderException const& e) {
+            LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
+        }
+    } else {
+        LogProcessorError("Could not find a data reader for file: " << file_.get());
+    }
+
+    if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
+        basis_.updateForNewVolume(*(*volumes_)[0], deserialize);
+        information_.updateForNewVolume(*(*volumes_)[0], deserialize);
+        
+        volumeSequence_.updateMax(volumes_->size());
+        volumeSequence_.setVisible(volumes_->size() > 1);
+        invalidate(INVALID_OUTPUT);
+    }
+}
+
+void VolumeSource::addFileNameFilters() {
+    auto rf = DataReaderFactory::getPtr();
+    auto extensions = rf->getExtensionsForType<Volume>();
+    for (auto& ext : extensions) {
+        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
+    }
+    extensions = rf->getExtensionsForType<VolumeVector>();
+    for (auto& ext : extensions) {
+        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
+    }
+}
+
+void VolumeSource::process() {
+    if (!isDeserializing_ && volumes_ && !volumes_->empty()) {
+        size_t index = std::min(volumes_->size()-1, static_cast<size_t>(volumeSequence_.selectedSequenceIndex_.get()));
+        
+        if (!(*volumes_)[index]) return;
+        
+        basis_.updateVolume(*(*volumes_)[index]);
+        information_.updateVolume(*(*volumes_)[index]);
+
+        outport_.setData((*volumes_)[index].get(), false);
+    }
+}
+
+void VolumeSource::serialize(IvwSerializer& s) const {
+    Processor::serialize(s);
+}
+
+void VolumeSource::deserialize(IvwDeserializer& d) {
+    {
+        isDeserializing_ = true;
+        Processor::deserialize(d);
+        addFileNameFilters();
+        isDeserializing_ = false;
+    }
+    load(true);
+}
+
+VolumeBasisProperty::VolumeBasisProperty(std::string identifier, std::string displayName,
+                                         InvalidationLevel invalidationLevel,
+                                         PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , overRideDefaults_("override", "Override", false)
     , a_("a", "A", vec3(1.0f, 0.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
     , b_("b", "B", vec3(0.0f, 1.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
@@ -66,44 +170,17 @@ VolumeSource::VolumeSource()
     , overrideA_("overrideA", "A", vec3(1.0f, 0.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
     , overrideB_("overrideB", "B", vec3(0.0f, 1.0f, 0.0f), vec3(-10.0f), vec3(10.0f))
     , overrideC_("overrideC", "C", vec3(0.0f, 0.0f, 1.0f), vec3(-10.0f), vec3(10.0f))
-    , overrideOffset_("overrideOffset", "Offset", vec3(0.0f), vec3(-10.0f), vec3(10.0f))
-
-    , dimensions_("dimensions", "Dimensions")
-    , format_("format", "Format", "")
-
-    , selectedSequenceIndex_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1, VALID)
-    , playSequence_("playSequence", "Play Sequence", false)
-    , volumesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, VALID)
-
-    , sequenceTimer_(1000 / volumesPerSecond_.get(), [this](){onSequenceTimerEvent();}) {
-
-    DataSource<Volume, VolumeOutport>::file_.setContentType("volume");
-    DataSource<Volume, VolumeOutport>::file_.setDisplayName("Volume file");
-
-    dimensions_.setReadOnly(true);
-    format_.setReadOnly(true);
-    dimensions_.setCurrentStateAsDefault();
-    format_.setCurrentStateAsDefault();
-    dataRange_.setSerializationMode(PropertySerializationMode::ALL);
-    valueRange_.setSerializationMode(PropertySerializationMode::ALL);
-    valueUnit_.setSerializationMode(PropertySerializationMode::ALL);
-    
-    information_.addProperty(dimensions_);
-    information_.addProperty(format_);
-    information_.addProperty(dataRange_);
-    information_.addProperty(valueRange_);
-    information_.addProperty(valueUnit_);
-    addProperty(information_);
+    , overrideOffset_("overrideOffset", "Offset", vec3(0.0f), vec3(-10.0f), vec3(10.0f)) {
 
     a_.setReadOnly(true);
-    a_.setSerializationMode(PropertySerializationMode::ALL);
+    a_.setSerializationMode(PropertySerializationMode::NONE);
     b_.setReadOnly(true);
-    b_.setSerializationMode(PropertySerializationMode::ALL);
+    b_.setSerializationMode(PropertySerializationMode::NONE);
     c_.setReadOnly(true);
-    c_.setSerializationMode(PropertySerializationMode::ALL);
+    c_.setSerializationMode(PropertySerializationMode::NONE);
     offset_.setReadOnly(true);
-    offset_.setSerializationMode(PropertySerializationMode::ALL);
-    
+    offset_.setSerializationMode(PropertySerializationMode::NONE);
+
     overrideA_.setSerializationMode(PropertySerializationMode::ALL);
     overrideA_.setVisible(false);
     overrideB_.setSerializationMode(PropertySerializationMode::ALL);
@@ -112,38 +189,75 @@ VolumeSource::VolumeSource()
     overrideC_.setVisible(false);
     overrideOffset_.setSerializationMode(PropertySerializationMode::ALL);
     overrideOffset_.setVisible(false);
+
+    addProperty(overRideDefaults_);
+    addProperty(a_);
+    addProperty(b_);
+    addProperty(c_);
+    addProperty(offset_);
+    addProperty(overrideA_);
+    addProperty(overrideB_);
+    addProperty(overrideC_);
+    addProperty(overrideOffset_);
     
-    overRideDefaults_.onChange(this, &VolumeSource::onOverrideChange);
-    basis_.addProperty(overRideDefaults_);
-    basis_.addProperty(a_);
-    basis_.addProperty(b_);
-    basis_.addProperty(c_);
-    basis_.addProperty(offset_);
-    basis_.addProperty(overrideA_);
-    basis_.addProperty(overrideB_);
-    basis_.addProperty(overrideC_);
-    basis_.addProperty(overrideOffset_);
-    addProperty(basis_);
-        
-    playSequence_.onChange(this, &VolumeSource::onPlaySequenceToggled);
-    selectedSequenceIndex_.onChange(this, &VolumeSource::onSequenceIndexChanged);
-
-    volumesPerSecond_.onChange(
-        [this]() { sequenceTimer_.setInterval(1000 / volumesPerSecond_.get()); });
-
-    selectedSequenceIndex_.setSerializationMode(PropertySerializationMode::ALL);
-    volumeSequence_.addProperty(selectedSequenceIndex_);
-    volumeSequence_.addProperty(playSequence_);
-    volumeSequence_.addProperty(volumesPerSecond_);
-    volumeSequence_.setVisible(false);
-    addProperty(volumeSequence_);
+    overRideDefaults_.onChange([this](){onOverrideChange();});
 }
 
-VolumeSource::~VolumeSource() {}
+VolumeBasisProperty::VolumeBasisProperty(const VolumeBasisProperty& rhs)
+    : CompositeProperty(rhs)
+    , overRideDefaults_(rhs.overRideDefaults_)
+    , a_(rhs.a_)
+    , b_(rhs.b_)
+    , c_(rhs.c_)
+    , offset_(rhs.offset_)
+    , overrideA_(rhs.overrideB_)
+    , overrideB_(rhs.overrideB_)
+    , overrideC_(rhs.overrideC_)
+    , overrideOffset_(rhs.overrideOffset_) {
 
-void VolumeSource::onOverrideChange() {
-    if (this->isDeserializing()) return;
-    
+    addProperty(overRideDefaults_);
+    addProperty(a_);
+    addProperty(b_);
+    addProperty(c_);
+    addProperty(offset_);
+    addProperty(overrideA_);
+    addProperty(overrideB_);
+    addProperty(overrideC_);
+    addProperty(overrideOffset_);
+
+    overRideDefaults_.onChange([this]() {onOverrideChange();});
+}
+
+void VolumeBasisProperty::updateForNewVolume(const Volume& volume, bool deserialize) {
+    // Set basis properties to the values from the new volume
+    a_.set(volume.getBasis()[0]);
+    b_.set(volume.getBasis()[1]);
+    c_.set(volume.getBasis()[2]);
+    offset_.set(volume.getOffset());
+    a_.setCurrentStateAsDefault();
+    b_.setCurrentStateAsDefault();
+    c_.setCurrentStateAsDefault();
+    offset_.setCurrentStateAsDefault();
+
+
+    if (deserialize) {
+        Property::setStateAsDefault(overrideA_, volume.getBasis()[0]);
+        Property::setStateAsDefault(overrideB_, volume.getBasis()[1]);
+        Property::setStateAsDefault(overrideC_, volume.getBasis()[2]);
+        Property::setStateAsDefault(overrideOffset_, volume.getOffset());
+    } else {
+        overrideA_.set(volume.getBasis()[0]);
+        overrideB_.set(volume.getBasis()[1]);
+        overrideC_.set(volume.getBasis()[2]);
+        overrideOffset_.set(volume.getOffset());
+        overrideA_.setCurrentStateAsDefault();
+        overrideB_.setCurrentStateAsDefault();
+        overrideC_.setCurrentStateAsDefault();
+        overrideOffset_.setCurrentStateAsDefault();
+    }
+}
+
+void VolumeBasisProperty::onOverrideChange() {
     if (overRideDefaults_) {
         a_.setVisible(false);
         b_.setVisible(false);
@@ -167,110 +281,194 @@ void VolumeSource::onOverrideChange() {
     }
 }
 
-void VolumeSource::dataDeserialized(Volume* volume) {
-    // We are de-serializing a workspace, so here we
-    // mainly need to make sure that the defaults are correct.
-    
-    NetworkLock lock;
-    
-    setStateAsDefault(dataRange_, volume->dataMap_.dataRange);
-    setStateAsDefault(valueRange_, volume->dataMap_.valueRange);
-    setStateAsDefault(valueUnit_, volume->dataMap_.valueUnit);
-    setStateAsDefault(a_, volume->getBasis()[0]);
-    setStateAsDefault(b_, volume->getBasis()[1]);
-    setStateAsDefault(c_, volume->getBasis()[2]);
-    setStateAsDefault(offset_, volume->getOffset());
-    
-    setStateAsDefault(overrideA_, volume->getBasis()[0]);
-    setStateAsDefault(overrideB_, volume->getBasis()[1]);
-    setStateAsDefault(overrideC_, volume->getBasis()[2]);
-    setStateAsDefault(overrideOffset_, volume->getOffset());
-    
-    std::stringstream ss;
-    ss << volume->getDimensions().x << " x "
-       << volume->getDimensions().y << " x "
-       << volume->getDimensions().z;
-
-    DataSequence<Volume>* volumeSequence = dynamic_cast<DataSequence<Volume>*>(volume);
-    if(volumeSequence){
-        ss << " x " << volumeSequence->getNumSequences();
-        volumeSequence_.setVisible(true);
-        selectedSequenceIndex_.setMaxValue(static_cast<int>(volumeSequence->getNumSequences()));
-        setStateAsDefault(selectedSequenceIndex_, 1);
-        onPlaySequenceToggled();
-    } else {
-        volumeSequence_.setVisible(false);
+VolumeBasisProperty& VolumeBasisProperty::operator=(const VolumeBasisProperty& that) {
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        overRideDefaults_ = that.overRideDefaults_;
+        a_ = that.a_;
+        b_ = that.b_;
+        c_ = that.c_;
+        offset_ = that.offset_;
+        overrideA_ = that.overrideB_;
+        overrideB_ = that.overrideB_;
+        overrideC_ = that.overrideC_;
+        overrideOffset_ = that.overrideOffset_;
     }
-    dimensions_.set(ss.str());
-    format_.set(volume->getDataFormat()->getString());
-    dimensions_.setCurrentStateAsDefault();
-    format_.setCurrentStateAsDefault();
-    
-    invalidateOutput();
+    return *this;
 }
 
-
-void VolumeSource::dataLoaded(Volume* volume) {
-    // Here we have loaded a new volume we need to make sure all
-    // properties have valid values and correct new defaults.
-
-    NetworkLock lock;
-    
-    // Set the data range from the volume
-    dataRange_.set(volume->dataMap_.dataRange);
-    valueRange_.set(volume->dataMap_.valueRange);
-    valueUnit_.set(volume->dataMap_.valueUnit);
-    dataRange_.setCurrentStateAsDefault();
-    valueRange_.setCurrentStateAsDefault();
-    valueUnit_.setCurrentStateAsDefault();
-    
-    // Set basis properties to the values from the new volume
-    a_.set(volume->getBasis()[0]);
-    b_.set(volume->getBasis()[1]);
-    c_.set(volume->getBasis()[2]);
-    offset_.set(volume->getOffset());
-    a_.setCurrentStateAsDefault();
-    b_.setCurrentStateAsDefault();
-    c_.setCurrentStateAsDefault();
-    offset_.setCurrentStateAsDefault();
-    
-    overrideA_.set(volume->getBasis()[0]);
-    overrideB_.set(volume->getBasis()[1]);
-    overrideC_.set(volume->getBasis()[2]);
-    overrideOffset_.set(volume->getOffset());
-    overrideA_.setCurrentStateAsDefault();
-    overrideB_.setCurrentStateAsDefault();
-    overrideC_.setCurrentStateAsDefault();
-    overrideOffset_.setCurrentStateAsDefault();
-    
-    // Display the format and dimensions, read only.
-    std::stringstream ss;
-    ss << volume->getDimensions().x << " x "
-       << volume->getDimensions().y << " x "
-       << volume->getDimensions().z;
-
-    DataSequence<Volume>* volumeSequence = dynamic_cast<DataSequence<Volume>*>(volume);
-    if(volumeSequence){
-        ss << " x " << volumeSequence->getNumSequences();
-        volumeSequence_.setVisible(true);
-        selectedSequenceIndex_.setMaxValue(static_cast<int>(volumeSequence->getNumSequences()));
-        selectedSequenceIndex_.set(1);
-        selectedSequenceIndex_.setCurrentStateAsDefault();
-        onPlaySequenceToggled();
+void inviwo::VolumeBasisProperty::updateVolume(Volume& volume) {
+    if (overRideDefaults_) {
+        vec4 offset = vec4(overrideOffset_.get(), 1.0f);
+        mat3 basis(overrideA_, overrideB_, overrideC_);
+        mat4 basisAndOffset(basis);
+        basisAndOffset[3] = offset;
+        volume.setModelMatrix(basisAndOffset);
     } else {
-        volumeSequence_.setVisible(false);
+        vec4 offset = vec4(offset_.get(), 1.0f);
+        mat3 basis(a_, b_, c_);
+        mat4 basisAndOffset(basis);
+        basisAndOffset[3] = offset;
+        volume.setModelMatrix(basisAndOffset);
     }
+}
 
-    dimensions_.set(ss.str());
-    format_.set(volume->getDataFormat()->getString());
+VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
+                                                     std::string displayName,
+                                                     InvalidationLevel invalidationLevel,
+                                                     PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    , dimensions_("dimensions", "Dimensions")
+    , format_("format", "Format", "")
+    , dataRange_("dataRange", "Data range", 0., 255.0, -DataFLOAT64::max(), DataFLOAT64::max(), 0.0,
+                 0.0, INVALID_OUTPUT, PropertySemantics("Text"))
+    , valueRange_("valueRange", "Value range", 0., 255.0, -DataFLOAT64::max(), DataFLOAT64::max(),
+                  0.0, 0.0, INVALID_OUTPUT, PropertySemantics("Text"))
+    , valueUnit_("valueUnit", "Value unit", "arb. unit.") {
+
+
+    dimensions_.setReadOnly(true);
+    format_.setReadOnly(true);
+    dimensions_.setSerializationMode(PropertySerializationMode::NONE);
+    format_.setSerializationMode(PropertySerializationMode::NONE);
     dimensions_.setCurrentStateAsDefault();
     format_.setCurrentStateAsDefault();
 
-    invalidateOutput();
+    dataRange_.setSerializationMode(PropertySerializationMode::ALL);
+    valueRange_.setSerializationMode(PropertySerializationMode::ALL);
+    valueUnit_.setSerializationMode(PropertySerializationMode::ALL);
+
+    addProperty(dimensions_);
+    addProperty(format_);
+    addProperty(dataRange_);
+    addProperty(valueRange_);
+    addProperty(valueUnit_);
+
 }
 
-void VolumeSource::onPlaySequenceToggled() {
-    if (port_.hasDataSequence()) {
+VolumeInformationProperty::VolumeInformationProperty(const VolumeInformationProperty& rhs)
+    : CompositeProperty(rhs)
+    , dimensions_(rhs.dimensions_)
+    , format_(rhs.format_)
+    , dataRange_(rhs.dataRange_)
+    , valueRange_(rhs.valueRange_)
+    , valueUnit_(rhs.valueUnit_) {
+
+    addProperty(dimensions_);
+    addProperty(format_);
+    addProperty(dataRange_);
+    addProperty(valueRange_);
+    addProperty(valueUnit_);
+}
+
+void VolumeInformationProperty::updateForNewVolume(const Volume& volume, bool deserialize) {
+    std::stringstream ss;
+    ss << volume.getDimensions().x << " x " << volume.getDimensions().y << " x "
+       << volume.getDimensions().z;
+
+    dimensions_.set(ss.str());
+    format_.set(volume.getDataFormat()->getString());
+    dimensions_.setCurrentStateAsDefault();
+    format_.setCurrentStateAsDefault();
+    if (deserialize) {
+        Property::setStateAsDefault(dataRange_, volume.dataMap_.dataRange);
+        Property::setStateAsDefault(valueRange_, volume.dataMap_.valueRange);
+        Property::setStateAsDefault(valueUnit_, volume.dataMap_.valueUnit);
+    } else {
+        dataRange_.set(volume.dataMap_.dataRange);
+        valueRange_.set(volume.dataMap_.valueRange);
+        valueUnit_.set(volume.dataMap_.valueUnit);
+        dataRange_.setCurrentStateAsDefault();
+        valueRange_.setCurrentStateAsDefault();
+        valueUnit_.setCurrentStateAsDefault();
+    }
+}
+
+VolumeInformationProperty& VolumeInformationProperty::operator=(const VolumeInformationProperty& that) {
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        dimensions_ = that.dimensions_;
+        format_ = that.format_;
+        dataRange_ = that.dataRange_;
+        valueRange_ = that.valueRange_;
+        valueUnit_ = that.valueUnit_;
+    }
+    return *this;
+}
+
+void inviwo::VolumeInformationProperty::updateVolume(Volume& volume) {
+    if (volume.dataMap_.dataRange != dataRange_.get() &&
+        volume.hasRepresentation<VolumeRAM>()) {
+        auto volumeRAM = volume.getEditableRepresentation<VolumeRAM>();
+        if (volumeRAM->hasHistograms()) {
+            volumeRAM->getHistograms()->setValid(false);
+        }
+    }
+
+    volume.dataMap_.dataRange = dataRange_.get();
+    volume.dataMap_.valueRange = valueRange_.get();
+    volume.dataMap_.valueUnit = valueUnit_.get();
+}
+
+SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string displayName,
+                                             InvalidationLevel invalidationLevel,
+                                             PropertySemantics semantics)
+    : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    , selectedSequenceIndex_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1, VALID)
+    , playSequence_("playSequence", "Play Sequence", false)
+    , volumesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, VALID)
+    , sequenceTimer_(1000 / volumesPerSecond_.get(), [this]() { onTimerEvent(); }) {
+
+    playSequence_.onChange(this, &SequenceTimerProperty::onPlaySequenceToggled);
+
+    volumesPerSecond_.onChange(
+        [this]() { sequenceTimer_.setInterval(1000 / volumesPerSecond_.get()); });
+    selectedSequenceIndex_.setSerializationMode(PropertySerializationMode::ALL);
+    addProperty(selectedSequenceIndex_);
+    addProperty(playSequence_);
+    addProperty(volumesPerSecond_);
+}
+
+SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs) 
+    : CompositeProperty(rhs)
+    , selectedSequenceIndex_(rhs.selectedSequenceIndex_)
+    , playSequence_(rhs.playSequence_)
+    , volumesPerSecond_(rhs.volumesPerSecond_)
+    , sequenceTimer_(1000 / volumesPerSecond_.get(), [this]() { onTimerEvent(); }) {
+
+
+    volumesPerSecond_.onChange(
+        [this]() { sequenceTimer_.setInterval(1000 / volumesPerSecond_.get()); });
+    selectedSequenceIndex_.setSerializationMode(PropertySerializationMode::ALL);
+    addProperty(selectedSequenceIndex_);
+    addProperty(playSequence_);
+    addProperty(volumesPerSecond_);
+
+}
+SequenceTimerProperty& SequenceTimerProperty::operator=(const SequenceTimerProperty& that) {
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        selectedSequenceIndex_ = that.selectedSequenceIndex_;
+        playSequence_ = that.playSequence_;
+        volumesPerSecond_ = that.volumesPerSecond_;    
+    }
+    return *this;
+}
+
+void SequenceTimerProperty::updateMax(size_t max) {
+    selectedSequenceIndex_.setMaxValue(static_cast<int>(max));
+    selectedSequenceIndex_.set(1);
+    selectedSequenceIndex_.setCurrentStateAsDefault();
+}
+
+void inviwo::SequenceTimerProperty::onTimerEvent() {
+    selectedSequenceIndex_ =
+        (selectedSequenceIndex_ < selectedSequenceIndex_.getMaxValue() ? selectedSequenceIndex_ + 1
+                                                                       : 1);
+}
+
+void inviwo::SequenceTimerProperty::onPlaySequenceToggled() {
+    if (selectedSequenceIndex_.getMaxValue() > 1) {
         if (playSequence_.get()) {
             sequenceTimer_.start(1000 / volumesPerSecond_.get());
             selectedSequenceIndex_.setReadOnly(true);
@@ -281,64 +479,6 @@ void VolumeSource::onPlaySequenceToggled() {
             volumesPerSecond_.setReadOnly(true);
         }
     }
-}
-
-void VolumeSource::onSequenceIndexChanged() {
-    if (port_.hasDataSequence()) {
-        DataSequence<Volume>* volumeSequence = static_cast<DataSequence<Volume>*>(loadedData_);
-        volumeSequence->setCurrentIndex(selectedSequenceIndex_.get() - 1);
-        invalidateOutput();
-    }
-}
-
-void VolumeSource::onSequenceTimerEvent() {
-    if (port_.hasDataSequence()) {
-        selectedSequenceIndex_ = (selectedSequenceIndex_ < selectedSequenceIndex_.getMaxValue()
-                                      ? selectedSequenceIndex_ + 1
-                                      : 1);
-    }
-}
-
-void VolumeSource::process() {
-    if (this->isDeserializing()) return;
-
-    if (loadedData_) {
-        if (overRideDefaults_) {
-            vec4 offset = vec4(overrideOffset_.get(), 1.0f);
-            mat3 basis(overrideA_, overrideB_, overrideC_);
-            mat4 basisAndOffset(basis);
-            basisAndOffset[3] = offset;
-            loadedData_->setModelMatrix(basisAndOffset);
-        } else {
-            vec4 offset = vec4(offset_.get(), 1.0f);
-            mat3 basis(a_, b_, c_);
-            mat4 basisAndOffset(basis);
-            basisAndOffset[3] = offset;
-            loadedData_->setModelMatrix(basisAndOffset);
-        }
-
-        if (loadedData_->dataMap_.dataRange != dataRange_.get() &&
-            loadedData_->hasRepresentation<VolumeRAM>()) {
-            VolumeRAM* volumeRAM = loadedData_->getEditableRepresentation<VolumeRAM>();
-            if (volumeRAM->hasHistograms()) {
-                volumeRAM->getHistograms()->setValid(false);
-            }
-        }
-
-        loadedData_->dataMap_.dataRange = dataRange_.get();
-        loadedData_->dataMap_.valueRange = valueRange_.get();
-        loadedData_->dataMap_.valueUnit = valueUnit_.get();
-    }
-}
-
-void VolumeSource::serialize(IvwSerializer& s) const {
-    DataSource<Volume, VolumeOutport>::serialize(s);
-}
-
-void VolumeSource::deserialize(IvwDeserializer& d) {
-    // This function will deseialize all properties, then call load(), which will call dataLoaded()
-    DataSource<Volume, VolumeOutport>::deserialize(d);
-    onOverrideChange();
 }
 
 }  // namespace

@@ -24,14 +24,13 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMESOURCE_H
 #define IVW_VOLUMESOURCE_H
 
 #include <modules/base/basemoduledefine.h>
-#include <modules/base/processors/datasource.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/progressbarowner.h>
@@ -45,83 +44,119 @@
 #include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
-    /** \docpage{org.inviwo.VolumeSource, Volume Source}
-     * ![](org.inviwo.VolumeSource.png?classIdentifier=org.inviwo.VolumeSource)
-     *
-     * Loads a Volume
-     * 
-     * ### Outports
-     *   * __Outport__ The loaded volume
-     * 
-     * ### Properties
-     *   * __File name__ File to load.
-     */
 
-class IVW_MODULE_BASE_API VolumeSource : public DataSource<Volume, VolumeOutport> {
+class VolumeBasisProperty : public CompositeProperty {
 public:
-    VolumeSource();
-    ~VolumeSource();
+    VolumeBasisProperty(std::string identifier, std::string displayName,
+                        InvalidationLevel invalidationLevel = INVALID_RESOURCES,
+                        PropertySemantics semantics = PropertySemantics::Default);
+    VolumeBasisProperty(const VolumeBasisProperty& rhs);
+    VolumeBasisProperty& operator=(const VolumeBasisProperty& that);
 
-    InviwoProcessorInfo();
+    void updateForNewVolume(const Volume& volume, bool deserialize = false);
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    void updateVolume(Volume& volume);
 
-protected:
-    virtual void dataLoaded(Volume* data);
-    virtual void dataDeserialized(Volume* data);
-    virtual void process();
-    
-    void onSequenceTimerEvent();
-    void onOverrideChange();
-    void onPlaySequenceToggled();
-    void onSequenceIndexChanged();
-
-private:
-
-    // T models TemplateProperty<U>
-    template<typename T, typename U>
-    void setStateAsDefault(T& property, const U& state);
-
-    CompositeProperty basis_;
-    CompositeProperty information_;
-    CompositeProperty volumeSequence_;
-
-    DoubleMinMaxProperty dataRange_;
-    DoubleMinMaxProperty valueRange_;
-    StringProperty valueUnit_;
     BoolProperty overRideDefaults_;
     FloatVec3Property a_;
     FloatVec3Property b_;
     FloatVec3Property c_;
     FloatVec3Property offset_;
-    
+
     FloatVec3Property overrideA_;
     FloatVec3Property overrideB_;
     FloatVec3Property overrideC_;
     FloatVec3Property overrideOffset_;
 
-    // Readonly only use to show information
+private:
+    void onOverrideChange();
+};
+
+class VolumeInformationProperty : public CompositeProperty {
+public:
+    VolumeInformationProperty(std::string identifier, std::string displayName,
+                              InvalidationLevel invalidationLevel = INVALID_RESOURCES,
+                              PropertySemantics semantics = PropertySemantics::Default);
+    VolumeInformationProperty(const VolumeInformationProperty& rhs);
+    VolumeInformationProperty& operator=(const VolumeInformationProperty& that);
+
+    
+    void updateForNewVolume(const Volume& volume, bool deserialize = false);
+    void updateVolume(Volume& volume);
+    
+    // Read only used to show information
     StringProperty dimensions_;
     StringProperty format_;
 
-    // Sequence properties
+    // read / write
+    DoubleMinMaxProperty dataRange_;
+    DoubleMinMaxProperty valueRange_;
+    StringProperty valueUnit_;
+
+};
+
+class SequenceTimerProperty : public CompositeProperty {
+public:
+    SequenceTimerProperty(std::string identifier, std::string displayName,
+                          InvalidationLevel invalidationLevel = INVALID_RESOURCES,
+                          PropertySemantics semantics = PropertySemantics::Default);
+    SequenceTimerProperty(const SequenceTimerProperty& rhs);
+    SequenceTimerProperty& operator=(const SequenceTimerProperty& that);
+
+    void updateMax(size_t max);
+
     IntProperty selectedSequenceIndex_;
     BoolProperty playSequence_;
     IntProperty volumesPerSecond_;
-
     Timer sequenceTimer_;
+
+private:
+    void onTimerEvent();
+    void onPlaySequenceToggled();
 };
 
-template<typename T, typename U>
-void VolumeSource::setStateAsDefault(T& property, const U& state) {
-    U tmp = property;
-    property = state;
-    property.setCurrentStateAsDefault();
-    property = tmp;
-}
+/** \docpage{org.inviwo.VolumeSource, Volume Source}
+ * ![](org.inviwo.VolumeSource.png?classIdentifier=org.inviwo.VolumeSource)
+ *
+ * Loads a Volume
+ *
+ * ### Outports
+ *   * __Outport__ The loaded volume
+ *
+ * ### Properties
+ *   * __File name__ File to load.
+ */
+class IVW_MODULE_BASE_API VolumeSource : public Processor {
+public:
+    using VolumeVector = std::vector<std::unique_ptr<Volume>>;
+    VolumeSource();
+    virtual ~VolumeSource();
+
+    InviwoProcessorInfo();
+
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
 
-} // namespace
+protected:
+    virtual void process() override;
 
-#endif // IVW_VOLUMESOURCE_H
+private:
+    void load(bool deserialize = false);
+    void addFileNameFilters();
+
+    std::unique_ptr<VolumeVector> volumes_;
+
+    VolumeOutport outport_;
+    FileProperty file_;
+    ButtonProperty reload_;
+
+    VolumeBasisProperty basis_;
+    VolumeInformationProperty information_;
+    SequenceTimerProperty volumeSequence_;
+    bool isDeserializing_;
+};
+
+}  // namespace
+
+#endif  // IVW_VOLUMESOURCE_H

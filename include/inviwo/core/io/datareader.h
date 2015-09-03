@@ -75,8 +75,8 @@ private:
     std::vector<FileExtension> extensions_;
 };
 
-/** \brief Template base class for file readers designating what type of data object the reader returns.
- *
+/** \brief Template base class for file readers designating what type of data 
+ * object the reader returns.
  */
 template <typename T>
 class DataReaderType : public DataReader {
