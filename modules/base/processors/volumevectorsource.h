@@ -31,44 +31,59 @@
 #define IVW_VOLUMEVECTORSOURCE_H
 
 #include <modules/base/basemoduledefine.h>
+#include <modules/base/properties/volumebasisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, VolumeVectorSource}
+/** \docpage{org.inviwo.VolumeVectorSource, Volume Vector Source}
+ * ![](org.inviwo.VolumeVectorSource.png?classIdentifier=org.inviwo.VolumeVectorSource)
  * Explanation of how to use the processor.
  *
- * ### Inports
- *   * __<Inport1>__ <description>.
+ * Loads a vector of volumes
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
- * 
+ *   * __Outport__ The loaded volumes
+ *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __File name__ File to load.
  */
 
 
 /**
  * \class VolumeVectorSource
- *
- * \brief <brief description> 
- *
- * <Detailed description from a developer prespective>
+ * \brief Loads a vector of volumes
  */
 class IVW_MODULE_BASE_API VolumeVectorSource : public Processor { 
 public:
+    using VolumeVector = std::vector<std::unique_ptr<Volume>>;
+
     InviwoProcessorInfo();
     VolumeVectorSource();
-    virtual ~VolumeVectorSource(){}
+    virtual ~VolumeVectorSource() = default;
      
-protected:
-    virtual void process();
+    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void process() override;
 
 private:
+    void load(bool deserialize = false);
+    void addFileNameFilters();
 
+    std::unique_ptr<VolumeVector> volumes_;
+
+    DataOutport<VolumeVector> outport_;
+    FileProperty file_;
+    ButtonProperty reload_;
+
+    VolumeBasisProperty basis_;
+    VolumeInformationProperty information_;
+
+    bool isDeserializing_;
 };
 
 } // namespace

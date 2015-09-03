@@ -36,14 +36,9 @@
 #include <modules/base/properties/sequencetimerproperty.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 
@@ -61,12 +56,10 @@ namespace inviwo {
 class IVW_MODULE_BASE_API VolumeSource : public Processor {
 public:
     using VolumeVector = std::vector<std::unique_ptr<Volume>>;
-    VolumeSource();
-    virtual ~VolumeSource();
-
     InviwoProcessorInfo();
+    VolumeSource();
+    virtual ~VolumeSource() = default;
 
-    virtual void serialize(IvwSerializer& s) const override;
     virtual void deserialize(IvwDeserializer& d) override;
     virtual void process() override;
 

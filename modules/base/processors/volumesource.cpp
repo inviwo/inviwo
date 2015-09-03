@@ -75,8 +75,6 @@ VolumeSource::VolumeSource()
     addProperty(volumeSequence_);
 }
 
-VolumeSource::~VolumeSource() {}
-
 void VolumeSource::load(bool deserialize) {
     if (isDeserializing_ || file_.get().empty()) return;
 
@@ -142,8 +140,6 @@ void VolumeSource::process() {
         outport_.setData((*volumes_)[index].get(), false);
     }
 }
-
-void VolumeSource::serialize(IvwSerializer& s) const { Processor::serialize(s); }
 
 void VolumeSource::deserialize(IvwDeserializer& d) {
     {
