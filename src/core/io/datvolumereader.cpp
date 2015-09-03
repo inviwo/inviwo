@@ -28,7 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/datvolumereader.h>
-#include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/filesystem.h>
