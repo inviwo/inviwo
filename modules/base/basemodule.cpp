@@ -50,6 +50,11 @@
 #include <modules/base/processors/volumeslice.h>
 #include <modules/base/processors/volumesubsample.h>
 #include <modules/base/processors/volumesubset.h>
+#include <modules/base/processors/volumevectorsource.h>
+
+#include <modules/base/properties/volumebasisproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
+#include <modules/base/properties/sequencetimerproperty.h>
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
@@ -89,6 +94,12 @@ BaseModule::BaseModule() : InviwoModule() {
     registerProcessor(VolumeSlice);
     registerProcessor(VolumeSubsample);
     registerProcessor(VolumeSubset);
+    registerProcessor(VolumeVectorSource);
+
+
+    registerProperty(SequenceTimerProperty);
+    registerProperty(VolumeBasisProperty);
+    registerProperty(VolumeInformationProperty);
 }
 
 } // namespace

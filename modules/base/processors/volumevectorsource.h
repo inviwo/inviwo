@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,68 +24,54 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESOURCE_H
-#define IVW_VOLUMESOURCE_H
+#ifndef IVW_VOLUMEVECTORSOURCE_H
+#define IVW_VOLUMEVECTORSOURCE_H
 
 #include <modules/base/basemoduledefine.h>
-#include <modules/base/properties/volumebasisproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-#include <modules/base/properties/sequencetimerproperty.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeSource, Volume Source}
- * ![](org.inviwo.VolumeSource.png?classIdentifier=org.inviwo.VolumeSource)
+/** \docpage{<classIdentifier>, VolumeVectorSource}
+ * Explanation of how to use the processor.
  *
- * Loads a Volume
+ * ### Inports
+ *   * __<Inport1>__ <description>.
  *
  * ### Outports
- *   * __Outport__ The loaded volume
- *
+ *   * __<Outport1>__ <description>.
+ * 
  * ### Properties
- *   * __File name__ File to load.
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_BASE_API VolumeSource : public Processor {
+
+
+/**
+ * \class VolumeVectorSource
+ *
+ * \brief <brief description> 
+ *
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_BASE_API VolumeVectorSource : public Processor { 
 public:
-    using VolumeVector = std::vector<std::unique_ptr<Volume>>;
-    VolumeSource();
-    virtual ~VolumeSource();
-
     InviwoProcessorInfo();
-
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
-    virtual void process() override;
+    VolumeVectorSource();
+    virtual ~VolumeVectorSource(){}
+     
+protected:
+    virtual void process();
 
 private:
-    void load(bool deserialize = false);
-    void addFileNameFilters();
 
-    std::unique_ptr<VolumeVector> volumes_;
-
-    VolumeOutport outport_;
-    FileProperty file_;
-    ButtonProperty reload_;
-
-    VolumeBasisProperty basis_;
-    VolumeInformationProperty information_;
-    SequenceTimerProperty volumeSequence_;
-    bool isDeserializing_;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_VOLUMESOURCE_H
+#endif // IVW_VOLUMEVECTORSOURCE_H
+
