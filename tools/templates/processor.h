@@ -64,8 +64,9 @@ public:
     <name>();
     virtual ~<name>(){}
      
-protected:
     virtual void process();
+    
+protected:
 
 private:
 
