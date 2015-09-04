@@ -147,14 +147,16 @@ void LayerCLGL::notifyAfterTextureInitialization() {
     if (it != LayerCLGL::clImageSharingMap_.end()) {
         clImage_ = std::static_pointer_cast<cl::Image2DGL>(it->second);
     } else {
-        try {
-            clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                GL_TEXTURE_2D, 0, texture_->getID());
-            LayerCLGL::clImageSharingMap_.insert(
-                TextureCLImageSharingPair(texture_, clImage_));
-        } catch (cl::Error& err) {
-            LogOpenCLError(err.err());
-            throw err;
+        if (glm::all(glm::greaterThan(texture_->getDimensions(), uvec2(0)))) {
+            try {
+                clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                    GL_TEXTURE_2D, 0, texture_->getID());
+                LayerCLGL::clImageSharingMap_.insert(
+                    TextureCLImageSharingPair(texture_, clImage_));
+            } catch (cl::Error& err) {
+                LogOpenCLError(err.err());
+                throw err;
+            }
         }
     }
 }
