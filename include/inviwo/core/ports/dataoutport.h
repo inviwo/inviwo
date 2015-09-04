@@ -49,16 +49,13 @@ public:
     virtual uvec3 getColorCode() const override;
     virtual std::string getClassIdentifier() const override;
 
-    virtual T* getData();
-    virtual const T* getConstData() const;
+    virtual std::shared_ptr<T> getData();
+    virtual std::shared_ptr<const T> getData() const;
+    // Return data and release ownership. Data in the port will be nullptr after call.
+    virtual std::shared_ptr<T> detachData();
 
-    virtual void setData(T* data, bool ownsData = true);
-    virtual void setConstData(const T* data);
-
-    /**
-     * Return data and release ownership. Data in the port will be nullptr after call.
-     */
-    virtual T* detachData();
+    virtual void setData(std::shared_ptr<T> data);
+    virtual void setData(T* data);
 
     /**
      * An outport is ready if it has data and is valid.
@@ -66,25 +63,20 @@ public:
     virtual bool isReady() const override;
     bool hasData() const;
 
-    bool isDataOwner() const;
     virtual std::string getContentInfo() const;
 
 protected:
-    T* data_;
-    bool ownsData_;
+    std::shared_ptr<T> data_;
 };
 
 template <typename T>
 DataOutport<T>::DataOutport(std::string identifier)
     : Outport(identifier)
     , OutportIterableImpl<T>(this)
-    , data_(nullptr)
-    , ownsData_(true) {}
+    , data_() {}
 
 template <typename T>
-DataOutport<T>::~DataOutport() {
-    if (ownsData_ && data_) delete data_;
-}
+DataOutport<T>::~DataOutport() {}
 
 template <typename T>
 std::string inviwo::DataOutport<T>::getClassIdentifier() const {
@@ -97,44 +89,35 @@ uvec3 inviwo::DataOutport<T>::getColorCode() const {
 }
 
 template <typename T>
-T* DataOutport<T>::getData() {
-    ivwAssert(ownsData_, "Port does not own data, so can not return writable data.");
+std::shared_ptr<T> DataOutport<T>::getData() {
     return data_;
 }
 
 template <typename T>
-const T* DataOutport<T>::getConstData() const {
+std::shared_ptr<const T> DataOutport<T>::getData() const {
     return data_;
 }
 
 template <typename T>
-void DataOutport<T>::setData(T* data, bool ownsData) {
-    if (ownsData_ && data_ && data_ != data) {
-        delete data_;  // Delete old data
-    }
-    ownsData_ = ownsData;
-    data_ = data;  // Add reference to new data
+void DataOutport<T>::setData(std::shared_ptr<T> data) {
+    data_ = data;
 }
 
 template <typename T>
-void DataOutport<T>::setConstData(const T* data) {
-    setData(const_cast<T*>(data), false);
+void DataOutport<T>::setData(T* data) {
+    data_.reset(data);
 }
 
 template <typename T>
-T* DataOutport<T>::detachData() {
-    if (ownsData_) {
-        ownsData_ = false;
-        T* data = nullptr;
-        std::swap(data, data_);
-        return data;
-    }
-    return nullptr;
+std::shared_ptr<T> DataOutport<T>::detachData() {
+    std::shared_ptr<T> data(data_);
+    data_.reset();
+    return data;
 }
 
 template <typename T>
 bool DataOutport<T>::hasData() const {
-    return (data_ != nullptr);
+    return data_.get() != nullptr;
 }
 
 template <typename T>
@@ -143,14 +126,9 @@ bool DataOutport<T>::isReady() const {
 }
 
 template <typename T>
-bool DataOutport<T>::isDataOwner() const {
-    return ownsData_;
-}
-
-template <typename T>
 std::string DataOutport<T>::getContentInfo() const {
     if (hasData()) {
-        std::string info = port_traits<T>::data_info(data_);
+        std::string info = port_traits<T>::data_info(data_.get());
         if (!info.empty()) {
             return info;
         } else {

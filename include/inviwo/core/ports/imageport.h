@@ -70,9 +70,9 @@ public:
      */
     virtual void connectTo(Outport* outport) override;
     virtual void disconnectFrom(Outport* outport) override;
-    virtual const Image* getData() const override;
-    virtual std::vector<const Image*> getVectorData() const override;
-    virtual std::vector<std::pair<Outport*, const Image*>> getSourceVectorData()
+    virtual std::shared_ptr<const Image> getData() const override;
+    virtual std::vector<std::shared_ptr<const Image>> getVectorData() const override;
+    virtual std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> getSourceVectorData()
         const override;
     virtual std::string getContentInfo() const override;
 
@@ -87,7 +87,7 @@ public:
     void passOnDataToOutport(ImageOutport* outport) const;
 
 private:
-    const Image* getImage(ImageOutport* port) const;
+    std::shared_ptr<const Image> getImage(ImageOutport* port) const;
 
     std::unordered_map<ImageOutport*, size2_t> requestedDimensionsMap_;
     bool outportDeterminesSize_;
@@ -105,9 +105,8 @@ public:
 
     virtual ~ImageOutport();
 
-    virtual void setData(Image* data, bool ownsData = true) override;
-    virtual void setConstData(const Image* data) override;
-    const Image* getResizedImageData(size2_t dimensions) const;
+    virtual void setData(std::shared_ptr<Image>) override;
+    std::shared_ptr<const Image> getResizedImageData(size2_t dimensions) const;
 
     /**
      * Handle resize event
@@ -213,18 +212,18 @@ size2_t BaseImageInport<N>::getRequestedDimensions(ImageOutport* outport) const 
 }
 
 template <size_t N>
-const Image* BaseImageInport<N>::getData() const {
+std::shared_ptr<const Image> BaseImageInport<N>::getData() const {
     if (this->hasData()) {
         auto imgport = static_cast<ImageOutport*>(this->getConnectedOutport());
         return getImage(imgport);
     } else {
-        return nullptr;
+        return std::shared_ptr<const Image>();
     }
 }
 
 template <size_t N /*= 1*/>
-std::vector<const Image*> BaseImageInport<N>::getVectorData() const {
-    std::vector<const Image*> res(N);
+std::vector<std::shared_ptr<const Image>> BaseImageInport<N>::getVectorData() const {
+    std::vector<std::shared_ptr<const Image>> res(N);
 
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
@@ -235,8 +234,8 @@ std::vector<const Image*> BaseImageInport<N>::getVectorData() const {
 }
 
 template <size_t N>
-std::vector<std::pair<Outport*, const Image*>> BaseImageInport<N>::getSourceVectorData() const {
-    std::vector<std::pair<Outport*, const Image*>> res(N);
+std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> BaseImageInport<N>::getSourceVectorData() const {
+    std::vector<std::pair<Outport*, std::shared_ptr<const Image>>> res(N);
 
     for (auto outport : this->connectedOutports_) {
         auto imgport = static_cast<ImageOutport*>(outport);
@@ -247,15 +246,15 @@ std::vector<std::pair<Outport*, const Image*>> BaseImageInport<N>::getSourceVect
 }
 
 template <size_t N>
-const Image* BaseImageInport<N>::getImage(ImageOutport* port) const {
+std::shared_ptr<const Image> BaseImageInport<N>::getImage(ImageOutport* port) const {
     if (isOutportDeterminingSize()) {
-        return port->getConstData();
+        return port->getData();
     } else {
         auto it = requestedDimensionsMap_.find(port);
         if (it != requestedDimensionsMap_.end()) {
             return port->getResizedImageData(it->second);
         } else {
-            return port->getConstData();
+            return port->getData();
         }
     }
 }
@@ -281,9 +280,9 @@ std::string BaseImageInport<N>::getContentInfo() const {
 template <size_t N>
 void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
     if (this->hasData()) {
-        const Image* img = getData();
-        Image* out = outport->getData();
-        if (out) img->copyRepresentationsTo(out);
+        std::shared_ptr<const Image> img = getData();
+        std::shared_ptr<Image> out = outport->getData();
+        if (out) img->copyRepresentationsTo(out.get());
     }
 }
 

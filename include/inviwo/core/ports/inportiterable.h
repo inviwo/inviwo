@@ -42,7 +42,10 @@ public:
     InportIterable(std::vector<Outport*>* connections) : connections_(connections) {}
     virtual ~InportIterable() {}
 
-    class const_iterator : public std::iterator<std::forward_iterator_tag, T> {
+    class const_iterator
+        : public std::iterator<std::forward_iterator_tag, T, std::ptrdiff_t,
+                               std::shared_ptr<const T>, std::shared_ptr<const T>> {
+                               
         using self = const_iterator;
         using PortIter = typename std::vector<Outport*>::const_iterator;
         using DataIter = typename OutportIterable<T>::const_iterator;
@@ -54,7 +57,7 @@ public:
                 auto ptr = dynamic_cast<OutportIterable<T>*>(*pIter_);
                 dIter_ = ptr->begin();
                 dEnd_ = ptr->end();
-                
+
                 while (dIter_ == dEnd_ && pIter_ != pEnd_) {
                     pIter_++;
                     if (pIter_ != pEnd_) {
@@ -76,8 +79,10 @@ public:
             incrementIter();
             return i;
         }
-        const T& operator*() { return *dIter_; }
-        const T* operator->() { return &(*dIter_); }
+        
+        std::shared_ptr<const T> operator*() { return *dIter_; }
+        std::shared_ptr<const T> operator->() { return *dIter_; }
+        
         bool operator==(const self& rhs) const {
             return pIter_ == rhs.pIter_ && dIter_ == rhs.dIter_;
         }
@@ -99,8 +104,7 @@ public:
                 }
             }
         }
-    
-    
+
         PortIter pIter_;
         PortIter pEnd_;
         DataIter dIter_;
@@ -116,6 +120,7 @@ private:
     std::vector<Outport*>* connections_;
 };
 
+// Specialization for non flat case.
 template <typename T>
 class InportIterable<T, false> {
 public:
@@ -137,8 +142,12 @@ public:
             pIter_++;
             return i;
         }
-        const T& operator*() { return *(static_cast<DataOutport<T>*>(*pIter_)->getConstData()); }
-        const T* operator->() { return static_cast<DataOutport<T>*>(*pIter_)->getConstData(); }
+        std::shared_ptr<const T> operator*() {
+            return static_cast<DataOutport<T>*>(*pIter_)->getData();
+        }
+        std::shared_ptr<const T> operator->() {
+            return static_cast<DataOutport<T>*>(*pIter_)->getData();
+        }
         bool operator==(const self& rhs) const { return pIter_ == rhs.pIter_; }
         bool operator!=(const self& rhs) const { return pIter_ != rhs.pIter_; }
 

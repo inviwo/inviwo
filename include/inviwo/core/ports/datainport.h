@@ -61,9 +61,9 @@ public:
     virtual void connectTo(Outport* port) override;
     virtual bool isConnected() const override;
 
-    virtual const T* getData() const;
-    virtual std::vector<const T*> getVectorData() const;
-    virtual std::vector<std::pair<Outport*, const T*>> getSourceVectorData() const;
+    virtual std::shared_ptr<const T> getData() const;
+    virtual std::vector<std::shared_ptr<const T>> getVectorData() const;
+    virtual std::vector<std::pair<Outport*, std::shared_ptr<const T>>> getSourceVectorData() const;
 
     bool hasData() const;
 };
@@ -156,37 +156,37 @@ bool DataInport<T, N, Flat>::hasData() const {
 }
 
 template <typename T, size_t N, bool Flat>
-const T* DataInport<T, N, Flat>::getData() const {
+std::shared_ptr<const T> DataInport<T, N, Flat>::getData() const {
     if (isConnected()) {
         auto it = this->begin();
-        if (it != this->end()) return &*(it);
+        if (it != this->end()) return *it;
     } 
     return nullptr;   
 }
 
 template <typename T, size_t N, bool Flat>
-std::vector<const T*> DataInport<T, N, Flat>::getVectorData() const {
-    std::vector<const T*> res(N);
+std::vector<std::shared_ptr<const T>> DataInport<T, N, Flat>::getVectorData() const {
+    std::vector<std::shared_ptr<const T>> res(N);
 
-    for (auto it = this->begin(); it!= this->end(); ++it) res.push_back(&*it);
+    for (auto it = this->begin(); it!= this->end(); ++it) res.push_back(it.operator->());
     
     return res;
 }
 
 template <typename T, size_t N, bool Flat>
-std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N, Flat>::getSourceVectorData() const {
-    std::vector<std::pair<Outport*, const T*>> res(N);
+std::vector<std::pair<Outport*, std::shared_ptr<const T>>> inviwo::DataInport<T, N, Flat>::getSourceVectorData() const {
+    std::vector<std::pair<Outport*, std::shared_ptr<const T>>> res(N);
     
     for (auto outport : connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
         
         if (Flat) {
             if(auto iterable = dynamic_cast<OutportIterable<T>*>(outport)) {
-                for (auto& elem : *iterable) res.emplace_back(outport, &elem);
+                for (auto elem : *iterable) res.emplace_back(outport, elem);
             }
         } else {
             auto dataport = static_cast<DataOutport<T>*>(outport);
-            if (dataport->hasData()) res.emplace_back(dataport, dataport->getConstData());
+            if (dataport->hasData()) res.emplace_back(dataport, dataport->getData());
         }
     }
 
@@ -196,7 +196,7 @@ std::vector<std::pair<Outport*, const T*>> inviwo::DataInport<T, N, Flat>::getSo
 template <typename T, size_t N, bool Flat>
 std::string DataInport<T, N, Flat>::getContentInfo() const {
     if (hasData()) {
-        std::string info = port_traits<T>::data_info(getData());
+        std::string info = port_traits<T>::data_info(getData().get());
         if (!info.empty()) {
             return info;
         } else {

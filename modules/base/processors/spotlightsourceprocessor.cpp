@@ -51,7 +51,9 @@ SpotLightSourceProcessor::SpotLightSourceProcessor()
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))
     , lightDiffuse_("lightDiffuse", "Color", vec4(1.0f))
     , lightConeRadiusAngle_("lightConeRadiusAngle", "Light Cone Radius Angle", 30.f, 1.f, 90.f)
-    , lightFallOffAngle_("lightFallOffAngle", "Light Fall Off Angle", 5.f, 0.f, 30.f){
+    , lightFallOffAngle_("lightFallOffAngle", "Light Fall Off Angle", 5.f, 0.f, 30.f)
+    , lightSource_{std::make_shared<SpotLight>()} {
+    
     addPort(outport_);
 
     addProperty(lightPosition_);
@@ -65,16 +67,11 @@ SpotLightSourceProcessor::SpotLightSourceProcessor()
 
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightDiffuse_.setCurrentStateAsDefault();
-    lightSource_ = new SpotLight();
-}
-
-SpotLightSourceProcessor::~SpotLightSourceProcessor() {
-    delete lightSource_;
 }
 
 void SpotLightSourceProcessor::process() {
-    updateSpotLightSource(lightSource_);
-    outport_.setData(lightSource_, false);
+    updateSpotLightSource(lightSource_.get());
+    outport_.setData(lightSource_);
 }
 
 void SpotLightSourceProcessor::updateSpotLightSource(SpotLight* lightSource) {

@@ -366,9 +366,9 @@ void CameraProperty::inportChanged() {
     const SpatialEntity<3>* data = nullptr;
 
     if (volumeInport) {
-        data = volumeInport->getData();
+        data = volumeInport->getData().get();
     } else if (meshInport) {
-        data = meshInport->getData();
+        data = meshInport->getData().get();
     }
 
     if (data_ == nullptr && oldBasis_ == mat3(0.0f)) {  // first time only

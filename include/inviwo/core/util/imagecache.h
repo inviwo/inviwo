@@ -44,14 +44,14 @@ class Image;
  */
 class IVW_CORE_API ImageCache { 
 public:
-    ImageCache(const Image* master = nullptr);
-    ~ImageCache(){};
+    ImageCache(std::shared_ptr<const Image> master = std::shared_ptr<const Image>());
+    ~ImageCache() = default;
 
     ImageCache(const ImageCache&) = delete;
     ImageCache& operator=(const ImageCache& that) = delete;
 
-    void setMaster(const Image* master);
-    const Image* getImage(const size2_t dimensions) const;
+    void setMaster(std::shared_ptr<const Image> master);
+    std::shared_ptr<const Image> getImage(const size2_t dimensions) const;
 
     /**
      *    Remove all cached images except those in dimensions
@@ -64,16 +64,16 @@ public:
     void setInvalid() const;
 
     bool hasImage(const size2_t dimensions);
-    void addImage(Image* image);
-    Image* releaseImage(const size2_t dimensions);
-    Image* getUnusedImage(const std::vector<size2_t>& dimensions);
+    void addImage(std::shared_ptr<Image> image);
+    std::shared_ptr<Image> releaseImage(const size2_t dimensions);
+    std::shared_ptr<Image> getUnusedImage(const std::vector<size2_t>& dimensions);
     size_t size() const;
 
 private:
     mutable bool valid_;
-    const Image* master_; // non-owning reference.
+    std::shared_ptr<const Image> master_; // non-owning reference.
 
-    using Cache = std::unordered_map<glm::size2_t, std::unique_ptr<Image>>;
+    using Cache = std::unordered_map<glm::size2_t, std::shared_ptr<Image>>;
     mutable Cache cache_;
 };
 

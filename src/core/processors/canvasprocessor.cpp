@@ -206,7 +206,7 @@ void CanvasProcessor::saveImageLayer() {
 }
 
 void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
-    const Image* image = inport_.getData();
+    std::shared_ptr<const Image> image = inport_.getData();
     if (image) {
         const Layer* layer = nullptr;
         if (visibleLayer_.get() == COLOR_LAYER){
@@ -255,7 +255,7 @@ std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType lay
                                                                    std::string& type,
                                                                    size_t idx) {
     if (!inport_.hasData()) return nullptr;
-    const Image* image = inport_.getData();
+    std::shared_ptr<const Image> image = inport_.getData();
     const Layer* layer = image->getLayer(layerType, idx);
 
     if (layer) {
@@ -300,12 +300,12 @@ void CanvasProcessor::process() {
     if (canvasWidget_ && canvasWidget_->getCanvas()) {
         canvasWidget_->getCanvas()->activate();
         LayerType layerType = static_cast<LayerType>(visibleLayer_.get());
-        if (visibleLayer_.get() == COLOR_LAYER){
-            canvasWidget_->getCanvas()->render(inport_.getData(), COLOR_LAYER, colorLayer_.get());
+        if (visibleLayer_.get() == COLOR_LAYER) {
+            canvasWidget_->getCanvas()->render(inport_.getData().get(), COLOR_LAYER,
+                                               colorLayer_.get());
+        } else {
+            canvasWidget_->getCanvas()->render(inport_.getData().get(), layerType, 0);
         }
-        else{
-            canvasWidget_->getCanvas()->render(inport_.getData(), layerType, 0);
-        }//*/
     }
 }
 

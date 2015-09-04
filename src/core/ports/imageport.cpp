@@ -40,7 +40,7 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
     , handleResizeEvents_(handleResizeEvents) {
  
     // create a default image
-    setData(new Image(dimensions_, format));
+    setData(std::make_shared<Image>(dimensions_, format));
 }
 
 ImageOutport::~ImageOutport() {}
@@ -52,14 +52,8 @@ void ImageOutport::invalidate(InvalidationLevel invalidationLevel) {
     Outport::invalidate(invalidationLevel);
 }
 
-void ImageOutport::setData(Image* data, bool ownsData /*= true*/) {
-    DataOutport<Image>::setData(data, ownsData);
-    dimensions_ = data_->getDimensions();
-    cache_.setMaster(data);
-}
-
-void ImageOutport::setConstData(const Image* data) {
-    DataOutport<Image>::setConstData(data);
+void ImageOutport::setData(std::shared_ptr<Image> data) {
+    DataOutport<Image>::setData(data);
     dimensions_ = data_->getDimensions();
     cache_.setMaster(data);
 }
@@ -113,7 +107,7 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
 
 size2_t ImageOutport::getDimensions() const { return dimensions_; }
 
-const Image* ImageOutport::getResizedImageData(size2_t requiredDimensions) const {
+std::shared_ptr<const Image> ImageOutport::getResizedImageData(size2_t requiredDimensions) const {
     return cache_.getImage(requiredDimensions);
 }
 
@@ -132,6 +126,6 @@ void ImageOutport::setHandleResizeEvents(bool handleResizeEvents) {
     handleResizeEvents_ = handleResizeEvents;
 }
 
-bool ImageOutport::isHandlingResizeEvents() const { return handleResizeEvents_ && isDataOwner(); }
+bool ImageOutport::isHandlingResizeEvents() const { return handleResizeEvents_; }
 
 }  // namespace

@@ -66,7 +66,7 @@ class SpotLight;
 class IVW_MODULE_BASE_API SpotLightSourceProcessor : public Processor {
 public:
     SpotLightSourceProcessor();
-    virtual ~SpotLightSourceProcessor();
+    virtual ~SpotLightSourceProcessor() = default;
 
     InviwoProcessorInfo();
 
@@ -93,7 +93,7 @@ private:
     FloatProperty lightConeRadiusAngle_;
     FloatProperty lightFallOffAngle_;
 
-    SpotLight* lightSource_;
+    std::shared_ptr<SpotLight> lightSource_;
 };
 
 } // namespace

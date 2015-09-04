@@ -104,11 +104,11 @@ void DistanceTransformRAM::process() {
 
     if (dirty_ || volumePort_.isChanged()) {
         dirty_ = false;
-        const Volume* srcVolume = volumePort_.getData();
-
+        
+        std::shared_ptr<const Volume> srcVolume = volumePort_.getData();
         volDim_ = glm::max(srcVolume->getDimensions(), size3_t(1u));
-
-        const Volume *volDst = outport_.getConstData();
+        std::shared_ptr<const Volume> volDst = outport_.getData();
+        
         if (!volDst || (volDst->getDimensions() != volDim_)
             || (volDst == srcVolume)) 
         {

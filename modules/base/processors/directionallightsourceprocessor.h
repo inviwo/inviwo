@@ -63,7 +63,7 @@ class DirectionalLight;
 class IVW_MODULE_BASE_API DirectionalLightSourceProcessor : public Processor {
 public:
     DirectionalLightSourceProcessor();
-    virtual ~DirectionalLightSourceProcessor();
+    virtual ~DirectionalLightSourceProcessor() = default;
 
     InviwoProcessorInfo();
 
@@ -89,7 +89,7 @@ private:
     BoolProperty lightEnabled_;
     
     
-    DirectionalLight* lightSource_;
+    std::shared_ptr<DirectionalLight> lightSource_;
 };
 
 }  // namespace

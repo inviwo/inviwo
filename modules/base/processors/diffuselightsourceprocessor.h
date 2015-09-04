@@ -63,7 +63,7 @@ class DiffuseLight;
 class IVW_MODULE_BASE_API DiffuseLightSourceProcessor : public Processor {
 public:
     DiffuseLightSourceProcessor();
-    virtual ~DiffuseLightSourceProcessor();
+    virtual ~DiffuseLightSourceProcessor() = default;
 
     InviwoProcessorInfo();
 
@@ -90,7 +90,7 @@ private:
     
     
 
-    DiffuseLight* lightSource_;
+    std::shared_ptr<DiffuseLight> lightSource_;
 };
 
 }  // namespace
