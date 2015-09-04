@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include "volumevectorsource.h"
+#include <inviwo/core/io/datareaderfactory.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 

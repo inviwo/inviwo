@@ -83,17 +83,17 @@ void VolumeSource::load(bool deserialize) {
     std::unique_ptr<VolumeVector> volumes;
 
     std::string ext = filesystem::getFileExtension(file_.get());
-    if (auto reader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
+    if (auto volvecreader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
         try {
-            volumes.reset(reader->readMetaData(file_.get()));
+            volumes.reset(volvecreader->readMetaData(file_.get()));
 
             std::swap(volumes, volumes_);
         } catch (DataReaderException const& e) {
             LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
         }
-    } else if (auto reader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
+    } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
         try {
-            std::unique_ptr<Volume> volume(reader->readMetaData(file_.get()));
+            std::unique_ptr<Volume> volume(volreader->readMetaData(file_.get()));
             volumes = util::make_unique<VolumeVector>();
             volumes->push_back(std::move(volume));
 

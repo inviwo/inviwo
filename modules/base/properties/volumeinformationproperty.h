@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 
 namespace inviwo {
 

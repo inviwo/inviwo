@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "volumeinformationproperty.h"
-
+#include <inviwo/core/datastructures/volume/volumeram.h>
 namespace inviwo {
 
 PropertyClassIdentifier(VolumeInformationProperty, "org.inviwo.VolumeInformationProperty");
