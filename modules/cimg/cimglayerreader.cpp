@@ -49,7 +49,6 @@ CImgLayerReader::CImgLayerReader()
 #ifdef cimg_use_openexr
     addExtension(FileExtension("exr", "OpenEXR"));
 #endif
-    addExtension(FileExtension("hdr", "Analyze 7.5"));
 }
 
 CImgLayerReader::CImgLayerReader(const CImgLayerReader& rhs)
