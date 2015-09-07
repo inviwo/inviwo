@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,40 +24,36 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <inviwo/core/datastructures/volume/volumedisk.h>
+#ifndef IVW_CIMGLAYERWRITER_H
+#define IVW_CIMGLAYERWRITER_H
+
+#include <modules/cimg/cimgmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/datawriter.h>
 
 namespace inviwo {
 
-VolumeDisk::VolumeDisk(size3_t dimensions, const DataFormatBase* format)
-    : VolumeRepresentation(format), DiskRepresentation(), dimensions_(dimensions) {}
+class Layer;
 
-VolumeDisk::VolumeDisk(std::string srcFile, size3_t dimensions, const DataFormatBase* format)
-    : VolumeRepresentation(format), DiskRepresentation(srcFile), dimensions_(dimensions) {}
+/** \brief Writer for Images files
+ *
+ */
+class IVW_MODULE_CIMG_API CImgLayerWriter : public DataWriterType<Layer> {
+public:
+    CImgLayerWriter();
+    CImgLayerWriter(const CImgLayerWriter& rhs);
+    CImgLayerWriter& operator=(const CImgLayerWriter& that);
+    virtual CImgLayerWriter* clone() const;
+    virtual ~CImgLayerWriter() {};
 
-VolumeDisk::VolumeDisk(const VolumeDisk& rhs)
-    : VolumeRepresentation(rhs), DiskRepresentation(rhs) {}
+    virtual void writeData(const Layer* data, const std::string filePath) const;
+    virtual std::vector<unsigned char>* writeDataToBuffer(const Layer* data, std::string& type) const;
+    virtual bool writeDataToRepresentation(const DataRepresentation* src, DataRepresentation* dst) const;
+};
 
-VolumeDisk& VolumeDisk::operator=(const VolumeDisk& that) {
-    if (this != &that) {
-        VolumeRepresentation::operator=(that);
-        DiskRepresentation::operator=(that);
-    }
-    return *this;
-}
+} // namespace
 
-VolumeDisk* VolumeDisk::clone() const { return new VolumeDisk(*this); }
-
-VolumeDisk::~VolumeDisk() {}
-
-void VolumeDisk::setDimensions(size3_t dimensions) {
-    throw Exception("Can not set dimension of a Volume Disk", IvwContext);
-}
-
-const size3_t& VolumeDisk::getDimensions() const { return dimensions_; }
-
-void VolumeDisk::updateDataFormat(const DataFormatBase* format) { setDataFormat(format); }
-
-}  // namespace
+#endif // IVW_CIMGLAYERWRITER_H

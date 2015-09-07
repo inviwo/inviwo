@@ -163,7 +163,7 @@ struct CImgNormalizedLayerDispatcher {
     }
 };
 
-struct CImgLoadDispatcher {
+struct CImgLoadLayerDispatcher {
     using type = void*;
     template <typename T>
     void* dispatch(void* dst, const char* filePath, uvec2& dimensions, DataFormatEnums::Id& formatId, const DataFormatBase* dataFormat, bool rescaleToDim) {
@@ -182,7 +182,7 @@ struct CImgLoadDispatcher {
         if (loadedDataFormat)
             formatId = loadedDataFormat->getId();
         else
-            throw Exception("CImgLoadDispatcher, could not find proper data type");
+            throw Exception("CImgLoadLayerDispatcher, could not find proper data type");
 
         //Image is up-side-down
         img.mirror('y');
@@ -225,10 +225,32 @@ struct CImgRescaleLayerDispatcher {
     }
 };
 
+struct CImgLoadVolumeDispatcher {
+    using type = void*;
+    template <typename T>
+    void* dispatch(void* dst, const char* filePath, size3_t& dimensions, DataFormatEnums::Id& formatId, const DataFormatBase* dataFormat) {
+        CImg<typename T::primitive> img(filePath);
+
+        size_t components = static_cast<size_t>(img.spectrum());
+        dimensions = size3_t(img.width(), img.height(), img.depth());
+
+        const DataFormatBase* loadedDataFormat = DataFormatBase::get(dataFormat->getNumericType(), components, sizeof(typename T::primitive) * 8);
+        if (loadedDataFormat)
+            formatId = loadedDataFormat->getId();
+        else
+            throw Exception("CImgLoadVolumeDispatcher, could not find proper data type");
+
+        //Image is up-side-down
+        img.mirror('y');
+
+        return CImgToIvwConvert<typename T::primitive>::convert(dst, &img);
+    }
+};
+
 
 ////////////////////// CImgUtils ///////////////////////////////////////////////////
 
-void* CImgUtils::loadData(void* dst, const std::string& filePath, uvec2& dimensions,
+void* CImgUtils::loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
     DataFormatEnums::Id& formatId, bool rescaleToDim){
     std::string fileExtension = filesystem::getFileExtension(filePath);
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
@@ -239,8 +261,23 @@ void* CImgUtils::loadData(void* dst, const std::string& filePath, uvec2& dimensi
     }
     const DataFormatBase* dataFormat = DataFormatBase::get(formatId);
 
-    CImgLoadDispatcher disp;
+    CImgLoadLayerDispatcher disp;
     return dataFormat->dispatch(disp, dst, filePath.c_str(), dimensions, formatId, dataFormat, rescaleToDim);
+}
+
+void* CImgUtils::loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions,
+    DataFormatEnums::Id& formatId){
+    std::string fileExtension = filesystem::getFileExtension(filePath);
+    if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
+        formatId = extToBaseTypeMap_[fileExtension];
+    }
+    else{
+        formatId = DataFormatEnums::FLOAT32;
+    }
+    const DataFormatBase* dataFormat = DataFormatBase::get(formatId);
+
+    CImgLoadVolumeDispatcher disp;
+    return dataFormat->dispatch(disp, dst, filePath.c_str(), dimensions, formatId, dataFormat);
 }
 
 void CImgUtils::saveLayer(const std::string& filePath, const Layer* inputLayer) {

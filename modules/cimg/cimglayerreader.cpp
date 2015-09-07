@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include <modules/cimg/cimgreader.h>
+#include <modules/cimg/cimglayerreader.h>
 #include <modules/cimg/cimgutils.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-CImgReader::CImgReader()
+CImgLayerReader::CImgLayerReader()
     : DataReaderType<Layer>() {
     addExtension(FileExtension("raw", "RAW"));
 #ifdef cimg_use_png
@@ -52,10 +52,10 @@ CImgReader::CImgReader()
     addExtension(FileExtension("hdr", "Analyze 7.5"));
 }
 
-CImgReader::CImgReader(const CImgReader& rhs)
+CImgLayerReader::CImgLayerReader(const CImgLayerReader& rhs)
     : DataReaderType<Layer>(rhs) {};
 
-CImgReader& CImgReader::operator=(const CImgReader& that) {
+CImgLayerReader& CImgLayerReader::operator=(const CImgLayerReader& that) {
     if (this != &that) {
         DataReaderType<Layer>::operator=(that);
     }
@@ -63,9 +63,9 @@ CImgReader& CImgReader::operator=(const CImgReader& that) {
     return *this;
 }
 
-CImgReader* CImgReader::clone() const { return new CImgReader(*this); }
+CImgLayerReader* CImgLayerReader::clone() const { return new CImgLayerReader(*this); }
 
-Layer* CImgReader::readMetaData(std::string filePath) {
+Layer* CImgLayerReader::readMetaData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
         std::string newPath = filesystem::addBasePath(filePath);
 
@@ -86,7 +86,7 @@ Layer* CImgReader::readMetaData(std::string filePath) {
     return layer;
 }
 
-void CImgReader::readDataInto(void* destination) const {
+void CImgLayerReader::readDataInto(void* destination) const {
     LayerDisk* layerDisk = dynamic_cast<LayerDisk*>(owner_);
     if(layerDisk){
         uvec2 dimensions = layerDisk->getDimensions();
@@ -107,11 +107,11 @@ void CImgReader::readDataInto(void* destination) const {
 
         if (dimensions != uvec2(0)){
             // Load and rescale to input dimensions
-            CImgUtils::loadData(destination, filePath, dimensions, formatId, true);
+            CImgUtils::loadLayerData(destination, filePath, dimensions, formatId, true);
         }
         else{
             // Load to original dimensions
-            CImgUtils::loadData(destination, filePath, dimensions, formatId, false);
+            CImgUtils::loadLayerData(destination, filePath, dimensions, formatId, false);
             layerDisk->setDimensions(dimensions);
         }
 
@@ -119,7 +119,7 @@ void CImgReader::readDataInto(void* destination) const {
     }
 }
 
-void* CImgReader::readData() const {
+void* CImgLayerReader::readData() const {
     void* data = nullptr;
 
     LayerDisk* layerDisk = dynamic_cast<LayerDisk*>(owner_);
@@ -142,11 +142,11 @@ void* CImgReader::readData() const {
 
         if (dimensions != uvec2(0)){
             // Load and rescale to input dimensions
-            data = CImgUtils::loadData(nullptr, filePath, dimensions, formatId, true);
+            data = CImgUtils::loadLayerData(nullptr, filePath, dimensions, formatId, true);
         }
         else{
             // Load to original dimensions
-            data = CImgUtils::loadData(nullptr, filePath, dimensions, formatId, false);
+            data = CImgUtils::loadLayerData(nullptr, filePath, dimensions, formatId, false);
             layerDisk->setDimensions(dimensions);
         }
 

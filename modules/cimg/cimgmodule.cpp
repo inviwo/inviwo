@@ -28,18 +28,20 @@
  *********************************************************************************/
 
 #include <modules/cimg/cimgmodule.h>
-#include <modules/cimg/cimgreader.h>
-#include <modules/cimg/cimgwriter.h>
+#include <modules/cimg/cimglayerreader.h>
+#include <modules/cimg/cimglayerwriter.h>
+#include <modules/cimg/cimgvolumereader.h>
 
 namespace inviwo {
 
 CImgModule::CImgModule() : InviwoModule() {
     setIdentifier("CImg");
 
-    // Register Data reader
-    registerDataReader(new CImgReader());
-    // Register Data writer
-    registerDataWriter(new CImgWriter());
+    // Register Data Readers
+    registerDataReader(new CImgLayerReader());
+    registerDataReader(new CImgVolumeReader());
+    // Register Data Writers
+    registerDataWriter(new CImgLayerWriter());
 }
 
 } // namespace

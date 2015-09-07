@@ -97,8 +97,9 @@ file(GLOB_RECURSE ZLIB_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/zlib/*.c)
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/cimgutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgreader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgwriter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerreader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerwriter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimgvolumereader.h
 )
 ivw_group("Header Files" ${HEADER_FILES} ${LIBJPEG_HEADER_FILES} ${LIBPNG_HEADER_FILES} ${LIBRAWLITE_HEADER_FILES} ${OPENEXR_HEADER_FILES} ${ZLIB_HEADER_FILES})
 
@@ -106,8 +107,9 @@ ivw_group("Header Files" ${HEADER_FILES} ${LIBJPEG_HEADER_FILES} ${LIBPNG_HEADER
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/cimgutils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgreader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/cimgwriter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerreader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimglayerwriter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cimgvolumereader.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES} ${LIBJPEG_SOURCE_FILES} ${LIBPNG_SOURCE_FILES} ${OPENEXR_SOURCE_FILES} ${ZLIB_SOURCE_FILES})
 
