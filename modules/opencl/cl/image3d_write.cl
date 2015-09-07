@@ -38,14 +38,14 @@
 // being correctly defined and must use our own define.
 #ifdef SUPPORTS_VOLUME_WRITE //cl_khr_3d_image_writes 
     #pragma OPENCL_EXTENSION cl_khr_3d_image_writes : enable
-    #define image_3d_write_uint8_t __write_only image_3d_t
-    #define image_3d_write_uint16_t __write_only image_3d_t
-    #define image_3d_write_uint32_t __write_only image_3d_t
-    #define image_3d_write_float16_t __write_only image_3d_t
-    #define image_3d_write_float32_t __write_only image_3d_t
+    #define image_3d_write_uint8_t __write_only image3d_t
+    #define image_3d_write_uint16_t __write_only image3d_t
+    #define image_3d_write_uint32_t __write_only image3d_t
+    #define image_3d_write_float16_t __write_only image3d_t
+    #define image_3d_write_float32_t __write_only image3d_t
 
     // Vec2 types
-    #define image_3d_write_vec2_uint16_t __write_only image_3d_t
+    #define image_3d_write_vec2_uint16_t __write_only image3d_t
 
 #else
     #define image_3d_write_uint8_t __global uchar*
@@ -83,7 +83,7 @@ void writeImageUInt8f(image_3d_write_uint8_t image, int4 coord, int4 dimension, 
 // CL_UNSIGNED_INT8, CL_UNSIGNED_INT16, or CL_UNSIGNED_INT32.
 void write_imageUInt8ui(image_3d_write_uint8_t image, int4 coord, int4 dimension, uchar val) {
 #ifdef SUPPORTS_VOLUME_WRITE
-    write_imageui(image, coord, (uint4)(convert_uint(val));
+    write_imageui(image, coord, (uint4)(convert_uint(val)));
 #else
     image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = val;
 #endif
@@ -112,7 +112,7 @@ void writeImageUInt16f(image_3d_write_uint16_t image, int4 coord, int4 dimension
 // 1.f will convert to 65535
 void writeImageVec2UInt16f(image_3d_write_vec2_uint16_t image, int4 coord, int4 dimension, float2 val) {
 #ifdef SUPPORTS_VOLUME_WRITE //cl_khr_3d_image_writes 
-    write_imagef(image, coord, (uint4)(val));
+    write_imagef(image, coord, (float4)(val, val));
 #else
     image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = convert_ushort2_sat_rte(val * 65535.f);
 #endif
