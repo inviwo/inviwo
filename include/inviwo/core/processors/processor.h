@@ -76,6 +76,104 @@ class ResizeEvent;
  *
  * It can hold arbitrary number of inports and outports, as well as properties which can be used
  * to customize the processors behavior.
+ *
+ * A typical flow for processing Processor 1 is shown below.
+ *
+ *     ┌─────────────┐
+ *     │             │                                                            
+ *     │ Processor 2 │                                                            
+ *     │ ┌─┐         │◀────────────────────────────────────────── Outport 2       
+ *     └─┴┬┴─────────┘                                                            
+ *        └────────────────┐                                                      
+ *                       ┌┬▼┬──────────┐ ◀─────────────────────── Inport 1        
+ *                       │└─┘          │                                          
+ *                       │ Processor 1 │                                          
+ *                       │┌─┐          │ ◀─────────────────────── Outport 1       
+ *                       └┴┬┴──────────┘                                          
+ *                         └────────────────┐                                     
+ *                                        ┌┬▼┬──────────┐ ◀────── Inport 0        
+ *                                        │└─┘          │                         
+ *                                        │ Processor 0 │                         
+ *                                        │┌─┐          │ ◀────── Outport 0       
+ *                                        └┴─┴──────────┘                         
+ *                                                                                
+ *       Evaluator         Processor 1         Inport 1           Outport 2       
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           ├─────!isValid?────▶                  │                  │           
+ *           ◀────────No────────┤                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           ├────isReady?──────▶                  │                  │           
+ *           │                  ├─────isValid?─────▶                  │           
+ *           │                  │                  ├────isValid?──────▶           
+ *           │                  │                  │                  ├─────┐     
+ *           │                  │                  │                  │  data?    
+ *           │                  │                  │                  │  valid?   
+ *           │                  │                  │                  ◀─Yes─┘     
+ *           │                  │                  ◀──────Yes─────────┤           
+ *           │                  ◀───────Yes────────┤                  │           
+ *           ◀──────Yes─────────┤                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           │    Inv. Level    │                  │                  │           
+ *           ├─────────>────────▶                  │                  │           
+ *           │   INV.RESOURCES  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           ◀───────Yes────────┤                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           ├──Init. Resources ▶                  │                  │           
+ *           ◀───────Done───────┤                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           ├────GetInports────▶                  │                  │           
+ *           │                  ├──callOnChange────▶                  │           
+ *           │                  ◀──────Done────────┤                  │           
+ *           ◀───────Done───────┤                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  │                  │           
+ *           ├────Process───────▶                  │                  │           
+ *           │                  ├─────GetData──────▶                  │           
+ *           │                  │                  ├────GetData───────▶           
+ *           │                  │                  ◀──────data────────┤           
+ *           │                  ◀───────data───────┤                  │           
+ *           │                  │                  │                  │           
+ *           │                  │                  ▼                  ▼           
+ *           │                  │                                                 
+ *           │                  │              Outport 1                          
+ *           │                  │                  │                              
+ *           │                  ├─────SetData──────▶                              
+ *           │                  ◀───────Done───────┤                              
+ *           ◀───────Done───────┤                  │                              
+ *           │                  │                  ▼                              
+ *           │                  │                                                 
+ *           │                  │              Inport 1                           
+ *           ├─────SetValid─────▶    SetChanged    │                              
+ *           │                  ├─────(false)──────▶                              
+ *           │                  ◀───────Done───────┤                              
+ *           │                  │                  │                              
+ *           │                  │                  ▼                              
+ *           │                  │                                                 
+ *           │                  │              Outport 1          Inport 0        
+ *           │                  │                  │                  │           
+ *           │                  ├───SetValid───────▶                  │           
+ *           │                  │                  ├─────SetValid─────▶           
+ *           │                  │                  │                  ├──────┐    
+ *           │                  │                  │                  │ SetChanged
+ *           │                  │                  │                  │   (true)  
+ *           │                  │                  │                  ◀──────┘    
+ *           │                  │                  ◀──────Done────────┤           
+ *           │                  ◀─────Done─────────┤                  │           
+ *           ◀───────Done───────┤                  │                  │           
+ *           ▼                  ▼                  ▼                  ▼           
+ *
+ *
  */
 class IVW_CORE_API Processor : public PropertyOwner,
                                public MetaDataOwner,
