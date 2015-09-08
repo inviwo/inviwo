@@ -31,9 +31,9 @@
 
 namespace inviwo {
 
-VolumeRAM* VolumeRAMSubSample::apply(const VolumeRepresentation* in, Factor factor) {
+VolumeRAM* VolumeRAMSubSample::apply(const VolumeRepresentation* in, size3_t factors) {
     detail::VolumeRAMSubSampleDispatcher disp;
-    return in->getDataFormat()->dispatch(disp, in, factor);
+    return in->getDataFormat()->dispatch(disp, in, factors);
 }
 
 }  // namespace

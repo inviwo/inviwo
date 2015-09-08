@@ -44,30 +44,28 @@ VolumeSubsample::VolumeSubsample()
     , outport_("volume.outport")
     , enabled_("enabled", "Enable Operation", true)
     , waitForCompletion_("waitForCompletion", "Wait For Subsample Completion", false)
-    , subSampleFactor_("subSampleFacor", "Factor")
+    , subSampleFactors_("subSampleFactors", "Factors", ivec3(1), ivec3(1), ivec3(8))
     , dirty_(false) {
     addPort(inport_);
     addPort(outport_);
     addProperty(enabled_);
     addProperty(waitForCompletion_);
 
-    subSampleFactor_.addOption("none", "None", VolumeRAMSubSample::Factor::None);
-    subSampleFactor_.addOption("half", "Half", VolumeRAMSubSample::Factor::Half);
-    subSampleFactor_.addOption("third", "Third", VolumeRAMSubSample::Factor::Third);
-    subSampleFactor_.addOption("fourth", "Fourth", VolumeRAMSubSample::Factor::Fourth);
-    subSampleFactor_.setSelectedIdentifier("half");
-    subSampleFactor_.setCurrentStateAsDefault();
-    addProperty(subSampleFactor_);
+    addProperty(subSampleFactors_);
 }
 
 VolumeSubsample::~VolumeSubsample() {}
 
 void VolumeSubsample::process() {
-    if (enabled_.get() && subSampleFactor_.get() != VolumeRAMSubSample::Factor::None) {
+    if (enabled_.get()) {
+        ivec3 ssf = glm::max(subSampleFactors_.get(), ivec3(1));
+        size3_t subSampleFactors = size3_t(static_cast<size_t>(ssf.x), 
+            static_cast<size_t>(ssf.y), static_cast<size_t>(ssf.z));
+
         if (waitForCompletion_.get()){
             const Volume* data = inport_.getData();
             const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
-            Volume* volume = new Volume(VolumeRAMSubSample::apply(vol, subSampleFactor_.get()));
+            Volume* volume = new Volume(VolumeRAMSubSample::apply(vol, subSampleFactors));
             volume->copyMetaDataFrom(*data);
             volume->dataMap_ = data->dataMap_;
             volume->setModelMatrix(data->getModelMatrix());
@@ -80,7 +78,7 @@ void VolumeSubsample::process() {
                 const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
                 getActivityIndicator().setActive(true);
                 result_ = dispatchPool(
-                    [this](const VolumeRAM* v, VolumeRAMSubSample::Factor f)
+                    [this](const VolumeRAM* v, size3_t f)
                     -> std::unique_ptr < Volume > {
                     auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
                     dispatchFront([this]() {
@@ -89,7 +87,7 @@ void VolumeSubsample::process() {
                     });
                     return volume;
                 },
-                    vol, subSampleFactor_.get());
+                    vol, subSampleFactors);
             }
 
             if (result_.valid() &&
@@ -119,7 +117,7 @@ void VolumeSubsample::invalidate(InvalidationLevel invalidationLevel, Property* 
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
 
     if (dirty_ || inport_.isChanged() ||
-        !enabled_.get() || subSampleFactor_.get() == VolumeRAMSubSample::Factor::None) {
+        !enabled_.get()) {
         outport_.invalidate(INVALID_OUTPUT);
     }
 
