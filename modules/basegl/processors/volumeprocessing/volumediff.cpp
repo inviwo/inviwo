@@ -52,7 +52,7 @@ VolumeDiff::~VolumeDiff() {}
 void VolumeDiff::preProcess() {
 
     TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(&shader_, cont, vol2_.getData(), "volume2");
+    utilgl::bindAndSetUniforms(shader_, cont, *vol2_.getData(), "volume2");
 
 }
 

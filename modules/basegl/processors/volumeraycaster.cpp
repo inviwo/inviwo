@@ -87,10 +87,10 @@ VolumeRaycaster::VolumeRaycaster()
 VolumeRaycaster::~VolumeRaycaster() {}
 
 void VolumeRaycaster::initializeResources() {
-    utilgl::addShaderDefines(&shader_, raycasting_);
-    utilgl::addShaderDefines(&shader_, camera_);
-    utilgl::addShaderDefines(&shader_, lighting_);
-    utilgl::addShaderDefines(&shader_, positionIndicator_);
+    utilgl::addShaderDefines(shader_, raycasting_);
+    utilgl::addShaderDefines(shader_, camera_);
+    utilgl::addShaderDefines(shader_, lighting_);
+    utilgl::addShaderDefines(shader_, positionIndicator_);
     shader_.build();
 }
 
@@ -115,11 +115,11 @@ void VolumeRaycaster::process() {
     shader_.activate();
     
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(&shader_, units, volumePort_);
-    utilgl::bindAndSetUniforms(&shader_, units, transferFunction_);
-    utilgl::bindAndSetUniforms(&shader_, units, entryPort_, COLOR_DEPTH_PICKING);
-    utilgl::bindAndSetUniforms(&shader_, units, exitPort_, COLOR_DEPTH);
-    utilgl::setUniforms(&shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
+    utilgl::bindAndSetUniforms(shader_, units, volumePort_);
+    utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
+    utilgl::bindAndSetUniforms(shader_, units, entryPort_, COLOR_DEPTH_PICKING);
+    utilgl::bindAndSetUniforms(shader_, units, exitPort_, COLOR_DEPTH);
+    utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
                         channel_);
 
     utilgl::singleDrawImagePlaneRect();

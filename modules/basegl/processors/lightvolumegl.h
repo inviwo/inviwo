@@ -40,13 +40,11 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <modules/opengl/volume/volumegl.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
-
-class FrameBufferObject;
-class Shader;
-class Texture;
-class VolumeGL;
 
 /** \docpage{org.inviwo.LightVolumeGL, Light Volume}
  * ![](org.inviwo.LightVolumeGL.png?classIdentifier=org.inviwo.LightVolumeGL)
@@ -69,28 +67,27 @@ class VolumeGL;
 class IVW_MODULE_BASEGL_API LightVolumeGL : public Processor {
 public:
     LightVolumeGL();
-    ~LightVolumeGL();
+    virtual ~LightVolumeGL() = default;
 
     InviwoProcessorInfo();
 
     void initialize();
-    void deinitialize();
 
     void propagation3DTextureParameterFunction(Texture*);
 
 protected:
-    void process();
+    void process() override;
 
     struct PropagationParameters {
-        FrameBufferObject* fbo;
-        VolumeGL* vol;
+        std::unique_ptr<FrameBufferObject> fbo;
+        std::unique_ptr<VolumeGL> vol;
         mat4 axisPermutation;
         mat4 axisPermutationINV;
         mat4 axisPermutationLight;
         vec4 permutedLightDirection;
 
-        PropagationParameters() : fbo(nullptr), vol(nullptr) {}
-        ~PropagationParameters();
+        PropagationParameters() : fbo(), vol() {}
+        ~PropagationParameters() = default;
     };
 
     bool lightSourceChanged();
@@ -107,7 +104,7 @@ protected:
 private:
     VolumeInport inport_;
     VolumeOutport outport_;
-
+    std::shared_ptr<Volume> volume_;
     DataInport<LightSource> lightSource_;
 
     BoolProperty supportColoredLight_;
@@ -115,12 +112,12 @@ private:
     TransferFunctionProperty transferFunction_;
     BoolProperty floatPrecision_;
 
-    Shader* propagationShader_;
-    Shader* mergeShader_;
+    Shader propagationShader_;
+    Shader mergeShader_;
 
     PropagationParameters propParams_[2];
 
-    FrameBufferObject* mergeFBO_;
+    std::unique_ptr<FrameBufferObject> mergeFBO_;
     float blendingFactor_;
 
     bool internalVolumesInvalid_;

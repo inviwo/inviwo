@@ -59,7 +59,7 @@ VolumeLowPass::VolumeLowPass()
 VolumeLowPass::~VolumeLowPass() {}
 
 void VolumeLowPass::preProcess() { 
-    utilgl::setUniforms(&shader_, kernelSize_); 
+    utilgl::setUniforms(shader_, kernelSize_); 
     shader_.setUniform("inv2Sigma", 1.0f / (sigma_.get() * 2.0f));
 }
 

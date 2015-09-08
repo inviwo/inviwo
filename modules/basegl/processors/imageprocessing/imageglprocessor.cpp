@@ -82,7 +82,7 @@ void ImageGLProcessor::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
     shader_.activate();
 
-    utilgl::setShaderUniforms(&shader_, outport_, "outportParameters_");
+    utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");
     shader_.setUniform("inport_", imgUnit.getUnitNumber());
 
     preProcess();

@@ -91,9 +91,9 @@ void ImageMixer::process() {
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(&shader_, units, inport0_, COLOR_DEPTH_PICKING);
-    utilgl::bindAndSetUniforms(&shader_, units, inport1_, COLOR_DEPTH_PICKING);
-    utilgl::setUniforms(&shader_, outport_, weight_);
+    utilgl::bindAndSetUniforms(shader_, units, inport0_, COLOR_DEPTH_PICKING);
+    utilgl::bindAndSetUniforms(shader_, units, inport1_, COLOR_DEPTH_PICKING);
+    utilgl::setUniforms(shader_, outport_, weight_);
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();

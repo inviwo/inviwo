@@ -79,6 +79,7 @@ protected:
 
     VolumeInport inport_;
     VolumeOutport outport_;
+    std::shared_ptr<Volume> volume_;
 
     const DataFormatBase* dataFormat_;
     bool internalInvalid_;

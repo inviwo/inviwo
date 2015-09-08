@@ -62,19 +62,19 @@ void VolumeGLProcessor::process() {
         reattach = true;
         internalInvalid_ = false;
         const DataFormatBase* format = dataFormat_?dataFormat_:inport_.getData()->getDataFormat();
-        Volume* volume = new Volume(inport_.getData()->getDimensions(), format);
-        volume->setModelMatrix(inport_.getData()->getModelMatrix());
-        volume->setWorldMatrix(inport_.getData()->getWorldMatrix());
+        volume_ = std::make_shared<Volume>(inport_.getData()->getDimensions(), format);
+        volume_->setModelMatrix(inport_.getData()->getModelMatrix());
+        volume_->setWorldMatrix(inport_.getData()->getWorldMatrix());
         // pass meta data on
-        volume->copyMetaDataFrom(*inport_.getData());
-        volume->dataMap_ = inport_.getData()->dataMap_;
-        outport_.setData(volume);
+        volume_->copyMetaDataFrom(*inport_.getData());
+        volume_->dataMap_ = inport_.getData()->dataMap_;
+        outport_.setData(volume_);
     }
 
     shader_.activate();
 
     TextureUnitContainer cont;
-    utilgl::bindAndSetUniforms(&shader_, cont, inport_.getData(), "volume");
+    utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "volume");
 
     preProcess();
 
@@ -82,7 +82,7 @@ void VolumeGLProcessor::process() {
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
     if (reattach) {
-        VolumeGL* outVolumeGL = outport_.getData()->getEditableRepresentation<VolumeGL>();
+        VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }
 

@@ -47,10 +47,10 @@ VolumeLaplacian::VolumeLaplacian()
 }
 
 void VolumeLaplacian::process() {
-    const Volume* volume = inport_.getData();
+    auto volume = inport_.getData();
 
     VolumeLaplacian::Dispatcher disp;
-    Volume* res = volume->getDataFormat()->dispatch(disp, volume);
+    Volume* res = volume->getDataFormat()->dispatch(disp, volume.get());
 
     outport_.setData(res);
 }

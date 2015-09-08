@@ -56,7 +56,7 @@ void VolumeGradientMagnitude::preProcess() {
 }
 
 void VolumeGradientMagnitude::postProcess() {
-    outport_.getData()->dataMap_.dataRange = dvec2(0, 1);
+    volume_->dataMap_.dataRange = dvec2(0, 1);
 }
 
 void VolumeGradientMagnitude::afterInportChanged() {

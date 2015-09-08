@@ -89,10 +89,10 @@ MultichannelRaycaster::~MultichannelRaycaster() {
 }
 
 void MultichannelRaycaster::initializeResources() {
-    utilgl::addShaderDefines(&shader_, raycasting_);
-    utilgl::addShaderDefines(&shader_, camera_);
-    utilgl::addShaderDefines(&shader_, lighting_);
-    utilgl::addShaderDefines(&shader_, positionIndicator_);
+    utilgl::addShaderDefines(shader_, raycasting_);
+    utilgl::addShaderDefines(shader_, camera_);
+    utilgl::addShaderDefines(shader_, lighting_);
+    utilgl::addShaderDefines(shader_, positionIndicator_);
 
     if (volumePort_.hasData()) {
         size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
@@ -121,16 +121,16 @@ void MultichannelRaycaster::process() {
     shader_.activate();
 
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(&shader_, units, volumePort_);
-    utilgl::bindAndSetUniforms(&shader_, units, entryPort_, COLOR_DEPTH_PICKING);
-    utilgl::bindAndSetUniforms(&shader_, units, exitPort_, COLOR_DEPTH);
+    utilgl::bindAndSetUniforms(shader_, units, volumePort_);
+    utilgl::bindAndSetUniforms(shader_, units, entryPort_, COLOR_DEPTH_PICKING);
+    utilgl::bindAndSetUniforms(shader_, units, exitPort_, COLOR_DEPTH);
 
     auto tfs = transferFunctions_.getPropertiesByType<TransferFunctionProperty>();
     size_t channels = volumePort_.getData()->getDataFormat()->getComponents();
     for (size_t channel = 0; channel < channels; channel++) {
-        utilgl::bindAndSetUniforms(&shader_, units, *tfs[channel]);
+        utilgl::bindAndSetUniforms(shader_, units, *tfs[channel]);
     }
-    utilgl::setUniforms(&shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_);
+    utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_);
 
     utilgl::singleDrawImagePlaneRect();
 

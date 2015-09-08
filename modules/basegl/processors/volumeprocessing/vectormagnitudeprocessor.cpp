@@ -44,7 +44,7 @@ VectorMagnitudeProcessor::VectorMagnitudeProcessor()
 VectorMagnitudeProcessor::~VectorMagnitudeProcessor() {}
 
 void VectorMagnitudeProcessor::postProcess() {
-    outport_.getData()->dataMap_.dataRange = dvec2(0, 1);
+    volume_->dataMap_.dataRange = dvec2(0, 1);
 }
 
 }  // namespace

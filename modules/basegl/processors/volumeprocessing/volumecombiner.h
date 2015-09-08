@@ -82,6 +82,7 @@ private:
 
     DataInport<Volume, 0> inport_;
     VolumeOutport outport_;
+    std::shared_ptr<Volume> volume_;
     StringProperty eqn_;
     CompositeProperty scales_;
 

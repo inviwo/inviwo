@@ -141,7 +141,7 @@ void MeshRenderProcessorGL::initializeResources() {
 
 void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     // shading defines
-    utilgl::addShaderDefines(&shader, lightingProperty_);
+    utilgl::addShaderDefines(shader, lightingProperty_);
     int layerID = 0;
 
     if (overrideColorBuffer_.get()){
@@ -183,7 +183,7 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     }
 
     for (std::size_t i = outport_.getData()->getNumberOfColorLayers(); i < static_cast<std::size_t>(layerID); i++) {
-        outport_.getData()->addColorLayer(outport_.getData()->getColorLayer(0)->clone());
+        outport_.getMutableData()->addColorLayer(outport_.getData()->getColorLayer(0)->clone());
     }
 
     shader.build();
@@ -220,16 +220,16 @@ void MeshRenderProcessorGL::process() {
     
     shader_.activate();
 
-    utilgl::setShaderUniforms(&shader_, camera_, "camera_");
-    utilgl::setShaderUniforms(&shader_, lightingProperty_, "light_");
-    utilgl::setShaderUniforms(&shader_, overrideColor_);
+    utilgl::setShaderUniforms(shader_, camera_, "camera_");
+    utilgl::setShaderUniforms(shader_, lightingProperty_, "light_");
+    utilgl::setShaderUniforms(shader_, overrideColor_);
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
     utilgl::CullFaceState culling(cullFace_.get());
     utilgl::PolygonModeState polygon(polygonMode_.get(), renderLineWidth_, renderPointSize_);
 
     for (auto& drawer : drawers_) {
-        utilgl::setShaderUniforms(&shader_, *(drawer.second->getGeometry()), "geometry_");
+        utilgl::setShaderUniforms(shader_, *(drawer.second->getGeometry()), "geometry_");
         drawer.second->draw();
     }
 
@@ -254,7 +254,7 @@ void MeshRenderProcessorGL::centerViewOnGeometry() {
     for (auto& mesh : inport_) {
         vec3 minPos(std::numeric_limits<float>::max());
         vec3 maxPos(std::numeric_limits<float>::lowest());
-        for (auto buff : mesh.getBuffers()) {
+        for (auto buff : mesh->getBuffers()) {
             if (buff->getBufferType() == POSITION_ATTRIB) {
                 const Position3dBufferRAM* posbuff =
                     dynamic_cast<const Position3dBufferRAM*>(buff->getRepresentation<BufferRAM>());
@@ -269,7 +269,7 @@ void MeshRenderProcessorGL::centerViewOnGeometry() {
             }
         }
 
-        mat4 trans = mesh.getCoordinateTransformer().getDataToWorldMatrix();
+        mat4 trans = mesh->getCoordinateTransformer().getDataToWorldMatrix();
 
         worldMin = glm::min(worldMin, (trans * vec4(minPos, 1.f)).xyz());
         worldMax = glm::max(worldMax, (trans * vec4(maxPos, 1.f)).xyz());
@@ -280,7 +280,7 @@ void MeshRenderProcessorGL::centerViewOnGeometry() {
 void MeshRenderProcessorGL::setNearFarPlane() {
     if (!inport_.hasData()) return;
 
-    const Mesh* geom = inport_.getData();
+    auto geom = inport_.getData();
 
     const Position3dBufferRAM* posBuffer = dynamic_cast<const Position3dBufferRAM*>(
         geom->getAttributes(0)->getRepresentation<BufferRAM>());
@@ -324,7 +324,7 @@ void MeshRenderProcessorGL::updateDrawers() {
     DrawerMap temp;
     std::swap(temp, drawers_);
 
-    std::map<const Outport*, std::vector<const Mesh*>> data;
+    std::map<const Outport*, std::vector<std::shared_ptr<const Mesh>>> data;
     for (auto& elem : inport_.getSourceVectorData()) {
         data[elem.first].push_back(elem.second);
     }
@@ -337,7 +337,7 @@ void MeshRenderProcessorGL::updateDrawers() {
             static_cast<long>(elem.second.size()) != std::distance(ibegin, iend)) {  // data is changed or new.
 
             for (auto geo : elem.second) {
-                if (auto renderer = MeshDrawerFactory::getPtr()->create(geo)) {
+                if (auto renderer = MeshDrawerFactory::getPtr()->create(geo.get())) {
                     drawers_.emplace(std::make_pair(elem.first, std::move(renderer)));
                 } 
             }

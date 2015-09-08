@@ -99,7 +99,7 @@ void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
 void MeshPicking::process() {
     utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
 
-    MeshDrawerGL drawer(static_cast<const Mesh*>(meshInport_.getData()));
+    MeshDrawerGL drawer(meshInport_.getData().get());
     shader_.activate();
     shader_.setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
 

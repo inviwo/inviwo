@@ -124,9 +124,9 @@ void Background::process() {
     }
     shader_.activate();
     TextureUnitContainer units;
-    if (inport_.hasData()) utilgl::bindAndSetUniforms(&shader_, units, inport_, COLOR_ONLY);
+    if (inport_.hasData()) utilgl::bindAndSetUniforms(shader_, units, inport_, COLOR_ONLY);
    
-    utilgl::setUniforms(&shader_, outport_, color1_, color2_, checkerBoardSize_);
+    utilgl::setUniforms(shader_, outport_, color1_, color2_, checkerBoardSize_);
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();

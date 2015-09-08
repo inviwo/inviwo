@@ -60,7 +60,7 @@ void VolumeGradientProcessor::preProcess() {
 }
 
 void VolumeGradientProcessor::postProcess() {
-    outport_.getData()->dataMap_.dataRange = dvec2(-1.0, 1.0);
+    volume_->dataMap_.dataRange = dvec2(-1.0, 1.0);
 }
 
 void VolumeGradientProcessor::initializeResources() {

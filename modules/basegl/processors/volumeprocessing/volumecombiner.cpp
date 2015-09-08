@@ -137,26 +137,26 @@ void VolumeCombiner::buildEquation() {
 void VolumeCombiner::process() {
     if (inport_.isChanged()) {
         const DataFormatBase* format = inport_.getData()->getDataFormat();
-        Volume* volume = new Volume(inport_.getData()->getDimensions(), format);
-        volume->setModelMatrix(inport_.getData()->getModelMatrix());
-        volume->setWorldMatrix(inport_.getData()->getWorldMatrix());
+        volume_ = std::make_shared<Volume>(inport_.getData()->getDimensions(), format);
+        volume_->setModelMatrix(inport_.getData()->getModelMatrix());
+        volume_->setWorldMatrix(inport_.getData()->getWorldMatrix());
         // pass on metadata
-        volume->copyMetaDataFrom(*inport_.getData());
-        volume->dataMap_ = inport_.getData()->dataMap_;
-        outport_.setData(volume);
+        volume_->copyMetaDataFrom(*inport_.getData());
+        volume_->dataMap_ = inport_.getData()->dataMap_;
+        outport_.setData(volume_);
     }
     shader_.activate();
 
     TextureUnitContainer cont;
     int i = 0;
     for (const auto& vol : inport_) {
-        utilgl::bindAndSetUniforms(&shader_, cont, &vol, "volume" + (i == 0 ? "" : toString(i)));
+        utilgl::bindAndSetUniforms(shader_, cont, *vol, "volume" + (i == 0 ? "" : toString(i)));
         i++;
     }
 
     for (auto prop : scales_.getProperties()) {
         const FloatProperty& prop2 = *static_cast<FloatProperty*>(prop);
-        utilgl::setUniforms(&shader_, prop2);
+        utilgl::setUniforms(shader_, prop2);
     }
 
     const size3_t dim{inport_.getData()->getDimensions()};
@@ -164,7 +164,7 @@ void VolumeCombiner::process() {
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
     if (inport_.isChanged()) {
-        VolumeGL* outVolumeGL = outport_.getData()->getEditableRepresentation<VolumeGL>();
+        VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }
 

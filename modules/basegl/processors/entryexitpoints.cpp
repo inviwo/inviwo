@@ -75,7 +75,7 @@ EntryExitPoints::~EntryExitPoints() {}
 void EntryExitPoints::process() {
     // Check if no renderer exist or if geometry changed
     if (inport_.isChanged() && inport_.hasData()) {
-        drawer_ = MeshDrawerFactory::getPtr()->create(inport_.getData());
+        drawer_ = MeshDrawerFactory::getPtr()->create(inport_.getData().get());
     }
     if (!drawer_) return;
 
@@ -83,7 +83,7 @@ void EntryExitPoints::process() {
     utilgl::PointSizeState pointsize(1.0f);
 
     shader_.activate();
-    const Mesh* geom = inport_.getData();
+    auto geom = inport_.getData();
     mat4 modelMatrix = geom->getCoordinateTransformer(camera_.get()).getDataToClipMatrix();
     shader_.setUniform("dataToClip", modelMatrix);
 
@@ -104,7 +104,7 @@ void EntryExitPoints::process() {
                 tmpEntry_.reset(
                     new Image(entryPort_.getDimensions(), entryPort_.getData()->getDataFormat()));
             }
-            utilgl::activateAndClearTarget(tmpEntry_.get());
+            utilgl::activateAndClearTarget(*tmpEntry_);
         } else {
             utilgl::activateAndClearTarget(entryPort_, COLOR_DEPTH);
         }
@@ -121,8 +121,8 @@ void EntryExitPoints::process() {
         clipping_.activate();
 
         TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(&clipping_, units, tmpEntry_.get(), "entry", COLOR_DEPTH);
-        utilgl::bindAndSetUniforms(&clipping_, units, exitPort_, COLOR_DEPTH);
+        utilgl::bindAndSetUniforms(clipping_, units, *tmpEntry_, "entry", COLOR_DEPTH);
+        utilgl::bindAndSetUniforms(clipping_, units, exitPort_, COLOR_DEPTH);
 
         // the rendered plane is specified in camera coordinates
         // thus we must transform from camera to world to texture coordinates

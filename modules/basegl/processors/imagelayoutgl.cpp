@@ -168,7 +168,7 @@ void ImageLayoutGL::onStatusChange() {
 
 void ImageLayoutGL::process() {
     TextureUnit::setZeroUnit();
-    std::vector<const Image*> images = multiinport_.getVectorData();
+    auto images = multiinport_.getVectorData();
 
     TextureUnit colorUnit, depthUnit, pickingUnit;
     utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
@@ -180,7 +180,7 @@ void ImageLayoutGL::process() {
 
     size_t minNum = std::min(images.size(), viewManager_.size());
     for (size_t i = 0; i < minNum; ++i) {
-        utilgl::bindTextures(images[i], colorUnit, depthUnit, pickingUnit);
+        utilgl::bindTextures(*images[i], colorUnit, depthUnit, pickingUnit);
         glViewport(viewManager_[i].x, viewManager_[i].y, viewManager_[i].z, viewManager_[i].w);
         utilgl::singleDrawImagePlaneRect();
     }

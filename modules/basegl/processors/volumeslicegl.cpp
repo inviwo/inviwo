@@ -399,15 +399,15 @@ void VolumeSliceGL::process() {
     shader_.activate();
 
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(&shader_, units, inport_);
+    utilgl::bindAndSetUniforms(shader_, units, inport_);
 
     utilgl::TexParameter wraps(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, volumeWrapping_.get());
     utilgl::TexParameter wrapt(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, volumeWrapping_.get());
     utilgl::TexParameter wrapr(units[0], GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, volumeWrapping_.get());
 
-    if (tfMappingEnabled_) utilgl::bindAndSetUniforms(&shader_, units, transferFunction_);
+    if (tfMappingEnabled_) utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
 
-    utilgl::setUniforms(&shader_, tfAlphaOffset_, fillColor_);
+    utilgl::setUniforms(shader_, tfAlphaOffset_, fillColor_);
     shader_.setUniform("sliceRotation", sliceRotation_);
     shader_.setUniform("slice", (inverseSliceRotation_ * vec4(planePosition_.get(), 1.0f)).z);
     shader_.setUniform("dataToClip", mat4(1.0f));
