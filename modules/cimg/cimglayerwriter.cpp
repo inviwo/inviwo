@@ -27,14 +27,14 @@
  * 
  *********************************************************************************/
 
-#include <modules/cimg/cimgwriter.h>
+#include <modules/cimg/cimglayerwriter.h>
 #include <modules/cimg/cimgutils.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/image/layer.h>
 
 namespace inviwo {
 
-CImgWriter::CImgWriter() 
+CImgLayerWriter::CImgLayerWriter() 
     : DataWriterType<Layer>() {
     addExtension(FileExtension("raw", "RAW"));
 #ifdef cimg_use_png
@@ -51,28 +51,28 @@ CImgWriter::CImgWriter()
     addExtension(FileExtension("hdr", "Analyze 7.5"));
 }
 
-CImgWriter::CImgWriter(const CImgWriter& rhs) : DataWriterType<Layer>(rhs) {}
+CImgLayerWriter::CImgLayerWriter(const CImgLayerWriter& rhs) : DataWriterType<Layer>(rhs) {}
 
-CImgWriter& CImgWriter::operator=(const CImgWriter& that) {
+CImgLayerWriter& CImgLayerWriter::operator=(const CImgLayerWriter& that) {
     if (this != &that)
         DataWriterType<Layer>::operator=(that);
 
     return *this;
 }
 
-CImgWriter* CImgWriter::clone() const {
-    return new CImgWriter(*this);
+CImgLayerWriter* CImgLayerWriter::clone() const {
+    return new CImgLayerWriter(*this);
 }
 
-void CImgWriter::writeData(const Layer* data, const std::string filePath) const {
+void CImgLayerWriter::writeData(const Layer* data, const std::string filePath) const {
     CImgUtils::saveLayer(filePath, data);
 }
 
-std::vector<unsigned char>* CImgWriter::writeDataToBuffer(const Layer* data, std::string& type) const {
+std::vector<unsigned char>* CImgLayerWriter::writeDataToBuffer(const Layer* data, std::string& type) const {
     return CImgUtils::saveLayerToBuffer(type, data);
 }
 
-bool CImgWriter::writeDataToRepresentation(const DataRepresentation* src, DataRepresentation* dst) const {
+bool CImgLayerWriter::writeDataToRepresentation(const DataRepresentation* src, DataRepresentation* dst) const {
     const LayerRAM* source = dynamic_cast<const LayerRAM*>(src);
     LayerRAM* target = dynamic_cast<LayerRAM*>(dst);
 

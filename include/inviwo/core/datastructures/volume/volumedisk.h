@@ -49,6 +49,15 @@ public:
 
     virtual void setDimensions(size3_t dimensions);
     virtual const size3_t& getDimensions() const;
+
+    /**
+    * \brief Updates the data format retrieved during loading
+    *
+    * @param format the new dataformat
+    *
+    */
+    void updateDataFormat(const DataFormatBase* format);
+
 private:
     size3_t dimensions_;
 };

@@ -43,10 +43,16 @@ public:
     ~CImgUtils() {}
 
     /**
-    * Loads data from a specified filePath.
+    * Loads layer data from a specified filePath.
     **/
-    static void* loadData(void* dst, const std::string& filePath, uvec2& out_dim,
+    static void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
         DataFormatEnums::Id& formatId, bool rescaleToDim = false);
+
+    /**
+    * Loads volume data from a specified filePath.
+    **/
+    static void* loadVolumeData(void* dst, const std::string& filePath, size3_t& out_dim,
+        DataFormatEnums::Id& formatId);
    
     /**
     * Saves an layer of an image to a specified filename.

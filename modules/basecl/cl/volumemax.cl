@@ -36,7 +36,7 @@ __kernel void volumeMaxKernel(read_only image3d_t volumeIn, __constant VolumePar
     , int4 region
     ) 
 {
-    //output image pixel coordinates 
+    // output coordinates 
     int3 globalId = (int3)(get_global_id(0), get_global_id(1), get_global_id(2));  
 
     

@@ -38,8 +38,7 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API VolumeRAMSubSample {
 public:
-    enum class Factor : size_t {None = 1, Half = 2, Third = 3, Fourth = 4 };
-    static VolumeRAM* apply(const VolumeRepresentation* in, Factor factor);
+    static VolumeRAM* apply(const VolumeRepresentation* in, size3_t factors);
 };
 
 namespace detail {
@@ -47,12 +46,11 @@ namespace detail {
 struct IVW_MODULE_BASE_API VolumeRAMSubSampleDispatcher {
     using type = VolumeRAM*;
     template <class T>
-    VolumeRAM* dispatch(const VolumeRepresentation* in, VolumeRAMSubSample::Factor factor);
+    VolumeRAM* dispatch(const VolumeRepresentation* in, size3_t factors);
 };
 
 template <class DataType>
-VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in, 
-                                                  VolumeRAMSubSample::Factor factor) {
+VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in, size3_t f) {
     using T = typename DataType::type;
     using P = typename util::same_extent<T, double>::type;
 
@@ -61,7 +59,6 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
  
     // calculate new size
     const size3_t dataDims{volume->getDimensions()};
-    const size_t f = static_cast<size_t>(factor);
     const size3_t newDims{dataDims / f};
 
     // allocate space
@@ -74,20 +71,20 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
     util::IndexMapper o(dataDims);
     util::IndexMapper n(newDims);
 
-    const double samplesInv = 1.0/(f*f*f);
+    const double samplesInv = 1.0/(f.x*f.y*f.z);
     for (size_t z=0; z < newDims.z; ++z) {
         for (size_t y=0; y < newDims.y; ++y) {
             #pragma omp parallel for
             for (long long xomp=0; xomp < static_cast<long long>(newDims.x); ++xomp) {
                 const size_t x = static_cast<size_t>(xomp); // OpenMP need signed integral type.
-                const size_t px{x*f};
-                const size_t py{y*f};
-                const size_t pz{z*f};
+                const size_t px{x*f.x};
+                const size_t py{y*f.y};
+                const size_t pz{z*f.z};
                 P val{0.0};
 
-                for (size_t oz = 0; oz < f; ++oz) {
-                    for (size_t oy = 0; oy < f; ++oy) {
-                        for (size_t ox = 0; ox < f; ++ox) {
+                for (size_t oz = 0; oz < f.z; ++oz) {
+                    for (size_t oy = 0; oy < f.y; ++oy) {
+                        for (size_t ox = 0; ox < f.x; ++ox) {
                             val += src[o(px + ox, py + oy, pz + oz)];
                         }
                     }

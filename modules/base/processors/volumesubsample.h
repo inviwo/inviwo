@@ -35,7 +35,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/algorithm/volume/volumeramsubsample.h>
 #include <inviwo/core/processors/activityindicator.h>
 
@@ -56,7 +56,7 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Enable Operation__ ...
- *   * __Factor__ ...
+ *   * __Factors__ ...
  *
  */
 class IVW_MODULE_BASE_API VolumeSubsample : public Processor, public ActivityIndicatorOwner {
@@ -78,7 +78,7 @@ private:
 
     BoolProperty enabled_;
     BoolProperty waitForCompletion_;
-    TemplateOptionProperty<VolumeRAMSubSample::Factor> subSampleFactor_;
+    IntVec3Property subSampleFactors_;
 
     std::future<std::unique_ptr<Volume>> result_;
     bool dirty_;

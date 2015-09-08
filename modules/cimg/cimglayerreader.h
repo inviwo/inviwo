@@ -27,33 +27,34 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_CIMGWRITER_H
-#define IVW_CIMGWRITER_H
+#ifndef IVW_CIMGLAYERREADER_H
+#define IVW_CIMGLAYERREADER_H
 
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datareader.h>
 
 namespace inviwo {
 
 class Layer;
+class LayerDisk;
 
-/** \brief Writer for Images files
+/** \brief Reader for Images files
  *
  */
-class IVW_MODULE_CIMG_API CImgWriter : public DataWriterType<Layer> {
+class IVW_MODULE_CIMG_API CImgLayerReader : public DataReaderType<Layer> {
 public:
-    CImgWriter();
-    CImgWriter(const CImgWriter& rhs);
-    CImgWriter& operator=(const CImgWriter& that);
-    virtual CImgWriter* clone() const;
-    virtual ~CImgWriter() {};
+    CImgLayerReader();
+    CImgLayerReader(const CImgLayerReader& rhs);
+    CImgLayerReader& operator=(const CImgLayerReader& that);
+    virtual CImgLayerReader* clone() const;
+    virtual ~CImgLayerReader() {}
 
-    virtual void writeData(const Layer* data, const std::string filePath) const;
-    virtual std::vector<unsigned char>* writeDataToBuffer(const Layer* data, std::string& type) const;
-    virtual bool writeDataToRepresentation(const DataRepresentation* src, DataRepresentation* dst) const;
+    virtual Layer* readMetaData(const std::string filePath);
+    virtual void* readData() const;
+    virtual void readDataInto(void* dest) const;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_CIMGWRITER_H
+#endif  // IVW_CIMGLAYERREADER_H

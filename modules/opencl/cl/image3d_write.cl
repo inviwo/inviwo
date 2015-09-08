@@ -30,42 +30,94 @@
 #ifndef IVW_IMAGE3D_WRITE_CL
 #define IVW_IMAGE3D_WRITE_CL
 
+// https://www.khronos.org/registry/cl/sdk/1.2/docs/man/xhtml/write_image3d.html
+
 // cl_khr_3d_image_writes is defined but not supported
 // on some NVIDIA drivers (355.82 for example)
 // This means that we cannot rely on cl_khr_3d_image_writes
 // being correctly defined and must use our own define.
 #ifdef SUPPORTS_VOLUME_WRITE //cl_khr_3d_image_writes 
     #pragma OPENCL_EXTENSION cl_khr_3d_image_writes : enable
-    #define image_3d_write_uint8_t __write_only image_3d_t
-    #define image_3d_write_uint16_t __write_only image_3d_t
-    #define image_3d_write_uint32_t __write_only image_3d_t
-    #define image_3d_write_float16_t __write_only image_3d_t
-    #define image_3d_write_float32_t __write_only image_3d_t
+    #define image_3d_write_uint8_t __write_only image3d_t
+    #define image_3d_write_uint16_t __write_only image3d_t
+    #define image_3d_write_uint32_t __write_only image3d_t
+    #define image_3d_write_float16_t __write_only image3d_t
+    #define image_3d_write_float32_t __write_only image3d_t
+
+    // Vec2 types
+    #define image_3d_write_vec2_uint16_t __write_only image3d_t
+
 #else
     #define image_3d_write_uint8_t __global uchar*
     #define image_3d_write_uint16_t __global ushort*
     #define image_3d_write_uint32_t __global uint*
     #define image_3d_write_float16_t __global half*
     #define image_3d_write_float32_t __global float*
+
+    // vec2 types
+    #define image_3d_write_vec2_uint16_t __global ushort2*
 #endif
 
+// 8.3.1.2 Converting floating-point values 
+// to normalized integer channel data types
+// https://www.khronos.org/registry/cl/specs/opencl-1.0.pdf
 
+// Write value, val in [0 1], at location coord.
+// 0.f will convert to 0 
+// 1.f will convert to 255
+// @note write_imagef can only be used with image objects created with 
+// image_channel_data_type set to one of the pre-defined packed formats or set to 
+// CL_SNORM_INT8, CL_UNORM_INT8, CL_SNORM_INT16, CL_UNORM_INT16, CL_HALF_FLOAT or CL_FLOAT.
 void writeImageUInt8f(image_3d_write_uint8_t image, int4 coord, int4 dimension, float val) {
 #ifdef SUPPORTS_VOLUME_WRITE
-    write_imagef(image, coord, (uint4)(val));
+    write_imagef(image, coord, (float4)(val));
 #else
     // The preferred method for conversions from floating-point values to normalized integer
     image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = convert_uchar_sat_rte(val*255.f);
 #endif
 }
 
-void write_imageUInt8(image_3d_write_uint8_t image, int4 coord, int4 dimension, uchar val) {
+// 
+// write_imageui can only be used with image objects created with 
+// image_channel_data_type set to one of the following values: 
+// CL_UNSIGNED_INT8, CL_UNSIGNED_INT16, or CL_UNSIGNED_INT32.
+void write_imageUInt8ui(image_3d_write_uint8_t image, int4 coord, int4 dimension, uchar val) {
 #ifdef SUPPORTS_VOLUME_WRITE
-    write_imageui(image, coord, (uint4)(val));
+    write_imageui(image, coord, (uint4)(convert_uint(val)));
 #else
     image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = val;
 #endif
 }
+
+// Write value, val in [0 1], at location coord.
+// 0.f will convert to 0 
+// 1.f will convert to 65535
+// @note write_imagef can only be used with image objects created with 
+// image_channel_data_type set to one of the pre-defined packed formats or set to 
+// CL_SNORM_INT8, CL_UNORM_INT8, CL_SNORM_INT16, CL_UNORM_INT16, CL_HALF_FLOAT or CL_FLOAT.
+void writeImageUInt16f(image_3d_write_uint16_t image, int4 coord, int4 dimension, float val) {
+#ifdef SUPPORTS_VOLUME_WRITE
+    write_imagef(image, coord, (float4)(val));
+#else
+    // The preferred method for conversions from floating-point values to normalized integer
+    image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = convert_ushort_sat_rte(val * 65535.f);
+#endif
+}
+
+
+// ------------ vec2 ---------------- //
+
+// Write value, val in [0 1], at location coord.
+// 0.f will convert to 0 
+// 1.f will convert to 65535
+void writeImageVec2UInt16f(image_3d_write_vec2_uint16_t image, int4 coord, int4 dimension, float2 val) {
+#ifdef SUPPORTS_VOLUME_WRITE //cl_khr_3d_image_writes 
+    write_imagef(image, coord, (float4)(val, val));
+#else
+    image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = convert_ushort2_sat_rte(val * 65535.f);
+#endif
+}
+
 
 
 #endif // IVW_IMAGE3D_WRITE_CL

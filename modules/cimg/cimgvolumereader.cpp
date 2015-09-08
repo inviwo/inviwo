@@ -24,75 +24,61 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <modules/cimg/cimgreader.h>
+#include <modules/cimg/cimgvolumereader.h>
 #include <modules/cimg/cimgutils.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/layerdisk.h>
 
 namespace inviwo {
 
-CImgReader::CImgReader()
-    : DataReaderType<Layer>() {
-    addExtension(FileExtension("raw", "RAW"));
-#ifdef cimg_use_png
-    addExtension(FileExtension("png", "Portable Network Graphics"));
-#endif
-#ifdef cimg_use_jpeg
-    addExtension(FileExtension("jpg", "Joint Photographic Experts Group"));
-    addExtension(FileExtension("jpeg", "Joint Photographic Experts Group"));
-#endif
-    addExtension(FileExtension("bmp", "Windows bitmap"));
-#ifdef cimg_use_openexr
-    addExtension(FileExtension("exr", "OpenEXR"));
-#endif
+CImgVolumeReader::CImgVolumeReader() : DataReaderType<Volume>() {
     addExtension(FileExtension("hdr", "Analyze 7.5"));
 }
 
-CImgReader::CImgReader(const CImgReader& rhs)
-    : DataReaderType<Layer>(rhs) {};
+CImgVolumeReader::CImgVolumeReader(const CImgVolumeReader& rhs) : DataReaderType<Volume>(rhs){};
 
-CImgReader& CImgReader::operator=(const CImgReader& that) {
+CImgVolumeReader& CImgVolumeReader::operator=(const CImgVolumeReader& that) {
     if (this != &that) {
-        DataReaderType<Layer>::operator=(that);
+        DataReaderType<Volume>::operator=(that);
     }
 
     return *this;
 }
 
-CImgReader* CImgReader::clone() const { return new CImgReader(*this); }
+CImgVolumeReader* CImgVolumeReader::clone() const { return new CImgVolumeReader(*this); }
 
-Layer* CImgReader::readMetaData(std::string filePath) {
+Volume* CImgVolumeReader::readMetaData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
         std::string newPath = filesystem::addBasePath(filePath);
 
         if (filesystem::fileExists(newPath)) {
             filePath = newPath;
-        } else {
+        }
+        else {
             throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
         }
     }
 
-    Layer* layer = new Layer();
+    Volume* volume = new Volume();
 
-    LayerDisk* layerDisk = new LayerDisk(filePath);
-    layerDisk->setDataReader(this->clone());
+    VolumeDisk* volumeDisk = new VolumeDisk(filePath);
+    volumeDisk->setDataReader(this->clone());
 
-    layer->addRepresentation(layerDisk);
+    volume->addRepresentation(volumeDisk);
 
-    return layer;
+    return volume;
 }
 
-void CImgReader::readDataInto(void* destination) const {
-    LayerDisk* layerDisk = dynamic_cast<LayerDisk*>(owner_);
-    if(layerDisk){
-        uvec2 dimensions = layerDisk->getDimensions();
+void CImgVolumeReader::readDataInto(void* destination) const {
+    VolumeDisk* volumeDisk = dynamic_cast<VolumeDisk*>(owner_);
+    if (volumeDisk){
+        size3_t dimensions = volumeDisk->getDimensions();
         DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
 
-        std::string filePath = layerDisk->getSourceFile();
+        std::string filePath = volumeDisk->getSourceFile();
 
         if (!filesystem::fileExists(filePath)) {
             std::string newPath = filesystem::addBasePath(filePath);
@@ -105,29 +91,22 @@ void CImgReader::readDataInto(void* destination) const {
             }
         }
 
-        if (dimensions != uvec2(0)){
-            // Load and rescale to input dimensions
-            CImgUtils::loadData(destination, filePath, dimensions, formatId, true);
-        }
-        else{
-            // Load to original dimensions
-            CImgUtils::loadData(destination, filePath, dimensions, formatId, false);
-            layerDisk->setDimensions(dimensions);
-        }
+        CImgUtils::loadVolumeData(destination, filePath, dimensions, formatId);
+        volumeDisk->setDimensions(dimensions);
 
-        layerDisk->updateDataFormat(DataFormatBase::get(formatId));
+        volumeDisk->updateDataFormat(DataFormatBase::get(formatId));
     }
 }
 
-void* CImgReader::readData() const {
+void* CImgVolumeReader::readData() const {
     void* data = nullptr;
 
-    LayerDisk* layerDisk = dynamic_cast<LayerDisk*>(owner_);
-    if(layerDisk){
-        uvec2 dimensions = layerDisk->getDimensions();
+    VolumeDisk* volumeDisk = dynamic_cast<VolumeDisk*>(owner_);
+    if (volumeDisk){
+        size3_t dimensions = volumeDisk->getDimensions();
         DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
 
-        std::string filePath = layerDisk->getSourceFile();
+        std::string filePath = volumeDisk->getSourceFile();
 
         if (!filesystem::fileExists(filePath)) {
             std::string newPath = filesystem::addBasePath(filePath);
@@ -140,20 +119,23 @@ void* CImgReader::readData() const {
             }
         }
 
-        if (dimensions != uvec2(0)){
-            // Load and rescale to input dimensions
-            data = CImgUtils::loadData(nullptr, filePath, dimensions, formatId, true);
-        }
-        else{
-            // Load to original dimensions
-            data = CImgUtils::loadData(nullptr, filePath, dimensions, formatId, false);
-            layerDisk->setDimensions(dimensions);
-        }
+        data = CImgUtils::loadVolumeData(nullptr, filePath, dimensions, formatId);
+        volumeDisk->setDimensions(dimensions);
 
-        layerDisk->updateDataFormat(DataFormatBase::get(formatId));
+        volumeDisk->updateDataFormat(DataFormatBase::get(formatId));
     }
 
     return data;
+}
+
+void CImgVolumeReader::printMetaInfo(MetaDataOwner* metaDataOwner, std::string key) {
+    StringMetaData* metaData = metaDataOwner->getMetaData<StringMetaData>(key);
+    if (metaData) {
+        std::string metaStr = metaData->get();
+        replaceInString(metaStr, "\n", ", ");
+        key[0] = static_cast<char>(toupper(key[0]));
+        LogInfo(key << ": " << metaStr);
+    }
 }
 
 }  // namespace

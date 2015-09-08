@@ -27,34 +27,33 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_CIMGREADER_H
-#define IVW_CIMGREADER_H
+#ifndef IVW_CIMGVOLUMEREADER_H
+#define IVW_CIMGVOLUMEREADER_H
 
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/io/datareader.h>
 
 namespace inviwo {
 
-class Layer;
-class LayerDisk;
-
-/** \brief Reader for Images files
- *
- */
-class IVW_MODULE_CIMG_API CImgReader : public DataReaderType<Layer> {
+ class IVW_MODULE_CIMG_API CImgVolumeReader : public DataReaderType<Volume> {
 public:
-    CImgReader();
-    CImgReader(const CImgReader& rhs);
-    CImgReader& operator=(const CImgReader& that);
-    virtual CImgReader* clone() const;
-    virtual ~CImgReader() {}
+    CImgVolumeReader();
+    CImgVolumeReader(const CImgVolumeReader& rhs);
+    CImgVolumeReader& operator=(const CImgVolumeReader& that);
+    virtual CImgVolumeReader* clone() const;
+    virtual ~CImgVolumeReader() {}
 
-    virtual Layer* readMetaData(const std::string filePath);
+    virtual Volume* readMetaData(const std::string filePath);
     virtual void* readData() const;
     virtual void readDataInto(void* dest) const;
+
+ protected:
+     void printMetaInfo(MetaDataOwner*, std::string);
+
 };
 
 }  // namespace
 
-#endif  // IVW_CIMGREADER_H
+#endif  // IVW_CIMGVOLUMEREADER_H
