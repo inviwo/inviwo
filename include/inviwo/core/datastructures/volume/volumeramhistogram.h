@@ -38,7 +38,7 @@ namespace inviwo {
 
 namespace util {
 
-template <typename T, typename std::enable_if<util::rank<T>::value <= 1, int>::type = 0>
+template <typename T>
 HistogramContainer calculateVolumeHistogram(const T* data, size3_t dimensions,
                                                            dvec2 dataRange,
                                                            const bool& stop = false,
