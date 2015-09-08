@@ -61,8 +61,12 @@ KernelOwner::~KernelOwner() {
 }
 
 void KernelOwner::removeKernel(cl::Kernel* kernel) {
-    kernels_.erase(kernels_.find(kernel));
-    KernelManager::getPtr()->stopObservingKernel(kernel, this);
+    auto kernelIt = kernels_.find(kernel);
+    if (kernelIt != kernels_.end()) {
+        kernels_.erase(kernels_.find(kernel));
+        KernelManager::getPtr()->stopObservingKernel(kernel, this);
+    }
+
 }
 
 ProcessorKernelOwner::ProcessorKernelOwner(Processor* processor)
