@@ -78,7 +78,7 @@ void VolumeExport::deinitialize() {
 }
 
 void VolumeExport::exportVolume() {
-    const Volume* volume = volumePort_.getData();
+    auto volume = volumePort_.getData();
 
     if (volume && !volumeFile_.get().empty()) {
         std::string fileExtension = filesystem::getFileExtension(volumeFile_.get());
@@ -88,7 +88,7 @@ void VolumeExport::exportVolume() {
         if (writer) {
             try {
                 writer->setOverwrite(overwrite_.get());
-                writer->writeData(volume, volumeFile_.get());
+                writer->writeData(volume.get(), volumeFile_.get());
                 LogInfo("Volume exported to disk: " << volumeFile_.get());
             } catch (DataWriterException const& e) {
                 util::log(e.getContext(), e.getMessage(), LogLevel::Error);

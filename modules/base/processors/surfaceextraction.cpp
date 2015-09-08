@@ -50,14 +50,14 @@ ProcessorCodeState(SurfaceExtraction, CODE_STATE_EXPERIMENTAL);
 SurfaceExtraction::SurfaceExtraction()
     : Processor()
     , volume_("volume")
-    , mesh_("mesh")
+    , outport_("mesh")
     , isoValue_("iso", "ISO Value", 0.5f, 0.0f, 1.0f, 0.01f)
     , method_("method", "Method")
     , colors_("meshColors", "Mesh Colors")
     , dirty_(false) {
 
     addPort(volume_);
-    addPort(mesh_);
+    addPort(outport_);
 
     addProperty(method_);
     addProperty(isoValue_);
@@ -75,16 +75,15 @@ SurfaceExtraction::~SurfaceExtraction() {}
 
 
 void SurfaceExtraction::process() {
-    auto meshList = mesh_.getData();
-    if (!meshList) {
-        meshList = new std::vector<std::unique_ptr<Mesh>>();
-        mesh_.setData(meshList);
+    if (!meshes_) {
+        meshes_ = std::make_shared<std::vector<std::unique_ptr<Mesh>>>();
+        outport_.setData(meshes_);
     }
 
     auto data = volume_.getSourceVectorData();
     auto changed = volume_.getChangedOutports();
     result_.resize(data.size());
-    meshList->resize(data.size());
+    meshes_->resize(data.size());
 
     for (size_t i = 0; i < data.size(); ++i) {
         const VolumeRAM* vol = data[i].second->getRepresentation<VolumeRAM>();
@@ -94,7 +93,7 @@ void SurfaceExtraction::process() {
                 if (result_[i].result.valid() &&
                     result_[i].result.wait_for(std::chrono::duration<int, std::milli>(0)) ==
                         std::future_status::ready) {
-                    (*meshList)[i] = std::move(result_[i].result.get());
+                    (*meshes_)[i] = std::move(result_[i].result.get());
                     result_[i].status = 1.0f;
                     dirty_ = false;
                 }
@@ -143,9 +142,9 @@ void SurfaceExtraction::setMinMax() {
         auto minmax = std::make_pair(std::numeric_limits<double>::max(),
                                      std::numeric_limits<double>::lowest());
         minmax = std::accumulate(volume_.begin(), volume_.end(), minmax,
-                        [](decltype(minmax) mm, const Volume& v) {
-            return std::make_pair(std::min(mm.first, v.dataMap_.dataRange.x),
-                                  std::max(mm.second, v.dataMap_.dataRange.y));
+                        [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
+            return std::make_pair(std::min(mm.first, v->dataMap_.dataRange.x),
+                                  std::max(mm.second, v->dataMap_.dataRange.y));
         });
 
         isoValue_.setMinValue(static_cast<const float>(minmax.first));
@@ -196,7 +195,7 @@ void SurfaceExtraction::invalidate(InvalidationLevel invalidationLevel,
     notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
 
-    if (dirty_ || volume_.isChanged()) mesh_.invalidate(INVALID_OUTPUT);
+    if (dirty_ || volume_.isChanged()) outport_.invalidate(INVALID_OUTPUT);
 
     notifyObserversInvalidationEnd(this);
 }

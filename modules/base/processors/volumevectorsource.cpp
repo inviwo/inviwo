@@ -80,7 +80,7 @@ void VolumeVectorSource::load(bool deserialize /*= false*/) {
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
-        basis_.updateForNewVolume(*(*volumes_)[0], deserialize);
+        basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
         information_.updateForNewVolume(*(*volumes_)[0], deserialize);
     }
 }
@@ -96,10 +96,10 @@ void VolumeVectorSource::addFileNameFilters() {
 void VolumeVectorSource::process() {
     if (!isDeserializing_ && volumes_ && !volumes_->empty()) {
         for (auto& vol : *volumes_) {
-            basis_.updateVolume(*vol);
+            basis_.updateEntity(*vol);
             information_.updateVolume(*vol);
         }
-        outport_.setData(volumes_.get(), false);
+        outport_.setData(volumes_);
     }
 }
 

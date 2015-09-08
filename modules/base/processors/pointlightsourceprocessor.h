@@ -173,8 +173,8 @@ private:
     FloatVec2Property lightScreenPos_;
 
     OptionPropertyInt interactionEvents_;
-    PointLightInteractionHandler* lightInteractionHandler_;
-    PointLight* lightSource_;
+    PointLightInteractionHandler lightInteractionHandler_;
+    std::shared_ptr<PointLight> lightSource_;
 };
 
 } // namespace

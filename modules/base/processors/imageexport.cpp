@@ -92,7 +92,7 @@ void ImageExport::process() {
 
 void ImageExport::processExport(){
     exportQueued_ = false;
-    const Image* image = imagePort_.getData();
+    auto image = imagePort_.getData();
 
     if (image && !imageFile_.get().empty()) {
         const Layer* layer = image->getColorLayer();

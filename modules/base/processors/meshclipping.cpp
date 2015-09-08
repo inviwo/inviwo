@@ -103,7 +103,7 @@ void MeshClipping::process() {
         - Build new mesh from the triangle strip list and return it.
     */
     if (clippingEnabled_.get()) {
-        const Mesh* geom = inport_.getData();
+        auto geom = inport_.getData();
 
         vec3 point = planePoint_.get();
         vec3 normal = planeNormal_.get();
@@ -125,25 +125,25 @@ void MeshClipping::process() {
 
             // If pointPlaneMove_ zero i.e. no clipping, so output same mesh
             if (pointPlaneMove_ <= 0.f + EPSILON){
-                outport_.setConstData(inport_.getData());
+                outport_.setData(inport_.getData());
                 return;
             }
         }
 
         // LogInfo("Calling clipping method.");
         Mesh* clippedPlaneGeom =
-            clipGeometryAgainstPlaneRevised(geom, Plane(point, normal));
+            clipGeometryAgainstPlaneRevised(geom.get(), Plane(point, normal));
         if (clippedPlaneGeom) {
             clippedPlaneGeom->setModelMatrix(inport_.getData()->getModelMatrix());
             clippedPlaneGeom->setWorldMatrix(inport_.getData()->getWorldMatrix());
             // LogInfo("Setting new mesh as outport data.");
             outport_.setData(clippedPlaneGeom);
         }else{
-            outport_.setConstData(inport_.getData());
+            outport_.setData(inport_.getData());
         }
         // LogInfo("Done.");
     } else {
-        outport_.setConstData(inport_.getData());
+        outport_.setData(inport_.getData());
     }
 }
 
@@ -158,14 +158,14 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed(){
     planeNormal_.set(glm::normalize(camera_.getLookTo() - camera_.getLookFrom()));
 
     // Calculate new plane point by finding the closest geometry point to the camera
-    const Mesh* geom = inport_.getData();
+    auto geom = inport_.getData();
     const std::vector<vec3>* vertexList;
-    const SimpleMesh* simpleInputMesh = dynamic_cast<const SimpleMesh*>(geom);
+    const SimpleMesh* simpleInputMesh = dynamic_cast<const SimpleMesh*>(geom.get());
     if (simpleInputMesh) {
         vertexList = simpleInputMesh->getVertexList()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
     }
     else {
-        const BasicMesh* basicInputMesh = dynamic_cast<const BasicMesh*>(geom);
+        const BasicMesh* basicInputMesh = dynamic_cast<const BasicMesh*>(geom.get());
         if (basicInputMesh) {
             vertexList = basicInputMesh->getVertices()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
         }

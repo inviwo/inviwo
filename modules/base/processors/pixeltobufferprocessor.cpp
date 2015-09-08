@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "pixeltobufferprocessor.h"
@@ -35,20 +35,23 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(PixelToBufferProcessor,  "org.inviwo.PixelToBufferProcessor")
-ProcessorDisplayName(PixelToBufferProcessor,  "Pixel to buffer")
+ProcessorClassIdentifier(PixelToBufferProcessor, "org.inviwo.PixelToBufferProcessor");
+ProcessorDisplayName(PixelToBufferProcessor, "Pixel to buffer");
 ProcessorTags(PixelToBufferProcessor, Tags::CPU);
 ProcessorCategory(PixelToBufferProcessor, "Image");
 ProcessorCodeState(PixelToBufferProcessor, CODE_STATE_EXPERIMENTAL);
 
 PixelToBufferProcessor::PixelToBufferProcessor()
-    : Processor(), InteractionHandler()
-    , inport_("input", true) 
+    : Processor()
+    , InteractionHandler()
+    , inport_("input", true)
     , pixelValues_("pixelValues")
     , fromPixel_("fromPixel", "From pixel", ivec2(0), ivec2(0), ivec2(1))
     , channel_("channel", "Channel", 0, 0, 3)
     , clearValues_("clearValues", "Clear collected values", VALID)
-    , handleInteractionEvents_("handleEvents", "Enable picking", false) {
+    , handleInteractionEvents_("handleEvents", "Enable picking", false)
+    , values_(std::make_shared<PosBuffer>()) {
+
     addPort(inport_);
     addPort(pixelValues_);
 
@@ -57,21 +60,19 @@ PixelToBufferProcessor::PixelToBufferProcessor()
     addProperty(fromPixel_);
     addProperty(channel_);
     addProperty(clearValues_);
-    clearValues_.onChange(this,
-        &PixelToBufferProcessor::clearOutput);
+    clearValues_.onChange(this, &PixelToBufferProcessor::clearOutput);
     addProperty(handleInteractionEvents_);
     handleInteractionEvents_.onChange(this,
-        &PixelToBufferProcessor::handleInteractionEventsChanged);
-    pixelValues_.setData(&values_, false);
+                                      &PixelToBufferProcessor::handleInteractionEventsChanged);
+    pixelValues_.setData(values_);
 }
 
 void PixelToBufferProcessor::inportChanged() {
-    if (!inport_.hasData()) {
-        return;
-    }
+    if (!inport_.hasData()) return;
+
     auto data = inport_.getData();
-    fromPixel_.setMaxValue(ivec2(data->getDimensions())-1);
-    channel_.setMaxValue(static_cast<int>(data->getDataFormat()->components())-1);
+    fromPixel_.setMaxValue(ivec2(data->getDimensions()) - 1);
+    channel_.setMaxValue(static_cast<int>(data->getDataFormat()->components()) - 1);
 }
 
 void PixelToBufferProcessor::process() {
@@ -79,17 +80,14 @@ void PixelToBufferProcessor::process() {
         inport_.getData()->getColorLayer()->getRepresentation<LayerRAM>()->getValueAsVec4Double(
             fromPixel_.get())[channel_.get()];
 
-    BufferRAMPrecision<double>* values =
-        values_.getEditableRepresentation<BufferRAMPrecision<double>>();
+    auto values = values_->getEditableRepresentation<BufferRAMPrecision<double>>();
     values->add(value);
 }
 
-void PixelToBufferProcessor::setPixelToCollectFrom(const ivec2& xy) {
-    fromPixel_.set(xy);
-}
+void PixelToBufferProcessor::setPixelToCollectFrom(const ivec2& xy) { fromPixel_.set(xy); }
 
 void PixelToBufferProcessor::clearOutput() {
-    values_.getEditableRepresentation<BufferRAMPrecision<double> >()->setSize(0);
+    values_->getEditableRepresentation<BufferRAMPrecision<double>>()->setSize(0);
     invalidate(INVALID_OUTPUT);
 }
 
@@ -110,12 +108,11 @@ void PixelToBufferProcessor::invokeEvent(Event* event) {
         if (button == MouseEvent::MOUSE_BUTTON_LEFT && state == MouseEvent::MOUSE_STATE_PRESS) {
             fromPixel_.set(mouseEvent->pos());
             clearOutput();
-        } 
+        }
         mouseEvent->markAsUsed();
 
         return;
     }
 }
 
-} // namespace
-
+}  // namespace

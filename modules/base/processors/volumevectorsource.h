@@ -74,7 +74,7 @@ private:
     void load(bool deserialize = false);
     void addFileNameFilters();
 
-    std::unique_ptr<VolumeVector> volumes_;
+    std::shared_ptr<VolumeVector> volumes_;
 
     DataOutport<VolumeVector> outport_;
     FileProperty file_;

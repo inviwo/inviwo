@@ -81,10 +81,11 @@ protected:
 
 private:
     struct VolumeSliceDispatcher {
-        using type = Image*;
+        using type = std::shared_ptr<Image>;
         template <class T>
-        Image* dispatch(const Volume* vol, CoordinateEnums::CartesianCoordinateAxis axis,
-                        size_t slice, Image* img);
+        std::shared_ptr<Image> dispatch(const Volume& vol,
+                                        CoordinateEnums::CartesianCoordinateAxis axis, size_t slice,
+                                        std::shared_ptr<Image> img);
     };
 
     void eventShiftSlice(Event*);
@@ -94,6 +95,7 @@ private:
 
     VolumeInport inport_;
     ImageOutport outport_;
+    std::shared_ptr<Image> image_;
 
     OptionPropertyInt sliceAlongAxis_;
     IntProperty sliceNumber_;
@@ -109,16 +111,16 @@ private:
 };
 
 template <class T>
-Image* VolumeSlice::VolumeSliceDispatcher::dispatch(const Volume* vol,
-                                                    CoordinateEnums::CartesianCoordinateAxis axis,
-                                                    size_t slice, Image* img) {
+std::shared_ptr<Image> VolumeSlice::VolumeSliceDispatcher::dispatch(
+    const Volume& vol, CoordinateEnums::CartesianCoordinateAxis axis, size_t slice,
+    std::shared_ptr<Image> img) {
     // D = type of the data
     typedef typename T::type D;
 
-    Image* image;
+    std::shared_ptr<Image> image;
 
-    const DataFormatBase* format = vol->getDataFormat();
-    const size3_t voldim = vol->getDimensions();
+    const DataFormatBase* format = vol.getDataFormat();
+    const size3_t voldim = vol.getDimensions();
 
     // Calculate image dimensions
     size2_t dim;
@@ -135,10 +137,10 @@ Image* VolumeSlice::VolumeSliceDispatcher::dispatch(const Volume* vol,
     }
 
     // Check that the format is right
-    if (format == img->getDataFormat() && dim == img->getDimensions()) {
+    if (img && format == img->getDataFormat() && dim == img->getDimensions()) {
         image = img;
     } else {
-        image = new Image(dim, format);
+        image = std::make_shared<Image>(dim, format);
     }
 
     // Make sure there is a ImageRAM in image, and get LayerRAM
@@ -148,7 +150,7 @@ Image* VolumeSlice::VolumeSliceDispatcher::dispatch(const Volume* vol,
     if (!layer) return nullptr;
 
     D* layerdata = static_cast<D*>(layer->getData());
-    const D* voldata = static_cast<const D*>(vol->getRepresentation<VolumeRAM>()->getData());
+    const D* voldata = static_cast<const D*>(vol.getRepresentation<VolumeRAM>()->getData());
 
     size_t offsetVolume;
     size_t offsetImage;
@@ -183,7 +185,7 @@ Image* VolumeSlice::VolumeSliceDispatcher::dispatch(const Volume* vol,
 
             size_t dataSize = voldim.x * voldim.y * static_cast<size_t>(format->getSize());
             size_t initialStartPos = slice * voldim.x * voldim.y;
-    
+
             std::memcpy(layerdata, voldata + initialStartPos, dataSize);
 
             break;

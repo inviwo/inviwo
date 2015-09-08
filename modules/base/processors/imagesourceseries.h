@@ -62,12 +62,9 @@ class FileExtension;
 class IVW_MODULE_BASE_API ImageSourceSeries : public Processor {
 public:
     ImageSourceSeries();
-    ~ImageSourceSeries();
+    ~ImageSourceSeries() = default;
 
     InviwoProcessorInfo();
-
-    virtual void initialize() override;
-    virtual void deinitialize() override;
 
     virtual void onFindFiles();
 
@@ -87,7 +84,6 @@ private:
     StringProperty imageFileName_;
 
     std::vector<FileExtension> validExtensions_;
-
     std::vector<std::string> fileList_;
 };
 

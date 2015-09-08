@@ -92,6 +92,7 @@ private:
 
     VolumeInport volumePort_;
     VolumeOutport outport_;
+    std::shared_ptr<Volume> volDist_;
 
     BoolProperty transformEnabled_;
     BoolProperty resultSquaredDist_; //determines whether output uses squared euclidean distances
@@ -116,7 +117,7 @@ void DistanceTransformRAM::computeDistanceTransform() {
 #include <warn/ignore/conversion>
 
     const VolumeRAM *srcVol = volumePort_.getData()->getRepresentation<VolumeRAM>();
-    VolumeRAM *vol = outport_.getData()->getEditableRepresentation<VolumeRAM>();
+    VolumeRAM *vol = volDist_->getEditableRepresentation<VolumeRAM>();
 
     size3_t dataDim = vol->getDimensions();
     if (dataDim != srcVol->getDimensions())

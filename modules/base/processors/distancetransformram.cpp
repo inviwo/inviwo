@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "distancetransformram.h"
@@ -32,10 +32,10 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(DistanceTransformRAM, "org.inviwo.DistanceTransformRAM");
-ProcessorDisplayName(DistanceTransformRAM,  "Distance Transform");
-ProcessorTags(DistanceTransformRAM, Tags::CPU); 
+ProcessorDisplayName(DistanceTransformRAM, "Distance Transform");
+ProcessorTags(DistanceTransformRAM, Tags::CPU);
 ProcessorCategory(DistanceTransformRAM, "Volume Operation");
-ProcessorCodeState(DistanceTransformRAM, CODE_STATE_EXPERIMENTAL); 
+ProcessorCodeState(DistanceTransformRAM, CODE_STATE_EXPERIMENTAL);
 
 DistanceTransformRAM::DistanceTransformRAM()
     : Processor()
@@ -48,8 +48,7 @@ DistanceTransformRAM::DistanceTransformRAM()
     , volDim_(1u)
     , dirty_(false)
     , distTransformDirty_(true)
-    , numThreads_(8)
-{
+    , numThreads_(8) {
     addPort(volumePort_);
     addPort(outport_);
 
@@ -64,16 +63,14 @@ DistanceTransformRAM::DistanceTransformRAM()
     progressBar_.hide();
 }
 
-DistanceTransformRAM::~DistanceTransformRAM() {
-}
+DistanceTransformRAM::~DistanceTransformRAM() {}
 
 void DistanceTransformRAM::initialize() {
     Processor::initialize();
     dirty_ = true;
 
-    #ifndef __clang__
-    if (numThreads_ == 0)
-        numThreads_ = 2 * omp_get_max_threads();
+#ifndef __clang__
+    if (numThreads_ == 0) numThreads_ = 2 * omp_get_max_threads();
     LogInfo("max available threads (OpenMP): " << omp_get_max_threads());
 
     omp_set_num_threads(numThreads_);
@@ -85,7 +82,7 @@ void DistanceTransformRAM::initialize() {
             LogInfo("Threads used: " << omp_get_num_threads());
         }
     }
-    #endif
+#endif
 }
 
 void DistanceTransformRAM::deinitialize() {
@@ -97,54 +94,49 @@ void DistanceTransformRAM::deinitialize() {
 void DistanceTransformRAM::process() {
     if (!transformEnabled_.get()) {
         // copy inport to outport
-        outport_.setConstData(volumePort_.getData());
-
+        outport_.setData(volumePort_.getData());
         return;
     }
 
     if (dirty_ || volumePort_.isChanged()) {
         dirty_ = false;
-        
+
         std::shared_ptr<const Volume> srcVolume = volumePort_.getData();
         volDim_ = glm::max(srcVolume->getDimensions(), size3_t(1u));
-        std::shared_ptr<const Volume> volDst = outport_.getData();
-        
-        if (!volDst || (volDst->getDimensions() != volDim_)
-            || (volDst == srcVolume)) 
-        {
-            //Volume* volume = new Volume(volDim_, DataUINT32::get());
-            Volume* volume = new Volume(volDim_, DataUINT16::get());
-            volume->setModelMatrix(srcVolume->getModelMatrix());
-            volume->setWorldMatrix(srcVolume->getWorldMatrix());
-            // pass meta data on
-            volume->copyMetaDataFrom(*srcVolume);
-            outport_.setData(volume);
 
+        if (!volDist_ || (volDist_->getDimensions() != volDim_) || (volDist_ == srcVolume)) {
+            // Volume* volume = new Volume(volDim_, DataUINT32::get());
+            volDist_ = std::make_shared<Volume>(volDim_, DataUINT16::get());
+            volDist_->setModelMatrix(srcVolume->getModelMatrix());
+            volDist_->setWorldMatrix(srcVolume->getWorldMatrix());
+            // pass meta data on
+            volDist_->copyMetaDataFrom(*srcVolume);
+            outport_.setData(volDist_);
         }
         distTransformDirty_ = true;
     }
-    
+
     if (!dirty_ && distTransformDirty_) {
-        //progressBar_.resetProgress();
-        //progressBar_.show();
+        // progressBar_.resetProgress();
+        // progressBar_.show();
 
         updateOutport();
 
-        //progressBar_.finishProgress();
-        //progressBar_.hide();
+        // progressBar_.finishProgress();
+        // progressBar_.hide();
     }
 }
 
 void DistanceTransformRAM::updateOutport() {
-    VolumeRAM *vol = outport_.getData()->getEditableRepresentation<VolumeRAM>();
+    VolumeRAM* vol = volDist_->getEditableRepresentation<VolumeRAM>();
     DataFormatEnums::Id dataFormat = vol->getDataFormat()->getId();
-    #include <warn/push>
-    #include <warn/ignore/switch-enum>
-    switch (dataFormat)
-    {
-    case DataFormatEnums::NOT_SPECIALIZED:
-        break;
-//#define DataFormatIdMacro(i) case i: computeDistanceTransform<Data##i::type, Data##i::bits>(); break;
+#include <warn/push>
+#include <warn/ignore/switch-enum>
+    switch (dataFormat) {
+        case DataFormatEnums::NOT_SPECIALIZED:
+            break;
+//#define DataFormatIdMacro(i) case i: computeDistanceTransform<Data##i::type, Data##i::bits>();
+//break;
 //#include <inviwo/core/util/formatsdefinefunc.h>
 #define DataFormatIdMacro(i) case DataFormatEnums::i: computeDistanceTransform<Data##i::type>(); break;
 DataFormatIdMacro(FLOAT16)
@@ -163,12 +155,10 @@ DataFormatIdMacro(UINT64)
     default:
         break;
     }
-    #include <warn/pop>
+#include <warn/pop>
     distTransformDirty_ = false;
 }
 
-void DistanceTransformRAM::paramChanged() {
-    distTransformDirty_ = true;
-}
+void DistanceTransformRAM::paramChanged() { distTransformDirty_ = true; }
 
-} // namespace
+}  // namespace

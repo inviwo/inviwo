@@ -63,6 +63,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API PixelToBufferProcessor : public Processor, public InteractionHandler { 
 public:
+    using PosBuffer = BufferPrecision<double, POSITION_ATTRIB>;
     PixelToBufferProcessor();
     virtual ~PixelToBufferProcessor(){}
     
@@ -84,7 +85,7 @@ private:
     ButtonProperty clearValues_;
     BoolProperty handleInteractionEvents_; ///< Enable or disable pixel picking
 
-    BufferPrecision<double, POSITION_ATTRIB> values_;
+    std::shared_ptr<PosBuffer> values_;
 };
 
 } // namespace

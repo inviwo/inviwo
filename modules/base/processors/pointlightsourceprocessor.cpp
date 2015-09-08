@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "pointlightsourceprocessor.h"
@@ -32,13 +32,12 @@
 #include <inviwo/core/util/intersection/raysphereintersection.h>
 #include <inviwo/core/datastructures/light/pointlight.h>
 
-
 namespace inviwo {
 
 PropertyClassIdentifier(PointLightTrackball, "org.inviwo.PointLightTrackball");
 
 ProcessorClassIdentifier(PointLightSourceProcessor, "org.inviwo.Pointlightsource");
-ProcessorDisplayName(PointLightSourceProcessor,  "Point light source");
+ProcessorDisplayName(PointLightSourceProcessor, "Point light source");
 ProcessorTags(PointLightSourceProcessor, Tags::CPU);
 ProcessorCategory(PointLightSourceProcessor, "Light source");
 ProcessorCodeState(PointLightSourceProcessor, CODE_STATE_EXPERIMENTAL);
@@ -47,9 +46,11 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     : Processor()
     , outport_("PointLightSource")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-    vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
+              vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
     , lightPosition_("lightPosition", "Light Source Position",
-    FloatVec3Property("position", "Position", vec3(-2.f, -50.f, 90.f), vec3(-100.f), vec3(100.f)), &camera_.get())
+                     FloatVec3Property("position", "Position", vec3(-2.f, -50.f, 90.f),
+                                       vec3(-100.f), vec3(100.f)),
+                     &camera_.get())
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light radius", 1.5f, 0.0f, 3.0f)
@@ -57,9 +58,10 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , lightEnabled_("lightEnabled", "Enabled", true)
     , lightScreenPosEnabled_("lightScreenPosEnabled", "Screen Pos Enabled", false)
     , lightScreenPos_("lightScreenPos", "Light Screen Pos", vec2(0.7f), vec2(0.f), vec2(1.f))
-
-    , interactionEvents_("interactionEvents", "Interaction Events") 
-{
+    , interactionEvents_("interactionEvents", "Interaction Events")
+    , lightInteractionHandler_(&lightPosition_.position_, &camera_, &lightScreenPosEnabled_,
+                               &lightScreenPos_)
+    , lightSource_(std::make_shared<PointLight>()) {
     addPort(outport_);
     addProperty(lightPosition_);
     lighting_.addProperty(lightDiffuse_);
@@ -71,22 +73,17 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     addProperty(lighting_);
 
     lightScreenPos_.setVisible(false);
-    lightScreenPosEnabled_.onChange([this](){
-        lightScreenPos_.setVisible(lightScreenPosEnabled_.get());
-    });
-    
+    lightScreenPosEnabled_.onChange(
+        [this]() { lightScreenPos_.setVisible(lightScreenPosEnabled_.get()); });
+
     addProperty(camera_);
     camera_.setVisible(false);
-    
+
     lightDiffuse_.setSemantics(PropertySemantics::Color);
     lightDiffuse_.setCurrentStateAsDefault();
 
-    lightSource_ = new PointLight();
-    lightInteractionHandler_ = new PointLightInteractionHandler(&lightPosition_.position_, &camera_, &lightScreenPosEnabled_, &lightScreenPos_);
-
-    lightScreenPos_.onChange([this](){
-        lightInteractionHandler_->setLightPosFromScreenCoords(lightScreenPos_.get());
-    });
+    lightScreenPos_.onChange(
+        [this]() { lightInteractionHandler_.setLightPosFromScreenCoords(lightScreenPos_.get()); });
 
     interactionEvents_.addOption("off", "Handle None", 0);
     interactionEvents_.addOption("on", "Handle All", 1);
@@ -100,25 +97,24 @@ PointLightSourceProcessor::PointLightSourceProcessor()
 }
 
 PointLightSourceProcessor::~PointLightSourceProcessor() {
-    delete lightSource_;
-    removeInteractionHandler(lightInteractionHandler_);
-    delete lightInteractionHandler_;
+    removeInteractionHandler(&lightInteractionHandler_);
 }
 
 void PointLightSourceProcessor::process() {
-    updatePointLightSource(lightSource_);
-    outport_.setData(lightSource_, false);
+    updatePointLightSource(lightSource_.get());
+    outport_.setData(lightSource_);
 }
 
 void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) {
     vec3 lightPos = lightPosition_.get();
     vec3 dir;
-    switch (static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
-    case PositionProperty::Space::VIEW:
-        dir = glm::normalize(camera_.getLookTo() - lightPos);
-    case PositionProperty::Space::WORLD:
-    default:
-        dir = glm::normalize(vec3(0.f) - lightPos);
+    switch (
+        static_cast<PositionProperty::Space>(lightPosition_.referenceFrame_.getSelectedValue())) {
+        case PositionProperty::Space::VIEW:
+            dir = glm::normalize(camera_.getLookTo() - lightPos);
+        case PositionProperty::Space::WORLD:
+        default:
+            dir = glm::normalize(vec3(0.f) - lightPos);
     }
     mat4 transformationMatrix = getLightTransformationMatrix(lightPos, dir);
     // Offset by 0.5 to get to texture coordinates
@@ -127,23 +123,23 @@ void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) 
 
     lightSource->setSize(vec2(lightSize_.get()));
     vec3 diffuseLight = lightDiffuse_.get().xyz();
-    lightSource->setIntensity(lightPowerProp_.get()*diffuseLight);
+    lightSource->setIntensity(lightPowerProp_.get() * diffuseLight);
     lightSource->setEnabled(lightEnabled_.get());
 }
 
-
-
 void PointLightSourceProcessor::handleInteractionEventsChanged() {
     if (interactionEvents_.get() > 0) {
-        addInteractionHandler(lightInteractionHandler_);
+        addInteractionHandler(&lightInteractionHandler_);
     } else {
-        removeInteractionHandler(lightInteractionHandler_);
+        removeInteractionHandler(&lightInteractionHandler_);
     }
-
-    lightInteractionHandler_->setHandleEventsOptions(interactionEvents_.get());
+    lightInteractionHandler_.setHandleEventsOptions(interactionEvents_.get());
 }
 
-PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl, CameraProperty* cam, BoolProperty* screenPosEnabled, FloatVec2Property* screenPos)
+PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl,
+                                                           CameraProperty* cam,
+                                                           BoolProperty* screenPosEnabled,
+                                                           FloatVec2Property* screenPos)
     : InteractionHandler()
     , lightPosition_(pl)
     , camera_(cam)
@@ -152,10 +148,9 @@ PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl
     , lookUp_(camera_->getLookUp())
     , lookTo_(0.f)
     , trackball_(this)
-    , interactionEventOption_(0)
-{
-    //static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
-    camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged); 
+    , interactionEventOption_(0) {
+    // static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
+    camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged);
 }
 
 void PointLightInteractionHandler::serialize(IvwSerializer& s) const {}
@@ -163,16 +158,15 @@ void PointLightInteractionHandler::serialize(IvwSerializer& s) const {}
 void PointLightInteractionHandler::deserialize(IvwDeserializer& d) {}
 
 void PointLightInteractionHandler::invokeEvent(Event* event) {
-    //if(event->hasBeenUsed())
+    // if(event->hasBeenUsed())
     //    return;
 
-    if (screenPosEnabled_->get())
-        setLightPosFromScreenCoords(screenPos_->get());
+    if (screenPosEnabled_->get()) setLightPosFromScreenCoords(screenPos_->get());
 
-    if (interactionEventOption_ == 1 || interactionEventOption_ == 3){
+    if (interactionEventOption_ == 1 || interactionEventOption_ == 3) {
         GestureEvent* gestureEvent = dynamic_cast<GestureEvent*>(event);
         if (gestureEvent) {
-            if (gestureEvent->type() == GestureEvent::PAN){
+            if (gestureEvent->type() == GestureEvent::PAN) {
                 setLightPosFromScreenCoords(gestureEvent->screenPosNormalized());
                 gestureEvent->markAsUsed();
                 return;
@@ -182,7 +176,7 @@ void PointLightInteractionHandler::invokeEvent(Event* event) {
         if (mouseEvent) {
             int button = mouseEvent->button();
             if (button == MouseEvent::MOUSE_BUTTON_MIDDLE) {
-                //setLightPosFromScreenCoords(mouseEvent->posNormalized());
+                // setLightPosFromScreenCoords(mouseEvent->posNormalized());
                 mouseEvent->markAsUsed();
                 screenPos_->set(mouseEvent->posNormalized());
                 return;
@@ -190,35 +184,36 @@ void PointLightInteractionHandler::invokeEvent(Event* event) {
         }
     }
 
-    if (interactionEventOption_ == 1 || interactionEventOption_ == 2)
-        trackball_.invokeEvent(event);
+    if (interactionEventOption_ == 1 || interactionEventOption_ == 2) trackball_.invokeEvent(event);
 }
 
-void PointLightInteractionHandler::setHandleEventsOptions(int option){
+void PointLightInteractionHandler::setHandleEventsOptions(int option) {
     interactionEventOption_ = option;
 }
 
-void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& normalizedScreenCoord)
-{
-    vec2 deviceCoord(2.f*(normalizedScreenCoord-0.5f)); 
+void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& normalizedScreenCoord) {
+    vec2 deviceCoord(2.f * (normalizedScreenCoord - 0.5f));
     // Flip vertical axis since mouse event y position starts at top of screen
     deviceCoord.y *= -1.f;
     // Use half distance between look from and look to positions as scene radius.
-    float sceneRadius = 0.5f*glm::length(camera_->getLookTo()-camera_->getLookFrom());
-    vec3 rayOrigin = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 0.f)); 
-    vec3 rayDir = glm::normalize(camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 1.f))-rayOrigin); 
+    float sceneRadius = 0.5f * glm::length(camera_->getLookTo() - camera_->getLookFrom());
+    vec3 rayOrigin = camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 0.f));
+    vec3 rayDir = glm::normalize(
+        camera_->getWorldPosFromNormalizedDeviceCoords(vec3(deviceCoord, 1.f)) - rayOrigin);
     float t0 = 0, t1 = std::numeric_limits<float>::max();
     float lightRadius = glm::length(lightPosition_->get());
 
     if (raySphereIntersection(vec3(0.f), sceneRadius, rayOrigin, rayDir, &t0, &t1)) {
-        lightPosition_->set(glm::normalize(rayOrigin + t1*rayDir)*lightRadius);
+        lightPosition_->set(glm::normalize(rayOrigin + t1 * rayDir) * lightRadius);
     } else {
-
         // Project it to the rim of the sphere
-        t0 = 0; t1 = std::numeric_limits<float>::max();
-        if (rayPlaneIntersection(camera_->getLookTo(), glm::normalize(camera_->getLookTo()-camera_->getLookFrom()), rayOrigin, rayDir, &t0, &t1)) {
+        t0 = 0;
+        t1 = std::numeric_limits<float>::max();
+        if (rayPlaneIntersection(camera_->getLookTo(),
+                                 glm::normalize(camera_->getLookTo() - camera_->getLookFrom()),
+                                 rayOrigin, rayDir, &t0, &t1)) {
             // Project it to the edge of the sphere
-            lightPosition_->set(glm::normalize(rayOrigin + t1*rayDir)*lightRadius);
+            lightPosition_->set(glm::normalize(rayOrigin + t1 * rayDir) * lightRadius);
         }
     }
     // Ensure that up vector is same as camera afterwards
@@ -226,12 +221,12 @@ void PointLightInteractionHandler::setLightPosFromScreenCoords(const vec2& norma
 }
 
 void PointLightInteractionHandler::onCameraChanged() {
-    // This makes sure that the interaction with the light source is consistent with the direction of the camera
+    // This makes sure that the interaction with the light source is consistent with the direction
+    // of the camera
     setLookUp(camera_->getLookUp());
 }
 
-PointLightTrackball::PointLightTrackball(PointLightInteractionHandler* p) : Trackball<PointLightInteractionHandler>(p, &(p->getCamera())) {
+PointLightTrackball::PointLightTrackball(PointLightInteractionHandler* p)
+    : Trackball<PointLightInteractionHandler>(p, &(p->getCamera())) {}
 
-}
-
-} // namespace
+}  // namespace

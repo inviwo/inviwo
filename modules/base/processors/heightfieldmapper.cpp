@@ -76,7 +76,7 @@ void HeightFieldMapper::deinitialize() { Processor::deinitialize(); }
 void HeightFieldMapper::process() {
     if (!inport_.isReady()) return;
 
-    const Image *srcImg = inport_.getData();
+    auto srcImg = inport_.getData();
     if (!srcImg) {
         LogWarn("No valid input image given");
         return;

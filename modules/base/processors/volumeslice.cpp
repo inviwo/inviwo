@@ -102,7 +102,7 @@ void VolumeSlice::shiftSlice(int shift) {
 }
 
 void VolumeSlice::process() {
-    const Volume* vol = inport_.getData();
+    auto vol = inport_.getData();
 
     const ivec3 dims(vol->getDimensions());
 
@@ -129,11 +129,11 @@ void VolumeSlice::process() {
     }
 
     VolumeSliceDispatcher disp;
-    Image* newimg = vol->getDataFormat()->dispatch(
-        disp, vol, static_cast<CoordinateEnums::CartesianCoordinateAxis>(sliceAlongAxis_.get()),
-        static_cast<size_t>(sliceNumber_.get() - 1), outport_.getData());
+    image_ = vol->getDataFormat()->dispatch(
+        disp, *vol, static_cast<CoordinateEnums::CartesianCoordinateAxis>(sliceAlongAxis_.get()),
+        static_cast<size_t>(sliceNumber_.get() - 1), image_);
 
-    outport_.setData(newimg);
+    outport_.setData(image_);
 }
 
 void VolumeSlice::eventShiftSlice(Event* event) {

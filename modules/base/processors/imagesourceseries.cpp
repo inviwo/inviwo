@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "imagesourceseries.h"
@@ -38,7 +38,7 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(ImageSourceSeries, "org.inviwo.ImageSourceSeries");
-ProcessorDisplayName(ImageSourceSeries,  "Image Series Source");
+ProcessorDisplayName(ImageSourceSeries, "Image Series Source");
 ProcessorTags(ImageSourceSeries, Tags::CPU);
 ProcessorCategory(ImageSourceSeries, "Data Input");
 ProcessorCodeState(ImageSourceSeries, CODE_STATE_EXPERIMENTAL);
@@ -47,11 +47,11 @@ ImageSourceSeries::ImageSourceSeries()
     : Processor()
     , outport_("image.outport")
     , findFilesButton_("findFiles", "Update File List")
-    , imageFileDirectory_("imageFileDirectory", "Image file directory", "" ,
-                          InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES, "/images"))
+    , imageFileDirectory_(
+          "imageFileDirectory", "Image file directory", "",
+          InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES, "/images"))
     , currentImageIndex_("currentImageIndex", "Image index", 1, 1, 1, 1)
     , imageFileName_("imageFileName", "Image file name") {
-
     addPort(outport_);
     addProperty(imageFileDirectory_);
     addProperty(findFilesButton_);
@@ -68,23 +68,13 @@ ImageSourceSeries::ImageSourceSeries()
     this->onFindFiles();
 }
 
-ImageSourceSeries::~ImageSourceSeries() {}
-
-void ImageSourceSeries::initialize() {
-    Processor::initialize();
-}
-
-void ImageSourceSeries::deinitialize() {
-    Processor::deinitialize();
-}
-
 void ImageSourceSeries::onFindFiles() {
-    std::string path{ imageFileDirectory_.get() };
+    std::string path{imageFileDirectory_.get()};
     if (!path.empty()) {
         std::vector<std::string> files = filesystem::getDirectoryContents(path);
 
         fileList_.clear();
-        for (std::size_t i=0; i<files.size(); i++) {
+        for (std::size_t i = 0; i < files.size(); i++) {
             if (isValidImageFile(files[i])) {
                 std::string fileName = filesystem::getFileNameWithExtension(files[i]);
                 fileList_.push_back(fileName);
@@ -102,50 +92,43 @@ void ImageSourceSeries::onFindFiles() {
  * Creates a ImageDisk representation if there isn't an object already defined.
  **/
 void ImageSourceSeries::process() {
-    Image* outImage = outport_.getData();
+    if (fileList_.empty()) return;
 
-    if (fileList_.empty()) {
+    std::string basePath{imageFileDirectory_.get()};
+    long currentIndex = currentImageIndex_.get() - 1;
+    if ((currentIndex < 0) || (currentIndex >= static_cast<long>(fileList_.size()))) {
+        LogError("Invalid image index. Exceeded number of files.");
         return;
     }
 
-    if (outImage) {
-        std::string basePath{ imageFileDirectory_.get() };
-        long currentIndex = currentImageIndex_.get() - 1;
-        if ((currentIndex < 0) || (currentIndex >= static_cast<long>(fileList_.size()))) {
-            LogError("Invalid image index. Exceeded number of files.");
-            return;
+    std::string currentFileName{basePath + "/" + fileList_[currentIndex]};
+    imageFileName_.set(fileList_[currentIndex]);
+
+    std::string fileExtension = filesystem::getFileExtension(currentFileName);
+    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(fileExtension);
+
+    if (reader) {
+        try {
+            Layer* outLayer = reader->readMetaData(currentFileName);
+            // Call getRepresentation here to force read a ram representation.
+            // Otherwise the default image size, i.e. 256x265, will be reported
+            // until you do the conversion. Since the LayerDisk does not have any metadata.
+            outLayer->getRepresentation<LayerRAM>();
+            auto newOutImage = std::make_shared<Image>(outLayer);
+            newOutImage->getRepresentation<ImageRAM>();
+
+            outport_.setData(newOutImage);
+        } catch (DataReaderException const& e) {
+            util::log(e.getContext(),
+                      "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(),
+                      LogLevel::Error);
         }
-
-        std::string currentFileName{ basePath + "/" + fileList_[currentIndex] };
-        imageFileName_.set(fileList_[currentIndex]);
-
-        std::string fileExtension = filesystem::getFileExtension(currentFileName);
-        auto reader =
-            DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(fileExtension);
-
-        if (reader) {
-            try {
-                Layer* outLayer = reader->readMetaData(currentFileName);
-                // Call getRepresentation here to force read a ram representation.
-                // Otherwise the default image size, i.e. 256x265, will be reported 
-                // until you do the conversion. Since the LayerDisk does not have any metadata.
-                outLayer->getRepresentation<LayerRAM>();
-                Image* newOutImage = new Image(outLayer);
-                newOutImage->getRepresentation<ImageRAM>();
-
-                outport_.setData(newOutImage);
-            }
-            catch (DataReaderException const& e) {
-                util::log(e.getContext(), "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(), LogLevel::Error);
-            }
-        }
-        else {
-            LogWarn("Could not find a data reader for file: " << currentFileName);
-            // remove file from list
-            fileList_.erase(fileList_.begin() + currentIndex);
-            // adjust index property
-            updateProperties();
-        }
+    } else {
+        LogWarn("Could not find a data reader for file: " << currentFileName);
+        // remove file from list
+        fileList_.erase(fileList_.begin() + currentIndex);
+        // adjust index property
+        updateProperties();
     }
 }
 
@@ -165,20 +148,19 @@ void ImageSourceSeries::updateFileName() {
     int index = currentImageIndex_.get() - 1;
     if ((index < 0) || (static_cast<std::size_t>(index) >= fileList_.size())) {
         imageFileName_.set("<no images found>");
-    }
-    else {
+    } else {
         imageFileName_.set(fileList_[index]);
     }
 }
 
-bool ImageSourceSeries::isValidImageFile(std::string fileName){
+bool ImageSourceSeries::isValidImageFile(std::string fileName) {
     std::string fileExtension = filesystem::getFileExtension(fileName);
-    for (std::vector<FileExtension>::const_iterator it = validExtensions_.begin(); it != validExtensions_.end(); ++it) {
-        if(fileExtension == it->extension_)
-            return true;
+    for (std::vector<FileExtension>::const_iterator it = validExtensions_.begin();
+         it != validExtensions_.end(); ++it) {
+        if (fileExtension == it->extension_) return true;
     }
 
     return false;
 }
 
-} // namespace
+}  // namespace

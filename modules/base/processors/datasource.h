@@ -54,9 +54,9 @@ protected:
     bool isDeserializing() const;
 
     // Called when we load new data.
-    virtual void dataLoaded(DataType* data) {};
+    virtual void dataLoaded(std::shared_ptr<DataType> data) {};
     // Called when we deserialized old data.
-    virtual void dataDeserialized(DataType* data) {};
+    virtual void dataDeserialized(std::shared_ptr<DataType> data) {};
 
     virtual void invalidateOutput();
 
@@ -66,7 +66,7 @@ protected:
     PortType port_;
     FileProperty file_;
     ButtonProperty reload_;
-    DataType* loadedData_;
+    std::shared_ptr<DataType> loadedData_;
 
 private:
     bool isDeserializing_;
@@ -79,7 +79,7 @@ DataSource<DataType, PortType>::DataSource()
     , port_("data")
     , file_("filename", "File")
     , reload_("reload", "Reload data")
-    , loadedData_(nullptr)
+    , loadedData_()
     , isDeserializing_(false) {
     
     addPort(port_);
@@ -131,8 +131,8 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
     std::string ext = filesystem::getFileExtension(file_.get());  
     if (auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<DataType>(ext)) {
         try {
-            DataType* data = reader->readMetaData(file_.get());
-            port_.setData(data, true);
+            auto data = std::shared_ptr<DataType>(reader->readMetaData(file_.get()));
+            port_.setData(data);
             loadedData_ = data;
             if (deserialized) {
                 dataDeserialized(data);

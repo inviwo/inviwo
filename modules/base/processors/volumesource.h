@@ -55,7 +55,9 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API VolumeSource : public Processor {
 public:
-    using VolumeVector = std::vector<std::unique_ptr<Volume>>;
+    using VolumeVector = std::vector<std::shared_ptr<Volume>>;
+    using VolumeUniqueVector = std::vector<std::unique_ptr<Volume>>;
+
     InviwoProcessorInfo();
     VolumeSource();
     virtual ~VolumeSource() = default;

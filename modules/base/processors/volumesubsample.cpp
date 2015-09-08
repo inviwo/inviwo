@@ -65,7 +65,7 @@ VolumeSubsample::~VolumeSubsample() {}
 void VolumeSubsample::process() {
     if (enabled_.get() && subSampleFactor_.get() != VolumeRAMSubSample::Factor::None) {
         if (waitForCompletion_.get()){
-            const Volume* data = inport_.getData();
+            auto data = inport_.getData();
             const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
             Volume* volume = new Volume(VolumeRAMSubSample::apply(vol, subSampleFactor_.get()));
             volume->copyMetaDataFrom(*data);
@@ -76,7 +76,7 @@ void VolumeSubsample::process() {
         }
         else{
             if (!result_.valid()) {
-                const Volume* data = inport_.getData();
+                auto data = inport_.getData();
                 const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
                 getActivityIndicator().setActive(true);
                 result_ = dispatchPool(
@@ -98,7 +98,7 @@ void VolumeSubsample::process() {
                 std::unique_ptr<Volume> volume = std::move(result_.get());
 
                 // pass meta data on
-                const Volume* data = inport_.getData();
+                auto data = inport_.getData();
                 volume->copyMetaDataFrom(*data);
                 volume->dataMap_ = data->dataMap_;
                 volume->setModelMatrix(data->getModelMatrix());
@@ -110,7 +110,7 @@ void VolumeSubsample::process() {
             }
         }
     } else {
-        outport_.setConstData(inport_.getData());
+        outport_.setData(inport_.getData());
     }
 }
 

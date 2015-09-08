@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMEBASISTRANSFORMER_H
@@ -34,20 +34,21 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/base/basemoduledefine.h>
+#include <modules/base/properties/basisproperty.h>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.BasisTransformVolume, Basis Transform Volume}
  * ![](org.inviwo.BasisTransformVolume.png?classIdentifier=org.inviwo.BasisTransformVolume)
  *
- * Transforms the worl of a volume.
- * 
+ * Transforms the world of a volume.
+ *
  * ### Inports
  *   * __VolumeInport__ Input volume.
  *
  * ### Outports
  *   * __VolumeOutport__ Transformed output volume.
- * 
+ *
  * ### Properties
  *   * __Lengths__ Length of each basis vector
  *   * __Angles__ Angles between vectors
@@ -58,22 +59,21 @@ namespace inviwo {
  * ![](org.inviwo.BasisTransformGeometry.png?classIdentifier=org.inviwo.BasisTransformGeometry)
  *
  * Transforms the basis of a mesh.
- * 
+ *
  * ### Inports
  *   * __MeshInport__ Input mesh.
  *
  * ### Outports
  *   * __MeshOutport__ Transformed output mesh.
- * 
+ *
  * ### Properties
  *   * __Lengths__ Length of each basis vector
  *   * __Angles__ Angles between vectors
  *   * __Offset__ Offset of basis
  */
 
-template <typename InportType, typename OutportType>
+template <typename T>
 class IVW_MODULE_BASE_API BasisTransform : public Processor {
-
 public:
     BasisTransform();
     ~BasisTransform();
@@ -84,95 +84,43 @@ protected:
     virtual void process();
 
 private:
-    InportType inport_;
-    OutportType outport_;
+    std::shared_ptr<T> data_;
+    DataInport<T> inport_;
+    DataOutport<T> outport_;
 
-    FloatVec3Property lengths_;
-    FloatVec3Property angels_;
-    FloatVec3Property offset_;
-
-    mat4 orgBasisAndOffset_;
+    BasisProperty basis_;
 };
 
-//ProcessorClassIdentifier(VolumeBasisTransformer, "org.inviwo.BasisTransformer");
-//ProcessorDisplayName(VolumeBasisTransformer, "Basis Transformer");
-template <typename InportType, typename OutportType> 
-const Tags BasisTransform<InportType, OutportType>::TAGS = Tags::CPU;
-template <typename InportType, typename OutportType> 
-const std::string BasisTransform<InportType, OutportType>::CATEGORY = "Coordinate Transforms";
-template <typename InportType, typename OutportType> 
-const CodeState BasisTransform<InportType, OutportType>::CODE_STATE = CODE_STATE_EXPERIMENTAL;
+template <typename T>
+const Tags BasisTransform<T>::TAGS = Tags::CPU;
+template <typename T>
+const std::string BasisTransform<T>::CATEGORY = "Coordinate Transforms";
+template <typename T>
+const CodeState BasisTransform<T>::CODE_STATE = CODE_STATE_EXPERIMENTAL;
 
-template <typename InportType, typename OutportType>
-inviwo::BasisTransform<InportType, OutportType>::BasisTransform()
-    : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , lengths_("length_", "Lengths", vec3(1.0f), vec3(0.0f), vec3(10.0f))
-    , angels_("angles_", "Angles", vec3(90.0f), vec3(0.0f), vec3(180.0f), vec3(1.0f))
-    , offset_("offset_", "Offset", vec3(0.0f), vec3(-10.0f), vec3(10.0f))
-    , orgBasisAndOffset_(0.0f) {
+template <typename T>
+inviwo::BasisTransform<T>::BasisTransform()
+    : Processor(), inport_("inport"), outport_("outport"), basis_("basis", "Basis") {
     addPort(inport_);
     addPort(outport_);
-    addProperty(lengths_);
-    addProperty(angels_);
-    addProperty(offset_);
+    addProperty(basis_);
 }
 
-template <typename InportType, typename OutportType>
-inviwo::BasisTransform<InportType, OutportType>::~BasisTransform() {}
+template <typename T>
+inviwo::BasisTransform<T>::~BasisTransform() {}
 
-template <typename InportType, typename OutportType>
-void inviwo::BasisTransform<InportType, OutportType>::process() {
+template <typename T>
+void inviwo::BasisTransform<T>::process() {
     if (inport_.hasData()) {
-        if (orgBasisAndOffset_ != inport_.getData()->getModelMatrix()) {
-            orgBasisAndOffset_ = inport_.getData()->getModelMatrix();
-            //TODO: Can't set these values as deserialization might already have done that.
-            //Also not that glm::angle always return radians from now on.
-            /*vec3 a(orgBasisAndOffset_[0]);
-            vec3 b(orgBasisAndOffset_[1]);
-            vec3 c(orgBasisAndOffset_[2]);
-            vec3 offset(orgBasisAndOffset_[3]);
-
-            float alpha = glm::angle(b,c);
-            float beta = glm::angle(c,a);
-            float gamma = glm::angle(a,b);
-
-            lengths_.setMaxValue(vec3(2.0f * (glm::length(a) + glm::length(b) + glm::length(c))));
-            offset_.setMaxValue(vec3(5.0*glm::length(offset)));
-            offset_.setMinValue(vec3(-5.0*glm::length(offset)));
-
-            lengths_.set(vec3(glm::length(a),glm::length(b),glm::length(c)));
-            angels_.set(vec3(alpha, beta, gamma));
-            offset_.set(offset);*/
+        if (inport_.isChanged()) {
+            data_.reset(inport_.getData()->clone());
+            basis_.updateForNewEntity(*data_);
+            outport_.setData(data_);
         }
-
-        // TODO: This should be changed to make some kind of shallow copy of the representations
-        // and update if the inport changes the representations
-        if (!outport_.hasData() || inport_.isChanged()) {
-            outport_.setData(inport_.getData()->clone());
-        }
-
-        float a = lengths_.get()[0];
-        float b = lengths_.get()[1];
-        float c = lengths_.get()[2];
-        vec3 offset = offset_.get();
-        float alpha = glm::radians(angels_.get()[0]);
-        float beta =  glm::radians(angels_.get()[1]);
-        float gamma = glm::radians(angels_.get()[2]);
-        float v = std::sqrt(1 - std::cos(alpha)*std::cos(alpha) - std::cos(beta)*std::cos(beta) - std::cos(gamma)*std::cos(gamma)
-                            - 2*std::cos(alpha)*std::cos(beta)*std::cos(gamma));
-        mat4 newBasisAndOffset(
-            a,    b*std::cos(gamma), c*std::cos(beta),                                                   offset[0],
-            0.0f, b*std::sin(gamma), c*(std::cos(alpha)-std::cos(beta)*std::cos(gamma))/std::sin(gamma), offset[1],
-            0.0f, 0.0f,              c*v/std::sin(gamma),                                                offset[2],
-            0.0f, 0.0f,              0.0f,                                                               1.0f
-        );
-
-       outport_.getData()->setModelMatrix(glm::transpose(newBasisAndOffset));
+        basis_.updateEntity(*data_);
     }
 }
 
-} // namespace
+}  // namespace
 
 #endif

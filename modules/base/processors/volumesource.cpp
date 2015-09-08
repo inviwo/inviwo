@@ -80,23 +80,23 @@ void VolumeSource::load(bool deserialize) {
 
     auto rf = DataReaderFactory::getPtr();
 
-    std::unique_ptr<VolumeVector> volumes;
+    
 
     std::string ext = filesystem::getFileExtension(file_.get());
-    if (auto volvecreader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
+    if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeUniqueVector>(ext)) {
         try {
-            volumes.reset(volvecreader->readMetaData(file_.get()));
-
+            auto vols(volVecReader->readMetaData(file_.get()));
+            auto volumes = util::make_unique<VolumeVector>();
+            for (auto& elem : *vols) volumes->emplace_back(std::move(elem));
             std::swap(volumes, volumes_);
         } catch (DataReaderException const& e) {
             LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
         }
     } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
         try {
-            std::unique_ptr<Volume> volume(volreader->readMetaData(file_.get()));
-            volumes = util::make_unique<VolumeVector>();
-            volumes->push_back(std::move(volume));
-
+            auto volume(volreader->readMetaData(file_.get()));
+            auto volumes = util::make_unique<VolumeVector>();
+            volumes->emplace_back(std::move(volume));
             std::swap(volumes, volumes_);
         } catch (DataReaderException const& e) {
             LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
@@ -106,7 +106,7 @@ void VolumeSource::load(bool deserialize) {
     }
 
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
-        basis_.updateForNewVolume(*(*volumes_)[0], deserialize);
+        basis_.updateForNewEntity(*(*volumes_)[0], deserialize);
         information_.updateForNewVolume(*(*volumes_)[0], deserialize);
 
         volumeSequence_.updateMax(volumes_->size());
@@ -134,10 +134,10 @@ void VolumeSource::process() {
 
         if (!(*volumes_)[index]) return;
 
-        basis_.updateVolume(*(*volumes_)[index]);
+        basis_.updateEntity(*(*volumes_)[index]);
         information_.updateVolume(*(*volumes_)[index]);
 
-        outport_.setData((*volumes_)[index].get(), false);
+        outport_.setData((*volumes_)[index]);
     }
 }
 

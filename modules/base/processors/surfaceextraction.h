@@ -92,7 +92,8 @@ protected:
     };
 
     DataInport<Volume, 0> volume_;
-    DataOutport<std::vector<std::unique_ptr<Mesh>>> mesh_;
+    DataOutport<std::vector<std::unique_ptr<Mesh>>> outport_;
+    std::shared_ptr<std::vector<std::unique_ptr<Mesh>>> meshes_;
 
     FloatProperty isoValue_;
     OptionPropertyInt method_;

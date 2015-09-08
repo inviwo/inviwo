@@ -62,8 +62,8 @@
 
 namespace inviwo {
 
-typedef BasisTransform<MeshInport, MeshOutport> BasisTransformMesh;
-typedef BasisTransform<VolumeInport, VolumeOutport> BasisTransformVolume;
+typedef BasisTransform<Mesh> BasisTransformMesh;
+typedef BasisTransform<Volume> BasisTransformVolume;
 template <> ProcessorClassIdentifier(BasisTransformMesh, "org.inviwo.BasisTransformGeometry");
 template <> ProcessorDisplayName(BasisTransformMesh, "Basis Transform Mesh");
 template <> ProcessorClassIdentifier(BasisTransformVolume, "org.inviwo.BasisTransformVolume");

@@ -80,7 +80,7 @@ void VolumeSubset::process() {
         dim -= offset;
 
         if (dim == dims_)
-            outport_.setConstData(inport_.getData());
+            outport_.setData(inport_.getData());
         else {
             Volume* volume = new Volume(VolumeRAMSubSet::apply(vol, dim, offset));
             // pass meta data on
@@ -110,7 +110,7 @@ void VolumeSubset::process() {
             outport_.setData(volume);
         }
     } else {
-        outport_.setConstData(inport_.getData());
+        outport_.setData(inport_.getData());
     }
 }
 
