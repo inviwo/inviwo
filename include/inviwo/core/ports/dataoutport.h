@@ -49,13 +49,12 @@ public:
     virtual uvec3 getColorCode() const override;
     virtual std::string getClassIdentifier() const override;
 
-    virtual std::shared_ptr<T> getData();
     virtual std::shared_ptr<const T> getData() const;
     // Return data and release ownership. Data in the port will be nullptr after call.
-    virtual std::shared_ptr<T> detachData();
+    virtual std::shared_ptr<const T> detachData();
 
-    virtual void setData(std::shared_ptr<T> data);
-    virtual void setData(T* data);
+    virtual void setData(std::shared_ptr<const T> data);
+    virtual void setData(const T* data); // will assume ownership of data.
 
     /**
      * An outport is ready if it has data and is valid.
@@ -66,7 +65,7 @@ public:
     virtual std::string getContentInfo() const;
 
 protected:
-    std::shared_ptr<T> data_;
+    std::shared_ptr<const T> data_;
 };
 
 template <typename T>
@@ -89,28 +88,23 @@ uvec3 inviwo::DataOutport<T>::getColorCode() const {
 }
 
 template <typename T>
-std::shared_ptr<T> DataOutport<T>::getData() {
-    return data_;
-}
-
-template <typename T>
 std::shared_ptr<const T> DataOutport<T>::getData() const {
     return data_;
 }
 
 template <typename T>
-void DataOutport<T>::setData(std::shared_ptr<T> data) {
+void DataOutport<T>::setData(std::shared_ptr<const T> data) {
     data_ = data;
 }
 
 template <typename T>
-void DataOutport<T>::setData(T* data) {
+void DataOutport<T>::setData(const T* data) {
     data_.reset(data);
 }
 
 template <typename T>
-std::shared_ptr<T> DataOutport<T>::detachData() {
-    std::shared_ptr<T> data(data_);
+std::shared_ptr<const T> DataOutport<T>::detachData() {
+    std::shared_ptr<const T> data(data_);
     data_.reset();
     return data;
 }

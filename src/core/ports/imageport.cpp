@@ -51,12 +51,34 @@ void ImageOutport::invalidate(InvalidationLevel invalidationLevel) {
     }
     Outport::invalidate(invalidationLevel);
 }
-
-void ImageOutport::setData(std::shared_ptr<Image> data) {
+void ImageOutport::setData(std::shared_ptr<const Image> data) {
     DataOutport<Image>::setData(data);
+    image_.reset();
     dimensions_ = data_->getDimensions();
     cache_.setMaster(data);
 }
+
+void ImageOutport::setData(const Image* data) {
+    DataOutport<Image>::setData(data);
+    image_.reset();
+    dimensions_ = data_->getDimensions();
+    cache_.setMaster(data_);
+}
+
+void ImageOutport::setData(std::shared_ptr<Image> data) {
+    DataOutport<Image>::setData(data);
+    image_ = data;
+    dimensions_ = data_->getDimensions();
+    cache_.setMaster(data);
+}
+
+void ImageOutport::setData(Image* data) {
+    image_.reset(data);
+    DataOutport<Image>::setData(image_); 
+    dimensions_ = data_->getDimensions();
+    cache_.setMaster(data_);
+}
+
 
 void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     // This function should check which dimensions request exists, by going through the successors
@@ -79,9 +101,10 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     std::unique_ptr<ResizeEvent> newEvent {resizeEvent->clone()};
     newEvent->setSize(newDimensions);
 
-    if (handleResizeEvents_ && newDimensions != data_->getDimensions()) {  // resize data.
-        data_->setDimensions(newDimensions);
-        dimensions_ = data_->getDimensions();
+    if (image_ && handleResizeEvents_ && newDimensions != data_->getDimensions()) { 
+        // resize data.
+        image_->setDimensions(newDimensions);
+        dimensions_ = image_->getDimensions();
         cache_.setInvalid();
 
         broadcast(newEvent.get());
@@ -117,15 +140,26 @@ bool ImageOutport::removeResizeEventListener(EventListener* el) { return removeE
 
 void ImageOutport::setDimensions(const size2_t& newDimension) {
     // Set new dimensions
-    DataOutport<Image>::getData()->setDimensions(newDimension);
-    dimensions_ = newDimension;
-    cache_.setInvalid();
+    if (image_) {
+        image_->setDimensions(newDimension);
+        dimensions_ = newDimension;
+        cache_.setInvalid();
+    } else {
+        throw Exception("Trying to resize const Image", IvwContext);
+    }
+}
+std::shared_ptr<Image> ImageOutport::getMutableData() const {
+    if (image_) {
+        return image_;
+    } else {
+        return std::shared_ptr<Image>();
+    }
 }
 
 void ImageOutport::setHandleResizeEvents(bool handleResizeEvents) {
     handleResizeEvents_ = handleResizeEvents;
 }
 
-bool ImageOutport::isHandlingResizeEvents() const { return handleResizeEvents_; }
+bool ImageOutport::isHandlingResizeEvents() const { return handleResizeEvents_ && image_; }
 
 }  // namespace

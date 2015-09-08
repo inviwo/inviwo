@@ -105,7 +105,12 @@ public:
 
     virtual ~ImageOutport();
 
-    virtual void setData(std::shared_ptr<Image>) override;
+    virtual void setData(std::shared_ptr<const Image>) override;
+    virtual void setData(const Image* data) override; // will assume ownership of data.
+    void setData(std::shared_ptr<Image>);
+    void setData(Image* data); // will assume ownership of data.
+
+    std::shared_ptr<Image> getMutableData() const;
     std::shared_ptr<const Image> getResizedImageData(size2_t dimensions) const;
 
     /**
@@ -134,12 +139,10 @@ public:
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
 private:
-    void updateImageFromInputSource();
-
+    std::shared_ptr<Image> image_;
     size2_t dimensions_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false
-
     ImageCache cache_;
 };
 
