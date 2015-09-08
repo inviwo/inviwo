@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#include "volumebasisproperty.h"
+#include "basisproperty.h"
 
 namespace inviwo {
 
-PropertyClassIdentifier(VolumeBasisProperty, "org.inviwo.VolumeBasisProperty");
+PropertyClassIdentifier(BasisProperty, "org.inviwo.VolumeBasisProperty");
 
-VolumeBasisProperty::VolumeBasisProperty(std::string identifier, std::string displayName,
+BasisProperty::BasisProperty(std::string identifier, std::string displayName,
                                          InvalidationLevel invalidationLevel,
                                          PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
@@ -78,7 +78,7 @@ VolumeBasisProperty::VolumeBasisProperty(std::string identifier, std::string dis
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
 }
 
-VolumeBasisProperty::VolumeBasisProperty(const VolumeBasisProperty& rhs)
+BasisProperty::BasisProperty(const BasisProperty& rhs)
     : CompositeProperty(rhs)
     , overRideDefaults_(rhs.overRideDefaults_)
     , a_(rhs.a_)
@@ -102,11 +102,11 @@ VolumeBasisProperty::VolumeBasisProperty(const VolumeBasisProperty& rhs)
     overRideDefaults_.onChange([this]() { onOverrideChange(); });
 }
 
-VolumeBasisProperty* VolumeBasisProperty::clone() const {
-    return new VolumeBasisProperty(*this);
+BasisProperty* BasisProperty::clone() const {
+    return new BasisProperty(*this);
 }
 
-void VolumeBasisProperty::updateForNewVolume(const Volume& volume, bool deserialize) {
+void BasisProperty::updateForNewEntity(const SpatialEntity<3>& volume, bool deserialize) {
     // Set basis properties to the values from the new volume
     a_.set(volume.getBasis()[0]);
     b_.set(volume.getBasis()[1]);
@@ -134,7 +134,7 @@ void VolumeBasisProperty::updateForNewVolume(const Volume& volume, bool deserial
     }
 }
 
-void VolumeBasisProperty::onOverrideChange() {
+void BasisProperty::onOverrideChange() {
     if (overRideDefaults_) {
         a_.setVisible(false);
         b_.setVisible(false);
@@ -158,7 +158,7 @@ void VolumeBasisProperty::onOverrideChange() {
     }
 }
 
-VolumeBasisProperty& VolumeBasisProperty::operator=(const VolumeBasisProperty& that) {
+BasisProperty& BasisProperty::operator=(const BasisProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
         overRideDefaults_ = that.overRideDefaults_;
@@ -174,7 +174,7 @@ VolumeBasisProperty& VolumeBasisProperty::operator=(const VolumeBasisProperty& t
     return *this;
 }
 
-void inviwo::VolumeBasisProperty::updateVolume(Volume& volume) {
+void inviwo::BasisProperty::updateEntity(SpatialEntity<3>& volume) {
     if (overRideDefaults_) {
         vec4 offset = vec4(overrideOffset_.get(), 1.0f);
         mat3 basis(overrideA_, overrideB_, overrideC_);

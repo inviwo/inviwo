@@ -31,7 +31,7 @@
 #define IVW_VOLUMESOURCE_H
 
 #include <modules/base/basemoduledefine.h>
-#include <modules/base/properties/volumebasisproperty.h>
+#include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 #include <inviwo/core/common/inviwo.h>
@@ -73,7 +73,7 @@ private:
     FileProperty file_;
     ButtonProperty reload_;
 
-    VolumeBasisProperty basis_;
+    BasisProperty basis_;
     VolumeInformationProperty information_;
     SequenceTimerProperty volumeSequence_;
     bool isDeserializing_;

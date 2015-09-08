@@ -35,24 +35,24 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 
 namespace inviwo {
 
-class IVW_MODULE_BASE_API VolumeBasisProperty : public CompositeProperty {
+class IVW_MODULE_BASE_API BasisProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();
-    VolumeBasisProperty(std::string identifier, std::string displayName,
+    BasisProperty(std::string identifier, std::string displayName,
                         InvalidationLevel invalidationLevel = INVALID_RESOURCES,
                         PropertySemantics semantics = PropertySemantics::Default);
-    VolumeBasisProperty(const VolumeBasisProperty& rhs);
-    VolumeBasisProperty& operator=(const VolumeBasisProperty& that);
-    virtual VolumeBasisProperty* clone() const override;
-    virtual ~VolumeBasisProperty() = default;
+    BasisProperty(const BasisProperty& rhs);
+    BasisProperty& operator=(const BasisProperty& that);
+    virtual BasisProperty* clone() const override;
+    virtual ~BasisProperty() = default;
 
-    void updateForNewVolume(const Volume& volume, bool deserialize = false);
+    void updateForNewEntity(const SpatialEntity<3>& volume, bool deserialize = false);
 
-    void updateVolume(Volume& volume);
+    void updateEntity(SpatialEntity<3>& volume);
 
     BoolProperty overRideDefaults_;
     FloatVec3Property a_;

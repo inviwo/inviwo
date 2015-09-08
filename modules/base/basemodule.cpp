@@ -52,7 +52,7 @@
 #include <modules/base/processors/volumesubset.h>
 #include <modules/base/processors/volumevectorsource.h>
 
-#include <modules/base/properties/volumebasisproperty.h>
+#include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 
@@ -98,7 +98,7 @@ BaseModule::BaseModule() : InviwoModule() {
 
 
     registerProperty(SequenceTimerProperty);
-    registerProperty(VolumeBasisProperty);
+    registerProperty(BasisProperty);
     registerProperty(VolumeInformationProperty);
 }
 
