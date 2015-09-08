@@ -50,23 +50,24 @@ namespace inviwo {
  * \brief Render text using the FreeType font library
  *
  */
-class IVW_MODULE_FONTRENDERING_API TextRenderer { 
+class IVW_MODULE_FONTRENDERING_API TextRenderer {
 public:
-    TextRenderer(const std::string& fontPath = InviwoApplication::getPtr()
-        ->getModuleByType<FontRenderingModule>()
-        ->getPath() + "/fonts/arial.ttf");
+    TextRenderer(
+        const std::string& fontPath =
+            InviwoApplication::getPtr()->getModuleByType<FontRenderingModule>()->getPath() +
+            "/fonts/arial.ttf");
     virtual ~TextRenderer();
 
     void render(const char* text, float x, float y, const vec2& scale, vec4 color);
-    /** 
-     * \brief Computes width and height of the given text     
+    /**
+     * \brief Computes width and height of the given text
      */
     vec2 computeTextSize(const char* text, const vec2& scale);
 
     int getFontSize() const { return fontSize_; }
     void setFontSize(int val);
+
 protected:
-    
     void initMesh();
 
     FT_Library fontlib_;
@@ -74,14 +75,12 @@ protected:
 
     int fontSize_;
 
-    Shader* textShader_;
+    Shader textShader_;
     GLuint texCharacter_;
-    Mesh* mesh_;
-    MeshDrawerGL* drawer_;
-
+    std::unique_ptr<Mesh> mesh_;
+    std::unique_ptr<MeshDrawerGL> drawer_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_TEXTRENDERER_H
-
+#endif  // IVW_TEXTRENDERER_H

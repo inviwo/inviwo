@@ -38,14 +38,12 @@
 
 namespace inviwo {
 
-
-
-TextRenderer::TextRenderer(const std::string& fontPath): drawer_(NULL) {
-    textShader_ = new Shader("fontrendering_freetype.vert", "fontrendering_freetype.frag", true);
-    int error = 0;
-
+TextRenderer::TextRenderer(const std::string& fontPath)
+    : textShader_("fontrendering_freetype.vert", "fontrendering_freetype.frag", true) {
+    
     if (FT_Init_FreeType(&fontlib_)) LogWarnCustom("TextRenderer", "FreeType: Major error.");
 
+    int error = 0;
     error = FT_New_Face(fontlib_, fontPath.c_str(), 0, &fontface_);
     if (error == FT_Err_Unknown_File_Format) {
         LogWarnCustom("TextRenderer", "FreeType: File opened and read, format unsupported.");
@@ -61,11 +59,7 @@ TextRenderer::TextRenderer(const std::string& fontPath): drawer_(NULL) {
 
 TextRenderer::~TextRenderer() {
     FT_Done_Face(fontface_);
-    delete textShader_;
-    textShader_ = NULL;
     glDeleteTextures(1, &texCharacter_);
-    delete mesh_;
-    delete drawer_;
 }
 
 void TextRenderer::render(const char* text, float x, float y, const vec2& scale, vec4 color) {
@@ -79,9 +73,9 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    textShader_->activate();
-    textShader_->setUniform("tex", texUnit.getUnitNumber());
-    textShader_->setUniform("color", color);
+    textShader_.activate();
+    textShader_.setUniform("tex", texUnit.getUnitNumber());
+    textShader_.setUniform("color", color);
 
     const char* p;
 
@@ -131,7 +125,7 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
         y += (fontface_->glyph->advance.y >> 6) * scale.y;
     }
 
-    textShader_->deactivate();
+    textShader_.deactivate();
 }
 
 vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
@@ -206,12 +200,12 @@ void TextRenderer::initMesh() {
     indexBufferRAM->add(2);
     indexBufferRAM->add(3);
 
-    mesh_ = new Mesh();
+    mesh_.reset(new Mesh());
     mesh_->addAttribute(verticesBuffer);
     mesh_->addAttribute(texCoordsBuffer);
     mesh_->addIndicies(Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP), indices_);
 
-    drawer_ = new MeshDrawerGL(mesh_);
+    drawer_.reset(new MeshDrawerGL(mesh_.get()));
 }
 
 void TextRenderer::setFontSize(int val) {
