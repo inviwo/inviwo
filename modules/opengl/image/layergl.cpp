@@ -69,7 +69,7 @@ LayerGL* LayerGL::clone() const { return new LayerGL(*this); }
 
 void LayerGL::bindTexture(GLenum texUnit) const {
     texUnit_ = texUnit;
-    utilgl::bindTexture(texture_.get(), texUnit);
+    utilgl::bindTexture(*texture_, texUnit);
 }
 
 void LayerGL::unbindTexture() const {
