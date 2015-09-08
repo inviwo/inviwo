@@ -36,42 +36,42 @@ namespace inviwo {
 
 namespace utilgl {
 
-void setShaderUniforms(Shader* shader, const Volume* volume, const std::string& samplerID) {
-    const StructuredCoordinateTransformer<3>& ct = volume->getCoordinateTransformer();
+void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& samplerID) {
+    const StructuredCoordinateTransformer<3>& ct = volume.getCoordinateTransformer();
 
-    shader->setUniform(samplerID + ".dataToModel", ct.getDataToModelMatrix());
-    shader->setUniform(samplerID + ".modelToData", ct.getModelToDataMatrix());
+    shader.setUniform(samplerID + ".dataToModel", ct.getDataToModelMatrix());
+    shader.setUniform(samplerID + ".modelToData", ct.getModelToDataMatrix());
 
-    shader->setUniform(samplerID + ".dataToWorld", ct.getDataToWorldMatrix());
-    shader->setUniform(samplerID + ".worldToData", ct.getWorldToDataMatrix());
+    shader.setUniform(samplerID + ".dataToWorld", ct.getDataToWorldMatrix());
+    shader.setUniform(samplerID + ".worldToData", ct.getWorldToDataMatrix());
 
-    shader->setUniform(samplerID + ".modelToWorld", ct.getModelToWorldMatrix());
-    shader->setUniform(samplerID + ".worldToModel", ct.getWorldToModelMatrix());
+    shader.setUniform(samplerID + ".modelToWorld", ct.getModelToWorldMatrix());
+    shader.setUniform(samplerID + ".worldToModel", ct.getWorldToModelMatrix());
 
-    shader->setUniform(samplerID + ".worldToTexture", ct.getWorldToTextureMatrix());
-    shader->setUniform(samplerID + ".textureToWorld", ct.getTextureToWorldMatrix());
+    shader.setUniform(samplerID + ".worldToTexture", ct.getWorldToTextureMatrix());
+    shader.setUniform(samplerID + ".textureToWorld", ct.getTextureToWorldMatrix());
 
-    shader->setUniform(samplerID + ".textureToIndex", ct.getTextureToIndexMatrix());
-    shader->setUniform(samplerID + ".indexToTexture", ct.getIndexToTextureMatrix());
+    shader.setUniform(samplerID + ".textureToIndex", ct.getTextureToIndexMatrix());
+    shader.setUniform(samplerID + ".indexToTexture", ct.getIndexToTextureMatrix());
 
-    float gradientSpacing = volume->getWorldSpaceGradientSpacing();
+    float gradientSpacing = volume.getWorldSpaceGradientSpacing();
     // Scale the world matrix by the gradient spacing and the transform it to texture space.
     // Note that since we are dealing with real values we can multiply the scalar after the
     // transform as well
-    shader->setUniform(
+    shader.setUniform(
         samplerID + ".textureSpaceGradientSpacing",
         gradientSpacing * mat3(ct.getWorldToTextureMatrix()));
 
-    vec3 dimF = static_cast<vec3>(volume->getDimensions());
-    shader->setUniform(samplerID + ".dimensions", dimF);
-    shader->setUniform(samplerID + ".reciprocalDimensions", vec3(1.f) / dimF);
+    vec3 dimF = static_cast<vec3>(volume.getDimensions());
+    shader.setUniform(samplerID + ".dimensions", dimF);
+    shader.setUniform(samplerID + ".reciprocalDimensions", vec3(1.f) / dimF);
 
-    shader->setUniform(samplerID + ".worldSpaceGradientSpacing", gradientSpacing);
+    shader.setUniform(samplerID + ".worldSpaceGradientSpacing", gradientSpacing);
 
-    dvec2 dataRange = volume->dataMap_.dataRange;
-    DataMapper defaultRange(volume->getDataFormat());
+    dvec2 dataRange = volume.dataMap_.dataRange;
+    DataMapper defaultRange(volume.getDataFormat());
 
-    double typescale = 1.0 - getGLFormats()->getGLFormat(volume->getDataFormat()->getId()).scaling;
+    double typescale = 1.0 - getGLFormats()->getGLFormat(volume.getDataFormat()->getId()).scaling;
     defaultRange.dataRange = defaultRange.dataRange * typescale;
 
     double scalingFactor = 1.0;
@@ -84,7 +84,7 @@ void setShaderUniforms(Shader* shader, const Volume* volume, const std::string& 
     double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
                                  (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
-    switch (getGLFormats()->getGLFormat(volume->getDataFormat()->getId()).normalization) {
+    switch (getGLFormats()->getGLFormat(volume.getDataFormat()->getId()).normalization) {
         case GLFormats::NONE:
             scalingFactor = invRange;
             offset = -dataRange.x;
@@ -105,31 +105,31 @@ void setShaderUniforms(Shader* shader, const Volume* volume, const std::string& 
             break;
     }
     // offset scaling because of reversed scaling in the shader, i.e. (1 - formatScaling_)
-    shader->setUniform(samplerID + ".formatScaling", static_cast<float>(1.0 - scalingFactor));
-    shader->setUniform(samplerID + ".formatOffset", static_cast<float>(offset));
+    shader.setUniform(samplerID + ".formatScaling", static_cast<float>(1.0 - scalingFactor));
+    shader.setUniform(samplerID + ".formatOffset", static_cast<float>(offset));
 
-    shader->setUniform(samplerID + ".signedFormatScaling",
+    shader.setUniform(samplerID + ".signedFormatScaling",
                        static_cast<float>(1.0 - signedScalingFactor));
-    shader->setUniform(samplerID + ".signedFormatOffset", static_cast<float>(signedOffset));
+    shader.setUniform(samplerID + ".signedFormatOffset", static_cast<float>(signedOffset));
 }
 
-void setShaderUniforms(Shader* shader, const VolumeInport& port, const std::string& samplerID) {
-    setShaderUniforms(shader, port.getData(), samplerID);
+void setShaderUniforms(Shader& shader, const VolumeInport& port, const std::string& samplerID) {
+    setShaderUniforms(shader, *port.getData(), samplerID);
 }
 
-void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont, VolumeInport& volumePort) {
+void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, VolumeInport& volumePort) {
     TextureUnit unit;
     utilgl::bindTexture(volumePort, unit);
-    shader->setUniform(volumePort.getIdentifier(), unit.getUnitNumber());
+    shader.setUniform(volumePort.getIdentifier(), unit.getUnitNumber());
     utilgl::setShaderUniforms(shader, volumePort, volumePort.getIdentifier() + "Parameters");
     cont.push_back(std::move(unit));
 }
 
-IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
-                                              const Volume* volume, const std::string& samplerID) {
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+                                              const Volume& volume, const std::string& samplerID) {
     TextureUnit unit;
     utilgl::bindTexture(volume, unit);
-    shader->setUniform(samplerID, unit.getUnitNumber());
+    shader.setUniform(samplerID, unit.getUnitNumber());
     utilgl::setShaderUniforms(shader, volume, samplerID + "Parameters");
     cont.push_back(std::move(unit));
 }

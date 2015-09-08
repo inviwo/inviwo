@@ -42,17 +42,17 @@ class Shader;
 
 namespace utilgl {
 
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const Volume* volume,
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const Volume& volume,
                                              const std::string& samplerID);
 
-IVW_MODULE_OPENGL_API void setShaderUniforms(Shader* shader, const VolumeInport& port,
+IVW_MODULE_OPENGL_API void setShaderUniforms(Shader& shader, const VolumeInport& port,
                                              const std::string& samplerID);
 
-IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
                                               VolumeInport& volume);
 
-IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader* shader, TextureUnitContainer& cont,
-                                              const Volume* volume, const std::string& samplerID);
+IVW_MODULE_OPENGL_API void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont,
+                                              const Volume& volume, const std::string& samplerID);
 }
 
 }  // namespace

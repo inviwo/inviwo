@@ -34,11 +34,11 @@ namespace inviwo {
 
 namespace utilgl {
 
-void addShaderDefines(Shader* shader, const SimpleLightingProperty& property) {
+void addShaderDefines(Shader& shader, const SimpleLightingProperty& property) {
     addShaderDefines(shader, ShadingMode::Modes(property.shadingMode_.get()));
 }
 
-void addShaderDefines(Shader* shader, const ShadingMode::Modes& mode) {
+void addShaderDefines(Shader& shader, const ShadingMode::Modes& mode) {
     // implementations in  modules/opengl/glsl/utils/shading.glsl
     std::string shadingKey =
         "APPLY_LIGHTING(lighting, materialAmbientColor, materialDiffuseColor, "
@@ -72,63 +72,63 @@ void addShaderDefines(Shader* shader, const ShadingMode::Modes& mode) {
         break;
     }
 
-    shader->getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
+    shader.getFragmentShaderObject()->addShaderDefine(shadingKey, shadingValue);
 }
 
-void setShaderUniforms(Shader* shader, const SimpleLightingProperty& property, std::string name) {
-    shader->setUniform(name + ".position", property.getTransformedPosition());
-    shader->setUniform(name + ".ambientColor", property.ambientColor_.get());
-    shader->setUniform(name + ".diffuseColor", property.diffuseColor_.get());
-    shader->setUniform(name + ".specularColor", property.specularColor_.get());
-    shader->setUniform(name + ".specularExponent", property.specularExponent_.get());
+void setShaderUniforms(Shader& shader, const SimpleLightingProperty& property, std::string name) {
+    shader.setUniform(name + ".position", property.getTransformedPosition());
+    shader.setUniform(name + ".ambientColor", property.ambientColor_.get());
+    shader.setUniform(name + ".diffuseColor", property.diffuseColor_.get());
+    shader.setUniform(name + ".specularColor", property.specularColor_.get());
+    shader.setUniform(name + ".specularExponent", property.specularExponent_.get());
 }
 
-void addShaderDefines(Shader* shader, const CameraProperty& property) {}
+void addShaderDefines(Shader& shader, const CameraProperty& property) {}
 
-void setShaderUniforms(Shader* shader, const CameraProperty& property, std::string name) {
-    shader->setUniform(name + ".worldToView", property.viewMatrix());
-    shader->setUniform(name + ".viewToWorld", property.inverseViewMatrix());
-    shader->setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());
-    shader->setUniform(name + ".clipToWorld",
+void setShaderUniforms(Shader& shader, const CameraProperty& property, std::string name) {
+    shader.setUniform(name + ".worldToView", property.viewMatrix());
+    shader.setUniform(name + ".viewToWorld", property.inverseViewMatrix());
+    shader.setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());
+    shader.setUniform(name + ".clipToWorld",
                        property.inverseViewMatrix() * property.inverseProjectionMatrix());
-    shader->setUniform(name + ".position", property.getLookFrom());
-    shader->setUniform(name + ".nearPlane", property.getNearPlaneDist());
-    shader->setUniform(name + ".farPlane", property.getFarPlaneDist());
+    shader.setUniform(name + ".position", property.getLookFrom());
+    shader.setUniform(name + ".nearPlane", property.getNearPlaneDist());
+    shader.setUniform(name + ".farPlane", property.getFarPlaneDist());
 }
 
-void setShaderUniforms(Shader* shader, const Camera& property, std::string name) {
-    shader->setUniform(name + ".worldToView", property.viewMatrix());
-    shader->setUniform(name + ".viewToWorld", property.inverseViewMatrix());
-    shader->setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());
-    shader->setUniform(name + ".clipToWorld",
+void setShaderUniforms(Shader& shader, const Camera& property, std::string name) {
+    shader.setUniform(name + ".worldToView", property.viewMatrix());
+    shader.setUniform(name + ".viewToWorld", property.inverseViewMatrix());
+    shader.setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());
+    shader.setUniform(name + ".clipToWorld",
         property.inverseViewMatrix() * property.inverseProjectionMatrix());
-    shader->setUniform(name + ".position", property.getLookFrom());
-    shader->setUniform(name + ".nearPlane", property.getNearPlaneDist());
-    shader->setUniform(name + ".farPlane", property.getFarPlaneDist());
+    shader.setUniform(name + ".position", property.getLookFrom());
+    shader.setUniform(name + ".nearPlane", property.getNearPlaneDist());
+    shader.setUniform(name + ".farPlane", property.getFarPlaneDist());
 }
 
-void setShaderUniforms(Shader* shader, const SpatialEntity<3>& object, const std::string& name) {
+void setShaderUniforms(Shader& shader, const SpatialEntity<3>& object, const std::string& name) {
     const SpatialCoordinateTransformer<3>& ct = object.getCoordinateTransformer();
 
     mat4 dataToWorldMatrix = ct.getDataToWorldMatrix();
     mat4 modelToWorldMatrix = ct.getModelToWorldMatrix();
 
-    shader->setUniform(name + ".dataToModel", ct.getDataToModelMatrix());
-    shader->setUniform(name + ".modelToData", ct.getModelToDataMatrix());
+    shader.setUniform(name + ".dataToModel", ct.getDataToModelMatrix());
+    shader.setUniform(name + ".modelToData", ct.getModelToDataMatrix());
 
-    shader->setUniform(name + ".dataToWorld", dataToWorldMatrix);
-    shader->setUniform(name + ".worldToData", ct.getWorldToDataMatrix());
+    shader.setUniform(name + ".dataToWorld", dataToWorldMatrix);
+    shader.setUniform(name + ".worldToData", ct.getWorldToDataMatrix());
 
-    shader->setUniform(name + ".modelToWorld", modelToWorldMatrix);
-    shader->setUniform(name + ".worldToModel", ct.getWorldToModelMatrix());
-    shader->setUniform(name + ".modelToWorldNormalMatrix",
+    shader.setUniform(name + ".modelToWorld", modelToWorldMatrix);
+    shader.setUniform(name + ".worldToModel", ct.getWorldToModelMatrix());
+    shader.setUniform(name + ".modelToWorldNormalMatrix",
                        glm::mat3(glm::transpose(glm::inverse(modelToWorldMatrix))));
 
-    shader->setUniform(name + ".dataToWorldNormalMatrix",
+    shader.setUniform(name + ".dataToWorldNormalMatrix",
                        glm::mat3(glm::transpose(glm::inverse(dataToWorldMatrix))));
 }
 
-void addShaderDefines(Shader* shader, const SimpleRaycastingProperty& property) {
+void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) {
     std::string gradientComputationKey = "";
     std::string gradientComputationValue = "";
 
@@ -151,7 +151,7 @@ void addShaderDefines(Shader* shader, const SimpleRaycastingProperty& property) 
         gradientComputationValue =
             "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, 0);";
 
-    shader->getFragmentShaderObject()->addShaderDefine(gradientComputationKey,
+    shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey,
                                                        gradientComputationValue);
 
     gradientComputationKey =
@@ -172,7 +172,7 @@ void addShaderDefines(Shader* shader, const SimpleRaycastingProperty& property) 
     else if (property.gradientComputationMode_.isSelectedIdentifier("backward"))
         gradientComputationValue =
             "gradientBackwardDiff(voxel, volume, volumeParams, samplePos, channel);";
-    shader->getFragmentShaderObject()->addShaderDefine(gradientComputationKey,
+    shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey,
                                                        gradientComputationValue);
 
     gradientComputationKey = "COMPUTE_ALL_GRADIENTS(voxel, volume, volumeParams, samplePos)";
@@ -192,7 +192,7 @@ void addShaderDefines(Shader* shader, const SimpleRaycastingProperty& property) 
     else if (property.gradientComputationMode_.isSelectedIdentifier("backward"))
         gradientComputationValue =
             "gradientAllBackwardDiff(voxel, volume, volumeParams, samplePos);";
-    shader->getFragmentShaderObject()->addShaderDefine(gradientComputationKey,
+    shader.getFragmentShaderObject()->addShaderDefine(gradientComputationKey,
                                                        gradientComputationValue);
 
     // classification defines
@@ -202,7 +202,7 @@ void addShaderDefines(Shader* shader, const SimpleRaycastingProperty& property) 
         classificationValue = "vec4(voxel);";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
         classificationValue = "applyTF(transferFunc, voxel);";
-    shader->getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
+    shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // compositing defines
     std::string compositingKey =
@@ -227,20 +227,20 @@ void addShaderDefines(Shader* shader, const SimpleRaycastingProperty& property) 
     else if (property.compositingMode_.isSelectedIdentifier("ison"))
         compositingValue = "compositeISON(result, color, voxel.r, gradient, t, tDepth, isoValue);";
 
-    shader->getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
+    shader.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);
 }
-void setShaderUniforms(Shader* shader, const SimpleRaycastingProperty& property) {
-    shader->setUniform("samplingRate_", property.samplingRate_.get());
-    shader->setUniform("isoValue_", property.isoValue_.get());
+void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property) {
+    shader.setUniform("samplingRate_", property.samplingRate_.get());
+    shader.setUniform("isoValue_", property.isoValue_.get());
 }
 
-void setShaderUniforms(Shader* shader, const SimpleRaycastingProperty& property,
+void setShaderUniforms(Shader& shader, const SimpleRaycastingProperty& property,
                        std::string name) {
-    shader->setUniform(name + ".samplingRate", property.samplingRate_.get());
-    shader->setUniform(name + ".isoValue", property.isoValue_.get());
+    shader.setUniform(name + ".samplingRate", property.samplingRate_.get());
+    shader.setUniform(name + ".isoValue", property.isoValue_.get());
 }
 
-void addShaderDefines(Shader* shader, const VolumeIndicatorProperty& property) {
+void addShaderDefines(Shader& shader, const VolumeIndicatorProperty& property) {
     // compositing defines
     std::string key = "DRAW_PLANES(result, samplePosition, rayDirection, increment, params)";
     std::string value = "result";
@@ -253,25 +253,25 @@ void addShaderDefines(Shader* shader, const VolumeIndicatorProperty& property) {
         planes += property.plane3_.enable_ ? ", params.plane3" : "";
         value = "drawPlanes(result, samplePosition, rayDirection, increment " + planes + ")";
     }
-    shader->getFragmentShaderObject()->addShaderDefine(key, value);
+    shader.getFragmentShaderObject()->addShaderDefine(key, value);
 }
 
-void setShaderUniforms(Shader* shader, const VolumeIndicatorProperty& property, std::string name) {
+void setShaderUniforms(Shader& shader, const VolumeIndicatorProperty& property, std::string name) {
     if (property.enable_) {
         if (property.plane1_.enable_) {
-            shader->setUniform(name + ".plane1.position", property.plane1_.position_);
-            shader->setUniform(name + ".plane1.normal", property.plane1_.normal_);
-            shader->setUniform(name + ".plane1.color", property.plane1_.color_);
+            shader.setUniform(name + ".plane1.position", property.plane1_.position_);
+            shader.setUniform(name + ".plane1.normal", property.plane1_.normal_);
+            shader.setUniform(name + ".plane1.color", property.plane1_.color_);
         }
         if (property.plane2_.enable_) {
-            shader->setUniform(name + ".plane2.position", property.plane2_.position_);
-            shader->setUniform(name + ".plane2.normal", property.plane2_.normal_);
-            shader->setUniform(name + ".plane2.color", property.plane2_.color_);
+            shader.setUniform(name + ".plane2.position", property.plane2_.position_);
+            shader.setUniform(name + ".plane2.normal", property.plane2_.normal_);
+            shader.setUniform(name + ".plane2.color", property.plane2_.color_);
         }
         if (property.plane3_.enable_) {
-            shader->setUniform(name + ".plane3.position", property.plane3_.position_);
-            shader->setUniform(name + ".plane3.normal", property.plane3_.normal_);
-            shader->setUniform(name + ".plane3.color", property.plane3_.color_);
+            shader.setUniform(name + ".plane3.position", property.plane3_.position_);
+            shader.setUniform(name + ".plane3.normal", property.plane3_.normal_);
+            shader.setUniform(name + ".plane3.color", property.plane3_.color_);
         }
     }
 }
