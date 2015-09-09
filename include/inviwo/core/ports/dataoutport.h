@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/data.h>
-#include <inviwo/core/datastructures/datasequence.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/ports/outportiterable.h>
 #include <inviwo/core/util/introspection.h>
