@@ -93,8 +93,6 @@ void CImgVolumeReader::readDataInto(void* destination) const {
 
         CImgUtils::loadVolumeData(destination, filePath, dimensions, formatId);
         volumeDisk->setDimensions(dimensions);
-
-        volumeDisk->updateDataFormat(DataFormatBase::get(formatId));
     }
 }
 
@@ -121,8 +119,6 @@ void* CImgVolumeReader::readData() const {
 
         data = CImgUtils::loadVolumeData(nullptr, filePath, dimensions, formatId);
         volumeDisk->setDimensions(dimensions);
-
-        volumeDisk->updateDataFormat(DataFormatBase::get(formatId));
     }
 
     return data;

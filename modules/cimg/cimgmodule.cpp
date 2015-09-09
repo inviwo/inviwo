@@ -39,7 +39,10 @@ CImgModule::CImgModule() : InviwoModule() {
 
     // Register Data Readers
     registerDataReader(new CImgLayerReader());
-    registerDataReader(new CImgVolumeReader());
+    
+    //TODO: Test HDR format
+    //registerDataReader(new CImgVolumeReader());
+    
     // Register Data Writers
     registerDataWriter(new CImgLayerWriter());
 }
