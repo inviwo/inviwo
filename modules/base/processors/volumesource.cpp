@@ -80,10 +80,8 @@ void VolumeSource::load(bool deserialize) {
 
     auto rf = DataReaderFactory::getPtr();
 
-    
-
     std::string ext = filesystem::getFileExtension(file_.get());
-    if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeUniqueVector>(ext)) {
+    if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
         try {
             auto vols(volVecReader->readMetaData(file_.get()));
             auto volumes = util::make_unique<VolumeVector>();

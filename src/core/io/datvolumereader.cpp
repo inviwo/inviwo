@@ -249,7 +249,7 @@ DatVolumeReader::VolumeVector* DatVolumeReader::readMetaData(std::string filePat
             offset = -0.5f * (basis[0] + basis[1] + basis[2]);
         }
 
-        auto volume = util::make_unique<Volume>();
+        auto volume = std::make_shared<Volume>();
         volume->setBasis(basis);
         volume->setOffset(offset);
         volume->setWorldMatrix(wtm);
@@ -275,7 +275,7 @@ DatVolumeReader::VolumeVector* DatVolumeReader::readMetaData(std::string filePat
 
         for (size_t t = 0; t < sequences; ++t) {
             if (t==0) volumes->push_back(std::move(volume));
-            else volumes->push_back(std::unique_ptr<Volume>(volumes->front()->clone()));
+            else volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
             auto diskRepr = util::make_unique<VolumeDisk>(filePath, dimensions_, format_);
             filePos_ = t * bytes;
             diskRepr->setDataReader(this->clone());

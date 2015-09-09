@@ -55,9 +55,9 @@ namespace inviwo {
  *  The tag names are case insensitive and should always be followed by a ":"
  *  Anything after a '#' will be considered a comment.
  */
-class IVW_CORE_API DatVolumeReader : public DataReaderType<std::vector<std::unique_ptr<Volume>>> {
+class IVW_CORE_API DatVolumeReader : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {
 public:
-    using VolumeVector = std::vector<std::unique_ptr<Volume>>;
+    using VolumeVector = std::vector<std::shared_ptr<Volume>>;
 
     DatVolumeReader();
     DatVolumeReader(const DatVolumeReader& rhs);
