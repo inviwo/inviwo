@@ -120,7 +120,7 @@ void DataSource<DataType, PortType>::load() {
 }
 
 /**
- * load is called when the filename changes, and after the deserialisation
+ * load is called when the filename changes, and after the deserialization
  */
 template <typename DataType, typename PortType>
 void DataSource<DataType, PortType>::load(bool deserialized) {

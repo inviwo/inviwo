@@ -50,10 +50,7 @@ public:
     virtual std::string getClassIdentifier() const override;
 
     virtual T* getData();
-    virtual DataSequence<T>* getDataSequence();
-
     virtual const T* getConstData() const;
-    virtual const DataSequence<T>* getConstDataSequence() const;
 
     virtual void setData(T* data, bool ownsData = true);
     virtual void setConstData(const T* data);
@@ -68,7 +65,6 @@ public:
      */
     virtual bool isReady() const override;
     bool hasData() const;
-    bool hasDataSequence() const;
 
     bool isDataOwner() const;
     virtual std::string getContentInfo() const;
@@ -76,40 +72,14 @@ public:
 protected:
     T* data_;
     bool ownsData_;
-    bool isSequence_;
 };
-
-
-namespace detail {
-
-template <typename T, typename std::enable_if<!std::is_polymorphic<T>::value, int>::type = 0>
-bool isDataSequence(T* data) {
-    return false;
-};
-template <typename T, typename std::enable_if<std::is_polymorphic<T>::value, int>::type = 0>
-bool isDataSequence(T* data) {
-    return dynamic_cast<DataSequence<T>*>(data) != nullptr;
-};
-
-template <typename T, typename std::enable_if<!std::is_polymorphic<T>::value, int>::type = 0>
-DataSequence<T>* getDataSequence(T* data) {
-    return nullptr;
-};
-template <typename T, typename std::enable_if<std::is_polymorphic<T>::value, int>::type = 0>
-DataSequence<T>* getDataSequence(T* data) {
-    return dynamic_cast<DataSequence<T>*>(data);
-};
-
-}
-
 
 template <typename T>
 DataOutport<T>::DataOutport(std::string identifier)
     : Outport(identifier)
     , OutportIterableImpl<T>(this)
     , data_(nullptr)
-    , ownsData_(true)
-    , isSequence_(false) {}
+    , ownsData_(true) {}
 
 template <typename T>
 DataOutport<T>::~DataOutport() {
@@ -129,37 +99,12 @@ uvec3 inviwo::DataOutport<T>::getColorCode() const {
 template <typename T>
 T* DataOutport<T>::getData() {
     ivwAssert(ownsData_, "Port does not own data, so can not return writable data.");
-
-    if (isSequence_)
-        return detail::getDataSequence<T>(data_)->getCurrent();
-    else
-        return data_;
-}
-
-template <typename T>
-DataSequence<T>* DataOutport<T>::getDataSequence() {
-    ivwAssert(ownsData_, "Port does not own data, so can not return writable data.");
-
-    if (isSequence_)
-        return detail::getDataSequence<T>(data_);
-    else
-        return nullptr;
+    return data_;
 }
 
 template <typename T>
 const T* DataOutport<T>::getConstData() const {
-    if (isSequence_)
-        return const_cast<const T*>(detail::getDataSequence<T>(data_)->getCurrent());
-    else
-        return const_cast<const T*>(data_);
-}
-
-template <typename T>
-const DataSequence<T>* DataOutport<T>::getConstDataSequence() const {
-    if (isSequence_)
-        return const_cast<const DataSequence<T>*>(detail::getDataSequence<T>(data_));
-    else
-        return nullptr;
+    return data_;
 }
 
 template <typename T>
@@ -167,8 +112,6 @@ void DataOutport<T>::setData(T* data, bool ownsData) {
     if (ownsData_ && data_ && data_ != data) {
         delete data_;  // Delete old data
     }
-    
-    isSequence_ = detail::isDataSequence<T>(data);
     ownsData_ = ownsData;
     data_ = data;  // Add reference to new data
 }
@@ -195,11 +138,6 @@ bool DataOutport<T>::hasData() const {
 }
 
 template <typename T>
-bool DataOutport<T>::hasDataSequence() const {
-    return (hasData() && isSequence_);
-}
-
-template <typename T>
 bool DataOutport<T>::isReady() const {
     return hasData() && invalidationLevel_ == VALID;
 }
@@ -211,10 +149,7 @@ bool DataOutport<T>::isDataOwner() const {
 
 template <typename T>
 std::string DataOutport<T>::getContentInfo() const {
-    if (hasDataSequence()) {
-        auto seq = static_cast<const DataSequence<T>*>(detail::getDataSequence<T>(data_));
-        return seq->getDataInfo();
-    } else if (hasData()) {
+    if (hasData()) {
         std::string info = port_traits<T>::data_info(data_);
         if (!info.empty()) {
             return info;
@@ -222,7 +157,7 @@ std::string DataOutport<T>::getContentInfo() const {
             return "No information available for: " + util::class_identifier<T>();
         }
     } else {
-        return "Port has no data";
+        return port_traits<T>::class_identifier() + "Outport has no data";
     }
 }
 

@@ -179,6 +179,9 @@ public:
     virtual void setVisible(bool val);
     virtual bool getVisible();
 
+    template <typename T, typename U>
+    static void setStateAsDefault(T& property, const U& state);
+
 protected:
     void notifyAboutChange();
 
@@ -211,6 +214,14 @@ void inviwo::Property::removeOnChange(T* o) {
 template <typename T>
 const BaseCallBack* Property::onChange(T* o, void (T::*m)()) {
     return onChangeCallback_.addMemberFunction(o, m);
+}
+
+template <typename T, typename U>
+void Property::setStateAsDefault(T& property, const U& state) {
+    U tmp = property;
+    property = state;
+    property.setCurrentStateAsDefault();
+    property = tmp;
 }
 
 }  // namespace

@@ -18,7 +18,6 @@ endif()
     #add_definitions( "/DZ_PREFIX" )
 #endif()
 
-
 #--------------------------------------------------------------------
 # Add LIBJPEG files
 file(GLOB_RECURSE LIBJPEG_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libjpeg/*.h)
@@ -156,6 +155,17 @@ ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/ilmthread)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/iex)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/zlib)
+
+#--------------------------------------------------------------------
+# Supress warning from ext...
+set(IGNORE_WARN_FILES ${LIBJPEG_SOURCE_FILES} ${LIBPNG_SOURCE_FILES} ${OPENEXR_SOURCE_FILES} ${ZLIB_SOURCE_FILES})
+if(MSVC)
+    set_source_files_properties( ${IGNORE_WARN_FILES} PROPERTIES COMPILE_FLAGS " /W0 " )
+endif(MSVC)
+if(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
+    set_source_files_properties(${IGNORE_WARN_FILES} PROPERTIES COMPILE_FLAGS " -w ")
+endif(CMAKE_SYSTEM_NAME MATCHES "(Darwin|FreeBSD)")
+
 
 #--------------------------------------------------------------------
 # Create module

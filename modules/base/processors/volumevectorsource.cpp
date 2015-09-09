@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,32 @@
  *
  *********************************************************************************/
 
-#include "volumesource.h"
-#include <inviwo/core/resources/resourcemanager.h>
-#include <inviwo/core/resources/templateresource.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/raiiutils.h>
+#include "volumevectorsource.h"
 #include <inviwo/core/io/datareaderfactory.h>
-#include <inviwo/core/io/rawvolumereader.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <math.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeSource, "org.inviwo.VolumeSource");
-ProcessorDisplayName(VolumeSource, "Volume Source");
-ProcessorTags(VolumeSource, Tags::CPU);
-ProcessorCategory(VolumeSource, "Data Input");
-ProcessorCodeState(VolumeSource, CODE_STATE_STABLE);
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+ProcessorClassIdentifier(VolumeVectorSource, "org.inviwo.VolumeVectorSource");
+ProcessorDisplayName(VolumeVectorSource, "Volume Vector Source");
+ProcessorTags(VolumeVectorSource, Tags::CPU);
+ProcessorCategory(VolumeVectorSource, "Data Input");
+ProcessorCodeState(VolumeVectorSource, CODE_STATE_STABLE);
 
-VolumeSource::VolumeSource()
+VolumeVectorSource::VolumeVectorSource()
     : Processor()
     , outport_("data")
     , file_("filename", "File")
     , reload_("reload", "Reload data")
     , basis_("Basis", "Basis and offset")
     , information_("Information", "Data information")
-    , volumeSequence_("Sequence", "Sequence")
     , isDeserializing_(false) {
     file_.setContentType("volume");
     file_.setDisplayName("Volume file");
 
     file_.onChange([this]() { load(); });
     reload_.onChange([this]() { load(); });
-
-    volumeSequence_.setVisible(false);
 
     addFileNameFilters();
 
@@ -72,32 +62,16 @@ VolumeSource::VolumeSource()
     addProperty(reload_);
     addProperty(information_);
     addProperty(basis_);
-    addProperty(volumeSequence_);
 }
 
-void VolumeSource::load(bool deserialize) {
+void VolumeVectorSource::load(bool deserialize /*= false*/) {
     if (isDeserializing_ || file_.get().empty()) return;
 
     auto rf = DataReaderFactory::getPtr();
-
-    std::unique_ptr<VolumeVector> volumes;
-
     std::string ext = filesystem::getFileExtension(file_.get());
-    if (auto volvecreader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
+    if (auto reader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
         try {
-            volumes.reset(volvecreader->readMetaData(file_.get()));
-
-            std::swap(volumes, volumes_);
-        } catch (DataReaderException const& e) {
-            LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
-        }
-    } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
-        try {
-            std::unique_ptr<Volume> volume(volreader->readMetaData(file_.get()));
-            volumes = util::make_unique<VolumeVector>();
-            volumes->push_back(std::move(volume));
-
-            std::swap(volumes, volumes_);
+            volumes_.reset(reader->readMetaData(file_.get()));
         } catch (DataReaderException const& e) {
             LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
         }
@@ -108,40 +82,28 @@ void VolumeSource::load(bool deserialize) {
     if (volumes_ && !volumes_->empty() && (*volumes_)[0]) {
         basis_.updateForNewVolume(*(*volumes_)[0], deserialize);
         information_.updateForNewVolume(*(*volumes_)[0], deserialize);
-
-        volumeSequence_.updateMax(volumes_->size());
-        volumeSequence_.setVisible(volumes_->size() > 1);
     }
 }
 
-void VolumeSource::addFileNameFilters() {
+void VolumeVectorSource::addFileNameFilters() {
     auto rf = DataReaderFactory::getPtr();
-    auto extensions = rf->getExtensionsForType<Volume>();
-    file_.clearNameFilters();
-    for (auto& ext : extensions) {
-        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
-    }
-    extensions = rf->getExtensionsForType<VolumeVector>();
+    auto extensions = rf->getExtensionsForType<VolumeVector>();
     for (auto& ext : extensions) {
         file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
     }
 }
 
-void VolumeSource::process() {
+void VolumeVectorSource::process() {
     if (!isDeserializing_ && volumes_ && !volumes_->empty()) {
-        size_t index =
-            std::min(volumes_->size() - 1, static_cast<size_t>(volumeSequence_.index_.get() - 1));
-
-        if (!(*volumes_)[index]) return;
-
-        basis_.updateVolume(*(*volumes_)[index]);
-        information_.updateVolume(*(*volumes_)[index]);
-
-        outport_.setData((*volumes_)[index].get(), false);
+        for (auto& vol : *volumes_) {
+            basis_.updateVolume(*vol);
+            information_.updateVolume(*vol);
+        }
+        outport_.setData(volumes_.get(), false);
     }
 }
 
-void VolumeSource::deserialize(IvwDeserializer& d) {
+void VolumeVectorSource::deserialize(IvwDeserializer& d) {
     {
         isDeserializing_ = true;
         Processor::deserialize(d);
@@ -150,5 +112,4 @@ void VolumeSource::deserialize(IvwDeserializer& d) {
     }
     load(true);
 }
-
 }  // namespace

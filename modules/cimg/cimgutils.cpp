@@ -43,6 +43,7 @@
 # pragma warning(disable: 4293)
 #endif
 
+#include <warn/ignore/all>
 #include <modules/cimg/ext/cimg/CImg.h>
 
 // Added in Cimg.h below struct type<float>...

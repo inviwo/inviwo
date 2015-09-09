@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,58 +27,49 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMESOURCE_H
-#define IVW_VOLUMESOURCE_H
+#ifndef IVW_VOLUMEBASISPROPERTY_H
+#define IVW_VOLUMEBASISPROPERTY_H
 
 #include <modules/base/basemoduledefine.h>
-#include <modules/base/properties/volumebasisproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-#include <modules/base/properties/sequencetimerproperty.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeSource, Volume Source}
- * ![](org.inviwo.VolumeSource.png?classIdentifier=org.inviwo.VolumeSource)
- *
- * Loads a Volume
- *
- * ### Outports
- *   * __Outport__ The loaded volume
- *
- * ### Properties
- *   * __File name__ File to load.
- */
-class IVW_MODULE_BASE_API VolumeSource : public Processor {
+class IVW_MODULE_BASE_API VolumeBasisProperty : public CompositeProperty {
 public:
-    using VolumeVector = std::vector<std::unique_ptr<Volume>>;
-    InviwoProcessorInfo();
-    VolumeSource();
-    virtual ~VolumeSource() = default;
+    InviwoPropertyInfo();
+    VolumeBasisProperty(std::string identifier, std::string displayName,
+                        InvalidationLevel invalidationLevel = INVALID_RESOURCES,
+                        PropertySemantics semantics = PropertySemantics::Default);
+    VolumeBasisProperty(const VolumeBasisProperty& rhs);
+    VolumeBasisProperty& operator=(const VolumeBasisProperty& that);
+    virtual VolumeBasisProperty* clone() const override;
+    virtual ~VolumeBasisProperty() = default;
 
-    virtual void deserialize(IvwDeserializer& d) override;
-    virtual void process() override;
+    void updateForNewVolume(const Volume& volume, bool deserialize = false);
+
+    void updateVolume(Volume& volume);
+
+    BoolProperty overRideDefaults_;
+    FloatVec3Property a_;
+    FloatVec3Property b_;
+    FloatVec3Property c_;
+    FloatVec3Property offset_;
+
+    FloatVec3Property overrideA_;
+    FloatVec3Property overrideB_;
+    FloatVec3Property overrideC_;
+    FloatVec3Property overrideOffset_;
 
 private:
-    void load(bool deserialize = false);
-    void addFileNameFilters();
-
-    std::unique_ptr<VolumeVector> volumes_;
-
-    VolumeOutport outport_;
-    FileProperty file_;
-    ButtonProperty reload_;
-
-    VolumeBasisProperty basis_;
-    VolumeInformationProperty information_;
-    SequenceTimerProperty volumeSequence_;
-    bool isDeserializing_;
+    void onOverrideChange();
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_VOLUMESOURCE_H
+#endif // IVW_VOLUMEBASISPROPERTY_H
+

@@ -14,13 +14,13 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/distancetransformram.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldmapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.h
@@ -32,6 +32,10 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorsource.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumebasisproperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumeinformationproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -46,13 +50,13 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/diffuselightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/distancetransformram.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldmapper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.cpp
@@ -63,6 +67,10 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorsource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumebasisproperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumeinformationproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
