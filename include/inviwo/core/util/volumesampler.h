@@ -58,6 +58,7 @@ public:
     virtual ~VolumeSampler();
 
     dvec4 sample(const dvec3 &pos) const;
+    dvec4 sample(double x, double y, double z) const { return sample(dvec3(x, y, z)); }
     dvec4 sample(const vec3 &pos) const { return sample(dvec3(pos)); }
 
 private:
@@ -66,18 +67,19 @@ private:
 };
 
 template <typename T>
-class IVW_CORE_API TemplateVolumeSampler {
+class TemplateVolumeSampler {
 public:
     TemplateVolumeSampler(const VolumeRAM *ram)
-        : data_(static_cast<T*>(ram->getData())), dims_(ram->getDimensions()), ic_(dims_) {}
+        : data_(static_cast<const T*>(ram->getData())), dims_(ram->getDimensions()), ic_(dims_) {}
 
     TemplateVolumeSampler(const Volume *vol)
         : TemplateVolumeSampler(vol->getRepresentation<VolumeRAM>()) {}
 
-    virtual ~TemplateVolumeSampler();
+    virtual ~TemplateVolumeSampler(){}
 
-    T sample(const vec3 &pos) const { return sample(dvec3(pos)); }
-    T sample(const dvec3 &pos) const {
+    T sample(const vec3 &pos) { return sample(dvec3(pos)); }
+    T sample(double x, double y, double z) { return sample(dvec3(x, y, z)); }
+    T sample(const dvec3 &pos) {
         dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
         size3_t indexPos = size3_t(samplePos);
         dvec3 interpolants = samplePos - dvec3(indexPos);
@@ -98,7 +100,7 @@ public:
 private:
     const T *data_;
     size3_t dims_;
-    util::IndexMapper ic_;
+    util::IndexMapper3D ic_;
 };
 
 }  // namespace

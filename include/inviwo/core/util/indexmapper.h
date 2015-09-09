@@ -43,8 +43,23 @@ namespace inviwo {
          *
          * DESCRIBE_THE_CLASS
          */
-        struct IndexMapper {
-            inline IndexMapper(const size3_t &dim) : dimx(dim.x), dimxy(dim.x * dim.y) {};
+        struct IndexMapper2D {
+            inline IndexMapper2D(const size2_t &dim) : dimx(dim.x) {};
+            inline size_t operator() (size_t x, size_t y) {
+                return x + y * dimx;
+            }
+            inline size_t operator() (long long x, long long y) {
+                return static_cast<size_t>(x + y * dimx );
+            }
+            inline size_t operator() (const size2_t &pos) { return pos.x + pos.y * dimx; }
+
+        private:
+            const size_t dimx;
+        };
+
+
+        struct IndexMapper3D {
+            inline IndexMapper3D(const size3_t &dim) : dimx(dim.x), dimxy(dim.x * dim.y) {};
             inline size_t operator() (size_t x, size_t y, size_t z) {
                 return x + y * dimx + z * dimxy;
             }

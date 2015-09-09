@@ -68,8 +68,8 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
     const T* src = static_cast<const T*>(volume->getData());
     T* dst = static_cast<T*>(newVolume->getData());
 
-    util::IndexMapper o(dataDims);
-    util::IndexMapper n(newDims);
+    util::IndexMapper3D o(dataDims);
+    util::IndexMapper3D n(newDims);
 
     const double samplesInv = 1.0/(f.x*f.y*f.z);
     for (size_t z=0; z < newDims.z; ++z) {
