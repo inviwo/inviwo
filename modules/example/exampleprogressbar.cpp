@@ -24,39 +24,33 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "exampleprogressbar.h"
-//include <inviwo/qt/widgets/inviwoapplicationqt.h>
-#ifndef WIN32
-#  include <unistd.h>
-#endif
+#include <thread>
 
 namespace inviwo {
 
 ProcessorClassIdentifier(ExampleProgressBar, "org.inviwo.ExampleProgressBar");
-ProcessorDisplayName(ExampleProgressBar,  "Example Progress Bar");
+ProcessorDisplayName(ExampleProgressBar, "Example Progress Bar");
 ProcessorTags(ExampleProgressBar, Tags::None);
 ProcessorCategory(ExampleProgressBar, "Various");
 ProcessorCodeState(ExampleProgressBar, CODE_STATE_EXPERIMENTAL);
 
-ExampleProgressBar::ExampleProgressBar() : Processor()
-      , inport_("image.inport")
-      , outport_("image.outport")
-{
+ExampleProgressBar::ExampleProgressBar()
+    : Processor(), inport_("image.inport"), outport_("image.outport") {
     addPort(inport_);
     addPort(outport_);
 
     // initially hide progress bar
-    //progressBar_.hide();
+    // progressBar_.hide();
 }
 
-ExampleProgressBar::~ExampleProgressBar() {
-}
+ExampleProgressBar::~ExampleProgressBar() {}
 
 void ExampleProgressBar::process() {
-    //progressBar_.show();
+    // progressBar_.show();
 
     // reset progress bar
     progressBar_.resetProgress();
@@ -64,22 +58,18 @@ void ExampleProgressBar::process() {
     const int sleepTime = 10;
 
     const int numSteps = 100;
-    for (int i=0; i<numSteps; ++i) {
-#ifdef WIN32
-        Sleep(sleepTime);
-#else
-        usleep(sleepTime);
-#endif
+    for (int i = 0; i < numSteps; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
         // update progress bar state
         updateProgress(i / static_cast<float>(numSteps));
     }
 
     // set progress bar to 100%
     progressBar_.finishProgress();
-    //progressBar_.hide();
+    // progressBar_.hide();
 
     // dummy operation, pass on image data
-    outport_.setConstData(inport_.getData());
+    outport_.setData(inport_.getData());
 }
 
-} // inviwo namespace
+}  // inviwo namespace
