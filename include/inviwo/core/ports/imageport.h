@@ -284,7 +284,7 @@ template <size_t N>
 void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
     if (this->hasData()) {
         std::shared_ptr<const Image> img = getData();
-        std::shared_ptr<Image> out = outport->getData();
+        std::shared_ptr<Image> out = outport->getMutableData();
         if (out) img->copyRepresentationsTo(out.get());
     }
 }
