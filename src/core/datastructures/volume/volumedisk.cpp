@@ -58,6 +58,4 @@ void VolumeDisk::setDimensions(size3_t dimensions) {
 
 const size3_t& VolumeDisk::getDimensions() const { return dimensions_; }
 
-void VolumeDisk::updateDataFormat(const DataFormatBase* format) { setDataFormat(format); }
-
 }  // namespace
