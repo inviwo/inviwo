@@ -85,15 +85,15 @@ protected:
         task(task&&);
         task& operator=(task&&);
 
-        std::future<std::unique_ptr<Mesh>> result;
+        std::future<std::shared_ptr<Mesh>> result;
         float iso = 0.0f;
         vec4 color = vec4(0);
         float status = 0.0f;
     };
 
     DataInport<Volume, 0> volume_;
-    DataOutport<std::vector<std::unique_ptr<Mesh>>> outport_;
-    std::shared_ptr<std::vector<std::unique_ptr<Mesh>>> meshes_;
+    DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
+    std::shared_ptr<std::vector<std::shared_ptr<Mesh>>> meshes_;
 
     FloatProperty isoValue_;
     OptionPropertyInt method_;

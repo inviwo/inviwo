@@ -136,6 +136,20 @@ struct port_traits<std::vector<std::unique_ptr<T, D>, A>> {
                     : " ");
     }
 };
+template <typename T, typename A>
+struct port_traits<std::vector<std::shared_ptr<T>, A>> {
+    static std::string class_identifier() {
+        return port_traits<T>::class_identifier() + "SharedPtrVector";
+    }
+    static uvec3 color_code() { return uvec3(30, 30, 30) + port_traits<T>::color_code(); }
+    static std::string data_info(const std::vector<std::shared_ptr<T>, A>* data) {
+        return "Vector of size " + toString(data->size()) +
+               (!data->empty()
+                    ? "<br/>with shared pointers to:<br/> " +
+                          port_traits<T>::data_info(data->front().get())
+                    : " ");
+    }
+};
 
 }  // namespace
 

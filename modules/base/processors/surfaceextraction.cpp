@@ -76,7 +76,7 @@ SurfaceExtraction::~SurfaceExtraction() {}
 
 void SurfaceExtraction::process() {
     if (!meshes_) {
-        meshes_ = std::make_shared<std::vector<std::unique_ptr<Mesh>>>();
+        meshes_ = std::make_shared<std::vector<std::shared_ptr<Mesh>>>();
         outport_.setData(meshes_);
     }
 
@@ -106,8 +106,8 @@ void SurfaceExtraction::process() {
                     result_[i].color = color;
                     result_[i].status = 0.0f;
                     result_[i].result =
-                        dispatchPool([this, vol, iso, color, i]() -> std::unique_ptr<Mesh> {
-                            auto m = std::unique_ptr<Mesh>(
+                        dispatchPool([this, vol, iso, color, i]() -> std::shared_ptr<Mesh> {
+                            auto m = std::shared_ptr<Mesh>(
                                 MarchingTetrahedron::apply(vol, iso, color, [this, i](float s) {
                                     this->result_[i].status = s;
                                     float status = 0;
