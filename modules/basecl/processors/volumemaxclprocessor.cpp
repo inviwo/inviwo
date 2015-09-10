@@ -76,23 +76,21 @@ void VolumeMaxCLProcessor::deinitialize() {
 }
 
 void VolumeMaxCLProcessor::process() {
-    if (kernel_ == nullptr) {
-        return;
-    }
-    const Volume* volume = inport_.getData();
+    if (!kernel_) return;
+    auto volume = inport_.getData();
 
     const size3_t dim{volume->getDimensions()};
     const size3_t outDim{glm::ceil(vec3(dim) / static_cast<float>(volumeRegionSize_.get()))};
     // const DataFormatBase* volFormat = inport_.getData()->getDataFormat(); // Not used
 
     if (!volumeOut_ || volumeOut_->getDimensions() != outDim) {
-        volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataUINT8::get()));
+        volumeOut_ = std::make_shared<Volume>(outDim, DataUINT8::get());
         // volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataUINT32::get()) );
         // volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataFLOAT32::get()) );
         // Use same transformation to make sure that they are render at the same location
         volumeOut_->setModelMatrix(volume->getModelMatrix());
         volumeOut_->setWorldMatrix(volume->getWorldMatrix());
-        outport_.setData(volumeOut_.get(), false);
+        outport_.setData(volumeOut_);
     }
 
     size3_t localWorkGroupSize(workGroupSize_.get());
@@ -109,12 +107,12 @@ void VolumeMaxCLProcessor::process() {
         glSync.addToAquireGLObjectList(volumeOutCL);
         glSync.aquireAllObjects();
 
-        executeVolumeOperation(volume, volumeCL, volumeOutCL, outDim, globalWorkGroupSize,
+        executeVolumeOperation(volume.get(), volumeCL, volumeOutCL, outDim, globalWorkGroupSize,
                                localWorkGroupSize);
     } else {
         const VolumeCL* volumeCL = volume->getRepresentation<VolumeCL>();
         VolumeCL* volumeOutCL = volumeOut_->getEditableRepresentation<VolumeCL>();
-        executeVolumeOperation(volume, volumeCL, volumeOutCL, outDim, globalWorkGroupSize,
+        executeVolumeOperation(volume.get(), volumeCL, volumeOutCL, outDim, globalWorkGroupSize,
                                localWorkGroupSize);
     }
 }

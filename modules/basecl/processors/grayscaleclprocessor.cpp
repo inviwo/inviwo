@@ -77,11 +77,11 @@ void GrayscaleCLProcessor::process() {
         return;
     }
 
-    Image* outImage = outport_.getData();
+    auto outImage = outport_.getMutableData();
 
     //outImage->resize(inImage->getDimensions());
     uvec2 outportDim = outImage->getDimensions();
-    const Image* inImage = input_.getData();
+    auto inImage = input_.getData();
     try {
         if (useGLSharing_.get()) {
             SyncCLGL glSync;

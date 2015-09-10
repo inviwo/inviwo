@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "meshentryexitpointscl.h"
@@ -38,13 +38,14 @@
 namespace inviwo {
 
 MeshEntryExitPointsCL::MeshEntryExitPointsCL(const glm::size2_t& workGroupSize /*= size2_t(16)*/)
-    : workGroupSize_(workGroupSize)
-    , kernel_(nullptr) {
+    : workGroupSize_(workGroupSize), kernel_(nullptr) {
     kernel_ = addKernel("entryexitpoints.cl", "entryExitPointsKernel");
 }
 
-
-bool MeshEntryExitPointsCL::computeEntryExitPoints(const Mesh* mesh, const mat4& worldToView, const mat4& viewToClip, Layer* entryPoints, Layer* exitPoints, bool useGLSharing, const VECTOR_CLASS<cl::Event> *waitForEvents /*= nullptr*/, cl::Event *event /*= nullptr*/) {
+bool MeshEntryExitPointsCL::computeEntryExitPoints(
+    const Mesh* mesh, const mat4& worldToView, const mat4& viewToClip, Layer* entryPoints,
+    Layer* exitPoints, bool useGLSharing,
+    const VECTOR_CLASS<cl::Event>* waitForEvents /*= nullptr*/, cl::Event* event /*= nullptr*/) {
     if (kernel_ == nullptr) {
         return false;
     }
@@ -52,7 +53,7 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(const Mesh* mesh, const mat4&
     // thus we must transform from camera to world to texture coordinates
     mat4 worldToTexMat = mesh->getCoordinateTransformer().getWorldToDataMatrix();
     uvec2 outportDim = entryPoints->getDimensions();
-    mat4 NDCToTextureMat = worldToTexMat*glm::inverse(worldToView)*glm::inverse(viewToClip);
+    mat4 NDCToTextureMat = worldToTexMat * glm::inverse(worldToView) * glm::inverse(viewToClip);
 
     int nIndices = static_cast<int>(mesh->getIndicies(0)->getSize());
     if (useGLSharing) {
@@ -67,25 +68,30 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(const Mesh* mesh, const mat4&
         glSync.addToAquireGLObjectList(indices);
         glSync.aquireAllObjects();
 
-        computeEntryExitPoints(NDCToTextureMat, worldToTexMat, vertices, indices, nIndices, entryCL, exitCL, outportDim, waitForEvents, event);
+        computeEntryExitPoints(NDCToTextureMat, worldToTexMat, vertices, indices, nIndices, entryCL,
+                               exitCL, outportDim, waitForEvents, event);
     } else {
         LayerCL* entryCL = entryPoints->getEditableRepresentation<LayerCL>();
         LayerCL* exitCL = exitPoints->getEditableRepresentation<LayerCL>();
         const BufferCL* vertices = mesh->getAttributes(0)->getRepresentation<BufferCL>();
         const BufferCL* indices = mesh->getIndicies(0)->getRepresentation<ElementBufferCL>();
-        computeEntryExitPoints(NDCToTextureMat, worldToTexMat, vertices, indices, nIndices, entryCL, exitCL, outportDim, waitForEvents, event);
+        computeEntryExitPoints(NDCToTextureMat, worldToTexMat, vertices, indices, nIndices, entryCL,
+                               exitCL, outportDim, waitForEvents, event);
     }
 
     return true;
 }
 
-void MeshEntryExitPointsCL::computeEntryExitPoints(const mat4& NDCToTextureMat, const mat4& worldToTextureMat, const BufferCLBase* vertices, const BufferCLBase* indices, int nIndices, const LayerCLBase* entryPointsCL, const LayerCLBase* exitPointsCL, const uvec2& outportDim, const VECTOR_CLASS<cl::Event> *waitForEvents /*= nullptr*/, cl::Event* event /*= nullptr*/) {
+void MeshEntryExitPointsCL::computeEntryExitPoints(
+    const mat4& NDCToTextureMat, const mat4& worldToTextureMat, const BufferCLBase* vertices,
+    const BufferCLBase* indices, int nIndices, const LayerCLBase* entryPointsCL,
+    const LayerCLBase* exitPointsCL, const uvec2& outportDim,
+    const VECTOR_CLASS<cl::Event>* waitForEvents /*= nullptr*/, cl::Event* event /*= nullptr*/) {
     size2_t localWorkGroupSize(workGroupSize_);
     size2_t globalWorkGroupSize(getGlobalWorkGroupSize(outportDim.x, localWorkGroupSize.x),
-        getGlobalWorkGroupSize(outportDim.y, localWorkGroupSize.y));
+                                getGlobalWorkGroupSize(outportDim.y, localWorkGroupSize.y));
 
-    try
-    {
+    try {
         cl_uint arg = 0;
         kernel_->setArg(arg++, NDCToTextureMat);
         kernel_->setArg(arg++, worldToTextureMat);
@@ -94,12 +100,11 @@ void MeshEntryExitPointsCL::computeEntryExitPoints(const mat4& NDCToTextureMat, 
         kernel_->setArg(arg++, nIndices);
         kernel_->setArg(arg++, *entryPointsCL);
         kernel_->setArg(arg++, *exitPointsCL);
-        OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, waitForEvents,
-            event);
+        OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(
+            *kernel_, cl::NullRange, globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));
     }
 }
 
-} // namespace
-
+}  // namespace

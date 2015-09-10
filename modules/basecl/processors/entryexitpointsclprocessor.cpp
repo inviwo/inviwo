@@ -81,8 +81,7 @@ void EntryExitPointsCLProcessor::initialize() {
 void EntryExitPointsCLProcessor::deinitialize() {}
 
 void EntryExitPointsCLProcessor::process() {
-    const Mesh* mesh = geometryPort_.getData();
-
+    auto mesh = geometryPort_.getData();
     if (!mesh) return;
 
     if (mesh->getNumberOfIndicies() == 0) {
@@ -90,8 +89,10 @@ void EntryExitPointsCLProcessor::process() {
         return;
     }
     // Computes entry exit points in texture coordinates
-    entryExitPoints_.computeEntryExitPoints(mesh, camera_.viewMatrix(), camera_.projectionMatrix(), entryPort_.getData()->getColorLayer(), exitPort_.getData()->getColorLayer(), useGLSharing_.get());
-
+    entryExitPoints_.computeEntryExitPoints(
+        mesh.get(), camera_.viewMatrix(), camera_.projectionMatrix(),
+        entryPort_.getMutableData()->getColorLayer(), exitPort_.getMutableData()->getColorLayer(),
+        useGLSharing_.get());
 }
 
 }  // namespace

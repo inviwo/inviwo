@@ -98,11 +98,11 @@ void VolumeFirstHitCLProcessor::process() {
     if (useGLSharing_.get()) {
         // Will synchronize with OpenGL upon creation and destruction
         SyncCLGL glSync;
-        const ImageCLGL* entry = entryImage->getRepresentation<ImageCLGL>();
-        const ImageCLGL* exit = exitImage->getRepresentation<ImageCLGL>();
-        const ImageCLGL* output = outport_.getData()->getEditableRepresentation<ImageCLGL>();
-        const VolumeCLGL* volume = volumePort_.getData()->getRepresentation<VolumeCLGL>();
-        const LayerCLGL* tfCL = transferFunction_.get().getData()->getRepresentation<LayerCLGL>();
+        auto entry = entryImage->getRepresentation<ImageCLGL>();
+        auto exit = exitImage->getRepresentation<ImageCLGL>();
+        auto output = outport_.getMutableData()->getEditableRepresentation<ImageCLGL>();
+        auto volume = volumePort_.getData()->getRepresentation<VolumeCLGL>();
+        auto tfCL = transferFunction_.get().getData()->getRepresentation<LayerCLGL>();
         volume->aquireGLObject(glSync.getGLSyncEvent());
         entry->getLayerCL()->aquireGLObject();
         exit->getLayerCL()->aquireGLObject();
@@ -121,11 +121,11 @@ void VolumeFirstHitCLProcessor::process() {
         tfCL->releaseGLObject();
         volume->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     } else {
-        const ImageCL* entry = entryImage->getRepresentation<ImageCL>();
-        const ImageCL* exit = exitImage->getRepresentation<ImageCL>();
-        const ImageCL* output = outport_.getData()->getEditableRepresentation<ImageCL>();
-        const VolumeCL* volume = volumePort_.getData()->getRepresentation<VolumeCL>();
-        const LayerCL* tfCL = transferFunction_.get().getData()->getRepresentation<LayerCL>();
+        auto entry = entryImage->getRepresentation<ImageCL>();
+        auto exit = exitImage->getRepresentation<ImageCL>();
+        auto output = outport_.getMutableData()->getEditableRepresentation<ImageCL>();
+        auto volume = volumePort_.getData()->getRepresentation<VolumeCL>();
+        auto tfCL = transferFunction_.get().getData()->getRepresentation<LayerCL>();
         const cl::Image& volumeCL = volume->get();
         const cl::Image& entryCL = entry->getLayerCL()->get();
         const cl::Image& exitCL = exit->getLayerCL()->get();

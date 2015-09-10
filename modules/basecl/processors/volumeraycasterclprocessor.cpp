@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "volumeraycasterclprocessor.h"
@@ -33,22 +33,22 @@
 #include <modules/opencl/buffer/buffercl.h>
 #include <modules/opencl/image/imagecl.h>
 #include <modules/opencl/image/imageclgl.h>
-#include <modules/opencl/settings/openclsettings.h> // To check if the we can use sharing
+#include <modules/opencl/settings/openclsettings.h>  // To check if the we can use sharing
 #include <modules/opencl/syncclgl.h>
 #include <modules/opencl/volume/volumecl.h>
 #include <modules/opencl/volume/volumeclgl.h>
 
-
 namespace inviwo {
 
 ProcessorClassIdentifier(VolumeRaycasterCLProcessor, "org.inviwo.VolumeRaycasterCL");
-ProcessorDisplayName(VolumeRaycasterCLProcessor,  "Volume Raycaster");
+ProcessorDisplayName(VolumeRaycasterCLProcessor, "Volume Raycaster");
 ProcessorTags(VolumeRaycasterCLProcessor, Tags::CL);
 ProcessorCategory(VolumeRaycasterCLProcessor, "Volume Rendering");
 ProcessorCodeState(VolumeRaycasterCLProcessor, CODE_STATE_EXPERIMENTAL);
 
 VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
-    : Processor(), KernelObserver()
+    : Processor()
+    , KernelObserver()
     , volumePort_("volume")
     , entryPort_("entry-points")
     , exitPort_("exit-points")
@@ -59,8 +59,7 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     , workGroupSize_("wgsize", "Work group size", ivec2(8, 8), ivec2(0), ivec2(256))
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
     , lighting_("lighting", "Lighting")
-    , camera_("camera", "Camera")
-{
+    , camera_("camera", "Camera") {
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
     addPort(exitPort_, "ImagePortGroup1");
@@ -87,7 +86,6 @@ VolumeRaycasterCLProcessor::~VolumeRaycasterCLProcessor() {}
 void VolumeRaycasterCLProcessor::initialize() {
     Processor::initialize();
 
-
     if (!InviwoApplication::getPtr()->getSettingsByType<OpenCLSettings>()->isSharingEnabled()) {
         useGLSharing_.setReadOnly(true);
         useGLSharing_.set(false);
@@ -95,17 +93,14 @@ void VolumeRaycasterCLProcessor::initialize() {
     onParameterChanged();
 }
 
-void VolumeRaycasterCLProcessor::deinitialize() {
-    Processor::deinitialize();
-}
+void VolumeRaycasterCLProcessor::deinitialize() { Processor::deinitialize(); }
 
 bool VolumeRaycasterCLProcessor::isReady() const {
-    return volumePort_.isReady() && entryPort_.isReady() && exitPort_.isReady() && volumeRaycaster_.isValid();
+    return volumePort_.isReady() && entryPort_.isReady() && exitPort_.isReady() &&
+           volumeRaycaster_.isValid();
 }
 
 void VolumeRaycasterCLProcessor::process() {
-
-
     try {
         // This macro will create an event called profilingEvent if IVW_PROFILING is enabled,
         // otherwise the profilingEvent will be declared as a null pointer
@@ -117,11 +112,13 @@ void VolumeRaycasterCLProcessor::process() {
             volumeRaycaster_.setBackground(nullptr);
         }
         volumeRaycaster_.outputSize(outport_.getDimensions());
-        volumeRaycaster_.volumeRaycast(volumePort_.getData(), entryPort_.getData()->getColorLayer(), exitPort_.getData()->getColorLayer(), transferFunction_.get().getData(), outport_.getData()->getColorLayer(), nullptr, profilingEvent);
+        volumeRaycaster_.volumeRaycast(
+            volumePort_.getData().get(), entryPort_.getData()->getColorLayer(),
+            exitPort_.getData()->getColorLayer(), transferFunction_.get().getData(),
+            outport_.getMutableData()->getColorLayer(), nullptr, profilingEvent);
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));
     }
-
 }
 
 void VolumeRaycasterCLProcessor::onParameterChanged() {
@@ -129,7 +126,6 @@ void VolumeRaycasterCLProcessor::onParameterChanged() {
     volumeRaycaster_.samplingRate(samplingRate_.get());
     volumeRaycaster_.workGroupSize(workGroupSize_.get());
     volumeRaycaster_.useGLSharing(useGLSharing_.get());
-
 }
 
-} // namespace
+}  // namespace
