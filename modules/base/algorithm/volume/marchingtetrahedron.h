@@ -43,16 +43,17 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API MarchingTetrahedron {
 public:
-    static Mesh *apply(const VolumeRepresentation *in, const double &iso, const vec4 &color,
-                       std::function<void(float)> progressCallback = std::function<void(float)>());
+    static std::shared_ptr<Mesh> apply(
+        std::shared_ptr<const Volume> volume, const double &iso, const vec4 &color,
+        std::function<void(float)> progressCallback = std::function<void(float)>());
 };
 
 namespace detail {
 struct IVW_MODULE_BASE_API MarchingTetrahedronDispatcher {
-    using type = Mesh *;
+    using type = std::shared_ptr<Mesh>;
     template <class T>
-    Mesh *dispatch(const VolumeRepresentation *in, const double &iso, const vec4 &color,
-                   std::function<void(float)> progressCallback);
+    std::shared_ptr<Mesh> dispatch(std::shared_ptr<const Volume> volume, const double &iso,
+                                   const vec4 &color, std::function<void(float)> progressCallback);
 };
 
 template <typename T>
@@ -76,30 +77,27 @@ void addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer
 glm::vec3 interpolate(const glm::vec3 &p0, const double &v0, const glm::vec3 &p1, const double &v1);
 
 template <class DataType>
-Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
-    const VolumeRepresentation *in, const double &iso, const vec4 &color,
+std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
+    std::shared_ptr<const Volume> baseVolume, const double &iso, const vec4 &color,
     std::function<void(float)> progressCallback) {
-
     if (progressCallback) progressCallback(0.0f);
 
     using T = typename DataType::type;
 
-    const VolumeRAMPrecision<T> *volume = dynamic_cast<const VolumeRAMPrecision<T> *>(in);
+    auto volrepr = baseVolume->getRepresentation<VolumeRAM>();
+    auto volume = dynamic_cast<const VolumeRAMPrecision<T>*>(volrepr);
     if (!volume) return nullptr;
 
     K3DTree<size_t, float> vertexTree;
 
-    BasicMesh *mesh = new BasicMesh();
+    auto mesh = std::make_shared<BasicMesh>();
     auto indexBuffer = mesh->addIndexBuffer(GeometryEnums::TRIANGLES, GeometryEnums::NONE);
 
     std::vector<vec3> positions;
     std::vector<vec3> normals;
 
-    const Volume *baseVolume = dynamic_cast<const Volume *>(volume->getOwner());
-    if (baseVolume) {
-        mesh->setModelMatrix(baseVolume->getModelMatrix());
-        mesh->setWorldMatrix(baseVolume->getWorldMatrix());
-    }
+    mesh->setModelMatrix(baseVolume->getModelMatrix());
+    mesh->setWorldMatrix(baseVolume->getWorldMatrix());
 
     const T *src = static_cast<const T *>(volume->getData());
 
@@ -111,8 +109,8 @@ Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
     double v[8];
     glm::vec3 p[8];
 
-    const static size_t tetras[6][4] = {
-        {0, 1, 3, 5}, {1, 2, 3, 5}, {2, 3, 5, 6}, {0, 3, 4, 5}, {7, 4, 3, 5}, {7, 6, 5, 3}};
+    const static size_t tetras[6][4] = {{0, 1, 3, 5}, {1, 2, 3, 5}, {2, 3, 5, 6},
+                                        {0, 3, 4, 5}, {7, 4, 3, 5}, {7, 6, 5, 3}};
 
     for (size_t k = 0; k < dim.z - 1; k++) {
         for (size_t j = 0; j < dim.y - 1; j++) {
@@ -163,7 +161,8 @@ Mesh *inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
                 }
             }
         }
-        if (progressCallback) progressCallback(static_cast<float>(k)/static_cast<float>(dim.z-1));
+        if (progressCallback)
+            progressCallback(static_cast<float>(k) / static_cast<float>(dim.z - 1));
     }
 
     ivwAssert(positions.size() == normals.size(), "positions_ and normals_ must be equal");

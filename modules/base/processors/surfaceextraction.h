@@ -89,6 +89,9 @@ protected:
         float iso = 0.0f;
         vec4 color = vec4(0);
         float status = 0.0f;
+
+        bool isSame(float iso, vec4 color) const;
+        void set(float iso, vec4 color, float status, std::future<std::shared_ptr<Mesh>>&& result);
     };
 
     DataInport<Volume, 0> volume_;

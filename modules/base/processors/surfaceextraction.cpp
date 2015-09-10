@@ -56,7 +56,6 @@ SurfaceExtraction::SurfaceExtraction()
     , method_("method", "Method")
     , colors_("meshColors", "Mesh Colors")
     , dirty_(false) {
-
     addPort(volume_);
     addPort(outport_);
 
@@ -74,7 +73,6 @@ SurfaceExtraction::SurfaceExtraction()
 
 SurfaceExtraction::~SurfaceExtraction() {}
 
-
 void SurfaceExtraction::process() {
     if (!meshes_) {
         meshes_ = std::make_shared<std::vector<std::shared_ptr<Mesh>>>();
@@ -87,7 +85,7 @@ void SurfaceExtraction::process() {
     meshes_->resize(data.size());
 
     for (size_t i = 0; i < data.size(); ++i) {
-        const VolumeRAM* vol = data[i].second->getRepresentation<VolumeRAM>();
+        auto vol = data[i].second;
 
         switch (method_.get()) {
             case TETRA: {
@@ -99,14 +97,12 @@ void SurfaceExtraction::process() {
 
                 float iso = isoValue_.get();
                 vec4 color = static_cast<FloatVec4Property*>(colors_[i])->get();
-                if (!result_[i].result.valid() && (util::contains(changed, data[i].first) ||
-                                            result_[i].iso != iso || result_[i].color != color)) {
-                    result_[i].iso = iso;
-                    result_[i].color = color;
-                    result_[i].status = 0.0f;
-                    result_[i].result =
+                if (!result_[i].result.valid() &&
+                    (util::contains(changed, data[i].first) || !result_[i].isSame(iso, color))) {
+                    result_[i].set(
+                        iso, color, 0.0f,
                         dispatchPool([this, vol, iso, color, i]() -> std::shared_ptr<Mesh> {
-                            auto m = std::shared_ptr<Mesh>(
+                            auto m =
                                 MarchingTetrahedron::apply(vol, iso, color, [this, i](float s) {
                                     this->result_[i].status = s;
                                     float status = 0;
@@ -114,18 +110,20 @@ void SurfaceExtraction::process() {
                                     status /= result_.size();
                                     dispatchFront([status](ProgressBar& pb) {
                                         pb.updateProgress(status);
-                                        if (status < 1.0f) pb.show();
-                                        else pb.hide();
+                                        if (status < 1.0f)
+                                            pb.show();
+                                        else
+                                            pb.hide();
                                     }, std::ref(this->getProgressBar()));
-                                }));
+                                });
 
                             dispatchFront([this]() {
-                                dirty_=true;
-                                invalidate(INVALID_OUTPUT); 
+                                dirty_ = true;
+                                invalidate(INVALID_OUTPUT);
                             });
 
-                            return std::move(m);
-                        });
+                            return m;
+                        }));
                 }
                 break;
             }
@@ -139,11 +137,12 @@ void SurfaceExtraction::setMinMax() {
     if (volume_.hasData()) {
         auto minmax = std::make_pair(std::numeric_limits<double>::max(),
                                      std::numeric_limits<double>::lowest());
-        minmax = std::accumulate(volume_.begin(), volume_.end(), minmax,
-                        [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
-            return std::make_pair(std::min(mm.first, v->dataMap_.dataRange.x),
-                                  std::max(mm.second, v->dataMap_.dataRange.y));
-        });
+        minmax =
+            std::accumulate(volume_.begin(), volume_.end(), minmax,
+                            [](decltype(minmax) mm, std::shared_ptr<const Volume> v) {
+                                return std::make_pair(std::min(mm.first, v->dataMap_.dataRange.x),
+                                                      std::max(mm.second, v->dataMap_.dataRange.y));
+                            });
 
         isoValue_.setMinValue(static_cast<const float>(minmax.first));
         isoValue_.setMaxValue(static_cast<const float>(minmax.second));
@@ -163,21 +162,21 @@ void SurfaceExtraction::updateColors() {
                                           vec4(0xbc, 0xbd, 0x22, 255) / vec4(255, 255, 255, 255),
                                           vec4(0x17, 0xbe, 0xcf, 255) / vec4(255, 255, 255, 255)};
 
-
     size_t count = 0;
     for (const auto& data : volume_) {
-        count++;      
+        count++;
         if (colors_.size() < count) {
             const static std::string color = "color";
             const static std::string dispName = "Color for Volume ";
-            FloatVec4Property* colorProp = new FloatVec4Property(
-                color + toString(count-1), dispName + toString(count), defaultColor[(count-1) % 11]);
+            FloatVec4Property* colorProp =
+                new FloatVec4Property(color + toString(count - 1), dispName + toString(count),
+                                      defaultColor[(count - 1) % 11]);
             colorProp->setCurrentStateAsDefault();
             colorProp->setSemantics(PropertySemantics::Color);
             colorProp->setSerializationMode(PropertySerializationMode::ALL);
-            colors_.addProperty(colorProp);    
+            colors_.addProperty(colorProp);
         }
-        colors_[count-1]->setVisible(true);
+        colors_[count - 1]->setVisible(true);
     }
 
     for (size_t i = count; i < colors_.size(); i++) {
@@ -185,11 +184,9 @@ void SurfaceExtraction::updateColors() {
     }
 }
 
-
 // This will stop the invalidation of the network unless the dirty flag is set.
 void SurfaceExtraction::invalidate(InvalidationLevel invalidationLevel,
                                    Property* modifiedProperty) {
-
     notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
 
@@ -202,7 +199,16 @@ SurfaceExtraction::task::task(task&& rhs)
     : result(std::move(rhs.result))
     , iso(rhs.iso)
     , color(std::move(rhs.color))
-    , status(rhs.status) {
+    , status(rhs.status) {}
+
+bool SurfaceExtraction::task::isSame(float i, vec4 c) const { return iso == i && color == c; }
+
+void SurfaceExtraction::task::set(float i, vec4 c, float s,
+                                  std::future<std::shared_ptr<Mesh>>&& r) {
+    iso = i;
+    color = c;
+    status = s;
+    result = std::move(r);
 }
 
 SurfaceExtraction::task& SurfaceExtraction::task::operator=(task&& that) {

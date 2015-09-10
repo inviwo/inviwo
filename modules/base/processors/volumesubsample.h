@@ -80,7 +80,7 @@ private:
     BoolProperty waitForCompletion_;
     IntVec3Property subSampleFactors_;
 
-    std::future<std::unique_ptr<Volume>> result_;
+    std::future<std::shared_ptr<Volume>> result_;
     bool dirty_;
 };
 }

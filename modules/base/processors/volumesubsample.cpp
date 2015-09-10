@@ -29,6 +29,7 @@
 
 #include "volumesubsample.h"
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -59,52 +60,43 @@ VolumeSubsample::~VolumeSubsample() {}
 void VolumeSubsample::process() {
     if (enabled_.get()) {
         ivec3 ssf = glm::max(subSampleFactors_.get(), ivec3(1));
-        size3_t subSampleFactors = size3_t(static_cast<size_t>(ssf.x), 
-            static_cast<size_t>(ssf.y), static_cast<size_t>(ssf.z));
+        size3_t subSampleFactors = size3_t(static_cast<size_t>(ssf.x), static_cast<size_t>(ssf.y),
+                                           static_cast<size_t>(ssf.z));
 
-        if (waitForCompletion_.get()){
+        if (waitForCompletion_.get()) {
             auto data = inport_.getData();
-            const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
-            Volume* volume = new Volume(VolumeRAMSubSample::apply(vol, subSampleFactors));
+            auto vol = data->getRepresentation<VolumeRAM>();
+            auto volume =
+                std::make_shared<Volume>(VolumeRAMSubSample::apply(vol, subSampleFactors));
             volume->copyMetaDataFrom(*data);
             volume->dataMap_ = data->dataMap_;
             volume->setModelMatrix(data->getModelMatrix());
             volume->setWorldMatrix(data->getWorldMatrix());
             outport_.setData(volume);
-        }
-        else{
+        } else {
             if (!result_.valid()) {
-                auto data = inport_.getData();
-                const VolumeRAM* vol = data->getRepresentation<VolumeRAM>();
                 getActivityIndicator().setActive(true);
                 result_ = dispatchPool(
-                    [this](const VolumeRAM* v, size3_t f)
-                    -> std::unique_ptr < Volume > {
-                    auto volume = util::make_unique<Volume>(VolumeRAMSubSample::apply(v, f));
-                    dispatchFront([this]() {
-                        dirty_ = true;
-                        invalidate(INVALID_OUTPUT);
-                    });
-                    return volume;
-                },
-                    vol, subSampleFactors);
+                    [this](std::shared_ptr<const Volume> volume,
+                           size3_t f) -> std::shared_ptr<Volume> {
+                        auto vol = volume->getRepresentation<VolumeRAM>();
+                        auto sample = std::make_shared<Volume>(VolumeRAMSubSample::apply(vol, f));
+                        sample->copyMetaDataFrom(*volume);
+                        sample->dataMap_ = volume->dataMap_;
+                        sample->setModelMatrix(volume->getModelMatrix());
+                        sample->setWorldMatrix(volume->getWorldMatrix());
+                        dispatchFront([this]() {
+                            dirty_ = true;
+                            invalidate(INVALID_OUTPUT);
+                        });
+                        return sample;
+                    },
+                    inport_.getData(), subSampleFactors);
             }
-
-            if (result_.valid() &&
-                result_.wait_for(std::chrono::duration<int, std::milli>(0)) ==
-                std::future_status::ready) {
-                std::unique_ptr<Volume> volume = std::move(result_.get());
-
-                // pass meta data on
-                auto data = inport_.getData();
-                volume->copyMetaDataFrom(*data);
-                volume->dataMap_ = data->dataMap_;
-                volume->setModelMatrix(data->getModelMatrix());
-                volume->setWorldMatrix(data->getWorldMatrix());
-                outport_.setData(volume.release());
+            if (util::is_future_ready(result_)) {
+                outport_.setData(result_.get());
                 getActivityIndicator().setActive(false);
                 dirty_ = false;
-
             }
         }
     } else {
@@ -116,8 +108,7 @@ void VolumeSubsample::invalidate(InvalidationLevel invalidationLevel, Property* 
     notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
 
-    if (dirty_ || inport_.isChanged() ||
-        !enabled_.get()) {
+    if (dirty_ || inport_.isChanged() || !enabled_.get()) {
         outport_.invalidate(INVALID_OUTPUT);
     }
 

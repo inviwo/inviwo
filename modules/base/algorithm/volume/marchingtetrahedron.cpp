@@ -30,10 +30,10 @@
 #include "marchingtetrahedron.h"
 namespace inviwo {
 
-Mesh *MarchingTetrahedron::apply(const VolumeRepresentation *in, const double &iso,
+std::shared_ptr<Mesh> MarchingTetrahedron::apply(std::shared_ptr<const Volume> volume, const double &iso,
                                  const vec4 &color, std::function<void(float)> progressCallback) {
     detail::MarchingTetrahedronDispatcher disp;
-    return in->getDataFormat()->dispatch(disp, in, iso, color, progressCallback);
+    return volume->getDataFormat()->dispatch(disp, volume, iso, color, progressCallback);
 }
 
 void detail::evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
