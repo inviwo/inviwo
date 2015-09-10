@@ -64,10 +64,10 @@ public:
     InviwoProcessorInfo();
 
     VolumeSubsample();
-    ~VolumeSubsample();
+    virtual ~VolumeSubsample() = default;
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty = nullptr) override;

@@ -55,19 +55,15 @@ VolumeSubsample::VolumeSubsample()
     addProperty(subSampleFactors_);
 }
 
-VolumeSubsample::~VolumeSubsample() {}
-
 void VolumeSubsample::process() {
-    if (enabled_.get()) {
-        ivec3 ssf = glm::max(subSampleFactors_.get(), ivec3(1));
-        size3_t subSampleFactors = size3_t(static_cast<size_t>(ssf.x), static_cast<size_t>(ssf.y),
-                                           static_cast<size_t>(ssf.z));
+    const size3_t factors = static_cast<size3_t>(glm::max(subSampleFactors_.get(), ivec3(1)));
 
+    if (enabled_.get() && factors != size3_t(1, 1, 1)) {
         if (waitForCompletion_.get()) {
             auto data = inport_.getData();
             auto vol = data->getRepresentation<VolumeRAM>();
             auto volume =
-                std::make_shared<Volume>(VolumeRAMSubSample::apply(vol, subSampleFactors));
+                std::make_shared<Volume>(VolumeRAMSubSample::apply(vol, factors));
             volume->copyMetaDataFrom(*data);
             volume->dataMap_ = data->dataMap_;
             volume->setModelMatrix(data->getModelMatrix());
@@ -91,7 +87,7 @@ void VolumeSubsample::process() {
                         });
                         return sample;
                     },
-                    inport_.getData(), subSampleFactors);
+                    inport_.getData(), factors);
             }
             if (util::is_future_ready(result_)) {
                 outport_.setData(result_.get());
