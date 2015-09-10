@@ -38,6 +38,7 @@
 #include <functional>
 #include <vector>
 #include <type_traits>
+#include <future>
 
 namespace inviwo {
 
@@ -115,11 +116,14 @@ void erase_remove_if(T& cont, Pred pred) {
 }
 
 template <typename T>
-void push_back_unique(T& cont, typename T::value_type elem) {
+bool push_back_unique(T& cont, typename T::value_type elem) {
     using std::begin;
     using std::end;
     if (std::find(begin(cont), end(cont), elem) == cont.end()) {
         cont.push_back(elem);
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -128,6 +132,13 @@ bool contains(T& cont, const V& elem) {
     using std::begin;
     using std::end;
     return std::find(begin(cont), end(cont), elem) != end(cont);
+}
+
+template <typename T, typename Pred>
+bool contains_if(T& cont, Pred pred) {
+    using std::begin;
+    using std::end;
+    return std::find_if(begin(cont), end(cont), pred) != end(cont);
 }
 
 template <typename T, typename V>
@@ -218,6 +229,12 @@ inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
     return iter_range<Iter>(x);
 }
 
+template <typename T>
+bool is_future_ready(const std::future<T>& future) {
+    return (future.valid() &&
+            future.wait_for(std::chrono::duration<int, std::milli>(0)) ==
+                std::future_status::ready);
+}
 
 /**
  * A type trait for std container types
