@@ -32,6 +32,7 @@
 #include <inviwo/core/properties/propertysemantics.h>
 #include <modules/base/algorithm/volume/marchingtetrahedron.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <numeric>
 
 #define TETRA 1
@@ -90,9 +91,7 @@ void SurfaceExtraction::process() {
 
         switch (method_.get()) {
             case TETRA: {
-                if (result_[i].result.valid() &&
-                    result_[i].result.wait_for(std::chrono::duration<int, std::milli>(0)) ==
-                        std::future_status::ready) {
+                if (util::is_future_ready(result_[i].result)) {
                     (*meshes_)[i] = std::move(result_[i].result.get());
                     result_[i].status = 1.0f;
                     dirty_ = false;
@@ -118,7 +117,6 @@ void SurfaceExtraction::process() {
                                         if (status < 1.0f) pb.show();
                                         else pb.hide();
                                     }, std::ref(this->getProgressBar()));
-
                                 }));
 
                             dispatchFront([this]() {
