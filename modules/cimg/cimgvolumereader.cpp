@@ -30,6 +30,7 @@
 #include <modules/cimg/cimgvolumereader.h>
 #include <modules/cimg/cimgutils.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {

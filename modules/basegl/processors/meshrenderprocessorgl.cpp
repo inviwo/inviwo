@@ -251,7 +251,7 @@ void MeshRenderProcessorGL::centerViewOnGeometry() {
     vec3 worldMin(std::numeric_limits<float>::max());
     vec3 worldMax(std::numeric_limits<float>::lowest());
 
-    for (auto& mesh : inport_) {
+    for (const auto& mesh : inport_) {
         vec3 minPos(std::numeric_limits<float>::max());
         vec3 maxPos(std::numeric_limits<float>::lowest());
         for (auto buff : mesh->getBuffers()) {
