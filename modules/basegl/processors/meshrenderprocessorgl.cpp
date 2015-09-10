@@ -183,7 +183,7 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     }
 
     for (std::size_t i = outport_.getData()->getNumberOfColorLayers(); i < static_cast<std::size_t>(layerID); i++) {
-        outport_.getMutableData()->addColorLayer(outport_.getData()->getColorLayer(0)->clone());
+        outport_.getEditableData()->addColorLayer(outport_.getData()->getColorLayer(0)->clone());
     }
 
     shader.build();

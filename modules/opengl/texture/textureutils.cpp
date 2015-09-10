@@ -39,7 +39,7 @@ namespace inviwo {
 namespace utilgl {
 
 void activateTarget(ImageOutport& outport, ImageType type) {
-    auto outImage = outport.getMutableData();
+    auto outImage = outport.getEditableData();
     auto outImageGL = outImage->getEditableRepresentation<ImageGL>();
     outImageGL->activateBuffer(type);
 }
@@ -60,7 +60,7 @@ void activateAndClearTarget(Image& image, ImageType type) {
 }
 
 void activateTargetAndCopySource(ImageOutport& outport, ImageInport& inport, ImageType type) {
-    auto outImage = outport.getMutableData();
+    auto outImage = outport.getEditableData();
     auto outImageGL = outImage->getEditableRepresentation<ImageGL>();
 
     auto inImage = inport.getData();
@@ -75,7 +75,7 @@ void clearCurrentTarget() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 void deactivateCurrentTarget() { FrameBufferObject::deactivateFBO(); }
 
 void updateAndActivateTarget(ImageOutport& outport, ImageInport& inport) {
-    auto outImage = outport.getMutableData();
+    auto outImage = outport.getEditableData();
     auto outImageGL = outImage->getEditableRepresentation<ImageGL>();
     outImageGL->updateFrom(inport.getData()->getRepresentation<ImageGL>());
     outImageGL->activateBuffer();

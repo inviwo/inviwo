@@ -115,7 +115,7 @@ void VolumeRaycasterCLProcessor::process() {
         volumeRaycaster_.volumeRaycast(
             volumePort_.getData().get(), entryPort_.getData()->getColorLayer(),
             exitPort_.getData()->getColorLayer(), transferFunction_.get().getData(),
-            outport_.getMutableData()->getColorLayer(), nullptr, profilingEvent);
+            outport_.getEditableData()->getColorLayer(), nullptr, profilingEvent);
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));
     }

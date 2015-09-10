@@ -79,6 +79,9 @@ void ImageOutport::setData(Image* data) {
     cache_.setMaster(data_);
 }
 
+bool ImageOutport::hasEditableData() const {
+    return static_cast<bool>(image_);
+}
 
 void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     // This function should check which dimensions request exists, by going through the successors
@@ -148,7 +151,7 @@ void ImageOutport::setDimensions(const size2_t& newDimension) {
         throw Exception("Trying to resize const Image", IvwContext);
     }
 }
-std::shared_ptr<Image> ImageOutport::getMutableData() const {
+std::shared_ptr<Image> ImageOutport::getEditableData() const {
     if (image_) {
         return image_;
     } else {

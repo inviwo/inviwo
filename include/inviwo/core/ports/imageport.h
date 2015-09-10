@@ -110,7 +110,8 @@ public:
     void setData(std::shared_ptr<Image>);
     void setData(Image* data); // will assume ownership of data.
 
-    std::shared_ptr<Image> getMutableData() const;
+    bool hasEditableData() const;
+    std::shared_ptr<Image> getEditableData() const;
     std::shared_ptr<const Image> getResizedImageData(size2_t dimensions) const;
 
     /**
@@ -284,7 +285,7 @@ template <size_t N>
 void BaseImageInport<N>::passOnDataToOutport(ImageOutport* outport) const {
     if (this->hasData()) {
         std::shared_ptr<const Image> img = getData();
-        std::shared_ptr<Image> out = outport->getMutableData();
+        std::shared_ptr<Image> out = outport->getEditableData();
         if (out) img->copyRepresentationsTo(out.get());
     }
 }

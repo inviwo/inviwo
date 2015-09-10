@@ -100,7 +100,7 @@ void VolumeFirstHitCLProcessor::process() {
         SyncCLGL glSync;
         auto entry = entryImage->getRepresentation<ImageCLGL>();
         auto exit = exitImage->getRepresentation<ImageCLGL>();
-        auto output = outport_.getMutableData()->getEditableRepresentation<ImageCLGL>();
+        auto output = outport_.getEditableData()->getEditableRepresentation<ImageCLGL>();
         auto volume = volumePort_.getData()->getRepresentation<VolumeCLGL>();
         auto tfCL = transferFunction_.get().getData()->getRepresentation<LayerCLGL>();
         volume->aquireGLObject(glSync.getGLSyncEvent());
@@ -123,7 +123,7 @@ void VolumeFirstHitCLProcessor::process() {
     } else {
         auto entry = entryImage->getRepresentation<ImageCL>();
         auto exit = exitImage->getRepresentation<ImageCL>();
-        auto output = outport_.getMutableData()->getEditableRepresentation<ImageCL>();
+        auto output = outport_.getEditableData()->getEditableRepresentation<ImageCL>();
         auto volume = volumePort_.getData()->getRepresentation<VolumeCL>();
         auto tfCL = transferFunction_.get().getData()->getRepresentation<LayerCL>();
         const cl::Image& volumeCL = volume->get();

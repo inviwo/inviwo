@@ -91,7 +91,7 @@ void EntryExitPointsCLProcessor::process() {
     // Computes entry exit points in texture coordinates
     entryExitPoints_.computeEntryExitPoints(
         mesh.get(), camera_.viewMatrix(), camera_.projectionMatrix(),
-        entryPort_.getMutableData()->getColorLayer(), exitPort_.getMutableData()->getColorLayer(),
+        entryPort_.getEditableData()->getColorLayer(), exitPort_.getEditableData()->getColorLayer(),
         useGLSharing_.get());
 }
 

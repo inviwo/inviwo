@@ -77,7 +77,7 @@ void GrayscaleCLProcessor::process() {
         return;
     }
 
-    auto outImage = outport_.getMutableData();
+    auto outImage = outport_.getEditableData();
 
     //outImage->resize(inImage->getDimensions());
     uvec2 outportDim = outImage->getDimensions();
