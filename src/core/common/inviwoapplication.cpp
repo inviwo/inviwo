@@ -77,6 +77,9 @@ InviwoApplication::InviwoApplication(std::string displayName, std::string basePa
     : InviwoApplication(0, nullptr, displayName, basePath) {}
 
 InviwoApplication::~InviwoApplication() {
+    delete processorNetwork_;
+    delete processorNetworkEvaluator_;
+
     if (initialized_) deinitialize();
 
     for (auto module : modules_) delete module;
@@ -84,9 +87,6 @@ InviwoApplication::~InviwoApplication() {
 
     for (auto callback : moudleCallbackActions_) delete callback;
     moudleCallbackActions_.clear();
-
-    delete processorNetwork_;
-    delete processorNetworkEvaluator_;
 
     SingletonBase::deleteAllSingeltons();
     DataFormatBase::cleanDataFormatBases();
