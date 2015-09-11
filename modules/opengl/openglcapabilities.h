@@ -35,9 +35,6 @@
 
 namespace inviwo {
 
-#define NO_GL_THEN_RETURN if(!OpenGLCapabilities::hasOpenGLVersion()) return;
-#define NO_SUPPORTED_GL_THEN_RETURN if(!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
-
 class IVW_MODULE_OPENGL_API OpenGLCapabilities : public Capabilities  {
 public:
     class IVW_MODULE_OPENGL_API GLSLShaderVersion {
@@ -53,7 +50,7 @@ public:
 
         bool hasProfile();
 
-		static bool sortHighestFirst(GLSLShaderVersion i, GLSLShaderVersion j);
+        static bool sortHighestFirst(GLSLShaderVersion i, GLSLShaderVersion j);
 
     private:
         int number_;

@@ -42,6 +42,20 @@ void RenderContext::activateDefaultRenderContext() const {
     if (defaultContext_) defaultContext_->activate();
 }
 
+void RenderContext::activateLocalRenderContext() const {
+    auto id = std::this_thread::get_id();
+    auto it = contextMap_.find(id);
+    Canvas* localContext = nullptr;
+    if (it == contextMap_.end()) {
+        auto canvas = defaultContext_->create();
+        localContext = canvas.get();
+        contextMap_[id] = std::move(canvas);
+    } else {
+        localContext = (*it).second.get();
+    }
+    localContext->activate();
+}
+
 Canvas* RenderContext::getDefaultRenderContext() { return defaultContext_; }
 
 } // namespace

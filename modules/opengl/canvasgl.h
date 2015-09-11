@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CANVASGL_H
@@ -48,16 +48,16 @@ public:
     CanvasGL(uvec2 dimensions);
     virtual ~CanvasGL();
 
-    virtual void initialize();
-    virtual void deinitialize();
+    virtual void initialize() override;
+    virtual void deinitialize() override;
 
-    virtual void activate();
+    virtual void activate() override;
     void defaultGLState();
 
-    virtual void render(const Image* im, LayerType layerType = COLOR_LAYER , size_t idx = 0);
-    virtual void resize(uvec2 size);
+    virtual void render(const Image* im, LayerType layerType = COLOR_LAYER, size_t idx = 0) override;
+    virtual void resize(uvec2 size) override;
     virtual void glSwapBuffers();
-    virtual void update();
+    virtual void update() override;
 
     static void attachImagePlanRect(BufferObjectArray*);
 
@@ -78,6 +78,8 @@ public:
 
     virtual void setProcessorWidgetOwner(ProcessorWidget*);
 
+    virtual std::unique_ptr<Canvas> create() override;
+
 protected:
     virtual void initializeSquare();
 
@@ -88,23 +90,24 @@ protected:
     void drawRect();
     void checkChannels(std::size_t);
 
-    /** 
+    /**
      * \brief Get depth layer RAM representation. Will return nullptr if depth layer does not exist.
      *
-     * 
+     *
      * @return Depth layer RAM representation if existing, nullptr otherwise.
      */
     const LayerRAM* getDepthLayerRAM() const;
-    /** 
+    /**
      * \brief Retrieve depth value in normalized device coordinates at screen coordinate.
      *
      * Depth is defined in [-1 1], where -1 is the near plane and 1 is the far plane.
      * Will be 1 if no depth value is available.
-     * 
+     *
      * @param screenCoordinate Screen coordinates [0 dim-1]^2
      * @return NDC depth in [-1 1], 1 if no depth value exist.
      */
-    double getDepthValueAtCoord(ivec2 screenCoordinate, const LayerRAM* depthLayerRAM = nullptr) const;
+    double getDepthValueAtCoord(ivec2 screenCoordinate,
+                                const LayerRAM* depthLayerRAM = nullptr) const;
 
     static void enableDrawImagePlaneRect();
     static void disableDrawImagePlaneRect();
@@ -115,15 +118,14 @@ protected:
 private:
     static const MeshGL* screenAlignedRectGL_;
 
-    BufferObjectArray* rectArray_;
+    std::unique_ptr<BufferObjectArray> rectArray_;
     LayerType layerType_;
-    Shader* shader_;
-    Shader* noiseShader_;
+    std::unique_ptr<Shader> shader_;
+    std::unique_ptr<Shader> noiseShader_;
     int singleChannel_;
     size_t previousRenderedLayerIdx_;
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_CANVASGL_H
+#endif  // IVW_CANVASGL_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFER_OBJECT_ARRAY_H
@@ -38,7 +38,6 @@ namespace inviwo {
 class BufferObject;
 
 class IVW_MODULE_OPENGL_API BufferObjectArray {
-
 public:
     BufferObjectArray();
     BufferObjectArray(const BufferObjectArray& rhs);
@@ -53,11 +52,11 @@ public:
     void bind() const;
     void unbind() const;
 
-    void clear(); // Make sure the buffer is bound before calling clear.
+    void clear();  // Make sure the buffer is bound before calling clear.
 
-    /* 
+    /*
     *  Attach buffer object to generic location based on Buffer::BufferType
-    *  or if generic location is occupied, add it to the closest available 
+    *  or if generic location is occupied, add it to the closest available
     *  after the range for generic locations.
     */
     int attachBufferObject(const BufferObject*);
@@ -77,7 +76,6 @@ private:
     static int maxVertexAttribSize_;
 };
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_BUFFER_OBJECT_ARRAY_H
+#endif  // IVW_BUFFER_OBJECT_ARRAY_H

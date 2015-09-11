@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/canvas.h>
@@ -49,8 +49,9 @@ Canvas::Canvas(uvec2 dimensions)
     , shared_(true)
     , screenDimensions_(dimensions)
     , propagator_(nullptr)
-    , pickingContainer_(new PickingContainer())
+    , pickingContainer_()
     , ownerWidget_(nullptr) {
+
     if (!screenAlignedRect_) {
         shared_ = false;
         Position2dBuffer* verticesBuffer = new Position2dBuffer();
@@ -78,13 +79,15 @@ Canvas::Canvas(uvec2 dimensions)
         Mesh* screenAlignedRectMesh = new Mesh();
         screenAlignedRectMesh->addAttribute(verticesBuffer);
         screenAlignedRectMesh->addAttribute(texCoordsBuffer);
-        screenAlignedRectMesh->addIndicies(Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP), indices_);
+        screenAlignedRectMesh->addIndicies(
+            Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP), indices_);
 
         screenAlignedRect_ = screenAlignedRectMesh;
     }
 
-    if(!generalLayerWriter_){
-        generalLayerWriter_ = DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>("png").release();
+    if (!generalLayerWriter_) {
+        generalLayerWriter_ =
+            DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>("png").release();
     }
 }
 
@@ -97,17 +100,12 @@ Canvas::~Canvas() {
         generalLayerWriter_ = nullptr;
     }
 
-    delete pickingContainer_;
-
     if (this == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
 }
 
 void Canvas::initialize() {
-    if (!pickingContainer_)
-        pickingContainer_ = new PickingContainer();
-
     initialized_ = true;
     propagator_ = nullptr;
 }
@@ -132,98 +130,69 @@ void Canvas::resize(uvec2 canvasSize) {
     }
 }
 
-uvec2 Canvas::getScreenDimensions() const {
-    return screenDimensions_;
-}
+uvec2 Canvas::getScreenDimensions() const { return screenDimensions_; }
 
 void Canvas::update() {}
 
-bool Canvas::isInitialized(){
-    return initialized_;
-}
+bool Canvas::isInitialized() { return initialized_; }
 
-void Canvas::activateDefaultRenderContext(){
+void Canvas::activateDefaultRenderContext() {
     RenderContext::getPtr()->activateDefaultRenderContext();
 }
 
 void Canvas::interactionEvent(Event* event) {
-    if (propagator_){
+    if (propagator_) {
         NetworkLock lock;
         propagator_->propagateEvent(event);
     }
 }
 
-void Canvas::mousePressEvent(MouseEvent* e) {
-    mouseButtonEvent(e);
-}
+void Canvas::mousePressEvent(MouseEvent* e) { mouseButtonEvent(e); }
 
-void Canvas::mouseReleaseEvent(MouseEvent* e) {
-    mouseButtonEvent(e);
-}
+void Canvas::mouseReleaseEvent(MouseEvent* e) { mouseButtonEvent(e); }
 
-void Canvas::mouseMoveEvent(MouseEvent* e) {
-    mouseButtonEvent(e);
-}
+void Canvas::mouseMoveEvent(MouseEvent* e) { mouseButtonEvent(e); }
 
-void Canvas::mouseButtonEvent(MouseEvent* e){
+void Canvas::mouseButtonEvent(MouseEvent* e) {
     NetworkLock lock;
-    bool picked = pickingContainer_->performMousePick(e);
-    if (!picked)
-        interactionEvent(e);
+    if (!pickingContainer_.performMousePick(e)) interactionEvent(e);
 }
 
-void Canvas::mouseWheelEvent(MouseEvent* e) {
-    interactionEvent(e);
-}
+void Canvas::mouseWheelEvent(MouseEvent* e) { interactionEvent(e); }
 
-void Canvas::keyPressEvent(KeyboardEvent* e) {
-    interactionEvent(e);
-}
+void Canvas::keyPressEvent(KeyboardEvent* e) { interactionEvent(e); }
 
-void Canvas::keyReleaseEvent(KeyboardEvent* e) {
-    interactionEvent(e);
-}
+void Canvas::keyReleaseEvent(KeyboardEvent* e) { interactionEvent(e); }
 
-void Canvas::gestureEvent(GestureEvent* e) {
-    interactionEvent(e);
-}
+void Canvas::gestureEvent(GestureEvent* e) { interactionEvent(e); }
 
 void Canvas::touchEvent(TouchEvent* e) {
     NetworkLock lock;
-    bool picked = pickingContainer_->performTouchPick(e);
-    if (!picked){
+
+    if (!pickingContainer_.performTouchPick(e)) {
         // One single touch point is already sent out as mouse event
-        if (e->getTouchPoints().size() > 1){
+        if (e->getTouchPoints().size() > 1) {
             interactionEvent(e);
         }
-    }
-    else if (e->hasTouchPoints()){
+    } else if (e->hasTouchPoints()) {
         // As one touch point is handle as mouse event
         // Send out a mouse event if only one touch point remains
         const std::vector<TouchPoint>& touchPoints = e->getTouchPoints();
-        if (touchPoints.size() == 1){
-            MouseEvent mouseEvent(touchPoints[0].getPos(),
-                MouseEvent::MOUSE_BUTTON_LEFT, MouseEvent::MOUSE_STATE_MOVE,
-                InteractionEvent::MODIFIER_NONE, e->canvasSize(),
-                touchPoints[0].getDepth());
+        if (touchPoints.size() == 1) {
+            MouseEvent mouseEvent(touchPoints[0].getPos(), MouseEvent::MOUSE_BUTTON_LEFT,
+                                  MouseEvent::MOUSE_STATE_MOVE, InteractionEvent::MODIFIER_NONE,
+                                  e->canvasSize(), touchPoints[0].getDepth());
             interactionEvent(&mouseEvent);
-        }
-        else{
+        } else {
             interactionEvent(e);
         }
     }
 }
 
-void Canvas::setEventPropagator(EventPropagator* propagator) {
-    propagator_ = propagator;
-}
+void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }
 
-ProcessorWidget* Canvas::getProcessorWidgetOwner() const {
-    return ownerWidget_;
-}
+ProcessorWidget* Canvas::getProcessorWidgetOwner() const { return ownerWidget_; }
 
-void Canvas::setProcessorWidgetOwner(ProcessorWidget* ownerWidget) {
-    ownerWidget_  = ownerWidget;
-}
+void Canvas::setProcessorWidgetOwner(ProcessorWidget* ownerWidget) { ownerWidget_ = ownerWidget; }
 
-} // namespace
+}  // namespace

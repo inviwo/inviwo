@@ -48,30 +48,30 @@ public:
     CanvasProcessorWidgetQt();
     virtual ~CanvasProcessorWidgetQt();
 
-    virtual CanvasProcessorWidgetQt* create() const;
-    virtual void initialize();
-    virtual void deinitialize();
+    virtual CanvasProcessorWidgetQt* create() const override;
+    virtual void initialize() override;
+    virtual void deinitialize() override;
 
     // Override ProcessorWidget
-    virtual void setVisible(bool visible);
-    virtual void show();
-    virtual void hide();
-    virtual void setPosition(glm::ivec2 pos); 
-    virtual void setDimensions(ivec2 dimensions);
-    virtual void setProcessor(Processor* processor);
+    virtual void setVisible(bool visible) override;
+    virtual void show() override;
+    virtual void hide() override;
+    virtual void setPosition(glm::ivec2 pos) override; 
+    virtual void setDimensions(ivec2 dimensions) override;
+    virtual void setProcessor(Processor* processor) override;
 
-    virtual Canvas* getCanvas() const;
+    virtual Canvas* getCanvas() const override;
 
     // Override ProcessorObserver
-    virtual void onProcessorIdentifierChange(Processor*);
+    virtual void onProcessorIdentifierChange(Processor*) override;
 
 protected:
     // Override QWidget events
-    virtual void resizeEvent(QResizeEvent*);
-    virtual void closeEvent(QCloseEvent*);
-    virtual void showEvent(QShowEvent*);
-    virtual void hideEvent(QHideEvent*);
-    virtual void moveEvent(QMoveEvent*);
+    virtual void resizeEvent(QResizeEvent*) override;
+    virtual void closeEvent(QCloseEvent*) override;
+    virtual void showEvent(QShowEvent*) override;
+    virtual void hideEvent(QHideEvent*) override;
+    virtual void moveEvent(QMoveEvent*) override;
 
 private:
     CanvasQt* canvas_;

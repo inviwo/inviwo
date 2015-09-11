@@ -93,6 +93,7 @@ private:
     void toggleShading(Event*);
     
     VolumeInport volumePort_;
+    std::shared_ptr<const Volume> loadedVolume_;
     ImageInport entryPort_;
     ImageInport exitPort_;
     ImageOutport outport_;

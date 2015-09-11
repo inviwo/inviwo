@@ -72,8 +72,7 @@ BufferObject::BufferObject(BufferObject&& rhs)
     , glFormat_(rhs.glFormat_)
     , type_(rhs.type_)
     // Steal buffer
-    , id_(rhs.id_)
-{
+    , id_(rhs.id_) {
     // Free resources from other
     rhs.id_ = 0;
 }
@@ -85,7 +84,7 @@ BufferObject& BufferObject::operator=(const BufferObject& rhs) {
         target_ = rhs.target_;
         glFormat_ = rhs.glFormat_;
         type_ = rhs.type_;
-        
+
         // TODO: Verify that data copying works. What about backwards compability?
         // Initialize size of buffer
         initialize(nullptr, rhs.sizeInBytes_);

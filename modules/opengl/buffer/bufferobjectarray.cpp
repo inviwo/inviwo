@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/buffer/bufferobjectarray.h>
@@ -38,7 +38,8 @@ BufferObjectArray::BufferObjectArray() : id_(0u), attachedBuffers_(NUMBER_OF_BUF
     initialize();
 }
 
-BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs) : id_(0u), attachedBuffers_(NUMBER_OF_BUFFER_TYPES) {
+BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
+    : id_(0u), attachedBuffers_(NUMBER_OF_BUFFER_TYPES) {
     initialize();
 
     bind();
@@ -48,53 +49,41 @@ BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs) : id_(0u), at
     unbind();
 }
 
-BufferObjectArray* BufferObjectArray::clone() const {
-    return new BufferObjectArray(*this);
-}
+BufferObjectArray* BufferObjectArray::clone() const { return new BufferObjectArray(*this); }
 
-BufferObjectArray::~BufferObjectArray() {
-    deinitialize();
-}
+BufferObjectArray::~BufferObjectArray() { deinitialize(); }
 
 void BufferObjectArray::initialize() {
     glGenVertexArrays(1, &id_);
 
 #ifdef GL_VERSION_2_0
-    if(maxVertexAttribSize_<1){
+    if (maxVertexAttribSize_ < 1) {
         glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&maxVertexAttribSize_);
     }
 #endif
 
     attachedBuffers_.reserve(maxVertexAttribSize_);
-    for (int i=0; i < maxVertexAttribSize_; ++i) {
+    for (int i = 0; i < maxVertexAttribSize_; ++i) {
         attachedBuffers_.push_back(nullptr);
     }
 }
 
-void BufferObjectArray::deinitialize() {
-    glDeleteVertexArrays(1, &id_);
-}
+void BufferObjectArray::deinitialize() { glDeleteVertexArrays(1, &id_); }
 
-GLuint BufferObjectArray::getId() const {
-    return id_;
-}
+GLuint BufferObjectArray::getId() const { return id_; }
 
 void BufferObjectArray::clear() {
-    for (GLuint i=0; i < static_cast<GLuint>(attachedBuffers_.size()); ++i) {
-        if(attachedBuffers_[i]){
+    for (GLuint i = 0; i < static_cast<GLuint>(attachedBuffers_.size()); ++i) {
+        if (attachedBuffers_[i]) {
             glDisableVertexAttribArray(i);
             attachedBuffers_[i] = nullptr;
         }
     }
 }
 
-void BufferObjectArray::bind() const {
-    glBindVertexArray(id_);
-}
+void BufferObjectArray::bind() const { glBindVertexArray(id_); }
 
-void BufferObjectArray::unbind() const {
-    glBindVertexArray(0);
-}
+void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
 int BufferObjectArray::attachBufferObject(const BufferObject* bo) {
     if (!bo) {
@@ -122,7 +111,7 @@ int BufferObjectArray::attachBufferObject(const BufferObject* bo) {
 }
 
 void BufferObjectArray::attachBufferObject(const BufferObject* bo, GLuint location) {
-    if(bo)
+    if (bo)
         pointToObject(bo, location);
     else
         LogError("Error: No valid BufferObject");
@@ -131,22 +120,20 @@ void BufferObjectArray::attachBufferObject(const BufferObject* bo, GLuint locati
 }
 
 void BufferObjectArray::pointToObject(const BufferObject* bo, GLuint location) {
-    if(location < attachedBuffers_.size()){
+    if (location < attachedBuffers_.size()) {
         glEnableVertexAttribArray(location);
         bo->bind();
         glVertexAttribPointer(location, bo->getGLFormat().channels, bo->getGLFormat().type,
                               GL_FALSE, 0, (void*)nullptr);
-    }
-    else
+    } else
         LogError("Error: VertexAttribArray location exceeds maximum allowed range");
 }
 
-const BufferObject* BufferObjectArray::getBufferObject(size_t idx) const{
-    if(idx<attachedBuffers_.size())
+const BufferObject* BufferObjectArray::getBufferObject(size_t idx) const {
+    if (idx < attachedBuffers_.size())
         return attachedBuffers_[idx];
     else
         return nullptr;
 }
 
-} // namespace
-
+}  // namespace

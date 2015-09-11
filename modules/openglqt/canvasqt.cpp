@@ -44,6 +44,8 @@
 #define USING_QT4
 #endif
 
+#include <QThread>
+
 namespace inviwo {
 
 inline QGLContextFormat GetQGLFormat() {
@@ -210,7 +212,9 @@ void CanvasQt::activate() {
 #ifdef USE_QWINDOW
     thisGLContext_->makeCurrent(this);
 #else
-    makeCurrent();
+
+    context()->moveToThread(QThread::currentThread());
+    context()->makeCurrent();
 #endif
 }
 
@@ -676,6 +680,10 @@ void CanvasQt::pinchTriggered(QPinchGesture* gesture) {
 void CanvasQt::resize(uvec2 size) {
     QGLWindow::resize(size.x, size.y);
     CanvasGL::resize(size);
+}
+
+std::unique_ptr<Canvas> CanvasQt::create() {
+    return util::make_unique<CanvasQt>();
 }
 
 void CanvasQt::resizeEvent(QResizeEvent* event) {

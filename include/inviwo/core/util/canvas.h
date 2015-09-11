@@ -74,6 +74,8 @@ public:
     //TODO, this should not be here...
     static DataWriterType<Layer>* generalLayerWriter_;
 
+    virtual std::unique_ptr<Canvas> create() = 0;
+
 protected:
     void activateDefaultRenderContext();
 
@@ -97,9 +99,9 @@ protected:
     bool initialized_;
     bool shared_;
     uvec2 screenDimensions_;
-    EventPropagator* propagator_;
-    PickingContainer* pickingContainer_;
-    ProcessorWidget* ownerWidget_;
+    EventPropagator* propagator_; //< non-owning reference
+    PickingContainer pickingContainer_;
+    ProcessorWidget* ownerWidget_; //< non-owning reference
 };
 
 } // namespace
