@@ -55,6 +55,10 @@
 #include <modules/basegl/processors/imageprocessing/imageinvert.h>
 #include <modules/basegl/processors/imageprocessing/imagemapping.h>
 #include <modules/basegl/processors/imageprocessing/imageresample.h>
+#include <modules/basegl/processors/imageprocessing/imagebinary.h>
+#include <modules/basegl/processors/imageprocessing/imagelowpass.h>
+#include <modules/basegl/processors/imageprocessing/imagehighpass.h>
+#include <modules/basegl/processors/volumeprocessing/volumebinary.h>
 #include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>
 #include <modules/basegl/processors/volumeprocessing/volumecombiner.h>
 #include <modules/basegl/processors/volumeprocessing/volumediff.h>
@@ -106,6 +110,9 @@ BaseGLModule::BaseGLModule() : InviwoModule() {
     registerProcessor(ImageInvert);
     registerProcessor(ImageMapping);
     registerProcessor(ImageResample);
+    registerProcessor(ImageBinary)
+    registerProcessor(ImageLowPass)
+    registerProcessor(ImageHighPass)
 
     //volume processing
     registerProcessor(VectorMagnitudeProcessor);
@@ -116,6 +123,7 @@ BaseGLModule::BaseGLModule() : InviwoModule() {
     registerProcessor(VolumeLaplacian);
     registerProcessor(VolumeLowPass);
     registerProcessor(VolumeMapping);
+    registerProcessor(VolumeBinary);
 
 }
 
