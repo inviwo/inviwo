@@ -53,9 +53,10 @@ public:
     void activateDefaultRenderContext() const;
 
     void activateLocalRenderContext() const;
+    void clearLocalContexts();
 private: 
     Canvas* defaultContext_;
-
+    std::thread::id mainThread_;
     mutable std::unordered_map<std::thread::id, std::unique_ptr<Canvas>> contextMap_;
 };
 

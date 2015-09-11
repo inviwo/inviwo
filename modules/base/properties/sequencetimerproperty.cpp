@@ -92,11 +92,9 @@ void inviwo::SequenceTimerProperty::onPlaySequenceToggled() {
         if (play_.get()) {
             timer_.start(1000 / framesPerSecond_.get());
             index_.setReadOnly(true);
-            framesPerSecond_.setReadOnly(false);
         } else {
             timer_.stop();
             index_.setReadOnly(false);
-            framesPerSecond_.setReadOnly(true);
         }
     }
 }

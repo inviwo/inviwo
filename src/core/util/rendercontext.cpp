@@ -36,7 +36,10 @@ RenderContext::RenderContext() : defaultContext_(nullptr) {}
 
 RenderContext::~RenderContext() {}
 
-void RenderContext::setDefaultRenderContext(Canvas* canvas) { defaultContext_ = canvas; }
+void RenderContext::setDefaultRenderContext(Canvas* canvas) {
+    defaultContext_ = canvas;
+    mainThread_ = std::this_thread::get_id();
+}
 
 void RenderContext::activateDefaultRenderContext() const {
     if (defaultContext_) defaultContext_->activate();
@@ -44,6 +47,12 @@ void RenderContext::activateDefaultRenderContext() const {
 
 void RenderContext::activateLocalRenderContext() const {
     auto id = std::this_thread::get_id();
+    
+    if(id == mainThread_) {
+        activateDefaultRenderContext();
+        return;
+    }
+    
     auto it = contextMap_.find(id);
     Canvas* localContext = nullptr;
     if (it == contextMap_.end()) {
@@ -54,6 +63,10 @@ void RenderContext::activateLocalRenderContext() const {
         localContext = (*it).second.get();
     }
     localContext->activate();
+}
+
+void RenderContext::clearLocalContexts() {
+    contextMap_.clear();
 }
 
 Canvas* RenderContext::getDefaultRenderContext() { return defaultContext_; }

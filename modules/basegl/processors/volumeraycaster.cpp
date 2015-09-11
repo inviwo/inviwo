@@ -118,7 +118,6 @@ void VolumeRaycaster::process() {
 
     if (volumePort_.isChanged()) {
         auto newVolume = volumePort_.getData();
-        LogInfo("Has gl " << newVolume->hasRepresentation<VolumeGL>());
 
         if (newVolume->hasRepresentation<VolumeGL>()) {
             loadedVolume_ = newVolume;
@@ -134,7 +133,14 @@ void VolumeRaycaster::process() {
         }
     }
 
-    if (!loadedVolume_) return;
+    if (!loadedVolume_) {
+        LogInfo("No loaded data");
+        return;
+    }
+    if (!loadedVolume_->hasRepresentation<VolumeGL>()) {
+        LogInfo("No GL rep !!! ");
+        return;
+    }
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, *loadedVolume_, "volume");
