@@ -31,6 +31,13 @@
 
 namespace inviwo {
 
+<name>::<name>()  {
+    
+}
+
+<name>::~<name>()  {
+    
+}
 
 } // namespace
 

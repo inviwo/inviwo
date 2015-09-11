@@ -42,6 +42,10 @@ ProcessorCodeState(<name>, CODE_STATE_EXPERIMENTAL);
     : Processor() {
     
 }
+
+<name>::~<name>() {
+    
+}
     
 void <name>::process() {
 
