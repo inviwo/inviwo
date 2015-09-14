@@ -45,6 +45,7 @@
 
 #include <warn/ignore/all>
 #include <modules/cimg/ext/cimg/CImg.h>
+#include <warn/pop>
 
 // Added in Cimg.h below struct type<float>...
 /*#include <limits>
