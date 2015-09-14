@@ -31,32 +31,16 @@
 
 namespace inviwo {
 
-Action::Action() : callback_(nullptr) {}
+Action::Action() : callback_() {}
 
-Action::Action(const Action& rhs)
-    : callback_(rhs.callback_) {
-}
-
-Action& Action::operator=(const Action& that) {
-    if (this != &that) {
-        if(callback_) delete callback_;
-        callback_ = that.callback_;
-    }
-    return *this;
-}
+Action::Action(std::function<void(Event*)> cb) : callback_(cb) {}
 
 Action* Action::clone() const {
     return new Action(*this);
 }
 
-Action::~Action() {
-    if (callback_) delete callback_;
-}
-
 void Action::invoke(Event* event) {
-    if(callback_) {
-        callback_->invoke(event);
-    }
+    callback_(event);
 }
 
 } // namespace
