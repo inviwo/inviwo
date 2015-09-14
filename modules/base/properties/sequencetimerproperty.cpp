@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include "sequencetimerproperty.h"
+#include <inviwo/core/interaction/events/keyboardevent.h>
+#include <inviwo/core/interaction/action.h>
 
 namespace inviwo {
 
@@ -40,6 +42,10 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
     , index_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1)
     , play_("playSequence", "Play Sequence", false)
     , framesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, VALID)
+    , playPause_(
+          "playPause", "Play / Pause",
+          new KeyboardEvent('P', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),
+          new Action([this](Event* e){play_.set(!play_.get());}))
     , timer_(1000 / framesPerSecond_.get(), [this]() { onTimerEvent(); }) {
     play_.onChange(this, &SequenceTimerProperty::onPlaySequenceToggled);
 
@@ -48,6 +54,7 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
     addProperty(index_);
     addProperty(play_);
     addProperty(framesPerSecond_);
+    addProperty(playPause_);
 }
 
 SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs)
@@ -55,12 +62,14 @@ SequenceTimerProperty::SequenceTimerProperty(const SequenceTimerProperty& rhs)
     , index_(rhs.index_)
     , play_(rhs.play_)
     , framesPerSecond_(rhs.framesPerSecond_)
+    , playPause_(rhs.playPause_)
     , timer_(1000 / framesPerSecond_.get(), [this]() { onTimerEvent(); }) {
     framesPerSecond_.onChange([this]() { timer_.setInterval(1000 / framesPerSecond_.get()); });
     index_.setSerializationMode(PropertySerializationMode::ALL);
     addProperty(index_);
     addProperty(play_);
     addProperty(framesPerSecond_);
+    addProperty(playPause_);
 }
 
 SequenceTimerProperty& SequenceTimerProperty::operator=(const SequenceTimerProperty& that) {
@@ -69,6 +78,8 @@ SequenceTimerProperty& SequenceTimerProperty::operator=(const SequenceTimerPrope
         index_ = that.index_;
         play_ = that.play_;
         framesPerSecond_ = that.framesPerSecond_;
+        playPause_ = that.playPause_;
+        
     }
     return *this;
 }

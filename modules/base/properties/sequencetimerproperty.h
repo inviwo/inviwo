@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 
 namespace inviwo {
 
@@ -56,6 +57,7 @@ public:
     IntProperty index_;
     BoolProperty play_;
     IntProperty framesPerSecond_;
+    EventProperty playPause_;
     Timer timer_;
 
 private:
