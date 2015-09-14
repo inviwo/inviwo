@@ -33,6 +33,11 @@
 #include <algorithm>
 
 #include <warn/push>
+#include <warn/ignore/all>
+#include <modules/cimg/ext/cimg/CImg.h>
+#include <warn/pop>
+
+#include <warn/push>
 #include <warn/ignore/switch-enum>
 #include <warn/ignore/conversion>
 #if (_MSC_VER)
@@ -43,9 +48,7 @@
 # pragma warning(disable: 4293)
 #endif
 
-#include <warn/ignore/all>
-#include <modules/cimg/ext/cimg/CImg.h>
-#include <warn/pop>
+
 
 // Added in Cimg.h below struct type<float>...
 /*#include <limits>
