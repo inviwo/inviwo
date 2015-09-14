@@ -39,6 +39,9 @@ namespace inviwo {
 
 using VolumeInport = DataInport<Volume>;
 using VolumeOutport = DataOutport<Volume>;
+using VolumeVector = std::vector<std::shared_ptr<Volume>>;
+using VolumeVectorInport = DataInport<VolumeVector>;
+using VolumeVectorOutport = DataOutport<VolumeVector>;
 
 }  // namespace
 
