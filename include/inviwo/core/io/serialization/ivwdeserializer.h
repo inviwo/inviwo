@@ -109,6 +109,12 @@ public:
     template <typename T>
     void deserialize(const std::string& key, std::vector<T>& sVector, const std::string& itemKey);
 
+
+    template <typename T>
+    void deserialize(const std::string& key, std::vector<std::unique_ptr<T>>& vector,
+    const std::string& itemKey);
+
+
     template <typename T>
     void deserialize(const std::string& key, std::list<T>& sContainer, const std::string& itemKeyr);
     /**
@@ -323,6 +329,42 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
     }
 }
 
+template <typename T>
+void IvwDeserializer::deserialize(const std::string& key, std::vector<std::unique_ptr<T>>& vector,
+                                  const std::string& itemKey) {
+    try {
+        NodeSwitch vectorNodeSwitch(*this, key);
+
+        unsigned int i = 0;
+        TxEIt child(itemKey);
+        for (child = child.begin(rootElement_); child != child.end(); ++child) {
+            // In the next deserialization call do net fetch the "child" since we are looping...
+            // hence the "false" as the last arg.
+            NodeSwitch elementNodeSwitch(*this, &(*child), false);
+
+            if (vector.size() <= i) {
+                T* item = nullptr;
+                try {
+                    deserialize(itemKey, item);
+                    vector.emplace_back(item);
+                } catch (SerializationException& e) {
+                    delete item;
+                    handleError(e);
+                }
+            } else {
+                try {
+                    auto ptr = vector[i].get();
+                    deserialize(itemKey, ptr);
+                } catch (SerializationException& e) {
+                    handleError(e);
+                }
+            }
+            i++;
+        }
+    } catch (TxException&) {
+    }
+}
+
 template <typename T, typename C>
 void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                                   const std::string& itemKey, C identifier) {
@@ -333,9 +375,9 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
 
         TxEIt child(itemKey);
         for (child = child.begin(rootElement_); child != child.end(); ++child) {
+            
             identifier.setKey(child.Get());
-            typename std::vector<T*>::iterator it =
-                std::find_if(vector.begin(), vector.end(), identifier);
+            auto it = std::find_if(vector.begin(), vector.end(), identifier);
 
             if (it != vector.end()) {  // There is a item in vector with same identifier as on disk
                 NodeSwitch elementNodeSwitch(*this, &(*child), false);
