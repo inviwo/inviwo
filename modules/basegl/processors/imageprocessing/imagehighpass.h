@@ -24,31 +24,61 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_<uname>_H
-#define IVW_<uname>_H
+#ifndef IVW_IMAGEHIGHPASS_H
+#define IVW_IMAGEHIGHPASS_H
 
-#include <define>
+#include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-/**
- * \class <name>
+/** \docpage{<classIdentifier>, ImageHighPass}
+ * Explanation of how to use the processor.
  *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * ### Inports
+ *   * __<Inport1>__ <description>.
  *
- * DESCRIBE_THE_CLASS
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class <api> <name> { 
+
+
+/**
+ * \class ImageHighPass
+ *
+ * \brief <brief description> 
+ *
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_BASEGL_API ImageHighPass : public ImageGLProcessor {
 public:
-    <name>();
-    virtual ~<name>();
+    InviwoProcessorInfo();
+    ImageHighPass();
+    virtual ~ImageHighPass() {}
+
+protected:
+    virtual void preProcess();
+    
+protected:
+
+private:
+    IntProperty kernelSize_;
+    BoolProperty sharpen_;
+
 };
 
 } // namespace
 
-#endif // IVW_<uname>_H
+#endif // IVW_IMAGEHIGHPASS_H
 

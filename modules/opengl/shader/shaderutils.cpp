@@ -89,6 +89,8 @@ void setShaderUniforms(Shader& shader, const CameraProperty& property, std::stri
     shader.setUniform(name + ".worldToView", property.viewMatrix());
     shader.setUniform(name + ".viewToWorld", property.inverseViewMatrix());
     shader.setUniform(name + ".worldToClip", property.projectionMatrix() * property.viewMatrix());
+    shader.setUniform(name + ".viewToClip", property.projectionMatrix());
+    shader.setUniform(name + ".clipToView", property.inverseProjectionMatrix());
     shader.setUniform(name + ".clipToWorld",
                        property.inverseViewMatrix() * property.inverseProjectionMatrix());
     shader.setUniform(name + ".position", property.getLookFrom());

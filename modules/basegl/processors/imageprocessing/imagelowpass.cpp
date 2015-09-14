@@ -27,28 +27,23 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_<uname>_H
-#define IVW_<uname>_H
-
-#include <define>
-#include <inviwo/core/common/inviwo.h>
+#include "imagelowpass.h"
 
 namespace inviwo {
 
-/**
- * \class <name>
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
-class <api> <name> { 
-public:
-    <name>();
-    virtual ~<name>();
-};
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+ProcessorClassIdentifier(ImageLowPass, "org.inviwo.ImageLowPass")
+ProcessorDisplayName(ImageLowPass, "Image Low Pass") 
+ProcessorTags(ImageLowPass, Tags::None);
+ProcessorCategory(ImageLowPass, "Undefined");
+ProcessorCodeState(ImageLowPass, CODE_STATE_EXPERIMENTAL);
 
-} // namespace
+ImageLowPass::ImageLowPass()
+    : ImageGLProcessor("img_lowpass.frag")
+    , kernelSize_("kernelSize", "Kernel Size", 3, 1, 15, 2) {
+    addProperty(kernelSize_);
+}
 
-#endif // IVW_<uname>_H
+void ImageLowPass::preProcess() { shader_.setUniform("kernelSize", kernelSize_.get()); }
 
+}  // namespace

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2014-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,31 +24,22 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_<uname>_H
-#define IVW_<uname>_H
+#include "utils/sampler3d.glsl"
 
-#include <define>
-#include <inviwo/core/common/inviwo.h>
+uniform sampler3D volume_;
+uniform VolumeParameters volumeParameters_;
+in vec4 texCoord_;
 
-namespace inviwo {
+uniform float threshold_;
 
-/**
- * \class <name>
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
-class <api> <name> { 
-public:
-    <name>();
-    virtual ~<name>();
-};
 
-} // namespace
 
-#endif // IVW_<uname>_H
-
+void main() {
+    vec4 texCoords = gl_FragCoord.xyz * volumeParameters_.reciprocalDimensions;
+    bool b = texture(volume_, texCoords).r >= threshold_;
+    float v = b ? 1.0f : 0.0f;
+    FragData0 = vec4(v,v,v,1.0);
+}

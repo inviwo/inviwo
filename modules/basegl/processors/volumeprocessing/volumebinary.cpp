@@ -27,28 +27,27 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_<uname>_H
-#define IVW_<uname>_H
-
-#include <define>
-#include <inviwo/core/common/inviwo.h>
+#include "volumebinary.h"
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
-/**
- * \class <name>
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
-class <api> <name> { 
-public:
-    <name>();
-    virtual ~<name>();
-};
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+ProcessorClassIdentifier(VolumeBinary,  "org.inviwo.VolumeBinary")
+ProcessorDisplayName(VolumeBinary,  "Volume Binary")
+ProcessorTags(VolumeBinary, Tags::None);
+ProcessorCategory(VolumeBinary, "Undefined");
+ProcessorCodeState(VolumeBinary, CODE_STATE_EXPERIMENTAL);
+
+VolumeBinary::VolumeBinary()
+    : VolumeGLProcessor("volume_binary.frag")
+    , threshold_("threshold", "Threshold", 0.5) {
+    addProperty(threshold_);
+}
+    
+void VolumeBinary::preProcess() {
+    utilgl::setUniforms(shader_, threshold_);
+}
 
 } // namespace
-
-#endif // IVW_<uname>_H
 

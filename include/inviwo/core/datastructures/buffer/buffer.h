@@ -114,6 +114,7 @@ typedef BufferPrecision<float, CURVATURE_ATTRIB> CurvatureBuffer;
 typedef BufferPrecision<std::uint32_t, INDEX_ATTRIB> IndexBuffer;
 
 // Scalar buffers
+typedef BufferPrecision<std::uint8_t> BufferUInt8;
 typedef BufferPrecision<float, POSITION_ATTRIB> BufferFloat32;
 typedef BufferPrecision<std::int32_t, INDEX_ATTRIB> BufferInt32;
 typedef BufferPrecision<std::uint32_t, INDEX_ATTRIB> BufferUInt32;

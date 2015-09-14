@@ -27,28 +27,30 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_<uname>_H
-#define IVW_<uname>_H
-
-#include <define>
-#include <inviwo/core/common/inviwo.h>
+#include "imagehighpass.h"
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
-/**
- * \class <name>
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
-class <api> <name> { 
-public:
-    <name>();
-    virtual ~<name>();
-};
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+ProcessorClassIdentifier(ImageHighPass,  "org.inviwo.ImageHighPass")
+ProcessorDisplayName(ImageHighPass,  "Image High Pass")
+ProcessorTags(ImageHighPass, Tags::None);
+ProcessorCategory(ImageHighPass, "Undefined");
+ProcessorCodeState(ImageHighPass, CODE_STATE_EXPERIMENTAL);
+
+ImageHighPass::ImageHighPass()
+    : ImageGLProcessor("img_highpass.frag")
+    , kernelSize_("kernelSize", "Kernel Size" , 3 , 1 , 15 , 2) 
+    , sharpen_("sharpen" , "Sharpen" , false){
+    addProperty(kernelSize_);
+    addProperty(sharpen_);
+}
+
+
+void ImageHighPass::preProcess() {
+    utilgl::setUniforms(shader_, kernelSize_, sharpen_);
+}
 
 } // namespace
-
-#endif // IVW_<uname>_H
 

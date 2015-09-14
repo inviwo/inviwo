@@ -33,6 +33,8 @@
 struct CameraParameters {
    mat4 worldToView; // Equivalent to view
    mat4 viewToWorld; // Equivalent to viewInverse
+   mat4 viewToClip; // Equivalent to projection
+   mat4 clipToView; // Equivalent to projectionInverse
    mat4 worldToClip; // Equivalent to viewProjection
    mat4 clipToWorld; // Equivalent to viewProjectionInverse
    vec3 position;

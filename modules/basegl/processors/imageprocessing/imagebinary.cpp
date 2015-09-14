@@ -27,28 +27,27 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_<uname>_H
-#define IVW_<uname>_H
-
-#include <define>
-#include <inviwo/core/common/inviwo.h>
+#include "imagebinary.h"
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
-/**
- * \class <name>
- *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
- * DESCRIBE_THE_CLASS
- */
-class <api> <name> { 
-public:
-    <name>();
-    virtual ~<name>();
-};
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+ProcessorClassIdentifier(ImageBinary,  "org.inviwo.ImageBinary")
+ProcessorDisplayName(ImageBinary,  "Image Binary")
+ProcessorTags(ImageBinary, Tags::None);
+ProcessorCategory(ImageBinary, "Undefined");
+ProcessorCodeState(ImageBinary, CODE_STATE_EXPERIMENTAL);
+
+ImageBinary::ImageBinary()
+    : ImageGLProcessor("img_binary.frag")
+    , threshold_("threshold","Threshold", 0.5)  {
+    addProperty(threshold_);
+}
+
+void ImageBinary::preProcess() {
+    utilgl::setUniforms(shader_, threshold_);
+}
 
 } // namespace
-
-#endif // IVW_<uname>_H
 

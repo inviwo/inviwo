@@ -62,9 +62,9 @@ class <api> <name> : public Processor {
 public:
     InviwoProcessorInfo();
     <name>();
-    virtual ~<name>(){}
+    virtual ~<name>();
      
-    virtual void process();
+    virtual void process() override;
     
 protected:
 
