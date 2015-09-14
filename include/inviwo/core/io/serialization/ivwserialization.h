@@ -30,15 +30,10 @@
 #ifndef IVW_SERIALIZATION_H
 #define IVW_SERIALIZATION_H
 
-#include <warn/push>
-#include <warn/ignore/dll-interface>
-
 #include <inviwo/core/io/serialization/ivwserializebase.h>
 #include <inviwo/core/io/serialization/ivwserializer.h>
 #include <inviwo/core/io/serialization/ivwserializable.h>
 #include <inviwo/core/io/serialization/ivwdeserializer.h>
 #include <inviwo/core/util/factory.h>
-
-#include <warn/pop>
 
 #endif

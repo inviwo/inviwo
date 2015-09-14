@@ -32,6 +32,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/glm.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <memory>
 #include <string>
 #include <algorithm>
@@ -39,6 +41,7 @@
 #include <vector>
 #include <type_traits>
 #include <future>
+#include <warn/pop>
 
 namespace inviwo {
 
