@@ -47,29 +47,37 @@ void RenderContext::activateDefaultRenderContext() const {
 
 void RenderContext::activateLocalRenderContext() const {
     auto id = std::this_thread::get_id();
-    
-    if(id == mainThread_) {
+
+    if (id == mainThread_) {
         activateDefaultRenderContext();
         return;
     }
-    
-    auto it = contextMap_.find(id);
+
     Canvas* localContext = nullptr;
-    if (it == contextMap_.end()) {
-        auto canvas = defaultContext_->create();
-        localContext = canvas.get();
-        contextMap_[id] = std::move(canvas);
-    } else {
-        localContext = (*it).second.get();
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        auto it = contextMap_.find(id);
+        if (it == contextMap_.end()) {
+            auto canvas = defaultContext_->create();
+            localContext = canvas.get();
+            contextMap_[id] = std::move(canvas);
+        } else {
+            localContext = (*it).second.get();
+        }
     }
     localContext->activate();
 }
 
+void RenderContext::clearContext(const std::thread::id& id) {
+    std::unique_lock<std::mutex> lock(mutex_);
+    contextMap_.erase(id);
+}
+
 void RenderContext::clearLocalContexts() {
+    std::unique_lock<std::mutex> lock(mutex_);
     contextMap_.clear();
 }
 
 Canvas* RenderContext::getDefaultRenderContext() { return defaultContext_; }
 
-} // namespace
-
+}  // namespace

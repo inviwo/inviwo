@@ -522,9 +522,6 @@ std::vector<Property*> ProcessorNetwork::getPropertiesRecursive(PropertyOwner* o
 void ProcessorNetwork::clear() {
     NetworkLock lock(this);
 
-    // Clear all the thread contexts.
-    RenderContext::getPtr()->clearLocalContexts();
-
     // make sure the pool is not doing any work.
     InviwoApplication::getPtr()->waitForPool();
 
