@@ -51,8 +51,6 @@ public:
     virtual void updateFromProperty();
 
     virtual bool isCollapsed() const;
-
-    virtual void onSetDisplayName(const std::string& displayName) override;
     virtual void onSetCollapsed(bool value) override;
 
     virtual void initState() override; 

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/editablelabelqt.h>
@@ -32,7 +32,6 @@
 #include <QFontMetrics>
 
 namespace inviwo {
-
 
 EditableLabelQt::EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText)
     : QWidget(parent)
@@ -61,84 +60,65 @@ void EditableLabelQt::generateWidget() {
     hLayout->setSpacing(0);
     label_ = new QLabel(this);
 
-    if (shortenText_)
-        label_->setText(shortenText());
-    else
-        label_->setText(QString::fromStdString(text_.c_str()));
+    updateText();
 
     lineEdit_ = new QLineEdit(this);
     hLayout->addWidget(lineEdit_);
     lineEdit_->hide();
     lineEdit_->setAlignment(Qt::AlignLeft);
-    lineEdit_->setContentsMargins(0,0,0,0);
+    lineEdit_->setContentsMargins(0, 0, 0, 0);
     hLayout->addWidget(label_);
     setLayout(hLayout);
-    
+
     QSizePolicy labelPol = this->sizePolicy();
     labelPol.setHorizontalStretch(1);
     labelPol.setVerticalPolicy(QSizePolicy::Fixed);
     this->setSizePolicy(labelPol);
     label_->setSizePolicy(labelPol);
     lineEdit_->setSizePolicy(labelPol);
+    setFocusProxy(lineEdit_);
+    label_->setFocusProxy(lineEdit_);
 
     label_->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(label_,
-            SIGNAL(customContextMenuRequested(const QPoint&)),
-            this,
+    connect(label_, SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(showContextMenu(const QPoint&)));
 
-    connect(lineEdit_,
-            SIGNAL(editingFinished()),
-            this,
-            SLOT(finishEditing()));
+    connect(lineEdit_, SIGNAL(editingFinished()), this, SLOT(finishEditing()));
 }
 
 void EditableLabelQt::edit() {
-    label_->hide();
     lineEdit_->setText(QString::fromStdString(text_));
+    label_->hide();
     lineEdit_->show();
-    lineEdit_->setFocus();
-    lineEdit_->selectAll();
 }
 
 QSize EditableLabelQt::sizeHint() const { return QSize(18, 18); }
 QSize EditableLabelQt::minimumSizeHint() const { return sizeHint(); }
 
-void EditableLabelQt::resizeEvent(QResizeEvent *event) {
-    if (shortenText_){
+void EditableLabelQt::resizeEvent(QResizeEvent* event) {
+    if (shortenText_) {
         label_->setText(shortenText());
     }
     QWidget::resizeEvent(event);
 }
 
-
-void EditableLabelQt::mouseDoubleClickEvent(QMouseEvent* e) {
-    edit();
-}
+void EditableLabelQt::mouseDoubleClickEvent(QMouseEvent* e) { edit(); }
 
 void EditableLabelQt::finishEditing() {
-    lineEdit_->hide();
     text_ = lineEdit_->text().toLocal8Bit().constData();
-
-    if (shortenText_){
-        label_->setText(shortenText());
-    } else {
-        label_->setText(QString::fromStdString(text_.c_str()));
-    }
-
+    updateText();
+    
+    lineEdit_->hide();
     label_->show();
-
-    if (property_) {
-        property_->setDisplayName(text_);
-    }
+    
+    if (property_) property_->setDisplayName(text_);
 
     emit textChanged();
 }
 
 void EditableLabelQt::setText(std::string txt) {
     text_ = txt;
-    edit();
-    finishEditing();
+    updateText();
 }
 
 void EditableLabelQt::showContextMenu(const QPoint& pos) {
@@ -162,17 +142,7 @@ QString EditableLabelQt::shortenText() {
     return fm.elidedText(QString::fromStdString(text_.c_str()), Qt::ElideRight, width());
 }
 
-void EditableLabelQt::onSetDisplayName(const std::string& displayName) {
-    text_ = displayName;
-    if (shortenText_){
-        label_->setText(shortenText());
-    } else {
-        label_->setText(QString::fromStdString(text_.c_str()));
-    }
-}
-
-void EditableLabelQt::setShortenText(bool shorten) {
-    shortenText_ = shorten;
+void EditableLabelQt::updateText() {
     if (shortenText_) {
         label_->setText(shortenText());
     } else {
@@ -180,4 +150,14 @@ void EditableLabelQt::setShortenText(bool shorten) {
     }
 }
 
-} //namespace
+void EditableLabelQt::onSetDisplayName(const std::string& displayName) {
+    text_ = displayName;
+    updateText();
+}
+
+void EditableLabelQt::setShortenText(bool shorten) {
+    shortenText_ = shorten;
+    updateText();
+}
+
+}  // namespace
