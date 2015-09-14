@@ -41,50 +41,28 @@ class Event;
 class IVW_CORE_API Action {
 public:
     Action();
+    Action(std::function<void(Event*)>);
     template <typename T>
     Action(T* obj, void (T::*m)(Event*));
-    Action(const Action& rhs);
-    Action& operator=(const Action& that);
+    Action(const Action& rhs) = default;
+    Action& operator=(const Action& that) = default;
     virtual Action* clone() const;
-    virtual ~Action();
+    virtual ~Action() = default;
 
     virtual void invoke(Event* event);
 
     template <typename T>
     void setAction(T* o, void (T::*m)(Event*)) {
-        if (callback_) delete callback_;
-        callback_ = new ActionCallback<T>(o, m);
+        callback_ = std::bind(m, o, std::placeholders::_1);
     }
 
 protected:
-    class BaseActionCallback {
-    public:
-        BaseActionCallback() {}
-        virtual void invoke(Event*) = 0;
-        virtual ~BaseActionCallback(){};
-    };
-
-    template <typename T>
-    class ActionCallback : public BaseActionCallback {
-    public:
-        typedef void (T::*fPointer)(Event*);
-        ActionCallback(T* obj, fPointer function)
-            : BaseActionCallback(), function_(function), obj_(obj) {}
-        virtual ~ActionCallback() {}
-
-        virtual void invoke(Event* event) { (*obj_.*function_)(event); }
-
-    private:
-        const fPointer function_;
-        T* obj_;
-    };
-
-    BaseActionCallback* callback_;
+    std::function<void(Event*)> callback_;
 };
 
 template <typename T>
-Action::Action(T* obj, void (T::*m)(Event*))
-    : callback_(new ActionCallback<T>(obj, m)) {}
+Action::Action(T* o, void (T::*m)(Event*))
+    : callback_(std::bind(m, o, std::placeholders::_1)) {}
 
 }  // namespace
 
