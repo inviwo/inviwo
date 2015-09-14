@@ -668,11 +668,11 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) {
         DeserializationErrorHandle<ErrorHandle> outport_err(d, "OutPort", &errorHandle,
                                                             &ErrorHandle::handlePortError);
 
-        ProcessorVector processors;
+        std::vector<std::unique_ptr<Processor>> processors;
         d.deserialize("Processors", processors, "Processor");
         for (size_t i = 0; i < processors.size(); ++i) {
             if (processors[i]) {
-                addProcessor(processors[i]);
+                addProcessor(processors[i].release());
             } else {
                 LogNetworkWarn("Failed deserialization: Processor Nr." << i);
             }
@@ -692,7 +692,7 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) {
 
     // Connections
     try {
-        std::vector<PortConnection*> portConnections;
+        std::vector<std::unique_ptr<PortConnection>> portConnections;
         DeserializationErrorHandle<ErrorHandle> connection_err(d, "Connection", &errorHandle,
                                                                &ErrorHandle::handleConnectionError);
         d.deserialize("Connections", portConnections, "Connection");
@@ -705,8 +705,6 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) {
                 if (!(outPort && inPort && addConnection(outPort, inPort))) {
                     LogNetworkWarn("Unable to establish port connection Nr." << i);
                 }
-
-                delete portConnections[i];
             } else {
                 LogNetworkWarn("Failed deserialization: Port Connection Nr." << i);
             }
@@ -720,7 +718,7 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) {
 
     // Links
     try {
-        std::vector<PropertyLink*> propertyLinks;
+        std::vector<std::unique_ptr<PropertyLink>> propertyLinks;
         DeserializationErrorHandle<ErrorHandle> connection_err(d, "PropertyLink", &errorHandle,
                                                                &ErrorHandle::handleLinkError);
         d.deserialize("PropertyLinks", propertyLinks, "PropertyLink");
@@ -733,9 +731,6 @@ void ProcessorNetwork::deserialize(IvwDeserializer& d) {
                 if (!(srcProperty && destProperty && addLink(srcProperty, destProperty))) {
                     LogNetworkWarn("Unable to establish property link Nr: " << j);
                 }
-
-                delete propertyLinks[j];
-
             } else {
                 LogNetworkWarn("Unable to establish property link Nr: " << j);
             }
