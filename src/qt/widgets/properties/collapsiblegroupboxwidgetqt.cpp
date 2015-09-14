@@ -91,7 +91,8 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     defaultLabel_ = new QLabel("No properties available");
 
     propertyWidgetGroupLayout_->addWidget(defaultLabel_, 0, 0);
-    propertyWidgetGroupLayout_->addItem(new QSpacerItem(PropertyWidgetQt::SPACING, 1, QSizePolicy::Fixed), 0, 1);
+    propertyWidgetGroupLayout_->addItem(
+        new QSpacerItem(PropertyWidgetQt::SPACING, 1, QSizePolicy::Fixed), 0, 1);
     propertyWidgetGroupLayout_->setColumnStretch(0, 1);
     propertyWidgetGroupLayout_->setColumnStretch(1, 0);
 
@@ -100,7 +101,11 @@ void CollapsibleGroupBoxWidgetQt::generateWidget() {
     btnCollapse_->setIcon(QIcon(":/stylesheets/images/arrow_lighter_down.png"));
     connect(btnCollapse_, SIGNAL(clicked()), this, SLOT(toggleCollapsed()));
 
-    label_ = new EditableLabelQt(this, displayName_, false);
+    if (property_) {
+        label_ = new EditableLabelQt(this, property_, false);
+    } else {
+        label_ = new EditableLabelQt(this, displayName_, false);
+    }
     label_->setObjectName("compositeLabel");
     QSizePolicy labelPol = label_->sizePolicy();
     labelPol.setHorizontalStretch(10);

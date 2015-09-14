@@ -62,6 +62,7 @@ protected:
     virtual void resizeEvent(QResizeEvent*);
 
 private:
+    void updateText();
     void generateWidget();
     void mouseDoubleClickEvent(QMouseEvent* e);
     virtual void onSetDisplayName(const std::string& displayName) override;

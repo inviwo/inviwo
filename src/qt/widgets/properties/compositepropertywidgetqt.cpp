@@ -55,11 +55,6 @@ void CompositePropertyWidgetQt::setCollapsed(bool value) {
     compProperty_->setCollapsed(value);
 }
 
-void CompositePropertyWidgetQt::onSetDisplayName(const std::string& displayName) {
-    displayName_ = displayName;
-    label_->setText(displayName);
-}
-
 void CompositePropertyWidgetQt::onSetCollapsed(bool value) {
     CollapsibleGroupBoxWidgetQt::setCollapsed(value);
 }
