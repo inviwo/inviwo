@@ -77,6 +77,7 @@ InviwoApplication::InviwoApplication(std::string displayName, std::string basePa
     : InviwoApplication(0, nullptr, displayName, basePath) {}
 
 InviwoApplication::~InviwoApplication() {
+    pool_.setSize(0);
     delete processorNetwork_;
     delete processorNetworkEvaluator_;
 
