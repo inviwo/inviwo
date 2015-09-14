@@ -47,39 +47,30 @@ PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
     : PropertyOwnerObservable()
     , invalidationLevel_(rhs.invalidationLevel_) {
 
-    for(Property* p : rhs.ownedProperties_) {
-        addProperty(p->clone());   
-    }
+    for (const auto& p : rhs.ownedProperties_) addProperty(p->clone());
 }
 
 PropertyOwner& PropertyOwner::operator=(const PropertyOwner& that) {
     if (this != &that) {
         invalidationLevel_ = that.invalidationLevel_;
         properties_.clear();
-
-        for (Property* p : ownedProperties_) {
-            delete p;
-        }
         ownedProperties_.clear();
-
-        for (Property* p : that.ownedProperties_) {
-            addProperty(p->clone());
-        }
+        for (const auto& p : that.ownedProperties_) addProperty(p->clone());
     }
     return *this;
 }
 
-PropertyOwner::~PropertyOwner() {
-    for (Property* p : ownedProperties_) delete p;
-}
-
 void PropertyOwner::addProperty(Property* property, bool owner) {
-    ivwAssert(getPropertyByIdentifier(property->getIdentifier()) == nullptr,
-              "Property already exist");
+    if (getPropertyByIdentifier(property->getIdentifier()) != nullptr) {
+        throw Exception(
+            "Can't add property identifier, " + property->getIdentifier() + " already exist",
+            IvwContext);
+    }
 
     notifyObserversWillAddProperty(property, properties_.size());
     properties_.push_back(property);
     property->setOwner(this);
+
     if (dynamic_cast<EventProperty*>(property)) {
         eventProperties_.push_back(static_cast<EventProperty*>(property));
     }
@@ -87,10 +78,10 @@ void PropertyOwner::addProperty(Property* property, bool owner) {
         compositeProperties_.push_back(static_cast<CompositeProperty*>(property));
     }
 
-    if (owner) { // Assume ownership of property;
-        ownedProperties_.push_back(property);
+    if (owner) {  // Assume ownership of property;
+        ownedProperties_.emplace_back(property);
     }
-    notifyObserversDidAddProperty(property, properties_.size()-1);
+    notifyObserversDidAddProperty(property, properties_.size() - 1);
 }
 
 void PropertyOwner::addProperty(Property& property) {
@@ -118,7 +109,9 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
         size_t index = std::distance(properties_.begin(), it);
         notifyObserversWillRemoveProperty(prop, index);
 
-        util::erase_remove(ownedProperties_, *it);
+        util::erase_remove_if(ownedProperties_, [it](const std::unique_ptr<Property>& p ){
+            return p.get() == *it;
+        });
         util::erase_remove(eventProperties_, *it);
         util::erase_remove(compositeProperties_, *it);
 
@@ -265,7 +258,7 @@ void PropertyOwner::deserialize(IvwDeserializer& d) {
             if (dynamic_cast<CompositeProperty*>(p)) {
                 compositeProperties_.push_back(static_cast<CompositeProperty*>(p));
             }
-            ownedProperties_.push_back(p);
+            ownedProperties_.emplace_back(p);
             notifyObserversDidAddProperty(p, i);
         }
     }
