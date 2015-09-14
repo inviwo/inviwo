@@ -61,8 +61,6 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API VolumeVectorSource : public Processor { 
 public:
-    using VolumeVector = std::vector<std::shared_ptr<Volume>>;
-
     InviwoProcessorInfo();
     VolumeVectorSource();
     virtual ~VolumeVectorSource() = default;
@@ -76,7 +74,7 @@ private:
 
     std::shared_ptr<VolumeVector> volumes_;
 
-    DataOutport<VolumeVector> outport_;
+    VolumeVectorOutport outport_;
     FileProperty file_;
     ButtonProperty reload_;
 
