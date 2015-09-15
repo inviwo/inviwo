@@ -24,28 +24,26 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DISKREPRESENTATION_H
 #define IVW_DISKREPRESENTATION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/io/datareader.h>
 #include <string>
 
 namespace inviwo {
 
-class DataReader;
-
 class IVW_CORE_API DiskRepresentation {
-
 public:
     DiskRepresentation();
     DiskRepresentation(std::string);
     DiskRepresentation(const DiskRepresentation& rhs);
     DiskRepresentation& operator=(const DiskRepresentation& that);
     virtual DiskRepresentation* clone() const;
-    virtual ~DiskRepresentation();
+    virtual ~DiskRepresentation() = default;
 
     const std::string& getSourceFile() const;
     bool hasSourceFile() const;
@@ -56,15 +54,15 @@ public:
     void readDataInto(void* dest) const;
 
 private:
-
-    #include <warn/push>
-    #include <warn/ignore/dll-interface>
+#include <warn/push>
+#include <warn/ignore/dll-interface>
     std::string sourceFile_;
-    #include <warn/pop>
+#include <warn/pop>
+
     // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
-    DataReader* reader_;
+    std::unique_ptr<DataReader> reader_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_DISKREPRESENTATION_H
+#endif  // IVW_DISKREPRESENTATION_H

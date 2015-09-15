@@ -24,79 +24,48 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/diskrepresentation.h>
-#include <inviwo/core/io/datareader.h>
+
 
 namespace inviwo {
 
-DiskRepresentation::DiskRepresentation() : sourceFile_(""), reader_(nullptr) {}
+DiskRepresentation::DiskRepresentation() : sourceFile_(""), reader_() {}
 
-DiskRepresentation::DiskRepresentation(std::string srcFile)
-    : sourceFile_(srcFile), reader_(nullptr) {}
+DiskRepresentation::DiskRepresentation(std::string srcFile) : sourceFile_(srcFile), reader_() {}
 
 DiskRepresentation::DiskRepresentation(const DiskRepresentation& rhs)
-    : sourceFile_(rhs.sourceFile_), reader_(nullptr) {
-    setDataReader(rhs.reader_ != nullptr ? rhs.reader_->clone() : nullptr);
+    : sourceFile_(rhs.sourceFile_), reader_() {
+    setDataReader(rhs.reader_ ? rhs.reader_->clone() : nullptr);
 }
 
 DiskRepresentation& DiskRepresentation::operator=(const DiskRepresentation& that) {
     if (this != &that) {
         sourceFile_ = that.sourceFile_;
-
-        if (reader_) {
-            delete reader_;
-            reader_ = nullptr;
-        }
-
-        setDataReader(that.reader_ != nullptr ? that.reader_->clone() : nullptr);
+        setDataReader(that.reader_ ? that.reader_->clone() : nullptr);
     }
-
     return *this;
 }
 
-DiskRepresentation* DiskRepresentation::clone() const {
-    return new DiskRepresentation(*this);
-}
+DiskRepresentation* DiskRepresentation::clone() const { return new DiskRepresentation(*this); }
 
-DiskRepresentation::~DiskRepresentation() {
-    if (reader_) {
-        delete reader_;
-        reader_ = nullptr;
-    }
-}
+const std::string& DiskRepresentation::getSourceFile() const { return sourceFile_; }
 
-const std::string& DiskRepresentation::getSourceFile() const {
-    return sourceFile_;
-}
-
-bool DiskRepresentation::hasSourceFile() const {
-    return !sourceFile_.empty();
-}
+bool DiskRepresentation::hasSourceFile() const { return !sourceFile_.empty(); }
 
 void DiskRepresentation::setDataReader(DataReader* reader) {
-    if(!reader)
-        return;
-    
-    if (reader_)
-        delete reader_;
-
-    reader_ = reader;
-    reader->setOwner(this);
+    reader_.reset(reader);
+    reader_->setOwner(this);
 }
 
 void* DiskRepresentation::readData() const {
-    if (reader_)
-        return reader_->readData();
-
-    return nullptr;
+     return reader_ ? reader_->readData() : nullptr;
 }
 
 void DiskRepresentation::readDataInto(void* dest) const {
-    if (reader_)
-        reader_->readDataInto(dest);
+    if (reader_) reader_->readDataInto(dest);
 }
 
-} // namespace
+}  // namespace

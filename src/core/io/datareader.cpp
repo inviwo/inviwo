@@ -40,10 +40,8 @@ DataReader::DataReader(const DataReader& rhs) : extensions_(rhs.extensions_) {}
 DataReader& DataReader::operator=(const DataReader& that) {
     if (this != &that) {
         extensions_.clear();
-
         for (const auto& elem : that.getExtensions()) extensions_.push_back(elem);
     }
-
     return *this;
 }
 

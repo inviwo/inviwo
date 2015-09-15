@@ -33,11 +33,12 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/data.h>
-#include <inviwo/core/datastructures/diskrepresentation.h>
 #include <inviwo/core/util/fileextension.h>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
+
+class DiskRepresentation;
 
 class IVW_CORE_API DataReaderException : public Exception {
 public:
