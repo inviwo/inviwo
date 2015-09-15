@@ -81,8 +81,8 @@ InviwoApplication::InviwoApplication(std::string displayName, std::string basePa
 
 InviwoApplication::~InviwoApplication() {
     pool_.setSize(0);
-    processorNetwork_.reset();
     processorNetworkEvaluator_.reset();
+    processorNetwork_.reset();
 
     if (initialized_) deinitialize();
 
@@ -332,7 +332,6 @@ void InviwoApplication::processFront() {
         }
         task();
     }
-
 }
 
 void InviwoApplication::setProgressCallback(std::function<void(std::string)> progressCallback) {
