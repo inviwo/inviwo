@@ -293,21 +293,18 @@ void PropertyWidgetQt::generateContextMenu() {
 
 void PropertyWidgetQt::generateModuleMenuActions() {
     moduleSubMenus_.clear();
-    InviwoApplication* app = InviwoApplication::getPtr();
-    std::vector<ModuleCallbackAction*> moduleActions = app->getCallbackActions();
-    std::map<std::string, std::vector<ModuleCallbackAction*> > callbackMapPerModule;
+    auto& moduleActions = InviwoApplication::getPtr()->getCallbackActions();
+    std::map<std::string, std::vector<const ModuleCallbackAction*> > callbackMapPerModule;
 
     for (auto& moduleAction : moduleActions)
-        callbackMapPerModule[moduleAction->getModule()->getIdentifier()].push_back(moduleAction);
+        callbackMapPerModule[moduleAction->getModule()->getIdentifier()].push_back(moduleAction.get());
 
-    std::map<std::string, std::vector<ModuleCallbackAction*> >::iterator mapIt;
-
-    for (mapIt = callbackMapPerModule.begin(); mapIt != callbackMapPerModule.end(); mapIt++) {
-        std::vector<ModuleCallbackAction*> moduleActions = mapIt->second;
+        for (auto& elem : callbackMapPerModule) {
+        auto moduleActions = elem.second;
 
         if (moduleActions.size()) {
-            QMenu* submenu = new QMenu(tr(mapIt->first.c_str()));
-            moduleSubMenus_[mapIt->first.c_str()] = submenu;
+            QMenu* submenu = new QMenu(tr(elem.first.c_str()));
+            moduleSubMenus_[elem.first.c_str()] = submenu;
 
             for (auto& moduleAction : moduleActions) {
                 QAction* action = new QAction(tr(moduleAction->getActionName().c_str()), this);
@@ -322,8 +319,7 @@ void PropertyWidgetQt::generateModuleMenuActions() {
 }
 
 void PropertyWidgetQt::updateModuleMenuActions() {
-    InviwoApplication* app = InviwoApplication::getPtr();
-    std::vector<ModuleCallbackAction*> moduleActions = app->getCallbackActions();
+    auto& moduleActions = InviwoApplication::getPtr()->getCallbackActions();
 
     for (auto& moduleAction : moduleActions) {
         std::string moduleName = moduleAction->getModule()->getIdentifier();
@@ -368,7 +364,7 @@ void PropertyWidgetQt::moduleAction() {
 
     if (action) {
         InviwoApplication* app = InviwoApplication::getPtr();
-        std::vector<ModuleCallbackAction*> moduleActions = app->getCallbackActions();
+        const auto& moduleActions = app->getCallbackActions();
         std::string actionName(action->text().toLocal8Bit().constData());
 
         for (auto& moduleAction : moduleActions) {

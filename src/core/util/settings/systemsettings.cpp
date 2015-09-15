@@ -151,10 +151,10 @@ void SystemSettings::logStacktraceCallback() {
 }
 
 void SystemSettings::allocationTest() {
-    InviwoCore* module = InviwoApplication::getPtr()->getModuleByType<InviwoCore>();
+    auto module = InviwoApplication::getPtr()->getModuleByType<InviwoCore>();
     if (!module) return;
 
-    SystemCapabilities* sysInfo = getTypeFromVector<SystemCapabilities>(module->getCapabilities());
+    auto sysInfo = getTypeFromVector<SystemCapabilities>(module->getCapabilities());
 
     if (sysInfo) {
         IntProperty* useRAMPercent =

@@ -206,9 +206,7 @@ std::string ShaderManager::getShaderResource(std::string key){
 
 OpenGLCapabilities* ShaderManager::getOpenGLCapabilitiesObject(){
     if (!openGLInfoRef_) {
-        OpenGLModule* openGLModule = getTypeFromVector<OpenGLModule>(InviwoApplication::getPtr()->getModules());
-
-        if (openGLModule)
+        if (auto openGLModule = InviwoApplication::getPtr()->getModuleByType<OpenGLModule>())
             openGLInfoRef_ = getTypeFromVector<OpenGLCapabilities>(openGLModule->getCapabilities());
     }
     return openGLInfoRef_;

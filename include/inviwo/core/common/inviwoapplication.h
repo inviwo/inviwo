@@ -73,6 +73,9 @@ public:
     InviwoApplication();
     InviwoApplication(std::string displayName, std::string basePath);
     InviwoApplication(int argc, char** argv, std::string displayName, std::string basePath);
+    InviwoApplication(const InviwoApplication& rhs) = delete;
+    InviwoApplication& operator=(const InviwoApplication& that) = delete;
+
     virtual ~InviwoApplication();
 
     virtual void initialize(registerModuleFuncPtr);
@@ -118,7 +121,7 @@ public:
                         const bool& createFolder = false);
 
     void registerModule(InviwoModule* module);
-    const std::vector<InviwoModule*>& getModules() const;
+    const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
 
     ProcessorNetwork* getProcessorNetwork();
     ProcessorNetworkEvaluator* getProcessorNetworkEvaluator();
@@ -138,7 +141,7 @@ public:
     virtual void playSound(Message soundID) {}
 
     virtual void addCallbackAction(ModuleCallbackAction* callbackAction);
-    virtual std::vector<ModuleCallbackAction*> getCallbackActions();
+    virtual std::vector<std::unique_ptr<ModuleCallbackAction>>& getCallbackActions();
     std::vector<Settings*> getModuleSettings(size_t startIdx = 0);
 
     void addNonSupportedTags(const Tags);
@@ -176,32 +179,30 @@ private:
 
     std::string displayName_;
     std::string basePath_;
-
-    CommandLineParser commandLineParser_;
     bool initialized_;
+    Tags nonSupportedTags_;
+
+    std::function<void(std::string)> progressCallback_;
+    CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
 
-    ProcessorNetwork* processorNetwork_;
-    ProcessorNetworkEvaluator* processorNetworkEvaluator_;
+    std::vector<std::unique_ptr<InviwoModule>> modules_;
+    std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 
-    Tags nonSupportedTags_;
-    std::vector<InviwoModule*> modules_;
-    std::vector<ModuleCallbackAction*> moudleCallbackActions_;
-
-    std::function<void(std::string)> progressCallback_;
+    std::unique_ptr<ProcessorNetwork> processorNetwork_;
+    std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;    
 };
 
 template <class T>
 T* InviwoApplication::getSettingsByType() {
-    T* settings = getTypeFromVector<T>(getModuleSettings());
-    return settings;
+    auto settings = getModuleSettings();
+    return getTypeFromVector<T>(settings);
 }
 
 template <class T>
 T* InviwoApplication::getModuleByType() {
-    T* module = getTypeFromVector<T>(getModules());
-    return module;
+    return getTypeFromVector<T>(getModules());
 }
 
 template <class F, class... Args>

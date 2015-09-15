@@ -57,17 +57,20 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
                                      std::string basePath)
     : displayName_(displayName)
     , basePath_(basePath)
-    , commandLineParser_(argc, argv)
     , initialized_(false)
+    , nonSupportedTags_()
+    , progressCallback_()
+    , commandLineParser_(argc, argv)
     , pool_(0)
-    , progressCallback_() {
-
+    , queue_()
+    , processorNetwork_{util::make_unique<ProcessorNetwork>()}
+    , processorNetworkEvaluator_{
+          util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())} {
     if (commandLineParser_.getLogToFile()) {
         LogCentral::getPtr()->registerLogger(
             new FileLogger(commandLineParser_.getLogToFileFileName()));
     }
-    processorNetwork_ = new ProcessorNetwork();
-    processorNetworkEvaluator_ = new ProcessorNetworkEvaluator(processorNetwork_);
+
     init(this);
 }
 
@@ -78,15 +81,12 @@ InviwoApplication::InviwoApplication(std::string displayName, std::string basePa
 
 InviwoApplication::~InviwoApplication() {
     pool_.setSize(0);
-    delete processorNetwork_;
-    delete processorNetworkEvaluator_;
+    processorNetwork_.reset();
+    processorNetworkEvaluator_.reset();
 
     if (initialized_) deinitialize();
 
-    for (auto module : modules_) delete module;
     modules_.clear();
-
-    for (auto callback : moudleCallbackActions_) delete callback;
     moudleCallbackActions_.clear();
 
     SingletonBase::deleteAllSingeltons();
@@ -150,8 +150,6 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
 }
 
 void InviwoApplication::deinitialize() {
-    // Clear the network
-    getProcessorNetwork()->clear();
     // Deinitialize Resource manager before modules
     // to prevent them from using module specific 
     // (OpenGL/OpenCL) features after their module 
@@ -245,19 +243,19 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
 
 void InviwoApplication::registerModule(InviwoModule* module) {
     postProgress("Loaded module: " + module->getIdentifier());
-    modules_.push_back(module);
+    modules_.emplace_back(module);
 }
 
-const std::vector<InviwoModule*>& InviwoApplication::getModules() const {
+const std::vector<std::unique_ptr<InviwoModule>>& InviwoApplication::getModules() const {
     return modules_;
 }
 
 ProcessorNetwork* InviwoApplication::getProcessorNetwork() {
-    return processorNetwork_;
+    return processorNetwork_.get();
 }
 
 ProcessorNetworkEvaluator* InviwoApplication::getProcessorNetworkEvaluator() {
-    return processorNetworkEvaluator_;
+    return processorNetworkEvaluator_.get();
 }
 
 const CommandLineParser* InviwoApplication::getCommandLineParser() const {
@@ -294,10 +292,10 @@ std::string InviwoApplication::getDisplayName() const {
 }
 
 void InviwoApplication::addCallbackAction(ModuleCallbackAction* callbackAction) {
-    moudleCallbackActions_.push_back(callbackAction);
+    moudleCallbackActions_.emplace_back(callbackAction);
 }
 
-std::vector<ModuleCallbackAction*> InviwoApplication::getCallbackActions() {
+std::vector<std::unique_ptr<ModuleCallbackAction>>& InviwoApplication::getCallbackActions() {
     return moudleCallbackActions_;
 }
 
@@ -323,7 +321,7 @@ bool InviwoApplication::checkIfAllTagsAreSupported(const Tags t) const{
 }
 
 void InviwoApplication::processFront() {
-    NetworkLock netlock(processorNetwork_);
+    NetworkLock netlock(processorNetwork_.get());
     std::function<void()> task;
     while (true) {     
         {

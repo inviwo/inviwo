@@ -41,11 +41,11 @@ ModuleCallbackAction::ModuleCallbackAction(std::string actionName,
     , actionState_(state) {
 }
 
-std::string ModuleCallbackAction::getActionName() {
+std::string ModuleCallbackAction::getActionName() const {
     return actionName_;
 }
 
-InviwoModule* ModuleCallbackAction::getModule() {
+InviwoModule* ModuleCallbackAction::getModule() const {
     return module_;
 }
 
@@ -53,7 +53,7 @@ ModuleCallback* ModuleCallbackAction::getCallBack() {
     return &callBack_;
 }
 
-ModuleCallBackActionState::Status ModuleCallbackAction::getActionState() {
+ModuleCallBackActionState::Status ModuleCallbackAction::getActionState() const {
     return actionState_;
 }
 

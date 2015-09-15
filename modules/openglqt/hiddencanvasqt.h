@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,46 +24,35 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_MODULE_ACTION_H
-#define IVW_MODULE_ACTION_H
+#ifndef IVW_HIDDENCANVASQT_H
+#define IVW_HIDDENCANVASQT_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/modulecallback.h>
+#include <modules/openglqt/openglqtmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <modules/openglqt/canvasqt.h>
 
 namespace inviwo {
 
-class InviwoModule;
-
-class IVW_CORE_API ModuleCallBackActionState {
+class IVW_MODULE_OPENGLQT_API HiddenCanvasQt : public CanvasQt {
 public:
-    enum Status { Default =0,
-                  Enabled =1,
-                  Disabled =2,
-                  Custom =3
-                };
+    explicit HiddenCanvasQt(QGLParent *parent = nullptr, uvec2 dim = uvec2(256, 256));
+    virtual ~HiddenCanvasQt();
+
+protected:
+    virtual void glInit() override;
+    virtual void glDraw() override;
+
+    virtual void initializeGL() override;
+    virtual void resizeGL(int width, int height) override;
+    virtual void paintGL() override;
+
+    virtual void resizeEvent(QResizeEvent *event) override;
+    virtual void paintEvent(QPaintEvent *) override;
 };
 
-//TODO: several types of call back action required ???
-class IVW_CORE_API ModuleCallbackAction {
-public:
-    ModuleCallbackAction(std::string actionName, InviwoModule* module,
-                         ModuleCallBackActionState::Status state=ModuleCallBackActionState::Disabled);
-    std::string getActionName() const;
-    InviwoModule* getModule() const;
-    ModuleCallback* getCallBack();
-    void setActionState(ModuleCallBackActionState::Status state);
-    ModuleCallBackActionState::Status getActionState() const;
-private:
-    InviwoModule* module_;
-    std::string actionName_;
-    // TODO: for now call backs with single argument is supported
-    ModuleCallback callBack_;
-    ModuleCallBackActionState::Status actionState_;
-};
+}  // namespace
 
-} // namespace
-
-#endif // IVW_MODULE_ACTION_H
+#endif  // IVW_HIDDENCANVASQT_H

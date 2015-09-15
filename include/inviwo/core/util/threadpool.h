@@ -136,10 +136,7 @@ inline void ThreadPool::addWorker() {
             }
 
             task();
-        }
-        
-        RenderContext::getPtr()->clearContext(std::this_thread::get_id());
-        
+        }        
     });
 }
 
@@ -149,9 +146,11 @@ inline void ThreadPool::removeWorker() {
             std::unique_lock<std::mutex> lock(queue_mutex);
             workers.back().stop = true;
         }
+        auto id = workers.back().thread.get_id();
         condition.notify_all();
         workers.back().thread.join();
         workers.pop_back();
+        RenderContext::getPtr()->clearContext(id);
     }
 }
 

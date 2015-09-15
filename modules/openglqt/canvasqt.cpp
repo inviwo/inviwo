@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/openglqt/canvasqt.h>
+#include <modules/openglqt/hiddencanvasqt.h>
 #include <inviwo/core/datastructures/image/layerram.h>
 #include <modules/opengl/openglcapabilities.h>
 #if defined(USE_NEW_OPENGLWIDGET)
@@ -212,8 +213,6 @@ void CanvasQt::activate() {
 #ifdef USE_QWINDOW
     thisGLContext_->makeCurrent(this);
 #else
-
-    context()->moveToThread(QThread::currentThread());
     context()->makeCurrent();
 #endif
 }
@@ -683,7 +682,13 @@ void CanvasQt::resize(uvec2 size) {
 }
 
 std::unique_ptr<Canvas> CanvasQt::create() {
-    return util::make_unique<CanvasQt>();
+    auto thread = QThread::currentThread();
+    auto res = dispatchFront([&thread]() {
+        auto canvas = util::make_unique<HiddenCanvasQt>();
+        canvas->context()->moveToThread(thread);
+        return canvas;
+    });
+    return res.get();
 }
 
 void CanvasQt::resizeEvent(QResizeEvent* event) {
