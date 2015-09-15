@@ -30,6 +30,7 @@
 #include <modules/openglqt/canvasqt.h>
 #include <modules/openglqt/hiddencanvasqt.h>
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/openglcapabilities.h>
 #if defined(USE_NEW_OPENGLWIDGET)
 #include <QOpenGLContext>

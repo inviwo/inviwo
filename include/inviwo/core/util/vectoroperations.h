@@ -55,7 +55,7 @@ T* getTypeFromVector(std::vector<U*>& vec) {
 template <class T, class U>
 T* getTypeFromVector(std::vector<std::unique_ptr<U>>& vec) {
     for (size_t i = 0; i < vec.size(); i++) {   
-        if (auto item = dynamic_cast<T*>(vec[i].get());) return item;
+        if (auto item = dynamic_cast<T*>(vec[i].get())) return item;
     }
     return nullptr;
 }
