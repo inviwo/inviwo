@@ -55,6 +55,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/light/spotlight.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationconverterfactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/representationtraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/spatialdata.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/transferfunction.h
     ${IVW_INCLUDE_DIR}/inviwo/core/datastructures/transferfunctiondatapoint.h

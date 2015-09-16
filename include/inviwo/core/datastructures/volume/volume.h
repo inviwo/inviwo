@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/datamapper.h>
+#include <inviwo/core/datastructures/representationtraits.h>
 
 namespace inviwo {
 
@@ -99,9 +100,22 @@ public:
     static uvec3 COLOR_CODE;
     static const std::string CLASS_IDENTIFIER;
 
+
+    template<typename Kind>
+    auto getRep() const -> const typename representation_traits<Volume, Kind>::type*;
+
+
 protected:
     virtual DataRepresentation* createDefaultRepresentation();
 };
+
+template <typename Kind>
+auto Volume::getRep() const  -> const typename representation_traits<Volume, Kind>::type* {
+    static_assert(
+        !std::is_same<typename representation_traits<Volume, Kind>::type, nullptr_t>::value,
+        "No representation of specified kind found");
+    return getRepresentation<typename representation_traits<Volume, Kind>::type>();
+}
 
 }  // namespace
 

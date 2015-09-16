@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <inviwo/core/datastructures/histogram.h>
 
@@ -91,6 +92,11 @@ public:
     template <typename T>
     static T periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posIn,
                                 const glm::detail::tvec3<T, glm::defaultp>& dim);
+};
+
+template <>
+struct representation_traits<Volume, kind::RAM> {
+    using type = VolumeRAM;
 };
 
 template <typename T>
