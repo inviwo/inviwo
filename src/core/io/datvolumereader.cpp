@@ -34,6 +34,8 @@
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <iterator>
+
 namespace inviwo {
 
 DatVolumeReader::DatVolumeReader()
