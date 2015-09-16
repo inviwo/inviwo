@@ -125,6 +125,7 @@ void VolumeRaycaster::process() {
             dispatchPool([this, newVolume]() {
                 RenderContext::getPtr()->activateLocalRenderContext();
                 newVolume->getRepresentation<VolumeGL>();
+                glFlush();
                 dispatchFront([this, newVolume]() {
                     loadedVolume_ = newVolume;
                     invalidate(INVALID_OUTPUT);
