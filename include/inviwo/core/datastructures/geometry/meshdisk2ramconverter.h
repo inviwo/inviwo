@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHDISK2RAMCONVERTER_H
@@ -37,23 +37,19 @@
 #include <inviwo/core/datastructures/geometry/meshram.h>
 #include <inviwo/core/datastructures/geometry/meshdisk.h>
 
-
 namespace inviwo {
 
-class IVW_CORE_API MeshDisk2RAMConverter : public RepresentationConverterType<MeshRAM> {
+class IVW_CORE_API MeshDisk2RAMConverter : public RepresentationConverterType<MeshDisk, MeshRAM> {
 public:
     MeshDisk2RAMConverter();
     virtual ~MeshDisk2RAMConverter();
 
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const MeshDisk*>(source) != nullptr;
-    }
-
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_MESHDISK2RAMCONVERTER_H
-
+#endif  // IVW_MESHDISK2RAMCONVERTER_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMERAMCONVERTER_H
@@ -38,34 +38,31 @@
 
 namespace inviwo {
 
-class IVW_CORE_API VolumeDisk2RAMConverter : public RepresentationConverterType<VolumeRAM> {
-
+class IVW_CORE_API VolumeDisk2RAMConverter
+    : public RepresentationConverterType<VolumeDisk, VolumeRAM> {
 public:
     VolumeDisk2RAMConverter();
     virtual ~VolumeDisk2RAMConverter();
 
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeDisk*>(source) != nullptr;
-    }
-
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
 namespace detail {
 struct VolumeDisk2RAMDispatcher {
-    using type = VolumeRAM*;
+    using type = std::shared_ptr<VolumeRAM>;
     template <class T>
-    VolumeRAM* dispatch(const DataRepresentation* source) {
+    std::shared_ptr<VolumeRAM> dispatch(const DataRepresentation* source) {
         typedef typename T::type F;
         const VolumeDisk* volumeDisk = static_cast<const VolumeDisk*>(source);
-        return new VolumeRAMPrecision<F>(static_cast<F*>(volumeDisk->readData()),
-                                         volumeDisk->getDimensions());
+        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(volumeDisk->readData()),
+                                                       volumeDisk->getDimensions());
     }
 };
-
 }
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VOLUMERAMCONVERTER_H
+#endif  // IVW_VOLUMERAMCONVERTER_H

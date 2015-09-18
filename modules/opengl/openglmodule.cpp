@@ -61,11 +61,9 @@ OpenGLModule::OpenGLModule() :
     registerDrawer(new MeshDrawerGL());
     registerRepresentationConverter(new LayerRAM2GLConverter());
     registerRepresentationConverter(new LayerGL2RAMConverter());
-    registerRepresentationConverter(new LayerDisk2GLConverter());
 
     registerRepresentationConverter(new VolumeRAM2GLConverter());
     registerRepresentationConverter(new VolumeGL2RAMConverter());
-    registerRepresentationConverter(new VolumeDisk2GLConverter());
     
     registerRepresentationConverter(new BufferRAM2GLConverter());
     registerRepresentationConverter(new BufferGL2RAMConverter());

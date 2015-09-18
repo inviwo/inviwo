@@ -276,10 +276,10 @@ DatVolumeReader::VolumeVector* DatVolumeReader::readMetaData(std::string filePat
         for (size_t t = 0; t < sequences; ++t) {
             if (t==0) volumes->push_back(std::move(volume));
             else volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
-            auto diskRepr = util::make_unique<VolumeDisk>(filePath, dimensions_, format_);
+            auto diskRepr = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
             filePos_ = t * bytes;
             diskRepr->setDataReader(this->clone());
-            volumes->back()->addRepresentation(diskRepr.release());
+            volumes->back()->addRepresentation(diskRepr);
         }
 
         std::string size = formatBytesToString(bytes * sequences);

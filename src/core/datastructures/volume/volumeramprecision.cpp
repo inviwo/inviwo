@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-VolumeRAM* createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format, void* dataPtr) {
+std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format, void* dataPtr) {
     VolumeRamDispatcher disp;
     return format->dispatch(disp, dataPtr, dimensions);
 }

@@ -31,42 +31,15 @@
 
 namespace inviwo {
 
-BaseData::BaseData() : MetaDataOwner() {
-}
+std::string BaseData::getDataInfo() const { return ""; }
 
-BaseData::BaseData(const BaseData& rhs) : MetaDataOwner(rhs)  {
-}
-
-BaseData& BaseData::operator=(const BaseData& that) {
-    if (this != &that) {
-        MetaDataOwner::operator=(that);
-    }
-
-    return *this;
-}
-BaseData::~BaseData() {}
-
-std::string BaseData::getDataInfo() const{
-    return "";
-}
-
-Data::Data()
-    : BaseData()
-    , validRepresentations_(0)
-    , lastValidRepresentation_(nullptr)
-    , dataFormatBase_(DataFormatBase::get()) {}
+Data::Data() : BaseData(), lastValidRepresentation_(), dataFormatBase_(DataFormatBase::get()) {}
 
 Data::Data(const DataFormatBase* format)
-    : BaseData()
-    , validRepresentations_(0)
-    , lastValidRepresentation_(nullptr)
-    , dataFormatBase_(format) {}
+    : BaseData(), lastValidRepresentation_(), dataFormatBase_(format) {}
 
 Data::Data(const Data& rhs)
-    : BaseData(rhs)
-    , validRepresentations_(0)
-    , lastValidRepresentation_(nullptr)
-    , dataFormatBase_(rhs.dataFormatBase_) {
+    : BaseData(rhs), lastValidRepresentation_(), dataFormatBase_(rhs.dataFormatBase_) {
     rhs.copyRepresentationsTo(this);
 }
 
@@ -80,70 +53,58 @@ Data& Data::operator=(const Data& that) {
     return *this;
 }
 
+Data::~Data() {}
 
-Data::~Data() {
-    clearRepresentations();
+void Data::invalidateAllOther(DataRepresentation* repr) {
+    for (auto& elem : representations_) {
+        if (elem.second.get() != repr) elem.second->setValid(false);
+    }
 }
 
 void Data::clearRepresentations() {
-    setAllRepresentationsAsInvalid();
-
-    while (hasRepresentations()) {
-        delete representations_.back();
-        representations_.pop_back();
-    }
+    representations_.clear();
 }
 
 void Data::copyRepresentationsTo(Data* targetData) const {
     targetData->clearRepresentations();
 
     if (lastValidRepresentation_) {
-        DataRepresentation* rep = lastValidRepresentation_->clone();
+        auto rep = std::shared_ptr<DataRepresentation>(lastValidRepresentation_->clone());
         targetData->addRepresentation(rep);
     }
 }
 
-void Data::addRepresentation(DataRepresentation* representation) {
-    representation->setOwner(this);
-    representations_.push_back(representation);
-    lastValidRepresentation_ = representation;
-    setRepresentationAsValid(static_cast<int>(representations_.size())-1);
-    newRepresentationCreated();
+void Data::addRepresentation(std::shared_ptr<DataRepresentation> repr) {
+    repr->setOwner(this);
+    representations_[repr->getTypeIndex()] = repr;
+    lastValidRepresentation_ = repr;
+    repr->setValid(true);
 }
 
-void Data::removeRepresentation(DataRepresentation* representation)
-{
-    std::vector<DataRepresentation*>::iterator it = std::find(representations_.begin(), representations_.end(), representation);
+void Data::removeRepresentation(std::shared_ptr<DataRepresentation> representation) {
+    for (auto& elem : representations_) {
+        if(elem.second == representation) {
+            representations_.erase(elem.first);
+            break;
+        }
+    }
 
-    if (it != representations_.end()) {
-        // Update last valid representation
-        if (lastValidRepresentation_ == *it) {
-            lastValidRepresentation_ = nullptr;
+    if (lastValidRepresentation_ == representation) {
+        lastValidRepresentation_.reset();
 
-            for (int i = static_cast<int>(representations_.size())-1; i >= 0; --i) {
-                // Check if this representation is valid
-                // and make sure that it is not the one removed
-                if (isRepresentationValid(i) && representations_[i] != representation) {
-                    lastValidRepresentation_ = representations_[i];
-                    break;
-                }
+        for (auto& elem : representations_) {
+            if(elem.second->isValid()) {
+                lastValidRepresentation_ = elem.second;
             }
         }
-
-        // Update valid representation bit mask
-        size_t element = static_cast<size_t>(std::distance(representations_.begin(), it));
-
-        // Start after the element that is going to be removed and update the mask.
-        for (int i = static_cast<int>(element+1); i < static_cast<int>(representations_.size()); ++i) {
-            if (isRepresentationValid(i))
-                setRepresentationAsValid(i-1);
-            else
-                setRepresentationAsInvalid(i-1);
-        }
-
-        delete(*it);
-        representations_.erase(it);
     }
+}
+
+void Data::removeOtherRepresentations(std::shared_ptr<DataRepresentation> representation) {
+    representations_.clear();
+    representations_[representation->getTypeIndex()] = representation;
+
+    if(lastValidRepresentation_ != representation) lastValidRepresentation_.reset();
 }
 
 bool Data::hasRepresentations() const {

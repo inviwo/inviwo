@@ -124,7 +124,7 @@ Volume* RawVolumeReader::readMetaData(std::string filePath) {
         volume->setWorldMatrix(wtm);
         volume->setDimensions(dimensions_);
         volume->setDataFormat(format_);
-        VolumeDisk* vd = new VolumeDisk(filePath, dimensions_, format_);
+        auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
         vd->setDataReader(this->clone());
         volume->addRepresentation(vd);
         std::string size = formatBytesToString(dimensions_.x * dimensions_.y * dimensions_.z *

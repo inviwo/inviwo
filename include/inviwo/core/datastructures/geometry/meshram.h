@@ -47,6 +47,7 @@ public:
     MeshRAM& operator=(const MeshRAM& that);
     virtual MeshRAM* clone() const;
     virtual ~MeshRAM();
+    virtual std::type_index getTypeIndex() const override final;
 
 protected:
     virtual void update(bool editable);

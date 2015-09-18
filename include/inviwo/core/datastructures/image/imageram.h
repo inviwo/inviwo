@@ -58,6 +58,8 @@ public:
     const LayerRAM* getDepthLayerRAM() const;
     const LayerRAM* getPickingLayerRAM() const;
 
+    virtual std::type_index getTypeIndex() const override final;
+
 protected:
     virtual void update(bool editable) override;
 

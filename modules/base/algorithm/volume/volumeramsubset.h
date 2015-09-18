@@ -38,24 +38,26 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API VolumeRAMSubSet {
 public:
-    static VolumeRAM* apply(const VolumeRepresentation* in, size3_t dim, size3_t offset,
-                            const VolumeBorders& border = VolumeBorders(),
-                            bool clampBorderOutsideVolume = true);
+    static std::shared_ptr<VolumeRAM> apply(const VolumeRepresentation* in, size3_t dim,
+                                            size3_t offset,
+                                            const VolumeBorders& border = VolumeBorders(),
+                                            bool clampBorderOutsideVolume = true);
 };
 
 namespace detail {
 
 struct IVW_MODULE_BASE_API VolumeRAMSubSetDispatcher {
-    using type = VolumeRAM*;
+    using type = std::shared_ptr<VolumeRAM>;
     template <class T>
-    VolumeRAM* dispatch(const VolumeRepresentation* in, size3_t dim, size3_t offset,
-                        const VolumeBorders& border, bool clampBorderOutsideVolume);
+    std::shared_ptr<VolumeRAM> dispatch(const VolumeRepresentation* in, size3_t dim, size3_t offset,
+                                        const VolumeBorders& border, bool clampBorderOutsideVolume);
 };
 
 template <class DataType>
-VolumeRAM* VolumeRAMSubSetDispatcher::dispatch(const VolumeRepresentation* in, size3_t dim,
-                                               size3_t offset, const VolumeBorders& border,
-                                               bool clampBorderOutsideVolume) {
+std::shared_ptr<VolumeRAM> VolumeRAMSubSetDispatcher::dispatch(const VolumeRepresentation* in,
+                                                               size3_t dim, size3_t offset,
+                                                               const VolumeBorders& border,
+                                                               bool clampBorderOutsideVolume) {
     using T = typename DataType::type;
     using P = typename util::same_extent<T, double>::type;
 
@@ -64,11 +66,10 @@ VolumeRAM* VolumeRAMSubSetDispatcher::dispatch(const VolumeRepresentation* in, s
 
     // determine parameters
     const size3_t dataDims{volume->getDimensions()};
-    const size3_t copyDataDims{static_cast<size3_t>(
-        glm::max(static_cast<ivec3>(dim) -
-                     glm::max(static_cast<ivec3>(offset + dim) - static_cast<ivec3>(dataDims),
-                              ivec3(0)),
-                 ivec3(0)))};
+    const size3_t copyDataDims{static_cast<size3_t>(glm::max(
+        static_cast<ivec3>(dim) -
+            glm::max(static_cast<ivec3>(offset + dim) - static_cast<ivec3>(dataDims), ivec3(0)),
+        ivec3(0)))};
 
     ivec3 newOffset_Dims = static_cast<ivec3>(glm::min(offset, dataDims) - border.llf);
     VolumeBorders trueBorder = VolumeBorders();
@@ -101,8 +102,8 @@ VolumeRAM* VolumeRAMSubSetDispatcher::dispatch(const VolumeRepresentation* in, s
     size_t dataSize =
         copyDimsWithoutBorder.x * static_cast<size_t>(volume->getDataFormat()->getSize());
     // allocate space
-    VolumeRAMPrecision<T>* newVolume =
-        new VolumeRAMPrecision<T>(dim + correctBorder.llf + correctBorder.urb);
+    auto newVolume =
+        std::make_shared<VolumeRAMPrecision<T>>(dim + correctBorder.llf + correctBorder.urb);
 
     const T* src = static_cast<const T*>(volume->getData());
     T* dst = static_cast<T*>(newVolume->getData());

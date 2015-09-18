@@ -33,21 +33,20 @@ namespace inviwo {
 CLBufferSharingMap BufferCLGL::clBufferSharingMap_;
 
 BufferCLGL::BufferCLGL(size_t size, const DataFormatBase* format, BufferType type,
-    BufferUsage usage, std::shared_ptr<BufferObject> data, cl_mem_flags readWriteFlag)
+                       BufferUsage usage, std::shared_ptr<BufferObject> data,
+                       cl_mem_flags readWriteFlag)
     : BufferCLBase()
     , BufferRepresentation(format, type, usage)
     , bufferObject_(data)
     , readWriteFlag_(readWriteFlag)
     , size_(size) {
-    
-    if (data) {       
+    if (data) {
         auto it = BufferCLGL::clBufferSharingMap_.find(data);
 
         if (it == BufferCLGL::clBufferSharingMap_.end()) {
-            clBuffer_ =
-                std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_, data->getId());
-            BufferCLGL::clBufferSharingMap_.insert(
-                BufferSharingPair(data, clBuffer_));
+            clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(),
+                                                       readWriteFlag_, data->getId());
+            BufferCLGL::clBufferSharingMap_.insert(BufferSharingPair(data, clBuffer_));
         } else {
             clBuffer_ = it->second;
         }
@@ -61,14 +60,12 @@ BufferCLGL::BufferCLGL(const BufferCLGL& rhs)
     , bufferObject_(rhs.getBufferGL())
     , readWriteFlag_(rhs.readWriteFlag_)
     , size_(rhs.size_) {
-    
     CLBufferSharingMap::iterator it = BufferCLGL::clBufferSharingMap_.find(bufferObject_);
 
     if (it == BufferCLGL::clBufferSharingMap_.end()) {
         clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                     bufferObject_->getId());
-        BufferCLGL::clBufferSharingMap_.insert(
-            BufferSharingPair(bufferObject_, clBuffer_));
+                                                   bufferObject_->getId());
+        BufferCLGL::clBufferSharingMap_.insert(BufferSharingPair(bufferObject_, clBuffer_));
     } else {
         clBuffer_ = it->second;
     }
@@ -78,7 +75,7 @@ BufferCLGL::BufferCLGL(const BufferCLGL& rhs)
 
 BufferCLGL::~BufferCLGL() {
     CLBufferSharingMap::iterator it = BufferCLGL::clBufferSharingMap_.find(bufferObject_);
-    // Release 
+    // Release
     clBuffer_.reset();
     if (it != BufferCLGL::clBufferSharingMap_.end()) {
         if (it->second.use_count() == 1) {
@@ -89,9 +86,7 @@ BufferCLGL::~BufferCLGL() {
 
 BufferCLGL* BufferCLGL::clone() const { return new BufferCLGL(*this); }
 
-size_t BufferCLGL::getSize() const {
-    return size_;
-}
+size_t BufferCLGL::getSize() const { return size_; }
 
 void BufferCLGL::setSize(size_t size) {
     if (size == size_) {
@@ -105,9 +100,11 @@ void BufferCLGL::setSize(size_t size) {
     bufferObject_->setSize(size * getSizeOfElement());
 }
 
+std::type_index BufferCLGL::getTypeIndex() const { return std::type_index(typeid(BufferCLGL)); }
+
 void BufferCLGL::onBeforeBufferInitialization() {
     const auto it = BufferCLGL::clBufferSharingMap_.find(bufferObject_);
-    // Release 
+    // Release
     clBuffer_.reset();
     if (it != BufferCLGL::clBufferSharingMap_.end()) {
         if (it->second.use_count() == 1) {
@@ -123,9 +120,8 @@ void BufferCLGL::onAfterBufferInitialization() {
         clBuffer_ = it->second;
     } else {
         clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-            bufferObject_->getId());
-        BufferCLGL::clBufferSharingMap_.insert(
-            BufferSharingPair(bufferObject_, clBuffer_));
+                                                   bufferObject_->getId());
+        BufferCLGL::clBufferSharingMap_.insert(BufferSharingPair(bufferObject_, clBuffer_));
     }
 }
 

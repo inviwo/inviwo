@@ -92,6 +92,8 @@ public:
     template <typename T>
     static T periodicPosToIndex(const glm::detail::tvec3<T, glm::defaultp>& posIn,
                                 const glm::detail::tvec3<T, glm::defaultp>& dim);
+
+    virtual std::type_index getTypeIndex() const override final;
 };
 
 template <>

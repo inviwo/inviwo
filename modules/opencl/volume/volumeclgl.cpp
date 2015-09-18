@@ -40,7 +40,8 @@ VolumeCLGL::VolumeCLGL(const DataFormatBase* format, Texture3D* data)
     initialize();
 }
 
-VolumeCLGL::VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format, std::shared_ptr<Texture3D> data)
+VolumeCLGL::VolumeCLGL(const size3_t& dimensions, const DataFormatBase* format,
+                       std::shared_ptr<Texture3D> data)
     : VolumeRepresentation(format), dimensions_(dimensions), texture_(data) {
     initialize();
 }
@@ -57,10 +58,10 @@ void VolumeCLGL::initialize() {
         const auto it = VolumeCLGL::clVolumeSharingMap_.find(texture_);
 
         if (it == VolumeCLGL::clVolumeSharingMap_.end()) {
-            clImage_ = std::make_shared<cl::Image3DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                GL_TEXTURE_3D, 0, texture_->getID());
-            VolumeCLGL::clVolumeSharingMap_.insert(
-                Texture3DCLImageSharingPair(texture_, clImage_));
+            clImage_ =
+                std::make_shared<cl::Image3DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                                GL_TEXTURE_3D, 0, texture_->getID());
+            VolumeCLGL::clVolumeSharingMap_.insert(Texture3DCLImageSharingPair(texture_, clImage_));
         } else {
             clImage_ = it->second;
         }
@@ -102,10 +103,10 @@ void VolumeCLGL::notifyAfterTextureInitialization() {
         clImage_ = it->second;
     } else {
         try {
-            clImage_ = std::make_shared<cl::Image3DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_3D,
-                0, texture_->getID());
-            VolumeCLGL::clVolumeSharingMap_.insert(
-                Texture3DCLImageSharingPair(texture_, clImage_));
+            clImage_ =
+                std::make_shared<cl::Image3DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                                GL_TEXTURE_3D, 0, texture_->getID());
+            VolumeCLGL::clVolumeSharingMap_.insert(Texture3DCLImageSharingPair(texture_, clImage_));
         } catch (cl::Error& err) {
             LogOpenCLError(err.err());
             throw err;
@@ -127,6 +128,8 @@ void VolumeCLGL::releaseGLObject(
     queue.enqueueReleaseGLObjects(&syncImages, syncEvents, event);
 }
 
+std::type_index VolumeCLGL::getTypeIndex() const { return std::type_index(typeid(VolumeCLGL)); }
+
 void VolumeCLGL::setDimensions(size3_t dimensions) {
     if (dimensions == dimensions_) {
         return;
@@ -141,13 +144,9 @@ void VolumeCLGL::setDimensions(size3_t dimensions) {
 
 cl::Image3DGL& VolumeCLGL::getEditable() { return *clImage_; }
 
-const cl::Image3DGL& VolumeCLGL::get() const {
-    return *clImage_;
-}
+const cl::Image3DGL& VolumeCLGL::get() const { return *clImage_; }
 
-std::shared_ptr<Texture3D> VolumeCLGL::getTexture() const {
-    return texture_;
-}
+std::shared_ptr<Texture3D> VolumeCLGL::getTexture() const { return texture_; }
 
 }  // namespace
 

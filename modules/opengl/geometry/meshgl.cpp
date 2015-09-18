@@ -104,5 +104,9 @@ const Mesh* MeshGL::getOwner() const {
 }
 
 
+std::type_index MeshGL::getTypeIndex() const {
+    return std::type_index(typeid(MeshGL));
+}
+
 } // namespace
 

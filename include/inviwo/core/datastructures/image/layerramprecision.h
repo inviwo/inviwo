@@ -79,15 +79,15 @@ private:
  * @param format of layer to create.
  * @return nullptr if no valid format was specified.
  */
-IVW_CORE_API LayerRAM* createLayerRAM(const size2_t& dimensions, LayerType type,
+IVW_CORE_API std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType type,
                                       const DataFormatBase* format);
 
 struct IVW_CORE_API LayerRAMDispatcher {
-    using type = LayerRAM*;
+    using type = std::shared_ptr<LayerRAM>;
     template <class T>
-    LayerRAM* dispatch(const size2_t& dimensions, LayerType type) {
+    std::shared_ptr<LayerRAM> dispatch(const size2_t& dimensions, LayerType type) {
         using F = typename T::type;
-        return new LayerRAMPrecision<F>(dimensions, type);
+        return std::make_shared<LayerRAMPrecision<F>>(dimensions, type);
     }
 };
 

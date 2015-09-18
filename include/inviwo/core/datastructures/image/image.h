@@ -70,7 +70,7 @@ public:
     size2_t getDimensions() const;
 
     /**
-     * Reeize all representation to dimension. This is destructive, the data will not be
+     * Resize all representation to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
      */
     void setDimensions(size2_t dimensions);

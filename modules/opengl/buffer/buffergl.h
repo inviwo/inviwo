@@ -74,6 +74,8 @@ public:
     void enable() const;
     void disable() const;
 
+    virtual std::type_index getTypeIndex() const override final;
+
 protected:
     std::shared_ptr<BufferObject> buffer_;
     mutable BufferObjectArray* bufferArray_;

@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-LayerRAM* createLayerRAM(const size2_t& dimensions, LayerType type, const DataFormatBase* format) {
+std::shared_ptr<LayerRAM> createLayerRAM(const size2_t& dimensions, LayerType type,
+                                         const DataFormatBase* format) {
     LayerRAMDispatcher disp;
     return format->dispatch(disp, dimensions, type);
 }

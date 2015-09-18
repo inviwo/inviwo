@@ -29,7 +29,7 @@
 
 #include <modules/opencl/volume/volumecl.h>
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/util/stdextensions.h> // make_unique is c++14 but works on some compilers
+#include <inviwo/core/util/stdextensions.h>  // make_unique is c++14 but works on some compilers
 
 namespace inviwo {
 
@@ -54,11 +54,12 @@ VolumeCL::VolumeCL(const VolumeCL& rhs)
                                                   glm::size3_t(0), glm::size3_t(dimensions_));
 }
 
-VolumeCL::~VolumeCL() { }
+VolumeCL::~VolumeCL() {}
 
 void VolumeCL::initialize(const void* voxels) {
-    clImage_ = util::make_unique<cl::Image3D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
-                               dimensions_.x, dimensions_.y, dimensions_.z);
+    clImage_ =
+        util::make_unique<cl::Image3D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                       getFormat(), dimensions_.x, dimensions_.y, dimensions_.z);
 
     if (voxels) {
         OpenCL::getPtr()->getQueue().enqueueWriteImage(*clImage_, true, glm::size3_t(0),
@@ -90,9 +91,9 @@ cl::ImageFormat VolumeCL::getFormat() const { return imageFormat_; }
 
 cl::Image3D& VolumeCL::getEditable() { return *clImage_; }
 
-const cl::Image3D& VolumeCL::get() const {
-    return *clImage_;
-}
+const cl::Image3D& VolumeCL::get() const { return *clImage_; }
+
+std::type_index VolumeCL::getTypeIndex() const { return std::type_index(typeid(VolumeCL)); }
 
 }  // namespace
 

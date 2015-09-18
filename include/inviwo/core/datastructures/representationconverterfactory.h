@@ -36,97 +36,42 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/singleton.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <memory>
+#include <mutex>
+#include <warn/pop>
+
 namespace inviwo {
 
 class IVW_CORE_API RepresentationConverterFactory
     : public Singleton<RepresentationConverterFactory> {
 public:
+    using ConverterID = RepresentationConverter::ConverterID;
+    using RepMap = std::unordered_map<ConverterID, RepresentationConverter*>;
+    using PackageMap =
+        std::unordered_multimap<ConverterID, std::unique_ptr<RepresentationConverterPackage>>;
     RepresentationConverterFactory() = default;
     virtual ~RepresentationConverterFactory() = default;
 
+    // This will not assume ownership.
     void registerObject(RepresentationConverter* representationConverter);
 
-    // Get best converter that can convert from the source to T
-    template <typename T>
-    RepresentationConverter* getRepresentationConverter(DataRepresentation* source);
-
-    // Get best converter package that can convert from the source to T
-    template <typename T>
-    RepresentationConverterPackage<T>* getRepresentationConverterPackage(
-        DataRepresentation* source);
-
-    // Get all converters that can convert from the source
-    std::vector<RepresentationConverter*> getRepresentationConvertersFrom(
-        DataRepresentation* source);
-
-    // Get best converter that can convert to T
-    template <typename T>
-    std::vector<RepresentationConverter*> getRepresentationConvertersTo();
+    // Get best converter
+    const RepresentationConverterPackage* getRepresentationConverter(ConverterID);
+    const RepresentationConverterPackage* getRepresentationConverter(std::type_index from,
+                                                                     std::type_index to);
 
 private:
-    std::vector<RepresentationConverter*> representationConverters_;
+    const RepresentationConverterPackage* createConverterPackage(ConverterID id);
+
+    // converters are owned by the Module
+    RepMap converters_;
+
+    // All the converter packages created locally;
+    std::mutex mutex_;
+    PackageMap packages_;
 };
-
-// Get all converters that can convert from the source
-inline std::vector<RepresentationConverter*>
-RepresentationConverterFactory::getRepresentationConvertersFrom(DataRepresentation* source) {
-    std::vector<RepresentationConverter*> srcConverters;
-    for (auto converter : representationConverters_) {
-        if (converter->canConvertFrom(source)) {
-            srcConverters.push_back(converter);
-        }
-    }
-    return srcConverters;
-}
-
-template <typename T>
-std::vector<RepresentationConverter*>
-RepresentationConverterFactory::getRepresentationConvertersTo() {
-    std::vector<RepresentationConverter*> tConverters;
-    for (auto converter : representationConverters_) {
-        if (dynamic_cast<RepresentationConverterType<T>*>(converter)) {
-            tConverters.push_back(converter);
-        }
-    }
-    return tConverters;
-}
-
-template <typename T>
-RepresentationConverter* RepresentationConverterFactory::getRepresentationConverter(
-    DataRepresentation* source) {
-    // TODO: optimize performance, e.g., by using a hash table
-    for (auto converter : representationConverters_) {
-        if (auto converterTyped = dynamic_cast<RepresentationConverterType<T>*>(converter)) {
-            if (converterTyped->canConvertFrom(source)) return converter;
-        }
-    }
-    return nullptr;
-}
-
-// Get best converter package that can convert from the source to T
-
-template <typename T>
-inline RepresentationConverterPackage<T>*
-RepresentationConverterFactory::getRepresentationConverterPackage(DataRepresentation* source) {
-    // TODO: optimize performance, e.g., by using a hash table
-    RepresentationConverterPackage<T>* result = nullptr;
-
-    for (auto converter : representationConverters_) {
-        if (auto package = dynamic_cast<RepresentationConverterPackage<T>*>(converter)) {
-            if (package->canConvertFrom(source)) {
-                if (result) {
-                    result = (package->getNumberOfConverters() < result->getNumberOfConverters()
-                                  ? package
-                                  : result);
-                } else {
-                    result = package;
-                }
-            }
-        }
-    }
-
-    return result;
-}
 
 }  // namespace
 

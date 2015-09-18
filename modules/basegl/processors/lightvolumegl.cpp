@@ -368,7 +368,7 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
         }
 
         outport_.setData(nullptr);
-        VolumeGL* volumeGL = new VolumeGL(volumeDimOut_, format);
+        auto volumeGL = std::make_shared<VolumeGL>(volumeDimOut_, format);
         volumeGL->getTexture()->initialize(nullptr);
         volume_ = std::make_shared<Volume>(volumeGL);
         outport_.setData(volume_);

@@ -57,6 +57,8 @@ public:
     virtual dvec2 getValueAsVec2Double(size_t index) const = 0;
     virtual dvec3 getValueAsVec3Double(size_t index) const = 0;
     virtual dvec4 getValueAsVec4Double(size_t index) const = 0;
+
+    virtual std::type_index getTypeIndex() const override final;
 };
 
 /**
@@ -67,18 +69,18 @@ public:
  * @param format of buffer to create.
  * @return nullptr if no valid format was specified.
  */
-IVW_CORE_API BufferRAM* createBufferRAM(size_t size, const DataFormatBase* format, BufferType type,
-                                        BufferUsage usage);
-    
+IVW_CORE_API std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
+                                                        BufferType type, BufferUsage usage);
+
 template <typename T>
 class BufferRAMPrecision;
 struct BufferRamDispatcher {
-    using type = BufferRAM*;
+    using type = std::shared_ptr<BufferRAM>;
     template <class T>
-    BufferRAM* dispatch(size_t size, const DataFormatBase* format, BufferType type,
-                        BufferUsage usage) {
+    std::shared_ptr<BufferRAM> dispatch(size_t size, const DataFormatBase* format, BufferType type,
+                                        BufferUsage usage) {
         typedef typename T::type F;
-        return new BufferRAMPrecision<F>(size, format, type, usage);
+        return std::make_shared<BufferRAMPrecision<F>>(size, format, type, usage);
     }
 };
 

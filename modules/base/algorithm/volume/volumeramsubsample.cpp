@@ -31,7 +31,7 @@
 
 namespace inviwo {
 
-VolumeRAM* VolumeRAMSubSample::apply(const VolumeRepresentation* in, size3_t factors) {
+std::shared_ptr<VolumeRAM> VolumeRAMSubSample::apply(const VolumeRepresentation* in, size3_t factors) {
     detail::VolumeRAMSubSampleDispatcher disp;
     return in->getDataFormat()->dispatch(disp, in, factors);
 }

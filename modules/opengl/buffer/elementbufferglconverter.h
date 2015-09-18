@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ELEMENT_BUFFERGL_CONVERTER_H
@@ -37,33 +37,24 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API ElementBufferRAM2GLConverter : public RepresentationConverterType<ElementBufferGL> {
-
+class IVW_MODULE_OPENGL_API ElementBufferRAM2GLConverter
+    : public RepresentationConverterType<BufferRAM, ElementBufferGL> {
 public:
-    ElementBufferRAM2GLConverter();
-    virtual ~ElementBufferRAM2GLConverter();
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const BufferRAM*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-class IVW_MODULE_OPENGL_API ElementBufferGL2RAMConverter : public RepresentationConverterType<BufferRAM> {
-
+class IVW_MODULE_OPENGL_API ElementBufferGL2RAMConverter
+    : public RepresentationConverterType<ElementBufferGL, BufferRAM> {
 public:
-    ElementBufferGL2RAMConverter();
-    virtual ~ElementBufferGL2RAMConverter();
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const ElementBufferGL*>(source) != nullptr;
-    }
-
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_ELEMENT_BUFFERGL_CONVERTER_H
+#endif  // IVW_ELEMENT_BUFFERGL_CONVERTER_H

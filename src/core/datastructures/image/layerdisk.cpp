@@ -56,4 +56,8 @@ bool LayerDisk::copyRepresentationsTo(DataRepresentation*) const { return false;
 
 void LayerDisk::updateDataFormat(const DataFormatBase* format) { setDataFormat(format); }
 
+std::type_index LayerDisk::getTypeIndex() const {
+    return std::type_index(typeid(LayerDisk));
+}
+
 }  // namespace

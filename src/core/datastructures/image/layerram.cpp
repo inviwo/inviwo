@@ -49,4 +49,8 @@ bool LayerRAM::copyRepresentationsTo(DataRepresentation* targetLayerRam) const {
     return Canvas::generalLayerWriter_->writeDataToRepresentation(this, targetLayerRam);
 }
 
+std::type_index LayerRAM::getTypeIndex() const {
+    return std::type_index(typeid(LayerRAM));
+}
+
 }  // namespace

@@ -24,26 +24,22 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/buffer/bufferclconverter.h>
 
 namespace inviwo {
 
-BufferRAM2CLConverter::BufferRAM2CLConverter()
-    : RepresentationConverterType<BufferCL>() {
-}
-
-BufferRAM2CLConverter::~BufferRAM2CLConverter() {}
-
-DataRepresentation* BufferRAM2CLConverter::createFrom(const DataRepresentation* source) {
+std::shared_ptr<DataRepresentation> BufferRAM2CLConverter::createFrom(
+    const DataRepresentation* source) const {
     const BufferRAM* bufferRAM = static_cast<const BufferRAM*>(source);
-    BufferCL* bufferCL = new BufferCL(bufferRAM->getSize(), bufferRAM->getDataFormat(), bufferRAM->getBufferType(), bufferRAM->getBufferUsage(),
+    return std::make_shared<BufferCL>(bufferRAM->getSize(), bufferRAM->getDataFormat(),
+                                      bufferRAM->getBufferType(), bufferRAM->getBufferUsage(),
                                       bufferRAM->getData());
-    return bufferCL;
 }
-void BufferRAM2CLConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void BufferRAM2CLConverter::update(const DataRepresentation* source,
+                                   DataRepresentation* destination) const {
     const BufferRAM* src = static_cast<const BufferRAM*>(source);
     BufferCL* dst = static_cast<BufferCL*>(destination);
 
@@ -51,28 +47,23 @@ void BufferRAM2CLConverter::update(const DataRepresentation* source, DataReprese
         dst->setSize(src->getSize());
     }
 
-    dst->upload(src->getData(), src->getSize()*src->getSizeOfElement());
+    dst->upload(src->getData(), src->getSize() * src->getSizeOfElement());
 }
 
-
-
-BufferCL2RAMConverter::BufferCL2RAMConverter()
-    : RepresentationConverterType<BufferRAM>() {
-}
-
-BufferCL2RAMConverter::~BufferCL2RAMConverter() {}
-
-DataRepresentation* BufferCL2RAMConverter::createFrom(const DataRepresentation* source) {
+std::shared_ptr<DataRepresentation> BufferCL2RAMConverter::createFrom(
+    const DataRepresentation* source) const {
     const BufferCL* src = static_cast<const BufferCL*>(source);
-    BufferRAM* dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferType(), src->getBufferUsage());
+    auto dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferType(),
+                               src->getBufferUsage());
     src->download(dst->getData());
     return dst;
 }
 
-void BufferCL2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void BufferCL2RAMConverter::update(const DataRepresentation* source,
+                                   DataRepresentation* destination) const {
     const BufferCL* src = static_cast<const BufferCL*>(source);
     BufferRAM* dst = static_cast<BufferRAM*>(destination);
-    
+
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }
@@ -80,4 +71,4 @@ void BufferCL2RAMConverter::update(const DataRepresentation* source, DataReprese
     src->download(dst->getData());
 }
 
-} // end namespace
+}  // end namespace

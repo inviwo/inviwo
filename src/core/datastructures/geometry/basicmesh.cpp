@@ -63,59 +63,41 @@ BasicMesh::~BasicMesh() {
 }
 
 size_t BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
-    auto posBuf = static_cast<Position3dBuffer*>(attributes_[0]);
-    posBuf->getEditableRepresentation<Position3dBufferRAM>()
-          ->add(pos);
-    static_cast<TexCoord3dBuffer*>(attributes_[1])
-        ->getEditableRepresentation<TexCoord3dBufferRAM>()
-        ->add(texCoord);
-    static_cast<ColorBuffer*>(attributes_[2])->getEditableRepresentation<ColorBufferRAM>()->add(
-        color);
-    static_cast<NormalBuffer*>(attributes_[3])->getEditableRepresentation<NormalBufferRAM>()->add(
-        normal);
-    return posBuf->getSize() - 1;
+    getEditableVerticesRAM()->add(pos);
+    getEditableTexCoordsRAM()->add(texCoord);
+    getEditableColorsRAM()->add(color);
+    getEditableNormalsRAM()->add(normal);
+    return getVertices()->getSize() - 1;
 }
 
 void BasicMesh::setVertex(size_t index, vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
-    static_cast<Position3dBuffer*>(attributes_[0])
-        ->getEditableRepresentation<Position3dBufferRAM>()
-        ->set(index, pos);
-    static_cast<TexCoord3dBuffer*>(attributes_[1])
-        ->getEditableRepresentation<TexCoord3dBufferRAM>()
-        ->set(index, texCoord);
-    static_cast<ColorBuffer*>(attributes_[2])->getEditableRepresentation<ColorBufferRAM>()->set(index,
-        color);
-    static_cast<NormalBuffer*>(attributes_[3])->getEditableRepresentation<NormalBufferRAM>()->set(index,
-        normal);
+    getEditableVerticesRAM()->set(index, pos);
+    getEditableTexCoordsRAM()->set(index, texCoord);
+    getEditableColorsRAM()->set(index, color);
+    getEditableNormalsRAM()->set(index, normal);
 }
 
 void BasicMesh::setVertexPosition(size_t index, vec3 pos) {
-    static_cast<Position3dBuffer*>(attributes_[0])
-        ->getEditableRepresentation<Position3dBufferRAM>()
-        ->set(index, pos);
+    getEditableVerticesRAM()->set(index, pos);
 }
 
 void BasicMesh::setVertexNormal(size_t index, vec3 normal) {
-    static_cast<NormalBuffer*>(attributes_[3])->getEditableRepresentation<NormalBufferRAM>()->set(index,
-        normal);
+    getEditableNormalsRAM()->set(index, normal);
 }
 
 void BasicMesh::setVertexTexCoord(size_t index, vec3 texCoord) {
-    static_cast<TexCoord3dBuffer*>(attributes_[1])
-        ->getEditableRepresentation<TexCoord3dBufferRAM>()
-        ->set(index, texCoord);
+    getEditableTexCoordsRAM()->set(index, texCoord);
 }
 
 void BasicMesh::setVertexColor(size_t index, vec4 color) {
-    static_cast<ColorBuffer*>(attributes_[2])->getEditableRepresentation<ColorBufferRAM>()->set(index,
-        color);
+    getEditableColorsRAM()->set(index, color);
 }
 
 IndexBufferRAM* BasicMesh::addIndexBuffer(GeometryEnums::DrawType dt,
                                           GeometryEnums::ConnectivityType ct) {
     IndexBuffer* indices_ = new IndexBuffer();
     addIndicies(Mesh::AttributesInfo(dt, ct), indices_);
-    return indices_->getEditableRepresentation<IndexBufferRAM>();
+    return static_cast<IndexBufferRAM*>(indices_->getEditableRepresentation<BufferRAM>());
 }
 
 std::string BasicMesh::getDataInfo() const {
@@ -133,30 +115,19 @@ std::string BasicMesh::getDataInfo() const {
 }
 
 void BasicMesh::append(const BasicMesh* mesh) {
-    const Position3dBufferRAM* pos = mesh->getVertices()->getRepresentation<Position3dBufferRAM>();
-    const NormalBufferRAM* norm = mesh->getNormals()->getRepresentation<NormalBufferRAM>();
-    const TexCoord3dBufferRAM* tex = mesh->getTexCoords()->getRepresentation<TexCoord3dBufferRAM>();
-    const ColorBufferRAM* col = mesh->getColors()->getRepresentation<ColorBufferRAM>();
-
     size_t size = attributes_[0]->getSize();
 
-    static_cast<Position3dBuffer*>(attributes_[0])
-        ->getEditableRepresentation<Position3dBufferRAM>()
-        ->append(pos->getDataContainer());
-    static_cast<TexCoord3dBuffer*>(attributes_[1])
-        ->getEditableRepresentation<TexCoord3dBufferRAM>()
-        ->append(tex->getDataContainer());
-    static_cast<ColorBuffer*>(attributes_[2])->getEditableRepresentation<ColorBufferRAM>()->append(
-        col->getDataContainer());
-    static_cast<NormalBuffer*>(attributes_[3])
-        ->getEditableRepresentation<NormalBufferRAM>()
-        ->append(norm->getDataContainer());
+    getEditableVerticesRAM()->append(mesh->getVerticesRAM()->getDataContainer());
+    getEditableTexCoordsRAM()->append(mesh->getTexCoordsRAM()->getDataContainer());
+    getEditableColorsRAM()->append(mesh->getColorsRAM()->getDataContainer());
+    getEditableNormalsRAM()->append(mesh->getNormalsRAM()->getDataContainer());
 
     for (auto buffer : mesh->indexAttributes_) {
         IndexBufferRAM* ind = addIndexBuffer(buffer.first.dt, buffer.first.ct);
 
         const std::vector<unsigned int>* newinds =
-            buffer.second->getRepresentation<IndexBufferRAM>()->getDataContainer();
+            static_cast<const IndexBufferRAM*>(buffer.second->getRepresentation<BufferRAM>())
+            ->getDataContainer();
 
         for (const auto& newind : *newinds) {
             ind->add(static_cast<const unsigned int>(newind + size));
@@ -197,6 +168,36 @@ vec3 BasicMesh::calcnormal(const vec3& r, const vec3& p) {
 
 vec3 BasicMesh::tospherical(const vec2& v) {
     return vec3(std::sin(v.x)*std::cos(v.y), std::sin(v.x)*std::sin(v.y), std::cos(v.x));
+}
+
+const Position3dBufferRAM* BasicMesh::getVerticesRAM() const {
+    return static_cast<const Position3dBufferRAM*>(attributes_[0]->getRepresentation<BufferRAM>());
+}
+const TexCoord3dBufferRAM* BasicMesh::getTexCoordsRAM() const {
+    return static_cast<const TexCoord3dBufferRAM*>(attributes_[1]->getRepresentation<BufferRAM>());
+}
+const ColorBufferRAM* BasicMesh::getColorsRAM() const {
+    return static_cast<const ColorBufferRAM*>(attributes_[2]->getRepresentation<BufferRAM>());
+}
+const NormalBufferRAM* BasicMesh::getNormalsRAM() const {
+    return static_cast<const NormalBufferRAM*>(attributes_[3]->getRepresentation<BufferRAM>());
+}
+
+Position3dBufferRAM* BasicMesh::getEditableVerticesRAM() {
+    return static_cast<Position3dBufferRAM*>(
+        attributes_[0]->getEditableRepresentation<BufferRAM>());
+}
+
+TexCoord3dBufferRAM* BasicMesh::getEditableTexCoordsRAM() {
+    return static_cast<TexCoord3dBufferRAM*>(
+        attributes_[1]->getEditableRepresentation<BufferRAM>());
+}
+
+ColorBufferRAM* BasicMesh::getEditableColorsRAM() {
+    return static_cast<ColorBufferRAM*>(attributes_[2]->getEditableRepresentation<BufferRAM>());
+}
+NormalBufferRAM* BasicMesh::getEditableNormalsRAM() {
+    return static_cast<NormalBufferRAM*>(attributes_[3]->getEditableRepresentation<BufferRAM>());
 }
 
 BasicMesh* BasicMesh::disk(const vec3& center,

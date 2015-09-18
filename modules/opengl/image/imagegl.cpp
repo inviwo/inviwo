@@ -396,6 +396,10 @@ void ImageGL::renderImagePlaneRect() const {
     LGL_ERROR;
 }
 
+std::type_index ImageGL::getTypeIndex() const {
+    return std::type_index(typeid(ImageGL));
+}
+
 GLenum ImageGL::getPickingAttachmentID() const { return pickingAttachmentID_; }
 
 }  // namespace

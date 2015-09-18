@@ -24,33 +24,24 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/image/imagecl.h>
 
 namespace inviwo {
 
-ImageCL::ImageCL()
-    : ImageRepresentation(), layerCL_(nullptr) {}
+ImageCL::ImageCL() : ImageRepresentation(), layerCL_(nullptr) {}
 
-ImageCL::ImageCL(const ImageCL& rhs)
-    : ImageRepresentation(rhs) {}
+ImageCL::ImageCL(const ImageCL& rhs) : ImageRepresentation(rhs) {}
 
-ImageCL::~ImageCL() {
-}
+ImageCL::~ImageCL() {}
 
-ImageCL* ImageCL::clone() const {
-    return new ImageCL(*this);
-}
+ImageCL* ImageCL::clone() const { return new ImageCL(*this); }
 
-LayerCL* ImageCL::getLayerCL() {
-    return layerCL_;
-}
+LayerCL* ImageCL::getLayerCL() { return layerCL_; }
 
-const LayerCL* ImageCL::getLayerCL() const {
-    return layerCL_;
-}
+const LayerCL* ImageCL::getLayerCL() const { return layerCL_; }
 
 bool ImageCL::copyRepresentationsTo(DataRepresentation* targetRep) const {
     ImageCL* targetCL = dynamic_cast<ImageCL*>(targetRep);
@@ -60,10 +51,12 @@ bool ImageCL::copyRepresentationsTo(DataRepresentation* targetRep) const {
     return this->getLayerCL()->copyRepresentationsTo(targetCL->getLayerCL());
 }
 
+std::type_index ImageCL::getTypeIndex() const { return std::type_index(typeid(ImageCL)); }
+
 void ImageCL::update(bool editable) {
-    //TODO: Convert more then just first color layer
+    // TODO: Convert more then just first color layer
     layerCL_ = nullptr;
-    Image *owner = this->getOwner();
+    Image* owner = this->getOwner();
 
     if (editable) {
         layerCL_ = owner->getColorLayer()->getEditableRepresentation<LayerCL>();
@@ -71,13 +64,13 @@ void ImageCL::update(bool editable) {
         layerCL_ = const_cast<LayerCL*>(owner->getColorLayer()->getRepresentation<LayerCL>());
     }
 
-    if(layerCL_->getDataFormat() != getOwner()->getDataFormat()){
+    if (layerCL_->getDataFormat() != getOwner()->getDataFormat()) {
         owner->getColorLayer()->setDataFormat(layerCL_->getDataFormat());
         owner->getColorLayer()->setDimensions(layerCL_->getDimensions());
     }
 }
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -86,4 +79,4 @@ cl_int Kernel::setArg(cl_uint index, const inviwo::ImageCL& value) {
     return setArg(index, value.getLayerCL()->get());
 }
 
-} // namespace cl
+}  // namespace cl

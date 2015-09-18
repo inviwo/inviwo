@@ -110,6 +110,18 @@ protected:
     static vec3 orthvec(const vec3& vec);
     static vec3 calcnormal(const vec3& r, const vec3& p);
     static vec3 tospherical(const vec2& v);
+
+    
+    const Position3dBufferRAM* getVerticesRAM() const;
+    const TexCoord3dBufferRAM* getTexCoordsRAM() const;
+    const ColorBufferRAM* getColorsRAM() const;
+    const NormalBufferRAM* getNormalsRAM() const;
+
+    Position3dBufferRAM* getEditableVerticesRAM();
+    TexCoord3dBufferRAM* getEditableTexCoordsRAM();
+    ColorBufferRAM* getEditableColorsRAM();
+    NormalBufferRAM* getEditableNormalsRAM();
+
 };
 
 } // namespace

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/image/imageclgl.h>
@@ -32,28 +32,17 @@
 
 namespace inviwo {
 
-ImageCLGL::ImageCLGL()
-    : ImageRepresentation(), layerCLGL_(nullptr)
-{}
+ImageCLGL::ImageCLGL() : ImageRepresentation(), layerCLGL_(nullptr) {}
 
-ImageCLGL::ImageCLGL(const ImageCLGL& rhs)
-    : ImageRepresentation(rhs)
-{}
+ImageCLGL::ImageCLGL(const ImageCLGL& rhs) : ImageRepresentation(rhs) {}
 
-ImageCLGL::~ImageCLGL() {
-}
+ImageCLGL::~ImageCLGL() {}
 
-ImageCLGL* ImageCLGL::clone() const {
-    return new ImageCLGL(*this);
-}
+ImageCLGL* ImageCLGL::clone() const { return new ImageCLGL(*this); }
 
-LayerCLGL* ImageCLGL::getLayerCL() {
-    return layerCLGL_;
-}
+LayerCLGL* ImageCLGL::getLayerCL() { return layerCLGL_; }
 
-const LayerCLGL* ImageCLGL::getLayerCL() const {
-    return layerCLGL_;
-}
+const LayerCLGL* ImageCLGL::getLayerCL() const { return layerCLGL_; }
 
 bool ImageCLGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
     ImageCLGL* targetCLGL = dynamic_cast<ImageCLGL*>(targetRep);
@@ -63,20 +52,21 @@ bool ImageCLGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
     return layerCLGL_->copyRepresentationsTo(targetCLGL->getLayerCL());
 }
 
+std::type_index ImageCLGL::getTypeIndex() const { return std::type_index(typeid(ImageCLGL)); }
+
 void ImageCLGL::update(bool editable) {
-    //TODO: Convert more then just first color layer
+    // TODO: Convert more then just first color layer
     layerCLGL_ = nullptr;
-    Image *owner = this->getOwner();
+    Image* owner = this->getOwner();
 
     if (editable) {
         layerCLGL_ = owner->getColorLayer()->getEditableRepresentation<LayerCLGL>();
-    }
-    else {
+    } else {
         layerCLGL_ = const_cast<LayerCLGL*>(owner->getColorLayer()->getRepresentation<LayerCLGL>());
     }
 }
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -85,4 +75,4 @@ cl_int Kernel::setArg(cl_uint index, const inviwo::ImageCLGL& value) {
     return setArg(index, value.getLayerCL()->get());
 }
 
-} // namespace cl
+}  // namespace cl

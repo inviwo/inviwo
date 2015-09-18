@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ELEMENTBUFFERCL_CONVERTER_H
@@ -38,54 +38,24 @@
 
 namespace inviwo {
 
-
-class IVW_MODULE_OPENCL_API ElementBufferRAM2CLConverter : public RepresentationConverterType<ElementBufferCL> {
-
+class IVW_MODULE_OPENCL_API ElementBufferRAM2CLConverter
+    : public RepresentationConverterType<BufferRAM, ElementBufferCL> {
 public:
-    ElementBufferRAM2CLConverter();
-    virtual ~ElementBufferRAM2CLConverter();
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const BufferRAM*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-class IVW_MODULE_OPENCL_API ElementBufferCL2RAMConverter : public RepresentationConverterType<BufferRAM> {
-
+class IVW_MODULE_OPENCL_API ElementBufferCL2RAMConverter
+    : public RepresentationConverterType<ElementBufferCL, BufferRAM> {
 public:
-    ElementBufferCL2RAMConverter();
-    virtual ~ElementBufferCL2RAMConverter();
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const ElementBufferCL*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-class IVW_MODULE_OPENCL_API ElementBufferGL2CLConverter : public RepresentationConverterPackage<ElementBufferCL> {
+}  // namespace inviwo
 
-public:
-    ElementBufferGL2CLConverter() : RepresentationConverterPackage<ElementBufferCL>() {
-        addConverter(new ElementBufferGL2RAMConverter());
-        addConverter(new ElementBufferRAM2CLConverter());
-    };
-    virtual ~ElementBufferGL2CLConverter() {};
-};
-
-class IVW_MODULE_OPENCL_API ElementBufferCL2GLConverter : public RepresentationConverterPackage<BufferGL> {
-
-public:
-    ElementBufferCL2GLConverter() : RepresentationConverterPackage<BufferGL>() {
-        addConverter(new ElementBufferCL2RAMConverter());
-        addConverter(new ElementBufferRAM2GLConverter());
-    };
-    virtual ~ElementBufferCL2GLConverter() {};
-};
-
-
-} // namespace inviwo
-
-#endif // IVW_ELEMENTBUFFERCL_CONVERTER_H
+#endif  // IVW_ELEMENTBUFFERCL_CONVERTER_H

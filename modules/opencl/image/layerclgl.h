@@ -39,7 +39,8 @@
 
 namespace inviwo {
 
-typedef std::pair< std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL> > TextureCLImageSharingPair;
+typedef std::pair<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL> >
+    TextureCLImageSharingPair;
 typedef std::map<std::shared_ptr<Texture>, std::shared_ptr<cl::Image2DGL> > CLTextureSharingMap;
 
 /** \class LayerCLGL
@@ -56,15 +57,15 @@ class IVW_MODULE_OPENCL_API LayerCLGL : public LayerCLBase,
                                         public LayerRepresentation,
                                         public TextureObserver {
 public:
-    LayerCLGL(size2_t dimensions, LayerType type,
-        const DataFormatBase* format, std::shared_ptr<Texture2D> data);
+    LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
+              std::shared_ptr<Texture2D> data);
     virtual ~LayerCLGL();
     LayerCLGL(const LayerCLGL& rhs);
     virtual LayerCLGL* clone() const;
 
     void initialize(Texture2D* texture);
     void deinitialize();
-    
+
     virtual void setDimensions(size2_t dimensions) override;
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
 
@@ -93,12 +94,11 @@ public:
         std::vector<cl::Memory> syncLayers(1, *clImage_);
         OpenCL::getPtr()->getQueue().enqueueReleaseGLObjects(&syncLayers, syncEvents, event);
     }
-
-
+    virtual std::type_index getTypeIndex() const override final;
 protected:
     static CLTextureSharingMap clImageSharingMap_;
-    std::shared_ptr<Texture2D> texture_; ///< Shared with LayerGL
-    std::shared_ptr<cl::Image2DGL> clImage_; ///< Potentially shared with other LayerCLGL
+    std::shared_ptr<Texture2D> texture_;      ///< Shared with LayerGL
+    std::shared_ptr<cl::Image2DGL> clImage_;  ///< Potentially shared with other LayerCLGL
 };
 
 }  // namespace

@@ -48,6 +48,8 @@ public:
     virtual VolumeDisk* clone() const;
     virtual ~VolumeDisk();
 
+    virtual std::type_index getTypeIndex() const override final;
+
     virtual void setDimensions(size3_t dimensions);
     virtual const size3_t& getDimensions() const;
 private:

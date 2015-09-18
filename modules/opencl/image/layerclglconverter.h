@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_LAYERCLGLCONVERTER_H
@@ -39,85 +39,42 @@
 #include <modules/opencl/image/layerclgl.h>
 
 namespace inviwo {
-
-class IVW_MODULE_OPENCL_API LayerRAM2CLGLConverter : public RepresentationConverterPackage<LayerCLGL> {
-
+class IVW_MODULE_OPENCL_API LayerCLGL2RAMConverter
+    : public RepresentationConverterType<LayerCLGL, LayerRAM> {
 public:
-    LayerRAM2CLGLConverter();
-    virtual ~LayerRAM2CLGLConverter() {};
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-
-
-class IVW_MODULE_OPENCL_API LayerCLGL2RAMConverter : public RepresentationConverterType<LayerRAM> {
-
+class IVW_MODULE_OPENCL_API LayerCLGL2GLConverter
+    : public RepresentationConverterType<LayerCLGL, LayerGL> {
 public:
-    LayerCLGL2RAMConverter();
-    virtual ~LayerCLGL2RAMConverter() {};
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerCLGL*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-class IVW_MODULE_OPENCL_API LayerCLGL2GLConverter : public RepresentationConverterType<LayerGL> {
-
+class IVW_MODULE_OPENCL_API LayerCLGL2CLConverter
+    : public RepresentationConverterType<LayerCLGL, LayerCL> {
 public:
-    LayerCLGL2GLConverter();
-    virtual ~LayerCLGL2GLConverter() {};
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerCLGL*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-class IVW_MODULE_OPENCL_API LayerCLGL2CLConverter : public RepresentationConverterType<LayerCL> {
-
+class IVW_MODULE_OPENCL_API LayerGL2CLGLConverter
+    : public RepresentationConverterType<LayerGL, LayerCLGL> {
 public:
-    LayerCLGL2CLConverter() : RepresentationConverterType<LayerCL>() {};
-    virtual ~LayerCLGL2CLConverter() {};
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerCLGL*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-class IVW_MODULE_OPENCL_API LayerGL2CLGLConverter : public RepresentationConverterType<LayerCLGL> {
+}  // namespace
 
-public:
-    LayerGL2CLGLConverter() : RepresentationConverterType<LayerCLGL>() {};
-    virtual ~LayerGL2CLGLConverter() {};
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerGL*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
-};
-
-class IVW_MODULE_OPENCL_API LayerCL2CLGLConverter : public RepresentationConverterPackage<LayerCLGL> {
-public:
-    LayerCL2CLGLConverter();
-    virtual ~LayerCL2CLGLConverter() {};
-};
-
-class IVW_MODULE_OPENCL_API LayerDisk2CLGLConverter : public RepresentationConverterPackage<LayerCLGL> {
-
-public:
-    LayerDisk2CLGLConverter() : RepresentationConverterPackage<LayerCLGL>() {
-        addConverter(new LayerDisk2RAMConverter());
-        addConverter(new LayerRAM2GLConverter());
-        addConverter(new LayerGL2CLGLConverter());
-    };
-    virtual ~LayerDisk2CLGLConverter() {};
-};
-
-} // namespace
-
-#endif // IVW_LAYERCLGLCONVERTER_H
+#endif  // IVW_LAYERCLGLCONVERTER_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGERAMCONVERTER_H
@@ -38,28 +38,28 @@
 
 namespace inviwo {
 
-class IVW_CORE_API LayerDisk2RAMConverter : public RepresentationConverterType<LayerRAM> {
+class IVW_CORE_API LayerDisk2RAMConverter
+    : public RepresentationConverterType<LayerDisk, LayerRAM> {
 public:
     LayerDisk2RAMConverter();
     virtual ~LayerDisk2RAMConverter();
 
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const LayerDisk*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
 struct LayerDisk2RAMDispatcher {
-    using type = LayerRAM*;
+    using type = std::shared_ptr<LayerRAM>;
     template <class T>
-    LayerRAM* dispatch(const LayerDisk* source, void* data) {
+    std::shared_ptr<LayerRAM> dispatch(const LayerDisk* source, void* data) {
         using F = typename T::type;
-        return new LayerRAMPrecision<F>(static_cast<F*>(data), source->getDimensions(),
-                                        source->getLayerType());
+        return std::make_shared<LayerRAMPrecision<F>>(
+            static_cast<F*>(data), source->getDimensions(), source->getLayerType());
     }
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_IMAGERAMCONVERTER_H
+#endif  // IVW_IMAGERAMCONVERTER_H

@@ -47,6 +47,8 @@ MeshRAM& MeshRAM::operator=(const MeshRAM& that) {
 
 MeshRAM::~MeshRAM() {}
 
+std::type_index MeshRAM::getTypeIndex() const { return std::type_index(typeid(MeshRAM)); }
+
 MeshRAM* MeshRAM::clone() const { return new MeshRAM(*this); }
 
 void MeshRAM::update(bool editable) {

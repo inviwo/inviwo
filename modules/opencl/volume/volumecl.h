@@ -64,6 +64,8 @@ public:
     virtual cl::Image3D& getEditable();
     virtual const cl::Image3D& get() const;
 
+    virtual std::type_index getTypeIndex() const override final;
+
 protected:
     void initialize(const void* voxels);
     size3_t dimensions_;

@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <typeindex>
 
 namespace inviwo {
 
@@ -52,13 +53,18 @@ public:
     std::string getDataFormatString() const;
     DataFormatEnums::Id getDataFormatId() const;
 
+    virtual std::type_index getTypeIndex() const = 0;
+
     virtual void setOwner(BaseData*);
     virtual BaseData* getOwner();
     virtual const BaseData* getOwner() const;
 
+    bool isValid();
+    void setValid(bool valid);
+
 protected:
     void setDataFormat(const DataFormatBase* format);
-
+    bool isValid_;
     const DataFormatBase* dataFormatBase_;
     BaseData *owner_;
 };

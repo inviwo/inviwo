@@ -77,6 +77,7 @@ public:
 
     void updateExistingLayers() const;
     void renderImagePlaneRect() const;
+    virtual std::type_index getTypeIndex() const override final;
 
 protected:
     virtual void update(bool editable);

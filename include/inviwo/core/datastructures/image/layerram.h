@@ -69,6 +69,8 @@ public:
     static inline size_t posToIndex(const size2_t& pos, const size2_t& dim) {
         return pos.x + (pos.y * dim.x);
     }
+
+    virtual std::type_index getTypeIndex() const override final;
 };
 
 }  // namespace

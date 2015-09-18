@@ -63,6 +63,8 @@ public:
     virtual cl::Image2D& getEditable() {    return *clImage_;   }
     virtual const cl::Image2D& get() const {    return *clImage_;   }
 
+    virtual std::type_index getTypeIndex() const override final;
+
 protected:
     cl::ImageFormat layerFormat_;
     std::unique_ptr<cl::Image2D> clImage_; 

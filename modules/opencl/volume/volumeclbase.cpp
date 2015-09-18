@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/volume/volumeclbase.h>
@@ -34,21 +34,23 @@
 
 namespace inviwo {
 
-VolumeCLBase::VolumeCLBase()
-    : volumeStruct_(sizeof(VolumeParameters), DataUINT8::get())
-{
-    volumeStruct_.addRepresentation(new BufferRAMPrecision<glm::u8>(sizeof(VolumeParameters), DataUINT8::get()));
-    ivwAssert(volumeStruct_.getSize() == 512, "VolumeParameters must have a size that is power of two, currently " << volumeStruct_.getSize())
+VolumeCLBase::VolumeCLBase() : volumeStruct_(sizeof(VolumeParameters), DataUINT8::get()) {
+    volumeStruct_.addRepresentation(
+        std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters), DataUINT8::get()));
+    ivwAssert(volumeStruct_.getSize() == 512,
+              "VolumeParameters must have a size that is power of two, currently "
+                  << volumeStruct_.getSize())
 }
 
-VolumeCLBase::VolumeCLBase(const VolumeCLBase& rhs): volumeStruct_(sizeof(VolumeParameters), DataUINT8::get()) {
-    volumeStruct_.addRepresentation(new BufferRAMPrecision<glm::u8>(sizeof(VolumeParameters), DataUINT8::get()));
+VolumeCLBase::VolumeCLBase(const VolumeCLBase& rhs)
+    : volumeStruct_(sizeof(VolumeParameters), DataUINT8::get()) {
+    volumeStruct_.addRepresentation(
+        std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters), DataUINT8::get()));
 }
 
-VolumeCLBase::~VolumeCLBase() { }
+VolumeCLBase::~VolumeCLBase() {}
 
-vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const
-{
+vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
     // Note: The basically the same code is used in VolumeCLGL and VolumeGL as well.
     // Changes here should also be done there.
     // Compute data scaling based on volume data range
@@ -66,34 +68,35 @@ vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const
     double invRange = 1.0 / (dataRange.y - dataRange.x);
     double defaultToDataRange = (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
     double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
-        (defaultRange.dataRange.y - defaultRange.dataRange.x);
+                                 (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
     switch (getCLFormats()->getCLFormat(volume->getDataFormat()->getId()).normalization) {
-    case CLFormats::NONE:
-        scalingFactor = invRange;
-        offset = -dataRange.x;
-        signedScalingFactor = scalingFactor;
-        signedOffset = offset;
-        break;
-    case CLFormats::NORMALIZED:
-        scalingFactor = defaultToDataRange;
-        offset = -defaultToDataOffset;
-        signedScalingFactor = scalingFactor;
-        signedOffset = offset;
-        break;
-    case CLFormats::SIGN_NORMALIZED:
-        scalingFactor = 0.5 * defaultToDataRange;
-        offset = 1.0 - 2 * defaultToDataOffset;
-        signedScalingFactor = defaultToDataRange;
-        signedOffset = -defaultToDataOffset;
-        break;
+        case CLFormats::NONE:
+            scalingFactor = invRange;
+            offset = -dataRange.x;
+            signedScalingFactor = scalingFactor;
+            signedOffset = offset;
+            break;
+        case CLFormats::NORMALIZED:
+            scalingFactor = defaultToDataRange;
+            offset = -defaultToDataOffset;
+            signedScalingFactor = scalingFactor;
+            signedOffset = offset;
+            break;
+        case CLFormats::SIGN_NORMALIZED:
+            scalingFactor = 0.5 * defaultToDataRange;
+            offset = 1.0 - 2 * defaultToDataOffset;
+            signedScalingFactor = defaultToDataRange;
+            signedOffset = -defaultToDataOffset;
+            break;
     }
     return vec2(offset, scalingFactor);
 }
 
 const Buffer& VolumeCLBase::getVolumeStruct(const Volume* volume) const {
     // Update data before returning it
-    VolumeParameters* volumeStruct = static_cast<VolumeParameters*>(const_cast<Buffer&>(volumeStruct_).getEditableRepresentation<BufferRAM>()->getData());
+    VolumeParameters* volumeStruct = static_cast<VolumeParameters*>(
+        const_cast<Buffer&>(volumeStruct_).getEditableRepresentation<BufferRAM>()->getData());
 
     volumeStruct->modelToWorld = volume->getCoordinateTransformer().getModelToWorldMatrix();
     volumeStruct->worldToModel = volume->getCoordinateTransformer().getWorldToModelMatrix();
@@ -103,11 +106,13 @@ const Buffer& VolumeCLBase::getVolumeStruct(const Volume* volume) const {
     volumeStruct->indexToTexture = volume->getCoordinateTransformer().getIndexToTextureMatrix();
     float gradientSpacing = volume->getWorldSpaceGradientSpacing();
     // Scale the world matrix by the gradient spacing and the transform it to texture space.
-    // Note that since we are dealing with real values we can multiply the scalar after the transform as well
-    volumeStruct->textureSpaceGradientSpacing = glm::scale(volumeStruct->worldToTexture, vec3(gradientSpacing));
+    // Note that since we are dealing with real values we can multiply the scalar after the
+    // transform as well
+    volumeStruct->textureSpaceGradientSpacing =
+        glm::scale(volumeStruct->worldToTexture, vec3(gradientSpacing));
     volumeStruct->worldSpaceGradientSampleSpacing = gradientSpacing;
 
-    // Compute scaling and offset for datatypes that will be sampled 
+    // Compute scaling and offset for datatypes that will be sampled
     // (for instance 12-bit data)
     // Note: Basically the same code is used in VolumeGL as well.
     // Changes here should also be done there.
@@ -118,7 +123,6 @@ const Buffer& VolumeCLBase::getVolumeStruct(const Volume* volume) const {
     double typescale = getCLFormats()->getCLFormat(volume->getDataFormat()->getId()).scaling;
     defaultRange.dataRange *= typescale;
 
-   
     double formatScalingFactor = 1.0;
     double signedFormatScalingFactor = 1.0;
     double formatOffset = 0.0;
@@ -127,29 +131,28 @@ const Buffer& VolumeCLBase::getVolumeStruct(const Volume* volume) const {
     double invRange = 1.0 / (dataRange.y - dataRange.x);
     double defaultToDataRange = (defaultRange.dataRange.y - defaultRange.dataRange.x) * invRange;
     double defaultToDataOffset = (dataRange.x - defaultRange.dataRange.x) /
-        (defaultRange.dataRange.y - defaultRange.dataRange.x);
+                                 (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
     switch (getCLFormats()->getCLFormat(volume->getDataFormat()->getId()).normalization) {
-    case CLFormats::NONE:
-        formatScalingFactor = invRange;
-        formatOffset = -dataRange.x;
-        signedFormatScalingFactor = formatScalingFactor;
-        signedFormatOffset = formatOffset;
-        break;
-    case CLFormats::NORMALIZED:
-        formatScalingFactor = defaultToDataRange;
-        formatOffset = -defaultToDataOffset;
-        signedFormatScalingFactor = formatScalingFactor;
-        signedFormatOffset = formatOffset;
-        break;
-    case CLFormats::SIGN_NORMALIZED:
-        formatScalingFactor = 0.5 * defaultToDataRange;
-        formatOffset = 1.0 - 2 * defaultToDataOffset;
-        signedFormatScalingFactor = defaultToDataRange;
-        signedFormatOffset = -defaultToDataOffset;
-        break;
+        case CLFormats::NONE:
+            formatScalingFactor = invRange;
+            formatOffset = -dataRange.x;
+            signedFormatScalingFactor = formatScalingFactor;
+            signedFormatOffset = formatOffset;
+            break;
+        case CLFormats::NORMALIZED:
+            formatScalingFactor = defaultToDataRange;
+            formatOffset = -defaultToDataOffset;
+            signedFormatScalingFactor = formatScalingFactor;
+            signedFormatOffset = formatOffset;
+            break;
+        case CLFormats::SIGN_NORMALIZED:
+            formatScalingFactor = 0.5 * defaultToDataRange;
+            formatOffset = 1.0 - 2 * defaultToDataOffset;
+            signedFormatScalingFactor = defaultToDataRange;
+            signedFormatOffset = -defaultToDataOffset;
+            break;
     }
-
 
     volumeStruct->formatScaling = static_cast<float>(formatScalingFactor);
     volumeStruct->formatOffset = static_cast<float>(formatOffset);
@@ -159,7 +162,7 @@ const Buffer& VolumeCLBase::getVolumeStruct(const Volume* volume) const {
     return volumeStruct_;
 }
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -168,4 +171,4 @@ cl_int Kernel::setArg(cl_uint index, const inviwo::VolumeCLBase& value) {
     return setArg(index, value.get());
 }
 
-} // namespace cl
+}  // namespace cl

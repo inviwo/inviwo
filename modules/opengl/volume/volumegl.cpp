@@ -79,4 +79,8 @@ void VolumeGL::setDimensions(size3_t dimensions) {
     volumeTexture_->uploadAndResize(nullptr, dimensions_);
 }
 
+std::type_index VolumeGL::getTypeIndex() const {
+    return std::type_index(typeid(VolumeGL));
+}
+
 }  // namespace

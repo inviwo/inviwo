@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGECLGL_H
@@ -38,8 +38,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENCL_API ImageCLGL: public ImageRepresentation {
-
+class IVW_MODULE_OPENCL_API ImageCLGL : public ImageRepresentation {
 public:
     ImageCLGL();
     ImageCLGL(const ImageCLGL& other);
@@ -50,6 +49,7 @@ public:
     const LayerCLGL* getLayerCL() const;
 
     virtual bool copyRepresentationsTo(DataRepresentation*) const override;
+    virtual std::type_index getTypeIndex() const override final;
 
 protected:
     virtual void update(bool);
@@ -57,7 +57,7 @@ protected:
     LayerCLGL* layerCLGL_;
 };
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -67,6 +67,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::ImageCLGL& value);
 
-} // namespace cl
+}  // namespace cl
 
-#endif // IVW_IMAGECLGL_H
+#endif  // IVW_IMAGECLGL_H

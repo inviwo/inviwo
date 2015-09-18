@@ -56,21 +56,22 @@ Canvas::Canvas(uvec2 dimensions)
         shared_ = false;
         Position2dBuffer* verticesBuffer = new Position2dBuffer();
         Position2dBufferRAM* verticesBufferRAM =
-            verticesBuffer->getEditableRepresentation<Position2dBufferRAM>();
+            dynamic_cast<Position2dBufferRAM*>(verticesBuffer->getEditableRepresentation<BufferRAM>());
         verticesBufferRAM->add(vec2(-1.0f, -1.0f));
         verticesBufferRAM->add(vec2(1.0f, -1.0f));
         verticesBufferRAM->add(vec2(-1.0f, 1.0f));
         verticesBufferRAM->add(vec2(1.0f, 1.0f));
         TexCoord2dBuffer* texCoordsBuffer = new TexCoord2dBuffer();
         TexCoord2dBufferRAM* texCoordsBufferRAM =
-            texCoordsBuffer->getEditableRepresentation<TexCoord2dBufferRAM>();
+            dynamic_cast<TexCoord2dBufferRAM*>(texCoordsBuffer->getEditableRepresentation<BufferRAM>());
         texCoordsBufferRAM->add(vec2(0.0f, 0.0f));
         texCoordsBufferRAM->add(vec2(1.0f, 0.0f));
         texCoordsBufferRAM->add(vec2(0.0f, 1.0f));
         texCoordsBufferRAM->add(vec2(1.0f, 1.0f));
 
         IndexBuffer* indices_ = new IndexBuffer();
-        IndexBufferRAM* indexBufferRAM = indices_->getEditableRepresentation<IndexBufferRAM>();
+        IndexBufferRAM* indexBufferRAM = 
+            dynamic_cast<IndexBufferRAM*>(indices_->getEditableRepresentation<BufferRAM>());
         indexBufferRAM->add(0);
         indexBufferRAM->add(1);
         indexBufferRAM->add(2);

@@ -55,6 +55,10 @@ bool ImageDisk::copyRepresentationsTo(DataRepresentation*) const {
     return false;
 }
 
+std::type_index ImageDisk::getTypeIndex() const {
+    return std::type_index(typeid(ImageDisk));
+}
+
 void ImageDisk::update(bool editable) {
     Image *owner = this->getOwner();
     if (editable) {

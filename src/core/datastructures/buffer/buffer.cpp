@@ -65,29 +65,13 @@ void Buffer::setSize(size_t size) {
 
         if (lastValidRepresentation_) {
             // Resize last valid representation 
-            static_cast<BufferRepresentation*>(lastValidRepresentation_)->setSize(size);
-
-            // and remove the other ones
-            util::erase_remove_if(representations_, [this](DataRepresentation* repr) {
-                if (repr != lastValidRepresentation_) {
-                    delete repr;
-                    return true;
-                } else {
-                    return false;
-                }
-            });
-
-            setAllRepresentationsAsInvalid();
-            // Set the remaining representation as valid.
-            // Solves issue where the buffer will try to update 
-            // the remaining representation with itself when getRepresentation of the same type is called
-            setRepresentationAsValid(0);
+            static_cast<BufferRepresentation*>(lastValidRepresentation_.get())->setSize(size);
+            removeOtherRepresentations(lastValidRepresentation_);
         } 
-        
     }
 }
 
-DataRepresentation* Buffer::createDefaultRepresentation() {
+std::shared_ptr<DataRepresentation> Buffer::createDefaultRepresentation() const {
     return createBufferRAM(getSize(), dataFormatBase_, type_, usage_);
 }
 
@@ -95,7 +79,7 @@ size_t Buffer::getSize() const {
     // We need to update the size if a representation has changed size
     if (lastValidRepresentation_)
         const_cast<Buffer*>(this)->size_ =
-            static_cast<const BufferRepresentation*>(lastValidRepresentation_)->getSize();
+            static_cast<const BufferRepresentation*>(lastValidRepresentation_.get())->getSize();
 
     return size_;
 }

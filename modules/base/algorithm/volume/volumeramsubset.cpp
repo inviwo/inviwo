@@ -31,9 +31,10 @@
 
 namespace inviwo {
 
-VolumeRAM* VolumeRAMSubSet::apply(const VolumeRepresentation* in, size3_t dim, size3_t offset,
-                                  const VolumeBorders& border /*= VolumeBorders()*/,
-                                  bool clampBorderOutsideVolume /*= true*/) {
+std::shared_ptr<VolumeRAM> VolumeRAMSubSet::apply(const VolumeRepresentation* in, size3_t dim,
+                                                  size3_t offset,
+                                                  const VolumeBorders& border /*= VolumeBorders()*/,
+                                                  bool clampBorderOutsideVolume /*= true*/) {
     detail::VolumeRAMSubSetDispatcher disp;
     return in->getDataFormat()->dispatch(disp, in, dim, offset, border, clampBorderOutsideVolume);
 }

@@ -29,7 +29,7 @@
 
 #include <modules/opencl/image/layercl.h>
 #include <modules/opencl/image/layerclresizer.h>
-#include <inviwo/core/util/stdextensions.h> // make_unique is c++14 but works on some compilers
+#include <inviwo/core/util/stdextensions.h>  // make_unique is c++14 but works on some compilers
 
 namespace inviwo {
 
@@ -45,7 +45,7 @@ LayerCL::LayerCL(const LayerCL& rhs) : LayerRepresentation(rhs), layerFormat_(rh
                                                   glm::size3_t(0), glm::size3_t(dimensions_, 1));
 }
 
-LayerCL::~LayerCL() { }
+LayerCL::~LayerCL() {}
 
 void LayerCL::initialize(const void* texels) {
     if (texels != nullptr) {
@@ -62,28 +62,29 @@ void LayerCL::initialize(const void* texels) {
         // glm::size3_t(dimensions_, 1), 0, 0, mappedMem);
         // OpenCL::getPtr()->getQueue().enqueueUnmapMemObject(pinnedMem, mappedMem);
         // This should also use pinned memory...
-        clImage_ =
-            util::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(),
-                            CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR,
-                            getFormat(), static_cast<size_t>(dimensions_.x),
-                            static_cast<size_t>(dimensions_.y), 0, const_cast<void*>(texels));
+        clImage_ = util::make_unique<cl::Image2D>(
+            OpenCL::getPtr()->getContext(),
+            CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR | CL_MEM_ALLOC_HOST_PTR, getFormat(),
+            static_cast<size_t>(dimensions_.x), static_cast<size_t>(dimensions_.y), 0,
+            const_cast<void*>(texels));
         // Alternatively first allocate memory on device and then transfer
         // layer2D_ = new cl::Layer2D(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
         // getFormat(), dimensions_.x, dimensions_.y);
         // OpenCL::getPtr()->getQueue().enqueueWriteLayer(*layer2D_, true, glm::size3_t(0),
         // glm::size3_t(dimensions_, 1), 0, 0, texels);
     } else {
-        clImage_ =
-            util::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, getFormat(),
-                            static_cast<size_t>(dimensions_.x), static_cast<size_t>(dimensions_.y));
+        clImage_ = util::make_unique<cl::Image2D>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                                  getFormat(), static_cast<size_t>(dimensions_.x),
+                                                  static_cast<size_t>(dimensions_.y));
     }
 }
 
 LayerCL* LayerCL::clone() const { return new LayerCL(*this); }
 
 void LayerCL::upload(const void* data) {
-    OpenCL::getPtr()->getQueue().enqueueWriteImage(
-        *clImage_, true, glm::size3_t(0), glm::size3_t(dimensions_, 1), 0, 0, const_cast<void*>(data));
+    OpenCL::getPtr()->getQueue().enqueueWriteImage(*clImage_, true, glm::size3_t(0),
+                                                   glm::size3_t(dimensions_, 1), 0, 0,
+                                                   const_cast<void*>(data));
 }
 
 void LayerCL::download(void* data) const {
@@ -99,6 +100,8 @@ bool LayerCL::copyRepresentationsTo(DataRepresentation* target) const {
     LayerCLResizer::resize(*clImage_, (targetCL->get()), targetCL->getDimensions());
     return true;
 }
+
+std::type_index LayerCL::getTypeIndex() const { return std::type_index(typeid(LayerCL)); }
 
 void LayerCL::setDimensions(size2_t dimensions) {
     if (dimensions == dimensions_) {

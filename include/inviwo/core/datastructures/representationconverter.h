@@ -36,54 +36,6 @@
 
 namespace inviwo {
 
-class DataRepresentation;
-
-class IVW_CORE_API RepresentationConverter {
-public:
-    RepresentationConverter() = default;
-    virtual ~RepresentationConverter() = default;
-
-    /**
-     * Checks if it is possible to convert from the data representation.
-     * @param source is the DataRepresentation to test for conversion possibility.
-     * @return boolean True if possible, false otherwise.
-     */
-    virtual bool canConvertFrom(const DataRepresentation* source) const = 0;
-    virtual bool canConvertTo(const DataRepresentation* destination) const = 0;
-
-    virtual bool isConverterReverse(RepresentationConverter*);
-
-    virtual DataRepresentation* createFrom(const DataRepresentation* source) = 0;
-    virtual void update(const DataRepresentation* source, DataRepresentation* destination) = 0;
-};
-
-template <typename TO>
-class RepresentationConverterType : public RepresentationConverter {
-public:
-    RepresentationConverterType() = default;
-    virtual ~RepresentationConverterType() = default;
-    virtual bool canConvertTo(const DataRepresentation* destination) const override;
-};
-
-template <typename T>
-class RepresentationConverterPackage : public RepresentationConverter {
-public:
-    RepresentationConverterPackage() = default;
-    virtual ~RepresentationConverterPackage();
-    virtual bool canConvertFrom(const DataRepresentation* source) const override;
-    virtual bool canConvertTo(const DataRepresentation* destination) const override;
-    virtual DataRepresentation* createFrom(const DataRepresentation* source) override;
-    virtual void update(const DataRepresentation* source, DataRepresentation* destination) override;
-
-    void addConverter(RepresentationConverter* converter);
-    size_t getNumberOfConverters();
-
-    const std::vector<RepresentationConverter*>& getConverters() const;
-
-private:
-    std::vector<RepresentationConverter*> converters_;
-};
-
 class IVW_CORE_API ConverterException : public Exception {
 public:
     ConverterException(const std::string& message = "",
@@ -92,66 +44,45 @@ public:
     virtual ~ConverterException() throw() {}
 };
 
-template <typename TO>
-bool RepresentationConverterType<TO>::canConvertTo(const DataRepresentation* destination) const {
-    return dynamic_cast<const TO*>(destination) != nullptr;
-}
+class DataRepresentation;
 
-template <typename T>
-const std::vector<RepresentationConverter*>& RepresentationConverterPackage<T>::getConverters()
+class IVW_CORE_API RepresentationConverter {
+public:
+    RepresentationConverter() = default;
+    virtual ~RepresentationConverter() = default;
+    using ConverterID = std::pair<std::type_index, std::type_index>;
+    virtual ConverterID getConverterID() const = 0;
+
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const = 0;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const = 0;
+};
+
+template <typename From, typename To>
+class RepresentationConverterType : public RepresentationConverter {
+public:
+    virtual ConverterID getConverterID() const override;
+};
+
+class IVW_CORE_API RepresentationConverterPackage {
+public:
+    using ConverterID = std::pair<std::type_index, std::type_index>;
+
+    size_t steps() const;
+    ConverterID getConverterID() const;
+
+    void addConverter(const RepresentationConverter* converter);
+    const std::vector<const RepresentationConverter*>& getConverters() const;
+
+private:
+    std::vector<const RepresentationConverter*> converters_;
+};
+
+template <typename From, typename To>
+RepresentationConverter::ConverterID inviwo::RepresentationConverterType<From, To>::getConverterID()
     const {
-    return converters_;
-}
-
-template <typename T>
-size_t RepresentationConverterPackage<T>::getNumberOfConverters() {
-    return converters_.size();
-}
-
-template <typename T>
-void RepresentationConverterPackage<T>::addConverter(RepresentationConverter* converter) {
-    converters_.push_back(converter);
-}
-
-template <typename T>
-void RepresentationConverterPackage<T>::update(const DataRepresentation* source,
-                                               DataRepresentation* destination) {
-    for (auto converter : converters_) {
-        if (converter->canConvertFrom(source)) converter->update(source, destination);
-    }
-}
-
-template <typename T>
-DataRepresentation* RepresentationConverterPackage<T>::createFrom(
-    const DataRepresentation* source) {
-    for (auto converter : converters_) {
-        if (converter->canConvertFrom(source)) return converter->createFrom(source);
-    }
-
-    return nullptr;
-}
-
-template <typename T>
-bool RepresentationConverterPackage<T>::canConvertTo(const DataRepresentation* destination) const {
-    for (auto converter : converters_) {
-        if (converter->canConvertTo(destination)) return true;
-    }
-
-    return false;
-}
-
-template <typename T>
-bool RepresentationConverterPackage<T>::canConvertFrom(const DataRepresentation* source) const {
-    for (auto converter : converters_) {
-        if (converter->canConvertFrom(source)) return true;
-    }
-
-    return false;
-}
-
-template <typename T>
-RepresentationConverterPackage<T>::~RepresentationConverterPackage() {
-    for (auto converter : converters_) delete converter;
+    return ConverterID(typeid(From), typeid(To));
 }
 
 }  // namespace

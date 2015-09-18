@@ -56,10 +56,6 @@ public:
     virtual Buffer* clone() const;
     virtual ~Buffer();
 
-    void resizeBufferRepresentations(Buffer* targetBuffer, size_t targetSize);
-
-    size_t getSize() const;
-
     /**
      * Set the number of elements in the buffer. This is destructive, the data will not be
      * preserved.
@@ -67,6 +63,7 @@ public:
      * Last valid representation will remain valid after changing the size.
      */
     void setSize(size_t size);
+    size_t getSize() const;
 
     size_t getSizeInBytes();
     BufferType getBufferType() const { return type_; }
@@ -75,7 +72,7 @@ public:
     static const std::string CLASS_IDENTIFIER;
 
 protected:
-    virtual DataRepresentation* createDefaultRepresentation();
+    virtual std::shared_ptr<DataRepresentation> createDefaultRepresentation() const override;
 
 private:
     size_t size_;

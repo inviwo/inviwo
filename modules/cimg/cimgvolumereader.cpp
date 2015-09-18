@@ -65,7 +65,7 @@ Volume* CImgVolumeReader::readMetaData(std::string filePath) {
 
     Volume* volume = new Volume();
 
-    VolumeDisk* volumeDisk = new VolumeDisk(filePath);
+    auto volumeDisk = std::make_shared<VolumeDisk>(filePath);
     volumeDisk->setDataReader(this->clone());
 
     volume->addRepresentation(volumeDisk);

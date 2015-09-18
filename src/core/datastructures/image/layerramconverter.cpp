@@ -29,10 +29,10 @@
 
 #include <inviwo/core/datastructures/image/layerramconverter.h>
 
-
 namespace inviwo {
 
-LayerDisk2RAMConverter::LayerDisk2RAMConverter() : RepresentationConverterType<LayerRAM>() {}
+LayerDisk2RAMConverter::LayerDisk2RAMConverter()
+    : RepresentationConverterType<LayerDisk, LayerRAM>() {}
 
 LayerDisk2RAMConverter::~LayerDisk2RAMConverter() {}
 
@@ -45,20 +45,20 @@ LayerDisk2RAMConverter::~LayerDisk2RAMConverter() {}
  * @return the imageRAM representation of the file. Returns nullptr if source is not a
  * LayerDisk object.
  **/
-DataRepresentation* LayerDisk2RAMConverter::createFrom(const DataRepresentation* source) {
-    const LayerDisk* layerDisk = static_cast<const LayerDisk*>(source);
-    
-    // This has the side effect of setting the data format of layerdisk
+std::shared_ptr<DataRepresentation> LayerDisk2RAMConverter::createFrom(const DataRepresentation* source) const {
+    auto layerDisk = static_cast<const LayerDisk*>(source);
+
+    // This has the side effect of setting the data format of layer disk
     void* data = layerDisk->readData();
-    
+
     LayerDisk2RAMDispatcher disp;
     return source->getDataFormat()->dispatch(disp, layerDisk, data);
 }
 
 void LayerDisk2RAMConverter::update(const DataRepresentation* source,
-                                    DataRepresentation* destination) {
-    const LayerDisk* layerSrc = static_cast<const LayerDisk*>(source);
-    LayerRAM* layerDst = static_cast<LayerRAM*>(destination);
+                                    DataRepresentation* destination) const {
+    auto layerSrc = static_cast<const LayerDisk*>(source);
+    auto layerDst = static_cast<LayerRAM*>(destination);
 
     if (layerSrc->getDimensions() != layerDst->getDimensions())
         layerDst->setDimensions(layerSrc->getDimensions());

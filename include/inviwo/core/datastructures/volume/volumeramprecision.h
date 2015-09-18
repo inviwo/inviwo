@@ -99,15 +99,15 @@ private:
  * @param format of volume to create.
  * @return nullptr if no valid format was specified.
  */
-IVW_CORE_API VolumeRAM* createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format,
+IVW_CORE_API std::shared_ptr<VolumeRAM> createVolumeRAM(const size3_t& dimensions, const DataFormatBase* format,
                                         void* dataPtr = nullptr);
 
 struct VolumeRamDispatcher {
-    using type = VolumeRAM*;
+    using type = std::shared_ptr<VolumeRAM>;
     template <class T>
-    VolumeRAM* dispatch(void* dataPtr, const size3_t& dimensions) {
+    std::shared_ptr<VolumeRAM> dispatch(void* dataPtr, const size3_t& dimensions) {
         typedef typename T::type F;
-        return new VolumeRAMPrecision<F>(static_cast<F*>(dataPtr), dimensions);
+        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(dataPtr), dimensions);
     }
 };
 

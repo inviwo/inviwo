@@ -38,19 +38,19 @@ namespace inviwo {
 
 class IVW_MODULE_BASE_API VolumeRAMSubSample {
 public:
-    static VolumeRAM* apply(const VolumeRepresentation* in, size3_t factors);
+    static std::shared_ptr<VolumeRAM> apply(const VolumeRepresentation* in, size3_t factors);
 };
 
 namespace detail {
 
 struct IVW_MODULE_BASE_API VolumeRAMSubSampleDispatcher {
-    using type = VolumeRAM*;
+    using type = std::shared_ptr<VolumeRAM>;
     template <class T>
-    VolumeRAM* dispatch(const VolumeRepresentation* in, size3_t factors);
+    std::shared_ptr<VolumeRAM> dispatch(const VolumeRepresentation* in, size3_t factors);
 };
 
 template <class DataType>
-VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in, size3_t f) {
+std::shared_ptr<VolumeRAM> VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in, size3_t f) {
     using T = typename DataType::type;
     using P = typename util::same_extent<T, double>::type;
 
@@ -62,7 +62,7 @@ VolumeRAM* VolumeRAMSubSampleDispatcher::dispatch(const VolumeRepresentation* in
     const size3_t newDims{dataDims / f};
 
     // allocate space
-    VolumeRAMPrecision<T>* newVolume = new VolumeRAMPrecision<T>(newDims);
+    auto newVolume = std::make_shared<VolumeRAMPrecision<T>>(newDims);
 
     // get data pointers
     const T* src = static_cast<const T*>(volume->getData());

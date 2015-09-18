@@ -33,24 +33,24 @@
 namespace inviwo {
 
 MeshDisk2RAMConverter::MeshDisk2RAMConverter()
-    : RepresentationConverterType<MeshRAM>() {}
+    : RepresentationConverterType<MeshDisk, MeshRAM>() {}
 
 MeshDisk2RAMConverter::~MeshDisk2RAMConverter() {}
 
-DataRepresentation* MeshDisk2RAMConverter::createFrom(const DataRepresentation* source) {
-    const MeshDisk* meshdisk = dynamic_cast<const MeshDisk*>(source);
+std::shared_ptr<DataRepresentation> MeshDisk2RAMConverter::createFrom(const DataRepresentation* source) const {
+    auto meshdisk = static_cast<const MeshDisk*>(source);
 
     if (meshdisk) {
-        return static_cast<MeshRAM*>(meshdisk->readData());
+        return std::shared_ptr<DataRepresentation>(static_cast<MeshRAM*>(meshdisk->readData()));
     }
 
     return nullptr;
 }
 
 void MeshDisk2RAMConverter::update(const DataRepresentation* source,
-                                       DataRepresentation* destination) {
-    const MeshDisk* meshdisk = dynamic_cast<const MeshDisk*>(source);
-    MeshRAM* meshram = dynamic_cast<MeshRAM*>(destination);
+                                       DataRepresentation* destination) const {
+    auto meshdisk = static_cast<const MeshDisk*>(source);
+    auto meshram = static_cast<MeshRAM*>(destination);
 
     if (meshdisk && meshram) {
         meshdisk->readDataInto(meshram);

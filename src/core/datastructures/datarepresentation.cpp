@@ -32,14 +32,15 @@
 
 namespace inviwo {
 
-DataRepresentation::DataRepresentation() : dataFormatBase_(DataUINT8::get()), owner_(nullptr) {}
+DataRepresentation::DataRepresentation() : isValid_(true), dataFormatBase_(DataUINT8::get()), owner_(nullptr) {}
 DataRepresentation::DataRepresentation(const DataFormatBase* format)
-    : dataFormatBase_(format), owner_(nullptr) {}
+    : isValid_(true), dataFormatBase_(format), owner_(nullptr) {}
 DataRepresentation::DataRepresentation(const DataRepresentation& rhs)
-    : dataFormatBase_(rhs.dataFormatBase_), owner_(rhs.owner_) {}
+    : isValid_(rhs.isValid_), dataFormatBase_(rhs.dataFormatBase_), owner_(rhs.owner_) {}
 
 DataRepresentation& DataRepresentation::operator=(const DataRepresentation& that) {
     if (this != &that) {
+        isValid_ = that.isValid_;
         dataFormatBase_ = that.dataFormatBase_;
         owner_ = that.owner_;
     }
@@ -77,5 +78,13 @@ const BaseData* DataRepresentation::getOwner() const {
 }
 
 
+
+bool DataRepresentation::isValid() {
+    return isValid_;
+}
+
+void DataRepresentation::setValid(bool valid) {
+    isValid_ = valid;
+}
 
 } // namespace

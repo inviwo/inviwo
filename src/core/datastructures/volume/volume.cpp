@@ -39,12 +39,11 @@ Volume::Volume(size3_t dimensions, const DataFormatBase* format)
 Volume::Volume(const Volume& rhs)
     : Data(rhs), StructuredGridEntity<3>(rhs), dataMap_(rhs.dataMap_) {}
 
-Volume::Volume(VolumeRepresentation* in)
+Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
     : Data(in->getDataFormat())
     , StructuredGridEntity<3>(in->getDimensions())
     , dataMap_(in->getDataFormat()) {
     addRepresentation(in);
-    in->setOwner(this);
 }
 
 Volume& Volume::operator=(const Volume& that) {
@@ -104,35 +103,22 @@ std::string Volume::getDataInfo() const {
     return ss.str();
 }
 
-size3_t Volume::getDimensions() const { 
+size3_t Volume::getDimensions() const {
     if (hasRepresentations() && lastValidRepresentation_) {
-        size3_t dim = static_cast<VolumeRepresentation*>(lastValidRepresentation_)->getDimensions();
+        size3_t dim =
+            static_cast<VolumeRepresentation*>(lastValidRepresentation_.get())->getDimensions();
         return dim;
     }
     return StructuredGridEntity<3>::getDimensions();
 }
 
-void Volume::setDimensions(const size3_t& dim) { 
-    StructuredGridEntity<3>::setDimensions(dim); 
+void Volume::setDimensions(const size3_t& dim) {
+    StructuredGridEntity<3>::setDimensions(dim);
 
     if (lastValidRepresentation_) {
         // Resize last valid representation
-        static_cast<VolumeRepresentation*>(lastValidRepresentation_)->setDimensions(dim);
-
-        // and remove the other ones
-        util::erase_remove_if(representations_, [this](DataRepresentation* repr) {
-            if (repr != lastValidRepresentation_) {
-                delete repr;
-                return true;
-            } else {
-                return false;
-            }
-        });
-        setAllRepresentationsAsInvalid();
-        // Set the remaining representation as valid.
-        // Solves issue where the volume will try to update 
-        // the remaining representation with itself when getRepresentation of the same type is called
-        setRepresentationAsValid(0);
+        static_cast<VolumeRepresentation*>(lastValidRepresentation_.get())->setDimensions(dim);
+        removeOtherRepresentations(lastValidRepresentation_);
     }
 }
 
@@ -154,10 +140,8 @@ void Volume::setWorldMatrix(const mat4& mat) {
     SpatialEntity<3>::setWorldMatrix(Matrix<4, float>(mat));
 }
 
-DataRepresentation* Volume::createDefaultRepresentation() {
-    VolumeDisk* volDisk = new VolumeDisk(getDimensions(), getDataFormat());
-    volDisk->setOwner(this);
-    return volDisk;
+std::shared_ptr<DataRepresentation> Volume::createDefaultRepresentation() const {
+    return std::make_shared<VolumeDisk>(getDimensions(), getDataFormat());
 }
 
 float Volume::getWorldSpaceGradientSpacing() const {
@@ -182,9 +166,9 @@ float Volume::getWorldSpaceGradientSpacing() const {
     distanceToSide[1] = glm::distance(voxelSpaceBasis[0], xOntoZ);
     distanceToSide[2] = glm::distance(voxelSpaceBasis[1], yOntoZ);
 
-    // From the center of the voxel we can go half of the minumum distance without going outside
+    // From the center of the voxel we can go half of the minimum distance without going outside
     float minimumDistance = 0.5f*std::min(distanceToSide[0], std::min(distanceToSide[1], distanceToSide[2]));
-    // Return the minumum distance we can travel along each basis
+    // Return the minimum distance we can travel along each basis
     return minimumDistance;
 }
 

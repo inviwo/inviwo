@@ -90,6 +90,7 @@ public:
     void releaseGLObject(std::vector<cl::Event>* syncEvents = nullptr, cl::Event* event = nullptr,
                          const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue()) const;
 
+    virtual std::type_index getTypeIndex() const override final;
 protected:
     static CLTexture3DSharingMap clVolumeSharingMap_;
     void initialize();

@@ -36,6 +36,9 @@
 
 namespace inviwo {
 
+// Inspiration from http://www.krazer.com/?p=109
+// https://github.com/caseymcc/TestOpenCL
+
 class IVW_MODULE_OPENGLQT_API HiddenCanvasQt : public CanvasQt {
 public:
     explicit HiddenCanvasQt(QGLParent *parent = nullptr, uvec2 dim = uvec2(256, 256));

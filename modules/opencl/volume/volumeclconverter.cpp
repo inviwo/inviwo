@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/volume/volumeclconverter.h>
@@ -33,52 +33,43 @@
 
 namespace inviwo {
 
-VolumeRAM2CLConverter::VolumeRAM2CLConverter()
-    : RepresentationConverterType<VolumeCL>()
-{}
-
-DataRepresentation* VolumeRAM2CLConverter::createFrom(const DataRepresentation* source) {
-    DataRepresentation* destination = 0;
+std::shared_ptr<DataRepresentation> VolumeRAM2CLConverter::createFrom(
+    const DataRepresentation* source) const {
     const VolumeRAM* volumeRAM = static_cast<const VolumeRAM*>(source);
     size3_t dimensions = volumeRAM->getDimensions();
     const void* data = volumeRAM->getData();
-    destination = new VolumeCL(dimensions, volumeRAM->getDataFormat(), data);
-    return destination;
+    return std::make_shared<VolumeCL>(dimensions, volumeRAM->getDataFormat(), data);
 }
 
-void VolumeRAM2CLConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void VolumeRAM2CLConverter::update(const DataRepresentation* source,
+                                   DataRepresentation* destination) const {
     const VolumeRAM* volumeSrc = static_cast<const VolumeRAM*>(source);
     VolumeCL* volumeDst = static_cast<VolumeCL*>(destination);
 
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
-
     volumeDst->upload(volumeSrc->getData());
 }
 
-VolumeCL2RAMConverter::VolumeCL2RAMConverter()
-    : RepresentationConverterType<VolumeRAM>()
-{}
-
-
-DataRepresentation* VolumeCL2RAMConverter::createFrom(const DataRepresentation* source) {
-    DataRepresentation* destination = 0;
+std::shared_ptr<DataRepresentation> VolumeCL2RAMConverter::createFrom(
+    const DataRepresentation* source) const {
     const VolumeCL* volumeCL = static_cast<const VolumeCL*>(source);
     size3_t dimensions = volumeCL->getDimensions();
-    destination = createVolumeRAM(dimensions, volumeCL->getDataFormat());
+    auto destination = createVolumeRAM(dimensions, volumeCL->getDataFormat());
 
     if (destination) {
-        VolumeRAM* volumeRAM = static_cast<VolumeRAM*>(destination);
-        volumeCL->download(volumeRAM->getData());
-        //const cl::CommandQueue& queue = OpenCL::getInstance()->getQueue();
-        //queue.enqueueReadImage(volumeCL->getVolume(), true, glm::size3_t(0), glm::size3_t(dimension), 0, 0, volumeRAM->getData());
+        volumeCL->download(destination->getData());
+        // const cl::CommandQueue& queue = OpenCL::getInstance()->getQueue();
+        // queue.enqueueReadImage(volumeCL->getVolume(), true, glm::size3_t(0),
+        // glm::size3_t(dimension), 0, 0, volumeRAM->getData());
     }
 
     return destination;
 }
 
-void VolumeCL2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void VolumeCL2RAMConverter::update(const DataRepresentation* source,
+                                   DataRepresentation* destination) const {
     const VolumeCL* volumeSrc = static_cast<const VolumeCL*>(source);
     VolumeRAM* volumeDst = static_cast<VolumeRAM*>(destination);
 
@@ -88,8 +79,7 @@ void VolumeCL2RAMConverter::update(const DataRepresentation* source, DataReprese
 
     volumeSrc->download(volumeDst->getData());
 
-    if (volumeDst->hasHistograms())
-        volumeDst->getHistograms()->setValid(false);
+    if (volumeDst->hasHistograms()) volumeDst->getHistograms()->setValid(false);
 }
 
-} // namespace
+}  // namespace

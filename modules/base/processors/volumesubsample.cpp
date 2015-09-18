@@ -62,8 +62,7 @@ void VolumeSubsample::process() {
         if (waitForCompletion_.get()) {
             auto data = inport_.getData();
             auto vol = data->getRepresentation<VolumeRAM>();
-            auto volume =
-                std::make_shared<Volume>(VolumeRAMSubSample::apply(vol, factors));
+            auto volume = std::make_shared<Volume>(VolumeRAMSubSample::apply(vol, factors));
             volume->copyMetaDataFrom(*data);
             volume->dataMap_ = data->dataMap_;
             volume->setModelMatrix(data->getModelMatrix());

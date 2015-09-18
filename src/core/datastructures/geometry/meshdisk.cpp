@@ -47,6 +47,10 @@ MeshDisk& MeshDisk::operator=(const MeshDisk& that) {
 
 MeshDisk* MeshDisk::clone() const { return new MeshDisk(*this); }
 
+std::type_index MeshDisk::getTypeIndex() const {
+    return std::type_index(typeid(MeshDisk));
+}
+
 void MeshDisk::update(bool editable) {}
 
 }  // namespace

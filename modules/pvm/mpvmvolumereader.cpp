@@ -139,7 +139,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     }
 
     // Create RAM volume
-    VolumeRAM* mvolRAM = createVolumeRAM(mdim, mformat);
+    auto mvolRAM = createVolumeRAM(mdim, mformat);
     unsigned char* dataPtr = static_cast<unsigned char*>(mvolRAM->getData());
 
     std::vector<const unsigned char*> volumesDataPtr;

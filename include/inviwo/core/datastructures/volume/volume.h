@@ -46,7 +46,7 @@ public:
     Volume(size3_t dimensions = size3_t(128, 128, 128),
            const DataFormatBase* format = DataUINT8::get());
     Volume(const Volume&);
-    Volume(VolumeRepresentation*);
+    Volume(std::shared_ptr<VolumeRepresentation>);
     Volume& operator=(const Volume& that);
     virtual Volume* clone() const;
     virtual ~Volume();
@@ -106,7 +106,7 @@ public:
 
 
 protected:
-    virtual DataRepresentation* createDefaultRepresentation();
+    virtual std::shared_ptr<DataRepresentation> createDefaultRepresentation() const override;
 };
 
 template <typename Kind>

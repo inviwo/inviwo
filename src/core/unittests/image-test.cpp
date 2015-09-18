@@ -52,7 +52,7 @@ TEST(ImageTests,ImageLoadWhite) {
     std::string imgFile = IMG_WHITE;
     ASSERT_TRUE(filesystem::fileExists(imgFile));
 
-    LayerDisk* disk = new LayerDisk(imgFile);
+    auto disk = std::make_shared<LayerDisk>(imgFile);
     ASSERT_TRUE(disk != 0);
 
     std::string ext = filesystem::getFileExtension(imgFile);
@@ -100,7 +100,7 @@ TEST(ImageTests, ImageLoadRGB) {
     std::string imgFile = IMG_RGB;
     ASSERT_TRUE(filesystem::fileExists(imgFile));
 
-    LayerDisk* disk = new LayerDisk(imgFile);
+    auto disk = std::make_shared<LayerDisk>(imgFile);
     ASSERT_TRUE(disk != 0);
 
     std::string ext = filesystem::getFileExtension(imgFile);
@@ -147,7 +147,7 @@ TEST(ImageTests, ImageLoadRange) {
     std::string imgFile = IMG_RANGE;
     ASSERT_TRUE(filesystem::fileExists(imgFile));
 
-    LayerDisk* disk = new LayerDisk(imgFile);
+    auto disk = std::make_shared<LayerDisk>(imgFile);
     ASSERT_TRUE(disk != 0);
 
     std::string ext = filesystem::getFileExtension(imgFile);
@@ -184,7 +184,7 @@ TEST(ImageTests, ImageResize) {
     std::string imgFile = IMG_RGB;
     ASSERT_TRUE(filesystem::fileExists(imgFile));
 
-    LayerDisk* disk = new LayerDisk(imgFile);
+    auto disk = std::make_shared<LayerDisk>(imgFile);
     ASSERT_TRUE(disk != 0);
 
     std::string ext = filesystem::getFileExtension(imgFile);

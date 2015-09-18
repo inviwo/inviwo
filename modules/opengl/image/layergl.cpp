@@ -93,6 +93,10 @@ bool LayerGL::copyRepresentationsTo(DataRepresentation* targetLayerGL) const {
     return false;
 }
 
+std::type_index LayerGL::getTypeIndex() const {
+    return std::type_index(typeid(LayerGL));
+}
+
 void LayerGL::setDimensions(size2_t dimensions) {
     dimensions_ = dimensions;
 

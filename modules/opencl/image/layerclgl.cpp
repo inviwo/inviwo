@@ -36,17 +36,17 @@ namespace inviwo {
 CLTextureSharingMap LayerCLGL::clImageSharingMap_;
 
 LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
-    std::shared_ptr<Texture2D> data)
+                     std::shared_ptr<Texture2D> data)
     : LayerRepresentation(dimensions, type, format), texture_(data) {
     if (data) {
         initialize(data.get());
         CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
 
         if (it == LayerCLGL::clImageSharingMap_.end()) {
-            clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                GL_TEXTURE_2D, 0, texture_->getID());
-            LayerCLGL::clImageSharingMap_.insert(
-                TextureCLImageSharingPair(texture_, clImage_));
+            clImage_ =
+                std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
+                                                GL_TEXTURE_2D, 0, texture_->getID());
+            LayerCLGL::clImageSharingMap_.insert(TextureCLImageSharingPair(texture_, clImage_));
         } else {
             clImage_ = it->second;
         }
@@ -56,27 +56,24 @@ LayerCLGL::LayerCLGL(size2_t dimensions, LayerType type, const DataFormatBase* f
 }
 
 LayerCLGL::LayerCLGL(const LayerCLGL& rhs)
-    : LayerRepresentation(rhs),
-    texture_(rhs.texture_->clone()) {
+    : LayerRepresentation(rhs), texture_(rhs.texture_->clone()) {
     initialize(texture_.get());
 }
 
-LayerCLGL::~LayerCLGL() {
-    deinitialize();
-}
+LayerCLGL::~LayerCLGL() { deinitialize(); }
 
 void LayerCLGL::initialize(Texture2D* texture) {
     ivwAssert(texture != 0, "Cannot initialize with null OpenGL texture");
 
-    //const auto it = std::find_if(LayerCLGL::clImageSharingMap_.begin(), LayerCLGL::clImageSharingMap_.end(), 
+    // const auto it = std::find_if(LayerCLGL::clImageSharingMap_.begin(),
+    // LayerCLGL::clImageSharingMap_.end(),
     //    [texture](const TextureCLImageSharingPair& o) { return  o.first.get() == texture; });
     CLTextureSharingMap::iterator it = LayerCLGL::clImageSharingMap_.find(texture_);
 
     if (it == LayerCLGL::clImageSharingMap_.end()) {
-        clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                                     GL_TEXTURE_2D, 0, texture->getID());
-        LayerCLGL::clImageSharingMap_.insert(
-            TextureCLImageSharingPair(texture_, clImage_));
+        clImage_ = std::make_shared<cl::Image2DGL>(
+            OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0, texture->getID());
+        LayerCLGL::clImageSharingMap_.insert(TextureCLImageSharingPair(texture_, clImage_));
     } else {
         clImage_ = it->second;
     }
@@ -87,7 +84,7 @@ void LayerCLGL::initialize(Texture2D* texture) {
 void LayerCLGL::deinitialize() {
     // Delete OpenCL image before texture
     const auto it = LayerCLGL::clImageSharingMap_.find(texture_);
-     // Release reference
+    // Release reference
     clImage_.reset();
     if (it != LayerCLGL::clImageSharingMap_.end()) {
         if (it->second.use_count() == 1) {
@@ -137,8 +134,6 @@ void LayerCLGL::notifyBeforeTextureInitialization() {
             LayerCLGL::clImageSharingMap_.erase(it);
         }
     }
-
-    
 }
 
 void LayerCLGL::notifyAfterTextureInitialization() {
@@ -149,10 +144,10 @@ void LayerCLGL::notifyAfterTextureInitialization() {
     } else {
         if (glm::all(glm::greaterThan(texture_->getDimensions(), uvec2(0)))) {
             try {
-                clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(), CL_MEM_READ_WRITE,
-                    GL_TEXTURE_2D, 0, texture_->getID());
-                LayerCLGL::clImageSharingMap_.insert(
-                    TextureCLImageSharingPair(texture_, clImage_));
+                clImage_ = std::make_shared<cl::Image2DGL>(OpenCL::getPtr()->getContext(),
+                                                           CL_MEM_READ_WRITE, GL_TEXTURE_2D, 0,
+                                                           texture_->getID());
+                LayerCLGL::clImageSharingMap_.insert(TextureCLImageSharingPair(texture_, clImage_));
             } catch (cl::Error& err) {
                 LogOpenCLError(err.err());
                 throw err;
@@ -160,6 +155,8 @@ void LayerCLGL::notifyAfterTextureInitialization() {
         }
     }
 }
+
+std::type_index LayerCLGL::getTypeIndex() const { return std::type_index(typeid(LayerCLGL)); }
 
 }  // namespace
 

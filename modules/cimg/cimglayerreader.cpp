@@ -77,7 +77,7 @@ Layer* CImgLayerReader::readMetaData(std::string filePath) {
 
     Layer* layer = new Layer();
 
-    LayerDisk* layerDisk = new LayerDisk(filePath);
+    auto layerDisk = std::make_shared<LayerDisk>(filePath);
     layerDisk->setDataReader(this->clone());
 
     layer->addRepresentation(layerDisk);

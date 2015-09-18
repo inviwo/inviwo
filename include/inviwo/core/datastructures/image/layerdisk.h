@@ -58,6 +58,7 @@ public:
      *
      */
     void updateDataFormat(const DataFormatBase* format);
+    virtual std::type_index getTypeIndex() const override final;
 };
 
 }  // namespace

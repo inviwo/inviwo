@@ -46,6 +46,7 @@ public:
     MeshDisk& operator=(const MeshDisk& that);
     virtual ~MeshDisk(){}
     virtual MeshDisk* clone() const;
+    virtual std::type_index getTypeIndex() const override final;
 
 protected:
     virtual void update(bool editable);

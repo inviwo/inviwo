@@ -194,7 +194,7 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
     volume->setDataFormat(format);
 
     // Create RAM volume s all data has already is in memory
-    VolumeRAM* volRAM = createVolumeRAM(dim, format, data);
+    auto volRAM = createVolumeRAM(dim, format, data);
     volume->addRepresentation(volRAM);
 
     return volume;

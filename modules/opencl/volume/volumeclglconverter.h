@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VOLUMECLGLCONVERTER_H
@@ -41,84 +41,42 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENCL_API VolumeRAM2CLGLConverter : public RepresentationConverterPackage<VolumeCLGL> {
-
+class IVW_MODULE_OPENCL_API VolumeCLGL2RAMConverter
+    : public RepresentationConverterType<VolumeCLGL, VolumeRAM> {
 public:
-    VolumeRAM2CLGLConverter();
-    virtual ~VolumeRAM2CLGLConverter() {};
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-
-
-class IVW_MODULE_OPENCL_API VolumeCLGL2RAMConverter : public RepresentationConverterType<VolumeRAM> {
-
+class IVW_MODULE_OPENCL_API VolumeGL2CLGLConverter
+    : public RepresentationConverterType<VolumeGL, VolumeCLGL> {
 public:
-    VolumeCLGL2RAMConverter();
-    virtual ~VolumeCLGL2RAMConverter() {};
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeCLGL*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-class IVW_MODULE_OPENCL_API VolumeGL2CLGLConverter : public RepresentationConverterType<VolumeCLGL> {
-
+class IVW_MODULE_OPENCL_API VolumeCLGL2CLConverter
+    : public RepresentationConverterType<VolumeCLGL, VolumeCL> {
 public:
-    VolumeGL2CLGLConverter() : RepresentationConverterType<VolumeCLGL>() {};
-    virtual ~VolumeGL2CLGLConverter() {};
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeGL*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-class IVW_MODULE_OPENCL_API VolumeCLGL2CLConverter : public RepresentationConverterType<VolumeCL> {
+class IVW_MODULE_OPENCL_API VolumeCLGL2GLConverter
+    : public RepresentationConverterType<VolumeCLGL, VolumeGL> {
 public:
-    VolumeCLGL2CLConverter() : RepresentationConverterType<VolumeCL>() {};
-    virtual ~VolumeCLGL2CLConverter() {};
-
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeCLGL*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        const DataRepresentation* source) const override;
+    virtual void update(const DataRepresentation* source,
+                        DataRepresentation* destination) const override;
 };
 
-class IVW_MODULE_OPENCL_API VolumeCLGL2GLConverter : public RepresentationConverterType<VolumeGL> {
-public:
-    VolumeCLGL2GLConverter() : RepresentationConverterType<VolumeGL>() {};
-    virtual ~VolumeCLGL2GLConverter() {};
+}  // namespace
 
-    inline bool canConvertFrom(const DataRepresentation* source) const {
-        return dynamic_cast<const VolumeCLGL*>(source) != nullptr;
-    }
-    DataRepresentation* createFrom(const DataRepresentation* source);
-    void update(const DataRepresentation* source, DataRepresentation* destination);
-};
-
-class IVW_MODULE_OPENCL_API VolumeCL2CLGLConverter : public RepresentationConverterPackage<VolumeCLGL> {
-public:
-    VolumeCL2CLGLConverter();
-    virtual ~VolumeCL2CLGLConverter() {};
-};
-
-class IVW_MODULE_OPENCL_API VolumeDisk2CLGLConverter : public RepresentationConverterPackage<VolumeCLGL> {
-
-public:
-    VolumeDisk2CLGLConverter() : RepresentationConverterPackage<VolumeCLGL>() {
-        addConverter(new VolumeDisk2RAMConverter());
-        addConverter(new VolumeRAM2GLConverter());
-        addConverter(new VolumeGL2CLGLConverter());
-    };
-    virtual ~VolumeDisk2CLGLConverter() {};
-};
-
-
-
-} // namespace
-
-#endif // IVW_VOLUMECLGLCONVERTER_H
+#endif  // IVW_VOLUMECLGLCONVERTER_H

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/volume/volumeclconverter.h>
@@ -35,30 +35,17 @@
 
 namespace inviwo {
 
-VolumeRAM2CLGLConverter::VolumeRAM2CLGLConverter()
-    : RepresentationConverterPackage<VolumeCLGL>()
-{
-    addConverter(new VolumeRAM2GLConverter());
-    addConverter(new VolumeGL2CLGLConverter());
-}
-
-VolumeCLGL2RAMConverter::VolumeCLGL2RAMConverter()
-    : RepresentationConverterType<VolumeRAM>()
-{
-}
-
-
-DataRepresentation* VolumeCLGL2RAMConverter::createFrom(const DataRepresentation* source) {
-    DataRepresentation* destination = 0;
+std::shared_ptr<DataRepresentation> VolumeCLGL2RAMConverter::createFrom(
+    const DataRepresentation* source) const {
     const VolumeCLGL* volumeCLGL = static_cast<const VolumeCLGL*>(source);
     const size3_t dimensions{volumeCLGL->getDimensions()};
-    destination = createVolumeRAM(dimensions, volumeCLGL->getDataFormat());
+    auto destination = createVolumeRAM(dimensions, volumeCLGL->getDataFormat());
 
     if (destination) {
-        VolumeRAM* volumeRAM = static_cast<VolumeRAM*>(destination);
-        volumeCLGL->getTexture()->download(volumeRAM->getData());
-        //const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue();
-        //queue.enqueueReadVolume(volumeCL->get(), true, glm::size3_t(0), glm::size3_t(dimensions, 1), 0, 0, volumeRAM->getData());
+        volumeCLGL->getTexture()->download(destination->getData());
+        // const cl::CommandQueue& queue = OpenCL::getPtr()->getQueue();
+        // queue.enqueueReadVolume(volumeCL->get(), true, glm::size3_t(0), glm::size3_t(dimensions,
+        // 1), 0, 0, volumeRAM->getData());
     } else {
         LogError("Invalid conversion or not implemented");
     }
@@ -66,7 +53,8 @@ DataRepresentation* VolumeCLGL2RAMConverter::createFrom(const DataRepresentation
     return destination;
 }
 
-void VolumeCLGL2RAMConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void VolumeCLGL2RAMConverter::update(const DataRepresentation* source,
+                                     DataRepresentation* destination) const {
     const VolumeCLGL* volumeSrc = static_cast<const VolumeCLGL*>(source);
     VolumeRAM* volumeDst = static_cast<VolumeRAM*>(destination);
 
@@ -76,19 +64,18 @@ void VolumeCLGL2RAMConverter::update(const DataRepresentation* source, DataRepre
 
     volumeSrc->getTexture()->download(volumeDst->getData());
 
-    if (volumeDst->hasHistograms())
-        volumeDst->getHistograms()->setValid(false);
+    if (volumeDst->hasHistograms()) volumeDst->getHistograms()->setValid(false);
 }
 
-
-DataRepresentation* VolumeGL2CLGLConverter::createFrom(const DataRepresentation* source) {
-    DataRepresentation* destination = 0;
+std::shared_ptr<DataRepresentation> VolumeGL2CLGLConverter::createFrom(
+    const DataRepresentation* source) const {
     const VolumeGL* volumeGL = static_cast<const VolumeGL*>(source);
-    destination = new VolumeCLGL(volumeGL->getDimensions(), volumeGL->getDataFormat(), volumeGL->getTexture());
-    return destination;
+    return std::make_shared<VolumeCLGL>(volumeGL->getDimensions(), volumeGL->getDataFormat(),
+                                        volumeGL->getTexture());
 }
 
-void VolumeGL2CLGLConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void VolumeGL2CLGLConverter::update(const DataRepresentation* source,
+                                    DataRepresentation* destination) const {
     // Do nothing since they are sharing data
     const VolumeGL* volumeSrc = static_cast<const VolumeGL*>(source);
     VolumeCLGL* volumeDst = static_cast<VolumeCLGL*>(destination);
@@ -98,24 +85,27 @@ void VolumeGL2CLGLConverter::update(const DataRepresentation* source, DataRepres
     }
 }
 
-
-DataRepresentation* VolumeCLGL2CLConverter::createFrom(const DataRepresentation* source) {
+std::shared_ptr<DataRepresentation> VolumeCLGL2CLConverter::createFrom(
+    const DataRepresentation* source) const {
 #ifdef IVW_DEBUG
     LogWarn("Performance warning: Use shared CLGL representation instead of CL ");
 #endif
     const VolumeCLGL* volumeCLGL = static_cast<const VolumeCLGL*>(source);
     const size3_t dimensions{volumeCLGL->getDimensions()};
-    auto destination = new VolumeCL(dimensions, volumeCLGL->getDataFormat());
-    {   SyncCLGL glSync;
+    auto destination = std::make_shared<VolumeCL>(dimensions, volumeCLGL->getDataFormat());
+    {
+        SyncCLGL glSync;
         glSync.addToAquireGLObjectList(volumeCLGL);
         glSync.aquireAllObjects();
-        OpenCL::getPtr()->getQueue().enqueueCopyImage(volumeCLGL->get(), static_cast<VolumeCL*>(destination)->get(), glm::size3_t(0), glm::size3_t(0),
-                glm::size3_t(dimensions));
+        OpenCL::getPtr()->getQueue().enqueueCopyImage(volumeCLGL->get(), destination->get(),
+                                                      glm::size3_t(0), glm::size3_t(0),
+                                                      glm::size3_t(dimensions));
     }
     return destination;
 }
 
-void VolumeCLGL2CLConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void VolumeCLGL2CLConverter::update(const DataRepresentation* source,
+                                    DataRepresentation* destination) const {
     const VolumeCLGL* volumeSrc = static_cast<const VolumeCLGL*>(source);
     VolumeCL* volumeDst = static_cast<VolumeCL*>(destination);
 
@@ -123,32 +113,25 @@ void VolumeCLGL2CLConverter::update(const DataRepresentation* source, DataRepres
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
 
-    {   SyncCLGL glSync;
+    {
+        SyncCLGL glSync;
         glSync.addToAquireGLObjectList(volumeSrc);
         glSync.aquireAllObjects();
-        OpenCL::getPtr()->getQueue().enqueueCopyImage(volumeSrc->get(), volumeDst->get(), glm::size3_t(0), glm::size3_t(0),
-                glm::size3_t(volumeSrc->getDimensions()));
+        OpenCL::getPtr()->getQueue().enqueueCopyImage(volumeSrc->get(), volumeDst->get(),
+                                                      glm::size3_t(0), glm::size3_t(0),
+                                                      glm::size3_t(volumeSrc->getDimensions()));
     }
 }
 
-DataRepresentation* VolumeCLGL2GLConverter::createFrom(const DataRepresentation* source) {
-    DataRepresentation* destination = 0;
+std::shared_ptr<DataRepresentation> VolumeCLGL2GLConverter::createFrom(
+    const DataRepresentation* source) const {
     const VolumeCLGL* src = static_cast<const VolumeCLGL*>(source);
-    destination = new VolumeGL(src->getTexture(), src->getDataFormat());
-    return destination;
+    return std::make_shared<VolumeGL>(src->getTexture(), src->getDataFormat());
 }
 
-void VolumeCLGL2GLConverter::update(const DataRepresentation* source, DataRepresentation* destination) {
+void VolumeCLGL2GLConverter::update(const DataRepresentation* source,
+                                    DataRepresentation* destination) const {
     // Do nothing since they share data
 }
 
-VolumeCL2CLGLConverter::VolumeCL2CLGLConverter() : RepresentationConverterPackage<VolumeCLGL>() {
-    addConverter(new VolumeCL2RAMConverter());
-    addConverter(new VolumeRAM2GLConverter());
-    addConverter(new VolumeGL2CLGLConverter());
-}
-
-
-
-
-} // namespace
+}  // namespace

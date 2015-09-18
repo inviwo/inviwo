@@ -43,7 +43,7 @@ class IVW_CORE_API Layer : public Data, public StructuredGridEntity<2> {
 public:
     Layer(size2_t dimensions = size2_t(32, 32), const DataFormatBase* format = DataVec4UINT8::get(),
           LayerType type = COLOR_LAYER);
-    Layer(LayerRepresentation*);
+    Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&);
     Layer& operator=(const Layer& that);
     virtual Layer* clone() const;
@@ -68,7 +68,7 @@ public:
     LayerType getLayerType() const;
 
 protected:
-    virtual DataRepresentation* createDefaultRepresentation();
+    virtual std::shared_ptr<DataRepresentation> createDefaultRepresentation() const override;
 
 private:
     LayerType layerType_;

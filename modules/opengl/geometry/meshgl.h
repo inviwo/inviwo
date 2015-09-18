@@ -57,6 +57,8 @@ public:
     virtual Mesh* getOwner();
     virtual const Mesh* getOwner() const;
 
+    virtual std::type_index getTypeIndex() const override final;
+
 protected:
     virtual void update(bool editable);
 

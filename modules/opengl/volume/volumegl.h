@@ -62,6 +62,7 @@ public:
     virtual void setDimensions(size3_t dimensions) override;
 
     std::shared_ptr<Texture3D> getTexture() const { return volumeTexture_; }
+    virtual std::type_index getTypeIndex() const override final;
 private:
     size3_t dimensions_;
     std::shared_ptr<Texture3D> volumeTexture_;

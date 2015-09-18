@@ -144,6 +144,20 @@ bool contains_if(T& cont, Pred pred) {
     return std::find_if(begin(cont), end(cont), pred) != end(cont);
 }
 
+template <typename T, typename P>
+auto find_if_or_null(T& cont, P pred) -> typename T::value_type {
+    using std::begin;
+    using std::end;
+
+    auto it = std::find_if(begin(cont), end(cont), pred);
+    if (it != end(cont)) {
+        return *it;
+    } else {
+        return nullptr;
+    }
+}
+
+
 template <typename T, typename V>
 auto find_or_null(T& cont, const V& elem) -> typename T::value_type {
     using std::begin;
@@ -183,6 +197,16 @@ bool insert_unique(T& map, const typename T::key_type& key, typename T::mapped_t
     } else {
         return false;
     };
+}
+
+template <typename T, typename V>
+auto map_find_or_null(T& cont, const V& elem) -> typename typename T::mapped_type {
+    auto it = cont.find(elem);
+    if (it != end(cont)) {
+        return it->second;
+    } else {
+        return nullptr;
+    }
 }
 
 template <typename T, typename V, typename Callable>
