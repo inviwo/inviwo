@@ -35,7 +35,7 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
-#include <inviwo/qt/widgets/tooltiphelper.h>
+#include <inviwo/core/util/tooltiphelper.h>
 #include <inviwo/core/common/moduleaction.h>
 
 #include <inviwo/qt/widgets/propertylistwidget.h>

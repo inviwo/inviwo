@@ -61,7 +61,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/qstringhelper.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/qtwidgetmodule.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/rawdatareaderdialogqt.h
-    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/tooltiphelper.h
     ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -120,7 +119,6 @@ set(SOURCE_FILES
     rawdatareaderdialogqt.cpp
     sliderwidgetqt.cpp
     spinboxrangesliderwidgetqt.cpp
-    tooltiphelper.cpp
 )
 
 ivw_group("Source Files" ${SOURCE_FILES})

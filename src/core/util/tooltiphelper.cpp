@@ -27,14 +27,11 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/widgets/tooltiphelper.h>
-#include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <inviwo/core/util/tooltiphelper.h>
 
 namespace inviwo {
 
 ToolTipHelper::ToolTipHelper(std::string item /*= ""*/) : ss() {
-    utilqt::localizeStream(ss);
-
     ss << "<html><head>"
        << "<style>"
        << "table { border-color:white;white-space:pre;margin-top:5px;margin-bottom:5px; }"
@@ -45,7 +42,6 @@ ToolTipHelper::ToolTipHelper(std::string item /*= ""*/) : ss() {
 }
 
 ToolTipHelper::~ToolTipHelper() {}
-
 
 ToolTipHelper& ToolTipHelper::tableTop() {
     ss << "<table border='0' cellspacing='0' cellpadding='0'"
@@ -58,8 +54,6 @@ ToolTipHelper& ToolTipHelper::tableBottom() {
     return *this;
 }
 
-ToolTipHelper::operator std::string() {
-    return ss.str() + "</body></html>";
-}
+ToolTipHelper::operator std::string() { return ss.str() + "</body></html>"; }
 
 }  // namespace

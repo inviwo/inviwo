@@ -36,7 +36,7 @@
 #include <inviwo/qt/widgets/properties/propertysettingswidgetqt.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/ordinaleditorwidget.h>
-#include <inviwo/qt/widgets/tooltiphelper.h>
+#include <inviwo/core/util/tooltiphelper.h>
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/util/stringconversion.h>

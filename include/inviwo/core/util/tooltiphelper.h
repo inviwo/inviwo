@@ -30,9 +30,8 @@
 #ifndef IVW_TOOLTIPHELPER_H
 #define IVW_TOOLTIPHELPER_H
 
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <initializer_list>
 
 namespace inviwo {
 
@@ -40,7 +39,7 @@ namespace inviwo {
  * \class ToolTipHelper
  * \brief Helper class to create html tooltips
  */
-class IVW_QTWIDGETS_API ToolTipHelper {
+class IVW_CORE_API ToolTipHelper {
 public:
     ToolTipHelper(std::string item = "");
     operator std::string();
@@ -95,6 +94,7 @@ ToolTipHelper& inviwo::ToolTipHelper::row(T item, std::initializer_list<U> vals,
     return *this;
 }
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_TOOLTIPHELPER_H
+#endif // IVW_TOOLTIPHELPER_H
+
