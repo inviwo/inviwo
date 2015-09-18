@@ -37,14 +37,14 @@
 
 namespace inviwo {
 
-VolumeGLProcessor::VolumeGLProcessor(std::string fragmentShader)
+VolumeGLProcessor::VolumeGLProcessor(const std::string &fragmentShader, bool buildShader)
     : Processor()
     , inport_(fragmentShader + "inport")
     , outport_(fragmentShader + "outport")
     , dataFormat_(nullptr)
     , internalInvalid_(true)
     , fragmentShader_(fragmentShader)
-    , shader_("volume_gpu.vert", "volume_gpu.geom", fragmentShader_, true)
+    , shader_("volume_gpu.vert", "volume_gpu.geom", fragmentShader_, buildShader)
     , fbo_() {
     addPort(inport_);
     addPort(outport_);

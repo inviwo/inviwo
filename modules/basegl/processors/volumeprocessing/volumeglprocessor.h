@@ -53,7 +53,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API VolumeGLProcessor : public Processor {
 public:
-    VolumeGLProcessor(std::string fragmentShader);
+    VolumeGLProcessor(const std::string &fragmentShader , bool buildShader = true);
     virtual ~VolumeGLProcessor();
 
     virtual void process() override;
