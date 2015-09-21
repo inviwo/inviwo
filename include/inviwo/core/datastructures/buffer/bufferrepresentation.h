@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_BUFFER_REPRESENTATION_H
@@ -33,21 +33,30 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
 
 namespace inviwo {
 
-class IVW_CORE_API BufferRepresentation : public DataRepresentation {
+enum BufferType {
+    POSITION_ATTRIB,
+    NORMAL_ATTRIB,
+    COLOR_ATTRIB,
+    TEXCOORD_ATTRIB,
+    CURVATURE_ATTRIB,
+    INDEX_ATTRIB,
+    NUMBER_OF_BUFFER_TYPES
+};
 
+enum BufferUsage { STATIC, DYNAMIC };
+
+class IVW_CORE_API BufferRepresentation : public DataRepresentation {
 public:
     BufferRepresentation(const DataFormatBase* format = DataFormatBase::get(),
-                         BufferType type = POSITION_ATTRIB,
-                         BufferUsage usage = STATIC);
-    
+                         BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
+
     BufferRepresentation(const BufferRepresentation& rhs);
     BufferRepresentation& operator=(const BufferRepresentation& that);
     virtual BufferRepresentation* clone() const = 0;
-    virtual ~BufferRepresentation() {};
+    virtual ~BufferRepresentation(){};
     virtual void setSize(size_t size) = 0;
 
     /**
@@ -72,6 +81,6 @@ protected:
     BufferUsage usage_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_BUFFER_REPRESENTATION_H
+#endif  // IVW_BUFFER_REPRESENTATION_H

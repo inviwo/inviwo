@@ -103,9 +103,9 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPo
         volumeRaycast(volume, volumeCL, background, entryCL, exitCL, transferFunctionCL, outImageCL,
                       globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
     } else {
-        const ImageCL* entryCL = entryPoints->getRepresentation<ImageCL>();
-        const ImageCL* exitCL = exitPoints->getRepresentation<ImageCL>();
-        ImageCL* outImageCL = outImage->getEditableRepresentation<ImageCL>();
+        const LayerCL* entryCL = entryPoints->getRepresentation<LayerCL>();
+        const LayerCL* exitCL = exitPoints->getRepresentation<LayerCL>();
+        LayerCL* outImageCL = outImage->getEditableRepresentation<LayerCL>();
         const VolumeCL* volumeCL = volume->getRepresentation<VolumeCL>();
         const LayerCL* transferFunctionCL = transferFunction->getRepresentation<LayerCL>();
         // const LayerCL* background = background_->getRepresentation<LayerCL>();
@@ -115,8 +115,8 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPo
         } else {
             background = defaultBackground_.getRepresentation<LayerCL>();
         }
-        volumeRaycast(volume, volumeCL, background, entryCL->getLayerCL(), exitCL->getLayerCL(),
-                      transferFunctionCL, outImageCL->getLayerCL(), globalWorkGroupSize,
+        volumeRaycast(volume, volumeCL, background, entryCL, exitCL,
+                      transferFunctionCL, outImageCL, globalWorkGroupSize,
                       localWorkGroupSize, waitForEvents, event);
     }
 }

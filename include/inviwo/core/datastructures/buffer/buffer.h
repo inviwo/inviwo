@@ -32,29 +32,18 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/data.h>
+#include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
 
 namespace inviwo {
 
-enum BufferType {
-    POSITION_ATTRIB,
-    NORMAL_ATTRIB,
-    COLOR_ATTRIB,
-    TEXCOORD_ATTRIB,
-    CURVATURE_ATTRIB,
-    INDEX_ATTRIB,
-    NUMBER_OF_BUFFER_TYPES
-};
-
-enum BufferUsage { STATIC, DYNAMIC };
-
-class IVW_CORE_API Buffer : public Data {
+class IVW_CORE_API Buffer : public Data<BufferRepresentation> {
 public:
     Buffer(size_t size, const DataFormatBase* format = DataFormatBase::get(),
            BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
     Buffer(const Buffer& rhs);
     Buffer& operator=(const Buffer& that);
     virtual Buffer* clone() const;
-    virtual ~Buffer();
+    virtual ~Buffer() = default;
 
     /**
      * Set the number of elements in the buffer. This is destructive, the data will not be
@@ -72,7 +61,7 @@ public:
     static const std::string CLASS_IDENTIFIER;
 
 protected:
-    virtual std::shared_ptr<DataRepresentation> createDefaultRepresentation() const override;
+    virtual std::shared_ptr<BufferRepresentation> createDefaultRepresentation() const override;
 
 private:
     size_t size_;

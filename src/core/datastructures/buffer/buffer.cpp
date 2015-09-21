@@ -35,13 +35,13 @@
 namespace inviwo {
 
 Buffer::Buffer(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage)
-    : Data(format), size_(size), type_(type), usage_(usage) {}
+    : Data<BufferRepresentation>(format), size_(size), type_(type), usage_(usage) {}
 Buffer::Buffer(const Buffer& rhs)
-    : Data(rhs), size_(rhs.size_), type_(rhs.type_), usage_(rhs.usage_) {}
+    : Data<BufferRepresentation>(rhs), size_(rhs.size_), type_(rhs.type_), usage_(rhs.usage_) {}
 
 Buffer& Buffer::operator=(const Buffer& that) {
     if (this != &that) {
-        Data::operator=(that);
+        Data<BufferRepresentation>::operator=(that);
         size_ = that.size_;
         type_ = that.type_;
         usage_ = that.usage_;
@@ -50,8 +50,6 @@ Buffer& Buffer::operator=(const Buffer& that) {
 }
 
 Buffer* Buffer::clone() const { return new Buffer(*this); }
-
-Buffer::~Buffer() {}
 
 size_t Buffer::getSizeInBytes() { return size_ * dataFormatBase_->getSize(); }
 
@@ -65,21 +63,20 @@ void Buffer::setSize(size_t size) {
 
         if (lastValidRepresentation_) {
             // Resize last valid representation 
-            static_cast<BufferRepresentation*>(lastValidRepresentation_.get())->setSize(size);
+            lastValidRepresentation_->setSize(size);
             removeOtherRepresentations(lastValidRepresentation_);
         } 
     }
 }
 
-std::shared_ptr<DataRepresentation> Buffer::createDefaultRepresentation() const {
+std::shared_ptr<BufferRepresentation> Buffer::createDefaultRepresentation() const {
     return createBufferRAM(getSize(), dataFormatBase_, type_, usage_);
 }
 
 size_t Buffer::getSize() const {
     // We need to update the size if a representation has changed size
     if (lastValidRepresentation_)
-        const_cast<Buffer*>(this)->size_ =
-            static_cast<const BufferRepresentation*>(lastValidRepresentation_.get())->getSize();
+        const_cast<Buffer*>(this)->size_ = lastValidRepresentation_->getSize();
 
     return size_;
 }

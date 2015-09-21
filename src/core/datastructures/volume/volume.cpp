@@ -30,17 +30,18 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/tooltiphelper.h>
 
 namespace inviwo {
 
 Volume::Volume(size3_t dimensions, const DataFormatBase* format)
-    : Data(format), StructuredGridEntity<3>(dimensions), dataMap_(format) {}
+    : Data<VolumeRepresentation>(format), StructuredGridEntity<3>(dimensions), dataMap_(format) {}
 
 Volume::Volume(const Volume& rhs)
-    : Data(rhs), StructuredGridEntity<3>(rhs), dataMap_(rhs.dataMap_) {}
+    : Data<VolumeRepresentation>(rhs), StructuredGridEntity<3>(rhs), dataMap_(rhs.dataMap_) {}
 
 Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
-    : Data(in->getDataFormat())
+    : Data<VolumeRepresentation>(in->getDataFormat())
     , StructuredGridEntity<3>(in->getDimensions())
     , dataMap_(in->getDataFormat()) {
     addRepresentation(in);
@@ -48,7 +49,7 @@ Volume::Volume(std::shared_ptr<VolumeRepresentation> in)
 
 Volume& Volume::operator=(const Volume& that) {
     if (this != &that) {
-        Data::operator=(that);
+        Data<VolumeRepresentation>::operator=(that);
         StructuredGridEntity<3>::operator=(that);
         dataMap_ = that.dataMap_;
     }
@@ -59,55 +60,44 @@ Volume* Volume::clone() const { return new Volume(*this); }
 Volume::~Volume() {}
 
 std::string Volume::getDataInfo() const {
-    std::stringstream ss;
-    ss << "<table border='0' cellspacing='0' cellpadding='0' "
-          "style='border-color:white;white-space:pre;'>\n"
-       << "<tr><td "
-          "style='color:#bbb;padding-right:8px;'>Type</td><td><nobr>Volume</nobr></td></tr>\n"
-       << "<tr><td style='color:#bbb;padding-right:8px;'>Format</td><td><nobr>"
-       << getDataFormat()->getString() << "</nobr></td></tr>\n"
+    ToolTipHelper t("Volume");
+    t.tableTop();
 
-       << "<tr><td style='color:#bbb;padding-right:8px;'>Dimension</td><td><nobr>"
-       << "(" << getDimensions().x << ", " << getDimensions().y << ", " << getDimensions().z << ")"
-       << "</nobr></td></tr>\n"
-
-       << "<tr><td style='color:#bbb;padding-right:8px;'>DataRange</td><td><nobr>"
-       << dataMap_.dataRange.x << ", " << dataMap_.dataRange.y << "</nobr></td></tr>\n"
-
-       << "<tr><td style='color:#bbb;padding-right:8px;'>ValueRange</td><td><nobr>"
-       << dataMap_.valueRange.x << ", " << dataMap_.valueRange.y << "</nobr></td></tr>\n";
+    t.row("Format", getDataFormat()->getString());
+    t.row("Dimension", toString(getDimensions()));
+    t.row("Data Range", toString(dataMap_.dataRange));
+    t.row("Value Range", toString(dataMap_.valueRange));
 
     if (hasRepresentation<VolumeRAM>()) {
-        const VolumeRAM* volumeRAM = getRepresentation<VolumeRAM>();
+        auto volumeRAM = getRepresentation<VolumeRAM>();
         if (volumeRAM->hasHistograms()) {
-            const HistogramContainer* histograms = volumeRAM->getHistograms();
+            auto histograms = volumeRAM->getHistograms();
             for (size_t i = 0; i < histograms->size(); ++i) {
-                ss << "<tr><td style='color:#bbb;padding-right:8px;'>Stats</td><td><nobr>"
-                   << "Channel " << i << " Min: " << (*histograms)[i].stats_.min
+                std::stringstream ss;
+                ss << "Channel " << i << " Min: " << (*histograms)[i].stats_.min
                    << " Mean: " << (*histograms)[i].stats_.mean
                    << " Max: " << (*histograms)[i].stats_.max
-                   << " Std: " << (*histograms)[i].stats_.standardDeviation << "</nobr></td></tr>\n";
+                   << " Std: " << (*histograms)[i].stats_.standardDeviation;
+                t.row("Stats", ss.str());
 
-                ss << "<tr><td style='color:#bbb;padding-right:8px;'>Percentiles</td><td><nobr>"
-                   << "(1: " << (*histograms)[i].stats_.percentiles[1]
+                std::stringstream ss2;
+                ss2 << "(1: " << (*histograms)[i].stats_.percentiles[1]
                    << ", 25: " << (*histograms)[i].stats_.percentiles[25]
                    << ", 50: " << (*histograms)[i].stats_.percentiles[50]
                    << ", 75: " << (*histograms)[i].stats_.percentiles[75]
-                   << ", 99: " << (*histograms)[i].stats_.percentiles[99] << ")"
-                   << "</nobr></td></tr>\n";
+                   << ", 99: " << (*histograms)[i].stats_.percentiles[99] << ")";
+                t.row("Percentiles", ss2.str());
             }
         }
     }
-    ss << "</table>\n";
 
-    return ss.str();
+    t.tableBottom();
+    return t;
 }
 
 size3_t Volume::getDimensions() const {
     if (hasRepresentations() && lastValidRepresentation_) {
-        size3_t dim =
-            static_cast<VolumeRepresentation*>(lastValidRepresentation_.get())->getDimensions();
-        return dim;
+        return lastValidRepresentation_->getDimensions();
     }
     return StructuredGridEntity<3>::getDimensions();
 }
@@ -117,7 +107,7 @@ void Volume::setDimensions(const size3_t& dim) {
 
     if (lastValidRepresentation_) {
         // Resize last valid representation
-        static_cast<VolumeRepresentation*>(lastValidRepresentation_.get())->setDimensions(dim);
+        lastValidRepresentation_->setDimensions(dim);
         removeOtherRepresentations(lastValidRepresentation_);
     }
 }
@@ -140,7 +130,7 @@ void Volume::setWorldMatrix(const mat4& mat) {
     SpatialEntity<3>::setWorldMatrix(Matrix<4, float>(mat));
 }
 
-std::shared_ptr<DataRepresentation> Volume::createDefaultRepresentation() const {
+std::shared_ptr<VolumeRepresentation> Volume::createDefaultRepresentation() const {
     return std::make_shared<VolumeDisk>(getDimensions(), getDataFormat());
 }
 
@@ -173,7 +163,6 @@ float Volume::getWorldSpaceGradientSpacing() const {
 }
 
 inviwo::uvec3 Volume::COLOR_CODE = uvec3(188, 101, 101);
-
 const std::string Volume::CLASS_IDENTIFIER = "org.inviwo.Volume";
 
 const StructuredCameraCoordinateTransformer<3>& Volume::getCoordinateTransformer(

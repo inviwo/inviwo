@@ -56,71 +56,48 @@ InviwoModule::~InviwoModule() {
                 "' should have been deinitialized before destruction.");
 
     for (auto& elem : capabilities_) delete elem;
-
     capabilities_.clear();
 
-    for (auto& elem : data_) delete elem;
-
-    data_.clear();
-
     for (auto& elem : dataReaders_) delete elem;
-
     dataReaders_.clear();
 
-    for (auto& elem : dataRepresentations_) delete elem;
-
-    dataRepresentations_.clear();
-
     for (auto& elem : dataWriters_) delete elem;
-
     dataWriters_.clear();
 
     for (auto& elem : dialogs_) delete elem;
-
     dialogs_.clear();
 
     for (auto& elem : metadata_) delete elem;
-
     metadata_.clear();
 
     for (auto& elem : moduleSettings_) delete elem;
-
     moduleSettings_.clear();
 
     for (auto& elem : ports_) delete elem;
-
     ports_.clear();
 
     for (auto& elem : portInspectors_) delete elem;
-
     portInspectors_.clear();
 
     for (auto& elem : processors_) delete elem;
-
     processors_.clear();
 
     for (auto& elem : processorWidgets_) delete elem.second;
-
     processorWidgets_.clear();
 
     for (auto& elem : properties_) delete elem;
-
     properties_.clear();
 
     for (auto& elem : propertyWidgets_) delete elem;
-
     propertyWidgets_.clear();
 
     for (auto& elem : representationConverters_) delete elem;
-
     representationConverters_.clear();
 
     for (auto& elem : resources_) delete elem;
-
     resources_.clear();
 
     for (auto& elem : drawers_) delete elem;
-
     drawers_.clear();
 }
 
@@ -165,11 +142,7 @@ void InviwoModule::setupModuleSettings() {
 }
 
 const std::vector<Capabilities*>& InviwoModule::getCapabilities() const { return capabilities_; }
-const std::vector<Data*>& InviwoModule::getData() const { return data_; }
 const std::vector<DataReader*>& InviwoModule::getDataReaders() const { return dataReaders_; }
-const std::vector<DataRepresentation*>& InviwoModule::getDataRepresentations() const {
-    return dataRepresentations_;
-}
 const std::vector<DataWriter*>& InviwoModule::getDataWriters() const { return dataWriters_; }
 const std::vector<DialogFactoryObject*>& InviwoModule::getDialogs() const { return dialogs_; }
 const std::vector<MetaData*>& InviwoModule::getMetaData() const { return metadata_; }
@@ -197,11 +170,12 @@ const std::vector<MeshDrawer*>& InviwoModule::getDrawers() const { return drawer
 const std::vector<Resource*>& InviwoModule::getResources() const { return resources_; }
 const std::vector<Settings*>& InviwoModule::getSettings() const { return moduleSettings_; }
 
-void InviwoModule::registerCapabilities(Capabilities* info) { capabilities_.push_back(info); }
-void InviwoModule::registerData(Data* data) { data_.push_back(data); }
-void InviwoModule::registerDataRepresentation(DataRepresentation* dataRepresentation) {
-    dataRepresentations_.push_back(dataRepresentation);
+std::string InviwoModule::getDescription() const {
+    return "No description available";
 }
+
+void InviwoModule::registerCapabilities(Capabilities* info) { capabilities_.push_back(info); }
+
 void InviwoModule::registerDataReader(DataReader* dataReader) {
     dataReaders_.push_back(dataReader);
     DataReaderFactory::getPtr()->registerObject(dataReader);

@@ -66,14 +66,15 @@ public:
  *  3 is needed for the factory pattern, 3 should be implemented using 1.
  *
  */
-class IVW_CORE_API Data : public BaseData {
+template <class Repr>
+class Data : public BaseData {
 public:
     Data();
     Data(const DataFormatBase*);
     Data(const Data& rhs);
     Data& operator=(const Data& rhs);
     virtual Data* clone() const = 0;
-    virtual ~Data();
+    virtual ~Data() = default;
 
     // Representations
     template <typename T>
@@ -86,15 +87,15 @@ public:
     bool hasRepresentation() const;
 
     bool hasRepresentations() const;
-    void addRepresentation(std::shared_ptr<DataRepresentation> representation);
+    void addRepresentation(std::shared_ptr<Repr> representation);
 
     /**
      * Remove representation from data object.
      * This will delete the representation, thus rendering the representation pointer invalid.
      * @param representation The representation to remove
      */
-    void removeRepresentation(std::shared_ptr<DataRepresentation> representation);
-    void removeOtherRepresentations(std::shared_ptr<DataRepresentation> representation);
+    void removeRepresentation(std::shared_ptr<Repr> representation);
+    void removeOtherRepresentations(std::shared_ptr<Repr> representation);
     void clearRepresentations();
 
     // DataFormat
@@ -102,22 +103,47 @@ public:
     const DataFormatBase* getDataFormat() const;
 
 protected:
-    virtual std::shared_ptr<DataRepresentation> createDefaultRepresentation() const = 0;
+    virtual std::shared_ptr<Repr> createDefaultRepresentation() const = 0;
     template <typename T>
     const T* getValidRepresentation() const;
-    void invalidateAllOther(DataRepresentation* repr);
+    void invalidateAllOther(const Repr* repr);
     void copyRepresentationsTo(Data* targetData) const;
 
-
     mutable std::mutex mutex_;
-    mutable std::unordered_map<std::type_index, std::shared_ptr<DataRepresentation>> representations_;
+    mutable std::unordered_map<std::type_index, std::shared_ptr<Repr>> representations_;
     // A pointer to the the most recently updated representation. Makes updates and creation faster.
-    mutable std::shared_ptr<DataRepresentation> lastValidRepresentation_; 
+    mutable std::shared_ptr<Repr> lastValidRepresentation_;
     const DataFormatBase* dataFormatBase_;
 };
 
+template <class Repr>
+Data<Repr>::Data()
+    : BaseData(), lastValidRepresentation_(), dataFormatBase_(DataFormatBase::get()) {}
+
+template <class Repr>
+Data<Repr>::Data(const DataFormatBase* format)
+    : BaseData(), lastValidRepresentation_(), dataFormatBase_(format) {}
+
+template <class Repr>
+Data<Repr>::Data(const Data<Repr>& rhs)
+    : BaseData(rhs), lastValidRepresentation_(), dataFormatBase_(rhs.dataFormatBase_) {
+    rhs.copyRepresentationsTo(this);
+}
+
+template <class Repr>
+Data<Repr>& Data<Repr>::operator=(const Data<Repr>& that) {
+    if (this != &that) {
+        BaseData::operator=(that);
+        that.copyRepresentationsTo(this);
+        dataFormatBase_ = that.dataFormatBase_;
+    }
+
+    return *this;
+}
+
+template <class Repr>
 template <typename T>
-const T* Data::getRepresentation() const {
+const T* Data<Repr>::getRepresentation() const {
     if (!hasRepresentations()) {
         auto repr = const_cast<Data*>(this)->createDefaultRepresentation();
         if (!repr) {
@@ -147,9 +173,9 @@ const T* Data::getRepresentation() const {
         }
     }
 }
-
+template <class Repr>
 template <typename T>
-const T* Data::getValidRepresentation() const {
+const T* Data<Repr>::getValidRepresentation() const {
     auto factory = RepresentationConverterFactory::getPtr();
 
     auto package = factory->getRepresentationConverter(lastValidRepresentation_->getTypeIndex(),
@@ -157,16 +183,17 @@ const T* Data::getValidRepresentation() const {
 
     if (package) {
         for (auto converter : package->getConverters()) {
-            std::shared_ptr<DataRepresentation> result;
-            
+            std::shared_ptr<Repr> result;
+
             auto dest = converter->getConverterID().second;
             auto it = representations_.find(dest);
-            if (it != representations_.end()) { // Next representation already exist, just update it
+            if (it !=
+                representations_.end()) {  // Next representation already exist, just update it
                 result = it->second;
                 converter->update(lastValidRepresentation_.get(), result.get());
             } else {  // No representation found, create it
-                result = std::shared_ptr<DataRepresentation>(
-                    converter->createFrom(lastValidRepresentation_.get()));
+                // TODO remove static cast here with template factory...
+                result = std::dynamic_pointer_cast<Repr>(converter->createFrom(lastValidRepresentation_.get()));
                 if (!result) throw ConverterException("Converter failed to create", IvwContext);
                 result->setOwner(const_cast<Data*>(this));
                 representations_[result->getTypeIndex()] = result;
@@ -180,19 +207,92 @@ const T* Data::getValidRepresentation() const {
     }
 }
 
+template <class Repr>
 template <typename T>
-T* Data::getEditableRepresentation() {
-    T* result = const_cast<T*>(getRepresentation<T>());
-    invalidateAllOther(result);
-    return result;
+T* Data<Repr>::getEditableRepresentation() {
+    auto repr = getRepresentation<T>();
+    invalidateAllOther(repr);
+    return const_cast<T*>(repr);
 }
 
+template <class Repr>
 template <typename T>
-bool Data::hasRepresentation() const {
+bool Data<Repr>::hasRepresentation() const {
     return util::has_key(representations_, std::type_index(typeid(T)));
 }
 
+template <class Repr>
+void Data<Repr>::invalidateAllOther(const Repr* repr) {
+    for (auto& elem : representations_) {
+        if (elem.second.get() != repr) elem.second->setValid(false);
+    }
+}
 
+template <class Repr>
+void Data<Repr>::clearRepresentations() {
+    representations_.clear();
+}
+
+template <class Repr>
+void Data<Repr>::copyRepresentationsTo(Data* targetData) const {
+    targetData->clearRepresentations();
+
+    if (lastValidRepresentation_) {
+        auto rep = std::shared_ptr<Repr>(lastValidRepresentation_->clone());
+        targetData->addRepresentation(rep);
+    }
+}
+
+template <class Repr>
+void Data<Repr>::addRepresentation(std::shared_ptr<Repr> repr) {
+    repr->setOwner(this);
+    representations_[repr->getTypeIndex()] = repr;
+    lastValidRepresentation_ = repr;
+    repr->setValid(true);
+}
+
+template <class Repr>
+void Data<Repr>::removeRepresentation(std::shared_ptr<Repr> representation) {
+    for (auto& elem : representations_) {
+        if (elem.second == representation) {
+            representations_.erase(elem.first);
+            break;
+        }
+    }
+
+    if (lastValidRepresentation_ == representation) {
+        lastValidRepresentation_.reset();
+
+        for (auto& elem : representations_) {
+            if (elem.second->isValid()) {
+                lastValidRepresentation_ = elem.second;
+            }
+        }
+    }
+}
+
+template <class Repr>
+void Data<Repr>::removeOtherRepresentations(std::shared_ptr<Repr> representation) {
+    representations_.clear();
+    representations_[representation->getTypeIndex()] = representation;
+
+    if (lastValidRepresentation_ != representation) lastValidRepresentation_.reset();
+}
+
+template <class Repr>
+bool Data<Repr>::hasRepresentations() const {
+    return !representations_.empty();
+}
+
+template <class Repr>
+void Data<Repr>::setDataFormat(const DataFormatBase* format) {
+    dataFormatBase_ = format;
+}
+
+template <class Repr>
+const DataFormatBase* Data<Repr>::getDataFormat() const {
+    return dataFormatBase_;
+}
 
 }  // namespace
 

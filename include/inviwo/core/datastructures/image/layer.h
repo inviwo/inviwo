@@ -34,12 +34,11 @@
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layerrepresentation.h>
 
 namespace inviwo {
 
-class LayerRepresentation;
-
-class IVW_CORE_API Layer : public Data, public StructuredGridEntity<2> {
+class IVW_CORE_API Layer : public Data<LayerRepresentation>, public StructuredGridEntity<2> {
 public:
     Layer(size2_t dimensions = size2_t(32, 32), const DataFormatBase* format = DataVec4UINT8::get(),
           LayerType type = COLOR_LAYER);
@@ -50,11 +49,11 @@ public:
     virtual ~Layer();
 
     virtual size2_t getDimensions() const override;
-    
+
     /**
      * Resize to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
-     * @note Resizes the last valid representation and erases all other representations. 
+     * @note Resizes the last valid representation and erases all other representations.
      * Last valid representation will remain valid after changing the dimension.
      */
     virtual void setDimensions(const size2_t& dim) override;
@@ -68,7 +67,7 @@ public:
     LayerType getLayerType() const;
 
 protected:
-    virtual std::shared_ptr<DataRepresentation> createDefaultRepresentation() const override;
+    virtual std::shared_ptr<LayerRepresentation> createDefaultRepresentation() const override;
 
 private:
     LayerType layerType_;

@@ -62,7 +62,6 @@ namespace inviwo {
 
 /**
  * \class InviwoModule
- *
  * \brief A module class contains registrations of functionality, such as processors, ports, properties etc.
  */
 class IVW_CORE_API InviwoModule {
@@ -72,17 +71,13 @@ public:
 
     /** 
      * \brief Get module identifier, i.e the module folder name.
-     * 
-     * @return std::string 
      */
     std::string getIdentifier() const;
 
     bool isInitialized() const;
 
     const std::vector<Capabilities*>& getCapabilities() const;
-    const std::vector<Data*>& getData() const;
     const std::vector<DataReader*>& getDataReaders() const;
-    const std::vector<DataRepresentation*>& getDataRepresentations() const;
     const std::vector<DataWriter*>& getDataWriters() const;
     const std::vector<DialogFactoryObject*>& getDialogs() const;
     const std::vector<MetaData*>& getMetaData() const;
@@ -97,8 +92,7 @@ public:
     const std::vector<Resource*>& getResources() const;
     const std::vector<Settings*>& getSettings() const;
 
-    std::string getDescription() const;
-    void setDescription(const std::string& description) const;
+    virtual std::string getDescription() const;
 
     /** 
      * Get the path to this module directory.
@@ -120,9 +114,7 @@ protected:
     void setIdentifier(const std::string& identifier);
 
     void registerCapabilities(Capabilities* info);
-    void registerData(Data* data);
     void registerDataReader(DataReader* reader);
-    void registerDataRepresentation(DataRepresentation* dataRepresentation);
     void registerDataWriter(DataWriter* writer);
     void registerDialogObject(DialogFactoryObject* dialog);
     void registerMetaData(MetaData* meta);
@@ -142,17 +134,13 @@ protected:
      * @note Call InviwoModule::setupModuleSettings() if overriding this function
      */
     virtual void setupModuleSettings();
-
     std::vector<Settings*> moduleSettings_;
 
 private:
     std::string identifier_; ///< Module folder name
-
     bool initialized_;
 
     std::vector<Capabilities*> capabilities_;
-    std::vector<Data*> data_;
-    std::vector<DataRepresentation*> dataRepresentations_;
     std::vector<DataReader*> dataReaders_;
     std::vector<DataWriter*> dataWriters_;
     std::vector<DialogFactoryObject*> dialogs_;

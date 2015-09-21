@@ -35,13 +35,13 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/representationtraits.h>
+#include <inviwo/core/datastructures/volume/volumerepresentation.h>
 
 namespace inviwo {
 
 class CameraProperty;
-class VolumeRepresentation;
 
-class IVW_CORE_API Volume : public Data, public StructuredGridEntity<3> {
+class IVW_CORE_API Volume : public Data<VolumeRepresentation>, public StructuredGridEntity<3> {
 public:
     Volume(size3_t dimensions = size3_t(128, 128, 128),
            const DataFormatBase* format = DataUINT8::get());
@@ -84,7 +84,7 @@ public:
      *
      * Finds the maximum distance we can go from the center of a voxel without ending up outside the
      * voxel.
-     * For a volume with orthogonal basis it will be half the minumum voxel spacing in world space.
+     * For a volume with orthogonal basis it will be half the minimum voxel spacing in world space.
      *  _____
      * |     |
      * |  .  | <- Computes minimum distance from center point to edges.
@@ -106,7 +106,7 @@ public:
 
 
 protected:
-    virtual std::shared_ptr<DataRepresentation> createDefaultRepresentation() const override;
+    virtual std::shared_ptr<VolumeRepresentation> createDefaultRepresentation() const override;
 };
 
 template <typename Kind>

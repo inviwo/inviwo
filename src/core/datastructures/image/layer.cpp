@@ -35,21 +35,21 @@
 namespace inviwo {
 
 Layer::Layer(size2_t dimensions, const DataFormatBase* format, LayerType type)
-    : Data(format), StructuredGridEntity<2>(dimensions), layerType_(type) {}
+    : Data<LayerRepresentation>(format), StructuredGridEntity<2>(dimensions), layerType_(type) {}
 
 Layer::Layer(std::shared_ptr<LayerRepresentation> in)
-    : Data(in->getDataFormat())
+    : Data<LayerRepresentation>(in->getDataFormat())
     , StructuredGridEntity<2>(in->getDimensions())
     , layerType_(in->getLayerType()) {
     addRepresentation(in);
 }
 
 Layer::Layer(const Layer& rhs)
-    : Data(rhs), StructuredGridEntity<2>(rhs), layerType_(rhs.layerType_) {}
+    : Data<LayerRepresentation>(rhs), StructuredGridEntity<2>(rhs), layerType_(rhs.layerType_) {}
 
 Layer& Layer::operator=(const Layer& that) {
     if (this != &that) {
-        Data::operator=(that);
+        Data<LayerRepresentation>::operator=(that);
         StructuredGridEntity<2>::operator=(that);
         layerType_ = that.layerType_;
     }
@@ -62,8 +62,7 @@ Layer::~Layer() {}
 
 size2_t Layer::getDimensions() const {
     if (hasRepresentations() && lastValidRepresentation_) {
-        size2_t dim =
-            static_cast<LayerRepresentation*>(lastValidRepresentation_.get())->getDimensions();
+        size2_t dim = lastValidRepresentation_->getDimensions();
         if (dim != size2_t(0)) return dim;
     }
     return StructuredGridEntity<2>::getDimensions();
@@ -74,7 +73,7 @@ void Layer::setDimensions(const size2_t& dim) {
 
     if (lastValidRepresentation_) {
         // Resize last valid representation
-        static_cast<LayerRepresentation*>(lastValidRepresentation_.get())->setDimensions(dim);
+        lastValidRepresentation_->setDimensions(dim);
         removeOtherRepresentations(lastValidRepresentation_);
     }
 }
@@ -87,12 +86,12 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
     bool copyDone = false;
 
     for (auto& sourceElem : representations_) {
-        auto sourceRepr = static_cast<LayerRepresentation*>(sourceElem.second.get());
+        auto sourceRepr = sourceElem.second;
         if (sourceRepr->isValid()) {
             for (auto& targetElem : targets) {
-                auto targetRepr = static_cast<LayerRepresentation*>(targetElem.second.get());
+                auto targetRepr = targetElem.second;
                 if (typeid(*sourceRepr) == typeid(*targetRepr)) {
-                    if (sourceRepr->copyRepresentationsTo(targetRepr)) {
+                    if (sourceRepr->copyRepresentationsTo(targetRepr.get())) {
                         targetRepr->setValid(true);
                         targetLayer->lastValidRepresentation_ = targetElem.second;
                         copyDone = true;
@@ -103,19 +102,15 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
     }
 
     if (!copyDone) {  // Fallback
-        ivwAssert(lastValidRepresentation_.get() != nullptr,
-                  "Last valid representation is expected.");
+        ivwAssert(lastValidRepresentation_, "Last valid representation is expected.");
         for (auto& targetElem : targets) targetElem.second->setValid(false);
         targetLayer->createDefaultRepresentation();
 
-        auto clone = std::shared_ptr<LayerRepresentation>(
-            dynamic_cast<LayerRepresentation*>(lastValidRepresentation_->clone()));
+        auto clone = std::shared_ptr<LayerRepresentation>(lastValidRepresentation_->clone());
         targetLayer->addRepresentation(clone);
         targetLayer->setDimensions(targetLayer->getDimensions());
 
-        auto lastValidRepresentation =
-            dynamic_cast<LayerRepresentation*>(lastValidRepresentation_.get());
-        if (lastValidRepresentation->copyRepresentationsTo(clone.get())) {
+        if (lastValidRepresentation_->copyRepresentationsTo(clone.get())) {
             clone->setValid(true);
             targetLayer->lastValidRepresentation_ = clone;
         }
@@ -124,7 +119,7 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
 
 LayerType Layer::getLayerType() const { return layerType_; }
 
-std::shared_ptr<DataRepresentation> Layer::createDefaultRepresentation() const {
+std::shared_ptr<LayerRepresentation> Layer::createDefaultRepresentation() const {
     return createLayerRAM(getDimensions(), getLayerType(), getDataFormat());
 }
 
