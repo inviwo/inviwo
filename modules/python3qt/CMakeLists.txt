@@ -1,8 +1,3 @@
-if(DESIRED_QT_VERSION MATCHES 5)
-        string(REGEX REPLACE "bin\\\\qmake([^ ]*)$" "lib\\\\cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
-        set(CMAKE_PREFIX_PATH "${QT5_PATH}")
-endif()
-
 #--------------------------------------------------------------------
 # Inviwo PythonQt Module
 ivw_module(Python3Qt)

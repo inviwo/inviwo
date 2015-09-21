@@ -36,13 +36,20 @@ if(IVW_QT_EDITOR OR IVW_QT_WIDGETS)
             set(DESIRED_QT_VERSION 5 CACHE STRING "Desired Qt version set to 5, but either qt 4 or 5 was found on the system")
         endif()
     endif(NOT DESIRED_QT_VERSION)
-
-    # Find the QtWidgets library
+   
     if(DESIRED_QT_VERSION MATCHES 5)
-        string(REGEX REPLACE "bin\\\\qmake([^ ]*)$" "lib\\\\cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
-        set(CMAKE_PREFIX_PATH "${QT5_PATH}")
+        if(QT_QMAKE_EXECUTABLE)
+            if(WIN32)
+                string(REGEX REPLACE "bin\\\\qmake([^ ]*)$" "lib\\\\cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
+            else()
+                string(REGEX REPLACE "bin/qmake([^ ]*)$" "lib/cmake" QT5_PATH "${QT_QMAKE_EXECUTABLE}")
+            endif()
+            set(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH};${QT5_PATH}")
+        endif()
+    else()
+        set(QT_USE_QTOPENGL TRUE)
     endif()
-    
+
     if(IVW_PACKAGE_PROJECT)
         find_package(Qt5Core QUIET)
         if(WIN32 AND Qt5Core_FOUND)
