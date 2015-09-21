@@ -87,7 +87,7 @@
 
 #include <iostream>
 
-#ifndef FREEIMAGE_LIB
+#ifndef IVW_MODULE_CIMG_EXPORTS
 #if defined(_WIN32) || defined(__WIN32__)
 		#ifdef HALF_EXPORTS
 			#define HALF_EXPORT __declspec(dllexport)
