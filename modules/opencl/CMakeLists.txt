@@ -15,6 +15,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclglconverter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/cl.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/clformats.h
     ${CMAKE_CURRENT_SOURCE_DIR}/clockcl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/glmcl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecl.h
@@ -56,6 +57,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/buffer/elementbufferclglconverter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/clformats.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/clockcl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glmcl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/image/imagecl.cpp

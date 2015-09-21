@@ -29,6 +29,8 @@
 
 #include <modules/opencl/image/layercl.h>
 #include <modules/opencl/image/layerclresizer.h>
+#include <modules/opencl/clformats.h>
+
 #include <inviwo/core/util/stdextensions.h> // make_unique is c++14 but works on some compilers
 
 namespace inviwo {
