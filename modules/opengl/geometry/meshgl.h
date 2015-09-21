@@ -45,7 +45,7 @@ public:
     MeshGL();
     MeshGL(const MeshGL& rhs);
     MeshGL& operator=(const MeshGL& that);
-    virtual MeshGL* clone() const;
+    virtual MeshGL* clone() const override;
   
     virtual ~MeshGL();
 
@@ -54,13 +54,13 @@ public:
 
     const BufferGL* getBufferGL(size_t idx=0) const;
 
-    virtual Mesh* getOwner();
-    virtual const Mesh* getOwner() const;
+    virtual Mesh* getOwner() override;
+    virtual const Mesh* getOwner() const override;
 
     virtual std::type_index getTypeIndex() const override final;
 
 protected:
-    virtual void update(bool editable);
+    virtual void update(bool editable) override;
 
 private:
     std::vector<const BufferGL*> attributesGL_;

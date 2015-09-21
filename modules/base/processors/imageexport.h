@@ -62,12 +62,12 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initialize();
-    virtual void deinitialize();
+    virtual void initialize() override;
+    virtual void deinitialize() override;
     void exportImage();
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
     void processExport();
 

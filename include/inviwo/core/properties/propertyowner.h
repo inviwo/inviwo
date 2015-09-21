@@ -91,8 +91,8 @@ public:
     virtual Processor* getProcessor();
     virtual const Processor* getProcessor() const;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
     void setAllPropertiesCurrentStateAsDefault();
     void resetAllPoperties();

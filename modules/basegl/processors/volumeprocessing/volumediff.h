@@ -57,7 +57,7 @@ public:
 
 protected:
     VolumeInport vol2_;
-    virtual void preProcess();
+    virtual void preProcess() override;
 };
 
 } // namespace

@@ -76,9 +76,9 @@ public:
     MeshPicking();
     virtual ~MeshPicking();
 
-    virtual void process();
+    virtual void process() override;
 
-    bool isReady() const { return meshInport_.isReady(); }
+    bool isReady() const override { return meshInport_.isReady(); }
 
     void updateWidgetPositionFromPicking(const PickingObject*);
 

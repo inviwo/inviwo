@@ -69,7 +69,7 @@ public:
     virtual void onFindFiles();
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
     bool isValidImageFile(std::string);
 

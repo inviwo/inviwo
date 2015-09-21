@@ -42,7 +42,7 @@ public:
               BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
     BufferRAM(const BufferRAM& rhs);
     BufferRAM& operator=(const BufferRAM& that);
-    virtual BufferRAM* clone() const = 0;
+    virtual BufferRAM* clone() const override = 0;
     virtual ~BufferRAM();
 
     virtual void* getData() = 0;

@@ -76,7 +76,7 @@ public:
         disableDrawImagePlaneRect();
     }
 
-    virtual void setProcessorWidgetOwner(ProcessorWidget*);
+    virtual void setProcessorWidgetOwner(ProcessorWidget*) override;
 
     virtual std::unique_ptr<Canvas> create() override;
 

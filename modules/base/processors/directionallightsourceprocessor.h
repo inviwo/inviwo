@@ -68,7 +68,7 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
     /**
      * Update light source parameters. Transformation will be given in texture space.

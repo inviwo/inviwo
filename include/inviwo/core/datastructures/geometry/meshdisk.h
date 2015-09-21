@@ -49,7 +49,7 @@ public:
     virtual std::type_index getTypeIndex() const override final;
 
 protected:
-    virtual void update(bool editable);
+    virtual void update(bool editable) override;
 };
 
 } // namespace

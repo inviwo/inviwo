@@ -50,8 +50,8 @@ public:
     void setContextMenu(QMenu* menu) { contextMenu_ = menu; };
     void setShortenText(bool shorten);
 
-    QSize sizeHint() const;
-    QSize minimumSizeHint() const;
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
 
 public slots:
     void edit();
@@ -59,12 +59,12 @@ public slots:
     void showContextMenu(const QPoint& pos);
 
 protected:
-    virtual void resizeEvent(QResizeEvent*);
+    virtual void resizeEvent(QResizeEvent*) override;
 
 private:
     void updateText();
     void generateWidget();
-    void mouseDoubleClickEvent(QMouseEvent* e);
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
     virtual void onSetDisplayName(const std::string& displayName) override;
     QString shortenText();
 

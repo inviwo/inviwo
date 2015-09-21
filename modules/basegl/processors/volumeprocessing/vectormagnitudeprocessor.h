@@ -61,7 +61,7 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void postProcess();
+    virtual void postProcess() override;
 };
 
 } // namespace

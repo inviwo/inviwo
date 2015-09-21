@@ -71,14 +71,14 @@ public:
 
     InviwoProcessorInfo();
 
-    void initialize();
+    void initialize() override;
 
     void buildKernel();
 
-    void deinitialize();
+    void deinitialize() override;
 
 protected:
-    virtual void process();
+    virtual void process() override;
     void executeVolumeOperation(const Volume* volume, const VolumeCLBase* volumeCL,
                                 VolumeCLBase* volumeOutCL, const size3_t& outDim,
                                 const size3_t& globalWorkGroupSize,

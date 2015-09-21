@@ -66,13 +66,13 @@ public:
 
     InviwoProcessorInfo();
 
-    void initialize();
-    void deinitialize();
+    void initialize() override;
+    void deinitialize() override;
 
     Mesh* createMesh();
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
 private:
     enum MeshType {

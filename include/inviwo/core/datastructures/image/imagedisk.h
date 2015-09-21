@@ -41,14 +41,14 @@ public:
     ImageDisk();
     ImageDisk(const ImageDisk& rhs);
     ImageDisk& operator=(const ImageDisk& that);
-    virtual ImageDisk* clone() const;
+    virtual ImageDisk* clone() const override;
     virtual ~ImageDisk();
 
     virtual bool copyRepresentationsTo(DataRepresentation*) const override;
     virtual std::type_index getTypeIndex() const override final;
 
 protected:
-    virtual void update(bool editable);
+    virtual void update(bool editable) override;
 };
 
 } // namespace

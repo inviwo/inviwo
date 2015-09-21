@@ -87,13 +87,13 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual bool isReady() const {
+    virtual bool isReady() const override {
         // only the mesh input port is mandatory
         return inport_.isReady(); 
     }
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
 private:
     void heightfieldChanged();

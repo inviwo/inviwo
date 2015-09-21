@@ -76,11 +76,11 @@ public:
     Background();
     virtual ~Background();
 
-    virtual void initializeResources();
+    virtual void initializeResources() override;
 
 protected:
-    virtual void process();
-    virtual bool isReady() const;
+    virtual void process() override;
+    virtual bool isReady() const override;
 
 private:
     void switchColors();

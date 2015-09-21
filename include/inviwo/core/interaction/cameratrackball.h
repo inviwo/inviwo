@@ -48,7 +48,7 @@ public:
      */
     CameraTrackball(CameraProperty* cameraProp);
     virtual ~CameraTrackball();
-    virtual CameraTrackball* clone() const;
+    virtual CameraTrackball* clone() const override;
 protected:
 
     CameraProperty* cameraProp_; //< non-owning reference

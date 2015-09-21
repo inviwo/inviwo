@@ -45,7 +45,7 @@ public:
     Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&);
     Layer& operator=(const Layer& that);
-    virtual Layer* clone() const;
+    virtual Layer* clone() const override;
     virtual ~Layer();
 
     virtual size2_t getDimensions() const override;

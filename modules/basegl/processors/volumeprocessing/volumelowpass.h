@@ -60,7 +60,7 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void preProcess();
+    virtual void preProcess() override;
 
     virtual void initializeResources() override;
 

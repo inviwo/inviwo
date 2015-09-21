@@ -70,7 +70,7 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void preProcess();
+    virtual void preProcess() override;
 
 private:
     FloatProperty gamma_;

@@ -46,7 +46,7 @@ public:
     virtual ~VolumeCL();
     VolumeCL(const VolumeCL& rhs);
 
-    virtual VolumeCL* clone() const;
+    virtual VolumeCL* clone() const override;
 
     virtual const size3_t& getDimensions() const override;
     virtual void setDimensions(size3_t dimensions) override;
@@ -61,8 +61,8 @@ public:
     void download(void* data) const;
     cl::ImageFormat getFormat() const;
 
-    virtual cl::Image3D& getEditable();
-    virtual const cl::Image3D& get() const;
+    virtual cl::Image3D& getEditable() override;
+    virtual const cl::Image3D& get() const override;
 
     virtual std::type_index getTypeIndex() const override final;
 

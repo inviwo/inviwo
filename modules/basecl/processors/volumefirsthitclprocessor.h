@@ -73,11 +73,11 @@ public:
 
     InviwoProcessorInfo();
 
-    void initialize();
-    void deinitialize();
+    void initialize() override;
+    void deinitialize() override;
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
     void firstHit(const cl::Image& volumeCL, const cl::Image& entryPoints,
                   const cl::Image& exitPoints, const cl::Image& transferFunctionCL,

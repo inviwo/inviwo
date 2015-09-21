@@ -73,7 +73,7 @@ public:
     
     SimpleLightingProperty(const SimpleLightingProperty& rhs);
     SimpleLightingProperty& operator=(const SimpleLightingProperty& that);
-    virtual SimpleLightingProperty* clone() const;
+    virtual SimpleLightingProperty* clone() const override;
     virtual ~SimpleLightingProperty();
     
     // Light properties

@@ -52,7 +52,7 @@ public:
                std::shared_ptr<BufferObject> data, cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     BufferCLGL(const BufferCLGL& rhs);
     virtual ~BufferCLGL();
-    virtual BufferCLGL* clone() const;
+    virtual BufferCLGL* clone() const override;
 
     virtual size_t getSize() const override;
     virtual void setSize(size_t size) override;
@@ -60,8 +60,8 @@ public:
     const cl::Buffer& getBuffer() const { return *(clBuffer_); }
     std::shared_ptr<BufferObject> getBufferGL() const { return bufferObject_; }
 
-    cl::Buffer& getEditable() { return *clBuffer_; }
-    const cl::Buffer& get() const { return *clBuffer_; }
+    cl::Buffer& getEditable() override { return *clBuffer_; }
+    const cl::Buffer& get() const override { return *clBuffer_; }
 
     void aquireGLObject(std::vector<cl::Event>* syncEvents = nullptr) const {
         std::vector<cl::Memory> syncBuffers(1, *clBuffer_);
@@ -78,11 +78,11 @@ public:
     /**
      * Release shared object before it is initialized.
      */
-    void onBeforeBufferInitialization();
+    void onBeforeBufferInitialization() override;
     /**
      * Reattach shared object after it has been initialized.
      */
-    void onAfterBufferInitialization();
+    void onAfterBufferInitialization() override;
 
 protected:
     static CLBufferSharingMap clBufferSharingMap_;

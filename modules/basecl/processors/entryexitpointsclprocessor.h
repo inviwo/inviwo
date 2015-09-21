@@ -71,12 +71,12 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initialize();
-    virtual void deinitialize();
+    virtual void initialize() override;
+    virtual void deinitialize() override;
 
 protected:
-    virtual void process();
-    void onKernelCompiled( const cl::Kernel* kernel ) { invalidate(INVALID_RESOURCES); }
+    virtual void process() override;
+    void onKernelCompiled( const cl::Kernel* kernel ) override { invalidate(INVALID_RESOURCES); }
 
 
 

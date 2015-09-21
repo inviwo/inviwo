@@ -44,8 +44,8 @@
 
 namespace inviwo {
 
-#define InviwoPropertyInfo()                                                    \
-    virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; } \
+#define InviwoPropertyInfo()                                                             \
+    virtual std::string getClassIdentifier() const override { return CLASS_IDENTIFIER; } \
     static const std::string CLASS_IDENTIFIER
 
 #define PropertyClassIdentifier(T, classIdentifier) \
@@ -78,14 +78,16 @@ class IVW_CORE_API Property : public PropertyObservable,
                               public IvwSerializable,
                               public MetaDataOwner {
 public:
-    InviwoPropertyInfo();  // Should be included by all inheriting classes
+    // Should be included by all inheriting classes by calling the InviwoPropertyInfo() macro
+    static const std::string CLASS_IDENTIFIER;
+    virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
 
     Property(const std::string& identifier = "", const std::string& displayName = "",
              InvalidationLevel invalidationLevel = INVALID_OUTPUT,
              PropertySemantics semantics = PropertySemantics::Default);
     Property(const Property& rhs);
     Property& operator=(const Property& that);
-    virtual Property* clone() const;
+    virtual Property* clone() const override;
     virtual ~Property();
 
     virtual void setIdentifier(const std::string& identifier);
@@ -160,8 +162,8 @@ public:
     virtual bool isPropertyModified() const;
     virtual void set(const Property* src);
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
     const BaseCallBack* onChange(std::function<void()> callback);
     void removeOnChange(const BaseCallBack* callback);

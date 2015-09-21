@@ -57,7 +57,7 @@ public:
 protected:
     TransferFunctionProperty tfProperty_;
 
-    virtual void preProcess();
+    virtual void preProcess() override;
 };
 
 } // namespace

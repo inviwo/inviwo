@@ -59,7 +59,7 @@ public:
 
     PlaneProperty(const PlaneProperty& rhs);
     PlaneProperty& operator=(const PlaneProperty& that);
-    virtual PlaneProperty* clone() const;
+    virtual PlaneProperty* clone() const override;
     virtual ~PlaneProperty();
 
     BoolProperty enable_;

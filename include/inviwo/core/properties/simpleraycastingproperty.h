@@ -47,7 +47,7 @@ public:
     
     SimpleRaycastingProperty(const SimpleRaycastingProperty& rhs);
     SimpleRaycastingProperty& operator=(const SimpleRaycastingProperty& that);
-    virtual SimpleRaycastingProperty* clone() const;
+    virtual SimpleRaycastingProperty* clone() const override;
     virtual ~SimpleRaycastingProperty();
         
     OptionPropertyString classificationMode_;

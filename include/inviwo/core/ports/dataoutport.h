@@ -61,7 +61,7 @@ public:
     virtual bool isReady() const override;
     bool hasData() const;
 
-    virtual std::string getContentInfo() const;
+    virtual std::string getContentInfo() const override;
 
 protected:
     std::shared_ptr<const T> data_;

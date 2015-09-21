@@ -59,14 +59,14 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual bool isReady() const;
+    virtual bool isReady() const override;
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
     void load();
 
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void deserialize(IvwDeserializer& d) override;
 
 private:
     ImageOutport outport_;

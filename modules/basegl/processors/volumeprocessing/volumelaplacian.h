@@ -56,7 +56,7 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void process();
+    virtual void process() override;
 
 protected:
     template <typename T>

@@ -58,7 +58,7 @@ public:
     virtual ~ImageCompositeProcessorGL(){}
      
 protected:
-    virtual void process();
+    virtual void process() override;
 
 private:
     ImageInport imageInport1_;

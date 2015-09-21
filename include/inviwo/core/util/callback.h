@@ -50,7 +50,7 @@ public:
 
     MemberFunctionCallBack(T* obj, fPointerType func) : func_(func), obj_(obj) {}
     virtual ~MemberFunctionCallBack() {}
-    virtual void invoke() const {
+    virtual void invoke() const  override {
         if (func_) (*obj_.*func_)();
     }
 

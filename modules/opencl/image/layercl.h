@@ -45,7 +45,7 @@ public:
     LayerCL(const LayerCL& other);
     virtual ~LayerCL();
 
-    virtual LayerCL* clone() const;
+    virtual LayerCL* clone() const override;
 
     void initialize(const void* texels);
     void upload(const void* data);
@@ -60,8 +60,8 @@ public:
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
     cl::ImageFormat getFormat() const { return layerFormat_; }
 
-    virtual cl::Image2D& getEditable() {    return *clImage_;   }
-    virtual const cl::Image2D& get() const {    return *clImage_;   }
+    virtual cl::Image2D& getEditable() override {    return *clImage_;   }
+    virtual const cl::Image2D& get() const override {    return *clImage_;   }
 
     virtual std::type_index getTypeIndex() const override final;
 

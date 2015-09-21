@@ -67,11 +67,11 @@ public:
     FileProperty(const FileProperty& rhs);
     FileProperty& operator=(const FileProperty& that);
     FileProperty& operator=(const std::string& value);
-    virtual FileProperty* clone() const;
+    virtual FileProperty* clone() const override;
     virtual ~FileProperty();
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
     virtual void addNameFilter(std::string);
     virtual void clearNameFilters();

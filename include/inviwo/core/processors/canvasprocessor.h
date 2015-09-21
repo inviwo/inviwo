@@ -51,8 +51,8 @@ public:
     CanvasProcessor();
     virtual ~CanvasProcessor();
 
-    virtual void initialize();
-    virtual void deinitialize();
+    virtual void initialize() override;
+    virtual void deinitialize() override;
 
     virtual void process() override;
     virtual void doIfNotReady() override;
@@ -73,13 +73,13 @@ public:
     std::vector<unsigned char>* getVisibleLayerAsCodedBuffer(std::string& type);
 
     void triggerQueuedEvaluation();
-    virtual bool isReady() const;
+    virtual bool isReady() const override;
 
     virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
 protected:
     void performEvaluationAtNextShow();
-    void performEvaluateRequest();
+    virtual void performEvaluateRequest() override;
 
     ImageInport inport_;
 

@@ -62,7 +62,7 @@ public:
 
     InviwoProcessorInfo();
 
-    void initialize();
+    void initialize() override;
 
 protected:
     void updateTimerInterval();

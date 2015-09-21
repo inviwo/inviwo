@@ -67,7 +67,7 @@ public:
     virtual ~ImageBinary() {}
 
 protected:
-    virtual void preProcess();
+    virtual void preProcess() override;
 
     FloatProperty threshold_;
 private:

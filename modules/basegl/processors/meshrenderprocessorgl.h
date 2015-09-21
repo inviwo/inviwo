@@ -88,8 +88,8 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initializeResources();
-    virtual void process(); 
+    virtual void initializeResources() override;
+    virtual void process() override; 
 
     virtual bool isReady()const override;
 

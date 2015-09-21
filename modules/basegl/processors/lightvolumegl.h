@@ -71,7 +71,7 @@ public:
 
     InviwoProcessorInfo();
 
-    void initialize();
+    void initialize() override;
 
     void propagation3DTextureParameterFunction(Texture*);
 

@@ -49,16 +49,16 @@ class InteractionHandler;
 class ProcessorWidget;
 class ResizeEvent;
 
-#define InviwoProcessorInfo()                                                   \
-    virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; } \
-    virtual std::string getDisplayName() const { return DISPLAY_NAME; }         \
-    virtual std::string getCategory() const { return CATEGORY; }                \
-    virtual CodeState getCodeState() const { return CODE_STATE; }               \
-    virtual Tags getTags() const { return TAGS; }                               \
-    static const std::string CLASS_IDENTIFIER;                                  \
-    static const std::string CATEGORY;                                          \
-    static const std::string DISPLAY_NAME;                                      \
-    static const CodeState CODE_STATE;                                          \
+#define InviwoProcessorInfo()                                                            \
+    virtual std::string getClassIdentifier() const override { return CLASS_IDENTIFIER; } \
+    virtual std::string getDisplayName() const override { return DISPLAY_NAME; }         \
+    virtual std::string getCategory() const override { return CATEGORY; }                \
+    virtual CodeState getCodeState() const override { return CODE_STATE; }               \
+    virtual Tags getTags() const override { return TAGS; }                               \
+    static const std::string CLASS_IDENTIFIER;                                           \
+    static const std::string CATEGORY;                                                   \
+    static const std::string DISPLAY_NAME;                                               \
+    static const CodeState CODE_STATE;                                                   \
     static const Tags TAGS
 
 #define ProcessorClassIdentifier(T, classIdentifier) \
@@ -182,7 +182,18 @@ class IVW_CORE_API Processor : public PropertyOwner,
 public:
     Processor();
     virtual ~Processor();
-    InviwoProcessorInfo();
+    
+    //  Should be included by all inheriting classes by calling the InviwoProcessorInfo() macro
+    virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
+    virtual std::string getDisplayName() const { return DISPLAY_NAME; }
+    virtual std::string getCategory() const { return CATEGORY; }
+    virtual CodeState getCodeState() const { return CODE_STATE; }
+    virtual Tags getTags() const { return TAGS; }
+    static const std::string CLASS_IDENTIFIER;
+    static const std::string CATEGORY;
+    static const std::string DISPLAY_NAME;
+    static const CodeState CODE_STATE;
+    static const Tags TAGS;
 
     /**
      * Sets the identifier of the Processor. If there already exist a processor with that identifier
@@ -192,7 +203,7 @@ public:
      */
     std::string setIdentifier(const std::string& identifier);
     std::string getIdentifier();
-    virtual std::vector<std::string> getPath() const;
+    virtual std::vector<std::string> getPath() const override;
 
     void setProcessorWidget(ProcessorWidget* processorWidget);
     ProcessorWidget* getProcessorWidget() const;
@@ -258,7 +269,7 @@ public:
      *    * All outports and their connected inports.
      * It will also set is't inports "changed" to false.
      */
-    virtual void setValid();
+    virtual void setValid() override;
 
     /**
      * Triggers invalidation.
@@ -270,7 +281,7 @@ public:
      * processors. Hence all processors that depend on this one in the network will be invalidated.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* modifiedProperty = nullptr);
+                            Property* modifiedProperty = nullptr) override;
 
     /**
      * Adds the interaction handler such that it receives events propagated
@@ -295,11 +306,11 @@ public:
 
 
     // Override from the property owner
-    virtual Processor* getProcessor() { return this; }
-    virtual const Processor* getProcessor() const { return this; }
+    virtual Processor* getProcessor() override { return this; }
+    virtual const Processor* getProcessor() const override { return this; }
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
     static const std::string getCodeStateString(CodeState state);
 

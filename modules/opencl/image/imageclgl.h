@@ -43,7 +43,7 @@ public:
     ImageCLGL();
     ImageCLGL(const ImageCLGL& other);
     virtual ~ImageCLGL();
-    virtual ImageCLGL* clone() const;
+    virtual ImageCLGL* clone() const override;
 
     LayerCLGL* getLayerCL();
     const LayerCLGL* getLayerCL() const;
@@ -52,7 +52,7 @@ public:
     virtual std::type_index getTypeIndex() const override final;
 
 protected:
-    virtual void update(bool);
+    virtual void update(bool) override;
 
     LayerCLGL* layerCLGL_;
 };

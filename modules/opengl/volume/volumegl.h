@@ -54,7 +54,7 @@ public:
     VolumeGL(const VolumeGL& rhs);
     VolumeGL& operator=(const VolumeGL& rhs);
     virtual ~VolumeGL();
-    virtual VolumeGL* clone() const;
+    virtual VolumeGL* clone() const override;
 
     void bindTexture(GLenum texUnit) const;
     void unbindTexture() const;

@@ -67,7 +67,7 @@ public:
     virtual ~VolumeBinary() {}
 
 protected:
-    virtual void preProcess();
+    virtual void preProcess() override;
 
     FloatProperty threshold_;
 

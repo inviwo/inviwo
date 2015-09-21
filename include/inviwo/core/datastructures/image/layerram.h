@@ -42,7 +42,7 @@ public:
              const DataFormatBase* format = DataVec4UINT8::get());
     LayerRAM(const LayerRAM& rhs);
     LayerRAM& operator=(const LayerRAM& that);
-    LayerRAM* clone() const = 0;
+    LayerRAM* clone() const override = 0;
     virtual ~LayerRAM();
 
     /**

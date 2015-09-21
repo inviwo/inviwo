@@ -55,7 +55,7 @@ public:
     MinMaxProperty& operator=(const MinMaxProperty& that);
     MinMaxProperty& operator=(const range_type& value);
 
-    virtual MinMaxProperty* clone() const;
+    virtual MinMaxProperty* clone() const override;
     virtual ~MinMaxProperty();
 
     T getRangeMin() const;
@@ -65,8 +65,8 @@ public:
 
     range_type getRange() const;
 
-    virtual void set(const range_type& value);
-    virtual void set(const Property* srcProperty);
+    virtual void set(const range_type& value) override;
+    virtual void set(const Property* srcProperty) override;
 
     void setRangeMin(const T& value);
     void setRangeMax(const T& value);
@@ -78,11 +78,11 @@ public:
     // set a new range, and maintains the same relative values as before.
     void setRangeNormalized(const range_type& newRange);
 
-    virtual void setCurrentStateAsDefault();
-    virtual void resetToDefaultState();
+    virtual void setCurrentStateAsDefault() override;
+    virtual void resetToDefaultState() override;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& s);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& s) override;
 
     static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
 

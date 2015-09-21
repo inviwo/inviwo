@@ -67,7 +67,7 @@ public:
     virtual ~ImageLowPass(){}
     
 protected:
-    virtual void preProcess();
+    virtual void preProcess() override;
 
 private:
     IntProperty kernelSize_;

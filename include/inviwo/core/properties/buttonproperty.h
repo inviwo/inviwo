@@ -59,7 +59,7 @@ public:
 
     ButtonProperty(const ButtonProperty& rhs);
     ButtonProperty& operator=(const ButtonProperty& that);
-    virtual ButtonProperty* clone() const;
+    virtual ButtonProperty* clone() const override;
     virtual ~ButtonProperty();
     
     /**
@@ -70,7 +70,7 @@ public:
      * 
      * @param src Button property
      */
-    virtual void set(const Property* src);
+    virtual void set(const Property* src) override;
 
     /**
      * Causes onChange to be called. 
@@ -80,7 +80,7 @@ public:
     virtual void pressButton();
 
     // Override Property::resetToDefaultState, to avoid calling propertyModified  on reset.
-    virtual void resetToDefaultState();
+    virtual void resetToDefaultState() override;
 };
 
 } //namespace

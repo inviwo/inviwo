@@ -66,7 +66,7 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void process();
+    virtual void process() override;
     void onVolumeChange();
 
 private:

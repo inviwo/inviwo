@@ -81,7 +81,7 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
 private:
     std::shared_ptr<T> data_;

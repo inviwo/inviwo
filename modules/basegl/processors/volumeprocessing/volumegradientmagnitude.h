@@ -67,11 +67,11 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void preProcess();
-    virtual void postProcess();
+    virtual void preProcess() override;
+    virtual void postProcess() override;
 
 private:
-    virtual void afterInportChanged();
+    virtual void afterInportChanged() override;
 
     OptionPropertyInt channel_;
 };

@@ -108,7 +108,7 @@ struct OutportIterable {
         public:
             Model(U data) : data_(data) {}
 
-            virtual Model<U>* clone() { return new Model<U>(*this); };
+            virtual Model<U>* clone() override { return new Model<U>(*this); };
             virtual void inc() override { data_.inc(); };
             virtual std::shared_ptr<const T> getref() override { return data_.getref(); };
             virtual std::shared_ptr<const T> getptr() override { return data_.getptr(); };

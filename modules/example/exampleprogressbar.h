@@ -61,7 +61,7 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
 private:    
     ImageInport inport_;

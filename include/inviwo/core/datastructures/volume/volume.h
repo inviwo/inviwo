@@ -75,7 +75,7 @@ public:
     void setWorldMatrix(const mat4& mat);
 
     virtual const StructuredCameraCoordinateTransformer<3>& getCoordinateTransformer(
-        const Camera& camera) const;
+        const Camera& camera) const override;
     using StructuredGridEntity<3>::getCoordinateTransformer;
 
     /**

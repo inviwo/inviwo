@@ -47,7 +47,7 @@ public:
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);
     virtual ~LayerGL();
-    virtual LayerGL* clone() const;
+    virtual LayerGL* clone() const override;
 
     virtual void setDimensions(size2_t dimensions) override;
 

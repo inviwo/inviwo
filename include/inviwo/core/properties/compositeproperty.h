@@ -51,9 +51,9 @@ public:
 
     CompositeProperty(const CompositeProperty& rhs);
     CompositeProperty& operator=(const CompositeProperty& that);
-    virtual CompositeProperty* clone() const;
+    virtual CompositeProperty* clone() const override;
     virtual ~CompositeProperty();
-    virtual std::string getClassIdentifierForWidget() const;
+    virtual std::string getClassIdentifierForWidget() const override;
 
     virtual bool isCollapsed() const;
     virtual void setCollapsed(bool value);

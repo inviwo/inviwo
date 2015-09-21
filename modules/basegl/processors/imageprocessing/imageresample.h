@@ -62,7 +62,7 @@ public:
     virtual ~ImageResample();
     InviwoProcessorInfo();
 
-    void initialize();
+    void initialize() override;
 
 protected:
     void interpolationTypeChanged();

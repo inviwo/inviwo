@@ -55,7 +55,7 @@ public:
         std::shared_ptr<BufferObject> data = std::shared_ptr<BufferObject>(nullptr));
     BufferGL(const BufferGL& rhs);
     virtual ~BufferGL();
-    virtual BufferGL* clone() const;
+    virtual BufferGL* clone() const override;
 
     virtual void setSize(size_t size) override;
     virtual size_t getSize() const override;

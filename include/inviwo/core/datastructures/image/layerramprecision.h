@@ -43,7 +43,7 @@ public:
                       const DataFormatBase* format = defaultformat());
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
-    virtual LayerRAMPrecision<T>* clone() const;
+    virtual LayerRAMPrecision<T>* clone() const override;
     virtual ~LayerRAMPrecision();
 
     virtual void* getData() override;
@@ -56,15 +56,15 @@ public:
      */
     virtual void setDimensions(size2_t dimensions) override;
 
-    void setValueFromSingleDouble(const size2_t& pos, double val);
-    void setValueFromVec2Double(const size2_t& pos, dvec2 val);
-    void setValueFromVec3Double(const size2_t& pos, dvec3 val);
-    void setValueFromVec4Double(const size2_t& pos, dvec4 val);
+    void setValueFromSingleDouble(const size2_t& pos, double val) override;
+    void setValueFromVec2Double(const size2_t& pos, dvec2 val) override;
+    void setValueFromVec3Double(const size2_t& pos, dvec3 val) override;
+    void setValueFromVec4Double(const size2_t& pos, dvec4 val) override;
 
-    double getValueAsSingleDouble(const size2_t& pos) const;
-    dvec2 getValueAsVec2Double(const size2_t& pos) const;
-    dvec3 getValueAsVec3Double(const size2_t& pos) const;
-    dvec4 getValueAsVec4Double(const size2_t& pos) const;
+    double getValueAsSingleDouble(const size2_t& pos) const override;
+    dvec2 getValueAsVec2Double(const size2_t& pos) const override;
+    dvec3 getValueAsVec3Double(const size2_t& pos) const override;
+    dvec4 getValueAsVec4Double(const size2_t& pos) const override;
 
 private:
     static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }

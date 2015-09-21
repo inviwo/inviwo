@@ -70,9 +70,9 @@ public:
     InviwoProcessorInfo();
     void setPixelToCollectFrom(const ivec2& xy);
     void clearOutput();
-    virtual void invokeEvent(Event* event);
+    virtual void invokeEvent(Event* event) override;
 protected:
-    virtual void process();
+    virtual void process() override;
     void inportChanged();
     void handleInteractionEventsChanged();
 private:

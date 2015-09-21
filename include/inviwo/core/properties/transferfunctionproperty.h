@@ -55,7 +55,7 @@ public:
     
     TransferFunctionProperty(const TransferFunctionProperty& rhs);
     TransferFunctionProperty& operator=(const TransferFunctionProperty& that);  
-    virtual TransferFunctionProperty* clone() const;
+    virtual TransferFunctionProperty* clone() const override;
     virtual ~TransferFunctionProperty();
 
     const vec2 getMask() const;
@@ -71,18 +71,18 @@ public:
     int getShowHistogram();
     VolumeInport* getVolumeInport();
 
-    virtual void setCurrentStateAsDefault();
-    virtual void resetToDefaultState();
+    virtual void setCurrentStateAsDefault() override;
+    virtual void resetToDefaultState() override;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
     // Override
-    virtual void set(const TransferFunction& property);
-    virtual void set(const Property *property);
-    virtual void onControlPointAdded(TransferFunctionDataPoint* p);
-    virtual void onControlPointRemoved(TransferFunctionDataPoint* p);
-    virtual void onControlPointChanged(const TransferFunctionDataPoint* p);
+    virtual void set(const TransferFunction& property) override;
+    virtual void set(const Property *property) override;
+    virtual void onControlPointAdded(TransferFunctionDataPoint* p) override;
+    virtual void onControlPointRemoved(TransferFunctionDataPoint* p) override;
+    virtual void onControlPointChanged(const TransferFunctionDataPoint* p) override;
 
 private:
     ValueWrapper<vec2> zoomH_;

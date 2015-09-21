@@ -42,7 +42,7 @@ public:
            BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
     Buffer(const Buffer& rhs);
     Buffer& operator=(const Buffer& that);
-    virtual Buffer* clone() const;
+    virtual Buffer* clone() const override;
     virtual ~Buffer() = default;
 
     /**

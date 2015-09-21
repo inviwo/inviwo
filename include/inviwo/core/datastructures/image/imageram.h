@@ -45,7 +45,7 @@ public:
     ImageRAM();
     ImageRAM(const ImageRAM& rhs);
     ImageRAM& operator=(const ImageRAM& that);
-    virtual ImageRAM* clone() const;
+    virtual ImageRAM* clone() const override;
     virtual ~ImageRAM();
 
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;

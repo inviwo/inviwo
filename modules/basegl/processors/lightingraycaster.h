@@ -73,12 +73,12 @@ public:
 
     InviwoProcessorInfo();
 
-    virtual void initializeResources();
+    virtual void initializeResources() override;
 
-    virtual void deserialize(IvwDeserializer& d); 
+    virtual void deserialize(IvwDeserializer& d) override;
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
     Shader shader_;
 

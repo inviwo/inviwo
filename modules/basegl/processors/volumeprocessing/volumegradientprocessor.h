@@ -64,10 +64,10 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void preProcess();
-    virtual void postProcess();
+    virtual void preProcess() override;
+    virtual void postProcess() override;
 
-    virtual void initializeResources();
+    virtual void initializeResources() override;
 
 private:
     void onVolumeChange();

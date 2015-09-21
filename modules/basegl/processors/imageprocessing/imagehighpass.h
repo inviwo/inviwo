@@ -68,7 +68,7 @@ public:
     virtual ~ImageHighPass() {}
 
 protected:
-    virtual void preProcess();
+    virtual void preProcess() override;
     
 protected:
 

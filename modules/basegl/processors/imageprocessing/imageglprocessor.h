@@ -58,7 +58,7 @@ public:
 
     virtual void initialize() override;
 
-    virtual void process();
+    virtual void process() override;
 protected:
     void markInvalid() { internalInvalid_ = true; }
 

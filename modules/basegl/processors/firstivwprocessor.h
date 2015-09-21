@@ -61,11 +61,11 @@ public:
 
     InviwoProcessorInfo();
 
-    void initialize();
-    void deinitialize();
+    void initialize() override;
+    void deinitialize() override;
 
 protected:
-    virtual void process();
+    virtual void process() override;
 
 private:
     FloatVec3Property color_;

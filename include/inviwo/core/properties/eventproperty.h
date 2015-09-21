@@ -63,7 +63,7 @@ public:
 
     EventProperty(const EventProperty& rhs);
     EventProperty& operator=(const EventProperty& that);
-    virtual EventProperty* clone() const;
+    virtual EventProperty* clone() const override;
     virtual ~EventProperty() = default;
 
     /**
@@ -76,11 +76,11 @@ public:
     void setAction(Action* action);
     Action* getAction() const;
     
-    virtual void setCurrentStateAsDefault();
-    virtual void resetToDefaultState();
+    virtual void setCurrentStateAsDefault() override;
+    virtual void resetToDefaultState() override;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
 private:
     std::unique_ptr<InteractionEvent> event_;           //< owning reference

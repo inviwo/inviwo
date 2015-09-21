@@ -259,10 +259,10 @@ public:
 
     OptionPropertyString(const OptionPropertyString& rhs);
     OptionPropertyString& operator=(const OptionPropertyString& that);
-    virtual OptionPropertyString* clone() const;
+    virtual OptionPropertyString* clone() const override;
     virtual ~OptionPropertyString();
 
-    virtual void addOption(std::string identifier, std::string displayName, std::string value);
+    virtual void addOption(std::string identifier, std::string displayName, std::string value) override;
     virtual void addOption(std::string identifier, std::string displayName);
 };
 

@@ -43,16 +43,16 @@ public:
     ImageCL();
     ImageCL(const ImageCL& other);
     virtual ~ImageCL();
-    virtual ImageCL* clone() const;
+    virtual ImageCL* clone() const override;
 
     LayerCL* getLayerCL();
     const LayerCL* getLayerCL() const;
 
-    virtual bool copyRepresentationsTo(DataRepresentation*) const;
+    virtual bool copyRepresentationsTo(DataRepresentation*) const override;
     virtual std::type_index getTypeIndex() const override final;
 
 protected:
-    virtual void update(bool);
+    virtual void update(bool) override;
     LayerCL* layerCL_;
 };
 

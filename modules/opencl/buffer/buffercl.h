@@ -56,14 +56,14 @@ public:
     BufferCL(const BufferCL& rhs);
     virtual ~BufferCL();
 
-    virtual BufferCL* clone() const;
+    virtual BufferCL* clone() const override;
     virtual size_t getSize() const override;
     virtual void setSize(size_t size) override;
 
     const Buffer* getAttribute() const;
 
-    cl::Buffer& getEditable() { return *clBuffer_; }
-    const cl::Buffer& get() const { return *clBuffer_; }
+    cl::Buffer& getEditable() override { return *clBuffer_; }
+    const cl::Buffer& get() const override { return *clBuffer_; }
     virtual std::type_index getTypeIndex() const override final;
     /**
      * \brief Copies data from RAM to OpenCL.

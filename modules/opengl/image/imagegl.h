@@ -48,7 +48,7 @@ public:
     ImageGL(const ImageGL& rhs);
     virtual ~ImageGL();
 
-    virtual ImageGL* clone() const;
+    virtual ImageGL* clone() const override;
 
     void reAttachAllLayers(ImageType type = ALL_LAYERS);
 
@@ -80,7 +80,7 @@ public:
     virtual std::type_index getTypeIndex() const override final;
 
 protected:
-    virtual void update(bool editable);
+    virtual void update(bool editable) override;
 
 private:
     std::vector<LayerGL*> colorLayersGL_; //< non-owning reference

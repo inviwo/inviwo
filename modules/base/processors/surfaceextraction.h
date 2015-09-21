@@ -71,7 +71,7 @@ public:
     SurfaceExtraction& operator=(const SurfaceExtraction&) = delete;
 
 protected:
-    virtual void process();
+    virtual void process() override;
     void setMinMax();
     void updateColors();
 

@@ -73,7 +73,7 @@ public:
     //virtual operator PerspectiveCamera&() { return value_; }; // Do not allow user to get non-const reference since no notification mechanism exist.
     virtual operator const PerspectiveCamera&() const;
 
-    virtual CameraProperty* clone() const;
+    virtual CameraProperty* clone() const override;
     virtual ~CameraProperty() = default;
 
     virtual PerspectiveCamera& get();
@@ -140,7 +140,7 @@ public:
 
     void setProjectionMatrix(float fovy, float aspect, float farPlane, float nearPlane);
 
-    void invokeEvent(Event* event);
+    void invokeEvent(Event* event) override;
 
     // Local camera invalidation
     // Use lock and unlock to set several camera properties without causing evaluation,

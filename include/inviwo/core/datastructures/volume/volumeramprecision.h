@@ -75,7 +75,7 @@ public:
     virtual void setValueFromVec4Double(const size3_t& pos, dvec4 val) override;
 
     void setValuesFromVolume(const VolumeRAM* src, const size3_t& dstOffset, const size3_t& subSize,
-                             const size3_t& subOffset);
+                             const size3_t& subOffset) override;
 
     virtual double getValueAsSingleDouble(const size3_t& pos) const override;
     virtual dvec2 getValueAsVec2Double(const size3_t& pos) const override;

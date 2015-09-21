@@ -52,7 +52,7 @@ public:
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ProcessorStatusGraphicsType };
-    int type() const { return Type; }
+    int type() const override { return Type; }
 
     // ProcessorWidgetObserver overrides
     virtual void onProcessorWidgetShow(ProcessorWidget*) override;
