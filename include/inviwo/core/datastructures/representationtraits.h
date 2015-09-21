@@ -47,7 +47,7 @@ struct RAM {};
 
 template <typename DataType, typename Kind>
 struct representation_traits {
-    using type = nullptr_t;
+    using type = std::nullptr_t;
 };
 
 }  // namespace

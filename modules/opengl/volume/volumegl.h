@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
 #include <modules/opengl/texture/texture3d.h>
+#include <inviwo/core/datastructures/representationtraits.h>
 
 namespace inviwo {
 

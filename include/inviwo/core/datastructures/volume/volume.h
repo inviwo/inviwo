@@ -48,9 +48,9 @@ public:
     Volume(const Volume&);
     Volume(std::shared_ptr<VolumeRepresentation>);
     Volume& operator=(const Volume& that);
-    virtual Volume* clone() const;
+    virtual Volume* clone() const override;
     virtual ~Volume();
-    virtual std::string getDataInfo() const;
+    virtual std::string getDataInfo() const override;
 
     size3_t getDimensions() const override;
     
@@ -102,17 +102,16 @@ public:
 
 
     template<typename Kind>
-    auto getRep() const -> const typename representation_traits<Volume, Kind>::type*;
-
+    const typename representation_traits<Volume, Kind>::type *getRep() const;
 
 protected:
     virtual std::shared_ptr<VolumeRepresentation> createDefaultRepresentation() const override;
 };
 
 template <typename Kind>
-auto Volume::getRep() const  -> const typename representation_traits<Volume, Kind>::type* {
+const typename representation_traits<Volume, Kind>::type *Volume::getRep() const {
     static_assert(
-        !std::is_same<typename representation_traits<Volume, Kind>::type, nullptr_t>::value,
+        !std::is_same<typename representation_traits<Volume, Kind>::type, std::nullptr_t>::value,
         "No representation of specified kind found");
     return getRepresentation<typename representation_traits<Volume, Kind>::type>();
 }

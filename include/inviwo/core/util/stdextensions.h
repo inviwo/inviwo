@@ -200,7 +200,7 @@ bool insert_unique(T& map, const typename T::key_type& key, typename T::mapped_t
 }
 
 template <typename T, typename V>
-auto map_find_or_null(T& cont, const V& elem) -> typename typename T::mapped_type {
+auto map_find_or_null(T& cont, const V& elem) -> typename T::mapped_type {
     auto it = cont.find(elem);
     if (it != end(cont)) {
         return it->second;

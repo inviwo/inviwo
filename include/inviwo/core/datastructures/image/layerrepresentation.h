@@ -33,14 +33,11 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
-#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/imagetypes.h>
 
 namespace inviwo {
 
 class IVW_CORE_API LayerRepresentation : public DataRepresentation {
-    friend class Layer;
-
 public:
     LayerRepresentation(size2_t dimensions = size2_t(32, 32), LayerType type = COLOR_LAYER,
                         const DataFormatBase* format = DataVec4UINT8::get());
