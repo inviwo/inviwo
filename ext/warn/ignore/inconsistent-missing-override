@@ -24,24 +24,25 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#if defined(IVW_WARN_PUSH_)
-# error "Not ending 'warn/push' include detected;"
-        "every 'push' must ends with 'warn/pop'; "
+#if !defined(IVW_WARN_PUSH_)
+# error "`warn/ignore/inconsistent-missing-override` used without `warn/push`"
+#endif
+
+#if defined(IVW_WARN_PUSH_INCONSISTENT_MISSING_OVERRIDE_)
+# error "`warn/ignore/inconsistent-missing-override` already included"
 #else
-# define IVW_WARN_PUSH_
+# define IVW_WARN_INCONSISTENT_MISSING_OVERRIDE_
 #endif
 
 #if (__clang__)
-# pragma clang diagnostic push
+# if __has_warning("-Winconsistent-missing-override")
+#  pragma clang diagnostic ignored "-Winconsistent-missing-override"
+# endif
 #endif
 
 #if (__GNUC__)
-# pragma GCC diagnostic push
-#endif
-
-#if (_MSC_VER)
-# pragma warning(push)
+# pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif

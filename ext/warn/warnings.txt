@@ -1,98 +1,99 @@
 ### Main table
 
- Name                                  | Clang        | GCC          | MSVC |
----------------------------------------|--------------|--------------|------|
- behavior-change                       | *no*         | *no*         | 4350 |
- bool-conversion                       | **same**     | *no*         | *no* |
- c++11-extensions                      | **same**     | *no*         | *no* |
- cast-align                            | **same**     | **same**     | *no* |
- catch-semantic-changed                | *no*         | *no*         | 4571 |
- conditional-uninitialized             | **same**     | *no*         | *no* |
- constant-conditional                  | *no*         | *no*         | 4127 |
- constant-conversion                   | **same**     | *no*         | *no* |
- conversion                            | **same**     | **same**     | 4244 |
- conversion-loss                       | conversion   | conversion   | 4242 |
- conversion-sign-extended              | *no*         | *no*         | 4826 |
- covered-switch-default                | **same**     | *no*         | *no* |
- deprecated                            | **same**     | **same**     | *no* |
- deprecated-declarations               | **same**     | **same**     | 4996 |
- deprecated-objc-isa-usage             | **same**     | *no*         | *no* |
- deprecated-register                   | **same**     | *no*         | *no* |
- digraphs-not-supported                | *no*         | *no*         | 4628 |
- disabled-macro-expansion              | **same**     | *no*         | *no* |
- documentation                         | **same**     | *no*         | *no* |
- documentation-unknown-command         | **same**     | *no*         | *no* |
- empty-body                            | **same**     | **same**     | *no* |
- enum-conversion                       | **same**     | *no*         | *no* |
- exit-time-destructors                 | **same**     | *no*         | *no* |
- extra-semi                            | **same**     | *no*         | *no* |
- format                                | **same**     | **same**     | *no* |
- four-char-constants                   | **same**     | *no*         | *no* |
- global-constructors                   | **same**     | *no*         | *no* |
- ill-formed-comma-expr                 | unused-value | unused-value | 4548 |
- implicit-fallthrough                  | **same**     | *no*         | *no* |
- inherits-via-dominance                | *no*         | *no*         | 4250 |
- int-conversion                        | **same**     | *no*         | *no* |
- invalid-offsetof                      | **same**     | **same**     | *no* |
- is-defined-to-be                      | *no*         | *no*         | 4574 |
- layout-changed                        | *no*         | *no*         | 4371 |
- missing-braces                        | **same**     | **same**     | *no* |
- missing-field-initializers            | **same**     | **same**     | *no* |
- missing-noreturn                      | **same**     | **same**     | *no* |
- missing-prototypes                    | **same**     | **same**     | *no* |
- name-length-exceeded                  | *no*         | *no*         | 4503 |
- newline-eof                           | **same**     | *no*         | *no* |
- no-such-warning                       | *no*         | *no*         | 4619 |
- non-virtual-dtor                      | **same**     | **same**     | 4265 |
- object-layout-change                  | *no*         | *no*         | 4435 |
- old-style-cast                        | **same**     | **same**     | *no* |
- overloaded-virtual                    | **same**     | **same**     | *no* |
- padded                                | **same**     | **same**     | 4820 |
- parentheses                           | **same**     | **same**     | *no* |
- pedantic                              | **same**     | **same**     | *no* |
- pointer-sign                          | **same**     | **same**     | *no* |
- return-type                           | **same**     | **same**     | *no* |
- shadow                                | **same**     | **same**     | *no* |
- shift-sign-overflow                   | **same**     | *no*         | *no* |
- shorten-64-to-32                      | **same**     | *no*         | *no* |
- sign-compare                          | **same**     | **same**     | 4389 |
- sign-conversion                       | **same**     | **same**     | 4365 |
- signed-unsigned-compare               | sign-compare | sign-compare | 4388 |
- static-ctor-not-thread-safe           | *no*         | *no*         | 4640 |
- switch                                | **same**     | **same**     | 4062 |
- switch-enum                           | **same**     | **same**     | 4061 |
- this-used-in-init                     | *no*         | *no*         | 4355 |
- undef                                 | **same**     | **same**     | 4668 |
- uninitialized                         | **same**     | **same**     | *no* |
- unknown-pragmas                       | **same**     | **same**     | *no* |
- unreachable-code                      | **same**     | **same**     | 4702 |
- unreachable-code-return               | **same**     | *no*         | *no* |
- unsafe-conversion                     | *no*         | *no*         | 4191 |
- unused-but-set-variable               | *no*         | **same**     | *no* |
- unused-function                       | **same**     | **same**     | *no* |
- unused-label                          | **same**     | **same**     | *no* |
- unused-parameter                      | **same**     | **same**     | 4100 |
- unused-value                          | **same**     | **same**     | 4555 |
- unused-variable                       | **same**     | **same**     | *no* |
- used-but-marked-unused                | **same**     | *no*         | *no* |
- weak-vtables                          | **same**     | *no*         | *no* |
- dll-interface                         | *no*         | *no*         | 4251 |
- dll-interface-base                    | *no*         | *no*         | 4275 |
- hide-virtual-func                     | *no*         | *no*         | 4263 |
- arc-bridge-casts-disallowed-in-nonarc | **same**     | *no*         | *no* |
- arc-repeated-use-of-weak              | **same**     | *no*         | *no* |
- deprecated-implementations            | **same**     | *no*         | *no* |
- duplicate-method-match                | **same**     | *no*         | *no* |
- explicit-ownership-type               | **same**     | *no*         | *no* |
- implicit-atomic-properties            | **same**     | *no*         | *no* |
- implicit-retain-self                  | **same**     | *no*         | *no* |
- objc-missing-property-synthesis       | **same**     | *no*         | *no* |
- objc-root-class                       | **same**     | *no*         | *no* |
- protocol                              | **same**     | **same**     | *no* |
- receiver-is-weak                      | **same**     | *no*         | *no* |
- selector                              | **same**     | **same**     | *no* |
- strict-selector-match                 | **same**     | **same**     | *no* |
- undeclared-selector                   | **same**     | **same**     | *no* |
+ Name                                  | Clang        | GCC              | MSVC |
+---------------------------------------|--------------|------------------|------|
+ behavior-change                       | *no*         | *no*             | 4350 |
+ bool-conversion                       | **same**     | *no*             | *no* |
+ c++11-extensions                      | **same**     | *no*             | *no* |
+ cast-align                            | **same**     | **same**         | *no* |
+ catch-semantic-changed                | *no*         | *no*             | 4571 |
+ conditional-uninitialized             | **same**     | *no*             | *no* |
+ constant-conditional                  | *no*         | *no*             | 4127 |
+ constant-conversion                   | **same**     | *no*             | *no* |
+ conversion                            | **same**     | **same**         | 4244 |
+ conversion-loss                       | conversion   | conversion       | 4242 |
+ conversion-sign-extended              | *no*         | *no*             | 4826 |
+ covered-switch-default                | **same**     | *no*             | *no* |
+ deprecated                            | **same**     | **same**         | *no* |
+ deprecated-declarations               | **same**     | **same**         | 4996 |
+ deprecated-objc-isa-usage             | **same**     | *no*             | *no* |
+ deprecated-register                   | **same**     | *no*             | *no* |
+ digraphs-not-supported                | *no*         | *no*             | 4628 |
+ disabled-macro-expansion              | **same**     | *no*             | *no* |
+ documentation                         | **same**     | *no*             | *no* |
+ documentation-unknown-command         | **same**     | *no*             | *no* |
+ empty-body                            | **same**     | **same**         | *no* |
+ enum-conversion                       | **same**     | *no*             | *no* |
+ exit-time-destructors                 | **same**     | *no*             | *no* |
+ extra-semi                            | **same**     | *no*             | *no* |
+ format                                | **same**     | **same**         | *no* |
+ four-char-constants                   | **same**     | *no*             | *no* |
+ global-constructors                   | **same**     | *no*             | *no* |
+ ill-formed-comma-expr                 | unused-value | unused-value     | 4548 |
+ implicit-fallthrough                  | **same**     | *no*             | *no* |
+ inherits-via-dominance                | *no*         | *no*             | 4250 |
+ int-conversion                        | **same**     | *no*             | *no* |
+ invalid-offsetof                      | **same**     | **same**         | *no* |
+ is-defined-to-be                      | *no*         | *no*             | 4574 |
+ layout-changed                        | *no*         | *no*             | 4371 |
+ missing-braces                        | **same**     | **same**         | *no* |
+ missing-field-initializers            | **same**     | **same**         | *no* |
+ missing-noreturn                      | **same**     | **same**         | *no* |
+ missing-prototypes                    | **same**     | **same**         | *no* |
+ name-length-exceeded                  | *no*         | *no*             | 4503 |
+ newline-eof                           | **same**     | *no*             | *no* |
+ no-such-warning                       | *no*         | *no*             | 4619 |
+ non-virtual-dtor                      | **same**     | **same**         | 4265 |
+ object-layout-change                  | *no*         | *no*             | 4435 |
+ old-style-cast                        | **same**     | **same**         | *no* |
+ overloaded-virtual                    | **same**     | **same**         | *no* |
+ padded                                | **same**     | **same**         | 4820 |
+ parentheses                           | **same**     | **same**         | *no* |
+ pedantic                              | **same**     | **same**         | *no* |
+ pointer-sign                          | **same**     | **same**         | *no* |
+ return-type                           | **same**     | **same**         | *no* |
+ shadow                                | **same**     | **same**         | *no* |
+ shift-sign-overflow                   | **same**     | *no*             | *no* |
+ shorten-64-to-32                      | **same**     | *no*             | *no* |
+ sign-compare                          | **same**     | **same**         | 4389 |
+ sign-conversion                       | **same**     | **same**         | 4365 |
+ signed-unsigned-compare               | sign-compare | sign-compare     | 4388 |
+ static-ctor-not-thread-safe           | *no*         | *no*             | 4640 |
+ switch                                | **same**     | **same**         | 4062 |
+ switch-enum                           | **same**     | **same**         | 4061 |
+ this-used-in-init                     | *no*         | *no*             | 4355 |
+ undef                                 | **same**     | **same**         | 4668 |
+ uninitialized                         | **same**     | **same**         | *no* |
+ unknown-pragmas                       | **same**     | **same**         | *no* |
+ unreachable-code                      | **same**     | **same**         | 4702 |
+ unreachable-code-return               | **same**     | *no*             | *no* |
+ unsafe-conversion                     | *no*         | *no*             | 4191 |
+ unused-but-set-variable               | *no*         | **same**         | *no* |
+ unused-function                       | **same**     | **same**         | *no* |
+ unused-label                          | **same**     | **same**         | *no* |
+ unused-parameter                      | **same**     | **same**         | 4100 |
+ unused-value                          | **same**     | **same**         | 4555 |
+ unused-variable                       | **same**     | **same**         | *no* |
+ used-but-marked-unused                | **same**     | *no*             | *no* |
+ weak-vtables                          | **same**     | *no*             | *no* |
+ dll-interface                         | *no*         | *no*             | 4251 |
+ dll-interface-base                    | *no*         | *no*             | 4275 |
+ hide-virtual-func                     | *no*         | *no*             | 4263 |
+ inconsistent-missing-override         | **same**     | suggest-override | *no* |
+ arc-bridge-casts-disallowed-in-nonarc | **same**     | *no*             | *no* |
+ arc-repeated-use-of-weak              | **same**     | *no*             | *no* |
+ deprecated-implementations            | **same**     | *no*             | *no* |
+ duplicate-method-match                | **same**     | *no*             | *no* |
+ explicit-ownership-type               | **same**     | *no*             | *no* |
+ implicit-atomic-properties            | **same**     | *no*             | *no* |
+ implicit-retain-self                  | **same**     | *no*             | *no* |
+ objc-missing-property-synthesis       | **same**     | *no*             | *no* |
+ objc-root-class                       | **same**     | *no*             | *no* |
+ protocol                              | **same**     | **same**         | *no* |
+ receiver-is-weak                      | **same**     | *no*             | *no* |
+ selector                              | **same**     | **same**         | *no* |
+ strict-selector-match                 | **same**     | **same**         | *no* |
+ undeclared-selector                   | **same**     | **same**         | *no* |
 
 ### Table for group: `inline`
 
@@ -102,6 +103,13 @@
  force-not-inlined   | *no*  | *no* | 4714 |
  not-inlined         | *no*  | *no* | 4710 |
  unreferenced-inline | *no*  | *no* | 4514 |
+
+### Table for group: `compatibility-c++98`
+
+ Name                  | Clang    | GCC  | MSVC |
+-----------------------|----------|------|------|
+ c++98-compat          | **same** | *no* | *no* |
+ c++98-compat-pedantic | **same** | *no* | *no* |
 
 ### Table for group: `special-members`
 
@@ -113,13 +121,6 @@
  dflt-ctor-base-inaccessible      | *no*  | *no* | 4623 |
  dflt-ctor-could-not-be-generated | *no*  | *no* | 4510 |
  user-ctor-required               | *no*  | *no* | 4610 |
-
-### Table for group: `compatibility-c++98`
-
- Name                  | Clang    | GCC  | MSVC |
------------------------|----------|------|------|
- c++98-compat          | **same** | *no* | *no* |
- c++98-compat-pedantic | **same** | *no* | *no* |
 
 
 ### Xcode/Clang table
