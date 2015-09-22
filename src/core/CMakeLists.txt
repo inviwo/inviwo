@@ -199,6 +199,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/canvas.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/capabilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/clock.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/cloneableptr.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/colorconversion.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/commandlineparser.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/datetime.h
