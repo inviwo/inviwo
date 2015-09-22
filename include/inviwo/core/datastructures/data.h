@@ -146,20 +146,8 @@ template <typename T>
 const T* Data<Repr>::getRepresentation() const {
     if (!hasRepresentations()) {
         auto repr = createDefaultRepresentation();
-        if (!repr) {
-            throw Exception(
-                "CreateDefaultRepresentation returned nullptr. Possible missing subclass "
-                "implementation",
-                IvwContext);
-        }
-        repr->setValid(true);
-        repr->setOwner(const_cast<Data*>(this));
-
-        {
-            std::unique_lock<std::mutex> lock(mutex_);
-            representations_[repr->getTypeIndex()] = repr;
-            lastValidRepresentation_ = repr;
-        }
+        if (!repr) throw Exception("Failed to create default representation", IvwContext);
+        const_cast<Data*>(this)->addRepresentation(repr);
     }
 
     {
@@ -173,6 +161,7 @@ const T* Data<Repr>::getRepresentation() const {
         }
     }
 }
+
 template <class Repr>
 template <typename T>
 const T* Data<Repr>::getValidRepresentation() const {
@@ -187,13 +176,13 @@ const T* Data<Repr>::getValidRepresentation() const {
 
             auto dest = converter->getConverterID().second;
             auto it = representations_.find(dest);
-            if (it !=
-                representations_.end()) {  // Next representation already exist, just update it
+            if (it != representations_.end()) {  // Next repr. already exist, just update it
                 result = it->second;
                 converter->update(lastValidRepresentation_.get(), result.get());
             } else {  // No representation found, create it
                 // TODO remove static cast here with template factory...
-                result = std::dynamic_pointer_cast<Repr>(converter->createFrom(lastValidRepresentation_.get()));
+                result = std::dynamic_pointer_cast<Repr>(
+                    converter->createFrom(lastValidRepresentation_.get()));
                 if (!result) throw ConverterException("Converter failed to create", IvwContext);
                 result->setOwner(const_cast<Data*>(this));
                 representations_[result->getTypeIndex()] = result;
@@ -248,9 +237,8 @@ void Data<Repr>::copyRepresentationsTo(Data* targetData) const {
 
 template <class Repr>
 void Data<Repr>::addRepresentation(std::shared_ptr<Repr> repr) {
-    repr->setOwner(this);
     repr->setValid(true);
-
+    repr->setOwner(this);
     {
         std::unique_lock<std::mutex> lock(mutex_);
         representations_[repr->getTypeIndex()] = repr;
