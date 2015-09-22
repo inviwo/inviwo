@@ -63,10 +63,10 @@ void LightPropertyWidgetQt::generateWidget() {
     connect(radiusSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(onRadiusSpinBoxChanged(double)));
    
     // Assuming that minimum value is negative and maximum value is positive
-    if (glm::any(glm::greaterThan(property_->getMinValue(), vec3(0)))) {
+    if (glm::any(glm::greaterThan(property_->getMinValue(), vec3(0.0f)))) {
         LogWarn("Minimum value is assumed to be negative. Widget may produce values out of range.")
     }
-    if (glm::any(glm::lessThan(property_->getMaxValue(), vec3(0)))) {
+    if (glm::any(glm::lessThan(property_->getMaxValue(), vec3(0.0f)))) {
         LogWarn("Maximum value is assumed to be positive. Widget may produce values out of range.")
     }
   
@@ -100,7 +100,7 @@ void LightPropertyWidgetQt::onPositionLightWidgetChanged() {
 }
 
 void LightPropertyWidgetQt::onRadiusSpinBoxChanged(double radius) {
-    lightWidget_->setRadius(radius);
+    lightWidget_->setRadius(static_cast<float>(radius));
 }
 
 void LightPropertyWidgetQt::updateFromProperty() {

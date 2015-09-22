@@ -38,7 +38,11 @@
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 
 #include <QtCore/qmath.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QSpinBox>
+#include <warn/pop>
 
 namespace inviwo {
 

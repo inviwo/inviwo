@@ -47,9 +47,9 @@ void inviwo::LightPositionWidgetQt::generateWidget() {
     gradientPixmap_->fill(Qt::transparent);
     this->setFixedWidth(100);
     this->setFixedHeight(100);
-    gradient_ = new QRadialGradient(50, 50, 50, 50, 50);
-    gradient_->setColorAt(0, QColor::fromRgbF(1, 1, 1, 1));
-    gradient_->setColorAt(1, QColor::fromRgbF(0, 0, 0, 0));
+    gradient_ = new QRadialGradient(50.0f, 50.0f, 50.0f, 50.0f, 50.0f);
+    gradient_->setColorAt(0, QColor::fromRgbF(1.0f, 1.0f, 1.0f, 1.0f));
+    gradient_->setColorAt(1, QColor::fromRgbF(0.0f, 0.0f, 0.0f, 0.0f));
     radius_ = gradient_->radius();
     painter_ = new QPainter(gradientPixmap_);
     painter_->fillRect(0, 0, 100, 100, *gradient_);
@@ -72,10 +72,10 @@ void LightPositionWidgetQt::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void LightPositionWidgetQt::setNewPosition(QMouseEvent* e) {
-    const QPoint p = e->pos();
-    QPoint center(gradientPixmap_->width()/2, gradientPixmap_->height()/2);
-    float x = p.x()-center.x();
-    float y = p.y()-center.y();
+    const QPoint p{e->pos()};
+    QPoint center{gradientPixmap_->width()/2, gradientPixmap_->height()/2};
+    float x = static_cast<float>(p.x()-center.x());
+    float y = static_cast<float>(p.y()-center.y());
     float gradientSpaceRadius = sqrt(x*x+y*y);
 
     // Check if user clicked close to, or outside of radius
@@ -90,7 +90,7 @@ void LightPositionWidgetQt::setNewPosition(QMouseEvent* e) {
     float z = sqrt(gradient_->radius()*gradient_->radius() - x*x - y*y);
     theta_ = acos(z/gradient_->radius());
     phi_ = atan2(y, x);
-    // Spherical to cartesian coordinates
+    // Spherical to Cartesian coordinates
     float x1=sin(theta_)*cos(phi_)*gradient_->radius();
     float y1=sin(theta_)*sin(phi_)*gradient_->radius();
     QPointF newPoint(x1, y1);
