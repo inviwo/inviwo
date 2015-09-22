@@ -188,7 +188,7 @@ void LinkDialogProcessorGraphicsItem::animate(qreal incr) {
     if (animateExpansion_ > 1.0 || animateExpansion_ < 0.0f) {
         animationEnd();
     } else {
-        animateExpansion_ += incr;
+        animateExpansion_ += static_cast<float>(incr);
         updateAll();
     }
 }

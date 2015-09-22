@@ -267,7 +267,7 @@ void TransferFunctionEditorView::drawBackground(QPainter* painter, const QRectF&
 
     QPen gridPen;
     gridPen.setColor(QColor(102, 102, 102));
-    gridPen.setWidth(1.0);
+    gridPen.setWidthF(1.0);
     gridPen.setCosmetic(true);
     painter->setPen(gridPen);
     painter->drawLines(lines.data(), lines.size());

@@ -46,7 +46,7 @@ class IVW_CORE_API Interpolation {
 public:
     template <typename T>
     static T linear(const T &a, const T &b, double x) {
-        return a + (b - a) * x;
+        return static_cast<T>(a + (b - a) * x);
     }
 
     template <typename T>

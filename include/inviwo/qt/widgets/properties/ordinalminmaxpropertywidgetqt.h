@@ -103,9 +103,9 @@ public:
     inline static float sliderToValue(MinMaxProperty<double>* p, int val) {
         double steps = (p->getRangeMax() - p->getRangeMin())/p->getIncrement();
         steps = steps > 2048.0 ? 2048.0 : steps;
-        double res = static_cast<float>(val);
+        double res = static_cast<double>(val);
         res = (res / steps) * (p->getRangeMax() - p->getRangeMin() ) + p->getRangeMin();
-        return res;
+        return static_cast<float>(res);
     };
     inline static int valueToSlider(MinMaxProperty<double>* p, double val){
         double steps = (p->getRangeMax() - p->getRangeMin())/p->getIncrement();
