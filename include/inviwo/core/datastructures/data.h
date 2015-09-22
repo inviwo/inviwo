@@ -145,7 +145,7 @@ template <class Repr>
 template <typename T>
 const T* Data<Repr>::getRepresentation() const {
     if (!hasRepresentations()) {
-        auto repr = const_cast<Data*>(this)->createDefaultRepresentation();
+        auto repr = createDefaultRepresentation();
         if (!repr) {
             throw Exception(
                 "CreateDefaultRepresentation returned nullptr. Possible missing subclass "
@@ -218,11 +218,13 @@ T* Data<Repr>::getEditableRepresentation() {
 template <class Repr>
 template <typename T>
 bool Data<Repr>::hasRepresentation() const {
+    std::unique_lock<std::mutex> lock(mutex_);
     return util::has_key(representations_, std::type_index(typeid(T)));
 }
 
 template <class Repr>
 void Data<Repr>::invalidateAllOther(const Repr* repr) {
+    std::unique_lock<std::mutex> lock(mutex_);
     for (auto& elem : representations_) {
         if (elem.second.get() != repr) elem.second->setValid(false);
     }
@@ -230,6 +232,7 @@ void Data<Repr>::invalidateAllOther(const Repr* repr) {
 
 template <class Repr>
 void Data<Repr>::clearRepresentations() {
+    std::unique_lock<std::mutex> lock(mutex_);
     representations_.clear();
 }
 
@@ -246,13 +249,19 @@ void Data<Repr>::copyRepresentationsTo(Data* targetData) const {
 template <class Repr>
 void Data<Repr>::addRepresentation(std::shared_ptr<Repr> repr) {
     repr->setOwner(this);
-    representations_[repr->getTypeIndex()] = repr;
-    lastValidRepresentation_ = repr;
     repr->setValid(true);
+
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        representations_[repr->getTypeIndex()] = repr;
+        lastValidRepresentation_ = repr;
+    }
 }
 
 template <class Repr>
 void Data<Repr>::removeRepresentation(std::shared_ptr<Repr> representation) {
+    std::unique_lock<std::mutex> lock(mutex_);
+
     for (auto& elem : representations_) {
         if (elem.second == representation) {
             representations_.erase(elem.first);
@@ -273,6 +282,7 @@ void Data<Repr>::removeRepresentation(std::shared_ptr<Repr> representation) {
 
 template <class Repr>
 void Data<Repr>::removeOtherRepresentations(std::shared_ptr<Repr> representation) {
+    std::unique_lock<std::mutex> lock(mutex_);
     representations_.clear();
     representations_[representation->getTypeIndex()] = representation;
 
@@ -281,6 +291,7 @@ void Data<Repr>::removeOtherRepresentations(std::shared_ptr<Repr> representation
 
 template <class Repr>
 bool Data<Repr>::hasRepresentations() const {
+    std::unique_lock<std::mutex> lock(mutex_);
     return !representations_.empty();
 }
 
