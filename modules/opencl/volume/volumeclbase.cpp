@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <modules/opencl/volume/volumeclbase.h>
+#include <modules/opencl/clformats.h>
+
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/datamapper.h>
