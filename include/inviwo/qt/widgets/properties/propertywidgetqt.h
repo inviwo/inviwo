@@ -31,6 +31,15 @@
 #define IVW_PROPERTYWIDGETQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <inviwo/core/properties/propertyvisibility.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/properties/propertyobserver.h>
+#include <inviwo/core/util/observer.h>
+#include <inviwo/core/properties/optionproperty.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QWidget>
@@ -38,12 +47,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QComboBox>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
-#include <inviwo/core/properties/propertyvisibility.h>
-#include <inviwo/core/properties/propertywidget.h>
-#include <inviwo/core/properties/propertyobserver.h>
-#include <inviwo/core/util/observer.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -58,7 +62,10 @@ class Property;
 class BaseCallBack;
 
 class IVW_QTWIDGETS_API IvwLineEdit : public QLineEdit {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     IvwLineEdit(QWidget* parent);
     virtual ~IvwLineEdit();
@@ -67,7 +74,10 @@ public:
 };
 
 class IVW_QTWIDGETS_API IvwPushButton : public QPushButton {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     IvwPushButton(QWidget* parent);
     virtual ~IvwPushButton();
@@ -77,7 +87,10 @@ public:
 };
 
 class IVW_QTWIDGETS_API IvwComboBox : public QComboBox {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     IvwComboBox(QWidget* parent);
     virtual ~IvwComboBox();
@@ -89,7 +102,10 @@ public:
 class IVW_QTWIDGETS_API PropertyWidgetQt : public QWidget,
                                            public PropertyWidget,
                                            public PropertyObserver {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     PropertyWidgetQt();
@@ -100,7 +116,7 @@ public:
     virtual QMenu* getContextMenu();
 
     // Should be called first thing after the property has been added to a layout.
-    virtual void initState(); 
+    virtual void initState();
 
     static int MINIMUM_WIDTH;
     static int SPACING;
@@ -142,19 +158,19 @@ signals:
     void updateSemantics(PropertyWidgetQt*);
 
 protected:
-    virtual void setVisible(bool visible);
+    virtual void setVisible(bool visible) override;
     UsageMode getApplicationUsageMode();
 
     // Context menu
     void generateContextMenu();
     void generateModuleMenuActions();
     void updateModuleMenuActions();
-    virtual void initializeEditorWidgetsMetaData();
+    virtual void initializeEditorWidgetsMetaData() override;
 
-    virtual bool event(QEvent* event);  //< for custom tooltips.
+    virtual bool event(QEvent* event) override;  //< for custom tooltips.
     virtual std::string getToolTipText();
 
-    void paintEvent(QPaintEvent* pe);
+    void paintEvent(QPaintEvent* pe) override;
 
     // Actions
     QMenu* usageModeItem_;
@@ -178,7 +194,7 @@ private:
     QMap<QString, QMenu*> moduleSubMenus_;
 
     static const Property* copySource;
-    const int maxNumNestedShades_; //< This number has do match the number of shades in the qss. 
+    const int maxNumNestedShades_;  //< This number has do match the number of shades in the qss.
     int nestedDepth_;
 };
 

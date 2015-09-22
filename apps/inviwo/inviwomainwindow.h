@@ -30,6 +30,11 @@
 #ifndef IVW_INVIWOMAINWINDOW_H
 #define IVW_INVIWOMAINWINDOW_H
 
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/qt/editor/networkeditor.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QMainWindow>
 #include <QDockWidget>
 #include <QListWidget>
@@ -38,9 +43,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
-
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/qt/editor/networkeditor.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -55,7 +58,10 @@ class HelpWidget;
 
 class InviwoMainWindow : public QMainWindow,
     public NetworkEditorObserver {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     static const unsigned int maxNumRecentFiles_ = 10;
 
@@ -108,7 +114,7 @@ private:
     void addMenus();
     void addMenuActions();
     void addToolBars();
-    void closeEvent(QCloseEvent* event);
+    void closeEvent(QCloseEvent* event) override;
 
     void saveWindowState();
     void loadWindowState();

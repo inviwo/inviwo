@@ -149,6 +149,8 @@ void SurfaceExtraction::setMinMax() {
     }
 }
 
+#include <warn/push>
+#include <warn/ignore/unused-variable>
 void SurfaceExtraction::updateColors() {
     const static vec4 defaultColor[11] = {vec4(1.0f),
                                           vec4(0x1f, 0x77, 0xb4, 255) / vec4(255, 255, 255, 255),
@@ -183,6 +185,8 @@ void SurfaceExtraction::updateColors() {
         colors_[i]->setVisible(false);
     }
 }
+#include <warn/pop>
+
 
 // This will stop the invalidation of the network unless the dirty flag is set.
 void SurfaceExtraction::invalidate(InvalidationLevel invalidationLevel,

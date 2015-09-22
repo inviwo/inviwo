@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/inviwodockwidgettitlebar.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QDockWidget>
 #include <QLabel>
 #include <QIcon>
@@ -36,7 +39,7 @@
 #include <QHBoxLayout>
 #include <QStyleOption>
 #include <QPainter>
-
+#include <warn/pop>
 
 namespace inviwo {
 

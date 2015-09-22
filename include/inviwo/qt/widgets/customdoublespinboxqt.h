@@ -31,7 +31,11 @@
 #define IVW_DOUBLE_SPIN_BOX_QT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QDoubleSpinBox>
+#include <warn/pop>
 
 class QTimerEvent;
 

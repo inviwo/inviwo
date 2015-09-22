@@ -30,13 +30,17 @@
 #ifndef IVW_PROPERTY_SELECTION_TREE_WIDGET_H
 #define IVW_PROPERTY_SELECTION_TREE_WIDGET_H
 
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QTreeWidget>
 #include <QApplication>
 #include <QDialog>
 #include <QPushButton>
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <warn/pop>
 
 namespace inviwo {
 

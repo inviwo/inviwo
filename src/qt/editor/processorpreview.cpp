@@ -32,10 +32,13 @@
 
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsView>
-
+#include <warn/pop>
 
 namespace inviwo {
 

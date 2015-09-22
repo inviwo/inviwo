@@ -29,10 +29,14 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/io/datareaderdialog.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QComboBox>
 #include <QDialog>
 #include <QLabel>
 #include <QSpinBox>
+#include <warn/pop>
 
 namespace inviwo {
 

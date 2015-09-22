@@ -28,15 +28,17 @@
  *********************************************************************************/
 
 #include "pythoninfowidget.h"
+#include <modules/python3/pyinviwo.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QTabWidget>
 #include <QLabel>
 #include <QScrollArea>
 #include <QGridLayout>
-
-#include <modules/python3/pyinviwo.h>
+#include <warn/pop>
 
 namespace inviwo {
 PythonInfoWidget::PythonInfoWidget(QWidget* parent)

@@ -85,7 +85,10 @@ private:
 };
 
 class IVW_QTWIDGETS_API RangeSliderMiddle : public QFrame {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     RangeSliderMiddle(QWidget* parent = nullptr);
     virtual ~RangeSliderMiddle();

@@ -76,7 +76,10 @@ class QOpenGLContext;
 namespace inviwo {
 
 class IVW_MODULE_OPENGLQT_API CanvasQt : public QGLWindow, public CanvasGL {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 
     friend class CanvasProcessorWidgetQt;
 
@@ -99,8 +102,8 @@ public:
     virtual std::unique_ptr<Canvas> create() override;
 
 protected:
-    void initializeGL();
-    void paintGL();
+    void initializeGL() override;
+    void paintGL() override;
 
     virtual bool event(QEvent *e) override;
     virtual void mousePressEvent(QMouseEvent* e) override;

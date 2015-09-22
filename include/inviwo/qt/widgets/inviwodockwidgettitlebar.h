@@ -52,7 +52,10 @@ dock button or double clicking the title bar is still possible.
 Note: adding a custom title bar to a QDockWidget removes the window decoration!
 */
 class IVW_QTWIDGETS_API InviwoDockWidgetTitleBar : public QWidget {
-Q_OBJECT
+    #include <warn/push>
+    #include <warn/ignore/all>
+    Q_OBJECT
+    #include <warn/pop>
 public:
     InviwoDockWidgetTitleBar(QWidget *parent=nullptr);
     virtual ~InviwoDockWidgetTitleBar();

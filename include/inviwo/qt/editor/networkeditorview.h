@@ -32,8 +32,11 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditor.h>
-#include <QGraphicsView>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGraphicsView>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -41,7 +41,10 @@ class TransferFunctionProperty;
 class TFPushButton;
 
 class IVW_QTWIDGETS_API TransferFunctionPropertyWidgetQt : public PropertyWidgetQt {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 
 public:
     TransferFunctionPropertyWidgetQt(TransferFunctionProperty* property);
@@ -62,7 +65,10 @@ public slots:
 };
 
 class IVW_QTWIDGETS_API TFPushButton : public IvwPushButton {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     TFPushButton(Property* property, TransferFunctionPropertyDialog* tfDialog,
                  QWidget* parent = nullptr);

@@ -32,10 +32,14 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QVBoxLayout>
 #include <QTabWidget>
 #include <QString>
 #include <QScrollArea>
+#include <warn/pop>
 
 namespace inviwo {
 class PropertyWidgetQt;

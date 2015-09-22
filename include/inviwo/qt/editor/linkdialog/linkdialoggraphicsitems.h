@@ -31,6 +31,13 @@
 #define  IVW_LINKDIALOG_GRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/properties/property.h>
+#include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <inviwo/qt/editor/connectiongraphicsitem.h>
+#include <inviwo/qt/widgets/inviwodockwidget.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsView>
 #include <QDialog>
 #include <QGraphicsRectItem>
@@ -45,11 +52,7 @@
 #include <QEventLoop>
 #include <QCheckBox>
 #include <QTimeLine>
-
-#include <inviwo/core/properties/property.h>
-#include <inviwo/qt/widgets/labelgraphicsitem.h>
-#include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <warn/pop>
 
 static const qreal LINKDIALOG_PROCESSOR_GRAPHICSITEM_DEPTH = 1.0f;
 static const qreal LINKDIALOG_PROPERTY_GRAPHICSITEM_DEPTH = 2.0f;

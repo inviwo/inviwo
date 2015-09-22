@@ -41,7 +41,10 @@ class QKeyEvent;
 namespace inviwo {
 
 class IVW_QTEDITOR_API ConsoleWidget : public InviwoDockWidget, public Logger {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     ConsoleWidget(QWidget* parent);
     ~ConsoleWidget();

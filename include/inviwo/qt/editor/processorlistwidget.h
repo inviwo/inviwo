@@ -31,16 +31,18 @@
 #define IVW_PROCESSORLISTWIDGET_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QComboBox>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMouseEvent>
 #include <QTreeWidget>
 #include <QDrag>
-
-#include <inviwo/qt/widgets/inviwodockwidget.h>
-
-#include <inviwo/core/processors/processorfactoryobject.h>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -32,8 +32,12 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/rangesliderqt.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QHBoxLayout>
 #include <QSpinBox>
+#include <warn/pop>
 
 namespace inviwo {
 

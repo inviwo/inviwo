@@ -28,11 +28,15 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/rawdatareaderdialogqt.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QDoubleValidator>
+#include <warn/pop>
 
 namespace inviwo {
 

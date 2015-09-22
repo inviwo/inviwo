@@ -43,7 +43,10 @@
 namespace inviwo {
 
 class IVW_QTWIDGETS_API InviwoFileDialog : public QFileDialog {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     InviwoFileDialog(QWidget *parent, const std::string &title,
         const std::string &pathType = "default",

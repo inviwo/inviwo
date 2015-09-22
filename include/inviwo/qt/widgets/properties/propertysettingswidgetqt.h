@@ -30,6 +30,17 @@
 #ifndef IVW_PROPERTYSETTINGSWIDGETQT_H
 #define IVW_PROPERTYSETTINGSWIDGETQT_H
 
+
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+// Core
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/properties/propertywidget.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/qt/widgets/qstringhelper.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 // Qt
 #include <QDialog>
 #include <QLineEdit>
@@ -40,13 +51,7 @@
 #include <QPushButton>
 #include <QKeyEvent>
 #include <QString>
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-// Core
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/properties/propertywidget.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/qt/widgets/qstringhelper.h>
+#include <warn/pop>
 
 namespace inviwo {
 

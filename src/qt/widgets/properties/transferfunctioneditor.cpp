@@ -33,15 +33,16 @@
 #include <inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h>
 #include <inviwo/qt/widgets/properties/transferfunctioncontrolpointconnection.h>
 
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QBrush>
-
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView>
 #include <QKeyEvent>
 #include <QLineF>
 #include <QPainter>
 #include <QPen>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -41,7 +41,10 @@
 namespace inviwo {
 
 class IVW_MODULE_OPENGLQT_API OpenGLQtMenu : public QObject, public ProcessorNetworkObserver {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     OpenGLQtMenu();
     virtual ~OpenGLQtMenu() {}

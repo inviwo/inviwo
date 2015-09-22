@@ -34,12 +34,14 @@
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 #include <inviwo/core/resources/resourcemanagerobserver.h>
 
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QFrame>
 #include <QVBoxLayout>
 #include <QListView>
 #include <QStandardItemModel>
 #include <QKeyEvent>
+#include <warn/pop>
 
 namespace inviwo {
 

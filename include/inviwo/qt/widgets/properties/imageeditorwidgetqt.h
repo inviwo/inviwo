@@ -30,6 +30,23 @@
 #ifndef IVW_IMAGEEDITORWIDGETQT_H
 #define IVW_IMAGEEDITORWIDGETQT_H
 
+
+//Property includes
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/imageeditorproperty.h>
+#include <inviwo/core/properties/property.h>
+
+//Widget includes
+#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
+#include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
+#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <inviwo/qt/widgets/properties/stringpropertywidgetqt.h>
+#include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <inviwo/qt/widgets/editablelabelqt.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 //QT includes
 #include <QFile>
 #include <QCheckBox>
@@ -59,22 +76,7 @@
 #include <QGraphicsItem>
 #include <QSpinBox>
 #include <QGraphicsDropShadowEffect>
-
-
-//Property includes
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/imageeditorproperty.h>
-#include <inviwo/core/properties/property.h>
-
-//Widget includes
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-#include <inviwo/qt/widgets/properties/stringpropertywidgetqt.h>
-#include <inviwo/qt/widgets/labelgraphicsitem.h>
-#include <inviwo/qt/widgets/editablelabelqt.h>
-
+#include <warn/pop>
 
 namespace inviwo {
 

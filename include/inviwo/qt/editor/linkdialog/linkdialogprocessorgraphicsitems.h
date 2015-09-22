@@ -31,6 +31,9 @@
 #define  IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsView>
 #include <QDialog>
 #include <QGraphicsRectItem>
@@ -44,6 +47,7 @@
 #include <QStandardItemModel>
 #include <QEventLoop>
 #include <QCheckBox>
+#include <warn/pop>
 
 #include <inviwo/qt/widgets/labelgraphicsitem.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>

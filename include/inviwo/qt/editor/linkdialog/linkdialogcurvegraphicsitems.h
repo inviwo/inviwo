@@ -31,6 +31,13 @@
 #define  IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <inviwo/qt/editor/connectiongraphicsitem.h>
+#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsView>
 #include <QDialog>
 #include <QGraphicsRectItem>
@@ -44,12 +51,7 @@
 #include <QStandardItemModel>
 #include <QEventLoop>
 #include <QCheckBox>
-
-#include <inviwo/qt/widgets/labelgraphicsitem.h>
-#include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
-
-#include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -63,7 +65,7 @@ public:
 
     //override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + LinkDialogCurveGraphicsItemType };
-    int type() const  {return Type; }
+    int type() const override {return Type; }
 protected:
     virtual QPainterPath obtainCurvePath() const override;
     virtual QPainterPath obtainCurvePath(QPointF startPoint, QPointF endPoint) const override;

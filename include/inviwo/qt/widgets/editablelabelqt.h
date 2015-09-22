@@ -41,7 +41,10 @@
 namespace inviwo {
 
 class IVW_QTWIDGETS_API EditableLabelQt : public QWidget, public PropertyObserver {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     EditableLabelQt(PropertyWidgetQt* parent, Property* property, bool shortenText = true);
     EditableLabelQt(PropertyWidgetQt* parent, std::string text, bool shortenText = true);

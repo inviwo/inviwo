@@ -43,7 +43,11 @@ class CanvasProcessor;
 class IVW_MODULE_OPENGLQT_API CanvasProcessorWidgetQt : public QWidget,
                                                         public CanvasProcessorWidget,
                                                         public ProcessorObserver {
+    
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     CanvasProcessorWidgetQt();
     virtual ~CanvasProcessorWidgetQt();

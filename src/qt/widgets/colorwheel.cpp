@@ -36,6 +36,9 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/colorwheel.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QPainter>
 #include <QResizeEvent>
 #include <QStyleOption>
@@ -43,6 +46,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <warn/pop>
 
 namespace inviwo {
 

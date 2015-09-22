@@ -31,11 +31,15 @@
 #define IVW_HTMLLISTWIDGETQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QMouseEvent>
 #include <QTreeWidget>
 #include <QDrag>
+#include <warn/pop>
 
 namespace inviwo {
 

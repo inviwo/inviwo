@@ -27,15 +27,6 @@
  * 
  *********************************************************************************/
 
-#include <QApplication>
-#include <QGraphicsDropShadowEffect>
-#include <QPainter>
-#include <QStyleOptionGraphicsItem>
-#include <QVector2D>
-#include <QTextCursor>
-#include <QGraphicsView>
-#include <QGraphicsSceneMouseEvent>
-
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>
 #include <inviwo/core/processors/processor.h>
@@ -56,6 +47,17 @@
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/widgets/processors/processorwidgetqt.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QApplication>
+#include <QGraphicsDropShadowEffect>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
+#include <QVector2D>
+#include <QTextCursor>
+#include <QGraphicsView>
+#include <QGraphicsSceneMouseEvent>
+#include <warn/pop>
 
 namespace inviwo {
 

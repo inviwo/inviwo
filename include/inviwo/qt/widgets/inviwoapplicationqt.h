@@ -56,7 +56,10 @@ private:
 };
 
 class IVW_QTWIDGETS_API InviwoApplicationQt : public QApplication, public InviwoApplication {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 
 public:
     InviwoApplicationQt(std::string displayName_, std::string basePath_, int& argc, char** argv, bool movePointsOn = true);

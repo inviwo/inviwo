@@ -31,7 +31,11 @@
 #define  IVW_LINKDIALOG_VIEW_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsView>
+#include <warn/pop>
 
 namespace inviwo {
 

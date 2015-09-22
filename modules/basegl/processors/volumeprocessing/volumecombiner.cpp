@@ -97,6 +97,8 @@ bool VolumeCombiner::isReady() const  {
     return Processor::isReady() && validEquation_;
 }
 
+#include <warn/push>
+#include <warn/ignore/unused-variable>
 void VolumeCombiner::buildEquation() {
     try {
         std::map<std::string, double> vars = {};
@@ -133,6 +135,8 @@ void VolumeCombiner::buildEquation() {
         LogProcessorError("Error: " << e.getMessage());
     }
 }
+#include <warn/pop>
+
 
 void VolumeCombiner::process() {
     if (inport_.isChanged()) {

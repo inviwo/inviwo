@@ -34,7 +34,11 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/histogram.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsView>
+#include <warn/pop>
 
 namespace inviwo {
 

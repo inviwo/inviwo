@@ -42,7 +42,10 @@ namespace inviwo {
     class InviwoDockWidgetTitleBar;
 
 class IVW_QTWIDGETS_API InviwoDockWidget : public QDockWidget {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 
 public:
     InviwoDockWidget(QString title, QWidget* parent);

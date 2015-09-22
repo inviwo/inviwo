@@ -31,6 +31,15 @@
 #define  IVW_LINKDIALOG_PROPERTYGRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/links/linkconditions.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <inviwo/qt/editor/connectiongraphicsitem.h>
+#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsView>
 #include <QDialog>
 #include <QGraphicsRectItem>
@@ -44,14 +53,7 @@
 #include <QStandardItemModel>
 #include <QEventLoop>
 #include <QCheckBox>
-
-#include <inviwo/core/links/linkconditions.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/qt/widgets/labelgraphicsitem.h>
-#include <inviwo/qt/editor/connectiongraphicsitem.h>
-#include <inviwo/qt/widgets/inviwodockwidget.h>
-
-#include <inviwo/qt/editor/linkdialog/linkdialoggraphicsitems.h>
+#include <warn/pop>
 
 namespace inviwo {
 

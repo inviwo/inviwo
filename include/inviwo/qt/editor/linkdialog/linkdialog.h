@@ -31,7 +31,10 @@
 #define  IVW_LINKDIALOG_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/qt/widgets/inviwodockwidget.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QComboBox>
 #include <QStandardItemModel>
 #include <QDialogButtonBox>
@@ -39,8 +42,7 @@
 #include <QPushButton>
 #include <QEventLoop>
 #include <QLineEdit>
-
-#include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <warn/pop>
 
 namespace inviwo {
 

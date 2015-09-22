@@ -36,6 +36,9 @@
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/processors/processor.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QLabel>
 #include <QScrollArea>
 #include <QVBoxLayout>
@@ -44,6 +47,7 @@
 #include <QStyle>
 #include <QStyleOption>
 #include <QPainter>
+#include <warn/pop>
 
 namespace inviwo {
 

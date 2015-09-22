@@ -27,6 +27,14 @@
  * 
  *********************************************************************************/
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/qt/editor/processorlistwidget.h>
+#include <inviwo/qt/editor/helpwidget.h>
+#include <inviwo/core/processors/processorstate.h>
+#include <inviwo/core/processors/processortags.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QApplication>
 #include <QLayout>
 #include <QLabel>
@@ -35,12 +43,7 @@
 #include <QWidget>
 #include <QMimeData>
 #include <QHeaderView>
-
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/qt/editor/processorlistwidget.h>
-#include <inviwo/qt/editor/helpwidget.h>
-#include <inviwo/core/processors/processorstate.h>
-#include <inviwo/core/processors/processortags.h>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -29,10 +29,14 @@
 
 #include <inviwo/qt/widgets/processors/processorwidgetqt.h>
 #include <apps/inviwo/inviwomainwindow.h>
-#include <QResizeEvent>
-#include <QMoveEvent>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QResizeEvent>
+#include <QMoveEvent>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -52,7 +52,10 @@ class EditableLabelQt;
 class IVW_QTWIDGETS_API CollapsibleGroupBoxWidgetQt : public PropertyWidgetQt,
                                                       public PropertyOwnerObserver,
                                                       public ProcessorObserver {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     CollapsibleGroupBoxWidgetQt(Property* property, bool isCheckable=false);
     CollapsibleGroupBoxWidgetQt(std::string displayName = "", bool isCheckable=false);
@@ -93,11 +96,11 @@ public slots:
 
     void checkedStateChanged();
     virtual void labelDidChange();
-    virtual void resetPropertyToDefaultState();
+    virtual void resetPropertyToDefaultState() override;
     void updatePropertyWidgetSemantics(PropertyWidgetQt*);
 
 protected:
-    virtual void setVisible(bool visible);
+    virtual void setVisible(bool visible) override;
     virtual void setCollapsed(bool value);
     virtual void setChecked(bool checked);
 

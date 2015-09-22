@@ -44,11 +44,13 @@
 
 #include <pathsexternalmodules.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QStandardPaths>
-#include <QScreen>
+    #include <QStandardPaths>
+    #include <QScreen>
 #else
-#include <QDesktopServices>
+    #include <QDesktopServices>
 #endif
 #include <QActionGroup>
 #include <QDesktopWidget>
@@ -60,7 +62,7 @@
 #include <QVariant>
 
 #include <algorithm>
-
+#include <warn/pop>
 
 #ifdef IVW_PYTHON2_QT
 #define IVW_PYTHON_QT

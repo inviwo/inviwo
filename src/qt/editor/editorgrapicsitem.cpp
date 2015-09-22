@@ -31,11 +31,15 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
+#include <inviwo/core/ports/port.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QToolTip>
 #include <QBuffer>
-#include <inviwo/core/ports/port.h>
+#include <warn/pop>
 
 namespace inviwo {
 

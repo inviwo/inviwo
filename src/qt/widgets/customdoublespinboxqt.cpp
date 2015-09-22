@@ -24,20 +24,20 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/customdoublespinboxqt.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <limits>
 #include <QTimerEvent>
+#include <warn/pop>
 
 namespace inviwo {
 
-
-
-CustomDoubleSpinBoxQt::CustomDoubleSpinBoxQt(QWidget* parent /*= 0*/) 
-    : QDoubleSpinBox(parent)
-{
+CustomDoubleSpinBoxQt::CustomDoubleSpinBoxQt(QWidget* parent /*= 0*/) : QDoubleSpinBox(parent) {
     // Enables setting number of decimals to display
     displayDecimals_ = decimals();
     // Save default sizeHint before changing decimal property
@@ -52,8 +52,7 @@ QString CustomDoubleSpinBoxQt::textFromValue(double value) const {
 }
 
 void CustomDoubleSpinBoxQt::setDecimals(int decimals) {
-    if (decimals == displayDecimals_)
-        return;
+    if (decimals == displayDecimals_) return;
 
     displayDecimals_ = decimals;
     // Block so that no signals are sent
@@ -67,9 +66,6 @@ void CustomDoubleSpinBoxQt::setDecimals(int decimals) {
     blockSignals(false);
 }
 
+void CustomDoubleSpinBoxQt::timerEvent(QTimerEvent* event) { event->accept(); }
 
-void CustomDoubleSpinBoxQt::timerEvent(QTimerEvent *event) {
-    event->accept();
-}
-
-} // namespace inviwo
+}  // namespace inviwo
