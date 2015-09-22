@@ -60,7 +60,7 @@ public:
         , PropertySemantics semantics = PropertySemantics::Default);
     PositionProperty(const PositionProperty& rhs);
     PositionProperty& operator=(const PositionProperty& that);
-    virtual PositionProperty* clone() const;
+    virtual PositionProperty* clone() const override;
     virtual ~PositionProperty(){}
 
     /** 

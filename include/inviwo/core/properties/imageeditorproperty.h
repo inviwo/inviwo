@@ -68,15 +68,15 @@ public:
 
     ImageEditorProperty(const ImageEditorProperty& rhs);
     ImageEditorProperty& operator=(const ImageEditorProperty& that);
-    virtual ImageEditorProperty* clone() const;
+    virtual ImageEditorProperty* clone() const override;
     virtual ~ImageEditorProperty();
 
     void addLabel(vec2 start, vec2 end, std::string name = "");
     void setDimensions(ivec2 imgSize);
     const std::vector<ImageLabel>& getLabels() const;
     void clearLabels();
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
 private:
     std::vector<ImageLabel> labels_;

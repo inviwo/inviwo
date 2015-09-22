@@ -66,14 +66,14 @@ public:
     
     AdvancedMaterialProperty(const AdvancedMaterialProperty& rhs);
     AdvancedMaterialProperty& operator=(const AdvancedMaterialProperty& that);
-    virtual AdvancedMaterialProperty* clone() const;
+    virtual AdvancedMaterialProperty* clone() const override;
     virtual ~AdvancedMaterialProperty();
 
     vec4 getCombinedMaterialParameters() const;
     ShadingFunctionEnum::Enum getPhaseFunctionEnum() const;
 
     virtual void phaseFunctionChanged();
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void deserialize(IvwDeserializer& d) override;
 
 
     // Material properties
