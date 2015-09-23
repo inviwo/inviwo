@@ -45,36 +45,36 @@ class IVW_MODULE_OPENCL_API VolumeCLGL2RAMConverter
     : public RepresentationConverterType<VolumeCLGL, VolumeRAM> {
 public:
     virtual std::shared_ptr<DataRepresentation> createFrom(
-        const DataRepresentation* source) const override;
-    virtual void update(const DataRepresentation* source,
-                        DataRepresentation* destination) const override;
+        std::shared_ptr<const DataRepresentation> source) const override;
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API VolumeGL2CLGLConverter
     : public RepresentationConverterType<VolumeGL, VolumeCLGL> {
 public:
     virtual std::shared_ptr<DataRepresentation> createFrom(
-        const DataRepresentation* source) const override;
-    virtual void update(const DataRepresentation* source,
-                        DataRepresentation* destination) const override;
+        std::shared_ptr<const DataRepresentation> source) const override;
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API VolumeCLGL2CLConverter
     : public RepresentationConverterType<VolumeCLGL, VolumeCL> {
 public:
     virtual std::shared_ptr<DataRepresentation> createFrom(
-        const DataRepresentation* source) const override;
-    virtual void update(const DataRepresentation* source,
-                        DataRepresentation* destination) const override;
+        std::shared_ptr<const DataRepresentation> source) const override;
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API VolumeCLGL2GLConverter
     : public RepresentationConverterType<VolumeCLGL, VolumeGL> {
 public:
     virtual std::shared_ptr<DataRepresentation> createFrom(
-        const DataRepresentation* source) const override;
-    virtual void update(const DataRepresentation* source,
-                        DataRepresentation* destination) const override;
+        std::shared_ptr<const DataRepresentation> source) const override;
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const override;
 };
 
 }  // namespace

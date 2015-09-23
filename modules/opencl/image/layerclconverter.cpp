@@ -34,17 +34,17 @@
 namespace inviwo {
 
 std::shared_ptr<DataRepresentation> LayerRAM2CLConverter::createFrom(
-    const DataRepresentation* source) const {
-    const LayerRAM* layerRAM = static_cast<const LayerRAM*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto layerRAM = std::static_pointer_cast<const LayerRAM>(source);
     uvec2 dimensions = layerRAM->getDimensions();
     const void* data = layerRAM->getData();
     return std::make_shared<LayerCL>(dimensions, layerRAM->getLayerType(),
                                      layerRAM->getDataFormat(), data);
 }
-void LayerRAM2CLConverter::update(const DataRepresentation* source,
-                                  DataRepresentation* destination) const {
-    const LayerRAM* layerSrc = static_cast<const LayerRAM*>(source);
-    LayerCL* layerDst = static_cast<LayerCL*>(destination);
+void LayerRAM2CLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                  std::shared_ptr<DataRepresentation> destination) const {
+    auto layerSrc = std::static_pointer_cast<const LayerRAM>(source);
+    auto layerDst = std::static_pointer_cast<LayerCL>(destination);
 
     if (layerSrc->getDimensions() != layerDst->getDimensions()) {
         layerDst->setDimensions(layerSrc->getDimensions());
@@ -54,8 +54,8 @@ void LayerRAM2CLConverter::update(const DataRepresentation* source,
 }
 
 std::shared_ptr<DataRepresentation> LayerCL2RAMConverter::createFrom(
-    const DataRepresentation* source) const {
-    const LayerCL* layerCL = static_cast<const LayerCL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto layerCL = std::static_pointer_cast<const LayerCL>(source);
     uvec2 dimensions = layerCL->getDimensions();
     auto destination =
         createLayerRAM(dimensions, layerCL->getLayerType(), layerCL->getDataFormat());
@@ -73,10 +73,10 @@ std::shared_ptr<DataRepresentation> LayerCL2RAMConverter::createFrom(
     return destination;
 }
 
-void LayerCL2RAMConverter::update(const DataRepresentation* source,
-                                  DataRepresentation* destination) const {
-    const LayerCL* layerSrc = static_cast<const LayerCL*>(source);
-    LayerRAM* layerDst = static_cast<LayerRAM*>(destination);
+void LayerCL2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                  std::shared_ptr<DataRepresentation> destination) const {
+    auto layerSrc = std::static_pointer_cast<const LayerCL>(source);
+    auto layerDst = std::static_pointer_cast<LayerRAM>(destination);
 
     if (layerSrc->getDimensions() != layerDst->getDimensions()) {
         layerDst->setDimensions(layerSrc->getDimensions());

@@ -37,30 +37,30 @@
 namespace inviwo {
 
 std::shared_ptr<DataRepresentation> ElementBufferCLGL2GLConverter::createFrom(
-    const DataRepresentation* source) const {
-    const ElementBufferCLGL* src = static_cast<const ElementBufferCLGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto src = std::static_pointer_cast<const ElementBufferCLGL>(source);
     return std::make_shared<ElementBufferGL>(src->getSize(), src->getDataFormat(),
                                              src->getBufferType(), src->getBufferUsage(),
                                              src->getElementBufferObject());
 }
 
-void ElementBufferCLGL2GLConverter::update(const DataRepresentation* source,
-                                           DataRepresentation* destination) const {
+void ElementBufferCLGL2GLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                           std::shared_ptr<DataRepresentation> destination) const {
     // Do nothing since they share data
 }
 
 std::shared_ptr<DataRepresentation> ElementBufferGL2CLGLConverter::createFrom(
-    const DataRepresentation* source) const {
-    const ElementBufferGL* src = static_cast<const ElementBufferGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto src = std::static_pointer_cast<const ElementBufferGL>(source);
     return std::make_shared<ElementBufferCLGL>(src->getSize(), src->getDataFormat(),
                                                src->getBufferType(), src->getBufferUsage(),
                                                src->getElementBufferObject());
 }
 
-void ElementBufferGL2CLGLConverter::update(const DataRepresentation* source,
-                                           DataRepresentation* destination) const {
-    const ElementBufferGL* src = static_cast<const ElementBufferGL*>(source);
-    ElementBufferCLGL* dst = static_cast<ElementBufferCLGL*>(destination);
+void ElementBufferGL2CLGLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                           std::shared_ptr<DataRepresentation> destination) const {
+    auto src = std::static_pointer_cast<const ElementBufferGL>(source);
+    auto dst = std::static_pointer_cast<ElementBufferCLGL>(destination);
 
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());

@@ -36,8 +36,8 @@
 namespace inviwo {
 
 std::shared_ptr<DataRepresentation> LayerCLGL2RAMConverter::createFrom(
-    const DataRepresentation* source) const {
-    const LayerCLGL* layerCLGL = static_cast<const LayerCLGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto layerCLGL = std::static_pointer_cast<const LayerCLGL>(source);
     uvec2 dimensions = layerCLGL->getDimensions();
     auto destination =
         createLayerRAM(dimensions, layerCLGL->getLayerType(), layerCLGL->getDataFormat());
@@ -54,10 +54,10 @@ std::shared_ptr<DataRepresentation> LayerCLGL2RAMConverter::createFrom(
     return destination;
 }
 
-void LayerCLGL2RAMConverter::update(const DataRepresentation* source,
-                                    DataRepresentation* destination) const {
-    const LayerCLGL* layerSrc = static_cast<const LayerCLGL*>(source);
-    LayerRAM* layerDst = static_cast<LayerRAM*>(destination);
+void LayerCLGL2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                    std::shared_ptr<DataRepresentation> destination) const {
+    auto layerSrc = std::static_pointer_cast<const LayerCLGL>(source);
+    auto layerDst = std::static_pointer_cast<LayerRAM>(destination);
 
     if (layerSrc->getDimensions() != layerDst->getDimensions()) {
         layerDst->setDimensions(layerSrc->getDimensions());
@@ -67,40 +67,40 @@ void LayerCLGL2RAMConverter::update(const DataRepresentation* source,
 }
 
 std::shared_ptr<DataRepresentation> LayerCLGL2GLConverter::createFrom(
-    const DataRepresentation* source) const {
-    const LayerCLGL* src = static_cast<const LayerCLGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto src = std::static_pointer_cast<const LayerCLGL>(source);
     return std::make_shared<LayerGL>(src->getDimensions(), src->getLayerType(),
                                      src->getDataFormat(), src->getTexture());
 }
 
-void LayerCLGL2GLConverter::update(const DataRepresentation* source,
-                                   DataRepresentation* destination) const {
+void LayerCLGL2GLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                   std::shared_ptr<DataRepresentation> destination) const {
     // Do nothing since they share data
 }
 
 std::shared_ptr<DataRepresentation> LayerCLGL2CLConverter::createFrom(
-    const DataRepresentation* source) const {
+    std::shared_ptr<const DataRepresentation> source) const {
 #ifdef IVW_DEBUG
     LogWarn("Performance warning: Use shared CLGL representation instead of CL ");
 #endif
-    const LayerCLGL* src = static_cast<const LayerCLGL*>(source);
+    auto src = std::static_pointer_cast<const LayerCLGL>(source);
     auto destination =
         std::make_shared<LayerCL>(src->getDimensions(), src->getLayerType(), src->getDataFormat());
     {
         SyncCLGL glSync;
         src->aquireGLObject(glSync.getGLSyncEvent());
-        OpenCL::getPtr()->getQueue().enqueueCopyImage(
-            src->get(), destination->get(), glm::size3_t(0), glm::size3_t(0),
-            glm::size3_t(src->getDimensions(), 1));
+        OpenCL::getPtr()->getQueue().enqueueCopyImage(src->get(), destination->get(),
+                                                      glm::size3_t(0), glm::size3_t(0),
+                                                      glm::size3_t(src->getDimensions(), 1));
         src->releaseGLObject(nullptr, glSync.getLastReleaseGLEvent());
     }
     return destination;
 }
 
-void LayerCLGL2CLConverter::update(const DataRepresentation* source,
-                                   DataRepresentation* destination) const {
-    const LayerCLGL* src = static_cast<const LayerCLGL*>(source);
-    LayerCL* dst = static_cast<LayerCL*>(destination);
+void LayerCLGL2CLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                   std::shared_ptr<DataRepresentation> destination) const {
+    auto src = std::static_pointer_cast<const LayerCLGL>(source);
+    auto dst = std::static_pointer_cast<LayerCL>(destination);
 
     if (src->getDimensions() != dst->getDimensions()) {
         dst->setDimensions(src->getDimensions());
@@ -117,16 +117,16 @@ void LayerCLGL2CLConverter::update(const DataRepresentation* source,
 }
 
 std::shared_ptr<DataRepresentation> LayerGL2CLGLConverter::createFrom(
-    const DataRepresentation* source) const {
-    const LayerGL* layerGL = static_cast<const LayerGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto layerGL = std::static_pointer_cast<const LayerGL>(source);
     return std::make_shared<LayerCLGL>(layerGL->getDimensions(), layerGL->getLayerType(),
                                        layerGL->getDataFormat(), layerGL->getTexture());
 }
 
-void LayerGL2CLGLConverter::update(const DataRepresentation* source,
-                                   DataRepresentation* destination) const {
-    const LayerGL* layerSrc = static_cast<const LayerGL*>(source);
-    LayerCLGL* layerDst = static_cast<LayerCLGL*>(destination);
+void LayerGL2CLGLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                   std::shared_ptr<DataRepresentation> destination) const {
+    auto layerSrc = std::static_pointer_cast<const LayerGL>(source);
+    auto layerDst = std::static_pointer_cast<LayerCLGL>(destination);
 
     if (layerSrc->getDimensions() != layerDst->getDimensions()) {
         layerDst->setDimensions(layerSrc->getDimensions());

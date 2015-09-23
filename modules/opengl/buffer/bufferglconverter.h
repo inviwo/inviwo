@@ -41,18 +41,18 @@ class IVW_MODULE_OPENGL_API BufferRAM2GLConverter
     : public RepresentationConverterType<BufferRAM, BufferGL> {
 public:
     virtual std::shared_ptr<DataRepresentation> createFrom(
-        const DataRepresentation* source) const override;
-    virtual void update(const DataRepresentation* source,
-                        DataRepresentation* destination) const override;
+        std::shared_ptr<const DataRepresentation> source) const override;
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const override;
 };
 
 class IVW_MODULE_OPENGL_API BufferGL2RAMConverter
     : public RepresentationConverterType<BufferGL, BufferRAM> {
 public:
     virtual std::shared_ptr<DataRepresentation> createFrom(
-        const DataRepresentation* source) const override;
-    virtual void update(const DataRepresentation* source,
-                        DataRepresentation* destination) const override;
+        std::shared_ptr<const DataRepresentation> source) const override;
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const override;
 };
 
 }  // namespace

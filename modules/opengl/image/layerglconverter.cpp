@@ -33,18 +33,18 @@
 namespace inviwo {
 
 std::shared_ptr<DataRepresentation> LayerRAM2GLConverter::createFrom(
-    const DataRepresentation* source) const {
-    const LayerRAM* layerRAM = static_cast<const LayerRAM*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto layerRAM = std::static_pointer_cast<const LayerRAM>(source);
 
     auto layerGL = std::make_shared<LayerGL>(layerRAM->getDimensions(), layerRAM->getLayerType(),
                                              layerRAM->getDataFormat());
     layerGL->getTexture()->initialize(layerRAM->getData());
     return layerGL;
 }
-void LayerRAM2GLConverter::update(const DataRepresentation* source,
-                                  DataRepresentation* destination) const {
-    const LayerRAM* layerSrc = static_cast<const LayerRAM*>(source);
-    LayerGL* layerDst = static_cast<LayerGL*>(destination);
+void LayerRAM2GLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                  std::shared_ptr<DataRepresentation> destination) const {
+    auto layerSrc = std::static_pointer_cast<const LayerRAM>(source);
+    auto layerDst = std::static_pointer_cast<LayerGL>(destination);
 
     if (layerSrc->getDimensions() != layerDst->getDimensions()) {
         layerDst->setDimensions(layerSrc->getDimensions());
@@ -54,8 +54,8 @@ void LayerRAM2GLConverter::update(const DataRepresentation* source,
 }
 
 std::shared_ptr<DataRepresentation> LayerGL2RAMConverter::createFrom(
-    const DataRepresentation* source) const {
-    const LayerGL* layerGL = static_cast<const LayerGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto layerGL = std::static_pointer_cast<const LayerGL>(source);
     auto layerRAM =
         createLayerRAM(layerGL->getDimensions(), layerGL->getLayerType(), layerGL->getDataFormat());
 
@@ -69,10 +69,10 @@ std::shared_ptr<DataRepresentation> LayerGL2RAMConverter::createFrom(
     return nullptr;
 }
 
-void LayerGL2RAMConverter::update(const DataRepresentation* source,
-                                  DataRepresentation* destination) const {
-    const LayerGL* layerSrc = static_cast<const LayerGL*>(source);
-    LayerRAM* layerDst = static_cast<LayerRAM*>(destination);
+void LayerGL2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                  std::shared_ptr<DataRepresentation> destination) const {
+    auto layerSrc = std::static_pointer_cast<const LayerGL>(source);
+    auto layerDst = std::static_pointer_cast<LayerRAM>(destination);
 
     if (layerSrc->getDimensions() != layerDst->getDimensions()) {
         layerDst->setDimensions(layerSrc->getDimensions());

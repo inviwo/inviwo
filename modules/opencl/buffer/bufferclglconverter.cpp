@@ -36,8 +36,8 @@
 namespace inviwo {
 
 std::shared_ptr<DataRepresentation> BufferCLGL2RAMConverter::createFrom(
-    const DataRepresentation* source) const {
-    const BufferCLGL* src = static_cast<const BufferCLGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto src = std::static_pointer_cast<const BufferCLGL>(source);
     size_t size = src->getSize();
     auto destination =
         createBufferRAM(size, src->getDataFormat(), src->getBufferType(), src->getBufferUsage());
@@ -51,10 +51,10 @@ std::shared_ptr<DataRepresentation> BufferCLGL2RAMConverter::createFrom(
     return destination;
 }
 
-void BufferCLGL2RAMConverter::update(const DataRepresentation* source,
-                                     DataRepresentation* destination) const {
-    const BufferCLGL* src = static_cast<const BufferCLGL*>(source);
-    BufferRAM* dst = static_cast<BufferRAM*>(destination);
+void BufferCLGL2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                     std::shared_ptr<DataRepresentation> destination) const {
+    auto src = std::static_pointer_cast<const BufferCLGL>(source);
+    auto dst = std::static_pointer_cast<BufferRAM>(destination);
 
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
@@ -64,28 +64,28 @@ void BufferCLGL2RAMConverter::update(const DataRepresentation* source,
 }
 
 std::shared_ptr<DataRepresentation> BufferCLGL2GLConverter::createFrom(
-    const DataRepresentation* source) const {
-    const BufferCLGL* src = static_cast<const BufferCLGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto src = std::static_pointer_cast<const BufferCLGL>(source);
     return std::make_shared<BufferGL>(src->getSize(), src->getDataFormat(), src->getBufferType(),
                                       src->getBufferUsage(), src->getBufferGL());
 }
 
-void BufferCLGL2GLConverter::update(const DataRepresentation* source,
-                                    DataRepresentation* destination) const {
+void BufferCLGL2GLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                    std::shared_ptr<DataRepresentation> destination) const {
     // Do nothing since they share data
 }
 
 std::shared_ptr<DataRepresentation> BufferGL2CLGLConverter::createFrom(
-    const DataRepresentation* source) const {
-    const BufferGL* src = static_cast<const BufferGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto src = std::static_pointer_cast<const BufferGL>(source);
     return std::make_shared<BufferCLGL>(src->getSize(), src->getDataFormat(), src->getBufferType(),
                                         src->getBufferUsage(), src->getBufferObject());
 }
 
-void BufferGL2CLGLConverter::update(const DataRepresentation* source,
-                                    DataRepresentation* destination) const {
-    const BufferGL* src = static_cast<const BufferGL*>(source);
-    BufferCLGL* dst = static_cast<BufferCLGL*>(destination);
+void BufferGL2CLGLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                    std::shared_ptr<DataRepresentation> destination) const {
+    auto src = std::static_pointer_cast<const BufferGL>(source);
+    auto dst = std::static_pointer_cast<BufferCLGL>(destination);
 
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
@@ -93,14 +93,14 @@ void BufferGL2CLGLConverter::update(const DataRepresentation* source,
 }
 
 std::shared_ptr<DataRepresentation> BufferCLGL2CLConverter::createFrom(
-    const DataRepresentation* source) const {
-    const BufferCLGL* src = static_cast<const BufferCLGL*>(source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    auto src = std::static_pointer_cast<const BufferCLGL>(source);
     size_t size = src->getSize();
     auto destination = std::make_shared<BufferCL>(size, src->getDataFormat(), src->getBufferType(),
                                                   src->getBufferUsage());
     {
         SyncCLGL glSync;
-        glSync.addToAquireGLObjectList(src);
+        glSync.addToAquireGLObjectList(src.get());
         glSync.aquireAllObjects();
         OpenCL::getPtr()->getQueue().enqueueCopyBuffer(src->get(), destination->get(), 0, 0,
                                                        src->getSize() * src->getSizeOfElement());
@@ -108,10 +108,10 @@ std::shared_ptr<DataRepresentation> BufferCLGL2CLConverter::createFrom(
     return destination;
 }
 
-void BufferCLGL2CLConverter::update(const DataRepresentation* source,
-                                    DataRepresentation* destination) const {
-    const BufferCLGL* src = static_cast<const BufferCLGL*>(source);
-    BufferCL* dst = static_cast<BufferCL*>(destination);
+void BufferCLGL2CLConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                    std::shared_ptr<DataRepresentation> destination) const {
+    auto src = std::static_pointer_cast<const BufferCLGL>(source);
+    auto dst = std::static_pointer_cast<BufferCL>(destination);
 
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
@@ -119,7 +119,7 @@ void BufferCLGL2CLConverter::update(const DataRepresentation* source,
 
     {
         SyncCLGL glSync;
-        glSync.addToAquireGLObjectList(src);
+        glSync.addToAquireGLObjectList(src.get());
         glSync.aquireAllObjects();
         OpenCL::getPtr()->getQueue().enqueueCopyBuffer(src->get(), dst->get(), 0, 0,
                                                        src->getSize() * src->getSizeOfElement());
