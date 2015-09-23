@@ -35,6 +35,7 @@
 #include <inviwo/core/io/bytereaderutil.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/datastructures/diskrepresentation.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 namespace inviwo {
 

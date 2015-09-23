@@ -32,6 +32,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerdisk.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 namespace inviwo {
 

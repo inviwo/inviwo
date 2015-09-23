@@ -33,16 +33,11 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/cloneableptr.h>
+#include <inviwo/core/datastructures/datarepresentation.h>
 
 namespace inviwo {
 
-class IVW_CORE_API DiskRepresentationLoader {
-public:
-    virtual ~DiskRepresentationLoader() = default;
-    virtual DiskRepresentationLoader* clone() const = 0;
-    virtual std::shared_ptr<DataRepresentation> createRepresentation() const = 0;
-    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const = 0;
-};
+class DiskRepresentationLoader;
 
 class IVW_CORE_API DiskRepresentation {
 public:
@@ -69,6 +64,14 @@ private:
 
     // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
     util::cloneable_ptr<DiskRepresentationLoader> loader_;
+};
+
+class IVW_CORE_API DiskRepresentationLoader {
+public:
+    virtual ~DiskRepresentationLoader() = default;
+    virtual DiskRepresentationLoader* clone() const = 0;
+    virtual std::shared_ptr<DataRepresentation> createRepresentation() const = 0;
+    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const = 0;
 };
 
 }  // namespace

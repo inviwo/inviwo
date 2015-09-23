@@ -37,6 +37,8 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/io/datareaderexception.h>
+
 #include <math.h>
 
 namespace inviwo {

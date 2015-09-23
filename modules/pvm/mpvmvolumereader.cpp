@@ -32,6 +32,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/io/datareaderexception.h>
 #include "ext/tidds/ddsbase.h"
 #include "pvmvolumereader.h"
 

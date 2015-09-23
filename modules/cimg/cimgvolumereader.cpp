@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 namespace inviwo {
 

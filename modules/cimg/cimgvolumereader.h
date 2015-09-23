@@ -44,7 +44,7 @@ public:
     CImgVolumeReader();
     CImgVolumeReader(const CImgVolumeReader& rhs) = default;
     CImgVolumeReader& operator=(const CImgVolumeReader& that) = default;
-    virtual CImgVolumeReader* clone() const;
+    virtual CImgVolumeReader* clone() const override;
     virtual ~CImgVolumeReader() = default;
 
     virtual std::shared_ptr<Volume> readData(const std::string filePath) override;

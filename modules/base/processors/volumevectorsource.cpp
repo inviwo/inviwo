@@ -30,6 +30,7 @@
 #include "volumevectorsource.h"
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 namespace inviwo {
 

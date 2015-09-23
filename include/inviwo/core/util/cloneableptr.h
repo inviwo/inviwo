@@ -81,7 +81,7 @@ cloneable_ptr<T>::cloneable_ptr(cloneable_ptr<T>&& rhs) : ptr_(std::move(rhs.ptr
 
 template <typename T>
 cloneable_ptr<T>& cloneable_ptr<T>::operator=(cloneable_ptr<T>&& that) {
-    ptr_ = std:move(that.ptr_);
+    ptr_ = std::move(that.ptr_);
 }
 
 template <typename T>
