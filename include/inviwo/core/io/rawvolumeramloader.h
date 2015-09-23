@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,47 +24,65 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_RAWVOLUMEREADER_H
-#define IVW_RAWVOLUMEREADER_H
+#ifndef IVW_RAWVOLUMERAMLOADER_H
+#define IVW_RAWVOLUMERAMLOADER_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/datastructures/volume/volumedisk.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/io/datareader.h>
-#include <inviwo/core/io/datareaderdialog.h>
+#include <inviwo/core/io/bytereaderutil.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 namespace inviwo {
 
-class IVW_CORE_API RawVolumeReader : public DataReaderType<Volume> {
+/**
+ * \class RawVolumeRAMLoader
+ *
+ * \brief A loader of raw files. Used to create VolumeRAM representations.
+ *
+ * This class us used by the DatVolumeReader, IvfVolumeReader and RawVolumeReader.
+ */
+
+class IVW_CORE_API RawVolumeRAMLoader : public DiskRepresentationLoader {
 public:
-    RawVolumeReader();
-    RawVolumeReader(const RawVolumeReader& rhs);
-    RawVolumeReader& operator=(const RawVolumeReader& that);
-    virtual RawVolumeReader* clone() const override;
-    virtual ~RawVolumeReader() = default;
+    RawVolumeRAMLoader(const std::string& rawFile, size_t offset, size3_t dimensions,
+                       bool littleEndian, const DataFormatBase* format);
+    virtual RawVolumeRAMLoader* clone() const override;
+    virtual std::shared_ptr<DataRepresentation> createRepresentation() const override;
+    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const override;
 
-    virtual void setParameters(const DataFormatBase* format, ivec3 dimensions, bool littleEndian);
+    using type = std::shared_ptr<VolumeRAM>;
 
-    virtual std::shared_ptr<Volume> readData(const std::string filePath) override;
+    template <class T>
+    std::shared_ptr<VolumeRAM> dispatch() const {
+        typedef typename T::type F;
 
-    bool haveReadLittleEndian() const { return littleEndian_; }
-    const DataFormatBase* getFormat() const { return format_; }
+        std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z;
+        auto data = util::make_unique<F[]>(size);
+
+        if (!data) {
+            throw DataReaderException(
+                "Error: Could not allocate memory for loading raw file: " + rawFile_, IvwContext);
+        }
+
+        util::readBytesIntoBuffer(rawFile_, offset_, size * format_->getSize(), littleEndian_,
+                                  format_->getSize(), data.get());
+
+        auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), dimensions_);
+        data.release();
+        return repr; 
+    }
 
 private:
     std::string rawFile_;
-    bool littleEndian_;
+    size_t offset_;
     size3_t dimensions_;
-    vec3 spacing_;
+    bool littleEndian_;
     const DataFormatBase* format_;
-    bool parametersSet_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_RAWVOLUMEREADER_H
-
+#endif  // IVW_RAWVOLUMERAMLOADER_H

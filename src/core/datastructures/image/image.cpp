@@ -35,56 +35,51 @@
 namespace inviwo {
 
 Image::Image(size2_t dimensions, const DataFormatBase* format) : DataGroup() {
-    initialize(nullptr, dimensions, format);
+    colorLayers_.push_back(std::make_shared<Layer>(dimensions, format));
+    depthLayer_ = std::make_shared<Layer>(dimensions, DataFLOAT32::get(), DEPTH_LAYER);
+    pickingLayer_ = std::make_shared<Layer>(dimensions, format, PICKING_LAYER);
 }
 
-Image::Image(Layer* colorLayer) : DataGroup() {
-    initialize(colorLayer);
+Image::Image(std::shared_ptr<Layer> colorLayer) : DataGroup() {
+    if(!colorLayer) throw Exception("No valid colorLayer", IvwContext);
+    colorLayers_.push_back(colorLayer);
+    auto dimensions = colorLayer->getDimensions();
+    auto format = colorLayer->getDataFormat();
+
+    depthLayer_ = std::make_shared<Layer>(dimensions, DataFLOAT32::get(), DEPTH_LAYER);
+    pickingLayer_ = std::make_shared<Layer>(dimensions, format, PICKING_LAYER);
 }
 
-Image::Image(const Image& rhs)
-    : DataGroup(rhs) {
+Image::Image(const Image& rhs) : DataGroup(rhs) {
     for (const auto& elem : rhs.colorLayers_) {
-        addColorLayer((elem)->clone());
+        colorLayers_.push_back(std::shared_ptr<Layer>(elem->clone()));
     }
 
-    const Layer* depth = rhs.getDepthLayer();
-    if (depth) {
-        depthLayer_ = depth->clone();
-    } else {
-        depthLayer_ = nullptr;
-    }
+    if (auto depth = rhs.getDepthLayer()) depthLayer_ = std::shared_ptr<Layer>(depth->clone());
 
-    const Layer* picking = rhs.getPickingLayer();
-    if (picking) {
-        pickingLayer_ = picking->clone();
-    } else {
-        pickingLayer_ = nullptr;
-    }
+    if (auto picking = rhs.getPickingLayer())
+        pickingLayer_ = std::shared_ptr<Layer>(picking->clone());
 }
 
 Image& Image::operator=(const Image& that) {
     if (this != &that) {
         DataGroup::operator=(that);
-        deinitialize();
 
-        for (const auto& elem : that.colorLayers_) {
-            addColorLayer((elem)->clone());
+        std::vector<std::shared_ptr<Layer>> colorLayers;
+        for (const auto& color : that.colorLayers_) {
+            colorLayers.push_back(std::shared_ptr<Layer>(color->clone()));
         }
 
-        const Layer* depth = that.getDepthLayer();
-        if (depth) {
-            depthLayer_ = depth->clone();
-        } else {
-            depthLayer_ = nullptr;
-        }
+        auto depth = that.getDepthLayer();
+        auto depthLayer = depth ? std::shared_ptr<Layer>(depth->clone()) : std::shared_ptr<Layer>();
 
-        const Layer* picking = that.getPickingLayer();
-        if (picking) {
-            pickingLayer_ = that.pickingLayer_->clone();
-        } else {
-            pickingLayer_ = nullptr;
-        }
+        auto picking = that.getPickingLayer();
+        auto pickingLayer =
+            picking ? std::shared_ptr<Layer>(picking->clone()) : std::shared_ptr<Layer>();
+
+        std::swap(colorLayers, colorLayers_);
+        std::swap(depthLayer, depthLayer_);
+        std::swap(pickingLayer, pickingLayer_);
     }
 
     return *this;
@@ -92,39 +87,6 @@ Image& Image::operator=(const Image& that) {
 
 Image* Image::clone() const {
     return new Image(*this);
-}
-
-Image::~Image() {
-    //Delete all layers
-    deinitialize();
-}
-
-void Image::deinitialize() {
-    for (auto& elem : colorLayers_) delete (elem);
-    colorLayers_.clear();
-    delete depthLayer_;
-    depthLayer_ = nullptr;
-    delete pickingLayer_;
-    pickingLayer_ = nullptr;
-}
-
-void Image::initialize(Layer* colorLayer, size2_t dimensions, const DataFormatBase* format) {
-    if (colorLayer) {
-        addColorLayer(colorLayer);
-        dimensions = colorLayer->getDimensions();
-        format = colorLayer->getDataFormat();
-    } else {
-        addColorLayer(new Layer(dimensions, format));
-    }
-
-    depthLayer_ = new Layer(dimensions, DataFLOAT32::get(), DEPTH_LAYER);
-    pickingLayer_ = new Layer(dimensions, format, PICKING_LAYER);
-}
-
-size_t Image::addColorLayer(Layer* layer) {
-    colorLayers_.push_back(layer);
-    //Return index to this layer
-    return colorLayers_.size()-1;
 }
 
 const Layer* Image::getLayer(LayerType type, size_t idx) const {
@@ -158,11 +120,11 @@ Layer* Image::getLayer(LayerType type, size_t idx) {
 }
 
 const Layer* Image::getColorLayer(size_t idx) const {
-    return colorLayers_[idx];
+    return colorLayers_[idx].get();
 }
 
 Layer* Image::getColorLayer(size_t idx) {
-    return colorLayers_[idx];
+    return colorLayers_[idx].get();
 }
 
 size_t Image::getNumberOfColorLayers() const {
@@ -170,19 +132,19 @@ size_t Image::getNumberOfColorLayers() const {
 }
 
 const Layer* Image::getDepthLayer() const {
-    return depthLayer_;
+    return depthLayer_.get();
 }
 
 Layer* Image::getDepthLayer() {
-    return depthLayer_;
+    return depthLayer_.get();
 }
 
 const Layer* Image::getPickingLayer() const {
-    return pickingLayer_;
+    return pickingLayer_.get();
 }
 
 Layer* Image::getPickingLayer() {
-    return pickingLayer_;
+    return pickingLayer_.get();
 }
 
 size2_t Image::getDimensions() const {

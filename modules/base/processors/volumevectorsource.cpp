@@ -71,7 +71,7 @@ void VolumeVectorSource::load(bool deserialize /*= false*/) {
     std::string ext = filesystem::getFileExtension(file_.get());
     if (auto reader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
         try {
-            volumes_.reset(reader->readMetaData(file_.get()));
+            volumes_ = reader->readData(file_.get());
         } catch (DataReaderException const& e) {
             LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
         }

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,50 +27,34 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DISKREPRESENTATION_H
-#define IVW_DISKREPRESENTATION_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/cloneableptr.h>
+#include <inviwo/core/io/rawvolumeramloader.h>
 
 namespace inviwo {
 
-class IVW_CORE_API DiskRepresentationLoader {
-public:
-    virtual ~DiskRepresentationLoader() = default;
-    virtual DiskRepresentationLoader* clone() const = 0;
-    virtual std::shared_ptr<DataRepresentation> createRepresentation() const = 0;
-    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const = 0;
-};
+RawVolumeRAMLoader::RawVolumeRAMLoader(const std::string& rawFile, size_t offset,
+                                       size3_t dimensions, bool littleEndian,
+                                       const DataFormatBase* format)
+    : rawFile_(rawFile)
+    , offset_(offset)
+    , dimensions_(dimensions)
+    , littleEndian_(littleEndian)
+    , format_(format) {}
 
-class IVW_CORE_API DiskRepresentation {
-public:
-    DiskRepresentation();
-    DiskRepresentation(std::string, DiskRepresentationLoader* loader = nullptr);
-    DiskRepresentation(const DiskRepresentation& rhs) = default;
-    DiskRepresentation& operator=(const DiskRepresentation& that) = default;
-    virtual ~DiskRepresentation() = default;    
-    virtual DiskRepresentation* clone() const;
+RawVolumeRAMLoader* RawVolumeRAMLoader::clone() const { return new RawVolumeRAMLoader(*this); }
 
-    const std::string& getSourceFile() const;
-    bool hasSourceFile() const;
+std::shared_ptr<DataRepresentation> RawVolumeRAMLoader::createRepresentation() const {
+    return format_->dispatch(*this);
+}
 
-    void setLoader(DiskRepresentationLoader* loader);
+void RawVolumeRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation> dest) const {
+    auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
-    std::shared_ptr<DataRepresentation> createRepresentation() const;
-    void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const;
+    if (dimensions_ != volumeDst->getDimensions()) {
+        throw Exception("Mismatching volume dimensions, can't update", IvwContext);
+    }
 
-private:
-#include <warn/push>
-#include <warn/ignore/dll-interface>
-    std::string sourceFile_;
-#include <warn/pop>
-
-    // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
-    util::cloneable_ptr<DiskRepresentationLoader> loader_;
-};
-
+    std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z;
+    util::readBytesIntoBuffer(rawFile_, offset_, size * format_->getSize(), littleEndian_,
+                              format_->getSize(), volumeDst->getData());
+}
 }  // namespace
-
-#endif  // IVW_DISKREPRESENTATION_H

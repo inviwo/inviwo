@@ -32,26 +32,14 @@
 
 namespace inviwo {
 
-VolumeDisk2RAMConverter::VolumeDisk2RAMConverter()
-    : RepresentationConverterType<VolumeDisk, VolumeRAM>() {}
-
-VolumeDisk2RAMConverter::~VolumeDisk2RAMConverter() {}
-
 std::shared_ptr<DataRepresentation> VolumeDisk2RAMConverter::createFrom(
-    const DataRepresentation* source) const {
-    detail::VolumeDisk2RAMDispatcher disp;
-    return source->getDataFormat()->dispatch(disp, source);
+    std::shared_ptr<const DataRepresentation> source) const {
+    return std::static_pointer_cast<const VolumeDisk>(source)->createRepresentation();
 }
 
-void VolumeDisk2RAMConverter::update(const DataRepresentation* source,
-                                     DataRepresentation* destination) const {
-    const VolumeDisk* volumeSrc = static_cast<const VolumeDisk*>(source);
-    VolumeRAM* volumeDst = static_cast<VolumeRAM*>(destination);
-
-    if (volumeSrc->getDimensions() != volumeDst->getDimensions())
-        volumeDst->setDimensions(volumeSrc->getDimensions());
-
-    volumeSrc->readDataInto(volumeDst->getData());
+void VolumeDisk2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
+                                     std::shared_ptr<DataRepresentation> destination) const {
+    std::static_pointer_cast<const VolumeDisk>(source)->updateRepresentation(destination);
 }
 
 }  // namespace

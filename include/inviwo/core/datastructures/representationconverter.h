@@ -55,9 +55,9 @@ public:
     virtual ConverterID getConverterID() const = 0;
 
     virtual std::shared_ptr<DataRepresentation> createFrom(
-        const DataRepresentation* source) const = 0;
-    virtual void update(const DataRepresentation* source,
-                        DataRepresentation* destination) const = 0;
+        std::shared_ptr<const DataRepresentation> source) const = 0;
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const = 0;
 };
 
 template <typename From, typename To>

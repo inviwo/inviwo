@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/cimg/cimglayerreader.h>
@@ -35,8 +35,7 @@
 
 namespace inviwo {
 
-CImgLayerReader::CImgLayerReader()
-    : DataReaderType<Layer>() {
+CImgLayerReader::CImgLayerReader() : DataReaderType<Layer>() {
     addExtension(FileExtension("raw", "RAW"));
 #ifdef cimg_use_png
     addExtension(FileExtension("png", "Portable Network Graphics"));
@@ -51,20 +50,9 @@ CImgLayerReader::CImgLayerReader()
 #endif
 }
 
-CImgLayerReader::CImgLayerReader(const CImgLayerReader& rhs)
-    : DataReaderType<Layer>(rhs) {};
-
-CImgLayerReader& CImgLayerReader::operator=(const CImgLayerReader& that) {
-    if (this != &that) {
-        DataReaderType<Layer>::operator=(that);
-    }
-
-    return *this;
-}
-
 CImgLayerReader* CImgLayerReader::clone() const { return new CImgLayerReader(*this); }
 
-Layer* CImgLayerReader::readMetaData(std::string filePath) {
+std::shared_ptr<Layer> CImgLayerReader::readData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
         std::string newPath = filesystem::addBasePath(filePath);
 
@@ -75,84 +63,79 @@ Layer* CImgLayerReader::readMetaData(std::string filePath) {
         }
     }
 
-    Layer* layer = new Layer();
-
+    auto layer = std::make_shared<Layer>();
     auto layerDisk = std::make_shared<LayerDisk>(filePath);
-    layerDisk->setDataReader(this->clone());
-
+    layerDisk->setLoader(new CImgLayerRAMLoader(layerDisk.get()));
     layer->addRepresentation(layerDisk);
-
     return layer;
 }
 
-void CImgLayerReader::readDataInto(void* destination) const {
-    LayerDisk* layerDisk = dynamic_cast<LayerDisk*>(owner_);
-    if(layerDisk){
-        uvec2 dimensions = layerDisk->getDimensions();
-        DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
+CImgLayerRAMLoader::CImgLayerRAMLoader(LayerDisk* layerDisk) : layerDisk_(layerDisk) {}
 
-        std::string filePath = layerDisk->getSourceFile();
-
-        if (!filesystem::fileExists(filePath)) {
-            std::string newPath = filesystem::addBasePath(filePath);
-
-            if (filesystem::fileExists(newPath)) {
-                filePath = newPath;
-            }
-            else {
-                throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
-            }
-        }
-
-        if (dimensions != uvec2(0)){
-            // Load and rescale to input dimensions
-            CImgUtils::loadLayerData(destination, filePath, dimensions, formatId, true);
-        }
-        else{
-            // Load to original dimensions
-            CImgUtils::loadLayerData(destination, filePath, dimensions, formatId, false);
-            layerDisk->setDimensions(dimensions);
-        }
-
-        layerDisk->updateDataFormat(DataFormatBase::get(formatId));
-    }
-}
-
-void* CImgLayerReader::readData() const {
+std::shared_ptr<DataRepresentation> CImgLayerRAMLoader::createRepresentation() const {
     void* data = nullptr;
 
-    LayerDisk* layerDisk = dynamic_cast<LayerDisk*>(owner_);
-    if(layerDisk){
-        uvec2 dimensions = layerDisk->getDimensions();
-        DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
+    uvec2 dimensions = layerDisk_->getDimensions();
+    DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
 
-        std::string filePath = layerDisk->getSourceFile();
+    std::string filePath = layerDisk_->getSourceFile();
 
-        if (!filesystem::fileExists(filePath)) {
-            std::string newPath = filesystem::addBasePath(filePath);
+    if (!filesystem::fileExists(filePath)) {
+        std::string newPath = filesystem::addBasePath(filePath);
 
-            if (filesystem::fileExists(newPath)) {
-                filePath = newPath;
-            }
-            else {
-                throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
-            }
+        if (filesystem::fileExists(newPath)) {
+            filePath = newPath;
+        } else {
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
         }
-
-        if (dimensions != uvec2(0)){
-            // Load and rescale to input dimensions
-            data = CImgUtils::loadLayerData(nullptr, filePath, dimensions, formatId, true);
-        }
-        else{
-            // Load to original dimensions
-            data = CImgUtils::loadLayerData(nullptr, filePath, dimensions, formatId, false);
-            layerDisk->setDimensions(dimensions);
-        }
-
-        layerDisk->updateDataFormat(DataFormatBase::get(formatId));
     }
 
-    return data;
+    if (dimensions != uvec2(0)) {
+        // Load and rescale to input dimensions
+        data = CImgUtils::loadLayerData(nullptr, filePath, dimensions, formatId, true);
+    } else {
+        // Load to original dimensions
+        data = CImgUtils::loadLayerData(nullptr, filePath, dimensions, formatId, false);
+        layerDisk_->setDimensions(dimensions);
+    }
+
+    layerDisk_->updateDataFormat(DataFormatBase::get(formatId));
+
+    return layerDisk_->getDataFormat()->dispatch(*this, data);
+}
+
+void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation> dest) const {
+    auto layerDst = std::static_pointer_cast<LayerRAM>(dest);
+
+    if (layerDisk_->getDimensions() != layerDst->getDimensions()) {
+        layerDst->setDimensions(layerDisk_->getDimensions());
+    }
+
+    uvec2 dimensions = layerDisk_->getDimensions();
+    DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
+
+    std::string filePath = layerDisk_->getSourceFile();
+
+    if (!filesystem::fileExists(filePath)) {
+        std::string newPath = filesystem::addBasePath(filePath);
+
+        if (filesystem::fileExists(newPath)) {
+            filePath = newPath;
+        } else {
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        }
+    }
+
+    if (dimensions != uvec2(0)) {
+        // Load and rescale to input dimensions
+        CImgUtils::loadLayerData(layerDst->getData(), filePath, dimensions, formatId, true);
+    } else {
+        // Load to original dimensions
+        CImgUtils::loadLayerData(layerDst->getData(), filePath, dimensions, formatId, false);
+        layerDisk_->setDimensions(dimensions);
+    }
+
+    layerDisk_->updateDataFormat(DataFormatBase::get(formatId));
 }
 
 }  // namespace

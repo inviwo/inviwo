@@ -41,27 +41,11 @@ namespace inviwo {
 class IVW_CORE_API VolumeDisk2RAMConverter
     : public RepresentationConverterType<VolumeDisk, VolumeRAM> {
 public:
-    VolumeDisk2RAMConverter();
-    virtual ~VolumeDisk2RAMConverter();
-
     virtual std::shared_ptr<DataRepresentation> createFrom(
-        const DataRepresentation* source) const override;
-    virtual void update(const DataRepresentation* source,
-                        DataRepresentation* destination) const override;
+        std::shared_ptr<const DataRepresentation> source) const override;
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const override;
 };
-
-namespace detail {
-struct VolumeDisk2RAMDispatcher {
-    using type = std::shared_ptr<VolumeRAM>;
-    template <class T>
-    std::shared_ptr<VolumeRAM> dispatch(const DataRepresentation* source) {
-        typedef typename T::type F;
-        const VolumeDisk* volumeDisk = static_cast<const VolumeDisk*>(source);
-        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(volumeDisk->readData()),
-                                                       volumeDisk->getDimensions());
-    }
-};
-}
 
 }  // namespace
 

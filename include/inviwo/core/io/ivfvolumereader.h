@@ -41,14 +41,12 @@ class IVW_CORE_API IvfVolumeReader : public DataReaderType<Volume> {
 public:
 
     IvfVolumeReader();
-    IvfVolumeReader(const IvfVolumeReader& rhs);
-    IvfVolumeReader& operator=(const IvfVolumeReader& that);
-    virtual IvfVolumeReader* clone() const;
-    virtual ~IvfVolumeReader() {}
+    IvfVolumeReader(const IvfVolumeReader& rhs) = default;
+    IvfVolumeReader& operator=(const IvfVolumeReader& that) = default;
+    virtual IvfVolumeReader* clone() const override;
+    virtual ~IvfVolumeReader() = default;
 
-    virtual Volume* readMetaData(const std::string filePath);
-    virtual void* readData() const;
-    virtual void readDataInto(void* dest) const;
+    virtual std::shared_ptr<Volume> readData(const std::string filePath) override;
 
 private:
     std::string rawFile_;

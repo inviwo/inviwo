@@ -24,49 +24,31 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/io/ivfvolumereader.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/io/rawvolumeramloader.h>
 
 namespace inviwo {
 
 IvfVolumeReader::IvfVolumeReader()
-    : DataReaderType<Volume>(), rawFile_(""), filePos_(0), littleEndian_(true),
-      dimensions_(size3_t(0)), format_(nullptr) {
+    : DataReaderType<Volume>()
+    , rawFile_("")
+    , filePos_(0)
+    , littleEndian_(true)
+    , dimensions_(size3_t(0))
+    , format_(nullptr) {
     addExtension(FileExtension("ivf", "Inviwo ivf file format"));
 }
 
-IvfVolumeReader::IvfVolumeReader(const IvfVolumeReader& rhs)
-    : DataReaderType<Volume>(rhs)
-    , rawFile_(rhs.rawFile_)
-    , filePos_(0)
-    , littleEndian_(rhs.littleEndian_)
-    , dimensions_(rhs.dimensions_)
-    , format_(rhs.format_) {
-}
+IvfVolumeReader* IvfVolumeReader::clone() const { return new IvfVolumeReader(*this); }
 
-IvfVolumeReader& IvfVolumeReader::operator=(const IvfVolumeReader& that) {
-    if (this != &that) {
-        rawFile_ = that.rawFile_;
-        filePos_ = that.filePos_;
-        littleEndian_ = that.littleEndian_;
-        dimensions_ = that.dimensions_;
-        format_ = that.format_;
-        DataReaderType<Volume>::operator=(that);
-    }
-
-    return *this;
-}
-
-IvfVolumeReader* IvfVolumeReader::clone() const {
-    return new IvfVolumeReader(*this);
-}
-
-Volume* IvfVolumeReader::readMetaData(std::string filePath)  {
+std::shared_ptr<Volume> IvfVolumeReader::readData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
         std::string newPath = filesystem::addBasePath(filePath);
 
@@ -79,7 +61,7 @@ Volume* IvfVolumeReader::readMetaData(std::string filePath)  {
 
     std::string fileDirectory = filesystem::getFileDirectory(filePath);
     std::string fileExtension = filesystem::getFileExtension(filePath);
-    Volume* volume = new Volume();
+    auto volume = std::make_shared<Volume>();
     IvwDeserializer d(filePath);
     d.deserialize("RawFile", rawFile_);
     rawFile_ = fileDirectory + rawFile_;
@@ -102,50 +84,13 @@ Volume* IvfVolumeReader::readMetaData(std::string filePath)  {
     volume->getMetaDataMap()->deserialize(d);
     littleEndian_ = volume->getMetaData<BoolMetaData>("LittleEndian", littleEndian_);
     auto vd = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
-    vd->setDataReader(this->clone());
+
+    auto loader = util::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
+                                                        littleEndian_, format_);
+    vd->setLoader(loader.release());
+
     volume->addRepresentation(vd);
     return volume;
 }
 
-void IvfVolumeReader::readDataInto(void* destination) const {
-    std::fstream fin(rawFile_.c_str(), std::ios::in | std::ios::binary);
-
-    if (fin.good()) {
-        std::size_t size = dimensions_.x*dimensions_.y*dimensions_.z*(format_->getSize());
-        fin.seekg(filePos_);
-        fin.read((char*)destination, size);
-
-        if (!littleEndian_ && format_->getSize() > 1) {
-            std::size_t bytes = format_->getSize();
-            char* temp = new char[bytes];
-
-            for (std::size_t i = 0; i < size; i += bytes) {
-                for (std::size_t j = 0; j < bytes; j++)
-                    temp[j] = static_cast<char*>(destination)[i + j];
-
-                for (std::size_t j = 0; j < bytes; j++)
-                    static_cast<char*>(destination)[i + j] = temp[bytes - j - 1];
-            }
-
-            delete[] temp;
-        }
-    } else
-        throw DataReaderException("Error: Could not read from raw file: " + rawFile_, IvwContext);
-
-    fin.close();
-}
-
-void* IvfVolumeReader::readData() const {
-    std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
-    char* data = new char[size];
-
-    if (data) {
-        readDataInto(data);
-    } else {
-        throw DataReaderException("Error: Could not allocate memory for loading raw file: " +
-                                  rawFile_, IvwContext);
-    }
-    return data;
-}
-
-} // namespace
+}  // namespace

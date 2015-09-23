@@ -33,6 +33,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/io/rawvolumeramloader.h>
 
 #include <iterator>
 
@@ -71,7 +73,7 @@ DatVolumeReader& DatVolumeReader::operator=(const DatVolumeReader& that) {
 
 DatVolumeReader* DatVolumeReader::clone() const { return new DatVolumeReader(*this); }
 
-DatVolumeReader::VolumeVector* DatVolumeReader::readMetaData(std::string filePath) {
+std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
         std::string newPath = filesystem::addBasePath(filePath);
 
@@ -204,15 +206,14 @@ DatVolumeReader::VolumeVector* DatVolumeReader::readMetaData(std::string filePat
     };
 
     // Check if other dat files where specified, and then only consider them as a sequence
-    auto volumes = util::make_unique<VolumeVector>();
+    auto volumes = std::make_shared<VolumeVector>();
 
     if (!datFiles.empty()) {
         for (size_t t = 0; t < datFiles.size(); ++t) {
             auto datVolReader = util::make_unique<DatVolumeReader>();
-            std::unique_ptr<VolumeVector> v(datVolReader->readMetaData(datFiles[t]));
+            auto v = datVolReader->readData(datFiles[t]);
 
-            std::copy(std::make_move_iterator(v->begin()), std::make_move_iterator(v->end()),
-                      std::back_inserter(*volumes));
+            std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
         }
         LogInfo("Loaded multiple volumes: " << filePath << " volumes: " << datFiles.size());
 
@@ -280,56 +281,17 @@ DatVolumeReader::VolumeVector* DatVolumeReader::readMetaData(std::string filePat
             else volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
             auto diskRepr = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
             filePos_ = t * bytes;
-            diskRepr->setDataReader(this->clone());
+
+            auto loader = util::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_, littleEndian_, format_);
+            diskRepr->setLoader(loader.release());
             volumes->back()->addRepresentation(diskRepr);
         }
 
         std::string size = formatBytesToString(bytes * sequences);
         LogInfo("Loaded volume sequence: " << filePath << " size: " << size);
     }
-    return volumes.release();
+    return volumes;
 }
 
-void DatVolumeReader::readDataInto(void* destination) const {
-    std::fstream fin(rawFile_.c_str(), std::ios::in | std::ios::binary);
-
-    if (fin.good()) {
-        std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
-        fin.seekg(filePos_);
-        fin.read(static_cast<char*>(destination), size);
-
-        if (!littleEndian_ && format_->getSize() > 1) {
-            std::size_t bytes = format_->getSize();
-            char* temp = new char[bytes];
-
-            for (std::size_t i = 0; i < size; i += bytes) {
-                for (std::size_t j = 0; j < bytes; j++)
-                    temp[j] = static_cast<char*>(destination)[i + j];
-
-                for (std::size_t j = 0; j < bytes; j++)
-                    static_cast<char*>(destination)[i + j] = temp[bytes - j - 1];
-            }
-
-            delete[] temp;
-        }
-    } else
-        throw DataReaderException("Error: Could not read from raw file: " + rawFile_, IvwContext);
-
-    fin.close();
-}
-
-void* DatVolumeReader::readData() const {
-    std::size_t size = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
-    char* data = new char[size];
-
-    if (data) {
-        readDataInto(data);
-    } else {
-        throw DataReaderException(
-            "Error: Could not allocate memory for loading raw file: " + rawFile_, IvwContext);
-    }
-
-    return data;
-}
 
 }  // namespace

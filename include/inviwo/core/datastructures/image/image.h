@@ -40,18 +40,12 @@ namespace inviwo {
 class IVW_CORE_API Image : public DataGroup {
 public:
     Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UINT8::get());
-    Image(Layer* colorLayer);
+    Image(std::shared_ptr<Layer> colorLayer);
     Image(const Image&);
     Image& operator=(const Image& that);
     virtual Image* clone() const;
-    virtual ~Image();
+    virtual ~Image() = default;
     virtual std::string getDataInfo() const;
-
-    void deinitialize();
-    void initialize(Layer* colorLayer = nullptr, size2_t dimensions = size2_t(8, 8),
-                    const DataFormatBase* format = DataVec4UINT8::get());
-
-    size_t addColorLayer(Layer*);
 
     const Layer* getLayer(LayerType, size_t idx = 0) const;
     Layer* getLayer(LayerType, size_t idx = 0);
@@ -85,10 +79,11 @@ public:
 
     static uvec3 COLOR_CODE;
     static const std::string CLASS_IDENTIFIER;
+
 protected:
-    std::vector<Layer*> colorLayers_;  //< owning pointer
-    Layer* depthLayer_;                //< owning pointer
-    Layer* pickingLayer_;              //< owning pointer
+    std::vector<std::shared_ptr<Layer>> colorLayers_;
+    std::shared_ptr<Layer> depthLayer_;
+    std::shared_ptr<Layer> pickingLayer_;
 };
 
 }  // namespace

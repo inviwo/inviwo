@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATAREADER_H
@@ -32,73 +32,41 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/util/fileextension.h>
-#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-class DiskRepresentation;
-
-class IVW_CORE_API DataReaderException : public Exception {
-public:
-    DataReaderException(const std::string& message = "", ExceptionContext context = ExceptionContext());
-    virtual ~DataReaderException() throw() {};
-};
-
-
 /** \brief A abstract base class for all file readers.
- *
  */
 class IVW_CORE_API DataReader {
-
-friend class DiskRepresentation;
-
 public:
-    DataReader();
-    DataReader(const DataReader& rhs);
-    DataReader& operator=(const DataReader& that);
+    DataReader() = default;
+    DataReader(const DataReader& rhs) = default;
+    DataReader& operator=(const DataReader& that) = default;
     virtual DataReader* clone() const = 0;
-    virtual ~DataReader() {};
-
-    virtual void* readData() const = 0;
-    virtual void readDataInto(void* dest) const = 0;
+    virtual ~DataReader() = default;
 
     const std::vector<FileExtension>& getExtensions() const;
     void addExtension(FileExtension ext);
-
-protected:
-    void setOwner(DiskRepresentation* owner) { owner_ = owner; };
-
-    DiskRepresentation* owner_;
 
 private:
     std::vector<FileExtension> extensions_;
 };
 
-/** \brief Template base class for file readers designating what type of data 
+/** \brief Template base class for file readers designating what type of data
  * object the reader returns.
  */
 template <typename T>
 class DataReaderType : public DataReader {
 public:
-    DataReaderType() : DataReader() {};
-    DataReaderType(const DataReaderType& rhs) : DataReader(rhs) {};
-    DataReaderType& operator=(const DataReaderType& that) {
-        if (this != &that)
-            DataReader::operator=(that);
-
-        return *this;
-    };
+    DataReaderType() = default;
+    DataReaderType(const DataReaderType& rhs) = default;
+    DataReaderType& operator=(const DataReaderType& that) = default;
     virtual DataReaderType* clone() const = 0;
-    virtual ~DataReaderType() {};
-
-    virtual T* readMetaData(const std::string filePath) = 0;
-    virtual void* readData() const = 0;
-    virtual void readDataInto(void* dest) const = 0;
+    virtual ~DataReaderType() = default;
+    virtual std::shared_ptr<T> readData(const std::string filePath) = 0;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_DATAREADER_H
-
+#endif  // IVW_DATAREADER_H

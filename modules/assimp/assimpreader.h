@@ -39,14 +39,12 @@ namespace inviwo {
 class IVW_MODULE_ASSIMP_API AssimpReader : public DataReaderType<Mesh>{
 public:
     AssimpReader();
-    AssimpReader(const AssimpReader& rhs);
-    AssimpReader& operator=(const AssimpReader& that);
-    virtual AssimpReader* clone() const;
-    virtual ~AssimpReader(){}
+    AssimpReader(const AssimpReader& rhs) = default;
+    AssimpReader& operator=(const AssimpReader& that) = default;
+    virtual AssimpReader* clone() const override;
+    virtual ~AssimpReader() = default;
     
-    virtual Mesh* readMetaData(const std::string filePath);
-    virtual void* readData() const;
-    virtual void readDataInto(void* dest) const;
+    virtual std::shared_ptr<Mesh> readData(const std::string filePath) override;
 };
 
 } // namespace

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,50 +27,21 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DISKREPRESENTATION_H
-#define IVW_DISKREPRESENTATION_H
+#ifndef IVW_DATAREADEREXCEPTION_H
+#define IVW_DATAREADEREXCEPTION_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/cloneableptr.h>
+#include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-class IVW_CORE_API DiskRepresentationLoader {
+class IVW_CORE_API DataReaderException : public Exception {
 public:
-    virtual ~DiskRepresentationLoader() = default;
-    virtual DiskRepresentationLoader* clone() const = 0;
-    virtual std::shared_ptr<DataRepresentation> createRepresentation() const = 0;
-    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const = 0;
-};
-
-class IVW_CORE_API DiskRepresentation {
-public:
-    DiskRepresentation();
-    DiskRepresentation(std::string, DiskRepresentationLoader* loader = nullptr);
-    DiskRepresentation(const DiskRepresentation& rhs) = default;
-    DiskRepresentation& operator=(const DiskRepresentation& that) = default;
-    virtual ~DiskRepresentation() = default;    
-    virtual DiskRepresentation* clone() const;
-
-    const std::string& getSourceFile() const;
-    bool hasSourceFile() const;
-
-    void setLoader(DiskRepresentationLoader* loader);
-
-    std::shared_ptr<DataRepresentation> createRepresentation() const;
-    void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const;
-
-private:
-#include <warn/push>
-#include <warn/ignore/dll-interface>
-    std::string sourceFile_;
-#include <warn/pop>
-
-    // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
-    util::cloneable_ptr<DiskRepresentationLoader> loader_;
+    DataReaderException(const std::string& message = "",
+                        ExceptionContext context = ExceptionContext());
 };
 
 }  // namespace
 
-#endif  // IVW_DISKREPRESENTATION_H
+#endif  // IVW_DATAREADEREXCEPTION_H

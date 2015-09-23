@@ -29,25 +29,12 @@
 
 #include <inviwo/core/datastructures/diskrepresentation.h>
 
-
 namespace inviwo {
 
-DiskRepresentation::DiskRepresentation() : sourceFile_(""), reader_() {}
+DiskRepresentation::DiskRepresentation() : sourceFile_(""), loader_() {}
 
-DiskRepresentation::DiskRepresentation(std::string srcFile) : sourceFile_(srcFile), reader_() {}
-
-DiskRepresentation::DiskRepresentation(const DiskRepresentation& rhs)
-    : sourceFile_(rhs.sourceFile_), reader_() {
-    setDataReader(rhs.reader_ ? rhs.reader_->clone() : nullptr);
-}
-
-DiskRepresentation& DiskRepresentation::operator=(const DiskRepresentation& that) {
-    if (this != &that) {
-        sourceFile_ = that.sourceFile_;
-        setDataReader(that.reader_ ? that.reader_->clone() : nullptr);
-    }
-    return *this;
-}
+DiskRepresentation::DiskRepresentation(std::string srcFile, DiskRepresentationLoader* loader)
+    : sourceFile_(srcFile), loader_(loader) {}
 
 DiskRepresentation* DiskRepresentation::clone() const { return new DiskRepresentation(*this); }
 
@@ -55,17 +42,18 @@ const std::string& DiskRepresentation::getSourceFile() const { return sourceFile
 
 bool DiskRepresentation::hasSourceFile() const { return !sourceFile_.empty(); }
 
-void DiskRepresentation::setDataReader(DataReader* reader) {
-    reader_.reset(reader);
-    reader_->setOwner(this);
+void DiskRepresentation::setLoader(DiskRepresentationLoader* loader) {
+    loader_.reset(loader);
 }
 
-void* DiskRepresentation::readData() const {
-     return reader_ ? reader_->readData() : nullptr;
+std::shared_ptr<DataRepresentation> DiskRepresentation::createRepresentation() const {
+    if (!loader_) throw Exception("No loader available to create representation", IvwContext);
+    return loader_->createRepresentation();
 }
 
-void DiskRepresentation::readDataInto(void* dest) const {
-    if (reader_) reader_->readDataInto(dest);
+void DiskRepresentation::updateRepresentation(std::shared_ptr<DataRepresentation> dest) const {
+    if (!loader_) throw Exception("No loader available to update representation", IvwContext);
+    loader_->updateRepresentation(dest);
 }
 
 }  // namespace

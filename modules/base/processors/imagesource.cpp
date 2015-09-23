@@ -83,12 +83,12 @@ void ImageSource::load() {
 
     if (reader) {
         try {
-            Layer* outLayer = reader->readMetaData(imageFileName_.get());
+            auto outLayer = reader->readData(imageFileName_.get());
             // Call getRepresentation here to force read a ram representation.
             // Otherwise the default image size, i.e. 256x265, will be reported
             // until you do the conversion. Since the LayerDisk does not have any metadata.
             outLayer->getRepresentation<LayerRAM>();
-            Image* outImage = new Image(outLayer);
+            Image* outImage = std::make_shared<Image>(outLayer);
             outImage->getRepresentation<ImageRAM>();
 
             outport_.setData(outImage);

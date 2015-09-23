@@ -256,27 +256,26 @@ struct CImgLoadVolumeDispatcher {
 ////////////////////// CImgUtils ///////////////////////////////////////////////////
 
 void* CImgUtils::loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
-    DataFormatEnums::Id& formatId, bool rescaleToDim){
+                               DataFormatEnums::Id& formatId, bool rescaleToDim) {
     std::string fileExtension = filesystem::getFileExtension(filePath);
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
-    }
-    else{
+    } else {
         formatId = DataFormatEnums::FLOAT32;
     }
     const DataFormatBase* dataFormat = DataFormatBase::get(formatId);
 
     CImgLoadLayerDispatcher disp;
-    return dataFormat->dispatch(disp, dst, filePath.c_str(), dimensions, formatId, dataFormat, rescaleToDim);
+    return dataFormat->dispatch(disp, dst, filePath.c_str(), dimensions, formatId, dataFormat,
+                                rescaleToDim);
 }
 
 void* CImgUtils::loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions,
-    DataFormatEnums::Id& formatId){
+                                DataFormatEnums::Id& formatId) {
     std::string fileExtension = filesystem::getFileExtension(filePath);
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
-    }
-    else{
+    } else {
         formatId = DataFormatEnums::FLOAT32;
     }
     const DataFormatBase* dataFormat = DataFormatBase::get(formatId);

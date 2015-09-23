@@ -41,13 +41,10 @@ namespace inviwo {
 
 class IVW_CORE_API MeshDisk2RAMConverter : public RepresentationConverterType<MeshDisk, MeshRAM> {
 public:
-    MeshDisk2RAMConverter();
-    virtual ~MeshDisk2RAMConverter();
-
     virtual std::shared_ptr<DataRepresentation> createFrom(
-        const DataRepresentation* source) const override;
-    virtual void update(const DataRepresentation* source,
-                        DataRepresentation* destination) const override;
+        std::shared_ptr<const DataRepresentation> source) const override;
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const override;
 };
 
 }  // namespace

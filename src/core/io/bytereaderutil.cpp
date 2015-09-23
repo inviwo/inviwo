@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,50 +27,38 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DISKREPRESENTATION_H
-#define IVW_DISKREPRESENTATION_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/cloneableptr.h>
+#include <inviwo/core/io/bytereaderutil.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
 
-class IVW_CORE_API DiskRepresentationLoader {
-public:
-    virtual ~DiskRepresentationLoader() = default;
-    virtual DiskRepresentationLoader* clone() const = 0;
-    virtual std::shared_ptr<DataRepresentation> createRepresentation() const = 0;
-    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const = 0;
-};
+void util::readBytesIntoBuffer(const std::string& file, size_t offset, size_t bytes,
+                               bool littleEndian, size_t elementSize, void* dest) {
+    std::fstream fin(file.c_str(), std::ios::in | std::ios::binary);
+    OnScopeExit close([&fin]() { fin.close(); });
 
-class IVW_CORE_API DiskRepresentation {
-public:
-    DiskRepresentation();
-    DiskRepresentation(std::string, DiskRepresentationLoader* loader = nullptr);
-    DiskRepresentation(const DiskRepresentation& rhs) = default;
-    DiskRepresentation& operator=(const DiskRepresentation& that) = default;
-    virtual ~DiskRepresentation() = default;    
-    virtual DiskRepresentation* clone() const;
+    if (fin.good()) {
+        fin.seekg(offset);
+        fin.read(static_cast<char*>(dest), bytes);
 
-    const std::string& getSourceFile() const;
-    bool hasSourceFile() const;
+        if (!littleEndian && elementSize > 1) {
+            char* temp = new char[elementSize];
 
-    void setLoader(DiskRepresentationLoader* loader);
+            for (std::size_t i = 0; i < bytes; i += elementSize) {
+                for (std::size_t j = 0; j < elementSize; j++)
+                    temp[j] = static_cast<char*>(dest)[i + j];
 
-    std::shared_ptr<DataRepresentation> createRepresentation() const;
-    void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const;
+                for (std::size_t j = 0; j < elementSize; j++)
+                    static_cast<char*>(dest)[i + j] = temp[elementSize - j - 1];
+            }
 
-private:
-#include <warn/push>
-#include <warn/ignore/dll-interface>
-    std::string sourceFile_;
-#include <warn/pop>
-
-    // DiskRepresentation owns a DataReader to be able to convert it self into RAM.
-    util::cloneable_ptr<DiskRepresentationLoader> loader_;
-};
+            delete[] temp;
+        }
+    } else {
+        throw DataReaderException("Error: Could not read from file: " + file,
+                                  IvwContextCustom("readBytesIntoBuffer"));
+    }
+}
 
 }  // namespace
-
-#endif  // IVW_DISKREPRESENTATION_H

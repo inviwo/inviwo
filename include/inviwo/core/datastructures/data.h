@@ -178,11 +178,11 @@ const T* Data<Repr>::getValidRepresentation() const {
             auto it = representations_.find(dest);
             if (it != representations_.end()) {  // Next repr. already exist, just update it
                 result = it->second;
-                converter->update(lastValidRepresentation_.get(), result.get());
+                converter->update(lastValidRepresentation_, result);
             } else {  // No representation found, create it
                 // TODO remove static cast here with template factory...
                 result = std::dynamic_pointer_cast<Repr>(
-                    converter->createFrom(lastValidRepresentation_.get()));
+                    converter->createFrom(lastValidRepresentation_));
                 if (!result) throw ConverterException("Converter failed to create", IvwContext);
                 result->setOwner(const_cast<Data*>(this));
                 representations_[result->getTypeIndex()] = result;

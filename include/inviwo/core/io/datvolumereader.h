@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATVOLUMEREADER_H
@@ -62,12 +62,10 @@ public:
     DatVolumeReader();
     DatVolumeReader(const DatVolumeReader& rhs);
     DatVolumeReader& operator=(const DatVolumeReader& that);
-    virtual DatVolumeReader* clone() const;
-    virtual ~DatVolumeReader() {}
+    virtual DatVolumeReader* clone() const override;
+    virtual ~DatVolumeReader() = default;
 
-    virtual VolumeVector* readMetaData(const std::string filePath);
-    virtual void* readData() const;
-    virtual void readDataInto(void* dest) const;
+    virtual std::shared_ptr<VolumeVector> readData(const std::string filePath) override;
 
 private:
     std::string rawFile_;

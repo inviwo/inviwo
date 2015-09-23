@@ -32,16 +32,15 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-
 #include <assimp/Importer.hpp>   // C++ importer interface
 #include <assimp/scene.h>        // Output data structure
 #include <assimp/postprocess.h>  // Post processing flags
 #include <assimp/types.h>
 #include <assimp/importerdesc.h>
-
 #include <warn/pop>
 
 namespace inviwo {
@@ -59,18 +58,9 @@ AssimpReader::AssimpReader() : DataReaderType<Mesh>() {
     }
 }
 
-AssimpReader::AssimpReader(const AssimpReader& rhs) : DataReaderType<Mesh>(rhs) {}
-
 AssimpReader* AssimpReader::clone() const { return new AssimpReader(*this); }
 
-AssimpReader& AssimpReader::operator=(const AssimpReader& that) {
-    if (this != &that) {
-        DataReaderType<Mesh>::operator=(that);
-    }
-    return *this;
-}
-
-Mesh* AssimpReader::readMetaData(const std::string filePath) {
+std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
     Assimp::Importer importer;
 
     // And have it read the given file with some example post processing
@@ -80,11 +70,9 @@ Mesh* AssimpReader::readMetaData(const std::string filePath) {
         filePath, aiProcess_CalcTangentSpace | aiProcess_Triangulate | aiProcess_GenSmoothNormals |
                       aiProcess_JoinIdenticalVertices | aiProcess_SortByPType);
 
-    if (!scene) {
-        throw DataReaderException(importer.GetErrorString(), IvwContext);
-    }
+    if (!scene) throw DataReaderException(importer.GetErrorString(), IvwContext);
 
-    Mesh* mesh = new Mesh();
+    auto mesh = std::make_shared<Mesh>();
 
     // Only support reading one mesh from the scene. 
     for (size_t i = 0; i < std::min(size_t{1}, size_t{scene->mNumMeshes}); ++i) {
@@ -150,7 +138,5 @@ Mesh* AssimpReader::readMetaData(const std::string filePath) {
 
     return mesh;
 }
-void* AssimpReader::readData() const { return nullptr; }
-void AssimpReader::readDataInto(void* dest) const {}
 
 }  // namespace

@@ -131,7 +131,7 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
     std::string ext = filesystem::getFileExtension(file_.get());  
     if (auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<DataType>(ext)) {
         try {
-            auto data = std::shared_ptr<DataType>(reader->readMetaData(file_.get()));
+            auto data = reader->readData(file_.get());
             port_.setData(data);
             loadedData_ = data;
             if (deserialized) {

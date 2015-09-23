@@ -83,18 +83,16 @@ void VolumeSource::load(bool deserialize) {
     std::string ext = filesystem::getFileExtension(file_.get());
     if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
         try {
-            auto vols(volVecReader->readMetaData(file_.get()));
-            auto volumes = util::make_unique<VolumeVector>();
-            for (auto& elem : *vols) volumes->emplace_back(std::move(elem));
+            auto volumes = volVecReader->readData(file_.get());
             std::swap(volumes, volumes_);
         } catch (DataReaderException const& e) {
             LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
         }
     } else if (auto volreader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
         try {
-            auto volume(volreader->readMetaData(file_.get()));
-            auto volumes = util::make_unique<VolumeVector>();
-            volumes->emplace_back(std::move(volume));
+            auto volume(volreader->readData(file_.get()));
+            auto volumes = std::make_shared<VolumeVector>();
+            volumes->push_back(volume);
             std::swap(volumes, volumes_);
         } catch (DataReaderException const& e) {
             LogProcessorError("Could not load data: " << file_.get() << ", " << e.getMessage());
