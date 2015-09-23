@@ -52,7 +52,7 @@ void testVolumeLoad(std::string filename) {
     std::string fileExtension = filesystem::getFileExtension(file);
     auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Volume>(fileExtension);
     ASSERT_TRUE(reader.get() != nullptr);
-    Volume* volume = reader->readMetaData(file);
+    auto volume = reader->readData(file);
     const VolumeRAMPrecision<T>* volumeRAM =
         static_cast<const VolumeRAMPrecision<T>*>(volume->getRepresentation<VolumeRAM>());
     ASSERT_TRUE(volumeRAM != nullptr);
@@ -88,7 +88,6 @@ void testVolumeLoad(std::string filename) {
             }
         }
     }
-    delete volume;
 }
 
 template<typename T>
@@ -98,7 +97,7 @@ void testVolumeClone(std::string filename) {
     std::string fileExtension = filesystem::getFileExtension(file);
     auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Volume>(fileExtension);
     ASSERT_TRUE(reader.get() != nullptr);
-    Volume* volume = reader->readMetaData(file);
+    auto volume = reader->readData(file);
     Volume* volume1 = volume->clone();
 
     const VolumeRAMPrecision<T>* volumeRAM =
@@ -167,7 +166,6 @@ void testVolumeClone(std::string filename) {
             }
         }
     }
-    delete volume;
     delete volume1;
     delete volume2;
 }

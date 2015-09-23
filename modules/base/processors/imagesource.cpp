@@ -88,7 +88,7 @@ void ImageSource::load() {
             // Otherwise the default image size, i.e. 256x265, will be reported
             // until you do the conversion. Since the LayerDisk does not have any metadata.
             outLayer->getRepresentation<LayerRAM>();
-            Image* outImage = std::make_shared<Image>(outLayer);
+            auto outImage = std::make_shared<Image>(outLayer);
             outImage->getRepresentation<ImageRAM>();
 
             outport_.setData(outImage);

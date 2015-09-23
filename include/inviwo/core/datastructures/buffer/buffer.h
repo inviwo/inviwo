@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 
 namespace inviwo {
 
@@ -75,20 +76,35 @@ public:
     BufferPrecision(size_t size = 0, BufferUsage usage = STATIC)
         : Buffer(size, DataFormat<T>::get(), A, usage) {}
     BufferPrecision(BufferUsage usage) : Buffer(0, DataFormat<T>::get(), A, usage) {}
-    BufferPrecision(const BufferPrecision& rhs) : Buffer(rhs) {}
-    BufferPrecision& operator=(const BufferPrecision& that) {
-        if (this != &that) {
-            Buffer::operator=(that);
-        }
-        return *this;
-    }
+    BufferPrecision(const BufferPrecision& rhs) = default;
+    BufferPrecision& operator=(const BufferPrecision& that) = default;
     virtual BufferPrecision<T, A>* clone() const { return new BufferPrecision<T, A>(*this); }
+    virtual ~BufferPrecision() = default;
 
-    virtual ~BufferPrecision() {}
+    BufferRAMPrecision<T>* getEditableRAMRepresentation();
+    const BufferRAMPrecision<T>* getRAMRepresentation() const;
 
 private:
     static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
 };
+
+template <typename T, BufferType A>
+const BufferRAMPrecision<T>* inviwo::BufferPrecision<T, A>::getRAMRepresentation() const {
+    if (auto res = dynamic_cast<const BufferRAMPrecision<T>*>(getRepresentation<BufferRAM>())) {
+        return res;
+    } else {
+        throw Exception("Unable to create requested RAM representation", IvwContext);
+    }
+}
+
+template <typename T, BufferType A>
+BufferRAMPrecision<T>* inviwo::BufferPrecision<T, A>::getEditableRAMRepresentation() {
+    if (auto res = dynamic_cast<BufferRAMPrecision<T>*>(getEditableRepresentation<BufferRAM>())) {
+        return res;
+    } else {
+        throw Exception("Unable to create requested RAM representation", IvwContext);
+    }
+}
 
 typedef BufferPrecision<vec2, POSITION_ATTRIB> Position2dBuffer;
 typedef BufferPrecision<vec2, TEXCOORD_ATTRIB> TexCoord2dBuffer;

@@ -33,6 +33,8 @@
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/io/datareader.h>
 
 namespace inviwo {
@@ -40,18 +42,36 @@ namespace inviwo {
  class IVW_MODULE_CIMG_API CImgVolumeReader : public DataReaderType<Volume> {
 public:
     CImgVolumeReader();
-    CImgVolumeReader(const CImgVolumeReader& rhs);
-    CImgVolumeReader& operator=(const CImgVolumeReader& that);
+    CImgVolumeReader(const CImgVolumeReader& rhs) = default;
+    CImgVolumeReader& operator=(const CImgVolumeReader& that) = default;
     virtual CImgVolumeReader* clone() const;
-    virtual ~CImgVolumeReader() {}
+    virtual ~CImgVolumeReader() = default;
 
-    virtual Volume* readMetaData(const std::string filePath);
-    virtual void* readData() const;
-    virtual void readDataInto(void* dest) const;
+    virtual std::shared_ptr<Volume> readData(const std::string filePath) override;
 
  protected:
-     void printMetaInfo(MetaDataOwner*, std::string);
+     void printMetaInfo(const MetaDataOwner&, std::string) const;
 
+};
+
+class IVW_MODULE_CIMG_API CImgVolumeRAMLoader : public DiskRepresentationLoader {
+public:
+    CImgVolumeRAMLoader(VolumeDisk* volumeDisk);
+    virtual CImgVolumeRAMLoader* clone() const override;
+    virtual ~CImgVolumeRAMLoader() = default;
+    virtual std::shared_ptr<DataRepresentation> createRepresentation() const override;
+    virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const override;
+
+    using type = std::shared_ptr<VolumeRAM>;
+    template <class T>
+    std::shared_ptr<VolumeRAM> dispatch(void* data) const {
+        typedef typename T::type F;
+        return std::make_shared<VolumeRAMPrecision<F>>(static_cast<F*>(data),
+                                                       volumeDisk_->getDimensions());
+    }
+
+private:
+    VolumeDisk* volumeDisk_;
 };
 
 }  // namespace

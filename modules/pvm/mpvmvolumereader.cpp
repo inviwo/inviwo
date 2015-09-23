@@ -41,19 +41,9 @@ MPVMVolumeReader::MPVMVolumeReader() : DataReaderType<Volume>() {
     addExtension(FileExtension("mpvm", "MPVM (Multiple PVMs) file format"));
 }
 
-MPVMVolumeReader::MPVMVolumeReader(const MPVMVolumeReader& rhs) : DataReaderType<Volume>(rhs){};
-
-MPVMVolumeReader& MPVMVolumeReader::operator=(const MPVMVolumeReader& that) {
-    if (this != &that) {
-        DataReaderType<Volume>::operator=(that);
-    }
-
-    return *this;
-}
-
 MPVMVolumeReader* MPVMVolumeReader::clone() const { return new MPVMVolumeReader(*this); }
 
-Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
+std::shared_ptr<Volume> MPVMVolumeReader::readData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
         std::string newPath = filesystem::addBasePath(filePath);
 
@@ -67,27 +57,29 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     std::string fileDirectory = filesystem::getFileDirectory(filePath);
 
     // Read the mpvm file content
-    std::istream* f = new std::ifstream(filePath.c_str());
+
     std::string textLine;
     std::vector<std::string> files;
+    {
+        std::ifstream f(filePath.c_str());
+        while (!f.eof()) {
+            getline(f, textLine);
+            textLine = trim(textLine);
+            files.push_back(textLine);
+        };
+    }
 
-    while (!f->eof()) {
-        getline(*f, textLine);
-        textLine = trim(textLine);
-        files.push_back(textLine);
-    };
-
-    delete f;
-
-    if (files.empty()) throw DataReaderException("Error: No PVM files found in " + filePath, IvwContext);
+    if (files.empty())
+        throw DataReaderException("Error: No PVM files found in " + filePath, IvwContext);
 
     if (files.size() > 4)
-        throw DataReaderException("Error: Maximum 4 pvm files are supported, file: " + filePath, IvwContext);
+        throw DataReaderException("Error: Maximum 4 pvm files are supported, file: " + filePath,
+                                  IvwContext);
 
     // Read all pvm volumes
-    std::vector<Volume*> volumes;
+    std::vector<std::shared_ptr<Volume>> volumes;
     for (size_t i = 0; i < files.size(); i++) {
-        Volume* newVol = PVMVolumeReader::readPVMData(fileDirectory + files[i]);
+        auto newVol = PVMVolumeReader::readPVMData(fileDirectory + files[i]);
         if (newVol)
             volumes.push_back(newVol);
         else
@@ -95,10 +87,11 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     }
 
     if (volumes.empty())
-        throw DataReaderException("No PVM volumes could be read from file: " + filePath, IvwContext);
+        throw DataReaderException("No PVM volumes could be read from file: " + filePath,
+                                  IvwContext);
 
     if (volumes.size() == 1) {
-        printPVMMeta(volumes[0], fileDirectory + files[0]);
+        printPVMMeta(*volumes[0], fileDirectory + files[0]);
         return volumes[0];
     }
 
@@ -108,17 +101,17 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     for (size_t i = 1; i < volumes.size(); i++) {
         if (format != volumes[i]->getDataFormat() || mdim != volumes[i]->getDimensions()) {
             LogWarn("PVM volumes did not have the same format or dimensions, using first volume.");
-            printPVMMeta(volumes[0], fileDirectory + files[0]);
+            printPVMMeta(*volumes[0], fileDirectory + files[0]);
             return volumes[0];
         }
     }
 
     // Create new format
     const DataFormatBase* mformat =
-        DataFormatBase::get(format->getNumericType(), volumes.size(), format->getSize()*8);
+        DataFormatBase::get(format->getNumericType(), volumes.size(), format->getSize() * 8);
 
     // Create new volume
-    Volume* volume = new Volume();
+    auto volume = std::make_shared<Volume>();
     glm::mat3 basis = volumes[0]->getBasis();
     volume->setBasis(basis);
     volume->setOffset(-0.5f * (basis[0] + basis[1] + basis[2]));
@@ -128,8 +121,7 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
     volume->copyMetaDataFrom(*volumes[0]);
 
     // Merge descriptions but ignore the rest
-    StringMetaData* metaData = volume->getMetaData<StringMetaData>("description");
-    if (metaData) {
+    if (auto metaData = volume->getMetaData<StringMetaData>("description")) {
         std::string descStr = metaData->get();
         for (size_t i = 1; i < volumes.size(); i++) {
             metaData = volumes[0]->getMetaData<StringMetaData>("description");
@@ -161,24 +153,14 @@ Volume* MPVMVolumeReader::readMetaData(std::string filePath) {
         }
     }
 
-    // Delete the single channel volumes
-    for (size_t i = 0; i < volumes.size(); i++) {
-        delete volumes[i];
-    }
-
     volume->addRepresentation(mvolRAM);
-
-    printPVMMeta(volume, filePath);
+    printPVMMeta(*volume, filePath);
     return volume;
 }
 
-void MPVMVolumeReader::readDataInto(void*) const { return; }
-
-void* MPVMVolumeReader::readData() const { return nullptr; }
-
-void MPVMVolumeReader::printPVMMeta(Volume* volume, std::string filePath) {
-    size3_t dim = volume->getDimensions();
-    size_t bytes = dim.x * dim.y * dim.z * (volume->getDataFormat()->getSize());
+void MPVMVolumeReader::printPVMMeta(const Volume& volume, std::string filePath) const {
+    size3_t dim = volume.getDimensions();
+    size_t bytes = dim.x * dim.y * dim.z * (volume.getDataFormat()->getSize());
     std::string size = formatBytesToString(bytes);
     LogInfo("Loaded volume: " << filePath << " size: " << size);
     printMetaInfo(volume, "description");
@@ -187,9 +169,8 @@ void MPVMVolumeReader::printPVMMeta(Volume* volume, std::string filePath) {
     printMetaInfo(volume, "comment");
 }
 
-void MPVMVolumeReader::printMetaInfo(MetaDataOwner* metaDataOwner, std::string key) {
-    StringMetaData* metaData = metaDataOwner->getMetaData<StringMetaData>(key);
-    if (metaData) {
+void MPVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string key) const {
+    if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
         key[0] = static_cast<char>(toupper(key[0]));

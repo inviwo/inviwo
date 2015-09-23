@@ -52,31 +52,25 @@ TEST(ImageTests,ImageLoadWhite) {
     std::string imgFile = IMG_WHITE;
     ASSERT_TRUE(filesystem::fileExists(imgFile));
 
-    auto disk = std::make_shared<LayerDisk>(imgFile);
-    ASSERT_TRUE(disk != 0);
-
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
-
     auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
+    auto layer = reader->readData(imgFile);
 
-    disk->setDataReader(reader.release());
+    Image img(layer);
+    auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
+    ASSERT_TRUE(layerRam!=0);
 
-    Image img;
-    img.getColorLayer()->addRepresentation(disk);
-    const LayerRAM* layer = img.getColorLayer()->getRepresentation<LayerRAM>();
-    ASSERT_TRUE(layer!=0);
-
-    uvec2 dim = layer->getDimensions();
+    uvec2 dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x,2);
     EXPECT_EQ(dim.y,2);
 
-    dvec4 a = layer->getValueAsVec4Double(uvec2(0,0));
-    dvec4 b = layer->getValueAsVec4Double(uvec2(0,1));
-    dvec4 c = layer->getValueAsVec4Double(uvec2(1,0));
-    dvec4 d = layer->getValueAsVec4Double(uvec2(1,1));
+    dvec4 a = layerRam->getValueAsVec4Double(uvec2(0,0));
+    dvec4 b = layerRam->getValueAsVec4Double(uvec2(0,1));
+    dvec4 c = layerRam->getValueAsVec4Double(uvec2(1,0));
+    dvec4 d = layerRam->getValueAsVec4Double(uvec2(1,1));
     EXPECT_DOUBLE_EQ(a.r, 1.0);
     EXPECT_DOUBLE_EQ(a.g, 1.0);
     EXPECT_DOUBLE_EQ(a.b, 1.0);
@@ -106,23 +100,21 @@ TEST(ImageTests, ImageLoadRGB) {
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
-
     auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
+    auto layer = reader->readData(imgFile);
 
-    disk->setDataReader(reader.release());
+    Image img(layer);
+    auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
+    ASSERT_TRUE(layerRam != 0);
 
-    Image img;
-    img.getColorLayer()->addRepresentation(disk);
-    const LayerRAM* layer = img.getColorLayer()->getRepresentation<LayerRAM>();
-    ASSERT_TRUE(layer!=0);
-    uvec2 dim = layer->getDimensions();
+    uvec2 dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x,2);
     EXPECT_EQ(dim.y,2);
-    dvec4 a = layer->getValueAsVec4Double(uvec2(0,0));
-    dvec4 b = layer->getValueAsVec4Double(uvec2(1,0));
-    dvec4 c = layer->getValueAsVec4Double(uvec2(0,1));
-    dvec4 d = layer->getValueAsVec4Double(uvec2(1,1));
+    dvec4 a = layerRam->getValueAsVec4Double(uvec2(0,0));
+    dvec4 b = layerRam->getValueAsVec4Double(uvec2(1,0));
+    dvec4 c = layerRam->getValueAsVec4Double(uvec2(0,1));
+    dvec4 d = layerRam->getValueAsVec4Double(uvec2(1,1));
     EXPECT_DOUBLE_EQ(a.r, 1.0);
     EXPECT_DOUBLE_EQ(a.g, 0.0);
     EXPECT_DOUBLE_EQ(a.b, 0.0);
@@ -153,22 +145,20 @@ TEST(ImageTests, ImageLoadRange) {
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
-
     auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
+    auto layer = reader->readData(imgFile);
 
-    disk->setDataReader(reader.release());
+    Image img(layer);
+    auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
+    ASSERT_TRUE(layerRam != 0);
 
-    Image img;
-    img.getColorLayer()->addRepresentation(disk);
-    const LayerRAM* layer = img.getColorLayer()->getRepresentation<LayerRAM>();
-    ASSERT_TRUE(layer!=0);
-    uvec2 dim = layer->getDimensions();
+    uvec2 dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x,256);
     EXPECT_EQ(dim.y,1);
 
     for (int i = 0; i<255; i++) {
-        dvec4 a = layer->getValueAsVec4Double(uvec2(i,0));
+        dvec4 a = layerRam->getValueAsVec4Double(uvec2(i,0));
         EXPECT_DOUBLE_EQ(a.r, i/255.0);
         EXPECT_DOUBLE_EQ(a.g, i/255.0);
         EXPECT_DOUBLE_EQ(a.b, i/255.0);
@@ -190,39 +180,34 @@ TEST(ImageTests, ImageResize) {
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
-
     auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
+    auto layer = reader->readData(imgFile);
 
-    disk->setDataReader(reader.release());
+    Image img(layer);
+    auto layerRam = img.getColorLayer()->getRepresentation<LayerRAM>();
+    ASSERT_TRUE(layerRam != 0);
 
-    Image img;
-    img.getColorLayer()->addRepresentation(disk);
-    const LayerRAM* layer = img.getColorLayer()->getRepresentation<LayerRAM>();
-    ASSERT_TRUE(layer!=0);
-    uvec2 dim = layer->getDimensions();
+    uvec2 dim = layerRam->getDimensions();
     EXPECT_EQ(dim.x,2);
     EXPECT_EQ(dim.y,2);
 
 
     img.setDimensions(uvec2(10,10));
 
+    auto layerRam2 = img.getColorLayer()->getRepresentation<LayerRAM>();
 
-    const LayerRAM* layer2 = img.getColorLayer()->getRepresentation<LayerRAM>();
-
-    dim = layer->getDimensions();
+    dim = layerRam->getDimensions();
 
     EXPECT_EQ(dim.x,10);
     EXPECT_EQ(dim.y,10);
     
-    dim = layer2->getDimensions();
+    dim = layerRam2->getDimensions();
 
     EXPECT_EQ(dim.x,10);
     EXPECT_EQ(dim.y,10);
 
-    EXPECT_TRUE(layer == layer2);
-
-
+    EXPECT_TRUE(layerRam == layerRam2);
 }
 
 

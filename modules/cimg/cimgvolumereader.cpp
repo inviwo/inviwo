@@ -39,19 +39,9 @@ CImgVolumeReader::CImgVolumeReader() : DataReaderType<Volume>() {
     addExtension(FileExtension("hdr", "Analyze 7.5"));
 }
 
-CImgVolumeReader::CImgVolumeReader(const CImgVolumeReader& rhs) : DataReaderType<Volume>(rhs){};
-
-CImgVolumeReader& CImgVolumeReader::operator=(const CImgVolumeReader& that) {
-    if (this != &that) {
-        DataReaderType<Volume>::operator=(that);
-    }
-
-    return *this;
-}
-
 CImgVolumeReader* CImgVolumeReader::clone() const { return new CImgVolumeReader(*this); }
 
-Volume* CImgVolumeReader::readMetaData(std::string filePath) {
+std::shared_ptr<Volume> CImgVolumeReader::readData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
         std::string newPath = filesystem::addBasePath(filePath);
 
@@ -63,76 +53,72 @@ Volume* CImgVolumeReader::readMetaData(std::string filePath) {
         }
     }
 
-    Volume* volume = new Volume();
-
+    auto volume = std::make_shared<Volume>();
     auto volumeDisk = std::make_shared<VolumeDisk>(filePath);
-    volumeDisk->setDataReader(this->clone());
-
+    volumeDisk->setLoader(new CImgVolumeRAMLoader(volumeDisk.get()));
     volume->addRepresentation(volumeDisk);
 
     return volume;
 }
-
-void CImgVolumeReader::readDataInto(void* destination) const {
-    VolumeDisk* volumeDisk = dynamic_cast<VolumeDisk*>(owner_);
-    if (volumeDisk){
-        size3_t dimensions = volumeDisk->getDimensions();
-        DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
-
-        std::string filePath = volumeDisk->getSourceFile();
-
-        if (!filesystem::fileExists(filePath)) {
-            std::string newPath = filesystem::addBasePath(filePath);
-
-            if (filesystem::fileExists(newPath)) {
-                filePath = newPath;
-            }
-            else {
-                throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
-            }
-        }
-
-        CImgUtils::loadVolumeData(destination, filePath, dimensions, formatId);
-        volumeDisk->setDimensions(dimensions);
-    }
-}
-
-void* CImgVolumeReader::readData() const {
-    void* data = nullptr;
-
-    VolumeDisk* volumeDisk = dynamic_cast<VolumeDisk*>(owner_);
-    if (volumeDisk){
-        size3_t dimensions = volumeDisk->getDimensions();
-        DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
-
-        std::string filePath = volumeDisk->getSourceFile();
-
-        if (!filesystem::fileExists(filePath)) {
-            std::string newPath = filesystem::addBasePath(filePath);
-
-            if (filesystem::fileExists(newPath)) {
-                filePath = newPath;
-            }
-            else {
-                throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
-            }
-        }
-
-        data = CImgUtils::loadVolumeData(nullptr, filePath, dimensions, formatId);
-        volumeDisk->setDimensions(dimensions);
-    }
-
-    return data;
-}
-
-void CImgVolumeReader::printMetaInfo(MetaDataOwner* metaDataOwner, std::string key) {
-    StringMetaData* metaData = metaDataOwner->getMetaData<StringMetaData>(key);
-    if (metaData) {
+void CImgVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string key) const {
+    if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
         key[0] = static_cast<char>(toupper(key[0]));
         LogInfo(key << ": " << metaStr);
     }
+}
+
+CImgVolumeRAMLoader::CImgVolumeRAMLoader(VolumeDisk* volumeDisk) :volumeDisk_(volumeDisk) {}
+
+CImgVolumeRAMLoader* CImgVolumeRAMLoader::clone() const {
+    return new CImgVolumeRAMLoader(*this);
+}
+
+std::shared_ptr<DataRepresentation> CImgVolumeRAMLoader::createRepresentation() const {
+    void* data = nullptr;
+
+    size3_t dimensions = volumeDisk_->getDimensions();
+    DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
+
+    std::string filePath = volumeDisk_->getSourceFile();
+
+    if (!filesystem::fileExists(filePath)) {
+        std::string newPath = filesystem::addBasePath(filePath);
+
+        if (filesystem::fileExists(newPath)) {
+            filePath = newPath;
+        } else {
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        }
+    }
+
+    data = CImgUtils::loadVolumeData(nullptr, filePath, dimensions, formatId);
+    volumeDisk_->setDimensions(dimensions);
+
+    return volumeDisk_->getDataFormat()->dispatch(*this, data);
+}
+
+void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation> dest) const {
+    auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
+
+    size3_t dimensions = volumeDisk_->getDimensions();
+    DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
+
+    std::string filePath = volumeDisk_->getSourceFile();
+
+    if (!filesystem::fileExists(filePath)) {
+        std::string newPath = filesystem::addBasePath(filePath);
+
+        if (filesystem::fileExists(newPath)) {
+            filePath = newPath;
+        } else {
+            throw DataReaderException("Error could not find input file: " + filePath, IvwContext);
+        }
+    }
+
+    CImgUtils::loadVolumeData(volumeDst->getData(), filePath, dimensions, formatId);
+    volumeDisk_->setDimensions(dimensions);
 }
 
 }  // namespace

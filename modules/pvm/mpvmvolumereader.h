@@ -44,18 +44,16 @@ namespace inviwo {
  class IVW_MODULE_PVM_API MPVMVolumeReader : public DataReaderType<Volume> {
 public:
     MPVMVolumeReader();
-    MPVMVolumeReader(const MPVMVolumeReader& rhs);
-    MPVMVolumeReader& operator=(const MPVMVolumeReader& that);
-    virtual MPVMVolumeReader* clone() const;
-    virtual ~MPVMVolumeReader() {}
+    MPVMVolumeReader(const MPVMVolumeReader& rhs) = default;
+    MPVMVolumeReader& operator=(const MPVMVolumeReader& that) = default;
+    virtual MPVMVolumeReader* clone() const override;
+    virtual ~MPVMVolumeReader() = default;
 
-    virtual Volume* readMetaData(const std::string filePath);
-    virtual void* readData() const;
-    virtual void readDataInto(void* dest) const;
-
+    virtual std::shared_ptr<Volume> readData(const std::string filePath) override;
+    
  protected:
-     void printPVMMeta(Volume*, std::string);
-     void printMetaInfo(MetaDataOwner*, std::string);
+     void printPVMMeta(const Volume&, std::string) const;
+     void printMetaInfo(const MetaDataOwner&, std::string) const;
 
 };
 

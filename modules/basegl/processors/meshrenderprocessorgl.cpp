@@ -144,10 +144,9 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     utilgl::addShaderDefines(shader, lightingProperty_);
     int layerID = 0;
 
-    if (overrideColorBuffer_.get()){
+    if (overrideColorBuffer_.get()) {
         shader.getFragmentShaderObject()->addShaderDefine("OVERRIDE_COLOR_BUFFER");
-    }
-    else{
+    } else {
         shader.getFragmentShaderObject()->removeShaderDefine("OVERRIDE_COLOR_BUFFER");
     }
 
@@ -182,8 +181,10 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
         shader.getFragmentShaderObject()->removeShaderDefine("VIEW_NORMALS_LAYER");
     }
 
-    for (std::size_t i = outport_.getData()->getNumberOfColorLayers(); i < static_cast<std::size_t>(layerID); i++) {
-        outport_.getEditableData()->addColorLayer(outport_.getData()->getColorLayer(0)->clone());
+    for (std::size_t i = outport_.getData()->getNumberOfColorLayers();
+         i < static_cast<std::size_t>(layerID); i++) {
+        outport_.getEditableData()->addColorLayer(
+            std::shared_ptr<Layer>(outport_.getData()->getColorLayer(0)->clone()));
     }
 
     shader.build();

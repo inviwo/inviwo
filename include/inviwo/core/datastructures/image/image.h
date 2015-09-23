@@ -52,6 +52,7 @@ public:
 
     const Layer* getColorLayer(size_t idx = 0) const;
     Layer* getColorLayer(size_t idx = 0);
+    void addColorLayer(std::shared_ptr<Layer> layer);
 
     size_t getNumberOfColorLayers() const;
 

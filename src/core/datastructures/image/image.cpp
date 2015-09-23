@@ -127,6 +127,10 @@ Layer* Image::getColorLayer(size_t idx) {
     return colorLayers_[idx].get();
 }
 
+void Image::addColorLayer(std::shared_ptr<Layer> layer) {
+    colorLayers_.push_back(layer);
+}
+
 size_t Image::getNumberOfColorLayers() const {
     return colorLayers_.size();
 }

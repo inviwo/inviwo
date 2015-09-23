@@ -72,6 +72,10 @@ std::shared_ptr<Layer> CImgLayerReader::readData(std::string filePath) {
 
 CImgLayerRAMLoader::CImgLayerRAMLoader(LayerDisk* layerDisk) : layerDisk_(layerDisk) {}
 
+CImgLayerRAMLoader* CImgLayerRAMLoader::clone() const {
+    return new CImgLayerRAMLoader(*this);
+}
+
 std::shared_ptr<DataRepresentation> CImgLayerRAMLoader::createRepresentation() const {
     void* data = nullptr;
 

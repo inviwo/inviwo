@@ -32,6 +32,8 @@
 
 #include <modules/cimg/cimgmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/datastructures/image/layerdisk.h>
 #include <inviwo/core/io/datareader.h>
 
 namespace inviwo {
@@ -53,17 +55,18 @@ public:
     virtual std::shared_ptr<Layer> readData(const std::string filePath) override;
 };
 
-class IVW_CORE_API CImgLayerRAMLoader : public DiskRepresentationLoader {
+class IVW_MODULE_CIMG_API CImgLayerRAMLoader : public DiskRepresentationLoader {
 public:
     CImgLayerRAMLoader(LayerDisk* layerDisk);
     virtual CImgLayerRAMLoader* clone() const override;
+    virtual ~CImgLayerRAMLoader() = default;
     virtual std::shared_ptr<DataRepresentation> createRepresentation() const override;
     virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const override;
 
     using type = std::shared_ptr<LayerRAM>;
 
     template <class T>
-    std::shared_ptr<LayerRAM> dispatch(const LayerDisk* source, void* data) {
+    std::shared_ptr<LayerRAM> dispatch(void* data) const {
         typedef typename T::type F;
         return std::make_shared<LayerRAMPrecision<F>>(
             static_cast<F*>(data), layerDisk_->getDimensions(), layerDisk_->getLayerType());

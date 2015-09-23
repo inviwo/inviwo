@@ -41,41 +41,27 @@ PVMVolumeReader::PVMVolumeReader() : DataReaderType<Volume>() {
     addExtension(FileExtension("pvm", "PVM file format"));
 }
 
-PVMVolumeReader::PVMVolumeReader(const PVMVolumeReader& rhs) : DataReaderType<Volume>(rhs){};
-
-PVMVolumeReader& PVMVolumeReader::operator=(const PVMVolumeReader& that) {
-    if (this != &that) {
-        DataReaderType<Volume>::operator=(that);
-    }
-
-    return *this;
-}
-
 PVMVolumeReader* PVMVolumeReader::clone() const { return new PVMVolumeReader(*this); }
 
-Volume* PVMVolumeReader::readMetaData(const std::string filePath) {
-    Volume* volume = readPVMData(filePath);
+std::shared_ptr<Volume> PVMVolumeReader::readData(const std::string filePath) {
+    auto volume = readPVMData(filePath);
 
-    if (!volume) return nullptr;
+    if (!volume) return std::shared_ptr<Volume>();
 
     // Print information
     size3_t dim = volume->getDimensions();
     size_t bytes = dim.x * dim.y * dim.z * (volume->getDataFormat()->getSize());
     std::string size = formatBytesToString(bytes);
     LogInfo("Loaded volume: " << filePath << " size: " << size);
-    printMetaInfo(volume, "description");
-    printMetaInfo(volume, "courtesy");
-    printMetaInfo(volume, "parameter");
-    printMetaInfo(volume, "comment");
+    printMetaInfo(*volume, "description");
+    printMetaInfo(*volume, "courtesy");
+    printMetaInfo(*volume, "parameter");
+    printMetaInfo(*volume, "comment");
 
     return volume;
 }
 
-void PVMVolumeReader::readDataInto(void*) const { return; }
-
-void* PVMVolumeReader::readData() const { return nullptr; }
-
-Volume* PVMVolumeReader::readPVMData(std::string filePath) {
+std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
     if (!filesystem::fileExists(filePath)) {
         std::string newPath = filesystem::addBasePath(filePath);
 
@@ -137,7 +123,7 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
                                   IvwContextCustom("PVMVolumeReader"));
     }
 
-    Volume* volume = new Volume();
+    auto volume = std::make_shared<Volume>();
 
     if (format == DataUINT16::get()) {
         size_t bytes = format->getSize();
@@ -200,9 +186,8 @@ Volume* PVMVolumeReader::readPVMData(std::string filePath) {
     return volume;
 }
 
-void PVMVolumeReader::printMetaInfo(MetaDataOwner* metaDataOwner, std::string key) {
-    StringMetaData* metaData = metaDataOwner->getMetaData<StringMetaData>(key);
-    if (metaData) {
+void PVMVolumeReader::printMetaInfo(const MetaDataOwner& metaDataOwner, std::string key) const {
+    if (auto metaData = metaDataOwner.getMetaData<StringMetaData>(key)) {
         std::string metaStr = metaData->get();
         replaceInString(metaStr, "\n", ", ");
         key[0] = static_cast<char>(toupper(key[0]));

@@ -40,7 +40,6 @@ namespace inviwo {
 
 TextRenderer::TextRenderer(const std::string& fontPath)
     : textShader_("fontrendering_freetype.vert", "fontrendering_freetype.frag", true) {
-    
     if (FT_Init_FreeType(&fontlib_)) LogWarnCustom("TextRenderer", "FreeType: Major error.");
 
     int error = 0;
@@ -83,8 +82,8 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
     float inputX = x;
 
     // TODO: To make things more reliable ask the system for proper ascii
-    char lf = (char)0xA;  // Line Feed Ascii for std::endl, \n
-    char tab = (char)0x9;  // Tab Ascii 
+    char lf = (char)0xA;   // Line Feed Ascii for std::endl, \n
+    char tab = (char)0x9;  // Tab Ascii
 
     BufferObjectArray rectArray;
 
@@ -95,8 +94,8 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
         }
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, fontface_->glyph->bitmap.width,
-            fontface_->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE,
-            fontface_->glyph->bitmap.buffer);
+                     fontface_->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE,
+                     fontface_->glyph->bitmap.buffer);
 
         float x2 = x + fontface_->glyph->bitmap_left * scale.x;
         float y2 = -y - fontface_->glyph->bitmap_top * scale.y;
@@ -117,9 +116,9 @@ void TextRenderer::render(const char* text, float x, float y, const vec2& scale,
 
         y2 += offset;
         // Translate quad to correct position and render
-        mesh_->setModelMatrix(glm::translate(vec3(x2, -y2, 0.f))*glm::scale(vec3(w, -h, 1.f)));
-        utilgl::setShaderUniforms(textShader_, *mesh_, "geometry_");                
-        
+        mesh_->setModelMatrix(glm::translate(vec3(x2, -y2, 0.f)) * glm::scale(vec3(w, -h, 1.f)));
+        utilgl::setShaderUniforms(textShader_, *mesh_, "geometry_");
+
         drawer_->draw();
         x += (fontface_->glyph->advance.x >> 6) * scale.x;
         y += (fontface_->glyph->advance.y >> 6) * scale.y;
@@ -137,7 +136,7 @@ vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
     float maxx = 0.0f;
     float maxy = 0.0f;
 
-    char lf = (char)0xA;  // Line Feed Ascii for std::endl, \n
+    char lf = (char)0xA;   // Line Feed Ascii for std::endl, \n
     char tab = (char)0x9;  // Tab Ascii
 
     for (p = text; *p; p++) {
@@ -149,7 +148,7 @@ vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
         float w = fontface_->glyph->bitmap.width * scale.x;
         float h = fontface_->glyph->bitmap.rows * scale.y;
 
-        if(y == 0.0f) y+=2*h;
+        if (y == 0.0f) y += 2 * h;
 
         if (*p == lf) {
             y += (2 * h);
@@ -172,29 +171,26 @@ vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
         maxy = std::max(maxy, y);
     }
 
-
     return vec2(maxx, maxy);
 }
 
 void TextRenderer::initMesh() {
-    Position2dBuffer* verticesBuffer = new Position2dBuffer();
-    Position2dBufferRAM* verticesBufferRAM =
-        verticesBuffer->getEditableRepresentation<Position2dBufferRAM>();
+    auto verticesBuffer = new Position2dBuffer();
+    auto verticesBufferRAM = verticesBuffer->getEditableRAMRepresentation();
     verticesBufferRAM->add(vec2(0.0f, 0.0f));
     verticesBufferRAM->add(vec2(1.0f, 0.0f));
     verticesBufferRAM->add(vec2(0.0f, 1.0f));
     verticesBufferRAM->add(vec2(1.0f, 1.0f));
-    TexCoord2dBuffer* texCoordsBuffer = new TexCoord2dBuffer();
-    TexCoord2dBufferRAM* texCoordsBufferRAM =
-        texCoordsBuffer->getEditableRepresentation<TexCoord2dBufferRAM>();
+
+    auto texCoordsBuffer = new TexCoord2dBuffer();
+    auto texCoordsBufferRAM = texCoordsBuffer->getEditableRAMRepresentation();
     texCoordsBufferRAM->add(vec2(0.0f, 0.0f));
     texCoordsBufferRAM->add(vec2(1.0f, 0.0f));
     texCoordsBufferRAM->add(vec2(0.0f, 1.0f));
     texCoordsBufferRAM->add(vec2(1.0f, 1.0f));
 
-    IndexBuffer* indices_ = new IndexBuffer();
-    Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP);
-    IndexBufferRAM* indexBufferRAM = indices_->getEditableRepresentation<IndexBufferRAM>();
+    auto indices = new IndexBuffer();
+    auto indexBufferRAM = indices->getEditableRAMRepresentation();
     indexBufferRAM->add(0);
     indexBufferRAM->add(1);
     indexBufferRAM->add(2);
@@ -203,7 +199,8 @@ void TextRenderer::initMesh() {
     mesh_.reset(new Mesh());
     mesh_->addAttribute(verticesBuffer);
     mesh_->addAttribute(texCoordsBuffer);
-    mesh_->addIndicies(Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP), indices_);
+    mesh_->addIndicies(Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP),
+                       indices);
 
     drawer_.reset(new MeshDrawerGL(mesh_.get()));
 }
@@ -213,7 +210,4 @@ void TextRenderer::setFontSize(int val) {
     FT_Set_Pixel_Sizes(fontface_, 0, val);
 }
 
-
-
-} // namespace
-
+}  // namespace
