@@ -31,18 +31,15 @@
 
 namespace inviwo {
 
-std::shared_ptr<DataRepresentation> ElementBufferRAM2CLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto bufferRAM = std::static_pointer_cast<const BufferRAM>(source);
+std::shared_ptr<ElementBufferCL> ElementBufferRAM2CLConverter::createFrom(
+    std::shared_ptr<const BufferRAM> bufferRAM) const {
     return std::make_shared<ElementBufferCL>(bufferRAM->getSize(), bufferRAM->getDataFormat(),
                                              bufferRAM->getBufferType(),
                                              bufferRAM->getBufferUsage(), bufferRAM->getData());
 }
-void ElementBufferRAM2CLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                          std::shared_ptr<DataRepresentation> destination) const {
-    auto src = std::static_pointer_cast<const BufferRAM>(source);
-    auto dst = std::static_pointer_cast<ElementBufferCL>(destination);
 
+void ElementBufferRAM2CLConverter::update(std::shared_ptr<const BufferRAM> src,
+                                          std::shared_ptr<ElementBufferCL> dst) const {
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }
@@ -50,20 +47,16 @@ void ElementBufferRAM2CLConverter::update(std::shared_ptr<const DataRepresentati
     dst->upload(src->getData(), src->getSize() * src->getSizeOfElement());
 }
 
-std::shared_ptr<DataRepresentation> ElementBufferCL2RAMConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto src = std::static_pointer_cast<const ElementBufferCL>(source);
+std::shared_ptr<BufferRAM> ElementBufferCL2RAMConverter::createFrom(
+    std::shared_ptr<const ElementBufferCL> src) const {
     auto dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferType(),
                                src->getBufferUsage());
     src->download(dst->getData());
     return dst;
 }
 
-void ElementBufferCL2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                          std::shared_ptr<DataRepresentation> destination) const {
-    auto src = std::static_pointer_cast<const ElementBufferCL>(source);
-    auto dst = std::static_pointer_cast<BufferRAM>(destination);
-
+void ElementBufferCL2RAMConverter::update(std::shared_ptr<const ElementBufferCL> src,
+                                          std::shared_ptr<BufferRAM> dst) const {
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }

@@ -40,21 +40,21 @@
 namespace inviwo {
 
 class IVW_MODULE_OPENCL_API ElementBufferCLGL2GLConverter
-    : public RepresentationConverterType<ElementBufferCLGL, BufferGL> {
+    : public RepresentationConverterType<ElementBufferCLGL, ElementBufferGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<ElementBufferGL> createFrom(
+        std::shared_ptr<const ElementBufferCLGL> source) const override;
+    virtual void update(std::shared_ptr<const ElementBufferCLGL> source,
+                        std::shared_ptr<ElementBufferGL> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API ElementBufferGL2CLGLConverter
-    : public RepresentationConverterType<BufferGL, ElementBufferCLGL> {
+    : public RepresentationConverterType<ElementBufferGL, ElementBufferCLGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<ElementBufferCLGL> createFrom(
+        std::shared_ptr<const ElementBufferGL> source) const override;
+    virtual void update(std::shared_ptr<const ElementBufferGL> source,
+                        std::shared_ptr<ElementBufferCLGL> destination) const override;
 };
 
 }  // namespace

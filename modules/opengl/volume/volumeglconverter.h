@@ -42,19 +42,19 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API VolumeRAM2GLConverter
     : public RepresentationConverterType<VolumeRAM, VolumeGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<VolumeGL> createFrom(
+        std::shared_ptr<const VolumeRAM> source) const override;
+    virtual void update(std::shared_ptr<const VolumeRAM> source,
+                        std::shared_ptr<VolumeGL> destination) const override;
 };
 
 class IVW_MODULE_OPENGL_API VolumeGL2RAMConverter
     : public RepresentationConverterType<VolumeGL, VolumeRAM> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<VolumeRAM> createFrom(
+        std::shared_ptr<const VolumeGL> source) const override;
+    virtual void update(std::shared_ptr<const VolumeGL> source,
+                        std::shared_ptr<VolumeRAM> destination) const override;
 };
 
 }  // namespace

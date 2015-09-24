@@ -42,37 +42,37 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API BufferCLGL2RAMConverter
     : public RepresentationConverterType<BufferCLGL, BufferRAM> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<BufferRAM> createFrom(
+        std::shared_ptr<const BufferCLGL> source) const override;
+    virtual void update(std::shared_ptr<const BufferCLGL> source,
+                        std::shared_ptr<BufferRAM> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API BufferCLGL2GLConverter
     : public RepresentationConverterType<BufferCLGL, BufferGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<BufferGL> createFrom(
+        std::shared_ptr<const BufferCLGL> source) const override;
+    virtual void update(std::shared_ptr<const BufferCLGL> source,
+                        std::shared_ptr<BufferGL> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API BufferGL2CLGLConverter
     : public RepresentationConverterType<BufferGL, BufferCLGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<BufferCLGL> createFrom(
+        std::shared_ptr<const BufferGL> source) const override;
+    virtual void update(std::shared_ptr<const BufferGL> source,
+                        std::shared_ptr<BufferCLGL> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API BufferCLGL2CLConverter
     : public RepresentationConverterType<BufferCLGL, BufferCL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<BufferCL> createFrom(
+        std::shared_ptr<const BufferCLGL> source) const override;
+    virtual void update(std::shared_ptr<const BufferCLGL> source,
+                        std::shared_ptr<BufferCL> destination) const override;
 };
 
 }  // namespace

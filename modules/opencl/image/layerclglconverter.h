@@ -42,37 +42,37 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API LayerCLGL2RAMConverter
     : public RepresentationConverterType<LayerCLGL, LayerRAM> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<LayerRAM> createFrom(
+        std::shared_ptr<const LayerCLGL> source) const override;
+    virtual void update(std::shared_ptr<const LayerCLGL> source,
+                        std::shared_ptr<LayerRAM> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API LayerCLGL2GLConverter
     : public RepresentationConverterType<LayerCLGL, LayerGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<LayerGL> createFrom(
+        std::shared_ptr<const LayerCLGL> source) const override;
+    virtual void update(std::shared_ptr<const LayerCLGL> source,
+                        std::shared_ptr<LayerGL> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API LayerCLGL2CLConverter
     : public RepresentationConverterType<LayerCLGL, LayerCL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<LayerCL> createFrom(
+        std::shared_ptr<const LayerCLGL> source) const override;
+    virtual void update(std::shared_ptr<const LayerCLGL> source,
+                        std::shared_ptr<LayerCL> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API LayerGL2CLGLConverter
     : public RepresentationConverterType<LayerGL, LayerCLGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<LayerCLGL> createFrom(
+        std::shared_ptr<const LayerGL> source) const override;
+    virtual void update(std::shared_ptr<const LayerGL> source,
+                        std::shared_ptr<LayerCLGL> destination) const override;
 };
 
 }  // namespace

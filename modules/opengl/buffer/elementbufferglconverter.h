@@ -40,19 +40,19 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API ElementBufferRAM2GLConverter
     : public RepresentationConverterType<BufferRAM, ElementBufferGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<ElementBufferGL> createFrom(
+        std::shared_ptr<const BufferRAM> source) const override;
+    virtual void update(std::shared_ptr<const BufferRAM> source,
+                        std::shared_ptr<ElementBufferGL> destination) const override;
 };
 
 class IVW_MODULE_OPENGL_API ElementBufferGL2RAMConverter
     : public RepresentationConverterType<ElementBufferGL, BufferRAM> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<BufferRAM> createFrom(
+        std::shared_ptr<const ElementBufferGL> source) const override;
+    virtual void update(std::shared_ptr<const ElementBufferGL> source,
+                        std::shared_ptr<BufferRAM> destination) const override;
 };
 
 }  // namespace

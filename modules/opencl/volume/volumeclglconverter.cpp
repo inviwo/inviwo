@@ -35,9 +35,8 @@
 
 namespace inviwo {
 
-std::shared_ptr<DataRepresentation> VolumeCLGL2RAMConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto volumeCLGL = std::static_pointer_cast<const VolumeCLGL>(source);
+std::shared_ptr<VolumeRAM> VolumeCLGL2RAMConverter::createFrom(
+    std::shared_ptr<const VolumeCLGL> volumeCLGL) const {
     const size3_t dimensions{volumeCLGL->getDimensions()};
     auto destination = createVolumeRAM(dimensions, volumeCLGL->getDataFormat());
 
@@ -53,11 +52,8 @@ std::shared_ptr<DataRepresentation> VolumeCLGL2RAMConverter::createFrom(
     return destination;
 }
 
-void VolumeCLGL2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                     std::shared_ptr<DataRepresentation> destination) const {
-    auto volumeSrc = std::static_pointer_cast<const VolumeCLGL>(source);
-    auto volumeDst = std::static_pointer_cast<VolumeRAM>(destination);
-
+void VolumeCLGL2RAMConverter::update(std::shared_ptr<const VolumeCLGL> volumeSrc,
+                                     std::shared_ptr<VolumeRAM> volumeDst) const {
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
@@ -67,30 +63,25 @@ void VolumeCLGL2RAMConverter::update(std::shared_ptr<const DataRepresentation> s
     if (volumeDst->hasHistograms()) volumeDst->getHistograms()->setValid(false);
 }
 
-std::shared_ptr<DataRepresentation> VolumeGL2CLGLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto volumeGL = std::static_pointer_cast<const VolumeGL>(source);
+std::shared_ptr<VolumeCLGL> VolumeGL2CLGLConverter::createFrom(
+    std::shared_ptr<const VolumeGL> volumeGL) const {
     return std::make_shared<VolumeCLGL>(volumeGL->getDimensions(), volumeGL->getDataFormat(),
                                         volumeGL->getTexture());
 }
 
-void VolumeGL2CLGLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                    std::shared_ptr<DataRepresentation> destination) const {
+void VolumeGL2CLGLConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
+                                    std::shared_ptr<VolumeCLGL> volumeDst) const {
     // Do nothing since they are sharing data
-    auto volumeSrc = std::static_pointer_cast<const VolumeGL>(source);
-    auto volumeDst = std::static_pointer_cast<VolumeCLGL>(destination);
-
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
 }
 
-std::shared_ptr<DataRepresentation> VolumeCLGL2CLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
+std::shared_ptr<VolumeCL> VolumeCLGL2CLConverter::createFrom(
+    std::shared_ptr<const VolumeCLGL> volumeCLGL) const {
 #ifdef IVW_DEBUG
     LogWarn("Performance warning: Use shared CLGL representation instead of CL ");
 #endif
-    auto volumeCLGL = std::static_pointer_cast<const VolumeCLGL>(source);
     const size3_t dimensions{volumeCLGL->getDimensions()};
     auto destination = std::make_shared<VolumeCL>(dimensions, volumeCLGL->getDataFormat());
     {
@@ -104,11 +95,8 @@ std::shared_ptr<DataRepresentation> VolumeCLGL2CLConverter::createFrom(
     return destination;
 }
 
-void VolumeCLGL2CLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                    std::shared_ptr<DataRepresentation> destination) const {
-    auto volumeSrc = std::static_pointer_cast<const VolumeCLGL>(source);
-    auto volumeDst = std::static_pointer_cast<VolumeCL>(destination);
-
+void VolumeCLGL2CLConverter::update(std::shared_ptr<const VolumeCLGL> volumeSrc,
+                                    std::shared_ptr<VolumeCL> volumeDst) const {
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
@@ -123,14 +111,13 @@ void VolumeCLGL2CLConverter::update(std::shared_ptr<const DataRepresentation> so
     }
 }
 
-std::shared_ptr<DataRepresentation> VolumeCLGL2GLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto src = std::static_pointer_cast<const VolumeCLGL>(source);
+std::shared_ptr<VolumeGL> VolumeCLGL2GLConverter::createFrom(
+    std::shared_ptr<const VolumeCLGL> src) const {
     return std::make_shared<VolumeGL>(src->getTexture(), src->getDataFormat());
 }
 
-void VolumeCLGL2GLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                    std::shared_ptr<DataRepresentation> destination) const {
+void VolumeCLGL2GLConverter::update(std::shared_ptr<const VolumeCLGL> source,
+                                    std::shared_ptr<VolumeGL> destination) const {
     // Do nothing since they share data
 }
 

@@ -35,9 +35,8 @@
 
 namespace inviwo {
 
-std::shared_ptr<DataRepresentation> BufferCLGL2RAMConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto src = std::static_pointer_cast<const BufferCLGL>(source);
+std::shared_ptr<BufferRAM> BufferCLGL2RAMConverter::createFrom(
+    std::shared_ptr<const BufferCLGL> src) const {
     size_t size = src->getSize();
     auto destination =
         createBufferRAM(size, src->getDataFormat(), src->getBufferType(), src->getBufferUsage());
@@ -51,11 +50,8 @@ std::shared_ptr<DataRepresentation> BufferCLGL2RAMConverter::createFrom(
     return destination;
 }
 
-void BufferCLGL2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                     std::shared_ptr<DataRepresentation> destination) const {
-    auto src = std::static_pointer_cast<const BufferCLGL>(source);
-    auto dst = std::static_pointer_cast<BufferRAM>(destination);
-
+void BufferCLGL2RAMConverter::update(std::shared_ptr<const BufferCLGL> src,
+                                     std::shared_ptr<BufferRAM> dst) const {
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }
@@ -63,38 +59,32 @@ void BufferCLGL2RAMConverter::update(std::shared_ptr<const DataRepresentation> s
     src->getBufferGL()->download(dst->getData());
 }
 
-std::shared_ptr<DataRepresentation> BufferCLGL2GLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto src = std::static_pointer_cast<const BufferCLGL>(source);
+std::shared_ptr<BufferGL> BufferCLGL2GLConverter::createFrom(
+    std::shared_ptr<const BufferCLGL> src) const {
     return std::make_shared<BufferGL>(src->getSize(), src->getDataFormat(), src->getBufferType(),
                                       src->getBufferUsage(), src->getBufferGL());
 }
 
-void BufferCLGL2GLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                    std::shared_ptr<DataRepresentation> destination) const {
+void BufferCLGL2GLConverter::update(std::shared_ptr<const BufferCLGL> source,
+                                    std::shared_ptr<BufferGL> destination) const {
     // Do nothing since they share data
 }
 
-std::shared_ptr<DataRepresentation> BufferGL2CLGLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto src = std::static_pointer_cast<const BufferGL>(source);
+std::shared_ptr<BufferCLGL> BufferGL2CLGLConverter::createFrom(
+    std::shared_ptr<const BufferGL> src) const {
     return std::make_shared<BufferCLGL>(src->getSize(), src->getDataFormat(), src->getBufferType(),
                                         src->getBufferUsage(), src->getBufferObject());
 }
 
-void BufferGL2CLGLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                    std::shared_ptr<DataRepresentation> destination) const {
-    auto src = std::static_pointer_cast<const BufferGL>(source);
-    auto dst = std::static_pointer_cast<BufferCLGL>(destination);
-
+void BufferGL2CLGLConverter::update(std::shared_ptr<const BufferGL> src,
+                                    std::shared_ptr<BufferCLGL> dst) const {
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }
 }
 
-std::shared_ptr<DataRepresentation> BufferCLGL2CLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto src = std::static_pointer_cast<const BufferCLGL>(source);
+std::shared_ptr<BufferCL> BufferCLGL2CLConverter::createFrom(
+    std::shared_ptr<const BufferCLGL> src) const {
     size_t size = src->getSize();
     auto destination = std::make_shared<BufferCL>(size, src->getDataFormat(), src->getBufferType(),
                                                   src->getBufferUsage());
@@ -107,12 +97,8 @@ std::shared_ptr<DataRepresentation> BufferCLGL2CLConverter::createFrom(
     }
     return destination;
 }
-
-void BufferCLGL2CLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                    std::shared_ptr<DataRepresentation> destination) const {
-    auto src = std::static_pointer_cast<const BufferCLGL>(source);
-    auto dst = std::static_pointer_cast<BufferCL>(destination);
-
+void BufferCLGL2CLConverter::update(std::shared_ptr<const BufferCLGL> src,
+                                    std::shared_ptr<BufferCL> dst) const {
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }

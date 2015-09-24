@@ -41,10 +41,10 @@ namespace inviwo {
 class IVW_CORE_API LayerDisk2RAMConverter
     : public RepresentationConverterType<LayerDisk, LayerRAM> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<LayerRAM> createFrom(
+        std::shared_ptr<const LayerDisk> source) const override;
+    virtual void update(std::shared_ptr<const LayerDisk> source,
+                        std::shared_ptr<LayerRAM> destination) const override;
 };
 
 }  // namespace

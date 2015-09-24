@@ -42,19 +42,19 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API LayerRAM2CLConverter
     : public RepresentationConverterType<LayerRAM, LayerCL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<LayerCL> createFrom(
+        std::shared_ptr<const LayerRAM> source) const override;
+    virtual void update(std::shared_ptr<const LayerRAM> source,
+                        std::shared_ptr<LayerCL> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API LayerCL2RAMConverter
     : public RepresentationConverterType<LayerCL, LayerRAM> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<LayerRAM> createFrom(
+        std::shared_ptr<const LayerCL> source) const override;
+    virtual void update(std::shared_ptr<const LayerCL> source,
+                        std::shared_ptr<LayerRAM> destination) const override;
 };
 
 }  // namespace

@@ -39,14 +39,15 @@ namespace inviwo {
  * @return the imageRAM representation of the file. Returns nullptr if source is not a
  * LayerDisk object.
  **/
-std::shared_ptr<DataRepresentation> LayerDisk2RAMConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    return std::static_pointer_cast<const LayerDisk>(source)->createRepresentation();
+
+std::shared_ptr<LayerRAM> LayerDisk2RAMConverter::createFrom(
+    std::shared_ptr<const LayerDisk> source) const {
+    return std::static_pointer_cast<LayerRAM>(source->createRepresentation());
 }
 
-void LayerDisk2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                    std::shared_ptr<DataRepresentation> destination) const {
-    std::static_pointer_cast<const LayerDisk>(source)->updateRepresentation(destination);
+void LayerDisk2RAMConverter::update(std::shared_ptr<const LayerDisk> source,
+                                    std::shared_ptr<LayerRAM> destination) const {
+    source->updateRepresentation(destination);
 }
 
 }  // namespace

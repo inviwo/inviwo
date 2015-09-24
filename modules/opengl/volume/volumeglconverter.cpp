@@ -32,30 +32,24 @@
 
 namespace inviwo {
 
-std::shared_ptr<DataRepresentation> VolumeRAM2GLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto volumeRAM = std::static_pointer_cast<const VolumeRAM>(source);
+std::shared_ptr<VolumeGL> VolumeRAM2GLConverter::createFrom(
+    std::shared_ptr<const VolumeRAM> volumeRAM) const {
     auto volume =
         std::make_shared<VolumeGL>(volumeRAM->getDimensions(), volumeRAM->getDataFormat(), false);
     volume->getTexture()->initialize(volumeRAM->getData());
     return volume;
 }
 
-void VolumeRAM2GLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                   std::shared_ptr<DataRepresentation> destination) const {
-    auto volumeSrc = std::static_pointer_cast<const VolumeRAM>(source);
-    auto volumeDst = std::static_pointer_cast<VolumeGL>(destination);
-
+void VolumeRAM2GLConverter::update(std::shared_ptr<const VolumeRAM> volumeSrc,
+                                   std::shared_ptr<VolumeGL> volumeDst) const {
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
-
     volumeDst->getTexture()->upload(volumeSrc->getData());
 }
 
-std::shared_ptr<DataRepresentation> VolumeGL2RAMConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto volumeGL = std::static_pointer_cast<const VolumeGL>(source);
+std::shared_ptr<VolumeRAM> VolumeGL2RAMConverter::createFrom(
+    std::shared_ptr<const VolumeGL> volumeGL) const {
     auto volume = createVolumeRAM(volumeGL->getDimensions(), volumeGL->getDataFormat());
 
     if (volume) {
@@ -68,11 +62,8 @@ std::shared_ptr<DataRepresentation> VolumeGL2RAMConverter::createFrom(
     return nullptr;
 }
 
-void VolumeGL2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                   std::shared_ptr<DataRepresentation> destination) const {
-    auto volumeSrc = std::static_pointer_cast<const VolumeGL>(source);
-    auto volumeDst = std::static_pointer_cast<VolumeRAM>(destination);
-
+void VolumeGL2RAMConverter::update(std::shared_ptr<const VolumeGL> volumeSrc,
+                                   std::shared_ptr<VolumeRAM> volumeDst) const {
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }

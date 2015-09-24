@@ -32,14 +32,14 @@
 
 namespace inviwo {
 
-std::shared_ptr<DataRepresentation> MeshDisk2RAMConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    return std::static_pointer_cast<const MeshDisk>(source)->createRepresentation();
+std::shared_ptr<MeshRAM> MeshDisk2RAMConverter::createFrom(
+    std::shared_ptr<const MeshDisk> source) const {
+    return std::static_pointer_cast<MeshRAM>(source->createRepresentation());
 }
 
-void MeshDisk2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                   std::shared_ptr<DataRepresentation> destination) const {
-    std::static_pointer_cast<const MeshDisk>(source)->updateRepresentation(destination);
+void MeshDisk2RAMConverter::update(std::shared_ptr<const MeshDisk> source,
+                                   std::shared_ptr<MeshRAM> destination) const {
+    source->updateRepresentation(destination);
 }
 
 }  // namespace

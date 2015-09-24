@@ -64,6 +64,21 @@ template <typename From, typename To>
 class RepresentationConverterType : public RepresentationConverter {
 public:
     virtual ConverterID getConverterID() const override;
+
+    virtual std::shared_ptr<DataRepresentation> createFrom(
+        std::shared_ptr<const DataRepresentation> source) const override final {
+        return createFrom(std::static_pointer_cast<const From>(source));
+    }
+
+    virtual void update(std::shared_ptr<const DataRepresentation> source,
+                        std::shared_ptr<DataRepresentation> destination) const override final {
+        update(std::static_pointer_cast<const From>(source),
+               std::static_pointer_cast<To>(destination));
+    };
+
+    virtual std::shared_ptr<To> createFrom(std::shared_ptr<const From> source) const = 0;
+    virtual void update(std::shared_ptr<const From> source,
+                        std::shared_ptr<To> destination) const = 0;
 };
 
 class IVW_CORE_API RepresentationConverterPackage {

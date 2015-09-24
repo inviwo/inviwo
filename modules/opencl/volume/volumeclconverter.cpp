@@ -33,28 +33,23 @@
 
 namespace inviwo {
 
-std::shared_ptr<DataRepresentation> VolumeRAM2CLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto volumeRAM = std::static_pointer_cast<const VolumeRAM>(source);
+std::shared_ptr<VolumeCL> VolumeRAM2CLConverter::createFrom(
+    std::shared_ptr<const VolumeRAM> volumeRAM) const {
     size3_t dimensions = volumeRAM->getDimensions();
     const void* data = volumeRAM->getData();
     return std::make_shared<VolumeCL>(dimensions, volumeRAM->getDataFormat(), data);
 }
 
-void VolumeRAM2CLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                   std::shared_ptr<DataRepresentation> destination) const {
-    auto volumeSrc = std::static_pointer_cast<const VolumeRAM>(source);
-    auto volumeDst = std::static_pointer_cast<VolumeCL>(destination);
-
+void VolumeRAM2CLConverter::update(std::shared_ptr<const VolumeRAM> volumeSrc,
+                                   std::shared_ptr<VolumeCL> volumeDst) const {
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }
     volumeDst->upload(volumeSrc->getData());
 }
 
-std::shared_ptr<DataRepresentation> VolumeCL2RAMConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto volumeCL = std::static_pointer_cast<const VolumeCL>(source);
+std::shared_ptr<VolumeRAM> VolumeCL2RAMConverter::createFrom(
+    std::shared_ptr<const VolumeCL> volumeCL) const {
     size3_t dimensions = volumeCL->getDimensions();
     auto destination = createVolumeRAM(dimensions, volumeCL->getDataFormat());
 
@@ -68,11 +63,8 @@ std::shared_ptr<DataRepresentation> VolumeCL2RAMConverter::createFrom(
     return destination;
 }
 
-void VolumeCL2RAMConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                   std::shared_ptr<DataRepresentation> destination) const {
-    auto volumeSrc = std::static_pointer_cast<const VolumeCL>(source);
-    auto volumeDst = std::static_pointer_cast<VolumeRAM>(destination);
-
+void VolumeCL2RAMConverter::update(std::shared_ptr<const VolumeCL> volumeSrc,
+                                   std::shared_ptr<VolumeRAM> volumeDst) const {
     if (volumeSrc->getDimensions() != volumeDst->getDimensions()) {
         volumeDst->setDimensions(volumeSrc->getDimensions());
     }

@@ -44,37 +44,37 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API VolumeCLGL2RAMConverter
     : public RepresentationConverterType<VolumeCLGL, VolumeRAM> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<VolumeRAM> createFrom(
+        std::shared_ptr<const VolumeCLGL> source) const override;
+    virtual void update(std::shared_ptr<const VolumeCLGL> source,
+                        std::shared_ptr<VolumeRAM> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API VolumeGL2CLGLConverter
     : public RepresentationConverterType<VolumeGL, VolumeCLGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<VolumeCLGL> createFrom(
+        std::shared_ptr<const VolumeGL> source) const override;
+    virtual void update(std::shared_ptr<const VolumeGL> source,
+                        std::shared_ptr<VolumeCLGL> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API VolumeCLGL2CLConverter
     : public RepresentationConverterType<VolumeCLGL, VolumeCL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<VolumeCL> createFrom(
+        std::shared_ptr<const VolumeCLGL> source) const override;
+    virtual void update(std::shared_ptr<const VolumeCLGL> source,
+                        std::shared_ptr<VolumeCL> destination) const override;
 };
 
 class IVW_MODULE_OPENCL_API VolumeCLGL2GLConverter
     : public RepresentationConverterType<VolumeCLGL, VolumeGL> {
 public:
-    virtual std::shared_ptr<DataRepresentation> createFrom(
-        std::shared_ptr<const DataRepresentation> source) const override;
-    virtual void update(std::shared_ptr<const DataRepresentation> source,
-                        std::shared_ptr<DataRepresentation> destination) const override;
+    virtual std::shared_ptr<VolumeGL> createFrom(
+        std::shared_ptr<const VolumeCLGL> source) const override;
+    virtual void update(std::shared_ptr<const VolumeCLGL> source,
+                        std::shared_ptr<VolumeGL> destination) const override;
 };
 
 }  // namespace

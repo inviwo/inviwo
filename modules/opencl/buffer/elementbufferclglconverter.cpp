@@ -36,32 +36,27 @@
 
 namespace inviwo {
 
-std::shared_ptr<DataRepresentation> ElementBufferCLGL2GLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto src = std::static_pointer_cast<const ElementBufferCLGL>(source);
+std::shared_ptr<ElementBufferGL> ElementBufferCLGL2GLConverter::createFrom(
+    std::shared_ptr<const ElementBufferCLGL> src) const {
     return std::make_shared<ElementBufferGL>(src->getSize(), src->getDataFormat(),
                                              src->getBufferType(), src->getBufferUsage(),
                                              src->getElementBufferObject());
 }
 
-void ElementBufferCLGL2GLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                           std::shared_ptr<DataRepresentation> destination) const {
+void ElementBufferCLGL2GLConverter::update(std::shared_ptr<const ElementBufferCLGL> source,
+                                           std::shared_ptr<ElementBufferGL> destination) const {
     // Do nothing since they share data
 }
 
-std::shared_ptr<DataRepresentation> ElementBufferGL2CLGLConverter::createFrom(
-    std::shared_ptr<const DataRepresentation> source) const {
-    auto src = std::static_pointer_cast<const ElementBufferGL>(source);
+std::shared_ptr<ElementBufferCLGL> ElementBufferGL2CLGLConverter::createFrom(
+    std::shared_ptr<const ElementBufferGL> src) const {
     return std::make_shared<ElementBufferCLGL>(src->getSize(), src->getDataFormat(),
                                                src->getBufferType(), src->getBufferUsage(),
                                                src->getElementBufferObject());
 }
 
-void ElementBufferGL2CLGLConverter::update(std::shared_ptr<const DataRepresentation> source,
-                                           std::shared_ptr<DataRepresentation> destination) const {
-    auto src = std::static_pointer_cast<const ElementBufferGL>(source);
-    auto dst = std::static_pointer_cast<ElementBufferCLGL>(destination);
-
+void ElementBufferGL2CLGLConverter::update(std::shared_ptr<const ElementBufferGL> src,
+                                           std::shared_ptr<ElementBufferCLGL> dst) const {
     if (src->getSize() != dst->getSize()) {
         dst->setSize(src->getSize());
     }
