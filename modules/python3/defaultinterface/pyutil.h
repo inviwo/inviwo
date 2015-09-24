@@ -39,6 +39,7 @@ namespace inviwo {
 PyObject* py_wait(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_snapshot(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_snapshotCanvas(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_snapshotAllCanvases(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_getBasePath(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_getDataPath(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_getWorkspaceSavePath(PyObject* /*self*/, PyObject* /*args*/);
@@ -52,10 +53,6 @@ PyObject* py_clearResourceManager(PyObject* /*self*/, PyObject* /*args*/);
 
 PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/);
 PyObject* py_enableEvaluation(PyObject* /*self*/, PyObject* /*args*/);
-PyObject* py_snapshot(PyObject* /*self*/, PyObject* /*args*/);
-
-
-PyObject* py_snapshot(PyObject* /*self*/, PyObject* /*args*/);
 
 
 
@@ -102,6 +99,23 @@ private:
     PyParamInt canvasID_;
     PyParamString filename_;
 };
+
+class IVW_MODULE_PYTHON3_API PySnapshotAllCanvasesMethod : public PyMethod {
+public:
+    PySnapshotAllCanvasesMethod();
+    virtual ~PySnapshotAllCanvasesMethod() {}
+    virtual std::string getName() const { return "snapshotAllCanvases"; }
+    virtual std::string getDesc() const {
+        return "Saves a snapshot of each canvas to the given path, with a given prefix (prefix defaults to the empty string).";
+    }
+    virtual PyCFunction getFunc() { return py_snapshotAllCanvases; }
+
+private:
+    PyParamString path_;
+    PyParamString prefix_;
+    PyParamString fileEnding_;
+};
+//
 
 class IVW_MODULE_PYTHON3_API PyGetBasePathMethod : public PyMethod {
 public:

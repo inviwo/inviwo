@@ -104,7 +104,7 @@ PyObject* py_snapshotCanvas(PyObject* /*self*/, PyObject* args) {
 
     if (index >= canvases.size()) {
         std::string msg = std::string("snapshotCanvas() index out of range with index: ") +
-                          toString(index) + " ,canvases avilable: " + toString(canvases.size());
+            toString(index) + " ,canvases avilable: " + toString(canvases.size());
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
@@ -112,6 +112,40 @@ PyObject* py_snapshotCanvas(PyObject* /*self*/, PyObject* args) {
     canvases[index]->saveImageLayer(filename);
     Py_RETURN_NONE;
 }
+
+PyObject* py_snapshotAllCanvases(PyObject* /*self*/, PyObject* args) {
+    static PySnapshotAllCanvasesMethod p;
+
+    if (!p.testParams(args)) return nullptr;
+    auto size  = PyTuple_Size(args);
+
+    std::string path;
+    std::string prefix = "";
+    std::string fileEnding = "png";
+
+    path = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
+    if (size >= 1) {
+        prefix = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1));
+    }
+    if (size >= 2) {
+        fileEnding = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 2));
+    }
+
+
+    std::vector<CanvasProcessor*> canvases =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
+
+    for (auto &c : canvases) {
+        std::stringstream ss;
+        ss << path << "/" << prefix << c->getIdentifier() << "." << fileEnding;
+        c->saveImageLayer(ss.str());
+    }
+
+    
+    Py_RETURN_NONE;
+}
+
+
 
 PyObject* py_getBasePath(PyObject* /*self*/, PyObject* /*args*/) {
     return PyValueParser::toPyObject(InviwoApplication::getPtr()->getBasePath());
@@ -251,4 +285,14 @@ PySnapshotCanvasMethod::PySnapshotCanvasMethod() : canvasID_("canvasID"), filena
     addParam(&canvasID_);
     addParam(&filename_);
 }
+
+PySnapshotAllCanvasesMethod::PySnapshotAllCanvasesMethod()
+    : path_("path"), prefix_("prefix", true), fileEnding_("fileEnding", true)
+{
+    addParam(&path_);
+    addParam(&prefix_);
+    addParam(&fileEnding_);
+
+}
+
 }
