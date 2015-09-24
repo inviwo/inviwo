@@ -80,14 +80,14 @@ void MeshGL::update(bool editable) {
     attributesArray_->bind(); // Have to call bind before clear.
     attributesArray_->clear();
     if (editable) {
-        for (Buffer* buf : owner->getBuffers()) {
-            BufferGL* bufGL = buf->getEditableRepresentation<BufferGL>();
+        for (auto buf : owner->getBuffers()) {
+            auto bufGL = buf->getEditableRepresentation<BufferGL>();
             attributesGL_.push_back(bufGL);
             attributesArray_->attachBufferObject(bufGL->getBufferObject().get());
         }
     } else {
-        for (Buffer* buf : owner->getBuffers()) {
-            const BufferGL* bufGL = buf->getRepresentation<BufferGL>();
+        for (auto buf : owner->getBuffers()) {
+            auto bufGL = buf->getRepresentation<BufferGL>();
             attributesGL_.push_back(bufGL);
             attributesArray_->attachBufferObject(bufGL->getBufferObject().get());
         }
@@ -96,11 +96,11 @@ void MeshGL::update(bool editable) {
 }
 
 Mesh* MeshGL::getOwner() {
-    return reinterpret_cast<Mesh*>(DataRepresentation::getOwner());
+    return static_cast<Mesh*>(DataRepresentation::getOwner());
 }
 
 const Mesh* MeshGL::getOwner() const {
-    return reinterpret_cast<const Mesh*>(DataRepresentation::getOwner());
+    return static_cast<const Mesh*>(DataRepresentation::getOwner());
 }
 
 

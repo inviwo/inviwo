@@ -55,16 +55,16 @@ FirstIvwProcessor::FirstIvwProcessor()
 void FirstIvwProcessor::initialize() {
     Processor::initialize();
 
-    quad_ = new Position2dBuffer();
-    Position2dBufferRAM* quadRAM = quad_->getEditableRepresentation<Position2dBufferRAM>();
+    auto quadRAM = std::make_shared<Position2dBufferRAM>();
+    quad_ = new Position2dBuffer(quadRAM);
     quadRAM->add(vec2(-1.0f, -1.0f));
     quadRAM->add(vec2(1.0f, -1.0f));
     quadRAM->add(vec2(-1.0f, 1.0f));
     quadRAM->add(vec2(1.0f, 1.0f));
     quadGL_ = quad_->getRepresentation<BufferGL>();
 
-    triangle_ = new Position2dBuffer();
-    Position2dBufferRAM* triangleRAM = triangle_->getEditableRepresentation<Position2dBufferRAM>();
+    auto triangleRAM = std::make_shared<Position2dBufferRAM>();
+    triangle_ = new Position2dBuffer(triangleRAM);
     triangleRAM->add(vec2(0.0f, 1.0f));
     triangleRAM->add(vec2(-1.0f, -1.0f));
     triangleRAM->add(vec2(1.0f, -1.0f));

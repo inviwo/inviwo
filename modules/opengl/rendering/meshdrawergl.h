@@ -44,18 +44,18 @@ public:
     MeshDrawerGL();
     MeshDrawerGL(const Mesh* mesh);
     MeshDrawerGL(const Mesh* mesh, Mesh::AttributesInfo);
-    MeshDrawerGL(const Mesh* mesh, GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
+    MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct);
     MeshDrawerGL& operator=(const MeshDrawerGL& other);
     MeshDrawerGL(MeshDrawerGL&& other); // move constructor
     virtual ~MeshDrawerGL();
 
     virtual void draw();
-    virtual void draw(GeometryEnums::DrawType dt);
+    virtual void draw(DrawType dt);
 
     const MeshGL* getMeshGL() const;
 
     GLenum getDefaultDrawMode();
-    GLenum getDrawMode(GeometryEnums::DrawType, GeometryEnums::ConnectivityType);
+    GLenum getDrawMode(DrawType, ConnectivityType);
 
     virtual const Mesh* getGeometry() const { return meshToDraw_; }
 
@@ -69,18 +69,18 @@ protected:
 
     virtual void initialize(Mesh::AttributesInfo = Mesh::AttributesInfo());
     void initializeIndexBuffer(const Buffer* indexBuffer, Mesh::AttributesInfo ai);
-    void drawArray(GeometryEnums::DrawType) const;
-    void drawElements(GeometryEnums::DrawType) const;
-    void emptyFunc(GeometryEnums::DrawType dt) const {};
+    void drawArray(DrawType) const;
+    void drawElements(DrawType) const;
+    void emptyFunc(DrawType dt) const {};
 
-    typedef void (MeshDrawerGL::*DrawFunc)(GeometryEnums::DrawType) const;
+    typedef void (MeshDrawerGL::*DrawFunc)(DrawType) const;
     struct DrawMethod {
         DrawFunc drawFunc;
         GLenum drawMode;
         std::vector<const Buffer*> elementBufferList;
     };
 
-    DrawMethod drawMethods_[GeometryEnums::NUMBER_OF_DRAW_TYPES];
+    DrawMethod drawMethods_[static_cast<size_t>(DrawType::NUMBER_OF_DRAW_TYPES)];
     const Mesh* meshToDraw_;
 };
 

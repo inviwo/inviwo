@@ -51,8 +51,8 @@ VolumeRaycasterCL::VolumeRaycasterCL()
     , samplingRate_(2.f)
     , background_(nullptr)
     , defaultBackground_(uvec2(1), DataVec4UINT8::get())
-    , lightStruct_(sizeof(utilcl::LightParameters), DataUINT8::get(), POSITION_ATTRIB, STATIC,
-                   nullptr, CL_MEM_READ_ONLY)
+    , lightStruct_(sizeof(utilcl::LightParameters), DataUINT8::get(), BufferType::POSITION_ATTRIB,
+                   BufferUsage::STATIC, nullptr, CL_MEM_READ_ONLY)
     , kernel_(nullptr) {
     light_.ambientColor = vec4(1.f);
     light_.diffuseColor = vec4(1.f);
@@ -73,7 +73,7 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPo
                                       cl::Event* event /*= nullptr*/) {
     size2_t localWorkGroupSize(workGroupSize_);
     size2_t globalWorkGroupSize(getGlobalWorkGroupSize(outputSize_.x, localWorkGroupSize.x),
-                              getGlobalWorkGroupSize(outputSize_.y, localWorkGroupSize.y));
+                                getGlobalWorkGroupSize(outputSize_.y, localWorkGroupSize.y));
 
     if (useGLSharing_) {
         // SyncCLGL will synchronize with OpenGL upon creation and destruction
@@ -115,9 +115,8 @@ void VolumeRaycasterCL::volumeRaycast(const Volume* volume, const Layer* entryPo
         } else {
             background = defaultBackground_.getRepresentation<LayerCL>();
         }
-        volumeRaycast(volume, volumeCL, background, entryCL, exitCL,
-                      transferFunctionCL, outImageCL, globalWorkGroupSize,
-                      localWorkGroupSize, waitForEvents, event);
+        volumeRaycast(volume, volumeCL, background, entryCL, exitCL, transferFunctionCL, outImageCL,
+                      globalWorkGroupSize, localWorkGroupSize, waitForEvents, event);
     }
 }
 

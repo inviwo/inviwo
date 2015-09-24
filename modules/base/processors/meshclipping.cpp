@@ -325,7 +325,7 @@ std::vector<EdgeIndex> triangleListtoEdgeList(const std::vector<unsigned int>* t
 }
 
 Mesh* MeshClipping::clipGeometryAgainstPlaneRevised(const Mesh* in, Plane plane) {
-    GeometryEnums::ConnectivityType indexAttrInfo;
+    ConnectivityType indexAttrInfo;
     const std::vector<vec3>* vertexList;
     const std::vector<vec3>* texcoordlist;
     const std::vector<vec4>* colorList;
@@ -354,12 +354,12 @@ Mesh* MeshClipping::clipGeometryAgainstPlaneRevised(const Mesh* in, Plane plane)
     }
 
 
-    SimpleMesh* outputMesh = new SimpleMesh(GeometryEnums::TRIANGLES);
+    SimpleMesh* outputMesh = new SimpleMesh(DrawType::TRIANGLES);
 
     //Check if we are using indicies
     if (triangleList->size() > 0) {
         //Check if it is a Triangle Strip
-        if (indexAttrInfo == GeometryEnums::STRIP) {
+        if (indexAttrInfo == ConnectivityType::STRIP) {
             // Iterate over edges by edge
             unsigned int idx[3];
             std::vector<vec3> newVertices;
@@ -909,9 +909,9 @@ Mesh* MeshClipping::clipGeometryAgainstPlane(const Mesh* in, Plane plane) {
     //LogInfo("Number of verts in output mesh: " <<
     //  outputList.size());
     if (renderAsPoints_.get())
-        outputMesh->setIndicesInfo(GeometryEnums::POINTS, GeometryEnums::NONE);
+        outputMesh->setIndicesInfo(DrawType::POINTS, ConnectivityType::NONE);
     else
-        outputMesh->setIndicesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP);
+        outputMesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP);
 
     for (unsigned int i=0; i<outputList.size(); ++i) {
         outputMesh->addIndex(i);

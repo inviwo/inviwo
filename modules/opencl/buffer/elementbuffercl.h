@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ELEMENTBUFFERCL_H
@@ -44,8 +44,7 @@ namespace inviwo {
  * but needs to be used so that the representation converter
  * can create an ElementBufferGL object.
  */
-class IVW_MODULE_OPENCL_API ElementBufferCL: public BufferCL {
-
+class IVW_MODULE_OPENCL_API ElementBufferCL : public BufferCL {
 public:
     /**
      * .
@@ -54,19 +53,19 @@ public:
      * @param type
      * @param format
      * @param data Data to transfer. Does not transfer data if data is nullptr.
-     * @param readWriteFlag Determine how memory will be used by Kernels: CL_MEM_READ_ONLY, CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
+     * @param readWriteFlag Determine how memory will be used by Kernels: CL_MEM_READ_ONLY,
+     * CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
      */
-    ElementBufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage = STATIC, const void* data = nullptr,
-             cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
+    ElementBufferCL(size_t size, const DataFormatBase* format, BufferType type,
+                    BufferUsage usage = BufferUsage::STATIC, const void* data = nullptr,
+                    cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     ElementBufferCL(const ElementBufferCL& rhs);
     virtual ~ElementBufferCL();
-
-
 
 protected:
 };
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -75,6 +74,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::ElementBufferCL& value);
 
-} // namespace cl
+}  // namespace cl
 
-#endif // IVW_ELEMENTBUFFERCL_H
+#endif  // IVW_ELEMENTBUFFERCL_H

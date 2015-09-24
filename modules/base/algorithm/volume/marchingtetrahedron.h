@@ -91,7 +91,7 @@ std::shared_ptr<Mesh> inviwo::detail::MarchingTetrahedronDispatcher::dispatch(
     K3DTree<size_t, float> vertexTree;
 
     auto mesh = std::make_shared<BasicMesh>();
-    auto indexBuffer = mesh->addIndexBuffer(GeometryEnums::TRIANGLES, GeometryEnums::NONE);
+    auto indexBuffer = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
 
     std::vector<vec3> positions;
     std::vector<vec3> normals;

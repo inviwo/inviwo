@@ -95,8 +95,8 @@ void VolumeMaxCLProcessor::process() {
 
     size3_t localWorkGroupSize(workGroupSize_.get());
     size3_t globalWorkGroupSize(getGlobalWorkGroupSize(outDim.x, localWorkGroupSize.x),
-                              getGlobalWorkGroupSize(outDim.y, localWorkGroupSize.y),
-                              getGlobalWorkGroupSize(outDim.z, localWorkGroupSize.z));
+                                getGlobalWorkGroupSize(outDim.y, localWorkGroupSize.y),
+                                getGlobalWorkGroupSize(outDim.z, localWorkGroupSize.z));
 
     if (useGLSharing_.get()) {
         SyncCLGL glSync;
@@ -136,7 +136,8 @@ void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume,
             size_t outDimFlattened = outDim.x * outDim.y * outDim.z;
             if (tmpVolume_ == nullptr || tmpVolume_->getSize() != outDimFlattened) {
                 delete tmpVolume_;
-                tmpVolume_ = new BufferPrecision<unsigned char, POSITION_ATTRIB>(outDimFlattened);
+                tmpVolume_ = new BufferPrecision<unsigned char, BufferType::POSITION_ATTRIB>(
+                    outDimFlattened);
             }
             tmpVolumeCL = tmpVolume_->getEditableRepresentation<BufferCL>();
             kernel_->setArg(argIndex++, *tmpVolumeCL);

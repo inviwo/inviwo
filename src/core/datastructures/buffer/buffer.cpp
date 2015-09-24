@@ -36,18 +36,7 @@ namespace inviwo {
 
 Buffer::Buffer(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage)
     : Data<BufferRepresentation>(format), size_(size), type_(type), usage_(usage) {}
-Buffer::Buffer(const Buffer& rhs)
-    : Data<BufferRepresentation>(rhs), size_(rhs.size_), type_(rhs.type_), usage_(rhs.usage_) {}
 
-Buffer& Buffer::operator=(const Buffer& that) {
-    if (this != &that) {
-        Data<BufferRepresentation>::operator=(that);
-        size_ = that.size_;
-        type_ = that.type_;
-        usage_ = that.usage_;
-    }
-    return *this;
-}
 
 Buffer* Buffer::clone() const { return new Buffer(*this); }
 

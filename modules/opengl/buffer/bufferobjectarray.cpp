@@ -34,12 +34,13 @@ namespace inviwo {
 
 int BufferObjectArray::maxVertexAttribSize_ = 0;
 
-BufferObjectArray::BufferObjectArray() : id_(0u), attachedBuffers_(NUMBER_OF_BUFFER_TYPES) {
+BufferObjectArray::BufferObjectArray()
+    : id_(0u), attachedBuffers_(static_cast<size_t>(BufferType::NUMBER_OF_BUFFER_TYPES)) {
     initialize();
 }
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
-    : id_(0u), attachedBuffers_(NUMBER_OF_BUFFER_TYPES) {
+    : id_(0u), attachedBuffers_(static_cast<size_t>(BufferType::NUMBER_OF_BUFFER_TYPES)) {
     initialize();
 
     bind();
@@ -91,13 +92,14 @@ int BufferObjectArray::attachBufferObject(const BufferObject* bo) {
         return -1;
     }
 
-    if (!attachedBuffers_[bo->getBufferType()]) {
+    if (!attachedBuffers_[static_cast<size_t>(bo->getBufferType())]) {
         pointToObject(bo, static_cast<GLuint>(bo->getBufferType()));
-        attachedBuffers_[bo->getBufferType()] = bo;
+        attachedBuffers_[static_cast<size_t>(bo->getBufferType())] = bo;
         return static_cast<int>(bo->getBufferType());
     } else {
-        auto it = std::find(attachedBuffers_.begin() + NUMBER_OF_BUFFER_TYPES,
-                            attachedBuffers_.end(), static_cast<const BufferObject*>(nullptr));
+        auto it = std::find(
+            attachedBuffers_.begin() + static_cast<size_t>(BufferType::NUMBER_OF_BUFFER_TYPES),
+            attachedBuffers_.end(), static_cast<const BufferObject*>(nullptr));
         if (it != attachedBuffers_.end()) {
             int location = static_cast<int>(it - attachedBuffers_.begin());
             pointToObject(bo, location);

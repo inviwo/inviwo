@@ -36,8 +36,8 @@
 
 namespace inviwo {
 
-enum BufferType {
-    POSITION_ATTRIB,
+enum class BufferType {
+    POSITION_ATTRIB = 0,
     NORMAL_ATTRIB,
     COLOR_ATTRIB,
     TEXCOORD_ATTRIB,
@@ -46,17 +46,18 @@ enum BufferType {
     NUMBER_OF_BUFFER_TYPES
 };
 
-enum BufferUsage { STATIC, DYNAMIC };
+enum class BufferUsage { STATIC, DYNAMIC };
 
 class IVW_CORE_API BufferRepresentation : public DataRepresentation {
 public:
     BufferRepresentation(const DataFormatBase* format = DataFormatBase::get(),
-                         BufferType type = POSITION_ATTRIB, BufferUsage usage = STATIC);
+                         BufferType type = BufferType::POSITION_ATTRIB,
+                         BufferUsage usage = BufferUsage::STATIC);
 
-    BufferRepresentation(const BufferRepresentation& rhs);
-    BufferRepresentation& operator=(const BufferRepresentation& that);
-    virtual BufferRepresentation* clone() const = 0;
-    virtual ~BufferRepresentation(){};
+    BufferRepresentation(const BufferRepresentation& rhs) = default;
+    BufferRepresentation& operator=(const BufferRepresentation& that) = default;
+    virtual BufferRepresentation* clone() const override = 0;
+    virtual ~BufferRepresentation() = default;
     virtual void setSize(size_t size) = 0;
 
     /**

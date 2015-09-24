@@ -121,11 +121,11 @@ VolumeSliceGL::VolumeSliceGL()
     addPort(outport_);
 
     inport_.onChange(this, &VolumeSliceGL::updateMaxSliceNumber);
-    sliceAlongAxis_.addOption("x", "y-z plane (X axis)", CoordinateEnums::X);
-    sliceAlongAxis_.addOption("y", "z-x plane (Y axis)", CoordinateEnums::Y);
-    sliceAlongAxis_.addOption("z", "x-y plane (Z axis)", CoordinateEnums::Z);
+    sliceAlongAxis_.addOption("x", "y-z plane (X axis)", static_cast<int>(CartesianCoordinateAxis::X));
+    sliceAlongAxis_.addOption("y", "z-x plane (Y axis)", static_cast<int>(CartesianCoordinateAxis::Y));
+    sliceAlongAxis_.addOption("z", "x-y plane (Z axis)", static_cast<int>(CartesianCoordinateAxis::Z));
     sliceAlongAxis_.addOption("p", "plane equation", 3);
-    sliceAlongAxis_.set(CoordinateEnums::X);
+    sliceAlongAxis_.set(static_cast<int>(CartesianCoordinateAxis::X));
     sliceAlongAxis_.setCurrentStateAsDefault();
     sliceAlongAxis_.onChange(this, &VolumeSliceGL::modeChange);
     addProperty(sliceAlongAxis_);
@@ -274,17 +274,17 @@ void VolumeSliceGL::modeChange() {
     planeNormal_.setReadOnly(true);
 
     switch (sliceAlongAxis_.get()) {
-        case CoordinateEnums::X:
+        case CartesianCoordinateAxis::X:
             sliceX_.setReadOnly(false);
             planeNormal_.set(vec3(-1.0f, 0.0f, 0.0f));
             sliceChange();
             break;
-        case CoordinateEnums::Y:
+        case CartesianCoordinateAxis::Y:
             sliceY_.setReadOnly(false);
             planeNormal_.set(vec3(0.0f, -1.0f, 0.0f));
             sliceChange();
             break;
-        case CoordinateEnums::Z:
+        case CartesianCoordinateAxis::Z:
             sliceZ_.setReadOnly(false);
             planeNormal_.set(vec3(0.0f, 0.0f, -1.0f));
             sliceChange();
@@ -457,71 +457,75 @@ void VolumeSliceGL::renderPositionIndicator() {
 void VolumeSliceGL::updateIndicatorMesh() {
     vec2 pos = getScreenPosFromVolPos();
 
-    delete meshCrossHair_;
-    delete meshBox_;
-    meshCrossHair_ = new Mesh;
-    meshCrossHair_->setModelMatrix(mat4(1.0f));
-    meshBox_ = new Mesh;
-    meshBox_->setModelMatrix(mat4(1.0f));
-
     size2_t canvasSize(outport_.getDimensions());
     const vec2 indicatorSize = vec2(4.0f / canvasSize.x, 4.0f / canvasSize.y);
     vec4 color(indicatorColor_.get());
 
-    // add two vertical and two horizontal lines with a gap around the selected position
-    Position2dBuffer* posBuf = new Position2dBuffer;
-    Position2dBufferRAM* vertices = posBuf->getEditableRepresentation<Position2dBufferRAM>();
+    {
+        delete meshCrossHair_;
+        meshCrossHair_ = new Mesh;
+        meshCrossHair_->setModelMatrix(mat4(1.0f));
+        // add two vertical and two horizontal lines with a gap around the selected position
+        auto vertices = std::make_shared<Position2dBufferRAM>();
+        auto posBuf = std::make_shared<Position2dBuffer>(vertices);
 
-    // horizontal
-    vertices->add(vec2(-0.5f, pos.y) * 2.0f - 1.0f);
-    vertices->add(vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f);
-    vertices->add(vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f);
-    vertices->add(vec2(1.5f, pos.y) * 2.0f - 1.0f);
-    // vertical
-    vertices->add(vec2(pos.x, -0.5f) * 2.0f - 1.0f);
-    vertices->add(vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
-    vertices->add(vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
-    vertices->add(vec2(pos.x, 1.5f) * 2.0f - 1.0f);
+        // horizontal
+        vertices->add(vec2(-0.5f, pos.y) * 2.0f - 1.0f);
+        vertices->add(vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f);
+        vertices->add(vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f);
+        vertices->add(vec2(1.5f, pos.y) * 2.0f - 1.0f);
+        // vertical
+        vertices->add(vec2(pos.x, -0.5f) * 2.0f - 1.0f);
+        vertices->add(vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
+        vertices->add(vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
+        vertices->add(vec2(pos.x, 1.5f) * 2.0f - 1.0f);
 
-    ColorBuffer* colorBuf = new ColorBuffer;
-    ColorBufferRAM* colors = colorBuf->getEditableRepresentation<ColorBufferRAM>();
+        auto colors = std::make_shared<ColorBufferRAM>();
+        auto colorBuf = std::make_shared<ColorBuffer>(colors);
 
-    // indices for cross hair lines
-    IndexBuffer* indexBuf = new IndexBuffer();
-    IndexBufferRAM* indices = indexBuf->getEditableRepresentation<IndexBufferRAM>();
-    for (unsigned int i = 0; i < 8; ++i) {
-        colors->add(color);
-        indices->add(i);
+        // indices for cross hair lines
+        auto indices = std::make_shared<IndexBufferRAM>();
+        auto indexBuf = std::make_shared<IndexBuffer>(indices);
+        for (unsigned int i = 0; i < 8; ++i) {
+            colors->add(color);
+            indices->add(i);
+        }
+        // clear up existing attribute buffers
+        // meshCrossHair_->deinitialize();
+        meshCrossHair_->addAttribute(posBuf);
+        meshCrossHair_->addAttribute(colorBuf);
+        meshCrossHair_->addIndicies(Mesh::AttributesInfo(DrawType::LINES, ConnectivityType::NONE),
+                                    indexBuf);
     }
-    // clear up existing attribute buffers
-    // meshCrossHair_->deinitialize();
-    meshCrossHair_->addAttribute(posBuf);
-    meshCrossHair_->addAttribute(colorBuf);
-    meshCrossHair_->addIndicies(Mesh::AttributesInfo(GeometryEnums::LINES, GeometryEnums::NONE),
-                                indexBuf);
 
-    // mesh for center box
-    posBuf = new Position2dBuffer;
-    vertices = posBuf->getEditableRepresentation<Position2dBufferRAM>();
-    colorBuf = new ColorBuffer;
-    colors = colorBuf->getEditableRepresentation<ColorBufferRAM>();
-    indexBuf = new IndexBuffer();
-    indices = indexBuf->getEditableRepresentation<IndexBufferRAM>();
-    // box
-    vertices->add(vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
-    vertices->add(vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
-    vertices->add(vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
-    vertices->add(vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
-    for (unsigned int i = 0; i < 4; ++i) {
-        colors->add(color);
-        indices->add(i);
+    {
+        // mesh for center box
+        delete meshBox_;
+        meshBox_ = new Mesh;
+        meshBox_->setModelMatrix(mat4(1.0f));
+
+        auto vertices = std::make_shared<Position2dBufferRAM>();
+        auto posBuf = std::make_shared<Position2dBuffer>(vertices);
+        auto colors = std::make_shared<ColorBufferRAM>();
+        auto colorBuf = std::make_shared<ColorBuffer>(colors);
+        auto indices = std::make_shared<IndexBufferRAM>();
+        auto indexBuf = std::make_shared<IndexBuffer>(indices);
+        // box
+        vertices->add(vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
+        vertices->add(vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
+        vertices->add(vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
+        vertices->add(vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
+        for (unsigned int i = 0; i < 4; ++i) {
+            colors->add(color);
+            indices->add(i);
+        }
+        // clear up existing attribute buffers
+        // meshBox_->deinitialize();
+        meshBox_->addAttribute(posBuf);
+        meshBox_->addAttribute(colorBuf);
+        meshBox_->addIndicies(Mesh::AttributesInfo(DrawType::LINES, ConnectivityType::LOOP),
+                              indexBuf);
     }
-    // clear up existing attribute buffers
-    // meshBox_->deinitialize();
-    meshBox_->addAttribute(posBuf);
-    meshBox_->addAttribute(colorBuf);
-    meshBox_->addIndicies(Mesh::AttributesInfo(GeometryEnums::LINES, GeometryEnums::LOOP),
-                          indexBuf);
 
     meshDirty_ = false;
 }

@@ -37,41 +37,40 @@ namespace inviwo {
 
 class IVW_CORE_API SimpleMesh : public Mesh {
 public:
-    SimpleMesh(GeometryEnums::DrawType dt = GeometryEnums::POINTS,
-               GeometryEnums::ConnectivityType ct = GeometryEnums::NONE);
-    SimpleMesh(const SimpleMesh& rhs);
-    SimpleMesh& operator=(const SimpleMesh& that);
-    virtual SimpleMesh* clone() const;
-    virtual ~SimpleMesh();
+    SimpleMesh(DrawType dt = DrawType::POINTS, ConnectivityType ct = ConnectivityType::NONE);
+    SimpleMesh(const SimpleMesh& rhs) = default;
+    SimpleMesh& operator=(const SimpleMesh& that) = default;
+    virtual SimpleMesh* clone() const override;
+    virtual ~SimpleMesh() = default;
 
     unsigned int addVertex(vec3 pos, vec3 texCoord, vec4 color);
     void addIndex(unsigned int idx);
 
-    template<typename... Args> void addIndices(Args&&...);
-    void setIndicesInfo(GeometryEnums::DrawType, GeometryEnums::ConnectivityType);
+    template <typename... Args>
+    void addIndices(Args&&...);
+    void setIndicesInfo(DrawType dt, ConnectivityType ct);
     const Position3dBuffer* getVertexList() const;
     const TexCoord3dBuffer* getTexCoordList() const;
     const ColorBuffer* getColorList() const;
     const IndexBuffer* getIndexList() const;
 };
 
-namespace detail{
-   
-    template<typename T>
-    void addIndices(SimpleMesh* mesh, T index) {
-        mesh->addIndex(index);
-    }
+namespace detail {
 
-    template<typename T, typename... Args>
-    void addIndices(SimpleMesh* mesh, T index, Args... args) {
-        mesh->addIndex(index);
-        addIndices(mesh, args...);
-    }
-
-
+template <typename T>
+void addIndices(SimpleMesh* mesh, T index) {
+    mesh->addIndex(index);
 }
 
-template<typename... Args> void SimpleMesh::addIndices(Args&&...args){
+template <typename T, typename... Args>
+void addIndices(SimpleMesh* mesh, T index, Args... args) {
+    mesh->addIndex(index);
+    addIndices(mesh, args...);
+}
+}
+
+template <typename... Args>
+void SimpleMesh::addIndices(Args&&... args) {
     detail::addIndices<Args...>(this, args...);
 }
 

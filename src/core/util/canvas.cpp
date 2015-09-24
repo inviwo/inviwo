@@ -51,37 +51,22 @@ Canvas::Canvas(uvec2 dimensions)
     , propagator_(nullptr)
     , pickingContainer_()
     , ownerWidget_(nullptr) {
-
     if (!screenAlignedRect_) {
         shared_ = false;
-        Position2dBuffer* verticesBuffer = new Position2dBuffer();
-        Position2dBufferRAM* verticesBufferRAM =
-            dynamic_cast<Position2dBufferRAM*>(verticesBuffer->getEditableRepresentation<BufferRAM>());
-        verticesBufferRAM->add(vec2(-1.0f, -1.0f));
-        verticesBufferRAM->add(vec2(1.0f, -1.0f));
-        verticesBufferRAM->add(vec2(-1.0f, 1.0f));
-        verticesBufferRAM->add(vec2(1.0f, 1.0f));
-        TexCoord2dBuffer* texCoordsBuffer = new TexCoord2dBuffer();
-        TexCoord2dBufferRAM* texCoordsBufferRAM =
-            dynamic_cast<TexCoord2dBufferRAM*>(texCoordsBuffer->getEditableRepresentation<BufferRAM>());
-        texCoordsBufferRAM->add(vec2(0.0f, 0.0f));
-        texCoordsBufferRAM->add(vec2(1.0f, 0.0f));
-        texCoordsBufferRAM->add(vec2(0.0f, 1.0f));
-        texCoordsBufferRAM->add(vec2(1.0f, 1.0f));
 
-        IndexBuffer* indices_ = new IndexBuffer();
-        IndexBufferRAM* indexBufferRAM = 
-            dynamic_cast<IndexBufferRAM*>(indices_->getEditableRepresentation<BufferRAM>());
-        indexBufferRAM->add(0);
-        indexBufferRAM->add(1);
-        indexBufferRAM->add(2);
-        indexBufferRAM->add(3);
+        auto verticesBuffer = util::makeBuffer<vec2, BufferType::POSITION_ATTRIB>(
+            {{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
+
+        auto texCoordsBuffer = util::makeBuffer<vec2, BufferType::TEXCOORD_ATTRIB>(
+            {{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
+
+        auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
 
         Mesh* screenAlignedRectMesh = new Mesh();
         screenAlignedRectMesh->addAttribute(verticesBuffer);
         screenAlignedRectMesh->addAttribute(texCoordsBuffer);
         screenAlignedRectMesh->addIndicies(
-            Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP), indices_);
+            Mesh::AttributesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP), indices_);
 
         screenAlignedRect_ = screenAlignedRectMesh;
     }

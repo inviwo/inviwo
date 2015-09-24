@@ -32,35 +32,29 @@
 
 namespace inviwo {
 
-namespace CoordinateEnums {
-
-enum CoordinatePlane {
+enum class CoordinatePlane {
     XY,
     XZ,
     YZ,
     ZY
 };
 
-enum CartesianCoordinateAxis {
+enum class CartesianCoordinateAxis {
     X, // Right 
     Y, // Up
     Z  // Into screen
 };
 
-}
-
-namespace GeometryEnums {
-
-enum DrawType {
-    NOT_SPECIFIED,
+enum class DrawType {
+    NOT_SPECIFIED = 0,
     POINTS,
     LINES,
     TRIANGLES,
     NUMBER_OF_DRAW_TYPES
 };
 
-enum ConnectivityType {
-    NONE,
+enum class ConnectivityType {
+    NONE = 0,
     STRIP,
     LOOP,
     FAN,
@@ -68,8 +62,6 @@ enum ConnectivityType {
     STRIP_ADJACENCY,
     NUMBER_OF_CONNECTIVITY_TYPES
 };
-
-}
 
 } // namespace
 

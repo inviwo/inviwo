@@ -32,26 +32,14 @@
 
 namespace inviwo {
 
-SimpleMesh::SimpleMesh(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct)
-    : Mesh(dt, ct) {
-    addAttribute(new Position3dBuffer());  // pos 0
-    addAttribute(new TexCoord3dBuffer());  // pos 1
-    addAttribute(new ColorBuffer());       // pos 2
-    addIndicies(Mesh::AttributesInfo(dt, ct), new IndexBuffer());
-}
-
-SimpleMesh::SimpleMesh(const SimpleMesh& rhs) : Mesh(rhs) {}
-
-SimpleMesh& SimpleMesh::operator=(const SimpleMesh& that) {
-    if (this != &that) {
-        Mesh::operator=(that);
-    }
-    return *this;
+SimpleMesh::SimpleMesh(DrawType dt, ConnectivityType ct) : Mesh(dt, ct) {
+    addAttribute(std::make_shared<Position3dBuffer>());  // pos 0
+    addAttribute(std::make_shared<TexCoord3dBuffer>());  // pos 1
+    addAttribute(std::make_shared<ColorBuffer>());       // pos 2
+    addIndicies(Mesh::AttributesInfo(dt, ct), std::make_shared<IndexBuffer>());
 }
 
 SimpleMesh* SimpleMesh::clone() const { return new SimpleMesh(*this); }
-
-SimpleMesh::~SimpleMesh() { deinitialize(); }
 
 unsigned int SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
     auto posBuffer =
@@ -69,22 +57,22 @@ void SimpleMesh::addIndex(unsigned int idx) {
         ->add(idx);
 }
 
-void SimpleMesh::setIndicesInfo(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct) {
+void SimpleMesh::setIndicesInfo(DrawType dt, ConnectivityType ct) {
     indexAttributes_[0].first = Mesh::AttributesInfo(dt, ct);
 }
 
 const Position3dBuffer* SimpleMesh::getVertexList() const {
-    return static_cast<const Position3dBuffer*>(attributes_[0]);
+    return static_cast<const Position3dBuffer*>(attributes_[0].get());
 }
 
 const TexCoord3dBuffer* SimpleMesh::getTexCoordList() const {
-    return static_cast<const TexCoord3dBuffer*>(attributes_[1]);
+    return static_cast<const TexCoord3dBuffer*>(attributes_[1].get());
 }
 
 const ColorBuffer* SimpleMesh::getColorList() const {
-    return static_cast<const ColorBuffer*>(attributes_[2]);
+    return static_cast<const ColorBuffer*>(attributes_[2].get());
 }
 
-const IndexBuffer* SimpleMesh::getIndexList() const { return indexAttributes_[0].second; }
+const IndexBuffer* SimpleMesh::getIndexList() const { return indexAttributes_[0].second.get(); }
 
 }  // namespace

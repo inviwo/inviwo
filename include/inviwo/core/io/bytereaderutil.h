@@ -37,11 +37,10 @@ namespace inviwo {
 
 namespace util {
 
-void readBytesIntoBuffer(const std::string& file, size_t offset, size_t bytes, bool littleEndian,
-                         size_t elementSize, void* dest);
-} // namespace
+void IVW_CORE_API readBytesIntoBuffer(const std::string& file, size_t offset, size_t bytes,
+                                      bool littleEndian, size_t elementSize, void* dest);
+}  // namespace
 
-} // namespace
+}  // namespace
 
-#endif // IVW_BYTEREADERUTIL_H
-
+#endif  // IVW_BYTEREADERUTIL_H

@@ -175,31 +175,32 @@ vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
 }
 
 void TextRenderer::initMesh() {
-    auto verticesBuffer = new Position2dBuffer();
-    auto verticesBufferRAM = verticesBuffer->getEditableRAMRepresentation();
+    auto verticesBufferRAM = std::make_shared<Position2dBufferRAM>();
+    auto verticesBuffer = std::make_shared<Position2dBuffer>(verticesBufferRAM);
     verticesBufferRAM->add(vec2(0.0f, 0.0f));
     verticesBufferRAM->add(vec2(1.0f, 0.0f));
     verticesBufferRAM->add(vec2(0.0f, 1.0f));
     verticesBufferRAM->add(vec2(1.0f, 1.0f));
 
-    auto texCoordsBuffer = new TexCoord2dBuffer();
-    auto texCoordsBufferRAM = texCoordsBuffer->getEditableRAMRepresentation();
+    auto texCoordsBufferRAM = std::make_shared<TexCoord2dBufferRAM>();
+    auto texCoordsBuffer = std::make_shared<TexCoord2dBuffer>(texCoordsBufferRAM);
     texCoordsBufferRAM->add(vec2(0.0f, 0.0f));
     texCoordsBufferRAM->add(vec2(1.0f, 0.0f));
     texCoordsBufferRAM->add(vec2(0.0f, 1.0f));
     texCoordsBufferRAM->add(vec2(1.0f, 1.0f));
 
-    auto indices = new IndexBuffer();
-    auto indexBufferRAM = indices->getEditableRAMRepresentation();
+    auto indexBufferRAM = std::make_shared<IndexBufferRAM>();
+    auto indices = std::make_shared<IndexBuffer>(indexBufferRAM);
     indexBufferRAM->add(0);
     indexBufferRAM->add(1);
     indexBufferRAM->add(2);
     indexBufferRAM->add(3);
 
+
     mesh_.reset(new Mesh());
     mesh_->addAttribute(verticesBuffer);
     mesh_->addAttribute(texCoordsBuffer);
-    mesh_->addIndicies(Mesh::AttributesInfo(GeometryEnums::TRIANGLES, GeometryEnums::STRIP),
+    mesh_->addIndicies(Mesh::AttributesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP),
                        indices);
 
     drawer_.reset(new MeshDrawerGL(mesh_.get()));

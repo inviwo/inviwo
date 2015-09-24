@@ -58,7 +58,7 @@ DrawPoints::DrawPoints()
           "keyEnableDraw", "Enable Draw",
           new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
           new Action(this, &DrawPoints::eventEnableDraw))
-    , points_(GeometryEnums::POINTS, GeometryEnums::NONE)
+    , points_(DrawType::POINTS, ConnectivityType::NONE)
     , pointDrawer_(&points_)
     , pointShader_("img_color.frag")
     , drawModeEnabled_(false) {
@@ -75,7 +75,7 @@ DrawPoints::DrawPoints()
     addProperty(keyEnableDraw_);
 
     pointShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
-    points_.addAttribute(new Position2dBuffer());
+    points_.addAttribute(std::make_shared<Position2dBuffer>());
 }
 
 DrawPoints::~DrawPoints() {}
@@ -94,11 +94,16 @@ void DrawPoints::process() {
 }
 
 void DrawPoints::addPoint(vec2 p) {
-    points_.getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->add(p);
+    auto buff = static_cast<Position2dBufferRAM*>(
+                    points_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
+    buff->add(p);
 }
 
 void DrawPoints::clearPoints() {
-    points_.getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->clear();
+    auto buff = static_cast<Position2dBufferRAM*>(
+        points_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
+
+    buff->clear();
 }
 
 void DrawPoints::eventDraw(Event* event){

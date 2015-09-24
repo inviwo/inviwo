@@ -84,7 +84,7 @@ private:
         using type = std::shared_ptr<Image>;
         template <class T>
         std::shared_ptr<Image> dispatch(const Volume& vol,
-                                        CoordinateEnums::CartesianCoordinateAxis axis, size_t slice,
+                                        CartesianCoordinateAxis axis, size_t slice,
                                         std::shared_ptr<Image> img);
     };
 
@@ -112,7 +112,7 @@ private:
 
 template <class T>
 std::shared_ptr<Image> VolumeSlice::VolumeSliceDispatcher::dispatch(
-    const Volume& vol, CoordinateEnums::CartesianCoordinateAxis axis, size_t slice,
+    const Volume& vol, CartesianCoordinateAxis axis, size_t slice,
     std::shared_ptr<Image> img) {
     // D = type of the data
     typedef typename T::type D;
@@ -125,13 +125,13 @@ std::shared_ptr<Image> VolumeSlice::VolumeSliceDispatcher::dispatch(
     // Calculate image dimensions
     size2_t dim;
     switch (axis) {
-        case CoordinateEnums::X:
+        case CartesianCoordinateAxis::X:
             dim = size2_t(voldim.y, voldim.z);
             break;
-        case CoordinateEnums::Y:
+        case CartesianCoordinateAxis::Y:
             dim = size2_t(voldim.x, voldim.z);
             break;
-        case CoordinateEnums::Z:
+        case CartesianCoordinateAxis::Z:
             dim = size2_t(voldim.x, voldim.y);
             break;
     }
@@ -155,7 +155,7 @@ std::shared_ptr<Image> VolumeSlice::VolumeSliceDispatcher::dispatch(
     size_t offsetVolume;
     size_t offsetImage;
     switch (axis) {
-        case CoordinateEnums::X: {
+        case CartesianCoordinateAxis::X: {
             slice = std::min(slice, static_cast<size_t>(voldim.x - 1));
 
             for (size_t i = 0; i < voldim.z; i++) {
@@ -168,7 +168,7 @@ std::shared_ptr<Image> VolumeSlice::VolumeSliceDispatcher::dispatch(
 
             break;
         }
-        case CoordinateEnums::Y: {
+        case CartesianCoordinateAxis::Y: {
             slice = std::min(slice, static_cast<size_t>(voldim.y - 1));
 
             size_t dataSize = voldim.x * static_cast<size_t>(format->getSize());
@@ -180,7 +180,7 @@ std::shared_ptr<Image> VolumeSlice::VolumeSliceDispatcher::dispatch(
             }
             break;
         }
-        case CoordinateEnums::Z: {
+        case CartesianCoordinateAxis::Z: {
             slice = std::min(slice, static_cast<size_t>(voldim.z - 1));
 
             size_t dataSize = voldim.x * voldim.y * static_cast<size_t>(format->getSize());

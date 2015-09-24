@@ -51,7 +51,7 @@ TextOverlayGL::TextOverlayGL()
     , fontSize_("Font size", "Font size")
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))
-    , textRenderer_(NULL) {
+    , textRenderer_() {
 
     addPort(inport_);
     addPort(outport_);
@@ -72,18 +72,6 @@ TextOverlayGL::TextOverlayGL()
     fontSize_.setCurrentStateAsDefault();
 }
 
-TextOverlayGL::~TextOverlayGL() {}
-
-void TextOverlayGL::initialize() {
-    Processor::initialize();
-    textRenderer_ = new TextRenderer();
-}
-
-void TextOverlayGL::deinitialize() {
-
-    delete textRenderer_;
-    Processor::deinitialize();
-}
 
 void TextOverlayGL::process() {
     utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_DEPTH);
@@ -95,13 +83,13 @@ void TextOverlayGL::process() {
     vec2 scale(2.f / vec2(outport_.getData()->getDimensions()));
 
     int fontSize = fontSize_.getSelectedValue();
-    textRenderer_->setFontSize(fontSize);
+    textRenderer_.setFontSize(fontSize);
     float xpos_ = fontPos_.get().x * outport_.getData()->getDimensions().x;
     float ypos_ = fontPos_.get().y * outport_.getData()->getDimensions().y + float(fontSize);
 
-    vec2 size = textRenderer_->computeTextSize(text_.get().c_str(), scale);
+    vec2 size = textRenderer_.computeTextSize(text_.get().c_str(), scale);
     vec2 shift = 0.5f * size * (anchorPos_.get() + vec2(1.0f, 1.0f));
-    textRenderer_->render(text_.get().c_str(), -1 + xpos_ * scale.x - shift.x,
+    textRenderer_.render(text_.get().c_str(), -1 + xpos_ * scale.x - shift.x,
                           1 - ypos_ * scale.y + shift.y, scale, color_.get());
 
     glDisable(GL_BLEND);

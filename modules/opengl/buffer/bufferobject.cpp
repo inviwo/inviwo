@@ -38,11 +38,11 @@ BufferObject::BufferObject(size_t sizeInBytes, const DataFormatBase* format, Buf
     , glFormat_(getGLFormats()->getGLFormat(format->getId()))
     , type_(type) {
     switch (usage) {
-        case DYNAMIC:
+        case BufferUsage::DYNAMIC:
             usageGL_ = GL_DYNAMIC_DRAW;
             break;
 
-        case STATIC:
+        case BufferUsage::STATIC:
         default:
             usageGL_ = GL_STATIC_DRAW;
             break;

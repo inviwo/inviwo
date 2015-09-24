@@ -43,22 +43,21 @@ namespace inviwo {
 class IVW_CORE_API Mesh : public DataGroup, public SpatialEntity<3> {
 public:
     struct AttributesInfo {
-        GeometryEnums::DrawType dt;
-        GeometryEnums::ConnectivityType ct;
-        AttributesInfo() : dt(GeometryEnums::POINTS), ct(GeometryEnums::NONE) {}
-        AttributesInfo(GeometryEnums::DrawType d, GeometryEnums::ConnectivityType c)
-            : dt(d), ct(c) {}
+        AttributesInfo() : dt(DrawType::POINTS), ct(ConnectivityType::NONE) {}
+        AttributesInfo(DrawType d, ConnectivityType c) : dt(d), ct(c) {}
+        DrawType dt;
+        ConnectivityType ct;
     };
 
-    typedef std::vector<std::pair<AttributesInfo, IndexBuffer*> > IndexVector;
+    using IndexVector = std::vector<std::pair<AttributesInfo, std::shared_ptr<IndexBuffer>>>;
 
-    Mesh();
-    Mesh(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
+    Mesh() = default;
+    Mesh(DrawType dt, ConnectivityType ct);
 
     Mesh(const Mesh& rhs);
     Mesh& operator=(const Mesh& that);
     virtual Mesh* clone() const;
-    virtual ~Mesh();
+    virtual ~Mesh() = default;
     virtual std::string getDataInfo() const;
 
     /**
@@ -67,7 +66,7 @@ public:
      * @param att Data to be rendered.
      * @param takeOwnership True if the buffer should be deleted by the mesh.
      */
-    void addAttribute(Buffer* att, bool takeOwnership = true);
+    void addAttribute(std::shared_ptr<Buffer> att);
 
     /**
      * Replaces buffer at index with new buffer and deletes old one if it has ownership of it.
@@ -76,7 +75,7 @@ public:
      * @param att New buffer
      * @param takeOwnership True if new buffer should be owned.
      */
-    void setAttribute(size_t idx, Buffer* att, bool takeOwnership = true);
+    void setAttribute(size_t idx, std::shared_ptr<Buffer> att);
 
     /**
      * Add index buffer. The indices will be used as look up
@@ -85,9 +84,9 @@ public:
      * @param info Rendering type and connectivity.
      * @param ind Index buffer, will be owned by mesh.
      */
-    void addIndicies(AttributesInfo info, IndexBuffer* ind);
+    void addIndicies(AttributesInfo info, std::shared_ptr<IndexBuffer> ind);
 
-    const std::vector<Buffer*>& getBuffers() const;
+    const std::vector<std::shared_ptr<Buffer>>& getBuffers() const;
     const IndexVector& getIndexBuffers() const;
 
     const Buffer* getAttributes(size_t idx) const;
@@ -110,13 +109,9 @@ public:
     static const std::string CLASS_IDENTIFIER;
 
 protected:
-    std::vector<Buffer*> attributes_;
-    std::vector<bool>
-        attributesOwnership_;  // Indicates if the Mesh owns the corresponding Buffer in attributes_
+    std::vector<std::shared_ptr<Buffer>> attributes_;
     IndexVector indexAttributes_;
     AttributesInfo defaultAttributeInfo_;
-
-    void deinitialize();
 };
 
 }  // namespace

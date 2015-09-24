@@ -51,9 +51,7 @@ public:
     void setVertexNormal(size_t index, vec3 normal);
     void setVertexTexCoord(size_t index, vec3 texCoord);
     void setVertexColor(size_t index, vec4 color);
-    IndexBufferRAM* addIndexBuffer(GeometryEnums::DrawType dt, GeometryEnums::ConnectivityType ct);
-
-    virtual std::string getDataInfo() const;
+    IndexBufferRAM* addIndexBuffer(DrawType dt, ConnectivityType ct);
 
     const Position3dBuffer* getVertices() const;
     const TexCoord3dBuffer* getTexCoords() const;

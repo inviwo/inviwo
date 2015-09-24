@@ -66,9 +66,9 @@ VolumeSlice::VolumeSlice()
     addPort(inport_);
     addPort(outport_);
     outport_.setHandleResizeEvents(false);
-    sliceAlongAxis_.addOption("x", "X axis", CoordinateEnums::X);
-    sliceAlongAxis_.addOption("y", "Y axis", CoordinateEnums::Y);
-    sliceAlongAxis_.addOption("z", "Z axis", CoordinateEnums::Z);
+    sliceAlongAxis_.addOption("x", "X axis", static_cast<int>(CartesianCoordinateAxis::X));
+    sliceAlongAxis_.addOption("y", "Y axis", static_cast<int>(CartesianCoordinateAxis::Y));
+    sliceAlongAxis_.addOption("z", "Z axis", static_cast<int>(CartesianCoordinateAxis::Z));
     sliceAlongAxis_.setSelectedIndex(0);
     sliceAlongAxis_.setCurrentStateAsDefault();
     addProperty(sliceAlongAxis_);
@@ -106,21 +106,21 @@ void VolumeSlice::process() {
 
     const ivec3 dims(vol->getDimensions());
 
-    switch (sliceAlongAxis_.get()) {
-        case CoordinateEnums::X:
+    switch (static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get())) {
+        case CartesianCoordinateAxis::X:
             if (dims.x != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.x);
                 sliceNumber_.set(dims.x / 2);
                 sliceNumber_.setCurrentStateAsDefault();
             }
             break;
-        case CoordinateEnums::Y:
+        case CartesianCoordinateAxis::Y:
             if (dims.y != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.y);
                 sliceNumber_.set(dims.y / 2);
             }
             break;
-        case CoordinateEnums::Z:
+        case CartesianCoordinateAxis::Z:
             if (dims.z != sliceNumber_.getMaxValue()) {
                 sliceNumber_.setMaxValue(dims.z);
                 sliceNumber_.set(dims.z / 2);
@@ -130,7 +130,7 @@ void VolumeSlice::process() {
 
     VolumeSliceDispatcher disp;
     image_ = vol->getDataFormat()->dispatch(
-        disp, *vol, static_cast<CoordinateEnums::CartesianCoordinateAxis>(sliceAlongAxis_.get()),
+        disp, *vol, static_cast<CartesianCoordinateAxis>(sliceAlongAxis_.get()),
         static_cast<size_t>(sliceNumber_.get() - 1), image_);
 
     outport_.setData(image_);

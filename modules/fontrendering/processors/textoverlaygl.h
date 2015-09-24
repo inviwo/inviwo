@@ -65,18 +65,14 @@ namespace inviwo {
 class IVW_MODULE_FONTRENDERING_API TextOverlayGL : public Processor {
 public:
     TextOverlayGL();
-    ~TextOverlayGL();
+    virtual ~TextOverlayGL() = default;
 
     InviwoProcessorInfo();
 
-    void initialize() override;
-    void deinitialize() override;
 protected:
     virtual void process() override;
 
 private:
-    void initMesh();
-
     ImageInport inport_;
     ImageOutport outport_;
     StringProperty text_;
@@ -86,7 +82,7 @@ private:
     FloatVec2Property fontPos_;
     FloatVec2Property anchorPos_;
 
-    TextRenderer* textRenderer_;
+    TextRenderer textRenderer_;
 
 };
 

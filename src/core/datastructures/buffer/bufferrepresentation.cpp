@@ -35,17 +35,4 @@ BufferRepresentation::BufferRepresentation(const DataFormatBase* format,
                                            BufferType type, BufferUsage usage)
     : DataRepresentation(format), type_(type), usage_(usage) {}
 
-BufferRepresentation::BufferRepresentation(const BufferRepresentation& rhs)
-    : DataRepresentation(rhs), type_(rhs.type_), usage_(rhs.usage_) {}
-
-BufferRepresentation& BufferRepresentation::operator=(const BufferRepresentation& that) {
-    if (this != &that) {
-        DataRepresentation::operator=(that);
-        type_ = that.type_;
-        usage_ = that.usage_;
-    }
-
-    return *this;
-}
-
 }  // namespace

@@ -57,7 +57,7 @@ DrawLines::DrawLines()
           "keyEnableDraw", "Enable Draw",
           new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
           new Action(this, &DrawLines::eventEnableDraw))
-    , lines_(GeometryEnums::LINES, GeometryEnums::STRIP)
+    , lines_(DrawType::LINES, ConnectivityType::STRIP)
     , lineDrawer_(&lines_)
     , lineShader_("img_color.frag") {
 
@@ -74,7 +74,7 @@ DrawLines::DrawLines()
     addProperty(keyEnableDraw_);
     lineShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 
-    lines_.addAttribute(new Position2dBuffer());
+    lines_.addAttribute(std::make_shared<Position2dBuffer>());
 
     GLint aliasRange[2];
     glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, aliasRange);
@@ -105,11 +105,16 @@ void DrawLines::process() {
 }
 
 void DrawLines::addPoint(vec2 p) {
-    lines_.getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->add(p);
+    auto buff = static_cast<Position2dBufferRAM*>(
+        lines_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
+    buff->add(p);
 }
 
 void DrawLines::clearLines() {
-    lines_.getAttributes(0)->getEditableRepresentation<Position2dBufferRAM>()->clear();
+    auto buff = static_cast<Position2dBufferRAM*>(
+        lines_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
+
+    buff->clear();
 }
 
 void DrawLines::eventDraw(Event* event){

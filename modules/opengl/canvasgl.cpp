@@ -139,9 +139,11 @@ void CanvasGL::attachImagePlanRect(BufferObjectArray* arrayObject) {
     if (arrayObject) {
         arrayObject->bind();
         arrayObject->attachBufferObject(
-            screenAlignedRectGL_->getBufferGL(0)->getBufferObject().get(), POSITION_ATTRIB);
+            screenAlignedRectGL_->getBufferGL(0)->getBufferObject().get(),
+            static_cast<GLuint>(BufferType::POSITION_ATTRIB));
         arrayObject->attachBufferObject(
-            screenAlignedRectGL_->getBufferGL(1)->getBufferObject().get(), TEXCOORD_ATTRIB);
+            screenAlignedRectGL_->getBufferGL(1)->getBufferObject().get(),
+            static_cast<GLuint>(BufferType::TEXCOORD_ATTRIB));
         arrayObject->unbind();
     }
 }
@@ -201,9 +203,9 @@ void CanvasGL::drawRect() {
     rectArray_.reset(new BufferObjectArray());
     rectArray_->bind();
     rectArray_->attachBufferObject(screenAlignedRectGL_->getBufferGL(0)->getBufferObject().get(),
-                                   POSITION_ATTRIB);
+                                   static_cast<GLuint>(BufferType::POSITION_ATTRIB));
     rectArray_->attachBufferObject(screenAlignedRectGL_->getBufferGL(1)->getBufferObject().get(),
-                                   TEXCOORD_ATTRIB);
+                                   static_cast<GLuint>(BufferType::TEXCOORD_ATTRIB));
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     rectArray_->unbind();
 }
