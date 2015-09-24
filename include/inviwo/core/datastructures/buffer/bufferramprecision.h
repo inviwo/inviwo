@@ -104,7 +104,7 @@ BufferRAMPrecision<T>::BufferRAMPrecision(size_t size, const DataFormatBase* for
 template <typename T>
 inviwo::BufferRAMPrecision<T>::BufferRAMPrecision(std::vector<T> data, const DataFormatBase* format,
                                                   BufferType type, BufferUsage usage)
-    : BufferRAM(format, type, usage), data_(std::make_unique<std::vector<T>>(std::move(data))) {}
+    : BufferRAM(format, type, usage), data_(util::make_unique<std::vector<T>>(std::move(data))) {}
 
 template <typename T>
 BufferRAMPrecision<T>::BufferRAMPrecision(const BufferRAMPrecision<T>& rhs)

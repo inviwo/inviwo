@@ -1214,7 +1214,6 @@ bool NetworkEditor::loadNetwork(std::string fileName) {
 bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
     // Clean the current network
     clearNetwork();
-    InviwoApplicationQt::processEvents();
     {
         // Lock the network that so no evaluations are triggered during the de-serialization
         NetworkLock lock;

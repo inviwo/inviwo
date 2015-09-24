@@ -274,17 +274,17 @@ void VolumeSliceGL::modeChange() {
     planeNormal_.setReadOnly(true);
 
     switch (sliceAlongAxis_.get()) {
-        case CartesianCoordinateAxis::X:
+        case static_cast<int>(CartesianCoordinateAxis::X):
             sliceX_.setReadOnly(false);
             planeNormal_.set(vec3(-1.0f, 0.0f, 0.0f));
             sliceChange();
             break;
-        case CartesianCoordinateAxis::Y:
+        case static_cast<int>(CartesianCoordinateAxis::Y):
             sliceY_.setReadOnly(false);
             planeNormal_.set(vec3(0.0f, -1.0f, 0.0f));
             sliceChange();
             break;
-        case CartesianCoordinateAxis::Z:
+        case static_cast<int>(CartesianCoordinateAxis::Z):
             sliceZ_.setReadOnly(false);
             planeNormal_.set(vec3(0.0f, 0.0f, -1.0f));
             sliceChange();
