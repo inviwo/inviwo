@@ -162,12 +162,12 @@ void MeshClipping::onAlignPlaneNormalToCameraNormalPressed(){
     const std::vector<vec3>* vertexList;
     const SimpleMesh* simpleInputMesh = dynamic_cast<const SimpleMesh*>(geom.get());
     if (simpleInputMesh) {
-        vertexList = simpleInputMesh->getVertexList()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
+        vertexList = simpleInputMesh->getVertexList()->getRAMRepresentation()->getDataContainer();
     }
     else {
         const BasicMesh* basicInputMesh = dynamic_cast<const BasicMesh*>(geom.get());
         if (basicInputMesh) {
-            vertexList = basicInputMesh->getVertices()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
+            vertexList = basicInputMesh->getVertices()->getRAMRepresentation()->getDataContainer();
         }
         else {
             LogError("Unsupported mesh type, only simple and basic meshes are supported");
@@ -333,19 +333,19 @@ Mesh* MeshClipping::clipGeometryAgainstPlaneRevised(const Mesh* in, Plane plane)
     
     const SimpleMesh* simpleInputMesh = dynamic_cast<const SimpleMesh*>(in);
     if (simpleInputMesh) {
-        vertexList = simpleInputMesh->getVertexList()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
-        texcoordlist = simpleInputMesh->getTexCoordList()->getRepresentation<TexCoord3dBufferRAM>()->getDataContainer();
-        colorList = simpleInputMesh->getColorList()->getRepresentation<ColorBufferRAM>()->getDataContainer();
-        triangleList = simpleInputMesh->getIndexList()->getRepresentation<IndexBufferRAM>()->getDataContainer();
+        vertexList = simpleInputMesh->getVertexList()->getRAMRepresentation()->getDataContainer();
+        texcoordlist = simpleInputMesh->getTexCoordList()->getRAMRepresentation()->getDataContainer();
+        colorList = simpleInputMesh->getColorList()->getRAMRepresentation()->getDataContainer();
+        triangleList = simpleInputMesh->getIndexList()->getRAMRepresentation()->getDataContainer();
         indexAttrInfo = simpleInputMesh->getIndexAttributesInfo(0).ct;
     } else {
         // TODO do clipping in all the index list now we only consider the first one 
         const BasicMesh* basicInputMesh = dynamic_cast<const BasicMesh*>(in);
         if(basicInputMesh) {
-            vertexList = basicInputMesh->getVertices()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
-            texcoordlist = basicInputMesh->getTexCoords()->getRepresentation<TexCoord3dBufferRAM>()->getDataContainer();
-            colorList = basicInputMesh->getColors()->getRepresentation<ColorBufferRAM>()->getDataContainer();
-            triangleList = basicInputMesh->getIndexBuffers()[0].second->getRepresentation<IndexBufferRAM>()->getDataContainer();
+            vertexList = basicInputMesh->getVertices()->getRAMRepresentation()->getDataContainer();
+            texcoordlist = basicInputMesh->getTexCoords()->getRAMRepresentation()->getDataContainer();
+            colorList = basicInputMesh->getColors()->getRAMRepresentation()->getDataContainer();
+            triangleList = basicInputMesh->getIndexBuffers()[0].second->getRAMRepresentation()->getDataContainer();
             indexAttrInfo = basicInputMesh->getIndexBuffers()[0].first.ct;
         } else {
             LogError("Unsupported mesh type, only simeple and basic meshes are supported");
@@ -750,8 +750,8 @@ Mesh* MeshClipping::clipGeometryAgainstPlane(const Mesh* in, Plane plane) {
         -   Use correct outputEdgeList to create a correctly sorted triangle strip list
     */
     //LogInfo("Fetching vertex- and triangle lists.");
-    const std::vector<vec3>* inputList = inputMesh->getVertexList()->getRepresentation<Position3dBufferRAM>()->getDataContainer();
-    const std::vector<unsigned int>* triangleList = inputMesh->getIndexList()->getRepresentation<IndexBufferRAM>()->getDataContainer();
+    const std::vector<vec3>* inputList = inputMesh->getVertexList()->getRAMRepresentation()->getDataContainer();
+    const std::vector<unsigned int>* triangleList = inputMesh->getIndexList()->getRAMRepresentation()->getDataContainer();
     std::vector<EdgeIndex> edgeList = triangleListtoEdgeList(triangleList);
     std::vector<unsigned int> clippedVertInd;
     // For each clip plane, do:

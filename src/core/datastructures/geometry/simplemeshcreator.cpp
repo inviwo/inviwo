@@ -158,7 +158,7 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
     spheremesh->setModelMatrix(mat4(1.f));
 
     // Create Vertices
-    auto normals = std::make_shared<NormalBufferRAM>((numLoops + 1) * (segmentsPerLoop + 1));
+    auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1), BufferType::NORMAL_ATTRIB);
     auto normalBuffer = std::make_shared<NormalBuffer>(normals);
 
     unsigned int pointsPerLine = segmentsPerLoop + 1;
@@ -187,7 +187,7 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
     // compute indices
     spheremesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
     for (unsigned int y = 0; y < numLoops; ++y) {
-        auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
+        auto indices = std::make_shared<UInt32BufferRAM>(pointsPerLine * 2, BufferType::INDEX_ATTRIB);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
 
         unsigned int offset = y * pointsPerLine;
@@ -215,7 +215,7 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
     spheremesh->setModelMatrix(mat4(1.f));
 
     // Create Vertices
-    auto normals = std::make_shared<NormalBufferRAM>((numLoops + 1) * (segmentsPerLoop + 1));
+    auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1),BufferType::NORMAL_ATTRIB);
     auto normalBuffer = std::make_shared<NormalBuffer>(normals);
 
     unsigned int pointsPerLine = segmentsPerLoop + 1;
@@ -246,7 +246,7 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
     // compute indices
     spheremesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
     for (unsigned int y = 0; y < numLoops; ++y) {
-        auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
+        auto indices = std::make_shared<UInt32BufferRAM>(pointsPerLine * 2, BufferType::INDEX_ATTRIB);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
 
         unsigned int offset = y * pointsPerLine;
@@ -281,7 +281,7 @@ SimpleMesh* SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 extent, unsigned i
 
     const glm::vec4 color(0.6f, 0.6f, 0.6f, 1.0f);
 
-    auto normals = std::make_shared<NormalBufferRAM>((meshResX + 1) * (meshResY + 1));
+    auto normals = std::make_shared<Vec3BufferRAM>((meshResX + 1) * (meshResY + 1), BufferType::NORMAL_ATTRIB);
     auto normalBuffer = std::make_shared<NormalBuffer>(normals);
 
     for (unsigned int y = 0; y <= meshResY; ++y) {
@@ -296,7 +296,7 @@ SimpleMesh* SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 extent, unsigned i
     // compute indices
     plane->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
     for (unsigned int y = 0; y < meshResY; ++y) {
-        auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
+        auto indices = std::make_shared<UInt32BufferRAM>(pointsPerLine * 2, BufferType::INDEX_ATTRIB);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
 
         unsigned int offset = y * pointsPerLine;

@@ -257,8 +257,8 @@ void MeshRenderProcessorGL::centerViewOnGeometry() {
         vec3 maxPos(std::numeric_limits<float>::lowest());
         for (auto buff : mesh->getBuffers()) {
             if (buff->getBufferType() == BufferType::POSITION_ATTRIB) {
-                const Position3dBufferRAM* posbuff =
-                    dynamic_cast<const Position3dBufferRAM*>(buff->getRepresentation<BufferRAM>());
+                const Vec3BufferRAM* posbuff =
+                    dynamic_cast<const Vec3BufferRAM*>(buff->getRepresentation<BufferRAM>());
 
                 if (posbuff) {
                     const std::vector<vec3>* pos = posbuff->getDataContainer();
@@ -283,7 +283,7 @@ void MeshRenderProcessorGL::setNearFarPlane() {
 
     auto geom = inport_.getData();
 
-    const Position3dBufferRAM* posBuffer = dynamic_cast<const Position3dBufferRAM*>(
+    const Vec3BufferRAM* posBuffer = dynamic_cast<const Vec3BufferRAM*>(
         geom->getAttributes(0)->getRepresentation<BufferRAM>());
 
     if (posBuffer == nullptr) {

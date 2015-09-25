@@ -62,7 +62,7 @@ double getValue(const T *src, size3_t pos, size3_t dim, double iso) {
     return -(v - iso);
 }
 
-void evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
+void evaluateTetra(K3DTree<size_t, float> &vertexTree, UInt32BufferRAM *indexBuffer,
                    std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &p0,
                    const double &v0, const glm::vec3 &p1, const double &v1, const glm::vec3 &p2,
                    const double &v2, const glm::vec3 &p3, const double &v3);
@@ -70,7 +70,7 @@ void evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuff
 size_t addVertex(K3DTree<size_t, float> &vertexTree, std::vector<vec3> &positions,
                  std::vector<vec3> &normals, const vec3 pos);
 
-void addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
+void addTriangle(K3DTree<size_t, float> &vertexTree, UInt32BufferRAM *indexBuffer,
                  std::vector<vec3> &positions, std::vector<vec3> &normals, const glm::vec3 &a,
                  const glm::vec3 &b, const glm::vec3 &c);
 

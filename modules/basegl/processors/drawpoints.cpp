@@ -94,13 +94,13 @@ void DrawPoints::process() {
 }
 
 void DrawPoints::addPoint(vec2 p) {
-    auto buff = static_cast<Position2dBufferRAM*>(
+    auto buff = static_cast<Vec2BufferRAM*>(
                     points_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
     buff->add(p);
 }
 
 void DrawPoints::clearPoints() {
-    auto buff = static_cast<Position2dBufferRAM*>(
+    auto buff = static_cast<Vec2BufferRAM*>(
         points_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
 
     buff->clear();

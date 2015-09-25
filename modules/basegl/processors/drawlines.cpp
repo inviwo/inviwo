@@ -105,13 +105,13 @@ void DrawLines::process() {
 }
 
 void DrawLines::addPoint(vec2 p) {
-    auto buff = static_cast<Position2dBufferRAM*>(
+    auto buff = static_cast<Vec2BufferRAM*>(
         lines_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
     buff->add(p);
 }
 
 void DrawLines::clearLines() {
-    auto buff = static_cast<Position2dBufferRAM*>(
+    auto buff = static_cast<Vec2BufferRAM*>(
         lines_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
 
     buff->clear();

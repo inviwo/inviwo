@@ -38,12 +38,11 @@ namespace inviwo {
 template <typename T>
 class BufferRAMPrecision : public BufferRAM {
 public:
-    BufferRAMPrecision(size_t size = 0, const DataFormatBase* format = DataFormat<T>::get(),
-                       BufferType type = BufferType::POSITION_ATTRIB,
-                       BufferUsage usage = BufferUsage::STATIC);
+    BufferRAMPrecision(BufferType type, BufferUsage usage = BufferUsage::STATIC);
 
-    BufferRAMPrecision(std::vector<T> data, const DataFormatBase* format = DataFormat<T>::get(),
-                       BufferType type = BufferType::POSITION_ATTRIB,
+    BufferRAMPrecision(size_t size, BufferType type, BufferUsage usage = BufferUsage::STATIC);
+
+    BufferRAMPrecision(std::vector<T> data, BufferType type,
                        BufferUsage usage = BufferUsage::STATIC);
 
     BufferRAMPrecision(const BufferRAMPrecision<T>& rhs);
@@ -97,14 +96,17 @@ T& inviwo::BufferRAMPrecision<T>::operator[](size_t i) {
 }
 
 template <typename T>
-BufferRAMPrecision<T>::BufferRAMPrecision(size_t size, const DataFormatBase* format,
-                                          BufferType type, BufferUsage usage)
-    : BufferRAM(format, type, usage), data_(new std::vector<T>(size)) {}
+BufferRAMPrecision<T>::BufferRAMPrecision(BufferType type, BufferUsage usage)
+    : BufferRAMPrecision(0, type, usage) {}
 
 template <typename T>
-inviwo::BufferRAMPrecision<T>::BufferRAMPrecision(std::vector<T> data, const DataFormatBase* format,
-                                                  BufferType type, BufferUsage usage)
-    : BufferRAM(format, type, usage), data_(util::make_unique<std::vector<T>>(std::move(data))) {}
+BufferRAMPrecision<T>::BufferRAMPrecision(size_t size, BufferType type, BufferUsage usage)
+    : BufferRAM(DataFormat<T>::get(), type, usage), data_(new std::vector<T>(size)) {}
+
+template <typename T>
+inviwo::BufferRAMPrecision<T>::BufferRAMPrecision(std::vector<T> data, BufferType type, BufferUsage usage)
+    : BufferRAM(DataFormat<T>::get(), type, usage)
+    , data_(util::make_unique<std::vector<T>>(std::move(data))) {}
 
 template <typename T>
 BufferRAMPrecision<T>::BufferRAMPrecision(const BufferRAMPrecision<T>& rhs)
@@ -231,14 +233,11 @@ void BufferRAMPrecision<T>::clear() {
     data_->clear();
 }
 
-typedef BufferRAMPrecision<vec4> ColorBufferRAM;
-typedef BufferRAMPrecision<float> CurvatureBufferRAM;
-typedef BufferRAMPrecision<std::uint32_t> IndexBufferRAM;
-typedef BufferRAMPrecision<vec2> Position2dBufferRAM;
-typedef BufferRAMPrecision<vec2> TexCoord2dBufferRAM;
-typedef BufferRAMPrecision<vec3> Position3dBufferRAM;
-typedef BufferRAMPrecision<vec3> TexCoord3dBufferRAM;
-typedef BufferRAMPrecision<vec3> NormalBufferRAM;
+typedef BufferRAMPrecision<float> FloatBufferRAM;
+typedef BufferRAMPrecision<std::uint32_t> UInt32BufferRAM;
+typedef BufferRAMPrecision<vec2> Vec2BufferRAM;
+typedef BufferRAMPrecision<vec3> Vec3BufferRAM;
+typedef BufferRAMPrecision<vec4> Vec4BufferRAM;
 
 }  // namespace
 

@@ -43,17 +43,17 @@ SimpleMesh* SimpleMesh::clone() const { return new SimpleMesh(*this); }
 
 unsigned int SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
     auto posBuffer =
-        static_cast<Position3dBufferRAM*>(attributes_[0]->getEditableRepresentation<BufferRAM>());
+        static_cast<Vec3BufferRAM*>(attributes_[0]->getEditableRepresentation<BufferRAM>());
     posBuffer->add(pos);
-    static_cast<TexCoord3dBufferRAM*>(attributes_[1]->getEditableRepresentation<BufferRAM>())
+    static_cast<Vec3BufferRAM*>(attributes_[1]->getEditableRepresentation<BufferRAM>())
         ->add(texCoord);
-    static_cast<ColorBufferRAM*>(attributes_[2]->getEditableRepresentation<BufferRAM>())
+    static_cast<Vec4BufferRAM*>(attributes_[2]->getEditableRepresentation<BufferRAM>())
         ->add(color);
     return static_cast<unsigned int>(posBuffer->getSize() - 1);
 }
 
 void SimpleMesh::addIndex(unsigned int idx) {
-    static_cast<IndexBufferRAM*>(indexAttributes_[0].second->getEditableRepresentation<BufferRAM>())
+    static_cast<UInt32BufferRAM*>(indexAttributes_[0].second->getEditableRepresentation<BufferRAM>())
         ->add(idx);
 }
 

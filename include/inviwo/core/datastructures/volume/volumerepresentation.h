@@ -38,9 +38,6 @@ namespace inviwo {
 class Volume;
 
 class IVW_CORE_API VolumeRepresentation : public DataRepresentation {
-
-    friend class Volume;
-
 public:
     VolumeRepresentation();
     VolumeRepresentation(const DataFormatBase* format);

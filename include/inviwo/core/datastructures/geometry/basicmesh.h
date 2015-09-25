@@ -51,7 +51,7 @@ public:
     void setVertexNormal(size_t index, vec3 normal);
     void setVertexTexCoord(size_t index, vec3 texCoord);
     void setVertexColor(size_t index, vec4 color);
-    IndexBufferRAM* addIndexBuffer(DrawType dt, ConnectivityType ct);
+    UInt32BufferRAM* addIndexBuffer(DrawType dt, ConnectivityType ct);
 
     const Position3dBuffer* getVertices() const;
     const TexCoord3dBuffer* getTexCoords() const;
@@ -110,15 +110,15 @@ protected:
     static vec3 tospherical(const vec2& v);
 
     
-    const Position3dBufferRAM* getVerticesRAM() const;
-    const TexCoord3dBufferRAM* getTexCoordsRAM() const;
-    const ColorBufferRAM* getColorsRAM() const;
-    const NormalBufferRAM* getNormalsRAM() const;
+    const Vec3BufferRAM* getVerticesRAM() const;
+    const Vec3BufferRAM* getTexCoordsRAM() const;
+    const Vec4BufferRAM* getColorsRAM() const;
+    const Vec3BufferRAM* getNormalsRAM() const;
 
-    Position3dBufferRAM* getEditableVerticesRAM();
-    TexCoord3dBufferRAM* getEditableTexCoordsRAM();
-    ColorBufferRAM* getEditableColorsRAM();
-    NormalBufferRAM* getEditableNormalsRAM();
+    Vec3BufferRAM* getEditableVerticesRAM();
+    Vec3BufferRAM* getEditableTexCoordsRAM();
+    Vec4BufferRAM* getEditableColorsRAM();
+    Vec3BufferRAM* getEditableNormalsRAM();
 
 };
 

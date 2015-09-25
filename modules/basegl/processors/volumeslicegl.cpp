@@ -466,7 +466,7 @@ void VolumeSliceGL::updateIndicatorMesh() {
         meshCrossHair_ = new Mesh;
         meshCrossHair_->setModelMatrix(mat4(1.0f));
         // add two vertical and two horizontal lines with a gap around the selected position
-        auto vertices = std::make_shared<Position2dBufferRAM>();
+        auto vertices = std::make_shared<Vec2BufferRAM>(BufferType::POSITION_ATTRIB);
         auto posBuf = std::make_shared<Position2dBuffer>(vertices);
 
         // horizontal
@@ -480,11 +480,11 @@ void VolumeSliceGL::updateIndicatorMesh() {
         vertices->add(vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
         vertices->add(vec2(pos.x, 1.5f) * 2.0f - 1.0f);
 
-        auto colors = std::make_shared<ColorBufferRAM>();
+        auto colors = std::make_shared<Vec4BufferRAM>(BufferType::COLOR_ATTRIB);
         auto colorBuf = std::make_shared<ColorBuffer>(colors);
 
         // indices for cross hair lines
-        auto indices = std::make_shared<IndexBufferRAM>();
+        auto indices = std::make_shared<UInt32BufferRAM>(BufferType::INDEX_ATTRIB);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
         for (unsigned int i = 0; i < 8; ++i) {
             colors->add(color);
@@ -504,11 +504,11 @@ void VolumeSliceGL::updateIndicatorMesh() {
         meshBox_ = new Mesh;
         meshBox_->setModelMatrix(mat4(1.0f));
 
-        auto vertices = std::make_shared<Position2dBufferRAM>();
+        auto vertices = std::make_shared<Vec2BufferRAM>(BufferType::POSITION_ATTRIB);
         auto posBuf = std::make_shared<Position2dBuffer>(vertices);
-        auto colors = std::make_shared<ColorBufferRAM>();
+        auto colors = std::make_shared<Vec4BufferRAM>(BufferType::COLOR_ATTRIB);
         auto colorBuf = std::make_shared<ColorBuffer>(colors);
-        auto indices = std::make_shared<IndexBufferRAM>();
+        auto indices = std::make_shared<UInt32BufferRAM>(BufferType::INDEX_ATTRIB);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
         // box
         vertices->add(vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);

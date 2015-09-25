@@ -166,21 +166,21 @@ typedef BufferPrecision<uvec4, BufferType::POSITION_ATTRIB> BufferVec4UInt32;
 
 namespace util {
 inline std::shared_ptr<IndexBuffer> makeIndexBuffer(std::initializer_list<std::uint32_t> data) {
-    auto indexBufferRAM =
-        std::make_shared<IndexBufferRAM>(std::vector<std::uint32_t>(std::move(data)));
+    auto indexBufferRAM = std::make_shared<UInt32BufferRAM>(
+        std::vector<std::uint32_t>(std::move(data)), BufferType::INDEX_ATTRIB);
     auto indices = std::make_shared<IndexBuffer>(indexBufferRAM);
     return indices;
 }
 
-template <typename T = vec3, BufferType type = BufferType::POSITION_ATTRIB,
-          BufferUsage usage = BufferUsage::STATIC>
-std::shared_ptr<Buffer> makeBuffer(std::initializer_list<T> data) {
-    auto repr = std::make_shared<BufferRAMPrecision<T>>(std::vector<T>(std::move(data)),
-                                                        DataFormat<T>::get(), type, usage);
-    auto buffer = std::make_shared<Buffer>(repr);
+template <typename T = vec3, BufferType A = BufferType::POSITION_ATTRIB,
+          BufferUsage U = BufferUsage::STATIC>
+    std::shared_ptr<BufferPrecision<T, A>> makeBuffer(std::initializer_list<T> data) {
+    auto repr = std::make_shared<BufferRAMPrecision<T>>(std::vector<T>(std::move(data)), A, U);
+    auto buffer = std::make_shared<BufferPrecision<T, A>>(repr);
     return buffer;
 }
-}
+
+}  // namespace
 
 }  // namespace
 

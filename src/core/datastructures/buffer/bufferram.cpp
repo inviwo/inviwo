@@ -40,6 +40,6 @@ std::type_index BufferRAM::getTypeIndex() const { return std::type_index(typeid(
 std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
                                            BufferType type, BufferUsage usage) {
     BufferRamDispatcher disp;
-    return format->dispatch(disp, size, format, type, usage);
+    return format->dispatch(disp, size, type, usage);
 }
 }

@@ -38,7 +38,7 @@ namespace inviwo {
 
 VolumeCLBase::VolumeCLBase() : volumeStruct_(sizeof(VolumeParameters), DataUINT8::get()) {
     volumeStruct_.addRepresentation(
-        std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters), DataUINT8::get()));
+        std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters), BufferType::POSITION_ATTRIB));
     ivwAssert(volumeStruct_.getSize() == 512,
               "VolumeParameters must have a size that is power of two, currently "
                   << volumeStruct_.getSize())
@@ -47,7 +47,7 @@ VolumeCLBase::VolumeCLBase() : volumeStruct_(sizeof(VolumeParameters), DataUINT8
 VolumeCLBase::VolumeCLBase(const VolumeCLBase& rhs)
     : volumeStruct_(sizeof(VolumeParameters), DataUINT8::get()) {
     volumeStruct_.addRepresentation(
-        std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters), DataUINT8::get()));
+        std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters), BufferType::POSITION_ATTRIB));
 }
 
 VolumeCLBase::~VolumeCLBase() {}
