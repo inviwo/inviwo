@@ -35,7 +35,6 @@
 
 namespace inviwo {
 
-struct CanDrawMesh;
 class MeshDrawerFactory;
 
 /** \class MeshDrawer
@@ -73,11 +72,10 @@ class MeshDrawerFactory;
  * @see Module
  */
 class IVW_CORE_API MeshDrawer {
-    friend struct CanDrawMesh;       // Access to canRender
     friend class MeshDrawerFactory;  // Access to create
 public:
-    MeshDrawer(){};
-    virtual ~MeshDrawer(){};
+    MeshDrawer() = default;
+    virtual ~MeshDrawer() = default;
 
     /**
      * Draw the geometry the renderer was created for.

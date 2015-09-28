@@ -58,17 +58,17 @@ size_t BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
     return getVertices()->getSize() - 1;
 }
 
-void BasicMesh::addVertices(std::initializer_list<std::tuple<vec3, vec3, vec3, vec4>> data) {
+void BasicMesh::addVertices(std::initializer_list<Vertex> data) {
     auto v = getEditableVerticesRAM();
     auto t = getEditableTexCoordsRAM();
     auto c = getEditableColorsRAM();
     auto n = getEditableNormalsRAM();
 
     for (const auto& elem : data) {
-        v->add(std::get<0>(elem));
-        n->add(std::get<1>(elem));
-        t->add(std::get<2>(elem));
-        c->add(std::get<3>(elem));
+        v->add(elem.pos);
+        n->add(elem.normal);
+        t->add(elem.tex);
+        c->add(elem.color);
     }
 }
 

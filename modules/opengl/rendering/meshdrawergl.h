@@ -49,7 +49,7 @@ public:
     MeshDrawerGL(MeshDrawerGL&& other); // move constructor
     virtual ~MeshDrawerGL();
 
-    virtual void draw();
+    virtual void draw() override;
     virtual void draw(DrawType dt);
 
     const MeshGL* getMeshGL() const;
@@ -57,23 +57,25 @@ public:
     GLenum getDefaultDrawMode();
     GLenum getDrawMode(DrawType, ConnectivityType);
 
-    virtual const Mesh* getGeometry() const { return meshToDraw_; }
+    virtual const Mesh* getGeometry() const override { return meshToDraw_; }
 
 protected:
-    virtual MeshDrawer* create(const Mesh* geom) const {
+    virtual MeshDrawer* create(const Mesh* geom) const override {
         return new MeshDrawerGL(geom);
     }
-    virtual bool canDraw(const Mesh* geom) const {
+    virtual bool canDraw(const Mesh* geom) const override {
         return geom != nullptr;
     }
 
     virtual void initialize(Mesh::AttributesInfo = Mesh::AttributesInfo());
     void initializeIndexBuffer(const Buffer* indexBuffer, Mesh::AttributesInfo ai);
+
     void drawArray(DrawType) const;
     void drawElements(DrawType) const;
     void emptyFunc(DrawType dt) const {};
 
-    typedef void (MeshDrawerGL::*DrawFunc)(DrawType) const;
+    // A member function pointer to Either drawArrays, drawElement or emptyFunc
+    using DrawFunc = void (MeshDrawerGL::*)(DrawType) const;
     struct DrawMethod {
         DrawFunc drawFunc;
         GLenum drawMode;

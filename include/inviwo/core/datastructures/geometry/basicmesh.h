@@ -49,7 +49,13 @@ public:
     size_t addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
     
     // add a list of verties: {{pos, normal, tex, color}, ...}
-    void addVertices(std::initializer_list<std::tuple<vec3, vec3, vec3, vec4>> data);
+    struct Vertex {
+        vec3 pos;
+        vec3 normal;
+        vec3 tex;
+        vec4 color;
+    };
+    void addVertices(std::initializer_list<Vertex> data);
     
     void setVertex(size_t index, vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
     void setVertexPosition(size_t index, vec3 pos);
