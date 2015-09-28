@@ -63,10 +63,8 @@ void BufferObjectArray::initialize() {
     }
 #endif
 
-    attachedBuffers_.reserve(maxVertexAttribSize_);
-    for (int i = 0; i < maxVertexAttribSize_; ++i) {
-        attachedBuffers_.push_back(nullptr);
-    }
+    if (maxVertexAttribSize_ > 0) attachedBuffers_.resize(maxVertexAttribSize_);
+    std::fill(attachedBuffers_.begin(), attachedBuffers_.end(), nullptr);
 }
 
 void BufferObjectArray::deinitialize() { glDeleteVertexArrays(1, &id_); }
@@ -92,10 +90,11 @@ int BufferObjectArray::attachBufferObject(const BufferObject* bo) {
         return -1;
     }
 
-    if (!attachedBuffers_[static_cast<size_t>(bo->getBufferType())]) {
-        pointToObject(bo, static_cast<GLuint>(bo->getBufferType()));
-        attachedBuffers_[static_cast<size_t>(bo->getBufferType())] = bo;
-        return static_cast<int>(bo->getBufferType());
+    const auto bt = static_cast<size_t>(bo->getBufferType());
+    if (!attachedBuffers_[bt]) {
+        pointToObject(bo, static_cast<GLuint>(bt));
+        attachedBuffers_[bt] = bo;
+        return static_cast<int>(bt);
     } else {
         auto it = std::find(
             attachedBuffers_.begin() + static_cast<size_t>(BufferType::NUMBER_OF_BUFFER_TYPES),

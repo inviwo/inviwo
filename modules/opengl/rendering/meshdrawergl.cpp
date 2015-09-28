@@ -29,6 +29,7 @@
 
 #include <modules/opengl/buffer/elementbuffergl.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -61,11 +62,10 @@ MeshDrawerGL& MeshDrawerGL::operator=(const MeshDrawerGL& rhs) {
     return *this;
 }
 
-MeshDrawerGL::~MeshDrawerGL() {}
-
 void MeshDrawerGL::draw() {
-    const MeshGL* meshGL = getMeshGL();
-    meshGL->enable();
+    auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
+    utilgl::Enable<MeshGL> enable(meshGL);
+    
     // If default is indices, render all index lists
     if (!drawMethods_[0].elementBufferList.empty()) {
         for (int i = 1; i < static_cast<int>(DrawType::NUMBER_OF_DRAW_TYPES); i++) {
@@ -76,19 +76,78 @@ void MeshDrawerGL::draw() {
         // Render just default one
         (this->*drawMethods_[0].drawFunc)(DrawType::NOT_SPECIFIED);
     }
-    meshGL->disable();
 }
 
 void MeshDrawerGL::draw(DrawType dt) {
-    const MeshGL* meshGL = getMeshGL();
-    meshGL->enable();
+    auto meshGL = meshToDraw_->getRepresentation<MeshGL>();
+    utilgl::Enable<MeshGL> enable(meshGL);
+    
     (this->*drawMethods_[static_cast<size_t>(dt)].drawFunc)(dt);
-    meshGL->disable();
 }
 
-const MeshGL* MeshDrawerGL::getMeshGL() const { return meshToDraw_->getRepresentation<MeshGL>(); }
-
 GLenum MeshDrawerGL::getDefaultDrawMode() { return drawMethods_[0].drawMode; }
+
+void MeshDrawerGL::drawArray(DrawType dtenum) const {
+    const auto dt = static_cast<size_t>(dtenum);
+    glDrawArrays(drawMethods_[dt].drawMode, 0,
+                 static_cast<GLsizei>(meshToDraw_->getAttributes(0)->getSize()));
+}
+
+void MeshDrawerGL::drawElements(DrawType dtenum) const {
+    const auto dt = static_cast<size_t>(dtenum);
+    for (auto elem : drawMethods_[dt].elementBufferList) {
+        auto elementBufferGL = elem->getRepresentation<ElementBufferGL>();
+        elementBufferGL->bind();
+        glDrawElements(drawMethods_[dt].drawMode, static_cast<GLsizei>(elementBufferGL->getSize()),
+                       elementBufferGL->getFormatType(), nullptr);
+    }
+}
+
+void MeshDrawerGL::initialize(Mesh::AttributesInfo ai) {
+    const auto dt = static_cast<size_t>(ai.dt);
+    const auto ns = static_cast<size_t>(DrawType::NOT_SPECIFIED);
+    
+    drawMethods_[ns].drawFunc = &MeshDrawerGL::emptyFunc;
+    drawMethods_[ns].drawMode = getDrawMode(ai.dt, ai.ct);
+    drawMethods_[ns].elementBufferList.clear();
+
+    for (size_t i = 1; i < static_cast<size_t>(DrawType::NUMBER_OF_DRAW_TYPES); i++) {
+        drawMethods_[i].drawFunc = drawMethods_[ns].drawFunc;
+        drawMethods_[i].drawMode = drawMethods_[ns].drawMode;
+        drawMethods_[i].elementBufferList.clear();
+    }
+
+    drawMethods_[dt].drawFunc = &MeshDrawerGL::drawArray;
+    drawMethods_[ns].drawFunc = &MeshDrawerGL::drawArray;
+
+    for (size_t i = 0; i < meshToDraw_->getNumberOfIndicies(); ++i) {
+        if (meshToDraw_->getIndicies(i)->getSize() > 0)
+            initializeIndexBuffer(meshToDraw_->getIndicies(i),
+                                  meshToDraw_->getIndexAttributesInfo(i));
+    }
+}
+
+void MeshDrawerGL::initializeIndexBuffer(const Buffer* indexBuffer, Mesh::AttributesInfo ai) {
+    const auto dt = static_cast<int>(ai.dt);
+    // check draw mode if there exists another indexBuffer
+    if (drawMethods_[dt].elementBufferList.size() != 0) {
+        if (getDrawMode(ai.dt, ai.ct) != drawMethods_[dt].drawMode) {
+            LogWarn("draw mode mismatch (element buffer " << dt << ")");
+        }
+    } else {
+        drawMethods_[dt].drawFunc = &MeshDrawerGL::drawElements;
+        drawMethods_[dt].drawMode = getDrawMode(ai.dt, ai.ct);
+    }
+    drawMethods_[dt].elementBufferList.push_back(indexBuffer);
+
+    // Specify first element buffer as default rendering method
+    const auto ns = static_cast<int>(DrawType::NOT_SPECIFIED);
+    if (drawMethods_[ns].elementBufferList.size() == 0) {
+        drawMethods_[ns].drawFunc = drawMethods_[dt].drawFunc;
+        drawMethods_[ns].drawMode = drawMethods_[dt].drawMode;
+        drawMethods_[ns].elementBufferList.push_back(drawMethods_[dt].elementBufferList.at(0));
+    }
+}
 
 GLenum MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType ct) {
     switch (dt) {
@@ -143,65 +202,6 @@ GLenum MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType ct) {
         case DrawType::NUMBER_OF_DRAW_TYPES:
         default:
             return GL_POINTS;
-    }
-}
-
-void MeshDrawerGL::drawArray(DrawType dt) const {
-    glDrawArrays(drawMethods_[static_cast<size_t>(dt)].drawMode, 0,
-                 static_cast<GLsizei>(meshToDraw_->getAttributes(0)->getSize()));
-}
-
-void MeshDrawerGL::drawElements(DrawType dt) const {
-    for (auto elem : drawMethods_[static_cast<size_t>(dt)].elementBufferList) {
-        const ElementBufferGL* elementBufferGL = elem->getRepresentation<ElementBufferGL>();
-        elementBufferGL->bind();
-        glDrawElements(drawMethods_[static_cast<size_t>(dt)].drawMode,
-                       static_cast<GLsizei>(elementBufferGL->getSize()),
-                       elementBufferGL->getFormatType(), nullptr);
-    }
-}
-
-void MeshDrawerGL::initialize(Mesh::AttributesInfo ai) {
-    drawMethods_[0].drawFunc = &MeshDrawerGL::emptyFunc;
-    drawMethods_[0].drawMode = getDrawMode(ai.dt, ai.ct);
-    drawMethods_[0].elementBufferList.clear();
-
-    for (int i = 1; i < static_cast<int>(DrawType::NUMBER_OF_DRAW_TYPES); i++) {
-        drawMethods_[i].drawFunc = drawMethods_[0].drawFunc;
-        drawMethods_[i].drawMode = drawMethods_[0].drawMode;
-        drawMethods_[i].elementBufferList.clear();
-    }
-
-    drawMethods_[static_cast<int>(ai.dt)].drawFunc = &MeshDrawerGL::drawArray;
-    drawMethods_[static_cast<int>(DrawType::NOT_SPECIFIED)].drawFunc = &MeshDrawerGL::drawArray;
-
-    for (size_t i = 0; i < meshToDraw_->getNumberOfIndicies(); ++i) {
-        if (meshToDraw_->getIndicies(i)->getSize() > 0)
-            initializeIndexBuffer(meshToDraw_->getIndicies(i),
-                                  meshToDraw_->getIndexAttributesInfo(i));
-    }
-}
-
-void MeshDrawerGL::initializeIndexBuffer(const Buffer* indexBuffer, Mesh::AttributesInfo ai) {
-    // check draw mode if there exists another indexBuffer
-    if (drawMethods_[static_cast<int>(ai.dt)].elementBufferList.size() != 0) {
-        if (getDrawMode(ai.dt, ai.ct) != drawMethods_[static_cast<int>(ai.dt)].drawMode) {
-            LogWarn("draw mode mismatch (element buffer " << static_cast<int>(ai.dt) << ")");
-        }
-    } else {
-        drawMethods_[static_cast<int>(ai.dt)].drawFunc = &MeshDrawerGL::drawElements;
-        drawMethods_[static_cast<int>(ai.dt)].drawMode = getDrawMode(ai.dt, ai.ct);
-    }
-    drawMethods_[static_cast<int>(ai.dt)].elementBufferList.push_back(indexBuffer);
-
-    // Specify first element buffer as default rendering method
-    if (drawMethods_[static_cast<int>(DrawType::NOT_SPECIFIED)].elementBufferList.size() == 0) {
-        drawMethods_[static_cast<int>(DrawType::NOT_SPECIFIED)].drawFunc =
-            drawMethods_[static_cast<int>(ai.dt)].drawFunc;
-        drawMethods_[static_cast<int>(DrawType::NOT_SPECIFIED)].drawMode =
-            drawMethods_[static_cast<int>(ai.dt)].drawMode;
-        drawMethods_[static_cast<int>(DrawType::NOT_SPECIFIED)].elementBufferList.push_back(
-            drawMethods_[static_cast<int>(ai.dt)].elementBufferList.at(0));
     }
 }
 

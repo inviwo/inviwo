@@ -47,7 +47,7 @@ public:
     MeshGL& operator=(const MeshGL& that);
     virtual MeshGL* clone() const override;
   
-    virtual ~MeshGL();
+    virtual ~MeshGL() = default;
 
     void enable() const;
     void disable() const;
@@ -64,7 +64,7 @@ protected:
 
 private:
     std::vector<const BufferGL*> attributesGL_;
-    BufferObjectArray* attributesArray_;
+    std::unique_ptr<BufferObjectArray> attributesArray_;
 
 };
 

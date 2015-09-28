@@ -41,20 +41,21 @@ namespace inviwo {
 
 class IVW_MODULE_OPENGL_API BufferGL : public BufferRepresentation {
 public:
-    /** 
+    /**
      * \brief Create a buffer stored on the GPU.
-     * 
+     *
      * @param size_t size Size in bytes.
-     * @param const DataFormatBase * format Data format 
-     * @param BufferType type What kind of data is stored (positions, normals...) ? Will determine location in shader. 
+     * @param const DataFormatBase * format Data format
+     * @param BufferType type What kind of data is stored (positions, normals...) ? Will determine
+     *location in shader.
      * @param BufferUsage usage STATIC if not changing all the time, else DYNAMIC.
      * @param std::shared_ptr<BufferObject> data Will be created if nullptr.
-     * @return  
+     * @return
      */
     BufferGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage,
-        std::shared_ptr<BufferObject> data = std::shared_ptr<BufferObject>(nullptr));
+             std::shared_ptr<BufferObject> data = std::shared_ptr<BufferObject>(nullptr));
     BufferGL(const BufferGL& rhs);
-    virtual ~BufferGL();
+    virtual ~BufferGL() = default;
     virtual BufferGL* clone() const override;
 
     virtual void setSize(size_t size) override;
@@ -78,7 +79,7 @@ public:
 
 protected:
     std::shared_ptr<BufferObject> buffer_;
-    mutable BufferObjectArray* bufferArray_;
+    mutable std::unique_ptr<BufferObjectArray> bufferArray_;
     size_t size_;
 };
 

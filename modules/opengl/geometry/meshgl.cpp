@@ -54,10 +54,6 @@ MeshGL& MeshGL::operator=(const MeshGL& that) {
     return *this;
 }
 
-MeshGL::~MeshGL() {
-    delete attributesArray_;
-}
-
 MeshGL* MeshGL::clone() const {
     return new MeshGL(*this);
 }

@@ -223,6 +223,18 @@ using DepthMaskState = SimpleState<GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glG
 using LineWidthState = SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth>;
 using PointSizeState = SimpleState<GLfloat, GLfloat, GL_POINT_SIZE, glGetFloatv, glPointSize>;
 
+template <typename T>
+// requiers can enable/disable const
+struct Enable {
+    Enable(const T* item) : item_(item) { item->enable(); }
+    Enable(const Enable&) = delete;
+    Enable& operator=(const Enable&) = delete;
+    ~Enable() { item_->disable(); }
+
+private:
+    const T* item_;
+};
+
 }  // namespace
 
 }  // namespace

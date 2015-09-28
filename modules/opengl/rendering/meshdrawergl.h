@@ -47,12 +47,10 @@ public:
     MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct);
     MeshDrawerGL& operator=(const MeshDrawerGL& other);
     MeshDrawerGL(MeshDrawerGL&& other); // move constructor
-    virtual ~MeshDrawerGL();
+    virtual ~MeshDrawerGL() = default;
 
     virtual void draw() override;
     virtual void draw(DrawType dt);
-
-    const MeshGL* getMeshGL() const;
 
     GLenum getDefaultDrawMode();
     GLenum getDrawMode(DrawType, ConnectivityType);
