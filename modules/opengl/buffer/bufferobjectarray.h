@@ -59,7 +59,7 @@ public:
     *  or if generic location is occupied, add it to the closest available
     *  after the range for generic locations.
     */
-    int attachBufferObject(const BufferObject*);
+    //int attachBufferObject(const BufferObject*);
 
     // Attach buffer object to specific location
     void attachBufferObject(const BufferObject*, GLuint);

@@ -44,8 +44,9 @@ BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
     initialize();
 
     bind();
-    for (const auto& elem : rhs.attachedBuffers_) {
-        attachBufferObject(elem);
+
+    for (auto it = rhs.attachedBuffers_.cbegin(); it != rhs.attachedBuffers_.cend(); it++) {
+        attachBufferObject(*it, static_cast<GLuint>(it - attachedBuffers_.cbegin()));
     }
     unbind();
 }
@@ -84,32 +85,32 @@ void BufferObjectArray::bind() const { glBindVertexArray(id_); }
 
 void BufferObjectArray::unbind() const { glBindVertexArray(0); }
 
-int BufferObjectArray::attachBufferObject(const BufferObject* bo) {
-    if (!bo) {
-        LogError("Error: No valid BufferObject");
-        return -1;
-    }
-
-    const auto bt = static_cast<size_t>(bo->getBufferType());
-    if (!attachedBuffers_[bt]) {
-        pointToObject(bo, static_cast<GLuint>(bt));
-        attachedBuffers_[bt] = bo;
-        return static_cast<int>(bt);
-    } else {
-        auto it = std::find(
-            attachedBuffers_.begin() + static_cast<size_t>(BufferType::NUMBER_OF_BUFFER_TYPES),
-            attachedBuffers_.end(), static_cast<const BufferObject*>(nullptr));
-        if (it != attachedBuffers_.end()) {
-            int location = static_cast<int>(it - attachedBuffers_.begin());
-            pointToObject(bo, location);
-            attachedBuffers_.at(location) = bo;
-            return location;
-        } else {
-            LogError("Error: No available locations for attaching the buffer object.");
-            return -1;
-        }
-    }
-}
+// int BufferObjectArray::attachBufferObject(const BufferObject* bo) {
+//    if (!bo) {
+//        LogError("Error: No valid BufferObject");
+//        return -1;
+//    }
+//
+//    const auto bt = static_cast<size_t>(bo->getBufferType());
+//    if (!attachedBuffers_[bt]) {
+//        pointToObject(bo, static_cast<GLuint>(bt));
+//        attachedBuffers_[bt] = bo;
+//        return static_cast<int>(bt);
+//    } else {
+//        auto it = std::find(
+//            attachedBuffers_.begin() + static_cast<size_t>(BufferType::NUMBER_OF_BUFFER_TYPES),
+//            attachedBuffers_.end(), static_cast<const BufferObject*>(nullptr));
+//        if (it != attachedBuffers_.end()) {
+//            int location = static_cast<int>(it - attachedBuffers_.begin());
+//            pointToObject(bo, location);
+//            attachedBuffers_.at(location) = bo;
+//            return location;
+//        } else {
+//            LogError("Error: No available locations for attaching the buffer object.");
+//            return -1;
+//        }
+//    }
+//}
 
 void BufferObjectArray::attachBufferObject(const BufferObject* bo, GLuint location) {
     if (bo)

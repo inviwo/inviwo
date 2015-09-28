@@ -73,19 +73,21 @@ const BufferGL* MeshGL::getBufferGL(size_t idx) const{
 void MeshGL::update(bool editable) {
     attributesGL_.clear();
     Mesh* owner = this->getOwner();
-    attributesArray_->bind(); // Have to call bind before clear.
+    attributesArray_->bind();  // Have to call bind before clear.
     attributesArray_->clear();
     if (editable) {
         for (auto buf : owner->getBuffers()) {
-            auto bufGL = buf->getEditableRepresentation<BufferGL>();
+            auto bufGL = buf.second->getEditableRepresentation<BufferGL>();
             attributesGL_.push_back(bufGL);
-            attributesArray_->attachBufferObject(bufGL->getBufferObject().get());
+            attributesArray_->attachBufferObject(bufGL->getBufferObject().get(),
+                                                 static_cast<GLuint>(buf.first));
         }
     } else {
         for (auto buf : owner->getBuffers()) {
-            auto bufGL = buf->getRepresentation<BufferGL>();
+            auto bufGL = buf.second->getRepresentation<BufferGL>();
             attributesGL_.push_back(bufGL);
-            attributesArray_->attachBufferObject(bufGL->getBufferObject().get());
+            attributesArray_->attachBufferObject(bufGL->getBufferObject().get(),
+                                                 static_cast<GLuint>(buf.first));
         }
     }
     attributesArray_->unbind();

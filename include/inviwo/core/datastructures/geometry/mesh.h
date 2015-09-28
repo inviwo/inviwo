@@ -48,8 +48,9 @@ public:
         DrawType dt;
         ConnectivityType ct;
     };
-
+    
     using IndexVector = std::vector<std::pair<AttributesInfo, std::shared_ptr<BufferUInt32>>>;
+    using BufferVector = std::vector<std::pair<BufferType, std::shared_ptr<Buffer>>>;
 
     Mesh() = default;
     Mesh(DrawType dt, ConnectivityType ct);
@@ -86,7 +87,7 @@ public:
      */
     void addIndicies(AttributesInfo info, std::shared_ptr<BufferUInt32> ind);
 
-    const std::vector<std::shared_ptr<Buffer>>& getBuffers() const;
+    const BufferVector& getBuffers() const;
     const IndexVector& getIndexBuffers() const;
 
     const Buffer* getAttributes(size_t idx) const;
@@ -109,7 +110,7 @@ public:
     static const std::string CLASS_IDENTIFIER;
 
 protected:
-    std::vector<std::shared_ptr<Buffer>> attributes_;
+    BufferVector attributes_;
     IndexVector indexAttributes_;
     AttributesInfo defaultAttributeInfo_;
 };

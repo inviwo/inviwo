@@ -44,11 +44,11 @@ SimpleMesh* SimpleMesh::clone() const { return new SimpleMesh(*this); }
 
 unsigned int SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
     auto posBuffer =
-        static_cast<Vec3BufferRAM*>(attributes_[0]->getEditableRepresentation<BufferRAM>());
+        static_cast<Vec3BufferRAM*>(attributes_[0].second->getEditableRepresentation<BufferRAM>());
     posBuffer->add(pos);
-    static_cast<Vec3BufferRAM*>(attributes_[1]->getEditableRepresentation<BufferRAM>())
+    static_cast<Vec3BufferRAM*>(attributes_[1].second->getEditableRepresentation<BufferRAM>())
         ->add(texCoord);
-    static_cast<Vec4BufferRAM*>(attributes_[2]->getEditableRepresentation<BufferRAM>())
+    static_cast<Vec4BufferRAM*>(attributes_[2].second->getEditableRepresentation<BufferRAM>())
         ->add(color);
     return static_cast<unsigned int>(posBuffer->getSize() - 1);
 }
@@ -63,15 +63,15 @@ void SimpleMesh::setIndicesInfo(DrawType dt, ConnectivityType ct) {
 }
 
 const BufferVec3Float32* SimpleMesh::getVertexList() const {
-    return static_cast<const BufferVec3Float32*>(attributes_[0].get());
+    return static_cast<const BufferVec3Float32*>(attributes_[0].second.get());
 }
 
 const BufferVec3Float32* SimpleMesh::getTexCoordList() const {
-    return static_cast<const BufferVec3Float32*>(attributes_[1].get());
+    return static_cast<const BufferVec3Float32*>(attributes_[1].second.get());
 }
 
 const BufferVec4Float32* SimpleMesh::getColorList() const {
-    return static_cast<const BufferVec4Float32*>(attributes_[2].get());
+    return static_cast<const BufferVec4Float32*>(attributes_[2].second.get());
 }
 
 const BufferUInt32* SimpleMesh::getIndexList() const { return indexAttributes_[0].second.get(); }

@@ -38,11 +38,12 @@ Mesh::Mesh(DrawType dt, ConnectivityType ct)
 Mesh::Mesh(const Mesh& rhs)
     : DataGroup(rhs), SpatialEntity<3>(rhs), defaultAttributeInfo_(rhs.defaultAttributeInfo_) {
     for (const auto& attribute : rhs.attributes_) {
-        attributes_.push_back(std::shared_ptr<Buffer>(attribute->clone()));
+        attributes_.emplace_back(attribute.first,
+                                 std::shared_ptr<Buffer>(attribute.second->clone()));
     }
     for (const auto& elem : rhs.indexAttributes_) {
-        indexAttributes_.push_back(
-            std::make_pair(elem.first, std::shared_ptr<BufferUInt32>(elem.second->clone())));
+        indexAttributes_.emplace_back(elem.first,
+                                      std::shared_ptr<BufferUInt32>(elem.second->clone()));
     }
 }
 
@@ -50,30 +51,71 @@ Mesh& Mesh::operator=(const Mesh& that) {
     if (this != &that) {
         DataGroup::operator=(that);
         SpatialEntity<3>::operator=(that);
-       
-        std::vector<std::shared_ptr<Buffer>> attributes;
+
+        BufferVector attributes;
         IndexVector indexAttributes;
-               
-        for (const auto& attribute : that.attributes_) {
-            attributes.push_back(std::shared_ptr<Buffer>(attribute->clone()));
+
+        for (const auto& attr : that.attributes_) {
+            attributes.emplace_back(attr.first, std::shared_ptr<Buffer>(attr.second->clone()));
         }
         for (const auto& elem : that.indexAttributes_) {
-            indexAttributes.push_back(
-                std::make_pair(elem.first, std::shared_ptr<BufferUInt32>(elem.second->clone())));
+            indexAttributes.emplace_back(elem.first,
+                                         std::shared_ptr<BufferUInt32>(elem.second->clone()));
         }
 
         std::swap(attributes, attributes_);
         std::swap(indexAttributes, indexAttributes_);
-        defaultAttributeInfo_ = that.defaultAttributeInfo_;    
+        defaultAttributeInfo_ = that.defaultAttributeInfo_;
     }
     return *this;
 }
 
 Mesh* Mesh::clone() const { return new Mesh(*this); }
 
-const std::vector<std::shared_ptr<Buffer>>& Mesh::getBuffers() const { return attributes_; }
+const Mesh::BufferVector& Mesh::getBuffers() const { return attributes_; }
 
 const Mesh::IndexVector& Mesh::getIndexBuffers() const { return indexAttributes_; }
+
+void Mesh::addAttribute(std::shared_ptr<Buffer> att) {
+    attributes_.emplace_back(att->getBufferType(), att);
+}
+
+void Mesh::setAttribute(size_t idx, std::shared_ptr<Buffer> att) {
+    if (idx < attributes_.size()) {
+        attributes_[idx] = std::make_pair(att->getBufferType(), att);
+    }
+}
+
+void Mesh::addIndicies(AttributesInfo info, std::shared_ptr<BufferUInt32> ind) {
+    indexAttributes_.push_back(std::make_pair(info, ind));
+}
+
+const Buffer* Mesh::getAttributes(size_t idx) const { return attributes_[idx].second.get(); }
+
+const Buffer* Mesh::getIndicies(size_t idx) const { return indexAttributes_[idx].second.get(); }
+
+Buffer* Mesh::getAttributes(size_t idx) { return attributes_[idx].second.get(); }
+
+Buffer* Mesh::getIndicies(size_t idx) { return indexAttributes_[idx].second.get(); }
+
+Mesh::AttributesInfo Mesh::getDefaultAttributesInfo() const { return defaultAttributeInfo_; }
+
+Mesh::AttributesInfo Mesh::getIndexAttributesInfo(size_t idx) const {
+    return indexAttributes_[idx].first;
+}
+
+size_t Mesh::getNumberOfAttributes() const { return attributes_.size(); }
+
+size_t Mesh::getNumberOfIndicies() const { return indexAttributes_.size(); }
+
+const SpatialCameraCoordinateTransformer<3>& Mesh::getCoordinateTransformer(
+    const Camera& camera) const {
+    return SpatialEntity<3>::getCoordinateTransformer(camera);
+}
+
+inviwo::uvec3 Mesh::COLOR_CODE = uvec3(188, 188, 101);
+
+const std::string Mesh::CLASS_IDENTIFIER = "org.inviwo.Mesh";
 
 std::string Mesh::getDataInfo() const {
     ToolTipHelper t("Mesh");
@@ -127,7 +169,7 @@ std::string Mesh::getDataInfo() const {
 
     for (const auto& elem : attributes_) {
         std::stringstream ss;
-        switch (elem->getBufferType()) {
+        switch (elem.first) {
             case BufferType::POSITION_ATTRIB:
                 ss << "Positions";
                 break;
@@ -150,7 +192,7 @@ std::string Mesh::getDataInfo() const {
             default:
                 ss << "Type not specified";
         }
-        switch (elem->getBufferUsage()) {
+        switch (elem.second->getBufferUsage()) {
             case BufferUsage::STATIC:
                 ss << " Static";
                 break;
@@ -160,53 +202,12 @@ std::string Mesh::getDataInfo() const {
             default:
                 ss << " Usage not specified";
         }
-        ss << " (" << elem->getSize() << ")";
+        ss << " (" << elem.second->getSize() << ")";
         t.row("Buffer", ss.str());
     }
 
     t.tableBottom();
     return t;
 }
-
-void Mesh::addAttribute(std::shared_ptr<Buffer> att) {
-    attributes_.push_back(att);
-}
-
-void Mesh::setAttribute(size_t idx, std::shared_ptr<Buffer> att) {
-    if (idx < attributes_.size()) {
-        attributes_[idx] = att;
-    }
-}
-
-void Mesh::addIndicies(AttributesInfo info, std::shared_ptr<BufferUInt32> ind) {
-    indexAttributes_.push_back(std::make_pair(info, ind));
-}
-
-const Buffer* Mesh::getAttributes(size_t idx) const { return attributes_[idx].get(); }
-
-const Buffer* Mesh::getIndicies(size_t idx) const { return indexAttributes_[idx].second.get(); }
-
-Buffer* Mesh::getAttributes(size_t idx) { return attributes_[idx].get(); }
-
-Buffer* Mesh::getIndicies(size_t idx) { return indexAttributes_[idx].second.get(); }
-
-Mesh::AttributesInfo Mesh::getDefaultAttributesInfo() const { return defaultAttributeInfo_; }
-
-Mesh::AttributesInfo Mesh::getIndexAttributesInfo(size_t idx) const {
-    return indexAttributes_[idx].first;
-}
-
-size_t Mesh::getNumberOfAttributes() const { return attributes_.size(); }
-
-size_t Mesh::getNumberOfIndicies() const { return indexAttributes_.size(); }
-
-const SpatialCameraCoordinateTransformer<3>& Mesh::getCoordinateTransformer(
-    const Camera& camera) const {
-    return SpatialEntity<3>::getCoordinateTransformer(camera);
-}
-
-inviwo::uvec3 Mesh::COLOR_CODE = uvec3(188, 188, 101);
-
-const std::string Mesh::CLASS_IDENTIFIER = "org.inviwo.Mesh";
 
 }  // namespace

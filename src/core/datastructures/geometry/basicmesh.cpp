@@ -103,7 +103,7 @@ UInt32BufferRAM* BasicMesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
 }
 
 void BasicMesh::append(const BasicMesh* mesh) {
-    size_t size = attributes_[0]->getSize();
+    size_t size = attributes_[0].second->getSize();
 
     getEditableVerticesRAM()->append(mesh->getVerticesRAM()->getDataContainer());
     getEditableTexCoordsRAM()->append(mesh->getTexCoordsRAM()->getDataContainer());
