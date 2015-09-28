@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ELEMENT_BUFFER_GL_H
@@ -41,24 +41,21 @@
 
 namespace inviwo {
 
-
-class IVW_MODULE_OPENGL_API ElementBufferGL: public BufferGL {
-
+class IVW_MODULE_OPENGL_API ElementBufferGL : public BufferGL {
 public:
-    ElementBufferGL(size_t size,
-                    const DataFormatBase* format,
-                    BufferType type,
-                    BufferUsage usage,
-                    std::shared_ptr<ElementBufferObject> data = std::shared_ptr<ElementBufferObject>(nullptr));
-    
-    virtual ~ElementBufferGL();
+    ElementBufferGL(
+        size_t size, const DataFormatBase* format, BufferUsage usage,
+        std::shared_ptr<ElementBufferObject> data = std::shared_ptr<ElementBufferObject>(nullptr));
 
-    std::shared_ptr<ElementBufferObject> getElementBufferObject() const { return std::static_pointer_cast<ElementBufferObject>(buffer_); }
+    virtual ~ElementBufferGL() = default;
+
+    std::shared_ptr<ElementBufferObject> getElementBufferObject() const {
+        return std::static_pointer_cast<ElementBufferObject>(buffer_);
+    }
 
     virtual ElementBufferGL* clone() const;
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_ELEMENT_BUFFER_GL_H
+#endif  // IVW_ELEMENT_BUFFER_GL_H

@@ -175,17 +175,17 @@ vec2 TextRenderer::computeTextSize(const char* text, const vec2& scale) {
 }
 
 void TextRenderer::initMesh() {
-    auto verticesBuffer = util::makeBuffer<vec2, BufferType::POSITION_ATTRIB>(
+    auto verticesBuffer = util::makeBuffer<vec2>(
         {{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
 
-    auto texCoordsBuffer = util::makeBuffer<vec2, BufferType::TEXCOORD_ATTRIB>(
+    auto texCoordsBuffer = util::makeBuffer<vec2>(
         {{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
 
     auto indices = util::makeIndexBuffer({0, 1, 2, 3});
 
     mesh_.reset(new Mesh());
-    mesh_->addAttribute(verticesBuffer);
-    mesh_->addAttribute(texCoordsBuffer);
+    mesh_->addAttribute(BufferType::POSITION_ATTRIB, verticesBuffer);
+    mesh_->addAttribute(BufferType::TEXCOORD_ATTRIB, texCoordsBuffer);
     mesh_->addIndicies(Mesh::AttributesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP), indices);
 
     drawer_.reset(new MeshDrawerGL(mesh_.get()));

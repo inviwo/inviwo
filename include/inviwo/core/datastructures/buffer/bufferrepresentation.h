@@ -51,7 +51,6 @@ enum class BufferUsage { STATIC, DYNAMIC };
 class IVW_CORE_API BufferRepresentation : public DataRepresentation {
 public:
     BufferRepresentation(const DataFormatBase* format = DataFormatBase::get(),
-                         BufferType type = BufferType::POSITION_ATTRIB,
                          BufferUsage usage = BufferUsage::STATIC);
 
     BufferRepresentation(const BufferRepresentation& rhs) = default;
@@ -74,11 +73,9 @@ public:
      */
     virtual size_t getSizeOfElement() const { return getDataFormat()->getSize(); };
 
-    BufferType getBufferType() const { return type_; }
     BufferUsage getBufferUsage() const { return usage_; }
 
 protected:
-    BufferType type_;
     BufferUsage usage_;
 };
 

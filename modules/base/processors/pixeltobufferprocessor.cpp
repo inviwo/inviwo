@@ -50,7 +50,7 @@ PixelToBufferProcessor::PixelToBufferProcessor()
     , channel_("channel", "Channel", 0, 0, 3)
     , clearValues_("clearValues", "Clear collected values", VALID)
     , handleInteractionEvents_("handleEvents", "Enable picking", false)
-    , values_(std::make_shared<PosBuffer>(BufferType::POSITION_ATTRIB)) {
+    , values_(std::make_shared<PosBuffer>()) {
 
     addPort(inport_);
     addPort(pixelValues_);

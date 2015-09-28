@@ -67,7 +67,7 @@ public:
      * @param att Data to be rendered.
      * @param takeOwnership True if the buffer should be deleted by the mesh.
      */
-    void addAttribute(std::shared_ptr<Buffer> att);
+    void addAttribute(BufferType type, std::shared_ptr<Buffer> att);
 
     /**
      * Replaces buffer at index with new buffer and deletes old one if it has ownership of it.
@@ -76,7 +76,7 @@ public:
      * @param att New buffer
      * @param takeOwnership True if new buffer should be owned.
      */
-    void setAttribute(size_t idx, std::shared_ptr<Buffer> att);
+    void setAttribute(size_t idx, BufferType type, std::shared_ptr<Buffer> att);
 
     /**
      * Add index buffer. The indices will be used as look up

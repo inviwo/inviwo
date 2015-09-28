@@ -51,8 +51,8 @@ VolumeRaycasterCL::VolumeRaycasterCL()
     , samplingRate_(2.f)
     , background_(nullptr)
     , defaultBackground_(uvec2(1), DataVec4UINT8::get())
-    , lightStruct_(sizeof(utilcl::LightParameters), DataUINT8::get(), BufferType::POSITION_ATTRIB,
-                   BufferUsage::STATIC, nullptr, CL_MEM_READ_ONLY)
+    , lightStruct_(sizeof(utilcl::LightParameters), DataUINT8::get(), BufferUsage::STATIC, nullptr,
+                   CL_MEM_READ_ONLY)
     , kernel_(nullptr) {
     light_.ambientColor = vec4(1.f);
     light_.diffuseColor = vec4(1.f);

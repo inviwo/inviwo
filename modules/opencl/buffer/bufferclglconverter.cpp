@@ -38,8 +38,7 @@ namespace inviwo {
 std::shared_ptr<BufferRAM> BufferCLGL2RAMConverter::createFrom(
     std::shared_ptr<const BufferCLGL> src) const {
     size_t size = src->getSize();
-    auto destination =
-        createBufferRAM(size, src->getDataFormat(), src->getBufferType(), src->getBufferUsage());
+    auto destination = createBufferRAM(size, src->getDataFormat(), src->getBufferUsage());
 
     if (destination) {
         src->getBufferGL()->download(destination->getData());
@@ -61,8 +60,8 @@ void BufferCLGL2RAMConverter::update(std::shared_ptr<const BufferCLGL> src,
 
 std::shared_ptr<BufferGL> BufferCLGL2GLConverter::createFrom(
     std::shared_ptr<const BufferCLGL> src) const {
-    return std::make_shared<BufferGL>(src->getSize(), src->getDataFormat(), src->getBufferType(),
-                                      src->getBufferUsage(), src->getBufferGL());
+    return std::make_shared<BufferGL>(src->getSize(), src->getDataFormat(), src->getBufferUsage(),
+                                      src->getBufferGL());
 }
 
 void BufferCLGL2GLConverter::update(std::shared_ptr<const BufferCLGL> source,
@@ -72,8 +71,8 @@ void BufferCLGL2GLConverter::update(std::shared_ptr<const BufferCLGL> source,
 
 std::shared_ptr<BufferCLGL> BufferGL2CLGLConverter::createFrom(
     std::shared_ptr<const BufferGL> src) const {
-    return std::make_shared<BufferCLGL>(src->getSize(), src->getDataFormat(), src->getBufferType(),
-                                        src->getBufferUsage(), src->getBufferObject());
+    return std::make_shared<BufferCLGL>(src->getSize(), src->getDataFormat(), src->getBufferUsage(),
+                                        src->getBufferObject());
 }
 
 void BufferGL2CLGLConverter::update(std::shared_ptr<const BufferGL> src,
@@ -86,8 +85,8 @@ void BufferGL2CLGLConverter::update(std::shared_ptr<const BufferGL> src,
 std::shared_ptr<BufferCL> BufferCLGL2CLConverter::createFrom(
     std::shared_ptr<const BufferCLGL> src) const {
     size_t size = src->getSize();
-    auto destination = std::make_shared<BufferCL>(size, src->getDataFormat(), src->getBufferType(),
-                                                  src->getBufferUsage());
+    auto destination =
+        std::make_shared<BufferCL>(size, src->getDataFormat(), src->getBufferUsage());
     {
         SyncCLGL glSync;
         glSync.addToAquireGLObjectList(src.get());

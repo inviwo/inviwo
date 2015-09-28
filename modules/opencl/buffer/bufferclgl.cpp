@@ -32,11 +32,10 @@
 namespace inviwo {
 CLBufferSharingMap BufferCLGL::clBufferSharingMap_;
 
-BufferCLGL::BufferCLGL(size_t size, const DataFormatBase* format, BufferType type,
-                       BufferUsage usage, std::shared_ptr<BufferObject> data,
-                       cl_mem_flags readWriteFlag)
+BufferCLGL::BufferCLGL(size_t size, const DataFormatBase* format, BufferUsage usage,
+                       std::shared_ptr<BufferObject> data, cl_mem_flags readWriteFlag)
     : BufferCLBase()
-    , BufferRepresentation(format, type, usage)
+    , BufferRepresentation(format, usage)
     , bufferObject_(data)
     , readWriteFlag_(readWriteFlag)
     , size_(size) {

@@ -24,37 +24,25 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/buffer/elementbufferclgl.h>
 
 namespace inviwo {
 
-ElementBufferCLGL::ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, std::shared_ptr<ElementBufferObject> data,
-                       cl_mem_flags readWriteFlag)
-    : BufferCLGL(size, format, type, usage, data, readWriteFlag)
-{
-}
+ElementBufferCLGL::ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferUsage usage,
+                                     std::shared_ptr<ElementBufferObject> data,
+                                     cl_mem_flags readWriteFlag)
+    : BufferCLGL(size, format, usage, data, readWriteFlag) {}
 
-ElementBufferCLGL::ElementBufferCLGL(const ElementBufferCLGL& rhs)
-    : BufferCLGL(rhs)
-{
-}
-
-ElementBufferCLGL::~ElementBufferCLGL() {
-
-}
-
-} // namespace
+}  // namespace
 
 namespace cl {
 
 template <>
-cl_int Kernel::setArg(cl_uint index, const inviwo::ElementBufferCLGL& value)
-{
+cl_int Kernel::setArg(cl_uint index, const inviwo::ElementBufferCLGL& value) {
     return setArg(index, value.get());
 }
 
-
-} // namespace cl
+}  // namespace cl

@@ -54,13 +54,6 @@ public:
 
     void clear();  // Make sure the buffer is bound before calling clear.
 
-    /*
-    *  Attach buffer object to generic location based on Buffer::BufferType
-    *  or if generic location is occupied, add it to the closest available
-    *  after the range for generic locations.
-    */
-    //int attachBufferObject(const BufferObject*);
-
     // Attach buffer object to specific location
     void attachBufferObject(const BufferObject*, GLuint);
 

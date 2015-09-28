@@ -24,23 +24,19 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/buffer/elementbuffergl.h>
 
 namespace inviwo {
 
-ElementBufferGL::ElementBufferGL(size_t size, const DataFormatBase* format, BufferType type,
-                                 BufferUsage usage, std::shared_ptr<ElementBufferObject> data)
-    : BufferGL(size, format, type, usage,
-    data != nullptr ? data : std::make_shared<ElementBufferObject>(size * format->getSize(), format,
-                                                                type, usage)) {}
-
-ElementBufferGL::~ElementBufferGL() {}
+ElementBufferGL::ElementBufferGL(size_t size, const DataFormatBase* format, BufferUsage usage,
+                                 std::shared_ptr<ElementBufferObject> data)
+    : BufferGL(size, format, usage,
+               data != nullptr ? data : std::make_shared<ElementBufferObject>(
+                                            size * format->getSize(), format, usage)) {}
 
 ElementBufferGL* ElementBufferGL::clone() const { return new ElementBufferGL(*this); }
 
-
-} // namespace
-
+}  // namespace

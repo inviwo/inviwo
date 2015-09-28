@@ -31,8 +31,7 @@
 
 namespace inviwo {
 
-BufferRepresentation::BufferRepresentation(const DataFormatBase* format,
-                                           BufferType type, BufferUsage usage)
-    : DataRepresentation(format), type_(type), usage_(usage) {}
+BufferRepresentation::BufferRepresentation(const DataFormatBase* format, BufferUsage usage)
+    : DataRepresentation(format), usage_(usage) {}
 
 }  // namespace

@@ -24,30 +24,21 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opengl/buffer/elementbufferobject.h>
 
 namespace inviwo {
 
-ElementBufferObject::ElementBufferObject(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage)
-    : BufferObject(size, format, type, usage, GL_ELEMENT_ARRAY_BUFFER) {
-}
+ElementBufferObject::ElementBufferObject(size_t size, const DataFormatBase* format,
+                                         BufferUsage usage)
+    : BufferObject(size, format, usage, GL_ELEMENT_ARRAY_BUFFER) {}
 
-ElementBufferObject::~ElementBufferObject() {
-}
+void ElementBufferObject::enable() const { bind(); }
 
-void ElementBufferObject::enable() const {
-    bind();
-}
+void ElementBufferObject::disable() const {}
 
-void ElementBufferObject::disable() const {
-}
+ElementBufferObject* ElementBufferObject::clone() const { return new ElementBufferObject(*this); }
 
-ElementBufferObject* ElementBufferObject::clone() const {
-    return new ElementBufferObject(*this);
-}
-
-} // namespace
-
+}  // namespace

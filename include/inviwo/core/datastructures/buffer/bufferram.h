@@ -39,7 +39,6 @@ namespace inviwo {
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
     BufferRAM(const DataFormatBase* format = DataFormatBase::get(),
-              BufferType type = BufferType::POSITION_ATTRIB,
               BufferUsage usage = BufferUsage::STATIC);
     BufferRAM(const BufferRAM& rhs) = default;
     BufferRAM& operator=(const BufferRAM& that) = default;
@@ -71,24 +70,22 @@ public:
  * @return nullptr if no valid format was specified.
  */
 IVW_CORE_API std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataFormatBase* format,
-                                                        BufferType type, BufferUsage usage);
-
+                                                        BufferUsage usage);
 
 template <typename T>
 class BufferRAMPrecision;
 
-template <BufferType A = BufferType::POSITION_ATTRIB, BufferUsage U = BufferUsage::STATIC,
-          typename T = vec3>
+template <BufferUsage U = BufferUsage::STATIC, typename T = vec3>
 std::shared_ptr<BufferRAMPrecision<T>> createBufferRAM(std::vector<T> data) {
-    return std::make_shared<BufferRAMPrecision<T>>(std::move(data), DataFormat<T>::get(), A, U);
+    return std::make_shared<BufferRAMPrecision<T>>(std::move(data), DataFormat<T>::get(), U);
 }
 
 struct BufferRamDispatcher {
     using type = std::shared_ptr<BufferRAM>;
     template <class T>
-    std::shared_ptr<BufferRAM> dispatch(size_t size, BufferType type, BufferUsage usage) {
+    std::shared_ptr<BufferRAM> dispatch(size_t size, BufferUsage usage) {
         typedef typename T::type F;
-        return std::make_shared<BufferRAMPrecision<F>>(size, type, usage);
+        return std::make_shared<BufferRAMPrecision<F>>(size, usage);
     }
 };
 

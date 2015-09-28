@@ -78,48 +78,48 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
     for (size_t i = 0; i < std::min(size_t{1}, size_t{scene->mNumMeshes}); ++i) {
         aiMesh* m = scene->mMeshes[i];
 
-        auto prep = std::make_shared<Vec3BufferRAM>(m->mNumVertices, BufferType::POSITION_ATTRIB);
+        auto prep = std::make_shared<Vec3BufferRAM>(m->mNumVertices);
         auto pbuff = std::make_shared<BufferVec3Float32>(prep);
 
         for (size_t j = 0; j < m->mNumVertices; ++j) {
             aiVector3D v = m->mVertices[j];
             (*prep)[j] = vec3(v.x, v.y, v.z);
         }
-        mesh->addAttribute(pbuff);
+        mesh->addAttribute(BufferType::POSITION_ATTRIB, pbuff);
    
         for (size_t l = 0; l < m->GetNumUVChannels(); ++l) {
-            auto trep = std::make_shared<Vec3BufferRAM>(m->mNumVertices, BufferType::NORMAL_ATTRIB);
+            auto trep = std::make_shared<Vec3BufferRAM>(m->mNumVertices);
             auto tbuff = std::make_shared<BufferVec3Float32>(trep);
             for (size_t j = 0; j < m->mNumVertices; ++j) {
                 aiVector3D t = m->mTextureCoords[l][j];
                 (*trep)[j] = vec3(t.x, t.y, t.z);
             }
-            mesh->addAttribute(tbuff);
+            mesh->addAttribute(BufferType::TEXCOORD_ATTRIB, tbuff);
         }
 
         for (size_t l = 0; l < m->GetNumColorChannels(); ++l) {
-            auto crep = std::make_shared<Vec4BufferRAM>(m->mNumVertices, BufferType::COLOR_ATTRIB);
+            auto crep = std::make_shared<Vec4BufferRAM>(m->mNumVertices);
             auto cbuff = std::make_shared<BufferVec4Float32>(crep);
             
             for (size_t j = 0; j < m->mNumVertices; ++j) {
                 aiColor4D c = m->mColors[l][j];
                 (*crep)[j] = vec4(c.r, c.g, c.b, c.a);
             }
-            mesh->addAttribute(cbuff);
+            mesh->addAttribute(BufferType::COLOR_ATTRIB, cbuff);
         }
 
         if (m->HasNormals()) {
-            auto nrep = std::make_shared<Vec3BufferRAM>(m->mNumVertices, BufferType::NORMAL_ATTRIB);
+            auto nrep = std::make_shared<Vec3BufferRAM>(m->mNumVertices);
             auto nbuff = std::make_shared<BufferVec3Float32>(nrep);
             
             for (size_t j = 0; j < m->mNumVertices; ++j) {
                 aiVector3D n = m->mNormals[j];
                 (*nrep)[j] = vec3(n.x, n.y, n.z);
             }
-            mesh->addAttribute(nbuff);
+            mesh->addAttribute(BufferType::NORMAL_ATTRIB, nbuff);
         }
 
-        auto ibuff = std::make_shared<UInt32BufferRAM>(BufferType::INDEX_ATTRIB);
+        auto ibuff = std::make_shared<UInt32BufferRAM>();
         auto inds = std::make_shared<BufferUInt32>(ibuff);
         
         for (size_t j = 0; j < m->mNumFaces; ++j) {

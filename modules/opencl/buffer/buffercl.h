@@ -51,9 +51,8 @@ public:
      * @param readWriteFlag Determine how memory will be used by Kernels: CL_MEM_READ_ONLY,
      *CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
      */
-    BufferCL(size_t size, const DataFormatBase* format, BufferType type,
-             BufferUsage usage = BufferUsage::STATIC, const void* data = nullptr,
-             cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
+    BufferCL(size_t size, const DataFormatBase* format, BufferUsage usage = BufferUsage::STATIC,
+             const void* data = nullptr, cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     BufferCL(const BufferCL& rhs);
     virtual ~BufferCL();
 

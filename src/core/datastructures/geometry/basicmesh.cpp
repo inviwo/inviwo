@@ -37,15 +37,15 @@
 
 namespace inviwo {
 BasicMesh::BasicMesh() : Mesh() {
-    vertices_ = std::make_shared<BufferVec3Float32>(BufferType::POSITION_ATTRIB);
-    texCoords_ = std::make_shared<BufferVec3Float32>(BufferType::TEXCOORD_ATTRIB);
-    colors_ = std::make_shared<BufferVec4Float32>(BufferType::COLOR_ATTRIB);
-    normals_ = std::make_shared<BufferVec3Float32>(BufferType::NORMAL_ATTRIB);
+    vertices_ = std::make_shared<BufferVec3Float32>();
+    texCoords_ = std::make_shared<BufferVec3Float32>();
+    colors_ = std::make_shared<BufferVec4Float32>();
+    normals_ = std::make_shared<BufferVec3Float32>();
 
-    addAttribute(vertices_);   // pos 0
-    addAttribute(texCoords_);  // pos 1
-    addAttribute(colors_);     // pos 2
-    addAttribute(normals_);    // pos 3
+    addAttribute(BufferType::POSITION_ATTRIB, vertices_);  // pos 0
+    addAttribute(BufferType::TEXCOORD_ATTRIB, texCoords_); // pos 1
+    addAttribute(BufferType::COLOR_ATTRIB, colors_);       // pos 2
+    addAttribute(BufferType::NORMAL_ATTRIB, normals_);     // pos 3
 }
 
 BasicMesh* BasicMesh::clone() const { return new BasicMesh(*this); }
@@ -96,7 +96,7 @@ void BasicMesh::setVertexColor(size_t index, vec4 color) {
 }
 
 UInt32BufferRAM* BasicMesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
-    auto indicesRam = std::make_shared<UInt32BufferRAM>(BufferType::INDEX_ATTRIB);
+    auto indicesRam = std::make_shared<UInt32BufferRAM>();
     auto indices_ = std::make_shared<BufferUInt32>(indicesRam);
     addIndicies(Mesh::AttributesInfo(dt, ct), indices_);
     return indicesRam.get();

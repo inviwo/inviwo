@@ -34,8 +34,8 @@
 
 namespace inviwo {
 
-Buffer::Buffer(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage)
-    : Data<BufferRepresentation>(format), size_(size), type_(type), usage_(usage) {}
+Buffer::Buffer(size_t size, const DataFormatBase* format, BufferUsage usage)
+    : Data<BufferRepresentation>(format), size_(size), usage_(usage) {}
 
 
 Buffer* Buffer::clone() const { return new Buffer(*this); }
@@ -59,7 +59,7 @@ void Buffer::setSize(size_t size) {
 }
 
 std::shared_ptr<BufferRepresentation> Buffer::createDefaultRepresentation() const {
-    return createBufferRAM(getSize(), dataFormatBase_, type_, usage_);
+    return createBufferRAM(getSize(), dataFormatBase_, usage_);
 }
 
 size_t Buffer::getSize() const {

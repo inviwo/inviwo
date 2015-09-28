@@ -39,11 +39,11 @@ namespace inviwo {
 template <typename T>
 class BufferRAMPrecision : public BufferRAM {
 public:
-    BufferRAMPrecision(BufferType type, BufferUsage usage = BufferUsage::STATIC);
+    BufferRAMPrecision(BufferUsage usage = BufferUsage::STATIC);
 
-    BufferRAMPrecision(size_t size, BufferType type, BufferUsage usage = BufferUsage::STATIC);
+    BufferRAMPrecision(size_t size, BufferUsage usage = BufferUsage::STATIC);
 
-    BufferRAMPrecision(std::vector<T> data, BufferType type,
+    BufferRAMPrecision(std::vector<T> data,
                        BufferUsage usage = BufferUsage::STATIC);
 
     BufferRAMPrecision(const BufferRAMPrecision<T>& rhs);
@@ -107,16 +107,16 @@ T& inviwo::BufferRAMPrecision<T>::operator[](size_t i) {
 }
 
 template <typename T>
-BufferRAMPrecision<T>::BufferRAMPrecision(BufferType type, BufferUsage usage)
-    : BufferRAMPrecision(0, type, usage) {}
+BufferRAMPrecision<T>::BufferRAMPrecision(BufferUsage usage)
+    : BufferRAMPrecision(0, usage) {}
 
 template <typename T>
-BufferRAMPrecision<T>::BufferRAMPrecision(size_t size, BufferType type, BufferUsage usage)
-    : BufferRAM(DataFormat<T>::get(), type, usage), data_(new std::vector<T>(size)) {}
+BufferRAMPrecision<T>::BufferRAMPrecision(size_t size, BufferUsage usage)
+    : BufferRAM(DataFormat<T>::get(), usage), data_(new std::vector<T>(size)) {}
 
 template <typename T>
-inviwo::BufferRAMPrecision<T>::BufferRAMPrecision(std::vector<T> data, BufferType type, BufferUsage usage)
-    : BufferRAM(DataFormat<T>::get(), type, usage)
+inviwo::BufferRAMPrecision<T>::BufferRAMPrecision(std::vector<T> data, BufferUsage usage)
+    : BufferRAM(DataFormat<T>::get(), usage)
     , data_(util::make_unique<std::vector<T>>(std::move(data))) {}
 
 template <typename T>
@@ -222,7 +222,6 @@ void BufferRAMPrecision<T>::add(std::initializer_list<T> data) {
         data_->push_back(elem);
     }
 }
-
 
 template <typename T>
 void BufferRAMPrecision<T>::append(const std::vector<T>* data) {

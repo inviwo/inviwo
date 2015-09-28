@@ -33,9 +33,8 @@ namespace inviwo {
 
 std::shared_ptr<ElementBufferGL> ElementBufferRAM2GLConverter::createFrom(
     std::shared_ptr<const BufferRAM> bufferRAM) const {
-    auto bufferGL =
-        std::make_shared<ElementBufferGL>(bufferRAM->getSize(), bufferRAM->getDataFormat(),
-                                          bufferRAM->getBufferType(), bufferRAM->getBufferUsage());
+    auto bufferGL = std::make_shared<ElementBufferGL>(
+        bufferRAM->getSize(), bufferRAM->getDataFormat(), bufferRAM->getBufferUsage());
     bufferGL->upload(bufferRAM->getData(), bufferRAM->getSize() * bufferRAM->getSizeOfElement());
     return bufferGL;
 }
@@ -48,8 +47,7 @@ void ElementBufferRAM2GLConverter::update(std::shared_ptr<const BufferRAM> src,
 
 std::shared_ptr<BufferRAM> ElementBufferGL2RAMConverter::createFrom(
     std::shared_ptr<const ElementBufferGL> src) const {
-    auto dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferType(),
-                               src->getBufferUsage());
+    auto dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferUsage());
 
     if (!dst)
         throw ConverterException(std::string("Cannot convert format from GL to RAM: ") +

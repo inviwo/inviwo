@@ -466,7 +466,7 @@ void VolumeSliceGL::updateIndicatorMesh() {
         meshCrossHair_ = new Mesh;
         meshCrossHair_->setModelMatrix(mat4(1.0f));
         // add two vertical and two horizontal lines with a gap around the selected position
-        auto vertices = std::make_shared<Vec2BufferRAM>(BufferType::POSITION_ATTRIB);
+        auto vertices = std::make_shared<Vec2BufferRAM>();
         auto posBuf = std::make_shared<BufferVec2Float32>(vertices);
 
         // horizontal
@@ -480,11 +480,11 @@ void VolumeSliceGL::updateIndicatorMesh() {
         vertices->add(vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
         vertices->add(vec2(pos.x, 1.5f) * 2.0f - 1.0f);
 
-        auto colors = std::make_shared<Vec4BufferRAM>(BufferType::COLOR_ATTRIB);
+        auto colors = std::make_shared<Vec4BufferRAM>();
         auto colorBuf = std::make_shared<BufferVec4Float32>(colors);
 
         // indices for cross hair lines
-        auto indices = std::make_shared<UInt32BufferRAM>(BufferType::INDEX_ATTRIB);
+        auto indices = std::make_shared<UInt32BufferRAM>();
         auto indexBuf = std::make_shared<BufferUInt32>(indices);
         for (unsigned int i = 0; i < 8; ++i) {
             colors->add(color);
@@ -492,8 +492,8 @@ void VolumeSliceGL::updateIndicatorMesh() {
         }
         // clear up existing attribute buffers
         // meshCrossHair_->deinitialize();
-        meshCrossHair_->addAttribute(posBuf);
-        meshCrossHair_->addAttribute(colorBuf);
+        meshCrossHair_->addAttribute(BufferType::POSITION_ATTRIB, posBuf);
+        meshCrossHair_->addAttribute(BufferType::COLOR_ATTRIB, colorBuf);
         meshCrossHair_->addIndicies(Mesh::AttributesInfo(DrawType::LINES, ConnectivityType::NONE),
                                     indexBuf);
     }
@@ -504,11 +504,11 @@ void VolumeSliceGL::updateIndicatorMesh() {
         meshBox_ = new Mesh;
         meshBox_->setModelMatrix(mat4(1.0f));
 
-        auto vertices = std::make_shared<Vec2BufferRAM>(BufferType::POSITION_ATTRIB);
+        auto vertices = std::make_shared<Vec2BufferRAM>();
         auto posBuf = std::make_shared<BufferVec2Float32>(vertices);
-        auto colors = std::make_shared<Vec4BufferRAM>(BufferType::COLOR_ATTRIB);
+        auto colors = std::make_shared<Vec4BufferRAM>();
         auto colorBuf = std::make_shared<BufferVec4Float32>(colors);
-        auto indices = std::make_shared<UInt32BufferRAM>(BufferType::INDEX_ATTRIB);
+        auto indices = std::make_shared<UInt32BufferRAM>();
         auto indexBuf = std::make_shared<BufferUInt32>(indices);
         // box
         vertices->add(vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
@@ -521,8 +521,8 @@ void VolumeSliceGL::updateIndicatorMesh() {
         }
         // clear up existing attribute buffers
         // meshBox_->deinitialize();
-        meshBox_->addAttribute(posBuf);
-        meshBox_->addAttribute(colorBuf);
+        meshBox_->addAttribute(BufferType::POSITION_ATTRIB, posBuf);
+        meshBox_->addAttribute(BufferType::COLOR_ATTRIB, colorBuf);
         meshBox_->addIndicies(Mesh::AttributesInfo(DrawType::LINES, ConnectivityType::LOOP),
                               indexBuf);
     }

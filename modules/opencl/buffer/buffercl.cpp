@@ -32,10 +32,10 @@
 
 namespace inviwo {
 
-BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage,
-                   const void* data, cl_mem_flags readWriteFlag)
+BufferCL::BufferCL(size_t size, const DataFormatBase* format, BufferUsage usage, const void* data,
+                   cl_mem_flags readWriteFlag)
     : BufferCLBase()
-    , BufferRepresentation(format, type, usage)
+    , BufferRepresentation(format, usage)
     , readWriteFlag_(readWriteFlag)
     , size_(size) {
     // Generate a new buffer

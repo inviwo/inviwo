@@ -33,11 +33,10 @@
 namespace inviwo {
 
 SimpleMesh::SimpleMesh(DrawType dt, ConnectivityType ct) : Mesh(dt, ct) {
-    addAttribute(std::make_shared<BufferVec3Float32>(BufferType::POSITION_ATTRIB));  // pos 0
-    addAttribute(std::make_shared<BufferVec3Float32>(BufferType::TEXCOORD_ATTRIB));  // pos 1
-    addAttribute(std::make_shared<BufferVec4Float32>(BufferType::COLOR_ATTRIB));     // pos 2
-    addIndicies(Mesh::AttributesInfo(dt, ct),
-                std::make_shared<BufferUInt32>(BufferType::INDEX_ATTRIB));
+    addAttribute(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec3Float32>());  // pos 0
+    addAttribute(BufferType::TEXCOORD_ATTRIB, std::make_shared<BufferVec3Float32>());  // pos 1
+    addAttribute(BufferType::COLOR_ATTRIB, std::make_shared<BufferVec4Float32>());     // pos 2
+    addIndicies(Mesh::AttributesInfo(dt, ct), std::make_shared<BufferUInt32>());
 }
 
 SimpleMesh* SimpleMesh::clone() const { return new SimpleMesh(*this); }

@@ -39,8 +39,7 @@ namespace inviwo {
 std::shared_ptr<ElementBufferGL> ElementBufferCLGL2GLConverter::createFrom(
     std::shared_ptr<const ElementBufferCLGL> src) const {
     return std::make_shared<ElementBufferGL>(src->getSize(), src->getDataFormat(),
-                                             src->getBufferType(), src->getBufferUsage(),
-                                             src->getElementBufferObject());
+                                             src->getBufferUsage(), src->getElementBufferObject());
 }
 
 void ElementBufferCLGL2GLConverter::update(std::shared_ptr<const ElementBufferCLGL> source,
@@ -50,9 +49,8 @@ void ElementBufferCLGL2GLConverter::update(std::shared_ptr<const ElementBufferCL
 
 std::shared_ptr<ElementBufferCLGL> ElementBufferGL2CLGLConverter::createFrom(
     std::shared_ptr<const ElementBufferGL> src) const {
-    return std::make_shared<ElementBufferCLGL>(src->getSize(), src->getDataFormat(),
-                                               src->getBufferType(), src->getBufferUsage(),
-                                               src->getElementBufferObject());
+    return std::make_shared<ElementBufferCLGL>(
+        src->getSize(), src->getDataFormat(), src->getBufferUsage(), src->getElementBufferObject());
 }
 
 void ElementBufferGL2CLGLConverter::update(std::shared_ptr<const ElementBufferGL> src,

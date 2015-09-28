@@ -34,7 +34,6 @@ namespace inviwo {
 std::shared_ptr<ElementBufferCL> ElementBufferRAM2CLConverter::createFrom(
     std::shared_ptr<const BufferRAM> bufferRAM) const {
     return std::make_shared<ElementBufferCL>(bufferRAM->getSize(), bufferRAM->getDataFormat(),
-                                             bufferRAM->getBufferType(),
                                              bufferRAM->getBufferUsage(), bufferRAM->getData());
 }
 
@@ -49,8 +48,7 @@ void ElementBufferRAM2CLConverter::update(std::shared_ptr<const BufferRAM> src,
 
 std::shared_ptr<BufferRAM> ElementBufferCL2RAMConverter::createFrom(
     std::shared_ptr<const ElementBufferCL> src) const {
-    auto dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferType(),
-                               src->getBufferUsage());
+    auto dst = createBufferRAM(src->getSize(), src->getDataFormat(), src->getBufferUsage());
     src->download(dst->getData());
     return dst;
 }

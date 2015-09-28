@@ -24,36 +24,24 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/opencl/buffer/elementbuffercl.h>
 
 namespace inviwo {
 
-ElementBufferCL::ElementBufferCL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, const void* data,
-                   cl_mem_flags readWriteFlag)
-    : BufferCL(size, format, type, usage, data, readWriteFlag)
-{
-}
+ElementBufferCL::ElementBufferCL(size_t size, const DataFormatBase* format, BufferUsage usage,
+                                 const void* data, cl_mem_flags readWriteFlag)
+    : BufferCL(size, format, usage, data, readWriteFlag) {}
 
-ElementBufferCL::ElementBufferCL(const ElementBufferCL& rhs)
-    : BufferCL(rhs)
-{
-}
-
-ElementBufferCL::~ElementBufferCL() {
-}
-
-
-} // namespace inviwo
+}  // namespace inviwo
 
 namespace cl {
 
 template <>
-cl_int Kernel::setArg(cl_uint index, const inviwo::ElementBufferCL& value)
-{
+cl_int Kernel::setArg(cl_uint index, const inviwo::ElementBufferCL& value) {
     return setArg(index, value.get());
 }
 
-} // namespace cl
+}  // namespace cl

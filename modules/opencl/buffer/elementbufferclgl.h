@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_ELEMENT_BUFFERCLGL_H
@@ -45,20 +45,21 @@ namespace inviwo {
  * can create an ElementBufferGL object.
  */
 class IVW_MODULE_OPENCL_API ElementBufferCLGL : public BufferCLGL {
-
 public:
-    ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferType type, BufferUsage usage, std::shared_ptr<ElementBufferObject> data,
-               cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
-    ElementBufferCLGL(const ElementBufferCLGL& rhs);
-    virtual ~ElementBufferCLGL();
+    ElementBufferCLGL(size_t size, const DataFormatBase* format, BufferUsage usage,
+                      std::shared_ptr<ElementBufferObject> data,
+                      cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
+    ElementBufferCLGL(const ElementBufferCLGL& rhs) = default;
+    virtual ~ElementBufferCLGL() = default;
 
-    std::shared_ptr<ElementBufferObject> getElementBufferObject() const { return std::static_pointer_cast<ElementBufferObject>(bufferObject_); }
+    std::shared_ptr<ElementBufferObject> getElementBufferObject() const {
+        return std::static_pointer_cast<ElementBufferObject>(bufferObject_);
+    }
 
 protected:
-
 };
 
-} // namespace
+}  // namespace
 
 namespace cl {
 
@@ -67,8 +68,6 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::ElementBufferCLGL& value);
 
-} // namespace cl
+}  // namespace cl
 
-
-
-#endif // IVW_ELEMENT_BUFFERCLGL_H
+#endif  // IVW_ELEMENT_BUFFERCLGL_H
