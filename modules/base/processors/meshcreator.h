@@ -69,7 +69,7 @@ public:
     void initialize() override;
     void deinitialize() override;
 
-    Mesh* createMesh();
+    std::shared_ptr<Mesh> createMesh();
 
 protected:
     virtual void process() override;

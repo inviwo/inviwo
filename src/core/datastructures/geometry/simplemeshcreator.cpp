@@ -32,9 +32,10 @@
 
 namespace inviwo {
 
-SimpleMesh* SimpleMeshCreator::rectangularPrism(vec3 posLlf, vec3 posUrb, vec3 texCoordLlf,
-                                                vec3 texCoordUrb, vec4 colorLlf, vec4 colorUrb) {
-    SimpleMesh* recPrism = new SimpleMesh();
+std::shared_ptr<SimpleMesh> SimpleMeshCreator::rectangularPrism(vec3 posLlf, vec3 posUrb,
+                                                                vec3 texCoordLlf, vec3 texCoordUrb,
+                                                                vec4 colorLlf, vec4 colorUrb) {
+    auto recPrism = std::make_shared<SimpleMesh>();
     // Set identity matrix
     recPrism->setModelMatrix(mat4(1.f));
     // 8 corners
@@ -78,11 +79,10 @@ SimpleMesh* SimpleMeshCreator::rectangularPrism(vec3 posLlf, vec3 posUrb, vec3 t
     return recPrism;
 }
 
-SimpleMesh* SimpleMeshCreator::parallelepiped(glm::vec3 pos, glm::vec3 p1, glm::vec3 p2,
-                                              glm::vec3 p3, glm::vec3 tex, glm::vec3 t1,
-                                              glm::vec3 t2, glm::vec3 t3, glm::vec4 col,
-                                              glm::vec4 c1, glm::vec4 c2, glm::vec4 c3) {
-    SimpleMesh* ppd = new SimpleMesh();
+std::shared_ptr<SimpleMesh> SimpleMeshCreator::parallelepiped(
+    glm::vec3 pos, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 tex, glm::vec3 t1,
+    glm::vec3 t2, glm::vec3 t3, glm::vec4 col, glm::vec4 c1, glm::vec4 c2, glm::vec4 c3) {
+    auto ppd = std::make_shared<SimpleMesh>();
     // Set identity matrix
     ppd->setModelMatrix(mat4(1.f));
 
@@ -123,8 +123,8 @@ SimpleMesh* SimpleMeshCreator::parallelepiped(glm::vec3 pos, glm::vec3 p1, glm::
     return ppd;
 }
 
-SimpleMesh* SimpleMeshCreator::rectangle(vec3 posLl, vec3 posUr) {
-    SimpleMesh* rec = new SimpleMesh();
+std::shared_ptr<SimpleMesh> SimpleMeshCreator::rectangle(vec3 posLl, vec3 posUr) {
+    auto rec = std::make_shared<SimpleMesh>();
     // Set identity matrix
     rec->setModelMatrix(mat4(1.f));
     vec3 texCoordLl(0, 0, 0);
@@ -147,9 +147,9 @@ SimpleMesh* SimpleMeshCreator::rectangle(vec3 posLl, vec3 posUr) {
     return rec;
 }
 
-SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
-                                      unsigned int segmentsPerLoop) {
-    SimpleMesh* spheremesh = new SimpleMesh();
+std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
+                                                      unsigned int segmentsPerLoop) {
+    auto spheremesh = std::make_shared<SimpleMesh>();
 
     numLoops = std::max(4u, numLoops);
     segmentsPerLoop = std::max(8u, segmentsPerLoop);
@@ -158,7 +158,8 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
     spheremesh->setModelMatrix(mat4(1.f));
 
     // Create Vertices
-    auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1), BufferType::NORMAL_ATTRIB);
+    auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1),
+                                                   BufferType::NORMAL_ATTRIB);
     auto normalBuffer = std::make_shared<BufferVec3Float32>(normals);
 
     unsigned int pointsPerLine = segmentsPerLoop + 1;
@@ -187,7 +188,8 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
     // compute indices
     spheremesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
     for (unsigned int y = 0; y < numLoops; ++y) {
-        auto indices = std::make_shared<UInt32BufferRAM>(pointsPerLine * 2, BufferType::INDEX_ATTRIB);
+        auto indices =
+            std::make_shared<UInt32BufferRAM>(pointsPerLine * 2, BufferType::INDEX_ATTRIB);
         auto indexBuf = std::make_shared<BufferUInt32>(indices);
 
         unsigned int offset = y * pointsPerLine;
@@ -197,16 +199,16 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
             indices->set(count++, offset + x + pointsPerLine);
         }
 
-        spheremesh->addIndicies(
-            Mesh::AttributesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP), indexBuf);
+        spheremesh->addIndicies(Mesh::AttributesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP),
+                                indexBuf);
     }
 
     return spheremesh;
 }
 
-SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
-                                      unsigned int segmentsPerLoop, vec4 color) {
-    SimpleMesh* spheremesh = new SimpleMesh();
+std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
+                                                      unsigned int segmentsPerLoop, vec4 color) {
+    auto spheremesh = std::make_shared<SimpleMesh>();
 
     numLoops = std::max(4u, numLoops);
     segmentsPerLoop = std::max(8u, segmentsPerLoop);
@@ -215,7 +217,8 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
     spheremesh->setModelMatrix(mat4(1.f));
 
     // Create Vertices
-    auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1),BufferType::NORMAL_ATTRIB);
+    auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1),
+                                                   BufferType::NORMAL_ATTRIB);
     auto normalBuffer = std::make_shared<BufferVec3Float32>(normals);
 
     unsigned int pointsPerLine = segmentsPerLoop + 1;
@@ -246,7 +249,8 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
     // compute indices
     spheremesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
     for (unsigned int y = 0; y < numLoops; ++y) {
-        auto indices = std::make_shared<UInt32BufferRAM>(pointsPerLine * 2, BufferType::INDEX_ATTRIB);
+        auto indices =
+            std::make_shared<UInt32BufferRAM>(pointsPerLine * 2, BufferType::INDEX_ATTRIB);
         auto indexBuf = std::make_shared<BufferUInt32>(indices);
 
         unsigned int offset = y * pointsPerLine;
@@ -256,16 +260,16 @@ SimpleMesh* SimpleMeshCreator::sphere(float radius, unsigned int numLoops,
             indices->set(count++, offset + x + pointsPerLine);
         }
 
-        spheremesh->addIndicies(
-            Mesh::AttributesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP), indexBuf);
+        spheremesh->addIndicies(Mesh::AttributesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP),
+                                indexBuf);
     }
 
     return spheremesh;
 }
 
-SimpleMesh* SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 extent, unsigned int meshResX,
-                                     unsigned int meshResY) {
-    SimpleMesh* plane = new SimpleMesh();
+std::shared_ptr<SimpleMesh> SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 extent,
+                                                     unsigned int meshResX, unsigned int meshResY) {
+    auto plane = std::make_shared<SimpleMesh>();
     // Set identity matrix
     plane->setModelMatrix(mat4(1.f));
 
@@ -281,7 +285,8 @@ SimpleMesh* SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 extent, unsigned i
 
     const glm::vec4 color(0.6f, 0.6f, 0.6f, 1.0f);
 
-    auto normals = std::make_shared<Vec3BufferRAM>((meshResX + 1) * (meshResY + 1), BufferType::NORMAL_ATTRIB);
+    auto normals =
+        std::make_shared<Vec3BufferRAM>((meshResX + 1) * (meshResY + 1), BufferType::NORMAL_ATTRIB);
     auto normalBuffer = std::make_shared<BufferVec3Float32>(normals);
 
     for (unsigned int y = 0; y <= meshResY; ++y) {
@@ -296,7 +301,8 @@ SimpleMesh* SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 extent, unsigned i
     // compute indices
     plane->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
     for (unsigned int y = 0; y < meshResY; ++y) {
-        auto indices = std::make_shared<UInt32BufferRAM>(pointsPerLine * 2, BufferType::INDEX_ATTRIB);
+        auto indices =
+            std::make_shared<UInt32BufferRAM>(pointsPerLine * 2, BufferType::INDEX_ATTRIB);
         auto indexBuf = std::make_shared<BufferUInt32>(indices);
 
         unsigned int offset = y * pointsPerLine;

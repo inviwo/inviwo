@@ -32,6 +32,7 @@
 
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <initializer_list>
 
 namespace inviwo {
 
@@ -47,7 +48,7 @@ public:
 
     BufferRAMPrecision(const BufferRAMPrecision<T>& rhs);
     BufferRAMPrecision<T>& operator=(const BufferRAMPrecision<T>& that);
-    virtual ~BufferRAMPrecision();
+    virtual ~BufferRAMPrecision() = default;
     virtual BufferRAMPrecision<T>* clone() const override;
 
     virtual void setSize(size_t size) override;
@@ -69,6 +70,7 @@ public:
     virtual dvec4 getValueAsVec4Double(size_t index) const override;
 
     void add(const T& item);
+    void add(std::initializer_list<T> data);
     void append(const std::vector<T>* data);
 
     T& operator[](size_t i);
@@ -133,9 +135,6 @@ BufferRAMPrecision<T>& inviwo::BufferRAMPrecision<T>::operator=(const BufferRAMP
     }
     return *this;
 }
-
-template <typename T>
-inviwo::BufferRAMPrecision<T>::~BufferRAMPrecision() {}
 
 template <typename T>
 BufferRAMPrecision<T>* BufferRAMPrecision<T>::clone() const {
@@ -216,6 +215,14 @@ template <typename T>
 void BufferRAMPrecision<T>::add(const T& item) {
     data_->push_back(item);
 }
+
+template <typename T>
+void BufferRAMPrecision<T>::add(std::initializer_list<T> data) {
+    for (auto& elem : data) {
+        data_->push_back(elem);
+    }
+}
+
 
 template <typename T>
 void BufferRAMPrecision<T>::append(const std::vector<T>* data) {

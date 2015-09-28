@@ -82,7 +82,7 @@ void MeshCreator::initialize() { Processor::initialize(); }
 
 void MeshCreator::deinitialize() { Processor::deinitialize(); }
 
-Mesh* MeshCreator::createMesh() {
+std::shared_ptr<Mesh> MeshCreator::createMesh() {
     switch (meshType_.getSelectedIndex()) {
         case SPHERE:
             return SimpleMeshCreator::sphere(0.5f * meshScale_.get(), meshRes_.get().y,
