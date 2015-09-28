@@ -65,10 +65,6 @@ void FirstIvwProcessor::initialize() {
     triangleGL_ = triangle_->getRepresentation<BufferGL>();
 }
 
-void FirstIvwProcessor::deinitialize() {
-    Processor::deinitialize();
-}
-
 void FirstIvwProcessor::process() {
     utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
     shader_.activate();

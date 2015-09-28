@@ -49,7 +49,7 @@ public:
         ConnectivityType ct;
     };
 
-    using IndexVector = std::vector<std::pair<AttributesInfo, std::shared_ptr<IndexBuffer>>>;
+    using IndexVector = std::vector<std::pair<AttributesInfo, std::shared_ptr<BufferUInt32>>>;
 
     Mesh() = default;
     Mesh(DrawType dt, ConnectivityType ct);
@@ -84,7 +84,7 @@ public:
      * @param info Rendering type and connectivity.
      * @param ind Index buffer, will be owned by mesh.
      */
-    void addIndicies(AttributesInfo info, std::shared_ptr<IndexBuffer> ind);
+    void addIndicies(AttributesInfo info, std::shared_ptr<BufferUInt32> ind);
 
     const std::vector<std::shared_ptr<Buffer>>& getBuffers() const;
     const IndexVector& getIndexBuffers() const;

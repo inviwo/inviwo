@@ -63,7 +63,7 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API PixelToBufferProcessor : public Processor, public InteractionHandler { 
 public:
-    using PosBuffer = BufferPrecision<double, BufferType::POSITION_ATTRIB>;
+    using PosBuffer = BufferPrecision<double>;
     PixelToBufferProcessor();
     virtual ~PixelToBufferProcessor(){}
     

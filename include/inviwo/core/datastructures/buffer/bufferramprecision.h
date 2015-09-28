@@ -85,6 +85,15 @@ private:
     std::unique_ptr<std::vector<T>> data_;
 };
 
+
+using FloatBufferRAM = BufferRAMPrecision<float>;
+using Vec2BufferRAM = BufferRAMPrecision<vec2>;
+using Vec3BufferRAM = BufferRAMPrecision<vec3>;
+using Vec4BufferRAM = BufferRAMPrecision<vec4>;
+using UInt32BufferRAM = BufferRAMPrecision<std::uint32_t>;
+
+
+
 template <typename T>
 const T& inviwo::BufferRAMPrecision<T>::operator[](size_t i) const {
     return (*data_)[i];
@@ -232,12 +241,6 @@ template <typename T>
 void BufferRAMPrecision<T>::clear() {
     data_->clear();
 }
-
-typedef BufferRAMPrecision<float> FloatBufferRAM;
-typedef BufferRAMPrecision<std::uint32_t> UInt32BufferRAM;
-typedef BufferRAMPrecision<vec2> Vec2BufferRAM;
-typedef BufferRAMPrecision<vec3> Vec3BufferRAM;
-typedef BufferRAMPrecision<vec4> Vec4BufferRAM;
 
 }  // namespace
 

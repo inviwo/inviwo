@@ -53,10 +53,10 @@ public:
     void setVertexColor(size_t index, vec4 color);
     UInt32BufferRAM* addIndexBuffer(DrawType dt, ConnectivityType ct);
 
-    const Position3dBuffer* getVertices() const;
-    const TexCoord3dBuffer* getTexCoords() const;
-    const ColorBuffer* getColors() const;
-    const NormalBuffer* getNormals() const;
+    const BufferVec3Float32* getVertices() const;
+    const BufferVec3Float32* getTexCoords() const;
+    const BufferVec4Float32* getColors() const;
+    const BufferVec3Float32* getNormals() const;
   
     void append(const BasicMesh* mesh);
     

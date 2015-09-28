@@ -85,18 +85,20 @@ inviwo::Buffer::Buffer(std::shared_ptr<BufferRAMPrecision<T>> repr)
     addRepresentation(repr);
 }
 
-template <typename T, BufferType A = BufferType::POSITION_ATTRIB>
+template <typename T>
 class BufferPrecision : public Buffer {
 public:
-    BufferPrecision(size_t size = 0, BufferUsage usage = BufferUsage::STATIC)
-        : Buffer(size, DataFormat<T>::get(), A, usage) {}
+    BufferPrecision(size_t size, BufferType type,  BufferUsage usage = BufferUsage::STATIC)
+        : Buffer(size, DataFormat<T>::get(), type, usage) {}
 
-    BufferPrecision(BufferUsage usage) : Buffer(0, DataFormat<T>::get(), A, usage) {}
+    BufferPrecision(BufferType type,  BufferUsage usage = BufferUsage::STATIC)
+        : Buffer(0, DataFormat<T>::get(), type, usage) {}
+
     BufferPrecision(std::shared_ptr<BufferRAMPrecision<T>> repr);
 
     BufferPrecision(const BufferPrecision& rhs) = default;
     BufferPrecision& operator=(const BufferPrecision& that) = default;
-    virtual BufferPrecision<T, A>* clone() const { return new BufferPrecision<T, A>(*this); }
+    virtual BufferPrecision<T>* clone() const { return new BufferPrecision<T>(*this); }
     virtual ~BufferPrecision() = default;
 
     BufferRAMPrecision<T>* getEditableRAMRepresentation();
@@ -106,15 +108,15 @@ private:
     static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
 };
 
-template <typename T, BufferType A>
-inviwo::BufferPrecision<T, A>::BufferPrecision(std::shared_ptr<BufferRAMPrecision<T>> repr)
+template <typename T>
+inviwo::BufferPrecision<T>::BufferPrecision(std::shared_ptr<BufferRAMPrecision<T>> repr)
     : Buffer(repr->getSize(), repr->getDataFormat(), repr->getBufferType(),
              repr->getBufferUsage()) {
     addRepresentation(repr);
 }
 
-template <typename T, BufferType A>
-const BufferRAMPrecision<T>* inviwo::BufferPrecision<T, A>::getRAMRepresentation() const {
+template <typename T>
+const BufferRAMPrecision<T>* inviwo::BufferPrecision<T>::getRAMRepresentation() const {
     if (auto res = dynamic_cast<const BufferRAMPrecision<T>*>(getRepresentation<BufferRAM>())) {
         return res;
     } else {
@@ -122,8 +124,8 @@ const BufferRAMPrecision<T>* inviwo::BufferPrecision<T, A>::getRAMRepresentation
     }
 }
 
-template <typename T, BufferType A>
-BufferRAMPrecision<T>* inviwo::BufferPrecision<T, A>::getEditableRAMRepresentation() {
+template <typename T>
+BufferRAMPrecision<T>* inviwo::BufferPrecision<T>::getEditableRAMRepresentation() {
     if (auto res = dynamic_cast<BufferRAMPrecision<T>*>(getEditableRepresentation<BufferRAM>())) {
         return res;
     } else {
@@ -131,52 +133,43 @@ BufferRAMPrecision<T>* inviwo::BufferPrecision<T, A>::getEditableRAMRepresentati
     }
 }
 
-typedef BufferPrecision<vec2, BufferType::POSITION_ATTRIB> Position2dBuffer;
-typedef BufferPrecision<vec2, BufferType::TEXCOORD_ATTRIB> TexCoord2dBuffer;
-typedef BufferPrecision<vec3, BufferType::POSITION_ATTRIB> Position3dBuffer;
-typedef BufferPrecision<vec4, BufferType::COLOR_ATTRIB> ColorBuffer;
-typedef BufferPrecision<vec3, BufferType::NORMAL_ATTRIB> NormalBuffer;
-typedef BufferPrecision<vec3, BufferType::TEXCOORD_ATTRIB> TexCoord3dBuffer;
-typedef BufferPrecision<float, BufferType::CURVATURE_ATTRIB> CurvatureBuffer;
-typedef BufferPrecision<std::uint32_t, BufferType::INDEX_ATTRIB> IndexBuffer;
-
 // Scalar buffers
 typedef BufferPrecision<std::uint8_t> BufferUInt8;
-typedef BufferPrecision<float, BufferType::POSITION_ATTRIB> BufferFloat32;
-typedef BufferPrecision<std::int32_t, BufferType::INDEX_ATTRIB> BufferInt32;
-typedef BufferPrecision<std::uint32_t, BufferType::INDEX_ATTRIB> BufferUInt32;
-typedef BufferPrecision<double, BufferType::POSITION_ATTRIB> BufferFloat64;
+typedef BufferPrecision<std::int32_t> BufferInt32;
+typedef BufferPrecision<std::uint32_t> BufferUInt32; // used for index buffers
+typedef BufferPrecision<float> BufferFloat32;
+typedef BufferPrecision<double> BufferFloat64;
 
 // Vector buffers
-typedef BufferPrecision<vec2, BufferType::TEXCOORD_ATTRIB> BufferVec2Float32;
-typedef BufferPrecision<vec3, BufferType::POSITION_ATTRIB> BufferVec3Float32;
-typedef BufferPrecision<vec4, BufferType::COLOR_ATTRIB> BufferVec4Float32;
+typedef BufferPrecision<vec2> BufferVec2Float32; // 2D position, textures, normals.
+typedef BufferPrecision<vec3> BufferVec3Float32; // 3D position, textures, normals.
+typedef BufferPrecision<vec4> BufferVec4Float32; // colors.
 
-typedef BufferPrecision<dvec2, BufferType::TEXCOORD_ATTRIB> BufferVec2Float64;
-typedef BufferPrecision<dvec3, BufferType::POSITION_ATTRIB> BufferVec3Float64;
-typedef BufferPrecision<dvec4, BufferType::COLOR_ATTRIB> BufferVec4Float64;
+typedef BufferPrecision<dvec2> BufferVec2Float64;
+typedef BufferPrecision<dvec3> BufferVec3Float64;
+typedef BufferPrecision<dvec4> BufferVec4Float64;
 
-typedef BufferPrecision<ivec2, BufferType::POSITION_ATTRIB> BufferVec2Int32;
-typedef BufferPrecision<ivec3, BufferType::POSITION_ATTRIB> BufferVec3Int32;
-typedef BufferPrecision<ivec4, BufferType::POSITION_ATTRIB> BufferVec4Int32;
+typedef BufferPrecision<ivec2> BufferVec2Int32;
+typedef BufferPrecision<ivec3> BufferVec3Int32;
+typedef BufferPrecision<ivec4> BufferVec4Int32;
 
-typedef BufferPrecision<uvec2, BufferType::POSITION_ATTRIB> BufferVec2UInt32;
-typedef BufferPrecision<uvec3, BufferType::POSITION_ATTRIB> BufferVec3UInt32;
-typedef BufferPrecision<uvec4, BufferType::POSITION_ATTRIB> BufferVec4UInt32;
+typedef BufferPrecision<uvec2> BufferVec2UInt32;
+typedef BufferPrecision<uvec3> BufferVec3UInt32;
+typedef BufferPrecision<uvec4> BufferVec4UInt32;
 
 namespace util {
-inline std::shared_ptr<IndexBuffer> makeIndexBuffer(std::initializer_list<std::uint32_t> data) {
+inline std::shared_ptr<BufferUInt32> makeIndexBuffer(std::initializer_list<std::uint32_t> data) {
     auto indexBufferRAM = std::make_shared<UInt32BufferRAM>(
         std::vector<std::uint32_t>(std::move(data)), BufferType::INDEX_ATTRIB);
-    auto indices = std::make_shared<IndexBuffer>(indexBufferRAM);
+    auto indices = std::make_shared<BufferUInt32>(indexBufferRAM);
     return indices;
 }
 
 template <typename T = vec3, BufferType A = BufferType::POSITION_ATTRIB,
           BufferUsage U = BufferUsage::STATIC>
-    std::shared_ptr<BufferPrecision<T, A>> makeBuffer(std::initializer_list<T> data) {
+    std::shared_ptr<BufferPrecision<T>> makeBuffer(std::initializer_list<T> data) {
     auto repr = std::make_shared<BufferRAMPrecision<T>>(std::vector<T>(std::move(data)), A, U);
-    auto buffer = std::make_shared<BufferPrecision<T, A>>(repr);
+    auto buffer = std::make_shared<BufferPrecision<T>>(repr);
     return buffer;
 }
 

@@ -79,7 +79,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
         aiMesh* m = scene->mMeshes[i];
 
         auto prep = std::make_shared<Vec3BufferRAM>(m->mNumVertices, BufferType::POSITION_ATTRIB);
-        auto pbuff = std::make_shared<Position3dBuffer>(prep);
+        auto pbuff = std::make_shared<BufferVec3Float32>(prep);
 
         for (size_t j = 0; j < m->mNumVertices; ++j) {
             aiVector3D v = m->mVertices[j];
@@ -89,7 +89,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
    
         for (size_t l = 0; l < m->GetNumUVChannels(); ++l) {
             auto trep = std::make_shared<Vec3BufferRAM>(m->mNumVertices, BufferType::NORMAL_ATTRIB);
-            auto tbuff = std::make_shared<TexCoord3dBuffer>(trep);
+            auto tbuff = std::make_shared<BufferVec3Float32>(trep);
             for (size_t j = 0; j < m->mNumVertices; ++j) {
                 aiVector3D t = m->mTextureCoords[l][j];
                 (*trep)[j] = vec3(t.x, t.y, t.z);
@@ -99,7 +99,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
 
         for (size_t l = 0; l < m->GetNumColorChannels(); ++l) {
             auto crep = std::make_shared<Vec4BufferRAM>(m->mNumVertices, BufferType::COLOR_ATTRIB);
-            auto cbuff = std::make_shared<ColorBuffer>(crep);
+            auto cbuff = std::make_shared<BufferVec4Float32>(crep);
             
             for (size_t j = 0; j < m->mNumVertices; ++j) {
                 aiColor4D c = m->mColors[l][j];
@@ -110,7 +110,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
 
         if (m->HasNormals()) {
             auto nrep = std::make_shared<Vec3BufferRAM>(m->mNumVertices, BufferType::NORMAL_ATTRIB);
-            auto nbuff = std::make_shared<NormalBuffer>(nrep);
+            auto nbuff = std::make_shared<BufferVec3Float32>(nrep);
             
             for (size_t j = 0; j < m->mNumVertices; ++j) {
                 aiVector3D n = m->mNormals[j];
@@ -120,7 +120,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
         }
 
         auto ibuff = std::make_shared<UInt32BufferRAM>(BufferType::INDEX_ATTRIB);
-        auto inds = std::make_shared<IndexBuffer>(ibuff);
+        auto inds = std::make_shared<BufferUInt32>(ibuff);
         
         for (size_t j = 0; j < m->mNumFaces; ++j) {
             aiFace face = m->mFaces[j];

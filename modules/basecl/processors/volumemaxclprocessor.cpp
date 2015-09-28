@@ -136,8 +136,8 @@ void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume,
             size_t outDimFlattened = outDim.x * outDim.y * outDim.z;
             if (tmpVolume_ == nullptr || tmpVolume_->getSize() != outDimFlattened) {
                 delete tmpVolume_;
-                tmpVolume_ = new BufferPrecision<unsigned char, BufferType::POSITION_ATTRIB>(
-                    outDimFlattened);
+                tmpVolume_ = new BufferPrecision<unsigned char>(
+                    outDimFlattened, BufferType::POSITION_ATTRIB);
             }
             tmpVolumeCL = tmpVolume_->getEditableRepresentation<BufferCL>();
             kernel_->setArg(argIndex++, *tmpVolumeCL);

@@ -42,7 +42,7 @@ Mesh::Mesh(const Mesh& rhs)
     }
     for (const auto& elem : rhs.indexAttributes_) {
         indexAttributes_.push_back(
-            std::make_pair(elem.first, std::shared_ptr<IndexBuffer>(elem.second->clone())));
+            std::make_pair(elem.first, std::shared_ptr<BufferUInt32>(elem.second->clone())));
     }
 }
 
@@ -59,7 +59,7 @@ Mesh& Mesh::operator=(const Mesh& that) {
         }
         for (const auto& elem : that.indexAttributes_) {
             indexAttributes.push_back(
-                std::make_pair(elem.first, std::shared_ptr<IndexBuffer>(elem.second->clone())));
+                std::make_pair(elem.first, std::shared_ptr<BufferUInt32>(elem.second->clone())));
         }
 
         std::swap(attributes, attributes_);
@@ -178,7 +178,7 @@ void Mesh::setAttribute(size_t idx, std::shared_ptr<Buffer> att) {
     }
 }
 
-void Mesh::addIndicies(AttributesInfo info, std::shared_ptr<IndexBuffer> ind) {
+void Mesh::addIndicies(AttributesInfo info, std::shared_ptr<BufferUInt32> ind) {
     indexAttributes_.push_back(std::make_pair(info, ind));
 }
 

@@ -37,10 +37,10 @@
 
 namespace inviwo {
 BasicMesh::BasicMesh() : Mesh() {
-    addAttribute(std::make_shared<Position3dBuffer>());  // pos 0
-    addAttribute(std::make_shared<TexCoord3dBuffer>());  // pos 1
-    addAttribute(std::make_shared<ColorBuffer>());       // pos 2
-    addAttribute(std::make_shared<NormalBuffer>());      // pos 3
+    addAttribute(std::make_shared<BufferVec3Float32>(BufferType::POSITION_ATTRIB));  // pos 0
+    addAttribute(std::make_shared<BufferVec3Float32>(BufferType::TEXCOORD_ATTRIB));  // pos 1
+    addAttribute(std::make_shared<BufferVec4Float32>(BufferType::COLOR_ATTRIB));  // pos 2
+    addAttribute(std::make_shared<BufferVec3Float32>(BufferType::NORMAL_ATTRIB));  // pos 3
 }
 
 BasicMesh::BasicMesh(const BasicMesh& rhs) : Mesh(rhs) {}
@@ -89,7 +89,7 @@ void BasicMesh::setVertexColor(size_t index, vec4 color) {
 
 UInt32BufferRAM* BasicMesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
     auto indicesRam = std::make_shared<UInt32BufferRAM>(BufferType::INDEX_ATTRIB);
-    auto indices_ = std::make_shared<IndexBuffer>(indicesRam);
+    auto indices_ = std::make_shared<BufferUInt32>(indicesRam);
     addIndicies(Mesh::AttributesInfo(dt, ct), indices_);
     return indicesRam.get();
 }
@@ -115,20 +115,20 @@ void BasicMesh::append(const BasicMesh* mesh) {
     }
 }
 
-const Position3dBuffer* BasicMesh::getVertices() const {
-    return static_cast<Position3dBuffer*>(attributes_[0].get());
+const BufferVec3Float32* BasicMesh::getVertices() const {
+    return static_cast<BufferVec3Float32*>(attributes_[0].get());
 }
 
-const TexCoord3dBuffer* BasicMesh::getTexCoords() const {
-    return static_cast<const TexCoord3dBuffer*>(attributes_[1].get());
+const BufferVec3Float32* BasicMesh::getTexCoords() const {
+    return static_cast<const BufferVec3Float32*>(attributes_[1].get());
 }
 
-const ColorBuffer* BasicMesh::getColors() const {
-    return static_cast<ColorBuffer*>(attributes_[1].get());
+const BufferVec4Float32* BasicMesh::getColors() const {
+    return static_cast<BufferVec4Float32*>(attributes_[1].get());
 }
 
-const NormalBuffer* BasicMesh::getNormals() const {
-    return static_cast<NormalBuffer*>(attributes_[2].get());
+const BufferVec3Float32* BasicMesh::getNormals() const {
+    return static_cast<BufferVec3Float32*>(attributes_[2].get());
 }
 
 vec3 BasicMesh::orthvec(const vec3& vec) {
