@@ -33,46 +33,46 @@
 namespace inviwo {
 
 SimpleMesh::SimpleMesh(DrawType dt, ConnectivityType ct) : Mesh(dt, ct) {
-    addAttribute(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec3Float32>());  // pos 0
-    addAttribute(BufferType::TEXCOORD_ATTRIB, std::make_shared<BufferVec3Float32>());  // pos 1
-    addAttribute(BufferType::COLOR_ATTRIB, std::make_shared<BufferVec4Float32>());     // pos 2
-    addIndicies(Mesh::AttributesInfo(dt, ct), std::make_shared<BufferUInt32>());
+    addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec3Float32>());  // pos 0
+    addBuffer(BufferType::TEXCOORD_ATTRIB, std::make_shared<BufferVec3Float32>());  // pos 1
+    addBuffer(BufferType::COLOR_ATTRIB, std::make_shared<BufferVec4Float32>());     // pos 2
+    addIndicies(Mesh::MeshInfo(dt, ct), std::make_shared<BufferUInt32>());
 }
 
 SimpleMesh* SimpleMesh::clone() const { return new SimpleMesh(*this); }
 
 unsigned int SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
     auto posBuffer =
-        static_cast<Vec3BufferRAM*>(attributes_[0].second->getEditableRepresentation<BufferRAM>());
+        static_cast<Vec3BufferRAM*>(buffers_[0].second->getEditableRepresentation<BufferRAM>());
     posBuffer->add(pos);
-    static_cast<Vec3BufferRAM*>(attributes_[1].second->getEditableRepresentation<BufferRAM>())
+    static_cast<Vec3BufferRAM*>(buffers_[1].second->getEditableRepresentation<BufferRAM>())
         ->add(texCoord);
-    static_cast<Vec4BufferRAM*>(attributes_[2].second->getEditableRepresentation<BufferRAM>())
+    static_cast<Vec4BufferRAM*>(buffers_[2].second->getEditableRepresentation<BufferRAM>())
         ->add(color);
     return static_cast<unsigned int>(posBuffer->getSize() - 1);
 }
 
 void SimpleMesh::addIndex(unsigned int idx) {
-    static_cast<UInt32BufferRAM*>(indexAttributes_[0].second->getEditableRepresentation<BufferRAM>())
+    static_cast<UInt32BufferRAM*>(indices_[0].second->getEditableRepresentation<BufferRAM>())
         ->add(idx);
 }
 
 void SimpleMesh::setIndicesInfo(DrawType dt, ConnectivityType ct) {
-    indexAttributes_[0].first = Mesh::AttributesInfo(dt, ct);
+    indices_[0].first = Mesh::MeshInfo(dt, ct);
 }
 
 const BufferVec3Float32* SimpleMesh::getVertexList() const {
-    return static_cast<const BufferVec3Float32*>(attributes_[0].second.get());
+    return static_cast<const BufferVec3Float32*>(buffers_[0].second.get());
 }
 
 const BufferVec3Float32* SimpleMesh::getTexCoordList() const {
-    return static_cast<const BufferVec3Float32*>(attributes_[1].second.get());
+    return static_cast<const BufferVec3Float32*>(buffers_[1].second.get());
 }
 
 const BufferVec4Float32* SimpleMesh::getColorList() const {
-    return static_cast<const BufferVec4Float32*>(attributes_[2].second.get());
+    return static_cast<const BufferVec4Float32*>(buffers_[2].second.get());
 }
 
-const BufferUInt32* SimpleMesh::getIndexList() const { return indexAttributes_[0].second.get(); }
+const BufferUInt32* SimpleMesh::getIndexList() const { return indices_[0].second.get(); }
 
 }  // namespace

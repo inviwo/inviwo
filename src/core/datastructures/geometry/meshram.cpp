@@ -45,22 +45,20 @@ MeshRAM& MeshRAM::operator=(const MeshRAM& that) {
     return *this;
 }
 
-MeshRAM::~MeshRAM() {}
-
 std::type_index MeshRAM::getTypeIndex() const { return std::type_index(typeid(MeshRAM)); }
 
 MeshRAM* MeshRAM::clone() const { return new MeshRAM(*this); }
 
 void MeshRAM::update(bool editable) {
-    attributesRAM_.clear();
+    bufferRAM_.clear();
 
     Mesh* owner = static_cast<Mesh*>(this->getOwner());
     if (editable) {
         for (const auto& elem : owner->getBuffers())
-            attributesRAM_.push_back(elem.second->getEditableRepresentation<BufferRAM>());
+            bufferRAM_.push_back(elem.second->getEditableRepresentation<BufferRAM>());
     } else {
         for (const auto& elem : owner->getBuffers())
-            attributesRAM_.push_back(
+            bufferRAM_.push_back(
                 const_cast<BufferRAM*>(elem.second->getRepresentation<BufferRAM>()));
     }
 }

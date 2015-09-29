@@ -60,7 +60,7 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(
         SyncCLGL glSync;
         LayerCLGL* entryCL = entryPoints->getEditableRepresentation<LayerCLGL>();
         LayerCLGL* exitCL = exitPoints->getEditableRepresentation<LayerCLGL>();
-        const BufferCLGL* vertices = mesh->getAttributes(0)->getRepresentation<BufferCLGL>();
+        const BufferCLGL* vertices = mesh->getBuffer(0)->getRepresentation<BufferCLGL>();
         const BufferCLGL* indices = mesh->getIndicies(0)->getRepresentation<ElementBufferCLGL>();
         glSync.addToAquireGLObjectList(entryCL);
         glSync.addToAquireGLObjectList(exitCL);
@@ -73,7 +73,7 @@ bool MeshEntryExitPointsCL::computeEntryExitPoints(
     } else {
         LayerCL* entryCL = entryPoints->getEditableRepresentation<LayerCL>();
         LayerCL* exitCL = exitPoints->getEditableRepresentation<LayerCL>();
-        const BufferCL* vertices = mesh->getAttributes(0)->getRepresentation<BufferCL>();
+        const BufferCL* vertices = mesh->getBuffer(0)->getRepresentation<BufferCL>();
         const BufferCL* indices = mesh->getIndicies(0)->getRepresentation<ElementBufferCL>();
         computeEntryExitPoints(NDCToTextureMat, worldToTexMat, vertices, indices, nIndices, entryCL,
                                exitCL, outportDim, waitForEvents, event);

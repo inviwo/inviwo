@@ -75,7 +75,7 @@ DrawPoints::DrawPoints()
     addProperty(keyEnableDraw_);
 
     pointShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
-    points_.addAttribute(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec2Float32>());
+    points_.addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec2Float32>());
 }
 
 DrawPoints::~DrawPoints() {}
@@ -95,13 +95,13 @@ void DrawPoints::process() {
 
 void DrawPoints::addPoint(vec2 p) {
     auto buff = static_cast<Vec2BufferRAM*>(
-                    points_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
+                    points_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
     buff->add(p);
 }
 
 void DrawPoints::clearPoints() {
     auto buff = static_cast<Vec2BufferRAM*>(
-        points_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
+        points_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
 
     buff->clear();
 }

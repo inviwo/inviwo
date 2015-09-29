@@ -36,15 +36,15 @@ namespace inviwo {
 MeshDrawerGL::MeshDrawerGL() : meshToDraw_(nullptr) {}
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh) : meshToDraw_(mesh) {
-    initialize(mesh->getDefaultAttributesInfo());
+    initialize(mesh->getDefaultMeshInfo());
 }
 
-MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, Mesh::AttributesInfo ai) : meshToDraw_(mesh) {
+MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo ai) : meshToDraw_(mesh) {
     initialize(ai);
 }
 
 MeshDrawerGL::MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct) : meshToDraw_(mesh) {
-    initialize(Mesh::AttributesInfo(dt, ct));
+    initialize(Mesh::MeshInfo(dt, ct));
 }
 
 MeshDrawerGL::MeshDrawerGL(MeshDrawerGL&& other)
@@ -90,7 +90,7 @@ GLenum MeshDrawerGL::getDefaultDrawMode() { return drawMethods_[0].drawMode; }
 void MeshDrawerGL::drawArray(DrawType dtenum) const {
     const auto dt = static_cast<size_t>(dtenum);
     glDrawArrays(drawMethods_[dt].drawMode, 0,
-                 static_cast<GLsizei>(meshToDraw_->getAttributes(0)->getSize()));
+                 static_cast<GLsizei>(meshToDraw_->getBuffer(0)->getSize()));
 }
 
 void MeshDrawerGL::drawElements(DrawType dtenum) const {
@@ -103,7 +103,7 @@ void MeshDrawerGL::drawElements(DrawType dtenum) const {
     }
 }
 
-void MeshDrawerGL::initialize(Mesh::AttributesInfo ai) {
+void MeshDrawerGL::initialize(Mesh::MeshInfo ai) {
     const auto dt = static_cast<size_t>(ai.dt);
     const auto ns = static_cast<size_t>(DrawType::NOT_SPECIFIED);
     
@@ -123,11 +123,11 @@ void MeshDrawerGL::initialize(Mesh::AttributesInfo ai) {
     for (size_t i = 0; i < meshToDraw_->getNumberOfIndicies(); ++i) {
         if (meshToDraw_->getIndicies(i)->getSize() > 0)
             initializeIndexBuffer(meshToDraw_->getIndicies(i),
-                                  meshToDraw_->getIndexAttributesInfo(i));
+                                  meshToDraw_->getIndexMeshInfo(i));
     }
 }
 
-void MeshDrawerGL::initializeIndexBuffer(const Buffer* indexBuffer, Mesh::AttributesInfo ai) {
+void MeshDrawerGL::initializeIndexBuffer(const Buffer* indexBuffer, Mesh::MeshInfo ai) {
     const auto dt = static_cast<int>(ai.dt);
     // check draw mode if there exists another indexBuffer
     if (drawMethods_[dt].elementBufferList.size() != 0) {

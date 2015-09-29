@@ -283,25 +283,22 @@ void MeshRenderProcessorGL::setNearFarPlane() {
 
     auto geom = inport_.getData();
 
-    const Vec3BufferRAM* posBuffer = dynamic_cast<const Vec3BufferRAM*>(
-        geom->getAttributes(0)->getRepresentation<BufferRAM>());
+    auto posBuffer =
+        dynamic_cast<const Vec3BufferRAM*>(geom->getBuffer(0)->getRepresentation<BufferRAM>());
 
-    if (posBuffer == nullptr) {
-        return;
-    }
+    if (posBuffer == nullptr) return;
 
-    const std::vector<vec3>* pos = posBuffer->getDataContainer();
+    auto pos = posBuffer->getDataContainer();
 
-    if (pos->empty()) {
-        return;
-    }
+    if (pos->empty()) return;
 
     float nearDist, farDist;
     nearDist = std::numeric_limits<float>::infinity();
     farDist = 0;
     vec3 nearPos, farPos;
     vec3 camPos = (geom->getCoordinateTransformer().getWorldToModelMatrix() *
-                   vec4(camera_.getLookFrom(), 1.0)).xyz();
+                   vec4(camera_.getLookFrom(), 1.0))
+                      .xyz();
     for (auto& po : *pos) {
         auto d = glm::distance2(po, camPos);
         if (d < nearDist) {

@@ -74,7 +74,7 @@ DrawLines::DrawLines()
     addProperty(keyEnableDraw_);
     lineShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 
-    lines_.addAttribute(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec2Float32>());
+    lines_.addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec2Float32>());
 
     GLint aliasRange[2];
     glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, aliasRange);
@@ -106,13 +106,13 @@ void DrawLines::process() {
 
 void DrawLines::addPoint(vec2 p) {
     auto buff = static_cast<Vec2BufferRAM*>(
-        lines_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
+        lines_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
     buff->add(p);
 }
 
 void DrawLines::clearLines() {
     auto buff = static_cast<Vec2BufferRAM*>(
-        lines_.getAttributes(0)->getEditableRepresentation<BufferRAM>());
+        lines_.getBuffer(0)->getEditableRepresentation<BufferRAM>());
 
     buff->clear();
 }

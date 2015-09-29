@@ -42,14 +42,14 @@ namespace inviwo {
 
 class IVW_CORE_API Mesh : public DataGroup, public SpatialEntity<3> {
 public:
-    struct AttributesInfo {
-        AttributesInfo() : dt(DrawType::POINTS), ct(ConnectivityType::NONE) {}
-        AttributesInfo(DrawType d, ConnectivityType c) : dt(d), ct(c) {}
+    struct MeshInfo {
+        MeshInfo() : dt(DrawType::POINTS), ct(ConnectivityType::NONE) {}
+        MeshInfo(DrawType d, ConnectivityType c) : dt(d), ct(c) {}
         DrawType dt;
         ConnectivityType ct;
     };
-    
-    using IndexVector = std::vector<std::pair<AttributesInfo, std::shared_ptr<BufferUInt32>>>;
+
+    using IndexVector = std::vector<std::pair<MeshInfo, std::shared_ptr<BufferUInt32>>>;
     using BufferVector = std::vector<std::pair<BufferType, std::shared_ptr<Buffer>>>;
 
     Mesh() = default;
@@ -67,7 +67,7 @@ public:
      * @param att Data to be rendered.
      * @param takeOwnership True if the buffer should be deleted by the mesh.
      */
-    void addAttribute(BufferType type, std::shared_ptr<Buffer> att);
+    void addBuffer(BufferType type, std::shared_ptr<Buffer> att);
 
     /**
      * Replaces buffer at index with new buffer and deletes old one if it has ownership of it.
@@ -76,7 +76,7 @@ public:
      * @param att New buffer
      * @param takeOwnership True if new buffer should be owned.
      */
-    void setAttribute(size_t idx, BufferType type, std::shared_ptr<Buffer> att);
+    void setBuffer(size_t idx, BufferType type, std::shared_ptr<Buffer> att);
 
     /**
      * Add index buffer. The indices will be used as look up
@@ -85,21 +85,21 @@ public:
      * @param info Rendering type and connectivity.
      * @param ind Index buffer, will be owned by mesh.
      */
-    void addIndicies(AttributesInfo info, std::shared_ptr<BufferUInt32> ind);
+    void addIndicies(MeshInfo info, std::shared_ptr<BufferUInt32> ind);
 
     const BufferVector& getBuffers() const;
     const IndexVector& getIndexBuffers() const;
 
-    const Buffer* getAttributes(size_t idx) const;
+    const Buffer* getBuffer(size_t idx) const;
     const Buffer* getIndicies(size_t idx) const;
 
-    Buffer* getAttributes(size_t idx);
+    Buffer* getBuffer(size_t idx);
     Buffer* getIndicies(size_t idx);
 
-    AttributesInfo getDefaultAttributesInfo() const;
-    AttributesInfo getIndexAttributesInfo(size_t idx) const;
+    MeshInfo getDefaultMeshInfo() const;
+    MeshInfo getIndexMeshInfo(size_t idx) const;
 
-    size_t getNumberOfAttributes() const;
+    size_t getNumberOfBuffers() const;
     size_t getNumberOfIndicies() const;
 
     virtual const SpatialCameraCoordinateTransformer<3>& getCoordinateTransformer(
@@ -110,9 +110,9 @@ public:
     static const std::string CLASS_IDENTIFIER;
 
 protected:
-    BufferVector attributes_;
-    IndexVector indexAttributes_;
-    AttributesInfo defaultAttributeInfo_;
+    BufferVector buffers_;
+    IndexVector indices_;
+    MeshInfo defaultMeshInfo_;
 };
 
 }  // namespace

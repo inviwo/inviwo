@@ -85,7 +85,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
             aiVector3D v = m->mVertices[j];
             (*prep)[j] = vec3(v.x, v.y, v.z);
         }
-        mesh->addAttribute(BufferType::POSITION_ATTRIB, pbuff);
+        mesh->addBuffer(BufferType::POSITION_ATTRIB, pbuff);
    
         for (size_t l = 0; l < m->GetNumUVChannels(); ++l) {
             auto trep = std::make_shared<Vec3BufferRAM>(m->mNumVertices);
@@ -94,7 +94,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
                 aiVector3D t = m->mTextureCoords[l][j];
                 (*trep)[j] = vec3(t.x, t.y, t.z);
             }
-            mesh->addAttribute(BufferType::TEXCOORD_ATTRIB, tbuff);
+            mesh->addBuffer(BufferType::TEXCOORD_ATTRIB, tbuff);
         }
 
         for (size_t l = 0; l < m->GetNumColorChannels(); ++l) {
@@ -105,7 +105,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
                 aiColor4D c = m->mColors[l][j];
                 (*crep)[j] = vec4(c.r, c.g, c.b, c.a);
             }
-            mesh->addAttribute(BufferType::COLOR_ATTRIB, cbuff);
+            mesh->addBuffer(BufferType::COLOR_ATTRIB, cbuff);
         }
 
         if (m->HasNormals()) {
@@ -116,7 +116,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
                 aiVector3D n = m->mNormals[j];
                 (*nrep)[j] = vec3(n.x, n.y, n.z);
             }
-            mesh->addAttribute(BufferType::NORMAL_ATTRIB, nbuff);
+            mesh->addBuffer(BufferType::NORMAL_ATTRIB, nbuff);
         }
 
         auto ibuff = std::make_shared<UInt32BufferRAM>();
@@ -137,7 +137,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
         } else if (m->mPrimitiveTypes == aiPrimitiveType_TRIANGLE) {
             dt = DrawType::TRIANGLES;
         }
-        mesh->addIndicies(Mesh::AttributesInfo(dt, ConnectivityType::NONE), inds);
+        mesh->addIndicies(Mesh::MeshInfo(dt, ConnectivityType::NONE), inds);
     }
 
     return mesh;

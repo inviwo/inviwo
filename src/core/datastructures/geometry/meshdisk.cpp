@@ -31,19 +31,7 @@
 
 namespace inviwo {
 
-MeshDisk::MeshDisk() : MeshRepresentation(), DiskRepresentation() {}
-
 MeshDisk::MeshDisk(std::string srcFile) : MeshRepresentation(), DiskRepresentation(srcFile) {}
-
-MeshDisk::MeshDisk(const MeshDisk& rhs) : MeshRepresentation(rhs), DiskRepresentation(rhs) {}
-
-MeshDisk& MeshDisk::operator=(const MeshDisk& that) {
-    if (this != &that) {
-        MeshRepresentation::operator=(that);
-        DiskRepresentation::operator=(that);
-    }
-    return *this;
-}
 
 MeshDisk* MeshDisk::clone() const { return new MeshDisk(*this); }
 

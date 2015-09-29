@@ -42,10 +42,10 @@ BasicMesh::BasicMesh() : Mesh() {
     colors_ = std::make_shared<BufferVec4Float32>();
     normals_ = std::make_shared<BufferVec3Float32>();
 
-    addAttribute(BufferType::POSITION_ATTRIB, vertices_);  // pos 0
-    addAttribute(BufferType::TEXCOORD_ATTRIB, texCoords_); // pos 1
-    addAttribute(BufferType::COLOR_ATTRIB, colors_);       // pos 2
-    addAttribute(BufferType::NORMAL_ATTRIB, normals_);     // pos 3
+    addBuffer(BufferType::POSITION_ATTRIB, vertices_);   // pos 0
+    addBuffer(BufferType::TEXCOORD_ATTRIB, texCoords_);  // pos 1
+    addBuffer(BufferType::COLOR_ATTRIB, colors_);        // pos 2
+    addBuffer(BufferType::NORMAL_ATTRIB, normals_);      // pos 3
 }
 
 BasicMesh* BasicMesh::clone() const { return new BasicMesh(*this); }
@@ -98,19 +98,19 @@ void BasicMesh::setVertexColor(size_t index, vec4 color) {
 UInt32BufferRAM* BasicMesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
     auto indicesRam = std::make_shared<UInt32BufferRAM>();
     auto indices_ = std::make_shared<BufferUInt32>(indicesRam);
-    addIndicies(Mesh::AttributesInfo(dt, ct), indices_);
+    addIndicies(Mesh::MeshInfo(dt, ct), indices_);
     return indicesRam.get();
 }
 
 void BasicMesh::append(const BasicMesh* mesh) {
-    size_t size = attributes_[0].second->getSize();
+    size_t size = buffers_[0].second->getSize();
 
     getEditableVerticesRAM()->append(mesh->getVerticesRAM()->getDataContainer());
     getEditableTexCoordsRAM()->append(mesh->getTexCoordsRAM()->getDataContainer());
     getEditableColorsRAM()->append(mesh->getColorsRAM()->getDataContainer());
     getEditableNormalsRAM()->append(mesh->getNormalsRAM()->getDataContainer());
 
-    for (auto buffer : mesh->indexAttributes_) {
+    for (auto buffer : mesh->indices_) {
         UInt32BufferRAM* ind = addIndexBuffer(buffer.first.dt, buffer.first.ct);
 
         const std::vector<unsigned int>* newinds =
@@ -187,7 +187,7 @@ std::shared_ptr<BasicMesh> BasicMesh::disk(const vec3& center, const vec3& norma
     vec3 t;
     double angle = 2.0 * M_PI / segments;
     const auto ns = static_cast<std::uint32_t>(segments);
-      for (std::uint32_t i = 0; i < ns; ++i) {
+    for (std::uint32_t i = 0; i < ns; ++i) {
         p = center + radius * glm::rotate(orth, static_cast<float>(i * angle), normal);
         t = tc + glm::rotate(to, static_cast<float>(i * angle), tn);
         mesh->addVertex(p, normal, t, color);

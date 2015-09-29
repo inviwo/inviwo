@@ -33,20 +33,10 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
 
 namespace inviwo {
 
-enum class BufferType {
-    POSITION_ATTRIB = 0,
-    NORMAL_ATTRIB,
-    COLOR_ATTRIB,
-    TEXCOORD_ATTRIB,
-    CURVATURE_ATTRIB,
-    INDEX_ATTRIB,
-    NUMBER_OF_BUFFER_TYPES
-};
-
-enum class BufferUsage { STATIC, DYNAMIC };
 
 class IVW_CORE_API BufferRepresentation : public DataRepresentation {
 public:
@@ -61,19 +51,13 @@ public:
 
     /**
      * Return the number of elements in the buffer.
-     *
-     * @return Number of elements in the buffer
      */
     virtual size_t getSize() const = 0;
-
     /**
      * Return size of buffer element in bytes.
-     *
-     * @return Size of element in bytes.
      */
-    virtual size_t getSizeOfElement() const { return getDataFormat()->getSize(); };
-
-    BufferUsage getBufferUsage() const { return usage_; }
+    virtual size_t getSizeOfElement() const;
+    BufferUsage getBufferUsage() const;
 
 protected:
     BufferUsage usage_;

@@ -492,9 +492,9 @@ void VolumeSliceGL::updateIndicatorMesh() {
         }
         // clear up existing attribute buffers
         // meshCrossHair_->deinitialize();
-        meshCrossHair_->addAttribute(BufferType::POSITION_ATTRIB, posBuf);
-        meshCrossHair_->addAttribute(BufferType::COLOR_ATTRIB, colorBuf);
-        meshCrossHair_->addIndicies(Mesh::AttributesInfo(DrawType::LINES, ConnectivityType::NONE),
+        meshCrossHair_->addBuffer(BufferType::POSITION_ATTRIB, posBuf);
+        meshCrossHair_->addBuffer(BufferType::COLOR_ATTRIB, colorBuf);
+        meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::LINES, ConnectivityType::NONE),
                                     indexBuf);
     }
 
@@ -521,9 +521,9 @@ void VolumeSliceGL::updateIndicatorMesh() {
         }
         // clear up existing attribute buffers
         // meshBox_->deinitialize();
-        meshBox_->addAttribute(BufferType::POSITION_ATTRIB, posBuf);
-        meshBox_->addAttribute(BufferType::COLOR_ATTRIB, colorBuf);
-        meshBox_->addIndicies(Mesh::AttributesInfo(DrawType::LINES, ConnectivityType::LOOP),
+        meshBox_->addBuffer(BufferType::POSITION_ATTRIB, posBuf);
+        meshBox_->addBuffer(BufferType::COLOR_ATTRIB, colorBuf);
+        meshBox_->addIndicies(Mesh::MeshInfo(DrawType::LINES, ConnectivityType::LOOP),
                               indexBuf);
     }
 

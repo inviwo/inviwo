@@ -60,7 +60,7 @@ public:
     void setSize(size_t size);
     size_t getSize() const;
 
-    size_t getSizeInBytes();
+    size_t getSizeInBytes() const;
     BufferUsage getBufferUsage() const { return usage_; }
 
     static uvec3 COLOR_CODE;
@@ -73,14 +73,6 @@ private:
     size_t size_;
     BufferUsage usage_;
 };
-
-template <typename T>
-inviwo::Buffer::Buffer(std::shared_ptr<BufferRAMPrecision<T>> repr)
-    : Data<BufferRepresentation>(repr->getDataFormat())
-    , size_(repr->getSize())
-    , usage_(repr->getBufferUsage()) {
-    addRepresentation(repr);
-}
 
 template <typename T>
 class BufferPrecision : public Buffer {
@@ -104,30 +96,6 @@ public:
 private:
     static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
 };
-
-template <typename T>
-inviwo::BufferPrecision<T>::BufferPrecision(std::shared_ptr<BufferRAMPrecision<T>> repr)
-    : Buffer(repr->getSize(), repr->getDataFormat(), repr->getBufferUsage()) {
-    addRepresentation(repr);
-}
-
-template <typename T>
-const BufferRAMPrecision<T>* inviwo::BufferPrecision<T>::getRAMRepresentation() const {
-    if (auto res = dynamic_cast<const BufferRAMPrecision<T>*>(getRepresentation<BufferRAM>())) {
-        return res;
-    } else {
-        throw Exception("Unable to create requested RAM representation", IvwContext);
-    }
-}
-
-template <typename T>
-BufferRAMPrecision<T>* inviwo::BufferPrecision<T>::getEditableRAMRepresentation() {
-    if (auto res = dynamic_cast<BufferRAMPrecision<T>*>(getEditableRepresentation<BufferRAM>())) {
-        return res;
-    } else {
-        throw Exception("Unable to create requested RAM representation", IvwContext);
-    }
-}
 
 // Scalar buffers
 typedef BufferPrecision<std::uint8_t> BufferUInt8;
@@ -169,6 +137,40 @@ std::shared_ptr<BufferPrecision<T>> makeBuffer(std::initializer_list<T> data) {
 }
 
 }  // namespace
+
+
+template <typename T>
+Buffer::Buffer(std::shared_ptr<BufferRAMPrecision<T>> repr)
+    : Data<BufferRepresentation>(repr->getDataFormat())
+    , size_(repr->getSize())
+    , usage_(repr->getBufferUsage()) {
+    addRepresentation(repr);
+}
+
+template <typename T>
+BufferPrecision<T>::BufferPrecision(std::shared_ptr<BufferRAMPrecision<T>> repr)
+    : Buffer(repr->getSize(), repr->getDataFormat(), repr->getBufferUsage()) {
+    addRepresentation(repr);
+}
+
+template <typename T>
+const BufferRAMPrecision<T>* BufferPrecision<T>::getRAMRepresentation() const {
+    if (auto res = dynamic_cast<const BufferRAMPrecision<T>*>(getRepresentation<BufferRAM>())) {
+        return res;
+    } else {
+        throw Exception("Unable to create requested RAM representation", IvwContext);
+    }
+}
+
+template <typename T>
+BufferRAMPrecision<T>* BufferPrecision<T>::getEditableRAMRepresentation() {
+    if (auto res = dynamic_cast<BufferRAMPrecision<T>*>(getEditableRepresentation<BufferRAM>())) {
+        return res;
+    } else {
+        throw Exception("Unable to create requested RAM representation", IvwContext);
+    }
+}
+
 
 }  // namespace
 

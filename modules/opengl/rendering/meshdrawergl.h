@@ -43,7 +43,7 @@ class IVW_MODULE_OPENGL_API MeshDrawerGL: public MeshDrawer {
 public:
     MeshDrawerGL();
     MeshDrawerGL(const Mesh* mesh);
-    MeshDrawerGL(const Mesh* mesh, Mesh::AttributesInfo);
+    MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo);
     MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct);
     MeshDrawerGL& operator=(const MeshDrawerGL& other);
     MeshDrawerGL(MeshDrawerGL&& other); // move constructor
@@ -65,8 +65,8 @@ protected:
         return geom != nullptr;
     }
 
-    virtual void initialize(Mesh::AttributesInfo = Mesh::AttributesInfo());
-    void initializeIndexBuffer(const Buffer* indexBuffer, Mesh::AttributesInfo ai);
+    virtual void initialize(Mesh::MeshInfo = Mesh::MeshInfo());
+    void initializeIndexBuffer(const Buffer* indexBuffer, Mesh::MeshInfo ai);
 
     void drawArray(DrawType) const;
     void drawElements(DrawType) const;

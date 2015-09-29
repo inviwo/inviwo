@@ -54,19 +54,19 @@ Canvas::Canvas(uvec2 dimensions)
     if (!screenAlignedRect_) {
         shared_ = false;
 
-        auto verticesBuffer = util::makeBuffer<vec2>(
-            {{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
+        auto verticesBuffer =
+            util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
 
-        auto texCoordsBuffer = util::makeBuffer<vec2>(
-            {{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
+        auto texCoordsBuffer =
+            util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
 
         auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
 
         Mesh* screenAlignedRectMesh = new Mesh();
-        screenAlignedRectMesh->addAttribute(BufferType::POSITION_ATTRIB, verticesBuffer);
-        screenAlignedRectMesh->addAttribute(BufferType::TEXCOORD_ATTRIB, texCoordsBuffer);
+        screenAlignedRectMesh->addBuffer(BufferType::POSITION_ATTRIB, verticesBuffer);
+        screenAlignedRectMesh->addBuffer(BufferType::TEXCOORD_ATTRIB, texCoordsBuffer);
         screenAlignedRectMesh->addIndicies(
-            Mesh::AttributesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP), indices_);
+            Mesh::MeshInfo(DrawType::TRIANGLES, ConnectivityType::STRIP), indices_);
 
         screenAlignedRect_ = screenAlignedRectMesh;
     }

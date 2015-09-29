@@ -337,7 +337,7 @@ Mesh* MeshClipping::clipGeometryAgainstPlaneRevised(const Mesh* in, Plane plane)
         texcoordlist = simpleInputMesh->getTexCoordList()->getRAMRepresentation()->getDataContainer();
         colorList = simpleInputMesh->getColorList()->getRAMRepresentation()->getDataContainer();
         triangleList = simpleInputMesh->getIndexList()->getRAMRepresentation()->getDataContainer();
-        indexAttrInfo = simpleInputMesh->getIndexAttributesInfo(0).ct;
+        indexAttrInfo = simpleInputMesh->getIndexMeshInfo(0).ct;
     } else {
         // TODO do clipping in all the index list now we only consider the first one 
         const BasicMesh* basicInputMesh = dynamic_cast<const BasicMesh*>(in);

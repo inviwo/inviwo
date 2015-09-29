@@ -40,7 +40,7 @@ Buffer::Buffer(size_t size, const DataFormatBase* format, BufferUsage usage)
 
 Buffer* Buffer::clone() const { return new Buffer(*this); }
 
-size_t Buffer::getSizeInBytes() { return size_ * dataFormatBase_->getSize(); }
+size_t Buffer::getSizeInBytes() const { return size_ * dataFormatBase_->getSize(); }
 
 inviwo::uvec3 Buffer::COLOR_CODE = uvec3(255, 113, 0);
 
