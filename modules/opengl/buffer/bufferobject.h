@@ -48,7 +48,7 @@ public:
     virtual ~BufferObject();
     virtual BufferObject* clone() const;
 
-    const Buffer* getAttribute() const;
+    const BufferBase* getAttribute() const;
     GLenum getFormatType() const;
     GLuint getId() const;
 

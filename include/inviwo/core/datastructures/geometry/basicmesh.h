@@ -47,7 +47,7 @@ public:
     virtual ~BasicMesh() = default;
 
     size_t addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
-    
+
     // add a list of verties: {{pos, normal, tex, color}, ...}
     struct Vertex {
         vec3 pos;
@@ -56,18 +56,18 @@ public:
         vec4 color;
     };
     void addVertices(std::initializer_list<Vertex> data);
-    
+
     void setVertex(size_t index, vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
     void setVertexPosition(size_t index, vec3 pos);
     void setVertexNormal(size_t index, vec3 normal);
     void setVertexTexCoord(size_t index, vec3 texCoord);
     void setVertexColor(size_t index, vec4 color);
-    UInt32BufferRAM* addIndexBuffer(DrawType dt, ConnectivityType ct);
+    IndexBufferRAM* addIndexBuffer(DrawType dt, ConnectivityType ct);
 
-    const BufferVec3Float32* getVertices() const;
-    const BufferVec3Float32* getTexCoords() const;
-    const BufferVec4Float32* getColors() const;
-    const BufferVec3Float32* getNormals() const;
+    const Buffer<vec3>* getVertices() const;
+    const Buffer<vec3>* getTexCoords() const;
+    const Buffer<vec4>* getColors() const;
+    const Buffer<vec3>* getNormals() const;
 
     void append(const BasicMesh* mesh);
 
@@ -120,10 +120,10 @@ protected:
     Vec4BufferRAM* getEditableColorsRAM();
     Vec3BufferRAM* getEditableNormalsRAM();
 
-    std::shared_ptr<BufferVec3Float32> vertices_;
-    std::shared_ptr<BufferVec3Float32> texCoords_;
-    std::shared_ptr<BufferVec4Float32> colors_;
-    std::shared_ptr<BufferVec3Float32> normals_;
+    std::shared_ptr<Buffer<vec3>> vertices_;
+    std::shared_ptr<Buffer<vec3>> texCoords_;
+    std::shared_ptr<Buffer<vec4>> colors_;
+    std::shared_ptr<Buffer<vec3>> normals_;
 };
 
 }  // namespace

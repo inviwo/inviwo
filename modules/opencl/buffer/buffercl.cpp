@@ -106,7 +106,7 @@ cl_int Kernel::setArg(cl_uint index, const inviwo::BufferCL& value) {
 }
 
 template <>
-cl_int Kernel::setArg(cl_uint index, const inviwo::Buffer& value) {
+cl_int Kernel::setArg(cl_uint index, const inviwo::BufferBase& value) {
     return setArg(index, value.getRepresentation<inviwo::BufferCL>()->get());
 }
 

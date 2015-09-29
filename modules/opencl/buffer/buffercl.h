@@ -100,7 +100,7 @@ IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferC
 // @note This function is only valid for buffers
 // that does not change the buffer data.
 template <>
-IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::Buffer& value);
+IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferBase& value);
 
 }  // namespace cl
 

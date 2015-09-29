@@ -79,7 +79,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
         aiMesh* m = scene->mMeshes[i];
 
         auto prep = std::make_shared<Vec3BufferRAM>(m->mNumVertices);
-        auto pbuff = std::make_shared<BufferVec3Float32>(prep);
+        auto pbuff = std::make_shared<Buffer<vec3>>(prep);
 
         for (size_t j = 0; j < m->mNumVertices; ++j) {
             aiVector3D v = m->mVertices[j];
@@ -89,7 +89,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
    
         for (size_t l = 0; l < m->GetNumUVChannels(); ++l) {
             auto trep = std::make_shared<Vec3BufferRAM>(m->mNumVertices);
-            auto tbuff = std::make_shared<BufferVec3Float32>(trep);
+            auto tbuff = std::make_shared<Buffer<vec3>>(trep);
             for (size_t j = 0; j < m->mNumVertices; ++j) {
                 aiVector3D t = m->mTextureCoords[l][j];
                 (*trep)[j] = vec3(t.x, t.y, t.z);
@@ -99,7 +99,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
 
         for (size_t l = 0; l < m->GetNumColorChannels(); ++l) {
             auto crep = std::make_shared<Vec4BufferRAM>(m->mNumVertices);
-            auto cbuff = std::make_shared<BufferVec4Float32>(crep);
+            auto cbuff = std::make_shared<Buffer<vec4>>(crep);
             
             for (size_t j = 0; j < m->mNumVertices; ++j) {
                 aiColor4D c = m->mColors[l][j];
@@ -110,7 +110,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
 
         if (m->HasNormals()) {
             auto nrep = std::make_shared<Vec3BufferRAM>(m->mNumVertices);
-            auto nbuff = std::make_shared<BufferVec3Float32>(nrep);
+            auto nbuff = std::make_shared<Buffer<vec3>>(nrep);
             
             for (size_t j = 0; j < m->mNumVertices; ++j) {
                 aiVector3D n = m->mNormals[j];
@@ -119,8 +119,8 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
             mesh->addBuffer(BufferType::NORMAL_ATTRIB, nbuff);
         }
 
-        auto ibuff = std::make_shared<UInt32BufferRAM>();
-        auto inds = std::make_shared<BufferUInt32>(ibuff);
+        auto ibuff = std::make_shared<IndexBufferRAM>();
+        auto inds = std::make_shared<IndexBuffer>(ibuff);
         
         for (size_t j = 0; j < m->mNumFaces; ++j) {
             aiFace face = m->mFaces[j];

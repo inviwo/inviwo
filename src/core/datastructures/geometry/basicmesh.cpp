@@ -37,10 +37,10 @@
 
 namespace inviwo {
 BasicMesh::BasicMesh() : Mesh() {
-    vertices_ = std::make_shared<BufferVec3Float32>();
-    texCoords_ = std::make_shared<BufferVec3Float32>();
-    colors_ = std::make_shared<BufferVec4Float32>();
-    normals_ = std::make_shared<BufferVec3Float32>();
+    vertices_ = std::make_shared<Buffer<vec3>>();
+    texCoords_ = std::make_shared<Buffer<vec3>>();
+    colors_ = std::make_shared<Buffer<vec4>>();
+    normals_ = std::make_shared<Buffer<vec3>>();
 
     addBuffer(BufferType::POSITION_ATTRIB, vertices_);   // pos 0
     addBuffer(BufferType::TEXCOORD_ATTRIB, texCoords_);  // pos 1
@@ -95,9 +95,9 @@ void BasicMesh::setVertexColor(size_t index, vec4 color) {
     getEditableColorsRAM()->set(index, color);
 }
 
-UInt32BufferRAM* BasicMesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
-    auto indicesRam = std::make_shared<UInt32BufferRAM>();
-    auto indices_ = std::make_shared<BufferUInt32>(indicesRam);
+IndexBufferRAM* BasicMesh::addIndexBuffer(DrawType dt, ConnectivityType ct) {
+    auto indicesRam = std::make_shared<IndexBufferRAM>();
+    auto indices_ = std::make_shared<IndexBuffer>(indicesRam);
     addIndicies(Mesh::MeshInfo(dt, ct), indices_);
     return indicesRam.get();
 }
@@ -111,10 +111,10 @@ void BasicMesh::append(const BasicMesh* mesh) {
     getEditableNormalsRAM()->append(mesh->getNormalsRAM()->getDataContainer());
 
     for (auto buffer : mesh->indices_) {
-        UInt32BufferRAM* ind = addIndexBuffer(buffer.first.dt, buffer.first.ct);
+        IndexBufferRAM* ind = addIndexBuffer(buffer.first.dt, buffer.first.ct);
 
         const std::vector<unsigned int>* newinds =
-            static_cast<const UInt32BufferRAM*>(buffer.second->getRepresentation<BufferRAM>())
+            static_cast<const IndexBufferRAM*>(buffer.second->getRepresentation<BufferRAM>())
                 ->getDataContainer();
 
         for (const auto& newind : *newinds) {
@@ -123,13 +123,13 @@ void BasicMesh::append(const BasicMesh* mesh) {
     }
 }
 
-const BufferVec3Float32* BasicMesh::getVertices() const { return vertices_.get(); }
+const Buffer<vec3>* BasicMesh::getVertices() const { return vertices_.get(); }
 
-const BufferVec3Float32* BasicMesh::getTexCoords() const { return texCoords_.get(); }
+const Buffer<vec3>* BasicMesh::getTexCoords() const { return texCoords_.get(); }
 
-const BufferVec4Float32* BasicMesh::getColors() const { return colors_.get(); }
+const Buffer<vec4>* BasicMesh::getColors() const { return colors_.get(); }
 
-const BufferVec3Float32* BasicMesh::getNormals() const { return normals_.get(); }
+const Buffer<vec3>* BasicMesh::getNormals() const { return normals_.get(); }
 
 const Vec3BufferRAM* BasicMesh::getVerticesRAM() const { return vertices_->getRAMRepresentation(); }
 const Vec3BufferRAM* BasicMesh::getTexCoordsRAM() const {
@@ -175,7 +175,7 @@ std::shared_ptr<BasicMesh> BasicMesh::disk(const vec3& center, const vec3& norma
                                            const size_t& segments) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    UInt32BufferRAM* inds = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
+    IndexBufferRAM* inds = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
     vec3 orth = orthvec(normal);
 
     mesh->addVertex(center, normal, vec3(0.5f, 0.5f, 0.0f), color);

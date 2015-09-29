@@ -62,7 +62,7 @@ public:
     };
     VolumeCLBase();
     VolumeCLBase(const VolumeCLBase& other);
-    virtual ~VolumeCLBase();
+    virtual ~VolumeCLBase() = default;
 
     virtual cl::Image& getEditable() = 0;
     virtual const cl::Image& get() const = 0;
@@ -73,9 +73,9 @@ public:
      * @return vec2 Offset in first component and scaling in second.
      */
     virtual vec2 getVolumeDataOffsetAndScaling(const Volume* volume) const;
-    const Buffer& getVolumeStruct(const Volume* volume) const;
+    const Buffer<glm::u8>& getVolumeStruct(const Volume* volume) const;
 protected:
-    Buffer volumeStruct_; // Contains VolumeParameters
+    Buffer<glm::u8> volumeStruct_; // Contains VolumeParameters
 };
 
 } // namespace

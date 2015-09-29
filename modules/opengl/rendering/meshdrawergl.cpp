@@ -127,7 +127,7 @@ void MeshDrawerGL::initialize(Mesh::MeshInfo ai) {
     }
 }
 
-void MeshDrawerGL::initializeIndexBuffer(const Buffer* indexBuffer, Mesh::MeshInfo ai) {
+void MeshDrawerGL::initializeIndexBuffer(const BufferBase* indexBuffer, Mesh::MeshInfo ai) {
     const auto dt = static_cast<int>(ai.dt);
     // check draw mode if there exists another indexBuffer
     if (drawMethods_[dt].elementBufferList.size() != 0) {

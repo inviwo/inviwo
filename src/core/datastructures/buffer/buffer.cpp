@@ -34,39 +34,37 @@
 
 namespace inviwo {
 
-Buffer::Buffer(size_t size, const DataFormatBase* format, BufferUsage usage)
+BufferBase::BufferBase(size_t size, const DataFormatBase* format, BufferUsage usage)
     : Data<BufferRepresentation>(format), size_(size), usage_(usage) {}
 
+size_t BufferBase::getSizeInBytes() const { return size_ * dataFormatBase_->getSize(); }
 
-Buffer* Buffer::clone() const { return new Buffer(*this); }
+inviwo::BufferUsage BufferBase::getBufferUsage() const { return usage_; }
 
-size_t Buffer::getSizeInBytes() const { return size_ * dataFormatBase_->getSize(); }
+inviwo::uvec3 BufferBase::COLOR_CODE = uvec3(255, 113, 0);
 
-inviwo::uvec3 Buffer::COLOR_CODE = uvec3(255, 113, 0);
+const std::string BufferBase::CLASS_IDENTIFIER = "org.inviwo.Buffer";
 
-const std::string Buffer::CLASS_IDENTIFIER = "org.inviwo.Buffer";
-
-void Buffer::setSize(size_t size) {
+void BufferBase::setSize(size_t size) {
     if (size != size_) {
         size_ = size;
 
         if (lastValidRepresentation_) {
-            // Resize last valid representation 
+            // Resize last valid representation
             lastValidRepresentation_->setSize(size);
             removeOtherRepresentations(lastValidRepresentation_);
-        } 
+        }
     }
 }
 
-std::shared_ptr<BufferRepresentation> Buffer::createDefaultRepresentation() const {
-    return createBufferRAM(getSize(), dataFormatBase_, usage_);
-}
-
-size_t Buffer::getSize() const {
+size_t BufferBase::getSize() const {
     // We need to update the size if a representation has changed size
     if (lastValidRepresentation_)
-        const_cast<Buffer*>(this)->size_ = lastValidRepresentation_->getSize();
+        const_cast<BufferBase*>(this)->size_ = lastValidRepresentation_->getSize();
 
     return size_;
 }
+
+
+
 }

@@ -71,10 +71,10 @@ private:
     FloatVec3Property color_;
     ImageOutport outport_;
 
-    std::shared_ptr<BufferVec2Float32> quad_;
+    std::shared_ptr<Buffer<vec2>> quad_;
     const BufferGL* quadGL_;
 
-    std::shared_ptr<BufferVec2Float32> triangle_;
+    std::shared_ptr<Buffer<vec2>> triangle_;
     const BufferGL* triangleGL_;
 
     Shader shader_;

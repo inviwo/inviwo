@@ -75,7 +75,7 @@ DrawPoints::DrawPoints()
     addProperty(keyEnableDraw_);
 
     pointShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
-    points_.addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec2Float32>());
+    points_.addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<Buffer<vec2>>());
 }
 
 DrawPoints::~DrawPoints() {}

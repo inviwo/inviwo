@@ -74,7 +74,7 @@ DrawLines::DrawLines()
     addProperty(keyEnableDraw_);
     lineShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 
-    lines_.addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec2Float32>());
+    lines_.addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<Buffer<vec2>>());
 
     GLint aliasRange[2];
     glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, aliasRange);

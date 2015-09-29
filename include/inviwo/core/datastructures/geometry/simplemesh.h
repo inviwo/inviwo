@@ -49,10 +49,10 @@ public:
     template <typename... Args>
     void addIndices(Args&&...);
     void setIndicesInfo(DrawType dt, ConnectivityType ct);
-    const BufferVec3Float32* getVertexList() const;
-    const BufferVec3Float32* getTexCoordList() const;
-    const BufferVec4Float32* getColorList() const;
-    const BufferUInt32* getIndexList() const;
+    const Buffer<vec3>* getVertexList() const;
+    const Buffer<vec3>* getTexCoordList() const;
+    const Buffer<vec4>* getColorList() const;
+    const IndexBuffer* getIndexList() const;
 };
 
 namespace detail {

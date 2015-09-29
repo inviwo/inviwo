@@ -36,21 +36,15 @@
 
 namespace inviwo {
 
-VolumeCLBase::VolumeCLBase() : volumeStruct_(sizeof(VolumeParameters), DataUINT8::get()) {
-    volumeStruct_.addRepresentation(
-        std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters)));
-    ivwAssert(volumeStruct_.getSize() == 512,
-              "VolumeParameters must have a size that is power of two, currently "
+    VolumeCLBase::VolumeCLBase()
+        : volumeStruct_(std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters))) {
+        ivwAssert(volumeStruct_.getSize() == 512,
+                  "VolumeParameters must have a size that is power of two, currently "
                   << volumeStruct_.getSize())
-}
+    }
 
-VolumeCLBase::VolumeCLBase(const VolumeCLBase& rhs)
-    : volumeStruct_(sizeof(VolumeParameters), DataUINT8::get()) {
-    volumeStruct_.addRepresentation(
-        std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters)));
-}
-
-VolumeCLBase::~VolumeCLBase() {}
+    VolumeCLBase::VolumeCLBase(const VolumeCLBase& rhs)
+        : volumeStruct_(std::make_shared<BufferRAMPrecision<glm::u8>>(sizeof(VolumeParameters))) {}
 
 vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
     // Note: The basically the same code is used in VolumeCLGL and VolumeGL as well.
@@ -95,10 +89,10 @@ vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
     return vec2(offset, scalingFactor);
 }
 
-const Buffer& VolumeCLBase::getVolumeStruct(const Volume* volume) const {
+const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const {
     // Update data before returning it
     VolumeParameters* volumeStruct = static_cast<VolumeParameters*>(
-        const_cast<Buffer&>(volumeStruct_).getEditableRepresentation<BufferRAM>()->getData());
+        const_cast<Buffer<glm::u8>&>(volumeStruct_).getEditableRepresentation<BufferRAM>()->getData());
 
     volumeStruct->modelToWorld = volume->getCoordinateTransformer().getModelToWorldMatrix();
     volumeStruct->worldToModel = volume->getCoordinateTransformer().getWorldToModelMatrix();

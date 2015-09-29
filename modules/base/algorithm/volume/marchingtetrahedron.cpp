@@ -36,7 +36,7 @@ std::shared_ptr<Mesh> MarchingTetrahedron::apply(std::shared_ptr<const Volume> v
     return volume->getDataFormat()->dispatch(disp, volume, iso, color, progressCallback);
 }
 
-void detail::evaluateTetra(K3DTree<size_t, float> &vertexTree, UInt32BufferRAM *indexBuffer,
+void detail::evaluateTetra(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
                            std::vector<vec3> &positions, std::vector<vec3> &normals,
                            const glm::vec3 &p0, const double &v0, const glm::vec3 &p1,
                            const double &v1, const glm::vec3 &p2, const double &v2,
@@ -146,7 +146,7 @@ size_t detail::addVertex(K3DTree<size_t, float> &vertexTree, std::vector<vec3> &
     return nearest->get();
 }
 
-void detail::addTriangle(K3DTree<size_t, float> &vertexTree, UInt32BufferRAM *indexBuffer,
+void detail::addTriangle(K3DTree<size_t, float> &vertexTree, IndexBufferRAM *indexBuffer,
                          std::vector<vec3> &positions, std::vector<vec3> &normals,
                          const glm::vec3 &a, const glm::vec3 &b, const glm::vec3 &c) {
     size_t i0 = addVertex(vertexTree, positions, normals, a);

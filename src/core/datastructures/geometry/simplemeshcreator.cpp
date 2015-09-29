@@ -159,7 +159,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
 
     // Create Vertices
     auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1));
-    auto normalBuffer = std::make_shared<BufferVec3Float32>(normals);
+    auto normalBuffer = std::make_shared<Buffer<vec3>>(normals);
 
     unsigned int pointsPerLine = segmentsPerLoop + 1;
     for (unsigned int i = 0; i <= numLoops; ++i) {
@@ -187,8 +187,8 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
     // compute indices
     spheremesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
     for (unsigned int y = 0; y < numLoops; ++y) {
-        auto indices = std::make_shared<UInt32BufferRAM>(pointsPerLine * 2);
-        auto indexBuf = std::make_shared<BufferUInt32>(indices);
+        auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
+        auto indexBuf = std::make_shared<IndexBuffer>(indices);
 
         unsigned int offset = y * pointsPerLine;
         std::size_t count = 0;
@@ -216,7 +216,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
 
     // Create Vertices
     auto normals = std::make_shared<Vec3BufferRAM>((numLoops + 1) * (segmentsPerLoop + 1));
-    auto normalBuffer = std::make_shared<BufferVec3Float32>(normals);
+    auto normalBuffer = std::make_shared<Buffer<vec3>>(normals);
 
     unsigned int pointsPerLine = segmentsPerLoop + 1;
     for (unsigned int i = 0; i <= numLoops; ++i) {
@@ -246,8 +246,8 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
     // compute indices
     spheremesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
     for (unsigned int y = 0; y < numLoops; ++y) {
-        auto indices = std::make_shared<UInt32BufferRAM>(pointsPerLine * 2);
-        auto indexBuf = std::make_shared<BufferUInt32>(indices);
+        auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
+        auto indexBuf = std::make_shared<IndexBuffer>(indices);
 
         unsigned int offset = y * pointsPerLine;
         std::size_t count = 0;
@@ -282,7 +282,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 ex
     const glm::vec4 color(0.6f, 0.6f, 0.6f, 1.0f);
 
     auto normals = std::make_shared<Vec3BufferRAM>((meshResX + 1) * (meshResY + 1));
-    auto normalBuffer = std::make_shared<BufferVec3Float32>(normals);
+    auto normalBuffer = std::make_shared<Buffer<vec3>>(normals);
 
     for (unsigned int y = 0; y <= meshResY; ++y) {
         for (unsigned int x = 0; x <= meshResX; ++x) {
@@ -296,8 +296,8 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 ex
     // compute indices
     plane->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
     for (unsigned int y = 0; y < meshResY; ++y) {
-        auto indices = std::make_shared<UInt32BufferRAM>(pointsPerLine * 2);
-        auto indexBuf = std::make_shared<BufferUInt32>(indices);
+        auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
+        auto indexBuf = std::make_shared<IndexBuffer>(indices);
 
         unsigned int offset = y * pointsPerLine;
         std::size_t count = 0;

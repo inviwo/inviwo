@@ -50,8 +50,8 @@ public:
         ConnectivityType ct;
     };
 
-    using IndexVector = std::vector<std::pair<MeshInfo, std::shared_ptr<BufferUInt32>>>;
-    using BufferVector = std::vector<std::pair<BufferType, std::shared_ptr<Buffer>>>;
+    using IndexVector = std::vector<std::pair<MeshInfo, std::shared_ptr<IndexBuffer>>>;
+    using BufferVector = std::vector<std::pair<BufferType, std::shared_ptr<BufferBase>>>;
 
     Mesh() = default;
     Mesh(DrawType dt, ConnectivityType ct);
@@ -68,7 +68,7 @@ public:
      * @param att Data to be rendered.
      * @param takeOwnership True if the buffer should be deleted by the mesh.
      */
-    void addBuffer(BufferType type, std::shared_ptr<Buffer> att);
+    void addBuffer(BufferType type, std::shared_ptr<BufferBase> att);
 
     /**
      * Replaces buffer at index with new buffer and deletes old one if it has ownership of it.
@@ -77,7 +77,7 @@ public:
      * @param att New buffer
      * @param takeOwnership True if new buffer should be owned.
      */
-    void setBuffer(size_t idx, BufferType type, std::shared_ptr<Buffer> att);
+    void setBuffer(size_t idx, BufferType type, std::shared_ptr<BufferBase> att);
 
     /**
      * Add index buffer. The indices will be used as look up
@@ -86,16 +86,16 @@ public:
      * @param info Rendering type and connectivity.
      * @param ind Index buffer, will be owned by mesh.
      */
-    void addIndicies(MeshInfo info, std::shared_ptr<BufferUInt32> ind);
+    void addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind);
 
     const BufferVector& getBuffers() const;
     const IndexVector& getIndexBuffers() const;
 
-    const Buffer* getBuffer(size_t idx) const;
-    const Buffer* getIndicies(size_t idx) const;
+    const BufferBase* getBuffer(size_t idx) const;
+    const BufferBase* getIndicies(size_t idx) const;
 
-    Buffer* getBuffer(size_t idx);
-    Buffer* getIndicies(size_t idx);
+    BufferBase* getBuffer(size_t idx);
+    BufferBase* getIndicies(size_t idx);
 
     MeshInfo getDefaultMeshInfo() const;
     MeshInfo getIndexMeshInfo(size_t idx) const;

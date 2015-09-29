@@ -40,10 +40,8 @@ namespace inviwo {
 template <typename T>
 class VolumeRAMPrecision : public VolumeRAM {
 public:
-    VolumeRAMPrecision(size3_t dimensions = size3_t(128, 128, 128),
-                       const DataFormatBase* format = DataFormat<T>::get());
-    VolumeRAMPrecision(T* data, size3_t dimensions = size3_t(128, 128, 128),
-                       const DataFormatBase* format = DataFormat<T>::get());
+    VolumeRAMPrecision(size3_t dimensions = size3_t(128, 128, 128));
+    VolumeRAMPrecision(T* data, size3_t dimensions = size3_t(128, 128, 128));
     VolumeRAMPrecision(const VolumeRAMPrecision<T>& rhs);
     VolumeRAMPrecision<T>& operator=(const VolumeRAMPrecision<T>& that);
     virtual VolumeRAMPrecision<T>* clone() const override;
@@ -113,15 +111,15 @@ struct VolumeRamDispatcher {
 
 
 template <typename T>
-VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions, const DataFormatBase* format)
-    : VolumeRAM(format)
+VolumeRAMPrecision<T>::VolumeRAMPrecision(size3_t dimensions)
+    : VolumeRAM(DataFormat<T>::get())
     , dimensions_(dimensions)
     , ownsDataPtr_(true)
     , data_(new T[dimensions_.x * dimensions_.y * dimensions_.z]()) {}
 
 template <typename T>
-VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions, const DataFormatBase* format)
-    : VolumeRAM(format)
+VolumeRAMPrecision<T>::VolumeRAMPrecision(T* data, size3_t dimensions)
+    : VolumeRAM(DataFormat<T>::get())
     , dimensions_(dimensions)
     , ownsDataPtr_(true)
     , data_(data ? data : new T[dimensions_.x * dimensions_.y * dimensions_.z]()) {}

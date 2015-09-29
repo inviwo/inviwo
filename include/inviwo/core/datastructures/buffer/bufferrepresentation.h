@@ -37,7 +37,6 @@
 
 namespace inviwo {
 
-
 class IVW_CORE_API BufferRepresentation : public DataRepresentation {
 public:
     BufferRepresentation(const DataFormatBase* format = DataFormatBase::get(),

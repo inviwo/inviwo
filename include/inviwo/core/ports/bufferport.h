@@ -37,8 +37,8 @@
 
 namespace inviwo {
 
-using BufferInport = DataInport<Buffer>;
-using BufferOutport = DataOutport<Buffer>;
+using BufferInport = DataInport<BufferBase>;
+using BufferOutport = DataOutport<BufferBase>;
 
 }  // namespace
 

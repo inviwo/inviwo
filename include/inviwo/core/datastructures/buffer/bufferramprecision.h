@@ -40,12 +40,8 @@ template <typename T>
 class BufferRAMPrecision : public BufferRAM {
 public:
     BufferRAMPrecision(BufferUsage usage = BufferUsage::STATIC);
-
     BufferRAMPrecision(size_t size, BufferUsage usage = BufferUsage::STATIC);
-
-    BufferRAMPrecision(std::vector<T> data,
-                       BufferUsage usage = BufferUsage::STATIC);
-
+    BufferRAMPrecision(std::vector<T> data, BufferUsage usage = BufferUsage::STATIC);
     BufferRAMPrecision(const BufferRAMPrecision<T>& rhs);
     BufferRAMPrecision<T>& operator=(const BufferRAMPrecision<T>& that);
     virtual ~BufferRAMPrecision() = default;
@@ -83,18 +79,15 @@ public:
     void clear();
 
 private:
-    static const DataFormatBase* defaultformat() { return DataFormat<T>::get(); }
     std::unique_ptr<std::vector<T>> data_;
 };
-
 
 using FloatBufferRAM = BufferRAMPrecision<float>;
 using Vec2BufferRAM = BufferRAMPrecision<vec2>;
 using Vec3BufferRAM = BufferRAMPrecision<vec3>;
 using Vec4BufferRAM = BufferRAMPrecision<vec4>;
-using UInt32BufferRAM = BufferRAMPrecision<std::uint32_t>;
-
-
+// Used for index buffers
+using IndexBufferRAM = BufferRAMPrecision<std::uint32_t>;
 
 template <typename T>
 const T& inviwo::BufferRAMPrecision<T>::operator[](size_t i) const {

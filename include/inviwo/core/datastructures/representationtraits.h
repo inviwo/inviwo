@@ -39,8 +39,8 @@ namespace inviwo {
  * \class representation_traits
  * \brief A type trait to connect data classes to representation classes of different kinds.
  */
-
 namespace kind {
+struct Base {};
 struct Disk {};
 struct RAM {};
 }
@@ -49,6 +49,9 @@ template <typename DataType, typename Kind>
 struct representation_traits {
     using type = std::nullptr_t;
 };
+
+template <typename DataType, typename Kind>
+using representation_traits_t = typename representation_traits<DataType, Kind>::type;
 
 }  // namespace
 

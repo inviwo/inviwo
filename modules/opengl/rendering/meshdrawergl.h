@@ -66,7 +66,7 @@ protected:
     }
 
     virtual void initialize(Mesh::MeshInfo = Mesh::MeshInfo());
-    void initializeIndexBuffer(const Buffer* indexBuffer, Mesh::MeshInfo ai);
+    void initializeIndexBuffer(const BufferBase* indexBuffer, Mesh::MeshInfo ai);
 
     void drawArray(DrawType) const;
     void drawElements(DrawType) const;
@@ -77,7 +77,7 @@ protected:
     struct DrawMethod {
         DrawFunc drawFunc;
         GLenum drawMode;
-        std::vector<const Buffer*> elementBufferList;
+        std::vector<const BufferBase*> elementBufferList;
     };
 
     DrawMethod drawMethods_[static_cast<size_t>(DrawType::NUMBER_OF_DRAW_TYPES)];

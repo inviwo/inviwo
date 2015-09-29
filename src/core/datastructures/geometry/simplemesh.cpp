@@ -33,10 +33,10 @@
 namespace inviwo {
 
 SimpleMesh::SimpleMesh(DrawType dt, ConnectivityType ct) : Mesh(dt, ct) {
-    addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<BufferVec3Float32>());  // pos 0
-    addBuffer(BufferType::TEXCOORD_ATTRIB, std::make_shared<BufferVec3Float32>());  // pos 1
-    addBuffer(BufferType::COLOR_ATTRIB, std::make_shared<BufferVec4Float32>());     // pos 2
-    addIndicies(Mesh::MeshInfo(dt, ct), std::make_shared<BufferUInt32>());
+    addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<Buffer<vec3>>());  // pos 0
+    addBuffer(BufferType::TEXCOORD_ATTRIB, std::make_shared<Buffer<vec3>>());  // pos 1
+    addBuffer(BufferType::COLOR_ATTRIB, std::make_shared<Buffer<vec4>>());     // pos 2
+    addIndicies(Mesh::MeshInfo(dt, ct), std::make_shared<IndexBuffer>());
 }
 
 SimpleMesh* SimpleMesh::clone() const { return new SimpleMesh(*this); }
@@ -53,7 +53,7 @@ unsigned int SimpleMesh::addVertex(vec3 pos, vec3 texCoord, vec4 color) {
 }
 
 void SimpleMesh::addIndex(unsigned int idx) {
-    static_cast<UInt32BufferRAM*>(indices_[0].second->getEditableRepresentation<BufferRAM>())
+    static_cast<IndexBufferRAM*>(indices_[0].second->getEditableRepresentation<BufferRAM>())
         ->add(idx);
 }
 
@@ -61,18 +61,18 @@ void SimpleMesh::setIndicesInfo(DrawType dt, ConnectivityType ct) {
     indices_[0].first = Mesh::MeshInfo(dt, ct);
 }
 
-const BufferVec3Float32* SimpleMesh::getVertexList() const {
-    return static_cast<const BufferVec3Float32*>(buffers_[0].second.get());
+const Buffer<vec3>* SimpleMesh::getVertexList() const {
+    return static_cast<const Buffer<vec3>*>(buffers_[0].second.get());
 }
 
-const BufferVec3Float32* SimpleMesh::getTexCoordList() const {
-    return static_cast<const BufferVec3Float32*>(buffers_[1].second.get());
+const Buffer<vec3>* SimpleMesh::getTexCoordList() const {
+    return static_cast<const Buffer<vec3>*>(buffers_[1].second.get());
 }
 
-const BufferVec4Float32* SimpleMesh::getColorList() const {
-    return static_cast<const BufferVec4Float32*>(buffers_[2].second.get());
+const Buffer<vec4>* SimpleMesh::getColorList() const {
+    return static_cast<const Buffer<vec4>*>(buffers_[2].second.get());
 }
 
-const BufferUInt32* SimpleMesh::getIndexList() const { return indices_[0].second.get(); }
+const IndexBuffer* SimpleMesh::getIndexList() const { return indices_[0].second.get(); }
 
 }  // namespace
