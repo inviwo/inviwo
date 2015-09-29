@@ -71,9 +71,9 @@ class Data : public BaseData {
 public:
     Data();
     Data(const DataFormatBase*);
-    Data(const Data& rhs);
-    Data& operator=(const Data& rhs);
-    virtual Data* clone() const = 0;
+    Data(const Data<Repr>& rhs);
+    Data<Repr>& operator=(const Data<Repr>& rhs);
+    virtual Data<Repr>* clone() const = 0;
     virtual ~Data() = default;
 
     // Representations

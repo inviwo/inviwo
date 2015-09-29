@@ -57,16 +57,15 @@ namespace inviwo {
  *      thus we do not know when it's valid and we need to call update before we return it 
  *      from getRepresentation.
  */
-class IVW_CORE_API DataGroup : public BaseData {
+template <typename Repr>
+class DataGroup : public BaseData {
 
 public:
-    DataGroup();
-    DataGroup(const DataGroup& rhs);
-    DataGroup& operator=(const DataGroup& rhs);
-    virtual DataGroup* clone() const = 0;
-    virtual ~DataGroup();
-
-    void deinitialize();
+    DataGroup() = default;
+    DataGroup(const DataGroup<Repr>& rhs);
+    DataGroup<Repr>& operator=(const DataGroup<Repr>& rhs);
+    virtual DataGroup<Repr>* clone() const override = 0;
+    virtual ~DataGroup() = default;
 
     //Representations
     template<typename T>
@@ -82,7 +81,8 @@ public:
     void clearRepresentations();
 
 protected:
-    mutable std::vector<DataGroupRepresentation*> representations_;
+    mutable std::mutex mutex_;
+    mutable std::vector<std::shared_ptr<Repr>> representations_;
 
 private:
     template<typename T>
@@ -95,32 +95,65 @@ template <typename T, typename std::enable_if<
                           !std::is_abstract<T>::value && std::is_default_constructible<T>::value &&
                               std::is_base_of<DataGroupRepresentation, T>::value,
                           int>::type = 0>
-T* createGroupRepresentation() {
-    return new T();
+std::shared_ptr<T> createGroupRepresentation() {
+    return std::make_shared<T>();
 };
 
 template <typename T, typename std::enable_if<
                           std::is_abstract<T>::value || !std::is_default_constructible<T>::value ||
                               !std::is_base_of<DataGroupRepresentation, T>::value,
                           int>::type = 0>
-T* createGroupRepresentation() {
-    return nullptr;
+std::shared_ptr<T> createGroupRepresentation() {
+    return std::shared_ptr<T>();
 };
 }
 
+template <typename Repr>
+DataGroup<Repr>::DataGroup(const DataGroup<Repr>& rhs) : BaseData(rhs) {}
+
+template <typename Repr>
+DataGroup<Repr>& DataGroup<Repr>::operator=(const DataGroup<Repr>& that) {
+    if (this != &that) {
+        BaseData::operator=(that);
+        clearRepresentations();
+    }
+    return *this;
+}
+
+template <typename Repr>
+bool DataGroup<Repr>::hasRepresentations() const {
+    std::unique_lock<std::mutex> lock(mutex_);
+    return !representations_.empty();
+}
+
+template <typename Repr>
+void DataGroup<Repr>::setRepresentationsAsInvalid() {
+    std::unique_lock<std::mutex> lock(mutex_);
+    for (auto& elem : representations_) elem->setAsInvalid();
+}
+
+template <typename Repr>
+void DataGroup<Repr>::clearRepresentations() {
+    std::unique_lock<std::mutex> lock(mutex_);
+    representations_.clear();
+}
+
+template <typename Repr>
 template <typename T>
-T* inviwo::DataGroup::getRepresentation(bool editable) const {
+T* inviwo::DataGroup<Repr>::getRepresentation(bool editable) const {
     // check if a representation exists and return it
-    for (int i = 0; i < static_cast<int>(representations_.size()); ++i) {
-        if (T* representation = dynamic_cast<T*>(representations_[i])) {
-            representations_[i]->update(editable);
-            representations_[i]->setAsValid();
-            return representation;
+    std::unique_lock<std::mutex> lock(mutex_);
+    for (size_t i = 0; i < representations_.size(); ++i) {
+        if (auto representation = std::dynamic_pointer_cast<T>(representations_[i])) {
+            auto baseRepr = std::static_pointer_cast<DataGroupRepresentation>(representation);
+            baseRepr->update(editable);
+            baseRepr->setAsValid();
+            return representation.get();
         }
     }
 
     // no representation exists, create one
-    T* representation = detail::createGroupRepresentation<T>();
+    auto representation = detail::createGroupRepresentation<T>();
 
     if (!representation) {
         throw Exception("Trying to create an invalid group representation: " +
@@ -130,29 +163,32 @@ T* inviwo::DataGroup::getRepresentation(bool editable) const {
     }
 
     // Need to cast to be able to call the protected update function, we are friends with base.
-    DataGroupRepresentation* baseRepr = static_cast<DataGroupRepresentation*>(representation);
+    auto baseRepr = std::static_pointer_cast<DataGroupRepresentation>(representation);
     baseRepr->setOwner(const_cast<DataGroup*>(this));
     baseRepr->update(editable);
     baseRepr->setAsValid();
-    representations_.push_back(baseRepr);
+    representations_.push_back(representation);
 
-    return representation;
+    return representation.get();
 }
 
+template <typename Repr>
 template<typename T>
-const T* DataGroup::getRepresentation() const {
+const T* DataGroup<Repr>::getRepresentation() const {
     return static_cast<const T*>(getRepresentation<T>(false));
 }
 
+template <typename Repr>
 template<typename T>
-T* DataGroup::getEditableRepresentation() {
+T* DataGroup<Repr>::getEditableRepresentation() {
     return getRepresentation<T>(true);
 }
 
+template <typename Repr>
 template<typename T>
-bool DataGroup::hasRepresentation() const {
-    for (int i=0; i<static_cast<int>(representations_.size()); i++) {
-        if (dynamic_cast<T*>(representations_[i])) return true;
+bool DataGroup<Repr>::hasRepresentation() const {
+    for (size_t i=0; i<representations_.size(); i++) {
+        if (std::dynamic_pointer_cast<T>(representations_[i])) return true;
     }
     return false;
 }

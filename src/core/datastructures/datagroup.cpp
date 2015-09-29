@@ -31,39 +31,4 @@
 
 namespace inviwo {
 
-DataGroup::DataGroup() : BaseData() {}
-
-DataGroup::DataGroup(const DataGroup& rhs) : BaseData(rhs) {}
-
-DataGroup& DataGroup::operator=(const DataGroup& that) {
-    if (this != &that) {
-        BaseData::operator=(that);
-        deinitialize();
-    }
-    return *this;
-}
-
-DataGroup::~DataGroup() {
-    deinitialize();
-}
-
-void DataGroup::deinitialize() {
-    clearRepresentations();
-}
-
-bool DataGroup::hasRepresentations() const {
-    return !representations_.empty();
-}
-
-void DataGroup::setRepresentationsAsInvalid() {
-    for (auto& elem : representations_) elem->setAsInvalid();
-}
-
-void DataGroup::clearRepresentations() {
-    while (hasRepresentations()) {
-        delete representations_.back();
-        representations_.pop_back();
-    }
-}
-
 } // namespace

@@ -36,15 +36,16 @@
 #include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
-    
+  //class Image;
+
 class IVW_CORE_API ImageRepresentation : public DataGroupRepresentation {
     friend class Image;
 public:
-    ImageRepresentation();
-    ImageRepresentation(const ImageRepresentation& rhs);
-    ImageRepresentation& operator=(const ImageRepresentation& that);
-    virtual ImageRepresentation* clone() const = 0;
-    virtual ~ImageRepresentation();
+    ImageRepresentation() = default;
+    ImageRepresentation(const ImageRepresentation& rhs) = default;
+    ImageRepresentation& operator=(const ImageRepresentation& that) = default;
+    virtual ImageRepresentation* clone() const override = 0;
+    virtual ~ImageRepresentation() = default;
 
     size2_t getDimensions() const;
 
@@ -52,9 +53,6 @@ public:
      * Copy and resize the representations of this onto the target.
      */
     virtual bool copyRepresentationsTo(DataRepresentation* target) const = 0;
-
-    virtual Image* getOwner();
-    virtual const Image* getOwner() const;
 
 protected:
     virtual void update(bool) = 0;

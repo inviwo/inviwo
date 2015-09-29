@@ -60,7 +60,7 @@ std::type_index ImageDisk::getTypeIndex() const {
 }
 
 void ImageDisk::update(bool editable) {
-    Image *owner = this->getOwner();
+    auto owner = static_cast<Image*>(this->getOwner());
     if (editable) {
         for (size_t i=0; i<owner->getNumberOfColorLayers(); ++i)
             owner->getColorLayer(i)->getEditableRepresentation<LayerDisk>();

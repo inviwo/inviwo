@@ -56,7 +56,7 @@ std::type_index ImageCL::getTypeIndex() const { return std::type_index(typeid(Im
 void ImageCL::update(bool editable) {
     // TODO: Convert more then just first color layer
     layerCL_ = nullptr;
-    Image* owner = this->getOwner();
+    auto owner = static_cast<Image*>(this->getOwner());
 
     if (editable) {
         layerCL_ = owner->getColorLayer()->getEditableRepresentation<LayerCL>();
@@ -64,7 +64,7 @@ void ImageCL::update(bool editable) {
         layerCL_ = const_cast<LayerCL*>(owner->getColorLayer()->getRepresentation<LayerCL>());
     }
 
-    if (layerCL_->getDataFormat() != getOwner()->getDataFormat()) {
+    if (layerCL_->getDataFormat() != owner->getDataFormat()) {
         owner->getColorLayer()->setDataFormat(layerCL_->getDataFormat());
         owner->getColorLayer()->setDimensions(layerCL_->getDimensions());
     }

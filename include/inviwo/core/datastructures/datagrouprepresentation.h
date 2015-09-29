@@ -37,6 +37,7 @@
 
 namespace inviwo {
 
+template<typename Repr>
 class DataGroup;
 
 /** 
@@ -53,6 +54,7 @@ class DataGroup;
  */
 class IVW_CORE_API DataGroupRepresentation : public DataRepresentation {
 
+    template<typename Repr>
     friend class DataGroup;
 
 public:

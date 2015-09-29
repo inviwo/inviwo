@@ -180,14 +180,14 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
         bool imageDiskFound = false;
         bool imageRamFound = false;
         for (size_t j = 0; j < nTargets; j++) {
-            if (dynamic_cast<ImageRAM*>(targets[j])) {
+            if (std::dynamic_pointer_cast<ImageRAM>(targets[j])) {
                 if (imageDiskFound) {
                     ordering[nTargets - 2] = j;
                 } else {
                     ordering[nTargets - 1] = j;
                 }
                 imageRamFound = true;
-            } else if (dynamic_cast<ImageDisk*>(targets[j])) {
+            } else if (std::dynamic_pointer_cast<ImageDisk>(targets[j])) {
                 if (imageRamFound) {
                     ordering[nTargets - 2] = ordering[nTargets - 1];
                     ordering[nTargets - 1] = j;
@@ -203,12 +203,12 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
 
         for (size_t i = 0; i < targets.size() && !copyDone; i++) {
             for (size_t j = 0; j < representations_.size() && !copyDone; j++) {
-                auto sourceRepr = static_cast<ImageRepresentation*>(representations_[j]);
-                auto targetRepr = static_cast<ImageRepresentation*>(targets[ordering[i]]);
+                auto sourceRepr = std::static_pointer_cast<ImageRepresentation>(representations_[j]);
+                auto targetRepr = std::static_pointer_cast<ImageRepresentation>(targets[ordering[i]]);
                 if (typeid(*sourceRepr) == typeid(*targetRepr)) {
                     sourceRepr->update(false);
                     targetRepr->update(true);
-                    sourceRepr->copyRepresentationsTo(targetRepr);
+                    sourceRepr->copyRepresentationsTo(targetRepr.get());
                     copyDone = true;
                 }
             }

@@ -57,7 +57,7 @@ std::type_index ImageCLGL::getTypeIndex() const { return std::type_index(typeid(
 void ImageCLGL::update(bool editable) {
     // TODO: Convert more then just first color layer
     layerCLGL_ = nullptr;
-    Image* owner = this->getOwner();
+    auto owner = static_cast<Image*>(this->getOwner());
 
     if (editable) {
         layerCLGL_ = owner->getColorLayer()->getEditableRepresentation<LayerCLGL>();

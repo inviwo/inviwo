@@ -36,11 +36,12 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/datastructures/geometry/meshrepresentation.h>
 #include <utility>
 
 namespace inviwo {
 
-class IVW_CORE_API Mesh : public DataGroup, public SpatialEntity<3> {
+class IVW_CORE_API Mesh : public DataGroup<MeshRepresentation>, public SpatialEntity<3> {
 public:
     struct MeshInfo {
         MeshInfo() : dt(DrawType::POINTS), ct(ConnectivityType::NONE) {}

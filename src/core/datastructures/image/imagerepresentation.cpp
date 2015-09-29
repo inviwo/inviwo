@@ -28,31 +28,12 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/image/imagerepresentation.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 
-ImageRepresentation::ImageRepresentation() : DataGroupRepresentation() {}
-
-ImageRepresentation::ImageRepresentation(const ImageRepresentation& rhs)
-    : DataGroupRepresentation(rhs) {}
-    
-ImageRepresentation& ImageRepresentation::operator=(const ImageRepresentation& that) {
-    if (this != &that) {
-        DataGroupRepresentation::operator=(that);
-    }
-    return *this;
-}
-
-ImageRepresentation::~ImageRepresentation() {}
-
-size2_t ImageRepresentation::getDimensions() const { return getOwner()->getDimensions(); }
-
-Image* ImageRepresentation::getOwner() {
-    return reinterpret_cast<Image*>(DataRepresentation::getOwner());
-}
-
-const Image* ImageRepresentation::getOwner() const {
-    return reinterpret_cast<const Image*>(DataRepresentation::getOwner());
+size2_t ImageRepresentation::getDimensions() const {
+    return static_cast<const Image*>(getOwner())->getDimensions();
 }
 
 }  // namespace

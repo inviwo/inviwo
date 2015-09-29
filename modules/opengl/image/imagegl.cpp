@@ -323,7 +323,7 @@ const LayerGL* ImageGL::getDepthLayerGL() const { return depthLayerGL_; }
 const LayerGL* ImageGL::getPickingLayerGL() const { return pickingLayerGL_; }
 
 void ImageGL::updateExistingLayers() const {
-    const Image* owner = this->getOwner();
+    auto owner = static_cast<const Image*>(this->getOwner());
 
     for (size_t i = 0; i < owner->getNumberOfColorLayers(); ++i) {
         owner->getColorLayer(i)->getRepresentation<LayerGL>();
@@ -344,7 +344,7 @@ void ImageGL::update(bool editable) {
     pickingLayerGL_ = nullptr;
 
     if (editable) {
-        Image* owner = this->getOwner();
+        auto owner = static_cast<Image*>(this->getOwner());
 
         for (size_t i = 0; i < owner->getNumberOfColorLayers(); ++i) {
             colorLayersGL_.push_back(owner->getColorLayer(i)->getEditableRepresentation<LayerGL>());
@@ -361,7 +361,7 @@ void ImageGL::update(bool editable) {
         }
 
     } else {
-        const Image* owner = this->getOwner();
+        auto owner = static_cast<const Image*>(this->getOwner());
 
         for (size_t i = 0; i < owner->getNumberOfColorLayers(); ++i) {
             colorLayersGL_.push_back(
