@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_MESHGLDRAWER_H
@@ -38,7 +38,22 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API MeshDrawerGL: public MeshDrawer {
+class IVW_MODULE_OPENGL_API MeshDrawerGL : public MeshDrawer {
+    enum class DrawMode {
+        NOT_SPECIFIED = 0,
+        POINTS,
+        LINES,
+        LINE_STRIP,
+        LINE_LOOP,
+        LINES_ADJACENCY,
+        LINE_STRIP_ADJACENCY,
+        TRIANGLES,
+        TRIANGLE_STRIP,
+        TRIANGLE_FAN,
+        TRIANGLES_ADJACENCY,
+        TRIANGLE_STRIP_ADJACENCY,
+        NUMBER_OF_DRAW_MODES
+    };
 
 public:
     MeshDrawerGL();
@@ -46,44 +61,41 @@ public:
     MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo);
     MeshDrawerGL(const Mesh* mesh, DrawType dt, ConnectivityType ct);
     MeshDrawerGL& operator=(const MeshDrawerGL& other);
-    MeshDrawerGL(MeshDrawerGL&& other); // move constructor
+    MeshDrawerGL(MeshDrawerGL&& other);  // move constructor
     virtual ~MeshDrawerGL() = default;
 
     virtual void draw() override;
-    virtual void draw(DrawType dt);
+    virtual void draw(DrawMode dm);
 
     GLenum getDefaultDrawMode();
-    GLenum getDrawMode(DrawType, ConnectivityType);
+    DrawMode getDrawMode(DrawType, ConnectivityType) const;
+    GLenum getGLDrawMode(DrawMode) const;
 
     virtual const Mesh* getGeometry() const override { return meshToDraw_; }
 
 protected:
-    virtual MeshDrawer* create(const Mesh* geom) const override {
-        return new MeshDrawerGL(geom);
-    }
-    virtual bool canDraw(const Mesh* geom) const override {
-        return geom != nullptr;
-    }
+    virtual MeshDrawer* create(const Mesh* geom) const override { return new MeshDrawerGL(geom); }
+    virtual bool canDraw(const Mesh* geom) const override { return geom != nullptr; }
 
     virtual void initialize(Mesh::MeshInfo = Mesh::MeshInfo());
     void initializeIndexBuffer(const BufferBase* indexBuffer, Mesh::MeshInfo ai);
 
-    void drawArray(DrawType) const;
-    void drawElements(DrawType) const;
-    void emptyFunc(DrawType dt) const {};
+    void drawArray(DrawMode) const;
+    void drawElements(DrawMode) const;
+    void emptyFunc(DrawMode dt) const {};
 
     // A member function pointer to Either drawArrays, drawElement or emptyFunc
-    using DrawFunc = void (MeshDrawerGL::*)(DrawType) const;
+    using DrawFunc = void (MeshDrawerGL::*)(DrawMode) const;
     struct DrawMethod {
         DrawFunc drawFunc;
         GLenum drawMode;
         std::vector<const BufferBase*> elementBufferList;
     };
 
-    DrawMethod drawMethods_[static_cast<size_t>(DrawType::NUMBER_OF_DRAW_TYPES)];
+    DrawMethod drawMethods_[static_cast<size_t>(DrawMode::NUMBER_OF_DRAW_MODES)];
     const Mesh* meshToDraw_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_MESHGLDRAWER_H
+#endif  // IVW_MESHGLDRAWER_H
