@@ -58,6 +58,7 @@
 #include <inviwo/qt/widgets/properties/ordinalminmaxtextpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/ordinalpropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/stringpropertywidgetqt.h>
+#include <inviwo/qt/widgets/properties/stringmultilinepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/texteditorwidgetqt.h>
 #include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
 
@@ -143,6 +144,7 @@ QtWidgetModule::QtWidgetModule() : InviwoModule() {
     registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyString, "Default");
     registerPropertyWidget(StringPropertyWidgetQt, StringProperty, "Default");
     registerPropertyWidget(StringPropertyWidgetQt, StringProperty, "Password");
+    registerPropertyWidget(StringMultilinePropertyWidgetQt, StringProperty, "Multiline");
     registerPropertyWidget(TextEditorWidgetQt, FileProperty, "TextEditor");
     registerPropertyWidget(TextEditorWidgetQt, FileProperty, "ShaderEditor");
     registerPropertyWidget(TextEditorWidgetQt, StringProperty, "TextEditor");

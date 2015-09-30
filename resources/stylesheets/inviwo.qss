@@ -546,7 +546,13 @@ QTextBrowser {
     border: 0px;
 }
 
-
+QPlainTextEdit {
+    border: 1px solid #444;
+}
+QPlainTextEdit:hover  {
+    background: #47474b;
+    border: 1px solid #268bd2;
+}
 
 /* QLineEdit styles */
 QLineEdit {
