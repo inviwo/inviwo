@@ -77,7 +77,6 @@ public:
     bool hasRepresentation() const;
     bool hasRepresentations() const;
 
-    void setRepresentationsAsInvalid();
     void clearRepresentations();
 
 protected:
@@ -127,12 +126,6 @@ bool DataGroup<Repr>::hasRepresentations() const {
 }
 
 template <typename Repr>
-void DataGroup<Repr>::setRepresentationsAsInvalid() {
-    std::unique_lock<std::mutex> lock(mutex_);
-    for (auto& elem : representations_) elem->setAsInvalid();
-}
-
-template <typename Repr>
 void DataGroup<Repr>::clearRepresentations() {
     std::unique_lock<std::mutex> lock(mutex_);
     representations_.clear();
@@ -147,7 +140,6 @@ T* inviwo::DataGroup<Repr>::getRepresentation(bool editable) const {
         if (auto representation = std::dynamic_pointer_cast<T>(representations_[i])) {
             auto baseRepr = std::static_pointer_cast<DataGroupRepresentation>(representation);
             baseRepr->update(editable);
-            baseRepr->setAsValid();
             return representation.get();
         }
     }
@@ -166,7 +158,6 @@ T* inviwo::DataGroup<Repr>::getRepresentation(bool editable) const {
     auto baseRepr = std::static_pointer_cast<DataGroupRepresentation>(representation);
     baseRepr->setOwner(const_cast<DataGroup*>(this));
     baseRepr->update(editable);
-    baseRepr->setAsValid();
     representations_.push_back(representation);
 
     return representation.get();

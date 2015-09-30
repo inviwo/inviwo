@@ -156,8 +156,6 @@ size2_t Image::getDimensions() const {
 }
 
 void Image::setDimensions(size2_t dimensions) {
-    setRepresentationsAsInvalid();
-
     for (auto layer : colorLayers_) layer->setDimensions(dimensions);
     if (depthLayer_) depthLayer_->setDimensions(dimensions);
     if (pickingLayer_) pickingLayer_->setDimensions(dimensions);

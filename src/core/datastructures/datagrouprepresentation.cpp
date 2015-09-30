@@ -31,31 +31,4 @@
 
 namespace inviwo {
 
-DataGroupRepresentation::DataGroupRepresentation()
-    : DataRepresentation(), valid_(false) {}
-
-DataGroupRepresentation::DataGroupRepresentation(const DataGroupRepresentation& rhs)
-    : DataRepresentation(rhs), valid_(false) {}
-
-DataGroupRepresentation::~DataGroupRepresentation() { }
-
-DataGroupRepresentation& DataGroupRepresentation::operator=(const DataGroupRepresentation& that) {
-    if (this != &that)
-        DataRepresentation::operator=(that);
-
-    return *this;
-}
-
-void DataGroupRepresentation::setAsInvalid() {
-    valid_ = false;
-}
-
-bool DataGroupRepresentation::isValid() const {
-    return valid_;
-}
-
-void DataGroupRepresentation::setAsValid() {
-    valid_ = true;
-}
-
 } // namespace
