@@ -139,15 +139,8 @@ inline float3 sphericalDirection(float sintheta, float costheta, float phi) {
 inline float3 sphericalDirectionCoordinateSystem(float sintheta, float costheta, float phi, const float3 x, const float3 y, const float3 z) {
     return sintheta * native_cos(phi) * x + sintheta * native_sin(phi) * y + costheta * z;
 }
-// Given two uniform random numbers, compute a random direction on the sphere
+// Given two uniform random numbers in [0 1], compute a random direction on the sphere
 float3 uniformSampleSphere(const float2 u) {
-    //float3 result;
-    //result.z = 1.f-2.f*u.x;
-    //float r = native_sqrt(max(0.f, 1.f-result.z*result.z));
-    //float phi = 2.f*M_PI*u.y;
-    //result.x = r*cos(phi);
-    //result.y = r*sin(phi);
-    //return result;
     float z = 1.f-2.f*u.x;
     float r = native_sqrt(max(0.f, 1.f-z*z));
     float phi = 2.f*M_PI*u.y;
@@ -160,6 +153,17 @@ float uniformSpherePdf() {
     //return 0.25f*M_1_PI;
     return 1.f/(4.f*M_PI);
 }
+
+// Given two uniform random numbers in [0 1], compute a random direction on the hemisphere
+float3 uniformSampleHemisphere(const float2 u) {
+    float z = u.x;
+    float r = native_sqrt(1.f - z*z);
+    float phi = 2.f*M_PI*u.y;
+    float x = r*native_cos(phi);
+    float y = r*native_sin(phi);
+    return (float3)(x, y, z);
+}
+
 
 
 
