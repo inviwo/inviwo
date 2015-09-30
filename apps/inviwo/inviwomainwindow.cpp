@@ -478,6 +478,7 @@ void InviwoMainWindow::fillExampleWorkspaceMenu() {
             QObject::connect(action, SIGNAL(triggered()), this, SLOT(openExampleWorkspace()));
         }
     }
+    exampleWorkspaceMenu_->menuAction()->setVisible(!exampleWorkspaceMenu_->isEmpty());
 }
 
 void InviwoMainWindow::fillTestWorkspaceMenu() {
@@ -573,6 +574,7 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
             }
         }
     }
+    testWorkspaceMenu_->menuAction()->setVisible(!testWorkspaceMenu_->isEmpty());
 }
 
 std::string InviwoMainWindow::getCurrentWorkspace() {
@@ -869,7 +871,7 @@ bool InviwoMainWindow::askToSaveWorkspaceChanges() {
     bool continueOperation = true;
 
     if (getNetworkEditor()->isModified()) {
-        QMessageBox msgBox;
+        QMessageBox msgBox(this);
         msgBox.setText("Workspace Modified");
         msgBox.setInformativeText("Do you want to save your changes?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);

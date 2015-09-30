@@ -467,6 +467,23 @@ QTextBrowser {
     border: 0px 
 }
 
+QPlainTextEdit {
+    border: 1px solid #444;
+}
+QPlainTextEdit:hover  {
+    background: #47474b;
+    border: 1px solid #268bd2;
+}
+QPlainTextEdit:hover QScrollBar, QPlainTextEdit:hover QScrollBar::add-page, QPlainTextEdit:hover QScrollBar::add-line,QPlainTextEdit:hover  QScrollBar::sub-page, QPlainTextEdit:hover QScrollBar::sub-line{
+/*    background: #47474b;*/
+}
+QPlainTextEdit QScrollBar, QPlainTextEdit QScrollBar::add-line {
+/*	border-bottom: 1px solid red;*/
+}
+QPlainTextEdit QScrollBar::add-line {
+	margin-bottom: 1px;
+}
+
 
 
 /* QLineEdit styles */
@@ -759,7 +776,7 @@ QPushButton:hover, QToolButton:hover, QComboBox:hover, QLineEdit:hover, QCheckBo
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset>
+     <iconset resource="../inviwo.qrc">
       <normaloff>:/stylesheets/images/dock-docked.png</normaloff>:/stylesheets/images/dock-docked.png</iconset>
     </property>
     <property name="autoRaise">
@@ -1039,7 +1056,7 @@ p, li { white-space: pre-wrap; }
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset>
+     <iconset resource="../inviwo.qrc">
       <normaloff>:/stylesheets/images/dock-sticky.png</normaloff>:/stylesheets/images/dock-sticky.png</iconset>
     </property>
     <property name="autoRaise">
@@ -1059,7 +1076,7 @@ p, li { white-space: pre-wrap; }
      <string>...</string>
     </property>
     <property name="icon">
-     <iconset>
+     <iconset resource="../inviwo.qrc">
       <normaloff>:/stylesheets/images/close.png</normaloff>:/stylesheets/images/close.png</iconset>
     </property>
     <property name="autoRaise">
@@ -1238,6 +1255,90 @@ p, li { white-space: pre-wrap; }
      <bool>false</bool>
     </property>
    </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>250</y>
+      <width>251</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="plainTextEdit">
+       <property name="styleSheet">
+        <string notr="true">
+
+QPlainTextEdit {
+    border: 1px solid #444;
+}
+QPlainTextEdit:hover  {
+    background: #47474b;
+    border: 1px solid #268bd2;
+}
+QPlainTextEdit:hover QScrollBar, QPlainTextEdit:hover QScrollBar::add-page, QPlainTextEdit:hover QScrollBar::add-line,QPlainTextEdit:hover  QScrollBar::sub-page, QPlainTextEdit:hover QScrollBar::sub-line{
+/*    background: #47474b;*/
+}
+QPlainTextEdit QScrollBar, QPlainTextEdit QScrollBar::add-line {
+	border-bottom: 1px solid red;
+}</string>
+       </property>
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOn</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="plainText">
+        <string>fasdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+asdf
+</string>
+       </property>
+       <property name="backgroundVisible">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
    <zorder>widget</zorder>
    <zorder>pushButton</zorder>
    <zorder>toolButton</zorder>
@@ -1261,6 +1362,8 @@ p, li { white-space: pre-wrap; }
    <zorder>frame_2</zorder>
    <zorder>lineEdit_2</zorder>
    <zorder>pushButton_3</zorder>
+   <zorder>horizontalLayoutWidget</zorder>
+   <zorder>horizontalLayoutWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -1588,7 +1691,7 @@ p, li { white-space: pre-wrap; }
   </widget>
   <action name="actionTest">
    <property name="icon">
-    <iconset>
+    <iconset resource="../inviwo.qrc">
      <normaloff>:/icons/new.png</normaloff>:/icons/new.png</iconset>
    </property>
    <property name="text">
@@ -1597,7 +1700,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionTest2">
    <property name="icon">
-    <iconset>
+    <iconset resource="../inviwo.qrc">
      <normaloff>:/icons/open.png</normaloff>:/icons/open.png</iconset>
    </property>
    <property name="text">
@@ -1606,7 +1709,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset>
+    <iconset resource="../inviwo.qrc">
      <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
    </property>
    <property name="text">
@@ -1629,6 +1732,8 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../inviwo.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -58,6 +58,7 @@ public:
     static const PropertySemantics Color;
     static const PropertySemantics LightPosition;
     static const PropertySemantics TextEditor;
+    static const PropertySemantics Multiline;
     static const PropertySemantics ImageEditor;
     static const PropertySemantics ShaderEditor;
 
