@@ -31,6 +31,7 @@
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/canvasgl.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 

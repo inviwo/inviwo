@@ -29,6 +29,7 @@
 
 #include <inviwo/core/datastructures/image/imagedisk.h>
 #include <inviwo/core/datastructures/image/layerdisk.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 

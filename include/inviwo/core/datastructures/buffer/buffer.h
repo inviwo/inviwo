@@ -75,7 +75,7 @@ public:
     Buffer(std::shared_ptr<BufferRAMPrecision<T>> repr);
     Buffer(const Buffer<T>& rhs) = default;
     Buffer<T>& operator=(const Buffer<T>& that) = default;
-    virtual Buffer<T>* clone() const;
+    virtual Buffer<T>* clone() const override;
     virtual ~Buffer() = default;
 
     BufferRAMPrecision<T>* getEditableRAMRepresentation();

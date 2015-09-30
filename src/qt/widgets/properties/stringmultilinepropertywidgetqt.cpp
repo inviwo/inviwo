@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/properties/stringmultilinepropertywidgetqt.h>
@@ -34,31 +34,29 @@
 
 namespace inviwo {
 
-StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty* property) 
-    : PropertyWidgetQt(property)
-    , property_(property) {
-
+StringMultilinePropertyWidgetQt::StringMultilinePropertyWidgetQt(StringProperty *property)
+    : PropertyWidgetQt(property), property_(property) {
     generateWidget();
     updateFromProperty();
 }
 
 void StringMultilinePropertyWidgetQt::generateWidget() {
-    QHBoxLayout* hLayout = new QHBoxLayout;
+    QHBoxLayout *hLayout = new QHBoxLayout;
     setSpacingAndMargins(hLayout);
 
-    //QVBoxLayout* vLayout = new QVBoxLayout;
-    //vLayout->setContentsMargins(0, 0, 0, 0);
-    //vLayout->setSpacing(0);
+    // QVBoxLayout* vLayout = new QVBoxLayout;
+    // vLayout->setContentsMargins(0, 0, 0, 0);
+    // vLayout->setSpacing(0);
 
     label_ = new EditableLabelQt(this, property_);
-    //vLayout->addWidget(label_);
-    //vLayout->addStretch();
-    //hLayout->addLayout(vLayout);
+    // vLayout->addWidget(label_);
+    // vLayout->addStretch();
+    // hLayout->addLayout(vLayout);
 
     hLayout->addWidget(label_);
 
     textEdit_ = new MultilineTextEdit;
-    //if(property_->getSemantics().getString() == "Password"){
+    // if(property_->getSemantics().getString() == "Password"){
     //    textEdit_->setEchoMode(QLineEdit::PasswordEchoOnEdit);
     //}
 
@@ -66,9 +64,9 @@ void StringMultilinePropertyWidgetQt::generateWidget() {
     sp.setHorizontalStretch(3);
     sp.setVerticalPolicy(QSizePolicy::Preferred);
     textEdit_->setSizePolicy(sp);
-    
+
     hLayout->addWidget(textEdit_);
-    
+
     setLayout(hLayout);
     connect(textEdit_, SIGNAL(editingFinished()), this, SLOT(setPropertyValue()));
 }
@@ -89,15 +87,8 @@ void StringMultilinePropertyWidgetQt::updateFromProperty() {
     }
 }
 
-
-
-
 MultilineTextEdit::MultilineTextEdit(QWidget *parent)
-    : QPlainTextEdit(parent)
-    , minLineCount_(2)
-    , maxLineCount_(10)
-    , showContextMenu_(false)
-{
+    : QPlainTextEdit(parent), minLineCount_(2), maxLineCount_(10), showContextMenu_(false) {
     QFontMetrics fontMetric(font());
     lineHeight_ = fontMetric.lineSpacing();
 
@@ -109,10 +100,8 @@ MultilineTextEdit::MultilineTextEdit(QWidget *parent)
     // make the text edit show at least n lines of text
     setMinimumHeight(minLineCount_ * lineHeight_);
     setMaximumHeight(maxLineCount_ * lineHeight_);
-
 }
-MultilineTextEdit::~MultilineTextEdit() {
-}
+MultilineTextEdit::~MultilineTextEdit() {}
 
 void MultilineTextEdit::focusOutEvent(QFocusEvent *e) {
     if (showContextMenu_) {
@@ -136,13 +125,12 @@ void MultilineTextEdit::resizeEvent(QResizeEvent *e) {
 
 void MultilineTextEdit::keyPressEvent(QKeyEvent *e) {
     // commit text changes when pressing CTRL + Return or Enter
-    if (((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter))
-        && (e->modifiers() & Qt::ControlModifier)) {
-        emit editingFinished();;
+    if (((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter)) &&
+        (e->modifiers() & Qt::ControlModifier)) {
+        emit editingFinished();
         adjustHeight();
         e->accept();
-    }
-    else {
+    } else {
         QPlainTextEdit::keyPressEvent(e);
     }
 }
@@ -154,9 +142,11 @@ void MultilineTextEdit::contextMenuEvent(QContextMenuEvent *e) {
 }
 
 void MultilineTextEdit::adjustHeight() {
-    qreal textHeight = glm::clamp(static_cast<int>(document()->size().height()), minLineCount_, maxLineCount_) * lineHeight_;
+    qreal textHeight =
+        glm::clamp(static_cast<int>(document()->size().height()), minLineCount_, maxLineCount_) *
+        lineHeight_;
     QMargins margins(contentsMargins());
     setFixedHeight(textHeight + margins.top() + margins.bottom());
 }
 
-} // namespace
+}  // namespace

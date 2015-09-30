@@ -40,6 +40,7 @@
 #include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/openglcapabilities.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 

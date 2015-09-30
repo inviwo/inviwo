@@ -33,7 +33,7 @@
 namespace inviwo {
 
 size2_t ImageRepresentation::getDimensions() const {
-    return static_cast<const Image*>(getOwner())->getDimensions();
+    return dynamic_cast<const Image*>(getOwner())->getDimensions();
 }
 
 }  // namespace

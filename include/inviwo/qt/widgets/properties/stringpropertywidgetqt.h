@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_STRINGPROPERTYWIDGETQT_H
@@ -32,17 +32,21 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
-#include <QLineEdit>
-
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-
 #include <inviwo/core/properties/stringproperty.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QLineEdit>
+#include <warn/pop>
 
 namespace inviwo {
 
 class IVW_QTWIDGETS_API StringPropertyWidgetQt : public PropertyWidgetQt {
-
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     StringPropertyWidgetQt(StringProperty* property);
@@ -60,6 +64,6 @@ public slots:
     void setPropertyValue();
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_STRINGPROPERTYWIDGETQT_H
+#endif  // IVW_STRINGPROPERTYWIDGETQT_H
