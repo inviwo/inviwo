@@ -54,6 +54,8 @@ MeshGL& MeshGL::operator=(const MeshGL& that) {
     return *this;
 }
 
+MeshGL::~MeshGL(){}
+
 MeshGL* MeshGL::clone() const {
     return new MeshGL(*this);
 }

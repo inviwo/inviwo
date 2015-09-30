@@ -55,7 +55,7 @@ public:
     BufferGL(size_t size, const DataFormatBase* format, BufferUsage usage,
              std::shared_ptr<BufferObject> data = std::shared_ptr<BufferObject>(nullptr));
     BufferGL(const BufferGL& rhs);
-    virtual ~BufferGL() = default;
+    virtual ~BufferGL();
     virtual BufferGL* clone() const override;
 
     virtual void setSize(size_t size) override;

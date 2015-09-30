@@ -35,6 +35,8 @@ ElementBufferObject::ElementBufferObject(size_t size, const DataFormatBase* form
                                          BufferUsage usage)
     : BufferObject(size, format, usage, GL_ELEMENT_ARRAY_BUFFER) {}
 
+ElementBufferObject::~ElementBufferObject(){}
+
 void ElementBufferObject::enable() const { bind(); }
 
 void ElementBufferObject::disable() const {}

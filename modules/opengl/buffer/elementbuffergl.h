@@ -47,7 +47,7 @@ public:
         size_t size, const DataFormatBase* format, BufferUsage usage,
         std::shared_ptr<ElementBufferObject> data = std::shared_ptr<ElementBufferObject>(nullptr));
 
-    virtual ~ElementBufferGL() = default;
+    virtual ~ElementBufferGL();
 
     std::shared_ptr<ElementBufferObject> getElementBufferObject() const {
         return std::static_pointer_cast<ElementBufferObject>(buffer_);

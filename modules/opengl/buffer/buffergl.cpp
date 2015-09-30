@@ -47,6 +47,8 @@ BufferGL::BufferGL(const BufferGL& rhs)
     , bufferArray_(nullptr)
     , size_(rhs.size_) {}
 
+BufferGL::~BufferGL(){}
+
 BufferGL* BufferGL::clone() const { return new BufferGL(*this); }
 
 size_t BufferGL::getSize() const { return size_; }

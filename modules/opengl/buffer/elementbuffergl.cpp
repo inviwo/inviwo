@@ -37,6 +37,8 @@ ElementBufferGL::ElementBufferGL(size_t size, const DataFormatBase* format, Buff
                data != nullptr ? data : std::make_shared<ElementBufferObject>(
                                             size * format->getSize(), format, usage)) {}
 
+ElementBufferGL::~ElementBufferGL(){}
+
 ElementBufferGL* ElementBufferGL::clone() const { return new ElementBufferGL(*this); }
 
 }  // namespace

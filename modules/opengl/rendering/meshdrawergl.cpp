@@ -54,6 +54,8 @@ MeshDrawerGL::MeshDrawerGL(MeshDrawerGL&& other)
     other.meshToDraw_ = nullptr;
 }
 
+MeshDrawerGL::~MeshDrawerGL(){}
+
 MeshDrawerGL& MeshDrawerGL::operator=(const MeshDrawerGL& rhs) {
     if (this != &rhs) {
         meshToDraw_ = rhs.meshToDraw_;

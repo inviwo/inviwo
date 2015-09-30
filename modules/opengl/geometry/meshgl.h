@@ -47,7 +47,7 @@ public:
     MeshGL& operator=(const MeshGL& that);
     virtual MeshGL* clone() const override;
   
-    virtual ~MeshGL() = default;
+    virtual ~MeshGL();
 
     void enable() const;
     void disable() const;
