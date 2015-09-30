@@ -92,10 +92,10 @@ public:
     const IndexVector& getIndexBuffers() const;
 
     const BufferBase* getBuffer(size_t idx) const;
-    const BufferBase* getIndicies(size_t idx) const;
+    const IndexBuffer* getIndicies(size_t idx) const;
 
     BufferBase* getBuffer(size_t idx);
-    BufferBase* getIndicies(size_t idx);
+    IndexBuffer* getIndicies(size_t idx);
 
     MeshInfo getDefaultMeshInfo() const;
     MeshInfo getIndexMeshInfo(size_t idx) const;

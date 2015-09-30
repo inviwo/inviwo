@@ -89,11 +89,11 @@ void Mesh::addIndicies(MeshInfo info, std::shared_ptr<IndexBuffer> ind) {
 
 const BufferBase* Mesh::getBuffer(size_t idx) const { return buffers_[idx].second.get(); }
 
-const BufferBase* Mesh::getIndicies(size_t idx) const { return indices_[idx].second.get(); }
+const IndexBuffer* Mesh::getIndicies(size_t idx) const { return indices_[idx].second.get(); }
 
 BufferBase* Mesh::getBuffer(size_t idx) { return buffers_[idx].second.get(); }
 
-BufferBase* Mesh::getIndicies(size_t idx) { return indices_[idx].second.get(); }
+IndexBuffer* Mesh::getIndicies(size_t idx) { return indices_[idx].second.get(); }
 
 Mesh::MeshInfo Mesh::getDefaultMeshInfo() const { return defaultMeshInfo_; }
 

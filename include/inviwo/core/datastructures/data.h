@@ -94,9 +94,10 @@ public:
      * This will delete the representation, thus rendering the representation pointer invalid.
      * @param representation The representation to remove
      */
-    void removeRepresentation(std::shared_ptr<Repr> representation);
-    void removeOtherRepresentations(std::shared_ptr<Repr> representation);
+    void removeRepresentation(const Repr* representation);
+    void removeOtherRepresentations(const Repr* representation);
     void clearRepresentations();
+    void invalidateAllOther(const Repr* repr);
 
     // DataFormat
     void setDataFormat(const DataFormatBase* format);
@@ -106,7 +107,6 @@ protected:
     virtual std::shared_ptr<Repr> createDefaultRepresentation() const = 0;
     template <typename T>
     const T* getValidRepresentation() const;
-    void invalidateAllOther(const Repr* repr);
     void copyRepresentationsTo(Data* targetData) const;
 
     mutable std::mutex mutex_;
@@ -213,10 +213,18 @@ bool Data<Repr>::hasRepresentation() const {
 
 template <class Repr>
 void Data<Repr>::invalidateAllOther(const Repr* repr) {
+    bool found = false;
     std::unique_lock<std::mutex> lock(mutex_);
     for (auto& elem : representations_) {
-        if (elem.second.get() != repr) elem.second->setValid(false);
+        if (elem.second.get() != repr) {
+            elem.second->setValid(false);
+        } else {
+            found = true;
+            elem.second->setValid(true);
+            lastValidRepresentation_ = elem.second;
+        }
     }
+    if(!found) throw Exception("Called with representation not in representations.", IvwContext);
 }
 
 template <class Repr>
@@ -247,17 +255,17 @@ void Data<Repr>::addRepresentation(std::shared_ptr<Repr> repr) {
 }
 
 template <class Repr>
-void Data<Repr>::removeRepresentation(std::shared_ptr<Repr> representation) {
+void Data<Repr>::removeRepresentation(const Repr* representation) {
     std::unique_lock<std::mutex> lock(mutex_);
 
     for (auto& elem : representations_) {
-        if (elem.second == representation) {
+        if (elem.second.get() == representation) {
             representations_.erase(elem.first);
             break;
         }
     }
 
-    if (lastValidRepresentation_ == representation) {
+    if (lastValidRepresentation_.get() == representation) {
         lastValidRepresentation_.reset();
 
         for (auto& elem : representations_) {
@@ -269,12 +277,24 @@ void Data<Repr>::removeRepresentation(std::shared_ptr<Repr> representation) {
 }
 
 template <class Repr>
-void Data<Repr>::removeOtherRepresentations(std::shared_ptr<Repr> representation) {
+void Data<Repr>::removeOtherRepresentations(const Repr* representation) {
     std::unique_lock<std::mutex> lock(mutex_);
-    representations_.clear();
-    representations_[representation->getTypeIndex()] = representation;
 
-    if (lastValidRepresentation_ != representation) lastValidRepresentation_.reset();
+    std::unordered_map<std::type_index, std::shared_ptr<Repr>> repr;
+    for (auto& elem : representations_) {
+        if (elem.second.get() == representation) {
+            repr.insert(elem);
+            if (lastValidRepresentation_.get() != representation) {
+                if (elem.second->isValid()) {
+                    lastValidRepresentation_ = elem.second;
+                } else {
+                    lastValidRepresentation_.reset();
+                }
+            }
+            break;
+        }
+    }
+    std::swap(repr, representations_);
 }
 
 template <class Repr>
