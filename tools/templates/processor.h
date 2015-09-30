@@ -33,10 +33,13 @@
 #include <define>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-/** \docpage{<classIdentifier>, <name>}
+/** \docpage{org.inviwo.<name>, <dname>}
+ * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.<name>)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -53,23 +56,20 @@ namespace inviwo {
 
 /**
  * \class <name>
- *
  * \brief <brief description> 
- *
  * <Detailed description from a developer prespective>
  */
 class <api> <name> : public Processor { 
 public:
     InviwoProcessorInfo();
     <name>();
-    virtual ~<name>();
+    virtual ~<name>() = default;
      
     virtual void process() override;
-    
-protected:
 
 private:
-
+    ImageOutport outport_;
+    FloatVec3Property position_;
 };
 
 } // namespace

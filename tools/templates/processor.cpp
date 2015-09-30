@@ -32,23 +32,23 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(<name>,  "org.inviwo.<name>")
-ProcessorDisplayName(<name>,  "<name>")
+ProcessorClassIdentifier(<name>,  "org.inviwo.<name>");
+ProcessorDisplayName(<name>,  "<dname>");
 ProcessorTags(<name>, Tags::None);
 ProcessorCategory(<name>, "Undefined");
 ProcessorCodeState(<name>, CODE_STATE_EXPERIMENTAL);
 
 <name>::<name>()
-    : Processor() {
+    : Processor()
+    , outport_("outport")
+    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
     
-}
-
-<name>::~<name>() {
-    
+    addPort(outport_);
+    addProperty(position_);
 }
     
 void <name>::process() {
-
+    //outport_.setData(myImage);
 }
 
 } // namespace

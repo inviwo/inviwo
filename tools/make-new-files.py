@@ -83,6 +83,7 @@ def make_template(file, name, define, api, incfile, author = "<Author>" ):
 	with open(file,'r') as f:
 		for line in f:
 			line = line.replace("<name>", name)
+			line = line.replace("<dname>", re.sub("([a-z])([A-Z])","\g<1> \g<2>", name))
 			line = line.replace("<lname>", name.lower())
 			line = line.replace("<uname>", name.upper())
 			line = line.replace("<api>", api)
