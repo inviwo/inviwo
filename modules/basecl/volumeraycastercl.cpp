@@ -227,8 +227,8 @@ void VolumeRaycasterCL::setLightingProperties(const SimpleLightingProperty& ligh
 }
 
 void VolumeRaycasterCL::setDefaultBackgroundColor(const vec4 color) {
-    LayerRAM_Vec4UINT8* defaultBGRAM =
-        defaultBackground_.getEditableRepresentation<LayerRAM_Vec4UINT8>();
+    LayerRAM* defaultBGRAM =
+        defaultBackground_.getEditableRepresentation<LayerRAM>();
     unsigned char* data = static_cast<unsigned char*>(defaultBGRAM->getData());
     for (int i = 0; i < 4; ++i) {
         data[i] = static_cast<unsigned char>(glm::floor(color[i] * 255.f + 0.5f));
