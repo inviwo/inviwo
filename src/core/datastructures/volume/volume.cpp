@@ -131,7 +131,7 @@ void Volume::setWorldMatrix(const mat4& mat) {
 }
 
 std::shared_ptr<VolumeRepresentation> Volume::createDefaultRepresentation() const {
-    return std::make_shared<VolumeDisk>(getDimensions(), getDataFormat());
+    return createVolumeRAM(getDimensions(), getDataFormat());
 }
 
 float Volume::getWorldSpaceGradientSpacing() const {
