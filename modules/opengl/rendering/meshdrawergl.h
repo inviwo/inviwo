@@ -39,6 +39,7 @@
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API MeshDrawerGL : public MeshDrawer {
+public:
     enum class DrawMode {
         NOT_SPECIFIED = 0,
         POINTS,
@@ -55,7 +56,6 @@ class IVW_MODULE_OPENGL_API MeshDrawerGL : public MeshDrawer {
         NUMBER_OF_DRAW_MODES
     };
 
-public:
     MeshDrawerGL();
     MeshDrawerGL(const Mesh* mesh);
     MeshDrawerGL(const Mesh* mesh, Mesh::MeshInfo);
