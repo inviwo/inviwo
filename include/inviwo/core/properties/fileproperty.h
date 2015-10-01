@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/templateproperty.h>
+#include <inviwo/core/util/fileextension.h>
 
 namespace inviwo {
 
@@ -74,8 +75,9 @@ public:
     virtual void deserialize(IvwDeserializer& d) override;
 
     virtual void addNameFilter(std::string);
+    virtual void addNameFilter(FileExtension);
     virtual void clearNameFilters();
-    virtual std::vector<std::string> getNameFilters();
+    virtual std::vector<FileExtension> getNameFilters();
 
     virtual void setAcceptMode(AcceptMode mode);
     AcceptMode getAcceptMode() const;
@@ -87,7 +89,7 @@ public:
     std::string getContentType() const;
 
 private:
-    std::vector<std::string> nameFilters_;
+    std::vector<FileExtension> nameFilters_;
     AcceptMode acceptMode_;
     FileMode fileMode_;
     std::string contentType_;

@@ -85,7 +85,7 @@ protected:
     FileExtension getMatchingFileExtension(const QString &extStr);
 
     QList<QUrl> sidebarURLs_;
-    QStringList extension_;
+    QStringList extensions_;
     QString selectedExtension_;
     QString pathType_;
     QString currentPath_;

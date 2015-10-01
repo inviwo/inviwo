@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/settings/settings.h>
@@ -33,33 +33,32 @@
 
 namespace inviwo {
 
-Settings::Settings(const std::string &id) : identifier_(id), isDeserializing_(false) {}
+Settings::Settings(const std::string& id) : identifier_(id), isDeserializing_(false) {}
 
 Settings::~Settings() {}
 
-void Settings::addProperty(Property* property, bool owner){
+void Settings::addProperty(Property* property, bool owner) {
     PropertyOwner::addProperty(property, owner);
-    property->onChange(this,&Settings::saveToDisk);
+    property->onChange(this, &Settings::saveToDisk);
 }
 
-void Settings::addProperty(Property& property){
+void Settings::addProperty(Property& property) {
     PropertyOwner::addProperty(&property, false);
-    property.onChange(this,&Settings::saveToDisk);
+    property.onChange(this, &Settings::saveToDisk);
 }
 
-std::string Settings::getIdentifier() {
-    return identifier_;
-}
+std::string Settings::getIdentifier() { return identifier_; }
 
-void Settings::loadFromDisk(){
+void Settings::loadFromDisk() {
     std::stringstream ss;
     ss << identifier_ << ".ivs";
     std::string filename = ss.str();
-    replaceInString(filename," ","_");
-    filename = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_SETTINGS, "/" + filename);
+    replaceInString(filename, " ", "_");
+    filename =
+        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_SETTINGS, "/" + filename);
 
     isDeserializing_ = true;
-    if(filesystem::fileExists(filename)){
+    if (filesystem::fileExists(filename)) {
         IvwDeserializer d(filename);
         deserialize(d);
     }
@@ -74,8 +73,8 @@ void Settings::saveToDisk() {
     std::string filename = ss.str();
     replaceInString(filename, " ", "_");
     try {
-        IvwSerializer s(
-            InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_SETTINGS, "/" + filename, true));
+        IvwSerializer s(InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_SETTINGS,
+                                                             "/" + filename, true));
         serialize(s);
         s.writeFile();
     } catch (std::exception e) {
@@ -83,4 +82,4 @@ void Settings::saveToDisk() {
     }
 }
 
-} // namespace
+}  // namespace

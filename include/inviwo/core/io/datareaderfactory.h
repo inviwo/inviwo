@@ -35,22 +35,23 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/stringconversion.h>
-
 #include <inviwo/core/io/datareader.h>
 
 namespace inviwo {
 
-class IVW_CORE_API DataReaderFactory : public Factory<DataReader>,
+class IVW_CORE_API DataReaderFactory : public Factory<DataReader, const FileExtension&>,
                                        public Singleton<DataReaderFactory> {
 public:
-    using Map = std::unordered_map<std::string, DataReader*>;
+    using Map = std::unordered_map<FileExtension, DataReader*>;
 
     DataReaderFactory() = default;
     virtual ~DataReaderFactory() = default;
 
     bool registerObject(DataReader* reader);
-    virtual std::unique_ptr<DataReader> create(const std::string& key) const override;
-    virtual bool hasKey(const std::string& key) const override;
+    virtual std::unique_ptr<DataReader> create(const FileExtension& key) const override;
+    virtual std::unique_ptr<DataReader> create(const std::string& key) const;
+    virtual bool hasKey(const std::string& key) const;
+    virtual bool hasKey(const FileExtension& key) const override;
 
     template <typename T>
     std::vector<FileExtension> getExtensionsForType();
@@ -68,8 +69,7 @@ std::vector<FileExtension> DataReaderFactory::getExtensionsForType() {
 
     for (auto reader : map_) {
         if (auto r = dynamic_cast<DataReaderType<T>*>(reader.second)) {
-            auto rext = r->getExtensions();
-            ext.insert(ext.end(), rext.begin(), rext.end());
+            ext.push_back(reader.first);
         }
     }
     return ext;
@@ -78,14 +78,15 @@ std::vector<FileExtension> DataReaderFactory::getExtensionsForType() {
 template <typename T>
 std::unique_ptr<DataReaderType<T>> DataReaderFactory::getReaderForTypeAndExtension(
     const std::string& ext) {
-    auto it = map_.find(toLower(ext));
 
-    if (it != map_.end()) {
-        if (auto r = dynamic_cast<DataReaderType<T>*>(it->second)) {
-            return std::unique_ptr<DataReaderType<T>>(r->clone());
+    auto lkey = toLower(ext);
+    for (auto& elem : map_) {
+        if (toLower(elem.first.extension_) == toLower(lkey)) {
+            if (auto r = dynamic_cast<DataReaderType<T>*>(elem.second)) {
+                return std::unique_ptr<DataReaderType<T>>(r->clone());
+            }
         }
     }
-
     return std::unique_ptr<DataReaderType<T>>();
 }
 

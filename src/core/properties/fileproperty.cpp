@@ -43,7 +43,7 @@ FileProperty::FileProperty(std::string identifier, std::string displayName, std:
     , acceptMode_(AcceptMode::Open)
     , fileMode_(FileMode::AnyFile)
     , contentType_(contentType) {
-    addNameFilter("All Files (*)");
+    addNameFilter(FileExtension("*", "All Files"));
 }
 
 FileProperty::FileProperty(const FileProperty& rhs  )
@@ -129,14 +129,18 @@ void FileProperty::deserialize(IvwDeserializer& d) {
 }
 
 void FileProperty::addNameFilter(std::string filter) { 
-    nameFilters_.push_back(filter); 
+    nameFilters_.push_back(FileExtension::createFileExtensionFromString(filter)); 
 }
 
-void FileProperty::clearNameFilters() { 
+void FileProperty::addNameFilter(FileExtension filter) {
+    nameFilters_.push_back(filter);
+}
+
+void FileProperty::clearNameFilters() {
     nameFilters_.clear(); 
 }
 
-std::vector<std::string> FileProperty::getNameFilters() { 
+std::vector<FileExtension> FileProperty::getNameFilters() { 
     return nameFilters_; 
 }
 

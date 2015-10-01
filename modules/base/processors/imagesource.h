@@ -70,7 +70,7 @@ protected:
 
 private:
     ImageOutport outport_;
-    FileProperty imageFileName_;
+    FileProperty file_;
     IntVec2Property imageDimension_;
 
     bool isDeserializing_;

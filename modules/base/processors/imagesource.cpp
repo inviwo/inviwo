@@ -36,7 +36,6 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datareaderexception.h>
 
-
 namespace inviwo {
 
 ProcessorClassIdentifier(ImageSource, "org.inviwo.ImageSource");
@@ -48,21 +47,16 @@ ProcessorCodeState(ImageSource, CODE_STATE_STABLE);
 ImageSource::ImageSource()
     : Processor()
     , outport_("image.outport", DataVec4UINT8::get(), false)
-    , imageFileName_("imageFileName", "File name", "", "image")
-    , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000),
-                      ivec2(1), VALID, PropertySemantics("Text"))
+    , file_("imageFileName", "File name", "", "image")
+    , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
+                      VALID, PropertySemantics("Text"))
     , isDeserializing_(false) {
     addPort(outport_);
 
-    imageFileName_.onChange(this, &ImageSource::load);
-    std::vector<FileExtension> ext = DataReaderFactory::getPtr()->getExtensionsForType<Layer>();
-    for (std::vector<FileExtension>::const_iterator it = ext.begin(); it != ext.end(); ++it) {
-        std::stringstream ss;
-        ss << it->description_ << " (*." << it->extension_ << ")";
-        imageFileName_.addNameFilter(ss.str());
-    }
+    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<Layer>();
+    for (auto& ext : extensions) file_.addNameFilter(ext);
 
-    addProperty(imageFileName_);
+    addProperty(file_);
 
     imageDimension_.setReadOnly(true);
     addProperty(imageDimension_);
@@ -70,21 +64,19 @@ ImageSource::ImageSource()
 
 ImageSource::~ImageSource() {}
 
-bool ImageSource::isReady() const { return filesystem::fileExists(imageFileName_.get()); }
+bool ImageSource::isReady() const { return filesystem::fileExists(file_.get()); }
 
 void ImageSource::process() {}
 
 void ImageSource::load() {
-    if (isDeserializing_ || imageFileName_.get() == "") {
+    if (isDeserializing_ || file_.get() == "") {
         return;
     }
 
-    std::string fileExtension = filesystem::getFileExtension(imageFileName_.get());
-    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(fileExtension);
-
-    if (reader) {
+    std::string ext = filesystem::getFileExtension(file_.get());
+    if (auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext)) {
         try {
-            auto outLayer = reader->readData(imageFileName_.get());
+            auto outLayer = reader->readData(file_.get());
             // Call getRepresentation here to force read a ram representation.
             // Otherwise the default image size, i.e. 256x265, will be reported
             // until you do the conversion. Since the LayerDisk does not have any metadata.
@@ -96,14 +88,13 @@ void ImageSource::load() {
             imageDimension_.set(outLayer->getDimensions());
 
         } catch (DataReaderException const& e) {
-            util::log(e.getContext(),
-                      "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(),
+            util::log(e.getContext(), "Could not load data: " + file_.get() + ", " + e.getMessage(),
                       LogLevel::Error);
-            imageFileName_.set("");
+            file_.set("");
         }
     } else {
-        LogError("Could not find a data reader for file: " << imageFileName_.get());
-        imageFileName_.set("");
+        LogError("Could not find a data reader for file: " << file_.get());
+        file_.set("");
     }
 }
 
@@ -113,6 +104,12 @@ void ImageSource::load() {
 void ImageSource::deserialize(IvwDeserializer& d) {
     isDeserializing_ = true;
     Processor::deserialize(d);
+    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<Layer>();
+    file_.clearNameFilters();
+    file_.addNameFilter(FileExtension("*", "All Files"));
+    for (auto& ext : extensions) {
+        file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
+    }
     isDeserializing_ = false;
     load();
 }

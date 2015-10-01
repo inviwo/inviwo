@@ -34,17 +34,35 @@ namespace inviwo {
 
 bool DataReaderFactory::registerObject(DataReader* reader) {
     for (const auto& ext : reader->getExtensions()) {
-        auto lext = toLower(ext.extension_);
-        util::insert_unique(map_, lext, reader);
+        util::insert_unique(map_, ext, reader);
     }
     return true;
 }
 
-std::unique_ptr<DataReader> DataReaderFactory::create(const std::string& key) const {
+std::unique_ptr<DataReader> DataReaderFactory::create(const FileExtension& key) const {
     return std::unique_ptr<DataReader>(
         util::map_find_or_null(map_, key, [](DataReader* o) { return o->clone(); }));
 }
 
-bool DataReaderFactory::hasKey(const std::string& key) const { return util::has_key(map_, key); }
+std::unique_ptr<DataReader> DataReaderFactory::create(const std::string& key) const {
+    auto lkey = toLower(key);
+    for (auto& elem : map_) {
+        if (toLower(elem.first.extension_) == toLower(lkey)) {
+            return std::unique_ptr<DataReader>(elem.second->clone());
+        }
+    }
+}
+
+bool DataReaderFactory::hasKey(const std::string& key) const {
+    auto lkey = toLower(key);
+    for(auto& elem: map_) {
+        if(toLower(elem.first.extension_) == toLower(lkey)) return true;
+    }    
+    return false;
+}
+
+bool DataReaderFactory::hasKey(const FileExtension& key) const {
+    return util::has_key(map_, key);
+}
 
 }  // namespace

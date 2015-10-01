@@ -61,7 +61,6 @@ protected:
 
     virtual void invalidateOutput();
 
-    virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
 
     PortType port_;
@@ -148,10 +147,6 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
     }
 }
 
-template <typename DataType, typename PortType>
-void inviwo::DataSource<DataType, PortType>::serialize(IvwSerializer& s) const {
-    Processor::serialize(s);
-}
 /**
  * Deserialize everything first then load the data
  */
@@ -161,6 +156,7 @@ void inviwo::DataSource<DataType, PortType>::deserialize(IvwDeserializer& d) {
     Processor::deserialize(d);
     auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<DataType>();
     file_.clearNameFilters();
+    file_.addNameFilter(FileExtension("*", "All Files"));
     for (auto& ext : extensions) {
         file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
     }

@@ -32,12 +32,15 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
-class IVW_CORE_API FileExtension {
+class IVW_CORE_API FileExtension : public IvwSerializable {
 public:
     FileExtension();
+    FileExtension(const FileExtension&) = default;
+    FileExtension& operator=(const FileExtension&) = default;
     FileExtension(std::string extension, std::string description);
     virtual ~FileExtension() {};
 
@@ -49,12 +52,35 @@ public:
      * @return FileExtension object created from the information given in the input string.
      */
     static FileExtension createFileExtensionFromString(const std::string &str);
+    std::string toString() const;
+
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
+
+
 
     std::string extension_; ///< File extension in lower case letters.
     std::string description_;
+
+    friend bool operator==(const FileExtension&, const FileExtension&);
 };
 
+bool operator==(const FileExtension&, const FileExtension&);
+
 } // namespace
+
+namespace std {
+    template<>
+    struct hash<inviwo::FileExtension>
+    {
+        size_t operator()(const inviwo::FileExtension& f) const {
+            size_t h = 0;
+            inviwo::util::hash_combine(h, f.extension_);
+            inviwo::util::hash_combine(h, f.description_);
+            return h;
+        }
+    };
+}
 
 #endif // IVW_FILEEXTENSION_H
 

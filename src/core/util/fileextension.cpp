@@ -84,5 +84,32 @@ FileExtension FileExtension::createFileExtensionFromString(const std::string &st
     return{ ext, desc };
 }
 
+std::string FileExtension::toString() const {
+    std::stringstream ss;
+    ss << description_ << " ";
+    // consider the special case when the extension is empty, i.e. the file selector is '*'
+    if (extension_.empty() || extension_ == "*") {
+        ss << "(*)";
+    } else {
+        ss << "(*." << extension_ << ")";
+    }
+    return ss.str();
+}
+
+void FileExtension::serialize(IvwSerializer& s) const {
+    s.serialize("extension", extension_);
+    s.serialize("description", description_);
+}
+
+void FileExtension::deserialize(IvwDeserializer& d) {
+    d.deserialize("extension", extension_);
+    d.deserialize("description", description_);
+}
+
+bool operator==(const FileExtension& rhs, const FileExtension& lhs) {
+    return rhs.extension_ == lhs.extension_ && rhs.description_ == lhs.description_;
+}
+
+
 } // namespace
 

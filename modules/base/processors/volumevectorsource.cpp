@@ -89,6 +89,8 @@ void VolumeVectorSource::load(bool deserialize /*= false*/) {
 void VolumeVectorSource::addFileNameFilters() {
     auto rf = DataReaderFactory::getPtr();
     auto extensions = rf->getExtensionsForType<VolumeVector>();
+    file_.clearNameFilters();
+    file_.addNameFilter(FileExtension("*", "All Files"));
     for (auto& ext : extensions) {
         file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
     }

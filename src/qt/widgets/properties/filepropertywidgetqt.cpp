@@ -96,15 +96,13 @@ void FilePropertyWidgetQt::setPropertyValue() {
     }
 
     // Setup Extensions
-    std::vector<std::string> filters = property_->getNameFilters();
+    std::vector<FileExtension> filters = property_->getNameFilters();
     InviwoFileDialog importFileDialog(this, property_->getDisplayName(),
                                       property_->getContentType(),
                                       path);
     
 
-    for (std::vector<std::string>::const_iterator it = filters.begin(); it != filters.end(); ++it)
-        importFileDialog.addExtension(*it);
-
+    for (const auto& filter : filters) importFileDialog.addExtension(filter);
 
     switch (property_->getAcceptMode()) {
     case FileProperty::AcceptMode::Save:
