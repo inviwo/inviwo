@@ -35,6 +35,7 @@
 #include <modules/opencl/inviwoopencl.h>
 
 #include <inviwo/core/datastructures/buffer/bufferrepresentation.h>
+#include <inviwo/core/util/formats.h>
 #include <memory>
 
 namespace inviwo {
@@ -95,12 +96,21 @@ namespace cl {
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferCL& value);
 
-// Kernel argument specializations for Buffer type
-// (enables calling cl::Queue::setArg with Buffer)
+// Kernel argument specializations for BufferBase type
+// (enables calling cl::Queue::setArg with BufferBase).
+// Calls value.getRepresentation<BufferCL>().
 // @note This function is only valid for buffers
 // that does not change the buffer data.
 template <>
 IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::BufferBase& value);
+
+// Kernel argument specializations for Buffer<T> type
+// (enables calling cl::Queue::setArg with Buffer<T>).
+// Calls value.getRepresentation<BufferCL>().
+// @note This function is only valid for buffers
+// that does not change the buffer data.
+#define DataFormatIdMacro(i) template <> IVW_MODULE_OPENCL_API cl_int Kernel::setArg(cl_uint index, const inviwo::Buffer<inviwo::Data##i::type>& value);
+#include <inviwo/core/util/formatsdefinefunc.h>
 
 }  // namespace cl
 
