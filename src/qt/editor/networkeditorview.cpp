@@ -50,6 +50,12 @@ NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, QWidget* pare
     setDragMode(QGraphicsView::RubberBandDrag);
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
+
+    //setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    setTransformationAnchor(QGraphicsView::NoAnchor);
+    //setResizeAnchor(QGraphicsView::NoAnchor);
 }
 
 NetworkEditorView::~NetworkEditorView() { QGraphicsView::setScene(nullptr); }
@@ -86,10 +92,14 @@ void NetworkEditorView::setZoom(const float& zoom, const QPointF& pos) {
 
     QTransform matrix;
     matrix.scale(zoom_, zoom_);
-    QPointF pos2 = QGraphicsView::mapToScene(pos.toPoint());
-    QGraphicsView::translate(pos2.x(), pos2.y());
+    
+    QPointF center = viewport()->rect().center();
+    QPointF oldPos = QGraphicsView::mapToScene(pos.toPoint());
     QGraphicsView::setTransform(matrix);
-    QGraphicsView::translate(-pos2.x(), -pos2.y());
+    QPointF newPos = QGraphicsView::mapToScene(pos.toPoint());
+    QPointF delta = newPos - oldPos;
+
+    QGraphicsView::translate(delta.x(), delta.y());
 }
 
 void NetworkEditorView::mouseDoubleClickEvent(QMouseEvent* e) {
