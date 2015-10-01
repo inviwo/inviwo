@@ -73,7 +73,9 @@ void StringMultilinePropertyWidgetQt::generateWidget() {
 
 void StringMultilinePropertyWidgetQt::setPropertyValue() {
     std::string valueStr = textEdit_->toPlainText().toLocal8Bit().constData();
+    property_->setInitiatingWidget(this);
     property_->set(valueStr);
+    property_->clearInitiatingWidget();
 }
 
 void StringMultilinePropertyWidgetQt::updateFromProperty() {
