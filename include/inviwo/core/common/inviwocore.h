@@ -41,7 +41,7 @@ namespace inviwo {
  */
 class IVW_CORE_API InviwoCore : public InviwoModule {
 public:
-    InviwoCore();
+    InviwoCore(InviwoApplication* app);
 };
 
 }  // namespace

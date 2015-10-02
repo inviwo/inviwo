@@ -48,7 +48,8 @@
 
 namespace inviwo {
 
-InviwoModule::InviwoModule() : identifier_("undefined"), initialized_(false) {}
+InviwoModule::InviwoModule(InviwoApplication* app, const std::string& identifier)
+    : app_(app), identifier_(identifier), initialized_(false) {}
 
 InviwoModule::~InviwoModule() {
     if (isInitialized())
@@ -123,11 +124,12 @@ std::string InviwoModule::getPath() const {
 
 void InviwoModule::initialize() {
     for (auto& elem : capabilities_) {
-        elem->initialize();
+        elem->retrieveStaticInfo();
         elem->printInfo();
     }
-
-    setupModuleSettings();
+    for (auto& elem : moduleSettings_) {
+        elem->initialize();
+    }
     initialized_ = true;
 }
 
@@ -136,10 +138,6 @@ bool InviwoModule::isInitialized() const { return initialized_; }
 void InviwoModule::deinitialize() { initialized_ = false; }
 
 void InviwoModule::setIdentifier(const std::string& identifier) { identifier_ = identifier; }
-
-void InviwoModule::setupModuleSettings() {
-    for (auto& elem : moduleSettings_) elem->initialize();
-}
 
 const std::vector<Capabilities*>& InviwoModule::getCapabilities() const { return capabilities_; }
 const std::vector<DataReader*>& InviwoModule::getDataReaders() const { return dataReaders_; }

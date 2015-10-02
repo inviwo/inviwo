@@ -74,9 +74,7 @@
 
 namespace inviwo {
 
-BaseGLModule::BaseGLModule() : InviwoModule() {
-    setIdentifier("BaseGL");
-
+BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL") {
 #ifdef BASEGL_INCLUDE_SHADER_RESOURCES
     BASEGL_addGeneratedShaderResources();
 #else

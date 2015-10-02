@@ -32,14 +32,34 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/observer.h>
+#include <inviwo/core/util/logcentral.h>
+
 #include <string>
 #include <memory>
 #include <unordered_map>
-#include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
 class IvwSerializable;
+
+template<typename T>
+class FactoryObserver : public Observer {
+public:
+    virtual void onRegister(T* p) {}
+    virtual void onUnRegister(T* p) {}
+};
+
+template<typename T>
+class FactoryObservable : public Observable<FactoryObserver<T>> {
+protected:
+    void notifyObserversOnRegister(T* p) const {
+        for (auto o : this->observers_) o->onRegister(p);
+    }
+    void notifyObserversOnUnRegister(T* p) const {
+        for (auto o : this->observers_) o->onUnRegister(p);
+    }
+};
 
 class IVW_CORE_API FactoryBase {
 public:

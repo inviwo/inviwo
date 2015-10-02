@@ -37,16 +37,12 @@
 #include <modules/python3/pyinviwo.h>
 namespace inviwo {
 
-Python3QtModule::Python3QtModule() : InviwoModule() {
-    setIdentifier("Python3Qt");
-}
+Python3QtModule::Python3QtModule(InviwoApplication* app) : InviwoModule(app, "Python3Qt") {}
 
 Python3QtModule::~Python3QtModule() {
     delete inviwoPyQtModule_;
     delete menu_;
 }
-
-
 
 void Python3QtModule::initialize() {
     InviwoModule::initialize();

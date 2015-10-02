@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2013-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,25 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_QTWIDGETMODULE_H
-#define IVW_QTWIDGETMODULE_H
-
-#include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/capabilities.h>
 
 namespace inviwo {
 
-class IVW_QTWIDGETS_API QtWidgetModule : public InviwoModule {
-public:
-    QtWidgetModule(InviwoApplication* app);
-    virtual ~QtWidgetModule() {}
-};
+Capabilities::Capabilities() {}
+
+Capabilities::~Capabilities() {}
+
+bool Capabilities::canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory) {
+    return true;
+}
+
+uvec3 Capabilities::calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
+                                              glm::u8 percentageOfAvailableMemory) {
+    return dimensions;
+}
+
+glm::u64 Capabilities::getMemorySizeInBytes(uvec3 dimensions, size_t formatSizeInBytes) {
+    return static_cast<glm::u64>(dimensions.x * dimensions.y * dimensions.z * formatSizeInBytes);
+}
 
 }  // namespace
-
-#endif  // IVW_QTWIDGETMODULE_H

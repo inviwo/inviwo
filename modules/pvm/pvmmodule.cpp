@@ -34,11 +34,9 @@
 
 namespace inviwo {
 
-PVMModule::PVMModule() : InviwoModule() {
-    setIdentifier("PVM");
+PVMModule::PVMModule(InviwoApplication* app) : InviwoModule(app, "PVM") {
     registerDataReader(new PVMVolumeReader());
     registerDataWriter(new PVMVolumeWriter());
-
     registerDataReader(new MPVMVolumeReader());
 }
 

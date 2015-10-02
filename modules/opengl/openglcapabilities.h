@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_OPENGLCAPABILITIES_H
@@ -35,7 +35,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_OPENGL_API OpenGLCapabilities : public Capabilities  {
+class IVW_MODULE_OPENGL_API OpenGLCapabilities : public Capabilities {
 public:
     class IVW_MODULE_OPENGL_API GLSLShaderVersion {
     public:
@@ -58,21 +58,17 @@ public:
     };
 
     //#undef INTEL
-    enum GlVendor {
-        VENDOR_NVIDIA,
-        VENDOR_AMD,
-        VENDOR_INTEL,
-        VENDOR_UNKNOWN
-    };
+    enum GlVendor { VENDOR_NVIDIA, VENDOR_AMD, VENDOR_INTEL, VENDOR_UNKNOWN };
 
     OpenGLCapabilities();
     virtual ~OpenGLCapabilities();
 
-    void printInfo();
+    virtual void printInfo() override;
     void printDetailedInfo();
 
-    bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100);
-    uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes, glm::u8 percentageOfAvailableMemory = 100);
+    virtual bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100) override;
+    virtual uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
+                                            glm::u8 percentageOfAvailableMemory = 100) override;
 
     static int getOpenGLVersion();
 
@@ -114,8 +110,8 @@ public:
     bool setPreferredProfile(std::string, bool);
 
 protected:
-    void retrieveStaticInfo();
-    void retrieveDynamicInfo();
+    virtual void retrieveStaticInfo() override;
+    virtual void retrieveDynamicInfo() override;
 
     void rebuildGLSLHeader();
     void rebuildGLSLVertexDefines();
@@ -124,7 +120,7 @@ protected:
     void addShaderVersion(GLSLShaderVersion);
     void addShaderVersionIfEqualOrLower(GLSLShaderVersion, int);
     void parseAndAddShaderVersion(std::string, int);
-    
+
     static int parseAndRetrieveVersion(std::string);
 
 private:
@@ -139,7 +135,7 @@ private:
     std::string glRenderStr_;
     std::string glslVersionStr_;
 
-    //GLSL
+    // GLSL
     bool shadersAreSupported_;
     bool shadersAreSupportedARB_;
     bool geometryShsadersAreSupported_;
@@ -154,7 +150,7 @@ private:
     std::string currentGlobalGLSLFragmentDefines_;
     std::vector<GLSLShaderVersion> supportedShaderVersions_;
 
-    //Texturing
+    // Texturing
     bool texSupported_;
     bool tex3DSupported_;
     bool texArraySupported_;
@@ -167,6 +163,6 @@ private:
     int numTexUnits_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_OPENGLCAPABILITIES_H
+#endif  // IVW_OPENGLCAPABILITIES_H

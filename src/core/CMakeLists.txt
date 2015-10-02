@@ -407,6 +407,7 @@ set(SOURCE_FILES
     resources/resourcemanager.cpp
     util/assertion.cpp
     util/canvas.cpp
+    util/capabilities.cpp
     util/clock.cpp
     util/colorconversion.cpp
     util/commandlineparser.cpp

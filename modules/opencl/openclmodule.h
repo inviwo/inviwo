@@ -38,9 +38,8 @@ namespace inviwo {
  * See inviwoopencl.h for usage.
  */
 class IVW_MODULE_OPENCL_API OpenCLModule : public InviwoModule {
-
 public:
-    OpenCLModule();
+    OpenCLModule(InviwoApplication* app);
 
     void initialize();
 

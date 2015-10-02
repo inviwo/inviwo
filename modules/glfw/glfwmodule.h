@@ -37,9 +37,8 @@
 namespace inviwo {
 
 class IVW_MODULE_GLFW_API GLFWModule : public InviwoModule {
-
 public:
-    GLFWModule();
+    GLFWModule(InviwoApplication* app);
     virtual ~GLFWModule();
 
     virtual void deinitialize();

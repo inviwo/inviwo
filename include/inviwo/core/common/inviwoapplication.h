@@ -57,6 +57,7 @@
 namespace inviwo {
 
 class ProcessorNetworkEvaluator;
+class PropertyFactory;
 
 /**
  * \class InviwoApplication
@@ -160,6 +161,9 @@ public:
     void waitForPool();
     void setPostEnqueueFront(std::function<void()> func);
     void setProgressCallback(std::function<void(std::string)> progressCallback);
+
+    PropertyFactory* getPropertyFactory() const;
+
 
 protected:
     void printApplicationInfo();

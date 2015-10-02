@@ -36,9 +36,8 @@
 namespace inviwo {
 
 class IVW_MODULE_ASSIMP_API AssimpModule : public InviwoModule {
-
 public:
-    AssimpModule();
+    AssimpModule(InviwoApplication* app);
 
 };
 

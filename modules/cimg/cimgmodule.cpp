@@ -34,9 +34,7 @@
 
 namespace inviwo {
 
-CImgModule::CImgModule() : InviwoModule() {
-    setIdentifier("CImg");
-
+CImgModule::CImgModule(InviwoApplication* app) : InviwoModule(app, "CImg") {
     // Register Data Readers
     registerDataReader(new CImgLayerReader());
     

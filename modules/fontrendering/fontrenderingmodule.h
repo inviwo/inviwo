@@ -36,9 +36,8 @@
 namespace inviwo {
 
 class IVW_MODULE_FONTRENDERING_API FontRenderingModule : public InviwoModule {
-
 public:
-    FontRenderingModule();
+    FontRenderingModule(InviwoApplication* app);
 
 };
 

@@ -36,9 +36,8 @@
 namespace inviwo {
 
 class IVW_MODULE_PVM_API PVMModule : public InviwoModule {
-
 public:
-    PVMModule();
+    PVMModule(InviwoApplication* app);
 
 };
 

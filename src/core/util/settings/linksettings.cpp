@@ -35,38 +35,40 @@
 
 namespace inviwo {
 
-LinkSettings::LinkSettings(const std::string& id)
-    : Settings(id), linkProperties_("auto-link-properties", "Auto Link Properties") {
+LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
+    : Settings(id)
+    , FactoryObserver<PropertyFactoryObject>()
+    , linkProperties_("auto-link-properties", "Auto Link Properties") {
+
     addProperty(linkProperties_);
-}
 
-LinkSettings::~LinkSettings() {
-    for (size_t i = 0; i < linkProperties_.getProperties().size(); i++) {
-        delete linkProperties_.getProperties()[i];
-    }
-}
-
-void LinkSettings::initialize() {
-    std::vector<std::string> properties =
-        PropertyFactory::getPtr()->getKeys();
+    auto properties = factory->getKeys();
     std::sort(properties.begin(), properties.end());
 
-    CameraProperty cam("", "");
-    for (auto& propertie : properties) {
-        BoolProperty* linkPropery =
-            new BoolProperty("link-" + propertie, propertie,
-                             (propertie == cam.getClassIdentifier()) != 0 ? true : false);
-        linkProperties_.addProperty(linkPropery, false);
+    for (auto& property : properties) {
+        //enable camera prop linking by default.
+        bool enabled = (property == CameraProperty::CLASS_IDENTIFIER) != 0 ? true : false;
+        auto linkPropery = new BoolProperty("link-" + property, property, enabled);
+        linkProperties_.addProperty(linkPropery);
     }
+    
+    factory->addObserver(this);
 }
 
-void LinkSettings::deinitialize() {}
+void LinkSettings::onRegister(PropertyFactoryObject* p) {
+    auto property = p->getClassIdentifier();
+    bool enabled = (property == CameraProperty::CLASS_IDENTIFIER) != 0 ? true : false;
+    auto linkPropery = new BoolProperty("link-" + property, property, enabled);
+    linkProperties_.addProperty(linkPropery);
+}
+
+void LinkSettings::onUnRegister(PropertyFactoryObject* p) {
+    linkProperties_.removeProperty("link-" + p->getClassIdentifier());
+}
 
 bool LinkSettings::isLinkable(const Property* property) const {
-    Property* prop = getPropertyByIdentifier("link-" + property->getClassIdentifier(), true);
-    if (prop) {
-        BoolProperty* linkOption = dynamic_cast<BoolProperty*>(prop);
-        if (linkOption) return linkOption->get();
+    if (auto prop = getPropertyByIdentifier("link-" + property->getClassIdentifier(), true)) {
+        if (auto linkOption = dynamic_cast<BoolProperty*>(prop)) return linkOption->get();
     }
     return false;
 }

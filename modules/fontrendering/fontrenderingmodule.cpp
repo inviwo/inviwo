@@ -36,8 +36,7 @@
 
 namespace inviwo {
 
-FontRenderingModule::FontRenderingModule() : InviwoModule() {
-    setIdentifier("FontRendering");
+FontRenderingModule::FontRenderingModule(InviwoApplication* app) : InviwoModule(app, "FontRendering") {
 
 #ifdef FONTRENDERING_INCLUDE_SHADER_RESOURCES
     FONTRENDERING_addGeneratedShaderResources();

@@ -36,9 +36,8 @@
 namespace inviwo {
 
 class IVW_MODULE_EXAMPLE_API ExampleModule : public InviwoModule {
-
 public:
-    ExampleModule();
+    ExampleModule(InviwoApplication* app);
 
 };
 

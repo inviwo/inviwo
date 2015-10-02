@@ -90,8 +90,7 @@
 
 namespace inviwo {
 
-InviwoCore::InviwoCore() : InviwoModule() {
-    setIdentifier("Core");
+InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     // Register Converters
     registerRepresentationConverter(new VolumeDisk2RAMConverter());
     registerRepresentationConverter(new LayerDisk2RAMConverter());
@@ -143,7 +142,11 @@ InviwoCore::InviwoCore() : InviwoModule() {
     registerMetaData(new ProcessorWidgetMetaData());
     registerMetaData(new PropertyEditorWidgetMetaData());
     // Register Capabilities
-    registerCapabilities(new SystemCapabilities());
+    auto syscap = new SystemCapabilities();
+    syscap->retrieveStaticInfo();
+    syscap->printInfo();
+    registerCapabilities(syscap);
+    
     // Register Data readers
     registerDataReader(new DatVolumeReader());
     registerDataReader(new IvfVolumeReader());
@@ -153,7 +156,7 @@ InviwoCore::InviwoCore() : InviwoModule() {
     registerDataWriter(new IvfVolumeWriter());
     // Register Settings
     registerSettings(new SystemSettings());
-    registerSettings(new LinkSettings());
+    registerSettings(new LinkSettings("Link Settings", app_->getPropertyFactory()));
     // Register Ports
     registerPort(MeshInport);
     registerPort(MeshMultiInport);

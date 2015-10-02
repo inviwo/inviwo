@@ -69,8 +69,7 @@ template <> ProcessorDisplayName(BasisTransformMesh, "Basis Transform Mesh");
 template <> ProcessorClassIdentifier(BasisTransformVolume, "org.inviwo.BasisTransformVolume");
 template <> ProcessorDisplayName(BasisTransformVolume, "Basis Transform Volume");
 
-BaseModule::BaseModule() : InviwoModule() {
-    setIdentifier("Base");
+BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor(CubeProxyGeometry);
     registerProcessor(DiffuseLightSourceProcessor);
     registerProcessor(DirectionalLightSourceProcessor);

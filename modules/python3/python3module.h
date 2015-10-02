@@ -39,7 +39,7 @@ class PyInviwo;
 
 class IVW_MODULE_PYTHON3_API Python3Module : public InviwoModule {
 public:
-    Python3Module();
+    Python3Module(InviwoApplication* app);
     virtual ~Python3Module();
 
     virtual void initialize();

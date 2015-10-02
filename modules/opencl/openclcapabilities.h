@@ -52,7 +52,7 @@ public:
     OpenCLCapabilities();
     virtual ~OpenCLCapabilities();
 
-    void printInfo();
+    virtual void printInfo() override;
     void printDetailedInfo();
     /**
      * Print all available information on device.
@@ -60,8 +60,8 @@ public:
     static void printDeviceInfo(const cl::Device& device);
 
 protected:
-    void retrieveStaticInfo();
-    void retrieveDynamicInfo();
+    virtual void retrieveStaticInfo() override;
+    virtual void retrieveDynamicInfo() override;
 };
 
 

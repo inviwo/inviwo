@@ -37,8 +37,7 @@
 
 namespace inviwo {
 
-BaseCLModule::BaseCLModule() : InviwoModule() {
-    setIdentifier("BaseCL");
+BaseCLModule::BaseCLModule(InviwoApplication* app) : InviwoModule(app, "BaseCL") {
     // Processors
     registerProcessor(EntryExitPointsCLProcessor);
     registerProcessor(GrayscaleCLProcessor);

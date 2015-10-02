@@ -40,8 +40,7 @@
 using namespace inviwo;
 
 namespace inviwo {
-UnitTestsModule::UnitTestsModule() : InviwoModule() {
-    setIdentifier("UnitTests");
+UnitTestsModule::UnitTestsModule(InviwoApplication* app) : InviwoModule(app, "UnitTests") {
     LogErrorCounter::init();
     LogCentral::getPtr()->registerLogger(LogErrorCounter::getPtr());
 }

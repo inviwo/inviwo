@@ -37,7 +37,7 @@ namespace inviwo {
 
 class IVW_MODULE_ABUFFERGL_API ABufferGLModule : public InviwoModule {
 public:
-    ABufferGLModule();
+    ABufferGLModule(InviwoApplication* app);
 
     virtual void initialize() override;
     virtual void deinitialize() override;

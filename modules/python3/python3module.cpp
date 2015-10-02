@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
@@ -35,13 +35,13 @@
 
 namespace inviwo {
 
-Python3Module::Python3Module() : InviwoModule() , pyInviwo_(nullptr){
-    setIdentifier("Python3");
+Python3Module::Python3Module(InviwoApplication* app)
+    : InviwoModule(app, "Python3"), pyInviwo_(nullptr) {
     PythonExecutionOutputObservable::init();
 }
 
 Python3Module::~Python3Module() {
-    pyInviwo_ = nullptr; //issue destruction before PythonExecutionOutputObservable
+    pyInviwo_ = nullptr;  // issue destruction before PythonExecutionOutputObservable
     PythonExecutionOutputObservable::deleteInstance();
 }
 
@@ -50,8 +50,6 @@ void Python3Module::initialize() {
     pyInviwo_ = util::make_unique<PyInviwo>();
 }
 
-void Python3Module::deinitialize() {
-    InviwoModule::deinitialize();
-}
+void Python3Module::deinitialize() { InviwoModule::deinitialize(); }
 
-} // namespace
+}  // namespace

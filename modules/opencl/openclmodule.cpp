@@ -44,9 +44,7 @@
 
 namespace inviwo {
 
-OpenCLModule::OpenCLModule() : InviwoModule() {
-    setIdentifier("OpenCL");
-
+OpenCLModule::OpenCLModule(InviwoApplication* app) : InviwoModule(app, "OpenCL") {
     // Buffer CL
     registerRepresentationConverter(new BufferRAM2CLConverter());
     registerRepresentationConverter(new BufferCL2RAMConverter());

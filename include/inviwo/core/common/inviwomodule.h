@@ -66,7 +66,7 @@ namespace inviwo {
  */
 class IVW_CORE_API InviwoModule {
 public:
-    InviwoModule();
+    InviwoModule(InviwoApplication* app, const std::string& identifier = "undefined");
     virtual ~InviwoModule();
 
     /** 
@@ -129,12 +129,8 @@ protected:
     void registerResource(Resource* resource);
     void registerSettings(Settings* settings);
 
-    /**
-     * Initializes all settings registered by the module.
-     * @note Call InviwoModule::setupModuleSettings() if overriding this function
-     */
-    virtual void setupModuleSettings();
     std::vector<Settings*> moduleSettings_;
+    InviwoApplication* app_; // reference to the app that we belong to
 
 private:
     std::string identifier_; ///< Module folder name

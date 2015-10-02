@@ -40,9 +40,9 @@ class IVW_MODULE_OPENGLQT_API OpenGLQtCapabilities : public Capabilities  {
 public:
     OpenGLQtCapabilities();
     virtual ~OpenGLQtCapabilities();
-    void printInfo();
-    virtual void retrieveStaticInfo() {};
-    virtual void retrieveDynamicInfo() {};
+    virtual void printInfo() override;
+    virtual void retrieveStaticInfo() override {};
+    virtual void retrieveDynamicInfo() override {};
     std::vector<int> getGLVersion();
 };
 

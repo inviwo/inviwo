@@ -115,7 +115,7 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
     RepresentationConverterFactory::init();
     
     //Create and register core
-    InviwoCore* ivwCore = new InviwoCore();
+    InviwoCore* ivwCore = new InviwoCore(this);
     registerModule(ivwCore);
     
     //Initialize core
@@ -344,5 +344,11 @@ void InviwoApplication::waitForPool() {
     processFront();
     pool_.setSize(old_size);
 }
+
+PropertyFactory* InviwoApplication::getPropertyFactory() const {
+    return PropertyFactory::getPtr();
+}
+
+
 
 } // namespace

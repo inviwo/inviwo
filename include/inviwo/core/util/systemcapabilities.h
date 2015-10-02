@@ -76,18 +76,18 @@ public:
     SystemCapabilities();
     virtual ~SystemCapabilities();
 
-    void printInfo();
+    virtual void printInfo() override;
 
     int numberOfCores() const;
 
-    bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100);
-    uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes, glm::u8 percentageOfAvailableMemory = 100);
+    virtual bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100) override;
+    virtual uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes, glm::u8 percentageOfAvailableMemory = 100) override;
 
     glm::u64 getAvailableMemory();
     glm::u64 getCurrentResidentMemoryUsage();
-protected:
-    void retrieveStaticInfo();
-    void retrieveDynamicInfo();
+
+    virtual void retrieveStaticInfo() override;
+    virtual void retrieveDynamicInfo() override;
 
 private:
     bool lookupOSInfo();

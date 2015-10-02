@@ -46,10 +46,7 @@
 
 namespace inviwo {
 
-OpenGLModule::OpenGLModule() :
-    InviwoModule() {
-    setIdentifier("OpenGL");
-
+OpenGLModule::OpenGLModule(InviwoApplication* app) : InviwoModule(app, "OpenGL") {
     ShaderManager::init();
 
 #ifdef OPENGL_INCLUDE_SHADER_RESOURCES

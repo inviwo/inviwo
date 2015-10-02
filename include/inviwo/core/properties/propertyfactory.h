@@ -38,7 +38,9 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PropertyFactory : public Factory<Property>, public Singleton<PropertyFactory> {
+class IVW_CORE_API PropertyFactory : public Factory<Property>,
+                                     public FactoryObservable<PropertyFactoryObject>,
+                                     public Singleton<PropertyFactory> {
 public:
     using Map = std::unordered_map<std::string, PropertyFactoryObject *>;
 
@@ -46,6 +48,7 @@ public:
     virtual ~PropertyFactory() = default;
 
     virtual bool registerObject(PropertyFactoryObject *property);
+    virtual bool unRegisterObject(PropertyFactoryObject *property);
     virtual std::unique_ptr<Property> create(const std::string &className) const override;
     virtual std::unique_ptr<Property> create(const std::string &className,
                                              const std::string &identifier,

@@ -36,9 +36,7 @@
 
 namespace inviwo {
 
-GLFWModule::GLFWModule() : InviwoModule() {
-    setIdentifier("GLFW");
-
+GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     if (!glfwInit()) {
         LogError("GLFW could not be initialized.");
     }

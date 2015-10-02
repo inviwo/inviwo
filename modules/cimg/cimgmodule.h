@@ -36,9 +36,8 @@
 namespace inviwo {
 
 class IVW_MODULE_CIMG_API CImgModule : public InviwoModule {
-
 public:
-    CImgModule();
+    CImgModule(InviwoApplication* app);
 
 };
 

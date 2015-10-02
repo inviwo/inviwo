@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CAPABILITIES_H
@@ -35,35 +35,26 @@
 
 namespace inviwo {
 
-class IVW_CORE_API Capabilities  {
-
+class IVW_CORE_API Capabilities {
 public:
-    Capabilities() {}
-    virtual ~Capabilities() {}
-
-    virtual void initialize() {
-        retrieveStaticInfo();
-    }
+    Capabilities();
+    virtual ~Capabilities();
 
     virtual void printInfo() = 0;
 
-    virtual bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100) {
-        return true;
-    }
+    virtual bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100);
 
-    virtual uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes, glm::u8 percentageOfAvailableMemory = 100) {
-        return dimensions;
-    }
-
-protected:
-    virtual glm::u64 getMemorySizeInBytes(uvec3 dimensions, size_t formatSizeInBytes) {
-        return static_cast<glm::u64>(dimensions.x*dimensions.y*dimensions.z*formatSizeInBytes);
-    }
+    virtual uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
+                                            glm::u8 percentageOfAvailableMemory = 100);
 
     virtual void retrieveStaticInfo() = 0;
+protected:
+    virtual glm::u64 getMemorySizeInBytes(uvec3 dimensions, size_t formatSizeInBytes);
+
+
     virtual void retrieveDynamicInfo() = 0;
 };
 
-} // namespace
+}  // namespace
 
-#endif //IVW_CAPABILITIES_H
+#endif  // IVW_CAPABILITIES_H

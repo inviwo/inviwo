@@ -3,5 +3,5 @@
 @MODULE_HEADERS@
 namespace inviwo {
 void registerAllModules(InviwoApplication* app) {
-    @MODULE_CLASS_FUNCTIONS@
+@MODULE_CLASS_FUNCTIONS@
 }

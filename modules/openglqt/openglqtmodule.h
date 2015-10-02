@@ -38,9 +38,8 @@
 namespace inviwo {
 
 class IVW_MODULE_OPENGLQT_API OpenGLQtModule : public InviwoModule {
-
 public:
-    OpenGLQtModule();
+    OpenGLQtModule(InviwoApplication* app);
     virtual ~OpenGLQtModule();
 
 protected:

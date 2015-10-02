@@ -32,17 +32,17 @@
 
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/propertyfactory.h>
 
 namespace inviwo {
 
-class IVW_CORE_API LinkSettings : public Settings {
-
+class IVW_CORE_API LinkSettings : public Settings, public FactoryObserver<PropertyFactoryObject> {
 public:
-    LinkSettings(const std::string &id="Link Settings");
-    virtual ~LinkSettings();
-    virtual void initialize();
-    virtual void deinitialize();
+    LinkSettings(const std::string& id, PropertyFactory* factory);
     virtual bool isLinkable(const Property* property) const;
+
+    virtual void onRegister(PropertyFactoryObject* p) override;
+    virtual void onUnRegister(PropertyFactoryObject* p) override;
 
 private:
     CompositeProperty linkProperties_;

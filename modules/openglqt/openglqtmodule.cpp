@@ -35,8 +35,7 @@
 #include <inviwo/core/util/rendercontext.h>
 namespace inviwo {
 
-OpenGLQtModule::OpenGLQtModule() : InviwoModule() {
-    setIdentifier("OpenGLQt");
+OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "OpenGLQt") {
     //Create GL Context
     CanvasQt::defineDefaultContextFormat();
     qtGLSharedCanvas_ = new CanvasQt();

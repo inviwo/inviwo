@@ -39,7 +39,19 @@ bool PropertyFactory::registerObject(PropertyFactoryObject *property) {
                                              << " already registed");
         return false;
     }
+    notifyObserversOnRegister(property);
     return true;
+}
+
+bool PropertyFactory::unRegisterObject(PropertyFactoryObject *property) {
+    size_t removed = map_.erase(property->getClassIdentifier());
+    if (removed > 0) {
+        notifyObserversOnUnRegister(property);
+        return true;
+    }
+    LogWarn("Property with class name: " << property->getClassIdentifier()
+                                         << " could not be unregisted");
+    return false;
 }
 
 std::unique_ptr<Property> PropertyFactory::create(const std::string &className) const {

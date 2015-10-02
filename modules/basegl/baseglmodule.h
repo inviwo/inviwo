@@ -36,9 +36,8 @@
 namespace inviwo {
 
 class IVW_MODULE_BASEGL_API BaseGLModule : public InviwoModule {
-
 public:
-    BaseGLModule();
+    BaseGLModule(InviwoApplication* app);
 
 };
 
