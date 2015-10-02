@@ -41,8 +41,6 @@ public:
     GLFWModule(InviwoApplication* app);
     virtual ~GLFWModule();
 
-    virtual void deinitialize();
-
 protected:
     template <typename T>
     void registerProcessorWidgetAndAssociate(ProcessorWidget* processorWidget) {

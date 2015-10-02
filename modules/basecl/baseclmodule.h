@@ -39,7 +39,6 @@ class IVW_MODULE_BASECL_API BaseCLModule: public InviwoModule {
 public:
     BaseCLModule(InviwoApplication* app);
     virtual ~BaseCLModule();
-    void initialize();
 };
 
 } // namespace

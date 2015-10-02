@@ -42,9 +42,6 @@ public:
     Python3Module(InviwoApplication* app);
     virtual ~Python3Module();
 
-    virtual void initialize();
-    virtual void deinitialize();
-
 private:
     std::unique_ptr<PyInviwo> pyInviwo_;
 };

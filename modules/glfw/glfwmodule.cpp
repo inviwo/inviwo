@@ -51,15 +51,12 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     registerProcessorWidgetAndAssociate<CanvasProcessorGL>(new CanvasProcessorWidgetGLFW());
 }
 
-GLFWModule::~GLFWModule() {}
-
-void GLFWModule::deinitialize() {
+GLFWModule::~GLFWModule() {
     if (GLFWSharedCanvas_ == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
-        GLFWSharedCanvas_->deinitialize();
-        delete GLFWSharedCanvas_;
-    }    
-    InviwoModule::deinitialize();
+    }
+    GLFWSharedCanvas_->deinitialize();
+    delete GLFWSharedCanvas_;
 }
 
 } // namespace

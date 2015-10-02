@@ -139,7 +139,6 @@ void InviwoApplicationQt::initialize(registerModuleFuncPtr regModuleFunc) {
     // Since QtWidgets are not a module we have to register it our self
     InviwoModule* module = new QtWidgetModule(this);
     registerModule(module);
-    module->initialize();
 }
 
 void InviwoApplicationQt::wait(int ms) {

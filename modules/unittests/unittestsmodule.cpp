@@ -50,13 +50,6 @@ UnitTestsModule::~UnitTestsModule() {
     LogErrorCounter::deleteInstance();
 }
 
-void UnitTestsModule::initialize() {
-    InviwoModule::initialize();  // call superclass initialize
-}
-void UnitTestsModule::deinitialize() {
-    InviwoModule::deinitialize();  // call superclass deinitialize
-}
-
 int UnitTestsModule::runAllTests() {
     size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
     size_t errCount = LogErrorCounter::getPtr()->getErrorCount();

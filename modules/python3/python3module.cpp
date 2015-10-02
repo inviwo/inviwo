@@ -38,18 +38,12 @@ namespace inviwo {
 Python3Module::Python3Module(InviwoApplication* app)
     : InviwoModule(app, "Python3"), pyInviwo_(nullptr) {
     PythonExecutionOutputObservable::init();
+    pyInviwo_ = util::make_unique<PyInviwo>(this);
 }
 
 Python3Module::~Python3Module() {
-    pyInviwo_ = nullptr;  // issue destruction before PythonExecutionOutputObservable
+    pyInviwo_.reset();  // issue destruction before PythonExecutionOutputObservable
     PythonExecutionOutputObservable::deleteInstance();
 }
-
-void Python3Module::initialize() {
-    InviwoModule::initialize();
-    pyInviwo_ = util::make_unique<PyInviwo>();
-}
-
-void Python3Module::deinitialize() { InviwoModule::deinitialize(); }
 
 }  // namespace

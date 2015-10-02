@@ -30,24 +30,22 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <modules/opengl/openglmodule.h>
 #include <modules/opengl/openglsettings.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <modules/opengl/shader/shader.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/vectoroperations.h>
 
 namespace inviwo {
 
-OpenGLSettings::OpenGLSettings(OpenGLCapabilities* openglInfo)
+OpenGLSettings::OpenGLSettings()
     : Settings("OpenGL Settings")
     , shaderReloadingProperty_("shaderReloading", "Automatically reload shaders", true)
     , btnOpenGLInfo_("printOpenGLInfo", "Print OpenGL Info")
     , selectedOpenGLProfile_("selectedOpenGLProfile", "OpenGL Profile")
-    , uniformWarnings_("uniformWarnings", "Uniform Warnings")
-    , openGlCap_(openglInfo)
-    , hasOutputedGLSLVersionOnce_(false) {
+    , uniformWarnings_("uniformWarnings", "Uniform Warnings") {
     
     selectedOpenGLProfile_.addOption("core", "Core");
     selectedOpenGLProfile_.addOption("compatibility", "Compatibility");
-    selectedOpenGLProfile_.setSelectedIdentifier(OpenGLCapabilities::getPreferredProfile());
+    selectedOpenGLProfile_.setSelectedIndex(0);
     selectedOpenGLProfile_.setCurrentStateAsDefault();
 
     uniformWarnings_.addOption("ignore", "Ignore missing locations", Shader::UniformWarning::Ignore);
@@ -56,38 +54,12 @@ OpenGLSettings::OpenGLSettings(OpenGLCapabilities* openglInfo)
     uniformWarnings_.setSelectedIndex(0);
     uniformWarnings_.setCurrentStateAsDefault();
 
-    contextMode_ = OpenGLCapabilities::getPreferredProfile();
-
     addProperty(shaderReloadingProperty_);
     addProperty(btnOpenGLInfo_);
     addProperty(selectedOpenGLProfile_);
     addProperty(uniformWarnings_);
     
-    selectedOpenGLProfile_.onChange(this, &OpenGLSettings::updateProfile);
-
-    if (openGlCap_) {
-        btnOpenGLInfo_.onChange(openGlCap_, &OpenGLCapabilities::printDetailedInfo);
-        if (openGlCap_->getCurrentShaderVersion().getVersion() < 150) {
-            selectedOpenGLProfile_.setVisible(false);
-        }
-    }
-
     loadFromDisk();
-}
-
-void OpenGLSettings::updateProfile() {
-    if (openGlCap_) {
-        if (openGlCap_->setPreferredProfile(selectedOpenGLProfile_.getSelectedValue(),
-                                            !hasOutputedGLSLVersionOnce_) &&
-            hasOutputedGLSLVersionOnce_) {
-            ShaderManager::getPtr()->rebuildAllShaders();
-            if (contextMode_ != selectedOpenGLProfile_.getSelectedValue())
-                LogInfoCustom("OpenGLInfo", "Restart application to enable "
-                                                << selectedOpenGLProfile_.getSelectedValue()
-                                                << " mode.");
-        }
-        hasOutputedGLSLVersionOnce_ = true;
-    }
 }
 
 } // namespace

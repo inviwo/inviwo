@@ -76,7 +76,7 @@ static PyObject* py_stdout(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-PyInviwo::PyInviwo()
+PyInviwo::PyInviwo(Python3Module* module)
     : isInit_(false)
     , inviwoPyModule_(nullptr)
     , inviwoInternalPyModule_(nullptr)
@@ -84,7 +84,7 @@ PyInviwo::PyInviwo()
     , modulesDict_(nullptr) {
     init(this);
 
-    initPythonCInterface();
+    initPythonCInterface(module);
 }
 
 PyInviwo::~PyInviwo() {
@@ -129,7 +129,7 @@ void PyInviwo::addModulePath(const std::string& path) {
     if (ret != 0) LogWarn("Failed to add '" + pathConv + "' to Python module search path");
 }
 
-void PyInviwo::initPythonCInterface() {
+void PyInviwo::initPythonCInterface(Python3Module* module) {
     if (isInit_) return;
 
     isInit_ = true;
@@ -155,12 +155,9 @@ void PyInviwo::initPythonCInterface() {
     importModule("glob");
     importModule("random");
 
-
-    addModulePath(InviwoApplication::getPtr()->getBasePath() + "/modules/python3/scripts");
-
+    addModulePath(module->getPath()+"/scripts");
     initDefaultInterfaces();
-
-    initOutputRedirector();
+    initOutputRedirector(module);
 }
 
 void PyInviwo::importModule(const std::string &moduleName){
@@ -221,10 +218,8 @@ void PyInviwo::initDefaultInterfaces() {
     registerPyModule(inviwoInternalPyModule_);
 }
 
-void PyInviwo::initOutputRedirector() {
-    std::string directorFileName =
-        InviwoApplication::getPtr()->getModuleByType<Python3Module>()->getPath() +
-        "/scripts/outputredirector.py";
+void PyInviwo::initOutputRedirector(Python3Module* module) {
+    std::string directorFileName = module->getPath() + "/scripts/outputredirector.py";
 
     if (!filesystem::fileExists(directorFileName)) {
         LogError("Could not open outputredirector.py");
@@ -235,7 +230,6 @@ void PyInviwo::initOutputRedirector() {
     std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
     
-
     PythonScript outputCatcher; 
     outputCatcher.setSource(text);
 

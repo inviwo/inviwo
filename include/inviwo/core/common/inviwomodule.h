@@ -66,6 +66,9 @@ namespace inviwo {
  */
 class IVW_CORE_API InviwoModule {
 public:
+    /**
+     * @param identifier Name of module folder
+     */
     InviwoModule(InviwoApplication* app, const std::string& identifier = "undefined");
     virtual ~InviwoModule();
 
@@ -73,8 +76,6 @@ public:
      * \brief Get module identifier, i.e the module folder name.
      */
     std::string getIdentifier() const;
-
-    bool isInitialized() const;
 
     const std::vector<Capabilities*>& getCapabilities() const;
     const std::vector<DataReader*>& getDataReaders() const;
@@ -102,16 +103,8 @@ public:
      */
     std::string getPath() const;
 
-    virtual void initialize();
-    virtual void deinitialize();
-
 protected:
-    /** 
-     * \brief Set the name of the module. I.e module folder name
-     * 
-     * @param identifier Name of module folder
-     */
-    void setIdentifier(const std::string& identifier);
+
 
     void registerCapabilities(Capabilities* info);
     void registerDataReader(DataReader* reader);
@@ -133,8 +126,7 @@ protected:
     InviwoApplication* app_; // reference to the app that we belong to
 
 private:
-    std::string identifier_; ///< Module folder name
-    bool initialized_;
+    const std::string identifier_; ///< Module folder name
 
     std::vector<Capabilities*> capabilities_;
     std::vector<DataReader*> dataReaders_;

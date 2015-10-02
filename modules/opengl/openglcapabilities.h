@@ -34,6 +34,7 @@
 #include <inviwo/core/util/capabilities.h>
 
 namespace inviwo {
+class OpenGLSettings;
 
 class IVW_MODULE_OPENGL_API OpenGLCapabilities : public Capabilities {
 public:
@@ -60,24 +61,22 @@ public:
     //#undef INTEL
     enum GlVendor { VENDOR_NVIDIA, VENDOR_AMD, VENDOR_INTEL, VENDOR_UNKNOWN };
 
-    OpenGLCapabilities();
+    OpenGLCapabilities(OpenGLSettings* settings);
     virtual ~OpenGLCapabilities();
 
     virtual void printInfo() override;
     void printDetailedInfo();
-
+    
     virtual bool canAllocate(glm::u64 dataSize, glm::u8 percentageOfAvailableMemory = 100) override;
     virtual uvec3 calculateOptimalBrickSize(uvec3 dimensions, size_t formatSizeInBytes,
                                             glm::u8 percentageOfAvailableMemory = 100) override;
-
+    static void initializeGLEW();
     static int getOpenGLVersion();
 
     // Minimal support is OpenGL 3.2 at the moment
     static bool hasSupportedOpenGLVersion();
 
     static bool hasOpenGLVersion();
-
-    static void initializeGLEW();
 
     static bool isExtensionSupported(const char*);
     static bool isSupported(const char*);

@@ -80,14 +80,7 @@ InviwoApplication::InviwoApplication(std::string displayName, std::string basePa
     : InviwoApplication(0, nullptr, displayName, basePath) {}
 
 InviwoApplication::~InviwoApplication() {
-    pool_.setSize(0);
-    processorNetworkEvaluator_.reset();
-    processorNetwork_.reset();
-
     if (initialized_) deinitialize();
-
-    modules_.clear();
-    moudleCallbackActions_.clear();
 
     SingletonBase::deleteAllSingeltons();
     DataFormatBase::cleanDataFormatBases();
@@ -118,20 +111,18 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
     InviwoCore* ivwCore = new InviwoCore(this);
     registerModule(ivwCore);
     
-    //Initialize core
-    ivwCore->initialize();
-    
     //Load settings from core
     auto coreSettings = ivwCore->getSettings();
     for (auto setting : coreSettings) setting->loadFromDisk();
     
     //Create and register other modules
     (*regModuleFunc)(this);
-
-    //Initialize other modules
-    for (size_t i = 1; i < modules_.size(); i++) {
-        postProgress("Initializing module: " + modules_[i]->getIdentifier());
-        modules_[i]->initialize();
+    
+    for (auto& module: modules_) {
+        for (auto& elem : module->getCapabilities()) {
+            elem->retrieveStaticInfo();
+            elem->printInfo();
+        }
     }
 
     //Load settings from other modules
@@ -150,13 +141,15 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
 }
 
 void InviwoApplication::deinitialize() {
-    // Deinitialize Resource manager before modules
-    // to prevent them from using module specific 
-    // (OpenGL/OpenCL) features after their module 
-    // has been deinitialized
-    ResourceManager::deleteInstance();
-    for (auto& elem : modules_) elem->deinitialize();
+    pool_.setSize(0);
+    processorNetworkEvaluator_.reset();
+    processorNetwork_.reset();
+    ResourceManager::getPtr()->clearAllResources();
 
+    moudleCallbackActions_.clear();
+    modules_.clear();
+
+    ResourceManager::deleteInstance();
     DataReaderFactory::deleteInstance();
     DataWriterFactory::deleteInstance();
     DialogFactory::deleteInstance();

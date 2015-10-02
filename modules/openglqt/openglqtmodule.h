@@ -47,9 +47,6 @@ protected:
     void registerProcessorWidgetAndAssociate(ProcessorWidget* processorWidget) {
         registerProcessorWidget(T::CLASS_IDENTIFIER, processorWidget);
     }
-
-    virtual void deinitialize();
-
 private:
     CanvasQt* qtGLSharedCanvas_;
     

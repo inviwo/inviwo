@@ -116,32 +116,34 @@ void VolumeRaycaster::process() {
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 
-    if (volumePort_.isChanged()) {
-        auto newVolume = volumePort_.getData();
+//    if (volumePort_.isChanged()) {
+//        auto newVolume = volumePort_.getData();
+//
+//        if (newVolume->hasRepresentation<VolumeGL>()) {
+//            loadedVolume_ = newVolume;
+//        } else {
+//            dispatchPool([this, newVolume]() {
+//                RenderContext::getPtr()->activateLocalRenderContext();
+//                newVolume->getRep<kind::GL>();
+//                glFlush();
+//                dispatchFront([this, newVolume]() {
+//                    loadedVolume_ = newVolume;
+//                    invalidate(INVALID_OUTPUT);
+//                });
+//            });
+//        }
+//    }
+//
+//    if (!loadedVolume_) {
+//        LogInfo("No loaded data");
+//        return;
+//    }
+//    if (!loadedVolume_->hasRepresentation<VolumeGL>()) {
+//        LogInfo("No GL rep !!! ");
+//        return;
+//    }
 
-        if (newVolume->hasRepresentation<VolumeGL>()) {
-            loadedVolume_ = newVolume;
-        } else {
-            dispatchPool([this, newVolume]() {
-                RenderContext::getPtr()->activateLocalRenderContext();
-                newVolume->getRep<kind::GL>();
-                glFlush();
-                dispatchFront([this, newVolume]() {
-                    loadedVolume_ = newVolume;
-                    invalidate(INVALID_OUTPUT);
-                });
-            });
-        }
-    }
-
-    if (!loadedVolume_) {
-        LogInfo("No loaded data");
-        return;
-    }
-    if (!loadedVolume_->hasRepresentation<VolumeGL>()) {
-        LogInfo("No GL rep !!! ");
-        return;
-    }
+    loadedVolume_ = volumePort_.getData();
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, *loadedVolume_, "volume");

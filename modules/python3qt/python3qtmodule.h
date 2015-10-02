@@ -41,10 +41,6 @@ public:
     Python3QtModule(InviwoApplication* app);
     virtual ~Python3QtModule();
 
-
-    virtual void initialize();
-    virtual void deinitialize();
-
 private:
     void initPyQtModule();
 

@@ -51,16 +51,12 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "Open
 }
 
 OpenGLQtModule::~OpenGLQtModule() {
-    delete menu_;
-}
-
-void OpenGLQtModule::deinitialize() {
     if (qtGLSharedCanvas_ == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
-        qtGLSharedCanvas_->deinitialize();
-        delete qtGLSharedCanvas_;
     }
-    InviwoModule::deinitialize();
+    qtGLSharedCanvas_->deinitialize();
+    delete qtGLSharedCanvas_;
+    delete menu_;
 }
 
 } // namespace
