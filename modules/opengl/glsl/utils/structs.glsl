@@ -85,10 +85,10 @@ struct VolumeParameters {
     vec3 dimensions;                       // Number of voxels (dim) per axis 
     vec3 reciprocalDimensions;             // 1 over the number of voxels
     float worldSpaceGradientSpacing;       // Spacing between gradient samples in world space 
-    float formatScaling;                   // Map value from data range [min,max] to [0,1]
-    float formatOffset;
-    float signedFormatScaling;             // Map value from data range [min,max] to [-1,1]
-    float signedFormatOffset;
+    float formatScaling;                   // This scaling and offset parameters is used to
+    float formatOffset;                    // map value from data range [min,max] to [0,1]
+    float signedFormatScaling;             // or to [-1,1] for signed data. It is used by
+    float signedFormatOffset;              // sampler3d.glsl, and is calculated in volumeutils.cpp
 };
 
 struct ImageParameters {

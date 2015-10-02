@@ -38,11 +38,19 @@ vec4 getVoxel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos) {
     return (texture(volume, samplePos));
 }
 // Return a value mapped from data range [min,max] to [0,1]
+// The data range [min, max] here is the range specified by the dataMap_.dataRange of volume
+// and is not always the same as the range of the specified data type.
+// We have to apply some scaling here to compensate for that the data range of out data is
+// not the same as the min/max as the type. And at the same time take into account that opengl
+// also does it's own normalization, which if different for floating point and integer types
+// see: https://www.opengl.org/wiki/Normalized_Integer
+// the acctual calculation of the scaling parameters is done in volumeutils.cpp
 vec4 getNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos) {
     return (texture(volume, samplePos) + volumeParams.formatOffset)
         * (1.0 - volumeParams.formatScaling);
 }
 // Return a value mapped from data range [min,max] to [-1,1]
+// Same as getNormalizedVoxel but for signed types. 
 vec4 getSignNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, vec3 samplePos) {
     return (texture(volume, samplePos) + volumeParams.signedFormatOffset)
         * (1.0 - volumeParams.signedFormatScaling);
