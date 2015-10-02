@@ -1,4 +1,4 @@
 # Inviwo Python script 
-print("hej")
+import inviwo 
 
-1+1
+inviwo.snapshotCanvas(0,"snapshot.png") # this will take a snapshot of the first canvas, or fail with an error if there is no canvas in the current workspace 
