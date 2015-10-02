@@ -143,7 +143,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
         QString cid = query.queryItemValue("classIdentifier");
 
         auto imageCache = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_SETTINGS);
-        imageCache += "image-cache";
+        imageCache += "/image-cache";
         filesystem::createDirectoryRecursively(imageCache);
 
         QString imgname(QString::fromStdString(imageCache) + "/" + cid + ".png");
