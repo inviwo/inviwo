@@ -42,9 +42,6 @@ class IVW_CORE_API SystemSettings : public Settings {
 
 public:
     SystemSettings();
-    virtual ~SystemSettings();
-    virtual void initialize();
-    virtual void deinitialize();
 
     UsageMode getApplicationUsageMode() const;
 

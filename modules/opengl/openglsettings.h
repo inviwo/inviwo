@@ -44,9 +44,6 @@ class IVW_MODULE_OPENGL_API OpenGLSettings : public Settings {
 
 public:
     OpenGLSettings(OpenGLCapabilities*);
-    virtual ~OpenGLSettings();
-    virtual void initialize();
-    virtual void deinitialize();
 
     BoolProperty shaderReloadingProperty_;
     ButtonProperty btnOpenGLInfo_;

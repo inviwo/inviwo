@@ -35,17 +35,12 @@
 
 namespace inviwo {
 
-OpenCLSettings::OpenCLSettings(std::string id) :
-    Settings(id)
+OpenCLSettings::OpenCLSettings(OpenCLCapabilities* openclInfo) :
+    Settings("OpenCL Settings")
     , openCLDeviceProperty_("openCLDevice","Default device")
     , enableOpenGLSharing_("glsharing", "Enable OpenGL sharing", true)
-    , btnOpenCLInfo_("printOpenCLInfo", "Print OpenCL Info")
-{}
+    , btnOpenCLInfo_("printOpenCLInfo", "Print OpenCL Info") {
 
-OpenCLSettings::~OpenCLSettings() {
-}
-
-void OpenCLSettings::initialize() {
     std::vector<cl::Device> devices = OpenCL::getAllDevices();
     int defaultSelected = 0; 
     cl::Device bestDevice; cl::Platform platform;
@@ -65,17 +60,12 @@ void OpenCLSettings::initialize() {
     enableOpenGLSharing_.onChange(this, &OpenCLSettings::changeDevice);
 
     addProperty(btnOpenCLInfo_);
-    OpenCLModule* openCLModule = getTypeFromVector<OpenCLModule>(InviwoApplication::getPtr()->getModules());
-    if (openCLModule){
-        OpenCLCapabilities* openclInfo = getTypeFromVector<OpenCLCapabilities>(openCLModule->getCapabilities());
-
-        if (openclInfo){
-            btnOpenCLInfo_.onChange(openclInfo, &OpenCLCapabilities::printDetailedInfo);
-        }
+    
+    if (openclInfo){
+        btnOpenCLInfo_.onChange(openclInfo, &OpenCLCapabilities::printDetailedInfo);
     }
-}
 
-void OpenCLSettings::deinitialize()  {}
+}
 
 void OpenCLSettings::changeDevice() {
     // TODO: Close network before changing device. Load it again after changing

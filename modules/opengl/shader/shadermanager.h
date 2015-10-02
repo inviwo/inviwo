@@ -41,6 +41,8 @@
 
 namespace inviwo {
 
+class OpenGLSettings;
+
 class IVW_MODULE_OPENGL_API ShaderManager : public Singleton<ShaderManager>, public FileObserver {
 
 public:
@@ -69,7 +71,7 @@ public:
     const std::vector<Shader*> getShaders() const;
     void rebuildAllShaders();
 
-    void setUniformWarningLevel();
+    void setUniformWarningLevel(OpenGLSettings* settings);
 
 protected:
     OpenGLCapabilities* getOpenGLCapabilitiesObject();

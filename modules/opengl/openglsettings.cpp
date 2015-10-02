@@ -67,22 +67,13 @@ OpenGLSettings::OpenGLSettings(OpenGLCapabilities* openglInfo)
 
     if (openGlCap_) {
         btnOpenGLInfo_.onChange(openGlCap_, &OpenGLCapabilities::printDetailedInfo);
-    }
-
-    loadFromDisk();
-}
-
-OpenGLSettings::~OpenGLSettings() {}
-
-void OpenGLSettings::initialize() {
-    if (openGlCap_) {
         if (openGlCap_->getCurrentShaderVersion().getVersion() < 150) {
             selectedOpenGLProfile_.setVisible(false);
         }
     }
-}
 
-void OpenGLSettings::deinitialize() {}
+    loadFromDisk();
+}
 
 void OpenGLSettings::updateProfile() {
     if (openGlCap_) {

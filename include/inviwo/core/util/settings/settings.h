@@ -44,9 +44,6 @@ public:
     Settings(const std::string &id = "");
     virtual ~Settings();
 
-    virtual void initialize(){};
-    virtual void deinitialize(){};
-
     virtual void addProperty(Property* property, bool owner = true) override;
     virtual void addProperty(Property& property) override;
 

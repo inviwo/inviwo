@@ -43,8 +43,7 @@ ShaderManager::ShaderManager() : FileObserver(), uniformWarnings_(nullptr) {
     openGLInfoRef_ = nullptr;
 }
 
-void ShaderManager::setUniformWarningLevel() {
-    OpenGLSettings* settings = InviwoApplication::getPtr()->getSettingsByType<OpenGLSettings>();
+void ShaderManager::setUniformWarningLevel(OpenGLSettings* settings) {
     uniformWarnings_ = &(settings->uniformWarnings_);
 
     for (auto shader : shaders_) {

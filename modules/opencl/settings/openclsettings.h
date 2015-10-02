@@ -37,14 +37,12 @@
 #include <modules/opencl/openclmoduledefine.h>
 
 namespace inviwo {
+class OpenCLCapabilities;
 
 class IVW_MODULE_OPENCL_API OpenCLSettings : public Settings {
 
 public:
-    OpenCLSettings(std::string id="OpenCL Settings");
-    virtual ~OpenCLSettings();
-    virtual void initialize();
-    virtual void deinitialize();
+    OpenCLSettings(OpenCLCapabilities* openclInfo);
 
     bool isSharingEnabled() const { return enableOpenGLSharing_.get(); }
 protected:

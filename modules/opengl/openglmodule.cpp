@@ -69,18 +69,14 @@ OpenGLModule::OpenGLModule(InviwoApplication* app) : InviwoModule(app, "OpenGL")
 
     registerProcessor(CanvasProcessorGL);
 
-    OpenGLCapabilities* openGLCap = new OpenGLCapabilities();
+    auto openGLCap = new OpenGLCapabilities();
     registerCapabilities(openGLCap);
-    registerSettings(new OpenGLSettings(openGLCap));
+    
+    auto settings = new OpenGLSettings(openGLCap);
+    registerSettings(settings);
+    
+    ShaderManager::getPtr()->setUniformWarningLevel(settings);
 }
 
-void OpenGLModule::initialize() {
-    InviwoModule::initialize();
-    ShaderManager::getPtr()->setUniformWarningLevel();
-}
-
-
-OpenGLModule::~OpenGLModule() {
-}
 
 } // namespace

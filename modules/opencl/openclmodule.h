@@ -40,9 +40,6 @@ namespace inviwo {
 class IVW_MODULE_OPENCL_API OpenCLModule : public InviwoModule {
 public:
     OpenCLModule(InviwoApplication* app);
-
-    void initialize();
-
 };
 
 } // namespace

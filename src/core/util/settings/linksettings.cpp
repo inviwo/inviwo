@@ -58,8 +58,11 @@ LinkSettings::LinkSettings(const std::string& id, PropertyFactory* factory)
 void LinkSettings::onRegister(PropertyFactoryObject* p) {
     auto property = p->getClassIdentifier();
     bool enabled = (property == CameraProperty::CLASS_IDENTIFIER) != 0 ? true : false;
-    auto linkPropery = new BoolProperty("link-" + property, property, enabled);
-    linkProperties_.addProperty(linkPropery);
+    // Have to check we we already have a property from deserialization.
+    if (linkProperties_.getPropertyByIdentifier("link-" + property) == nullptr) {
+        auto linkPropery = new BoolProperty("link-" + property, property, enabled);
+        linkProperties_.addProperty(linkPropery);
+    }
 }
 
 void LinkSettings::onUnRegister(PropertyFactoryObject* p) {
