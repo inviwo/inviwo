@@ -51,6 +51,7 @@ std::unique_ptr<DataReader> DataReaderFactory::create(const std::string& key) co
             return std::unique_ptr<DataReader>(elem.second->clone());
         }
     }
+    return nullptr;
 }
 
 bool DataReaderFactory::hasKey(const std::string& key) const {
