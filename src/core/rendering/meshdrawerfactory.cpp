@@ -37,6 +37,11 @@ bool MeshDrawerFactory::registerObject(MeshDrawer* drawer) {
     return res.second;
 }
 
+bool MeshDrawerFactory::unRegisterObject(MeshDrawer* drawer) {
+    auto res = drawers_.erase(drawer);
+    return res > 0;
+}
+
 std::unique_ptr<MeshDrawer> MeshDrawerFactory::create(const Mesh* geom) const {
     auto it = std::find_if(drawers_.begin(), drawers_.end(),
                            [geom](MeshDrawer* d) { return d->canDraw(geom); });

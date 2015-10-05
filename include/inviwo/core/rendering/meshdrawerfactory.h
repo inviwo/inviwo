@@ -46,6 +46,7 @@ public:
     virtual ~MeshDrawerFactory() = default;
 
     bool registerObject(MeshDrawer* drawer);
+    bool unRegisterObject(MeshDrawer* drawer);
     virtual std::unique_ptr<MeshDrawer> create(const Mesh* geom) const override;
     virtual bool hasKey(const Mesh* geom) const override;
 

@@ -49,6 +49,8 @@ public:
     virtual ~DataWriterFactory() = default;
 
     bool registerObject(DataWriter* reader);
+    bool unRegisterObject(DataWriter* reader);
+    
     virtual std::unique_ptr<DataWriter> create(const std::string& key) const override;
     virtual bool hasKey(const std::string& key) const override;
 

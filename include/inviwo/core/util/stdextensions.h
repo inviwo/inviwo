@@ -118,6 +118,22 @@ void erase_remove_if(T& cont, Pred pred) {
     cont.erase(std::remove_if(begin(cont), end(cont), pred), cont.end());
 }
 
+template <typename T, typename Pred>
+size_t map_erase_remove_if(T& cont, Pred pred) {
+    using std::begin;
+    using std::end;
+    size_t removed{0};
+    for (auto it = begin(cont); it != end(cont);) {
+        if (pred(*it)) {
+            it = cont.erase(it);
+            removed++;
+        } else {
+            ++it;
+        }
+    }
+    return removed;
+}
+
 template <typename T>
 bool push_back_unique(T& cont, typename T::value_type elem) {
     using std::begin;

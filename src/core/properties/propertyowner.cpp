@@ -109,15 +109,22 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
         size_t index = std::distance(properties_.begin(), it);
         notifyObserversWillRemoveProperty(prop, index);
 
-        util::erase_remove_if(ownedProperties_, [it](const std::unique_ptr<Property>& p ){
-            return p.get() == *it;
-        });
         util::erase_remove(eventProperties_, *it);
         util::erase_remove(compositeProperties_, *it);
 
         prop->setOwner(nullptr);
         properties_.erase(it);
         notifyObserversDidRemoveProperty(prop, index);
+
+        // This will delete the property if owned; in that case set prop to nullptr.
+        util::erase_remove_if(ownedProperties_, [&prop](const std::unique_ptr<Property>& p) {
+            if (p.get() == prop) {
+                prop = nullptr;
+                return true;
+            } else {
+                return false;
+            }
+        });
     }
     return prop;
 }

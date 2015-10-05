@@ -43,6 +43,13 @@ bool DataWriterFactory::registerObject(DataWriter* writer) {
     return true;
 }
 
+bool DataWriterFactory::unRegisterObject(DataWriter* writer) {
+    size_t removed = util::map_erase_remove_if(
+        map_, [writer](typename Map::value_type& elem) { return elem.second == writer; });
+
+    return removed > 0;
+}
+
 std::unique_ptr<DataWriter> DataWriterFactory::create(const std::string& key) const {
     return std::unique_ptr<DataWriter>(
         util::map_find_or_null(map_, key, [](DataWriter* o) { return o->clone(); }));

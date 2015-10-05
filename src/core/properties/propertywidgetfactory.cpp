@@ -57,6 +57,15 @@ bool PropertyWidgetFactory::registerObject(PropertyWidgetFactoryObject* property
     return true;
 }
 
+bool PropertyWidgetFactory::unRegisterObject(PropertyWidgetFactoryObject* propertyWidget) {
+    size_t removed = util::map_erase_remove_if(
+        widgetMap_, [propertyWidget](typename WidgetMap::value_type& elem) {
+            return elem.second == propertyWidget;
+        });
+
+    return removed > 0;
+}
+
 std::unique_ptr<PropertyWidget> PropertyWidgetFactory::create(Property* property) const {
     PropertySemantics sematics = property->getSemantics();
     std::pair<WidgetMap::const_iterator, WidgetMap::const_iterator> sameKeys;

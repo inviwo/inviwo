@@ -39,6 +39,13 @@ bool DataReaderFactory::registerObject(DataReader* reader) {
     return true;
 }
 
+bool DataReaderFactory::unRegisterObject(DataReader* reader) {
+    size_t removed = util::map_erase_remove_if(
+        map_, [reader](typename Map::value_type& elem) { return elem.second == reader; });
+
+    return removed > 0;
+}
+
 std::unique_ptr<DataReader> DataReaderFactory::create(const FileExtension& key) const {
     return std::unique_ptr<DataReader>(
         util::map_find_or_null(map_, key, [](DataReader* o) { return o->clone(); }));
@@ -56,14 +63,12 @@ std::unique_ptr<DataReader> DataReaderFactory::create(const std::string& key) co
 
 bool DataReaderFactory::hasKey(const std::string& key) const {
     auto lkey = toLower(key);
-    for(auto& elem: map_) {
-        if(toLower(elem.first.extension_) == toLower(lkey)) return true;
-    }    
+    for (auto& elem : map_) {
+        if (toLower(elem.first.extension_) == toLower(lkey)) return true;
+    }
     return false;
 }
 
-bool DataReaderFactory::hasKey(const FileExtension& key) const {
-    return util::has_key(map_, key);
-}
+bool DataReaderFactory::hasKey(const FileExtension& key) const { return util::has_key(map_, key); }
 
 }  // namespace

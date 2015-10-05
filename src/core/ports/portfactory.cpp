@@ -40,6 +40,13 @@ bool PortFactory::registerObject(PortFactoryObject *port) {
     return true;
 }
 
+bool PortFactory::unRegisterObject(PortFactoryObject *port) {
+    size_t removed = util::map_erase_remove_if(
+        map_, [port](typename Map::value_type &elem) { return elem.second == port; });
+
+    return removed > 0;
+}
+
 std::unique_ptr<Port> PortFactory::create(const std::string &className) const {
     return create(className, "");
 }

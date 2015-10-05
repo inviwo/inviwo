@@ -43,14 +43,14 @@ namespace inviwo {
 
 class IvwSerializable;
 
-template<typename T>
+template <typename T>
 class FactoryObserver : public Observer {
 public:
     virtual void onRegister(T* p) {}
     virtual void onUnRegister(T* p) {}
 };
 
-template<typename T>
+template <typename T>
 class FactoryObservable : public Observable<FactoryObserver<T>> {
 protected:
     void notifyObserversOnRegister(T* p) const {
@@ -90,9 +90,10 @@ public:
     StandardFactory() = default;
     virtual ~StandardFactory() = default;
 
-    // The factory will not assume ownership over obj, although is assumes that obj will be 
+    // The factory will not assume ownership over obj, although is assumes that obj will be
     // valid for the lifetime of the factory
     virtual bool registerObject(M* obj);
+    virtual bool unRegisterObject(M* obj);
 
     virtual std::unique_ptr<T> create(K key) const override;
     virtual bool hasKey(K key) const override;
@@ -104,12 +105,20 @@ protected:
 
 template <typename T, typename M, typename K>
 inline bool StandardFactory<T, M, K>::registerObject(M* obj) {
-    if(util::insert_unique(map_, obj->getClassIdentifier(), obj)){
+    if (util::insert_unique(map_, obj->getClassIdentifier(), obj)) {
         return true;
-    }else{
-        LogWarn("Failed to register object " << obj->getClassIdentifier() << ", already registered");
+    } else {
+        LogWarn("Failed to register object " << obj->getClassIdentifier()
+                                             << ", already registered");
         return false;
     }
+}
+template <typename T, typename M, typename K>
+inline bool StandardFactory<T, M, K>::unRegisterObject(M* obj) {
+    size_t removed = util::map_erase_remove_if(
+        map_, [obj](typename Map::value_type& elem) { return elem.second == obj; });
+
+    return removed > 0;
 }
 
 template <typename T, typename M, typename K>
@@ -129,7 +138,6 @@ auto StandardFactory<T, M, K>::getKeys() const -> std::vector<Key> {
     return res;
 }
 
-
 /**
 * T Models the object created
 * T needs to have a clone() function.
@@ -145,6 +153,7 @@ public:
     // The factory will not assume ownership over obj, although is assumes that obj will be
     // valid for the lifetime of the factory
     virtual bool registerObject(T* obj);
+    virtual bool unRegisterObject(T* obj);
 
     virtual std::unique_ptr<T> create(K key) const override;
     virtual bool hasKey(K key) const override;
@@ -157,6 +166,14 @@ protected:
 template <typename T, typename K /*= const std::string&*/>
 bool inviwo::CloningFactory<T, K>::registerObject(T* obj) {
     return util::insert_unique(map_, obj->getClassIdentifier(), obj);
+}
+
+template <typename T, typename K /*= const std::string&*/>
+bool inviwo::CloningFactory<T, K>::unRegisterObject(T* obj) {
+    size_t removed = util::map_erase_remove_if(
+        map_, [obj](typename Map::value_type& elem) { return elem.second == obj; });
+
+    return removed > 0;
 }
 
 template <typename T, typename K /*= const std::string&*/>

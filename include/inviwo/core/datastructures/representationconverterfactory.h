@@ -56,6 +56,7 @@ public:
 
     // This will not assume ownership.
     bool registerObject(RepresentationConverter* representationConverter);
+    bool unRegisterObject(RepresentationConverter* representationConverter);
 
     // Get best converter
     const RepresentationConverterPackage* getRepresentationConverter(ConverterID);

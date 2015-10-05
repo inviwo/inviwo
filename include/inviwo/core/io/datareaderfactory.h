@@ -48,6 +48,7 @@ public:
     virtual ~DataReaderFactory() = default;
 
     bool registerObject(DataReader* reader);
+    bool unRegisterObject(DataReader* reader);
     virtual std::unique_ptr<DataReader> create(const FileExtension& key) const override;
     virtual std::unique_ptr<DataReader> create(const std::string& key) const;
     virtual bool hasKey(const std::string& key) const;

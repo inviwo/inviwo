@@ -53,9 +53,41 @@ InviwoModule::InviwoModule(InviwoApplication* app, const std::string& identifier
 
 InviwoModule::~InviwoModule() {
     // deregersiter everything...
-
+    for (auto& elem : dataReaders_) {
+        app_->getDataReaderFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : dataWriters_) {
+        app_->getDataWriterFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : dialogs_) {
+        app_->getDialogFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : drawers_) {
+        app_->getMeshDrawerFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : metadata_) {
+        app_->getMetaDataFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : ports_) {
+        app_->getPortFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : portInspectors_) {
+        app_->getPortInspectorFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : processors_) {
+        app_->getProcessorFactory()->unRegisterObject(elem.get());
+    }
     for (auto& elem : propertyConverters_) {
         app_->getPropertyConverterManager()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : properties_) {
+        app_->getPropertyFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : propertyWidgets_) {
+        app_->getPropertyWidgetFactory()->unRegisterObject(elem.get());
+    }
+    for (auto& elem : representationConverters_) {
+        app_->getRepresentationConverterFactory()->unRegisterObject(elem.get());
     }
 }
 

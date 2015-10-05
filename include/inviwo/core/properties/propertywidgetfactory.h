@@ -46,6 +46,8 @@ public:
     virtual ~PropertyWidgetFactory();
 
     virtual bool registerObject(PropertyWidgetFactoryObject* propertyWidget);
+    virtual bool unRegisterObject(PropertyWidgetFactoryObject* propertyWidget);
+    
     std::unique_ptr<PropertyWidget> create(Property* property) const override;
     virtual bool hasKey(Property* property) const override;
 

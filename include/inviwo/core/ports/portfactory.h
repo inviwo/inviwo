@@ -44,6 +44,7 @@ public:
     virtual ~PortFactory() = default;
 
     virtual bool registerObject(PortFactoryObject* property);
+    virtual bool unRegisterObject(PortFactoryObject* property);
 
     virtual std::unique_ptr<Port> create(const std::string& className) const override;
     virtual std::unique_ptr<Port> create(const std::string& className,
