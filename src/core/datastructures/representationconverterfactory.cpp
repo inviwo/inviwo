@@ -34,9 +34,11 @@
 
 namespace inviwo {
 
-void RepresentationConverterFactory::registerObject(RepresentationConverter* converter) {
+bool RepresentationConverterFactory::registerObject(RepresentationConverter* converter) {
     if (!util::insert_unique(converters_, converter->getConverterID(), converter))
         throw(ConverterException("Converter with supplied ID already registered", IvwContext));
+    
+    return true;
 }
 
 const RepresentationConverterPackage* RepresentationConverterFactory::getRepresentationConverter(

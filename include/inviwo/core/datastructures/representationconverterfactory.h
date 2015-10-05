@@ -55,7 +55,7 @@ public:
     virtual ~RepresentationConverterFactory() = default;
 
     // This will not assume ownership.
-    void registerObject(RepresentationConverter* representationConverter);
+    bool registerObject(RepresentationConverter* representationConverter);
 
     // Get best converter
     const RepresentationConverterPackage* getRepresentationConverter(ConverterID);

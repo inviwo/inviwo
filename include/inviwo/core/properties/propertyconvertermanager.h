@@ -46,8 +46,8 @@ public:
     PropertyConverterManager();
     virtual ~PropertyConverterManager();
 
-    template <typename T>
-    void registerConvert();
+    bool registerObject(PropertyConverter *converter);
+    bool unRegisterObject(PropertyConverter *converter);
 
     bool canConvert(const std::string &srcClassIdentifier,
                     const std::string &dstClassIdentifier) const;
@@ -63,20 +63,6 @@ private:
     PropertyConverter identityConverter_;
     std::unordered_map<std::pair<std::string, std::string>, PropertyConverter *> converters_;
 };
-
-template <typename T>
-void PropertyConverterManager::registerConvert() {
-    T *converter = new T();
-    std::string src = converter->getSourcePropertyClassIdenetifier();
-    std::string dst = converter->getDestinationPropertyClassIdenetifier();
-    if (canConvert(src, dst)) {
-        LogWarn("Property Converter from type " << src << " to type " << dst
-                                                << " already registered");
-        delete converter;
-        return;
-    }
-    converters_.insert(std::make_pair(std::make_pair(src, dst), converter));
-}
 
 }  // namespace
 

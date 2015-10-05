@@ -35,9 +35,29 @@ namespace inviwo {
 
 PropertyConverterManager::PropertyConverterManager() : identityConverter_("", "") {}
 
-PropertyConverterManager::~PropertyConverterManager() {
-    for (auto converter : converters_) delete converter.second;
-    converters_.clear();
+PropertyConverterManager::~PropertyConverterManager() {}
+
+bool PropertyConverterManager::registerObject(PropertyConverter *converter) {
+    std::string src = converter->getSourcePropertyClassIdenetifier();
+    std::string dst = converter->getDestinationPropertyClassIdenetifier();
+    if (canConvert(src, dst)) {
+        LogWarn("Property Converter from type " << src << " to type " << dst
+                                                << " already registered");
+        return false;
+    }
+    converters_.insert(std::make_pair(std::make_pair(src, dst), converter));
+    return true;
+}
+
+bool PropertyConverterManager::unRegisterObject(PropertyConverter *converter) {
+    auto it = converters_.find(std::make_pair(converter->getSourcePropertyClassIdenetifier(),
+                                              converter->getDestinationPropertyClassIdenetifier()));
+    if (it != converters_.end()) {
+        converters_.erase(it);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 bool PropertyConverterManager::canConvert(const std::string &srcClassIdentifier,
@@ -53,7 +73,6 @@ bool PropertyConverterManager::canConvert(const Property *srcProperty,
 
 const PropertyConverter *PropertyConverterManager::getConverter(
     const std::string &srcClassIdentifier, const std::string &dstClassIdentifier) const {
-    
     if (srcClassIdentifier == dstClassIdentifier) return &identityConverter_;
 
     auto converter = converters_.find(std::make_pair(srcClassIdentifier, dstClassIdentifier));
@@ -64,7 +83,7 @@ const PropertyConverter *PropertyConverterManager::getConverter(
 }
 
 const PropertyConverter *PropertyConverterManager::getConverter(const Property *srcProperty,
-                                                          const Property *dstProperty) const {
+                                                                const Property *dstProperty) const {
     return getConverter(srcProperty->getClassIdentifier(), dstProperty->getClassIdentifier());
 }
 

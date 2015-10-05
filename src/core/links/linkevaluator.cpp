@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/links/linkevaluator.h>
@@ -40,14 +40,14 @@ void LinkEvaluator::evaluate(Property* src, Property* dst) {
     ivwAssert(src != nullptr, "source property expected");
     ivwAssert(dst != nullptr, "destination property expected");
 
-    //TODO create a link evaluator for each link and cache the converter so that it does need to be looked up for each frame
-    const PropertyConverter* convetrter = PropertyConverterManager::getPtr()->getConverter(src,dst);
-    if (convetrter)
-        convetrter->convert(src, dst);
+    // TODO create a link evaluator for each link and cache the converter so that it does need to be
+    // looked up for each frame
+    const PropertyConverter* convetrter =
+        PropertyConverterManager::getPtr()->getConverter(src, dst);
+    if (convetrter) convetrter->convert(src, dst);
 }
 
 bool LinkEvaluator::canLink(Property* src, Property* dst) {
-    return PropertyConverterManager::getPtr()->canConvert(src,dst);
+    return PropertyConverterManager::getPtr()->canConvert(src, dst);
 }
-
 }

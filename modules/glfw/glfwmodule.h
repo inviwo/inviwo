@@ -43,8 +43,8 @@ public:
 
 protected:
     template <typename T>
-    void registerProcessorWidgetAndAssociate(ProcessorWidget* processorWidget) {
-        registerProcessorWidget(T::CLASS_IDENTIFIER, processorWidget);
+    void registerProcessorWidgetAndAssociate(std::unique_ptr<ProcessorWidget> processorWidget) {
+        registerProcessorWidget(T::CLASS_IDENTIFIER, std::move(processorWidget));
     }
 
 private:

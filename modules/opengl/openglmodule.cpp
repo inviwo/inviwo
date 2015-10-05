@@ -55,27 +55,26 @@ OpenGLModule::OpenGLModule(InviwoApplication* app) : InviwoModule(app, "OpenGL")
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "opengl/glsl");
 #endif
 
-    registerDrawer(new MeshDrawerGL());
-    registerRepresentationConverter(new LayerRAM2GLConverter());
-    registerRepresentationConverter(new LayerGL2RAMConverter());
+    registerDrawer(util::make_unique<MeshDrawerGL>());
+    registerRepresentationConverter(util::make_unique<LayerRAM2GLConverter>());
+    registerRepresentationConverter(util::make_unique<LayerGL2RAMConverter>());
 
-    registerRepresentationConverter(new VolumeRAM2GLConverter());
-    registerRepresentationConverter(new VolumeGL2RAMConverter());
+    registerRepresentationConverter(util::make_unique<VolumeRAM2GLConverter>());
+    registerRepresentationConverter(util::make_unique<VolumeGL2RAMConverter>());
     
-    registerRepresentationConverter(new BufferRAM2GLConverter());
-    registerRepresentationConverter(new BufferGL2RAMConverter());
-    registerRepresentationConverter(new ElementBufferRAM2GLConverter());
-    registerRepresentationConverter(new ElementBufferGL2RAMConverter());
+    registerRepresentationConverter(util::make_unique<BufferRAM2GLConverter>());
+    registerRepresentationConverter(util::make_unique<BufferGL2RAMConverter>());
+    registerRepresentationConverter(util::make_unique<ElementBufferRAM2GLConverter>());
+    registerRepresentationConverter(util::make_unique<ElementBufferGL2RAMConverter>());
 
     registerProcessor(CanvasProcessorGL);
 
-    auto settings = new OpenGLSettings();
-    registerSettings(settings);
+    auto settings = util::make_unique<OpenGLSettings>();
+    auto openGLCap = util::make_unique<OpenGLCapabilities>(settings.get());
+    ShaderManager::getPtr()->setUniformWarningLevel(settings.get());
 
-    auto openGLCap = new OpenGLCapabilities(settings);
-    registerCapabilities(openGLCap);
-    
-    ShaderManager::getPtr()->setUniformWarningLevel(settings);
+    registerSettings(std::move(settings));
+    registerCapabilities(std::move(openGLCap));
 }
 
 

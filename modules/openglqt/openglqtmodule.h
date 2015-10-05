@@ -44,13 +44,12 @@ public:
 
 protected:
     template <typename T>
-    void registerProcessorWidgetAndAssociate(ProcessorWidget* processorWidget) {
-        registerProcessorWidget(T::CLASS_IDENTIFIER, processorWidget);
+    void registerProcessorWidgetAndAssociate(std::unique_ptr<ProcessorWidget> processorWidget) {
+        registerProcessorWidget(T::CLASS_IDENTIFIER, std::move(processorWidget));
     }
 private:
-    CanvasQt* qtGLSharedCanvas_;
-    
-    OpenGLQtMenu* menu_;
+    std::unique_ptr<CanvasQt> qtGLSharedCanvas_;
+    std::unique_ptr<OpenGLQtMenu> menu_;
 };
 
 } // namespace

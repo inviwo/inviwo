@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwomodule.h>
@@ -52,50 +52,11 @@ InviwoModule::InviwoModule(InviwoApplication* app, const std::string& identifier
     : app_(app), identifier_(identifier) {}
 
 InviwoModule::~InviwoModule() {
-    for (auto& elem : capabilities_) delete elem;
-    capabilities_.clear();
+    // deregersiter everything...
 
-    for (auto& elem : dataReaders_) delete elem;
-    dataReaders_.clear();
-
-    for (auto& elem : dataWriters_) delete elem;
-    dataWriters_.clear();
-
-    for (auto& elem : dialogs_) delete elem;
-    dialogs_.clear();
-
-    for (auto& elem : metadata_) delete elem;
-    metadata_.clear();
-
-    for (auto& elem : moduleSettings_) delete elem;
-    moduleSettings_.clear();
-
-    for (auto& elem : ports_) delete elem;
-    ports_.clear();
-
-    for (auto& elem : portInspectors_) delete elem;
-    portInspectors_.clear();
-
-    for (auto& elem : processors_) delete elem;
-    processors_.clear();
-
-    for (auto& elem : processorWidgets_) delete elem.second;
-    processorWidgets_.clear();
-
-    for (auto& elem : properties_) delete elem;
-    properties_.clear();
-
-    for (auto& elem : propertyWidgets_) delete elem;
-    propertyWidgets_.clear();
-
-    for (auto& elem : representationConverters_) delete elem;
-    representationConverters_.clear();
-
-    for (auto& elem : resources_) delete elem;
-    resources_.clear();
-
-    for (auto& elem : drawers_) delete elem;
-    drawers_.clear();
+    for (auto& elem : propertyConverters_) {
+        app_->getPropertyConverterManager()->unRegisterObject(elem.get());
+    }
 }
 
 std::string InviwoModule::getIdentifier() const { return identifier_; }
@@ -104,11 +65,9 @@ std::string InviwoModule::getPath() const {
     std::string moduleNameLowerCase = getIdentifier();
     std::transform(moduleNameLowerCase.begin(), moduleNameLowerCase.end(),
                    moduleNameLowerCase.begin(), ::tolower);
-    if (filesystem::directoryExists(
-            InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + "/" +
-            moduleNameLowerCase)) {
-        return InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + "/" +
-               moduleNameLowerCase;
+    if (filesystem::directoryExists(app_->getPath(InviwoApplication::PATH_MODULES) + "/" +
+                                    moduleNameLowerCase)) {
+        return app_->getPath(InviwoApplication::PATH_MODULES) + "/" + moduleNameLowerCase;
     }
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
     for (auto& elem : externalModulePaths_) {
@@ -119,97 +78,132 @@ std::string InviwoModule::getPath() const {
     }
 #endif
     LogWarn(moduleNameLowerCase << " directory was not found");
-    return InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + "/" +
-           moduleNameLowerCase;
+    return app_->getPath(InviwoApplication::PATH_MODULES) + "/" + moduleNameLowerCase;
 }
 
-const std::vector<Capabilities*>& InviwoModule::getCapabilities() const { return capabilities_; }
-const std::vector<DataReader*>& InviwoModule::getDataReaders() const { return dataReaders_; }
-const std::vector<DataWriter*>& InviwoModule::getDataWriters() const { return dataWriters_; }
-const std::vector<DialogFactoryObject*>& InviwoModule::getDialogs() const { return dialogs_; }
-const std::vector<MetaData*>& InviwoModule::getMetaData() const { return metadata_; }
-const std::vector<PortFactoryObject*>& InviwoModule::getPorts() const { return ports_; }
-const std::vector<PortInspectorFactoryObject*>& InviwoModule::getPortInspectors() const {
-    return portInspectors_;
+const std::vector<Capabilities*> InviwoModule::getCapabilities() const {
+    return uniqueToPtr(capabilities_);
 }
-const std::vector<ProcessorFactoryObject*>& InviwoModule::getProcessors() const {
-    return processors_;
+const std::vector<DataReader*> InviwoModule::getDataReaders() const {
+    return uniqueToPtr(dataReaders_);
 }
-const std::vector<std::pair<std::string, ProcessorWidget*> >& InviwoModule::getProcessorWidgets()
+const std::vector<DataWriter*> InviwoModule::getDataWriters() const {
+    return uniqueToPtr(dataWriters_);
+}
+const std::vector<DialogFactoryObject*> InviwoModule::getDialogs() const {
+    return uniqueToPtr(dialogs_);
+}
+const std::vector<MetaData*> InviwoModule::getMetaData() const { return uniqueToPtr(metadata_); }
+const std::vector<PortFactoryObject*> InviwoModule::getPorts() const { return uniqueToPtr(ports_); }
+const std::vector<PortInspectorFactoryObject*> InviwoModule::getPortInspectors() const {
+    return uniqueToPtr(portInspectors_);
+}
+const std::vector<ProcessorFactoryObject*> InviwoModule::getProcessors() const {
+    return uniqueToPtr(processors_);
+}
+const std::vector<std::pair<std::string, ProcessorWidget*> > InviwoModule::getProcessorWidgets()
     const {
-    return processorWidgets_;
+    std::vector<std::pair<std::string, ProcessorWidget*> > res;
+    for (auto& elem : processorWidgets_)
+        res.push_back(std::make_pair(elem.first, elem.second.get()));
+    return res;
 }
-const std::vector<PropertyFactoryObject*>& InviwoModule::getProperties() const {
-    return properties_;
+const std::vector<PropertyFactoryObject*> InviwoModule::getProperties() const {
+    return uniqueToPtr(properties_);
 }
-const std::vector<PropertyWidgetFactoryObject*>& InviwoModule::getPropertyWidgets() const {
-    return propertyWidgets_;
+const std::vector<PropertyWidgetFactoryObject*> InviwoModule::getPropertyWidgets() const {
+    return uniqueToPtr(propertyWidgets_);
 }
-const std::vector<RepresentationConverter*>& InviwoModule::getRepresentationConverters() const {
-    return representationConverters_;
+const std::vector<RepresentationConverter*> InviwoModule::getRepresentationConverters() const {
+    return uniqueToPtr(representationConverters_);
 }
-const std::vector<MeshDrawer*>& InviwoModule::getDrawers() const { return drawers_; }
-const std::vector<Resource*>& InviwoModule::getResources() const { return resources_; }
-const std::vector<Settings*>& InviwoModule::getSettings() const { return moduleSettings_; }
+const std::vector<MeshDrawer*> InviwoModule::getDrawers() const { return uniqueToPtr(drawers_); }
+const std::vector<Resource*> InviwoModule::getResources() const { return uniqueToPtr(resources_); }
+const std::vector<Settings*> InviwoModule::getSettings() const { return uniqueToPtr(settings_); }
 
-std::string InviwoModule::getDescription() const {
-    return "No description available";
+std::string InviwoModule::getDescription() const { return "No description available"; }
+
+void InviwoModule::registerCapabilities(std::unique_ptr<Capabilities> info) {
+    capabilities_.push_back(std::move(info));
 }
 
-void InviwoModule::registerCapabilities(Capabilities* info) { capabilities_.push_back(info); }
+void InviwoModule::registerDataReader(std::unique_ptr<DataReader> dataReader) {
+    if (app_->getDataReaderFactory()->registerObject(dataReader.get())) {
+        dataReaders_.push_back(std::move(dataReader));
+    }
+}
+void InviwoModule::registerDataWriter(std::unique_ptr<DataWriter> dataWriter) {
+    if (app_->getDataWriterFactory()->registerObject(dataWriter.get())) {
+        dataWriters_.push_back(std::move(dataWriter));
+    }
+}
+void InviwoModule::registerDialogObject(std::unique_ptr<DialogFactoryObject> dialog) {
+    if (app_->getDialogFactory()->registerObject(dialog.get())) {
+        dialogs_.push_back(std::move(dialog));
+    }
+}
+void InviwoModule::registerDrawer(std::unique_ptr<MeshDrawer> drawer) {
+    if (app_->getMeshDrawerFactory()->registerObject(drawer.get())) {
+        drawers_.push_back(std::move(drawer));
+    }
+}
+void InviwoModule::registerMetaData(std::unique_ptr<MetaData> meta) {
+    if (app_->getMetaDataFactory()->registerObject(meta.get())) {
+        metadata_.push_back(std::move(meta));
+    }
+}
+void InviwoModule::registerPortObject(std::unique_ptr<PortFactoryObject> port) {
+    if (app_->getPortFactory()->registerObject(port.get())) {
+        ports_.push_back(std::move(port));
+    }
+}
+void InviwoModule::registerPortInspectorObject(
+    std::unique_ptr<PortInspectorFactoryObject> portInspector) {
+    if (app_->getPortInspectorFactory()->registerObject(portInspector.get())) {
+        portInspectors_.push_back(std::move(portInspector));
+    }
+}
+void InviwoModule::registerProcessorObject(std::unique_ptr<ProcessorFactoryObject> processor) {
+    if (app_->getProcessorFactory()->registerObject(processor.get())) {
+        processors_.push_back(std::move(processor));
+    }
+}
+void InviwoModule::registerPropertyConverter(std::unique_ptr<PropertyConverter> propertyConverter) {
+    if (app_->getPropertyConverterManager()->registerObject(propertyConverter.get())) {
+        propertyConverters_.push_back(std::move(propertyConverter));
+    }
+}
+void InviwoModule::registerPropertyObject(std::unique_ptr<PropertyFactoryObject> property) {
+    if (app_->getPropertyFactory()->registerObject(property.get())) {
+        properties_.push_back(std::move(property));
+    }
+}
+void InviwoModule::registerPropertyWidgetObject(
+    std::unique_ptr<PropertyWidgetFactoryObject> propertyWidget) {
+    if (app_->getPropertyWidgetFactory()->registerObject(propertyWidget.get())) {
+        propertyWidgets_.push_back(std::move(propertyWidget));
+    }
+}
 
-void InviwoModule::registerDataReader(DataReader* dataReader) {
-    dataReaders_.push_back(dataReader);
-    DataReaderFactory::getPtr()->registerObject(dataReader);
-}
-void InviwoModule::registerDataWriter(DataWriter* dataWriter) {
-    dataWriters_.push_back(dataWriter);
-    DataWriterFactory::getPtr()->registerObject(dataWriter);
-}
-void InviwoModule::registerDialogObject(DialogFactoryObject* dialog) {
-    dialogs_.push_back(dialog);
-    DialogFactory::getPtr()->registerObject(dialog);
-}
-void InviwoModule::registerMetaData(MetaData* meta) {
-    metadata_.push_back(meta);
-    MetaDataFactory::getPtr()->registerObject(meta);
-}
-void InviwoModule::registerPortObject(PortFactoryObject* port) {
-    ports_.push_back(port);
-    PortFactory::getPtr()->registerObject(port);
-}
-void InviwoModule::registerPortInspectorObject(PortInspectorFactoryObject* portInspector) {
-    portInspectors_.push_back(portInspector);
-    PortInspectorFactory::getPtr()->registerObject(portInspector);
-}
-void InviwoModule::registerProcessorObject(ProcessorFactoryObject* processor) {
-    processors_.push_back(processor);
-    ProcessorFactory::getPtr()->registerObject(processor);
-}
-void InviwoModule::registerProcessorWidget(std::string processorClassName,
-                                           ProcessorWidget* processorWidget) {
-    processorWidgets_.push_back(std::make_pair(processorClassName, processorWidget));
-    ProcessorWidgetFactory::getPtr()->registerObject(
-        std::make_pair(processorClassName, processorWidget));
-}
-void InviwoModule::registerPropertyObject(PropertyFactoryObject* property) {
-    properties_.push_back(property);
-    PropertyFactory::getPtr()->registerObject(property);
-}
-void InviwoModule::registerPropertyWidgetObject(PropertyWidgetFactoryObject* propertyWidget) {
-    propertyWidgets_.push_back(propertyWidget);
-    PropertyWidgetFactory::getPtr()->registerObject(propertyWidget);
-}
-void InviwoModule::registerDrawer(MeshDrawer* drawer) {
-    drawers_.push_back(drawer);
-    MeshDrawerFactory::getPtr()->registerObject(drawer);
-}
 void InviwoModule::registerRepresentationConverter(
-    RepresentationConverter* representationConverter) {
-    representationConverters_.push_back(representationConverter);
-    RepresentationConverterFactory::getPtr()->registerObject(representationConverter);
+    std::unique_ptr<RepresentationConverter> converter) {
+    if (app_->getRepresentationConverterFactory()->registerObject(converter.get())) {
+        representationConverters_.push_back(std::move(converter));
+    }
 }
-void InviwoModule::registerResource(Resource* resource) { resources_.push_back(resource); }
-void InviwoModule::registerSettings(Settings* settings) { moduleSettings_.push_back(settings); }
+void InviwoModule::registerResource(std::unique_ptr<Resource> resource) {
+    resources_.push_back(std::move(resource));
+}
+void InviwoModule::registerSettings(std::unique_ptr<Settings> settings) {
+    settings_.push_back(std::move(settings));
+}
+
+void InviwoModule::registerProcessorWidget(std::string processorClassName,
+                                           std::unique_ptr<ProcessorWidget> processorWidget) {
+    if (app_->getProcessorWidgetFactory()->registerObject(
+            std::make_pair(processorClassName, processorWidget.get()))) {
+        processorWidgets_.push_back(std::make_pair(processorClassName, std::move(processorWidget)));
+    }
+}
 
 }  // namespace

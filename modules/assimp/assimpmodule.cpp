@@ -46,7 +46,7 @@ AssimpModule::AssimpModule(InviwoApplication* app) : InviwoModule(app, "assimp")
     // registerProperty(assimpProperty);
     
     // Readers and writes
-    registerDataReader(new AssimpReader());
+    registerDataReader(util::make_unique<AssimpReader>());
     // registerDataWriter(new assimpWriter());
     
     // Data converters

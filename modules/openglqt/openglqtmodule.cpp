@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/openglqt/openglqtmodule.h>
@@ -36,27 +36,26 @@
 namespace inviwo {
 
 OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "OpenGLQt") {
-    //Create GL Context
+    // Create GL Context
     CanvasQt::defineDefaultContextFormat();
-    qtGLSharedCanvas_ = new CanvasQt();
+    qtGLSharedCanvas_ = util::make_unique<CanvasQt>();
 
     qtGLSharedCanvas_->initializeSquare();
     qtGLSharedCanvas_->defaultGLState();
-    RenderContext::getPtr()->setDefaultRenderContext(qtGLSharedCanvas_);
+    RenderContext::getPtr()->setDefaultRenderContext(qtGLSharedCanvas_.get());
 
-    registerProcessorWidgetAndAssociate<CanvasProcessorGL>(new CanvasProcessorWidgetQt());
-    registerCapabilities(new OpenGLQtCapabilities());
-    
-    menu_ = new OpenGLQtMenu();
+    registerProcessorWidgetAndAssociate<CanvasProcessorGL>(
+        util::make_unique<CanvasProcessorWidgetQt>());
+    registerCapabilities(util::make_unique<OpenGLQtCapabilities>());
+
+    menu_ = util::make_unique<OpenGLQtMenu>();
 }
 
 OpenGLQtModule::~OpenGLQtModule() {
-    if (qtGLSharedCanvas_ == RenderContext::getPtr()->getDefaultRenderContext()) {
+    if (qtGLSharedCanvas_.get() == RenderContext::getPtr()->getDefaultRenderContext()) {
         RenderContext::getPtr()->setDefaultRenderContext(nullptr);
     }
     qtGLSharedCanvas_->deinitialize();
-    delete qtGLSharedCanvas_;
-    delete menu_;
 }
 
-} // namespace
+}  // namespace
