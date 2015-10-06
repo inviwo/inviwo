@@ -224,6 +224,19 @@ std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::st
         else if (format_ == nullptr)
             throw DataReaderException(
                 "Error: Unable to find \"Format\" tag in .dat file: " + filePath, IvwContext);
+        else if (format_->getId() == DataFormatEnums::NOT_SPECIALIZED)
+            throw DataReaderException(
+                "Error: Invalid format string found: " + formatFlag + " in " + filePath +
+                    "\nThe valid formats are:\n" +
+                    "FLOAT16, FLOAT32, FLOAT64, INT8, INT16, INT32, INT64, UINT8, UINT16, UINT32, "
+                    "UINT64, Vec2FLOAT16, Vec2FLOAT32, Vec2FLOAT64, Vec2INT8, Vec2INT16, "
+                    "Vec2INT32, Vec2INT64, Vec2UINT8, Vec2UINT16, Vec2UINT32, Vec2UINT64, "
+                    "Vec3FLOAT16, Vec3FLOAT32, Vec3FLOAT64, Vec3INT8, Vec3INT16, Vec3INT32, "
+                    "Vec3INT64, Vec3UINT8, Vec3UINT16, Vec3UINT32, Vec3UINT64, Vec4FLOAT16, "
+                    "Vec4FLOAT32, Vec4FLOAT64, Vec4INT8, Vec4INT16, Vec4INT32, Vec4INT64, "
+                    "Vec4UINT8, Vec4UINT16, Vec4UINT32, Vec4UINT64",
+                IvwContext);
+
         else if (rawFile_ == "")
             throw DataReaderException(
                 "Error: Unable to find \"ObjectFilename\" tag in .dat file: " + filePath,
@@ -274,15 +287,18 @@ std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::st
         volume->setDataFormat(format_);
         size_t bytes = dimensions_.x * dimensions_.y * dimensions_.z * (format_->getSize());
 
-        for(auto elem : metadata) volume->setMetaData<StringMetaData>(elem.first, elem.second);
+        for (auto elem : metadata) volume->setMetaData<StringMetaData>(elem.first, elem.second);
 
         for (size_t t = 0; t < sequences; ++t) {
-            if (t==0) volumes->push_back(std::move(volume));
-            else volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
+            if (t == 0)
+                volumes->push_back(std::move(volume));
+            else
+                volumes->push_back(std::shared_ptr<Volume>(volumes->front()->clone()));
             auto diskRepr = std::make_shared<VolumeDisk>(filePath, dimensions_, format_);
             filePos_ = t * bytes;
 
-            auto loader = util::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_, littleEndian_, format_);
+            auto loader = util::make_unique<RawVolumeRAMLoader>(rawFile_, filePos_, dimensions_,
+                                                                littleEndian_, format_);
             diskRepr->setLoader(loader.release());
             volumes->back()->addRepresentation(diskRepr);
         }
@@ -292,6 +308,5 @@ std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::st
     }
     return volumes;
 }
-
 
 }  // namespace
