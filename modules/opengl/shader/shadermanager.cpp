@@ -174,7 +174,7 @@ void ShaderManager::addShaderSearchPath(InviwoApplication::PathType pathType, st
     if (!added){
         LogWarn("Failed to add shader search path: " << relativeShaderSearchPath);
         LogInfo("Tried with:");
-        LogInfo("\t" << InviwoApplication::getPtr()->getPath(pathType) + relativeShaderSearchPath);
+        LogInfo("\t" << InviwoApplication::getPtr()->getPath(pathType)  + "/" + relativeShaderSearchPath);
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
         if (pathType == InviwoApplication::PATH_MODULES){
             for (auto& elem : externalModulePaths_) {
