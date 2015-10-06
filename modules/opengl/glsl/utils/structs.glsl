@@ -77,6 +77,7 @@ struct VolumeParameters {
     mat4 worldToModel;
     mat4 worldToTexture;
     mat4 textureToWorld;
+    mat4 textureToWorldNormalMatrix;       // Equivalent to the inverse transposed textureToWorld matrix
     mat4 textureToIndex;                   // Transform from [0 1] to [-0.5 dim-0.5]
     mat4 indexToTexture;                   // Transform from [-0.5 dim-0.5] to [0 1]
     mat3 textureSpaceGradientSpacing;      // Maximum possible distance to go without ending up 

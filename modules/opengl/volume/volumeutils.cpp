@@ -51,6 +51,9 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     shader.setUniform(samplerID + ".worldToTexture", ct.getWorldToTextureMatrix());
     shader.setUniform(samplerID + ".textureToWorld", ct.getTextureToWorldMatrix());
 
+    auto textureToWorldNormalMatrix = glm::inverseTranspose(ct.getTextureToWorldMatrix());
+    shader.setUniform(samplerID + ".textureToWorldNormalMatrix", textureToWorldNormalMatrix);
+
     shader.setUniform(samplerID + ".textureToIndex", ct.getTextureToIndexMatrix());
     shader.setUniform(samplerID + ".indexToTexture", ct.getIndexToTextureMatrix());
 
