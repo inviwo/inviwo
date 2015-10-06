@@ -81,47 +81,47 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "basegl/glsl");
 #endif
     
-    registerProcessor(Background);
-    registerProcessor(DrawLines);
-    registerProcessor(DrawPoints);
-    registerProcessor(EntryExitPoints);
-    registerProcessor(FirstIvwProcessor);
-    registerProcessor(MeshPicking);
-    registerProcessor(HeightFieldProcessor);
-    registerProcessor(ImageCompositeProcessorGL);
-    registerProcessor(ImageLayoutGL);
-    registerProcessor(ImageMixer);
-    registerProcessor(ImageOverlayGL);
-    registerProcessor(LightingRaycaster);
-    registerProcessor(LightVolumeGL);
-    registerProcessor(MeshRenderProcessorGL);
-    registerProcessor(MultichannelRaycaster);
-    registerProcessor(RedGreenProcessor);
-    registerProcessor(VolumeRaycaster);
-    registerProcessor(ISORaycaster);
-    registerProcessor(VolumeSliceGL);
+    registerProcessor<Background>();
+    registerProcessor<DrawLines>();
+    registerProcessor<DrawPoints>();
+    registerProcessor<EntryExitPoints>();
+    registerProcessor<FirstIvwProcessor>();
+    registerProcessor<MeshPicking>();
+    registerProcessor<HeightFieldProcessor>();
+    registerProcessor<ImageCompositeProcessorGL>();
+    registerProcessor<ImageLayoutGL>();
+    registerProcessor<ImageMixer>();
+    registerProcessor<ImageOverlayGL>();
+    registerProcessor<LightingRaycaster>();
+    registerProcessor<LightVolumeGL>();
+    registerProcessor<MeshRenderProcessorGL>();
+    registerProcessor<MultichannelRaycaster>();
+    registerProcessor<RedGreenProcessor>();
+    registerProcessor<VolumeRaycaster>();
+    registerProcessor<ISORaycaster>();
+    registerProcessor<VolumeSliceGL>();
 
     // image processing
-    registerProcessor(FindEdges);
-    registerProcessor(ImageGamma);
-    registerProcessor(ImageGrayscale);
-    registerProcessor(ImageInvert);
-    registerProcessor(ImageMapping);
-    registerProcessor(ImageResample);
-    registerProcessor(ImageBinary)
-    registerProcessor(ImageLowPass)
-    registerProcessor(ImageHighPass)
+    registerProcessor<FindEdges>();
+    registerProcessor<ImageGamma>();
+    registerProcessor<ImageGrayscale>();
+    registerProcessor<ImageInvert>();
+    registerProcessor<ImageMapping>();
+    registerProcessor<ImageResample>();
+    registerProcessor<ImageBinary>();
+    registerProcessor<ImageLowPass>();
+    registerProcessor<ImageHighPass>();
 
     //volume processing
-    registerProcessor(VectorMagnitudeProcessor);
-    registerProcessor(VolumeCombiner);
-    registerProcessor(VolumeDiff);;
-    registerProcessor(VolumeGradientMagnitude);
-    registerProcessor(VolumeGradientProcessor);
-    registerProcessor(VolumeLaplacian);
-    registerProcessor(VolumeLowPass);
-    registerProcessor(VolumeMapping);
-    registerProcessor(VolumeBinary);
+    registerProcessor<VectorMagnitudeProcessor>();
+    registerProcessor<VolumeCombiner>();
+    registerProcessor<VolumeDiff>();
+    registerProcessor<VolumeGradientMagnitude>();
+    registerProcessor<VolumeGradientProcessor>();
+    registerProcessor<VolumeLaplacian>();
+    registerProcessor<VolumeLowPass>();
+    registerProcessor<VolumeMapping>();
+    registerProcessor<VolumeBinary>();
 
 }
 

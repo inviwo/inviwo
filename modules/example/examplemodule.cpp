@@ -35,8 +35,8 @@
 namespace inviwo {
 
 ExampleModule::ExampleModule(InviwoApplication* app) : InviwoModule(app, "Example") {
-    registerProcessor(ExampleProcessor);
-    registerProcessor(ExampleProgressBar);
+    registerProcessor<ExampleProcessor>();
+    registerProcessor<ExampleProgressBar>();
 }
 
 } // namespace

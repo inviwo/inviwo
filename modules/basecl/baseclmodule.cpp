@@ -39,11 +39,11 @@ namespace inviwo {
 
 BaseCLModule::BaseCLModule(InviwoApplication* app) : InviwoModule(app, "BaseCL") {
     // Processors
-    registerProcessor(EntryExitPointsCLProcessor);
-    registerProcessor(GrayscaleCLProcessor);
-    registerProcessor(VolumeFirstHitCLProcessor);
-    registerProcessor(VolumeMaxCLProcessor);
-    registerProcessor(VolumeRaycasterCLProcessor);
+    registerProcessor<EntryExitPointsCLProcessor>();
+    registerProcessor<GrayscaleCLProcessor>();
+    registerProcessor<VolumeFirstHitCLProcessor>();
+    registerProcessor<VolumeMaxCLProcessor>();
+    registerProcessor<VolumeRaycasterCLProcessor>();
     
     OpenCL::getPtr()->addCommonIncludeDirectory(InviwoApplication::PATH_MODULES, "basecl/cl");
 }

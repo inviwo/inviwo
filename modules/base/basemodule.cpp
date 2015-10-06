@@ -70,35 +70,34 @@ template <> ProcessorClassIdentifier(BasisTransformVolume, "org.inviwo.BasisTran
 template <> ProcessorDisplayName(BasisTransformVolume, "Basis Transform Volume");
 
 BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
-    registerProcessor(CubeProxyGeometry);
-    registerProcessor(DiffuseLightSourceProcessor);
-    registerProcessor(DirectionalLightSourceProcessor);
-    registerProcessor(DistanceTransformRAM);
-    registerProcessor(MeshSource);
-    registerProcessor(HeightFieldMapper);
-    registerProcessor(ImageExport);
-    registerProcessor(ImageSource);
-    registerProcessor(ImageSourceSeries);
-    registerProcessor(MeshClipping);
-    registerProcessor(MeshCreator);
-    registerProcessor(PixelToBufferProcessor);
-    registerProcessor(PointLightSourceProcessor);
-    registerProcessor(OrdinalPropertyAnimator);
-    registerProcessor(SpotLightSourceProcessor);
-    registerProcessor(SurfaceExtraction);
-    registerProcessor(VolumeSource);
-    registerProcessor(VolumeExport);
-    registerProcessor(BasisTransformMesh);
-    registerProcessor(BasisTransformVolume);
-    registerProcessor(VolumeSlice);
-    registerProcessor(VolumeSubsample);
-    registerProcessor(VolumeSubset);
-    registerProcessor(VolumeVectorSource);
+    registerProcessor<CubeProxyGeometry>();
+    registerProcessor<DiffuseLightSourceProcessor>();
+    registerProcessor<DirectionalLightSourceProcessor>();
+    registerProcessor<DistanceTransformRAM>();
+    registerProcessor<MeshSource>();
+    registerProcessor<HeightFieldMapper>();
+    registerProcessor<ImageExport>();
+    registerProcessor<ImageSource>();
+    registerProcessor<ImageSourceSeries>();
+    registerProcessor<MeshClipping>();
+    registerProcessor<MeshCreator>();
+    registerProcessor<PixelToBufferProcessor>();
+    registerProcessor<PointLightSourceProcessor>();
+    registerProcessor<OrdinalPropertyAnimator>();
+    registerProcessor<SpotLightSourceProcessor>();
+    registerProcessor<SurfaceExtraction>();
+    registerProcessor<VolumeSource>();
+    registerProcessor<VolumeExport>();
+    registerProcessor<BasisTransformMesh>();
+    registerProcessor<BasisTransformVolume>();
+    registerProcessor<VolumeSlice>();
+    registerProcessor<VolumeSubsample>();
+    registerProcessor<VolumeSubset>();
+    registerProcessor<VolumeVectorSource>();
 
-
-    registerProperty(SequenceTimerProperty);
-    registerProperty(BasisProperty);
-    registerProperty(VolumeInformationProperty);
+    registerProperty<SequenceTimerProperty>();
+    registerProperty<BasisProperty>();
+    registerProperty<VolumeInformationProperty>();
 }
 
 } // namespace

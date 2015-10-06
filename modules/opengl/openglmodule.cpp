@@ -67,7 +67,7 @@ OpenGLModule::OpenGLModule(InviwoApplication* app) : InviwoModule(app, "OpenGL")
     registerRepresentationConverter(util::make_unique<ElementBufferRAM2GLConverter>());
     registerRepresentationConverter(util::make_unique<ElementBufferGL2RAMConverter>());
 
-    registerProcessor(CanvasProcessorGL);
+    registerProcessor<CanvasProcessorGL>();
 
     auto settings = util::make_unique<OpenGLSettings>();
     auto openGLCap = util::make_unique<OpenGLCapabilities>(settings.get());

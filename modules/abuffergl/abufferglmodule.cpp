@@ -41,15 +41,8 @@ ABufferGLModule::ABufferGLModule(InviwoApplication* app) : InviwoModule(app, "AB
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES,
                                                  "abuffergl/glsl/abuffer");
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "abuffergl");
-}
 
-void ABufferGLModule::initialize() {
-    InviwoModule::initialize();
-    registerProcessor(ABufferGeometryGLProcessor);
-}
-
-void ABufferGLModule::deinitialize() {
-    InviwoModule::deinitialize();
+    registerProcessor<ABufferGeometryGLProcessor>();
 }
 
 }  // namespace

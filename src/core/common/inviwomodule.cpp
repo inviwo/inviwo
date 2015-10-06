@@ -230,6 +230,11 @@ void InviwoModule::registerSettings(std::unique_ptr<Settings> settings) {
     settings_.push_back(std::move(settings));
 }
 
+void InviwoModule::registerPortInspector(std::string portClassIdentifier, std::string inspectorPath) {
+    registerPortInspectorObject(
+        util::make_unique<PortInspectorFactoryObject>(portClassIdentifier, inspectorPath));
+}
+
 void InviwoModule::registerProcessorWidget(std::string processorClassName,
                                            std::unique_ptr<ProcessorWidget> processorWidget) {
     if (app_->getProcessorWidgetFactory()->registerObject(
