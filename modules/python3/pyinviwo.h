@@ -61,9 +61,9 @@ public:
     void registerPyModule(PyModule* pyModule);
 
     /**
-    * \brief add a path for where ptyhon scripts will look for modules
+    * \brief add a path for where python scripts will look for modules
     *
-    * add a path for where ptyhon scripts will look for modules
+    * add a path for where python scripts will look for modules
     *
     * @param const std::string& path path to folder
     * @param PyMethodDef * module static array of registered classes in a module

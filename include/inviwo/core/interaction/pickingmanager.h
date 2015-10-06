@@ -48,9 +48,11 @@ private:
  * Manager for picking objects.
  */
 class IVW_CORE_API PickingManager : public Singleton<PickingManager> {
-    friend class Singleton<PickingManager>;
     friend class PickingContainer;
 public:
+    PickingManager() {};
+    PickingManager(PickingManager const&) = delete;
+    PickingManager& operator=(PickingManager const&) = delete;
     virtual ~PickingManager();
 
     template <typename T>
@@ -60,10 +62,6 @@ public:
     bool pickingEnabled();
 
 protected:
-    PickingManager(){};
-    PickingManager(PickingManager const&){};
-    PickingManager& operator=(PickingManager const&) {return *this; };
-    
     void performUniqueColorGenerationTest(int iterations);
     PickingObject* getPickingObjectFromColor(const DataVec3UINT8::type&);
     PickingObject* generatePickingObject(size_t);

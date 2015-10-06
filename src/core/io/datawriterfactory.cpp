@@ -45,7 +45,7 @@ bool DataWriterFactory::registerObject(DataWriter* writer) {
 
 bool DataWriterFactory::unRegisterObject(DataWriter* writer) {
     size_t removed = util::map_erase_remove_if(
-        map_, [writer](typename Map::value_type& elem) { return elem.second == writer; });
+        map_, [writer](Map::value_type& elem) { return elem.second == writer; });
 
     return removed > 0;
 }

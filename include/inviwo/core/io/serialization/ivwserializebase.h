@@ -249,23 +249,9 @@ T* IvwSerializeBase::getRegisteredType(const std::string& className) {
     return nullptr;
 }
 
-template <typename T, typename std::enable_if<
-                          !std::is_abstract<T>::value && std::is_default_constructible<T>::value,
-                          int>::type = 0>
-T* defaultConstructType() {
-    return new T();
-};
-
-template <typename T, typename std::enable_if<
-                          std::is_abstract<T>::value || !std::is_default_constructible<T>::value,
-                          int>::type = 0>
-T* defaultConstructType() {
-    return nullptr;
-};
-
 template <typename T>
 T* IvwSerializeBase::getNonRegisteredType() {
-    return defaultConstructType<T>();
+    return util::defaultConstructType<T>();
 }
 
 

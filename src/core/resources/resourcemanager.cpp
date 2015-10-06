@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/resources/resourcemanager.h>
@@ -34,11 +34,13 @@ namespace inviwo {
 
 struct ResourceComparer {
     ResourceComparer(const std::string& identifier) : identifier_(identifier) {}
-    bool operator()(const Resource* resource) const {
-        return *resource == identifier_;
-    }
+    bool operator()(const Resource* resource) const { return *resource == identifier_; }
     const std::string& identifier_;
 };
+
+ResourceManager::ResourceManager() : ResourceManagerObservable() {
+    resources_ = new std::vector<Resource*>();
+}
 
 ResourceManager::~ResourceManager() {
     for (auto& elem : *resources_) {
@@ -47,9 +49,9 @@ ResourceManager::~ResourceManager() {
     delete resources_;
 }
 
-Resource* ResourceManager::getResource(const std::string& identifier)
-{
-    std::vector<Resource*>::iterator it = std::find_if(resources_->begin(), resources_->end(), ResourceComparer(identifier));
+Resource* ResourceManager::getResource(const std::string& identifier) {
+    std::vector<Resource*>::iterator it =
+        std::find_if(resources_->begin(), resources_->end(), ResourceComparer(identifier));
 
     if (it != resources_->end())
         return *it;
@@ -67,9 +69,9 @@ void ResourceManager::clearAllResources() {
     resources_->clear();
 }
 
-void ResourceManager::removeResource(Resource* resource)
-{
-    std::vector<Resource*>::iterator it = std::find(resources_->begin(), resources_->end(), resource);
+void ResourceManager::removeResource(Resource* resource) {
+    std::vector<Resource*>::iterator it =
+        std::find(resources_->begin(), resources_->end(), resource);
 
     if (it != resources_->end()) {
         notifyResourceRemoved(resource);
@@ -78,9 +80,9 @@ void ResourceManager::removeResource(Resource* resource)
     }
 }
 
-void ResourceManager::removeResource(const std::string& identifier)
-{
-    std::vector<Resource*>::iterator it = std::find_if(resources_->begin(), resources_->end(), ResourceComparer(identifier));
+void ResourceManager::removeResource(const std::string& identifier) {
+    std::vector<Resource*>::iterator it =
+        std::find_if(resources_->begin(), resources_->end(), ResourceComparer(identifier));
 
     if (it != resources_->end()) {
         notifyResourceRemoved(*it);
@@ -89,5 +91,4 @@ void ResourceManager::removeResource(const std::string& identifier)
     }
 }
 
-
-} // namespace
+}  // namespace

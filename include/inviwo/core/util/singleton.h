@@ -30,8 +30,10 @@
 #ifndef IVW_SINGLETON_H
 #define IVW_SINGLETON_H
 
-#include <inviwo/core/util/assertion.h>
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/stdextensions.h>
+
 #include <sstream>
 #include <vector>
 
@@ -61,7 +63,8 @@ public:
      */
     static void init() {
         ivwAssert(instance_==0, "Singleton already initialized.");
-        instance_ = new T;
+        instance_ = util::defaultConstructType<T>();
+        ivwAssert(instance_!=0, "Was not able to initialize singleton");
     };
 
     static void init(T* instance) {

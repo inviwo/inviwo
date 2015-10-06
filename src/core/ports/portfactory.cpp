@@ -42,7 +42,7 @@ bool PortFactory::registerObject(PortFactoryObject *port) {
 
 bool PortFactory::unRegisterObject(PortFactoryObject *port) {
     size_t removed = util::map_erase_remove_if(
-        map_, [port](typename Map::value_type &elem) { return elem.second == port; });
+        map_, [port](Map::value_type &elem) { return elem.second == port; });
 
     return removed > 0;
 }
