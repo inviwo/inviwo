@@ -158,13 +158,13 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerSettings(util::make_unique<SystemSettings>());
     registerSettings(util::make_unique<LinkSettings>("Link Settings", app_->getPropertyFactory()));
     // Register Ports
-    registerPort(MeshInport);
-    registerPort(MeshMultiInport);
-    registerPort(MeshOutport);
-    registerPort(ImageInport);
-    registerPort(ImageOutport);
-    registerPort(VolumeInport);
-    registerPort(VolumeOutport);
+    registerPort<MeshInport>("MeshInport");
+    registerPort<MeshMultiInport>("MeshMultiInport");
+    registerPort<MeshOutport>("MeshOutport");
+    registerPort<ImageInport>("ImageInport");
+    registerPort<ImageOutport>("ImageOutport");
+    registerPort<VolumeInport>("VolumeInport");
+    registerPort<VolumeOutport>("VolumeOutport");
     // Register PortInspectors
     registerPortInspector("org.inviwo.ImageOutport", InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_PORTINSPECTORS, "/imageportinspector.inv"));
     registerPortInspector("org.inviwo.VolumeOutport", InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_PORTINSPECTORS, "/volumeportinspector.inv"));

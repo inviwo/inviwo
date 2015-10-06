@@ -112,36 +112,39 @@ protected:
     void registerCapabilities(std::unique_ptr<Capabilities> info);
     void registerDataReader(std::unique_ptr<DataReader> reader);
     void registerDataWriter(std::unique_ptr<DataWriter> writer);
-    void registerDialogObject(std::unique_ptr<DialogFactoryObject> dialog);
+
+    template <typename T>
+    void registerDialog(std::string classIdentifier);
     void registerDrawer(std::unique_ptr<MeshDrawer> drawer);
     void registerMetaData(std::unique_ptr<MetaData> meta);
-    void registerPortObject(std::unique_ptr<PortFactoryObject> port);
+
+    template <typename T, typename P>
+    void registerPropertyWidget(PropertySemantics semantics);
+    template <typename T, typename P>
+    void registerPropertyWidget(std::string semantics);
+
+    template <typename T>
+    void registerProcessor();
+
     void registerProcessorWidget(std::string processorClassName,
                                  std::unique_ptr<ProcessorWidget> processorWidget);
+
+    void registerPortInspector(std::string portClassIdentifier, std::string inspectorPath);
+
+    template <typename T>
+    void registerPort(std::string classIdentifier);
+
+    template <typename T>
+    void registerProperty();
+
     void registerPropertyConverter(std::unique_ptr<PropertyConverter> propertyConverter);
-    void registerPropertyWidgetObject(std::unique_ptr<PropertyWidgetFactoryObject> property);
     void registerRepresentationConverter(std::unique_ptr<RepresentationConverter> converter);
     void registerResource(std::unique_ptr<Resource> resource);
     void registerSettings(std::unique_ptr<Settings> settings);
 
-    void registerPortInspector(std::string portClassIdentifier, std::string inspectorPath);
-    template<typename T>
-    void registerProcessor() {
-        registerProcessorObject(util::make_unique<ProcessorFactoryObjectTemplate<T>>());
-    }
-    template<typename T>
-    void registerProperty() {
-        registerPropertyObject(util::make_unique<PropertyFactoryObjectTemplate<T>>());
-    }
-
     InviwoApplication* app_;  // reference to the app that we belong to
 
 private:
-    void registerPortInspectorObject(std::unique_ptr<PortInspectorFactoryObject> portInspector);
-    void registerProcessorObject(std::unique_ptr<ProcessorFactoryObject> processor);
-    void registerPropertyObject(std::unique_ptr<PropertyFactoryObject> property);
-
-
     template <typename T>
     std::vector<T*> uniqueToPtr(std::vector<std::unique_ptr<T>>& v) {
         std::vector<T*> res;
@@ -176,22 +179,51 @@ private:
     std::vector<std::pair<std::string, std::unique_ptr<ProcessorWidget>>> processorWidgets_;
 };
 
-
-//#define registerProcessor(T) \
-//    { registerProcessorObject(util::make_unique<ProcessorFactoryObjectTemplate<T>>()); }
-//#define registerProperty(T) \
-//    { registerPropertyObject(util::make_unique<PropertyFactoryObjectTemplate<T>>()); }
-#define registerPropertyWidget(T, P, semantics)                                                    \
-    {                                                                                              \
-        registerPropertyWidgetObject(util::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>( \
-            PropertySemantics(semantics)));                                                        \
+template <typename T>
+void InviwoModule::registerDialog(std::string classIdentifier) {
+    auto dialog = util::make_unique<DialogFactoryObjectTemplate<T>>(classIdentifier);
+    if (app_->getDialogFactory()->registerObject(dialog.get())) {
+        dialogs_.push_back(std::move(dialog));
     }
-#define registerPort(T) \
-    { registerPortObject(util::make_unique<PortFactoryObjectTemplate<T>>(#T)); }
-#define registerDialog(P, T) \
-    { registerDialogObject(util::make_unique<DialogFactoryObjectTemplate<T>>(P)); }
-//#define registerPortInspector(P, T) \
-//    { registerPortInspectorObject(util::make_unique<PortInspectorFactoryObject>(P, T)); }
+
+}
+
+template <typename T, typename P>
+void InviwoModule::registerPropertyWidget(PropertySemantics semantics) {
+    auto propertyWidget = util::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics);
+    if (app_->getPropertyWidgetFactory()->registerObject(propertyWidget.get())) {
+        propertyWidgets_.push_back(std::move(propertyWidget));
+    }
+}
+
+template <typename T, typename P>
+void InviwoModule::registerPropertyWidget(std::string semantics) {
+    registerPropertyWidget<T,P>(PropertySemantics(semantics));
+}
+
+template <typename T>
+void InviwoModule::registerProcessor() {
+    auto processor = util::make_unique<ProcessorFactoryObjectTemplate<T>>();
+    if (app_->getProcessorFactory()->registerObject(processor.get())) {
+        processors_.push_back(std::move(processor));
+    }
+}
+
+template <typename T>
+void InviwoModule::registerPort(std::string classIdentifier) {
+    auto port = util::make_unique<PortFactoryObjectTemplate<T>>(classIdentifier);
+    if (app_->getPortFactory()->registerObject(port.get())) {
+        ports_.push_back(std::move(port));
+    }
+}
+
+template <typename T>
+void InviwoModule::registerProperty() {
+    auto property = util::make_unique<PropertyFactoryObjectTemplate<T>>();
+    if (app_->getPropertyFactory()->registerObject(property.get())) {
+        properties_.push_back(std::move(property));
+    }
+}
 
 }  // namespace
 

@@ -68,88 +68,88 @@
 namespace inviwo {
 
 QtWidgetModule::QtWidgetModule(InviwoApplication* app) : InviwoModule(app, "QtWidget") {
-    registerPropertyWidget(BoolPropertyWidgetQt, BoolProperty, "Default");
-    registerPropertyWidget(ButtonPropertyWidgetQt, ButtonProperty, "Default");
-    registerPropertyWidget(BoolCompositePropertyWidgetQt, BoolCompositeProperty, "Default");
+    registerPropertyWidget<BoolPropertyWidgetQt, BoolProperty>("Default");
+    registerPropertyWidget<ButtonPropertyWidgetQt, ButtonProperty>("Default");
+    registerPropertyWidget<BoolCompositePropertyWidgetQt, BoolCompositeProperty>("Default");
 
-    registerPropertyWidget(ColorPropertyWidgetQt, IntVec3Property, "Color");
-    registerPropertyWidget(ColorPropertyWidgetQt, IntVec4Property, "Color");
-    registerPropertyWidget(ColorPropertyWidgetQt, FloatVec3Property, "Color");
-    registerPropertyWidget(ColorPropertyWidgetQt, FloatVec4Property, "Color");
-    registerPropertyWidget(CompositePropertyWidgetQt, CompositeProperty, "Default");
-    registerPropertyWidget(EventPropertyWidgetQt, EventProperty, "Default");
-    registerPropertyWidget(FilePropertyWidgetQt, FileProperty, "Default");
+    registerPropertyWidget<ColorPropertyWidgetQt, IntVec3Property>("Color");
+    registerPropertyWidget<ColorPropertyWidgetQt, IntVec4Property>("Color");
+    registerPropertyWidget<ColorPropertyWidgetQt, FloatVec3Property>("Color");
+    registerPropertyWidget<ColorPropertyWidgetQt, FloatVec4Property>("Color");
+    registerPropertyWidget<CompositePropertyWidgetQt, CompositeProperty>("Default");
+    registerPropertyWidget<EventPropertyWidgetQt, EventProperty>("Default");
+    registerPropertyWidget<FilePropertyWidgetQt, FileProperty>("Default");
 
-    registerPropertyWidget(FloatMat2PropertyWidgetQt, FloatMat2Property, "Default");
-    registerPropertyWidget(FloatMat3PropertyWidgetQt, FloatMat3Property, "Default");
-    registerPropertyWidget(FloatMat4PropertyWidgetQt, FloatMat4Property, "Default");
-    registerPropertyWidget(FloatMinMaxPropertyWidgetQt, FloatMinMaxProperty, "Default");
-    registerPropertyWidget(FloatMinMaxTextPropertyWidgetQt, FloatMinMaxProperty, "Text");
-    registerPropertyWidget(FloatPropertyWidgetQt, FloatProperty, "Default");
-    registerPropertyWidget(FloatAnglePropertyWidgetQt, FloatProperty, "Angle");
-    registerPropertyWidget(FloatPropertyWidgetQt, FloatProperty, "Text");
-    registerPropertyWidget(FloatVec2PropertyWidgetQt, FloatVec2Property, "Default");
-    registerPropertyWidget(FloatVec2PropertyWidgetQt, FloatVec2Property, "Text");
-    registerPropertyWidget(FloatVec3PropertyWidgetQt, FloatVec3Property, "Default");
-    registerPropertyWidget(FloatVec3PropertyWidgetQt, FloatVec3Property, "Text");
-    registerPropertyWidget(FloatVec3PropertyWidgetQt, FloatVec3Property, "Spherical");
-    registerPropertyWidget(FloatVec4PropertyWidgetQt, FloatVec4Property, "Default");
-    registerPropertyWidget(FloatVec4PropertyWidgetQt, FloatVec4Property, "Text");
+    registerPropertyWidget<FloatMat2PropertyWidgetQt, FloatMat2Property>("Default");
+    registerPropertyWidget<FloatMat3PropertyWidgetQt, FloatMat3Property>("Default");
+    registerPropertyWidget<FloatMat4PropertyWidgetQt, FloatMat4Property>("Default");
+    registerPropertyWidget<FloatMinMaxPropertyWidgetQt, FloatMinMaxProperty>("Default");
+    registerPropertyWidget<FloatMinMaxTextPropertyWidgetQt, FloatMinMaxProperty>("Text");
+    registerPropertyWidget<FloatPropertyWidgetQt, FloatProperty>("Default");
+    registerPropertyWidget<FloatAnglePropertyWidgetQt, FloatProperty>("Angle");
+    registerPropertyWidget<FloatPropertyWidgetQt, FloatProperty>("Text");
+    registerPropertyWidget<FloatVec2PropertyWidgetQt, FloatVec2Property>("Default");
+    registerPropertyWidget<FloatVec2PropertyWidgetQt, FloatVec2Property>("Text");
+    registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("Default");
+    registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("Text");
+    registerPropertyWidget<FloatVec3PropertyWidgetQt, FloatVec3Property>("Spherical");
+    registerPropertyWidget<FloatVec4PropertyWidgetQt, FloatVec4Property>("Default");
+    registerPropertyWidget<FloatVec4PropertyWidgetQt, FloatVec4Property>("Text");
 
-    registerPropertyWidget(DoubleMat2PropertyWidgetQt, DoubleMat2Property, "Default");
-    registerPropertyWidget(DoubleMat3PropertyWidgetQt, DoubleMat3Property, "Default");
-    registerPropertyWidget(DoubleMat4PropertyWidgetQt, DoubleMat4Property, "Default");
-    registerPropertyWidget(DoubleMinMaxPropertyWidgetQt, DoubleMinMaxProperty, "Default");
-    registerPropertyWidget(DoubleMinMaxTextPropertyWidgetQt, DoubleMinMaxProperty, "Text");
-    registerPropertyWidget(DoublePropertyWidgetQt, DoubleProperty, "Default");
-    registerPropertyWidget(DoubleAnglePropertyWidgetQt, DoubleProperty, "Angle");
-    registerPropertyWidget(DoublePropertyWidgetQt, DoubleProperty, "Text");
-    registerPropertyWidget(DoubleVec2PropertyWidgetQt, DoubleVec2Property, "Default");
-    registerPropertyWidget(DoubleVec2PropertyWidgetQt, DoubleVec2Property, "Text");
-    registerPropertyWidget(DoubleVec3PropertyWidgetQt, DoubleVec3Property, "Default");
-    registerPropertyWidget(DoubleVec3PropertyWidgetQt, DoubleVec3Property, "Text");
-    registerPropertyWidget(DoubleVec3PropertyWidgetQt, DoubleVec3Property, "Spherical");
-    registerPropertyWidget(DoubleVec4PropertyWidgetQt, DoubleVec4Property, "Default");
-    registerPropertyWidget(DoubleVec4PropertyWidgetQt, DoubleVec4Property, "Text");
-    
-    registerPropertyWidget(ImageEditorWidgetQt, FileProperty, "ImageEditor");
-    registerPropertyWidget(ImageEditorWidgetQt, ImageEditorProperty, "Default");
-    registerPropertyWidget(ImageEditorWidgetQt, ImageEditorProperty, "ImageEditor");
-    
-    registerPropertyWidget(IntMinMaxPropertyWidgetQt, IntMinMaxProperty, "Default");
-    registerPropertyWidget(IntMinMaxTextPropertyWidgetQt, IntMinMaxProperty, "Text");
-    registerPropertyWidget(IntPropertyWidgetQt, IntProperty, "Default");
-    registerPropertyWidget(IntPropertyWidgetQt, IntProperty, "Text");
-    registerPropertyWidget(IntVec2PropertyWidgetQt, IntVec2Property, "Default");
-    registerPropertyWidget(IntVec2PropertyWidgetQt, IntVec2Property, "Text");
-    registerPropertyWidget(IntVec3PropertyWidgetQt, IntVec3Property, "Default");
-    registerPropertyWidget(IntVec3PropertyWidgetQt, IntVec3Property, "Text");
-    registerPropertyWidget(IntVec4PropertyWidgetQt, IntVec4Property, "Default");
-    registerPropertyWidget(IntVec4PropertyWidgetQt, IntVec4Property, "Text");
-    registerPropertyWidget(IntSize2PropertyWidgetQt, IntSize2Property, "Default");
-    registerPropertyWidget(IntSize2PropertyWidgetQt, IntSize2Property, "Text");
-    registerPropertyWidget(IntSize3PropertyWidgetQt, IntSize3Property, "Default");
-    registerPropertyWidget(IntSize3PropertyWidgetQt, IntSize3Property, "Text");
-    registerPropertyWidget(IntSize4PropertyWidgetQt, IntSize4Property, "Default");
-    registerPropertyWidget(IntSize4PropertyWidgetQt, IntSize4Property, "Text");
-    registerPropertyWidget(Int64PropertyWidgetQt, Int64Property, "Default");
-    registerPropertyWidget(Int64PropertyWidgetQt, Int64Property, "Text");
-    
-    registerPropertyWidget(LightPropertyWidgetQt, FloatVec3Property, "LightPosition");
-    registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyInt, "Default");
-    registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertySize_t, "Default");
-    registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyFloat, "Default");
-    registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyDouble, "Default");
-    registerPropertyWidget(OptionPropertyWidgetQt, OptionPropertyString, "Default");
-    registerPropertyWidget(StringPropertyWidgetQt, StringProperty, "Default");
-    registerPropertyWidget(StringPropertyWidgetQt, StringProperty, "Password");
-    registerPropertyWidget(StringMultilinePropertyWidgetQt, StringProperty, "Multiline");
-    registerPropertyWidget(TextEditorWidgetQt, FileProperty, "TextEditor");
-    registerPropertyWidget(TextEditorWidgetQt, FileProperty, "ShaderEditor");
-    registerPropertyWidget(TextEditorWidgetQt, StringProperty, "TextEditor");
-    registerPropertyWidget(TextEditorWidgetQt, StringProperty, "ShaderEditor");
-    registerPropertyWidget(TransferFunctionPropertyWidgetQt, TransferFunctionProperty, "Default");
-    registerDialog("RawVolumeReader", RawDataReaderDialogQt);
+    registerPropertyWidget<DoubleMat2PropertyWidgetQt, DoubleMat2Property>("Default");
+    registerPropertyWidget<DoubleMat3PropertyWidgetQt, DoubleMat3Property>("Default");
+    registerPropertyWidget<DoubleMat4PropertyWidgetQt, DoubleMat4Property>("Default");
+    registerPropertyWidget<DoubleMinMaxPropertyWidgetQt, DoubleMinMaxProperty>("Default");
+    registerPropertyWidget<DoubleMinMaxTextPropertyWidgetQt, DoubleMinMaxProperty>("Text");
+    registerPropertyWidget<DoublePropertyWidgetQt, DoubleProperty>("Default");
+    registerPropertyWidget<DoubleAnglePropertyWidgetQt, DoubleProperty>("Angle");
+    registerPropertyWidget<DoublePropertyWidgetQt, DoubleProperty>("Text");
+    registerPropertyWidget<DoubleVec2PropertyWidgetQt, DoubleVec2Property>("Default");
+    registerPropertyWidget<DoubleVec2PropertyWidgetQt, DoubleVec2Property>("Text");
+    registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Default");
+    registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Text");
+    registerPropertyWidget<DoubleVec3PropertyWidgetQt, DoubleVec3Property>("Spherical");
+    registerPropertyWidget<DoubleVec4PropertyWidgetQt, DoubleVec4Property>("Default");
+    registerPropertyWidget<DoubleVec4PropertyWidgetQt, DoubleVec4Property>("Text");
+
+    registerPropertyWidget<ImageEditorWidgetQt, FileProperty>("ImageEditor");
+    registerPropertyWidget<ImageEditorWidgetQt, ImageEditorProperty>("Default");
+    registerPropertyWidget<ImageEditorWidgetQt, ImageEditorProperty>("ImageEditor");
+
+    registerPropertyWidget<IntMinMaxPropertyWidgetQt, IntMinMaxProperty>("Default");
+    registerPropertyWidget<IntMinMaxTextPropertyWidgetQt, IntMinMaxProperty>("Text");
+    registerPropertyWidget<IntPropertyWidgetQt, IntProperty>("Default");
+    registerPropertyWidget<IntPropertyWidgetQt, IntProperty>("Text");
+    registerPropertyWidget<IntVec2PropertyWidgetQt, IntVec2Property>("Default");
+    registerPropertyWidget<IntVec2PropertyWidgetQt, IntVec2Property>("Text");
+    registerPropertyWidget<IntVec3PropertyWidgetQt, IntVec3Property>("Default");
+    registerPropertyWidget<IntVec3PropertyWidgetQt, IntVec3Property>("Text");
+    registerPropertyWidget<IntVec4PropertyWidgetQt, IntVec4Property>("Default");
+    registerPropertyWidget<IntVec4PropertyWidgetQt, IntVec4Property>("Text");
+    registerPropertyWidget<IntSize2PropertyWidgetQt, IntSize2Property>("Default");
+    registerPropertyWidget<IntSize2PropertyWidgetQt, IntSize2Property>("Text");
+    registerPropertyWidget<IntSize3PropertyWidgetQt, IntSize3Property>("Default");
+    registerPropertyWidget<IntSize3PropertyWidgetQt, IntSize3Property>("Text");
+    registerPropertyWidget<IntSize4PropertyWidgetQt, IntSize4Property>("Default");
+    registerPropertyWidget<IntSize4PropertyWidgetQt, IntSize4Property>("Text");
+    registerPropertyWidget<Int64PropertyWidgetQt, Int64Property>("Default");
+    registerPropertyWidget<Int64PropertyWidgetQt, Int64Property>("Text");
+
+    registerPropertyWidget<LightPropertyWidgetQt, FloatVec3Property>("LightPosition");
+    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyInt>("Default");
+    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertySize_t>("Default");
+    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyFloat>("Default");
+    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyDouble>("Default");
+    registerPropertyWidget<OptionPropertyWidgetQt, OptionPropertyString>("Default");
+    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Default");
+    registerPropertyWidget<StringPropertyWidgetQt, StringProperty>("Password");
+    registerPropertyWidget<StringMultilinePropertyWidgetQt, StringProperty>("Multiline");
+    registerPropertyWidget<TextEditorWidgetQt, FileProperty>("TextEditor");
+    registerPropertyWidget<TextEditorWidgetQt, FileProperty>("ShaderEditor");
+    registerPropertyWidget<TextEditorWidgetQt, StringProperty>("TextEditor");
+    registerPropertyWidget<TextEditorWidgetQt, StringProperty>("ShaderEditor");
+    registerPropertyWidget<TransferFunctionPropertyWidgetQt, TransferFunctionProperty>("Default");
+    registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
 }
 
 } // namespace
