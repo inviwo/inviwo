@@ -59,9 +59,9 @@ const DataFormatBase* DataFormatBase::get(DataFormatEnums::Id id) {
 }
 
 const DataFormatBase* DataFormatBase::get(std::string name) {
+    name = toLower(name);
     if (name == "") return DataFormatBase::get();
-
-#define DataFormatIdMacro(i) else if(name == #i) return Data##i::get();
+#define DataFormatIdMacro(i) else if(name == toLower(#i)) return Data##i::get();
 #include <inviwo/core/util/formatsdefinefunc.h>
     else if (name == "UCHAR") return DataUINT8::get();
     else if (name == "CHAR") return DataINT8::get();
