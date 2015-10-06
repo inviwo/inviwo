@@ -171,5 +171,19 @@ mat4x3 gradientAllCentralDiffH(vec4 intensity, sampler3D volume, VolumeParameter
     return transpose(cDs)/(12.0*volumeParams.worldSpaceGradientSpacing);
 }
 
+// Use pre-computed gradients stored in xyz of the current sample. The gradient will be transformed from texture space
+// to world space by using the textureToWorldNormalMatrix, i.e. the inverse transposed textureToWorld matrix.
+vec3 gradientPrecomputedXYZ(vec4 intensity, VolumeParameters volumeParams) {
+    vec3 gradient = intensity.xyz;
+    return (volumeParams.textureToWorldNormalMatrix * vec4(gradient, 0.0)).xyz;
+}
+
+// Use pre-computed gradients stored in yzw of the current sample. The gradient will be transformed from texture space
+// to world space by using the textureToWorldNormalMatrix, i.e. the inverse transposed textureToWorld matrix.
+vec3 gradientPrecomputedYZW(vec4 intensity, VolumeParameters volumeParams) {
+    vec3 gradient = intensity.yzw;
+    return (volumeParams.textureToWorldNormalMatrix * vec4(gradient, 0.0)).xyz;
+}
+
 #endif // IVW_GRADIENTS_GLSL
 

@@ -77,6 +77,18 @@ VolumeRaycaster::VolumeRaycaster()
 
     volumePort_.onChange(this, &VolumeRaycaster::onVolumeChange);
 
+    // change the currently selected channel when a pre-computed gradient is selected
+    raycasting_.gradientComputationMode_.onChange([this](){
+        if (channel_.size() == 4) {
+            if (raycasting_.gradientComputationMode_.isSelectedIdentifier("precomputedXYZ")) {
+                channel_.set(3);
+            }
+            else if (raycasting_.gradientComputationMode_.isSelectedIdentifier("precomputedYZW")) {
+                channel_.set(0);
+            }
+        }
+    });
+
     addProperty(channel_);
     addProperty(transferFunction_);
     addProperty(raycasting_);
