@@ -159,6 +159,8 @@ IVW_CORE_API std::string replaceFileExtension(const std::string& url,
                                               const std::string& newFileExtension);
 IVW_CORE_API std::string getRelativePath(const std::string& basePath,
                                          const std::string& absolutePath);
+IVW_CORE_API std::string getCanonicalPath(const std::string& url);
+
 IVW_CORE_API bool isAbsolutePath(const std::string& path);
 /**
  * \brief Checks whether the second path is on the same drive as the first path

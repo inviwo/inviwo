@@ -456,6 +456,43 @@ std::string getRelativePath(const std::string& bPath, const std::string& absolut
     return relativePath + fileName;
 }
 
+std::string getCanonicalPath(const std::string& url) {
+#ifdef WIN32
+    const DWORD buffSize = 4096; // MAX_PATH
+    std::wstring urlWStr;
+    urlWStr.assign(url.begin(), url.end());
+    std::string result{ url };
+
+    TCHAR buffer[buffSize + 1];
+
+    DWORD retVal = GetFullPathName(urlWStr.c_str(), buffSize, buffer, nullptr);
+    if (retVal == 0) {
+        // something went wrong, call GetLastError() to get the error code
+        return result;
+    }
+    else if (retVal > buffSize) {
+        // canonical path would be longer than buffer
+        return result;
+    }
+    else {
+        std::wstring resultWStr{ buffer };
+        result.assign(resultWStr.begin(), resultWStr.end());
+    }
+
+    return result;
+#else 
+    char buffer[PATH_MAX + 1];
+    char *retVal = realpath(url.c_str(), buffer);
+    if (retVal == nullptr) {
+        // something went wrong, check errno for error
+        return url;
+    }
+    else {
+        return std::string{ retVal };
+    }
+#endif
+}
+
 bool isAbsolutePath(const std::string& path) {
 #ifdef WIN32
     if (path.size() < 2) {
