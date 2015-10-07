@@ -108,7 +108,7 @@ void MultichannelRaycaster::initializeResources() {
 
         std::stringstream ss2;
         for (size_t i = 0; i < channels; ++i) {
-            ss2 << "color["<< i <<"] = APPLY_CLASSIFICATION(transferFunction" << i+1 << ", voxel[" << i << "]);";
+            ss2 << "color[" << i << "] = APPLY_CHANNEL_CLASSIFICATION(transferFunction" << i + 1 << ", voxel, " << i << ");";
         }
         shader_.getFragmentShaderObject()->addShaderDefine("SAMPLE_CHANNELS", ss2.str());
         shader_.build();
