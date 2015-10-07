@@ -37,9 +37,7 @@ namespace inviwo {
 
 /**
  * \class <name>
- *
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- *
  * DESCRIBE_THE_CLASS
  */
 class <api> <name> { 

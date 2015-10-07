@@ -31,47 +31,42 @@
 
 namespace inviwo {
 
-<name>Module::<name>Module() : InviwoModule() {
-    setIdentifier("<name>");
-    
+<name>Module::<name>Module(InviwoApplication* app) : InviwoModule(app, "<name>") {   
     // Add a directory to the search path of the Shadermanager
     //ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "<lname>/glsl");
     
     // Register objects that can be shared with the rest of inviwo here:
     
     // Processors
-    // registerProcessor(<name>);
+    // registerProcessor<<name>Processor>());
     
     // Properties
-    // registerProperty(<name>Property);
+    // registerProperty<<name>Property>());
     
     // Readers and writes
-    // registerDataReader(new <name>Reader());
-    // registerDataWriter(new <name>Writer());
+    // registerDataReader(util::make_unique<<name>Reader>());
+    // registerDataWriter(util::make_unique<<name>Writer>());
     
     // Data converters
-    // registerRepresentationConverter(new <name>Disk2RAMConverter());
+    // registerRepresentationConverter(util::make_unique<<name>Disk2RAMConverter>());
 
     // Ports
-    // registerPort(<name>Outport);
-    // registerPort(<name>Inport);
+    // registerPort<<name>Outport>("<name>Outport"));
+    // registerPort<<name>Inport>("<name>Inport"));
 
     // PropertyWidgets
-    // registerPropertyWidget(<name>PropertyWidgetQt, <name>Property, "Default");
+    // registerPropertyWidget<<name>PropertyWidget, <name>Property>("Default");
     
     // Dialogs
-    // registerDialog("<lname>", <name>DialogQt);
+    // registerDialog<<name>Dialog>(<name>Outport));
     
     // Other varius things
-    // registerCapabilities(Capabilities* info);
-    // registerData(Data* data);
-    // registerDataRepresentation(DataRepresentation* dataRepresentation);
-    // registerSettings(new SystemSettings());
-    // registerMetaData(MetaData* meta);   
-    // registerPortInspector(PortInspector* portInspector);
-    // registerProcessorWidget(std::string processorClassName, ProcessorWidget* processorWidget);
-    // registerDrawer(GeometryDrawer* renderer);
-    // registerResource(Resource* resource);    
+    // registerCapabilities(util::make_unique<<name>Capabilities>()));
+    // registerSettings(util::make_unique<<name>Settings>());
+    // registerMetaData(util::make_unique<<name>MetaData>());   
+    // registerPortInspector("<name>Outport", "path/workspace.inv");
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget);
+    // registerDrawer(util::make_unique_ptr<<name>Drawer>());  
 }
 
 } // namespace
