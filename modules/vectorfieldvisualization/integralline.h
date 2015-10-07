@@ -37,16 +37,26 @@ namespace inviwo {
 
 /**
  * \class IntegralLine
+ *
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ *
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
+    friend class StreamLineTracer;
+
 public:
     IntegralLine();
     virtual ~IntegralLine();
+
+    const std::vector<dvec3> &getPositions() const;
+    const std::vector<dvec3> &getMetaData(const std::string &name) const;
+
+private:
+    std::vector<dvec3> positions_;
+    std::map<std::string, std::vector<dvec3>> metaData_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_INTEGRALLINE_H
-
+#endif  // IVW_INTEGRALLINE_H

@@ -31,13 +31,18 @@
 
 namespace inviwo {
 
-IntegralLine::IntegralLine()  {
-    
+IntegralLine::IntegralLine() {}
+
+IntegralLine::~IntegralLine() {}
+
+const std::vector<dvec3> &IntegralLine::getPositions() const { return positions_; }
+
+const std::vector<dvec3> &IntegralLine::getMetaData(const std::string &name) const {
+    auto it = metaData_.find(name);
+    if (it == metaData_.end()) {
+        throw Exception("No meta data with name: " + name, IvwContext);
+    }
+    return it->second;
 }
 
-IntegralLine::~IntegralLine()  {
-    
-}
-
-} // namespace
-
+}  // namespace

@@ -27,26 +27,55 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_STREAMLINETRACE_H
-#define IVW_STREAMLINETRACE_H
+#ifndef IVW_STREAMTRACER_H
+#define IVW_STREAMTRACER_H
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <modules/vectorfieldvisualization/integralline.h>
+#include <inviwo/core/util/volumesampler.h>
 
 namespace inviwo {
 
 /**
- * \class StreamLineTrace
+ * \class StreamLineTracer
+ *
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ *
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineTrace { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineTracer {
 public:
-    StreamLineTrace();
-    virtual ~StreamLineTrace();
+
+    enum class Direction
+    {
+        FWD = 1,
+        BWD = 2,
+        BOTH = 3
+    };
+
+    StreamLineTracer(const Volume *vol);
+
+    virtual ~StreamLineTracer();
+
+    void addMetaVolume(const std::string &name, const VolumeRAM *vol);
+
+    IntegralLine traceFrom(const dvec3 &p, int steps, double stepSize, Direction dir, bool normalzieSample);
+    IntegralLine traceFrom(const  vec3 &p, int steps, double stepSize, Direction dir, bool normalzieSample);
+
+
+
+
+private:
+
+    void step(int steps, dvec3 curPos, IntegralLine &line, double stepSize, bool normalzieSample);
+
+    dmat3 invBasis_;
+    std::map<std::string, VolumeSampler> metaVolumes_;
+    VolumeSampler volumeSampler_;
+    size3_t dimensions_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_STREAMLINETRACE_H
-
+#endif  // IVW_INTEGRALLINETRACER_H

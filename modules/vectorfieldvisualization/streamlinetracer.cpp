@@ -27,17 +27,86 @@
  *
  *********************************************************************************/
 
-#include "streamlinetrace.h"
+#include "streamlinetracer.h"
+#include <inviwo/core/util/volumesampler.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {
 
-StreamLineTrace::StreamLineTrace()  {
-    
+StreamLineTracer::StreamLineTracer(const Volume *vol)
+    : volumeSampler_(vol->getRepresentation<VolumeRAM>())
+    , invBasis_(dmat3(glm::inverse(vol->getBasis())))
+    , dimensions_(vol->getDimensions()) {}
+
+StreamLineTracer::~StreamLineTracer() {}
+
+void StreamLineTracer::addMetaVolume(const std::string &name, const VolumeRAM *vol) {
+    metaVolumes_.insert(std::make_pair(name, VolumeSampler(vol)));
 }
 
-StreamLineTrace::~StreamLineTrace()  {
-    
+inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p, int steps, double stepSize,
+                                                 StreamLineTracer::Direction dir, bool normalzieSample) {
+    IntegralLine line;
+
+    auto direction = dir;
+    bool fwd = direction == Direction::BOTH || direction == Direction::FWD;
+    bool bwd = direction == Direction::BOTH || direction == Direction::BWD;
+    bool both = fwd && bwd;
+
+    line.positions_.reserve(steps + 2);
+    line.metaData_["velocity"].reserve(steps + 2);
+    for (auto m : metaVolumes_) {
+        line.metaData_[m.first].reserve(steps + 2);
+    }
+
+    if (bwd) {
+        step(steps, p, line, -stepSize / (both ? 2 : 1) , normalzieSample);
+    }
+    if (both && !line.positions_.empty()) {
+        std::reverse(line.positions_.begin(),
+                     line.positions_.end());  // reverse is faster than insert first
+        line.positions_.pop_back();           // dont repeat first step
+        for (auto &m : line.metaData_) {
+            std::reverse(m.second.begin(), m.second.end());  // reverse is faster than insert first
+            m.second.pop_back();                             // dont repeat first step
+        }
+    }
+    if (fwd) {
+        step(steps, p, line, stepSize / (both ? 2 : 1), normalzieSample);
+    }
+
+    return line;
 }
 
-} // namespace
+inviwo::IntegralLine StreamLineTracer::traceFrom(const vec3 &p, int steps, double stepSize,
+                                                 Direction dir, bool normalzieSample) {
+    return traceFrom(dvec3(p), steps, stepSize, dir,normalzieSample);
+}
 
+void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line, double stepSize, bool normalzieSample) {
+    for (int i = 0; i <= steps; i++) {
+        if (curPos.x < 0) break;
+        if (curPos.y < 0) break;
+        if (curPos.z < 0) break;
+
+        if (curPos.x > 1 - 1.0 / dimensions_.x) break;
+        if (curPos.y > 1 - 1.0 / dimensions_.y) break;
+        if (curPos.z > 1 - 1.0 / dimensions_.z) break;
+
+        dvec3 worldVelocty = volumeSampler_.sample(curPos).xyz();
+        dvec3 v = worldVelocty;
+        if (normalzieSample)
+            v = glm::normalize(v);
+        dvec3 velocity = invBasis_ * (v * stepSize);
+        line.positions_.push_back(curPos);
+        line.metaData_["velocity"].push_back(worldVelocty);
+        for (auto m : metaVolumes_) {
+            line.metaData_[m.first].push_back(m.second.sample(curPos).xyz());
+        }
+
+        curPos += velocity;
+    }
+}
+
+}  // namespace
