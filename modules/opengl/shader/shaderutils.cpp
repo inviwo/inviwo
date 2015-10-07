@@ -203,13 +203,22 @@ void addShaderDefines(Shader& shader, const SimpleRaycastingProperty& property) 
     shader.getFragmentShaderObject()->addShaderDefine(allChannelsGradientKey,
                                                        allChannelsGradientValue);
 
-    // classification defines
+    // classification defines, red channel is used
     std::string classificationKey = "APPLY_CLASSIFICATION(transferFunc, voxel)";
     std::string classificationValue = "";
     if (property.classificationMode_.isSelectedIdentifier("none"))
+        classificationValue = "vec4(voxel.r);";
+    else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
+        classificationValue = "applyTF(transferFunc, voxel.r);";
+    shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
+
+    // classification of specific channel
+    classificationKey = "APPLY_CHANNEL_CLASSIFICATION(transferFunc, voxel, channel)";
+    classificationValue = "";
+    if (property.classificationMode_.isSelectedIdentifier("none"))
         classificationValue = "vec4(voxel[channel]);";
     else if (property.classificationMode_.isSelectedIdentifier("transfer-function"))
-        classificationValue = "applyTF(transferFunc, voxel[channel]);";
+        classificationValue = "applyTF(transferFunc, voxel, channel);";
     shader.getFragmentShaderObject()->addShaderDefine(classificationKey, classificationValue);
 
     // compositing defines
