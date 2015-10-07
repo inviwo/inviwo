@@ -63,14 +63,14 @@ const DataFormatBase* DataFormatBase::get(std::string name) {
     if (name == "") return DataFormatBase::get();
 #define DataFormatIdMacro(i) else if(name == toLower(#i)) return Data##i::get();
 #include <inviwo/core/util/formatsdefinefunc.h>
-    else if (name == "UCHAR") return DataUINT8::get();
-    else if (name == "CHAR") return DataINT8::get();
-    else if (name == "USHORT") return DataUINT16::get();
-    else if (name == "SHORT") return DataINT16::get();
-    else if (name == "UINT") return DataUINT32::get();
-    else if (name == "INT") return DataINT32::get();
-    else if (name == "FLOAT") return DataFLOAT32::get();
-    else if (name == "DOUBLE") return DataFLOAT64::get();
+    else if (name == "uchar") return DataUINT8::get();
+    else if (name == "char") return DataINT8::get();
+    else if (name == "ushort") return DataUINT16::get();
+    else if (name == "short") return DataINT16::get();
+    else if (name == "uint") return DataUINT32::get();
+    else if (name == "int") return DataINT32::get();
+    else if (name == "float") return DataFLOAT32::get();
+    else if (name == "double") return DataFLOAT64::get();
     else return DataFormatBase::get();
 }
 
