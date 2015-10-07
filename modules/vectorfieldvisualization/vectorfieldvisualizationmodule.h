@@ -38,7 +38,7 @@ namespace inviwo {
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API VectorFieldVisualizationModule : public InviwoModule {
 
 public:
-    VectorFieldVisualizationModule();
+    VectorFieldVisualizationModule(InviwoApplication* app);
 
 };
 

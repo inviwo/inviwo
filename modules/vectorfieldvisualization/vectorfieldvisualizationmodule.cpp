@@ -33,12 +33,10 @@
 
 namespace inviwo {
 
-VectorFieldVisualizationModule::VectorFieldVisualizationModule() : InviwoModule() {
-    setIdentifier("VectorFieldVisualization");
+VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app) : InviwoModule(app,"VectorFieldVisualization") {
     
-   
-    registerProcessor(RBFVectorFieldGenerator2D);
-    registerProcessor(RBFVectorFieldGenerator3D);
+    registerProcessor<RBFVectorFieldGenerator2D>();
+    registerProcessor<RBFVectorFieldGenerator3D>();
     
    
 }

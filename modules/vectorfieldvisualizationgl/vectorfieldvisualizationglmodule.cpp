@@ -34,13 +34,12 @@
 
 namespace inviwo {
 
-VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule() : InviwoModule() {
-    setIdentifier("VectorFieldVisualizationGL");
+VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app) : InviwoModule(app,"VectorFieldVisualizationGL") {
     
     // Add a directory to the search path of the Shadermanager
     ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "/vectorfieldvisualizationgl/glsl");
 
-    registerProcessor(LorenzSystem);
+    registerProcessor<LorenzSystem>();
 
 }
 
