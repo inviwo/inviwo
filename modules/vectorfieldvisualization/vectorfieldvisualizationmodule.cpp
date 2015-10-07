@@ -31,12 +31,18 @@
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
 
+#include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
+#include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
+
 namespace inviwo {
 
 VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app) : InviwoModule(app,"VectorFieldVisualization") {
     
     registerProcessor<RBFVectorFieldGenerator2D>();
     registerProcessor<RBFVectorFieldGenerator3D>();
+
+    registerProcessor<StreamLines>();
+    registerProcessor<StreamRibbons>();
     
    
 }
