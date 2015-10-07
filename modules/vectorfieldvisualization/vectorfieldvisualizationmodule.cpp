@@ -30,6 +30,7 @@
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
 #include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
+#include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
 
 #include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
 #include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
@@ -40,9 +41,11 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     
     registerProcessor<RBFVectorFieldGenerator2D>();
     registerProcessor<RBFVectorFieldGenerator3D>();
+    registerProcessor<SeedPointGenerator>();
 
     registerProcessor<StreamLines>();
     registerProcessor<StreamRibbons>();
+
     
    
 }

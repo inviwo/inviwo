@@ -11,7 +11,7 @@
 namespace inviwo {
 
     ProcessorClassIdentifier(StreamLines, "org.inviwo.StreamLines")
-    ProcessorDisplayName(StreamLines,  "StreamLines")
+    ProcessorDisplayName(StreamLines,  "Stream Lines")
     ProcessorTags(StreamLines, Tags::None);
     ProcessorCategory(StreamLines, "Vector Field Visualization");
     ProcessorCodeState(StreamLines, CODE_STATE_EXPERIMENTAL);
