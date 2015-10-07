@@ -169,7 +169,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
 #ifdef IVW_DEBUG  // Look for the html in the doc-qt folder.
     if (type == QTextDocument::HtmlResource || type == QTextDocument::ImageResource) {
         std::string docbase = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA,
-                                                                   "../tools/doxygen/doc-qt/html");
+                                                                   "/../tools/doxygen/doc-qt/html");
         QString file = name.toString();
         file.replace("qthelp://org.inviwo/doc", QString::fromStdString(docbase));
         QFile newfile(file);
