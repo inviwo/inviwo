@@ -153,7 +153,7 @@ void LinkDialogGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 void LinkDialogGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
 
     QPointF pos = e->scenePos();
-    if (pos.x() > linkDialogWidth/2 ) {
+    if (pos.x() > linkDialogWidth/2.0 ) {
         mouseOnLeftSide_ = false;
     }
     else {
@@ -301,18 +301,16 @@ void LinkDialogGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* e) {
 }
 
 void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
-    //QPointF zoomOffset = allViews[0]->mapToScene(0, yIncrement);
-    QPointF scrollOffset = QPointF(0.0f, yIncrement);
+    QPointF scrollOffset(0.0f, yIncrement);
 
-    LinkDialogProcessorGraphicsItem* procGraphicsItem=0;
     std::vector<LinkDialogProcessorGraphicsItem*> processorGraphicsItems;
     processorGraphicsItems.push_back(srcProcessorGraphicsItem_);
     processorGraphicsItems.push_back(dstProcessorGraphicsItem_);
 
-    foreach(procGraphicsItem, processorGraphicsItems) {
+    for(auto procGraphicsItem : processorGraphicsItems) {
         QPointF pos = procGraphicsItem->scenePos();
-        if (scrollLeft && pos.x()>=linkDialogWidth/2) continue;
-        if (!scrollLeft && pos.x()<linkDialogWidth/2) continue;
+        if (scrollLeft && pos.x()>=linkDialogWidth/2.0) continue;
+        if (!scrollLeft && pos.x()<linkDialogWidth/2.0) continue;
         procGraphicsItem->setPos(pos.x()+scrollOffset.x(), pos.y()+scrollOffset.y());
         std::vector<LinkDialogPropertyGraphicsItem*> propItems = procGraphicsItem->getPropertyItemList();
         for (auto& propItem : propItems) {
@@ -358,12 +356,12 @@ void LinkDialogGraphicsScene::setExpandProperties(bool expand) {
 }
 
 void LinkDialogGraphicsScene::expandOrCollapseLinkedProcessorItems(
-    LinkDialogProcessorGraphicsItem* procGraphicsItem, bool collapse) {
+    LinkDialogProcessorGraphicsItem* procGraphicsItem, bool expand) {
     std::vector<LinkDialogPropertyGraphicsItem*> propItems =
         procGraphicsItem->getPropertyItemList();
     LinkDialogPropertyGraphicsItem* propertyItem = 0;
-    foreach (propertyItem, propItems) {
-        expandOrCollapseLinkedPropertyItems(propertyItem, collapse);
+    for(auto propertyItem : propItems) {
+        expandOrCollapseLinkedPropertyItems(propertyItem, expand);
     }
 }
 
@@ -402,13 +400,13 @@ void LinkDialogGraphicsScene::expandOrCollapseLinkedPropertyItems(
             }
         }
 
-        LinkDialogProcessorGraphicsItem* procGraphicsItem = 0;
         std::vector<LinkDialogProcessorGraphicsItem*> processorGraphicsItems;
         processorGraphicsItems.push_back(srcProcessorGraphicsItem_);
         processorGraphicsItems.push_back(dstProcessorGraphicsItem_);
 
-        foreach (procGraphicsItem, processorGraphicsItems)
+        for(auto procGraphicsItem : processorGraphicsItems) {
             procGraphicsItem->updatePropertyItemPositions(true);
+        }
     }
 }
 
@@ -418,24 +416,25 @@ bool LinkDialogGraphicsScene::isPropertyExpanded(Property* property) {
     if(propItem) return propItem->isExpanded();
     return false;
 }
-
-
 void LinkDialogGraphicsScene::removeCurrentPropertyLinks() {
-    DialogConnectionGraphicsItem* propertyLink=0;
     std::vector<DialogConnectionGraphicsItem*> tempList = currentConnectionGraphicsItems_;
-    foreach(propertyLink, currentConnectionGraphicsItems_)
-    removeConnectionFromCurrentList(propertyLink);
-    foreach(propertyLink, tempList)
-    removePropertyLink(propertyLink);
+    for (auto propertyLink : currentConnectionGraphicsItems_) {
+        removeConnectionFromCurrentList(propertyLink);
+    }
+    for (auto propertyLink : tempList) {
+        removePropertyLink(propertyLink);
+    }
 }
 
 void LinkDialogGraphicsScene::removeAllPropertyLinks() {
-    DialogConnectionGraphicsItem* propertyLink=0;
+    DialogConnectionGraphicsItem* propertyLink = 0;
     std::vector<DialogConnectionGraphicsItem*> tempList = connectionGraphicsItems_;
-    foreach(propertyLink, connectionGraphicsItems_)
-    removeConnectionFromCurrentList(propertyLink);
-    foreach(propertyLink, tempList)
-    removePropertyLink(propertyLink);
+    for (auto propertyLink : connectionGraphicsItems_) {
+        removeConnectionFromCurrentList(propertyLink);
+    }
+    for (auto propertyLink : tempList) {
+        removePropertyLink(propertyLink);
+    }
 }
 
 void LinkDialogGraphicsScene::removePropertyLink(DialogConnectionGraphicsItem* propertyLink) {
@@ -638,13 +637,13 @@ void LinkDialogGraphicsScene::initScene(Processor* srcProcessor,
         initializePropertyLinkRepresentation(propertyLink);
     }
 
-    LinkDialogProcessorGraphicsItem* procGraphicsItem=0;
     std::vector<LinkDialogProcessorGraphicsItem*> processorGraphicsItems;
     processorGraphicsItems.push_back(srcProcessorGraphicsItem_);
     processorGraphicsItems.push_back(dstProcessorGraphicsItem_);
 
-    foreach(procGraphicsItem, processorGraphicsItems)
+    for(auto procGraphicsItem : processorGraphicsItems){
         expandOrCollapseLinkedProcessorItems(procGraphicsItem, expandProperties_);
+    }
 
     currentConnectionGraphicsItems_.clear();
 }

@@ -81,7 +81,6 @@ public:
     void expandOrCollapseLinkedPropertyItems(LinkDialogPropertyGraphicsItem* propertyItem,
                                              bool expand);
 
-    void updatePropertyItemsOfAllProcessors();
     bool isPropertyExpanded(Property* property);
 
     virtual void onProcessorNetworkDidAddLink(PropertyLink* propertyLink);

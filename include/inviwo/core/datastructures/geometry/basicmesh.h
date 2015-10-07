@@ -46,7 +46,7 @@ public:
     virtual BasicMesh* clone() const override;
     virtual ~BasicMesh() = default;
 
-    size_t addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
+    uint32_t addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
 
     // add a list of verties: {{pos, normal, tex, color}, ...}
     struct Vertex {

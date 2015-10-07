@@ -72,10 +72,10 @@ void LightPositionWidgetQt::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void LightPositionWidgetQt::setNewPosition(QMouseEvent* e) {
-    const QPoint p{e->pos()};
-    QPoint center{gradientPixmap_->width()/2, gradientPixmap_->height()/2};
-    float x = static_cast<float>(p.x()-center.x());
-    float y = static_cast<float>(p.y()-center.y());
+    const QPointF p{e->pos()};
+    QPointF center{gradientPixmap_->width()/2.0f, gradientPixmap_->height()/2.0f};
+    float x = p.x()-center.x();
+    float y = p.y()-center.y();
     float gradientSpaceRadius = sqrt(x*x+y*y);
 
     // Check if user clicked close to, or outside of radius

@@ -50,12 +50,12 @@ BasicMesh::BasicMesh() : Mesh() {
 
 BasicMesh* BasicMesh::clone() const { return new BasicMesh(*this); }
 
-size_t BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
+uint32_t BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) {
     getEditableVerticesRAM()->add(pos);
     getEditableTexCoordsRAM()->add(texCoord);
     getEditableColorsRAM()->add(color);
     getEditableNormalsRAM()->add(normal);
-    return getVertices()->getSize() - 1;
+    return static_cast<uint32_t>(getVertices()->getSize() - 1);
 }
 
 void BasicMesh::addVertices(std::initializer_list<Vertex> data) {

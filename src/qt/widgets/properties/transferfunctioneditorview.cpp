@@ -34,6 +34,9 @@
 #include <inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h>
 #include <inviwo/qt/widgets/properties/transferfunctioneditor.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QVarLengthArray>
 #include <QGraphicsItem>
 #include <QThread>
@@ -41,6 +44,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QBrush>
+#include <warn/pop>
 
 namespace inviwo {
 

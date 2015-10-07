@@ -37,10 +37,9 @@
 #include <inviwo/qt/widgets/lightpositionwidgetqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 
-#include <QtCore/qmath.h>
-
 #include <warn/push>
 #include <warn/ignore/all>
+#include <QtCore/qmath.h>
 #include <QSpinBox>
 #include <warn/pop>
 
