@@ -35,6 +35,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorsource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/basisproperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumeinformationproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -70,6 +71,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorsource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/basisproperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumeinformationproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
