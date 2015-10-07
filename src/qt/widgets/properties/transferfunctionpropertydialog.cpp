@@ -34,8 +34,10 @@
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datawriterfactory.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <QImage>
 #include <QDockWidget>

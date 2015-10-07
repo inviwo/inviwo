@@ -50,7 +50,7 @@ namespace inviwo {
 class IVW_CORE_API ResourceManager : public Singleton<ResourceManager>,
                                      public ResourceManagerObservable {
 public:
-    ResourceManager();;
+    ResourceManager();
     ResourceManager(ResourceManager const&) = delete;
     void operator=(ResourceManager const&) = delete;
 

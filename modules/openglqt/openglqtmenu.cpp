@@ -31,6 +31,7 @@
 
 #include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <QTextBrowser>
 #include <QDialog>
 #include <QVariant>

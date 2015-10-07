@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/transferfunction.h>
 #include <inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h>
 #include <inviwo/qt/widgets/properties/transferfunctioncontrolpointconnection.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

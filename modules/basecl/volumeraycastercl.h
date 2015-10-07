@@ -41,6 +41,7 @@
 #include <modules/opencl/kernelowner.h>
 #include <modules/opencl/utilcl.h>
 #include <modules/opencl/volume/volumeclbase.h>
+#include <inviwo/core/datastructures/image/layer.h>
 
 namespace inviwo {
 

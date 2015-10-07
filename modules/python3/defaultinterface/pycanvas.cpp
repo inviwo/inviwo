@@ -32,6 +32,8 @@
 #include "pycanvas.h"
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetwork.h>
+
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
 

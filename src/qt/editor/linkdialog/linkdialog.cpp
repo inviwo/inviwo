@@ -34,6 +34,7 @@
 
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/common/inviwoapplication.h>
 

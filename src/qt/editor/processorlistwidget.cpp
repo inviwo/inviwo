@@ -32,6 +32,7 @@
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

@@ -31,11 +31,13 @@
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/opengl/image/imagegl.h>
 #include <modules/opengl/clockgl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
+
 
 namespace inviwo {
 

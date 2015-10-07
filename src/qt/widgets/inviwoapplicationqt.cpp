@@ -29,6 +29,8 @@
 
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/fileobserver.h>
 #include <inviwo/qt/widgets/qtwidgetmodule.h>
 
 #include <thread>

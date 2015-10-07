@@ -31,6 +31,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/systemcapabilities.h>
 #include <inviwo/core/util/formatconversion.h>
+#include <inviwo/core/common/inviwocore.h>
 
 namespace inviwo {
 

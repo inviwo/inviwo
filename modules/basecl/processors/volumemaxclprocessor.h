@@ -34,6 +34,8 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/kernelowner.h>

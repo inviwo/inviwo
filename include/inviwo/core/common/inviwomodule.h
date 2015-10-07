@@ -32,32 +32,31 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/datastructures/data.h>
-#include <inviwo/core/datastructures/datarepresentation.h>
-#include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/io/datareader.h>
-#include <inviwo/core/io/datareaderdialog.h>
-#include <inviwo/core/io/datawriter.h>
-#include <inviwo/core/metadata/metadata.h>
-#include <inviwo/core/ports/port.h>
-#include <inviwo/core/ports/portfactoryobject.h>
-#include <inviwo/core/ports/portinspector.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/processorfactoryobject.h>
-#include <inviwo/core/properties/property.h>
-#include <inviwo/core/properties/propertyfactoryobject.h>
-#include <inviwo/core/properties/propertywidgetfactoryobject.h>
-#include <inviwo/core/rendering/meshdrawer.h>
-#include <inviwo/core/resources/resource.h>
-#include <inviwo/core/util/capabilities.h>
-#include <inviwo/core/util/dialogfactoryobject.h>
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/properties/propertyconverter.h>
-#include <inviwo/core/properties/propertyconvertermanager.h>
+
+#include <inviwo/core/ports/portfactory.h>
+#include <inviwo/core/ports/portfactoryobject.h>
+#include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/properties/propertyfactoryobject.h>
+#include <inviwo/core/properties/propertywidgetfactory.h>
+#include <inviwo/core/properties/propertywidgetfactoryobject.h>
+#include <inviwo/core/util/dialogfactory.h>
+#include <inviwo/core/util/dialogfactoryobject.h>
 
 namespace inviwo {
 
 class Settings;
+class MetaData;
+class Capabilities;
+class Resource;
+class RepresentationConverter;
+class DataReader;
+class DataWriter;
+class PortInspectorFactoryObject;
+class MeshDrawer;
+class PropertyConverter;
 
 /**
  * \class InviwoModule
@@ -188,19 +187,6 @@ void InviwoModule::registerDialog(std::string classIdentifier) {
 
 }
 
-template <typename T, typename P>
-void InviwoModule::registerPropertyWidget(PropertySemantics semantics) {
-    auto propertyWidget = util::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics);
-    if (app_->getPropertyWidgetFactory()->registerObject(propertyWidget.get())) {
-        propertyWidgets_.push_back(std::move(propertyWidget));
-    }
-}
-
-template <typename T, typename P>
-void InviwoModule::registerPropertyWidget(std::string semantics) {
-    registerPropertyWidget<T,P>(PropertySemantics(semantics));
-}
-
 template <typename T>
 void InviwoModule::registerProcessor() {
     auto processor = util::make_unique<ProcessorFactoryObjectTemplate<T>>();
@@ -223,6 +209,17 @@ void InviwoModule::registerProperty() {
     if (app_->getPropertyFactory()->registerObject(property.get())) {
         properties_.push_back(std::move(property));
     }
+}
+template <typename T, typename P>
+void InviwoModule::registerPropertyWidget(PropertySemantics semantics) {
+    auto propertyWidget = util::make_unique<PropertyWidgetFactoryObjectTemplate<T, P>>(semantics);
+    if (app_->getPropertyWidgetFactory()->registerObject(propertyWidget.get())) {
+        propertyWidgets_.push_back(std::move(propertyWidget));
+    }
+}
+template <typename T, typename P>
+void InviwoModule::registerPropertyWidget(std::string semantics) {
+    registerPropertyWidget<T,P>(PropertySemantics(semantics));
 }
 
 }  // namespace

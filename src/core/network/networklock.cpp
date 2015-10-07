@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,23 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INVIWOCORE_H
-#define IVW_INVIWOCORE_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
-class InviwoApplication;
 
-/**
- * \class InviwoCore
- * \brief Module which registers all module related functionality available in the core.
- */
-class IVW_CORE_API InviwoCore : public InviwoModule {
-public:
-    InviwoCore(InviwoApplication* app);
-};
+NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorNetwork()) {
+    if(network_) network_->lock();
+}
 
-}  // namespace
+NetworkLock::NetworkLock(ProcessorNetwork* network) : network_(network) {
+    if(network_) network_->lock();
+}
 
-#endif  // IVW_INVIWOCORE_H
+NetworkLock::~NetworkLock() {
+    if(network_) network_->unlock();
+}
+
+} // namespace
+

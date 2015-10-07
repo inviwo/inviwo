@@ -40,6 +40,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/opencl/inviwoopencl.h>
 #include <modules/opencl/kernelowner.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 /** \docpage{org.inviwo.VolumeFirstHitCL, Volume First Hit}

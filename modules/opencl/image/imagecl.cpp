@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/opencl/image/imagecl.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 

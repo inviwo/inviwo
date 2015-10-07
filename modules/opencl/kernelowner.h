@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-
+class Processor;
 
 class IVW_MODULE_OPENCL_API KernelObserver: public Observer {
 public:

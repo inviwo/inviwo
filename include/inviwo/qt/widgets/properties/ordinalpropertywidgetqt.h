@@ -32,8 +32,6 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
-#include <QMenu>
-#include <QSignalMapper>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/sliderwidgetqt.h>
 #include <inviwo/qt/widgets/ordinaleditorwidget.h>
@@ -42,7 +40,11 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/tooltiphelper.h>
+#include <inviwo/core/properties/propertyowner.h>
+
 #include <math.h>
+#include <QMenu>
+#include <QSignalMapper>
 
 namespace inviwo {
 

@@ -75,21 +75,6 @@ private:
     virtual void fileChanged(std::string fileName);
 };
 
-class IVW_CORE_API PortInspectorFactoryObject {
-public:
-    PortInspectorFactoryObject(const std::string& portClassIdentifier,
-                               const std::string& inspectorWorkspaceFileName);
-    virtual ~PortInspectorFactoryObject() {}
-
-    virtual PortInspector* create();
-
-    std::string getClassIdentifier() const;
-
-private:
-    std::string portClassIdentifier_;
-    std::string inspectorWorkspaceFileName_;
-};
-
 }  // namespace
 
 #endif  // IVW_PORTINSPECTOR_H

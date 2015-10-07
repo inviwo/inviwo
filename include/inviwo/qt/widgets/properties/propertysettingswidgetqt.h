@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/qt/widgets/qstringhelper.h>
 
 #include <warn/push>

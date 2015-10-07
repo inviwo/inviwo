@@ -34,6 +34,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -47,6 +48,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
+
 
 namespace inviwo {
 

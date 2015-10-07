@@ -30,6 +30,7 @@
 #include <modules/opencl/kernelowner.h>
 #include <modules/opencl/kernelmanager.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 

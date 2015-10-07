@@ -27,12 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/metadata/metadatafactory.h>
-#include <inviwo/core/io/serialization/ivwserializable.h>
-#include <inviwo/core/util/stdextensions.h>
-
 namespace inviwo {
 
 }  // namespace

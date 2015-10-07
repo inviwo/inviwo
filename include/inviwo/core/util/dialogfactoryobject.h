@@ -35,6 +35,8 @@
 
 namespace inviwo {
 
+class Dialog;
+
 class IVW_CORE_API DialogFactoryObject {
 public:
     DialogFactoryObject(const std::string& className);

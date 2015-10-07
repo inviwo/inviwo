@@ -93,7 +93,6 @@ void NetworkEditorView::setZoom(const float& zoom, const QPointF& pos) {
     QTransform matrix;
     matrix.scale(zoom_, zoom_);
     
-    QPointF center = viewport()->rect().center();
     QPointF oldPos = QGraphicsView::mapToScene(pos.toPoint());
     QGraphicsView::setTransform(matrix);
     QPointF newPos = QGraphicsView::mapToScene(pos.toPoint());

@@ -152,18 +152,5 @@ void PortInspector::initialize() {
     }
 }
 
-PortInspectorFactoryObject::PortInspectorFactoryObject(const std::string& portClassIdentifier,
-                               const std::string& inspectorWorkspaceFileName)
-    : portClassIdentifier_(portClassIdentifier)
-    , inspectorWorkspaceFileName_(inspectorWorkspaceFileName) {}
-
-std::string PortInspectorFactoryObject::getClassIdentifier() const {
-    return portClassIdentifier_;
-}
-
-PortInspector* PortInspectorFactoryObject::create() {
-    return new PortInspector(portClassIdentifier_, inspectorWorkspaceFileName_);
-}
-
 } // namespace
 

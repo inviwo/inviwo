@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/core/util/dialog.h>
 #include <inviwo/core/util/dialogfactoryobject.h>
+#include <inviwo/core/util/dialog.h>
 
 namespace inviwo {
 

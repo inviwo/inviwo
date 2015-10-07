@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 

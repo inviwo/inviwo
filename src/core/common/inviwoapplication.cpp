@@ -28,25 +28,32 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwocore.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/moduleaction.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
+#include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/io/datawriterfactory.h>
-#include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/metadata/metadatafactory.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/ports/portfactory.h>
 #include <inviwo/core/ports/portinspectorfactory.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/resources/resourcemanager.h>
+#include <inviwo/core/util/capabilities.h>
 #include <inviwo/core/util/dialogfactory.h>
+#include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/core/properties/propertyconvertermanager.h>
+#include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {

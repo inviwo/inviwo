@@ -30,6 +30,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/templateproperty.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 

@@ -28,10 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/moduleaction.h>
-#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
-
 
 ModuleCallbackAction::ModuleCallbackAction(std::string actionName,
         InviwoModule* module,

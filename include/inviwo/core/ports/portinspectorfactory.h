@@ -35,6 +35,8 @@
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/ports/portinspector.h>
+#include <inviwo/core/ports/portinspectorfactoryobject.h>
+
 
 namespace inviwo {
 

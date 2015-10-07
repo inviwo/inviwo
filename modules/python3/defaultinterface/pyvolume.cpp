@@ -35,6 +35,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>

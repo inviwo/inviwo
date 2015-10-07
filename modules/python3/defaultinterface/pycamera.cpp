@@ -35,7 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
-
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 

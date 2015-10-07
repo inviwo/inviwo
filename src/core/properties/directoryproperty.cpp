@@ -24,28 +24,25 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/directoryproperty.h>
 
 namespace inviwo {
 
 PropertyClassIdentifier(DirectoryProperty, "org.inviwo.DirectoryProperty");
 
-DirectoryProperty::DirectoryProperty(
-    std::string identifier, std::string displayName,
-    std::string value, std::string contentType,
-    InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics)
-{
+DirectoryProperty::DirectoryProperty(std::string identifier, std::string displayName,
+                                     std::string value, std::string contentType,
+                                     InvalidationLevel invalidationLevel,
+                                     PropertySemantics semantics)
+    : FileProperty(identifier, displayName, value, contentType, invalidationLevel, semantics) {
     this->setAcceptMode(FileProperty::AcceptMode::Open);
     this->setFileMode(FileProperty::FileMode::DirectoryOnly);
 }
 
-DirectoryProperty::~DirectoryProperty() {
-}
+DirectoryProperty::~DirectoryProperty() {}
 
 std::string DirectoryProperty::getClassIdentifierForWidget() const {
     return FileProperty::getClassIdentifier();

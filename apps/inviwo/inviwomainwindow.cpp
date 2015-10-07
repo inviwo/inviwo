@@ -36,6 +36,7 @@
 #include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/filesystem.h>
 #include <inviwo/qt/editor/resourcemanagerwidget.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/qt/editor/settingswidget.h>

@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 

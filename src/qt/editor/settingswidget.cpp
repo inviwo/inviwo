@@ -33,6 +33,7 @@
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/settings.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

@@ -1222,16 +1222,4 @@ void ProcessorNetwork::NetworkConverter::updateNoSpaceInProcessorClassIdentifers
     }
 }
 
-NetworkLock::NetworkLock() : network_(InviwoApplication::getPtr()->getProcessorNetwork()) {
-    if(network_) network_->lock();
-}
-
-NetworkLock::NetworkLock(ProcessorNetwork* network) : network_(network) {
-    if(network_) network_->lock();
-}
-
-NetworkLock::~NetworkLock() {
-    if(network_) network_->unlock();
-}
-
 } // namespace

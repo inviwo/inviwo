@@ -29,6 +29,7 @@
 
 #include <modules/opencl/image/imageclgl.h>
 #include <modules/opencl/image/layerclgl.h>
+#include <inviwo/core/datastructures/image/image.h>
 
 namespace inviwo {
 

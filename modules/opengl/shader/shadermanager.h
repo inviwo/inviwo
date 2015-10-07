@@ -38,6 +38,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/singleton.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 

@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 

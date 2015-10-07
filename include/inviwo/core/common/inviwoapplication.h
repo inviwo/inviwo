@@ -32,18 +32,11 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/common/inviwocore.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/common/moduleaction.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/util/commandlineparser.h>
-#include <inviwo/core/util/fileobserver.h>
-#include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/util/vectoroperations.h>
-#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/singleton.h>
-#include <inviwo/core/util/timer.h>
 #include <inviwo/core/util/threadpool.h>
+#include <inviwo/core/util/commandlineparser.h>
+#include <inviwo/core/util/vectoroperations.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -56,21 +49,28 @@
 
 namespace inviwo {
 
+class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
 
 class DataReaderFactory;
 class DataWriterFactory;
-class DialogFactory;
 class MeshDrawerFactory;
 class MetaDataFactory;
-class PortFactory;
-class PortInspectorFactory;
 class ProcessorFactory;
 class PropertyConverterManager;
-class PropertyFactory;
-class PropertyWidgetFactory;
 class RepresentationConverterFactory;
 class ProcessorWidgetFactory;
+class DialogFactory;
+class PropertyFactory;
+class PropertyWidgetFactory;
+class PortFactory;
+class PortInspectorFactory;
+
+class Settings;
+class InviwoModule;
+class ModuleCallbackAction;
+class FileObserver;
+
 
 /**
  * \class InviwoApplication
@@ -280,24 +280,6 @@ template <class F, class... Args>
 auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
     return InviwoApplication::getPtr()->dispatchPool(std::forward<F>(f),
                                                      std::forward<Args>(args)...);
-}
-template <class F, class... Args>
-auto dispatchPoolAndInvalidate(Processor* p, F&& f, Args&&... args)
-    -> std::future<typename std::result_of<F(Args...)>::type> {
-    using return_type = typename std::result_of<F(Args...)>::type;
-    auto task = std::make_shared<std::packaged_task<return_type()>>(
-        std::bind(std::forward<F>(f), std::forward<Args>(args)...));
-
-    std::future<return_type> res = task->get_future();
-
-    InviwoApplication::getPtr()->dispatchPool([task, p]() {
-        (*task)();
-        dispatchFront([p]() {
-            if (p) p->invalidate(INVALID_OUTPUT);
-        });
-    });
-
-    return res;
 }
 
 inline DataReaderFactory* InviwoApplication::getDataReaderFactory() const {

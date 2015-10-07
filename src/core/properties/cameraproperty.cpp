@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
