@@ -596,7 +596,7 @@ void InviwoMainWindow::newWorkspace() {
 
     exampleWorkspaceOpen_ = false;
     getNetworkEditor()->clearNetwork();
-    setCurrentWorkspace(rootDir_ + "workspaces/untitled.inv");
+    setCurrentWorkspace(rootDir_ + "/workspaces/untitled.inv");
     getNetworkEditor()->setModified(false);
     updateWindowTitle();
 }
