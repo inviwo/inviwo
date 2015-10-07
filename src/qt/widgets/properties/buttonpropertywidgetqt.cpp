@@ -54,8 +54,7 @@ void ButtonPropertyWidgetQt::generateWidget() {
 }
 
 void ButtonPropertyWidgetQt::handleButton() {
-    if (!property_->getReadOnly())
-        property_->propertyModified();
+    if (!property_->getReadOnly()) property_->pressButton();
 }
 void ButtonPropertyWidgetQt::updateFromProperty() {
     button_->setText(QString::fromStdString(property_->getDisplayName()));

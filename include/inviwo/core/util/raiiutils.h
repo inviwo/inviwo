@@ -39,8 +39,8 @@ namespace util {
 
 class IVW_CORE_API KeepTrueWhileInScope {
 public:
-    KeepTrueWhileInScope(bool* b) : variable_(b) { (*variable_) = true; }
-    ~KeepTrueWhileInScope() { (*variable_) = false; }
+    KeepTrueWhileInScope(bool* b) : variable_(b) { if(variable_) (*variable_) = true; }
+    ~KeepTrueWhileInScope() { if(variable_) (*variable_) = false; }
 
 private:
     bool* variable_;

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
 
@@ -52,9 +53,24 @@ ButtonProperty* ButtonProperty::clone() const { return new ButtonProperty(*this)
 
 ButtonProperty::~ButtonProperty() {}
 
-void ButtonProperty::set(const Property* src) { pressButton(); }
+void ButtonProperty::set(const Property* src) {
+    bool* ptr = nullptr;
+    if (auto boolprop = dynamic_cast<const ButtonProperty*>(src)) {
+        if(boolprop->buttonPressed_) ptr = &buttonPressed_;
+    }    
+    util::KeepTrueWhileInScope guard(ptr);
+    Property::set(src);
+}
 
-void ButtonProperty::pressButton() { propertyModified(); }
+void ButtonProperty::pressButton() { 
+    util::KeepTrueWhileInScope guard(&buttonPressed_);
+    propertyModified(); 
+}
+
+void ButtonProperty::propertyModified() {
+    if (!buttonPressed_) return;
+    Property::propertyModified();
+}
 
 void ButtonProperty::resetToDefaultState() {}
 
