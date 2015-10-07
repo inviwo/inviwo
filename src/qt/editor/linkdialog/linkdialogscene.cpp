@@ -357,10 +357,7 @@ void LinkDialogGraphicsScene::setExpandProperties(bool expand) {
 
 void LinkDialogGraphicsScene::expandOrCollapseLinkedProcessorItems(
     LinkDialogProcessorGraphicsItem* procGraphicsItem, bool expand) {
-    std::vector<LinkDialogPropertyGraphicsItem*> propItems =
-        procGraphicsItem->getPropertyItemList();
-    LinkDialogPropertyGraphicsItem* propertyItem = 0;
-    for(auto propertyItem : propItems) {
+    for(auto propertyItem : procGraphicsItem->getPropertyItemList()) {
         expandOrCollapseLinkedPropertyItems(propertyItem, expand);
     }
 }
@@ -427,7 +424,6 @@ void LinkDialogGraphicsScene::removeCurrentPropertyLinks() {
 }
 
 void LinkDialogGraphicsScene::removeAllPropertyLinks() {
-    DialogConnectionGraphicsItem* propertyLink = 0;
     std::vector<DialogConnectionGraphicsItem*> tempList = connectionGraphicsItems_;
     for (auto propertyLink : connectionGraphicsItems_) {
         removeConnectionFromCurrentList(propertyLink);
