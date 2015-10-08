@@ -11,7 +11,8 @@
 namespace inviwo {
 
 ProcessorClassIdentifier(StreamLines, "org.inviwo.StreamLines")
-    ProcessorDisplayName(StreamLines, "Stream Lines") ProcessorTags(StreamLines, Tags::None);
+ProcessorDisplayName(StreamLines, "Stream Lines")
+ProcessorTags(StreamLines, Tags::GL);
 ProcessorCategory(StreamLines, "Vector Field Visualization");
 ProcessorCodeState(StreamLines, CODE_STATE_EXPERIMENTAL);
 
@@ -25,7 +26,7 @@ StreamLines::StreamLines()
     , stepSize_("stepSize", "StepSize", 0.001f, 0.0001f, 1.0f)
     , stepDirection_("stepDirection", "Step Direction")
     , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
-    , tf_("transferFunction_", "Transfer Function")
+    , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Velocity Range", "0", VALID) {
     addPort(volume_);

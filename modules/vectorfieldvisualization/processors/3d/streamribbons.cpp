@@ -38,7 +38,8 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 ProcessorClassIdentifier(StreamRibbons, "org.inviwo.StreamRibbons")
-    ProcessorDisplayName(StreamRibbons, "Stream Ribbons") ProcessorTags(StreamRibbons, Tags::None);
+ProcessorDisplayName(StreamRibbons, "Stream Ribbons") 
+ProcessorTags(StreamRibbons, Tags::GL);
 ProcessorCategory(StreamRibbons, "Undefined");
 ProcessorCodeState(StreamRibbons, CODE_STATE_EXPERIMENTAL);
 
@@ -46,7 +47,7 @@ StreamRibbons::StreamRibbons()
     : Processor()
     , vectorVolume_("vectorVolume")
     , vorticityVolume_("vorticityVolume")
-    , seedPoints_("seedPoints")
+    , seedPoints_("seedpoints")
     , mesh_("mesh")
     , numberOfSteps_("steps", "Number of Steps", 100, 1, 1000)
     , normalizeSamples_("normalizeSamples", "Normalize Samples", true)
