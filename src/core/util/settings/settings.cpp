@@ -59,8 +59,19 @@ void Settings::loadFromDisk() {
 
     isDeserializing_ = true;
     if (filesystem::fileExists(filename)) {
-        IvwDeserializer d(filename);
-        deserialize(d);
+        // An error is not critical as the default setting will be used.
+        try
+        {
+            IvwDeserializer d(filename);
+            deserialize(d);
+        }
+        catch (AbortException& e)
+        {
+            LogError(e.getMessage());
+        } 
+        catch (std::exception& e) {
+            LogError(e.what());
+        }
     }
     isDeserializing_ = false;
 }
