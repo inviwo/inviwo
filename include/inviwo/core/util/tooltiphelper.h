@@ -57,6 +57,12 @@ public:
     template <typename T, typename U>
     ToolTipHelper& row(T item, U val, bool tablehead = false);
 
+    template<typename T>
+    ToolTipHelper& operator<<(const T& item) {
+        ss << item;
+        return *this;
+    }
+
 private:
     std::stringstream ss;
 };

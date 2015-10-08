@@ -38,8 +38,8 @@ ToolTipHelper::ToolTipHelper(std::string item /*= ""*/) : ss() {
 
     ss << "<html><head>"
        << "<style>"
-       << "table { border-color:white;white-space:pre;margin-top:5px;margin-bottom:5px; }"
-       << "table > tr > td { padding-left:5px; padding-right:5px; }"
+       << "table { border-color:white;white-space:pre;margin-top:0px;margin-bottom:0px; }"
+       << "table > tr > td { padding-left:0px; padding-right:0px; }"
        << "</style><head/><body>";
 
     if (!item.empty()) ss << "<b style='color:white;'>" << item << "</b>";

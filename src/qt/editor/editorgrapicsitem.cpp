@@ -29,6 +29,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/tooltiphelper.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/core/ports/port.h>
@@ -106,8 +107,9 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     std::unique_ptr<std::vector<unsigned char>> data;
     int size = settings->portInspectorSize_.get();
 
-    QString info("<html><head/><body style=''>");
-    info.append("<table>");
+    ToolTipHelper t;
+    t.tableTop();
+
     std::string imageType = "png";
 
     if (inspector) {
@@ -117,9 +119,11 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     }
 
     if (portinfo) {
-        info.append(QString("<tr><td><b style='color:white;'>%1 %2</b></td></tr>")
-                        .arg(port->getClassIdentifier().c_str())
-                        .arg(port->getIdentifier().c_str()));
+        ToolTipHelper head(port->getClassIdentifier());
+        head.tableTop();
+        head.row("Identifier", port->getIdentifier());
+        head.tableBottom();
+        t << "<tr><td>" << std::string(head) << "</td></tr>";
     }
 
     if (data) {
@@ -145,23 +149,18 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
             byteArray.setRawData(reinterpret_cast<const char*>(&(data->front())),
                 static_cast<unsigned int>(data->size()));
         }
-        QString imageBase64 = QString::fromLatin1(byteArray.toBase64().data());
-
-        QString url(
-            QString(
-                "<tr><td><img width='%1' height='%1' src=\"data:image/png;base64,%2\"/></td></tr>")
-                .arg(size)
-                .arg(imageBase64));
-
-        info.append(url);
+        
+        t << "<tr><td><img width='"<< size <<"' height='"<< size << "' ";
+        t << "src=\"data:image/png;base64,"<< byteArray.toBase64().data() <<"\"/></td></tr>";
     }
 
     if (portinfo) {
-        info.append("<tr><td>" + utilqt::toLocalQString(port->getContentInfo()) + "</td></tr>");
+        t << "<tr><td>" << port->getContentInfo() << "</td></tr>";
     }
-    info.append("</table>");
-    info.append("</body></html>");
-    showToolTipHelper(e, info);
+
+    t.tableBottom();
+
+    showToolTipHelper(e, utilqt::toLocalQString(t));
 }
 
 } // namespace

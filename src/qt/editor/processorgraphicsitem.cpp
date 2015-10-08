@@ -35,6 +35,7 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/clock.h>
+#include <inviwo/core/util/tooltiphelper.h>
 
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
@@ -46,6 +47,7 @@
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/widgets/processors/processorwidgetqt.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -376,54 +378,22 @@ ProcessorStatusGraphicsItem* ProcessorGraphicsItem::getStatusItem() const {
 }
 
 void ProcessorGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
+    ToolTipHelper t(processor_->getDisplayName());
+    t.row("Identifier", processor_->getIdentifier());
+    t.row("Class", processor_->getClassIdentifier());
+    t.row("Category", processor_->getCategory());
+    t.row("Code", Processor::getCodeStateString(processor_->getCodeState()));
+    t.row("Tags", processor_->getTags().getString());
+
 #if IVW_PROFILING
-    QString str(QString(
-        "<html><head/><body>\
-         <b style='color:white;'>%1</b>\
-         <table border='0' cellspacing='0' cellpadding='0' style='border-color:white;white-space:pre;'>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Identifier:</td><td><nobr>%2</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Class Identifier:</td><td><nobr>%3</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Category:</td><td><nobr>%4</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Code State:</td><td><nobr>%5</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Tags:</td><td><nobr>%6</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Ready:</td><td><nobr>%11</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Eval Count:</td><td><nobr>%7</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Eval Time:</td><td><nobr>%8 ms</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Mean Time:</td><td><nobr>%9 ms</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Max Time:</td><td><nobr>%10 ms</nobr></td></tr>\
-         </tr></table></body></html>")
-         .arg(processor_->getDisplayName().c_str())
-         .arg(processor_->getIdentifier().c_str())
-         .arg(processor_->getClassIdentifier().c_str())
-         .arg(processor_->getCategory().c_str())
-         .arg(Processor::getCodeStateString(processor_->getCodeState()).c_str())
-         .arg(processor_->getTags().getString().c_str())
-         .arg(processCount_)
-         .arg(evalTime_)
-         .arg(totEvalTime_ / std::max(static_cast<double>(processCount_), 1.0))
-         .arg(maxEvalTime_)
-         .arg(processor_->isReady()?"Yes":"No")
-         );    
-#else
-    QString str(QString(
-        "<html><head/><body>\
-         <b style='color:white;'>%1</b>\
-         <table border='0' cellspacing='0' cellpadding='0' style='border-color:white;white-space:pre;'>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Identifier:</td><td><nobr>%2</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Class Identifier:</td><td><nobr>%3</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Category:</td><td><nobr>%4</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Code State:</td><td><nobr>%5</nobr></td></tr>\
-         <tr><td style='color:#bbb;padding-right:8px;'>Tags:</td><td><nobr>%6</nobr></td></tr>\
-         </tr></table></body></html>")
-         .arg(processor_->getDisplayName().c_str())
-         .arg(processor_->getIdentifier().c_str())
-         .arg(processor_->getClassIdentifier().c_str())
-         .arg(processor_->getCategory().c_str())
-         .arg(Processor::getCodeStateString(processor_->getCodeState()).c_str())
-         .arg(processor_->getTags().getString().c_str()));
+    t.row("Ready", processor_->isReady()?"Yes":"No");
+    t.row("Eval Count", processCount_);
+    t.row("Eval Time", evalTime_);
+    t.row("Mean Time", totEvalTime_/ std::max(static_cast<double>(processCount_), 1.0));
+    t.row("Max Time", maxEvalTime_);
 #endif
 
-    showToolTipHelper(e, str);
+    showToolTipHelper(e, utilqt::toLocalQString(t));
 }
 
 void ProcessorGraphicsItem::setHighlight(bool val) {

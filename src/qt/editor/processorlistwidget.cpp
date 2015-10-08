@@ -33,6 +33,8 @@
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/util/tooltiphelper.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -152,20 +154,6 @@ const QIcon* ProcessorTreeWidget::getCodeStateIcon(CodeState state) const {
             return &iconExperimental_;
     }
 }
-
-std::string ProcessorTreeWidget::getCodeStateString(CodeState state) const {
-    switch (state) {
-        case CODE_STATE_STABLE:
-            return "Stable";
-        case CODE_STATE_BROKEN:
-            return "Broken";
-        case CODE_STATE_EXPERIMENTAL:
-            return "Experimental";
-        default:
-            return "Unknown";
-    }
-}
-
 QTreeWidgetItem* ProcessorTreeWidget::addToplevelItemTo(QString title) {
     QTreeWidgetItem* newItem = new QTreeWidgetItem(QStringList(title));
     
@@ -186,24 +174,14 @@ QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
     newItem->setData(0, ProcessorTree::IDENTIFIER_ROLE,
                      QString::fromStdString(processor->getClassIdentifier()));
 
-    QString str(QString("<html><head/><body>\
-        <b style='color:white;'>%1</b>\
-        <table border='0' cellspacing='0' cellpadding='0' style='border-color:white;white-space:pre;'>\
-        <tr><td style='color:#bbb;padding-right:8px;'>Module:</td><td style='color:#d06060;'><nobr>%5</nobr></td>\
-        <tr><td style='color:#bbb;padding-right:8px;'>Identifier:</td><td><nobr>%2</nobr></td></tr>\
-        <tr><td style='color:#bbb;padding-right:8px;'>Category:</td><td><nobr>%3</nobr></td></tr>\
-        <tr><td style='color:#bbb;padding-right:8px;'>Code State:</td><td><nobr>%4</nobr></td></tr>\
-        <tr><td style='color:#bbb;padding-right:8px;'>Tags:</td><td><nobr>%6</nobr></td></tr>\
-        </tr></table></body></html>")
-        .arg(processor->getDisplayName().c_str())
-        .arg(processor->getClassIdentifier().c_str())
-        .arg(processor->getCategory().c_str())
-        .arg(getCodeStateString(processor->getCodeState()).c_str())
-        .arg(moduleId.c_str())
-        .arg(processor->getTags().getString().c_str())
-        );
+    ToolTipHelper t(processor->getDisplayName());
+    t.row("Module", moduleId);
+    t.row("Identifier", processor->getClassIdentifier());
+    t.row("Category", processor->getCategory());
+    t.row("Code", Processor::getCodeStateString(processor->getCodeState()));
+    t.row("Tags", processor->getTags().getString());
 
-    newItem->setToolTip(0, str);
+    newItem->setToolTip(0, utilqt::toLocalQString(t));
 
     QFont font = newItem->font(1);
     font.setWeight(QFont::Bold);
@@ -246,7 +224,7 @@ void ProcessorTreeWidget::addProcessorsToTree() {
                         categoryName = processor->getCategory();
                         break;
                     case 2:  // By Code State
-                        categoryName = getCodeStateString(processor->getCodeState());
+                        categoryName = Processor::getCodeStateString(processor->getCodeState());
                         break;
                     case 3:  // By Module
                         categoryName = elem->getIdentifier();
