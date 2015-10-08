@@ -12,27 +12,23 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
-
 namespace inviwo {
 
-    class SimpleMesh;
-    class VolumeRAM;
-
-    
-
+class SimpleMesh;
+class VolumeRAM;
 
 /** \docpage{org.inviwo.StreamLines, StreamLines}
  * ![](org.inviwo.StreamLines.png?classIdentifier=org.inviwo.StreamLines)
  *
  * ...
- * 
+ *
  * ### Inports
  *   * __seedpoints__ ...
  *   * __vectorvolume__ ...
- * 
+ *
  * ### Outports
  *   * __linesStripsMesh___ ...
- * 
+ *
  * ### Properties
  *   * __Velocity Scale__ ...
  *   * __Velocity Range__ ...
@@ -42,8 +38,7 @@ namespace inviwo {
  *   * __Transfer Function__ ...
  *
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLines : public Processor { 
-
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLines : public Processor {
 public:
     StreamLines();
     virtual ~StreamLines();
@@ -51,6 +46,7 @@ public:
     InviwoProcessorInfo();
 
     virtual void process() override;
+
 protected:
     VolumeInport volume_;
     DataInport<std::vector<vec3>, 0> seedPoints_;
@@ -64,13 +60,11 @@ protected:
 
     TemplateOptionProperty<StructuredCoordinateTransformer<3>::Space> seedPointsSpace_;
 
-
     TransferFunctionProperty tf_;
     FloatProperty velocityScale_;
     StringProperty maxVelocity_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_STREAMLINES_H
-
+#endif  // IVW_STREAMLINES_H

@@ -41,8 +41,7 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(RBFVectorFieldGenerator2D,
-                         "org.inviwo.RBFVectorFieldGenerator2D");
+ProcessorClassIdentifier(RBFVectorFieldGenerator2D, "org.inviwo.RBFVectorFieldGenerator2D");
 ProcessorDisplayName(RBFVectorFieldGenerator2D, "RBF Based 2D Vector Field Generator");
 ProcessorTags(RBFVectorFieldGenerator2D, Tags::CPU);
 ProcessorCategory(RBFVectorFieldGenerator2D, "Data Creation");

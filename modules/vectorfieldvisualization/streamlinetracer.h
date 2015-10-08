@@ -46,13 +46,7 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineTracer {
 public:
-
-    enum class Direction
-    {
-        FWD = 1,
-        BWD = 2,
-        BOTH = 3
-    };
+    enum class Direction { FWD = 1, BWD = 2, BOTH = 3 };
 
     StreamLineTracer(const Volume *vol);
 
@@ -60,14 +54,12 @@ public:
 
     void addMetaVolume(const std::string &name, const VolumeRAM *vol);
 
-    IntegralLine traceFrom(const dvec3 &p, int steps, double stepSize, Direction dir, bool normalzieSample);
-    IntegralLine traceFrom(const  vec3 &p, int steps, double stepSize, Direction dir, bool normalzieSample);
-
-
-
+    IntegralLine traceFrom(const dvec3 &p, int steps, double stepSize, Direction dir,
+                           bool normalzieSample);
+    IntegralLine traceFrom(const vec3 &p, int steps, double stepSize, Direction dir,
+                           bool normalzieSample);
 
 private:
-
     void step(int steps, dvec3 curPos, IntegralLine &line, double stepSize, bool normalzieSample);
 
     dmat3 invBasis_;

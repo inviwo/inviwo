@@ -48,45 +48,42 @@ namespace inviwo {
  *
  * DESCRIBE_THE_CLASS
  */
-    class IVW_MODULE_VECTORFIELDVISUALIZATION_API RBFVectorFieldGenerator3D : public Processor {
-    public:
-        InviwoProcessorInfo();
-        RBFVectorFieldGenerator3D();
-        virtual ~RBFVectorFieldGenerator3D();
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API RBFVectorFieldGenerator3D : public Processor {
+public:
+    InviwoProcessorInfo();
+    RBFVectorFieldGenerator3D();
+    virtual ~RBFVectorFieldGenerator3D();
 
-        virtual void process() override;
+    virtual void process() override;
 
+protected:
+    VolumeOutport volume_;
+    MeshOutport mesh_;
 
-    protected:
-        VolumeOutport volume_;
-        MeshOutport mesh_;
+    OrdinalProperty<size3_t> size_;
+    IntProperty seeds_;
 
-        OrdinalProperty<size3_t> size_;
-        IntProperty seeds_;
+    CompositeProperty randomness_;
+    BoolProperty useSameSeed_;
+    IntProperty seed_;
+    FloatProperty shape_;
+    Gaussian1DProperty gaussian_;
 
-        CompositeProperty randomness_;
-        BoolProperty useSameSeed_;
-        IntProperty seed_;
-        FloatProperty shape_;
-        Gaussian1DProperty gaussian_;
+    CompositeProperty debugMesh_;
+    FloatProperty sphereRadius_;
+    FloatProperty arrowLength_;
+    FloatVec4Property sphereColor_;
+    FloatVec4Property arrowColor_;
 
-        CompositeProperty debugMesh_;
-        FloatProperty sphereRadius_;
-        FloatProperty arrowLength_;
-        FloatVec4Property sphereColor_;
-        FloatVec4Property arrowColor_;
+    std::random_device rd_;
+    std::mt19937 mt_;
 
+    dvec3 randomVector();
 
-        std::random_device rd_;
-        std::mt19937 mt_;
+    std::uniform_real_distribution<double> theta_;
+    std::uniform_real_distribution<double> x_;
+};
 
-        dvec3 randomVector();
+}  // namespace
 
-        std::uniform_real_distribution<double> theta_;
-        std::uniform_real_distribution<double> x_;
-    };
-
-} // namespace
-
-#endif // IVW_RBFVECTORFIELDGENERATOR3D_H
-
+#endif  // IVW_RBFVECTORFIELDGENERATOR3D_H

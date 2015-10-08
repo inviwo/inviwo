@@ -46,7 +46,8 @@ void StreamLineTracer::addMetaVolume(const std::string &name, const VolumeRAM *v
 }
 
 inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p, int steps, double stepSize,
-                                                 StreamLineTracer::Direction dir, bool normalzieSample) {
+                                                 StreamLineTracer::Direction dir,
+                                                 bool normalzieSample) {
     IntegralLine line;
 
     auto direction = dir;
@@ -61,7 +62,7 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p, int steps, doub
     }
 
     if (bwd) {
-        step(steps, p, line, -stepSize / (both ? 2 : 1) , normalzieSample);
+        step(steps, p, line, -stepSize / (both ? 2 : 1), normalzieSample);
     }
     if (both && !line.positions_.empty()) {
         std::reverse(line.positions_.begin(),
@@ -81,10 +82,11 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p, int steps, doub
 
 inviwo::IntegralLine StreamLineTracer::traceFrom(const vec3 &p, int steps, double stepSize,
                                                  Direction dir, bool normalzieSample) {
-    return traceFrom(dvec3(p), steps, stepSize, dir,normalzieSample);
+    return traceFrom(dvec3(p), steps, stepSize, dir, normalzieSample);
 }
 
-void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line, double stepSize, bool normalzieSample) {
+void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line, double stepSize,
+                            bool normalzieSample) {
     for (int i = 0; i <= steps; i++) {
         if (curPos.x < 0) break;
         if (curPos.y < 0) break;
@@ -96,8 +98,7 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line, double 
 
         dvec3 worldVelocty = volumeSampler_.sample(curPos).xyz();
         dvec3 v = worldVelocty;
-        if (normalzieSample)
-            v = glm::normalize(v);
+        if (normalzieSample) v = glm::normalize(v);
         dvec3 velocity = invBasis_ * (v * stepSize);
         line.positions_.push_back(curPos);
         line.metaData_["velocity"].push_back(worldVelocty);

@@ -37,17 +37,14 @@
 
 namespace inviwo {
 
-VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app) : InviwoModule(app,"VectorFieldVisualization") {
-    
+VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
+    : InviwoModule(app, "VectorFieldVisualization") {
     registerProcessor<RBFVectorFieldGenerator2D>();
     registerProcessor<RBFVectorFieldGenerator3D>();
     registerProcessor<SeedPointGenerator>();
 
     registerProcessor<StreamLines>();
     registerProcessor<StreamRibbons>();
-
-    
-   
 }
 
-} // namespace
+}  // namespace

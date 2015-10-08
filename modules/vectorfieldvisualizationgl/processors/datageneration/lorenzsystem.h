@@ -51,35 +51,32 @@ namespace inviwo {
  *
  * DESCRIBE_THE_CLASS
  */
-    class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LorenzSystem : public Processor {
-    public:
-        InviwoProcessorInfo();
-        LorenzSystem();
-        virtual ~LorenzSystem();
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LorenzSystem : public Processor {
+public:
+    InviwoProcessorInfo();
+    LorenzSystem();
+    virtual ~LorenzSystem();
 
-        virtual void process() override;
+    virtual void process() override;
 
-    protected:
-        VolumeOutport outport_;
-        std::shared_ptr<Volume> volume_;
+protected:
+    VolumeOutport outport_;
+    std::shared_ptr<Volume> volume_;
 
-        OrdinalProperty<size3_t> size_;
+    OrdinalProperty<size3_t> size_;
 
-        FloatMinMaxProperty xRange_;
-        FloatMinMaxProperty yRange_;
-        FloatMinMaxProperty zRange_;
+    FloatMinMaxProperty xRange_;
+    FloatMinMaxProperty yRange_;
+    FloatMinMaxProperty zRange_;
 
-        FloatProperty rhoValue_; //?
-        FloatProperty sigmaValue_; //?
-        FloatProperty betaValue_; //? 
+    FloatProperty rhoValue_;    
+    FloatProperty sigmaValue_;  
+    FloatProperty betaValue_;   
 
+    Shader shader_;
+    FrameBufferObject fbo_;
+};
 
-        Shader shader_;
-        FrameBufferObject fbo_;
+}  // namespace
 
-    };
-
-} // namespace
-
-#endif // IVW_LORENZSYSTEM_H
-
+#endif  // IVW_LORENZSYSTEM_H

@@ -40,47 +40,44 @@
 #include <modules/base/properties/gaussianproperty.h>
 #include <random>
 
-
 namespace inviwo {
 
-    /**
-     * \class RBFVectorFieldGenerator2D
-     *
-     * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
-     *
-     * DESCRIBE_THE_CLASS
-     */
+/**
+ * \class RBFVectorFieldGenerator2D
+ *
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ *
+ * DESCRIBE_THE_CLASS
+ */
 
-    class IVW_MODULE_VECTORFIELDVISUALIZATION_API RBFVectorFieldGenerator2D : public Processor {
-    public:
-        InviwoProcessorInfo();
-        RBFVectorFieldGenerator2D();
-        virtual ~RBFVectorFieldGenerator2D();
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API RBFVectorFieldGenerator2D : public Processor {
+public:
+    InviwoProcessorInfo();
+    RBFVectorFieldGenerator2D();
+    virtual ~RBFVectorFieldGenerator2D();
 
-        virtual void process() override;
+    virtual void process() override;
 
+protected:
+    ImageOutport vectorField_;
 
-    protected:
-        ImageOutport vectorField_;
+    IntVec2Property size_;
+    IntProperty seeds_;
 
-        IntVec2Property size_;
-        IntProperty seeds_;
+    CompositeProperty randomness_;
+    BoolProperty useSameSeed_;
+    IntProperty seed_;
+    FloatProperty shape_;
+    Gaussian1DProperty gaussian_;
 
-        CompositeProperty randomness_;
-        BoolProperty useSameSeed_;
-        IntProperty seed_;
-        FloatProperty shape_;
-        Gaussian1DProperty gaussian_;
+    std::random_device rd_;
+    std::mt19937 mt_;
 
-        std::random_device rd_;
-        std::mt19937 mt_;
+    dvec2 randomVector();
 
-        dvec2 randomVector();
+    std::uniform_real_distribution<double> theta_;
+    std::uniform_real_distribution<double> x_;
+};
 
-        std::uniform_real_distribution<double> theta_;
-        std::uniform_real_distribution<double> x_;
-    };
-
-}//namespace
-#endif // IVW_RBFVECTORFIELDGENERATOR2D_H
-
+}  // namespace
+#endif  // IVW_RBFVECTORFIELDGENERATOR2D_H

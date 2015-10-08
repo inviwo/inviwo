@@ -52,12 +52,12 @@ StreamRibbons::StreamRibbons()
     , normalizeSamples_("normalizeSamples", "Normalize Samples", true)
     , stepSize_("stepSize", "StepSize", 0.001f, 0.0001f, 1.0f)
     , stepDirection_("stepDirection", "Step Direction", INVALID_RESOURCES)
-    , ribbonWidth_("ribbonWidth", "Ribbon Width",0.1f,0.00001f)
+    , ribbonWidth_("ribbonWidth", "Ribbon Width", 0.1f, 0.00001f)
     , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
     , maxVelocity_("minMaxVelocity", "Max Velocity", "0", VALID)
-    , maxVorticity_("maxVorticity", "Max Vorticity" , "0" , VALID)
+    , maxVorticity_("maxVorticity", "Max Vorticity", "0", VALID)
 
 {
     addPort(vectorVolume_);
@@ -113,25 +113,25 @@ void StreamRibbons::process() {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
             auto indexBuffer = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::STRIP);
-            auto line =
-                tracer.traceFrom(P.xyz(), numberOfSteps_.get(), stepSize_.get(), stepDirection_.get(), normalizeSamples_.get());
+            auto line = tracer.traceFrom(P.xyz(), numberOfSteps_.get(), stepSize_.get(),
+                                         stepDirection_.get(), normalizeSamples_.get());
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();
             auto vorticity = line.getMetaData("vorticity").begin();
-            
+
             auto size = line.getPositions().size();
 
             size_t i0, i1;
             for (size_t i = 0; i < size; i++) {
                 auto vort = invBasis * glm::normalize(vec3(*vorticity));
                 auto velo = invBasis * glm::normalize(vec3(*velocity));
-                auto N = glm::normalize(glm::cross(vort,velo));
-                vort *= (0.5f*ribbonWidth_.get());
+                auto N = glm::normalize(glm::cross(vort, velo));
+                vort *= (0.5f * ribbonWidth_.get());
                 auto l = glm::length(*velocity);
-                float d = glm::clamp( static_cast<float>(l) / velocityScale_.get(), 0.0f, 1.0f);
+                float d = glm::clamp(static_cast<float>(l) / velocityScale_.get(), 0.0f, 1.0f);
                 auto vortictyMagnitude = glm::length(*vorticity);
-                
+
                 maxVelocity = std::max(maxVelocity, l);
                 maxVorticity = std::max(maxVorticity, vortictyMagnitude);
 
@@ -152,15 +152,11 @@ void StreamRibbons::process() {
             }
         }
 
-
         maxVelocity_.set(toString(maxVelocity));
         maxVorticity_.set(toString(maxVorticity));
     }
 
-
     mesh_.setData(mesh.release());
 }
-
-
 
 }  // namespace

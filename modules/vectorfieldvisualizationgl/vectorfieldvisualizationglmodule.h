@@ -35,13 +35,12 @@
 
 namespace inviwo {
 
-class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldVisualizationGLModule : public InviwoModule {
-
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldVisualizationGLModule
+    : public InviwoModule {
 public:
     VectorFieldVisualizationGLModule(InviwoApplication* app);
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_VECTORFIELDVISUALIZATIONGLMODULE_H
+#endif  // IVW_VECTORFIELDVISUALIZATIONGLMODULE_H
