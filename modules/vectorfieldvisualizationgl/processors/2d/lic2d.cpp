@@ -51,7 +51,7 @@ LIC2D::LIC2D()
     , stepLength_("stepLength", "Step Length" , 0.003f , 0.0001f , 0.01f , 0.0001f)
     , normalizeVectors_("normalizeVectors", "Normalize vectors", true)
     , intensityMapping_("intensityMapping", "Enable intensity remapping", false)
-    , shader_("LIC2D.frag")
+    , shader_("lic2d.frag")
 {
     addPort(vectorField_);
     addPort(noiseTexture_);
