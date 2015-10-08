@@ -32,6 +32,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/qt/widgets/qtwidgetmodule.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <thread>
 
@@ -133,6 +134,10 @@ void InviwoApplicationQt::playSound(Message message) {
     }
 
 #endif
+}
+
+std::locale InviwoApplicationQt::getUILocale() const {
+    return utilqt::getCurrentStdLocale();
 }
 
 void InviwoApplicationQt::initialize(registerModuleFuncPtr regModuleFunc) {

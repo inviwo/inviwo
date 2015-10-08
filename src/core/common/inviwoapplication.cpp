@@ -355,6 +355,10 @@ bool InviwoApplication::checkIfAllTagsAreSupported(const Tags t) const {
     return (nonSupportedTags_.getMatches(t) == 0);
 }
 
+std::locale InviwoApplication::getUILocale() const {
+    return std::locale();
+}
+
 void InviwoApplication::processFront() {
     NetworkLock netlock(processorNetwork_.get());
     std::function<void()> task;

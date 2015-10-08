@@ -45,6 +45,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <future>
+#include <locale>
 #include <warn/pop>
 
 namespace inviwo {
@@ -160,6 +161,7 @@ public:
 
     void addNonSupportedTags(const Tags);
     bool checkIfAllTagsAreSupported(const Tags) const;
+    virtual std::locale getUILocale() const;
 
     template <class F, class... Args>
     auto dispatchPool(F&& f,
