@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2015 Inviwo Foundation
+ * Copyright (c) 2014-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,33 +24,35 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
+in vec3 texCoord_;
 
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
+uniform vec2 xRange;
+uniform vec2 yRange;
 
-namespace inviwo {
-
-
-
-VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualizationGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES,
-                                                 "/vectorfieldvisualizationgl/glsl");
-
-    registerProcessor<LorenzSystem>();
-    registerProcessor<VectorFieldGenerator2D>();
-    registerProcessor<VectorFieldGenerator3D>();
-    registerProcessor<LIC2D>();
-    registerProcessor<HedgeHog2D>();
+float getPos(float v ,vec2 range){ 
+	return range.x + v * (range.y - range.x);
 }
 
-}  // namespace
+vec4 getPos(){
+	return vec4(
+		      getPos(texCoord_.x , xRange)
+			, getPos(texCoord_.y , yRange)
+			, 0
+			, 1.0
+		);
+}
+
+void main() {
+    vec4 pos = getPos();
+
+    vec4 value = vec4(0,0,0,1);
+    value.x = X_VALUE(pos.x,pos.y);
+    value.y = Y_VALUE(pos.x,pos.y);
+    value.z = 0;
+    value.w = length(value.xy);
+
+    FragData0 = value;
+}

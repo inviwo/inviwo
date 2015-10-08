@@ -24,33 +24,72 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
+#ifndef IVW_LIC2D_H
+#define IVW_LIC2D_H
 
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
+#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
+/** \docpage{<classIdentifier>, LIC2D}
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
 
 
-VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualizationGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES,
-                                                 "/vectorfieldvisualizationgl/glsl");
+/**
+ * \class LIC2D
+ *
+ * \brief <brief description> 
+ *
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LIC2D : public Processor {
+public:
+    InviwoProcessorInfo();
+    LIC2D();
+    virtual ~LIC2D(){}
+     
+    virtual void process() override;
+    
+protected:
 
-    registerProcessor<LorenzSystem>();
-    registerProcessor<VectorFieldGenerator2D>();
-    registerProcessor<VectorFieldGenerator3D>();
-    registerProcessor<LIC2D>();
-    registerProcessor<HedgeHog2D>();
-}
+    ImageInport vectorField_;
+    ImageInport noiseTexture_;
+    ImageOutport LIC2D_;
 
-}  // namespace
+
+    IntProperty samples_;
+    FloatProperty stepLength_;
+    BoolProperty normalizeVectors_;
+    BoolProperty intensityMapping_;
+
+    Shader shader_;
+
+
+private:
+
+};
+
+} // namespace
+
+#endif // IVW_LIC2D_H
+

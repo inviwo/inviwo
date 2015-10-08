@@ -27,30 +27,59 @@
  *
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
+#ifndef IVW_VECTORFIELDGENERATOR2D_H
+#define IVW_VECTORFIELDGENERATOR2D_H
 
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
+#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <modules/basegl/processors/volumeprocessing/volumeglprocessor.h>
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/buffer/framebufferobject.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 
 namespace inviwo {
 
+/**
+ * \class VectorFieldGenerator2D
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+    class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API VectorFieldGenerator2D : public Processor {
+    public:
+        VectorFieldGenerator2D();
+        virtual ~VectorFieldGenerator2D();
+
+        InviwoProcessorInfo();
+
+        virtual void initializeResources()override;
 
 
-VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualizationGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES,
-                                                 "/vectorfieldvisualizationgl/glsl");
+    protected:
+        virtual void process() override;
 
-    registerProcessor<LorenzSystem>();
-    registerProcessor<VectorFieldGenerator2D>();
-    registerProcessor<VectorFieldGenerator3D>();
-    registerProcessor<LIC2D>();
-    registerProcessor<HedgeHog2D>();
-}
 
-}  // namespace
+        ImageOutport outport_;
+        std::shared_ptr<Image> image_;
+
+        IntVec2Property size_;
+
+        FloatMinMaxProperty xRange_;
+        FloatMinMaxProperty yRange_;
+
+        StringProperty xValue_;
+        StringProperty yValue_;
+
+        Shader shader_;
+        FrameBufferObject fbo_;
+
+    };
+
+} // namespace
+
+#endif // IVW_VECTORFIELDGENERATOR2D_H
+
