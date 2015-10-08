@@ -98,14 +98,14 @@ CanvasProcessor::CanvasProcessor()
     visibleLayer_.onChange([&](){
         if (inport_.hasData()){
             int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
-            colorLayer_.setVisible(layers != 0 && visibleLayer_.get() == COLOR_LAYER);
+            colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == COLOR_LAYER);
         }
         colorLayer_.setVisible(visibleLayer_.get() == COLOR_LAYER);
     });
 
     inport_.onChange([&](){
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
-        colorLayer_.setVisible(layers != 0 && visibleLayer_.get() == COLOR_LAYER);
+        colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == COLOR_LAYER);
         colorLayer_.setMaxValue(layers - 1);
     });
 
