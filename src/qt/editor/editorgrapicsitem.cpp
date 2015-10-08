@@ -32,6 +32,7 @@
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/editor/networkeditor.h>
 #include <inviwo/core/ports/port.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -116,7 +117,8 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     }
 
     if (portinfo) {
-        info.append(QString("<tr><td><b style='color:white;'>%1</b></td></tr>")
+        info.append(QString("<tr><td><b style='color:white;'>%1 %2</b></td></tr>")
+                        .arg(port->getClassIdentifier().c_str())
                         .arg(port->getIdentifier().c_str()));
     }
 
@@ -155,7 +157,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
     }
 
     if (portinfo) {
-        info.append("<tr><td>" + QString(port->getContentInfo().c_str()) + "</td></tr>");
+        info.append("<tr><td>" + utilqt::toLocalQString(port->getContentInfo()) + "</td></tr>");
     }
     info.append("</table>");
     info.append("</body></html>");

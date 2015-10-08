@@ -188,7 +188,7 @@ protected:
         else
             return static_cast<int>(str.length() - periodPosition - 1);
     }
-    virtual std::string getToolTipText();
+    virtual std::string getToolTipText() override;
 
     virtual void showSettings() {
         if (!this->settingsWidget_) {

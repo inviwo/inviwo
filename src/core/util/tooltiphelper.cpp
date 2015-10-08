@@ -28,10 +28,14 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/tooltiphelper.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
 ToolTipHelper::ToolTipHelper(std::string item /*= ""*/) : ss() {
+    auto locale = InviwoApplication::getPtr()->getUILocale();
+    ss.imbue(locale);
+
     ss << "<html><head>"
        << "<style>"
        << "table { border-color:white;white-space:pre;margin-top:5px;margin-bottom:5px; }"

@@ -152,13 +152,6 @@ protected:
         return sliders;
     }
 
-    virtual std::string getPropertyText() const { return toString(ordinalproperty_->get()); }
-
-    virtual std::string getPropertyToolTip() const {
-        return "Min: " + toString(ordinalproperty_->getMinValue()) + "  Max: " +
-            toString(ordinalproperty_->getMaxValue());
-    }
-
     virtual void showSettings() {
         if (!this->settingsWidget_) {
             this->settingsWidget_ =
@@ -289,7 +282,7 @@ public:
     virtual ~OrdinalPropertyWidgetQt() { delete transformer_; }
     void updateFromProperty();
 
-    virtual std::string getToolTipText();
+    virtual std::string getToolTipText() override;
 
 protected:
     // Connected to sliderwidget valueChanged()
@@ -303,32 +296,33 @@ protected:
 
 template <typename BT, typename T>
 std::string OrdinalPropertyWidgetQt<BT, T>::getToolTipText() {
-    ToolTipHelper t(this->ordinalproperty_->getDisplayName());
-    t.tableTop();
+     ToolTipHelper t(this->ordinalproperty_->getDisplayName());
+     t.tableTop();
 
-    t.row("Identifier", this->ordinalproperty_->getIdentifier());
-    t.row("Path", joinString(this->ordinalproperty_->getPath(),"."));
-    t.row("Semantics", this->ordinalproperty_->getSemantics().getString());
-    t.row("Validation Level", PropertyOwner::invalidationLevelToString(
-                                             this->ordinalproperty_->getInvalidationLevel()));
-    t.tableBottom();
-    
-    T min = transformer_->min(this->ordinalproperty_->getMinValue());
-    T max = transformer_->max(this->ordinalproperty_->getMaxValue());
-    T inc = transformer_->inc(this->ordinalproperty_->getIncrement());
-    T val = transformer_->value(this->ordinalproperty_->get());
+     t.row("Identifier", this->ordinalproperty_->getIdentifier());
+     t.row("Path", joinString(this->ordinalproperty_->getPath(), "."));
+     t.row("Semantics", this->ordinalproperty_->getSemantics().getString());
+     t.row("Validation Level",
+           PropertyOwner::invalidationLevelToString(this->ordinalproperty_->getInvalidationLevel()));
+     t.tableBottom();
 
-    t.tableTop();  
-    auto header = {"Value ", " Min ", " Max ", " Inc "};
-    t.row("#", header, true);    
-    size_t size = this->ordinalproperty_->getDim().x * this->ordinalproperty_->getDim().y;
-    for (size_t i = 0; i < size; i++) {
-        auto row = {util::glmcomp(val,i), util::glmcomp(min, i), util::glmcomp(max, i), util::glmcomp(inc, i)};
-        t.row(i, row);       
-    }
-    t.tableBottom();
+     T min = transformer_->min(this->ordinalproperty_->getMinValue());
+     T max = transformer_->max(this->ordinalproperty_->getMaxValue());
+     T inc = transformer_->inc(this->ordinalproperty_->getIncrement());
+     T val = transformer_->value(this->ordinalproperty_->get());
 
-    return t;
+     t.tableTop();
+     auto header = {"Value ", " Min ", " Max ", " Inc "};
+     t.row("#", header, true);
+     size_t size = this->ordinalproperty_->getDim().x * this->ordinalproperty_->getDim().y;
+     for (size_t i = 0; i < size; i++) {
+         auto row = {util::glmcomp(val, i), util::glmcomp(min, i), util::glmcomp(max, i),
+                     util::glmcomp(inc, i)};
+         t.row(i, row);
+     }
+     t.tableBottom();
+
+     return t;
 }
 
 template <typename BT, typename T>

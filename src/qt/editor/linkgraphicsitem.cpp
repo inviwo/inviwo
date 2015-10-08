@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <QGraphicsDropShadowEffect>
@@ -58,8 +58,6 @@ LinkGraphicsItem::LinkGraphicsItem(QPointF startPoint, QPointF endPoint, ivec3 c
 
 LinkGraphicsItem::~LinkGraphicsItem() {}
 
-
-
 void LinkGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
                              QWidget* widget) {
     IVW_UNUSED_PARAM(options);
@@ -90,9 +88,7 @@ QPainterPath LinkGraphicsItem::shape() const {
     return pathStrocker.createStroke(path_);
 }
 
-QRectF LinkGraphicsItem::boundingRect() const {
-    return rect_;
-}
+QRectF LinkGraphicsItem::boundingRect() const { return rect_; }
 
 void LinkGraphicsItem::setStartPoint(QPointF startPoint) {
     updateShape();
@@ -104,53 +100,44 @@ void LinkGraphicsItem::setEndPoint(QPointF endPoint) {
     endPoint_ = endPoint;
 }
 
-QPointF LinkGraphicsItem::getStartPoint() const {
-    return startPoint_;
-}
+QPointF LinkGraphicsItem::getStartPoint() const { return startPoint_; }
 
 void LinkGraphicsItem::setStartDir(QPointF dir) {
     updateShape();
     startDir_ = dir;
 }
 
-QPointF LinkGraphicsItem::getStartDir() const {
-    return startDir_;
-}
+QPointF LinkGraphicsItem::getStartDir() const { return startDir_; }
 
 void LinkGraphicsItem::setEndDir(QPointF dir) {
     updateShape();
     endDir_ = dir;
 }
 
-QPointF LinkGraphicsItem::getEndDir() const {
-    return endDir_;
-}
+QPointF LinkGraphicsItem::getEndDir() const { return endDir_; }
 
-QPointF LinkGraphicsItem::getEndPoint() const {
-    return endPoint_;
-}
+QPointF LinkGraphicsItem::getEndPoint() const { return endPoint_; }
 
 void LinkGraphicsItem::updateShape() {
     prepareGeometryChange();
 
     QPointF topLeft =
         QPointF(std::min(startPoint_.x(), endPoint_.x()), std::min(startPoint_.y(), endPoint_.y()));
-    rect_ =  QRectF(topLeft.x() - 40.0, topLeft.y() - 10.0,
-                  std::abs(startPoint_.x() - endPoint_.x()) + 80.0,
-                  std::abs(startPoint_.y() - endPoint_.y()) + 20.0);
+    rect_ = QRectF(topLeft.x() - 40.0, topLeft.y() - 10.0,
+                   std::abs(startPoint_.x() - endPoint_.x()) + 80.0,
+                   std::abs(startPoint_.y() - endPoint_.y()) + 20.0);
 
     path_ = obtainCurvePath();
 }
 
 //////////////////////////////////////////////////////////////////////////
 
-LinkConnectionDragGraphicsItem::LinkConnectionDragGraphicsItem(ProcessorLinkGraphicsItem* outLink, QPointF endPos) 
-    : LinkGraphicsItem(QPointF(0,0), endPos)
+LinkConnectionDragGraphicsItem::LinkConnectionDragGraphicsItem(ProcessorLinkGraphicsItem* outLink,
+                                                               QPointF endPos)
+    : LinkGraphicsItem(QPointF(0, 0), endPos)
     , inLeft_(endPoint_)
     , inRight_(endPoint_)
-    , outLink_(outLink) {
-
-}
+    , outLink_(outLink) {}
 
 LinkConnectionDragGraphicsItem::~LinkConnectionDragGraphicsItem() {}
 
@@ -231,21 +218,19 @@ void LinkConnectionDragGraphicsItem::updateShape() {
 
     QPointF topLeft = QPointF(std::min(start.x(), stop.x()), std::min(start.y(), stop.y()));
     QPointF bottomRight = QPointF(std::max(start.x(), stop.x()), std::max(start.y(), stop.y()));
-    rect_ =  QRectF(topLeft.x() - 30, topLeft.y() - 10, bottomRight.x() - topLeft.x() + 70,
-                  bottomRight.y() - topLeft.y() + 20);
+    rect_ = QRectF(topLeft.x() - 30, topLeft.y() - 10, bottomRight.x() - topLeft.x() + 70,
+                   bottomRight.y() - topLeft.y() + 20);
 
     path_ = obtainCurvePath();
 
     prepareGeometryChange();
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 
 LinkConnectionGraphicsItem::LinkConnectionGraphicsItem(ProcessorLinkGraphicsItem* outLink,
                                                        ProcessorLinkGraphicsItem* inLink)
-    : LinkConnectionDragGraphicsItem(outLink, QPointF(0,0))
-    , inLink_(inLink) {
+    : LinkConnectionDragGraphicsItem(outLink, QPointF(0, 0)), inLink_(inLink) {
     setFlags(ItemIsSelectable | ItemIsFocusable);
 
     outLink_->addLink(this);
@@ -327,23 +312,23 @@ void LinkConnectionGraphicsItem::updateShape() {
     QPointF topLeft = QPointF(std::min(start.x(), stop.x()), std::min(start.y(), stop.y()));
     QPointF bottomRight = QPointF(std::max(start.x(), stop.x()), std::max(start.y(), stop.y()));
     rect_ = QRectF(topLeft.x() - 30, topLeft.y() - 10, bottomRight.x() - topLeft.x() + 70,
-                  bottomRight.y() - topLeft.y() + 20);
+                   bottomRight.y() - topLeft.y() + 20);
 
     path_ = obtainCurvePath();
 
     prepareGeometryChange();
 }
 
-
-std::string getLinkInfoTableRows(const std::vector<PropertyLink *> &links, const std::string &imgName) {
+std::string getLinkInfoTableRows(const std::vector<PropertyLink*>& links,
+                                 const std::string& imgName) {
     std::string str;
-    std::vector<PropertyLink *>::const_iterator it = links.begin();
+    std::vector<PropertyLink*>::const_iterator it = links.begin();
     while (it != links.end()) {
         Property* srcProperty = (*it)->getSourceProperty();
         Property* dstProperty = (*it)->getDestinationProperty();
-        str += "<tr><td align='center'>" + srcProperty->getDisplayName()
-            + "</td><td width='30px' align='center' valign='middle'><img src='" + imgName
-            + "'></td><td align='center'>" + dstProperty->getDisplayName() + "</td></tr>";
+        str += "<tr><td align='center'>" + srcProperty->getDisplayName() +
+               "</td><td width='30px' align='center' valign='middle'><img src='" + imgName +
+               "'></td><td align='center'>" + dstProperty->getDisplayName() + "</td></tr>";
         ++it;
     }
     return str;
@@ -354,8 +339,9 @@ public:
     LinkConnectionGraphicsItemMatchReverse(PropertyLink* link) : link_(link) {}
     bool operator()(const PropertyLink* link) const {
         return link->getDestinationProperty() == link_->getSourceProperty() &&
-            link->getSourceProperty() == link_->getDestinationProperty();
+               link->getSourceProperty() == link_->getDestinationProperty();
     }
+
 private:
     PropertyLink* link_;
 };

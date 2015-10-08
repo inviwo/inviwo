@@ -400,11 +400,12 @@ void PropertyWidgetQt::updateContextMenu() {
 
 bool PropertyWidgetQt::event(QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
-        QHelpEvent* helpEvent = static_cast<QHelpEvent*>(event);
-        QToolTip::showText(helpEvent->globalPos(), QString::fromStdString(getToolTipText()));
+        auto helpEvent = static_cast<QHelpEvent*>(event);
+        QToolTip::showText(helpEvent->globalPos(), utilqt::toLocalQString(getToolTipText()));
         return true;
+    } else {
+        return QWidget::event(event);
     }
-    return QWidget::event(event);
 }
 
 std::string PropertyWidgetQt::getToolTipText() {

@@ -92,7 +92,7 @@ public:
     
 protected:
     virtual void makeEditorWidgets();
-    virtual std::string getToolTipText();
+    virtual std::string getToolTipText() override;
 
     virtual void showSettings() {
         if (!this->settingsWidget_) {

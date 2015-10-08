@@ -30,7 +30,6 @@
 #ifndef IVW_PROPERTYSETTINGSWIDGETQT_H
 #define IVW_PROPERTYSETTINGSWIDGETQT_H
 
-
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 // Core
 #include <inviwo/core/common/inviwoapplication.h>
@@ -74,7 +73,8 @@ struct SinglePropertySetting {
     double getFieldAsDouble(int i) {
         if (i >= 0 && i < additionalFields_.size()) {
             QLocale locale = additionalFields_[i]->locale();
-            return locale.toDouble(additionalFields_[i]->text().remove(QChar(' ')));
+            return locale.toDouble(
+                additionalFields_[i]->text().remove(QChar(' ')).remove(locale.groupSeparator()));
         }
         return DataFLOAT64::minToDouble();
     }
@@ -312,7 +312,7 @@ public:
                 gridLayout_->addWidget(settings_[count]->label_, count + 1, t++);
                 gridLayout_->addWidget(rangeMin, count + 1, t++);
                 gridLayout_->addWidget(min, count + 1, t++);
-                gridLayout_->addWidget(max, count + 1, t++); 
+                gridLayout_->addWidget(max, count + 1, t++);
                 gridLayout_->addWidget(rangeMax, count + 1, t++);
                 gridLayout_->addWidget(minSep, count + 1, t++);
                 gridLayout_->addWidget(inc, count + 1, t++);
