@@ -64,9 +64,11 @@ std::ios_base& localizeStream(std::ios_base& stream) {
 }
 
 QString toLocalQString(const std::string& input) {
-   // Make a copy since we will call c_str we need to make sure that the string stays around
-   auto text = input; 
-   return QString::fromLocal8Bit(text.c_str());
+   return QString::fromLocal8Bit(input.c_str());
+}
+
+IVW_QTWIDGETS_API QString toQString(const std::string& input) {
+   return QString::fromUtf8(input.c_str());
 }
 
 } // namespace utilqt

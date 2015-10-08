@@ -35,6 +35,8 @@
 #include <ios>
 #include <sstream>
 
+#include <QString>
+
 namespace inviwo {
 
 namespace utilqt {
@@ -57,6 +59,14 @@ IVW_QTWIDGETS_API std::locale getCurrentStdLocale();
  * @return std::ios_base&  reference to the input stream
  */
 IVW_QTWIDGETS_API std::ios_base& localizeStream(std::ios_base& stream);
+
+/** 
+ * \brief create a localized QString from an "imbued" std::string
+ * The given string is imbued with the currently set system locale provided by Qt.
+ */
+IVW_QTWIDGETS_API QString toLocalQString(const std::string&);
+IVW_QTWIDGETS_API QString toQString(const std::string&);
+
 
 } // namespace utilqt
 
