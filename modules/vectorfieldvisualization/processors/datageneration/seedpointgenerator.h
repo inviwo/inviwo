@@ -39,6 +39,11 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+
+#include <random>
 
 namespace inviwo {
 
