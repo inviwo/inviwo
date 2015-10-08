@@ -63,6 +63,12 @@ std::ios_base& localizeStream(std::ios_base& stream) {
     return stream;
 }
 
+QString toLocalQString(const std::string& input) {
+   // Make a copy since we will call c_str we need to make sure that the string stays around
+   auto text = input; 
+   return QString::fromLocal8Bit(text.c_str());
+}
+
 } // namespace utilqt
 
 }  // namespace
