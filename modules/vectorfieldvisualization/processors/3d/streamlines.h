@@ -6,7 +6,6 @@
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/minmaxproperty.h>
-#include <modules/experimental/ports/pointcloudport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <modules/vectorfieldvisualization/streamlinetracer.h>
 #include <inviwo/core/processors/processor.h>

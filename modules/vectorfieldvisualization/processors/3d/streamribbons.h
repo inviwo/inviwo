@@ -33,12 +33,8 @@
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-
-#include <modules/experimental/ports/pointcloudport.h>
 #include <inviwo/core/ports/meshport.h>
-
 #include <inviwo/core/properties/transferfunctionproperty.h>
-
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <modules/vectorfieldvisualization/streamlinetracer.h>
 #include <inviwo/core/properties/ordinalproperty.h>
