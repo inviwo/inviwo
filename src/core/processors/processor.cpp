@@ -192,7 +192,7 @@ bool Processor::isEndProcessor() const { return outports_.empty(); }
 bool Processor::isReady() const { return allInportsAreReady(); }
 
 bool Processor::allInportsAreReady() const {
-    return util::all_of(inports_, [](Inport* p) { return p->isReady(); });
+    return util::all_of(inports_, [](Inport* p) { return p->isReady() || p->isOptional(); });
 }
 
 bool Processor::allInportsConnected() const {

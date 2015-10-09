@@ -64,6 +64,13 @@ public:
     virtual bool isReady() const override;
     
     /**
+     * A inport can be optional in a processor, in which case the processor will be ready even
+     * if the port is not;
+     */
+    bool isOptional() const;
+    void setOptional(bool optional);
+    
+    /**
      * An inport is changed when it has new data, and it's processor has not been processed.
      */
     virtual bool isChanged() const;
@@ -140,6 +147,7 @@ protected:
     
 private:
     bool changed_;
+    bool optional_;
     
     mutable CallBackList onChangeCallback_;
     std::vector<const Outport*> changedSources_;

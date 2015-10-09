@@ -35,18 +35,19 @@
 namespace inviwo {
 
 Inport::Inport(std::string identifier)
-    : Port(identifier), changed_(false), lastInvalidationLevel_(VALID) {}
+    : Port(identifier), changed_(false), optional_(false), lastInvalidationLevel_(VALID) {}
 
 Inport::~Inport() {}
 
-bool Inport::isConnected() const  {
-    return !connectedOutports_.empty();
-}
+bool Inport::isConnected() const { return !connectedOutports_.empty(); }
 
 bool Inport::isReady() const {
     return isConnected() &&
            util::all_of(connectedOutports_, [](Outport* p) { return p->isReady(); });
 }
+
+bool Inport::isOptional() const { return optional_; }
+void Inport::setOptional(bool optional) { optional_ = optional; }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
     if (lastInvalidationLevel_ == VALID && invalidationLevel >= INVALID_OUTPUT)
@@ -61,13 +62,9 @@ void Inport::setValid(const Outport* source) {
     setChanged(true, source);
 }
 
-size_t Inport::getNumberOfConnections() const {
-    return connectedOutports_.size();
-}
+size_t Inport::getNumberOfConnections() const { return connectedOutports_.size(); }
 
-std::vector<const Outport*> Inport::getChangedOutports() const {
-    return changedSources_;
-}
+std::vector<const Outport*> Inport::getChangedOutports() const { return changedSources_; }
 
 void Inport::propagateEvent(Event* event, Outport* target) {
     if (target) {
@@ -98,8 +95,8 @@ bool Inport::isChanged() const { return changed_; }
 void Inport::connectTo(Outport* outport) {
     if (!isConnectedTo(outport)) {
         connectedOutports_.push_back(outport);
-        outport->connectTo(this);  // add this to the outport.
-        setChanged(true, outport); // mark that we should call onChange.
+        outport->connectTo(this);   // add this to the outport.
+        setChanged(true, outport);  // mark that we should call onChange.
         onConnectCallback_.invokeAll();
         invalidate(INVALID_OUTPUT);
     }
@@ -152,7 +149,6 @@ void Inport::removeOnInvalid(const BaseCallBack* callback) const {
     onInvalidCallback_.remove(callback);
 }
 
-
 const BaseCallBack* Inport::onConnect(std::function<void()> lambda) const {
     return onConnectCallback_.addLambdaCallback(lambda);
 }
@@ -165,6 +161,5 @@ const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) const {
 void Inport::removeOnDisconnect(const BaseCallBack* callback) const {
     onDisconnectCallback_.remove(callback);
 }
-
 
 }  // namespace
