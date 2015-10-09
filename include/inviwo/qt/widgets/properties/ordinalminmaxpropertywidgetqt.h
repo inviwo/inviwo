@@ -167,10 +167,10 @@ public:
     OrdinalMinMaxPropertyWidgetQt(MinMaxProperty<T>* property);
     virtual ~OrdinalMinMaxPropertyWidgetQt();
 
-    virtual void updateFromProperty();
-    virtual void updateFromSlider(int valMin, int valMax);
-    virtual void updateFromSpinBoxMin(double val);
-    virtual void updateFromSpinBoxMax(double val);
+    virtual void updateFromProperty() override;
+    virtual void updateFromSlider(int valMin, int valMax) override;
+    virtual void updateFromSpinBoxMin(double val) override;
+    virtual void updateFromSpinBoxMax(double val) override;
 
     typedef glm::detail::tvec2<T, glm::defaultp> V;
     
@@ -190,7 +190,7 @@ protected:
     }
     virtual std::string getToolTipText() override;
 
-    virtual void showSettings() {
+    virtual void showSettings() override {
         if (!this->settingsWidget_) {
             this->settingsWidget_ =
                 new TemplateMinMaxPropertySettingsWidgetQt<BT, T>(minMaxProperty_, this);

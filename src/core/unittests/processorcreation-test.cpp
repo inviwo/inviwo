@@ -38,6 +38,7 @@
 #include "inviwo/core/datastructures/transferfunction.h"
 #include "inviwo/core/properties/transferfunctionproperty.h"
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
