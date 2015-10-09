@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
@@ -37,20 +37,18 @@
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
 
-
 namespace inviwo {
-
-
 
 PyObject* py_canvascount(PyObject* /*self*/, PyObject* /*args*/) {
     if (InviwoApplication::getPtr() && InviwoApplication::getPtr()->getProcessorNetwork()) {
-        std::vector<CanvasProcessor*> canvases = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
+        std::vector<CanvasProcessor*> canvases = InviwoApplication::getPtr()
+                                                     ->getProcessorNetwork()
+                                                     ->getProcessorsByType<CanvasProcessor>();
         return PyValueParser::toPyObject(canvases.size());
     }
 
     Py_RETURN_NONE;
 }
-
 
 //
 PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
@@ -59,15 +57,17 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
     if (!p.testParams(args)) return nullptr;
 
     CanvasProcessor* canvas = nullptr;
-    PyObject* arg0 = PyTuple_GetItem(args,0);
+    PyObject* arg0 = PyTuple_GetItem(args, 0);
     bool argIsString = PyValueParser::is<std::string>(arg0);
 
     if (argIsString) {
         std::string id = PyValueParser::parse<std::string>(arg0);
-        Processor* processor = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(id);
+        Processor* processor =
+            InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(id);
 
         if (!processor) {
-            std::string msg = std::string("resizeCanvas(canvas,width,height) no processor with name: ") + id;
+            std::string msg =
+                std::string("resizeCanvas(canvas,width,height) no processor with name: ") + id;
             PyErr_SetString(PyExc_TypeError, msg.c_str());
             return nullptr;
         }
@@ -75,24 +75,30 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
         canvas = dynamic_cast<CanvasProcessor*>(processor);
 
         if (!canvas) {
-            std::string msg = std::string("resizeCanvas(canvas,width,height) processor with name: ") + id + " is not a canvas processor, it is a" +
-                processor->getClassIdentifier();
+            std::string msg =
+                std::string("resizeCanvas(canvas,width,height) processor with name: ") + id +
+                " is not a canvas processor, it is a" + processor->getClassIdentifier();
             PyErr_SetString(PyExc_TypeError, msg.c_str());
             return nullptr;
         }
     } else {
         int id = PyValueParser::parse<int>(arg0);
-        std::vector<CanvasProcessor*> canvases = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
+        std::vector<CanvasProcessor*> canvases = InviwoApplication::getPtr()
+                                                     ->getProcessorNetwork()
+                                                     ->getProcessorsByType<CanvasProcessor>();
 
-        if (canvases.size()==0) {
-            std::string msg = std::string("resizeCanvas(canvas,width,height) no canvases found in current network") ;
+        if (canvases.size() == 0) {
+            std::string msg = std::string(
+                "resizeCanvas(canvas,width,height) no canvases found in current network");
             PyErr_SetString(PyExc_TypeError, msg.c_str());
             return nullptr;
         }
 
-        if (static_cast<int>(canvases.size())<=id) {
-            std::string msg = std::string("resizeCanvas(canvas,width,height) index out of bounds, index given: ") + toString(
-                                  id) + ", max index possible: " + toString(canvases.size()-1) ;
+        if (static_cast<int>(canvases.size()) <= id) {
+            std::string msg =
+                std::string(
+                    "resizeCanvas(canvas,width,height) index out of bounds, index given: ") +
+                toString(id) + ", max index possible: " + toString(canvases.size() - 1);
             PyErr_SetString(PyExc_TypeError, msg.c_str());
             return nullptr;
         }
@@ -100,18 +106,20 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
         canvas = canvases[id];
     }
 
-    PyObject* arg1 = PyTuple_GetItem(args,1);
-    PyObject* arg2 = PyTuple_GetItem(args,2);
+    PyObject* arg1 = PyTuple_GetItem(args, 1);
+    PyObject* arg2 = PyTuple_GetItem(args, 2);
     int w = PyValueParser::parse<int>(arg1);
     int h = PyValueParser::parse<int>(arg2);
 
     if (w <= 0 || h <= 0) {
-        std::string msg = std::string("resizeCanvas(canvas,width,height) width and height must have positive non-zero values ");
+        std::string msg = std::string(
+            "resizeCanvas(canvas,width,height) width and height must have positive non-zero "
+            "values ");
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
 
-    static_cast<IntVec2Property*>(canvas->getPropertyByIdentifier("dimensions"))->set(ivec2(w,h));
+    static_cast<IntVec2Property*>(canvas->getPropertyByIdentifier("dimensions"))->set(ivec2(w, h));
 
     canvas->invalidate(INVALID_OUTPUT);
 
@@ -119,13 +127,9 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
 }
 
 PyResizeCanvasMethod::PyResizeCanvasMethod()
-    : canvas_("canvas")
-    , newWidth_("newWidth")
-    , newHeight_("newHeight")
-{
+    : canvas_("canvas"), newWidth_("newWidth"), newHeight_("newHeight") {
     addParam(&canvas_);
     addParam(&newWidth_);
     addParam(&newHeight_);
 }
-
 }

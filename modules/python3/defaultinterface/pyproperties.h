@@ -24,18 +24,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERTIESMEHTODSINVIWO_H
 #define IVW_PROPERTIESMEHTODSINVIWO_H
 
-
-
 #include <modules/python3/python3moduledefine.h>
-
 #include <modules/python3/pythoninterface/pymethod.h>
-
 
 namespace inviwo {
 
@@ -52,9 +48,15 @@ public:
     PySetPropertyValueMethod();
     virtual ~PySetPropertyValueMethod() {}
 
-    virtual std::string getName()const {return "setPropertyValue";}
-    virtual std::string getDesc()const {return "Assigns a value to a processor property. The value has to be passed as scalar or tuple, depending on the property's cardinality. Camera properties take a 3-tuple of 3-tuples, containing the position, focus and up vectors. Option properties expect an option key.";}
-    virtual PyCFunction getFunc() {return py_setPropertyValue;}
+    virtual std::string getName() const { return "setPropertyValue"; }
+    virtual std::string getDesc() const {
+        return "Assigns a value to a processor property. The value has to be passed as scalar or "
+               "tuple, depending on the property's cardinality. Camera properties take a 3-tuple "
+               "of 3-tuples, containing the position, focus and up vectors. Option properties "
+               "expect an option key.";
+    }
+    virtual PyCFunction getFunc() { return py_setPropertyValue; }
+
 private:
     PyParamString path_;
     PyParamVarious value_;
@@ -65,9 +67,10 @@ public:
     PySetPropertyMaxValueMethod();
     virtual ~PySetPropertyMaxValueMethod() {}
 
-    virtual std::string getName()const {return "setPropertyMaxValue";}
-    virtual std::string getDesc()const {return "Defines the max value for a property.";}
-    virtual PyCFunction getFunc() {return py_setPropertyMaxValue;}
+    virtual std::string getName() const { return "setPropertyMaxValue"; }
+    virtual std::string getDesc() const { return "Defines the max value for a property."; }
+    virtual PyCFunction getFunc() { return py_setPropertyMaxValue; }
+
 private:
     PyParamString path_;
     PyParamVarious maxValue_;
@@ -78,9 +81,10 @@ public:
     PySetPropertyMinValueMethod();
     virtual ~PySetPropertyMinValueMethod() {}
 
-    virtual std::string getName()const {return "setPropertyMinValue";}
-    virtual std::string getDesc()const {return "Defines the min value for a property.";}
-    virtual PyCFunction getFunc() {return py_setPropertyMinValue;}
+    virtual std::string getName() const { return "setPropertyMinValue"; }
+    virtual std::string getDesc() const { return "Defines the min value for a property."; }
+    virtual PyCFunction getFunc() { return py_setPropertyMinValue; }
+
 private:
     PyParamString path_;
     PyParamVarious minValue_;
@@ -91,9 +95,12 @@ public:
     PyGetPropertyValueMethod();
     virtual ~PyGetPropertyValueMethod() {}
 
-    virtual std::string getName()const {return "getPropertyValue";}
-    virtual std::string getDesc()const {return "Returns the current value of a processor property (scalar or tuple).";}
-    virtual PyCFunction getFunc() {return py_getPropertyValue;}
+    virtual std::string getName() const { return "getPropertyValue"; }
+    virtual std::string getDesc() const {
+        return "Returns the current value of a processor property (scalar or tuple).";
+    }
+    virtual PyCFunction getFunc() { return py_getPropertyValue; }
+
 private:
     PyParamString path_;
 };
@@ -103,9 +110,12 @@ public:
     PyGetPropertyMaxValueMethod();
     virtual ~PyGetPropertyMaxValueMethod() {}
 
-    virtual std::string getName()const {return "getPropertyMaxValue";}
-    virtual std::string getDesc()const {return "Returns the max value for a property (scalar or tuple).";}
-    virtual PyCFunction getFunc() {return py_getPropertyMaxValue;}
+    virtual std::string getName() const { return "getPropertyMaxValue"; }
+    virtual std::string getDesc() const {
+        return "Returns the max value for a property (scalar or tuple).";
+    }
+    virtual PyCFunction getFunc() { return py_getPropertyMaxValue; }
+
 private:
     PyParamString path_;
 };
@@ -115,9 +125,12 @@ public:
     PyGetPropertyMinValueMethod();
     virtual ~PyGetPropertyMinValueMethod() {}
 
-    virtual std::string getName()const {return "getPropertyMinValue";}
-    virtual std::string getDesc()const {return "Returns the min value for a property (scalar or tuple).";}
-    virtual PyCFunction getFunc() {return py_getPropertyMinValue;}
+    virtual std::string getName() const { return "getPropertyMinValue"; }
+    virtual std::string getDesc() const {
+        return "Returns the min value for a property (scalar or tuple).";
+    }
+    virtual PyCFunction getFunc() { return py_getPropertyMinValue; }
+
 private:
     PyParamString path_;
 };
@@ -127,17 +140,14 @@ public:
     PyClickButtonMethod();
     virtual ~PyClickButtonMethod() {}
 
-    virtual std::string getName()const {return "clickButton";}
-    virtual std::string getDesc()const {return "Simulates a click on a button property.";}
-    virtual PyCFunction getFunc() {return py_clickButton;}
+    virtual std::string getName() const { return "clickButton"; }
+    virtual std::string getDesc() const { return "Simulates a click on a button property."; }
+    virtual PyCFunction getFunc() { return py_clickButton; }
+
 private:
     PyParamString path_;
 };
 
-} //namespace
+}  // namespace
 
-
-
-#endif // IVW_PROPERTIESMEHTODSINVIWO_H
-
-
+#endif  // IVW_PROPERTIESMEHTODSINVIWO_H

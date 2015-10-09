@@ -24,13 +24,12 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
 
 #include "pylist.h"
-
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
@@ -39,7 +38,6 @@
 #include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
-
 
 PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     static PyListPropertiesMethod p;
@@ -61,7 +59,8 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     }
 
     std::string processorName = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
-    Processor* processor = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(processorName);
+    Processor* processor =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(processorName);
 
     if (!processor) {
         std::ostringstream errStr;
@@ -70,19 +69,20 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     } else {
         std::vector<Property*> props = processor->getPropertiesRecursive();
 
-        PyObject *lst = PyList_New(props.size());
+        PyObject* lst = PyList_New(props.size());
         if (!lst) Py_RETURN_NONE;
 
         int i = 0;
-        for(auto prop : props) {
+        for (auto prop : props) {
             std::string name = joinString(prop->getPath(), ".");
-            std::string type  = prop->getClassIdentifier();
-            PyObject *pair = Py_BuildValue("(s#s#)", name.c_str(), name.size(), type.c_str(),type.size());
-            if(!pair) {
+            std::string type = prop->getClassIdentifier();
+            PyObject* pair =
+                Py_BuildValue("(s#s#)", name.c_str(), name.size(), type.c_str(), type.size());
+            if (!pair) {
                 Py_DECREF(lst);
                 Py_RETURN_NONE;
             }
-            
+
             PyList_SET_ITEM(lst, i, pair);
             ++i;
         }
@@ -93,13 +93,12 @@ PyObject* py_listProperties(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-
-
 PyObject* py_listProcesoors(PyObject* /*self*/, PyObject* /*args*/) {
     if (InviwoApplication::getPtr() && InviwoApplication::getPtr()->getProcessorNetwork()) {
-        std::vector<Processor*> processors  = InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
+        std::vector<Processor*> processors =
+            InviwoApplication::getPtr()->getProcessorNetwork()->getProcessors();
 
-        PyObject *lst = PyList_New(processors.size());
+        PyObject* lst = PyList_New(processors.size());
         if (!lst) Py_RETURN_NONE;
 
         int i = 0;
@@ -107,8 +106,9 @@ PyObject* py_listProcesoors(PyObject* /*self*/, PyObject* /*args*/) {
             std::string name = processor->getIdentifier();
             std::string type = processor->getClassIdentifier();
 
-            PyObject *pair = Py_BuildValue("(s#s#)", name.c_str(), name.size(), type.c_str(),type.size());
-            if(!pair) {
+            PyObject* pair =
+                Py_BuildValue("(s#s#)", name.c_str(), name.size(), type.c_str(), type.size());
+            if (!pair) {
                 Py_DECREF(lst);
                 Py_RETURN_NONE;
             }
@@ -122,10 +122,7 @@ PyObject* py_listProcesoors(PyObject* /*self*/, PyObject* /*args*/) {
     Py_RETURN_NONE;
 }
 
-PyListPropertiesMethod::PyListPropertiesMethod()
-    : processor_("processor")
-{
+PyListPropertiesMethod::PyListPropertiesMethod() : processor_("processor") {
     addParam(&processor_);
 }
-
 }

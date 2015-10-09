@@ -24,33 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INFOMEHTODINVIWO_H
 #define IVW_INFOMEHTODINVIWO_H
 
-
 #include <modules/python3/python3moduledefine.h>
 
 #include <modules/python3/pythoninterface/pymethod.h>
 
-
 namespace inviwo {
-    PyObject* py_info(PyObject* /*self*/, PyObject* /*args*/);
+PyObject* py_info(PyObject* /*self*/, PyObject* /*args*/);
 
-    class IVW_MODULE_PYTHON3_API PyInfoMethod : public PyMethod {
-    public:
+class IVW_MODULE_PYTHON3_API PyInfoMethod : public PyMethod {
+public:
+    virtual std::string getName() const { return "info"; }
+    virtual std::string getDesc() const {
+        return "Prints documentation of the module's functions.";
+    }
+    virtual PyCFunction getFunc() { return py_info; }
+};
 
-        virtual std::string getName()const { return "info"; }
-        virtual std::string getDesc()const { return "Prints documentation of the module's functions."; }
-        virtual PyCFunction getFunc() { return py_info; }
-    };
+}  // namespace
 
-
-} //namespace
-
-
-#endif // IVW_INFOMEHTODINVIWO_H
-
-
+#endif  // IVW_INFOMEHTODINVIWO_H
