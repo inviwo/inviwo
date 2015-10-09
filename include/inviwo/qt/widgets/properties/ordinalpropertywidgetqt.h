@@ -280,15 +280,15 @@ public:
         updateFromProperty();
     }
     virtual ~OrdinalPropertyWidgetQt() { delete transformer_; }
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
 
     virtual std::string getToolTipText() override;
 
 protected:
     // Connected to sliderwidget valueChanged()
-    void setPropertyValue(int);
-    void setAsMin();
-    void setAsMax();
+    virtual void setPropertyValue(int) override;
+    virtual void setAsMin() override;
+    virtual void setAsMax() override;
 
     PropertyTransformer<T>* transformer_;
     SliderVectorTyped sliders_;

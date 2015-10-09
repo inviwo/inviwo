@@ -72,7 +72,7 @@ public:
     virtual void stopFileObservation(std::string fileName) override;
     virtual void closeInviwoApplication() override;
     virtual void playSound(Message soundID) override;
-    virtual std::locale getUILocale() const;
+    virtual std::locale getUILocale() const override;
 
     void setMainWindow(QMainWindow* mainWindow);
     QMainWindow* getMainWindow() { return mainWindow_; }

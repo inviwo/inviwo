@@ -35,6 +35,7 @@
 #include <modules/unittests/unittestsmoduledefine.h>
 #include <inviwo/core/io/serialization/ivwserializable.h>
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 

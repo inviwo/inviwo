@@ -84,17 +84,17 @@ public:
     OrdinalMinMaxTextPropertyWidgetQt(MinMaxProperty<T>* property);
     virtual ~OrdinalMinMaxTextPropertyWidgetQt();
 
-    virtual void updateFromProperty();
-    virtual void updateFromMin();
-    virtual void updateFromMax();
+    virtual void updateFromProperty() override;
+    virtual void updateFromMin() override;
+    virtual void updateFromMax() override;
 
     typedef glm::detail::tvec2<T, glm::defaultp> V;
     
 protected:
-    virtual void makeEditorWidgets();
+    virtual void makeEditorWidgets() override;
     virtual std::string getToolTipText() override;
 
-    virtual void showSettings() {
+    virtual void showSettings() override {
         if (!this->settingsWidget_) {
             this->settingsWidget_ =
                 new TemplateMinMaxPropertySettingsWidgetQt<BT, T>(minMaxProperty_, this);
