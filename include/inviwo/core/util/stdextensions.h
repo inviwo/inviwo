@@ -288,6 +288,14 @@ inline iter_range<Iter> as_range(std::pair<Iter, Iter> const& x) {
     return iter_range<Iter>(x);
 }
 
+template <typename T, typename OutIt, typename P>
+OutIt copy_if(const T& cont, OutIt out, P pred) { 
+    using std::begin;
+    using std::end;
+    return std::copy_if(begin(cont), end(cont), out, pred);
+}
+
+
 template <typename T>
 bool is_future_ready(const std::future<T>& future) {
     return (future.valid() &&

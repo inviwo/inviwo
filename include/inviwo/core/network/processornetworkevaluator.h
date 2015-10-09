@@ -65,17 +65,9 @@ private:
     using ProcessorList = std::unordered_set<Processor*>;
 
     void evaluate();
-
-    void setProcessorVisited(Processor* processor, bool visited = true);
-    bool hasBeenVisited(Processor* processor) const;
-    void setPropertyVisited(Property* property, bool visited = true);
-    bool hasBeenVisited(Property* property) const;
-    // retrieve predecessors from global processor state list (look-up)
-    const ProcessorList& getStoredPredecessors(Processor* processor) const;
     // retrieve predecessors based on given event
     ProcessorList getDirectPredecessors(Processor* processor) const;
-    void traversePredecessors(Processor* processor);
-    void determineProcessingOrder();
+ 
     void updateProcessorStates();
     void resetProcessorVisitedStates();
 
@@ -86,28 +78,51 @@ private:
         ProcessorList pred;  // list of all predecessors
     };
 
-    // map for managing processor states (predecessors, visited flags, etc.)
-    // map contains a dummy element for nullptr processor
-    using ProcMap = std::unordered_map<Processor*, ProcessorState>;
-    using ProcMapIt = ProcMap::iterator;
-    using const_ProcMapIt = ProcMap::const_iterator;
-    using ProcMapPair = std::pair<Processor*, ProcessorState>;
+    struct ProcessorStates {
+        bool hasBeenVisited(Processor* processor) const {
+            auto it = processorStates_.find(processor);
+            if (it != processorStates_.end())
+                return it->second.visited;
+            else
+                return false;
+        }
 
-    struct PropertyState {
-        bool visited;
+        void setProcessorVisited(Processor* processor, bool visited = true) {
+            auto it = processorStates_.find(processor);
+            if (it != processorStates_.end()) it->second.visited = visited;
+        }
+
+        void clear() {
+            processorStates_.clear();
+        }
+
+        bool insert(Processor* p, ProcessorState s) {
+            return processorStates_.insert(std::make_pair(p, s)).second;
+        }
+
+        // retrieve predecessors from global processor state list (look-up)
+        const ProcessorList& getStoredPredecessors(Processor* processor) const {
+            auto it = processorStates_.find(processor);
+            if (it != processorStates_.end()) {
+                return it->second.pred;
+            } else {
+                // processor not found, return reference to empty list
+                return empty;
+            }
+        }
+
+
+        static ProcessorList empty;
+    private:
+        std::unordered_map<Processor*, ProcessorState> processorStates_;
     };
 
-    // map for visited state of properties
-    using PropertyMap = std::unordered_map<Property*, PropertyState>;
-    using PropertyMapIt = PropertyMap::iterator;
-    using const_PropertyMapIt = PropertyMap::const_iterator;
-    using PropertyMapPair = std::pair<Property*, PropertyState>;
+    void traversePredecessors(ProcessorStates& state, Processor* processor);
 
     ProcessorNetwork* processorNetwork_;
     // the sorted list of processors obtained through topological sorting
     std::vector<Processor*> processorsSorted_;
-    ProcMap processorStates_;
-    PropertyMap propertiesVisited_;
+    
     bool evaulationQueued_;
     bool evaluationDisabled_;
 
