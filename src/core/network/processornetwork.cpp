@@ -157,7 +157,6 @@ std::vector<Processor*> ProcessorNetwork::getProcessors() const {
     return processors;
 }
 
-
 PortConnection* ProcessorNetwork::addConnection(Outport* sourcePort, Inport* destPort) {
     PortConnection* connection = getConnection(sourcePort, destPort);
 
@@ -639,6 +638,8 @@ void ProcessorNetwork::serialize(IvwSerializer& s) const {
     s.serialize("InviwoSetup", info);
 }
 
+const int ProcessorNetwork::processorNetworkVersion_ = 11;
+
 void ProcessorNetwork::deserialize(IvwDeserializer& d) {
     // This will set deserializing_ to true while keepTrueWillAlive is in scope
     // and set it to false no matter how we leave the scope
@@ -766,8 +767,5 @@ Property* ProcessorNetwork::getProperty(std::vector<std::string> path) const {
     }
     return nullptr;
 }
-
-const int ProcessorNetwork::processorNetworkVersion_ = 11;
-
 
 } // namespace

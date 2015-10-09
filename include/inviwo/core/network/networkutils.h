@@ -72,13 +72,16 @@ void traverseNetwork(ProcessorStates& state, Processor* processor, Func f) {
                         traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f);
                     }
                 }
+                break;
             }
+            
             case TraversalDirection::Down: {
                 for (auto port : processor->getOutports()) {
                     for (auto connectedPort : port->getConnectedInports()) {
                         traverseNetwork<D, V, Func>(state, connectedPort->getProcessor(), f);
                     }
                 }
+                break;
             }
         }
 
