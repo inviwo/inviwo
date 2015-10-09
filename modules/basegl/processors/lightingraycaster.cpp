@@ -123,8 +123,8 @@ void LightingRaycaster::process() {
     utilgl::bindAndSetUniforms(shader_, units, volumePort_);
     utilgl::bindAndSetUniforms(shader_, units, lightVolumePort_);
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
-    utilgl::bindAndSetUniforms(shader_, units, *entryPort_.getData(), "entry", COLOR_DEPTH_PICKING);
-    utilgl::bindAndSetUniforms(shader_, units, *exitPort_.getData(), "exit", COLOR_DEPTH);
+    utilgl::bindAndSetUniforms(shader_, units, *entryPort_.getData(), "entry", ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(shader_, units, *exitPort_.getData(), "exit", ImageType::ColorDepth);
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_);
 
     utilgl::singleDrawImagePlaneRect();

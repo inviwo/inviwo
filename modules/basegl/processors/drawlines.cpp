@@ -89,7 +89,7 @@ DrawLines::DrawLines()
 DrawLines::~DrawLines() {}
 
 void DrawLines::process() {
-    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
+    utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
     {
         utilgl::GlBoolState linesmooth(GL_LINE_SMOOTH, false);
         utilgl::LineWidthState linewidth(lineSize_);
@@ -101,7 +101,7 @@ void DrawLines::process() {
     }
     utilgl::deactivateCurrentTarget();
 
-    compositePortsToOutport(outport_, COLOR_ONLY, inport_);
+    compositePortsToOutport(outport_, ImageType::ColorOnly, inport_);
 }
 
 void DrawLines::addPoint(vec2 p) {

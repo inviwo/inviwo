@@ -80,7 +80,7 @@ void VectorFieldGenerator2D::process() {
 
     image_ = std::make_shared<Image>(size_.get(), DataVec4FLOAT32::get());
 
-    utilgl::activateAndClearTarget(*(image_.get()), COLOR_ONLY);
+    utilgl::activateAndClearTarget(*(image_.get()), ImageType::ColorOnly);
 
     shader_.activate();
     utilgl::setUniforms(shader_, xRange_, yRange_);

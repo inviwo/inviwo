@@ -118,13 +118,13 @@ void Background::initializeResources() {
 void Background::process() {
     if (inport_.hasData() != hadData_) initializeResources();
     if (inport_.hasData()) {
-        utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
+        utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
     } else {
-        utilgl::activateTarget(outport_, COLOR_ONLY);
+        utilgl::activateTarget(outport_, ImageType::ColorOnly);
     }
     shader_.activate();
     TextureUnitContainer units;
-    if (inport_.hasData()) utilgl::bindAndSetUniforms(shader_, units, inport_, COLOR_ONLY);
+    if (inport_.hasData()) utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
    
     utilgl::setUniforms(shader_, outport_, color1_, color2_, checkerBoardSize_);
     utilgl::singleDrawImagePlaneRect();

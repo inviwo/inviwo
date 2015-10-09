@@ -40,7 +40,7 @@ LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* forma
     if (!texture_) {
         GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
 
-        if (getLayerType() == DEPTH_LAYER) {
+        if (getLayerType() == LayerType::Depth) {
             texture_ = std::make_shared<Texture2D>(getDimensions(), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
                 glFormat.type, GL_NEAREST);
         } else {

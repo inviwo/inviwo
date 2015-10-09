@@ -54,7 +54,7 @@ public:
     virtual void activate() override;
     void defaultGLState();
 
-    virtual void render(const Image* im, LayerType layerType = COLOR_LAYER, size_t idx = 0) override;
+    virtual void render(const Image* im, LayerType layerType = LayerType::Color, size_t idx = 0) override;
     virtual void resize(uvec2 size) override;
     virtual void glSwapBuffers();
     virtual void update() override;

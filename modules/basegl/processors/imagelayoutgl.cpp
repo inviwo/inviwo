@@ -171,7 +171,7 @@ void ImageLayoutGL::process() {
     auto images = multiinport_.getVectorData();
 
     TextureUnit colorUnit, depthUnit, pickingUnit;
-    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
+    utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
     shader_.activate();
     shader_.setUniform("color_", colorUnit.getUnitNumber());

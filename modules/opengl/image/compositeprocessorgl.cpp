@@ -47,8 +47,8 @@ void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageT
         shader_.activate();
 
         TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader_, units, *inport.getData(),  "tex0", COLOR_DEPTH_PICKING);
-        utilgl::bindAndSetUniforms(shader_, units, *outport.getData(), "tex1", COLOR_DEPTH_PICKING);
+        utilgl::bindAndSetUniforms(shader_, units, *inport.getData(),  "tex0", ImageType::ColorDepthPicking);
+        utilgl::bindAndSetUniforms(shader_, units, *outport.getData(), "tex1", ImageType::ColorDepthPicking);
         utilgl::setShaderUniforms(shader_, outport, "outportParameters");
         utilgl::singleDrawImagePlaneRect();
 

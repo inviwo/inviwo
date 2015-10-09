@@ -41,7 +41,7 @@ namespace inviwo {
 class IVW_CORE_API Layer : public Data<LayerRepresentation>, public StructuredGridEntity<2> {
 public:
     Layer(size2_t dimensions = size2_t(32, 32), const DataFormatBase* format = DataVec4UINT8::get(),
-          LayerType type = COLOR_LAYER);
+          LayerType type = LayerType::Color);
     Layer(std::shared_ptr<LayerRepresentation>);
     Layer(const Layer&);
     Layer& operator=(const Layer& that);

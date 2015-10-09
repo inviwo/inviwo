@@ -141,17 +141,17 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
             for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
                 ssUniform << "uniform sampler2D color" << i << ";";
             }
-            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS", ssUniform.str());
+            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_LayerType::Color_OUT_UNIFORMS", ssUniform.str());
 
             std::stringstream ssWrite;
             for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
                 ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord_.xy);";
             }
-            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE", ssWrite.str());
+            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_LayerType::Color_WRITE", ssWrite.str());
         }
         else{
-            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_UNIFORMS");
-            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE");
+            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_LayerType::Color_UNIFORMS");
+            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_LayerType::Color_WRITE");
         }
 
         colorLayerCopyCount_ = colorLayersGL_.size();
@@ -175,7 +175,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     }
 
     // Render to FBO, with correct scaling
-    target->activateBuffer(ALL_LAYERS);
+    target->activateBuffer(ImageType::AllLayers);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     float ratioSource = (float)source->getDimensions().x / (float)source->getDimensions().y;
@@ -283,13 +283,13 @@ const FrameBufferObject* ImageGL::getFBO() const { return &frameBufferObject_; }
 
 LayerGL* ImageGL::getLayerGL(LayerType type, size_t idx) {
     switch (type) {
-        case COLOR_LAYER:
+        case LayerType::Color:
             return getColorLayerGL(idx);
 
-        case DEPTH_LAYER:
+        case LayerType::Depth:
             return getDepthLayerGL();
 
-        case PICKING_LAYER:
+        case LayerType::Picking:
             return getPickingLayerGL();
     }
 
@@ -298,13 +298,13 @@ LayerGL* ImageGL::getLayerGL(LayerType type, size_t idx) {
 
 const LayerGL* ImageGL::getLayerGL(LayerType type, size_t idx) const {
     switch (type) {
-        case COLOR_LAYER:
+        case LayerType::Color:
             return getColorLayerGL(idx);
 
-        case DEPTH_LAYER:
+        case LayerType::Depth:
             return getDepthLayerGL();
 
-        case PICKING_LAYER:
+        case LayerType::Picking:
             return getPickingLayerGL();
     }
 
@@ -381,7 +381,7 @@ void ImageGL::update(bool editable) {
     }
 
     // Attach all targets
-    reAttachAllLayers(ALL_LAYERS);
+    reAttachAllLayers(ImageType::AllLayers);
 }
 
 void ImageGL::renderImagePlaneRect() const {

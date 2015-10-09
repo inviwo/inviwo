@@ -74,7 +74,7 @@ TextOverlayGL::TextOverlayGL()
 
 
 void TextOverlayGL::process() {
-    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_DEPTH);
+    utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorDepth);
 
     glDepthFunc(GL_ALWAYS);
     glEnable(GL_BLEND);

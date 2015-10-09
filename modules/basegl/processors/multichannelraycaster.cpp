@@ -122,8 +122,8 @@ void MultichannelRaycaster::process() {
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, volumePort_);
-    utilgl::bindAndSetUniforms(shader_, units, entryPort_, COLOR_DEPTH_PICKING);
-    utilgl::bindAndSetUniforms(shader_, units, exitPort_, COLOR_DEPTH);
+    utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
 
     auto tfs = transferFunctions_.getPropertiesByType<TransferFunctionProperty>();
     size_t channels = volumePort_.getData()->getDataFormat()->getComponents();

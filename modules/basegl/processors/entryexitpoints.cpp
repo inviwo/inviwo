@@ -91,7 +91,7 @@ void EntryExitPoints::process() {
 
     {
         // generate exit points
-        utilgl::activateAndClearTarget(exitPort_, COLOR_DEPTH);
+        utilgl::activateAndClearTarget(exitPort_, ImageType::ColorDepth);
         utilgl::CullFaceState cull(GL_FRONT);
         drawer_->draw();
         utilgl::deactivateCurrentTarget();
@@ -108,7 +108,7 @@ void EntryExitPoints::process() {
             }
             utilgl::activateAndClearTarget(*tmpEntry_);
         } else {
-            utilgl::activateAndClearTarget(entryPort_, COLOR_DEPTH);
+            utilgl::activateAndClearTarget(entryPort_, ImageType::ColorDepth);
         }
 
         utilgl::CullFaceState cull(GL_BACK);
@@ -119,12 +119,12 @@ void EntryExitPoints::process() {
 
     if (capNearClipping_ && tmpEntry_) {
         // render an image plane aligned quad to cap the proxy geometry
-        utilgl::activateAndClearTarget(entryPort_, COLOR_DEPTH);
+        utilgl::activateAndClearTarget(entryPort_, ImageType::ColorDepth);
         clipping_.activate();
 
         TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(clipping_, units, *tmpEntry_, "entry", COLOR_DEPTH);
-        utilgl::bindAndSetUniforms(clipping_, units, exitPort_, COLOR_DEPTH);
+        utilgl::bindAndSetUniforms(clipping_, units, *tmpEntry_, "entry", ImageType::ColorDepth);
+        utilgl::bindAndSetUniforms(clipping_, units, exitPort_, ImageType::ColorDepth);
 
         // the rendered plane is specified in camera coordinates
         // thus we must transform from camera to world to texture coordinates

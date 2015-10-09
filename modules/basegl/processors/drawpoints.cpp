@@ -81,7 +81,7 @@ DrawPoints::DrawPoints()
 DrawPoints::~DrawPoints() {}
 
 void DrawPoints::process() {
-    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
+    utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
     {
         utilgl::PointSizeState pointsize(static_cast<GLfloat>(pointSize_));
         pointShader_.activate();
@@ -90,7 +90,7 @@ void DrawPoints::process() {
         pointShader_.deactivate();
     }
     utilgl::deactivateCurrentTarget();
-    compositePortsToOutport(outport_, COLOR_ONLY, inport_);
+    compositePortsToOutport(outport_, ImageType::ColorOnly, inport_);
 }
 
 void DrawPoints::addPoint(vec2 p) {

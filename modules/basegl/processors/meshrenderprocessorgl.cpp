@@ -151,10 +151,10 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     }
 
     if (colorLayer_.get()) {
-        shader.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
+        shader.getFragmentShaderObject()->addShaderDefine("LayerType::Color");
         layerID++;
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
+        shader.getFragmentShaderObject()->removeShaderDefine("LayerType::Color");
     }
 
     if (texCoordLayer_.get()) {
@@ -216,7 +216,7 @@ void MeshRenderProcessorGL::process() {
         utilgl::activateTargetAndCopySource(outport_, imageInport_);
     }
     else{
-        utilgl::activateAndClearTarget(outport_, COLOR_DEPTH);
+        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
     
     shader_.activate();

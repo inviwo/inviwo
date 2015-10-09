@@ -38,8 +38,8 @@ namespace inviwo {
 
 class IVW_CORE_API LayerDisk : public LayerRepresentation, public DiskRepresentation {
 public:
-    LayerDisk(LayerType type = COLOR_LAYER);
-    LayerDisk(std::string url, LayerType type = COLOR_LAYER);
+    LayerDisk(LayerType type = LayerType::Color);
+    LayerDisk(std::string url, LayerType type = LayerType::Color);
     LayerDisk(const LayerDisk& rhs);
     LayerDisk& operator=(const LayerDisk& that);
     virtual LayerDisk* clone() const override;

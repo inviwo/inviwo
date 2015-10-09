@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_IMAGETYPES_H
@@ -36,34 +36,31 @@
 
 namespace inviwo {
 
-enum ImageType {
-    COLOR_ONLY = 0,
-    COLOR_DEPTH = 1,
-    COLOR_PICKING = 2,
-    COLOR_DEPTH_PICKING = 3,
-    ALL_LAYERS = COLOR_DEPTH_PICKING
+enum class ImageType {
+    ColorOnly = 0,
+    ColorDepth = 1,
+    ColorPicking = 2,
+    ColorDepthPicking = 3,
+    AllLayers = ColorDepthPicking
 };
 
-enum LayerType {
-    COLOR_LAYER = 0,
-    DEPTH_LAYER = 1,
-    PICKING_LAYER = 2
-};
+enum class LayerType { Color = 0, Depth = 1, Picking = 2 };
 
 #include <warn/push>
 #include <warn/ignore/unused-function>
 static bool typeContainsColor(ImageType type) {
-    return (type == COLOR_ONLY || type == COLOR_DEPTH || type == COLOR_PICKING || type == COLOR_DEPTH_PICKING);
+    return (type == ImageType::ColorOnly || type == ImageType::ColorDepth ||
+            type == ImageType::ColorPicking || type == ImageType::ColorDepthPicking);
 }
 
 static bool typeContainsDepth(ImageType type) {
-    return (type == COLOR_DEPTH || type == COLOR_DEPTH_PICKING);
+    return (type == ImageType::ColorDepth || type == ImageType::ColorDepthPicking);
 }
 
 static bool typeContainsPicking(ImageType type) {
-    return (type == COLOR_PICKING || type == COLOR_DEPTH_PICKING);
+    return (type == ImageType::ColorPicking || type == ImageType::ColorDepthPicking);
 }
 #include <warn/pop>
-} // namespace
+}  // namespace
 
-#endif // IVW_IMAGETYPES_H
+#endif  // IVW_IMAGETYPES_H

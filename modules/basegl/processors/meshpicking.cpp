@@ -97,7 +97,7 @@ void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
 }
 
 void MeshPicking::process() {
-    utilgl::activateAndClearTarget(outport_, COLOR_DEPTH_PICKING);
+    utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
 
     MeshDrawerGL drawer(meshInport_.getData().get());
     shader_.activate();
@@ -119,7 +119,7 @@ void MeshPicking::process() {
 
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-    compositePortsToOutport(outport_, COLOR_DEPTH_PICKING, imageInport_);
+    compositePortsToOutport(outport_, ImageType::ColorDepthPicking, imageInport_);
 }
 
 }  // namespace
