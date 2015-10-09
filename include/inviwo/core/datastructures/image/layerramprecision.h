@@ -37,8 +37,8 @@ namespace inviwo {
 template <typename T>
 class LayerRAMPrecision : public LayerRAM {
 public:
-    LayerRAMPrecision(size2_t dimensions = size2_t(8, 8), LayerType type = COLOR_LAYER);
-    LayerRAMPrecision(T* data, size2_t dimensions = size2_t(8, 8), LayerType type = COLOR_LAYER);
+    LayerRAMPrecision(size2_t dimensions = size2_t(8, 8), LayerType type = LayerType::Color);
+    LayerRAMPrecision(T* data, size2_t dimensions = size2_t(8, 8), LayerType type = LayerType::Color);
     LayerRAMPrecision(const LayerRAMPrecision<T>& rhs);
     LayerRAMPrecision<T>& operator=(const LayerRAMPrecision<T>& that);
     virtual LayerRAMPrecision<T>* clone() const override;

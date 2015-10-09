@@ -395,7 +395,7 @@ void VolumeSliceGL::process() {
         planeSettingsChanged();
     }
 
-    utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
+    utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
     shader_.activate();
 
     TextureUnitContainer units;

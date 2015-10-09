@@ -71,8 +71,8 @@ void LIC2D::process() {
 
     shader_.activate();
     TextureUnitContainer units;
-    utilgl::bindAndSetUniforms(shader_, units, vectorField_, COLOR_ONLY);
-    utilgl::bindAndSetUniforms(shader_, units, noiseTexture_, COLOR_ONLY);
+    utilgl::bindAndSetUniforms(shader_, units, vectorField_, ImageType::ColorOnly);
+    utilgl::bindAndSetUniforms(shader_, units, noiseTexture_, ImageType::ColorOnly);
 
     utilgl::setUniforms(shader_, LIC2D_, samples_, stepLength_, normalizeVectors_, intensityMapping_);
     

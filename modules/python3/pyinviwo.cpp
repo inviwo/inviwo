@@ -156,25 +156,24 @@ void PyInviwo::initPythonCInterface(Python3Module* module) {
     importModule("glob");
     importModule("random");
 
-    addModulePath(module->getPath()+"/scripts");
+    addModulePath(module->getPath() + "/scripts");
     initDefaultInterfaces();
     initOutputRedirector(module);
 }
 
-void PyInviwo::importModule(const std::string &moduleName){
+void PyInviwo::importModule(const std::string& moduleName) {
     const static std::string __key__ = "__";
-    char * key = new char[moduleName.size() + 5];
-    sprintf(key,"__%s__", moduleName.c_str());
+    char* key = new char[moduleName.size() + 5];
+    sprintf(key, "__%s__", moduleName.c_str());
     if (PyDict_GetItemString(mainDict_, key) == nullptr) {
         PyObject* pMod = PyImport_ImportModule(moduleName.c_str());
         if (nullptr != pMod) {
             PyDict_SetItemString(mainDict_, key, pMod);
-        }
-        else{
+        } else {
             LogWarn("Failed to import python module: " << moduleName);
         }
     }
-    delete [] key;
+    delete[] key;
 }
 
 void PyInviwo::initDefaultInterfaces() {
@@ -231,8 +230,8 @@ void PyInviwo::initOutputRedirector(Python3Module* module) {
     std::ifstream file(directorFileName.c_str());
     std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
-    
-    PythonScript outputCatcher; 
+
+    PythonScript outputCatcher;
     outputCatcher.setSource(text);
 
     if (!outputCatcher.run(false)) {

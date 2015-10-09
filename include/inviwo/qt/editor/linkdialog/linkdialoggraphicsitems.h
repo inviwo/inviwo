@@ -54,6 +54,9 @@
 #include <QTimeLine>
 #include <warn/pop>
 
+
+namespace inviwo {
+
 static const qreal LINKDIALOG_PROCESSOR_GRAPHICSITEM_DEPTH = 1.0f;
 static const qreal LINKDIALOG_PROPERTY_GRAPHICSITEM_DEPTH = 2.0f;
 static const qreal LINKDIALOG_CONNECTION_GRAPHICSITEM_DEPTH = 3.0f;
@@ -76,12 +79,6 @@ static const int propertyExpandCollapseOffset = 16;
 
 static const int arrowDimensionWidth = propertyItemWidth/15;
 static const int arrowDimensionHeight = arrowDimensionWidth/2;
-
-// WE should not use macros for this kind of things. //Peter.
-#define IS_SUB_PROPERTY(prop) (prop->getOwner()->getProcessor() != prop->getOwner())
-#define IS_COMPOSITE_PROPERTY(prop) dynamic_cast<CompositeProperty*>(prop)
-
-namespace inviwo {
 
 enum IVW_QTEDITOR_API InviwoLinkUserGraphicsItemType {
     LinkDialogProcessorGraphicsItemType = 4,

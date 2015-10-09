@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
@@ -44,76 +44,74 @@
 #include <QDir>
 
 namespace inviwo {
-    
 
-    PyObject* py_getPathCurrentWorkspace(PyObject* /*self*/, PyObject* args) {
-        if (!(PyTuple_Size(args) == 0)) {
-            std::ostringstream errStr;
-            utilqt::localizeStream(errStr);
-            errStr << "loadWorkspace() takes no parameters";
-            errStr << " (" << PyTuple_Size(args) << " given)";
-            PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
-            return nullptr;
-        }
-
-        return PyValueParser::toPyObject(NetworkEditor::getPtr()->getCurrentFilename());
+PyObject* py_getPathCurrentWorkspace(PyObject* /*self*/, PyObject* args) {
+    if (!(PyTuple_Size(args) == 0)) {
+        std::ostringstream errStr;
+        utilqt::localizeStream(errStr);
+        errStr << "loadWorkspace() takes no parameters";
+        errStr << " (" << PyTuple_Size(args) << " given)";
+        PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
+        return nullptr;
     }
 
-        PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
-        if (!(PyTuple_Size(args) == 1)) {
-            std::ostringstream errStr;
-            utilqt::localizeStream(errStr);
-            errStr << "loadWorkspace() takes 1 argument: filename";
-            errStr << " (" << PyTuple_Size(args) << " given)";
-            PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
-            return nullptr;
-        }
+    return PyValueParser::toPyObject(NetworkEditor::getPtr()->getCurrentFilename());
+}
 
-        // check parameter if is string
-        if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
-            PyErr_SetString(PyExc_TypeError, "loadWorkspace() first argument must be a string");
-            return nullptr;
-        }
+PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
+    if (!(PyTuple_Size(args) == 1)) {
+        std::ostringstream errStr;
+        utilqt::localizeStream(errStr);
+        errStr << "loadWorkspace() takes 1 argument: filename";
+        errStr << " (" << PyTuple_Size(args) << " given)";
+        PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
+        return nullptr;
+    }
 
-        std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
+    // check parameter if is string
+    if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
+        PyErr_SetString(PyExc_TypeError, "loadWorkspace() first argument must be a string");
+        return nullptr;
+    }
+
+    std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
+
+    if (!filesystem::fileExists(filename)) {
+        filename =
+            InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + "/" + filename;
 
         if (!filesystem::fileExists(filename)) {
-            filename = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + "/" + filename;
-
-            if (!filesystem::fileExists(filename)) {
-                std::string msg = std::string("loadWorkspace() could not find file") + filename;
-                PyErr_SetString(PyExc_TypeError, msg.c_str());
-                return nullptr;
-            }
-        }
-
-        NetworkEditor::getPtr()->loadNetwork(filename);
-        Py_RETURN_NONE;
-    }
-
-
-    PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* args) {
-        if (!(PyTuple_Size(args) == 1)) {
-            std::ostringstream errStr;
-            utilqt::localizeStream(errStr);
-            errStr << "saveWorkspace() takes 1 argument: filename";
-            errStr << " (" << PyTuple_Size(args) << " given)";
-            PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
+            std::string msg = std::string("loadWorkspace() could not find file") + filename;
+            PyErr_SetString(PyExc_TypeError, msg.c_str());
             return nullptr;
         }
-
-        // check parameter if is string
-        if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
-            PyErr_SetString(PyExc_TypeError, "saveWorkspace() first argument must be a string");
-            return nullptr;
-        }
-
-        std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
-
-        NetworkEditor::getPtr()->saveNetwork(filename);
-        Py_RETURN_NONE;
     }
 
+    NetworkEditor::getPtr()->loadNetwork(filename);
+    Py_RETURN_NONE;
+}
+
+PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* args) {
+    if (!(PyTuple_Size(args) == 1)) {
+        std::ostringstream errStr;
+        utilqt::localizeStream(errStr);
+        errStr << "saveWorkspace() takes 1 argument: filename";
+        errStr << " (" << PyTuple_Size(args) << " given)";
+        PyErr_SetString(PyExc_TypeError, errStr.str().c_str());
+        return nullptr;
+    }
+
+    // check parameter if is string
+    if (!PyValueParser::is<std::string>(PyTuple_GetItem(args, 0))) {
+        PyErr_SetString(PyExc_TypeError, "saveWorkspace() first argument must be a string");
+        return nullptr;
+    }
+
+    std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
+
+    NetworkEditor::getPtr()->saveNetwork(filename);
+    Py_RETURN_NONE;
+}
 
 PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/) {
     NetworkEditor::getPtr()->setModified(false);
@@ -147,36 +145,36 @@ PyObject* py_prompt(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-
 PyObject* py_showTransferFunctionEditor(PyObject* /*self*/, PyObject* args) {
     PyShowPropertyWidgetMethod p;
     if (!p.testParams(args)) {
         return nullptr;
     }
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
-        std::string msg = std::string("showTransferFunctionEditor() no property with path: ") + path;
+        std::string msg =
+            std::string("showTransferFunctionEditor() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
 
-    if (!dynamic_cast<TransferFunctionProperty*>(theProperty)){
-        std::string msg = std::string("showTransferFunctionEditor() not a transfer function property: ") + theProperty->getClassIdentifier();
+    if (!dynamic_cast<TransferFunctionProperty*>(theProperty)) {
+        std::string msg =
+            std::string("showTransferFunctionEditor() not a transfer function property: ") +
+            theProperty->getClassIdentifier();
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
-
     }
 
-
-    for (auto w : theProperty->getWidgets()){
+    for (auto w : theProperty->getWidgets()) {
         auto tfw = dynamic_cast<TransferFunctionPropertyWidgetQt*>(w);
-        if (tfw){
+        if (tfw) {
             tfw->openTransferFunctionDialog();
         }
     }
     Py_RETURN_NONE;
 }
-
 }

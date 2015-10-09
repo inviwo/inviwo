@@ -108,8 +108,8 @@ void ISORaycaster::process() {
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, volumePort_);
-    utilgl::bindAndSetUniforms(shader_, units, entryPort_, COLOR_DEPTH_PICKING);
-    utilgl::bindAndSetUniforms(shader_, units, exitPort_, COLOR_DEPTH);
+    utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
 
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, channel_);
 

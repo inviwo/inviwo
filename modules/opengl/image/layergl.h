@@ -42,7 +42,7 @@ class Texture2D;
 
 class IVW_MODULE_OPENGL_API LayerGL : public LayerRepresentation {
 public:
-    LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = COLOR_LAYER,
+    LayerGL(size2_t dimensions = size2_t(256, 256), LayerType type = LayerType::Color,
         const DataFormatBase* format = DataVec4UINT8::get(), std::shared_ptr<Texture2D> tex = std::shared_ptr<Texture2D>(nullptr));
     LayerGL(const LayerGL& rhs);
     LayerGL& operator=(const LayerGL& rhs);

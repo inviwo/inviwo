@@ -34,137 +34,22 @@
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/util/clock.h>
 
 namespace inviwo {
-
-std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*>
-    ProcessorNetworkEvaluator::processorNetworkEvaluators_;
 
 ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork)
     : processorNetwork_(processorNetwork)
     , evaulationQueued_(false)
     , evaluationDisabled_(false)
     , exceptionHandler_(StandardExceptionHandler()) {
-    ivwAssert(
-        processorNetworkEvaluators_.find(processorNetwork) == processorNetworkEvaluators_.end(),
-        "A ProcessorNetworkEvaluator for the given ProcessorNetwork is already created");
-
-    processorNetworkEvaluators_[processorNetwork] = this;
+    
     processorNetwork_->addObserver(this);
 }
 
-ProcessorNetworkEvaluator::~ProcessorNetworkEvaluator() {
-    std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*>::iterator it =
-        processorNetworkEvaluators_.find(processorNetwork_);
-
-    if (it != processorNetworkEvaluators_.end()) processorNetworkEvaluators_.erase(it);
-}
-
-void ProcessorNetworkEvaluator::setProcessorVisited(Processor* processor, bool visited) {
-    ProcMapIt it = processorStates_.find(processor);
-    if (it != processorStates_.end()) it->second.visited = visited;
-}
-
-bool ProcessorNetworkEvaluator::hasBeenVisited(Processor* processor) const {
-    const_ProcMapIt it = processorStates_.find(processor);
-    if (it != processorStates_.end())
-        return it->second.visited;
-    else
-        return false;
-}
-
-void ProcessorNetworkEvaluator::setPropertyVisited(Property* property, bool visited) {
-    PropertyMapIt it = propertiesVisited_.find(property);
-    if (it != propertiesVisited_.end()) it->second.visited = visited;
-}
-
-bool ProcessorNetworkEvaluator::hasBeenVisited(Property* property) const {
-    const_PropertyMapIt it = propertiesVisited_.find(property);
-    if (it != propertiesVisited_.end())
-        return it->second.visited;
-    else
-        return false;
-}
-
-const ProcessorNetworkEvaluator::ProcessorList& ProcessorNetworkEvaluator::getStoredPredecessors(
-    Processor* processor) const {
-    const_ProcMapIt it = processorStates_.find(processor);
-    if (it != processorStates_.end()) {
-        return it->second.pred;
-    } else {
-        // processor not found, return reference to empty list of dummy element
-        return processorStates_.find(nullptr)->second.pred;
-    }
-}
-
-ProcessorNetworkEvaluator::ProcessorList ProcessorNetworkEvaluator::getDirectPredecessors(
-    Processor* processor) const {
-    ProcessorList predecessors;
-
-    for (auto port : processor->getInports()) {
-        if (!port->isConnected()) continue;
-
-        for (auto connectedPort : port->getConnectedOutports()) {
-            if (connectedPort) predecessors.insert(connectedPort->getProcessor());
-        }
-    }
-
-    return predecessors;
-}
-
-void ProcessorNetworkEvaluator::traversePredecessors(Processor* processor) {
-    if (!hasBeenVisited(processor)) {
-        setProcessorVisited(processor);
-
-        for (auto p : getStoredPredecessors(processor)) traversePredecessors(p);
-
-        processorsSorted_.push_back(processor);
-    }
-}
-
-void ProcessorNetworkEvaluator::determineProcessingOrder() {
-    std::vector<Processor*> endProcessors;
-
-    for (auto processor : processorNetwork_->getProcessors()) {
-        if (processor->isEndProcessor()) endProcessors.push_back(processor);
-    }
-
-    // perform topological sorting and store processor order
-    // in processorsSorted_
-    processorsSorted_.clear();
-    resetProcessorVisitedStates();
-
-    for (auto processor : endProcessors) traversePredecessors(processor);
-}
-
-void ProcessorNetworkEvaluator::updateProcessorStates() {
-    std::vector<Processor*> endProcessors;
-
-    processorStates_.clear();
-    // insert dummy processor to be able to return a reference to an
-    // empty predecessor list, if a processor does not exist (getStoredPredecessors())
-    processorStates_.insert(ProcMapPair(nullptr, ProcessorState()));
-
-    // update all processor states, i.e. collecting predecessors
-    for (auto processor : processorNetwork_->getProcessors()) {
-        // register processor in global state map
-        if (!processorStates_.insert(ProcMapPair(processor, ProcessorState(getDirectPredecessors(
-                                                                processor)))).second)
-            LogError("Processor State was already registered.");
-
-        if (processor->isEndProcessor()) endProcessors.push_back(processor);
-    }
-
-    // perform topological sorting and store processor order in processorsSorted_
-    processorsSorted_.clear();
-
-    for (auto processor : endProcessors) traversePredecessors(processor);
-}
-
-void ProcessorNetworkEvaluator::resetProcessorVisitedStates() {
-    for (auto& state : processorStates_) state.second.visited = false;
-}
+ProcessorNetworkEvaluator::~ProcessorNetworkEvaluator() {}
 
 void ProcessorNetworkEvaluator::setExceptionHandler(ExceptionHandler handler) {
     exceptionHandler_ = handler;
@@ -206,17 +91,6 @@ void ProcessorNetworkEvaluator::enableEvaluation() {
     }
 }
 
-ProcessorNetworkEvaluator*
-ProcessorNetworkEvaluator::getProcessorNetworkEvaluatorForProcessorNetwork(
-    ProcessorNetwork* network) {
-    std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*>::iterator it =
-        processorNetworkEvaluators_.find(network);
-
-    if (it == processorNetworkEvaluators_.end()) return new ProcessorNetworkEvaluator(network);
-
-    return it->second;
-}
-
 void ProcessorNetworkEvaluator::requestEvaluate() {
     // evaluation has been triggered but is currently queued
     // requestEvaluate needs to be called with evaulationQueued_ false to continue.
@@ -248,8 +122,6 @@ void ProcessorNetworkEvaluator::requestEvaluate() {
 void ProcessorNetworkEvaluator::evaluate() {
     // lock processor network to avoid concurrent evaluation
     NetworkLock lock(processorNetwork_);
-    util::OnScopeExit reset([this](){resetProcessorVisitedStates();});
-
     RenderContext::getPtr()->activateDefaultRenderContext();
 
     // if the processor network has changed determine the new processor order
@@ -265,7 +137,7 @@ void ProcessorNetworkEvaluator::evaluate() {
         processorNetwork_->setModified(false);
 
         // network topology has changed, update internal processor states
-        updateProcessorStates();
+        processorsSorted_ = util::topologicalSort(processorNetwork_);
     }
 
     for (auto processor : processorsSorted_) {
@@ -286,9 +158,9 @@ void ProcessorNetworkEvaluator::evaluate() {
                     continue;
                 }
 
-                #if IVW_PROFILING
+#if IVW_PROFILING
                 processor->notifyObserversAboutToProcess(processor);
-                #endif
+#endif
 
                 try {
                     IVW_CPU_PROFILING_IF(500, "Processed " << processor->getDisplayName());
@@ -300,9 +172,9 @@ void ProcessorNetworkEvaluator::evaluate() {
                 // set processor as valid
                 processor->setValid();
 
-                #if IVW_PROFILING
+#if IVW_PROFILING
                 processor->notifyObserversFinishedProcess(processor);
-                #endif
+#endif
             } else {
                 processor->doIfNotReady();
             }

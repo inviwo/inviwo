@@ -88,7 +88,7 @@ protected:
     IntVec2Property customInputDimensions_;
     BoolProperty keepAspectRatio_;
     FloatProperty aspectRatioScaling_;
-    OptionPropertyInt visibleLayer_;
+    TemplateOptionProperty<LayerType> visibleLayer_;
     IntProperty colorLayer_;
     DirectoryProperty saveLayerDirectory_;
     ButtonProperty saveLayerButton_;

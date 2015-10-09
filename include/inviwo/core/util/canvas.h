@@ -58,7 +58,7 @@ public:
     virtual void initialize();
     virtual void deinitialize();
     virtual void activate();
-    virtual void render(const Image*, LayerType layerType = COLOR_LAYER, size_t idx = 0);
+    virtual void render(const Image*, LayerType layerType = LayerType::Color, size_t idx = 0);
     virtual void resize(uvec2 canvasSize);
 
     uvec2 getScreenDimensions() const;

@@ -36,8 +36,8 @@ namespace inviwo {
 
 Image::Image(size2_t dimensions, const DataFormatBase* format) : DataGroup() {
     colorLayers_.push_back(std::make_shared<Layer>(dimensions, format));
-    depthLayer_ = std::make_shared<Layer>(dimensions, DataFLOAT32::get(), DEPTH_LAYER);
-    pickingLayer_ = std::make_shared<Layer>(dimensions, format, PICKING_LAYER);
+    depthLayer_ = std::make_shared<Layer>(dimensions, DataFLOAT32::get(), LayerType::Depth);
+    pickingLayer_ = std::make_shared<Layer>(dimensions, format, LayerType::Picking);
 }
 
 Image::Image(std::shared_ptr<Layer> colorLayer) : DataGroup() {
@@ -46,8 +46,8 @@ Image::Image(std::shared_ptr<Layer> colorLayer) : DataGroup() {
     auto dimensions = colorLayer->getDimensions();
     auto format = colorLayer->getDataFormat();
 
-    depthLayer_ = std::make_shared<Layer>(dimensions, DataFLOAT32::get(), DEPTH_LAYER);
-    pickingLayer_ = std::make_shared<Layer>(dimensions, format, PICKING_LAYER);
+    depthLayer_ = std::make_shared<Layer>(dimensions, DataFLOAT32::get(), LayerType::Depth);
+    pickingLayer_ = std::make_shared<Layer>(dimensions, format, LayerType::Picking);
 }
 
 Image::Image(const Image& rhs) : DataGroup(rhs) {
@@ -91,13 +91,13 @@ Image* Image::clone() const {
 
 const Layer* Image::getLayer(LayerType type, size_t idx) const {
     switch (type) {
-        case COLOR_LAYER:
+        case LayerType::Color:
             return getColorLayer(idx);
 
-        case DEPTH_LAYER:
+        case LayerType::Depth:
             return getDepthLayer();
 
-        case PICKING_LAYER:
+        case LayerType::Picking:
             return getPickingLayer();
     }
 
@@ -106,13 +106,13 @@ const Layer* Image::getLayer(LayerType type, size_t idx) const {
 
 Layer* Image::getLayer(LayerType type, size_t idx) {
     switch (type) {
-        case COLOR_LAYER:
+        case LayerType::Color:
             return getColorLayer(idx);
 
-        case DEPTH_LAYER:
+        case LayerType::Depth:
             return getDepthLayer();
 
-        case PICKING_LAYER:
+        case LayerType::Picking:
             return getPickingLayer();
     }
 

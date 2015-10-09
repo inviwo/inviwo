@@ -395,7 +395,7 @@ void bindTexture(const VolumeInport& inport, const TextureUnit& texUnit) {
 void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image& image,
                         const std::string& id, ImageType type) {
     switch (type) {
-        case COLOR_ONLY: {
+        case ImageType::ColorOnly: {
             TextureUnit unit;
             bindColorTexture(image, unit);
             utilgl::setShaderUniforms(shader, image, id + "Parameters");
@@ -403,7 +403,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             cont.push_back(std::move(unit));
             break;
         }
-        case COLOR_DEPTH: {
+        case ImageType::ColorDepth: {
             TextureUnit unit1, unit2;
             bindTextures(image, unit1, unit2);
             utilgl::setShaderUniforms(shader, image, id + "Parameters");
@@ -413,7 +413,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             cont.push_back(std::move(unit2));
             break;
         }
-        case COLOR_PICKING: {
+        case ImageType::ColorPicking: {
             TextureUnit unit1, unit2;
             bindColorTexture(image, unit1);
             bindPickingTexture(image, unit2);
@@ -424,7 +424,7 @@ void bindAndSetUniforms(Shader& shader, TextureUnitContainer& cont, const Image&
             cont.push_back(std::move(unit2));
             break;
         }
-        case COLOR_DEPTH_PICKING: {
+        case ImageType::ColorDepthPicking: {
             TextureUnit unit1, unit2, unit3;
             bindTextures(image, unit1, unit2, unit3);
             utilgl::setShaderUniforms(shader, image, id + "Parameters");

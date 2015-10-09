@@ -82,10 +82,10 @@ CanvasProcessor::CanvasProcessor()
     aspectRatioScaling_.setVisible(false);
     inputSize_.addProperty(aspectRatioScaling_);
 
-    visibleLayer_.addOption("color", "Color layer", COLOR_LAYER);
-    visibleLayer_.addOption("depth", "Depth layer", DEPTH_LAYER);
-    visibleLayer_.addOption("picking", "Picking layer", PICKING_LAYER);
-    visibleLayer_.set(COLOR_LAYER);
+    visibleLayer_.addOption("color", "Color layer", LayerType::Color);
+    visibleLayer_.addOption("depth", "Depth layer", LayerType::Depth);
+    visibleLayer_.addOption("picking", "Picking layer", LayerType::Picking);
+    visibleLayer_.set(LayerType::Color);
     addProperty(visibleLayer_);
     addProperty(colorLayer_);
     addProperty(saveLayerDirectory_);
@@ -97,15 +97,15 @@ CanvasProcessor::CanvasProcessor()
 
     visibleLayer_.onChange([&](){
         if (inport_.hasData()){
-            int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
-            colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == COLOR_LAYER);
+            auto layers = inport_.getData()->getNumberOfColorLayers();
+            colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         }
-        colorLayer_.setVisible(visibleLayer_.get() == COLOR_LAYER);
+        colorLayer_.setVisible(visibleLayer_.get() == LayerType::Color);
     });
 
     inport_.onChange([&](){
-        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
-        colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == COLOR_LAYER);
+        auto layers = inport_.getData()->getNumberOfColorLayers();
+        colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         colorLayer_.setMaxValue(layers - 1);
     });
 
@@ -209,11 +209,11 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
     std::shared_ptr<const Image> image = inport_.getData();
     if (image) {
         const Layer* layer = nullptr;
-        if (visibleLayer_.get() == COLOR_LAYER){
+        if (visibleLayer_.get() == LayerType::Color){
             layer = image->getColorLayer(colorLayer_.get());
         }
         else{
-            layer = image->getLayer(static_cast<LayerType>(visibleLayer_.get()));
+            layer = image->getLayer(visibleLayer_.get());
         }
         if (layer) {
             std::string fileExtension = filesystem::getFileExtension(snapshotPath);
@@ -278,30 +278,30 @@ std::vector<unsigned char>* CanvasProcessor::getLayerAsCodedBuffer(LayerType lay
 
 std::vector<unsigned char>* CanvasProcessor::getColorLayerAsCodedBuffer(std::string& type,
                                                                         size_t idx) {
-    return getLayerAsCodedBuffer(LayerType::COLOR_LAYER, type, idx);
+    return getLayerAsCodedBuffer(LayerType::Color, type, idx);
 }
 
 std::vector<unsigned char>* CanvasProcessor::getDepthLayerAsCodedBuffer(std::string& type) {
-    return getLayerAsCodedBuffer(LayerType::DEPTH_LAYER, type);
+    return getLayerAsCodedBuffer(LayerType::Depth, type);
 }
 
 std::vector<unsigned char>* CanvasProcessor::getPickingLayerAsCodedBuffer(std::string& type) {
-    return getLayerAsCodedBuffer(LayerType::PICKING_LAYER, type);
+    return getLayerAsCodedBuffer(LayerType::Picking, type);
 }
 
 std::vector<unsigned char>* CanvasProcessor::getVisibleLayerAsCodedBuffer(std::string& type) {
-    if (visibleLayer_.get() == COLOR_LAYER){
+    if (visibleLayer_.get() == LayerType::Color){
         getColorLayerAsCodedBuffer(type, colorLayer_.get());
     }
-    return getLayerAsCodedBuffer(static_cast<LayerType>(visibleLayer_.get()), type);
+    return getLayerAsCodedBuffer(visibleLayer_.get(), type);
 }
 
 void CanvasProcessor::process() {
     if (canvasWidget_ && canvasWidget_->getCanvas()) {
         canvasWidget_->getCanvas()->activate();
-        LayerType layerType = static_cast<LayerType>(visibleLayer_.get());
-        if (visibleLayer_.get() == COLOR_LAYER) {
-            canvasWidget_->getCanvas()->render(inport_.getData().get(), COLOR_LAYER,
+        LayerType layerType = visibleLayer_.get();
+        if (visibleLayer_.get() == LayerType::Color) {
+            canvasWidget_->getCanvas()->render(inport_.getData().get(), LayerType::Color,
                                                colorLayer_.get());
         } else {
             canvasWidget_->getCanvas()->render(inport_.getData().get(), layerType, 0);
@@ -312,7 +312,7 @@ void CanvasProcessor::process() {
 void CanvasProcessor::doIfNotReady() {
     if (canvasWidget_ && canvasWidget_->getCanvas()) {
         canvasWidget_->getCanvas()->activate();
-        canvasWidget_->getCanvas()->render(nullptr, static_cast<LayerType>(visibleLayer_.get()));
+        canvasWidget_->getCanvas()->render(nullptr, visibleLayer_.get());
     }
 }
 

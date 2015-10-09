@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,39 +24,45 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#include "compositeprocessorgl.h"
-#include <modules/opengl/texture/textureunit.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/texture/textureutils.h>
-#include <modules/opengl/shader/shaderutils.h>
+#ifndef IVW_PROCESSORNETWORKCONVERTER_H
+#define IVW_PROCESSORNETWORKCONVERTER_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 
-CompositeProcessorGL::CompositeProcessorGL()
-    : Processor(), shaderFileName_("composite.frag"), shader_(shaderFileName_) {}
+/**
+ * \class ProcessorNetworkConverter
+ * \brief A utitlity to handle conversion of ProcessorNetwork versions.
+ */
+class IVW_CORE_API ProcessorNetworkConverter : public VersionConverter {
+    public:
+        typedef void (ProcessorNetworkConverter::*updateType)(TxElement*);
+        ProcessorNetworkConverter(int from);
+        virtual bool convert(TxElement* root);
+        int from_;
+    private:
+        void updateProcessorType(TxElement* node);
+        void updateMetaDataTree(TxElement* node);
+        void updatePropertType(TxElement* node);
+        void updateMetaDataType(TxElement* node);
+        void updateMetaDataKeys(TxElement* node);
+        void updateShadingMode(TxElement* node);
+        void updateCameraToComposite(TxElement* node);
+        void updateDimensionTag(TxElement* node);
+        void updatePropertyLinks(TxElement* node);
+        void updatePortsInProcessors(TxElement* node);
+        void updateNoSpaceInProcessorClassIdentifers(TxElement* node);
 
-CompositeProcessorGL::CompositeProcessorGL(std::string programFileName)
-    : Processor(), shaderFileName_(programFileName), shader_(shaderFileName_) {}
+        void traverseNodes(TxElement* node, updateType update);
+    };
 
-void CompositeProcessorGL::compositePortsToOutport(ImageOutport& outport, ImageType type, ImageInport& inport) {
-    if (inport.isReady() && outport.hasData()) {        
-        utilgl::activateTarget(outport, type);
-        shader_.activate();
+} // namespace
 
-        TextureUnitContainer units;
-        utilgl::bindAndSetUniforms(shader_, units, *inport.getData(),  "tex0", ImageType::ColorDepthPicking);
-        utilgl::bindAndSetUniforms(shader_, units, *outport.getData(), "tex1", ImageType::ColorDepthPicking);
-        utilgl::setShaderUniforms(shader_, outport, "outportParameters");
-        utilgl::singleDrawImagePlaneRect();
+#endif // IVW_PROCESSORNETWORKCONVERTER_H
 
-        shader_.deactivate();
-        utilgl::deactivateCurrentTarget();
-    }
-}
-
-void CompositeProcessorGL::initializeResources() { shader_.rebuild(); }
-
-}  // namespace

@@ -156,8 +156,8 @@ void LinkDialog::clickedSmartLinkPushButton() {
             if (linkSubProperties) {
                 if (AutoLinker::canLink(srcPropertie, dstPropertie,
                                         (LinkingConditions)selectedTypes)) {
-                    CompositeProperty* compSrc = IS_COMPOSITE_PROPERTY(srcPropertie);
-                    CompositeProperty* compDst = IS_COMPOSITE_PROPERTY(dstPropertie);
+                    CompositeProperty* compSrc = dynamic_cast<CompositeProperty*>(srcPropertie);
+                    CompositeProperty* compDst = dynamic_cast<CompositeProperty*>(dstPropertie);
                     if ( compSrc && compDst) {
                         //If composite property then try to link sub-properties only
                         std::vector<Property*> s = compSrc->getProperties();

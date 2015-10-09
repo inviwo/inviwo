@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
@@ -45,14 +45,14 @@
 
 namespace inviwo {
 
-
 PyObject* py_saveTransferFunction(PyObject* /*self*/, PyObject* args) {
     static PySaveTransferFunction p;
 
     if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -60,14 +60,14 @@ PyObject* py_saveTransferFunction(PyObject* /*self*/, PyObject* args) {
         return nullptr;
     }
 
+    std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1));
 
-    std::string filename      = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1));
-    
     TransferFunctionProperty* tf = dynamic_cast<TransferFunctionProperty*>(theProperty);
 
     if (!tf) {
-        std::string msg = std::string("saveTransferFunction() no transfer function property at path: ") + ", (" + path
-                          +" is of type "+ theProperty->getClassIdentifier() +  ")";
+        std::string msg =
+            std::string("saveTransferFunction() no transfer function property at path: ") + ", (" +
+            path + " is of type " + theProperty->getClassIdentifier() + ")";
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
@@ -80,35 +80,38 @@ PyObject* py_saveTransferFunction(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-
 PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
     static PyLoadTransferFunction p;
 
     if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
-    
+
     std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1));
-    
+
     TransferFunctionProperty* tf = dynamic_cast<TransferFunctionProperty*>(theProperty);
 
     if (!tf) {
-        std::string msg = std::string("loadTransferFunction() no transfer function property with id: ") + path + ", ("+path
-                          +" is of type "+ theProperty->getClassIdentifier() +  ")";
+        std::string msg =
+            std::string("loadTransferFunction() no transfer function property with id: ") + path +
+            ", (" + path + " is of type " + theProperty->getClassIdentifier() + ")";
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
 
     if (!filesystem::fileExists(filename)) {
-        if (filesystem::fileExists(InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_TRANSFERFUNCTIONS, "/" + filename))) {
-            filename = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_TRANSFERFUNCTIONS, "/" + filename);
+        if (filesystem::fileExists(InviwoApplication::getPtr()->getPath(
+                InviwoApplication::PATH_TRANSFERFUNCTIONS, "/" + filename))) {
+            filename = InviwoApplication::getPtr()->getPath(
+                InviwoApplication::PATH_TRANSFERFUNCTIONS, "/" + filename);
         } else {
             std::string msg = "loadTransferFunction() file not found (" + filename + ")";
             PyErr_SetString(PyExc_TypeError, msg.c_str());
@@ -123,14 +126,14 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-
 PyObject* py_clearTransferfunction(PyObject* /*self*/, PyObject* args) {
     static PyClearTransferfunction p;
 
     if (!p.testParams(args)) return nullptr;
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
 
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -140,8 +143,9 @@ PyObject* py_clearTransferfunction(PyObject* /*self*/, PyObject* args) {
     TransferFunctionProperty* tf = dynamic_cast<TransferFunctionProperty*>(theProperty);
 
     if (!tf) {
-        std::string msg = std::string("clearTransferfunction() no transfer function property with id: ") + path + ", ("+path
-                          +" is of type "+ theProperty->getClassIdentifier() +  ")";
+        std::string msg =
+            std::string("clearTransferfunction() no transfer function property with id: ") + path +
+            ", (" + path + " is of type " + theProperty->getClassIdentifier() + ")";
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
@@ -150,14 +154,14 @@ PyObject* py_clearTransferfunction(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-
 PyObject* py_addPointTransferFunction(PyObject* /*self*/, PyObject* args) {
     static PyAddTransferFunction p;
 
     if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -167,61 +171,37 @@ PyObject* py_addPointTransferFunction(PyObject* /*self*/, PyObject* args) {
 
     vec2 pos = PyValueParser::parse<vec2>(PyTuple_GetItem(args, 1));
     vec3 color = PyValueParser::parse<vec3>(PyTuple_GetItem(args, 2));
-    
+
     TransferFunctionProperty* tf = dynamic_cast<TransferFunctionProperty*>(theProperty);
 
     if (!tf) {
-        std::string msg = std::string("addPointToTransferFunction() no transfer function property with id: ") + path + ", ("+path
-                          +" is of type "+ theProperty->getClassIdentifier() +  ")";
+        std::string msg =
+            std::string("addPointToTransferFunction() no transfer function property with id: ") +
+            path + ", (" + path + " is of type " + theProperty->getClassIdentifier() + ")";
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
 
-    tf->get().addPoint(pos,vec4(color,pos.y));
+    tf->get().addPoint(pos, vec4(color, pos.y));
     tf->setPropertyModified(true);
     Py_RETURN_NONE;
 }
 
-
-PySaveTransferFunction::PySaveTransferFunction()
-    : path_("path")
-    , filename_("filename")
-{
+PySaveTransferFunction::PySaveTransferFunction() : path_("path"), filename_("filename") {
     addParam(&path_);
     addParam(&filename_);
 }
 
-
-
-PyLoadTransferFunction::PyLoadTransferFunction()
-    : path_("path")
-    , filename_("filename")
-{
+PyLoadTransferFunction::PyLoadTransferFunction() : path_("path"), filename_("filename") {
     addParam(&path_);
     addParam(&filename_);
 }
 
+PyClearTransferfunction::PyClearTransferfunction() : path_("path") { addParam(&path_); }
 
-PyClearTransferfunction::PyClearTransferfunction()
-    : path_("path")
-{
-    addParam(&path_);
-}
-
-
-
-
-PyAddTransferFunction::PyAddTransferFunction()
-    : path_("path")
-    , pos_("position")
-    , color_("color")
-{
+PyAddTransferFunction::PyAddTransferFunction() : path_("path"), pos_("position"), color_("color") {
     addParam(&path_);
     addParam(&pos_);
     addParam(&color_);
 }
-
 }
-
-
-

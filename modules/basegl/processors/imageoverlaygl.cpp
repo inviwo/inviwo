@@ -156,7 +156,7 @@ void ImageOverlayGL::onStatusChange() {
 }
 
 void ImageOverlayGL::process() {
-    utilgl::activateTargetAndCopySource(outport_, inport_, inviwo::COLOR_DEPTH_PICKING);
+    utilgl::activateTargetAndCopySource(outport_, inport_, inviwo::ImageType::ColorDepthPicking);
 
     if (overlayPort_.hasData()) {  // draw overlay
         utilgl::BlendModeState blendMode(static_cast<GLint>(overlayProperty_.blendMode_.get()),

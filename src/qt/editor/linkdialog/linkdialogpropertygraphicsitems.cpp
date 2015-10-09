@@ -33,6 +33,7 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 
@@ -68,8 +69,7 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem (
     processorGraphicsItem_ = processor;
     setProperty(prop);
 
-    CompositeProperty* compProp = IS_COMPOSITE_PROPERTY(prop);
-    if (compProp) {
+    if (auto compProp = dynamic_cast<CompositeProperty*>(prop)) {
         // LogWarn("Found composite sub properties")
         std::vector<Property*> subProperties = compProp->getProperties();
         for (auto& subPropertie : subProperties) {

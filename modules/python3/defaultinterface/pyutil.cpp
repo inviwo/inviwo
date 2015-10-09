@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
@@ -42,15 +42,16 @@
 
 namespace inviwo {
 
-    PyObject* py_wait(PyObject* /*self*/, PyObject* args) {
-        static PyWaitMethod p;
+PyObject* py_wait(PyObject* /*self*/, PyObject* args) {
+    static PyWaitMethod p;
 
-        if (!p.testParams(args)) return nullptr;
+    if (!p.testParams(args)) return nullptr;
 
-        InviwoApplication::getPtr()->waitForPool();
-        
-        Py_RETURN_NONE;
+    InviwoApplication::getPtr()->waitForPool();
+
+    Py_RETURN_NONE;
 }
+
 PyObject* py_snapshot(PyObject* /*self*/, PyObject* args) {
     static PySnapshotMethod p;
 
@@ -67,7 +68,8 @@ PyObject* py_snapshot(PyObject* /*self*/, PyObject* args) {
 
     if (canvasName.size() != 0) {
         canvas = dynamic_cast<CanvasProcessor*>(
-            InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(canvasName));
+            InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorByIdentifier(
+                canvasName));
     } else {
         if (InviwoApplication::getPtr() && InviwoApplication::getPtr()->getProcessorNetwork()) {
             std::vector<CanvasProcessor*> canvases = InviwoApplication::getPtr()
@@ -105,7 +107,7 @@ PyObject* py_snapshotCanvas(PyObject* /*self*/, PyObject* args) {
 
     if (index >= canvases.size()) {
         std::string msg = std::string("snapshotCanvas() index out of range with index: ") +
-            toString(index) + " ,canvases avilable: " + toString(canvases.size());
+                          toString(index) + " ,canvases avilable: " + toString(canvases.size());
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
@@ -118,7 +120,7 @@ PyObject* py_snapshotAllCanvases(PyObject* /*self*/, PyObject* args) {
     static PySnapshotAllCanvasesMethod p;
 
     if (!p.testParams(args)) return nullptr;
-    auto size  = PyTuple_Size(args);
+    auto size = PyTuple_Size(args);
 
     std::string path;
     std::string prefix = "";
@@ -132,21 +134,17 @@ PyObject* py_snapshotAllCanvases(PyObject* /*self*/, PyObject* args) {
         fileEnding = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 2));
     }
 
-
     std::vector<CanvasProcessor*> canvases =
         InviwoApplication::getPtr()->getProcessorNetwork()->getProcessorsByType<CanvasProcessor>();
 
-    for (auto &c : canvases) {
+    for (auto& c : canvases) {
         std::stringstream ss;
         ss << path << "/" << prefix << c->getIdentifier() << "." << fileEnding;
         c->saveImageLayer(ss.str());
     }
 
-    
     Py_RETURN_NONE;
 }
-
-
 
 PyObject* py_getBasePath(PyObject* /*self*/, PyObject* /*args*/) {
     return PyValueParser::toPyObject(InviwoApplication::getPtr()->getBasePath());
@@ -220,22 +218,10 @@ PyObject* py_clearResourceManager(PyObject* /*self*/, PyObject* /*args*/) {
 }
 
 PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
-    if (InviwoApplication::getPtr()) {
-        ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
-
-        if (network) {
-            ProcessorNetworkEvaluator* evaluator =
-                ProcessorNetworkEvaluator::getProcessorNetworkEvaluatorForProcessorNetwork(network);
-
-            if (evaluator) {
-                evaluator->disableEvaluation();
-                Py_RETURN_NONE;
-            }
-
-            std::string msg =
-                std::string("disableEvaluation() could not find ProcessorNetworkEvaluator");
-            PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return nullptr;
+    if (auto app = InviwoApplication::getPtr()) {
+        if (auto evaluator = app->getProcessorNetworkEvaluator()) {
+            evaluator->disableEvaluation();
+            Py_RETURN_NONE;
         }
 
         std::string msg = std::string("disableEvaluation() could not find ProcessorNetwork");
@@ -249,22 +235,10 @@ PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
 }
 
 PyObject* py_enableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
-    if (InviwoApplication::getPtr()) {
-        ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
-
-        if (network) {
-            ProcessorNetworkEvaluator* evaluator =
-                ProcessorNetworkEvaluator::getProcessorNetworkEvaluatorForProcessorNetwork(network);
-
-            if (evaluator) {
-                evaluator->enableEvaluation();
-                Py_RETURN_NONE;
-            }
-
-            std::string msg =
-                std::string("disableEvaluation() could not find ProcessorNetworkEvaluator");
-            PyErr_SetString(PyExc_TypeError, msg.c_str());
-            return nullptr;
+    if (auto app = InviwoApplication::getPtr()) {
+        if (auto evaluator = app->getProcessorNetworkEvaluator()) {
+            evaluator->enableEvaluation();
+            Py_RETURN_NONE;
         }
 
         std::string msg = std::string("disableEvaluation() could not find ProcessorNetwork");
@@ -288,12 +262,9 @@ PySnapshotCanvasMethod::PySnapshotCanvasMethod() : canvasID_("canvasID"), filena
 }
 
 PySnapshotAllCanvasesMethod::PySnapshotAllCanvasesMethod()
-    : path_("path"), prefix_("prefix", true), fileEnding_("fileEnding", true)
-{
+    : path_("path"), prefix_("prefix", true), fileEnding_("fileEnding", true) {
     addParam(&path_);
     addParam(&prefix_);
     addParam(&fileEnding_);
-
 }
-
 }

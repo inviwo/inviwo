@@ -50,9 +50,9 @@ public:
 
     virtual ImageGL* clone() const override;
 
-    void reAttachAllLayers(ImageType type = ALL_LAYERS);
+    void reAttachAllLayers(ImageType type = ImageType::AllLayers);
 
-    void activateBuffer(ImageType type = ALL_LAYERS);
+    void activateBuffer(ImageType type = ImageType::AllLayers);
     void deactivateBuffer();
 
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;

@@ -66,7 +66,7 @@ void FirstIvwProcessor::initialize() {
 }
 
 void FirstIvwProcessor::process() {
-    utilgl::activateAndClearTarget(outport_, COLOR_ONLY);
+    utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
     shader_.activate();
 
     //Render Quad

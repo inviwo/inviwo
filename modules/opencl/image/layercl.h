@@ -40,7 +40,7 @@ namespace inviwo {
 
 class IVW_MODULE_OPENCL_API LayerCL : public LayerCLBase, public LayerRepresentation {
 public:
-    LayerCL(size2_t dimensions = size2_t(128, 128), LayerType type = COLOR_LAYER,
+    LayerCL(size2_t dimensions = size2_t(128, 128), LayerType type = LayerType::Color,
             const DataFormatBase* format = DataFormatBase::get(), const void* data = nullptr);
     LayerCL(const LayerCL& other);
     virtual ~LayerCL();

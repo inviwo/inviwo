@@ -55,7 +55,7 @@ void ImageCompositeProcessorGL::process() {
     utilgl::activateTargetAndCopySource(outport_, imageInport1_);
     utilgl::deactivateCurrentTarget();
 
-    compositePortsToOutport(outport_, COLOR_DEPTH, imageInport2_);
+    compositePortsToOutport(outport_, ImageType::ColorDepth, imageInport2_);
 }
 
 } // namespace

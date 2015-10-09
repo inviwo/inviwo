@@ -37,8 +37,8 @@ namespace inviwo {
 template<typename T>
 class ImageRAMPrecision : public ImageRAM {
 public:
-    ImageRAMPrecision(uvec2 dimensions = uvec2(128,128), ImageType type = COLOR_DEPTH, const DataFormatBase* format = defaultformat());
-    ImageRAMPrecision(T* data, uvec2 dimensions = uvec2(128,128), ImageType type = COLOR_DEPTH, const DataFormatBase* format = defaultformat());
+    ImageRAMPrecision(uvec2 dimensions = uvec2(128,128), ImageType type = ImageType::ColorDepth, const DataFormatBase* format = defaultformat());
+    ImageRAMPrecision(T* data, uvec2 dimensions = uvec2(128,128), ImageType type = ImageType::ColorDepth, const DataFormatBase* format = defaultformat());
     ImageRAMPrecision(const ImageRAMPrecision<T>& rhs): ImageRAM(rhs.getDimension(), rhs.getImageType(), rhs.getDataFormat()) {
         *this = rhs;
     }
@@ -85,9 +85,9 @@ private:
 template<typename T, size_t B>
 class ImageRAMCustomPrecision : public ImageRAMPrecision<T> {
 public:
-    ImageRAMCustomPrecision(uvec2 dimensions = uvec2(128,128), ImageType type = COLOR_DEPTH, const DataFormatBase* format = defaultformat())
+    ImageRAMCustomPrecision(uvec2 dimensions = uvec2(128,128), ImageType type = ImageType::ColorDepth, const DataFormatBase* format = defaultformat())
         : ImageRAMPrecision<T>(dimensions, type, format) {}
-    ImageRAMCustomPrecision(T* data, uvec2 dimensions = uvec2(128,128), ImageType type = COLOR_DEPTH,
+    ImageRAMCustomPrecision(T* data, uvec2 dimensions = uvec2(128,128), ImageType type = ImageType::ColorDepth,
                             const DataFormatBase* format = defaultformat())
         : ImageRAMPrecision<T>(data, dimensions, type, format) {}
     virtual ~ImageRAMCustomPrecision() {};

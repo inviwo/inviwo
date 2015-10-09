@@ -24,13 +24,12 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
 
 #include "pyproperties.h"
-
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processor.h>
@@ -49,7 +48,6 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/python3/pythoninterface/pyvalueparser.h>
 
-
 namespace inviwo {
 
 PyObject* py_setPropertyValue(PyObject* self, PyObject* args) {
@@ -58,8 +56,9 @@ PyObject* py_setPropertyValue(PyObject* self, PyObject* args) {
     if (!p.testParams(args)) return nullptr;
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     PyObject* parameter = PyTuple_GetItem(args, 1);
-        
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -67,13 +66,9 @@ PyObject* py_setPropertyValue(PyObject* self, PyObject* args) {
         return nullptr;
     }
 
-    PyValueParser::setProperty(theProperty,parameter);
+    PyValueParser::setProperty(theProperty, parameter);
     Py_RETURN_NONE;
 }
-
-
-
-
 
 PyObject* py_setPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     static PySetPropertyMaxValueMethod p;
@@ -83,7 +78,8 @@ PyObject* py_setPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     PyObject* parameter = PyTuple_GetItem(args, 1);
 
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -92,16 +88,16 @@ PyObject* py_setPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     }
 
     OrdinalProperty<float>* ordinalFloat = dynamic_cast<OrdinalProperty<float>*>(theProperty);
-    OrdinalProperty<int>*   ordinalInt   = dynamic_cast<OrdinalProperty<int>  *>(theProperty);
+    OrdinalProperty<int>* ordinalInt = dynamic_cast<OrdinalProperty<int>*>(theProperty);
     OrdinalProperty<ivec2>* ordinalIvec2 = dynamic_cast<OrdinalProperty<ivec2>*>(theProperty);
     OrdinalProperty<ivec3>* ordinalIvec3 = dynamic_cast<OrdinalProperty<ivec3>*>(theProperty);
     OrdinalProperty<ivec4>* ordinalIvec4 = dynamic_cast<OrdinalProperty<ivec4>*>(theProperty);
-    OrdinalProperty<mat2>*  ordinalMat2  = dynamic_cast<OrdinalProperty<mat2> *>(theProperty);
-    OrdinalProperty<mat3>*  ordinalMat3  = dynamic_cast<OrdinalProperty<mat3> *>(theProperty);
-    OrdinalProperty<mat4>*  ordinalMat4  = dynamic_cast<OrdinalProperty<mat4> *>(theProperty);
-    OrdinalProperty<vec2>*  ordinalVec2  = dynamic_cast<OrdinalProperty<vec2> *>(theProperty);
-    OrdinalProperty<vec3>*  ordinalVec3  = dynamic_cast<OrdinalProperty<vec3> *>(theProperty);
-    OrdinalProperty<vec4>*  ordinalVec4  = dynamic_cast<OrdinalProperty<vec4> *>(theProperty);
+    OrdinalProperty<mat2>* ordinalMat2 = dynamic_cast<OrdinalProperty<mat2>*>(theProperty);
+    OrdinalProperty<mat3>* ordinalMat3 = dynamic_cast<OrdinalProperty<mat3>*>(theProperty);
+    OrdinalProperty<mat4>* ordinalMat4 = dynamic_cast<OrdinalProperty<mat4>*>(theProperty);
+    OrdinalProperty<vec2>* ordinalVec2 = dynamic_cast<OrdinalProperty<vec2>*>(theProperty);
+    OrdinalProperty<vec3>* ordinalVec3 = dynamic_cast<OrdinalProperty<vec3>*>(theProperty);
+    OrdinalProperty<vec4>* ordinalVec4 = dynamic_cast<OrdinalProperty<vec4>*>(theProperty);
 
     if (ordinalFloat) {
         ordinalFloat->setMaxValue(PyValueParser::parse<float>(parameter));
@@ -126,13 +122,12 @@ PyObject* py_setPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     } else if (ordinalVec4) {
         ordinalVec4->setMaxValue(PyValueParser::parse<vec4>(parameter));
     } else {
-        LogErrorCustom("inviwo_setPropertyMaxValue","Unknown parameter type: " << theProperty->getClassIdentifier());
+        LogErrorCustom("inviwo_setPropertyMaxValue",
+                       "Unknown parameter type: " << theProperty->getClassIdentifier());
     }
 
     Py_RETURN_NONE;
 }
-
-
 
 PyObject* py_setPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     static PySetPropertyMinValueMethod p;
@@ -142,7 +137,8 @@ PyObject* py_setPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
     PyObject* parameter = PyTuple_GetItem(args, 1);
 
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -151,16 +147,16 @@ PyObject* py_setPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     }
 
     OrdinalProperty<float>* ordinalFloat = dynamic_cast<OrdinalProperty<float>*>(theProperty);
-    OrdinalProperty<int>*   ordinalInt   = dynamic_cast<OrdinalProperty<int>  *>(theProperty);
+    OrdinalProperty<int>* ordinalInt = dynamic_cast<OrdinalProperty<int>*>(theProperty);
     OrdinalProperty<ivec2>* ordinalIvec2 = dynamic_cast<OrdinalProperty<ivec2>*>(theProperty);
     OrdinalProperty<ivec3>* ordinalIvec3 = dynamic_cast<OrdinalProperty<ivec3>*>(theProperty);
     OrdinalProperty<ivec4>* ordinalIvec4 = dynamic_cast<OrdinalProperty<ivec4>*>(theProperty);
-    OrdinalProperty<mat2>*  ordinalMat2  = dynamic_cast<OrdinalProperty<mat2> *>(theProperty);
-    OrdinalProperty<mat3>*  ordinalMat3  = dynamic_cast<OrdinalProperty<mat3> *>(theProperty);
-    OrdinalProperty<mat4>*  ordinalMat4  = dynamic_cast<OrdinalProperty<mat4> *>(theProperty);
-    OrdinalProperty<vec2>*  ordinalVec2  = dynamic_cast<OrdinalProperty<vec2> *>(theProperty);
-    OrdinalProperty<vec3>*  ordinalVec3  = dynamic_cast<OrdinalProperty<vec3> *>(theProperty);
-    OrdinalProperty<vec4>*  ordinalVec4  = dynamic_cast<OrdinalProperty<vec4> *>(theProperty);
+    OrdinalProperty<mat2>* ordinalMat2 = dynamic_cast<OrdinalProperty<mat2>*>(theProperty);
+    OrdinalProperty<mat3>* ordinalMat3 = dynamic_cast<OrdinalProperty<mat3>*>(theProperty);
+    OrdinalProperty<mat4>* ordinalMat4 = dynamic_cast<OrdinalProperty<mat4>*>(theProperty);
+    OrdinalProperty<vec2>* ordinalVec2 = dynamic_cast<OrdinalProperty<vec2>*>(theProperty);
+    OrdinalProperty<vec3>* ordinalVec3 = dynamic_cast<OrdinalProperty<vec3>*>(theProperty);
+    OrdinalProperty<vec4>* ordinalVec4 = dynamic_cast<OrdinalProperty<vec4>*>(theProperty);
 
     if (ordinalFloat) {
         ordinalFloat->setMinValue(PyValueParser::parse<float>(parameter));
@@ -185,14 +181,11 @@ PyObject* py_setPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     } else if (ordinalVec4) {
         ordinalVec4->setMinValue(PyValueParser::parse<vec4>(parameter));
     } else {
-        LogErrorCustom("inviwo_setPropertyMinValue","Unknown parameter type");
+        LogErrorCustom("inviwo_setPropertyMinValue", "Unknown parameter type");
     }
 
     Py_RETURN_NONE;
 }
-
-
-
 
 PyObject* py_getPropertyValue(PyObject* /*self*/, PyObject* args) {
     static PyGetPropertyValueMethod p;
@@ -201,7 +194,8 @@ PyObject* py_getPropertyValue(PyObject* /*self*/, PyObject* args) {
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
 
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -212,8 +206,20 @@ PyObject* py_getPropertyValue(PyObject* /*self*/, PyObject* args) {
     return PyValueParser::getProperty(theProperty);
 }
 
-#define CAST_N_GETMAX(PropType,prop,parser) {PropType* casted = dynamic_cast<PropType*>(prop); if(casted) {return PyValueParser::toPyObject(casted->getMaxValue());}}
-#define CAST_N_GETMIN(PropType,prop,parser) {PropType* casted = dynamic_cast<PropType*>(prop); if(casted) {return PyValueParser::toPyObject(casted->getMinValue());}}
+#define CAST_N_GETMAX(PropType, prop, parser)                        \
+    {                                                                \
+        PropType* casted = dynamic_cast<PropType*>(prop);            \
+        if (casted) {                                                \
+            return PyValueParser::toPyObject(casted->getMaxValue()); \
+        }                                                            \
+    }
+#define CAST_N_GETMIN(PropType, prop, parser)                        \
+    {                                                                \
+        PropType* casted = dynamic_cast<PropType*>(prop);            \
+        if (casted) {                                                \
+            return PyValueParser::toPyObject(casted->getMinValue()); \
+        }                                                            \
+    }
 
 PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
     static PyGetPropertyMaxValueMethod p;
@@ -222,7 +228,8 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
 
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -230,22 +237,20 @@ PyObject* py_getPropertyMaxValue(PyObject* /*self*/, PyObject* args) {
         return nullptr;
     }
 
-    CAST_N_GETMAX(FloatProperty,theProperty,parser);
-    CAST_N_GETMAX(IntProperty,theProperty,parser);
-    CAST_N_GETMAX(IntVec2Property,theProperty,parser);
-    CAST_N_GETMAX(IntVec3Property,theProperty,parser);
-    CAST_N_GETMAX(IntVec4Property,theProperty,parser);
-    CAST_N_GETMAX(FloatMat2Property,theProperty,parser);
-    CAST_N_GETMAX(FloatMat3Property,theProperty,parser);
-    CAST_N_GETMAX(FloatMat4Property,theProperty,parser);
-    CAST_N_GETMAX(FloatVec2Property,theProperty,parser);
-    CAST_N_GETMAX(FloatVec3Property,theProperty,parser);
-    CAST_N_GETMAX(FloatVec4Property,theProperty,parser);
-    LogErrorCustom("inviwo_getPropertyMaxValue","Unknown parameter type");
+    CAST_N_GETMAX(FloatProperty, theProperty, parser);
+    CAST_N_GETMAX(IntProperty, theProperty, parser);
+    CAST_N_GETMAX(IntVec2Property, theProperty, parser);
+    CAST_N_GETMAX(IntVec3Property, theProperty, parser);
+    CAST_N_GETMAX(IntVec4Property, theProperty, parser);
+    CAST_N_GETMAX(FloatMat2Property, theProperty, parser);
+    CAST_N_GETMAX(FloatMat3Property, theProperty, parser);
+    CAST_N_GETMAX(FloatMat4Property, theProperty, parser);
+    CAST_N_GETMAX(FloatVec2Property, theProperty, parser);
+    CAST_N_GETMAX(FloatVec3Property, theProperty, parser);
+    CAST_N_GETMAX(FloatVec4Property, theProperty, parser);
+    LogErrorCustom("inviwo_getPropertyMaxValue", "Unknown parameter type");
     Py_RETURN_NONE;
 }
-
-
 
 PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
     static PyGetPropertyMinValueMethod p;
@@ -254,7 +259,8 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
 
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -262,22 +268,20 @@ PyObject* py_getPropertyMinValue(PyObject* /*self*/, PyObject* args) {
         return nullptr;
     }
 
-    CAST_N_GETMIN(FloatProperty,theProperty,parser);
-    CAST_N_GETMIN(IntProperty,theProperty,parser);
-    CAST_N_GETMIN(IntVec2Property,theProperty,parser);
-    CAST_N_GETMIN(IntVec3Property,theProperty,parser);
-    CAST_N_GETMIN(IntVec4Property,theProperty,parser);
-    CAST_N_GETMIN(FloatMat2Property,theProperty,parser);
-    CAST_N_GETMIN(FloatMat3Property,theProperty,parser);
-    CAST_N_GETMIN(FloatMat4Property,theProperty,parser);
-    CAST_N_GETMIN(FloatVec2Property,theProperty,parser);
-    CAST_N_GETMIN(FloatVec3Property,theProperty,parser);
-    CAST_N_GETMIN(FloatVec4Property,theProperty,parser);
-    LogErrorCustom("inviwo_getPropertyMaxValue","Unknown parameter type");
+    CAST_N_GETMIN(FloatProperty, theProperty, parser);
+    CAST_N_GETMIN(IntProperty, theProperty, parser);
+    CAST_N_GETMIN(IntVec2Property, theProperty, parser);
+    CAST_N_GETMIN(IntVec3Property, theProperty, parser);
+    CAST_N_GETMIN(IntVec4Property, theProperty, parser);
+    CAST_N_GETMIN(FloatMat2Property, theProperty, parser);
+    CAST_N_GETMIN(FloatMat3Property, theProperty, parser);
+    CAST_N_GETMIN(FloatMat4Property, theProperty, parser);
+    CAST_N_GETMIN(FloatVec2Property, theProperty, parser);
+    CAST_N_GETMIN(FloatVec3Property, theProperty, parser);
+    CAST_N_GETMIN(FloatVec4Property, theProperty, parser);
+    LogErrorCustom("inviwo_getPropertyMaxValue", "Unknown parameter type");
     Py_RETURN_NONE;
 }
-
-
 
 PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
     static PyClickButtonMethod p;
@@ -285,8 +289,9 @@ PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
     if (!p.testParams(args)) return nullptr;
 
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
-    
-    Property* theProperty = InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+
+    Property* theProperty =
+        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -297,7 +302,8 @@ PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
     ButtonProperty* button = dynamic_cast<ButtonProperty*>(theProperty);
 
     if (!button) {
-        std::string msg = std::string("clickButton() found property is not a ButtonProperty: ") + theProperty->getClassIdentifier();
+        std::string msg = std::string("clickButton() found property is not a ButtonProperty: ") +
+                          theProperty->getClassIdentifier();
         PyErr_SetString(PyExc_TypeError, msg.c_str());
         return nullptr;
     }
@@ -306,56 +312,26 @@ PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
     Py_RETURN_NONE;
 }
 
-
-PySetPropertyValueMethod::PySetPropertyValueMethod()
-    : path_("path")
-    , value_("value")
-{
+PySetPropertyValueMethod::PySetPropertyValueMethod() : path_("path"), value_("value") {
     addParam(&path_);
     addParam(&value_);
 }
 
-PySetPropertyMaxValueMethod::PySetPropertyMaxValueMethod()
-    : path_("path")
-    , maxValue_("maxValue")
-{
+PySetPropertyMaxValueMethod::PySetPropertyMaxValueMethod() : path_("path"), maxValue_("maxValue") {
     addParam(&path_);
     addParam(&maxValue_);
 }
 
-PySetPropertyMinValueMethod::PySetPropertyMinValueMethod()
-    : path_("path")
-    , minValue_("minValue")
-{
+PySetPropertyMinValueMethod::PySetPropertyMinValueMethod() : path_("path"), minValue_("minValue") {
     addParam(&path_);
     addParam(&minValue_);
 }
 
-PyGetPropertyValueMethod::PyGetPropertyValueMethod()
-    : path_("path")
-{
-    addParam(&path_);
-}
+PyGetPropertyValueMethod::PyGetPropertyValueMethod() : path_("path") { addParam(&path_); }
 
-PyGetPropertyMaxValueMethod::PyGetPropertyMaxValueMethod()
-    : path_("path")
-{
-    addParam(&path_);
-}
+PyGetPropertyMaxValueMethod::PyGetPropertyMaxValueMethod() : path_("path") { addParam(&path_); }
 
-PyGetPropertyMinValueMethod::PyGetPropertyMinValueMethod()
-    : path_("path")
-{
-    addParam(&path_);
-}
+PyGetPropertyMinValueMethod::PyGetPropertyMinValueMethod() : path_("path") { addParam(&path_); }
 
-PyClickButtonMethod::PyClickButtonMethod()
-    : path_("path")
-{
-    addParam(&path_);
-}
-
-
-
-
+PyClickButtonMethod::PyClickButtonMethod() : path_("path") { addParam(&path_); }
 }

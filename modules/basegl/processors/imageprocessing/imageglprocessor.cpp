@@ -79,7 +79,7 @@ void ImageGLProcessor::process() {
     TextureUnit imgUnit;    
     utilgl::bindColorTexture(inport_, imgUnit);
 
-    utilgl::activateTargetAndCopySource(outport_, inport_, COLOR_ONLY);
+    utilgl::activateTargetAndCopySource(outport_, inport_, ImageType::ColorOnly);
     shader_.activate();
 
     utilgl::setShaderUniforms(shader_, outport_, "outportParameters_");

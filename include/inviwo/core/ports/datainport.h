@@ -38,6 +38,7 @@
 #include <inviwo/core/ports/inportiterable.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/network/networkutils.h>
 #include <limits>
 #include <iterator>
 
@@ -68,10 +69,10 @@ public:
     bool hasData() const;
 };
 
-template<typename T>
+template <typename T>
 using MultiDataInport = DataInport<T, 0, false>;
 
-template<typename T>
+template <typename T>
 using FlatMultiDataInport = DataInport<T, 0, true>;
 
 template <typename T, size_t N, bool Flat>
@@ -110,7 +111,11 @@ size_t inviwo::DataInport<T, N, Flat>::getMaxNumberOfConnections() const {
 template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::canConnectTo(const Port* port) const {
     if (!port || port->getProcessor() == getProcessor()) return false;
-    
+
+    // Check for cicular depends.
+    auto pd = util::getPredecessors(port->getProcessor());
+    if (pd.find(getProcessor()) != pd.end()) return false;
+
     if (dynamic_cast<const DataOutport<T>*>(port))
         return true;
     else if (Flat && dynamic_cast<const OutportIterable<T>*>(port))
@@ -148,8 +153,8 @@ template <typename T, size_t N, bool Flat>
 bool DataInport<T, N, Flat>::hasData() const {
     if (N > 0) {
         return isConnected() && util::all_of(connectedOutports_, [](Outport* p) {
-                                    return static_cast<DataOutport<T>*>(p)->hasData();
-                                });
+                   return static_cast<DataOutport<T>*>(p)->hasData();
+               });
     } else {
         return isConnected() && this->begin() != this->end();
     }
@@ -160,28 +165,29 @@ std::shared_ptr<const T> DataInport<T, N, Flat>::getData() const {
     if (isConnected()) {
         auto it = this->begin();
         if (it != this->end()) return *it;
-    } 
-    return nullptr;   
+    }
+    return nullptr;
 }
 
 template <typename T, size_t N, bool Flat>
 std::vector<std::shared_ptr<const T>> DataInport<T, N, Flat>::getVectorData() const {
     std::vector<std::shared_ptr<const T>> res(N);
 
-    for (auto it = this->begin(); it!= this->end(); ++it) res.push_back(it.operator->());
-    
+    for (auto it = this->begin(); it != this->end(); ++it) res.push_back(it.operator->());
+
     return res;
 }
 
 template <typename T, size_t N, bool Flat>
-std::vector<std::pair<Outport*, std::shared_ptr<const T>>> inviwo::DataInport<T, N, Flat>::getSourceVectorData() const {
+std::vector<std::pair<Outport*, std::shared_ptr<const T>>>
+inviwo::DataInport<T, N, Flat>::getSourceVectorData() const {
     std::vector<std::pair<Outport*, std::shared_ptr<const T>>> res(N);
-    
+
     for (auto outport : connectedOutports_) {
         // Safe to static cast since we are unable to connect other outport types.
-        
+
         if (Flat) {
-            if(auto iterable = dynamic_cast<OutportIterable<T>*>(outport)) {
+            if (auto iterable = dynamic_cast<OutportIterable<T>*>(outport)) {
                 for (auto elem : *iterable) res.emplace_back(outport, elem);
             }
         } else {

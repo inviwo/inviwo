@@ -64,7 +64,6 @@ VolumeRaycaster::VolumeRaycaster()
     , positionIndicator_("positionindicator", "Position Indicator")
     , toggleShading_("toggleShading", "Toggle Shading", new KeyboardEvent('L'),
                      new Action(this, &VolumeRaycaster::toggleShading)) {
-     
     shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
 
     addPort(volumePort_, "VolumePortGroup");
@@ -78,12 +77,12 @@ VolumeRaycaster::VolumeRaycaster()
     volumePort_.onChange(this, &VolumeRaycaster::onVolumeChange);
 
     // change the currently selected channel when a pre-computed gradient is selected
-    raycasting_.gradientComputationMode_.onChange([this](){
+    raycasting_.gradientComputationMode_.onChange([this]() {
         if (channel_.size() == 4) {
             if (raycasting_.gradientComputationMode_.isSelectedIdentifier("precomputedXYZ")) {
                 channel_.set(3);
-            }
-            else if (raycasting_.gradientComputationMode_.isSelectedIdentifier("precomputedYZW")) {
+            } else if (raycasting_.gradientComputationMode_.isSelectedIdentifier(
+                           "precomputedYZW")) {
                 channel_.set(0);
             }
         }
@@ -128,36 +127,36 @@ void VolumeRaycaster::process() {
     utilgl::activateAndClearTarget(outport_);
     shader_.activate();
 
-   if (volumePort_.isChanged()) {
-       auto newVolume = volumePort_.getData();
+    if (volumePort_.isChanged()) {
+        auto newVolume = volumePort_.getData();
 
-       if (newVolume->hasRepresentation<VolumeGL>()) {
-           loadedVolume_ = newVolume;
-       } else {
-           dispatchPool([this, newVolume]() {
-               RenderContext::getPtr()->activateLocalRenderContext();
-               newVolume->getRep<kind::GL>();
-               glFlush();
-               dispatchFront([this, newVolume]() {
-                   loadedVolume_ = newVolume;
-                   invalidate(INVALID_OUTPUT);
-               });
-           });
-       }
-   }
+        if (newVolume->hasRepresentation<VolumeGL>()) {
+            loadedVolume_ = newVolume;
+        } else {
+            dispatchPool([this, newVolume]() {
+                RenderContext::getPtr()->activateLocalRenderContext();
+                newVolume->getRep<kind::GL>();
+                glFlush();
+                dispatchFront([this, newVolume]() {
+                    loadedVolume_ = newVolume;
+                    invalidate(INVALID_OUTPUT);
+                });
+            });
+        }
+    }
 
-   if (!loadedVolume_) return;
-  
-   if (!loadedVolume_->hasRepresentation<VolumeGL>()) {
-       LogWarn("No GL rep !!! ");
-       return;
-   }
+    if (!loadedVolume_) return;
+
+    if (!loadedVolume_->hasRepresentation<VolumeGL>()) {
+        LogWarn("No GL rep !!! ");
+        return;
+    }
 
     TextureUnitContainer units;
     utilgl::bindAndSetUniforms(shader_, units, *loadedVolume_, "volume");
     utilgl::bindAndSetUniforms(shader_, units, transferFunction_);
-    utilgl::bindAndSetUniforms(shader_, units, entryPort_, COLOR_DEPTH_PICKING);
-    utilgl::bindAndSetUniforms(shader_, units, exitPort_, COLOR_DEPTH);
+    utilgl::bindAndSetUniforms(shader_, units, entryPort_, ImageType::ColorDepthPicking);
+    utilgl::bindAndSetUniforms(shader_, units, exitPort_, ImageType::ColorDepth);
     utilgl::setUniforms(shader_, outport_, camera_, lighting_, raycasting_, positionIndicator_,
                         channel_);
 
@@ -181,4 +180,4 @@ void VolumeRaycaster::deserialize(IvwDeserializer& d) {
     Processor::deserialize(d);
 }
 
-} // namespace
+}  // namespace

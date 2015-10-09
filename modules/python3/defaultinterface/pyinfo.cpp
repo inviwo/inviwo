@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
@@ -38,17 +38,14 @@
 
 #include "pyinfo.h"
 
-
 namespace inviwo {
 
-    PyObject* py_info(PyObject* self, PyObject* args) {
-        static PyInfoMethod p;
+PyObject* py_info(PyObject* self, PyObject* args) {
+    static PyInfoMethod p;
 
-        if (!p.testParams(args)) return nullptr;
+    if (!p.testParams(args)) return nullptr;
 
-        inviwo::PyModule::getModuleByPyObject(self)->printInfo();
-        Py_RETURN_NONE;
-    }
-
-
+    inviwo::PyModule::getModuleByPyObject(self)->printInfo();
+    Py_RETURN_NONE;
+}
 }
