@@ -40,7 +40,6 @@
 #include <inviwo/core/links/linkevaluator.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/util/exception.h>
-#include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/util/inviwosetupinfo.h>
 #include <inviwo/core/network/networklock.h>
 
@@ -379,28 +378,6 @@ private:
     LinkEvaluator* linkEvaluator_;
 
     bool linking_;
-    
-    class NetworkConverter : public VersionConverter {
-    public:
-        typedef void (NetworkConverter::*updateType)(TxElement*);
-        NetworkConverter(int from);
-        virtual bool convert(TxElement* root);
-        int from_;
-    private:
-        void updateProcessorType(TxElement* node);
-        void updateMetaDataTree(TxElement* node);
-        void updatePropertType(TxElement* node);
-        void updateMetaDataType(TxElement* node);
-        void updateMetaDataKeys(TxElement* node);
-        void updateShadingMode(TxElement* node);
-        void updateCameraToComposite(TxElement* node);
-        void updateDimensionTag(TxElement* node);
-        void updatePropertyLinks(TxElement* node);
-        void updatePortsInProcessors(TxElement* node);
-        void updateNoSpaceInProcessorClassIdentifers(TxElement* node);
-
-        void traverseNodes(TxElement* node, updateType update);
-    };
 };
 
 template<class T>
