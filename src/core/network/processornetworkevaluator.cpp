@@ -35,76 +35,21 @@
 #include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/util/clock.h>
 
 namespace inviwo {
-
-std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*>
-    ProcessorNetworkEvaluator::processorNetworkEvaluators_;
 
 ProcessorNetworkEvaluator::ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork)
     : processorNetwork_(processorNetwork)
     , evaulationQueued_(false)
     , evaluationDisabled_(false)
     , exceptionHandler_(StandardExceptionHandler()) {
-    ivwAssert(
-        processorNetworkEvaluators_.find(processorNetwork) == processorNetworkEvaluators_.end(),
-        "A ProcessorNetworkEvaluator for the given ProcessorNetwork is already created");
-
-    processorNetworkEvaluators_[processorNetwork] = this;
+    
     processorNetwork_->addObserver(this);
 }
 
-ProcessorNetworkEvaluator::~ProcessorNetworkEvaluator() {
-    auto it = processorNetworkEvaluators_.find(processorNetwork_);
-    if (it != processorNetworkEvaluators_.end()) processorNetworkEvaluators_.erase(it);
-}
-
-
-ProcessorNetworkEvaluator::ProcessorList ProcessorNetworkEvaluator::getDirectPredecessors(
-    Processor* processor) const {
-    ProcessorList predecessors;
-
-    for (auto port : processor->getInports()) {
-        if (!port->isConnected()) continue;
-
-        for (auto connectedPort : port->getConnectedOutports()) {
-            if (connectedPort) predecessors.insert(connectedPort->getProcessor());
-        }
-    }
-
-    return predecessors;
-}
-
-void ProcessorNetworkEvaluator::traversePredecessors(ProcessorStates& state, Processor* processor) {
-    if (!state.hasBeenVisited(processor)) {
-        state.setProcessorVisited(processor);
-
-        for (auto p : state.getStoredPredecessors(processor)) traversePredecessors(state, p);
-
-        processorsSorted_.push_back(processor);
-    }
-}
-
-void ProcessorNetworkEvaluator::updateProcessorStates() {
-    std::vector<Processor*> endProcessors;
-
-    ProcessorStates state;
-
-    // update all processor states, i.e. collecting predecessors
-    for (auto processor : processorNetwork_->getProcessors()) {
-        // register processor in global state map
-        auto res = state.insert(processor, ProcessorState(getDirectPredecessors(processor)));
-        if (!res) LogError("Processor State was already registered.");
-
-        if (processor->isEndProcessor()) endProcessors.push_back(processor);
-    }
-
-    // perform topological sorting and store processor order in processorsSorted_
-    processorsSorted_.clear();
-
-    for (auto processor : endProcessors) traversePredecessors(state, processor);
-}
+ProcessorNetworkEvaluator::~ProcessorNetworkEvaluator() {}
 
 void ProcessorNetworkEvaluator::setExceptionHandler(ExceptionHandler handler) {
     exceptionHandler_ = handler;
@@ -143,17 +88,6 @@ void ProcessorNetworkEvaluator::enableEvaluation() {
     if (evaulationQueued_) {
         evaulationQueued_ = false;
         requestEvaluate();
-    }
-}
-
-ProcessorNetworkEvaluator*
-ProcessorNetworkEvaluator::getProcessorNetworkEvaluatorForProcessorNetwork(
-    ProcessorNetwork* network) {
-    auto it = processorNetworkEvaluators_.find(network);
-    if (it == processorNetworkEvaluators_.end()) {
-        return new ProcessorNetworkEvaluator(network);
-    } else {
-        return it->second;
     }
 }
 
@@ -203,7 +137,7 @@ void ProcessorNetworkEvaluator::evaluate() {
         processorNetwork_->setModified(false);
 
         // network topology has changed, update internal processor states
-        updateProcessorStates();
+        processorsSorted_ = util::topologicalSort(processorNetwork_);
     }
 
     for (auto processor : processorsSorted_) {
@@ -224,9 +158,9 @@ void ProcessorNetworkEvaluator::evaluate() {
                     continue;
                 }
 
-                #if IVW_PROFILING
+#if IVW_PROFILING
                 processor->notifyObserversAboutToProcess(processor);
-                #endif
+#endif
 
                 try {
                     IVW_CPU_PROFILING_IF(500, "Processed " << processor->getDisplayName());
@@ -238,16 +172,14 @@ void ProcessorNetworkEvaluator::evaluate() {
                 // set processor as valid
                 processor->setValid();
 
-                #if IVW_PROFILING
+#if IVW_PROFILING
                 processor->notifyObserversFinishedProcess(processor);
-                #endif
+#endif
             } else {
                 processor->doIfNotReady();
             }
         }
     }
 }
-
-ProcessorNetworkEvaluator::ProcessorList ProcessorNetworkEvaluator::ProcessorStates::empty = ProcessorList();
 
 }  // namespace

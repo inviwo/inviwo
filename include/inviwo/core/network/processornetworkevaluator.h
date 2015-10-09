@@ -58,75 +58,14 @@ public:
     virtual void onProcessorNetworkEvaluateRequest() override;
     virtual void onProcessorNetworkUnlocked() override;
 
-    static ProcessorNetworkEvaluator* getProcessorNetworkEvaluatorForProcessorNetwork(
-        ProcessorNetwork* network);
-
 private:
-    using ProcessorList = std::unordered_set<Processor*>;
-
     void evaluate();
-    // retrieve predecessors based on given event
-    ProcessorList getDirectPredecessors(Processor* processor) const;
- 
-    void updateProcessorStates();
-    void resetProcessorVisitedStates();
-
-    struct ProcessorState {
-        ProcessorState() : visited(false) {}
-        ProcessorState(const ProcessorList& predecessors) : visited(false), pred(predecessors) {}
-        bool visited;
-        ProcessorList pred;  // list of all predecessors
-    };
-
-    struct ProcessorStates {
-        bool hasBeenVisited(Processor* processor) const {
-            auto it = processorStates_.find(processor);
-            if (it != processorStates_.end())
-                return it->second.visited;
-            else
-                return false;
-        }
-
-        void setProcessorVisited(Processor* processor, bool visited = true) {
-            auto it = processorStates_.find(processor);
-            if (it != processorStates_.end()) it->second.visited = visited;
-        }
-
-        void clear() {
-            processorStates_.clear();
-        }
-
-        bool insert(Processor* p, ProcessorState s) {
-            return processorStates_.insert(std::make_pair(p, s)).second;
-        }
-
-        // retrieve predecessors from global processor state list (look-up)
-        const ProcessorList& getStoredPredecessors(Processor* processor) const {
-            auto it = processorStates_.find(processor);
-            if (it != processorStates_.end()) {
-                return it->second.pred;
-            } else {
-                // processor not found, return reference to empty list
-                return empty;
-            }
-        }
-
-
-        static ProcessorList empty;
-    private:
-        std::unordered_map<Processor*, ProcessorState> processorStates_;
-    };
-
-    void traversePredecessors(ProcessorStates& state, Processor* processor);
 
     ProcessorNetwork* processorNetwork_;
     // the sorted list of processors obtained through topological sorting
     std::vector<Processor*> processorsSorted_;
-    
     bool evaulationQueued_;
     bool evaluationDisabled_;
-
-    static std::map<ProcessorNetwork*, ProcessorNetworkEvaluator*> processorNetworkEvaluators_;
     ExceptionHandler exceptionHandler_;
 };
 
