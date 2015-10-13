@@ -27,37 +27,45 @@
  *
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
-
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/vector2dmagnitude.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/vector2dcurl.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/vector2ddivergence.h>
+#include "vector2dcurl.h"
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/image/imagegl.h>
+#include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
 
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+ProcessorClassIdentifier(Vector2DCurl,  "org.inviwo.Vector2DCurl");
+ProcessorDisplayName(Vector2DCurl,  "Vector 2D Curl");
+ProcessorTags(Vector2DCurl, Tags::GL);
+ProcessorCategory(Vector2DCurl, "Vector Field Topology");
+ProcessorCodeState(Vector2DCurl, CODE_STATE_EXPERIMENTAL);
+
+Vector2DCurl::Vector2DCurl()
+    : Processor()
+    , inport_("inport", true)
+    , outport_("outport", DataVec4FLOAT32::get())
+    , shader_("vector2dcurl.frag")
+
+{
+
+    addPort(inport_);
+    addPort(outport_);
+}
+    
+void Vector2DCurl::process() {
+    utilgl::activateAndClearTarget(outport_);
+
+    shader_.activate();
+    TextureUnitContainer units;
+    utilgl::bindAndSetUniforms(shader_, units, inport_, ImageType::ColorOnly);
 
 
-VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualizationGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES,
-                                                 "/vectorfieldvisualizationgl/glsl");
-
-    registerProcessor<LorenzSystem>();
-    registerProcessor<VectorFieldGenerator2D>();
-    registerProcessor<VectorFieldGenerator3D>();
-    registerProcessor<LIC2D>();
-    registerProcessor<HedgeHog2D>();
-
-    registerProcessor<Vector2DMagnitude>();
-    registerProcessor<Vector2DCurl>();
-    registerProcessor<Vector2DDivergence>();
+    utilgl::singleDrawImagePlaneRect();
+    shader_.deactivate();
+    utilgl::deactivateCurrentTarget();
 }
 
-}  // namespace
+} // namespace
+

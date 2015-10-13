@@ -27,37 +27,27 @@
  *
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
 
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/vector2dmagnitude.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/vector2dcurl.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/vector2ddivergence.h>
+uniform sampler2D inportColor;
+uniform ImageParameters inportParameters;
 
-namespace inviwo {
+in vec3 texCoord_;
 
+void main(void) {
+	vec2 o = inportParameters.reciprocalDimensions;
+	mat2 J;  
+	J[0] =  texture(inportColor,texCoord_.xy  + vec2(o.x,0)).xy;
+	J[0] -= texture(inportColor,texCoord_.xy  - vec2(o.x,0)).xy;
+	J[1] =  texture(inportColor,texCoord_.xy  + vec2(0,o.y)).xy;
+	J[1] -= texture(inportColor,texCoord_.xy  - vec2(0,o.y)).xy;
+	J[0] *= 0.5;
+	J[1] *= 0.5;
 
+	float v = 0;
 
-VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualizationGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES,
-                                                 "/vectorfieldvisualizationgl/glsl");
+	v = J[1][0] - J[0][1];
 
-    registerProcessor<LorenzSystem>();
-    registerProcessor<VectorFieldGenerator2D>();
-    registerProcessor<VectorFieldGenerator3D>();
-    registerProcessor<LIC2D>();
-    registerProcessor<HedgeHog2D>();
-
-    registerProcessor<Vector2DMagnitude>();
-    registerProcessor<Vector2DCurl>();
-    registerProcessor<Vector2DDivergence>();
+	FragData0 = vec4((v));
 }
-
-}  // namespace
