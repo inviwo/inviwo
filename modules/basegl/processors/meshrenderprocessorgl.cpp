@@ -151,10 +151,10 @@ void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     }
 
     if (colorLayer_.get()) {
-        shader.getFragmentShaderObject()->addShaderDefine("LayerType::Color");
+        shader.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER");
         layerID++;
     } else {
-        shader.getFragmentShaderObject()->removeShaderDefine("LayerType::Color");
+        shader.getFragmentShaderObject()->removeShaderDefine("COLOR_LAYER");
     }
 
     if (texCoordLayer_.get()) {
