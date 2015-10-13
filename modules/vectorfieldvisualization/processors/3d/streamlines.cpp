@@ -2,6 +2,8 @@
 
 #include <bitset>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <modules/opengl/image/layergl.h>
 #include <inviwo/core/datastructures/image/layerram.h>
@@ -12,7 +14,7 @@ namespace inviwo {
 
 ProcessorClassIdentifier(StreamLines, "org.inviwo.StreamLines")
 ProcessorDisplayName(StreamLines, "Stream Lines")
-ProcessorTags(StreamLines, Tags::GL);
+ProcessorTags(StreamLines, Tags::CPU);
 ProcessorCategory(StreamLines, "Vector Field Visualization");
 ProcessorCodeState(StreamLines, CODE_STATE_EXPERIMENTAL);
 
@@ -25,6 +27,7 @@ StreamLines::StreamLines()
     , normalizeSamples_("normalizeSamples", "Normalize Samples", true)
     , stepSize_("stepSize", "StepSize", 0.001f, 0.0001f, 1.0f)
     , stepDirection_("stepDirection", "Step Direction")
+    , integrationScheme_("integrationScheme","Integration Scheme")
     , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
@@ -37,6 +40,10 @@ StreamLines::StreamLines()
     stepDirection_.addOption("fwd", "Forward", StreamLineTracer::Direction::FWD);
     stepDirection_.addOption("bwd", "Backwards", StreamLineTracer::Direction::BWD);
     stepDirection_.addOption("bi", "Bi Directional", StreamLineTracer::Direction::BOTH);
+
+    integrationScheme_.addOption("euler", "Euler", StreamLineTracer::IntegrationScheme::Euler);
+    integrationScheme_.addOption("rk4", "Runge-Kutta (RK4)", StreamLineTracer::IntegrationScheme::RK4);
+    integrationScheme_.setSelectedValue(StreamLineTracer::IntegrationScheme::RK4);
 
     seedPointsSpace_.addOption("texture", "Texture",
                                StructuredCoordinateTransformer<3>::Space::Texture);
@@ -53,6 +60,7 @@ StreamLines::StreamLines()
     addProperty(numberOfSteps_);
     addProperty(stepSize_);
     addProperty(stepDirection_);
+    addProperty(integrationScheme_);
     addProperty(normalizeSamples_);
     addProperty(seedPointsSpace_);
 
@@ -81,8 +89,10 @@ void StreamLines::process() {
     ImageSampler tf(tf_.get().getData());
 
     float maxVelocity = 0;
-    StreamLineTracer tracer(volume_.getData().get());
-    // mat3 invBasis = glm::inverse(volume_.getData()->getBasis()); //unused
+    StreamLineTracer tracer(volume_.getData().get(),integrationScheme_.get());
+
+    std::vector<BasicMesh::Vertex> vertices;
+
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
@@ -105,14 +115,18 @@ void StreamLines::process() {
                 maxVelocity = std::max(maxVelocity, l);
                 auto c = vec4(tf.sample(dvec2(d, 0.0)));
 
-                indexBuffer->add(
-                    static_cast<uint32_t>(mesh->addVertex(pos, glm::normalize(v), pos, c)));
+                indexBuffer->add(vertices.size());
 
+                vertices.push_back({pos,glm::normalize(v),pos,c});
+                
                 position++;
                 velocity++;
             }
         }
     }
+
+    mesh->addVertices(vertices);
+
     linesStripsMesh_.setData(mesh.release());
     maxVelocity_.set(toString(maxVelocity));
 }

@@ -34,10 +34,12 @@
 
 namespace inviwo {
 
-StreamLineTracer::StreamLineTracer(const Volume *vol)
+StreamLineTracer::StreamLineTracer(const Volume *vol, IntegrationScheme integrationScheme)
     : volumeSampler_(vol->getRepresentation<VolumeRAM>())
     , invBasis_(dmat3(glm::inverse(vol->getBasis())))
-    , dimensions_(vol->getDimensions()) {}
+    , dimensions_(vol->getDimensions())
+    , integrationScheme_(integrationScheme)
+{}
 
 StreamLineTracer::~StreamLineTracer() {}
 
@@ -96,8 +98,22 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line, double 
         if (curPos.y > 1 - 1.0 / dimensions_.y) break;
         if (curPos.z > 1 - 1.0 / dimensions_.z) break;
 
-        dvec3 worldVelocty = volumeSampler_.sample(curPos).xyz();
-        dvec3 v = worldVelocty;
+        dvec3 worldVelocty;
+        switch (integrationScheme_)
+        {
+        case inviwo::StreamLineTracer::IntegrationScheme::RK4:
+            worldVelocty = rk4(curPos,stepSize);
+            break;
+        case inviwo::StreamLineTracer::IntegrationScheme::Euler:
+        default:
+            worldVelocty = euler(curPos);
+            break;
+        }
+        
+
+
+
+        dvec3 v = worldVelocty * 2.0 - 1.0;
         if (normalzieSample) v = glm::normalize(v);
         dvec3 velocity = invBasis_ * (v * stepSize);
         line.positions_.push_back(curPos);
@@ -108,6 +124,19 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line, double 
 
         curPos += velocity;
     }
+}
+
+dvec3 StreamLineTracer::euler(const dvec3 &curPos) {
+    return volumeSampler_.sample(curPos).xyz();
+}
+
+dvec3 StreamLineTracer::rk4(const dvec3 &curPos, double stepSize) {
+    auto h = stepSize / 2;
+    auto k1 = volumeSampler_.sample(glm::clamp(curPos, 0.0, 1.0)).xyz();
+    auto k2 = volumeSampler_.sample(glm::clamp(curPos + k1 * h, 0.0, 1.0)).xyz();
+    auto k3 = volumeSampler_.sample(glm::clamp(curPos + k2 * h, 0.0, 1.0)).xyz();
+    auto k4 = volumeSampler_.sample(glm::clamp(curPos + k3 * stepSize, 0.0, 1.0)).xyz();
+    return (k1+2.0*(k2+k3)+k4 )/6.0;
 }
 
 }  // namespace
