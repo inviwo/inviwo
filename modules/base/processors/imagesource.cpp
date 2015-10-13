@@ -66,7 +66,7 @@ ImageSource::~ImageSource() {}
 
 bool ImageSource::isReady() const { return filesystem::fileExists(file_.get()); }
 
-void ImageSource::process() {}
+void ImageSource::process() { load(); }
 
 void ImageSource::load() {
     if (isDeserializing_ || file_.get() == "") {
