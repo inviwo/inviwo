@@ -70,7 +70,7 @@ public:
 private:
     void step(int steps, dvec3 curPos, IntegralLine &line, double stepSize, bool normalzieSample);
     dvec3 euler(const dvec3 &curPos);
-    dvec3 rk4(const dvec3 &curPos , double stepSize);
+    dvec3 rk4(const dvec3 &curPos , double stepSize, bool normalzieSample, dmat3 m);
     dmat3 invBasis_;
     std::map<std::string, VolumeSampler> metaVolumes_;
     VolumeSampler volumeSampler_;

@@ -98,22 +98,26 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line, double 
         if (curPos.y > 1 - 1.0 / dimensions_.y) break;
         if (curPos.z > 1 - 1.0 / dimensions_.z) break;
 
-        dvec3 worldVelocty;
+        dvec3 v;
         switch (integrationScheme_)
         {
         case inviwo::StreamLineTracer::IntegrationScheme::RK4:
-            worldVelocty = rk4(curPos,stepSize);
+            v = rk4(curPos,stepSize,normalzieSample, invBasis_);
             break;
         case inviwo::StreamLineTracer::IntegrationScheme::Euler:
         default:
-            worldVelocty = euler(curPos);
+            v = euler(curPos);
             break;
         }
         
+        if (glm::length(v) == 0) {
+            break;
+        }
+
+        
+        dvec3 worldVelocty = volumeSampler_.sample(curPos).xyz();
 
 
-
-        dvec3 v = worldVelocty * 2.0 - 1.0;
         if (normalzieSample) v = glm::normalize(v);
         dvec3 velocity = invBasis_ * (v * stepSize);
         line.positions_.push_back(curPos);
@@ -130,12 +134,24 @@ dvec3 StreamLineTracer::euler(const dvec3 &curPos) {
     return volumeSampler_.sample(curPos).xyz();
 }
 
-dvec3 StreamLineTracer::rk4(const dvec3 &curPos, double stepSize) {
+dvec3 StreamLineTracer::rk4(const dvec3 &curPos, double stepSize, bool normalzieSample , dmat3 m ) {
     auto h = stepSize / 2;
+    auto k1 = volumeSampler_.sample(curPos).xyz();
+    if (normalzieSample) k1 = glm::normalize(k1);
+    auto K1 = m * k1;
+    auto k2 = volumeSampler_.sample(curPos + K1 * h).xyz();
+    if (normalzieSample) k2 = glm::normalize(k2);
+    auto K2 = m * k2;
+    auto k3 = volumeSampler_.sample(curPos + K2 * h).xyz();
+    if (normalzieSample) k3 = glm::normalize(k3);
+    auto K3 = m * k3;
+    auto k4 = volumeSampler_.sample(curPos + K3 * stepSize).xyz();
+    if (normalzieSample) k4 = glm::normalize(k4);
+    /*
     auto k1 = volumeSampler_.sample(glm::clamp(curPos, 0.0, 1.0)).xyz();
     auto k2 = volumeSampler_.sample(glm::clamp(curPos + k1 * h, 0.0, 1.0)).xyz();
     auto k3 = volumeSampler_.sample(glm::clamp(curPos + k2 * h, 0.0, 1.0)).xyz();
-    auto k4 = volumeSampler_.sample(glm::clamp(curPos + k3 * stepSize, 0.0, 1.0)).xyz();
+    auto k4 = volumeSampler_.sample(glm::clamp(curPos + k3 * stepSize, 0.0, 1.0)).xyz(); */
     return (k1+2.0*(k2+k3)+k4 )/6.0;
 }
 
