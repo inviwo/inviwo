@@ -101,7 +101,7 @@ __declspec(dllimport) void VLDEnable ();
 __declspec(dllimport) void VLDRestore ();
 
 // VLDGlobalDisable - Disables Visual Leak Detector's memory leak detection at
-//   runtime in all threads. If memory leak detection is already disabled, 
+//   runtime in all threads. If memory leak detection is already disabled,
 //   then calling this function has no effect.
 //
 //  Return Value:
@@ -110,8 +110,8 @@ __declspec(dllimport) void VLDRestore ();
 //
 __declspec(dllimport) void VLDGlobalDisable ();
 
-// VLDGlobalEnable - Enables Visual Leak Detector's memory leak detection 
-//   at runtime in all threads. If memory leak detection is already enabled, 
+// VLDGlobalEnable - Enables Visual Leak Detector's memory leak detection
+//   at runtime in all threads. If memory leak detection is already enabled,
 //   which it is by default, then calling this function has no effect.
 //
 //  Return Value:
@@ -288,7 +288,7 @@ __declspec(dllimport) VLD_BOOL VLDGetModulesList(wchar_t *modules, VLD_UINT size
 //
 __declspec(dllimport) void VLDSetReportOptions(VLD_UINT option_mask, const wchar_t *filename);
 
-// VLDSetReportHook - Installs or uninstalls a client-defined reporting function by hooking it 
+// VLDSetReportHook - Installs or uninstalls a client-defined reporting function by hooking it
 //  into the C run-time debug reporting process (debug version only).
 //
 // mode: The action to take: VLD_RPTHOOK_INSTALL or VLD_RPTHOOK_REMOVE.
@@ -302,17 +302,17 @@ __declspec(dllimport) void VLDSetReportOptions(VLD_UINT option_mask, const wchar
 __declspec(dllimport) int VLDSetReportHook(int mode,  VLD_REPORT_HOOK pfnNewHook);
 
 // VLDResolveCallstacks - Performs symbol resolution for all saved extent CallStack's that have
-// been tracked by Visual Leak Detector. This function is necessary for applications that 
+// been tracked by Visual Leak Detector. This function is necessary for applications that
 // dynamically load and unload modules, and through which memory leaks might be included.
-// If this is NOT called, stack traces may have stack frames with no symbol information. This 
+// If this is NOT called, stack traces may have stack frames with no symbol information. This
 // happens because the symbol API's cannot look up symbols for a binary / module that has been unloaded
 // from the process.
 //
 //  Return Value:
 //
-//    None.
+//    int: 0 if successfully resolved all callstacks.
 //
-__declspec(dllexport) void VLDResolveCallstacks();
+__declspec(dllexport) int VLDResolveCallstacks();
 
 #ifdef __cplusplus
 }
@@ -323,6 +323,8 @@ __declspec(dllexport) void VLDResolveCallstacks();
 #define VLDEnable()
 #define VLDDisable()
 #define VLDRestore()
+#define VLDGlobalDisable()
+#define VLDGlobalEnable()
 #define VLDReportLeaks() (0)
 #define VLDReportThreadLeaks() (0)
 #define VLDGetLeaksCount() (0)
@@ -339,5 +341,6 @@ __declspec(dllexport) void VLDResolveCallstacks();
 #define VLDSetModulesList(a)
 #define VLDGetModulesList(a, b) (FALSE)
 #define VLDSetReportOptions(a, b)
+#define VLDResolveCallstacks() (0)
 
 #endif // _DEBUG
