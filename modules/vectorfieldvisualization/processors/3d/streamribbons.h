@@ -83,6 +83,7 @@ private:
     BoolProperty normalizeSamples_;
     TemplateOptionProperty<StreamLineTracer::Direction> stepDirection_;
     TemplateOptionProperty<StructuredCoordinateTransformer<3>::Space> seedPointsSpace_;
+    TemplateOptionProperty<StreamLineTracer::IntegrationScheme> integrationScheme_;
 
     FloatProperty ribbonWidth_;
 
