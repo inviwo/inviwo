@@ -99,7 +99,7 @@ public:
     }
 
 private:
-    T getVoxel(const size3_t &pos)const {
+    T getVoxel(const size3_t &pos) {
         auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
         return  data_[ic_(p)];
     }

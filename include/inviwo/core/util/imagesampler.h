@@ -65,7 +65,7 @@ public:
     dvec4 sample(const vec2 &pos) const { return sample(dvec2(pos)); }
 
 private:
-    dvec4 getPixel(size2_t pos)const;
+    dvec4 getPixel(const size2_t &pos)const;
     const LayerRAM *layer_;
     size2_t dims_;
 };
@@ -100,10 +100,9 @@ public:
     }
 
 private:
-    T getPixel(size2_t pos)const {
-        pos = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
-
-        return data_[ic_(pos)];;
+    T getPixel(const size2_t &pos) {
+        auto p = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
+        return data_[ic_(p)];;
 
     }
     const T *data_;
