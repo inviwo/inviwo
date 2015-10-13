@@ -56,6 +56,7 @@ public:
         vec4 color;
     };
     void addVertices(std::initializer_list<Vertex> data);
+    void addVertices(const std::vector<Vertex> &data);
 
     void setVertex(size_t index, vec3 pos, vec3 normal, vec3 texCoord, vec4 color);
     void setVertexPosition(size_t index, vec3 pos);

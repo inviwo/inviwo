@@ -59,6 +59,10 @@ uint32_t BasicMesh::addVertex(vec3 pos, vec3 normal, vec3 texCoord, vec4 color) 
 }
 
 void BasicMesh::addVertices(std::initializer_list<Vertex> data) {
+    return addVertices(std::vector<Vertex>(data));
+}
+
+void BasicMesh::addVertices(const std::vector<Vertex> &data) {
     auto v = getEditableVerticesRAM();
     auto t = getEditableTexCoordsRAM();
     auto c = getEditableColorsRAM();
