@@ -80,7 +80,7 @@ public:
     T sample(const vec3 &pos) { return sample(dvec3(pos)); }
     T sample(double x, double y, double z) { return sample(dvec3(x, y, z)); }
     T sample(const dvec3 &pos) {
-        if (pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= 1 || pos.y >= 1 || pos.z >= 1) {
+        if (pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x > 1 || pos.y > 1 || pos.z > 1) {
             //TODO handle border cases 
             return T(0);
         }
