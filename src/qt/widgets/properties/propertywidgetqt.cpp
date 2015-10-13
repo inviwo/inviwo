@@ -33,6 +33,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
 #include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/core/util/tooltiphelper.h>
