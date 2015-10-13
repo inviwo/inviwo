@@ -39,7 +39,7 @@ VolumeSampler::VolumeSampler(const Volume *vol)
 VolumeSampler::~VolumeSampler() {}
 
 dvec4 VolumeSampler::sample(const dvec3 &pos) const {
-    if (pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x > 1 || pos.y > 1 || pos.z > 1) {
+    if (pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= 1 || pos.y >= 1 || pos.z >= 1) {
         //TODO handle border cases 
         return dvec4(0);
     }

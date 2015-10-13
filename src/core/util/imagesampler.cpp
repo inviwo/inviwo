@@ -43,7 +43,7 @@ ImageSampler::ImageSampler(const Image *img) : ImageSampler(img->getColorLayer()
 ImageSampler::~ImageSampler() {}
 
 dvec4 ImageSampler::sample(const dvec2 &pos) const {
-    if (pos.x < 0 || pos.y < 0 || pos.x > 1 || pos.y > 1) {
+    if (pos.x < 0 || pos.y < 0 || pos.x >= 1 || pos.y >= 1) {
         //TODO handle border cases 
         return dvec4(0);
     }

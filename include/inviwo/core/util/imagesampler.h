@@ -83,7 +83,7 @@ public:
     T sample(const vec2 &pos)  { return sample(dvec2(pos)); }
     T sample(double x,double y) { return sample(dvec2(x,y)); }
     T sample(const dvec2 &pos) {
-        if (pos.x < 0 || pos.y < 0 || pos.x > 1 || pos.y > 1) {
+        if (pos.x < 0 || pos.y < 0 || pos.x >= 1 || pos.y >= 1) {
             //TODO handle border cases 
             return T(0);
         }
