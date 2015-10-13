@@ -65,6 +65,7 @@ public:
     dvec4 sample(const vec2 &pos) const { return sample(dvec2(pos)); }
 
 private:
+    dvec4 getPixel(size2_t pos)const;
     const LayerRAM *layer_;
     size2_t dims_;
 };
@@ -83,26 +84,28 @@ public:
     T sample(const vec2 &pos)  { return sample(dvec2(pos)); }
     T sample(double x,double y) { return sample(dvec2(x,y)); }
     T sample(const dvec2 &pos) {
-        if (pos.x < 0 || pos.y < 0 || pos.x >= 1 || pos.y >= 1) {
-            //TODO handle border cases 
-            return T(0);
-        }
         dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
         size2_t indexPos = size2_t(samplePos);
         dvec2 interpolants = samplePos - dvec2(indexPos);
 
 
         T samples[4];
-        samples[0] = data_[ic_(indexPos)];
-        samples[1] = data_[ic_(indexPos + size2_t(1, 0))];
+        samples[0] = getPixel(indexPos);
+        samples[1] = getPixel(indexPos + size2_t(1, 0));
 
-        samples[2] = data_[ic_(indexPos + size2_t(0, 1))];
-        samples[3] = data_[ic_(indexPos + size2_t(1, 1))];
+        samples[2] = getPixel(indexPos + size2_t(0, 1));
+        samples[3] = getPixel(indexPos + size2_t(1, 1));
 
         return Interpolation<T, P>::bilinear(samples, interpolants);
     }
 
 private:
+    T getPixel(size2_t pos)const {
+        pos = glm::clamp(pos, size2_t(0), dims_ - size2_t(1));
+
+        return data_[ic_(pos)];;
+
+    }
     const T *data_;
     size2_t dims_;
     util::IndexMapper2D ic_;
