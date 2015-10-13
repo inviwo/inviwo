@@ -103,6 +103,15 @@ std::shared_ptr<Buffer<T>> makeBuffer(std::initializer_list<T> data) {
     return buffer;
 }
 
+struct IVW_CORE_API BufferDispatcher {
+    using type = std::shared_ptr < BufferBase > ;
+    template <class T>
+    std::shared_ptr<BufferBase> dispatch(size_t size, BufferUsage usage) {
+        typedef typename T::type F;
+        return std::make_shared<Buffer<F>>(size, usage);
+    }
+};
+
 }  // namespace
 
 template <typename T>
