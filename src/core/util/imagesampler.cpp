@@ -42,7 +42,11 @@ ImageSampler::ImageSampler(const Image *img) : ImageSampler(img->getColorLayer()
 
 ImageSampler::~ImageSampler() {}
 
-inviwo::dvec4 ImageSampler::sample(const dvec2 &pos) const {
+dvec4 ImageSampler::sample(const dvec2 &pos) const {
+    if (pos.x < 0 || pos.y < 0 || pos.x >= 1 || pos.y >= 1) {
+        //TODO handle border cases 
+        return dvec4(0);
+    }
     dvec2 samplePos = pos * dvec2(dims_-size2_t(1));
     size2_t indexPos = size2_t(samplePos);
     dvec2 interpolants = samplePos - dvec2(indexPos);
@@ -50,13 +54,11 @@ inviwo::dvec4 ImageSampler::sample(const dvec2 &pos) const {
     dvec4 samples[4];
     samples[0] = layer_->getValueAsVec4Double(indexPos);
     samples[1] = layer_->getValueAsVec4Double(indexPos + size2_t(1, 0));
-    if (pos.y == 0) {
-        return Interpolation::linear(samples, interpolants.x);
-    }
+
     samples[2] = layer_->getValueAsVec4Double(indexPos + size2_t(0, 1));
     samples[3] = layer_->getValueAsVec4Double(indexPos + size2_t(1, 1));
 
-    return Interpolation::bilinear(samples, interpolants);
+    return Interpolation<dvec4>::bilinear(samples, interpolants);
 }
 
 }  // namespace

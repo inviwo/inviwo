@@ -69,7 +69,7 @@ private:
     size2_t dims_;
 };
 
-template <typename T>
+template <typename T,typename P>
 class TemplateImageSampler {
 public:
     TemplateImageSampler(const LayerRAM *ram)
@@ -83,6 +83,10 @@ public:
     T sample(const vec2 &pos)  { return sample(dvec2(pos)); }
     T sample(double x,double y) { return sample(dvec2(x,y)); }
     T sample(const dvec2 &pos) {
+        if (pos.x < 0 || pos.y < 0 || pos.x >= 1 || pos.y >= 1) {
+            //TODO handle border cases 
+            return T(0);
+        }
         dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
         size2_t indexPos = size2_t(samplePos);
         dvec2 interpolants = samplePos - dvec2(indexPos);
@@ -91,14 +95,11 @@ public:
         T samples[4];
         samples[0] = data_[ic_(indexPos)];
         samples[1] = data_[ic_(indexPos + size2_t(1, 0))];
-        if (interpolants.y == 0) {
-            return Interpolation::linear(samples, interpolants.x);
 
-        }
         samples[2] = data_[ic_(indexPos + size2_t(0, 1))];
         samples[3] = data_[ic_(indexPos + size2_t(1, 1))];
 
-        return Interpolation::bilinear(samples, interpolants);
+        return Interpolation<T, P>::bilinear(samples, interpolants);
     }
 
 private:

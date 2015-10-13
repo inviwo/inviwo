@@ -66,7 +66,7 @@ private:
     size3_t dims_;
 };
 
-template <typename T>
+template <typename T,typename P>
 class TemplateVolumeSampler {
 public:
     TemplateVolumeSampler(const VolumeRAM *ram)
@@ -80,6 +80,11 @@ public:
     T sample(const vec3 &pos) { return sample(dvec3(pos)); }
     T sample(double x, double y, double z) { return sample(dvec3(x, y, z)); }
     T sample(const dvec3 &pos) {
+        if (pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= 1 || pos.y >= 1 || pos.z >= 1) {
+            //TODO handle border cases 
+            return T(0);
+        }
+
         dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
         size3_t indexPos = size3_t(samplePos);
         dvec3 interpolants = samplePos - dvec3(indexPos);
@@ -94,7 +99,7 @@ public:
         samples[6] = data_[ic_(indexPos + size3_t(0, 1, 1))];
         samples[7] = data_[ic_(indexPos + size3_t(1, 1, 1))];
 
-        return Interpolation::trilinear(samples, interpolants);
+        return Interpolation<T,P>::trilinear(samples, interpolants);
     }
 
 private:

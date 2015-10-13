@@ -38,7 +38,13 @@ VolumeSampler::VolumeSampler(const Volume *vol)
 
 VolumeSampler::~VolumeSampler() {}
 
-inviwo::dvec4 VolumeSampler::sample(const dvec3 &pos) const {
+dvec4 VolumeSampler::sample(const dvec3 &pos) const {
+    if (pos.x < 0 || pos.y < 0 || pos.z < 0 || pos.x >= 1 || pos.y >= 1 || pos.z >= 1) {
+        //TODO handle border cases 
+        return dvec4(0);
+    }
+
+
     dvec3 samplePos = pos * dvec3(dims_-size3_t(1));
     size3_t indexPos = size3_t(samplePos);
     dvec3 interpolants = samplePos - dvec3(indexPos);
@@ -54,7 +60,7 @@ inviwo::dvec4 VolumeSampler::sample(const dvec3 &pos) const {
     samples[6] = vol_->getValueAsVec4Double(indexPos + size3_t(0, 1, 1));
     samples[7] = vol_->getValueAsVec4Double(indexPos + size3_t(1, 1, 1));
 
-    return Interpolation::trilinear(samples, interpolants);
+    return Interpolation<dvec4>::trilinear(samples, interpolants);
 }
 
 }  // namespace

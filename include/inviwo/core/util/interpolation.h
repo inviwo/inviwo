@@ -42,50 +42,44 @@ namespace inviwo {
  *
  * DESCRIBE_THE_CLASS
  */
-class IVW_CORE_API Interpolation {
+template <typename T,typename P = double>
+class Interpolation {
 public:
-    template <typename T>
-    static T linear(const T &a, const T &b, double x) {
+    
+    static inline T linear(const T &a, const T &b, P x) {
         return static_cast<T>(a + (b - a) * x);
     }
 
-    template <typename T>
-    static T linear(const T samples[2], double interpolant) {
+    static inline T linear(const T samples[2], P interpolant) {
         return linear(samples[0], samples[1], interpolant);
     }
 
-    template <typename T>
-    static T bilinear(const T &a, const T &b, const T &c, const T &d, const dvec2 &interpolants) {
+    static inline T bilinear(const T &a, const T &b, const T &c, const T &d, const Vector<2, P> &interpolants) {
         return linear(linear(a, b, interpolants.x), linear(c, d, interpolants.x), interpolants.y);
     }
 
-    template <typename T>
-    static T bilinear(const T samples[4], const dvec2 &interpolants) {
+    static inline T bilinear(const T samples[4], const Vector<2, P> &interpolants) {
         return bilinear(samples[0], samples[1], samples[2], samples[3], interpolants);
     }
 
-    template <typename T>
-    static T trilinear(const T &a, const T &b, const T &c, const T &d, const T &e, const T &f,
-        const T &g, const T &h, const dvec3 &interpolants) {
+    static inline T trilinear(const T &a, const T &b, const T &c, const T &d, const T &e, const T &f,
+        const T &g, const T &h, const Vector<3, P> &interpolants) {
         return linear(bilinear(a, b, c, d, interpolants.xy()), bilinear(e, f, g, h, interpolants.xy()), interpolants.z);
     }
 
-    template <typename T>
-    static T trilinear(const T samples[8], const dvec3 &interpolants) {
+    static inline T trilinear(const T samples[8], const Vector<3, P> &interpolants) {
         return trilinear(samples[0], samples[1], samples[2], samples[3]
             , samples[4], samples[5], samples[6], samples[7], interpolants);
     }
 
-    template <typename T>
-    static T quadlinear(const T &a, const T &b, const T &c, const T &d, const T &e, const T &f,
+    static inline T quadlinear(const T &a, const T &b, const T &c, const T &d, const T &e, const T &f,
         const T &g, const T &h, const T &i, const T &j, const T &k, const T &l, const T &m, const T &n,
-        const T &o, const T &p, const dvec4 &interpolants) {
+        const T &o, const T &p, const Vector<4, P> &interpolants) {
         return linear(trilinear(a, b, c, d, e, f, g, h, interpolants.xyz()), trilinear(i,j,k,l,m,n,o,p, interpolants.xyz()), interpolants.w);
     }
 
-    template <typename T>
-    static T trilinear(const T samples[16], const dvec4 &interpolants) {
-        return trilinear(samples[0], samples[1], samples[2], samples[3], samples[4], samples[5],
+    static inline T quadlinear(const T samples[16], const Vector<4, P> &interpolants) {
+        return quadlinear(samples[0], samples[1], samples[2], samples[3], samples[4], samples[5],
             samples[6], samples[7], samples[8], samples[9], samples[10], samples[11],
             samples[12], samples[13], samples[14], samples[15], interpolants);
     }
