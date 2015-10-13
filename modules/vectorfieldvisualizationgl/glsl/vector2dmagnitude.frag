@@ -27,32 +27,11 @@
  *
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
+ 
+uniform sampler2D inportColor;
 
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/vector2dmagnitude.h>
+in vec3 texCoord_;
 
-namespace inviwo {
-
-
-
-VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualizationGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES,
-                                                 "/vectorfieldvisualizationgl/glsl");
-
-    registerProcessor<LorenzSystem>();
-    registerProcessor<VectorFieldGenerator2D>();
-    registerProcessor<VectorFieldGenerator3D>();
-    registerProcessor<LIC2D>();
-    registerProcessor<HedgeHog2D>();
-    registerProcessor<Vector2DMagnitude>();
+void main(void) {
+    FragData0 = vec4(vec3(length(texture(inportColor,texCoord_.xy).rg)),1);
 }
-
-}  // namespace

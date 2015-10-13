@@ -24,35 +24,57 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
+#ifndef IVW_VECTOR2DMAGNITUDE_H
+#define IVW_VECTOR2DMAGNITUDE_H
 
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/lorenzsystem.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/datageneration/vectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/lic2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/hedgehog2d.h>
-#include <modules/vectorfieldvisualizationgl/processors/2d/vector2dmagnitude.h>
+#include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/imageport.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
+/** \docpage{org.inviwo.Vector2DMagnitude, Vector2DMagnitude}
+ * ![](org.inviwo.Vector2DMagnitude.png?classIdentifier=org.inviwo.Vector2DMagnitude)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
 
 
-VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualizationGL") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES,
-                                                 "/vectorfieldvisualizationgl/glsl");
+/**
+ * \class Vector2DMagnitude
+ * \brief <brief description> 
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DMagnitude : public Processor { 
+public:
+    InviwoProcessorInfo();
+    Vector2DMagnitude();
+    virtual ~Vector2DMagnitude() = default;
+     
+    virtual void process() override;
 
-    registerProcessor<LorenzSystem>();
-    registerProcessor<VectorFieldGenerator2D>();
-    registerProcessor<VectorFieldGenerator3D>();
-    registerProcessor<LIC2D>();
-    registerProcessor<HedgeHog2D>();
-    registerProcessor<Vector2DMagnitude>();
-}
+private:
+    ImageInport inport_;
+    ImageOutport outport_;
 
-}  // namespace
+    Shader shader_;
+};
+
+} // namespace
+
+#endif // IVW_VECTOR2DMAGNITUDE_H
+
