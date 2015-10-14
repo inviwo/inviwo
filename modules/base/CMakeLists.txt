@@ -21,6 +21,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.h
@@ -58,6 +59,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshclipping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshcreator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshsource.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/noiseprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/ordinalpropertyanimator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pixeltobufferprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/pointlightsourceprocessor.cpp
