@@ -104,7 +104,7 @@ CanvasProcessor::CanvasProcessor()
     });
 
     inport_.onChange([&](){
-        auto layers = inport_.getData()->getNumberOfColorLayers();
+        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
         colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         colorLayer_.setMaxValue(layers - 1);
     });

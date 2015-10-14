@@ -147,8 +147,8 @@ void StreamRibbons::process() {
 
                 auto c = vec4(tf.sample(dvec2(d, 0.0)));
 
-                indexBuffer->add(vertices.size());
-                indexBuffer->add(vertices.size()+1);
+                indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
+                indexBuffer->add(static_cast<std::uint32_t>(vertices.size()+1));
                 vertices.push_back({ p0, N, p0, c });
                 vertices.push_back({ p1, N, p1, c });
 

@@ -115,7 +115,7 @@ void StreamLines::process() {
                 maxVelocity = std::max(maxVelocity, l);
                 auto c = vec4(tf.sample(dvec2(d, 0.0)));
 
-                indexBuffer->add(vertices.size());
+                indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 
                 vertices.push_back({pos,glm::normalize(v),pos,c});
                 
