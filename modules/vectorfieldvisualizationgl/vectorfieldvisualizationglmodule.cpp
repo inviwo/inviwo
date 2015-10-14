@@ -39,6 +39,9 @@
 #include <modules/vectorfieldvisualizationgl/processors/2d/vector2dcurl.h>
 #include <modules/vectorfieldvisualizationgl/processors/2d/vector2ddivergence.h>
 
+#include <modules/vectorfieldvisualizationgl/processors/3d/vector3dcurl.h>
+#include <modules/vectorfieldvisualizationgl/processors/3d/vector3ddivergence.h>
+
 namespace inviwo {
 
 
@@ -58,6 +61,9 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
     registerProcessor<Vector2DMagnitude>();
     registerProcessor<Vector2DCurl>();
     registerProcessor<Vector2DDivergence>();
+
+    registerProcessor<Vector3DCurl>();
+    registerProcessor<Vector3DDivergence>();
 }
 
 }  // namespace

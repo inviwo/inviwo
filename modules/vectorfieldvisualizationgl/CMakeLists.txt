@@ -10,6 +10,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dcurl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2ddivergence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dmagnitude.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3dcurl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3ddivergence.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/lorenzsystem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator3d.h
@@ -24,6 +26,8 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dcurl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2ddivergence.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/2d/vector2dmagnitude.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3dcurl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/vector3ddivergence.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/lorenzsystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/vectorfieldgenerator3d.cpp
@@ -39,11 +43,13 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/streamlinesgl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/streamlinesgl.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/streamlinesgl.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2dcurl.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2ddivergence.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2dmagnitude.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator2d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator3d.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2dcurl.frag
-    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2ddivergence.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector3dcurl.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector3ddivergence.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
