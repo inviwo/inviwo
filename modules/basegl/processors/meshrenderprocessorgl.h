@@ -27,8 +27,8 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_GEOMETRYRENDERPROCESSORGL_H
-#define IVW_GEOMETRYRENDERPROCESSORGL_H
+#ifndef IVW_MESHRENDERPROCESSORGL_H
+#define IVW_MESHRENDERPROCESSORGL_H
 
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>

@@ -30,6 +30,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mesh2drenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
@@ -78,6 +79,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/mesh2drenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
@@ -124,6 +126,8 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightvolumeblend.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightvolumeblend.geom
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightvolumeblend.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/mesh2drendering.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/mesh2drendering.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/multichannelraycaster.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectormagnitudeprocessor.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_binary.frag
