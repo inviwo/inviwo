@@ -55,6 +55,7 @@
 #include <modules/base/processors/volumevectorsource.h>
 
 #include <modules/base/properties/basisproperty.h>
+#include <modules/base/properties/gaussianproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 
@@ -99,9 +100,14 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeVectorSource>();
     registerProcessor<TimeStepSelector>();
 
+
+
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
     registerProperty<VolumeInformationProperty>();
+
+    registerProperty<Gaussian1DProperty>();
+    registerProperty<Gaussian2DProperty>();
 }
 
 } // namespace
