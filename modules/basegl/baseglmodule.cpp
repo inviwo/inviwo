@@ -59,6 +59,7 @@
 #include <modules/basegl/processors/imageprocessing/imagebinary.h>
 #include <modules/basegl/processors/imageprocessing/imagelowpass.h>
 #include <modules/basegl/processors/imageprocessing/imagehighpass.h>
+#include <modules/basegl/processors/tuberendering.h>
 #include <modules/basegl/processors/volumeprocessing/volumebinary.h>
 #include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>
 #include <modules/basegl/processors/volumeprocessing/volumecombiner.h>
@@ -102,6 +103,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ISORaycaster>();
     registerProcessor<VolumeSliceGL>();
     registerProcessor<AxisAlignedCutPlane>();
+    registerProcessor<TubeRendering>();
 
     // image processing
     registerProcessor<FindEdges>();

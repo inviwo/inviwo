@@ -33,6 +33,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.h
@@ -80,6 +81,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/tuberendering.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/vectormagnitudeprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumebinary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeprocessing/volumecombiner.cpp
@@ -135,6 +137,9 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volume_mapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumegradientmagnitude.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/volumeslice.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.vert
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.geom
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/tuberendering.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
