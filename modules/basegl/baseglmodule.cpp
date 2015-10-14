@@ -29,6 +29,7 @@
 
 #include <modules/basegl/baseglmodule.h>
 #include <modules/opengl/shader/shadermanager.h>
+#include <modules/basegl/processors/axisalignedcutplane.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/basegl/processors/drawlines.h>
 #include <modules/basegl/processors/drawpoints.h>
@@ -100,6 +101,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<VolumeRaycaster>();
     registerProcessor<ISORaycaster>();
     registerProcessor<VolumeSliceGL>();
+    registerProcessor<AxisAlignedCutPlane>();
 
     // image processing
     registerProcessor<FindEdges>();

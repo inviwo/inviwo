@@ -5,6 +5,7 @@ ivw_module(BaseGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.h
@@ -51,6 +52,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/axisalignedcutplane.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/background.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/drawpoints.cpp
@@ -97,6 +99,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/axisalignedcutplaneboundingbox.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/axisalignedcutplaneslice.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/background.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/capnearclipping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/heightfield.frag
