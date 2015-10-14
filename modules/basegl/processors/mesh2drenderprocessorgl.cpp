@@ -69,9 +69,9 @@ Mesh2DRenderProcessorGL::~Mesh2DRenderProcessorGL() {}
 
 void Mesh2DRenderProcessorGL::process() {
     if (imageInport_.isConnected()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorOnly);
+        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
     } else {
-        utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
+        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
     shader_.activate();
 
