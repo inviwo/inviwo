@@ -54,6 +54,7 @@ Background::Background()
     , shader_("background.frag", false) {
     addPort(inport_);
     addPort(outport_);
+    inport_.setOptional(true);
     backgroundStyle_.addOption("linearGradient", "Linear gradient", 0);
     backgroundStyle_.addOption("uniformColor", "Uniform color", 1);
     backgroundStyle_.addOption("checkerBoard", "Checker board", 2);
@@ -75,11 +76,6 @@ void Background::switchColors() {
     vec4 tmp = color1_.get();
     color1_.set(color2_.get());
     color2_.set(tmp);
-}
-
-bool Background::isReady() const {
-    if (inport_.isConnected()) return Processor::isReady();
-    return true;
 }
 
 void Background::initializeResources() {

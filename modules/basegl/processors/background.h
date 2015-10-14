@@ -80,7 +80,6 @@ public:
 
 protected:
     virtual void process() override;
-    virtual bool isReady() const override;
 
 private:
     void switchColors();

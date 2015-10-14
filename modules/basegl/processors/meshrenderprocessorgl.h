@@ -91,8 +91,6 @@ public:
     virtual void initializeResources() override;
     virtual void process() override; 
 
-    virtual bool isReady()const override;
-
 protected:
     void centerViewOnGeometry();
     void setNearFarPlane();
