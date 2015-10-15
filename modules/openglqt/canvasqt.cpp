@@ -214,7 +214,11 @@ void CanvasQt::activate() {
 #ifdef USE_QWINDOW
     thisGLContext_->makeCurrent(this);
 #else
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     context()->makeCurrent();
+#else
+    makeCurrent();
+#endif
 #endif
 }
 
@@ -686,7 +690,9 @@ std::unique_ptr<Canvas> CanvasQt::create() {
     auto thread = QThread::currentThread();
     auto res = dispatchFront([&thread]() {
         auto canvas = util::make_unique<HiddenCanvasQt>();
+	#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
         canvas->context()->moveToThread(thread);
+	#endif
         return canvas;
     });
     return res.get();

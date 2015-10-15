@@ -138,7 +138,11 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
                 format = QImage::Format_RGB888;
             }
             else if (data->size() == size*size * 4){
-                format = QImage::Format_RGBA8888;
+                #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+			format = QImage::Format_RGBA8888;
+		#else
+			format = QImage::Format_RGB888;
+		#endif
             }
 
             QImage image(reinterpret_cast<const unsigned char*>(&(data->front())), size, size, format);
