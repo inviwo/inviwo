@@ -228,11 +228,11 @@ struct CImgRescaleLayerDispatcher {
     using type = void*;
     template <typename T>
     void* dispatch(const LayerRAM* inputLayerRAM, uvec2 dst_dim) {
-        CImg<typename T::primitive>* img = LayerToCImg<typename T::type>::convert(inputLayerRAM);
+        auto img = std::unique_ptr<CImg<typename T::primitive>>(LayerToCImg<typename T::type>::convert(inputLayerRAM));
 
         img->resize(dst_dim.x, dst_dim.y);
 
-        return CImgToIvwConvert<typename T::primitive>::convert(nullptr, img);
+        return CImgToIvwConvert<typename T::primitive>::convert(nullptr, img.get());
     }
 };
 

@@ -91,6 +91,15 @@ InviwoMainWindow::InviwoMainWindow()
     // LogCentral takes ownership of logger
     LogCentral::getPtr()->registerLogger(consoleWidget_);
     currentWorkspaceFileName_ = "";
+    QSize size(1920, 1080);
+    QDesktopWidget dw;
+    auto screen = dw.screenGeometry(this);
+    float maxRatio = 0.9;
+
+    size.setWidth(std::min(size.width(), static_cast<int>(screen.width()*maxRatio)));
+    size.setHeight(std::min(size.height(), static_cast<int>(screen.height()*maxRatio)));
+
+    resize(size);
 }
 
 InviwoMainWindow::~InviwoMainWindow() {

@@ -142,13 +142,7 @@ public:
 
     void invokeEvent(Event* event) override;
 
-    // Local camera invalidation
-    // Use lock and unlock to set several camera properties without causing evaluation,
-    // then call invalidateCamera().
-    void invalidateCamera();
-    void lockInvalidation();
-    void unlockInvalidation();
-    bool isInvalidationLocked();
+
 
     void setInport(Inport* inport);
     void fitWithBasis(const mat3& basis);
@@ -156,7 +150,11 @@ public:
     void inportChanged();
 
 private:
-
+    // Call this function after a property has changed
+    // Makes sure that linking is propagated after 
+    // a property has changed.
+    // Calls CompositeProperty::invalidate(INVALID_OUTPUT, this);
+    void invalidateCamera();
     // These functions make sure that the 
     // template value (PerspectiveCamera) is 
     // in sync with the property values.
