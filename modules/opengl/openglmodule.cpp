@@ -95,7 +95,7 @@ OpenGLModule::OpenGLModule(InviwoApplication* app) : InviwoModule(app, "OpenGL")
 // Select the high performance GPU as long as no profile exists 
 // that assigns the application to another GPU.
 extern "C" {
-    _declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+    __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
     __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 }
 
