@@ -71,7 +71,8 @@ namespace inviwo {
 class IVW_MODULE_BASE_API NoiseProcessor : public Processor {
     enum class NoiseType {
         Random , 
-        Perlin 
+        Perlin ,
+        PoissonDisk 
     };
 public:
     InviwoProcessorInfo();
@@ -87,8 +88,12 @@ protected:
 
     IntVec2Property size_;
     TemplateOptionProperty<NoiseType> type_;
+    FloatMinMaxProperty range_;
     IntMinMaxProperty levels_;
     FloatProperty persistence_;
+
+    IntProperty poissonDotsAlongX_;
+    IntProperty poissonMaxPoints_;
 
     CompositeProperty randomness_;
     BoolProperty useSameSeed_;
@@ -96,6 +101,7 @@ protected:
 private:
     void randomNoise(Image *img, float minv, float maxv);
     void perlinNoise(Image *img);
+    void poissonDisk(Image *img);
 
 
     std::random_device rd_;
