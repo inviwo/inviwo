@@ -46,6 +46,8 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2dcurl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2ddivergence.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector2dmagnitude.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator2d.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator3d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector3dcurl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector3ddivergence.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator2d.frag
