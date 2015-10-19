@@ -39,8 +39,8 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 ProcessorClassIdentifier(StreamRibbons, "org.inviwo.StreamRibbons")
 ProcessorDisplayName(StreamRibbons, "Stream Ribbons") 
-ProcessorTags(StreamRibbons, Tags::GL);
-ProcessorCategory(StreamRibbons, "Undefined");
+ProcessorTags(StreamRibbons, Tags::CPU);
+ProcessorCategory(StreamRibbons, "Vector Field Visualization");
 ProcessorCodeState(StreamRibbons, CODE_STATE_EXPERIMENTAL);
 
 StreamRibbons::StreamRibbons()

@@ -39,7 +39,7 @@ namespace inviwo {
 ProcessorClassIdentifier(Vector2DMagnitude,  "org.inviwo.Vector2DMagnitude");
 ProcessorDisplayName(Vector2DMagnitude,  "Vector 2D Magnitude");
 ProcessorTags(Vector2DMagnitude, Tags::GL);
-ProcessorCategory(Vector2DMagnitude, "Undefined");
+ProcessorCategory(Vector2DMagnitude, "Vector Field Topology");
 ProcessorCodeState(Vector2DMagnitude, CODE_STATE_EXPERIMENTAL);
 
 Vector2DMagnitude::Vector2DMagnitude()

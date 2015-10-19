@@ -38,8 +38,8 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 ProcessorClassIdentifier(LIC2D,  "org.inviwo.LIC2D")
 ProcessorDisplayName(LIC2D,  "LIC2D")
-ProcessorTags(LIC2D, Tags::None);
-ProcessorCategory(LIC2D, "Undefined");
+ProcessorTags(LIC2D, Tags::GL);
+ProcessorCategory(LIC2D, "Vector Field Visualization");
 ProcessorCodeState(LIC2D, CODE_STATE_EXPERIMENTAL);
 
 LIC2D::LIC2D()

@@ -34,8 +34,8 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 ProcessorClassIdentifier(ImageLowPass, "org.inviwo.ImageLowPass")
 ProcessorDisplayName(ImageLowPass, "Image Low Pass") 
-ProcessorTags(ImageLowPass, Tags::None);
-ProcessorCategory(ImageLowPass, "Undefined");
+ProcessorTags(ImageLowPass, Tags::GL);
+ProcessorCategory(ImageLowPass, "Image Operation");
 ProcessorCodeState(ImageLowPass, CODE_STATE_EXPERIMENTAL);
 
 ImageLowPass::ImageLowPass()

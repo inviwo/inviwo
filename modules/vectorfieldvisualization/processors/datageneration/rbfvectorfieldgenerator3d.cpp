@@ -43,7 +43,7 @@ namespace inviwo {
 ProcessorClassIdentifier(RBFVectorFieldGenerator3D, "org.inviwo.RBFBased3DVectorFieldGenerator");
 ProcessorDisplayName(RBFVectorFieldGenerator3D, "RBF Based 3D Vector Field Generator");
 ProcessorTags(RBFVectorFieldGenerator3D, Tags::CPU);
-ProcessorCategory(RBFVectorFieldGenerator3D, "Undefined");
+ProcessorCategory(RBFVectorFieldGenerator3D, "Data Creation");
 ProcessorCodeState(RBFVectorFieldGenerator3D, CODE_STATE_EXPERIMENTAL);
 RBFVectorFieldGenerator3D::RBFVectorFieldGenerator3D()
     : Processor()

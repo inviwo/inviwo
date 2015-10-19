@@ -35,8 +35,8 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 ProcessorClassIdentifier(ImageBinary,  "org.inviwo.ImageBinary")
 ProcessorDisplayName(ImageBinary,  "Image Binary")
-ProcessorTags(ImageBinary, Tags::None);
-ProcessorCategory(ImageBinary, "Undefined");
+ProcessorTags(ImageBinary, Tags::GL);
+ProcessorCategory(ImageBinary, "Image Operation");
 ProcessorCodeState(ImageBinary, CODE_STATE_EXPERIMENTAL);
 
 ImageBinary::ImageBinary()

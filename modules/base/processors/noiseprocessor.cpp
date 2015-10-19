@@ -51,7 +51,7 @@ namespace inviwo {
 ProcessorClassIdentifier(NoiseProcessor, "org.inviwo.NoiseProcessor")
 ProcessorDisplayName(NoiseProcessor, "NoiseProcessor")
 ProcessorTags(NoiseProcessor, Tags::CPU);
-ProcessorCategory(NoiseProcessor, "Undefined");
+ProcessorCategory(NoiseProcessor, "Data Creation");
 ProcessorCodeState(NoiseProcessor, CODE_STATE_EXPERIMENTAL);
 
 NoiseProcessor::NoiseProcessor()

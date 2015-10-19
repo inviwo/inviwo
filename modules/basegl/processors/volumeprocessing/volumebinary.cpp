@@ -36,7 +36,7 @@ namespace inviwo {
 ProcessorClassIdentifier(VolumeBinary,  "org.inviwo.VolumeBinary")
 ProcessorDisplayName(VolumeBinary,  "Volume Binary")
 ProcessorTags(VolumeBinary, Tags::None);
-ProcessorCategory(VolumeBinary, "Undefined");
+ProcessorCategory(VolumeBinary, "Volume Operation");
 ProcessorCodeState(VolumeBinary, CODE_STATE_EXPERIMENTAL);
 
 VolumeBinary::VolumeBinary()

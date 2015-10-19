@@ -35,7 +35,7 @@ namespace inviwo {
 ProcessorClassIdentifier(HedgeHog2D, "org.inviwo.HedgeHog2D")
 ProcessorDisplayName(HedgeHog2D, "Hedge Hog 2D") 
 ProcessorTags(HedgeHog2D, Tags::GL);
-ProcessorCategory(HedgeHog2D, "Undefined");
+ProcessorCategory(HedgeHog2D, "Vector Field Visualization");
 ProcessorCodeState(HedgeHog2D, CODE_STATE_EXPERIMENTAL);
 
 HedgeHog2D::HedgeHog2D()

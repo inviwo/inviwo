@@ -33,7 +33,7 @@ namespace inviwo {
 
 ProcessorClassIdentifier(TimeStepSelector, "org.inviwo.TimeStepSelector");
 ProcessorDisplayName(TimeStepSelector, "Time Step Selector");
-ProcessorTags(TimeStepSelector, Tags::None);
+ProcessorTags(TimeStepSelector, Tags::CPU);
 ProcessorCategory(TimeStepSelector, "Volume Operation");
 ProcessorCodeState(TimeStepSelector, CODE_STATE_STABLE);
 

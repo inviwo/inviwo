@@ -38,7 +38,7 @@ namespace inviwo {
 ProcessorClassIdentifier(PixelToBufferProcessor, "org.inviwo.PixelToBufferProcessor");
 ProcessorDisplayName(PixelToBufferProcessor, "Pixel to buffer");
 ProcessorTags(PixelToBufferProcessor, Tags::CPU);
-ProcessorCategory(PixelToBufferProcessor, "Image");
+ProcessorCategory(PixelToBufferProcessor, "Image Operation");
 ProcessorCodeState(PixelToBufferProcessor, CODE_STATE_EXPERIMENTAL);
 
 PixelToBufferProcessor::PixelToBufferProcessor()
