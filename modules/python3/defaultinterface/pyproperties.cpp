@@ -308,7 +308,7 @@ PyObject* py_clickButton(PyObject* /*self*/, PyObject* args) {
         return nullptr;
     }
 
-    button->propertyModified();
+    button->pressButton();
     Py_RETURN_NONE;
 }
 
