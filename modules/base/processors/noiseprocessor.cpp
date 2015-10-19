@@ -214,7 +214,7 @@ void NoiseProcessor::poissonDisk(Image *img) {
     util::IndexMapper2D gridIndex(gridSize);
 
 
-    for (int i = 0; i < gridSize.x*gridSize.y; i++) {
+    for (size_t i = 0; i < gridSize.x*gridSize.y; i++) {
         gridData[i] = glm::i32vec2(-2 * minDist);
     }
 
@@ -235,7 +235,7 @@ void NoiseProcessor::poissonDisk(Image *img) {
 
     int  someNumber = 30;
 
-    while (processList.size() != 0 && samplePoints.size()  < poissonMaxPoints_) {
+    while (processList.size() != 0 && samplePoints.size()  < static_cast<size_t>(poissonMaxPoints_)) {
         std::uniform_int_distribution<size_t> ri(0, processList.size()-1);
         auto i = ri(mt_);
         auto p = processList[i];

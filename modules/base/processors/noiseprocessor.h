@@ -79,7 +79,7 @@ public:
     NoiseProcessor();
     virtual ~NoiseProcessor();
      
-    virtual void process();
+    virtual void process() override;
     
     
 
