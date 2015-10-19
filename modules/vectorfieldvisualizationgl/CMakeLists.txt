@@ -50,6 +50,8 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator3d.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector3dcurl.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vector3ddivergence.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator2d.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/vectorfieldgenerator3d.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
