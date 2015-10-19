@@ -27,6 +27,16 @@
  *
  *********************************************************************************/
 
+/*
+Code for rendering tubes is heavily inspired by a blog post written by Philip Rideout 
+(Tron, Volumetric Lines, and Meshless Tubes)
+at "The little grasshopper, Graphics Programming Tips" 
+http://prideout.net/blog/?p=61
+
+*/
+
+
+
 #include "tuberendering.h"
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
