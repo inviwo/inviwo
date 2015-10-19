@@ -125,13 +125,13 @@ void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
             break;
     }
     #include <warn/pop>
-    mouseMoved_ = false;
+    mouseMovedSincePress_ = false;
 
     QGraphicsScene::mousePressEvent(e);
 }
 
 void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
-    mouseMoved_ = true;
+    mouseMovedSincePress_ = true;
     if (mouseDrag_) {
         // Prevent network evaluations while moving control point
         NetworkLock lock;
@@ -148,7 +148,7 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
     #include <warn/ignore/switch-enum>
     switch (e->button()) {
     case Qt::LeftButton:
-        if (!mouseMoved_ && !mouseDrag_) {
+        if (!mouseMovedSincePress_ && !mouseDrag_) {
             // Add a new point if a group of points are not selected
             // Simply deselect if more than one point is selected
             if (selectedItemsAtPress_.size() <= 1) {
