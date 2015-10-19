@@ -29,17 +29,17 @@
 
 #include "utils/sampler3d.glsl"
 
-uniform sampler3D volume_;
-uniform VolumeParameters volumeParameters_;
+uniform sampler3D volume;
+uniform VolumeParameters volumeParameters;
 in vec4 texCoord_;
 
-uniform float threshold_;
+uniform float threshold;
+
 
 
 
 void main() {
-    vec4 texCoords = gl_FragCoord.xyz * volumeParameters_.reciprocalDimensions;
-    bool b = texture(volume_, texCoords).r >= threshold_;
+    bool b = getVoxel(volume,volumeParameters, texCoord_.xyz).r >= threshold;
     float v = b ? 1.0f : 0.0f;
-    FragData0 = vec4(v,v,v,1.0);
+    FragData0 = vec4(vec3(v),1.0);
 }
