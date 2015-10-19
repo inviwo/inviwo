@@ -68,6 +68,7 @@ public:
 
 protected:
     virtual void preProcess(TextureUnitContainer &cont) override;
+    virtual void postProcess() override;
 
     FloatProperty threshold_;
 
