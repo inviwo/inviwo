@@ -107,7 +107,8 @@ void TransferFunctionEditor::resetTransferFunction() {
 void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
     TransferFunctionEditorControlPoint* controlPointGraphicsItem =
         getControlPointGraphicsItemAt(e->scenePos());
-
+    // Need to store these since they are deselected in mousePressEvent.
+    selectedItemsAtPress_ = QGraphicsScene::selectedItems();
     
     #include <warn/push>
     #include <warn/ignore/switch-enum>
@@ -116,32 +117,23 @@ void TransferFunctionEditor::mousePressEvent(QGraphicsSceneMouseEvent* e) {
             if (controlPointGraphicsItem) {
                 mouseDrag_ = true;
             } else {
-                if (e->modifiers() == Qt::NoModifier && QGraphicsScene::selectedItems().isEmpty()) {
-                    addControlPoint(e->scenePos());
-                    mouseDrag_ = true;
-                } else if (e->modifiers() == Qt::ControlModifier) {
-                    views().front()->setDragMode(QGraphicsView::RubberBandDrag);
-                }
+                views().front()->setDragMode(QGraphicsView::RubberBandDrag);
             }
 
             break;
-
-        case Qt::RightButton:
-            if (controlPointGraphicsItem && !mouseDrag_) {
-                removeControlPoint(controlPointGraphicsItem);
-            }
-            break;
-
         default:
             break;
     }
     #include <warn/pop>
+    mouseMoved_ = false;
 
     QGraphicsScene::mousePressEvent(e);
 }
 
 void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
+    mouseMoved_ = true;
     if (mouseDrag_) {
+        // Prevent network evaluations while moving control point
         NetworkLock lock;
         QGraphicsScene::mouseMoveEvent(e);
     } else {
@@ -150,8 +142,64 @@ void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
+    QPointF p(e->pos());
+    // left mouse button and no movement -> add new point if there is no selection
+    #include <warn/push>
+    #include <warn/ignore/switch-enum>
+    switch (e->button()) {
+    case Qt::LeftButton:
+        if (!mouseMoved_ && !mouseDrag_) {
+            // Add a new point if a group of points are not selected
+            // Simply deselect if more than one point is selected
+            if (selectedItemsAtPress_.size() <= 1) {
+                addControlPoint(e->scenePos());
+                this->clearSelection();
+                auto controlPointGraphicsItem =
+                    getControlPointGraphicsItemAt(e->scenePos());
+                if (controlPointGraphicsItem) {
+                    controlPointGraphicsItem->setSelected(true);
+                }
+            } else {
+                this->clearSelection();
+            }
+            
+            e->accept();
+        }
+        break;
+    case Qt::RightButton:
+        if (!mouseDrag_) {
+            auto controlPointGraphicsItem =
+                getControlPointGraphicsItemAt(e->scenePos());
+            if (selectedItemsAtPress_.size() <= 1) {
+                // One or no selection, check whether there is a TF point under the mouse
+                
+                if (controlPointGraphicsItem) {
+                    removeControlPoint(controlPointGraphicsItem);
+                }
+            } else {
+                auto pressedOnSelectedItem = std::find(std::begin(selectedItemsAtPress_), std::end(selectedItemsAtPress_), controlPointGraphicsItem) != selectedItemsAtPress_.end();
+                if (pressedOnSelectedItem) {
+                    for (auto& elem : selectedItemsAtPress_) {
+                        auto point =
+                            qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(elem);
+                        if (point) {
+                            removeControlPoint(point);
+                        }
+                    }
+                } else {
+                    this->clearSelection();
+                }
+
+            }
+            e->accept();
+        }
+        break;
+    }
+    #include <warn/pop>
     mouseDrag_ = false;
-    QGraphicsScene::mouseReleaseEvent(e);
+    if (!e->isAccepted()) {
+        QGraphicsScene::mouseReleaseEvent(e);
+    }
 }
 
 void TransferFunctionEditor::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
@@ -405,6 +453,7 @@ void TransferFunctionEditor::onControlPointAdded(TransferFunctionDataPoint* p) {
 
     TransferFunctionEditorControlPoint* newpoint =
         new TransferFunctionEditorControlPoint(p, dataMap_);
+    newpoint->setSize(controlPointSize_);
     newpoint->setPos(pos);
 
     PointVec::iterator it = std::lower_bound(points_.begin(), points_.end(), newpoint,
@@ -465,6 +514,13 @@ void TransferFunctionEditor::updateConnections() {
 }
 
 void TransferFunctionEditor::onControlPointChanged(const TransferFunctionDataPoint* p) {
+}
+
+void TransferFunctionEditor::setControlPointSize(float val) {
+    controlPointSize_ = val;
+    for (auto e : points_) {
+        e->setSize(getControlPointSize());
+    }
 }
 
 void TransferFunctionEditor::setDataMap(const DataMapper& dataMap) {

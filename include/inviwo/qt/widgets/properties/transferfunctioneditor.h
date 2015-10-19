@@ -77,6 +77,18 @@ public:
     virtual void onControlPointRemoved(TransferFunctionDataPoint* p);
     virtual void onControlPointChanged(const TransferFunctionDataPoint* p);
 
+    /** 
+     * \brief Get the display size of the control points.
+     * @see TransferFunctionEditorControlPoint::setSize
+     */
+    float getControlPointSize() const { return controlPointSize_; }
+    /** 
+     * \brief Set the display size of the control points.
+     *
+     * @see TransferFunctionEditorControlPoint::setSize
+     * @param float val Display size
+     */
+    void setControlPointSize(float val);
 signals:
     void doubleClick();
 
@@ -108,6 +120,9 @@ protected:
 
 private :
     void addControlPoint(QPointF pos, TransferFunctionDataPoint* dataPoint);
+
+    float controlPointSize_ = 15.f; ///< Size of control points
+
     float zoomRangeXMin_;
     float zoomRangeXMax_;
     float zoomRangeYMin_;
@@ -120,7 +135,9 @@ private :
     typedef std::vector<TransferFunctionControlPointConnection*> ConnectionVec;
     PointVec points_;
     ConnectionVec connections_;
+    QList<QGraphicsItem *> selectedItemsAtPress_; // The items selected when user pressed mouse button.
     bool mouseDrag_;
+    bool mouseMovedSincePress_ = false; // Mouse moved since click
     DataMapper dataMap_;
 
     std::vector<std::vector<TransferFunctionEditorControlPoint*> > groups_;
