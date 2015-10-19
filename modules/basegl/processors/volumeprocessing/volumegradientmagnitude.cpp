@@ -51,7 +51,7 @@ VolumeGradientMagnitude::VolumeGradientMagnitude()
 
 VolumeGradientMagnitude::~VolumeGradientMagnitude() {}
 
-void VolumeGradientMagnitude::preProcess() {
+void VolumeGradientMagnitude::preProcess(TextureUnitContainer &cont) {
     shader_.setUniform("channel", channel_.getSelectedValue());
 }
 

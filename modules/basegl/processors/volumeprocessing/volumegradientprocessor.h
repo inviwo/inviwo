@@ -64,7 +64,7 @@ public:
     InviwoProcessorInfo();
 
 protected:
-    virtual void preProcess() override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
     virtual void postProcess() override;
 
     virtual void initializeResources() override;

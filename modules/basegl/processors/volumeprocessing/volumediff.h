@@ -57,7 +57,7 @@ public:
 
 protected:
     VolumeInport vol2_;
-    virtual void preProcess() override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
 };
 
 } // namespace

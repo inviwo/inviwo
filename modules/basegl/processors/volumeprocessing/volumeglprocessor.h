@@ -36,6 +36,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/buffer/framebufferobject.h>
+#include <modules/opengl/texture/textureunit.h>
 
 namespace inviwo {
 
@@ -65,7 +66,7 @@ protected:
      * after the shader has been activated.
      * Overwrite this function in the derived class to perform things like custom shader setup
      */
-    virtual void preProcess() {}
+    virtual void preProcess(TextureUnitContainer &cont) {}
 
     /*! \brief this function gets called at the end of the process function
      * Overwrite this function in the derived class to perform post-processing

@@ -45,7 +45,7 @@ VolumeBinary::VolumeBinary()
     addProperty(threshold_);
 }
     
-void VolumeBinary::preProcess() {
+void VolumeBinary::preProcess(TextureUnitContainer &cont) {
     utilgl::setUniforms(shader_, threshold_);
 }
 

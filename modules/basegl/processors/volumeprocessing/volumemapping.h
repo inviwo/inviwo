@@ -57,7 +57,7 @@ public:
 protected:
     TransferFunctionProperty tfProperty_;
 
-    virtual void preProcess() override;
+    virtual void preProcess(TextureUnitContainer &cont) override;
 };
 
 } // namespace

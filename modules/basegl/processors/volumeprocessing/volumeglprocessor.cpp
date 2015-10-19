@@ -76,7 +76,7 @@ void VolumeGLProcessor::process() {
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(shader_, cont, *inport_.getData(), "volume");
 
-    preProcess();
+    preProcess(cont);
 
     const size3_t dim{inport_.getData()->getDimensions()};
     fbo_.activate();
