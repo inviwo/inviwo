@@ -62,10 +62,12 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
     shadingMode_.setCurrentStateAsDefault();
 
     referenceFrame_.addOption("world", "World", static_cast<int>(Space::WORLD));
+    referenceFrame_.setSelectedValue(static_cast<int>(Space::WORLD));
     if (camera_) {
         referenceFrame_.addOption("view", "View", static_cast<int>(Space::VIEW));
+        referenceFrame_.setSelectedValue(static_cast<int>(Space::VIEW));
     }
-    referenceFrame_.setSelectedValue(static_cast<int>(Space::WORLD));
+    
     referenceFrame_.setCurrentStateAsDefault();
 
     lightPosition_.setSemantics(PropertySemantics("Spherical"));
