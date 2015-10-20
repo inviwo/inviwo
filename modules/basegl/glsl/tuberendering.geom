@@ -27,14 +27,13 @@
  *
  *********************************************************************************/
 
-#extension GL_EXT_gpu_shader4: enable
-#extension GL_EXT_geometry_shader4: enable
-#extension GL_EXT_geometry_shader4: enable  
+#ifndef GLSL_VERSION_150
+#extension GL_EXT_gpu_shader4 : enable
+#extension GL_EXT_geometry_shader4 : enable
+#endif
 
 #include "utils/structs.glsl"
 
-
- 
 layout(lines_adjacency) in;
 layout(triangle_strip, max_vertices = 24) out;
 
@@ -80,8 +79,19 @@ void main()
 {
     // Compute orientation vectors for the two connecting faces:
     vec3 p0, p1, p2, p3;
-    p0 = gl_PositionIn[0].xyz; p1 = gl_PositionIn[1].xyz;
-    p2 = gl_PositionIn[2].xyz; p3 = gl_PositionIn[3].xyz; 
+
+#ifndef GLSL_VERSION_150
+    p0 = gl_PositionIn[0].xyz;
+    p1 = gl_PositionIn[1].xyz;
+    p2 = gl_PositionIn[2].xyz;
+    p3 = gl_PositionIn[3].xyz; 
+#else
+    p0 = gl_in[0].gl_Position.xyz;
+    p1 = gl_in[1].gl_Position.xyz;
+    p2 = gl_in[2].gl_Position.xyz;
+    p3 = gl_in[3].gl_Position.xyz;
+#endif
+
     vec3 n0 = normalize(p1-p0);
     vec3 n1 = normalize(p2-p1);
     vec3 n2 = normalize(p3-p2);
