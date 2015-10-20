@@ -24,6 +24,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
@@ -75,6 +76,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
@@ -118,6 +120,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_lowpass.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mapping.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_mix.frag
+    ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_normalize.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/img_resample.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightingraycasting.frag
     ${CMAKE_CURRENT_SOURCE_DIR}/glsl/lighting/lightpropagation.frag

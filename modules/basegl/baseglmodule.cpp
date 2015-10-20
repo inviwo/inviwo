@@ -60,6 +60,7 @@
 #include <modules/basegl/processors/imageprocessing/imagebinary.h>
 #include <modules/basegl/processors/imageprocessing/imagelowpass.h>
 #include <modules/basegl/processors/imageprocessing/imagehighpass.h>
+#include <modules/basegl/processors/imageprocessing/imagenormalizationprocessor.h>
 #include <modules/basegl/processors/tuberendering.h>
 #include <modules/basegl/processors/volumeprocessing/volumebinary.h>
 #include <modules/basegl/processors/volumeprocessing/vectormagnitudeprocessor.h>
@@ -117,6 +118,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
     registerProcessor<ImageBinary>();
     registerProcessor<ImageLowPass>();
     registerProcessor<ImageHighPass>();
+    registerProcessor<ImageNormalizationProcessor>();
 
     //volume processing
     registerProcessor<VectorMagnitudeProcessor>();
