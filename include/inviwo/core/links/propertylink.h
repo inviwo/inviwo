@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROPERYLINK_H
@@ -32,20 +32,19 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/links/linkevaluator.h>
 
 namespace inviwo {
 
+class Property;
+
 class IVW_CORE_API PropertyLink : public IvwSerializable {
-public :
+public:
     PropertyLink();
     PropertyLink(Property* srcProperty, Property* dstProperty);
-
     virtual ~PropertyLink();
-    
+
     Property* getSourceProperty() const { return srcProperty_; }
-    Property* getDestinationProperty() const { return dstProperty_; }    
+    Property* getDestinationProperty() const { return dstProperty_; }
     virtual void serialize(IvwSerializer& s) const;
     virtual void deserialize(IvwDeserializer& d);
 
@@ -59,9 +58,8 @@ private:
 
 bool IVW_CORE_API operator==(const PropertyLink& lhs, const PropertyLink& rhs);
 bool IVW_CORE_API operator!=(const PropertyLink& lhs, const PropertyLink& rhs);
-
 bool IVW_CORE_API operator<(const PropertyLink& lhs, const PropertyLink& rhs);
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROPERYLINK_H
+#endif  // IVW_PROPERYLINK_H

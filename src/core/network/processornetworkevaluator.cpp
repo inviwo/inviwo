@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/canvasprocessor.h>
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/util/assertion.h>
@@ -129,7 +131,9 @@ void ProcessorNetworkEvaluator::evaluate() {
         // make sure all processor are initialized
         for (auto p : processorNetwork_->getProcessors()) {
             try {
-                if (!p->isInitialized()) p->initialize();
+                if (!p->isInitialized()) {
+                    p->initialize();
+                }
             } catch (Exception&) {
                 exceptionHandler_(IvwContext);
             }

@@ -32,13 +32,11 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
-#include <inviwo/core/interaction/events/resizeevent.h>
-#include <inviwo/core/network/processornetwork.h>
-
-#include <unordered_map>
 
 namespace inviwo {
+
+class Processor;
+class ProcessorNetwork;
 
 class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
                                                public ProcessorObserver {

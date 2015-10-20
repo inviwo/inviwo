@@ -163,6 +163,21 @@ bool push_back_unique(T& cont, typename T::value_type elem) {
 }
 
 template <typename T, typename V>
+auto find(T& cont, const V& elem) -> typename T::iterator {
+    using std::begin;
+    using std::end;
+    return std::find(begin(cont), end(cont), elem);
+}
+
+template <typename T, typename Pred>
+auto find_if(T& cont, Pred pred) -> typename T::iterator {
+    using std::begin;
+    using std::end;
+    return std::find_if(begin(cont), end(cont), pred) != end(cont);
+}
+
+
+template <typename T, typename V>
 bool contains(T& cont, const V& elem) {
     using std::begin;
     using std::end;
@@ -295,6 +310,14 @@ OutIt copy_if(const T& cont, OutIt out, P pred) {
     return std::copy_if(begin(cont), end(cont), out, pred);
 }
 
+template <typename T, typename UnaryOperation>
+auto transform(const T& cont, UnaryOperation op)
+    -> std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> {
+
+    std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> res;
+    std::transform(cont.begin(), cont.end(), std::back_inserter(res), op);
+    return res;
+}
 
 template <typename T>
 bool is_future_ready(const std::future<T>& future) {

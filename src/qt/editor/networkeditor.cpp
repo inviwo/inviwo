@@ -230,14 +230,14 @@ LinkConnectionGraphicsItem* NetworkEditor::addLinkGraphicsItem(Processor* proces
 }
 
 void NetworkEditor::removeLink(LinkConnectionGraphicsItem* linkGraphicsItem) {
-    ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
-    ProcessorNetwork::PropertyLinkVector links = network->getLinksBetweenProcessors(
+    auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+    auto links = network->getLinksBetweenProcessors(
         linkGraphicsItem->getSrcProcessorGraphicsItem()->getProcessor(),
         linkGraphicsItem->getDestProcessorGraphicsItem()->getProcessor());
 
     NetworkLock lock;
     for (auto& link : links) {
-        network->removeLink((link)->getSourceProperty(), (link)->getDestinationProperty());
+        network->removeLink(link->getSourceProperty(), link->getDestinationProperty());
     }
 }
 

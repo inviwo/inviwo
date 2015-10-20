@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/links/propertylink.h>
+#include <inviwo/core/properties/property.h>
 
 namespace inviwo {
 
@@ -44,12 +45,12 @@ void PropertyLink::serialize(IvwSerializer& s) const {
 }
 
 void PropertyLink::deserialize(IvwDeserializer& d) {
-    struct LError {
-        LError() : error(false), data(){};
+    struct LinkError {
+        LinkError() : error(false), data(){};
         bool error;
         SerializationException::SerializationExceptionData data;
     };
-    LError src, dest;
+    LinkError src, dest;
 
     try {
         d.deserialize("SourceProperty", srcProperty_);

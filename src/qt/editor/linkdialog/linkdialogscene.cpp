@@ -374,7 +374,7 @@ void LinkDialogGraphicsScene::expandOrCollapseLinkedPropertyItems(
         std::vector<LinkDialogPropertyGraphicsItem*> subProps =
             propertyItem->getSubPropertyItemList(true);
         for (auto& subProp : subProps) {
-            std::vector<Property*> linkedSubProps =
+            auto linkedSubProps = 
                 processorNetwork_->getLinkedProperties(subProp->getGraphicsItemData());
             for (auto& linkedSubProp : linkedSubProps) {
                 Property* parentProperty = dynamic_cast<Property*>(linkedSubProp->getOwner());

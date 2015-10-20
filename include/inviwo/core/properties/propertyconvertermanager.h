@@ -38,7 +38,6 @@
 
 namespace inviwo {
 
-class PropertyConverter;
 class Property;
 
 class IVW_CORE_API PropertyConverterManager : public Singleton<PropertyConverterManager> {
