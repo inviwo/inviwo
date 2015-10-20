@@ -162,15 +162,26 @@ void LinkEvaluator::secondaryCacheHelper(std::vector<Link>& links, Property* src
     }
 }
 
-bool LinkEvaluator::isLinking() const { return linking_; }
+bool LinkEvaluator::isLinking() const { return !visited_.empty(); }
 
 void LinkEvaluator::evaluatePropertyLinks(Property* modifiedProperty) {
-    if (linking_) return;
+    if (visited_.find(modifiedProperty) != visited_.end()) return;
 
     NetworkLock lock(network_);
-    util::KeepTrueWhileInScope linking(&linking_);
 
-    for (auto& link : getTriggerdLinksForProperty(modifiedProperty)) {
+    auto& links = getTriggerdLinksForProperty(modifiedProperty);
+    for (auto& link : links) {
+        visited_.insert(link.src_);
+        visited_.insert(link.dst_);
+    }
+    util::OnScopeExit reset([&links, this](){
+        for (auto& link : links) {
+            visited_.erase(link.src_);
+            visited_.erase(link.dst_);
+        }
+    });
+
+    for (auto& link : links) {
         link.converter_->convert(link.src_, link.dst_);
     }
 }

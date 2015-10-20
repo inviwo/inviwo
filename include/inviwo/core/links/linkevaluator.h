@@ -32,6 +32,8 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 
+#include <set>
+
 namespace inviwo {
 
 class Property;
@@ -97,7 +99,8 @@ private:
     // A cache of all links between two processors.
     ProcessorLinkMap processorLinksCache_;
 
-    bool linking_ = false;
+    // Used to make sure we don't end up in circular links
+    std::set<Property*> visited_;
 };
 
 }  // namespace
