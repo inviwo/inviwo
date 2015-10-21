@@ -3,9 +3,40 @@
     <!-- Don't edit the following code -->
     <ProcessorNetworkVersion content="11" />
     <Processors>
+        <Processor type="org.inviwo.Background" identifier="Background">
+            <InPorts>
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref23" />
+            </InPorts>
+            <OutPorts>
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref24" />
+            </OutPorts>
+            <Properties>
+                <Property type="org.inviwo.OptionPropertyInt" identifier="backgroundStyle">
+                    <selectedIdentifier content="uniformColor" />
+                </Property>
+                <Property type="org.inviwo.FloatVec4Property" identifier="color1">
+                    <semantics semantics="Color" />
+                </Property>
+                <Property type="org.inviwo.FloatVec4Property" identifier="color2">
+                    <semantics semantics="Color" />
+                    <value x="0.031372551" y="0.078431375" z="1" w="1" />
+                </Property>
+                <Property type="org.inviwo.IntVec2Property" identifier="checkerBoardSize">
+                    <visible content="0" />
+                </Property>
+                <Property type="org.inviwo.ButtonProperty" identifier="Switch colors" />
+            </Properties>
+            <MetaDataMap>
+                <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                    <position x="-700" y="-425" />
+                    <visibility content="1" />
+                    <selection content="0" />
+                </MetaDataItem>
+            </MetaDataMap>
+        </Processor>
         <Processor type="org.inviwo.CanvasGL" identifier="Canvas">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref0" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref17" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -28,14 +59,14 @@
                     </Properties>
                     <collapsed content="0" />
                 </Property>
-                <Property type="org.inviwo.OptionPropertyInt" identifier="visibleLayer" />
+                <Property type="org.inviwo.OptionPropertyEnumInt" identifier="visibleLayer" />
                 <Property type="org.inviwo.IntProperty" identifier="colorLayer_" displayName="Color Layer ID">
                     <minvalue content="0" />
                     <maxvalue content="0" />
                     <increment content="1" />
                     <semantics semantics="Default" />
                     <usageMode content="0" />
-                    <visible content="1" />
+                    <visible content="0" />
                     <readonly content="0" />
                     <value content="0" />
                 </Property>
@@ -53,7 +84,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="140" y="195" />
+                    <position x="469" y="252" />
                     <dimensions x="512" y="512" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -61,10 +92,10 @@
         </Processor>
         <Processor type="org.inviwo.CubeProxyGeometry" identifier="Cube Proxy Geometry">
             <InPorts>
-                <InPort type="org.inviwo.VolumeInport" identifier="volume.inport" id="ref1" />
+                <InPort type="org.inviwo.VolumeInport" identifier="volume.inport" id="ref15" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.MeshOutport" identifier="geometry.outport" id="ref2" />
+                <OutPort type="org.inviwo.MeshOutport" identifier="geometry.outport" id="ref16" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.BoolProperty" identifier="clippingEnabled">
@@ -111,15 +142,15 @@
         </Processor>
         <Processor type="org.inviwo.EntryExitPoints" identifier="Entry Exit Points">
             <InPorts>
-                <InPort type="org.inviwo.MeshInport" identifier="geometry" id="ref5" />
+                <InPort type="org.inviwo.MeshInport" identifier="geometry" id="ref0" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="entry" id="ref6" />
-                <OutPort type="org.inviwo.ImageOutport" identifier="exit" id="ref7" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="entry" id="ref1" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="exit" id="ref2" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.BoolProperty" identifier="capNearClipping" />
-                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref8">
+                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref3">
                     <Properties>
                         <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
                             <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
@@ -188,18 +219,18 @@
         </Processor>
         <Processor type="org.inviwo.LightVolumeGL" identifier="Light Volume">
             <InPorts>
-                <InPort type="org.inviwo.VolumeInport" identifier="inport" id="ref9" />
-                <InPort type="Inport" identifier="lightSource" id="ref11" />
+                <InPort type="org.inviwo.VolumeInport" identifier="inport" id="ref18" />
+                <InPort type="Inport" identifier="lightSource" id="ref20" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.VolumeOutport" identifier="outport" id="ref10" />
+                <OutPort type="org.inviwo.VolumeOutport" identifier="outport" id="ref19" />
             </OutPorts>
             <Properties>
-                <Property type="org.inviwo.BoolProperty" identifier="supportColoredLight" id="ref12" />
+                <Property type="org.inviwo.BoolProperty" identifier="supportColoredLight" id="ref21" />
                 <Property type="org.inviwo.OptionPropertyInt" identifier="volumeSizeOption">
                     <selectedIdentifier content="1" />
                 </Property>
-                <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" id="ref13">
+                <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" id="ref22">
                     <MetaDataMap>
                         <MetaDataItem type="org.inviwo.PropertyEditorWidgetMetaData" key="org.inviwo.PropertyEditorWidgetMetaData">
                             <position x="920" y="673" />
@@ -254,13 +285,13 @@
         </Processor>
         <Processor type="org.inviwo.LightingRaycaster" identifier="Lighting Raycaster">
             <InPorts>
-                <InPort type="org.inviwo.VolumeInport" identifier="volume" id="ref15" />
-                <InPort type="org.inviwo.ImageInport" identifier="entry-points" id="ref16" />
-                <InPort type="org.inviwo.ImageInport" identifier="exit-points" id="ref17" />
-                <InPort type="org.inviwo.VolumeInport" identifier="lightVolume" id="ref18" />
+                <InPort type="org.inviwo.VolumeInport" identifier="volume" id="ref7" />
+                <InPort type="org.inviwo.ImageInport" identifier="entry-points" id="ref8" />
+                <InPort type="org.inviwo.ImageInport" identifier="exit-points" id="ref9" />
+                <InPort type="org.inviwo.VolumeInport" identifier="lightVolume" id="ref10" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref19" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref11" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.SimpleRaycastingProperty" identifier="raycaster">
@@ -273,7 +304,7 @@
                     </Properties>
                     <collapsed content="0" />
                 </Property>
-                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref22">
+                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref14">
                     <Properties>
                         <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
                             <minvalue x="-552.94727" y="-552.94727" z="-552.94727" />
@@ -325,12 +356,12 @@
                         </Property>
                         <Property type="org.inviwo.BoolProperty" identifier="applyLightAttenuation" />
                         <Property type="org.inviwo.FloatVec3Property" identifier="lightAttenuation" />
-                        <Property type="org.inviwo.BoolProperty" identifier="supportColoredLight" id="ref20" />
+                        <Property type="org.inviwo.BoolProperty" identifier="supportColoredLight" id="ref12" />
                     </Properties>
                     <collapsed content="0" />
                 </Property>
                 <Property type="org.inviwo.OptionPropertyInt" identifier="channel" />
-                <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" id="ref21">
+                <Property type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" id="ref13">
                     <MetaDataMap>
                         <MetaDataItem type="org.inviwo.PropertyEditorWidgetMetaData" key="org.inviwo.PropertyEditorWidgetMetaData">
                             <position x="968" y="584" />
@@ -382,7 +413,7 @@
         </Processor>
         <Processor type="org.inviwo.Pointlightsource" identifier="Point light source">
             <OutPorts>
-                <OutPort type="Outport" identifier="PointLightSource" id="ref3" />
+                <OutPort type="Outport" identifier="PointLightSource" id="ref4" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.PositionProperty" identifier="lightPosition">
@@ -411,7 +442,7 @@
                     </Properties>
                     <collapsed content="0" />
                 </Property>
-                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref4">
+                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref5">
                     <visible content="0" />
                     <Properties>
                         <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
@@ -443,24 +474,46 @@
                 <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
                     <position x="-350" y="-750" />
                     <visibility content="1" />
-                    <selection content="1" />
+                    <selection content="0" />
                 </MetaDataItem>
             </MetaDataMap>
         </Processor>
         <Processor type="org.inviwo.VolumeSource" identifier="Volume Source">
             <OutPorts>
-                <OutPort type="org.inviwo.VolumeOutport" identifier="data" id="ref14" />
+                <OutPort type="org.inviwo.VolumeOutport" identifier="data" id="ref6" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.FileProperty" identifier="filename" displayName="Volume file">
                     <url content="../volumes/Subclavia.pvm" />
                     <nameFilter>
-                        <filter content="Inviwo ivf file format (*.ivf)" />
-                        <filter content="Raw binary file (*.raw)" />
-                        <filter content="AmiraMesh file format (*.am)" />
-                        <filter content="PVM file format (*.pvm)" />
-                        <filter content="MPVM (Multiple PVMs) file format (*.mpvm)" />
-                        <filter content="Inviwo dat file format (*.dat)" />
+                        <filter>
+                            <extension content="*" />
+                            <description content="All Files" />
+                        </filter>
+                        <filter>
+                            <extension content="ivf" />
+                            <description content="Inviwo ivf file format" />
+                        </filter>
+                        <filter>
+                            <extension content="raw" />
+                            <description content="Raw binary file" />
+                        </filter>
+                        <filter>
+                            <extension content="pvm" />
+                            <description content="PVM file format" />
+                        </filter>
+                        <filter>
+                            <extension content="multiple pvms) file format (*.mpvm" />
+                            <description content="MPVM" />
+                        </filter>
+                        <filter>
+                            <extension content="am" />
+                            <description content="AmiraMesh file format" />
+                        </filter>
+                        <filter>
+                            <extension content="dat" />
+                            <description content="Inviwo dat file format" />
+                        </filter>
                     </nameFilter>
                     <acceptMode content="0" />
                     <fileMode content="0" />
@@ -579,125 +632,90 @@
     </Processors>
     <Connections>
         <Connection>
-            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref14" />
-            <InPort type="org.inviwo.VolumeInport" identifier="volume" reference="ref15" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="entry" reference="ref1" />
+            <InPort type="org.inviwo.ImageInport" identifier="entry-points" reference="ref8" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.VolumeOutport" identifier="outport" reference="ref10" />
-            <InPort type="org.inviwo.VolumeInport" identifier="lightVolume" reference="ref18" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="exit" reference="ref2" />
+            <InPort type="org.inviwo.ImageInport" identifier="exit-points" reference="ref9" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref14" />
-            <InPort type="org.inviwo.VolumeInport" identifier="inport" reference="ref9" />
+            <OutPort type="Outport" identifier="PointLightSource" reference="ref4" />
+            <InPort type="Inport" identifier="lightSource" reference="ref20" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref14" />
-            <InPort type="org.inviwo.VolumeInport" identifier="volume.inport" reference="ref1" />
+            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref6" />
+            <InPort type="org.inviwo.VolumeInport" identifier="volume" reference="ref7" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.MeshOutport" identifier="geometry.outport" reference="ref2" />
-            <InPort type="org.inviwo.MeshInport" identifier="geometry" reference="ref5" />
+            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref6" />
+            <InPort type="org.inviwo.VolumeInport" identifier="volume.inport" reference="ref15" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="entry" reference="ref6" />
-            <InPort type="org.inviwo.ImageInport" identifier="entry-points" reference="ref16" />
+            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref6" />
+            <InPort type="org.inviwo.VolumeInport" identifier="inport" reference="ref18" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="exit" reference="ref7" />
-            <InPort type="org.inviwo.ImageInport" identifier="exit-points" reference="ref17" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref11" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref23" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref19" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref0" />
+            <OutPort type="org.inviwo.MeshOutport" identifier="geometry.outport" reference="ref16" />
+            <InPort type="org.inviwo.MeshInport" identifier="geometry" reference="ref0" />
         </Connection>
         <Connection>
-            <OutPort type="Outport" identifier="PointLightSource" reference="ref3" />
-            <InPort type="Inport" identifier="lightSource" reference="ref11" />
+            <OutPort type="org.inviwo.VolumeOutport" identifier="outport" reference="ref19" />
+            <InPort type="org.inviwo.VolumeInport" identifier="lightVolume" reference="ref10" />
+        </Connection>
+        <Connection>
+            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref24" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref17" />
         </Connection>
     </Connections>
     <PropertyLinks>
         <PropertyLink>
-            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref4" />
-            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref4" />
+            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref3" />
+            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref14" />
         </PropertyLink>
         <PropertyLink>
-            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref4" />
-            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref22" />
+            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref5" />
+            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref5" />
         </PropertyLink>
         <PropertyLink>
-            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref8" />
-            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref22" />
+            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref5" />
+            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref14" />
         </PropertyLink>
         <PropertyLink>
             <SourceProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref12" />
-            <DestinationProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref20" />
+            <DestinationProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref21" />
         </PropertyLink>
         <PropertyLink>
             <SourceProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref13" />
-            <DestinationProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref21" />
+            <DestinationProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref22" />
         </PropertyLink>
         <PropertyLink>
-            <SourceProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref20" />
+            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref14" />
+            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref3" />
+        </PropertyLink>
+        <PropertyLink>
+            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref14" />
+            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref5" />
+        </PropertyLink>
+        <PropertyLink>
+            <SourceProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref21" />
             <DestinationProperty type="org.inviwo.BoolProperty" identifier="supportColoredLight" reference="ref12" />
         </PropertyLink>
         <PropertyLink>
-            <SourceProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref21" />
+            <SourceProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref22" />
             <DestinationProperty type="org.inviwo.TransferFunctionProperty" identifier="transferFunction" reference="ref13" />
-        </PropertyLink>
-        <PropertyLink>
-            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref22" />
-            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref4" />
-        </PropertyLink>
-        <PropertyLink>
-            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref22" />
-            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref8" />
         </PropertyLink>
     </PropertyLinks>
     <InviwoSetup>
         <Modules>
             <Module name="Core" />
-            <Module name="assimp" />
-            <Module name="Base">
-                <Processors>
-                    <Processor content="org.inviwo.CubeProxyGeometry" />
-                    <Processor content="org.inviwo.Diffuselightsource" />
-                    <Processor content="org.inviwo.Directionallightsource" />
-                    <Processor content="org.inviwo.DistanceTransformRAM" />
-                    <Processor content="org.inviwo.GeometrySource" />
-                    <Processor content="org.inviwo.HeightFieldMapper" />
-                    <Processor content="org.inviwo.ImageExport" />
-                    <Processor content="org.inviwo.ImageSource" />
-                    <Processor content="org.inviwo.ImageSourceSeries" />
-                    <Processor content="org.inviwo.MeshClipping" />
-                    <Processor content="org.inviwo.MeshCreator" />
-                    <Processor content="org.inviwo.PixelToBufferProcessor" />
-                    <Processor content="org.inviwo.Pointlightsource" />
-                    <Processor content="org.inviwo.OrdinalPropertyAnimator" />
-                    <Processor content="org.inviwo.Spotlightsource" />
-                    <Processor content="org.inviwo.SurfaceExtraction" />
-                    <Processor content="org.inviwo.VolumeSource" />
-                    <Processor content="org.inviwo.VolumeExport" />
-                    <Processor content="org.inviwo.BasisTransformGeometry" />
-                    <Processor content="org.inviwo.BasisTransformVolume" />
-                    <Processor content="org.inviwo.VolumeSlice" />
-                    <Processor content="org.inviwo.VolumeSubsample" />
-                    <Processor content="org.inviwo.VolumeSubset" />
-                    <Processor content="org.inviwo.VolumeVectorSource" />
-                </Processors>
-            </Module>
             <Module name="OpenGL">
                 <Processors>
                     <Processor content="org.inviwo.CanvasGL" />
-                </Processors>
-            </Module>
-            <Module name="OpenCL" />
-            <Module name="BaseCL">
-                <Processors>
-                    <Processor content="org.inviwo.EntryExitPointsCL" />
-                    <Processor content="org.inviwo.GrayscaleCL" />
-                    <Processor content="org.inviwo.VolumeFirstHitCL" />
-                    <Processor content="org.inviwo.VolumeMaxCL" />
-                    <Processor content="org.inviwo.VolumeRaycasterCL" />
                 </Processors>
             </Module>
             <Module name="BaseGL">
@@ -715,12 +733,15 @@
                     <Processor content="org.inviwo.ImageOverlayGL" />
                     <Processor content="org.inviwo.LightingRaycaster" />
                     <Processor content="org.inviwo.LightVolumeGL" />
+                    <Processor content="org.inviwo.Mesh2DRenderProcessorGL" />
                     <Processor content="org.inviwo.GeometryRenderGL" />
                     <Processor content="org.inviwo.MultichannelRaycaster" />
                     <Processor content="org.inviwo.RedGreenProcessor" />
                     <Processor content="org.inviwo.VolumeRaycaster" />
                     <Processor content="org.inviwo.ISORaycaster" />
                     <Processor content="org.inviwo.VolumeSliceGL" />
+                    <Processor content="org.inviwo.AxisAlignedCutPlane" />
+                    <Processor content="org.inviwo.TubeRendering" />
                     <Processor content="org.inviwo.FindEdges" />
                     <Processor content="org.inviwo.ImageGamma" />
                     <Processor content="org.inviwo.ImageGrayscale" />
@@ -730,6 +751,7 @@
                     <Processor content="org.inviwo.ImageBinary" />
                     <Processor content="org.inviwo.ImageLowPass" />
                     <Processor content="org.inviwo.ImageHighPass" />
+                    <Processor content="org.inviwo.ImageNormalization" />
                     <Processor content="org.inviwo.VectorMagnitude" />
                     <Processor content="org.inviwo.VolumeCombiner" />
                     <Processor content="org.inviwo.VolumeDiff" />
@@ -739,6 +761,52 @@
                     <Processor content="org.inviwo.VolumeLowPass" />
                     <Processor content="org.inviwo.VolumeMapping" />
                     <Processor content="org.inviwo.VolumeBinary" />
+                </Processors>
+            </Module>
+            <Module name="ABufferGLModule">
+                <Processors>
+                    <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
+                </Processors>
+            </Module>
+            <Module name="assimp" />
+            <Module name="Base">
+                <Processors>
+                    <Processor content="org.inviwo.CubeProxyGeometry" />
+                    <Processor content="org.inviwo.Diffuselightsource" />
+                    <Processor content="org.inviwo.Directionallightsource" />
+                    <Processor content="org.inviwo.DistanceTransformRAM" />
+                    <Processor content="org.inviwo.GeometrySource" />
+                    <Processor content="org.inviwo.HeightFieldMapper" />
+                    <Processor content="org.inviwo.ImageExport" />
+                    <Processor content="org.inviwo.ImageSource" />
+                    <Processor content="org.inviwo.ImageSourceSeries" />
+                    <Processor content="org.inviwo.MeshClipping" />
+                    <Processor content="org.inviwo.MeshCreator" />
+                    <Processor content="org.inviwo.NoiseProcessor" />
+                    <Processor content="org.inviwo.PixelToBufferProcessor" />
+                    <Processor content="org.inviwo.Pointlightsource" />
+                    <Processor content="org.inviwo.OrdinalPropertyAnimator" />
+                    <Processor content="org.inviwo.Spotlightsource" />
+                    <Processor content="org.inviwo.SurfaceExtraction" />
+                    <Processor content="org.inviwo.VolumeSource" />
+                    <Processor content="org.inviwo.VolumeExport" />
+                    <Processor content="org.inviwo.BasisTransformGeometry" />
+                    <Processor content="org.inviwo.BasisTransformVolume" />
+                    <Processor content="org.inviwo.VolumeSlice" />
+                    <Processor content="org.inviwo.VolumeSubsample" />
+                    <Processor content="org.inviwo.VolumeSubset" />
+                    <Processor content="org.inviwo.VolumeVectorSource" />
+                    <Processor content="org.inviwo.TimeStepSelector" />
+                </Processors>
+            </Module>
+            <Module name="OpenCL" />
+            <Module name="BaseCL">
+                <Processors>
+                    <Processor content="org.inviwo.EntryExitPointsCL" />
+                    <Processor content="org.inviwo.GrayscaleCL" />
+                    <Processor content="org.inviwo.VolumeFirstHitCL" />
+                    <Processor content="org.inviwo.VolumeMaxCL" />
+                    <Processor content="org.inviwo.VolumeRaycasterCL" />
                 </Processors>
             </Module>
             <Module name="CImg" />
@@ -751,9 +819,27 @@
             <Module name="PVM" />
             <Module name="Python3" />
             <Module name="Python3Qt" />
-            <Module name="ABufferGLModule">
+            <Module name="VectorFieldVisualization">
                 <Processors>
-                    <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
+                    <Processor content="org.inviwo.RBFVectorFieldGenerator2D" />
+                    <Processor content="org.inviwo.RBFBased3DVectorFieldGenerator" />
+                    <Processor content="org.inviwo.SeedPointGenerator" />
+                    <Processor content="org.inviwo.StreamLines" />
+                    <Processor content="org.inviwo.StreamRibbons" />
+                </Processors>
+            </Module>
+            <Module name="VectorFieldVisualizationGL">
+                <Processors>
+                    <Processor content="org.inviwo.LorenzSystem" />
+                    <Processor content="org.inviwo.VectorFieldGenerator2D" />
+                    <Processor content="org.inviwo.VectorFieldGenerator3D" />
+                    <Processor content="org.inviwo.LIC2D" />
+                    <Processor content="org.inviwo.HedgeHog2D" />
+                    <Processor content="org.inviwo.Vector2DMagnitude" />
+                    <Processor content="org.inviwo.Vector2DCurl" />
+                    <Processor content="org.inviwo.Vector2DDivergence" />
+                    <Processor content="org.inviwo.Vector3DCurl" />
+                    <Processor content="org.inviwo.Vector3DDivergence" />
                 </Processors>
             </Module>
             <Module name="CASQt">
@@ -762,12 +848,6 @@
                 </Processors>
             </Module>
             <Module name="JSON" />
-            <Module name="cURL">
-                <Processors>
-                    <Processor content="org.inviwo.FileDownload" />
-                </Processors>
-            </Module>
-            <Module name="cURLQT" />
             <Module name="Experimental">
                 <Processors>
                     <Processor content="org.inviwo.FloatPropertyToString" />
@@ -781,23 +861,15 @@
                     <Processor content="org.inviwo.BoolPropertyToString" />
                     <Processor content="org.inviwo.WorldTransformGeometry" />
                     <Processor content="org.inviwo.WorldTransformVolume" />
-                    <Processor content="org.inviwo.PointCloudGenerator" />
-                    <Processor content="org.inviwo.PointCloudToMesh" />
-                    <Processor content="org.inviwo.PointCloudFiltering" />
                     <Processor content="org.inviwo.ImageStackVolumeSource" />
                     <Processor content="org.inviwo.VolumeIllustration" />
                     <Processor content="org.inviwo.VolumeInformation" />
-                    <Processor content="org.inviwo.TimeStepSelector" />
-                    <Processor content="org.inviwo.TubeRendering" />
                     <Processor content="org.inviwo.Test2by2by2Volume" />
                     <Processor content="org.inviwo.GaussianImage" />
-                    <Processor content="org.inviwo.AxisAlignedCutPlane" />
                     <Processor content="org.inviwo.EggMaker" />
                     <Processor content="org.inviwo.TestVolume" />
-                    <Processor content="org.inviwo.NoiseProcessor" />
                     <Processor content="org.inviwo.CandidateVolume" />
                     <Processor content="org.inviwo.FeatureLineExtraction" />
-                    <Processor content="org.inviwo.ImageNormalization" />
                     <Processor content="org.inviwo.ColorDepthCombiner" />
                     <Processor content="org.inviwo.DepthOfFieldBokeh" />
                     <Processor content="org.inviwo.DepthToColorTextureProcessor" />
@@ -808,8 +880,6 @@
                     <Processor content="org.inviwo.MultiPlanar" />
                     <Processor content="org.inviwo.VolumeShader" />
                     <Processor content="org.inviwo.BaderPartition" />
-                    <Processor content="org.inviwo.VectorCurlVolume" />
-                    <Processor content="org.inviwo.VectorDivergenceVolume" />
                     <Processor content="org.inviwo.HaloSeeds" />
                     <Processor content="org.inviwo.HaloGeneration" />
                     <Processor content="org.inviwo.HaloVolumeRaycaster" />
@@ -828,17 +898,11 @@
                     <Processor content="org.inviwo.DynamicLoupe" />
                 </Processors>
             </Module>
-            <Module name="Octree">
+            <Module name="VectorFieldVisualizationExperimental">
                 <Processors>
-                    <Processor content="org.inviwo.VolumeOctreeCreator" />
-                </Processors>
-            </Module>
-            <Module name="OpenSlide">
-                <Processors>
-                    <Processor content="org.inviwo.OpenSlideSource" />
-                    <Processor content="org.inviwo.OpenSlideRendererGL" />
-                    <Processor content="org.inviwo.CbCrHistProcessor" />
-                    <Processor content="org.inviwo.RGBVolumeRaycaster" />
+                    <Processor content="org.inviwo.SeedPointsFromMask" />
+                    <Processor content="org.inviwo.ToComputationalSpace2D" />
+                    <Processor content="org.inviwo.VectorGradientProcessor" />
                 </Processors>
             </Module>
             <Module name="BinaryHistogram">
@@ -858,6 +922,13 @@
                     <Processor content="com.vistinct.Bezier2DSquare" />
                     <Processor content="com.vistinct.UltrasoundLines" />
                     <Processor content="com.vistinct.VolumeMaskSubsetGL" />
+                </Processors>
+            </Module>
+            <Module name="UniformGridCL">
+                <Processors>
+                    <Processor content="com.vistinct.EntryExitMinMaxUniformGrid3D" />
+                    <Processor content="com.vistinct.UniformGridEntryExitCL" />
+                    <Processor content="com.vistinct.VolumeMinMaxCLProcessor" />
                 </Processors>
             </Module>
             <Module name="LightPropagationModule">
