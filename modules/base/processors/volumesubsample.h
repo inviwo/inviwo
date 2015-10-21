@@ -69,6 +69,8 @@ public:
 protected:
     virtual void process() override;
 
+    std::shared_ptr<Volume> subsample(std::shared_ptr<const Volume> volume, size3_t f);
+
     virtual void invalidate(InvalidationLevel invalidationLevel,
                             Property* modifiedProperty = nullptr) override;
 

@@ -53,33 +53,25 @@ VolumeSubsample::VolumeSubsample()
     addProperty(waitForCompletion_);
 
     addProperty(subSampleFactors_);
+
+    waitForCompletion_.onChange([this]() { dirty_ = waitForCompletion_.get(); });
 }
 
 void VolumeSubsample::process() {
-    const size3_t factors = static_cast<size3_t>(glm::max(subSampleFactors_.get(), ivec3(1)));
+    const size3_t factors =
+        glm::min(static_cast<size3_t>(glm::max(subSampleFactors_.get(), ivec3(1))),
+                 inport_.getData()->getDimensions());
 
     if (enabled_.get() && factors != size3_t(1, 1, 1)) {
         if (waitForCompletion_.get()) {
-            auto data = inport_.getData();
-            auto vol = data->getRepresentation<VolumeRAM>();
-            auto volume = std::make_shared<Volume>(VolumeRAMSubSample::apply(vol, factors));
-            volume->copyMetaDataFrom(*data);
-            volume->dataMap_ = data->dataMap_;
-            volume->setModelMatrix(data->getModelMatrix());
-            volume->setWorldMatrix(data->getWorldMatrix());
-            outport_.setData(volume);
+            outport_.setData(subsample(inport_.getData(), factors));
         } else {
             if (!result_.valid()) {
                 getActivityIndicator().setActive(true);
                 result_ = dispatchPool(
                     [this](std::shared_ptr<const Volume> volume,
                            size3_t f) -> std::shared_ptr<Volume> {
-                        auto vol = volume->getRepresentation<VolumeRAM>();
-                        auto sample = std::make_shared<Volume>(VolumeRAMSubSample::apply(vol, f));
-                        sample->copyMetaDataFrom(*volume);
-                        sample->dataMap_ = volume->dataMap_;
-                        sample->setModelMatrix(volume->getModelMatrix());
-                        sample->setWorldMatrix(volume->getWorldMatrix());
+                        auto sample = subsample(volume, f);
                         dispatchFront([this]() {
                             dirty_ = true;
                             invalidate(INVALID_OUTPUT);
@@ -87,8 +79,7 @@ void VolumeSubsample::process() {
                         return sample;
                     },
                     inport_.getData(), factors);
-            }
-            if (util::is_future_ready(result_)) {
+            } else if (util::is_future_ready(result_)) {
                 outport_.setData(result_.get());
                 getActivityIndicator().setActive(false);
                 dirty_ = false;
@@ -97,6 +88,17 @@ void VolumeSubsample::process() {
     } else {
         outport_.setData(inport_.getData());
     }
+}
+
+std::shared_ptr<Volume> VolumeSubsample::subsample(std::shared_ptr<const Volume> volume,
+                                                   size3_t f) {
+    auto vol = volume->getRepresentation<VolumeRAM>();
+    auto sample = std::make_shared<Volume>(VolumeRAMSubSample::apply(vol, f));
+    sample->copyMetaDataFrom(*volume);
+    sample->dataMap_ = volume->dataMap_;
+    sample->setModelMatrix(volume->getModelMatrix());
+    sample->setWorldMatrix(volume->getWorldMatrix());
+    return sample;
 }
 
 void VolumeSubsample::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
