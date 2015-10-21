@@ -27,10 +27,10 @@
  # 
  #################################################################################
  
-set(IVW_VERSION 0.9.4dev)
+set(IVW_VERSION 0.9.5)
 set(IVW_MAJOR_VERSION 0)
 set(IVW_MINOR_VERSION 9)
-set(IVW_PATCH_VERSION 4dev)
+set(IVW_PATCH_VERSION 5)
  
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
@@ -283,7 +283,11 @@ if(DEBUG_POSTFIX)
     add_definitions(-D_DEBUG_POSTFIX)
 endif(DEBUG_POSTFIX)
 
-option(PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    option(PRECOMPILED_HEADERS "Create and use precompilied headers" OFF)
+else()
+    option(PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
+endif()
 
 #--------------------------------------------------------------------
 # Specify build-based defintions
