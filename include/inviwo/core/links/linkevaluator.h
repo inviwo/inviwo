@@ -31,8 +31,8 @@
 #define IVW_LIKEVALUATOR_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-
-#include <set>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processorpair.h>
 
 namespace inviwo {
 
@@ -40,16 +40,7 @@ class Property;
 class PropertyConverter;
 class Processor;
 class PropertyLink;
-
-// A Pair of processors independent of order, ProcessorPair(p1,p2) is equal to ProcessorPair(p2,p1)
-class IVW_CORE_API ProcessorPair {
-public:
-    ProcessorPair(Processor* p1, Processor* p2);
-    const Processor* processor1_;
-    const Processor* processor2_;
-};
-IVW_CORE_API bool operator==(const ProcessorPair& p1, const ProcessorPair& p2);
-IVW_CORE_API bool operator<(const ProcessorPair& p1, const ProcessorPair& p2);
+class ProcessorNetwork;
 
 class IVW_CORE_API LinkEvaluator {
 public:

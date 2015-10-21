@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,24 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORNETWORKEVALUATOR_H
-#define IVW_PROCESSORNETWORKEVALUATOR_H
-
-#include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/network/processornetworkobserver.h>
-#include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/processors/processorpair.h>
 
 namespace inviwo {
 
-class Processor;
-class ProcessorNetwork;
+ProcessorPair::ProcessorPair(Processor* p1, Processor* p2)
+    : processor1_(p1 < p2 ? p1 : p2), processor2_(p1 < p2 ? p2 : p1) {}
 
-class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
-                                               public ProcessorObserver {
-    friend class Processor;
+bool operator==(const ProcessorPair& p1, const ProcessorPair& p2) {
+    return p1.processor1_ == p2.processor1_ && p1.processor2_ == p2.processor2_;
+}
 
-public:
-    ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
-    virtual ~ProcessorNetworkEvaluator();
+bool operator<(const ProcessorPair& p1, const ProcessorPair& p2) {
+    if (p1.processor1_ != p2.processor1_) {
+        return p1.processor1_ < p2.processor1_;
+    } else {
+        return p1.processor2_ < p2.processor2_;
+    }
+}
 
-    void disableEvaluation();
-    void enableEvaluation();
-    void requestEvaluate();
+} // namespace
 
-    void setExceptionHandler(ExceptionHandler handler);
-
-    virtual void onProcessorInvalidationEnd(Processor*) override;
-    virtual void onProcessorNetworkEvaluateRequest() override;
-    virtual void onProcessorNetworkUnlocked() override;
-
-private:
-    void evaluate();
-
-    ProcessorNetwork* processorNetwork_;
-    // the sorted list of processors obtained through topological sorting
-    std::vector<Processor*> processorsSorted_;
-    bool evaulationQueued_;
-    bool evaluationDisabled_;
-    ExceptionHandler exceptionHandler_;
-};
-
-}  // namespace
-
-#endif  // IVW_PROCESSORNETWORKEVALUATOR_H

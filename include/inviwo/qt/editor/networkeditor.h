@@ -31,17 +31,18 @@
 #define IVW_NETWORKEDITOR_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/util/singleton.h>
+#include <inviwo/core/util/observer.h>
+#include <inviwo/core/processors/processorwidgetobserver.h>
+#include <inviwo/core/processors/processorpair.h>
+
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QThread>
 #include <QPointF>
 #include <QGraphicsSceneHelpEvent>
-
-#include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/util/singleton.h>
-#include <inviwo/core/util/observer.h>
-#include <inviwo/core/processors/processorwidgetobserver.h>
 
 namespace inviwo {
 

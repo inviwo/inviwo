@@ -35,6 +35,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <modules/basegl/processors/imageprocessing/imageglprocessor.h>
 #include <modules/opengl/inviwoopengl.h>
     

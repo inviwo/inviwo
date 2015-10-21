@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2012-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,27 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_PROCESSORNETWORKEVALUATOR_H
-#define IVW_PROCESSORNETWORKEVALUATOR_H
+#ifndef IVW_PROCESSORPAIR_H
+#define IVW_PROCESSORPAIR_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/network/processornetworkobserver.h>
-#include <inviwo/core/processors/processorobserver.h>
 
 namespace inviwo {
 
 class Processor;
-class ProcessorNetwork;
 
-class IVW_CORE_API ProcessorNetworkEvaluator : public ProcessorNetworkObserver,
-                                               public ProcessorObserver {
-    friend class Processor;
-
+// A Pair of processors independent of order, ProcessorPair(p1,p2) is equal to ProcessorPair(p2,p1)
+class IVW_CORE_API ProcessorPair {
 public:
-    ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
-    virtual ~ProcessorNetworkEvaluator();
-
-    void disableEvaluation();
-    void enableEvaluation();
-    void requestEvaluate();
-
-    void setExceptionHandler(ExceptionHandler handler);
-
-    virtual void onProcessorInvalidationEnd(Processor*) override;
-    virtual void onProcessorNetworkEvaluateRequest() override;
-    virtual void onProcessorNetworkUnlocked() override;
-
-private:
-    void evaluate();
-
-    ProcessorNetwork* processorNetwork_;
-    // the sorted list of processors obtained through topological sorting
-    std::vector<Processor*> processorsSorted_;
-    bool evaulationQueued_;
-    bool evaluationDisabled_;
-    ExceptionHandler exceptionHandler_;
+    ProcessorPair(Processor* p1, Processor* p2);
+    const Processor* processor1_;
+    const Processor* processor2_;
 };
+IVW_CORE_API bool operator==(const ProcessorPair& p1, const ProcessorPair& p2);
+IVW_CORE_API bool operator<(const ProcessorPair& p1, const ProcessorPair& p2);
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_PROCESSORNETWORKEVALUATOR_H
+#endif // IVW_PROCESSORPAIR_H
+

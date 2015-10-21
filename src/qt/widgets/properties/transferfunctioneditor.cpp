@@ -142,7 +142,6 @@ void TransferFunctionEditor::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
-    QPointF p(e->pos());
     // left mouse button and no movement -> add new point if there is no selection
     #include <warn/push>
     #include <warn/ignore/switch-enum>

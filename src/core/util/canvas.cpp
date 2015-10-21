@@ -36,6 +36,8 @@
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/interaction/events/eventpropagator.h>
+#include <inviwo/core/interaction/events/resizeevent.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 

@@ -35,23 +35,10 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
-
-ProcessorPair::ProcessorPair(Processor* p1, Processor* p2)
-    : processor1_(p1 < p2 ? p1 : p2), processor2_(p1 < p2 ? p2 : p1) {}
-
-bool operator==(const ProcessorPair& p1, const ProcessorPair& p2) {
-    return p1.processor1_ == p2.processor1_ && p1.processor2_ == p2.processor2_;
-}
-
-bool operator<(const ProcessorPair& p1, const ProcessorPair& p2) {
-    if (p1.processor1_ != p2.processor1_) {
-        return p1.processor1_ < p2.processor1_;
-    } else {
-        return p1.processor2_ < p2.processor2_;
-    }
-}
 
 LinkEvaluator::LinkEvaluator(ProcessorNetwork* network) : network_(network) {}
 
