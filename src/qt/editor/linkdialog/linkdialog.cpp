@@ -61,7 +61,7 @@ void LinkDialog::initDialogLayout() {
     setAllowedAreas(Qt::NoDockWidgetArea);
     QFrame* frame = new QFrame();
 
-    QSize rSize(linkDialogWidth, linkDialogHeight + 100);
+    QSize rSize(linkdialog::linkDialogWidth, linkdialog::linkDialogHeight + 100);
     setFixedWidth(rSize.width());
     QVBoxLayout* mainLayout = new QVBoxLayout(frame);
     linkDialogView_ = new LinkDialogGraphicsView(this);
@@ -121,11 +121,8 @@ void LinkDialog::clickedOkayButton() {
     eventLoop_.quit();
 }
 
-void LinkDialog::updateProcessorLinks() {}
-
 void LinkDialog::clickedCancelButton() {
     linkDialogScene_->removeCurrentPropertyLinks();
-    updateProcessorLinks();
     hide();
     eventLoop_.quit();
 }
@@ -192,7 +189,7 @@ void LinkDialog::expandCompositeProperties() {
 
 void LinkDialog::initDialog(Processor* src, Processor* dest) {
     linkDialogScene_->clearSceneRepresentations();
-    QSize rSize(linkDialogWidth, linkDialogHeight);
+    QSize rSize(linkdialog::linkDialogWidth, linkdialog::linkDialogHeight);
     //linkDialogView_->setSceneRect(0,0,rSize.width(), rSize.height()*5);
     linkDialogView_->fitInView(linkDialogView_->rect());
     linkDialogView_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -210,7 +207,7 @@ int LinkDialog::exec() {
 
 QSize LinkDialog::sizeHint() const {
     QSize size = layout()->sizeHint();
-    size.setHeight(linkDialogHeight);
+    size.setHeight(linkdialog::linkDialogHeight);
     return size;
 }
 

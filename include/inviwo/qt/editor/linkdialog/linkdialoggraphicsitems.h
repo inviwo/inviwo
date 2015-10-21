@@ -57,9 +57,10 @@
 
 namespace inviwo {
 
-static const qreal LINKDIALOG_PROCESSOR_GRAPHICSITEM_DEPTH = 1.0f;
-static const qreal LINKDIALOG_PROPERTY_GRAPHICSITEM_DEPTH = 2.0f;
-static const qreal LINKDIALOG_CONNECTION_GRAPHICSITEM_DEPTH = 3.0f;
+namespace linkdialog {
+static const qreal linkdialogProcessorGraphicsitemDepth = 1.0f;
+static const qreal linkdialogPropertyGraphicsitemDepth = 2.0f;
+static const qreal linkdialogConnectionGraphicsitemDepth = 3.0f;
 
 static const int processorItemWidth = 250; //all other parameters depends on processor width.
 static const int processorItemHeight = 50;
@@ -79,6 +80,7 @@ static const int propertyExpandCollapseOffset = 16;
 
 static const int arrowDimensionWidth = propertyItemWidth/15;
 static const int arrowDimensionHeight = arrowDimensionWidth/2;
+}
 
 enum IVW_QTEDITOR_API InviwoLinkUserGraphicsItemType {
     LinkDialogProcessorGraphicsItemType = 4,
@@ -90,8 +92,8 @@ template <typename T>
 class IVW_QTEDITOR_API GraphicsItemData : public QGraphicsRectItem {
 public:
     GraphicsItemData(T* item=0) : QGraphicsRectItem() {item_ = item;}
-    T* getGraphicsItemData() {return item_;}
-    void setGraphicsItemData(T* item) {item_ = item;}
+    T* getItem() {return item_;}
+    void setItem(T* item) {item_ = item;}
 private:
     T* item_;
 };

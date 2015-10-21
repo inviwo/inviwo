@@ -76,7 +76,6 @@ public:
     /**
      * Adds a Processor to the ProcessorNetwork. The identifiers of all processors in the
      * ProcessorNetwork should be unique.
-     *
      * @param[in] processor The Processor to be added.
      * @see removeProcessor(), Processor::setIdentifier()
      */
@@ -86,7 +85,6 @@ public:
      * Removes a Processor from the ProcessorNetwork. To ensure that the network does not end up
      * in a corrupt state, this method first removes and deletes all PortConnections and
      * ProcessorLinks, which are related to the Processor to be removed.
-     *
      * @param[in] processor The Processor to be removed.
      * @see addProcessor()
      */
@@ -96,7 +94,6 @@ public:
     * Removes and deletes a Processor from the ProcessorNetwork. To ensure that the network does not
     * end up in a corrupt state, this method first removes and deletes all PortConnections and
     * ProcessorLinks, which are related to the Processor to be removed.
-    *
     * @param[in] processor The Processor to be removed.
     * @see addProcessor()
     */
@@ -106,7 +103,6 @@ public:
     * Returns the Processor from the ProcessorNetwork, which has the given identifier.
     * In case no Processor with the given identifier is contained in the network, a null
     * pointer is returned.
-    *
     * @param identifier Identifier of the Processor to be accessed.
     * @see getProcessorsByType(), Processor::setIdentifier(), Processor::getIdentifier()
     */
@@ -115,21 +111,16 @@ public:
     /**
     * Returns a vector of Processors which are of type T. In case no Processors match T
     * an empty vector is returned.
-    *
     * @see getProcessorByIdentifier()
     */
     template <class T>
     std::vector<T*> getProcessorsByType() const;
 
-    /**
-    * Returns a vector of all Processors.
-    */
     std::vector<Processor*> getProcessors() const;
 
     /**
     * Adds a PortConnection to the ProcessorNetwork. This involves creating the connection
     * between the two specified ports, as well as adding this connection to the ProcessorNetwork.
-    *
     * @param[in] sourcePort The outport.
     * @param[in] destPort The inport.
     * @return The newly created connection. nullptr if a connection could not be made.
@@ -139,10 +130,8 @@ public:
 
     /**
      * Removes and deletes a PortConnection from the ProcessorNetwork. This involves resolving the
-     * connection
-     * between the two specified Ports, as well as removing this connection from the
+     * connection between the two specified Ports, as well as removing this connection from the
      * ProcessorNetwork.
-     *
      * @param[in] sourcePort The outport.
      * @param[in] destPort The inport.
      * @see addConnection()
@@ -151,7 +140,6 @@ public:
 
     /**
     * Checks weather two port are connected
-    *
     * @param[in] sourcePort The outport.
     * @param[in] destPort The inport.
     * @return Weather the two port are connected
@@ -161,7 +149,6 @@ public:
 
     /**
     * Get a connection between two ports
-    *
     * @param[in] sourcePort The outport.
     * @param[in] destPort The inport.
     * @return The PortConnection between the ports or nullptr if there is none.
@@ -169,18 +156,11 @@ public:
     */
     PortConnection* getConnection(Outport* sourcePort, Inport* destPort);
 
-    /**
-    * Returns a vector of all Connections.
-    *
-    * @return A vector of Connections
-    */
     std::vector<PortConnection*> getConnections() const;
 
     /**
      * Create and add Property Link to the network
-     *
      * Adds a link between two properties, that are owned by processor network.
-     *
      * @param[in] sourceProperty Property at which link starts
      * @param[in] destinationProperty Property at which link ends
      * @return PropertyLink* Newly added link
@@ -188,9 +168,7 @@ public:
     PropertyLink* addLink(Property* sourceProperty, Property* destinationProperty);
     /**
      * Remove and delete Property Link from the network
-     *
      * Removes a link between two properties, that are owned by processor network.
-     *
      * @param[in] sourceProperty Property at which link starts
      * @param[in] destinationProperty Property at which link ends
      * @return void
@@ -198,9 +176,7 @@ public:
     void removeLink(Property* sourceProperty, Property* destinationProperty);
     /**
      * Check whether Property Link exists
-     *
      * Checks if there is a link between two properties, that are owned by processor network.
-     *
      * @param[in] sourceProperty Property at which link starts
      * @param[in] destinationProperty Property at which link ends
      * @return bool true if link exists otherwise returns false
@@ -209,39 +185,31 @@ public:
 
     /**
      * Find Property Link
-     *
      * Search and return link between two properties, that are owned by processor network.
-     *
      * @param[in] sourceProperty Property at which link starts
      * @param[in] destinationProperty Property at which link ends
      * @return PropertyLink* returns pointer to link if it exists otherwise returns nullptr
      */
     PropertyLink* getLink(Property* sourceProperty, Property* destinationProperty) const;
-    /**
-     * Return all Property Links
-     *
-     * @return std::vector<PropertyLink*> List of all property links owned by processor network
-     */
+
     std::vector<PropertyLink*> getLinks() const;
     /**
-      * Get bidirectional Property Link
-      *
+      * Is Property Link bidirectional
       * Searches for bidirectional link between start and end properties
       * In other words property that goes from end to start
-      *
-      * @param[in] sourceProperty Property at which link starts
-      * @param[in] destinationProperty Property at which link ends
+      * @param[in] source Property at which link starts
+      * @param[in] destination Property at which link ends
       * @return void
       */
-    bool isLinkedBidirectional(Property* sourceProperty, Property* destinationProperty);
+    bool isLinkedBidirectional(Property* source, Property* destination);
 
-    std::vector<Property*> getLinkedProperties(Property* property);
+    std::vector<Property*> getPropertiesLinkedTo(Property* property);
     std::vector<PropertyLink*> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
     Property* getProperty(std::vector<std::string> path) const;
 
     void autoLinkProcessor(Processor* processor);
-    void evaluatePropertyLinks(Property*);
+    void evaluateLinksFromProperty(Property*);
 
     void modified();
     void setModified(bool modified);

@@ -67,8 +67,6 @@ private:
     std::string widgetName_;
 };
 
-//////////////////////////////////////////////////////////////////////////
-
 class IVW_QTEDITOR_API LinkDialog : public InviwoDockWidget {
     Q_OBJECT
 public:
@@ -88,7 +86,6 @@ private slots:
 
 private:
     void initDialogLayout();
-    void updateProcessorLinks();
 
     LinkDialogGraphicsView* linkDialogView_;
     LinkDialogGraphicsScene* linkDialogScene_;

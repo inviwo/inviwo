@@ -24,11 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef  IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
-#define  IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
+#ifndef IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
+#define IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 
@@ -60,24 +60,27 @@ namespace inviwo {
 class LinkDialogPropertyGraphicsItem;
 class Processor;
 
-class IVW_QTEDITOR_API LinkDialogProcessorGraphicsItem : public QObject, public GraphicsItemData<Processor> {
+class IVW_QTEDITOR_API LinkDialogProcessorGraphicsItem : public QObject,
+                                                         public GraphicsItemData<Processor> {
     Q_OBJECT
 public:
     LinkDialogProcessorGraphicsItem();
     virtual ~LinkDialogProcessorGraphicsItem();
 
-    void setProcessor(Processor* processor, bool expandProperties=false);
-    Processor* getProcessor() {return getGraphicsItemData();}
+    void setProcessor(Processor* processor, bool expandProperties = false);
+    Processor* getProcessor() { return getItem(); }
 
-    void updatePropertyItemPositions(bool animateExpansion=false);
+    void updatePropertyItemPositions(bool animateExpansion = false);
 
-    const std::vector<LinkDialogPropertyGraphicsItem*>& getPropertyItemList() const {return propertyGraphicsItems_;}
+    const std::vector<LinkDialogPropertyGraphicsItem*>& getPropertyItemList() const {
+        return propertyGraphicsItems_;
+    }
 
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF& constraint = QSizeF()) const;
 
-    //override for qgraphicsitem_cast (refer qt documentation)
+    // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + LinkDialogProcessorGraphicsItemType };
-    int type() const  {return Type; }
+    int type() const { return Type; }
 
 protected:
     virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
@@ -96,6 +99,6 @@ private:
     float animateExpansion_;
 };
 
-} //namespace
+}  // namespace
 
-#endif //IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H
+#endif  // IVW_LINKDIALOG_PROCESSORGRAPHICSITEMS_H

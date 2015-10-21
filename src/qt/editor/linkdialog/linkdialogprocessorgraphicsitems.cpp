@@ -41,25 +41,27 @@ namespace inviwo {
 
 LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem()
     : GraphicsItemData<Processor>(), animateExpansion_(1.0) {
-    setZValue(LINKDIALOG_PROCESSOR_GRAPHICSITEM_DEPTH);
+    setZValue(linkdialog::linkdialogProcessorGraphicsitemDepth);
     // setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
-    setRect(-processorItemWidth / 2, -processorItemHeight / 2, processorItemWidth,
-            processorItemHeight);
+    setRect(-linkdialog::processorItemWidth / 2, -linkdialog::processorItemHeight / 2,
+            linkdialog::processorItemWidth, linkdialog::processorItemHeight);
     QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
     processorShadowEffect->setOffset(3.0);
     processorShadowEffect->setBlurRadius(3.0);
     setGraphicsEffect(processorShadowEffect);
     nameLabel_ = new LabelGraphicsItem(this);
-    nameLabel_->setPos(-processorItemWidth / 2.0 + processorLabelHeight / 2.0,
-                       -processorItemHeight / 2.0 + processorLabelHeight);
+    nameLabel_->setPos(
+        -linkdialog::processorItemWidth / 2.0 + linkdialog::processorLabelHeight / 2.0,
+        -linkdialog::processorItemHeight / 2.0 + linkdialog::processorLabelHeight);
     nameLabel_->setDefaultTextColor(Qt::white);
-    nameLabel_->setFont(QFont("Segoe", processorLabelHeight, QFont::Black, false));
+    nameLabel_->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Black, false));
     nameLabel_->setCrop(9, 8);
     classLabel_ = new LabelGraphicsItem(this);
-    classLabel_->setPos(-processorItemWidth / 2.0 + processorLabelHeight / 2.0,
-                        -processorItemHeight / 2.0 + processorLabelHeight * 2.5);
+    classLabel_->setPos(
+        -linkdialog::processorItemWidth / 2.0 + linkdialog::processorLabelHeight / 2.0,
+        -linkdialog::processorItemHeight / 2.0 + linkdialog::processorLabelHeight * 2.5);
     classLabel_->setDefaultTextColor(Qt::lightGray);
-    classLabel_->setFont(QFont("Segoe", processorLabelHeight, QFont::Normal, true));
+    classLabel_->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true));
     classLabel_->setCrop(9, 8);
 }
 
@@ -109,20 +111,23 @@ void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraph
     p->setBrush(grad);
     QPainterPath roundRectPath;
     QRectF bRect = rect();
-    roundRectPath.moveTo(bRect.left(), bRect.top() + processorRoundedCorners);
-    roundRectPath.lineTo(bRect.left(), bRect.bottom() - processorRoundedCorners);
-    roundRectPath.arcTo(bRect.left(), bRect.bottom() - (2 * processorRoundedCorners),
-                        (2 * processorRoundedCorners), (2 * processorRoundedCorners), 180.0, 90.0);
-    roundRectPath.lineTo(bRect.right() - processorRoundedCorners, bRect.bottom());
-    roundRectPath.arcTo(bRect.right() - (2 * processorRoundedCorners),
-                        bRect.bottom() - (2 * processorRoundedCorners),
-                        (2 * processorRoundedCorners), (2 * processorRoundedCorners), 270.0, 90.0);
-    roundRectPath.lineTo(bRect.right(), bRect.top() + processorRoundedCorners);
-    roundRectPath.arcTo(bRect.right() - (2 * processorRoundedCorners), bRect.top(),
-                        (2 * processorRoundedCorners), (2 * processorRoundedCorners), 0.0, 90.0);
-    roundRectPath.lineTo(bRect.left() + processorRoundedCorners, bRect.top());
-    roundRectPath.arcTo(bRect.left(), bRect.top(), (2 * processorRoundedCorners),
-                        (2 * processorRoundedCorners), 90.0, 90.0);
+    roundRectPath.moveTo(bRect.left(), bRect.top() + linkdialog::processorRoundedCorners);
+    roundRectPath.lineTo(bRect.left(), bRect.bottom() - linkdialog::processorRoundedCorners);
+    roundRectPath.arcTo(bRect.left(), bRect.bottom() - (2 * linkdialog::processorRoundedCorners),
+                        (2 * linkdialog::processorRoundedCorners),
+                        (2 * linkdialog::processorRoundedCorners), 180.0, 90.0);
+    roundRectPath.lineTo(bRect.right() - linkdialog::processorRoundedCorners, bRect.bottom());
+    roundRectPath.arcTo(bRect.right() - (2 * linkdialog::processorRoundedCorners),
+                        bRect.bottom() - (2 * linkdialog::processorRoundedCorners),
+                        (2 * linkdialog::processorRoundedCorners),
+                        (2 * linkdialog::processorRoundedCorners), 270.0, 90.0);
+    roundRectPath.lineTo(bRect.right(), bRect.top() + linkdialog::processorRoundedCorners);
+    roundRectPath.arcTo(bRect.right() - (2 * linkdialog::processorRoundedCorners), bRect.top(),
+                        (2 * linkdialog::processorRoundedCorners),
+                        (2 * linkdialog::processorRoundedCorners), 0.0, 90.0);
+    roundRectPath.lineTo(bRect.left() + linkdialog::processorRoundedCorners, bRect.top());
+    roundRectPath.arcTo(bRect.left(), bRect.top(), (2 * linkdialog::processorRoundedCorners),
+                        (2 * linkdialog::processorRoundedCorners), 90.0, 90.0);
     p->drawPath(roundRectPath);
     p->restore();
 }
@@ -133,7 +138,7 @@ QVariant LinkDialogProcessorGraphicsItem::itemChange(GraphicsItemChange change,
 }
 
 void LinkDialogProcessorGraphicsItem::setProcessor(Processor* processor, bool expandProperties) {
-    setGraphicsItemData(processor);
+    setItem(processor);
 
     if (processor) {
         nameLabel_->setText(QString::fromStdString(processor->getIdentifier()));
@@ -141,13 +146,11 @@ void LinkDialogProcessorGraphicsItem::setProcessor(Processor* processor, bool ex
         propertyGraphicsItems_.clear();
         std::vector<Property*> properties = processor->getProperties();
 
-        for (auto& propertie : properties) {
-            LinkDialogPropertyGraphicsItem* compItem =
-                new LinkDialogPropertyGraphicsItem(this, propertie);
+        for (auto& property : properties) {
+            auto compItem = new LinkDialogPropertyGraphicsItem(this, property);
             compItem->show();
             propertyGraphicsItems_.push_back(compItem);
-            std::vector<LinkDialogPropertyGraphicsItem*> subPropGraphicsItems =
-                compItem->getSubPropertyItemList(true);
+            auto subPropGraphicsItems = compItem->getSubPropertyItemList(true);
             for (auto& subPropGraphicsItem : subPropGraphicsItems) {
                 propertyGraphicsItems_.push_back(subPropGraphicsItem);
             }

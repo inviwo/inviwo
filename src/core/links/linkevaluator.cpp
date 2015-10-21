@@ -55,7 +55,7 @@ bool operator<(const ProcessorPair& p1, const ProcessorPair& p2) {
 
 LinkEvaluator::LinkEvaluator(ProcessorNetwork* network) : network_(network) {}
 
-void LinkEvaluator::addToPrimaryCache(PropertyLink* propertyLink) {
+void LinkEvaluator::addLink(PropertyLink* propertyLink) {
     Property* src = propertyLink->getSourceProperty();
     Property* dst = propertyLink->getDestinationProperty();
 
@@ -75,7 +75,7 @@ void LinkEvaluator::addToPrimaryCache(PropertyLink* propertyLink) {
     propertyLinkSecondaryCache_.clear();
 }
 
-void LinkEvaluator::removeFromPrimaryCache(PropertyLink* propertyLink) {
+void LinkEvaluator::removeLink(PropertyLink* propertyLink) {
     Property* src = propertyLink->getSourceProperty();
     Property* dst = propertyLink->getDestinationProperty();
 
@@ -117,7 +117,7 @@ std::vector<LinkEvaluator::Link>& LinkEvaluator::getTriggerdLinksForProperty(Pro
     }
 }
 
-std::vector<Property*> LinkEvaluator::getLinkedProperties(Property* property) {
+std::vector<Property*> LinkEvaluator::getPropertiesLinkedTo(Property* property) {
     // check if link connectivity has been computed and cached already
     auto& list = (propertyLinkSecondaryCache_.find(property) != propertyLinkSecondaryCache_.end())
                      ? propertyLinkSecondaryCache_[property]
@@ -164,22 +164,13 @@ void LinkEvaluator::secondaryCacheHelper(std::vector<Link>& links, Property* src
 
 bool LinkEvaluator::isLinking() const { return !visited_.empty(); }
 
-void LinkEvaluator::evaluatePropertyLinks(Property* modifiedProperty) {
-    if (visited_.find(modifiedProperty) != visited_.end()) return;
+void LinkEvaluator::evaluateLinksFromProperty(Property* modifiedProperty) {
+    if (util::contains(visited_, modifiedProperty)) return;
 
     NetworkLock lock(network_);
 
     auto& links = getTriggerdLinksForProperty(modifiedProperty);
-    for (auto& link : links) {
-        visited_.insert(link.src_);
-        visited_.insert(link.dst_);
-    }
-    util::OnScopeExit reset([&links, this](){
-        for (auto& link : links) {
-            visited_.erase(link.src_);
-            visited_.erase(link.dst_);
-        }
-    });
+    VisitedHelper helper(visited_, links);
 
     for (auto& link : links) {
         link.converter_->convert(link.src_, link.dst_);

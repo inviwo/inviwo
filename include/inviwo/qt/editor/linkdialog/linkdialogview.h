@@ -46,8 +46,7 @@ public:
     LinkDialogGraphicsView(QWidget* parent);
     virtual ~LinkDialogGraphicsView();
     void setDialogScene(LinkDialogGraphicsScene* scene);
-protected:
-    void mouseDoubleClickEvent(QMouseEvent* e);
+
 private:
     LinkDialogGraphicsScene* scene_;
 };

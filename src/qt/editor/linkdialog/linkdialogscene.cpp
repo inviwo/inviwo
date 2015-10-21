@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
@@ -39,6 +39,7 @@
 #include <inviwo/core/properties/propertyowner.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/links/propertylink.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <QTimeLine>
 
@@ -53,13 +54,12 @@ LinkDialogGraphicsScene::LinkDialogGraphicsScene(QWidget* parent)
     , processorNetwork_(nullptr)
     , expandProperties_(false)
     , mouseOnLeftSide_(false) {
-
-    // The defalt bsp tends to crash...  
+    // The default bsp tends to crash...
     setItemIndexMethod(QGraphicsScene::NoIndex);
 }
 
 LinkDialogGraphicsScene::~LinkDialogGraphicsScene() {
-    // We need to make sure to delete the links first. since they referer to the properties
+    // We need to make sure to delete the links first. since they refer to the properties
     for (auto& elem : connectionGraphicsItems_) {
         delete elem;
     }
@@ -71,8 +71,7 @@ LinkDialogGraphicsScene::~LinkDialogGraphicsScene() {
 }
 
 QGraphicsItem* LinkDialogGraphicsScene::getPropertyGraphicsItemOf(Property* property) {
-    std::map<Property*, LinkDialogPropertyGraphicsItem*>::iterator it =
-        propertyGraphicsItemCache_.find(property);
+    auto it = propertyGraphicsItemCache_.find(property);
     if (it != propertyGraphicsItemCache_.end()) return it->second;
 
     LinkDialogPropertyGraphicsItem* graphicsItem = nullptr;
@@ -82,7 +81,7 @@ QGraphicsItem* LinkDialogGraphicsScene::getPropertyGraphicsItemOf(Property* prop
 
     for (auto propertyItems : processorGraphicsItems) {
         for (auto& propertyItem : propertyItems->getPropertyItemList()) {
-            if (propertyItem->getGraphicsItemData() == property) {
+            if (propertyItem->getItem() == property) {
                 graphicsItem = propertyItem;
                 break;
             }
@@ -91,13 +90,14 @@ QGraphicsItem* LinkDialogGraphicsScene::getPropertyGraphicsItemOf(Property* prop
     }
 
     if (!graphicsItem) {
-        //This is slightly expensive search. So do it only if you don't find required item in immediate children
+        // This is slightly expensive search. So do it only if you don't find required item in
+        // immediate children
         for (auto propertyItems : processorGraphicsItems) {
             for (auto& propertyItem : propertyItems->getPropertyItemList()) {
                 std::vector<LinkDialogPropertyGraphicsItem*> subPropertyItems =
                     propertyItem->getSubPropertyItemList(true);
                 for (auto& subPropertyItem : subPropertyItems) {
-                    if (subPropertyItem->getGraphicsItemData() == property) {
+                    if (subPropertyItem->getItem() == property) {
                         graphicsItem = subPropertyItem;
                         break;
                     }
@@ -124,9 +124,7 @@ void LinkDialogGraphicsScene::setNetwork(ProcessorNetwork* network) {
 ProcessorNetwork* LinkDialogGraphicsScene::getNetwork() { return processorNetwork_; }
 
 void LinkDialogGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-
-    LinkDialogPropertyGraphicsItem* tempProperty =
-        getSceneGraphicsItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos());
+    auto tempProperty = getSceneGraphicsItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos());
 
     if (!startProperty_ && tempProperty) {
         startProperty_ = tempProperty;
@@ -135,7 +133,7 @@ void LinkDialogGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* e) {
             linkCurve_->hide();
             removeItem(linkCurve_);
             delete linkCurve_;
-            linkCurve_ = 0;
+            linkCurve_ = nullptr;
         }
 
         QPointF center = startProperty_->getShortestBoundaryPointTo(e->scenePos());
@@ -151,18 +149,16 @@ void LinkDialogGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 }
 
 void LinkDialogGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* e) {
-
     QPointF pos = e->scenePos();
-    if (pos.x() > linkDialogWidth/2.0 ) {
+    if (pos.x() > linkdialog::linkDialogWidth / 2.0) {
         mouseOnLeftSide_ = false;
-    }
-    else {
+    } else {
         mouseOnLeftSide_ = true;
     }
 
     if (linkCurve_) {
         QPointF center = startProperty_->getShortestBoundaryPointTo(e->scenePos());
-        linkCurve_->setStartPoint(center) ;
+        linkCurve_->setStartPoint(center);
         linkCurve_->setEndPoint(e->scenePos());
         e->accept();
     } else
@@ -175,14 +171,14 @@ void LinkDialogGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
         linkCurve_ = nullptr;
         endProperty_ = getSceneGraphicsItemAt<LinkDialogPropertyGraphicsItem>(e->scenePos());
 
-        if (endProperty_ && (endProperty_!=startProperty_)) {
-            Property* sProp = startProperty_->getGraphicsItemData();
-            Property* eProp = endProperty_->getGraphicsItemData();
+        if (endProperty_ && (endProperty_ != startProperty_)) {
+            Property* sProp = startProperty_->getItem();
+            Property* eProp = endProperty_->getItem();
 
-            if (sProp->getOwner()->getProcessor()!=eProp->getOwner()->getProcessor()) {
+            if (sProp->getOwner()->getProcessor() != eProp->getOwner()->getProcessor()) {
                 bool src2dst = SimpleCondition::canLink(sProp, eProp);
                 bool dst2src = SimpleCondition::canLink(eProp, sProp);
-                if (src2dst &&dst2src)
+                if (src2dst && dst2src)
                     addPropertyLink(sProp, eProp, true);
                 else if (src2dst)
                     addPropertyLink(sProp, eProp, false);
@@ -220,9 +216,7 @@ void LinkDialogGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e)
                 if (propertyLink->getStartProperty() == propertyItem)
                     makePropertyLinkBidirectional(propertyLink, true);
             }
-        }
-        else {
-
+        } else {
             bool expand = false;
             if (propertyItem->isExpanded()) expand = true;
 
@@ -233,7 +227,6 @@ void LinkDialogGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e)
     } else
         QGraphicsScene::mouseDoubleClickEvent(e);
 }
-
 
 void LinkDialogGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
     if (keyEvent->key() == Qt::Key_Delete) {
@@ -285,19 +278,19 @@ void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e
 }
 
 void LinkDialogGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* e) {
-    //note:delta can be positive or negative (wheel rotated away from user or towards user)
+    // note:delta can be positive or negative (wheel rotated away from user or towards user)
     int numDegrees = e->delta() / 8;
     int numSteps = numDegrees / 15;
 
     currentScrollSteps_ = numSteps;
 
-    QTimeLine *anim = new QTimeLine(750, this);
+    QTimeLine* anim = new QTimeLine(750, this);
     anim->setUpdateInterval(20);
     connect(anim, SIGNAL(valueChanged(qreal)), SLOT(executeTimeLine(qreal)));
     connect(anim, SIGNAL(finished()), SLOT(terminateTimeLine()));
     anim->start();
     e->accept();
-    //QGraphicsScene::wheelEvent(e);
+    // QGraphicsScene::wheelEvent(e);
 }
 
 void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
@@ -307,12 +300,13 @@ void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
     processorGraphicsItems.push_back(srcProcessorGraphicsItem_);
     processorGraphicsItems.push_back(dstProcessorGraphicsItem_);
 
-    for(auto procGraphicsItem : processorGraphicsItems) {
+    for (auto procGraphicsItem : processorGraphicsItems) {
         QPointF pos = procGraphicsItem->scenePos();
-        if (scrollLeft && pos.x()>=linkDialogWidth/2.0) continue;
-        if (!scrollLeft && pos.x()<linkDialogWidth/2.0) continue;
-        procGraphicsItem->setPos(pos.x()+scrollOffset.x(), pos.y()+scrollOffset.y());
-        std::vector<LinkDialogPropertyGraphicsItem*> propItems = procGraphicsItem->getPropertyItemList();
+        if (scrollLeft && pos.x() >= linkdialog::linkDialogWidth / 2.0) continue;
+        if (!scrollLeft && pos.x() < linkdialog::linkDialogWidth / 2.0) continue;
+        procGraphicsItem->setPos(pos.x() + scrollOffset.x(), pos.y() + scrollOffset.y());
+        std::vector<LinkDialogPropertyGraphicsItem*> propItems =
+            procGraphicsItem->getPropertyItemList();
         for (auto& propItem : propItems) {
             propItem->updatePositionBasedOnIndex();
             const std::vector<DialogConnectionGraphicsItem*> connections =
@@ -327,21 +321,17 @@ void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
 }
 
 void LinkDialogGraphicsScene::executeTimeLine(qreal x) {
-    float yIncrement = processorItemHeight*(0.09f)*(currentScrollSteps_);
+    float yIncrement = linkdialog::processorItemHeight * (0.09f) * (currentScrollSteps_);
     offsetItems(yIncrement, mouseOnLeftSide_);
 }
 
-void LinkDialogGraphicsScene::terminateTimeLine() {
-    delete sender();
-}
-
+void LinkDialogGraphicsScene::terminateTimeLine() { delete sender(); }
 
 void LinkDialogGraphicsScene::addPropertyLink(Property* sProp, Property* eProp,
                                               bool bidirectional) {
-    
     processorNetwork_->addLink(sProp, eProp);
-    processorNetwork_->evaluatePropertyLinks(sProp);
-    
+    processorNetwork_->evaluateLinksFromProperty(sProp);
+
     if (bidirectional) processorNetwork_->addLink(eProp, sProp);
 }
 
@@ -349,15 +339,15 @@ int LinkDialogGraphicsScene::currentLinkItemsCount() {
     return static_cast<int>(currentConnectionGraphicsItems_.size());
 }
 
-void LinkDialogGraphicsScene::setExpandProperties(bool expand) { 
-    if (expand!=expandProperties_) {
+void LinkDialogGraphicsScene::setExpandProperties(bool expand) {
+    if (expand != expandProperties_) {
         expandProperties_ = expand;
     }
 }
 
 void LinkDialogGraphicsScene::expandOrCollapseLinkedProcessorItems(
     LinkDialogProcessorGraphicsItem* procGraphicsItem, bool expand) {
-    for(auto propertyItem : procGraphicsItem->getPropertyItemList()) {
+    for (auto propertyItem : procGraphicsItem->getPropertyItemList()) {
         expandOrCollapseLinkedPropertyItems(propertyItem, expand);
     }
 }
@@ -374,8 +364,7 @@ void LinkDialogGraphicsScene::expandOrCollapseLinkedPropertyItems(
         std::vector<LinkDialogPropertyGraphicsItem*> subProps =
             propertyItem->getSubPropertyItemList(true);
         for (auto& subProp : subProps) {
-            auto linkedSubProps = 
-                processorNetwork_->getLinkedProperties(subProp->getGraphicsItemData());
+            auto linkedSubProps = processorNetwork_->getPropertiesLinkedTo(subProp->getItem());
             for (auto& linkedSubProp : linkedSubProps) {
                 Property* parentProperty = dynamic_cast<Property*>(linkedSubProp->getOwner());
                 if (parentProperty && (linkedSubProp->getOwner()->getProcessor() ==
@@ -401,7 +390,7 @@ void LinkDialogGraphicsScene::expandOrCollapseLinkedPropertyItems(
         processorGraphicsItems.push_back(srcProcessorGraphicsItem_);
         processorGraphicsItems.push_back(dstProcessorGraphicsItem_);
 
-        for(auto procGraphicsItem : processorGraphicsItems) {
+        for (auto procGraphicsItem : processorGraphicsItems) {
             procGraphicsItem->updatePropertyItemPositions(true);
         }
     }
@@ -410,14 +399,13 @@ void LinkDialogGraphicsScene::expandOrCollapseLinkedPropertyItems(
 bool LinkDialogGraphicsScene::isPropertyExpanded(Property* property) {
     LinkDialogPropertyGraphicsItem* propItem =
         qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(getPropertyGraphicsItemOf(property));
-    if(propItem) return propItem->isExpanded();
+    if (propItem) return propItem->isExpanded();
     return false;
 }
 void LinkDialogGraphicsScene::removeCurrentPropertyLinks() {
-    std::vector<DialogConnectionGraphicsItem*> tempList = currentConnectionGraphicsItems_;
-    for (auto propertyLink : currentConnectionGraphicsItems_) {
-        removeConnectionFromCurrentList(propertyLink);
-    }
+    std::vector<DialogConnectionGraphicsItem*> tempList;
+    std::swap(tempList, currentConnectionGraphicsItems_);
+
     for (auto propertyLink : tempList) {
         removePropertyLink(propertyLink);
     }
@@ -425,17 +413,16 @@ void LinkDialogGraphicsScene::removeCurrentPropertyLinks() {
 
 void LinkDialogGraphicsScene::removeAllPropertyLinks() {
     std::vector<DialogConnectionGraphicsItem*> tempList = connectionGraphicsItems_;
-    for (auto propertyLink : connectionGraphicsItems_) {
-        removeConnectionFromCurrentList(propertyLink);
-    }
+    currentConnectionGraphicsItems_.clear();
+
     for (auto propertyLink : tempList) {
         removePropertyLink(propertyLink);
     }
 }
 
 void LinkDialogGraphicsScene::removePropertyLink(DialogConnectionGraphicsItem* propertyLink) {
-    Property* start = propertyLink->getStartProperty()->getGraphicsItemData();
-    Property* end = propertyLink->getEndProperty()->getGraphicsItemData();
+    Property* start = propertyLink->getStartProperty()->getItem();
+    Property* end = propertyLink->getEndProperty()->getItem();
 
     processorNetwork_->removeLink(start, end);
     processorNetwork_->removeLink(end, start);
@@ -445,7 +432,7 @@ void LinkDialogGraphicsScene::cleanupAfterRemoveLink(DialogConnectionGraphicsIte
     LinkDialogPropertyGraphicsItem* startProperty = propertyLink->getStartProperty();
     LinkDialogPropertyGraphicsItem* endProperty = propertyLink->getEndProperty();
 
-    //re-assign connection ids
+    // re-assign connection ids
     for (auto& elem : connectionGraphicsItems_) {
         if (elem == propertyLink)
             continue;
@@ -487,8 +474,8 @@ bool LinkDialogGraphicsScene::isPropertyLinkBidirectional(
     LinkDialogPropertyGraphicsItem* startProperty = propertyLink->getStartProperty();
     LinkDialogPropertyGraphicsItem* endProperty = propertyLink->getEndProperty();
 
-    return processorNetwork_->isLinkedBidirectional(startProperty->getGraphicsItemData(),
-                                                    endProperty->getGraphicsItemData());
+    return processorNetwork_->isLinkedBidirectional(startProperty->getItem(),
+                                                    endProperty->getItem());
 }
 
 void LinkDialogGraphicsScene::makePropertyLinkBidirectional(
@@ -496,16 +483,13 @@ void LinkDialogGraphicsScene::makePropertyLinkBidirectional(
     LinkDialogPropertyGraphicsItem* startProperty = propertyLink->getStartProperty();
     LinkDialogPropertyGraphicsItem* endProperty = propertyLink->getEndProperty();
 
-    PropertyLink* propLink = processorNetwork_->getLink(endProperty->getGraphicsItemData(),
-                                                        startProperty->getGraphicsItemData());
+    PropertyLink* propLink =
+        processorNetwork_->getLink(endProperty->getItem(), startProperty->getItem());
     if (isBidirectional) {
-        if (!propLink)
-            processorNetwork_->addLink(endProperty->getGraphicsItemData(),
-                                       startProperty->getGraphicsItemData());
+        if (!propLink) processorNetwork_->addLink(endProperty->getItem(), startProperty->getItem());
     } else {
         if (propLink)
-            processorNetwork_->removeLink(endProperty->getGraphicsItemData(),
-                                          startProperty->getGraphicsItemData());
+            processorNetwork_->removeLink(endProperty->getItem(), startProperty->getItem());
     }
 
     propertyLink->updateConnectionDrawing();
@@ -514,7 +498,6 @@ void LinkDialogGraphicsScene::makePropertyLinkBidirectional(
 
 void LinkDialogGraphicsScene::switchPropertyLinkDirection(
     DialogConnectionGraphicsItem* propertyLink) {
-    
     if (!propertyLink->isBidirectional()) {
         PropertyLink* link = propertyLink->getPropertyLink();
         Property* source = link->getSourceProperty();
@@ -524,19 +507,12 @@ void LinkDialogGraphicsScene::switchPropertyLinkDirection(
     }
 }
 
-void LinkDialogGraphicsScene::addConnectionToCurrentList(
-    DialogConnectionGraphicsItem* propertyLink) {
-    if (std::find(currentConnectionGraphicsItems_.begin(), currentConnectionGraphicsItems_.end(),
-                  propertyLink) == currentConnectionGraphicsItems_.end())
-        currentConnectionGraphicsItems_.push_back(propertyLink);
+void LinkDialogGraphicsScene::addConnectionToCurrentList(DialogConnectionGraphicsItem* link) {
+    util::push_back_unique(connectionGraphicsItems_, link);
 }
 
-void LinkDialogGraphicsScene::removeConnectionFromCurrentList(
-    DialogConnectionGraphicsItem* propertyLink) {
-    currentConnectionGraphicsItems_.erase(
-        std::remove(currentConnectionGraphicsItems_.begin(), currentConnectionGraphicsItems_.end(),
-                    propertyLink),
-        currentConnectionGraphicsItems_.end());
+void LinkDialogGraphicsScene::removeConnectionFromCurrentList(DialogConnectionGraphicsItem* link) {
+    util::erase_remove(currentConnectionGraphicsItems_, link);
 }
 
 DialogConnectionGraphicsItem* LinkDialogGraphicsScene::getConnectionGraphicsItem(
@@ -552,7 +528,6 @@ DialogConnectionGraphicsItem* LinkDialogGraphicsScene::getConnectionGraphicsItem
 
 DialogConnectionGraphicsItem* LinkDialogGraphicsScene::initializePropertyLinkRepresentation(
     PropertyLink* propertyLink) {
-    
     LinkDialogPropertyGraphicsItem* start = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
         getPropertyGraphicsItemOf(propertyLink->getSourceProperty()));
     LinkDialogPropertyGraphicsItem* end = qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(
@@ -582,19 +557,19 @@ void LinkDialogGraphicsScene::removePropertyLinkRepresentation(PropertyLink* pro
     DialogConnectionGraphicsItem* cItem = nullptr;
     std::vector<DialogConnectionGraphicsItem*>::iterator it;
     for (it = connectionGraphicsItems_.begin(); it != connectionGraphicsItems_.end(); ++it) {
-        if((*it)->getPropertyLink() == propertyLink) {
+        if ((*it)->getPropertyLink() == propertyLink) {
             cItem = *it;
             break;
         }
     }
-    
+
     if (cItem) {
         DialogConnectionGraphicsItem* cItem = *it;
 
         cItem->hide();
-        connectionGraphicsItems_.erase(std::remove(connectionGraphicsItems_.begin(),
-                                                   connectionGraphicsItems_.end(), cItem),
-                                       connectionGraphicsItems_.end());
+        connectionGraphicsItems_.erase(
+            std::remove(connectionGraphicsItems_.begin(), connectionGraphicsItems_.end(), cItem),
+            connectionGraphicsItems_.end());
 
         currentConnectionGraphicsItems_.erase(
             std::remove(currentConnectionGraphicsItems_.begin(),
@@ -613,20 +588,18 @@ void LinkDialogGraphicsScene::removePropertyLinkRepresentation(PropertyLink* pro
     }
 }
 
-void LinkDialogGraphicsScene::initScene(Processor* srcProcessor,
-                                        Processor* dstProcessor) {
-
+void LinkDialogGraphicsScene::initScene(Processor* srcProcessor, Processor* dstProcessor) {
     clearSceneRepresentations();
 
-    int xPosition = linkDialogWidth / 4;
-    int yPosition = processorItemHeight;
-    int xIncrement = linkDialogWidth / 2;
+    int xPosition = linkdialog::linkDialogWidth / 4;
+    int yPosition = linkdialog::processorItemHeight;
+    int xIncrement = linkdialog::linkDialogWidth / 2;
 
     srcProcessorGraphicsItem_ = addProcessorsItemsToScene(srcProcessor, xPosition, yPosition);
     xPosition += xIncrement;
     dstProcessorGraphicsItem_ = addProcessorsItemsToScene(dstProcessor, xPosition, yPosition);
 
-    //add links
+    // add links
     std::vector<PropertyLink*> propertyLinks =
         processorNetwork_->getLinksBetweenProcessors(srcProcessor, dstProcessor);
     for (auto& propertyLink : propertyLinks) {
@@ -637,7 +610,7 @@ void LinkDialogGraphicsScene::initScene(Processor* srcProcessor,
     processorGraphicsItems.push_back(srcProcessorGraphicsItem_);
     processorGraphicsItems.push_back(dstProcessorGraphicsItem_);
 
-    for(auto procGraphicsItem : processorGraphicsItems){
+    for (auto procGraphicsItem : processorGraphicsItems) {
         expandOrCollapseLinkedProcessorItems(procGraphicsItem, expandProperties_);
     }
 
@@ -684,9 +657,10 @@ void LinkDialogGraphicsScene::onProcessorNetworkDidRemoveLink(PropertyLink* prop
 }
 
 void LinkDialogGraphicsScene::onProcessorNetworkWillRemoveProcessor(Processor* processor) {
-    if (processor == srcProcessorGraphicsItem_->getProcessor() || processor == dstProcessorGraphicsItem_->getProcessor()) {
+    if (processor == srcProcessorGraphicsItem_->getProcessor() ||
+        processor == dstProcessorGraphicsItem_->getProcessor()) {
         emit closeDialog();
     }
 }
 
-} //namespace
+}  // namespace

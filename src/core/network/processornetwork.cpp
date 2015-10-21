@@ -184,7 +184,7 @@ PropertyLink* ProcessorNetwork::addLink(Property* sourceProperty, Property* dest
         link = new PropertyLink(sourceProperty, destinationProperty);
         notifyObserversProcessorNetworkWillAddLink(link);
         links_[std::make_pair(sourceProperty, destinationProperty)] = link;
-        linkEvaluator_.addToPrimaryCache(link);  // add to cache
+        linkEvaluator_.addLink(link);  // add to cache
         modified();
         notifyObserversProcessorNetworkDidAddLink(link);
     }
@@ -197,7 +197,7 @@ void ProcessorNetwork::removeLink(Property* sourceProperty, Property* destinatio
         NetworkLock lock(this);
         PropertyLink* link = it->second;
         notifyObserversProcessorNetworkWillRemoveLink(link);
-        linkEvaluator_.removeFromPrimaryCache(link);
+        linkEvaluator_.removeLink(link);
         links_.erase(it);
         modified();
         notifyObserversProcessorNetworkDidRemoveLink(link);
@@ -206,7 +206,7 @@ void ProcessorNetwork::removeLink(Property* sourceProperty, Property* destinatio
 }
 
 bool ProcessorNetwork::isLinked(Property* sourceProperty, Property* destinationProperty) {
-    return getLink(sourceProperty, sourceProperty) != nullptr;
+    return getLink(sourceProperty, destinationProperty) != nullptr;
 }
 
 PropertyLink* ProcessorNetwork::getLink(Property* src,
@@ -223,8 +223,8 @@ bool ProcessorNetwork::isLinkedBidirectional(Property* startProperty, Property* 
     return isLinked(startProperty, endProperty) && isLinked(endProperty, startProperty);
 }
 
-std::vector<Property*> ProcessorNetwork::getLinkedProperties(Property* property) {
-    return linkEvaluator_.getLinkedProperties(property);
+std::vector<Property*> ProcessorNetwork::getPropertiesLinkedTo(Property* property) {
+    return linkEvaluator_.getPropertiesLinkedTo(property);
 }
 
 std::vector<PropertyLink*> ProcessorNetwork::getLinksBetweenProcessors(Processor* p1,
@@ -321,14 +321,14 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
         if (candidates.size() > 0) {
             addLink(candidates.front(), destprop);
             // Propagate the link to the new Processor.
-            linkEvaluator_.evaluatePropertyLinks(candidates.front());
+            linkEvaluator_.evaluateLinksFromProperty(candidates.front());
             addLink(destprop, candidates.front());
         }
     }
 }
 
-void ProcessorNetwork::evaluatePropertyLinks(Property* source) {
-    linkEvaluator_.evaluatePropertyLinks(source);
+void ProcessorNetwork::evaluateLinksFromProperty(Property* source) {
+    linkEvaluator_.evaluateLinksFromProperty(source);
 }
 
 
@@ -393,7 +393,7 @@ Processor* ProcessorNetwork::getInvalidationInitiator() {
 
 
 void ProcessorNetwork::onAboutPropertyChange(Property* modifiedProperty) {
-    if (modifiedProperty) linkEvaluator_.evaluatePropertyLinks(modifiedProperty);
+    if (modifiedProperty) linkEvaluator_.evaluateLinksFromProperty(modifiedProperty);
     notifyObserversProcessorNetworkChanged();
 }
 

@@ -47,10 +47,6 @@ void LinkDialogGraphicsView::setDialogScene(LinkDialogGraphicsScene* scene) {
     scene_ = scene;
 }
 
-void LinkDialogGraphicsView::mouseDoubleClickEvent(QMouseEvent* e) {
-    QGraphicsView::mouseDoubleClickEvent(e);
-}
-
 LinkDialogGraphicsView::~LinkDialogGraphicsView() {}
 
 } //namespace

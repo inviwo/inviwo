@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <QVector2D>
@@ -39,24 +39,24 @@
 
 namespace inviwo {
 
-DialogCurveGraphicsItem::DialogCurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color) :
-    CurveGraphicsItem(startPoint, endPoint, color) {
-    setZValue(LINKDIALOG_CONNECTION_GRAPHICSITEM_DEPTH);
+DialogCurveGraphicsItem::DialogCurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color)
+    : CurveGraphicsItem(startPoint, endPoint, color) {
+    setZValue(linkdialog::linkdialogConnectionGraphicsitemDepth);
 }
 
-DialogCurveGraphicsItem::~DialogCurveGraphicsItem() { }
+DialogCurveGraphicsItem::~DialogCurveGraphicsItem() {}
 
 QPainterPath DialogCurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endPoint) const {
-    float delta = endPoint.x()-startPoint.x();
-    QPointF ctrlPoint1 = QPointF(startPoint.x()+delta/4.0, startPoint.y());
-    QPointF ctrlPoint2 = QPointF(endPoint.x()-delta/4.0, endPoint.y());
+    float delta = endPoint.x() - startPoint.x();
+    QPointF ctrlPoint1 = QPointF(startPoint.x() + delta / 4.0, startPoint.y());
+    QPointF ctrlPoint2 = QPointF(endPoint.x() - delta / 4.0, endPoint.y());
     QPainterPath bezierCurve;
     bezierCurve.moveTo(startPoint);
     bezierCurve.cubicTo(ctrlPoint1, ctrlPoint2, endPoint);
     return bezierCurve;
 }
 
-QPainterPath DialogCurveGraphicsItem::obtainCurvePath() const  {
+QPainterPath DialogCurveGraphicsItem::obtainCurvePath() const {
     return CurveGraphicsItem::obtainCurvePath();
 }
 
@@ -79,11 +79,9 @@ DialogConnectionGraphicsItem::DialogConnectionGraphicsItem(
     setEndArrowHeadIndex(endPropertyGraphicsItem_->getConnectionGraphicsItemCount());
 }
 
-DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() {    
-    cleanup();
-}
+DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() { cleanup(); }
 
-void DialogConnectionGraphicsItem::cleanup() { 
+void DialogConnectionGraphicsItem::cleanup() {
     if (startPropertyGraphicsItem_) {
         startPropertyGraphicsItem_->removeConnectionGraphicsItem(this);
         startPropertyGraphicsItem_ = nullptr;
@@ -96,22 +94,22 @@ void DialogConnectionGraphicsItem::cleanup() {
 }
 
 void DialogConnectionGraphicsItem::updateStartEndPoint() {
-    QPoint arrowDim(arrowDimensionWidth, arrowDimensionHeight);
-    //Start Property
+    QPoint arrowDim(linkdialog::arrowDimensionWidth, linkdialog::arrowDimensionHeight);
+    // Start Property
     QPointF aCenterR = startPropertyGraphicsItem_->calculateArrowCenter(startArrowHeadIndex_, true);
-    QPointF aCenterL = startPropertyGraphicsItem_->calculateArrowCenter(startArrowHeadIndex_, false);
+    QPointF aCenterL =
+        startPropertyGraphicsItem_->calculateArrowCenter(startArrowHeadIndex_, false);
     QPointF arrowCenter;
     QPointF start = getStartPoint();
     QVector2D vec1(aCenterR - start);
     QVector2D vec2(aCenterL - start);
     arrowCenter = aCenterR;
 
-    if (vec2.length()<vec1.length())
-        arrowCenter = aCenterL;
+    if (vec2.length() < vec1.length()) arrowCenter = aCenterL;
 
     setStartPoint(arrowCenter);
-    
-    //End Property
+
+    // End Property
     aCenterR = endPropertyGraphicsItem_->calculateArrowCenter(endArrowHeadIndex_, true);
     aCenterL = endPropertyGraphicsItem_->calculateArrowCenter(endArrowHeadIndex_, false);
     QPointF end = getEndPoint();
@@ -119,15 +117,14 @@ void DialogConnectionGraphicsItem::updateStartEndPoint() {
     vec2 = QVector2D(aCenterL - end);
     arrowCenter = aCenterR;
 
-    if (vec2.length()<vec1.length())
-        arrowCenter = aCenterL;
+    if (vec2.length() < vec1.length()) arrowCenter = aCenterL;
 
     setEndPoint(arrowCenter);
 }
 
 bool DialogConnectionGraphicsItem::isBidirectional() {
     return InviwoApplication::getPtr()->getProcessorNetwork()->isLinkedBidirectional(
-               propertyLink_->getSourceProperty(), propertyLink_->getDestinationProperty());
+        propertyLink_->getSourceProperty(), propertyLink_->getDestinationProperty());
 }
 
 void DialogConnectionGraphicsItem::updateConnectionDrawing() {
@@ -141,7 +138,4 @@ void DialogConnectionGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEven
     QGraphicsItem::mouseDoubleClickEvent(e);
 }
 
-//////////////////////////////////////////////////////////////////////////
-
-
-} //namespace
+}  // namespace

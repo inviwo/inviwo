@@ -58,7 +58,7 @@ public:
 
     LinkEvaluator(ProcessorNetwork* network);
 
-    void evaluatePropertyLinks(Property*);
+    void evaluateLinksFromProperty(Property*);
 
     /**
       * Properties that are linked to the given property where the given property is a source
@@ -67,11 +67,11 @@ public:
       * @param property given property
       * @return std::vector<Property*> List of all properties that are affected by given property
       */
-    std::vector<Property*> getLinkedProperties(Property* property);
+    std::vector<Property*> getPropertiesLinkedTo(Property* property);
     std::vector<PropertyLink*> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
-    void addToPrimaryCache(PropertyLink* propertyLink);
-    void removeFromPrimaryCache(PropertyLink* propertyLink);
+    void addLink(PropertyLink* propertyLink);
+    void removeLink(PropertyLink* propertyLink);
     bool isLinking() const;
 
 private:
@@ -83,7 +83,7 @@ private:
         const PropertyConverter* converter_;
     };
 
-    // Property Linking support
+    // Cache helpers
     std::vector<Link>& addToSecondaryCache(Property* property);
     void secondaryCacheHelper(std::vector<Link>& links, Property* src, Property* dst);
     std::vector<Link>& getTriggerdLinksForProperty(Property* property);
@@ -100,7 +100,26 @@ private:
     ProcessorLinkMap processorLinksCache_;
 
     // Used to make sure we don't end up in circular links
-    std::set<Property*> visited_;
+    std::vector<Property*> visited_;
+    struct VisitedHelper {
+        VisitedHelper(std::vector<Property*>& visited, std::vector<Link>& toVisit)
+            : visited_(visited), toVisit_(toVisit) {
+            for (auto& link : toVisit_) {
+                util::push_back_unique(visited_, link.src_);
+                util::push_back_unique(visited_, link.dst_);
+            }
+        }
+        ~VisitedHelper() {
+            for (auto& link : toVisit_) {
+                util::erase_remove(visited_, link.src_);
+                util::erase_remove(visited_, link.dst_);
+            }
+        }
+
+    private:
+        std::vector<Property*>& visited_;
+        std::vector<Link>& toVisit_;
+    };
 };
 
 }  // namespace
