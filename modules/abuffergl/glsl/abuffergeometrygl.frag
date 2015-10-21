@@ -50,7 +50,7 @@ void main() {
 
     PickingData = vec4(0, 0, 0, 0);
 
-#ifdef LayerType::Color
+#ifdef COLOR_LAYER
     FragData0 = fragColor;
 #endif
 #ifdef TEXCOORD_LAYER
