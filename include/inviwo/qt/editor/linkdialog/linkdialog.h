@@ -24,11 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef  IVW_LINKDIALOG_H
-#define  IVW_LINKDIALOG_H
+#ifndef IVW_LINKDIALOG_H
+#define IVW_LINKDIALOG_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
@@ -55,12 +55,13 @@ class LinkDialogGraphicsScene;
 class IVW_QTEDITOR_API CheckableQComboBox : public QComboBox {
     Q_OBJECT
 public:
-    CheckableQComboBox(QWidget *parent , std::string widgetName, std::vector<std::string> options);
+    CheckableQComboBox(QWidget* parent, std::string widgetName, std::vector<std::string> options);
     virtual ~CheckableQComboBox();
     bool isItemChecked(int i);
     std::vector<std::string> getCheckedItems();
 public slots:
     void onSmartLinkOptionChecked(const QModelIndex&, const QModelIndex&);
+
 private:
     QStandardItemModel* stdandardModel_;
     std::vector<QStandardItem*> standardItems_;
@@ -71,25 +72,23 @@ class IVW_QTEDITOR_API LinkDialog : public InviwoDockWidget {
     Q_OBJECT
 public:
     LinkDialog(Processor* src, Processor* dest, QWidget* parent);
-    void initDialog(Processor* src, Processor* dest);
-    virtual void closeEvent ( QCloseEvent * event );
+
+    virtual void closeEvent(QCloseEvent* event);
     int exec();
     virtual QSize sizeHint() const;
     virtual ~LinkDialog();
 
 private slots:
-    void clickedOkayButton();
-    void clickedCancelButton();
+    void closeLinkDialog();
     void clickedSmartLinkPushButton();
     void clickedDeleteAllLinksPushButton();
     void expandCompositeProperties();
 
 private:
-    void initDialogLayout();
+    void initDialogLayout(Processor* srcProcessor, Processor* dstProcessor);
 
     LinkDialogGraphicsView* linkDialogView_;
     LinkDialogGraphicsScene* linkDialogScene_;
-    QDialogButtonBox* okayCancelbuttonBox_;
     QPushButton* smartLinkPushButton_;
     CheckableQComboBox* smartLinkOptions_;
     QPushButton* expandCompositeButton_;
@@ -99,6 +98,6 @@ private:
     QEventLoop eventLoop_;
 };
 
-} //namespace
+}  // namespace
 
-#endif //IVW_LINKDIALOG_H
+#endif  // IVW_LINKDIALOG_H

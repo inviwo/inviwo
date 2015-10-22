@@ -88,14 +88,9 @@ public:
 
     bool isBidirectional();
 
-    void setStartArrowHeadIndex(size_t index) {startArrowHeadIndex_ = index;}
-    void setEndArrowHeadIndex(size_t index) {endArrowHeadIndex_ = index;}
-    size_t getStartArrowHeadIndex() { return startArrowHeadIndex_;}
-    size_t getEndArrowHeadIndex() { return endArrowHeadIndex_;}
     void updateStartEndPoint();
     void updateConnectionDrawing();
-    void cleanup();
-
+    
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
     
@@ -103,8 +98,6 @@ protected:
 private:
     LinkDialogPropertyGraphicsItem* startPropertyGraphicsItem_;
     LinkDialogPropertyGraphicsItem* endPropertyGraphicsItem_;
-    size_t startArrowHeadIndex_;
-    size_t endArrowHeadIndex_;
     PropertyLink* propertyLink_;
 };
 

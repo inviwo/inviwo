@@ -33,160 +33,90 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
+#include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 #include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 
-LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(
-    LinkDialogProcessorGraphicsItem* processor, Property* prop,
-    LinkDialogPropertyGraphicsItem* parentPropertyGraphicsItem, int subPropertyLevel)
-    : GraphicsItemData<Property>()
-    , parentPropertyGraphicsItem_(parentPropertyGraphicsItem)
-    , subPropertyLevel_(subPropertyLevel)
+LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogParent* parent,
+                                                               Property* prop)
+    : GraphicsItemData<Property>(parent->getSide(), prop)
+
     , isExpanded_(false)
-    , index_(0)
-    , animateEnabled_(false) {
-    setZValue(linkdialog::linkdialogPropertyGraphicsitemDepth);
-    // setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
-    int propWidth = linkdialog::propertyItemWidth -
-                    (subPropertyLevel_ * linkdialog::propertyExpandCollapseOffset);
-    setRect(-propWidth / 2, -linkdialog::propertyItemHeight / 2, propWidth,
-            linkdialog::propertyItemHeight);
+    , animateEnabled_(false)
+    , parent_(parent) {
+    setZValue(linkdialog::propertyDepth);
+
+    setFlags(ItemSendsScenePositionChanges);
+    int propWidth = linkdialog::propertyWidth -
+                    ((parent->getLevel() + 1) * linkdialog::propertyExpandCollapseOffset);
+    setRect(-propWidth / 2, -linkdialog::propertyHeight / 2, propWidth, linkdialog::propertyHeight);
     QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
     processorShadowEffect->setOffset(3.0);
     processorShadowEffect->setBlurRadius(3.0);
     setGraphicsEffect(processorShadowEffect);
-    classLabel_ = new LabelGraphicsItem(this);
+    auto classLabel_ = new LabelGraphicsItem(this);
     classLabel_->setPos(-propWidth / 2.0 + linkdialog::propertyLabelHeight / 2.0,
-                        -linkdialog::propertyItemHeight / 2.0 + linkdialog::propertyLabelHeight);
+                        -linkdialog::propertyHeight / 2.0 + linkdialog::propertyLabelHeight);
     classLabel_->setDefaultTextColor(Qt::black);
     classLabel_->setFont(QFont("Segoe", linkdialog::propertyLabelHeight, QFont::Black, false));
-    classLabel_->setCrop(9, 8);
-    typeLabel_ = new LabelGraphicsItem(this);
-    typeLabel_->setPos(
-        -propWidth / 2.0 + linkdialog::propertyLabelHeight / 2.0,
-        -linkdialog::propertyItemHeight / 2.0 + linkdialog::propertyLabelHeight * 2.5);
+    classLabel_->setCrop(15, 14);
+    auto typeLabel_ = new LabelGraphicsItem(this);
+    typeLabel_->setPos(-propWidth / 2.0 + linkdialog::propertyLabelHeight / 2.0,
+                       -linkdialog::propertyHeight / 2.0 + linkdialog::propertyLabelHeight * 2.5);
     typeLabel_->setDefaultTextColor(Qt::black);
     typeLabel_->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true));
-    typeLabel_->setCrop(9, 8);
-    processorGraphicsItem_ = processor;
-    setProperty(prop);
+    typeLabel_->setCrop(15, 14);
+
+    std::string className = item_->getClassIdentifier();
+    className = removeSubString(className, "Property");
+    QString label = QString::fromStdString(item_->getDisplayName());
+    classLabel_->setText(label);
+    typeLabel_->setText(QString::fromStdString(className));
 
     if (auto compProp = dynamic_cast<CompositeProperty*>(prop)) {
-        // LogWarn("Found composite sub properties")
-        std::vector<Property*> subProperties = compProp->getProperties();
-        for (auto& subPropertie : subProperties) {
-            LinkDialogPropertyGraphicsItem* compItem = new LinkDialogPropertyGraphicsItem(
-                processor, subPropertie, this, subPropertyLevel_ + 1);
-            compItem->hide();
-            subPropertyGraphicsItems_.push_back(compItem);
+        QPointF newPos(0.0f, rect().height());
+        for (auto& subProperty : compProp->getProperties()) {
+            auto item = new LinkDialogPropertyGraphicsItem(this, subProperty);
+            item->hide();
+            item->setParentItem(this);
+            item->setPos(isExpanded_? newPos : QPointF(0.0,0.0));
+            size_t count = 1 + item->getTotalVisibleChildCount();
+            newPos += QPointF(0, count * linkdialog::propertyHeight);
+            subProperties_.push_back(item);
         }
     }
 }
 
 LinkDialogPropertyGraphicsItem::~LinkDialogPropertyGraphicsItem() {}
 
-void LinkDialogPropertyGraphicsItem::setIndex(int index) { index_ = index; }
-
-const int LinkDialogPropertyGraphicsItem::getIndex() const { return index_; }
-
 void LinkDialogPropertyGraphicsItem::setAnimate(bool animate) { animateEnabled_ = animate; }
-
 const bool LinkDialogPropertyGraphicsItem::getAnimate() const { return animateEnabled_; }
 
-void LinkDialogPropertyGraphicsItem::setPropertyItemIndex(int& currIndex) {
-    setIndex(currIndex);
-    currIndex++;
+void LinkDialogPropertyGraphicsItem::setExpanded(bool expand) {
+    isExpanded_ = expand;
+    for (auto& elem : subProperties_) {
+        elem->setVisible(expand);
+    }
+    updatePositions();
+}
+
+bool LinkDialogPropertyGraphicsItem::isExpanded() const { return isExpanded_; }
+
+bool LinkDialogPropertyGraphicsItem::hasSubProperties() const { return subProperties_.size() > 0; }
+
+int LinkDialogPropertyGraphicsItem::getLevel() const { return parent_->getLevel() + 1; }
+
+size_t LinkDialogPropertyGraphicsItem::getTotalVisibleChildCount() const {
     if (isExpanded_) {
-        for (auto& elem : subPropertyGraphicsItems_) elem->setPropertyItemIndex(currIndex);
+        return std::accumulate(subProperties_.begin(), subProperties_.end(), 0,
+                               [](size_t val, LinkDialogPropertyGraphicsItem* p) {
+                                   return val + 1 + p->getTotalVisibleChildCount();
+                               });
     } else {
-        for (auto& elem : subPropertyGraphicsItems_) elem->setIndex(index_);
-    }
-
-    /*
-    //For debugging the indexing
-    QString label(glm::to_string(index_).c_str());
-    label+= QString::fromStdString(getItem()()->getDisplayName());
-    classLabel_->setText(label);
-    */
-}
-
-void LinkDialogPropertyGraphicsItem::updatePositionBasedOnIndex(float animateExpansion) {
-    if (!processorGraphicsItem_) return;
-
-    QPointF tl = processorGraphicsItem_->rect().topLeft();
-    QPointF br = processorGraphicsItem_->rect().bottomRight();
-    QPointF processorMappedDim =
-        processorGraphicsItem_->mapToParent(tl) - processorGraphicsItem_->mapToParent(br);
-
-    tl = rect().topLeft();
-    br = rect().bottomRight();
-    QPointF propertyMappedDim = mapToParent(tl) - mapToParent(br);
-
-    qreal initialOffset = fabs(processorMappedDim.y());
-    QPointF p = processorGraphicsItem_->pos();
-
-    qreal px =
-        p.x() + fabs((float)subPropertyLevel_ * linkdialog::propertyExpandCollapseOffset / 2);
-    qreal py = p.y() + initialOffset + index_ * fabs(propertyMappedDim.y());
-
-    int propWidth = 0;
-    int propHeight = linkdialog::propertyItemHeight;
-
-    bool parentExpanded =
-        (parentPropertyGraphicsItem_ && parentPropertyGraphicsItem_->isExpanded());
-    if (parentExpanded) {
-        // offsetting with respect to parent ( using current sub-property level)
-        propWidth = linkdialog::propertyItemWidth -
-                    (subPropertyLevel_ * linkdialog::propertyExpandCollapseOffset);
-
-        if (parentPropertyGraphicsItem_->getAnimate()) {
-            px = p.x() +
-                 fabs((float)subPropertyLevel_ * linkdialog::propertyExpandCollapseOffset / 2) *
-                     animateExpansion;
-            float diff = parentPropertyGraphicsItem_->getIndex() +
-                         (index_ - parentPropertyGraphicsItem_->getIndex()) * animateExpansion;
-            py = p.y() + initialOffset + diff * fabs(propertyMappedDim.y());
-        }
-    } else {
-        // no offsetting if parent is collapsed
-        propWidth = linkdialog::propertyItemWidth;
-        px = p.x();
-    }
-
-    setRect(-propWidth / 2, -linkdialog::propertyItemHeight / 2, propWidth, propHeight);
-
-    setPos(QPointF(px, py));
-
-    // LogWarn("SubProperty Level is : " << subPropertyLevel_ << " Index " << index_ << " Mapped dim
-    // y" << propertyMappedDim.y() << " (" << px << "," << py << ")")
-}
-
-void LinkDialogPropertyGraphicsItem::expand(bool expandSubProperties) {
-    if (!subPropertyGraphicsItems_.size()) return;
-    isExpanded_ = true;
-    if (!expandSubProperties) return;
-    for (auto& elem : subPropertyGraphicsItems_) {
-        elem->expand(true);
-        elem->show();
+        return 0;
     }
 }
-
-void LinkDialogPropertyGraphicsItem::collapse(bool collapseSubProperties) {
-    if (!subPropertyGraphicsItems_.size()) return;
-    isExpanded_ = false;
-    if (!collapseSubProperties) return;
-    for (auto& elem : subPropertyGraphicsItems_) {
-        elem->collapse(true);
-        elem->hide();
-    }
-}
-
-bool LinkDialogPropertyGraphicsItem::hasSubProperties() {
-    return (subPropertyGraphicsItems_.size() > 0);
-}
-
-bool LinkDialogPropertyGraphicsItem::isExpanded() { return isExpanded_; }
 
 QSizeF LinkDialogPropertyGraphicsItem::sizeHint(Qt::SizeHint which,
                                                 const QSizeF& constraint) const {
@@ -207,75 +137,40 @@ QSizeF LinkDialogPropertyGraphicsItem::sizeHint(Qt::SizeHint which,
 
 void LinkDialogPropertyGraphicsItem::addConnectionGraphicsItem(
     DialogConnectionGraphicsItem* cItem) {
-    connectionItems_.push_back(cItem);
+    connections_.push_back(cItem);
 }
 
 size_t LinkDialogPropertyGraphicsItem::getConnectionGraphicsItemCount() const {
-    return connectionItems_.size();
+    return connections_.size();
+}
+
+size_t LinkDialogPropertyGraphicsItem::getConnectionIndex(
+    const DialogConnectionGraphicsItem* item) const {
+    return std::find(connections_.begin(), connections_.end(), item) - connections_.begin();
 }
 
 void LinkDialogPropertyGraphicsItem::removeConnectionGraphicsItem(
     DialogConnectionGraphicsItem* cItem) {
-    connectionItems_.erase(std::remove(connectionItems_.begin(), connectionItems_.end(), cItem),
-                           connectionItems_.end());
+    connections_.erase(std::remove(connections_.begin(), connections_.end(), cItem),
+                       connections_.end());
 }
 
-DialogConnectionGraphicsItem* LinkDialogPropertyGraphicsItem::getArrowConnectionAt(
-    const QPointF pos) const {
-    QPointF itemPos = mapFromScene(pos);
+QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort) const {
+    auto centerEdge = calculateArrowCenterLocal(curPort);
+    QSizeF arrowDim(linkdialog::arrowWidth, linkdialog::arrowHeight);
 
-    for (size_t i = 0; i < connectionItems_.size(); i++) {
-        QRectF arrowRect = calculateArrowRect(i + 1, true);
-
-        if (arrowRect.contains(itemPos)) return connectionItems_[i];
+    switch (getSide()) {
+        case LinkDialogParent::Side::Left:
+            return QRectF(centerEdge + QPointF(-arrowDim.width(), -arrowDim.height() / 2),
+                          arrowDim);
+        case LinkDialogParent::Side::Right:
+            return QRectF(centerEdge + QPointF(0, -arrowDim.height() / 2), arrowDim);
     }
-
-    for (size_t i = 0; i < connectionItems_.size(); i++) {
-        QRectF arrowRect = calculateArrowRect(i + 1, false);
-
-        if (arrowRect.contains(itemPos)) return connectionItems_[i];
-    }
-
-    return nullptr;
 }
 
-QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(size_t curPort, bool computeRight) const {
-    QPointF arrowDim(linkdialog::arrowDimensionWidth, linkdialog::arrowDimensionHeight);
-    QPointF rectDim(0, rect().height() / (getConnectionGraphicsItemCount() + 1));
-    qreal x = rect().right() - arrowDim.x();
-
-    if (!computeRight) x = rect().left();
-
-    qreal y = rect().top() + (curPort * rectDim.y()) - arrowDim.y();
-    return QRectF(x, y, arrowDim.x(), 2 * arrowDim.y());
-}
-
-QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(DialogConnectionGraphicsItem* cItem,
-                                                          bool computeRight) const {
-    for (size_t i = 0; i < connectionItems_.size(); i++) {
-        if (connectionItems_[i] == cItem) return calculateArrowRect(i + 1, computeRight);
-    }
-
-    return QRectF();
-}
-
-bool LinkDialogPropertyGraphicsItem::isArrowPointedRight(DialogConnectionGraphicsItem* cItem) {
-    QPointF c = pos();
-    QPointF bl = rect().bottomLeft();
-    QPointF br = rect().bottomRight();
-    QPointF propertyMappedDim;
-    propertyMappedDim = mapToParent(br) - mapToParent(bl);
-    QPointF rightBoundaryCenter = c + (propertyMappedDim / 2.0);
-    propertyMappedDim = mapToParent(bl) - mapToParent(br);
-    QPointF leftBoundaryCenter = c + (propertyMappedDim / 2.0);
-    qreal dist1 = std::min(QVector2D(rightBoundaryCenter - cItem->getStartPoint()).length(),
-                           QVector2D(rightBoundaryCenter - cItem->getEndPoint()).length());
-    qreal dist2 = std::min(QVector2D(leftBoundaryCenter - cItem->getStartPoint()).length(),
-                           QVector2D(leftBoundaryCenter - cItem->getEndPoint()).length());
-
-    if (dist1 < dist2) return false;
-
-    return true;
+QRectF LinkDialogPropertyGraphicsItem::calculateArrowRect(
+    DialogConnectionGraphicsItem* cItem) const {
+    return calculateArrowRect(getConnectionIndex(cItem));
 }
 
 void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
@@ -288,20 +183,14 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
     // paint property
     QLinearGradient grad(rect().topLeft(), rect().bottomLeft());
 
-    if (isSelected()) {
-        QColor bgColor = Qt::blue;
+    if (hasSubProperties()) {
+        QColor bgColor = Qt::darkGray;
         grad.setColorAt(0.0f, bgColor);
         grad.setColorAt(1.0f, bgColor);
     } else {
-        if (subPropertyLevel_) {
-            QColor bgColor = Qt::darkGray;
-            grad.setColorAt(0.0f, bgColor);
-            grad.setColorAt(1.0f, bgColor);
-        } else {
-            QColor bgColor = Qt::lightGray;
-            grad.setColorAt(0.0f, bgColor);
-            grad.setColorAt(1.0f, bgColor);
-        }
+        QColor bgColor = Qt::lightGray;
+        grad.setColorAt(0.0f, bgColor);
+        grad.setColorAt(1.0f, bgColor);
     }
 
     p->setBrush(grad);
@@ -361,33 +250,21 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
 
     p->restore();
     p->save();
-    QPoint arrowDim(linkdialog::arrowDimensionWidth, linkdialog::arrowDimensionHeight);
+    QPoint arrowDim(linkdialog::arrowWidth, linkdialog::arrowHeight);
 
-    for (auto& elem : connectionItems_) {
-        // Determine if arrow need to be drawn pointing left or right side
-        bool right = isArrowPointedRight(elem);
+    for (auto& elem : connections_) {
+        if (elem->getStartProperty() == this && !elem->isBidirectional()) continue;
+
         // If arrow points right, then get the rectangle aligned to the left-
         // boundary of property item (rectangle) and vice versa
-        QRectF arrowRect = calculateArrowRect(elem, !right);
+        QRectF arrowRect = calculateArrowRect(elem);
+
+        // set color of arrow
+        p->setPen(Qt::black);
+        p->setBrush(Qt::green);
+
         QPainterPath rectPath;
-
-        // determine color of start and end arrow
-        if (elem->getEndProperty() == this) {
-            arrowRect = calculateArrowRect(elem->getEndArrowHeadIndex(), !right);
-            p->setPen(Qt::black);
-            p->setBrush(Qt::green);
-        } else if (elem->getStartProperty() == this) {
-            arrowRect = calculateArrowRect(elem->getStartArrowHeadIndex(), !right);
-            p->setPen(Qt::transparent);
-            p->setBrush(Qt::transparent);
-        }
-
-        if (elem->isBidirectional()) {
-            p->setPen(Qt::black);
-            p->setBrush(Qt::green);
-        }
-
-        if (right) {
+        if (getSide() == LinkDialogParent::Side::Right) {
             rectPath.moveTo(arrowRect.left(), arrowRect.top());
             rectPath.lineTo(arrowRect.left(), arrowRect.bottom());
             rectPath.lineTo(arrowRect.right(), arrowRect.bottom() - arrowRect.height() / 2);
@@ -407,86 +284,52 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
 
 QVariant LinkDialogPropertyGraphicsItem::itemChange(GraphicsItemChange change,
                                                     const QVariant& value) {
+    if (change == QGraphicsItem::ItemScenePositionHasChanged) {
+        for (auto connection : connections_) {
+            connection->updateStartEndPoint();
+        }
+    }
+
     return QGraphicsItem::itemChange(change, value);
 }
 
-void LinkDialogPropertyGraphicsItem::setProperty(Property* prop) {
-    setItem(prop);
-
-    if (prop) {
-        std::string className = prop->getClassIdentifier();
-        className = removeSubString(className, "Property");
-        QString label = QString::fromStdString(prop->getDisplayName());
-        classLabel_->setText(label);
-        typeLabel_->setText(QString::fromStdString(className));
-    } else {
-        classLabel_->setText("");
-        typeLabel_->setText("");
-    }
+void LinkDialogPropertyGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
+    setExpanded(!isExpanded_);
 }
 
-QPointF LinkDialogPropertyGraphicsItem::getShortestBoundaryPointTo(
-    LinkDialogPropertyGraphicsItem* inProperty) {
-    return getShortestBoundaryPointTo(inProperty->pos());
+QPointF LinkDialogPropertyGraphicsItem::getConnectionPoint() {
+    qreal dir = getSide() == LinkDialogParent::Side::Left ? 1.0f : -1.0;
+    QPointF offset{dir * rect().width() / 2, 0.0f};
+    return scenePos() + offset;
 }
 
-QPointF LinkDialogPropertyGraphicsItem::getShortestBoundaryPointTo(QPointF inPos) {
-    QPointF c = pos();
-    QPointF bl = rect().bottomLeft();
-    QPointF br = rect().bottomRight();
-    QPointF propertyMappedDim;
-    propertyMappedDim = mapToParent(br) - mapToParent(bl);
-    QPointF rightBoundaryCenter1 = c + (propertyMappedDim / 2.0);
-    propertyMappedDim = mapToParent(bl) - mapToParent(br);
-    QPointF leftBoundaryCenter1 = c + (propertyMappedDim / 2.0);
-    QVector2D vec1(leftBoundaryCenter1 - inPos);
-    QVector2D vec2(rightBoundaryCenter1 - inPos);
+QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenterLocal(size_t curPort) const {
+    QPointF bottom =
+        getSide() == LinkDialogParent::Side::Left ? rect().bottomRight() : rect().bottomLeft();
+    QPointF top = getSide() == LinkDialogParent::Side::Left ? rect().topRight() : rect().topLeft();
 
-    if (vec1.length() > vec2.length()) return rightBoundaryCenter1;
-
-    return leftBoundaryCenter1;
-}
-
-QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenter(size_t curPort,
-                                                             bool computeRight) const {
     size_t arrowCount = getConnectionGraphicsItemCount();
-    QPointF o = pos();
+    if (arrowCount == 0) arrowCount++;
 
-    if (computeRight) {
-        QPointF br = o + QPointF(rect().width() / 2, rect().height() / 2);
-        QPointF tr = o + QPointF(rect().width() / 2, -rect().height() / 2);
-        QPointF vec(br - tr);
-        vec = vec / (arrowCount + 1);
+    return top + (bottom - top) * (curPort + 1.0) / (arrowCount + 1.0);
+}
 
-        if (arrowCount == 0) vec = vec / 2;
-
-        vec *= curPort;
-        return tr + vec;
-    } else {
-        QPointF bl = o + QPointF(-rect().width() / 2, rect().height() / 2);
-        QPointF tl = o + QPointF(-rect().width() / 2, -rect().height() / 2);
-        QPointF vec(bl - tl);
-        vec = vec / (arrowCount + 1);
-
-        if (arrowCount == 0) vec = vec / 2;
-
-        vec *= curPort;
-        return tl + vec;
-    }
+QPointF LinkDialogPropertyGraphicsItem::calculateArrowCenter(size_t curPort) const {
+    return scenePos() + calculateArrowCenterLocal(curPort);
 }
 
 const std::vector<DialogConnectionGraphicsItem*>&
 LinkDialogPropertyGraphicsItem::getConnectionGraphicsItems() const {
-    return connectionItems_;
+    return connections_;
 }
 
 std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::getSubPropertyItemList(
     bool recursive) const {
-    if (!recursive) return subPropertyGraphicsItems_;
+    if (!recursive) return subProperties_;
 
     std::vector<LinkDialogPropertyGraphicsItem*> subProps;
 
-    for (auto& elem : subPropertyGraphicsItems_) {
+    for (auto& elem : subProperties_) {
         subProps.push_back(elem);
         std::vector<LinkDialogPropertyGraphicsItem*> props =
             elem->getSubPropertyItemList(recursive);
@@ -494,6 +337,17 @@ std::vector<LinkDialogPropertyGraphicsItem*> LinkDialogPropertyGraphicsItem::get
     }
 
     return subProps;
+}
+
+void LinkDialogPropertyGraphicsItem::updatePositions() {
+    QPointF newPos(0.0f, rect().height());
+    for (auto property : subProperties_) {
+        property->setPos(isExpanded_? newPos : QPointF(0.0,0.0));
+        size_t count = 1 + property->getTotalVisibleChildCount();
+        newPos += QPointF(0, count * linkdialog::propertyHeight);
+    }
+
+    dynamic_cast<LinkDialogParent*>(parentItem())->updatePositions();
 }
 
 }  // namespace

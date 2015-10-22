@@ -45,34 +45,31 @@ LinkDialog::LinkDialog(Processor* src, Processor* dest, QWidget* parent)
     , src_(src)
     , dest_(dest) {
 
-    initDialogLayout();
-    //Network is required to add property links created in dialog (or remove )
-    linkDialogScene_->setNetwork(InviwoApplication::getPtr()->getProcessorNetwork());
-    linkDialogScene_->setExpandProperties(false);
-    linkDialogScene_->initScene(src_, dest_);
+    initDialogLayout(src_, dest_);
 }
 
 LinkDialog::~LinkDialog() {}
 
-void LinkDialog::initDialogLayout() {
+void LinkDialog::initDialogLayout(Processor* src, Processor* dst) {
     setFloating(true);
 
     setObjectName("LinkDialogWidget");
     setAllowedAreas(Qt::NoDockWidgetArea);
     QFrame* frame = new QFrame();
 
-    QSize rSize(linkdialog::linkDialogWidth, linkdialog::linkDialogHeight + 100);
-    setFixedWidth(rSize.width());
+    setFixedWidth(linkdialog::dialogWidth);
     QVBoxLayout* mainLayout = new QVBoxLayout(frame);
     linkDialogView_ = new LinkDialogGraphicsView(this);
-    linkDialogScene_ = new LinkDialogGraphicsScene(this);
+    linkDialogScene_ = new LinkDialogGraphicsScene(this, InviwoApplication::getPtr()->getProcessorNetwork(), src, dst);
+    linkDialogScene_->setSceneRect(0.0, 0.0, linkdialog::dialogWidth, linkdialog::dialogHeight);
     linkDialogView_->setDialogScene(linkDialogScene_);
-    linkDialogView_->fitInView(linkDialogView_->rect());
-    linkDialogView_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    linkDialogView_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    linkDialogView_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
     mainLayout->addWidget(linkDialogView_);
     QHBoxLayout* commonButtonLayout = new QHBoxLayout;
 
-    connect(linkDialogScene_, SIGNAL(closeDialog()), this, SLOT(clickedOkayButton()));
+    connect(linkDialogScene_, SIGNAL(closeDialog()), this, SLOT(closeLinkDialog()));
 
     // smart link button
     QHBoxLayout* smartLinkPushButtonLayout = new QHBoxLayout;
@@ -97,32 +94,17 @@ void LinkDialog::initDialogLayout() {
     smartLinkPushButtonLayout->addWidget(deleteAllLinkPushButton_, 10);
 
     // expand composite
-    expandCompositeButton_ = new QPushButton("Expand All Properties", this);
+    expandCompositeButton_ = new QPushButton("Expand/Collapse", this);
     expandCompositeButton_->setChecked(false);
     smartLinkPushButtonLayout->addWidget(expandCompositeButton_, 30);
     connect(expandCompositeButton_, SIGNAL(clicked()), this, SLOT(expandCompositeProperties()));
     commonButtonLayout->addLayout(smartLinkPushButtonLayout);
 
-    // okay cancel button
-    QHBoxLayout* okayCancelButtonLayout = new QHBoxLayout;
-    okayCancelButtonLayout->setAlignment(Qt::AlignRight);
-    okayCancelbuttonBox_ =
-        new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
-    connect(okayCancelbuttonBox_, SIGNAL(accepted()), this, SLOT(clickedOkayButton()));
-    connect(okayCancelbuttonBox_, SIGNAL(rejected()), this, SLOT(clickedCancelButton()));
-    okayCancelButtonLayout->addWidget(okayCancelbuttonBox_);
-    commonButtonLayout->addLayout(okayCancelButtonLayout);
     mainLayout->addLayout(commonButtonLayout);
     setWidget(frame);
 }
 
-void LinkDialog::clickedOkayButton() {
-    hide();
-    eventLoop_.quit();
-}
-
-void LinkDialog::clickedCancelButton() {
-    linkDialogScene_->removeCurrentPropertyLinks();
+void LinkDialog::closeLinkDialog() {
     hide();
     eventLoop_.quit();
 }
@@ -183,35 +165,20 @@ void LinkDialog::clickedDeleteAllLinksPushButton() {
 }
 
 void LinkDialog::expandCompositeProperties() {
-    linkDialogScene_->setExpandProperties(true);
-    initDialog(src_, dest_);
-}
-
-void LinkDialog::initDialog(Processor* src, Processor* dest) {
-    linkDialogScene_->clearSceneRepresentations();
-    QSize rSize(linkdialog::linkDialogWidth, linkdialog::linkDialogHeight);
-    //linkDialogView_->setSceneRect(0,0,rSize.width(), rSize.height()*5);
-    linkDialogView_->fitInView(linkDialogView_->rect());
-    linkDialogView_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    src_ = src;
-    dest_ = dest;
-    linkDialogScene_->initScene(src_, dest_);
+    linkDialogScene_->toggleExpand();
 }
 
 int LinkDialog::exec() {
     eventLoop_.exit();
     show();
-    //connect(this, SIGNAL(destroy()), &eventLoop_, SLOT(quit()));
     return eventLoop_.exec();
 }
 
 QSize LinkDialog::sizeHint() const {
     QSize size = layout()->sizeHint();
-    size.setHeight(linkdialog::linkDialogHeight);
+    size.setHeight(linkdialog::dialogHeight);
     return size;
 }
-
-//////////////////////////////////////////////////////////////////////////
 
 CheckableQComboBox::CheckableQComboBox(QWidget *parent , std::string widgetName, std::vector<std::string> options) : QComboBox(parent),widgetName_(widgetName) {
     setEditable(true);

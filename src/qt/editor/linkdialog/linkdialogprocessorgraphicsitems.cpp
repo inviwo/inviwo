@@ -30,6 +30,7 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
+#include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 
 #include <QGraphicsDropShadowEffect>
 #include <QTimeLine>
@@ -39,30 +40,44 @@
 
 namespace inviwo {
 
-LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem()
-    : GraphicsItemData<Processor>(), animateExpansion_(1.0) {
-    setZValue(linkdialog::linkdialogProcessorGraphicsitemDepth);
-    // setFlags(ItemIsMovable | ItemIsSelectable | ItemIsFocusable | ItemSendsGeometryChanges);
-    setRect(-linkdialog::processorItemWidth / 2, -linkdialog::processorItemHeight / 2,
-            linkdialog::processorItemWidth, linkdialog::processorItemHeight);
+LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Processor* processor)
+    : GraphicsItemData<Processor>(side, processor), animateExpansion_(1.0) {
+    setZValue(linkdialog::processorDepth);
+    setFlags(ItemSendsGeometryChanges);
+
+    setRect(-linkdialog::processorWidth / 2, -linkdialog::processorHeight / 2,
+            linkdialog::processorWidth, linkdialog::processorHeight);
     QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
     processorShadowEffect->setOffset(3.0);
     processorShadowEffect->setBlurRadius(3.0);
     setGraphicsEffect(processorShadowEffect);
     nameLabel_ = new LabelGraphicsItem(this);
-    nameLabel_->setPos(
-        -linkdialog::processorItemWidth / 2.0 + linkdialog::processorLabelHeight / 2.0,
-        -linkdialog::processorItemHeight / 2.0 + linkdialog::processorLabelHeight);
+    nameLabel_->setPos(-linkdialog::processorWidth / 2.0 + linkdialog::processorLabelHeight / 2.0,
+                       -linkdialog::processorHeight / 2.0 + linkdialog::processorLabelHeight);
     nameLabel_->setDefaultTextColor(Qt::white);
     nameLabel_->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Black, false));
-    nameLabel_->setCrop(9, 8);
+    nameLabel_->setCrop(20, 19);
     classLabel_ = new LabelGraphicsItem(this);
     classLabel_->setPos(
-        -linkdialog::processorItemWidth / 2.0 + linkdialog::processorLabelHeight / 2.0,
-        -linkdialog::processorItemHeight / 2.0 + linkdialog::processorLabelHeight * 2.5);
+        -linkdialog::processorWidth / 2.0 + linkdialog::processorLabelHeight / 2.0,
+        -linkdialog::processorHeight / 2.0 + linkdialog::processorLabelHeight * 2.5);
     classLabel_->setDefaultTextColor(Qt::lightGray);
     classLabel_->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true));
-    classLabel_->setCrop(9, 8);
+    classLabel_->setCrop(20, 19);
+
+    nameLabel_->setText(QString::fromStdString(processor->getIdentifier()));
+    classLabel_->setText(QString::fromStdString(processor->getClassIdentifier()));
+
+    QPointF newPos(0.0f, rect().height());
+    for (auto& property : processor->getProperties()) {
+        auto item = new LinkDialogPropertyGraphicsItem(this, property);
+        properties_.push_back(item);
+        item->setParentItem(this);
+        item->setPos(newPos);
+        size_t count = 1 + item->getTotalVisibleChildCount();
+        newPos += QPointF(0, count * linkdialog::propertyHeight);
+        item->show();
+    }
 }
 
 LinkDialogProcessorGraphicsItem::~LinkDialogProcessorGraphicsItem() {}
@@ -84,6 +99,17 @@ QSizeF LinkDialogProcessorGraphicsItem::sizeHint(Qt::SizeHint which,
     return constraint;
 }
 
+int LinkDialogProcessorGraphicsItem::getLevel() const { return -1; }
+
+void LinkDialogProcessorGraphicsItem::updatePositions() {
+    QPointF newPos(0.0f, rect().height());
+    for (auto property : properties_) {
+        property->setPos(newPos);
+        size_t count = 1 + property->getTotalVisibleChildCount();
+        newPos += QPointF(0, count * linkdialog::propertyHeight);
+    }
+}
+
 void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* options,
                                             QWidget* widget) {
     IVW_UNUSED_PARAM(options);
@@ -97,16 +123,9 @@ void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraph
     // paint processor
     QLinearGradient grad(rect().topLeft(), rect().bottomLeft());
 
-    if (isSelected()) {
-        grad.setColorAt(0.0f, topColor);
-        grad.setColorAt(0.2f, middleColor);
-        grad.setColorAt(0.5f, Qt::darkRed);
-        grad.setColorAt(1.0f, bottomColor);
-    } else {
-        grad.setColorAt(0.0f, topColor);
-        grad.setColorAt(0.2f, middleColor);
-        grad.setColorAt(1.0f, bottomColor);
-    }
+    grad.setColorAt(0.0f, topColor);
+    grad.setColorAt(0.2f, middleColor);
+    grad.setColorAt(1.0f, bottomColor);
 
     p->setBrush(grad);
     QPainterPath roundRectPath;
@@ -132,51 +151,6 @@ void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraph
     p->restore();
 }
 
-QVariant LinkDialogProcessorGraphicsItem::itemChange(GraphicsItemChange change,
-                                                     const QVariant& value) {
-    return QGraphicsItem::itemChange(change, value);
-}
-
-void LinkDialogProcessorGraphicsItem::setProcessor(Processor* processor, bool expandProperties) {
-    setItem(processor);
-
-    if (processor) {
-        nameLabel_->setText(QString::fromStdString(processor->getIdentifier()));
-        classLabel_->setText(QString::fromStdString(processor->getClassIdentifier()));
-        propertyGraphicsItems_.clear();
-        std::vector<Property*> properties = processor->getProperties();
-
-        for (auto& property : properties) {
-            auto compItem = new LinkDialogPropertyGraphicsItem(this, property);
-            compItem->show();
-            propertyGraphicsItems_.push_back(compItem);
-            auto subPropGraphicsItems = compItem->getSubPropertyItemList(true);
-            for (auto& subPropGraphicsItem : subPropGraphicsItems) {
-                propertyGraphicsItems_.push_back(subPropGraphicsItem);
-            }
-        }
-
-        updatePropertyItemPositions();
-    } else {
-        nameLabel_->setText("");
-        classLabel_->setText("");
-    }
-}
-
-void LinkDialogProcessorGraphicsItem::updatePropertyItemPositions(bool animateExpansion) {
-    int globalIndex = 0;
-    for (auto& elem : propertyGraphicsItems_) {
-        if (elem->getLevel() == 0) elem->setPropertyItemIndex(globalIndex);
-    }
-
-    if (animateExpansion) {
-        animationStart();
-    } else {
-        animateExpansion_ = 1.0f;
-        updateAll();
-    }
-}
-
 void LinkDialogProcessorGraphicsItem::animationStart() {
     animateExpansion_ = 0.1f;
 
@@ -192,24 +166,13 @@ void LinkDialogProcessorGraphicsItem::animate(qreal incr) {
         animationEnd();
     } else {
         animateExpansion_ += static_cast<float>(incr);
-        updateAll();
-    }
-}
-
-void LinkDialogProcessorGraphicsItem::updateAll() {
-    for (auto& elem : propertyGraphicsItems_) elem->updatePositionBasedOnIndex(animateExpansion_);
-
-    for (auto connections : propertyGraphicsItems_) {
-        for (auto& connection : connections->getConnectionGraphicsItems())
-            connection->updateConnectionDrawing();
     }
 }
 
 void LinkDialogProcessorGraphicsItem::animationEnd() {
     animateExpansion_ = 1.0f;
     delete sender();
-    updateAll();
-    for (auto& elem : propertyGraphicsItems_) elem->setAnimate(false);
+    for (auto& elem : properties_) elem->setAnimate(false);
 }
 
 }  // namespace

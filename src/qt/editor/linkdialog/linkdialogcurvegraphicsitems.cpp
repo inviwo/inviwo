@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
+#include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -41,7 +42,7 @@ namespace inviwo {
 
 DialogCurveGraphicsItem::DialogCurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color)
     : CurveGraphicsItem(startPoint, endPoint, color) {
-    setZValue(linkdialog::linkdialogConnectionGraphicsitemDepth);
+    setZValue(linkdialog::connectionDepth);
 }
 
 DialogCurveGraphicsItem::~DialogCurveGraphicsItem() {}
@@ -60,28 +61,22 @@ QPainterPath DialogCurveGraphicsItem::obtainCurvePath() const {
     return CurveGraphicsItem::obtainCurvePath();
 }
 
-//////////////////////////////////////////////////////////////////////////
-
 DialogConnectionGraphicsItem::DialogConnectionGraphicsItem(
     LinkDialogPropertyGraphicsItem* startProperty, LinkDialogPropertyGraphicsItem* endProperty,
     PropertyLink* propertyLink)
-    : DialogCurveGraphicsItem(startProperty->getShortestBoundaryPointTo(endProperty),
-                              endProperty->getShortestBoundaryPointTo(startProperty),
-                              uvec3(38, 38, 38))
+    : DialogCurveGraphicsItem(startProperty->pos(), endProperty->pos(), uvec3(38, 38, 38))
     , startPropertyGraphicsItem_(startProperty)
     , endPropertyGraphicsItem_(endProperty)
     , propertyLink_(propertyLink) {
     setFlags(ItemIsSelectable | ItemIsFocusable);
 
+    setZValue(LinkDialogCurveGraphicsItemType);
+
     startPropertyGraphicsItem_->addConnectionGraphicsItem(this);
-    setStartArrowHeadIndex(startPropertyGraphicsItem_->getConnectionGraphicsItemCount());
     endPropertyGraphicsItem_->addConnectionGraphicsItem(this);
-    setEndArrowHeadIndex(endPropertyGraphicsItem_->getConnectionGraphicsItemCount());
 }
 
-DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() { cleanup(); }
-
-void DialogConnectionGraphicsItem::cleanup() {
+DialogConnectionGraphicsItem::~DialogConnectionGraphicsItem() { 
     if (startPropertyGraphicsItem_) {
         startPropertyGraphicsItem_->removeConnectionGraphicsItem(this);
         startPropertyGraphicsItem_ = nullptr;
@@ -94,36 +89,16 @@ void DialogConnectionGraphicsItem::cleanup() {
 }
 
 void DialogConnectionGraphicsItem::updateStartEndPoint() {
-    QPoint arrowDim(linkdialog::arrowDimensionWidth, linkdialog::arrowDimensionHeight);
-    // Start Property
-    QPointF aCenterR = startPropertyGraphicsItem_->calculateArrowCenter(startArrowHeadIndex_, true);
-    QPointF aCenterL =
-        startPropertyGraphicsItem_->calculateArrowCenter(startArrowHeadIndex_, false);
-    QPointF arrowCenter;
-    QPointF start = getStartPoint();
-    QVector2D vec1(aCenterR - start);
-    QVector2D vec2(aCenterL - start);
-    arrowCenter = aCenterR;
+    auto si = startPropertyGraphicsItem_->getConnectionIndex(this);
+    setStartPoint(startPropertyGraphicsItem_->calculateArrowCenter(si));
 
-    if (vec2.length() < vec1.length()) arrowCenter = aCenterL;
-
-    setStartPoint(arrowCenter);
-
-    // End Property
-    aCenterR = endPropertyGraphicsItem_->calculateArrowCenter(endArrowHeadIndex_, true);
-    aCenterL = endPropertyGraphicsItem_->calculateArrowCenter(endArrowHeadIndex_, false);
-    QPointF end = getEndPoint();
-    vec1 = QVector2D(aCenterR - end);
-    vec2 = QVector2D(aCenterL - end);
-    arrowCenter = aCenterR;
-
-    if (vec2.length() < vec1.length()) arrowCenter = aCenterL;
-
-    setEndPoint(arrowCenter);
+    auto ei = endPropertyGraphicsItem_->getConnectionIndex(this);
+    setEndPoint(endPropertyGraphicsItem_->calculateArrowCenter(ei));
 }
 
 bool DialogConnectionGraphicsItem::isBidirectional() {
-    return InviwoApplication::getPtr()->getProcessorNetwork()->isLinkedBidirectional(
+    auto linkscene = qobject_cast<LinkDialogGraphicsScene*>(scene());
+    return linkscene->getNetwork()->isLinkedBidirectional(
         propertyLink_->getSourceProperty(), propertyLink_->getDestinationProperty());
 }
 

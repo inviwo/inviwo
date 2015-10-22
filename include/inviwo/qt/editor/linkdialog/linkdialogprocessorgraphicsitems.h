@@ -64,27 +64,23 @@ class IVW_QTEDITOR_API LinkDialogProcessorGraphicsItem : public QObject,
                                                          public GraphicsItemData<Processor> {
     Q_OBJECT
 public:
-    LinkDialogProcessorGraphicsItem();
+    LinkDialogProcessorGraphicsItem(Side side, Processor* processor);
     virtual ~LinkDialogProcessorGraphicsItem();
 
-    void setProcessor(Processor* processor, bool expandProperties = false);
-    Processor* getProcessor() { return getItem(); }
-
-    void updatePropertyItemPositions(bool animateExpansion = false);
-
     const std::vector<LinkDialogPropertyGraphicsItem*>& getPropertyItemList() const {
-        return propertyGraphicsItems_;
+        return properties_;
     }
 
     QSizeF sizeHint(Qt::SizeHint which, const QSizeF& constraint = QSizeF()) const;
+    virtual int getLevel() const override;
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + LinkDialogProcessorGraphicsItemType };
     int type() const { return Type; }
+    virtual void updatePositions() override;
 
 protected:
     virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
 
 private slots:
     void animationStart();
@@ -92,10 +88,9 @@ private slots:
     void animationEnd();
 
 private:
-    void updateAll();
     LabelGraphicsItem* nameLabel_;
     LabelGraphicsItem* classLabel_;
-    std::vector<LinkDialogPropertyGraphicsItem*> propertyGraphicsItems_;
+    std::vector<LinkDialogPropertyGraphicsItem*> properties_;
     float animateExpansion_;
 };
 

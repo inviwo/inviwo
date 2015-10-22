@@ -173,7 +173,7 @@ template <typename T, typename Pred>
 auto find_if(T& cont, Pred pred) -> typename T::iterator {
     using std::begin;
     using std::end;
-    return std::find_if(begin(cont), end(cont), pred) != end(cont);
+    return std::find_if(begin(cont), end(cont), pred);
 }
 
 
