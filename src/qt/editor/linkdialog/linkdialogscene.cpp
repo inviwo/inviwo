@@ -131,7 +131,7 @@ void LinkDialogGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* e) {
 
         QPointF center = startProperty_->getConnectionPoint();
         linkCurve_ = new DialogCurveGraphicsItem(center, e->scenePos());
-        linkCurve_->setZValue(LinkDialogDragCurveGraphicsItemType);
+        linkCurve_->setZValue(linkdialog::connectionDragDepth);
         addItem(linkCurve_);
         linkCurve_->show();
         e->accept();
@@ -247,19 +247,14 @@ void LinkDialogGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* e
     }
 }
 
-void LinkDialogGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent* e) {
-    // note: delta can be positive or negative (wheel rotated away from user or towards user)
-    int numDegrees = e->delta() / 8;
-    int numSteps = numDegrees / 15;
-
-    currentScrollSteps_ = numSteps;
+void LinkDialogGraphicsScene::wheelAction(float offset) {
+    currentScrollSteps_ = offset;
 
     QTimeLine* anim = new QTimeLine(750, this);
     anim->setUpdateInterval(20);
     connect(anim, SIGNAL(valueChanged(qreal)), SLOT(executeTimeLine(qreal)));
     connect(anim, SIGNAL(finished()), SLOT(terminateTimeLine()));
     anim->start();
-    e->accept();
 }
 
 void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
@@ -275,7 +270,7 @@ void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
     }
    
     QPointF pos = proc->scenePos();
-    qreal newy = std::min(pos.y() + yIncrement, static_cast<qreal>(linkdialog::dialogHeight-linkdialog::processorHeight));
+    qreal newy = std::min(pos.y() + yIncrement, static_cast<qreal>(2*linkdialog::processorHeight));
     newy = std::max(newy, -(miny - (pos.y() + yIncrement)  - linkdialog::processorHeight));
     proc->setPos(pos.x(), newy);
 
@@ -444,5 +439,20 @@ void LinkDialogGraphicsScene::onProcessorNetworkWillRemoveProcessor(Processor* p
         emit closeDialog();
     }
 }
+
+// Manage various tooltips.
+void LinkDialogGraphicsScene::helpEvent(QGraphicsSceneHelpEvent* e) {
+    QList<QGraphicsItem*> graphicsItems = items(e->scenePos());
+    for (auto item : graphicsItems) {
+        switch (item->type()) {
+            case LinkDialogPropertyGraphicsItem::Type:
+                qgraphicsitem_cast<LinkDialogPropertyGraphicsItem*>(item)->showToolTip(e);
+                return;
+
+        };
+    }
+    QGraphicsScene::helpEvent(e);
+}
+
 
 }  // namespace

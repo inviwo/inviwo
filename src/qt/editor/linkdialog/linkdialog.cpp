@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/editor/linkdialog/linkdialog.h>
@@ -41,10 +41,7 @@
 namespace inviwo {
 
 LinkDialog::LinkDialog(Processor* src, Processor* dest, QWidget* parent)
-    : InviwoDockWidget("Edit Property Links", parent)
-    , src_(src)
-    , dest_(dest) {
-
+    : InviwoDockWidget("Edit Property Links", parent), src_(src), dest_(dest) {
     initDialogLayout(src_, dest_);
 }
 
@@ -60,7 +57,8 @@ void LinkDialog::initDialogLayout(Processor* src, Processor* dst) {
     setFixedWidth(linkdialog::dialogWidth);
     QVBoxLayout* mainLayout = new QVBoxLayout(frame);
     linkDialogView_ = new LinkDialogGraphicsView(this);
-    linkDialogScene_ = new LinkDialogGraphicsScene(this, InviwoApplication::getPtr()->getProcessorNetwork(), src, dst);
+    linkDialogScene_ = new LinkDialogGraphicsScene(
+        this, InviwoApplication::getPtr()->getProcessorNetwork(), src, dst);
     linkDialogScene_->setSceneRect(0.0, 0.0, linkdialog::dialogWidth, linkdialog::dialogHeight);
     linkDialogView_->setDialogScene(linkDialogScene_);
     linkDialogView_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -96,7 +94,7 @@ void LinkDialog::initDialogLayout(Processor* src, Processor* dst) {
     // expand composite
     expandCompositeButton_ = new QPushButton("Expand/Collapse", this);
     expandCompositeButton_->setChecked(false);
-    smartLinkPushButtonLayout->addWidget(expandCompositeButton_, 30);
+    smartLinkPushButtonLayout->addWidget(expandCompositeButton_, 10);
     connect(expandCompositeButton_, SIGNAL(clicked()), this, SLOT(expandCompositeProperties()));
     commonButtonLayout->addLayout(smartLinkPushButtonLayout);
 
@@ -109,22 +107,20 @@ void LinkDialog::closeLinkDialog() {
     eventLoop_.quit();
 }
 
-void LinkDialog::closeEvent(QCloseEvent* event) {
-   eventLoop_.quit();
-}
+void LinkDialog::closeEvent(QCloseEvent* event) { eventLoop_.quit(); }
 
 void LinkDialog::clickedSmartLinkPushButton() {
     std::vector<Property*> srcProperties = src_->getProperties();
     std::vector<Property*> dstProperties = dest_->getProperties();
-    int selectedTypes = (int) NoLinkCondition;
+    int selectedTypes = (int)NoLinkCondition;
     std::vector<std::string> selectedConditons = smartLinkOptions_->getCheckedItems();
 
     for (auto& selectedConditon : selectedConditons) {
         if (selectedConditon == SimpleCondition::conditionName())
-            selectedTypes|=SimpleCondition::conditionType();
+            selectedTypes |= SimpleCondition::conditionType();
 
         if (selectedConditon == PartiallyMatchingIdCondition::conditionName())
-            selectedTypes|=PartiallyMatchingIdCondition::conditionType();
+            selectedTypes |= PartiallyMatchingIdCondition::conditionType();
     }
 
     for (auto& srcPropertie : srcProperties) {
@@ -137,8 +133,8 @@ void LinkDialog::clickedSmartLinkPushButton() {
                                         (LinkingConditions)selectedTypes)) {
                     CompositeProperty* compSrc = dynamic_cast<CompositeProperty*>(srcPropertie);
                     CompositeProperty* compDst = dynamic_cast<CompositeProperty*>(dstPropertie);
-                    if ( compSrc && compDst) {
-                        //If composite property then try to link sub-properties only
+                    if (compSrc && compDst) {
+                        // If composite property then try to link sub-properties only
                         std::vector<Property*> s = compSrc->getProperties();
                         std::vector<Property*> d = compDst->getProperties();
                         for (auto& elem : s) {
@@ -160,13 +156,9 @@ void LinkDialog::clickedSmartLinkPushButton() {
     }
 }
 
-void LinkDialog::clickedDeleteAllLinksPushButton() {
-    linkDialogScene_->removeAllPropertyLinks();
-}
+void LinkDialog::clickedDeleteAllLinksPushButton() { linkDialogScene_->removeAllPropertyLinks(); }
 
-void LinkDialog::expandCompositeProperties() {
-    linkDialogScene_->toggleExpand();
-}
+void LinkDialog::expandCompositeProperties() { linkDialogScene_->toggleExpand(); }
 
 int LinkDialog::exec() {
     eventLoop_.exit();
@@ -180,12 +172,14 @@ QSize LinkDialog::sizeHint() const {
     return size;
 }
 
-CheckableQComboBox::CheckableQComboBox(QWidget *parent , std::string widgetName, std::vector<std::string> options) : QComboBox(parent),widgetName_(widgetName) {
+CheckableQComboBox::CheckableQComboBox(QWidget* parent, std::string widgetName,
+                                       std::vector<std::string> options)
+    : QComboBox(parent), widgetName_(widgetName) {
     setEditable(true);
     lineEdit()->setReadOnly(true);
-    stdandardModel_ = new QStandardItemModel(static_cast<int>(options.size()),1);
+    stdandardModel_ = new QStandardItemModel(static_cast<int>(options.size()), 1);
 
-    for (size_t i=0; i<options.size(); i++) {
+    for (size_t i = 0; i < options.size(); i++) {
         QStandardItem* item = new QStandardItem(QString(options[i].c_str()));
         item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
         item->setData(Qt::Checked, Qt::CheckStateRole);
@@ -195,22 +189,18 @@ CheckableQComboBox::CheckableQComboBox(QWidget *parent , std::string widgetName,
 
     setModel(stdandardModel_);
     lineEdit()->setText(QString(widgetName_.c_str()));
-    connect(stdandardModel_, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(onSmartLinkOptionChecked(const QModelIndex&,
-            const QModelIndex&)));
+    connect(stdandardModel_, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this,
+            SLOT(onSmartLinkOptionChecked(const QModelIndex&, const QModelIndex&)));
 }
 
-CheckableQComboBox::~CheckableQComboBox(){
-    delete stdandardModel_;
-}
+CheckableQComboBox::~CheckableQComboBox() { delete stdandardModel_; }
 
 bool CheckableQComboBox::isItemChecked(int i) {
-    if (i>(int)standardItems_.size())
-        return false;
+    if (i > (int)standardItems_.size()) return false;
 
     QStandardItem* item = standardItems_[i];
 
-    if (item->checkState() == Qt::Checked)
-        return true;
+    if (item->checkState() == Qt::Checked) return true;
 
     return false;
 }
@@ -218,7 +208,7 @@ bool CheckableQComboBox::isItemChecked(int i) {
 std::vector<std::string> CheckableQComboBox::getCheckedItems() {
     std::vector<std::string> checkedItemString;
 
-    for (size_t i=0; i<standardItems_.size(); i++)
+    for (size_t i = 0; i < standardItems_.size(); i++)
         if (isItemChecked(static_cast<int>(i)))
             checkedItemString.push_back(standardItems_[i]->text().toLocal8Bit().constData());
 
@@ -227,10 +217,10 @@ std::vector<std::string> CheckableQComboBox::getCheckedItems() {
 
 void CheckableQComboBox::onSmartLinkOptionChecked(const QModelIndex& tl, const QModelIndex& br) {
     if (isItemChecked(tl.row())) {
-        //do some maintenance stuff here if required
+        // do some maintenance stuff here if required
     }
 
     lineEdit()->setText(QString(widgetName_.c_str()));
 }
 
-} //namespace
+}  // namespace

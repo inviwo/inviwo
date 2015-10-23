@@ -47,26 +47,23 @@ LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Proc
 
     setRect(-linkdialog::processorWidth / 2, -linkdialog::processorHeight / 2,
             linkdialog::processorWidth, linkdialog::processorHeight);
-    QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
-    processorShadowEffect->setOffset(3.0);
-    processorShadowEffect->setBlurRadius(3.0);
-    setGraphicsEffect(processorShadowEffect);
-    nameLabel_ = new LabelGraphicsItem(this);
-    nameLabel_->setPos(-linkdialog::processorWidth / 2.0 + linkdialog::processorLabelHeight / 2.0,
-                       -linkdialog::processorHeight / 2.0 + linkdialog::processorLabelHeight);
-    nameLabel_->setDefaultTextColor(Qt::white);
-    nameLabel_->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Black, false));
-    nameLabel_->setCrop(20, 19);
-    classLabel_ = new LabelGraphicsItem(this);
-    classLabel_->setPos(
-        -linkdialog::processorWidth / 2.0 + linkdialog::processorLabelHeight / 2.0,
-        -linkdialog::processorHeight / 2.0 + linkdialog::processorLabelHeight * 2.5);
-    classLabel_->setDefaultTextColor(Qt::lightGray);
-    classLabel_->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true));
-    classLabel_->setCrop(20, 19);
 
-    nameLabel_->setText(QString::fromStdString(processor->getIdentifier()));
-    classLabel_->setText(QString::fromStdString(processor->getClassIdentifier()));
+    auto identifier = new LabelGraphicsItem(this);
+    identifier->setPos(rect().topLeft() + QPointF(linkdialog::offset, linkdialog::offset));
+    identifier->setDefaultTextColor(Qt::white);
+    identifier->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Bold, false));
+    identifier->setCrop(20, 19);
+
+    auto classIdentifier = new LabelGraphicsItem(this);
+    classIdentifier->setDefaultTextColor(Qt::lightGray);
+    classIdentifier->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true));
+    classIdentifier->setCrop(20, 19);
+    auto offset = classIdentifier->boundingRect().height();
+    classIdentifier->setPos(rect().bottomLeft() +
+                            QPointF(linkdialog::offset, -linkdialog::offset - offset));
+
+    identifier->setText(QString::fromStdString(processor->getIdentifier()));
+    classIdentifier->setText(QString::fromStdString(processor->getClassIdentifier()));
 
     QPointF newPos(0.0f, rect().height());
     for (auto& property : processor->getProperties()) {
@@ -115,8 +112,12 @@ void LinkDialogProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraph
     IVW_UNUSED_PARAM(options);
     IVW_UNUSED_PARAM(widget);
     p->save();
-    p->setPen(Qt::black);
+
+    QPen blackPen(QColor(0, 0, 0), 1);
+
+    p->setPen(blackPen);
     p->setRenderHint(QPainter::Antialiasing, true);
+    p->setViewTransformEnabled(false);
     QColor topColor(140, 140, 140);
     QColor middleColor(59, 61, 61);
     QColor bottomColor(40, 40, 40);

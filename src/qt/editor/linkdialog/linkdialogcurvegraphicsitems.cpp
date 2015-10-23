@@ -70,7 +70,7 @@ DialogConnectionGraphicsItem::DialogConnectionGraphicsItem(
     , propertyLink_(propertyLink) {
     setFlags(ItemIsSelectable | ItemIsFocusable);
 
-    setZValue(LinkDialogCurveGraphicsItemType);
+    setZValue(linkdialog::connectionDepth);
 
     startPropertyGraphicsItem_->addConnectionGraphicsItem(this);
     endPropertyGraphicsItem_->addConnectionGraphicsItem(this);
@@ -94,6 +94,14 @@ void DialogConnectionGraphicsItem::updateStartEndPoint() {
 
     auto ei = endPropertyGraphicsItem_->getConnectionIndex(this);
     setEndPoint(endPropertyGraphicsItem_->calculateArrowCenter(ei));
+    
+    if (startPropertyGraphicsItem_->isVisible() || endPropertyGraphicsItem_->isVisible()){
+        setColor(QColor(38, 38, 38));
+        setZValue(linkdialog::connectionDepth);
+    } else {
+        setColor(QColor(138, 138, 138));
+        setZValue(linkdialog::connectionDepth-0.5);
+    }
 }
 
 bool DialogConnectionGraphicsItem::isBidirectional() {
@@ -110,7 +118,17 @@ void DialogConnectionGraphicsItem::updateConnectionDrawing() {
 }
 
 void DialogConnectionGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) {
-    QGraphicsItem::mouseDoubleClickEvent(e);
+    // Toggle directionality
+
+    auto linkscene = qobject_cast<LinkDialogGraphicsScene*>(scene());
+    if(e->modifiers() == Qt::ShiftModifier || e->modifiers() == Qt::ControlModifier) {
+        linkscene->makePropertyLinkBidirectional(this, !isBidirectional());
+    }else if (isBidirectional()) {
+        linkscene->makePropertyLinkBidirectional(this, false);
+    } else {
+        linkscene->switchPropertyLinkDirection(this);
+    }
+    e->accept();
 }
 
 }  // namespace

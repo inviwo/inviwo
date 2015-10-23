@@ -98,6 +98,7 @@ public:
         bool recursive = false) const;
 
     virtual void updatePositions() override;
+    void showToolTip(QGraphicsSceneHelpEvent* event);
 
 protected:
     QPointF calculateArrowCenterLocal(size_t curPort) const;

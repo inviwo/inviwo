@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_NETWORKEDITOR_H
@@ -37,12 +37,15 @@
 #include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/processors/processorpair.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QThread>
 #include <QPointF>
 #include <QGraphicsSceneHelpEvent>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -78,7 +81,10 @@ class IVW_QTEDITOR_API NetworkEditor : public QGraphicsScene,
                                        public Singleton<NetworkEditor>,
                                        public Observable<NetworkEditorObserver>,
                                        public ProcessorNetworkObserver {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     NetworkEditor();
     virtual ~NetworkEditor();
@@ -94,7 +100,7 @@ public:
      */
     bool saveNetwork(std::ostream stream);
     bool saveNetwork(std::string fileName);
-    
+
     /**
      * Load network from a stream. The path will be used to calculate relative directories of data
      * (nothing will be stored in the path).
@@ -135,18 +141,17 @@ public:
     void setPropertyListWidget(PropertyListWidget* widget);
     PropertyListWidget* getPropertyListWidget() const;
 
-    // Overrides for ProcessorNetworkObserver 
-    virtual void onProcessorNetworkChange();
-    
-    virtual void onProcessorNetworkDidAddProcessor(Processor* processor);
-    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor);
-    
-    virtual void onProcessorNetworkDidAddConnection(PortConnection* connection);
-    virtual void onProcessorNetworkWillRemoveConnection(PortConnection* connection);
-    
-    virtual void onProcessorNetworkDidAddLink(PropertyLink* propertyLink);
-    virtual void onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink);
-    
+    // Overrides for ProcessorNetworkObserver
+    virtual void onProcessorNetworkChange() override;
+
+    virtual void onProcessorNetworkDidAddProcessor(Processor* processor) override;
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
+
+    virtual void onProcessorNetworkDidAddConnection(PortConnection* connection) override;
+    virtual void onProcessorNetworkWillRemoveConnection(PortConnection* connection) override;
+
+    virtual void onProcessorNetworkDidAddLink(PropertyLink* propertyLink) override;
+    virtual void onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink) override;
 
 public slots:
     void contextMenuRenameProcessor(EditorGraphicsItem*);
@@ -161,29 +166,27 @@ public slots:
     void resetAllTimeMeasurements();
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent* e);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent* e);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
 
-    void keyPressEvent(QKeyEvent* keyEvent);
-    void keyReleaseEvent(QKeyEvent* keyEvent);
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent* e);
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
 
-    void dragEnterEvent(QGraphicsSceneDragDropEvent* de);
-    void dragMoveEvent(QGraphicsSceneDragDropEvent* de);
-    void dropEvent(QGraphicsSceneDragDropEvent* de);
+    virtual void dragEnterEvent(QGraphicsSceneDragDropEvent* de) override;
+    virtual void dragMoveEvent(QGraphicsSceneDragDropEvent* de) override;
+    virtual void dropEvent(QGraphicsSceneDragDropEvent* de) override;
 
     void placeProcessorOnConnection(Processor* processorItem,
                                     ConnectionGraphicsItem* connectionItem);
-    void placeProcessorOnProcessor(Processor* processorItem,
-                                   Processor* oldProcessorItem);
+    void placeProcessorOnProcessor(Processor* processorItem, Processor* oldProcessorItem);
 
     // Override for tooltips
-    void helpEvent(QGraphicsSceneHelpEvent* helpEvent);
+    virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;
     // Override for custom events
-    virtual bool event(QEvent* e);
-    
+    virtual bool event(QEvent* e) override;
 
 private:
     enum NetworkEditorFlags { None = 0, CanvasHidden = 1, UseOriginalCanvasSize = 1 << 2 };
@@ -232,7 +235,7 @@ private:
     std::vector<std::string> saveSnapshotsInExternalNetwork(std::string externalNetworkFile,
                                                             std::string identifierPrefix);
 
-    void drawBackground(QPainter* painter, const QRectF& rect);
+    void drawBackground(QPainter* painter, const QRectF& rect) override;
 
     typedef std::map<Processor*, ProcessorGraphicsItem*> ProcessorMap;
     typedef std::map<PortConnection*, ConnectionGraphicsItem*> ConnectionMap;
@@ -243,11 +246,11 @@ private:
     ConnectionMap connectionGraphicsItems_;
     LinkMap linkGraphicsItems_;
     PortInspectorMap portInspectors_;
-    
+
     // Drag n drop state
     ConnectionGraphicsItem* oldConnectionTarget_;
     ProcessorGraphicsItem* oldProcessorTarget_;
-    
+
     // Connection and link state
     ConnectionDragGraphicsItem* connectionCurve_;
     LinkConnectionDragGraphicsItem* linkCurve_;
@@ -258,7 +261,6 @@ private:
     std::string filename_;
     bool modified_;
 };
-
 
 template <typename T>
 T* inviwo::NetworkEditor::getGraphicsItemAt(const QPointF pos) const {

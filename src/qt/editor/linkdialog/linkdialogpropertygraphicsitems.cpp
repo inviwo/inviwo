@@ -35,6 +35,7 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/qt/widgets/inviwoqtutils.h>
 
 #include <numeric>
 
@@ -48,33 +49,30 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogParent*
     , animateEnabled_(false)
     , parent_(parent) {
     setZValue(linkdialog::propertyDepth);
-
     setFlags(ItemSendsScenePositionChanges);
+
     int propWidth = linkdialog::propertyWidth -
                     ((parent->getLevel() + 1) * linkdialog::propertyExpandCollapseOffset);
     setRect(-propWidth / 2, -linkdialog::propertyHeight / 2, propWidth, linkdialog::propertyHeight);
-    QGraphicsDropShadowEffect* processorShadowEffect = new QGraphicsDropShadowEffect();
-    processorShadowEffect->setOffset(3.0);
-    processorShadowEffect->setBlurRadius(3.0);
-    setGraphicsEffect(processorShadowEffect);
-    auto classLabel_ = new LabelGraphicsItem(this);
-    classLabel_->setPos(-propWidth / 2.0 + linkdialog::propertyLabelHeight / 2.0,
-                        -linkdialog::propertyHeight / 2.0 + linkdialog::propertyLabelHeight);
-    classLabel_->setDefaultTextColor(Qt::black);
-    classLabel_->setFont(QFont("Segoe", linkdialog::propertyLabelHeight, QFont::Black, false));
-    classLabel_->setCrop(15, 14);
-    auto typeLabel_ = new LabelGraphicsItem(this);
-    typeLabel_->setPos(-propWidth / 2.0 + linkdialog::propertyLabelHeight / 2.0,
-                       -linkdialog::propertyHeight / 2.0 + linkdialog::propertyLabelHeight * 2.5);
-    typeLabel_->setDefaultTextColor(Qt::black);
-    typeLabel_->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true));
-    typeLabel_->setCrop(15, 14);
 
+    auto displayName = new LabelGraphicsItem(this);
+    displayName->setPos(rect().topLeft() + QPointF(linkdialog::offset, linkdialog::offset));
+    displayName->setDefaultTextColor(Qt::black);
+    displayName->setFont(QFont("Segoe", linkdialog::propertyLabelHeight, QFont::Bold, false));
+    displayName->setCrop(15, 14);
+    displayName->setText(QString::fromStdString(item_->getDisplayName()));
+
+
+    auto classIdentifier = new LabelGraphicsItem(this);
+    classIdentifier->setDefaultTextColor(Qt::black);
+    classIdentifier->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true));
+    classIdentifier->setCrop(15, 14);
+    auto offset = classIdentifier->boundingRect().height();
+    classIdentifier->setPos(rect().bottomLeft() +
+                            QPointF(linkdialog::offset, -linkdialog::offset - offset));
     std::string className = item_->getClassIdentifier();
     className = removeSubString(className, "Property");
-    QString label = QString::fromStdString(item_->getDisplayName());
-    classLabel_->setText(label);
-    typeLabel_->setText(QString::fromStdString(className));
+    classIdentifier->setText(QString::fromStdString(className));
 
     if (auto compProp = dynamic_cast<CompositeProperty*>(prop)) {
         QPointF newPos(0.0f, rect().height());
@@ -82,7 +80,7 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogParent*
             auto item = new LinkDialogPropertyGraphicsItem(this, subProperty);
             item->hide();
             item->setParentItem(this);
-            item->setPos(isExpanded_? newPos : QPointF(0.0,0.0));
+            item->setPos(isExpanded_ ? newPos : QPointF(0.0, 0.0));
             size_t count = 1 + item->getTotalVisibleChildCount();
             newPos += QPointF(0, count * linkdialog::propertyHeight);
             subProperties_.push_back(item);
@@ -197,8 +195,7 @@ void LinkDialogPropertyGraphicsItem::paint(QPainter* p, const QStyleOptionGraphi
 
     p->setBrush(grad);
 
-    QPen blackPen(QColor(0, 0, 0), 3);
-    QPen greyPen(QColor(96, 96, 96), 1);
+    QPen blackPen(QColor(0, 0, 0), 1);
     QRectF bRect = rect();
 
     QPainterPath roundRectPath;
@@ -350,6 +347,10 @@ void LinkDialogPropertyGraphicsItem::updatePositions() {
     }
 
     dynamic_cast<LinkDialogParent*>(parentItem())->updatePositions();
+}
+
+void LinkDialogPropertyGraphicsItem::showToolTip(QGraphicsSceneHelpEvent* e) {
+    showToolTipHelper(e, utilqt::toLocalQString("todo"));
 }
 
 }  // namespace

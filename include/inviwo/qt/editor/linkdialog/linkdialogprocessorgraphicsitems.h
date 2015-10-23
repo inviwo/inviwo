@@ -91,8 +91,6 @@ private slots:
     void animationEnd();
 
 private:
-    LabelGraphicsItem* nameLabel_;
-    LabelGraphicsItem* classLabel_;
     std::vector<LinkDialogPropertyGraphicsItem*> properties_;
     float animateExpansion_;
 };

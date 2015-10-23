@@ -52,26 +52,30 @@
 #include <QEventLoop>
 #include <QCheckBox>
 #include <QTimeLine>
+#include <QToolTip>
 #include <warn/pop>
 
 namespace inviwo {
 
 namespace linkdialog {
-static const qreal processorDepth = 1.0f;
-static const qreal propertyDepth = 2.0f;
-static const qreal connectionDepth = 3.0f;
+static const qreal connectionDepth = 1.0f;
+static const qreal processorDepth = 2.0f;
+static const qreal propertyDepth = 3.0f;
+static const qreal connectionDragDepth = 4.0f;
+
+static const int offset = 2;
 
 static const int processorWidth = 250;  // all other parameters depends on processor width.
-static const int processorHeight = 50;
-static const int processorRoundedCorners = 9;
-static const int processorLabelHeight = 8;
+static const int processorHeight = 40;
+static const int processorRoundedCorners = 5;
+static const int processorLabelHeight = 12;
 
 static const int dialogWidth = processorWidth * 3;
 static const int dialogHeight = processorHeight * 12;
 
-static const int propertyLabelHeight = 8;
-static const int propertyWidth = processorWidth * 4 / 5;
-static const int propertyHeight = processorHeight * 3 / 4 + 2 * propertyLabelHeight;
+static const int propertyLabelHeight = 12;
+static const int propertyWidth = processorWidth * 7 / 8;
+static const int propertyHeight = processorHeight;
 static const int propertyRoundedCorners = 3;
 
 static const int propertyExpandCollapseButtonSize = 8;
@@ -98,14 +102,19 @@ public:
 };
 
 template <typename T>
-class GraphicsItemData : public QGraphicsRectItem,
-                         public LinkDialogParent {
+class GraphicsItemData : public QGraphicsRectItem, public LinkDialogParent {
 public:
-    GraphicsItemData(Side side, T* item)
-        : QGraphicsRectItem(), item_(item), side_(side) {}
+    GraphicsItemData(Side side, T* item) : QGraphicsRectItem(), item_(item), side_(side) {}
     T* getItem() { return item_; }
     void setItem(T* item) { item_ = item; }
     LinkDialogParent::Side getSide() const { return side_; }
+
+    void showToolTipHelper(QGraphicsSceneHelpEvent* e, QString string) const {
+        QGraphicsView* v = scene()->views().first();
+        QRectF rect = this->mapRectToScene(this->rect());
+        QRect viewRect = v->mapFromScene(rect).boundingRect();
+        QToolTip::showText(e->screenPos(), string, v, viewRect);
+    }
 
 protected:
     T* item_;

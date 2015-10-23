@@ -47,6 +47,8 @@ public:
     virtual ~LinkDialogGraphicsView();
     void setDialogScene(LinkDialogGraphicsScene* scene);
 
+    void wheelEvent(QWheelEvent* e);
+
 private:
     LinkDialogGraphicsScene* scene_;
 };

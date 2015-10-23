@@ -32,11 +32,15 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/network/processornetworkobserver.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QMouseEvent>
 #include <QGraphicsSceneWheelEvent>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
+#include <warn/pop>
 
 namespace inviwo {
 
@@ -53,16 +57,19 @@ class PropertyLink;
 
 class IVW_QTEDITOR_API LinkDialogGraphicsScene : public QGraphicsScene,
                                                  public ProcessorNetworkObserver {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
-    LinkDialogGraphicsScene(QWidget* parent, ProcessorNetwork* network, Processor* srcProcessor, Processor* dstProcessor);
+    LinkDialogGraphicsScene(QWidget* parent, ProcessorNetwork* network, Processor* srcProcessor,
+                            Processor* dstProcessor);
     virtual ~LinkDialogGraphicsScene();
 
     template <typename T>
     T* getSceneGraphicsItemAt(const QPointF pos,
                               const Qt::ItemSelectionMode mode = Qt::IntersectsItemShape,
                               Qt::SortOrder order = Qt::DescendingOrder) const;
-
 
     ProcessorNetwork* getNetwork() const;
 
@@ -72,31 +79,35 @@ public:
     void toggleExpand();
     bool isPropertyExpanded(Property* property) const;
 
-    virtual void onProcessorNetworkDidAddLink(PropertyLink* propertyLink);
-    virtual void onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink);
-    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor);
+    void wheelAction(float offset);
+
+    virtual void onProcessorNetworkDidAddLink(PropertyLink* propertyLink) override;
+    virtual void onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink) override;
+    virtual void onProcessorNetworkWillRemoveProcessor(Processor* processor) override;
+
+    void makePropertyLinkBidirectional(DialogConnectionGraphicsItem* propertyLink,
+                                       bool isBidirectional);
+    void switchPropertyLinkDirection(DialogConnectionGraphicsItem* propertyLink);
 
 signals:
     void closeDialog();
 
 protected:
     // Overload qt events
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent* e);
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e);
-    virtual void keyPressEvent(QKeyEvent* keyEvent);
-    virtual void wheelEvent(QGraphicsSceneWheelEvent* e);
-    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* e) override;
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
 
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
+    // Override for tooltips
+    virtual void helpEvent(QGraphicsSceneHelpEvent* helpEvent) override;
 
     void removePropertyLink(DialogConnectionGraphicsItem* propertyLink);
 
     void cleanupAfterRemoveLink(DialogConnectionGraphicsItem* propertyLink);
 
     bool isPropertyLinkBidirectional(DialogConnectionGraphicsItem* propertyLink) const;
-    void makePropertyLinkBidirectional(DialogConnectionGraphicsItem* propertyLink,
-                                       bool isBidirectional);
-    void switchPropertyLinkDirection(DialogConnectionGraphicsItem* propertyLink);
 
     DialogConnectionGraphicsItem* initializePropertyLinkRepresentation(PropertyLink* propLink);
     void removePropertyLinkRepresentation(PropertyLink* propLink);
@@ -106,7 +117,7 @@ protected:
 
     // smooth scroll effect support
     void offsetItems(float yIncrement, bool scrollLeft);
-    int currentScrollSteps_;
+    float currentScrollSteps_;
 private slots:
     void executeTimeLine(qreal);
     void terminateTimeLine();

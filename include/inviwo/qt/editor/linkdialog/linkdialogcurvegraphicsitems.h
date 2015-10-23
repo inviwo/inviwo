@@ -24,11 +24,11 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef  IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
-#define  IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
+#ifndef IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
+#define IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/widgets/labelgraphicsitem.h>
@@ -58,14 +58,14 @@ namespace inviwo {
 class PropertyLink;
 
 class IVW_QTEDITOR_API DialogCurveGraphicsItem : public CurveGraphicsItem {
-
 public:
-    DialogCurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color=uvec3(38,38,38));
+    DialogCurveGraphicsItem(QPointF startPoint, QPointF endPoint, uvec3 color = uvec3(38, 38, 38));
     virtual ~DialogCurveGraphicsItem();
 
-    //override for qgraphicsitem_cast (refer qt documentation)
+    // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + LinkDialogCurveGraphicsItemType };
-    int type() const override {return Type; }
+    int type() const override { return Type; }
+
 protected:
     virtual QPainterPath obtainCurvePath() const override;
     virtual QPainterPath obtainCurvePath(QPointF startPoint, QPointF endPoint) const override;
@@ -78,7 +78,8 @@ class LinkDialogProcessorGraphicsItem;
 
 class IVW_QTEDITOR_API DialogConnectionGraphicsItem : public DialogCurveGraphicsItem {
 public:
-    DialogConnectionGraphicsItem(LinkDialogPropertyGraphicsItem* startProperty, LinkDialogPropertyGraphicsItem* endProperty,
+    DialogConnectionGraphicsItem(LinkDialogPropertyGraphicsItem* startProperty,
+                                 LinkDialogPropertyGraphicsItem* endProperty,
                                  PropertyLink* propertyLink);
     virtual ~DialogConnectionGraphicsItem();
 
@@ -90,10 +91,9 @@ public:
 
     void updateStartEndPoint();
     void updateConnectionDrawing();
-    
+
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
-    
 
 private:
     LinkDialogPropertyGraphicsItem* startPropertyGraphicsItem_;
@@ -101,6 +101,6 @@ private:
     PropertyLink* propertyLink_;
 };
 
-} //namespace
+}  // namespace
 
-#endif //IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
+#endif  // IVW_LINKDIALOG_CURVEGRAPHICSITEMS_H
