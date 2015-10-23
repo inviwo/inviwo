@@ -202,11 +202,7 @@ struct CImgSaveLayerDispatcher {
     void dispatch(const char* filePath, const LayerRAM* inputLayer) {
         CImg<typename T::primitive>* img = LayerToCImg<typename T::type>::convert(inputLayer);
 
-        //Single channel format of the incoming format.
-        const DataFormatBase* inFormat = DataFormatBase::get(inputLayer->getDataFormat()->getNumericType(), 1, 
-            (inputLayer->getDataFormat()->getSize() / inputLayer->getDataFormat()->getComponents())*8);
-
-        //Should normalize based on output format i.e. PNG/JPG is 0-255, HDR different.
+        //Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
         const DataFormatBase* outFormat = DataFLOAT32::get();
         std::string fileExtension = filesystem::getFileExtension(filePath);
         if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
@@ -216,8 +212,32 @@ struct CImgSaveLayerDispatcher {
         //Image is up-side-down
         img->mirror('y');
 
-        if (inFormat != outFormat)
-            img->normalize(static_cast<typename T::primitive>(outFormat->getMin()), static_cast<typename T::primitive>(outFormat->getMax()));
+        const DataFormatBase* inFormat = inputLayer->getDataFormat();
+        double inMin = inFormat->getMin();
+        double inMax = inFormat->getMax();
+        double outMin = outFormat->getMin();
+        double outMax = outFormat->getMax();
+
+        //Special treatment for float data types:
+        // For float input images, we assume that the range is [0,1] (which is the same as rendered in a Canvas)
+        // For float output images, we normalize to [0,1]
+        // Note that no normalization is performed if both input and output are float images
+        if (inFormat->getNumericType() == DataFormatEnums::FLOAT_TYPE) {
+            inMin = 0.0;
+            inMax = 1.0;
+        }
+        if (outFormat->getNumericType() == DataFormatEnums::FLOAT_TYPE) {
+            outMin = 0.0;
+            outMax = 1.0;
+        }
+
+        //The image values should be rescaled if the ranges of the input and output are different
+        if (inMin != outMin || inMax != outMax) {
+            typename T::primitive* data = img->data();
+            double scale = (outMax - outMin) / (inMax - inMin);
+            for (size_t i = 0; i < img->size(); i++)
+                data[i] = static_cast<typename T::primitive>((static_cast<double>(data[i]) - inMin)*scale + outMin);
+        }
 
         img->save(filePath);
         delete img;
