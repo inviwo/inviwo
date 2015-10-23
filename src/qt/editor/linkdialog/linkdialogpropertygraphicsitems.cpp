@@ -36,6 +36,8 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 #include <inviwo/core/properties/compositeproperty.h>
 
+#include <numeric>
+
 namespace inviwo {
 
 LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogParent* parent,

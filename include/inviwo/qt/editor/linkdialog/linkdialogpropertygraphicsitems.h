@@ -31,6 +31,7 @@
 #define IVW_LINKDIALOG_PROPERTYGRAPHICSITEMS_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/widgets/labelgraphicsitem.h>
