@@ -193,6 +193,8 @@ void TransferFunctionEditor::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
             e->accept();
         }
         break;
+        default:
+        break;
     }
     #include <warn/pop>
     mouseDrag_ = false;

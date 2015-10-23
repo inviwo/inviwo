@@ -62,7 +62,10 @@ class Processor;
 
 class IVW_QTEDITOR_API LinkDialogProcessorGraphicsItem : public QObject,
                                                          public GraphicsItemData<Processor> {
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 public:
     LinkDialogProcessorGraphicsItem(Side side, Processor* processor);
     virtual ~LinkDialogProcessorGraphicsItem();
@@ -76,11 +79,11 @@ public:
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + LinkDialogProcessorGraphicsItemType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
     virtual void updatePositions() override;
 
 protected:
-    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
 
 private slots:
     void animationStart();

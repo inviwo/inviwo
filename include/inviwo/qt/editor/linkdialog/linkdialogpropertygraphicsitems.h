@@ -71,7 +71,7 @@ public:
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + LinkDialogPropertyGraphicsItemType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
 
     QPointF getConnectionPoint();
 
@@ -104,10 +104,10 @@ protected:
     QRectF calculateArrowRect(size_t curPort) const;
     QRectF calculateArrowRect(DialogConnectionGraphicsItem* cItem) const;
 
-    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+    virtual void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
 
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
 
 private:
     bool isExpanded_;
