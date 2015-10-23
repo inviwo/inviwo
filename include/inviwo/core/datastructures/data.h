@@ -76,10 +76,21 @@ public:
     virtual Data<Repr>* clone() const = 0;
     virtual ~Data() = default;
 
-    // Representations
+    /**
+     * Get a representation of type T. If there already is a valid representation of type T, just
+     * return it, if it's invalid use the last valid representation to update it so it will be
+     * valid. It there is no represenation of type T, create it from the last valid representation.
+     * If there are no representations create a default represenation and from that create a
+     * representation of type T.
+     */
     template <typename T>
     const T* getRepresentation() const;
 
+    /**
+     * Get a editable representation. This will invalidate all other representations.
+     * They will now have to be updated from this one before use.
+     * @see getRepresentation and invalidateAllOther
+     */
     template <typename T>
     T* getEditableRepresentation();
 
@@ -97,6 +108,14 @@ public:
     void removeRepresentation(const Repr* representation);
     void removeOtherRepresentations(const Repr* representation);
     void clearRepresentations();
+    
+    
+    /**
+     * This call will make all other represenations invalid. You need to call this function if
+     * you are modifing a representation directly without calling getEditableRepresentation.
+     * getEditableRepresentation will automatically invalidate all other representations.
+     * @see getEditableRepresentation
+     */
     void invalidateAllOther(const Repr* repr);
 
     // DataFormat
