@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "inviwomainwindow.h"
@@ -48,10 +48,10 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    #include <QStandardPaths>
-    #include <QScreen>
+#include <QStandardPaths>
+#include <QScreen>
 #else
-    #include <QDesktopServices>
+#include <QDesktopServices>
 #endif
 #include <QActionGroup>
 #include <QDesktopWidget>
@@ -73,7 +73,7 @@
 #include <modules/python3qt/pythoneditorwidget.h>
 #endif
 
-// enable menu entry to reload the application stylesheet 
+// enable menu entry to reload the application stylesheet
 //#define IVW_STYLESHEET_RELOAD
 
 namespace inviwo {
@@ -81,9 +81,8 @@ namespace inviwo {
 InviwoMainWindow::InviwoMainWindow()
     : QMainWindow()
     , appUsageModeProp_(nullptr)
-    , testWorkspaceMenu_(nullptr) // this menu item is not always available!
-    , exampleWorkspaceOpen_(false)
-{
+    , testWorkspaceMenu_(nullptr)  // this menu item is not always available!
+    , exampleWorkspaceOpen_(false) {
     NetworkEditor::init();
     networkEditor_ = NetworkEditor::getPtr();
     // initialize console widget first to receive log messages
@@ -91,15 +90,20 @@ InviwoMainWindow::InviwoMainWindow()
     // LogCentral takes ownership of logger
     LogCentral::getPtr()->registerLogger(consoleWidget_);
     currentWorkspaceFileName_ = "";
-    QSize size(1920, 1080);
-    QDesktopWidget dw;
-    auto screen = dw.screenGeometry(this);
-    float maxRatio = 0.9;
 
-    size.setWidth(std::min(size.width(), static_cast<int>(screen.width()*maxRatio)));
-    size.setHeight(std::min(size.height(), static_cast<int>(screen.height()*maxRatio)));
+    const QDesktopWidget dw;
+    auto screen = dw.screenGeometry(this);
+    const float maxRatio = 0.9;
+
+    QSize size(1920, 1080);
+    size.setWidth(std::min(size.width(), static_cast<int>(screen.width() * maxRatio)));
+    size.setHeight(std::min(size.height(), static_cast<int>(screen.height() * maxRatio)));
+
+    // Center Window
+    QPoint pos{screen.width() / 2 - size.width() / 2, screen.height() / 2 - size.height() / 2};
 
     resize(size);
+    move(pos);
 }
 
 InviwoMainWindow::~InviwoMainWindow() {
@@ -122,9 +126,10 @@ void InviwoMainWindow::initialize() {
     settingsWidget_->hide();
 
     helpWidget_ = new HelpWidget(this);
+    addDockWidget(Qt::RightDockWidgetArea, helpWidget_);
+
     processorTreeWidget_ = new ProcessorTreeWidget(this, helpWidget_);
     addDockWidget(Qt::LeftDockWidgetArea, processorTreeWidget_);
-    addDockWidget(Qt::LeftDockWidgetArea, helpWidget_, Qt::Vertical);
 
     propertyListWidget_ = new PropertyListWidget(this);
     addDockWidget(Qt::RightDockWidgetArea, propertyListWidget_);
@@ -141,8 +146,9 @@ void InviwoMainWindow::initialize() {
     auto app = InviwoApplication::getPtr();
 
     QString firstWorkspace = app->getPath(InviwoApplication::PATH_WORKSPACES, "/boron.inv").c_str();
-    workspaceOnLastSuccessfulExit_ = settings.value("workspaceOnLastSuccessfulExit",
-                                                    QVariant::fromValue(firstWorkspace)).toString();
+    workspaceOnLastSuccessfulExit_ =
+        settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
+            .toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
     rootDir_ = QString::fromStdString(app->getPath(InviwoApplication::PATH_DATA));
@@ -179,15 +185,17 @@ void InviwoMainWindow::initialize() {
 }
 
 void InviwoMainWindow::showWindow() {
-    if (maximized_) showMaximized();
-    else show();
+    if (maximized_)
+        showMaximized();
+    else
+        show();
 };
 
 void InviwoMainWindow::deinitialize() {}
 void InviwoMainWindow::initializeWorkspace() {}
 
 bool InviwoMainWindow::processCommandLineArgs() {
-    auto app = static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());    
+    auto app = static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
     const auto cmdparser = app->getCommandLineParser();
 #ifdef IVW_PYTHON_QT
 
@@ -197,7 +205,6 @@ bool InviwoMainWindow::processCommandLineArgs() {
     }
 
 #endif
-    
 
     if (cmdparser->getScreenGrabAfterStartup()) {
         std::string path = cmdparser->getOutputPath();
@@ -217,7 +224,7 @@ bool InviwoMainWindow::processCommandLineArgs() {
     if (cmdparser->getCaptureAfterStartup()) {
         std::string path = cmdparser->getOutputPath();
         if (path.empty()) path = app->getPath(InviwoApplication::PATH_IMAGES);
-        
+
         repaint();
         app->processEvents();
         util::saveAllCanvases(app->getProcessorNetwork(), path, cmdparser->getSnapshotName());
@@ -279,10 +286,10 @@ void InviwoMainWindow::addMenuActions() {
     testWorkspaceMenu_ = fileMenuItem_->addMenu(tr("&Test Workspaces"));
     // -------
     fileMenuItem_->addSeparator();
-    
+
     // create placeholders for recent workspaces
     workspaceActionRecent_.resize(maxNumRecentFiles_);
-    for (auto &action : workspaceActionRecent_) {
+    for (auto& action : workspaceActionRecent_) {
         action = new QAction(this);
         action->setVisible(false);
         recentWorkspaceMenu_->addAction(action);
@@ -291,7 +298,8 @@ void InviwoMainWindow::addMenuActions() {
     // action for clearing the recent file menu
     clearRecentWorkspaces_ = recentWorkspaceMenu_->addAction("Clear Recent Workspace List");
     clearRecentWorkspaces_->setEnabled(false);
-    QObject::connect(clearRecentWorkspaces_, SIGNAL(triggered()), this, SLOT(clearRecentWorkspaceMenu()));
+    QObject::connect(clearRecentWorkspaces_, SIGNAL(triggered()), this,
+                     SLOT(clearRecentWorkspaceMenu()));
 
     // create list of all example workspaces
     fillExampleWorkspaceMenu();
@@ -300,7 +308,6 @@ void InviwoMainWindow::addMenuActions() {
     // create list of all test workspaces, inviwo-dev and other external modules, i.e. "research"
     fillTestWorkspaceMenu();
     // ---------
-
 
     exitAction_ = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
     exitAction_->setShortcut(QKeySequence::Close);
@@ -318,7 +325,7 @@ void InviwoMainWindow::addMenuActions() {
     viewMenuItem_->addAction(helpWidget_->toggleViewAction());
 
     // Disabled until we figure out what we want to use it for //Peter
-    //viewMenuItem_->addAction(resourceManagerWidget_->toggleViewAction());
+    // viewMenuItem_->addAction(resourceManagerWidget_->toggleViewAction());
 
     // application/developer mode menu entries
     visibilityModeAction_ = new QAction(tr("&Application Mode"), this);
@@ -332,14 +339,14 @@ void InviwoMainWindow::addMenuActions() {
     viewMenuItem_->addAction(visibilityModeAction_);
 
     appUsageModeProp_ = &InviwoApplication::getPtr()
-                                   ->getSettingsByType<SystemSettings>()
-                                   ->applicationUsageModeProperty_;
+                             ->getSettingsByType<SystemSettings>()
+                             ->applicationUsageModeProperty_;
     appUsageModeProp_->onChange(this, &InviwoMainWindow::visibilityModeChangedInSettings);
 
     connect(visibilityModeAction_, SIGNAL(triggered(bool)), this, SLOT(setVisibilityMode(bool)));
 
     visibilityModeChangedInSettings();
-    
+
     enableDisableEvaluationButton_ = new QToolButton(this);
     enableDisableEvaluationButton_->setToolTip(tr("Enable/Disable Evaluation"));
     enableDisableEvaluationButton_->setCheckable(true);
@@ -356,9 +363,9 @@ void InviwoMainWindow::addMenuActions() {
     resetTimeMeasurementsButton_->setToolTip(tr("Reset All Time Measurements"));
     resetTimeMeasurementsButton_->setCheckable(false);
     resetTimeMeasurementsButton_->setIcon(QIcon(":/icons/stopwatch.png"));
-    connect(resetTimeMeasurementsButton_, SIGNAL(clicked()), networkEditor_, SLOT(resetAllTimeMeasurements()));
+    connect(resetTimeMeasurementsButton_, SIGNAL(clicked()), networkEditor_,
+            SLOT(resetAllTimeMeasurements()));
 #endif
-
 
     helpMenuItem_->addAction(helpWidget_->toggleViewAction());
 
@@ -366,9 +373,8 @@ void InviwoMainWindow::addMenuActions() {
     connect(aboutBoxAction_, SIGNAL(triggered()), this, SLOT(showAboutBox()));
     helpMenuItem_->addAction(aboutBoxAction_);
 
-
 #if defined(IVW_STYLESHEET_RELOAD)
-    QAction *action = new QAction(tr("&Reload Stylesheet"), this);
+    QAction* action = new QAction(tr("&Reload Stylesheet"), this);
     QObject::connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
     helpMenuItem_->addAction(action);
 #endif
@@ -406,7 +412,7 @@ void InviwoMainWindow::updateWindowTitle() {
 }
 
 void InviwoMainWindow::updateRecentWorkspaceMenu() {
-    QStringList recentFiles{ getRecentWorkspaceList() };
+    QStringList recentFiles{getRecentWorkspaceList()};
 
     for (auto elem : workspaceActionRecent_) {
         elem->setVisible(false);
@@ -415,11 +421,9 @@ void InviwoMainWindow::updateRecentWorkspaceMenu() {
     for (int i = 0; i < recentFiles.size(); ++i) {
         workspaceActionRecent_[i]->setVisible(!recentFiles[i].isEmpty());
         if (!recentFiles[i].isEmpty()) {
-            QString menuEntry =
-                tr("&%1 %2").arg(i + 1)
-                .arg(recentFiles[i]);
+            QString menuEntry = tr("&%1 %2").arg(i + 1).arg(recentFiles[i]);
             // cannonical path will check whether the path exists and returns an empty string if not
-                //.arg(QFileInfo(recentFiles[i]).canonicalFilePath());
+            //.arg(QFileInfo(recentFiles[i]).canonicalFilePath());
             workspaceActionRecent_[i]->setText(menuEntry);
             workspaceActionRecent_[i]->setData(recentFiles[i]);
         }
@@ -438,7 +442,7 @@ void InviwoMainWindow::clearRecentWorkspaceMenu() {
 }
 
 void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
-    QStringList recentFiles{ getRecentWorkspaceList() };
+    QStringList recentFiles{getRecentWorkspaceList()};
 
     recentFiles.removeAll(workspaceFileName);
     recentFiles.prepend(workspaceFileName);
@@ -452,13 +456,13 @@ void InviwoMainWindow::addToRecentWorkspaces(QString workspaceFileName) {
 QStringList InviwoMainWindow::getRecentWorkspaceList() const {
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("mainwindow");
-    QStringList list{ settings.value("recentFileList").toStringList() };
+    QStringList list{settings.value("recentFileList").toStringList()};
     settings.endGroup();
 
     return list;
 }
 
-void InviwoMainWindow::saveRecentWorkspaceList(const QStringList &list) {
+void InviwoMainWindow::saveRecentWorkspaceList(const QStringList& list) {
     QSettings settings("Inviwo", "Inviwo");
     settings.beginGroup("mainwindow");
     settings.setValue("recentFileList", list);
@@ -474,14 +478,14 @@ void InviwoMainWindow::setCurrentWorkspace(QString workspaceFileName) {
 void InviwoMainWindow::fillExampleWorkspaceMenu() {
     auto app = InviwoApplication::getPtr();
 
-    std::string workspacePath{ app->getPath(InviwoApplication::PATH_WORKSPACES) };
+    std::string workspacePath{app->getPath(InviwoApplication::PATH_WORKSPACES)};
     // get non-recursive list of contents
     auto fileList = filesystem::getDirectoryContents(workspacePath);
     for (auto item : fileList) {
         // only accept inviwo workspace files
         if (filesystem::getFileExtension(item) == "inv") {
             QString filename(QString::fromStdString(item));
-            QAction *action = exampleWorkspaceMenu_->addAction(filename);
+            QAction* action = exampleWorkspaceMenu_->addAction(filename);
             QString path(QString("%1/%2").arg(QString::fromStdString(workspacePath)).arg(filename));
             action->setData(path);
 
@@ -493,7 +497,7 @@ void InviwoMainWindow::fillExampleWorkspaceMenu() {
 
 void InviwoMainWindow::fillTestWorkspaceMenu() {
     // store path and extracted module name
-    std::vector<std::pair<std::string, std::string> > paths; // we need to keep the order...
+    std::vector<std::pair<std::string, std::string> > paths;  // we need to keep the order...
 
     // add default workspace path
     auto app = InviwoApplication::getPtr();
@@ -509,11 +513,11 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
             }
         }
         if (workspaceExists) {
-            paths.push_back({ coreWorkspacePath, "core" });
+            paths.push_back({coreWorkspacePath, "core"});
         }
     }
 
-    // add paths of external modules, avoid duplicates
+// add paths of external modules, avoid duplicates
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
     for (auto directory : externalModulePaths_) {
         std::string moduleName;
@@ -522,7 +526,8 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
         if (endpos != std::string::npos) {
             directory = directory.substr(0, endpos);
             std::size_t pos = directory.rfind('/', endpos - 1);
-            // extract module name from, e.g., "e:/projects/inviwo/inviwo-dev/modules" -> "inviwo-dev"
+            // extract module name from, e.g., "e:/projects/inviwo/inviwo-dev/modules" ->
+            // "inviwo-dev"
             if (pos != std::string::npos) {
                 moduleName = directory.substr(pos + 1, endpos - pos - 1);
             }
@@ -557,14 +562,14 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
 
         if (workspaceExists) {
             // at least one workspace could be found
-            paths.push_back({ directory, moduleName });
+            paths.push_back({directory, moduleName});
         }
     }
 #endif
 
     // add menu entries
     for (auto& elem : paths) {
-        QMenu *baseMenu = testWorkspaceMenu_;
+        QMenu* baseMenu = testWorkspaceMenu_;
         // add module name as submenu folder for better organization, if it exists
         if (!elem.second.empty()) {
             baseMenu = testWorkspaceMenu_->addMenu(QString::fromStdString(elem.second));
@@ -576,8 +581,9 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
             // only accept inviwo workspace files
             if (filesystem::getFileExtension(item) == "inv") {
                 QString filename(QString::fromStdString(item));
-                QAction *action = baseMenu->addAction(filename);
-                QString path(QString("%1/%2").arg(QString::fromStdString(elem.first)).arg(filename));
+                QAction* action = baseMenu->addAction(filename);
+                QString path(
+                    QString("%1/%2").arg(QString::fromStdString(elem.first)).arg(filename));
                 action->setData(path);
 
                 QObject::connect(action, SIGNAL(triggered()), this, SLOT(openRecentWorkspace()));
@@ -611,7 +617,7 @@ void InviwoMainWindow::newWorkspace() {
 }
 
 void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
-    std::string fileName{ workspaceFileName.toStdString() };
+    std::string fileName{workspaceFileName.toStdString()};
 
     if (!filesystem::fileExists(fileName)) {
         LogError("Could not find workspace file: " << fileName);
@@ -621,11 +627,10 @@ void InviwoMainWindow::openWorkspace(QString workspaceFileName) {
     exampleWorkspaceOpen_ = false;
     bool loaded = getNetworkEditor()->loadNetwork(fileName);
 
-    if (loaded){
+    if (loaded) {
         onNetworkEditorFileChanged(fileName);
         saveWindowState();
-    }
-    else{
+    } else {
         setCurrentWorkspace(rootDir_ + "workspaces/untitled.inv");
         getNetworkEditor()->setModified(false);
         updateWindowTitle();
@@ -638,7 +643,7 @@ void InviwoMainWindow::onNetworkEditorFileChanged(const std::string& filename) {
         return;
     }
 
-    QString str{ QString::fromStdString(filename) };
+    QString str{QString::fromStdString(filename)};
     setCurrentWorkspace(str);
     addToRecentWorkspaces(str);
 }
@@ -694,12 +699,12 @@ void InviwoMainWindow::openExampleWorkspace() {
 
         exampleWorkspaceOpen_ = true;
         bool loaded = getNetworkEditor()->loadNetwork(fileName);
-        if (loaded){
+        if (loaded) {
             // FIXME: example data sets are no longer added to recent files
-            //addToRecentWorkspaces(action->data().toString());
+            // addToRecentWorkspaces(action->data().toString());
             saveWindowState();
         }
-        // reset workspace title in every case, we don't want to overwrite the 
+        // reset workspace title in every case, we don't want to overwrite the
         // existing example workspace
         setCurrentWorkspace(rootDir_ + "workspaces/untitled.inv");
         getNetworkEditor()->setModified(false);
@@ -804,7 +809,8 @@ void InviwoMainWindow::showAboutBox() {
         "Erik Sund&eacute;n, Daniel J&ouml;nsson, Martin Falk, Peter Steneteg, <br>Rickard Englund,"
         " Sathish Kottravel, Timo Ropinski</p>");
     aboutText.append("<p><b>Former Developers:</b><br>");
-    aboutText.append("Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
+    aboutText.append(
+        "Alexander Johansson, Andreas Valter, Johan Nor&eacute;n, Emanuel Winblad, "
         "Hans-Christian Helltegen, Viktor Axelsson</p>");
     QMessageBox::about(this, QString::fromStdString("Inviwo v" + IVW_VERSION),
                        QString::fromStdString(aboutText));
@@ -849,7 +855,7 @@ void InviwoMainWindow::saveWindowState() {
     settings.setValue("geometry", saveGeometry());
     settings.setValue("state", saveState());
     settings.setValue("maximized", isMaximized());
-    //settings.setValue("recentFileList", recentFileList_);
+    // settings.setValue("recentFileList", recentFileList_);
     settings.endGroup();
 }
 void InviwoMainWindow::loadWindowState() {}
@@ -909,7 +915,7 @@ void InviwoMainWindow::reloadStyleSheet() {
     // The following code snippet allows to reload the Qt style sheets during runtime,
     // which is handy while we change them. once the style sheets have been finalized,
     // this code should be removed.
-    
+
     auto app = InviwoApplication::getPtr();
     QString resourcePath = app->getPath(InviwoApplication::PATH_RESOURCES).c_str();
     QFile styleSheetFile(resourcePath + "/stylesheets/inviwo.qss");
