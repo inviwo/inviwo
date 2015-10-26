@@ -77,8 +77,8 @@ public:
     virtual bool isConnected() const = 0;
     virtual bool isReady() const = 0;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(IvwSerializer& s) const override;
+    virtual void deserialize(IvwDeserializer& d) override;
 
 protected:
     /**

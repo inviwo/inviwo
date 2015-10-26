@@ -139,6 +139,7 @@ PortConnection* ProcessorNetwork::addConnection(Outport* sourcePort, Inport* des
         notifyObserversProcessorNetworkWillAddConnection(connection);
         
         connections_[std::make_pair(sourcePort, destPort)] = connection;
+        connectionsVec_.push_back(connection);
         modified();
         destPort->connectTo(sourcePort);
         
@@ -158,6 +159,7 @@ void ProcessorNetwork::removeConnection(Outport* sourcePort, Inport* destPort) {
         modified();
         destPort->disconnectFrom(sourcePort);
         connections_.erase(itm);
+        util::erase_remove(connectionsVec_, connection);
 
         notifyObserversProcessorNetworkDidRemoveConnection(connection);
         delete connection;
@@ -173,8 +175,7 @@ PortConnection* ProcessorNetwork::getConnection(Outport* sourcePort, Inport* des
 }
 
 std::vector<PortConnection*> ProcessorNetwork::getConnections() const {
-    return util::transform(
-        connections_, [](PortConnectionMap::const_reference elem) { return elem.second; });
+    connectionsVec_;
 }
 
 PropertyLink* ProcessorNetwork::addLink(Property* sourceProperty, Property* destinationProperty) {
@@ -383,14 +384,6 @@ void ProcessorNetwork::onProcessorIdentifierChange(Processor* processor) {
 
     processors_[processor->getIdentifier()] = processor;
 }
-
-Processor* ProcessorNetwork::getInvalidationInitiator() {
-    if (processorsInvalidating_.empty())
-        return nullptr;
-    else
-        return processorsInvalidating_[0];
-}
-
 
 void ProcessorNetwork::onAboutPropertyChange(Property* modifiedProperty) {
     if (modifiedProperty) linkEvaluator_.evaluateLinksFromProperty(modifiedProperty);
