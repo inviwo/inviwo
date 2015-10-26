@@ -7,6 +7,10 @@
 cmake_minimum_required( VERSION 2.6 )
 SET( HEADER_PATH ../include/assimp )
 
+if(CMAKE_VERSION VERSION_GREATER "3.0.0")
+    cmake_policy(SET CMP0042 OLD) # MacOSX rpath policy.
+endif()
+
 SET( COMPILER_HEADERS
 	${HEADER_PATH}/Compiler/pushpack1.h
 	${HEADER_PATH}/Compiler/poppack1.h
