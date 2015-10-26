@@ -93,7 +93,7 @@ InviwoMainWindow::InviwoMainWindow()
 
     const QDesktopWidget dw;
     auto screen = dw.screenGeometry(this);
-    const float maxRatio = 0.9;
+    const float maxRatio = 0.8;
 
     QSize size(1920, 1080);
     size.setWidth(std::min(size.width(), static_cast<int>(screen.width() * maxRatio)));
