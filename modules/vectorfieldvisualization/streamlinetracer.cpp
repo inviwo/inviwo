@@ -79,6 +79,17 @@ inviwo::IntegralLine StreamLineTracer::traceFrom(const dvec3 &p, int steps, doub
         step(steps, p, line, stepSize / (both ? 2 : 1), normalzieSample);
     }
 
+    if (line.positions_.empty()) {
+        return line;
+    }
+
+    line.positions_.insert(line.positions_.begin(), line.positions_[0]);
+    line.positions_.push_back(line.positions_[line.positions_.size()-1]);
+    for (auto &m : line.metaData_) {
+        m.second.insert(m.second.begin(), m.second.at(0));
+        m.second.push_back(m.second.at(m.second.size()-1));
+    }
+
     return line;
 }
 
