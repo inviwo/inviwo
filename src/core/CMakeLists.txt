@@ -323,7 +323,6 @@ set(SOURCE_FILES
     interaction/pickingcontainer.cpp
     interaction/pickingmanager.cpp
     interaction/pickingobject.cpp
-    interaction/trackball.cpp
     io/bytereaderutil.cpp
     io/datareader.cpp
     io/datareaderdialog.cpp
