@@ -85,8 +85,6 @@ private slots:
     void expandCompositeProperties();
 
 private:
-    void initDialogLayout(Processor* srcProcessor, Processor* dstProcessor);
-
     LinkDialogGraphicsView* linkDialogView_;
     LinkDialogGraphicsScene* linkDialogScene_;
     QPushButton* smartLinkPushButton_;
