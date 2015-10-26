@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORFACTORYOBJECT_H
@@ -33,6 +33,9 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/processors/processorinfo.h>
+#include <inviwo/core/processors/processortraits.h>
+
 #include <string>
 
 namespace inviwo {
@@ -41,42 +44,32 @@ class Processor;
 
 class IVW_CORE_API ProcessorFactoryObject {
 public:
-    ProcessorFactoryObject(const std::string &classIdentifier, const std::string &displayName, Tags tags,
-                           const std::string &category, CodeState codeState)
-        : classIdentifier_(classIdentifier)
-        , displayName_(displayName)
-        , tags_(tags)
-        , category_(category)
-        , codeState_(codeState) {}
+    ProcessorFactoryObject(const ProcessorInfo info) : info_(info) {}
     virtual ~ProcessorFactoryObject() {}
 
     virtual Processor* create() = 0;
 
-    std::string getClassIdentifier() const { return classIdentifier_; }
-    std::string getDisplayName() const { return displayName_; }
-    Tags getTags() const { return tags_; }
-    std::string getCategory() const { return category_; }
-    CodeState getCodeState() const { return codeState_; }
+    ProcessorInfo getProcessorInfo() const { return info_; }
+    std::string getClassIdentifier() const { return info_.classIdentifier; }
+    std::string getDisplayName() const { return info_.displayName; }
+    Tags getTags() const { return info_.tags; }
+    std::string getCategory() const { return info_.category; }
+    CodeState getCodeState() const { return info_.codeState; }
 
 private:
-    const std::string classIdentifier_;
-    const std::string displayName_;
-    const Tags tags_;
-    const std::string category_;
-    const CodeState codeState_;
+    const ProcessorInfo info_;
 };
 
 template <typename T>
 class ProcessorFactoryObjectTemplate : public ProcessorFactoryObject {
 public:
     ProcessorFactoryObjectTemplate()
-        : ProcessorFactoryObject(T::CLASS_IDENTIFIER, T::DISPLAY_NAME, T::TAGS, T::CATEGORY,
-                                 T::CODE_STATE) {}
+        : ProcessorFactoryObject(ProcessorTraits<T>::getProcessorInfo()) {}
     virtual ~ProcessorFactoryObjectTemplate() {}
 
     virtual Processor* create() { return static_cast<Processor*>(new T()); }
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROCESSORFACTORYOBJECT_H
+#endif  // IVW_PROCESSORFACTORYOBJECT_H

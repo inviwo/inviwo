@@ -31,7 +31,6 @@
 #define IVW_PROCESSORTRAITS_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processorinfo.h>
 
 namespace inviwo {
@@ -50,16 +49,16 @@ public:
     static const bool value = decltype(check<T>(0))::value;
 };
 
-template <typename T,
-          typename std::enable_if<hasProcessorInfo<T>::value, std::size_t>::type = 0>
+template <typename T, typename std::enable_if<hasProcessorInfo<T>::value, std::size_t>::type = 0>
 ProcessorInfo processorInfo() {
     return T::processorInfo_;
 }
-template <typename T,
-          typename std::enable_if<!hasProcessorInfo<T>::value, std::size_t>::type = 0>
+template <typename T, typename std::enable_if<!hasProcessorInfo<T>::value, std::size_t>::type = 0>
 ProcessorInfo processorInfo() {
     return ProcessorInfo(T::CLASS_IDENTIFIER, T::DISPLAY_NAME, T::CATEGORY, T::CODE_STATE, T::TAGS);
 }
+
+}  // namesspace
 
 /**
  * \class ProcessorTraits
@@ -81,7 +80,6 @@ template <typename T>
 struct ProcessorTraits {
     static ProcessorInfo getProcessorInfo() { return detail::processorInfo<T>(); }
 };
-} // namespace
+}  // namespace
 
-#endif // IVW_PROCESSORTRAITS_H
-
+#endif  // IVW_PROCESSORTRAITS_H

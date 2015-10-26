@@ -38,7 +38,8 @@
 
 namespace inviwo {
 
-class IVW_CORE_API ProcessorFactory : public StandardFactory<Processor, ProcessorFactoryObject>, public Singleton<ProcessorFactory> {
+class IVW_CORE_API ProcessorFactory : public StandardFactory<Processor, ProcessorFactoryObject>,
+                                      public Singleton<ProcessorFactory> {
 public:
     ProcessorFactory() = default;
     virtual ~ProcessorFactory() = default;
