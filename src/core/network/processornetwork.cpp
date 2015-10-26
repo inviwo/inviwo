@@ -175,7 +175,7 @@ PortConnection* ProcessorNetwork::getConnection(Outport* sourcePort, Inport* des
 }
 
 std::vector<PortConnection*> ProcessorNetwork::getConnections() const {
-    connectionsVec_;
+    return connectionsVec_;
 }
 
 PropertyLink* ProcessorNetwork::addLink(Property* sourceProperty, Property* destinationProperty) {
