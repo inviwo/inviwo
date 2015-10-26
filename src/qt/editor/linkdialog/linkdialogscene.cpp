@@ -265,13 +265,19 @@ void LinkDialogGraphicsScene::offsetItems(float yIncrement, bool scrollLeft) {
         items = items.back()->getSubPropertyItemList();
     }
     qreal miny = std::numeric_limits<double>::lowest();
-    if (!items.empty()){
+    if (!items.empty()) {
         miny = items.back()->scenePos().y();
     }
-   
+
+    auto view = views().front();
+    auto top = view->mapToScene(QPoint(0, 0)).y();
+
     QPointF pos = proc->scenePos();
-    qreal newy = std::min(pos.y() + yIncrement, static_cast<qreal>(2*linkdialog::processorHeight));
-    newy = std::max(newy, -(miny - (pos.y() + yIncrement)  - linkdialog::processorHeight));
+    qreal newy = std::min(pos.y() + yIncrement,
+                          top + static_cast<qreal>(linkdialog::processorHeight));
+
+    qreal listHeight = miny - pos.y();
+    newy = std::max(newy, top - (listHeight - linkdialog::processorHeight));
     proc->setPos(pos.x(), newy);
 
     update();

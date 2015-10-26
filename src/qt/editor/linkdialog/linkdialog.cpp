@@ -38,45 +38,35 @@
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QSettings>
+#include <warn/pop>
+
 namespace inviwo {
 
-LinkDialog::LinkDialog(Processor* src, Processor* dest, QWidget* parent)
-    : InviwoDockWidget("Edit Property Links", parent), src_(src), dest_(dest) {
-    initDialogLayout(src_, dest_);
-}
-
-LinkDialog::~LinkDialog() {}
-
-void LinkDialog::initDialogLayout(Processor* src, Processor* dst) {
+LinkDialog::LinkDialog(Processor* src, Processor* dst, QWidget* parent)
+    : InviwoDockWidget("Edit Property Links", parent), src_(src), dest_(dst) {
+    
     setFloating(true);
 
     setObjectName("LinkDialogWidget");
     setAllowedAreas(Qt::NoDockWidgetArea);
-    QFrame* frame = new QFrame();
-
     setFixedWidth(linkdialog::dialogWidth);
+    setMinimumHeight(linkdialog::dialogHeight);
+
+    QFrame* frame = new QFrame();
+    setWidget(frame);
+    
     QVBoxLayout* mainLayout = new QVBoxLayout(frame);
     linkDialogView_ = new LinkDialogGraphicsView(this);
-    linkDialogScene_ = new LinkDialogGraphicsScene(
-        this, InviwoApplication::getPtr()->getProcessorNetwork(), src, dst);
-    linkDialogScene_->setSceneRect(0.0, 0.0, linkdialog::dialogWidth, linkdialog::dialogHeight);
-    linkDialogView_->setDialogScene(linkDialogScene_);
     linkDialogView_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     linkDialogView_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
     mainLayout->addWidget(linkDialogView_);
-    QHBoxLayout* commonButtonLayout = new QHBoxLayout;
-
-    connect(linkDialogScene_, SIGNAL(closeDialog()), this, SLOT(closeLinkDialog()));
-
+        
     // smart link button
     QHBoxLayout* smartLinkPushButtonLayout = new QHBoxLayout;
     smartLinkPushButtonLayout->setAlignment(Qt::AlignLeft);
-
-    // smart link button
-    smartLinkPushButton_ = new QPushButton("SmartLink", this);
-    connect(smartLinkPushButton_, SIGNAL(clicked()), this, SLOT(clickedSmartLinkPushButton()));
-    smartLinkPushButtonLayout->addWidget(smartLinkPushButton_, 10);
 
     // checkable combo box
     std::vector<std::string> options;
@@ -84,6 +74,11 @@ void LinkDialog::initDialogLayout(Processor* src, Processor* dst) {
     options.push_back(PartiallyMatchingIdCondition::conditionName());
     smartLinkOptions_ = new CheckableQComboBox(this, "AutoLink Filter", options);
     smartLinkPushButtonLayout->addWidget(smartLinkOptions_, 20);
+
+    // smart link button
+    smartLinkPushButton_ = new QPushButton("SmartLink", this);
+    connect(smartLinkPushButton_, SIGNAL(clicked()), this, SLOT(clickedSmartLinkPushButton()));
+    smartLinkPushButtonLayout->addWidget(smartLinkPushButton_, 10);
 
     // delete button
     deleteAllLinkPushButton_ = new QPushButton("Delete All", this);
@@ -96,18 +91,39 @@ void LinkDialog::initDialogLayout(Processor* src, Processor* dst) {
     expandCompositeButton_->setChecked(false);
     smartLinkPushButtonLayout->addWidget(expandCompositeButton_, 10);
     connect(expandCompositeButton_, SIGNAL(clicked()), this, SLOT(expandCompositeProperties()));
-    commonButtonLayout->addLayout(smartLinkPushButtonLayout);
+    mainLayout->addLayout(smartLinkPushButtonLayout);
+    
 
-    mainLayout->addLayout(commonButtonLayout);
-    setWidget(frame);
+    QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("linkwindow");
+    if (settings.contains("geometry")) {
+        restoreGeometry(settings.value("geometry").toByteArray());
+    }
+    settings.endGroup();
+        
+    linkDialogScene_ = new LinkDialogGraphicsScene(
+        this, InviwoApplication::getPtr()->getProcessorNetwork(), src, dst);
+    linkDialogScene_->setSceneRect(0.0, 0.0, linkdialog::dialogWidth, size().height());
+    linkDialogView_->setDialogScene(linkDialogScene_);
+
+    connect(linkDialogScene_, SIGNAL(closeDialog()), this, SLOT(closeLinkDialog()));
 }
+
+LinkDialog::~LinkDialog() {}
+
 
 void LinkDialog::closeLinkDialog() {
     hide();
+
+    QSettings settings("Inviwo", "Inviwo");
+    settings.beginGroup("linkwindow");
+    settings.setValue("geometry", saveGeometry());
+    settings.endGroup();
+
     eventLoop_.quit();
 }
 
-void LinkDialog::closeEvent(QCloseEvent* event) { eventLoop_.quit(); }
+void LinkDialog::closeEvent(QCloseEvent* event) { closeLinkDialog(); }
 
 void LinkDialog::clickedSmartLinkPushButton() {
     std::vector<Property*> srcProperties = src_->getProperties();

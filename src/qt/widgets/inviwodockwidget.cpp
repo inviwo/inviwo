@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/inviwodockwidget.h>
@@ -33,8 +33,7 @@
 
 namespace inviwo {
 
-InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
-    : QDockWidget(title, parent) {
+InviwoDockWidget::InviwoDockWidget(QString title, QWidget *parent) : QDockWidget(title, parent) {
     setObjectName(title);
 #ifdef __APPLE__
     setStyleSheet("QDockWidget::title {padding-left: 45px; }");
@@ -45,18 +44,19 @@ InviwoDockWidget::InviwoDockWidget(QString title, QWidget* parent)
     setTitleBarWidget(dockWidgetTitleBar_);
 
     QObject::connect(this, SIGNAL(topLevelChanged(bool)), titleBarWidget(), SLOT(floating(bool)));
-    QObject::connect(this, SIGNAL(windowTitleChanged(const QString &)), this, SLOT(updateWindowTitle(const QString &)));
+    QObject::connect(this, SIGNAL(windowTitleChanged(const QString &)), this,
+                     SLOT(updateWindowTitle(const QString &)));
 }
 
 InviwoDockWidget::~InviwoDockWidget() {}
 
-void InviwoDockWidget::showEvent(QShowEvent* showEvent){
+void InviwoDockWidget::showEvent(QShowEvent *showEvent) {
     raise();
     QDockWidget::showEvent(showEvent);
 }
 
-void InviwoDockWidget::keyPressEvent(QKeyEvent* keyEvent) {
-    if (keyEvent->key() == Qt::Key_Escape && isFloating()){
+void InviwoDockWidget::keyPressEvent(QKeyEvent *keyEvent) {
+    if (keyEvent->key() == Qt::Key_Escape && isFloating()) {
         hide();
     } else {
         keyEvent->ignore();
@@ -71,9 +71,7 @@ void InviwoDockWidget::setSticky(bool sticky) {
     }
 }
 
-bool InviwoDockWidget::isSticky() const {
-    return (this->allowedAreas() != Qt::NoDockWidgetArea);
-}
+bool InviwoDockWidget::isSticky() const { return (this->allowedAreas() != Qt::NoDockWidgetArea); }
 
 void InviwoDockWidget::setContents(QWidget *widget) {
     QWidget *oldWidget = this->widget();
@@ -97,8 +95,6 @@ void InviwoDockWidget::setContents(QLayout *layout) {
     this->setWidget(centralWidget);
 }
 
-void InviwoDockWidget::updateWindowTitle(const QString &str) {
-    dockWidgetTitleBar_->setLabel(str);
-}
+void InviwoDockWidget::updateWindowTitle(const QString &str) { dockWidgetTitleBar_->setLabel(str); }
 
-} // namespace
+}  // namespace

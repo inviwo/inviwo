@@ -32,7 +32,6 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
 
-#include <QGraphicsDropShadowEffect>
 #include <QTimeLine>
 
 #include <inviwo/core/links/linkconditions.h>
