@@ -51,18 +51,16 @@ void InviwoSplashScreen::show() {
 }
 
 void InviwoSplashScreen::drawContents(QPainter* painter) {
-    QSplashScreen::drawContents(painter);
     QString versionLabel;
     QTextStream labelStream(&versionLabel);
     labelStream << "Version " << QString::fromStdString(IVW_VERSION);
-    painter->drawText(13, 265, versionLabel);
+    painter->setPen(Qt::white);
+    painter->drawText(15, 270, versionLabel);
+    painter->drawText(15, 290, message());
 }
 
 void InviwoSplashScreen::showMessage(std::string message) {
-    // show message and add whitespace to match layout
-    if (showSplashScreen_)
-        QSplashScreen::showMessage(QString::fromStdString("   " + message),
-                                   Qt::AlignLeft | Qt::AlignBottom, Qt::white);
+    if (showSplashScreen_) QSplashScreen::showMessage(QString::fromStdString(message));
 }
 
 void InviwoSplashScreen::finish(QWidget* mainWindow) {
