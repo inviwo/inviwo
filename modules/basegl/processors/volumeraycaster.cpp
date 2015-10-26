@@ -43,11 +43,13 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeRaycaster, "org.inviwo.VolumeRaycaster");
-ProcessorDisplayName(VolumeRaycaster, "Volume Raycaster");
-ProcessorTags(VolumeRaycaster, Tags::GL);
-ProcessorCategory(VolumeRaycaster, "Volume Rendering");
-ProcessorCodeState(VolumeRaycaster, CODE_STATE_STABLE);
+const ProcessorInfo VolumeRaycaster::processorInfo_{
+    "org.inviwo.VolumeRaycaster",  // Class identifer
+    "Volume Raycaster",            // Display name
+    "Volume Rendering",            // Category
+    CODE_STATE_STABLE,             // Code state
+    Tags::GL                       // Tags
+};
 
 VolumeRaycaster::VolumeRaycaster()
     : Processor()
@@ -98,6 +100,10 @@ VolumeRaycaster::VolumeRaycaster()
 }
 
 VolumeRaycaster::~VolumeRaycaster() {}
+
+const ProcessorInfo VolumeRaycaster::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 void VolumeRaycaster::initializeResources() {
     utilgl::addShaderDefines(shader_, raycasting_);

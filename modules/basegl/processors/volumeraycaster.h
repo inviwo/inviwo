@@ -76,13 +76,13 @@ public:
     VolumeRaycaster();
     virtual ~VolumeRaycaster();
 
-    InviwoProcessorInfo();
-
     virtual void initializeResources() override;
 
     // override to do member renaming.
     virtual void deserialize(IvwDeserializer& d) override;
-
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+    
 protected:
     virtual void process() override;
 

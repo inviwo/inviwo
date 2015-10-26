@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSOR_H
@@ -38,6 +38,7 @@
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
 #include <inviwo/core/properties/propertyowner.h>
+#include <inviwo/core/processors/processorinfo.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
 #include <inviwo/core/util/group.h>
@@ -49,16 +50,14 @@ class InteractionHandler;
 class ProcessorWidget;
 class ResizeEvent;
 
-#define InviwoProcessorInfo()                                                            \
-    virtual std::string getClassIdentifier() const override { return CLASS_IDENTIFIER; } \
-    virtual std::string getDisplayName() const override { return DISPLAY_NAME; }         \
-    virtual std::string getCategory() const override { return CATEGORY; }                \
-    virtual CodeState getCodeState() const override { return CODE_STATE; }               \
-    virtual Tags getTags() const override { return TAGS; }                               \
-    static const std::string CLASS_IDENTIFIER;                                           \
-    static const std::string CATEGORY;                                                   \
-    static const std::string DISPLAY_NAME;                                               \
-    static const CodeState CODE_STATE;                                                   \
+#define InviwoProcessorInfo()                                                             \
+    virtual const ProcessorInfo getProcessorInfo() const override {                       \
+        return ProcessorInfo(CLASS_IDENTIFIER, DISPLAY_NAME, CATEGORY, CODE_STATE, TAGS); \
+    }                                                                                     \
+    static const std::string CLASS_IDENTIFIER;                                            \
+    static const std::string CATEGORY;                                                    \
+    static const std::string DISPLAY_NAME;                                                \
+    static const CodeState CODE_STATE;                                                    \
     static const Tags TAGS
 
 #define ProcessorClassIdentifier(T, classIdentifier) \
@@ -80,98 +79,98 @@ class ResizeEvent;
  * A typical flow for processing Processor 1 is shown below.
  *
  *     ┌─────────────┐
- *     │             │                                                            
- *     │ Processor 2 │                                                            
- *     │ ┌─┐         │◀────────────────────────────────────────── Outport 2       
- *     └─┴┬┴─────────┘                                                            
- *        └────────────────┐                                                      
- *                       ┌┬▼┬──────────┐ ◀─────────────────────── Inport 1        
- *                       │└─┘          │                                          
- *                       │ Processor 1 │                                          
- *                       │┌─┐          │ ◀─────────────────────── Outport 1       
- *                       └┴┬┴──────────┘                                          
- *                         └────────────────┐                                     
- *                                        ┌┬▼┬──────────┐ ◀────── Inport 0        
- *                                        │└─┘          │                         
- *                                        │ Processor 0 │                         
- *                                        │┌─┐          │ ◀────── Outport 0       
- *                                        └┴─┴──────────┘                         
- *                                                                                
- *       Evaluator         Processor 1         Inport 1           Outport 2       
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           ├─────!isValid?────▶                  │                  │           
- *           ◀────────No────────┤                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           ├────isReady?──────▶                  │                  │           
- *           │                  ├─────isValid?─────▶                  │           
- *           │                  │                  ├────isValid?──────▶           
- *           │                  │                  │                  ├─────┐     
- *           │                  │                  │                  │  data?    
- *           │                  │                  │                  │  valid?   
- *           │                  │                  │                  ◀─Yes─┘     
- *           │                  │                  ◀──────Yes─────────┤           
- *           │                  ◀───────Yes────────┤                  │           
- *           ◀──────Yes─────────┤                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           │    Inv. Level    │                  │                  │           
- *           ├─────────>────────▶                  │                  │           
- *           │   INV.RESOURCES  │                  │                  │           
- *           │                  │                  │                  │           
- *           ◀───────Yes────────┤                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           ├──Init. Resources ▶                  │                  │           
- *           ◀───────Done───────┤                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           ├────GetInports────▶                  │                  │           
- *           │                  ├──callOnChange────▶                  │           
- *           │                  ◀──────Done────────┤                  │           
- *           ◀───────Done───────┤                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           │                  │                  │                  │           
- *           ├────Process───────▶                  │                  │           
- *           │                  ├─────GetData──────▶                  │           
- *           │                  │                  ├────GetData───────▶           
- *           │                  │                  ◀──────data────────┤           
- *           │                  ◀───────data───────┤                  │           
- *           │                  │                  │                  │           
- *           │                  │                  ▼                  ▼           
- *           │                  │                                                 
- *           │                  │              Outport 1                          
- *           │                  │                  │                              
- *           │                  ├─────SetData──────▶                              
- *           │                  ◀───────Done───────┤                              
- *           ◀───────Done───────┤                  │                              
- *           │                  │                  ▼                              
- *           │                  │                                                 
- *           │                  │              Inport 1                           
- *           ├─────SetValid─────▶    SetChanged    │                              
- *           │                  ├─────(false)──────▶                              
- *           │                  ◀───────Done───────┤                              
- *           │                  │                  │                              
- *           │                  │                  ▼                              
- *           │                  │                                                 
- *           │                  │              Outport 1          Inport 0        
- *           │                  │                  │                  │           
- *           │                  ├───SetValid───────▶                  │           
- *           │                  │                  ├─────SetValid─────▶           
- *           │                  │                  │                  ├──────┐    
+ *     │             │
+ *     │ Processor 2 │
+ *     │ ┌─┐         │◀────────────────────────────────────────── Outport 2
+ *     └─┴┬┴─────────┘
+ *        └────────────────┐
+ *                       ┌┬▼┬──────────┐ ◀─────────────────────── Inport 1
+ *                       │└─┘          │
+ *                       │ Processor 1 │
+ *                       │┌─┐          │ ◀─────────────────────── Outport 1
+ *                       └┴┬┴──────────┘
+ *                         └────────────────┐
+ *                                        ┌┬▼┬──────────┐ ◀────── Inport 0
+ *                                        │└─┘          │
+ *                                        │ Processor 0 │
+ *                                        │┌─┐          │ ◀────── Outport 0
+ *                                        └┴─┴──────────┘
+ *
+ *       Evaluator         Processor 1         Inport 1           Outport 2
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           ├─────!isValid?────▶                  │                  │
+ *           ◀────────No────────┤                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           ├────isReady?──────▶                  │                  │
+ *           │                  ├─────isValid?─────▶                  │
+ *           │                  │                  ├────isValid?──────▶
+ *           │                  │                  │                  ├─────┐
+ *           │                  │                  │                  │  data?
+ *           │                  │                  │                  │  valid?
+ *           │                  │                  │                  ◀─Yes─┘
+ *           │                  │                  ◀──────Yes─────────┤
+ *           │                  ◀───────Yes────────┤                  │
+ *           ◀──────Yes─────────┤                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           │    Inv. Level    │                  │                  │
+ *           ├─────────>────────▶                  │                  │
+ *           │   INV.RESOURCES  │                  │                  │
+ *           │                  │                  │                  │
+ *           ◀───────Yes────────┤                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           ├──Init. Resources ▶                  │                  │
+ *           ◀───────Done───────┤                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           ├────GetInports────▶                  │                  │
+ *           │                  ├──callOnChange────▶                  │
+ *           │                  ◀──────Done────────┤                  │
+ *           ◀───────Done───────┤                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           │                  │                  │                  │
+ *           ├────Process───────▶                  │                  │
+ *           │                  ├─────GetData──────▶                  │
+ *           │                  │                  ├────GetData───────▶
+ *           │                  │                  ◀──────data────────┤
+ *           │                  ◀───────data───────┤                  │
+ *           │                  │                  │                  │
+ *           │                  │                  ▼                  ▼
+ *           │                  │
+ *           │                  │              Outport 1
+ *           │                  │                  │
+ *           │                  ├─────SetData──────▶
+ *           │                  ◀───────Done───────┤
+ *           ◀───────Done───────┤                  │
+ *           │                  │                  ▼
+ *           │                  │
+ *           │                  │              Inport 1
+ *           ├─────SetValid─────▶    SetChanged    │
+ *           │                  ├─────(false)──────▶
+ *           │                  ◀───────Done───────┤
+ *           │                  │                  │
+ *           │                  │                  ▼
+ *           │                  │
+ *           │                  │              Outport 1          Inport 0
+ *           │                  │                  │                  │
+ *           │                  ├───SetValid───────▶                  │
+ *           │                  │                  ├─────SetValid─────▶
+ *           │                  │                  │                  ├──────┐
  *           │                  │                  │                  │ SetChanged
- *           │                  │                  │                  │   (true)  
- *           │                  │                  │                  ◀──────┘    
- *           │                  │                  ◀──────Done────────┤           
- *           │                  ◀─────Done─────────┤                  │           
- *           ◀───────Done───────┤                  │                  │           
- *           ▼                  ▼                  ▼                  ▼           
+ *           │                  │                  │                  │   (true)
+ *           │                  │                  │                  ◀──────┘
+ *           │                  │                  ◀──────Done────────┤
+ *           │                  ◀─────Done─────────┤                  │
+ *           ◀───────Done───────┤                  │                  │
+ *           ▼                  ▼                  ▼                  ▼
  *
  *
  */
@@ -182,18 +181,15 @@ class IVW_CORE_API Processor : public PropertyOwner,
 public:
     Processor();
     virtual ~Processor();
-    
-    //  Should be included by all inheriting classes by calling the InviwoProcessorInfo() macro
-    virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
-    virtual std::string getDisplayName() const { return DISPLAY_NAME; }
-    virtual std::string getCategory() const { return CATEGORY; }
-    virtual CodeState getCodeState() const { return CODE_STATE; }
-    virtual Tags getTags() const { return TAGS; }
-    static const std::string CLASS_IDENTIFIER;
-    static const std::string CATEGORY;
-    static const std::string DISPLAY_NAME;
-    static const CodeState CODE_STATE;
-    static const Tags TAGS;
+
+    //  Should be implemented by all inheriting classes;
+    virtual const ProcessorInfo getProcessorInfo() const = 0;
+
+    std::string getClassIdentifier() const { return getProcessorInfo().classIdentifier; }
+    std::string getDisplayName() const { return getProcessorInfo().displayName; }
+    std::string getCategory() const { return getProcessorInfo().category; }
+    CodeState getCodeState() const { return getProcessorInfo().codeState; }
+    Tags getTags() const { return getProcessorInfo().tags; }
 
     /**
      * Sets the identifier of the Processor. If there already exist a processor with that identifier
@@ -209,7 +205,6 @@ public:
     ProcessorWidget* getProcessorWidget() const;
     bool hasProcessorWidget() const;
 
-
     /**
      * Initialize is called once before the first time the process function of the processor
      * is called. It is called by the processor network evaluator. Override to add resource
@@ -219,15 +214,15 @@ public:
 
     /*
      *    Deinitialize is called once before the processor is deleted by the processor network
-     *    Override to delete resources allocated in initialize. Make sure to call the base class 
+     *    Override to delete resources allocated in initialize. Make sure to call the base class
      *    deinitialize last.
-     */  
+     */
     virtual void deinitialize();
     bool isInitialized() const;
 
     /**
      * InitializeResources is called whenever a property with InvalidationLevel INVALID_RESOURCES
-     * is changes. 
+     * is changes.
      */
     virtual void initializeResources() {}
 
@@ -242,7 +237,6 @@ public:
     std::vector<Port*> getPortsByDependencySet(const std::string& portDependencySet) const;
     std::string getPortDependencySet(Port* port) const;
     std::vector<Port*> getPortsInSameSet(Port* port) const;
-
 
     bool allInportsConnected() const;
     bool allInportsAreReady() const;
@@ -263,7 +257,7 @@ public:
 
     /**
      *    Called by the network after Processor::process has been called.
-     *    This will set the following to valid 
+     *    This will set the following to valid
      *    * The processor
      *    * All properties
      *    * All outports and their connected inports.
@@ -277,7 +271,7 @@ public:
      * Proccessor::invalidate()
      * in your reimplemented invalidation function.
      * The general scheme is that the processor will invalidate is self and it's outports
-     * the outports will in turn invalidate their connected inports, which will invalidate there 
+     * the outports will in turn invalidate their connected inports, which will invalidate there
      * processors. Hence all processors that depend on this one in the network will be invalidated.
      */
     virtual void invalidate(InvalidationLevel invalidationLevel,
@@ -304,7 +298,6 @@ public:
     virtual void propagateEvent(Event* event) override;
     virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
-
     // Override from the property owner
     virtual Processor* getProcessor() override { return this; }
     virtual const Processor* getProcessor() const override { return this; }
@@ -326,7 +319,7 @@ protected:
 
     virtual void performEvaluateRequest();
 
-    ProcessorWidget* processorWidget_; //< non-owning reference, the widget is owned by the editor.
+    ProcessorWidget* processorWidget_;  //< non-owning reference, the widget is owned by the editor.
 
 private:
     std::string identifier_;
