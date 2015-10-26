@@ -111,6 +111,7 @@ void CanvasProcessorWidgetQt::deinitialize() {
         } else {
             canvas_->deinitialize();
         }
+        canvas_->setEventPropagator(nullptr);
         canvas_ = nullptr;  // Qt will take care of deleting the canvas
     }
     CanvasProcessorWidget::deinitialize();
