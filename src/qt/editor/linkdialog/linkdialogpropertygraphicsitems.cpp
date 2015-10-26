@@ -58,14 +58,18 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogParent*
     auto displayName = new LabelGraphicsItem(this);
     displayName->setPos(rect().topLeft() + QPointF(linkdialog::offset, linkdialog::offset));
     displayName->setDefaultTextColor(Qt::black);
-    displayName->setFont(QFont("Segoe", linkdialog::propertyLabelHeight, QFont::Bold, false));
+    auto dispFont = QFont("Segoe", linkdialog::propertyLabelHeight, QFont::Bold, false);
+    dispFont.setPixelSize(linkdialog::propertyLabelHeight);
+    displayName->setFont(dispFont);
     displayName->setCrop(15, 14);
     displayName->setText(QString::fromStdString(item_->getDisplayName()));
 
 
     auto classIdentifier = new LabelGraphicsItem(this);
     classIdentifier->setDefaultTextColor(Qt::black);
-    classIdentifier->setFont(QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true));
+    auto classFont = QFont("Segoe", linkdialog::processorLabelHeight, QFont::Normal, true);
+    classFont.setPixelSize(linkdialog::processorLabelHeight);
+    classIdentifier->setFont(classFont);
     classIdentifier->setCrop(15, 14);
     auto offset = classIdentifier->boundingRect().height();
     classIdentifier->setPos(rect().bottomLeft() +
