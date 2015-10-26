@@ -60,7 +60,7 @@ out vec3 endPos_;
 out vec3 gEndplanes[2];
 
 void emitV(int a){
-    color_ = vColor_[a <= 3 ? 2 : 1];
+    color_ = vColor_[a <= 3 ? 1 : 2]; 
     worldPos_ = prismoid[a].xyz;
     gl_Position = camera.worldToClip * prismoid[a];  
     EmitVertex();
