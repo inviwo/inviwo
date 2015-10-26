@@ -81,12 +81,11 @@ public:
     TemplateImageSampler(const Image *img) : TemplateImageSampler(img->getColorLayer()) {}
     virtual ~TemplateImageSampler(){}
 
-    T sample(const vec2 &pos)  { return sample(dvec2(pos)); }
-    T sample(double x,double y) { return sample(dvec2(x,y)); }
-    T sample(const dvec2 &pos) {
-        dvec2 samplePos = pos * dvec2(dims_ - size2_t(1));
+    T sample(P x,P y) { return sample(Vector<2, P>(x,y)); }
+    T sample(const Vector<2, P> &pos) {
+        Vector<2, P> samplePos = pos * Vector<2, P>(dims_ - size2_t(1));
         size2_t indexPos = size2_t(samplePos);
-        dvec2 interpolants = samplePos - dvec2(indexPos);
+        Vector<2, P> interpolants = samplePos - Vector<2, P>(indexPos);
 
 
         T samples[4];

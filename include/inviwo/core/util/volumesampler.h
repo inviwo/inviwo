@@ -78,12 +78,11 @@ public:
 
     virtual ~TemplateVolumeSampler(){}
 
-    T sample(const vec3 &pos) { return sample(dvec3(pos)); }
-    T sample(double x, double y, double z) { return sample(dvec3(x, y, z)); }
-    T sample(const dvec3 &pos) {
-        dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
+    T sample(P x, P y, P z) { return sample(Vector<3, P>(x, y, z)); }
+    T sample(const Vector<3, P> &pos) {
+        Vector<3, P> samplePos = pos *  Vector<3, P>(dims_ - size3_t(1));
         size3_t indexPos = size3_t(samplePos);
-        dvec3 interpolants = samplePos - dvec3(indexPos);
+        Vector<3, P> interpolants = samplePos - Vector<3,P>(indexPos);
 
         T samples[8];
         samples[0] = getVoxel(indexPos);
