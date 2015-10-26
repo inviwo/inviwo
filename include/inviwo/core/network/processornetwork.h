@@ -224,7 +224,6 @@ public:
     virtual void onProcessorRequestEvaluate(Processor* p = nullptr) override;
     virtual void onProcessorIdentifierChange(Processor*) override;
 
-    Processor* getInvalidationInitiator();
     inline void lock() { locked_++; }
     inline void unlock() {
         (locked_ > 0) ? locked_-- : locked_ = 0;
@@ -279,6 +278,9 @@ private:
 
     ProcessorMap processors_;
     PortConnectionMap connections_;
+    // This vector is needed to keep the connections in cronological order, since some processors
+    // depends on the order of connections, idealy we would get rid of this.
+    std::vector<PortConnection*> connectionsVec_;
     PropertyLinkMap links_;
 
     LinkEvaluator linkEvaluator_;
