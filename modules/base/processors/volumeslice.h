@@ -126,7 +126,7 @@ std::shared_ptr<Image> VolumeSlice::VolumeSliceDispatcher::dispatch(
     size2_t dim;
     switch (axis) {
         case CartesianCoordinateAxis::X:
-            dim = size2_t(voldim.y, voldim.z);
+            dim = size2_t(voldim.z, voldim.y);
             break;
         case CartesianCoordinateAxis::Y:
             dim = size2_t(voldim.x, voldim.z);
