@@ -235,8 +235,10 @@ struct CImgSaveLayerDispatcher {
         if (inMin != outMin || inMax != outMax) {
             typename T::primitive* data = img->data();
             double scale = (outMax - outMin) / (inMax - inMin);
-            for (size_t i = 0; i < img->size(); i++)
-                data[i] = static_cast<typename T::primitive>( glm::clamp( (static_cast<double>(data[i]) - inMin)*scale + outMin , outMin , outMax));
+            for (size_t i = 0; i < img->size(); i++) {
+                auto dataValue = glm::clamp(static_cast<double>(data[i]), inMin, inMax);
+                data[i] = static_cast<typename T::primitive>((dataValue - inMin) * scale + outMin);
+            }
         }
 
         img->save(filePath);
