@@ -40,6 +40,24 @@ enum class IVW_CORE_API CodeState {
     Stable
 };
 
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, CodeState cs) {
+    switch (cs) {
+        case CodeState::Broken:
+            ss << "Broken";
+            break;
+        case CodeState::Experimental:
+            ss << "Experimental";
+            break;
+        case CodeState::Stable:
+            ss << "Stable";
+            break;
+        default:
+            ss << "Not specified";
+    }
+    return ss;
+}
+
 } // namespace
 
 #endif // IVW_PROCESSORSTATE_H

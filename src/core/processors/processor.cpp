@@ -290,16 +290,9 @@ void Processor::propagateEvent(Event* event) {
 }
 
 const std::string Processor::getCodeStateString(CodeState state) {
-    switch (state) {
-        case CodeState::Stable:
-            return "Stable";
-        case CodeState::Broken:
-            return "Broken";
-        case CodeState::Experimental:
-            return "Experimental";
-        default:
-            return "Unknown";
-    }
+    std::stringstream ss;
+    ss << state;
+    return ss.str();
 }
 
 std::vector<std::string> Processor::getPath() const {
