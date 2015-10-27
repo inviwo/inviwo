@@ -177,7 +177,7 @@ struct CImgLoadLayerDispatcher {
         size_t components = static_cast<size_t>(img.spectrum());
 
         if (rescaleToDim) {
-            img.resize(dimensions.x, dimensions.y);
+            img.resize(dimensions.x, dimensions.y, -100, -100, 3);
         }
         else{
             dimensions = uvec2(img.width(), img.height());
@@ -250,7 +250,7 @@ struct CImgRescaleLayerDispatcher {
     void* dispatch(const LayerRAM* inputLayerRAM, uvec2 dst_dim) {
         auto img = std::unique_ptr<CImg<typename T::primitive>>(LayerToCImg<typename T::type>::convert(inputLayerRAM));
 
-        img->resize(dst_dim.x, dst_dim.y);
+        img->resize(dst_dim.x, dst_dim.y, -100, -100, 3);
 
         return CImgToIvwConvert<typename T::primitive>::convert(nullptr, img.get());
     }
