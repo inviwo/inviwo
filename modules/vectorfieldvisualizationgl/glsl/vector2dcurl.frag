@@ -49,5 +49,5 @@ void main(void) {
 
 	v = J[1][0] - J[0][1];
 
-	FragData0 = vec4((v));
+	FragData0 = vec4(v);
 }
