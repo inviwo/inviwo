@@ -40,11 +40,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeMapping, "org.inviwo.VolumeMapping");
-ProcessorDisplayName(VolumeMapping, "Volume Mapping");
-ProcessorTags(VolumeMapping, Tags::GL);
-ProcessorCategory(VolumeMapping, "Volume Operation");
-ProcessorCodeState(VolumeMapping, CodeState::Experimental);
+const ProcessorInfo VolumeMapping::processorInfo_{
+    "org.inviwo.VolumeMapping",  // Class identifier
+    "Volume Mapping",            // Display name
+    "Volume Operation",          // Category
+    CodeState::Experimental,     // Code state
+    Tags::GL,                    // Tags
+};
+const ProcessorInfo VolumeMapping::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeMapping::VolumeMapping()
     : VolumeGLProcessor("volume_mapping.frag")
@@ -59,3 +64,4 @@ void VolumeMapping::preProcess(TextureUnitContainer &cont) {
 }
 
 }  // namespace
+

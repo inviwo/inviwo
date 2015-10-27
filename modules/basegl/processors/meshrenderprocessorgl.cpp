@@ -43,11 +43,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(MeshRenderProcessorGL, "org.inviwo.GeometryRenderGL");
-ProcessorDisplayName(MeshRenderProcessorGL, "Mesh Renderer");
-ProcessorTags(MeshRenderProcessorGL, Tags::GL);
-ProcessorCategory(MeshRenderProcessorGL, "Geometry Rendering");
-ProcessorCodeState(MeshRenderProcessorGL, CodeState::Stable);
+const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
+    "org.inviwo.GeometryRenderGL",  // Class identifier
+    "Mesh Renderer",                // Display name
+    "Geometry Rendering",           // Category
+    CodeState::Stable,              // Code state
+    Tags::GL,                       // Tags
+};
+const ProcessorInfo MeshRenderProcessorGL::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()
@@ -342,3 +347,4 @@ void MeshRenderProcessorGL::updateDrawers() {
 }
 
 }  // namespace
+

@@ -64,7 +64,8 @@ class IVW_MODULE_BASEGL_API VolumeGradientMagnitude : public VolumeGLProcessor  
 public:
     VolumeGradientMagnitude();
     virtual ~VolumeGradientMagnitude();
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 protected:
     virtual void preProcess(TextureUnitContainer &cont) override;

@@ -57,7 +57,8 @@ class IVW_MODULE_BASE_API VolumeSource : public Processor {
 public:
     using VolumeVector = std::vector<std::shared_ptr<Volume>>;
 
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
     VolumeSource();
     virtual ~VolumeSource() = default;
 

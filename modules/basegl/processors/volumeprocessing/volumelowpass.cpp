@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeLowPass, "org.inviwo.VolumeLowPass");
-ProcessorDisplayName(VolumeLowPass, "Volume Low Pass");
-ProcessorTags(VolumeLowPass, "GL");
-ProcessorCategory(VolumeLowPass, "Volume Operation");
-ProcessorCodeState(VolumeLowPass, CodeState::Experimental);
+const ProcessorInfo VolumeLowPass::processorInfo_{
+    "org.inviwo.VolumeLowPass",  // Class identifier
+    "Volume Low Pass",           // Display name
+    "Volume Operation",          // Category
+    CodeState::Experimental,     // Code state
+    "GL",                        // Tags
+};
+const ProcessorInfo VolumeLowPass::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeLowPass::VolumeLowPass()
     : VolumeGLProcessor("volume_lowpass.frag")
@@ -76,3 +81,4 @@ void VolumeLowPass::initializeResources() {
 }
 
 }  // namespace
+

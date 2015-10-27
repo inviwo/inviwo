@@ -36,11 +36,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(DrawLines, "org.inviwo.DrawLines");
-ProcessorDisplayName(DrawLines, "Draw Lines");
-ProcessorTags(DrawLines, Tags::GL);
-ProcessorCategory(DrawLines, "Drawing");
-ProcessorCodeState(DrawLines, CodeState::Stable);
+const ProcessorInfo DrawLines::processorInfo_{
+    "org.inviwo.DrawLines",  // Class identifier
+    "Draw Lines",            // Display name
+    "Drawing",               // Category
+    CodeState::Stable,       // Code state
+    Tags::GL,                // Tags
+};
+const ProcessorInfo DrawLines::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 DrawLines::DrawLines()
     : CompositeProcessorGL()
@@ -136,3 +141,4 @@ void DrawLines::eventEnableDraw(Event* event){
 }
 
 }  // namespace
+

@@ -31,11 +31,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ExampleProcessor, "org.inviwo.ExampleProcessor");
-ProcessorDisplayName(ExampleProcessor,  "Example Processor");
-ProcessorTags(ExampleProcessor, Tags::None);
-ProcessorCategory(ExampleProcessor, "Geometry Creation");
-ProcessorCodeState(ExampleProcessor, CodeState::Experimental);
+const ProcessorInfo ExampleProcessor::processorInfo_{
+    "org.inviwo.ExampleProcessor",  // Class identifier
+    "Example Processor",            // Display name
+    "Geometry Creation",            // Category
+    CodeState::Experimental,        // Code state
+    Tags::None,                     // Tags
+};
+const ProcessorInfo ExampleProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ExampleProcessor::ExampleProcessor()
     : Processor()
@@ -58,3 +63,4 @@ void ExampleProcessor::deinitialize() {
 void ExampleProcessor::process() {
 }
 } // namespace
+

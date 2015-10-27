@@ -64,7 +64,8 @@ namespace inviwo {
     public:
         Vector3DDivergence();
         virtual ~Vector3DDivergence();
-        InviwoProcessorInfo();
+        virtual const ProcessorInfo getProcessorInfo() const override;
+        static const ProcessorInfo processorInfo_;
 
     protected:
         virtual void postProcess() override;

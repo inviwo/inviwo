@@ -43,11 +43,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeSource, "org.inviwo.VolumeSource");
-ProcessorDisplayName(VolumeSource, "Volume Source");
-ProcessorTags(VolumeSource, Tags::CPU);
-ProcessorCategory(VolumeSource, "Data Input");
-ProcessorCodeState(VolumeSource, CodeState::Stable);
+const ProcessorInfo VolumeSource::processorInfo_{
+    "org.inviwo.VolumeSource",  // Class identifier
+    "Volume Source",            // Display name
+    "Data Input",               // Category
+    CodeState::Stable,          // Code state
+    Tags::CPU,                  // Tags
+};
+const ProcessorInfo VolumeSource::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeSource::VolumeSource()
     : Processor()
@@ -151,3 +156,4 @@ void VolumeSource::deserialize(IvwDeserializer& d) {
 }
 
 }  // namespace
+

@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(MeshClipping, "org.inviwo.MeshClipping");
-ProcessorDisplayName(MeshClipping,  "Mesh Clipping");
-ProcessorTags(MeshClipping, Tags::CPU);
-ProcessorCategory(MeshClipping, "Geometry Creation");
-ProcessorCodeState(MeshClipping, CodeState::Experimental);
+const ProcessorInfo MeshClipping::processorInfo_{
+    "org.inviwo.MeshClipping",  // Class identifier
+    "Mesh Clipping",            // Display name
+    "Geometry Creation",        // Category
+    CodeState::Experimental,    // Code state
+    Tags::CPU,                  // Tags
+};
+const ProcessorInfo MeshClipping::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 const float MeshClipping::EPSILON = 0.00001f;
 

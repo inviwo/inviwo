@@ -67,8 +67,8 @@ def cs(var):
 
 def updatecpp(files):
 	patterns = {
-		"cid"   : r"""[ ]*ProcessorClassIdentifier\((\w+),\s+("[&\.\w]+")\);?""",
-		"name"  : r"""[ ]*ProcessorDisplayName\((\w+),\s+("[& \.\w]+")\);?""",
+		"cid"   : r"""[ ]*ProcessorClassIdentifier\((\w+),\s+("[-&\.\w]+")\);?""",
+		"name"  : r"""[ ]*ProcessorDisplayName\((\w+),\s+("[-& \.\w]+")\);?""",
 		"tags"  : r"""[ ]*ProcessorTags\((\w+),\s+([",/:\w]+)\);?""", 
 		"cat"   : r"""[ ]*ProcessorCategory\((\w+),\s+("[ \.\w]+")\);?""",
 		"state" : r"""[ ]*ProcessorCodeState\((\w+),\s+([_:\w]+)\);?"""

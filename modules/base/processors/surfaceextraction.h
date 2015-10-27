@@ -62,7 +62,8 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API SurfaceExtraction : public Processor, public ProgressBarOwner {
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     SurfaceExtraction();
     virtual ~SurfaceExtraction();

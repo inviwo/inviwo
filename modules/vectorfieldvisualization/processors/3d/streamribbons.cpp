@@ -37,11 +37,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(StreamRibbons, "org.inviwo.StreamRibbons")
-ProcessorDisplayName(StreamRibbons, "Stream Ribbons") 
-ProcessorTags(StreamRibbons, Tags::CPU);
-ProcessorCategory(StreamRibbons, "Vector Field Visualization");
-ProcessorCodeState(StreamRibbons, CodeState::Experimental);
+const ProcessorInfo StreamRibbons::processorInfo_{
+    "org.inviwo.StreamRibbons",    // Class identifier
+    "Stream Ribbons",              // Display name
+    "Vector Field Visualization",  // Category
+    CodeState::Experimental,       // Code state
+    Tags::CPU,                     // Tags
+};
+const ProcessorInfo StreamRibbons::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 StreamRibbons::StreamRibbons()
     : Processor()
@@ -166,3 +171,4 @@ void StreamRibbons::process() {
 }
 
 }  // namespace
+

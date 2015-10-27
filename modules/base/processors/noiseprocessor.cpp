@@ -48,11 +48,16 @@ static inline int nextPow2(int x) {
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(NoiseProcessor, "org.inviwo.NoiseProcessor")
-ProcessorDisplayName(NoiseProcessor, "NoiseProcessor")
-ProcessorTags(NoiseProcessor, Tags::CPU);
-ProcessorCategory(NoiseProcessor, "Data Creation");
-ProcessorCodeState(NoiseProcessor, CodeState::Experimental);
+const ProcessorInfo NoiseProcessor::processorInfo_{
+    "org.inviwo.NoiseProcessor",  // Class identifier
+    "NoiseProcessor",             // Display name
+    "Data Creation",              // Category
+    CodeState::Experimental,      // Code state
+    Tags::CPU,                    // Tags
+};
+const ProcessorInfo NoiseProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 NoiseProcessor::NoiseProcessor()
     : Processor()
@@ -280,3 +285,4 @@ void NoiseProcessor::poissonDisk(Image *img) {
 }
 
 }  // namespace
+

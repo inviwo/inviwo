@@ -32,11 +32,16 @@
 #include <inviwo/core/util/imagesampler.h>
 
 namespace inviwo {
-ProcessorClassIdentifier(HedgeHog2D, "org.inviwo.HedgeHog2D")
-ProcessorDisplayName(HedgeHog2D, "Hedge Hog 2D") 
-ProcessorTags(HedgeHog2D, Tags::GL);
-ProcessorCategory(HedgeHog2D, "Vector Field Visualization");
-ProcessorCodeState(HedgeHog2D, CodeState::Experimental);
+const ProcessorInfo HedgeHog2D::processorInfo_{
+    "org.inviwo.HedgeHog2D",       // Class identifier
+    "Hedge Hog 2D",                // Display name
+    "Vector Field Visualization",  // Category
+    CodeState::Experimental,       // Code state
+    Tags::GL,                      // Tags
+};
+const ProcessorInfo HedgeHog2D::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 HedgeHog2D::HedgeHog2D()
     : Processor()
@@ -257,3 +262,4 @@ void HedgeHog2D::createQuiver(BasicMesh &mesh, IndexBufferRAM &index, float x, f
 }
 
 }  // namespace
+

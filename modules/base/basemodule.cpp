@@ -65,12 +65,8 @@
 
 namespace inviwo {
 
-typedef BasisTransform<Mesh> BasisTransformMesh;
-typedef BasisTransform<Volume> BasisTransformVolume;
-template <> ProcessorClassIdentifier(BasisTransformMesh, "org.inviwo.BasisTransformGeometry");
-template <> ProcessorDisplayName(BasisTransformMesh, "Basis Transform Mesh");
-template <> ProcessorClassIdentifier(BasisTransformVolume, "org.inviwo.BasisTransformVolume");
-template <> ProcessorDisplayName(BasisTransformVolume, "Basis Transform Volume");
+using BasisTransformMesh = BasisTransform<Mesh>;
+using BasisTransformVolume = BasisTransform<Volume>;
 
 BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<CubeProxyGeometry>();
@@ -99,8 +95,6 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSubset>();
     registerProcessor<VolumeVectorSource>();
     registerProcessor<TimeStepSelector>();
-
-
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();

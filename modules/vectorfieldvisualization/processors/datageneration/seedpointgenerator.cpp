@@ -40,11 +40,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(SeedPointGenerator, "org.inviwo.SeedPointGenerator");
-ProcessorDisplayName(SeedPointGenerator, "Seed Point Generator");
-ProcessorTags(SeedPointGenerator, Tags::CPU);
-ProcessorCategory(SeedPointGenerator, "Data Creation");
-ProcessorCodeState(SeedPointGenerator, CodeState::Experimental);
+const ProcessorInfo SeedPointGenerator::processorInfo_{
+    "org.inviwo.SeedPointGenerator",  // Class identifier
+    "Seed Point Generator",           // Display name
+    "Data Creation",                  // Category
+    CodeState::Experimental,          // Code state
+    Tags::CPU,                        // Tags
+};
+const ProcessorInfo SeedPointGenerator::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 SeedPointGenerator::SeedPointGenerator()
     : Processor()
@@ -217,3 +222,4 @@ void SeedPointGenerator::randomPoints() {
 }
 
 }  // namespace
+

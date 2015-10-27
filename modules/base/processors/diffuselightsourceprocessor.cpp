@@ -32,11 +32,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(DiffuseLightSourceProcessor, "org.inviwo.Diffuselightsource");
-ProcessorDisplayName(DiffuseLightSourceProcessor, "Diffuse light source");
-ProcessorTags(DiffuseLightSourceProcessor, Tags::CPU);
-ProcessorCategory(DiffuseLightSourceProcessor, "Light source");
-ProcessorCodeState(DiffuseLightSourceProcessor, CodeState::Experimental);
+const ProcessorInfo DiffuseLightSourceProcessor::processorInfo_{
+    "org.inviwo.Diffuselightsource",  // Class identifier
+    "Diffuse light source",           // Display name
+    "Light source",                   // Category
+    CodeState::Experimental,          // Code state
+    Tags::CPU,                        // Tags
+};
+const ProcessorInfo DiffuseLightSourceProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     : Processor()
@@ -92,3 +97,4 @@ void DiffuseLightSourceProcessor::updateLightSource(DiffuseLight* lightSource) {
 }
 
 }  // namespace
+

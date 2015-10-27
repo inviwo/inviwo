@@ -53,7 +53,8 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API LorenzSystem : public Processor {
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
     LorenzSystem();
     virtual ~LorenzSystem();
 

@@ -47,11 +47,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ABufferGeometryGLProcessor, "org.inviwo.ABufferGeometryGLProcessor");
-ProcessorDisplayName(ABufferGeometryGLProcessor, "ABufferGeometryGLProcessor");
-ProcessorTags(ABufferGeometryGLProcessor, Tags::None);
-ProcessorCategory(ABufferGeometryGLProcessor, "ABufferDemo");
-ProcessorCodeState(ABufferGeometryGLProcessor, CodeState::Experimental);
+const ProcessorInfo ABufferGeometryGLProcessor::processorInfo_{
+    "org.inviwo.ABufferGeometryGLProcessor",  // Class identifier
+    "ABufferGeometryGLProcessor",             // Display name
+    "ABufferDemo",                            // Category
+    CodeState::Experimental,                  // Code state
+    Tags::None,                               // Tags
+};
+const ProcessorInfo ABufferGeometryGLProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     : MeshRenderProcessorGL()
@@ -151,3 +156,4 @@ void ABufferGeometryGLProcessor::onAbufferSettingChanged() { updateRequried_ = t
 void ABufferGeometryGLProcessor::onAbufferTransparencyChanged() { /*updateRequried_ = true;*/ }
 
 }  // namespace
+

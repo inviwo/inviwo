@@ -36,11 +36,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(AxisAlignedCutPlane, "org.inviwo.AxisAlignedCutPlane")
-ProcessorDisplayName(AxisAlignedCutPlane, "Axis Aligned Cut Plane")
-ProcessorTags(AxisAlignedCutPlane, Tags::GL);
-ProcessorCategory(AxisAlignedCutPlane, "Volume Operation");
-ProcessorCodeState(AxisAlignedCutPlane, CodeState::Experimental);
+const ProcessorInfo AxisAlignedCutPlane::processorInfo_{
+    "org.inviwo.AxisAlignedCutPlane",  // Class identifier
+    "Axis Aligned Cut Plane",          // Display name
+    "Volume Operation",                // Category
+    CodeState::Experimental,           // Code state
+    Tags::GL,                          // Tags
+};
+const ProcessorInfo AxisAlignedCutPlane::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 AxisAlignedCutPlane::AxisAlignedCutPlane()
     : Processor()
@@ -167,3 +172,4 @@ void AxisAlignedCutPlane::drawBoundingBox() {
 }
 
 }  // namespace
+

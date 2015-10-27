@@ -54,7 +54,8 @@ namespace inviwo {
         VectorFieldGenerator3D();
         virtual ~VectorFieldGenerator3D();
 
-        InviwoProcessorInfo();
+        virtual const ProcessorInfo getProcessorInfo() const override;
+        static const ProcessorInfo processorInfo_;
 
         virtual void initializeResources()override;
 

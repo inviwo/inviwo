@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-    ProcessorClassIdentifier(VectorFieldGenerator2D, "org.inviwo.VectorFieldGenerator2D");
-    ProcessorDisplayName(VectorFieldGenerator2D, "Vector Field Generator 2D");
-    ProcessorTags(VectorFieldGenerator2D, "GL");
-    ProcessorCategory(VectorFieldGenerator2D, "Data Creation");
-    ProcessorCodeState(VectorFieldGenerator2D, CodeState::Experimental);
+const ProcessorInfo VectorFieldGenerator2D::processorInfo_{
+    "org.inviwo.VectorFieldGenerator2D",  // Class identifier
+    "Vector Field Generator 2D",          // Display name
+    "Data Creation",                      // Category
+    CodeState::Experimental,              // Code state
+    "GL",                                 // Tags
+};
+const ProcessorInfo VectorFieldGenerator2D::getProcessorInfo() const {
+    return processorInfo_;
+}
 
     VectorFieldGenerator2D::VectorFieldGenerator2D()
         : Processor()
@@ -97,4 +102,5 @@ void VectorFieldGenerator2D::process() {
 }
 
 } // namespace
+
 

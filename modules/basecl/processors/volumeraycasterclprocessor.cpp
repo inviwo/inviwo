@@ -40,11 +40,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeRaycasterCLProcessor, "org.inviwo.VolumeRaycasterCL");
-ProcessorDisplayName(VolumeRaycasterCLProcessor, "Volume Raycaster");
-ProcessorTags(VolumeRaycasterCLProcessor, Tags::CL);
-ProcessorCategory(VolumeRaycasterCLProcessor, "Volume Rendering");
-ProcessorCodeState(VolumeRaycasterCLProcessor, CodeState::Experimental);
+const ProcessorInfo VolumeRaycasterCLProcessor::processorInfo_{
+    "org.inviwo.VolumeRaycasterCL",  // Class identifier
+    "Volume Raycaster",              // Display name
+    "Volume Rendering",              // Category
+    CodeState::Experimental,         // Code state
+    Tags::CL,                        // Tags
+};
+const ProcessorInfo VolumeRaycasterCLProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     : Processor()
@@ -129,3 +134,4 @@ void VolumeRaycasterCLProcessor::onParameterChanged() {
 }
 
 }  // namespace
+

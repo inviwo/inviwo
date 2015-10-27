@@ -44,7 +44,7 @@
 namespace inviwo {
 
 const ProcessorInfo VolumeRaycaster::processorInfo_{
-    "org.inviwo.VolumeRaycaster",  // Class identifer
+    "org.inviwo.VolumeRaycaster",  // Class identifier
     "Volume Raycaster",            // Display name
     "Volume Rendering",            // Category
     CodeState::Stable,             // Code state

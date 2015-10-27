@@ -35,11 +35,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(Background, "org.inviwo.Background");
-ProcessorDisplayName(Background, "Background");
-ProcessorTags(Background, Tags::GL);
-ProcessorCategory(Background, "Image Operation");
-ProcessorCodeState(Background, CodeState::Stable);
+const ProcessorInfo Background::processorInfo_{
+    "org.inviwo.Background",  // Class identifier
+    "Background",             // Display name
+    "Image Operation",        // Category
+    CodeState::Stable,        // Code state
+    Tags::GL,                 // Tags
+};
+const ProcessorInfo Background::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 Background::Background()
     : Processor()
@@ -129,3 +134,4 @@ void Background::process() {
 }
 
 }  // namespace
+

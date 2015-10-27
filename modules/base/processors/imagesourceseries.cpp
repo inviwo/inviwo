@@ -38,11 +38,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ImageSourceSeries, "org.inviwo.ImageSourceSeries");
-ProcessorDisplayName(ImageSourceSeries, "Image Series Source");
-ProcessorTags(ImageSourceSeries, Tags::CPU);
-ProcessorCategory(ImageSourceSeries, "Data Input");
-ProcessorCodeState(ImageSourceSeries, CodeState::Experimental);
+const ProcessorInfo ImageSourceSeries::processorInfo_{
+    "org.inviwo.ImageSourceSeries",  // Class identifier
+    "Image Series Source",           // Display name
+    "Data Input",                    // Category
+    CodeState::Experimental,         // Code state
+    Tags::CPU,                       // Tags
+};
+const ProcessorInfo ImageSourceSeries::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageSourceSeries::ImageSourceSeries()
     : Processor()
@@ -165,3 +170,4 @@ bool ImageSourceSeries::isValidImageFile(std::string fileName) {
 }
 
 }  // namespace
+

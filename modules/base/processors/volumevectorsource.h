@@ -61,7 +61,8 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API VolumeVectorSource : public Processor { 
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
     VolumeVectorSource();
     virtual ~VolumeVectorSource() = default;
      

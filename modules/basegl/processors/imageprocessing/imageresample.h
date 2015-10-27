@@ -60,7 +60,8 @@ class IVW_MODULE_BASEGL_API ImageResample : public ImageGLProcessor  {
 public:
     ImageResample();
     virtual ~ImageResample();
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     void initialize() override;
 

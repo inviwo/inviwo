@@ -38,11 +38,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(GrayscaleCLProcessor, "org.inviwo.GrayscaleCL");
-ProcessorDisplayName(GrayscaleCLProcessor,  "Image Grayscale");
-ProcessorTags(GrayscaleCLProcessor, Tags::CL);
-ProcessorCategory(GrayscaleCLProcessor, "Image Operation");
-ProcessorCodeState(GrayscaleCLProcessor, CodeState::Stable);
+const ProcessorInfo GrayscaleCLProcessor::processorInfo_{
+    "org.inviwo.GrayscaleCL",  // Class identifier
+    "Image Grayscale",         // Display name
+    "Image Operation",         // Category
+    CodeState::Stable,         // Code state
+    Tags::CL,                  // Tags
+};
+const ProcessorInfo GrayscaleCLProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 GrayscaleCLProcessor::GrayscaleCLProcessor()
     : Processor(), ProcessorKernelOwner(this)
@@ -109,3 +114,4 @@ void GrayscaleCLProcessor::process() {
 }
 
 } // namespace
+

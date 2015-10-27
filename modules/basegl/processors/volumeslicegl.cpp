@@ -48,11 +48,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeSliceGL, "org.inviwo.VolumeSliceGL");
-ProcessorDisplayName(VolumeSliceGL, "Volume Slice");
-ProcessorTags(VolumeSliceGL, Tags::GL);
-ProcessorCategory(VolumeSliceGL, "Volume Operation");
-ProcessorCodeState(VolumeSliceGL, CodeState::Stable);
+const ProcessorInfo VolumeSliceGL::processorInfo_{
+    "org.inviwo.VolumeSliceGL",  // Class identifier
+    "Volume Slice",              // Display name
+    "Volume Operation",          // Category
+    CodeState::Stable,           // Code state
+    Tags::GL,                    // Tags
+};
+const ProcessorInfo VolumeSliceGL::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeSliceGL::VolumeSliceGL()
     : Processor()
@@ -680,3 +685,4 @@ void VolumeSliceGL::deserialize(IvwDeserializer& d) {
 }
 
 }  // inviwo namespace
+

@@ -37,10 +37,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(LorenzSystem, "org.inviwo.LorenzSystem")
-    ProcessorDisplayName(LorenzSystem, "Lorenz System") ProcessorTags(LorenzSystem, Tags::GL);
-ProcessorCategory(LorenzSystem, "Data Creation");
-ProcessorCodeState(LorenzSystem, CodeState::Experimental);
+const ProcessorInfo LorenzSystem::processorInfo_{
+    "org.inviwo.LorenzSystem",  // Class identifier
+    "Lorenz System",            // Display name
+    "Data Creation",            // Category
+    CodeState::Experimental,    // Code state
+    Tags::GL,                   // Tags
+};
+const ProcessorInfo LorenzSystem::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 LorenzSystem::LorenzSystem()
     : Processor()
@@ -124,3 +130,4 @@ void LorenzSystem::process() {
 }
 
 }  // namespace
+

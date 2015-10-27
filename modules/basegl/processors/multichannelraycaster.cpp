@@ -39,11 +39,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(MultichannelRaycaster, "org.inviwo.MultichannelRaycaster");
-ProcessorDisplayName(MultichannelRaycaster,  "Multichannel Raycaster");
-ProcessorTags(MultichannelRaycaster, Tags::GL);
-ProcessorCategory(MultichannelRaycaster, "Volume Rendering");
-ProcessorCodeState(MultichannelRaycaster, CodeState::Experimental);
+const ProcessorInfo MultichannelRaycaster::processorInfo_{
+    "org.inviwo.MultichannelRaycaster",  // Class identifier
+    "Multichannel Raycaster",            // Display name
+    "Volume Rendering",                  // Category
+    CodeState::Experimental,             // Code state
+    Tags::GL,                            // Tags
+};
+const ProcessorInfo MultichannelRaycaster::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 MultichannelRaycaster::MultichannelRaycaster()
     : Processor()
@@ -159,3 +164,4 @@ void MultichannelRaycaster::deserialize(IvwDeserializer& d) {
 }
 
 }  // namespace
+

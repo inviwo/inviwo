@@ -32,11 +32,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(<name>,  "org.inviwo.<name>");
-ProcessorDisplayName(<name>,  "<dname>");
-ProcessorTags(<name>, Tags::None);
-ProcessorCategory(<name>, "Undefined");
-ProcessorCodeState(<name>, CodeState::Experimental);
+const ProcessorInfo <name>::processorInfo_{
+    "org.inviwo.<name>",      // Class identifier
+    "<dname>",                // Display name
+    "Undefined",              // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
+};
+const ProcessorInfo <name>::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 <name>::<name>()
     : Processor()

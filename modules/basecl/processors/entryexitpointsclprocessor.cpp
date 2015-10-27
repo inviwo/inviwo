@@ -36,11 +36,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(EntryExitPointsCLProcessor, "org.inviwo.EntryExitPointsCL");
-ProcessorDisplayName(EntryExitPointsCLProcessor, "Entry Exit Points");
-ProcessorTags(EntryExitPointsCLProcessor, Tags::CL);
-ProcessorCategory(EntryExitPointsCLProcessor, "Geometry Rendering");
-ProcessorCodeState(EntryExitPointsCLProcessor, CodeState::Stable);
+const ProcessorInfo EntryExitPointsCLProcessor::processorInfo_{
+    "org.inviwo.EntryExitPointsCL",  // Class identifier
+    "Entry Exit Points",             // Display name
+    "Geometry Rendering",            // Category
+    CodeState::Stable,               // Code state
+    Tags::CL,                        // Tags
+};
+const ProcessorInfo EntryExitPointsCLProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     : Processor()
@@ -96,3 +101,4 @@ void EntryExitPointsCLProcessor::process() {
 }
 
 }  // namespace
+

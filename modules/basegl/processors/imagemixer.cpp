@@ -34,11 +34,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ImageMixer, "org.inviwo.ImageMixer");
-ProcessorDisplayName(ImageMixer, "Image Mixer");
-ProcessorTags(ImageMixer, Tags::GL);
-ProcessorCategory(ImageMixer, "Image Operation");
-ProcessorCodeState(ImageMixer, CodeState::Stable);
+const ProcessorInfo ImageMixer::processorInfo_{
+    "org.inviwo.ImageMixer",  // Class identifier
+    "Image Mixer",            // Display name
+    "Image Operation",        // Category
+    CodeState::Stable,        // Code state
+    Tags::GL,                 // Tags
+};
+const ProcessorInfo ImageMixer::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageMixer::ImageMixer()
     : Processor()
@@ -150,3 +155,4 @@ void ImageMixer::initializeResources() {
 }
 
 }  // namespace
+

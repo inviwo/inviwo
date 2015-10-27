@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(DrawPoints, "org.inviwo.DrawPoints");
-ProcessorDisplayName(DrawPoints,  "Draw Points");
-ProcessorTags(DrawPoints, Tags::GL);
-ProcessorCategory(DrawPoints, "Drawing");
-ProcessorCodeState(DrawPoints, CodeState::Stable);
+const ProcessorInfo DrawPoints::processorInfo_{
+    "org.inviwo.DrawPoints",  // Class identifier
+    "Draw Points",            // Display name
+    "Drawing",                // Category
+    CodeState::Stable,        // Code state
+    Tags::GL,                 // Tags
+};
+const ProcessorInfo DrawPoints::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 DrawPoints::DrawPoints()
     : CompositeProcessorGL()
@@ -125,3 +130,4 @@ void DrawPoints::eventEnableDraw(Event* event){
 }
 
 } // inviwo namespace
+

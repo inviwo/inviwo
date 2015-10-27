@@ -34,11 +34,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(TextOverlayGL, "org.inviwo.TextOverlayGL");
-ProcessorDisplayName(TextOverlayGL, "Text Overlay");
-ProcessorTags(TextOverlayGL, Tags::GL);
-ProcessorCategory(TextOverlayGL, "Drawing");
-ProcessorCodeState(TextOverlayGL, CodeState::Stable);
+const ProcessorInfo TextOverlayGL::processorInfo_{
+    "org.inviwo.TextOverlayGL",  // Class identifier
+    "Text Overlay",              // Display name
+    "Drawing",                   // Category
+    CodeState::Stable,           // Code state
+    Tags::GL,                    // Tags
+};
+const ProcessorInfo TextOverlayGL::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 TextOverlayGL::TextOverlayGL()
     : Processor()
@@ -98,3 +103,4 @@ void TextOverlayGL::process() {
 }
 
 }  // namespace
+

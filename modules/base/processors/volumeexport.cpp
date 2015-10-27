@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeExport, "org.inviwo.VolumeExport");
-ProcessorDisplayName(VolumeExport,  "Volume Export");
-ProcessorTags(VolumeExport, Tags::CPU);
-ProcessorCategory(VolumeExport, "Data Output");
-ProcessorCodeState(VolumeExport, CodeState::Stable);
+const ProcessorInfo VolumeExport::processorInfo_{
+    "org.inviwo.VolumeExport",  // Class identifier
+    "Volume Export",            // Display name
+    "Data Output",              // Category
+    CodeState::Stable,          // Code state
+    Tags::CPU,                  // Tags
+};
+const ProcessorInfo VolumeExport::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeExport::VolumeExport()
     : Processor()
@@ -106,3 +111,4 @@ void VolumeExport::exportVolume() {
 void VolumeExport::process() {}
 
 } // namespace
+

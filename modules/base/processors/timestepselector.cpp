@@ -31,11 +31,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(TimeStepSelector, "org.inviwo.TimeStepSelector");
-ProcessorDisplayName(TimeStepSelector, "Time Step Selector");
-ProcessorTags(TimeStepSelector, Tags::CPU);
-ProcessorCategory(TimeStepSelector, "Volume Operation");
-ProcessorCodeState(TimeStepSelector, CodeState::Stable);
+const ProcessorInfo TimeStepSelector::processorInfo_{
+    "org.inviwo.TimeStepSelector",  // Class identifier
+    "Time Step Selector",           // Display name
+    "Volume Operation",             // Category
+    CodeState::Stable,              // Code state
+    Tags::CPU,                      // Tags
+};
+const ProcessorInfo TimeStepSelector::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 TimeStepSelector::TimeStepSelector()
     : Processor()
@@ -65,3 +70,4 @@ void TimeStepSelector::process() {
 }
 
 }  // namespace
+

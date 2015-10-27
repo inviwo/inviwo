@@ -33,11 +33,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(ImageBinary,  "org.inviwo.ImageBinary")
-ProcessorDisplayName(ImageBinary,  "Image Binary")
-ProcessorTags(ImageBinary, Tags::GL);
-ProcessorCategory(ImageBinary, "Image Operation");
-ProcessorCodeState(ImageBinary, CodeState::Experimental);
+const ProcessorInfo ImageBinary::processorInfo_{
+    "org.inviwo.ImageBinary",  // Class identifier
+    "Image Binary",            // Display name
+    "Image Operation",         // Category
+    CodeState::Experimental,   // Code state
+    Tags::GL,                  // Tags
+};
+const ProcessorInfo ImageBinary::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageBinary::ImageBinary()
     : ImageGLProcessor("img_binary.frag")
@@ -50,4 +55,5 @@ void ImageBinary::preProcess() {
 }
 
 } // namespace
+
 

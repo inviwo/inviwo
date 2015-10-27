@@ -35,11 +35,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(PixelToBufferProcessor, "org.inviwo.PixelToBufferProcessor");
-ProcessorDisplayName(PixelToBufferProcessor, "Pixel to buffer");
-ProcessorTags(PixelToBufferProcessor, Tags::CPU);
-ProcessorCategory(PixelToBufferProcessor, "Image Operation");
-ProcessorCodeState(PixelToBufferProcessor, CodeState::Experimental);
+const ProcessorInfo PixelToBufferProcessor::processorInfo_{
+    "org.inviwo.PixelToBufferProcessor",  // Class identifier
+    "Pixel to buffer",                    // Display name
+    "Image Operation",                    // Category
+    CodeState::Experimental,              // Code state
+    Tags::CPU,                            // Tags
+};
+const ProcessorInfo PixelToBufferProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 PixelToBufferProcessor::PixelToBufferProcessor()
     : Processor()
@@ -116,3 +121,4 @@ void PixelToBufferProcessor::invokeEvent(Event* event) {
 }
 
 }  // namespace
+

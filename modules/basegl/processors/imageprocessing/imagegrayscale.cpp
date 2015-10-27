@@ -33,11 +33,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ImageGrayscale, "org.inviwo.ImageGrayscale");
-ProcessorDisplayName(ImageGrayscale, "Image Grayscale");
-ProcessorTags(ImageGrayscale, Tags::GL);
-ProcessorCategory(ImageGrayscale, "Image Operation");
-ProcessorCodeState(ImageGrayscale, CodeState::Stable);
+const ProcessorInfo ImageGrayscale::processorInfo_{
+    "org.inviwo.ImageGrayscale",  // Class identifier
+    "Image Grayscale",            // Display name
+    "Image Operation",            // Category
+    CodeState::Stable,            // Code state
+    Tags::GL,                     // Tags
+};
+const ProcessorInfo ImageGrayscale::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageGrayscale::ImageGrayscale()
     : ImageGLProcessor("img_graysc.frag")
@@ -86,3 +91,4 @@ void ImageGrayscale::preProcess() {
 }
 
 }  // namespace
+

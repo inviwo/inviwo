@@ -45,11 +45,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(Mesh2DRenderProcessorGL, "org.inviwo.Mesh2DRenderProcessorGL");
-ProcessorDisplayName(Mesh2DRenderProcessorGL, "2D Mesh Renderer");
-ProcessorTags(Mesh2DRenderProcessorGL, Tags::GL);
-ProcessorCategory(Mesh2DRenderProcessorGL, "Geometry Rendering");
-ProcessorCodeState(Mesh2DRenderProcessorGL, CodeState::Experimental);
+const ProcessorInfo Mesh2DRenderProcessorGL::processorInfo_{
+    "org.inviwo.Mesh2DRenderProcessorGL",  // Class identifier
+    "2D Mesh Renderer",                    // Display name
+    "Geometry Rendering",                  // Category
+    CodeState::Experimental,               // Code state
+    Tags::GL,                              // Tags
+};
+const ProcessorInfo Mesh2DRenderProcessorGL::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     : Processor()
@@ -119,3 +124,4 @@ void Mesh2DRenderProcessorGL::updateDrawers() {
 }
 
 }  // namespace
+

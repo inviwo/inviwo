@@ -32,11 +32,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(RedGreenProcessor, "org.inviwo.RedGreenProcessor");
-ProcessorDisplayName(RedGreenProcessor, "Red Green Processor");
-ProcessorTags(RedGreenProcessor, Tags::GL);
-ProcessorCategory(RedGreenProcessor, "Various");
-ProcessorCodeState(RedGreenProcessor, CodeState::Stable);
+const ProcessorInfo RedGreenProcessor::processorInfo_{
+    "org.inviwo.RedGreenProcessor",  // Class identifier
+    "Red Green Processor",           // Display name
+    "Various",                       // Category
+    CodeState::Stable,               // Code state
+    Tags::GL,                        // Tags
+};
+const ProcessorInfo RedGreenProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 RedGreenProcessor::RedGreenProcessor()
     : Processor(), outportRed_("outportRed"), outportGreen_("outportGreen") {
@@ -60,3 +65,4 @@ void RedGreenProcessor::process() {
 }
 
 }  // namespace
+

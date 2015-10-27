@@ -69,7 +69,8 @@ namespace inviwo {
 */
 class IVW_MODULE_BASEGL_API DrawLines : public CompositeProcessorGL {
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     DrawLines();
     ~DrawLines();

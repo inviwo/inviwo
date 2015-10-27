@@ -41,11 +41,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(RBFVectorFieldGenerator2D, "org.inviwo.RBFVectorFieldGenerator2D");
-ProcessorDisplayName(RBFVectorFieldGenerator2D, "RBF Based 2D Vector Field Generator");
-ProcessorTags(RBFVectorFieldGenerator2D, Tags::CPU);
-ProcessorCategory(RBFVectorFieldGenerator2D, "Data Creation");
-ProcessorCodeState(RBFVectorFieldGenerator2D, CodeState::Experimental);
+const ProcessorInfo RBFVectorFieldGenerator2D::processorInfo_{
+    "org.inviwo.RBFVectorFieldGenerator2D",  // Class identifier
+    "RBF Based 2D Vector Field Generator",   // Display name
+    "Data Creation",                         // Category
+    CodeState::Experimental,                 // Code state
+    Tags::CPU,                               // Tags
+};
+const ProcessorInfo RBFVectorFieldGenerator2D::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     : Processor()
@@ -149,3 +154,4 @@ dvec2 RBFVectorFieldGenerator2D::randomVector() {
 }
 
 }  // namespace
+

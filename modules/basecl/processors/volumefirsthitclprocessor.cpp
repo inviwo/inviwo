@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeFirstHitCLProcessor, "org.inviwo.VolumeFirstHitCL");
-ProcessorDisplayName(VolumeFirstHitCLProcessor,  "Volume First Hit");
-ProcessorTags(VolumeFirstHitCLProcessor, Tags::CL);
-ProcessorCategory(VolumeFirstHitCLProcessor, "Volume Rendering");
-ProcessorCodeState(VolumeFirstHitCLProcessor, CodeState::Experimental);
+const ProcessorInfo VolumeFirstHitCLProcessor::processorInfo_{
+    "org.inviwo.VolumeFirstHitCL",  // Class identifier
+    "Volume First Hit",             // Display name
+    "Volume Rendering",             // Category
+    CodeState::Experimental,        // Code state
+    Tags::CL,                       // Tags
+};
+const ProcessorInfo VolumeFirstHitCLProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeFirstHitCLProcessor::VolumeFirstHitCLProcessor()
     : Processor()
@@ -159,3 +164,4 @@ void VolumeFirstHitCLProcessor::firstHit(const cl::Image& volumeCL, const cl::Im
 }
 
 }  // namespace
+

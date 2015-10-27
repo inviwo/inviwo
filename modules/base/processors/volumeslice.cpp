@@ -34,11 +34,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeSlice, "org.inviwo.VolumeSlice");
-ProcessorDisplayName(VolumeSlice, "Volume Slice");
-ProcessorTags(VolumeSlice, Tags::CPU);
-ProcessorCategory(VolumeSlice, "Volume Operation");
-ProcessorCodeState(VolumeSlice, CodeState::Stable);
+const ProcessorInfo VolumeSlice::processorInfo_{
+    "org.inviwo.VolumeSlice",  // Class identifier
+    "Volume Slice",            // Display name
+    "Volume Operation",        // Category
+    CodeState::Stable,         // Code state
+    Tags::CPU,                 // Tags
+};
+const ProcessorInfo VolumeSlice::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeSlice::VolumeSlice()
     : Processor()
@@ -155,3 +160,4 @@ void VolumeSlice::eventGestureShiftSlice(Event* event) {
 }
 
 }  // inviwo namespace
+

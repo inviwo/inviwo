@@ -67,7 +67,8 @@ public:
     PixelToBufferProcessor();
     virtual ~PixelToBufferProcessor(){}
     
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
     void setPixelToCollectFrom(const ivec2& xy);
     void clearOutput();
     virtual void invokeEvent(Event* event) override;

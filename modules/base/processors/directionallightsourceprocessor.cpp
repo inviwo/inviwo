@@ -32,11 +32,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(DirectionalLightSourceProcessor, "org.inviwo.Directionallightsource");
-ProcessorDisplayName(DirectionalLightSourceProcessor, "Directional light source");
-ProcessorTags(DirectionalLightSourceProcessor, Tags::CPU);
-ProcessorCategory(DirectionalLightSourceProcessor, "Light source");
-ProcessorCodeState(DirectionalLightSourceProcessor, CodeState::Experimental);
+const ProcessorInfo DirectionalLightSourceProcessor::processorInfo_{
+    "org.inviwo.Directionallightsource",  // Class identifier
+    "Directional light source",           // Display name
+    "Light source",                       // Category
+    CodeState::Experimental,              // Code state
+    Tags::CPU,                            // Tags
+};
+const ProcessorInfo DirectionalLightSourceProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 DirectionalLightSourceProcessor::DirectionalLightSourceProcessor()
     : Processor()
@@ -95,3 +100,4 @@ void DirectionalLightSourceProcessor::updateDirectionalLightSource(DirectionalLi
 }
 
 }  // namespace
+

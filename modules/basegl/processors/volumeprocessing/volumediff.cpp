@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeDiff, "org.inviwo.VolumeDiff");
-ProcessorDisplayName(VolumeDiff, "Volume Difference");
-ProcessorTags(VolumeDiff, Tags::GL);
-ProcessorCategory(VolumeDiff, "Volume Operation");
-ProcessorCodeState(VolumeDiff, CodeState::Experimental);
+const ProcessorInfo VolumeDiff::processorInfo_{
+    "org.inviwo.VolumeDiff",  // Class identifier
+    "Volume Difference",      // Display name
+    "Volume Operation",       // Category
+    CodeState::Experimental,  // Code state
+    Tags::GL,                 // Tags
+};
+const ProcessorInfo VolumeDiff::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("vol2") {
     addPort(vol2_);
@@ -54,3 +59,4 @@ void VolumeDiff::preProcess(TextureUnitContainer &cont) {
 }
 
 }  // namespace
+

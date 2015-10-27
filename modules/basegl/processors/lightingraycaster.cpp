@@ -41,11 +41,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(LightingRaycaster, "org.inviwo.LightingRaycaster");
-ProcessorDisplayName(LightingRaycaster,  "Lighting Raycaster");
-ProcessorTags(LightingRaycaster, Tags::GL);
-ProcessorCategory(LightingRaycaster, "Volume Rendering");
-ProcessorCodeState(LightingRaycaster, CodeState::Experimental);
+const ProcessorInfo LightingRaycaster::processorInfo_{
+    "org.inviwo.LightingRaycaster",  // Class identifier
+    "Lighting Raycaster",            // Display name
+    "Volume Rendering",              // Category
+    CodeState::Experimental,         // Code state
+    Tags::GL,                        // Tags
+};
+const ProcessorInfo LightingRaycaster::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 LightingRaycaster::LightingRaycaster()
     : Processor()
@@ -145,3 +150,4 @@ void LightingRaycaster::deserialize(IvwDeserializer& d) {
 }
 
 } // namespace
+

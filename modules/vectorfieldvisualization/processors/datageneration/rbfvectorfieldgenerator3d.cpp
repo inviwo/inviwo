@@ -40,11 +40,16 @@
 #include <warn/pop>
 
 namespace inviwo {
-ProcessorClassIdentifier(RBFVectorFieldGenerator3D, "org.inviwo.RBFBased3DVectorFieldGenerator");
-ProcessorDisplayName(RBFVectorFieldGenerator3D, "RBF Based 3D Vector Field Generator");
-ProcessorTags(RBFVectorFieldGenerator3D, Tags::CPU);
-ProcessorCategory(RBFVectorFieldGenerator3D, "Data Creation");
-ProcessorCodeState(RBFVectorFieldGenerator3D, CodeState::Experimental);
+const ProcessorInfo RBFVectorFieldGenerator3D::processorInfo_{
+    "org.inviwo.RBFBased3DVectorFieldGenerator",  // Class identifier
+    "RBF Based 3D Vector Field Generator",        // Display name
+    "Data Creation",                              // Category
+    CodeState::Experimental,                      // Code state
+    Tags::CPU,                                    // Tags
+};
+const ProcessorInfo RBFVectorFieldGenerator3D::getProcessorInfo() const {
+    return processorInfo_;
+}
 RBFVectorFieldGenerator3D::RBFVectorFieldGenerator3D()
     : Processor()
     , volume_("volume")
@@ -197,3 +202,4 @@ dvec3 RBFVectorFieldGenerator3D::randomVector() {
 }
 
 }  // namespace
+

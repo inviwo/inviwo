@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-    ProcessorClassIdentifier(VectorFieldGenerator3D, "org.inviwo.VectorFieldGenerator3D");
-    ProcessorDisplayName(VectorFieldGenerator3D, "Vector Field Generator 3D");
-    ProcessorTags(VectorFieldGenerator3D, "GL");
-    ProcessorCategory(VectorFieldGenerator3D, "Data Creation");
-    ProcessorCodeState(VectorFieldGenerator3D, CodeState::Experimental);
+const ProcessorInfo VectorFieldGenerator3D::processorInfo_{
+    "org.inviwo.VectorFieldGenerator3D",  // Class identifier
+    "Vector Field Generator 3D",          // Display name
+    "Data Creation",                      // Category
+    CodeState::Experimental,              // Code state
+    "GL",                                 // Tags
+};
+const ProcessorInfo VectorFieldGenerator3D::getProcessorInfo() const {
+    return processorInfo_;
+}
 
     VectorFieldGenerator3D::VectorFieldGenerator3D()
         : Processor()
@@ -131,4 +136,5 @@ void VectorFieldGenerator3D::process() {
 }
 
 } // namespace
+
 

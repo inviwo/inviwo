@@ -65,7 +65,8 @@ public:
     DirectionalLightSourceProcessor();
     virtual ~DirectionalLightSourceProcessor() = default;
 
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 protected:
     virtual void process() override;

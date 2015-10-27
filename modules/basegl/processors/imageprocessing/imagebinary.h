@@ -62,7 +62,8 @@ namespace inviwo {
  */
 class IVW_MODULE_BASEGL_API ImageBinary : public ImageGLProcessor {
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
     ImageBinary();
     virtual ~ImageBinary() {}
 

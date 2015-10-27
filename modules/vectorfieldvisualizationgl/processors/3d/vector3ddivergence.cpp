@@ -32,11 +32,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(Vector3DDivergence,  "org.inviwo.Vector3DDivergence");
-ProcessorDisplayName(Vector3DDivergence,  "Vector 3D Divergence");
-ProcessorTags(Vector3DDivergence, Tags::GL);
-ProcessorCategory(Vector3DDivergence, "Vector Field Topology");
-ProcessorCodeState(Vector3DDivergence, CodeState::Experimental);
+const ProcessorInfo Vector3DDivergence::processorInfo_{
+    "org.inviwo.Vector3DDivergence",  // Class identifier
+    "Vector 3D Divergence",           // Display name
+    "Vector Field Topology",          // Category
+    CodeState::Experimental,          // Code state
+    Tags::GL,                         // Tags
+};
+const ProcessorInfo Vector3DDivergence::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 Vector3DDivergence::Vector3DDivergence() : VolumeGLProcessor("vector3ddivergence.frag") {
     this->dataFormat_ = DataFLOAT32::get();
@@ -47,4 +52,5 @@ Vector3DDivergence::~Vector3DDivergence() {}
 void Vector3DDivergence::postProcess() { }
 
 } // namespace
+
 

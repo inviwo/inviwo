@@ -35,11 +35,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ImageMapping, "org.inviwo.ImageMapping");
-ProcessorDisplayName(ImageMapping, "Image Mapping");
-ProcessorTags(ImageMapping, Tags::GL);
-ProcessorCategory(ImageMapping, "Image Operation");
-ProcessorCodeState(ImageMapping, CodeState::Stable);
+const ProcessorInfo ImageMapping::processorInfo_{
+    "org.inviwo.ImageMapping",  // Class identifier
+    "Image Mapping",            // Display name
+    "Image Operation",          // Category
+    CodeState::Stable,          // Code state
+    Tags::GL,                   // Tags
+};
+const ProcessorInfo ImageMapping::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageMapping::ImageMapping()
     : ImageGLProcessor("img_mapping.frag")
@@ -59,3 +64,4 @@ void ImageMapping::preProcess() {
 }
 
 }  // namespace
+

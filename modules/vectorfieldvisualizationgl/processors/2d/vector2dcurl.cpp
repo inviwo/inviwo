@@ -36,11 +36,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(Vector2DCurl,  "org.inviwo.Vector2DCurl");
-ProcessorDisplayName(Vector2DCurl,  "Vector 2D Curl");
-ProcessorTags(Vector2DCurl, Tags::GL);
-ProcessorCategory(Vector2DCurl, "Vector Field Topology");
-ProcessorCodeState(Vector2DCurl, CodeState::Experimental);
+const ProcessorInfo Vector2DCurl::processorInfo_{
+    "org.inviwo.Vector2DCurl",  // Class identifier
+    "Vector 2D Curl",           // Display name
+    "Vector Field Topology",    // Category
+    CodeState::Experimental,    // Code state
+    Tags::GL,                   // Tags
+};
+const ProcessorInfo Vector2DCurl::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 Vector2DCurl::Vector2DCurl()
     : Processor()
@@ -68,4 +73,5 @@ void Vector2DCurl::process() {
 }
 
 } // namespace
+
 

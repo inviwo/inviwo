@@ -32,11 +32,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ImageGamma, "org.inviwo.ImageGamma");
-ProcessorDisplayName(ImageGamma, "Image Gamma");
-ProcessorTags(ImageGamma, Tags::GL);
-ProcessorCategory(ImageGamma, "Image Operation");
-ProcessorCodeState(ImageGamma, CodeState::Stable);
+const ProcessorInfo ImageGamma::processorInfo_{
+    "org.inviwo.ImageGamma",  // Class identifier
+    "Image Gamma",            // Display name
+    "Image Operation",        // Category
+    CodeState::Stable,        // Code state
+    Tags::GL,                 // Tags
+};
+const ProcessorInfo ImageGamma::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageGamma::ImageGamma() 
     : ImageGLProcessor("img_gamma.frag")
@@ -52,3 +57,4 @@ void ImageGamma::preProcess() {
 }
 
 }  // namespace
+

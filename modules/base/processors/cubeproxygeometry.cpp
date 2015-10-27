@@ -32,11 +32,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(CubeProxyGeometry, "org.inviwo.CubeProxyGeometry");
-ProcessorDisplayName(CubeProxyGeometry,  "Cube Proxy Geometry");
-ProcessorTags(CubeProxyGeometry, Tags::CPU);
-ProcessorCategory(CubeProxyGeometry, "Geometry Creation");
-ProcessorCodeState(CubeProxyGeometry, CodeState::Stable);
+const ProcessorInfo CubeProxyGeometry::processorInfo_{
+    "org.inviwo.CubeProxyGeometry",  // Class identifier
+    "Cube Proxy Geometry",           // Display name
+    "Geometry Creation",             // Category
+    CodeState::Stable,               // Code state
+    Tags::CPU,                       // Tags
+};
+const ProcessorInfo CubeProxyGeometry::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 CubeProxyGeometry::CubeProxyGeometry()
     : Processor()
@@ -131,3 +136,4 @@ void CubeProxyGeometry::onVolumeChange() {
 }
 
 } // namespace
+

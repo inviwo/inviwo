@@ -32,11 +32,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(ImageLowPass, "org.inviwo.ImageLowPass")
-ProcessorDisplayName(ImageLowPass, "Image Low Pass") 
-ProcessorTags(ImageLowPass, Tags::GL);
-ProcessorCategory(ImageLowPass, "Image Operation");
-ProcessorCodeState(ImageLowPass, CodeState::Experimental);
+const ProcessorInfo ImageLowPass::processorInfo_{
+    "org.inviwo.ImageLowPass",  // Class identifier
+    "Image Low Pass",           // Display name
+    "Image Operation",          // Category
+    CodeState::Experimental,    // Code state
+    Tags::GL,                   // Tags
+};
+const ProcessorInfo ImageLowPass::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageLowPass::ImageLowPass()
     : ImageGLProcessor("img_lowpass.frag")
@@ -47,3 +52,4 @@ ImageLowPass::ImageLowPass()
 void ImageLowPass::preProcess() { shader_.setUniform("kernelSize", kernelSize_.get()); }
 
 }  // namespace
+

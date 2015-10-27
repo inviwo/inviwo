@@ -52,7 +52,8 @@ namespace inviwo {
 
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API RBFVectorFieldGenerator2D : public Processor {
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
     RBFVectorFieldGenerator2D();
     virtual ~RBFVectorFieldGenerator2D();
 

@@ -36,11 +36,16 @@
 #include <inviwo/core/io/serialization/versionconverter.h>
 namespace inviwo {
 
-ProcessorClassIdentifier(ISORaycaster, "org.inviwo.ISORaycaster");
-ProcessorDisplayName(ISORaycaster, "ISO Raycaster");
-ProcessorTags(ISORaycaster, Tags::GL);
-ProcessorCategory(ISORaycaster, "Volume Rendering");
-ProcessorCodeState(ISORaycaster, CodeState::Stable);
+const ProcessorInfo ISORaycaster::processorInfo_{
+    "org.inviwo.ISORaycaster",  // Class identifier
+    "ISO Raycaster",            // Display name
+    "Volume Rendering",         // Category
+    CodeState::Stable,          // Code state
+    Tags::GL,                   // Tags
+};
+const ProcessorInfo ISORaycaster::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ISORaycaster::ISORaycaster()
     : Processor()
@@ -124,3 +129,4 @@ void ISORaycaster::deserialize(IvwDeserializer& d) {
 }
 
 } // namespace
+

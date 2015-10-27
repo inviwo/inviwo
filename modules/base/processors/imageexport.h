@@ -60,7 +60,8 @@ public:
     ImageExport();
     ~ImageExport();
 
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     virtual void initialize() override;
     virtual void deinitialize() override;

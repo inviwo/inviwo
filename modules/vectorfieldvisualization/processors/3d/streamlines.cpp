@@ -12,11 +12,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(StreamLines, "org.inviwo.StreamLines")
-ProcessorDisplayName(StreamLines, "Stream Lines")
-ProcessorTags(StreamLines, Tags::CPU);
-ProcessorCategory(StreamLines, "Vector Field Visualization");
-ProcessorCodeState(StreamLines, CodeState::Experimental);
+const ProcessorInfo StreamLines::processorInfo_{
+    "org.inviwo.StreamLines",      // Class identifier
+    "Stream Lines",                // Display name
+    "Vector Field Visualization",  // Category
+    CodeState::Experimental,       // Code state
+    Tags::CPU,                     // Tags
+};
+const ProcessorInfo StreamLines::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 StreamLines::StreamLines()
     : Processor()
@@ -137,3 +142,4 @@ void StreamLines::process() {
 }
 
 }  // namespace
+

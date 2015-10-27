@@ -114,7 +114,8 @@ public:
     ImageOverlayGL();
     ~ImageOverlayGL();
 
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     const std::vector<ivec4>& getViewCoords() const;
 

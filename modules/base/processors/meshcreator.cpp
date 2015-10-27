@@ -33,11 +33,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(MeshCreator, "org.inviwo.MeshCreator");
-ProcessorDisplayName(MeshCreator, "Mesh Creator");
-ProcessorTags(MeshCreator, Tags::CPU);
-ProcessorCategory(MeshCreator, "Geometry Creation");
-ProcessorCodeState(MeshCreator, CodeState::Stable);
+const ProcessorInfo MeshCreator::processorInfo_{
+    "org.inviwo.MeshCreator",  // Class identifier
+    "Mesh Creator",            // Display name
+    "Geometry Creation",       // Category
+    CodeState::Stable,         // Code state
+    Tags::CPU,                 // Tags
+};
+const ProcessorInfo MeshCreator::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 MeshCreator::MeshCreator()
     : Processor()
@@ -134,3 +139,4 @@ std::shared_ptr<Mesh> MeshCreator::createMesh() {
 void MeshCreator::process() { outport_.setData(createMesh()); }
 
 }  // namespace
+

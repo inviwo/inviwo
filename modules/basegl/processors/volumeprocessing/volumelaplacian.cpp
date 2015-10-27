@@ -33,11 +33,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeLaplacian, "org.inviwo.VolumeLaplacian");
-ProcessorDisplayName(VolumeLaplacian,  "Volume Laplacian");
-ProcessorTags(VolumeLaplacian, Tags::GL);
-ProcessorCategory(VolumeLaplacian, "Volume Operation");
-ProcessorCodeState(VolumeLaplacian, CodeState::Broken);
+const ProcessorInfo VolumeLaplacian::processorInfo_{
+    "org.inviwo.VolumeLaplacian",  // Class identifier
+    "Volume Laplacian",            // Display name
+    "Volume Operation",            // Category
+    CodeState::Broken,             // Code state
+    Tags::GL,                      // Tags
+};
+const ProcessorInfo VolumeLaplacian::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeLaplacian::VolumeLaplacian()
     : inport_("inport")
@@ -56,4 +61,5 @@ void VolumeLaplacian::process() {
 }
 
 } // namespace
+
 

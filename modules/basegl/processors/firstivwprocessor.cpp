@@ -33,11 +33,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(FirstIvwProcessor, "org.inviwo.FirstIVWProcessor");
-ProcessorDisplayName(FirstIvwProcessor,  "First Processor");
-ProcessorTags(FirstIvwProcessor, Tags::GL);
-ProcessorCategory(FirstIvwProcessor, "Various");
-ProcessorCodeState(FirstIvwProcessor, CodeState::Stable);
+const ProcessorInfo FirstIvwProcessor::processorInfo_{
+    "org.inviwo.FirstIVWProcessor",  // Class identifier
+    "First Processor",               // Display name
+    "Various",                       // Category
+    CodeState::Stable,               // Code state
+    Tags::GL,                        // Tags
+};
+const ProcessorInfo FirstIvwProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 
 FirstIvwProcessor::FirstIvwProcessor()
@@ -86,3 +91,4 @@ void FirstIvwProcessor::process() {
 }
 
 } // namespace
+

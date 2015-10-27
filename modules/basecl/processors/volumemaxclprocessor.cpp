@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeMaxCLProcessor, "org.inviwo.VolumeMaxCL");
-ProcessorDisplayName(VolumeMaxCLProcessor, "Volume Max");
-ProcessorTags(VolumeMaxCLProcessor, Tags::CL);
-ProcessorCategory(VolumeMaxCLProcessor, "Volume Operation");
-ProcessorCodeState(VolumeMaxCLProcessor, CodeState::Experimental);
+const ProcessorInfo VolumeMaxCLProcessor::processorInfo_{
+    "org.inviwo.VolumeMaxCL",  // Class identifier
+    "Volume Max",              // Display name
+    "Volume Operation",        // Category
+    CodeState::Experimental,   // Code state
+    Tags::CL,                  // Tags
+};
+const ProcessorInfo VolumeMaxCLProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeMaxCLProcessor::VolumeMaxCLProcessor()
     : Processor()
@@ -188,3 +193,4 @@ void VolumeMaxCLProcessor::buildKernel() {
 }
 
 }  // inviwo namespace
+

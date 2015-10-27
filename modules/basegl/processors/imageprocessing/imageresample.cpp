@@ -32,11 +32,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ImageResample, "org.inviwo.ImageResample");
-ProcessorDisplayName(ImageResample, "Image Resample");
-ProcessorTags(ImageResample, Tags::GL);
-ProcessorCategory(ImageResample, "Image Operation");
-ProcessorCodeState(ImageResample, CodeState::Stable);
+const ProcessorInfo ImageResample::processorInfo_{
+    "org.inviwo.ImageResample",  // Class identifier
+    "Image Resample",            // Display name
+    "Image Operation",           // Category
+    CodeState::Stable,           // Code state
+    Tags::GL,                    // Tags
+};
+const ProcessorInfo ImageResample::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageResample::ImageResample()
     : ImageGLProcessor("img_resample.frag")
@@ -115,3 +120,4 @@ void ImageResample::dimensionSourceChanged() {
 }
 
 }  // namespace
+

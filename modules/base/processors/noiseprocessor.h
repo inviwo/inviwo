@@ -75,7 +75,8 @@ class IVW_MODULE_BASE_API NoiseProcessor : public Processor {
         PoissonDisk 
     };
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
     NoiseProcessor();
     virtual ~NoiseProcessor();
      

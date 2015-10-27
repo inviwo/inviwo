@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(LightVolumeGL, "org.inviwo.LightVolumeGL");
-ProcessorDisplayName(LightVolumeGL,  "Light Volume");
-ProcessorTags(LightVolumeGL, Tags::GL);
-ProcessorCategory(LightVolumeGL, "Illumination");
-ProcessorCodeState(LightVolumeGL, CodeState::Experimental);
+const ProcessorInfo LightVolumeGL::processorInfo_{
+    "org.inviwo.LightVolumeGL",  // Class identifier
+    "Light Volume",              // Display name
+    "Illumination",              // Category
+    CodeState::Experimental,     // Code state
+    Tags::GL,                    // Tags
+};
+const ProcessorInfo LightVolumeGL::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 GLfloat borderColor_[4] = {
     1.f, 1.f, 1.f, 1.f
@@ -473,3 +478,4 @@ void LightVolumeGL::updatePermuationMatrices(const vec3& lightDir, PropagationPa
 
 
 } // namespace
+

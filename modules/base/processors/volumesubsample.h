@@ -61,7 +61,8 @@ namespace inviwo {
  */
 class IVW_MODULE_BASE_API VolumeSubsample : public Processor, public ActivityIndicatorOwner {
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     VolumeSubsample();
     virtual ~VolumeSubsample() = default;

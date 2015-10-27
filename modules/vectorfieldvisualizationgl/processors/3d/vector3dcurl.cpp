@@ -32,11 +32,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(Vector3DCurl,  "org.inviwo.Vector3DCurl");
-ProcessorDisplayName(Vector3DCurl,  "Vector 3D Curl");
-ProcessorTags(Vector3DCurl, Tags::GL);
-ProcessorCategory(Vector3DCurl, "Vector Field Topology");
-ProcessorCodeState(Vector3DCurl, CodeState::Experimental);
+const ProcessorInfo Vector3DCurl::processorInfo_{
+    "org.inviwo.Vector3DCurl",  // Class identifier
+    "Vector 3D Curl",           // Display name
+    "Vector Field Topology",    // Category
+    CodeState::Experimental,    // Code state
+    Tags::GL,                   // Tags
+};
+const ProcessorInfo Vector3DCurl::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 
 Vector3DCurl::Vector3DCurl() : VolumeGLProcessor("vector3dcurl.frag") {
@@ -47,4 +52,5 @@ Vector3DCurl::~Vector3DCurl() {}
 
 void Vector3DCurl::postProcess() {}
 } // namespace
+
 

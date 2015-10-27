@@ -37,11 +37,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(MeshPicking, "org.inviwo.GeometryPicking");
-ProcessorDisplayName(MeshPicking, "Mesh Picking");
-ProcessorTags(MeshPicking, Tags::GL);
-ProcessorCategory(MeshPicking, "Geometry Rendering");
-ProcessorCodeState(MeshPicking, CodeState::Stable);
+const ProcessorInfo MeshPicking::processorInfo_{
+    "org.inviwo.GeometryPicking",  // Class identifier
+    "Mesh Picking",                // Display name
+    "Geometry Rendering",          // Category
+    CodeState::Stable,             // Code state
+    Tags::GL,                      // Tags
+};
+const ProcessorInfo MeshPicking::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 MeshPicking::MeshPicking()
     : CompositeProcessorGL()
@@ -123,3 +128,4 @@ void MeshPicking::process() {
 }
 
 }  // namespace
+

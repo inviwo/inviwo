@@ -64,7 +64,8 @@ class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector3DCurl : public VolumeGLPr
 public:
     Vector3DCurl();
     virtual ~Vector3DCurl();
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 protected:
     virtual void postProcess() override;

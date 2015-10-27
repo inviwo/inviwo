@@ -31,11 +31,16 @@
 #include "volumegradientmagnitude.h"
 
 namespace inviwo {
-ProcessorClassIdentifier(VolumeGradientMagnitude, "org.inviwo.VolumeGradientMagnitude");
-ProcessorDisplayName(VolumeGradientMagnitude, "Volume Gradient Magnitude");
-ProcessorTags(VolumeGradientMagnitude, Tags::GL);
-ProcessorCategory(VolumeGradientMagnitude, "Volume Operation");
-ProcessorCodeState(VolumeGradientMagnitude, CodeState::Stable);
+const ProcessorInfo VolumeGradientMagnitude::processorInfo_{
+    "org.inviwo.VolumeGradientMagnitude",  // Class identifier
+    "Volume Gradient Magnitude",           // Display name
+    "Volume Operation",                    // Category
+    CodeState::Stable,                     // Code state
+    Tags::GL,                              // Tags
+};
+const ProcessorInfo VolumeGradientMagnitude::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeGradientMagnitude::VolumeGradientMagnitude()
     : VolumeGLProcessor("volumegradientmagnitude.frag")
@@ -77,3 +82,4 @@ void VolumeGradientMagnitude::afterInportChanged() {
 }
 
 }  // namespace
+

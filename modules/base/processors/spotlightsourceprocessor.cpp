@@ -33,11 +33,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(SpotLightSourceProcessor, "org.inviwo.Spotlightsource");
-ProcessorDisplayName(SpotLightSourceProcessor,  "Spot light source");
-ProcessorTags(SpotLightSourceProcessor, Tags::CPU);
-ProcessorCategory(SpotLightSourceProcessor, "Light source");
-ProcessorCodeState(SpotLightSourceProcessor, CodeState::Experimental);
+const ProcessorInfo SpotLightSourceProcessor::processorInfo_{
+    "org.inviwo.Spotlightsource",  // Class identifier
+    "Spot light source",           // Display name
+    "Light source",                // Category
+    CodeState::Experimental,       // Code state
+    Tags::CPU,                     // Tags
+};
+const ProcessorInfo SpotLightSourceProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 SpotLightSourceProcessor::SpotLightSourceProcessor()
     : Processor()
@@ -98,3 +103,4 @@ void SpotLightSourceProcessor::updateSpotLightSource(SpotLight* lightSource) {
 }
 
 } // namespace
+

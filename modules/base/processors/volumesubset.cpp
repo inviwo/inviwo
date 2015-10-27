@@ -33,11 +33,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(VolumeSubset, "org.inviwo.VolumeSubset");
-ProcessorDisplayName(VolumeSubset,  "Volume Subset");
-ProcessorTags(VolumeSubset, Tags::CPU);
-ProcessorCategory(VolumeSubset, "Volume Operation");
-ProcessorCodeState(VolumeSubset, CodeState::Stable);
+const ProcessorInfo VolumeSubset::processorInfo_{
+    "org.inviwo.VolumeSubset",  // Class identifier
+    "Volume Subset",            // Display name
+    "Volume Operation",         // Category
+    CodeState::Stable,          // Code state
+    Tags::CPU,                  // Tags
+};
+const ProcessorInfo VolumeSubset::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeSubset::VolumeSubset() : Processor()
       , inport_("volume.inport")
@@ -133,3 +138,4 @@ void VolumeSubset::onVolumeChange() {
 }
 
 } // inviwo namespace
+

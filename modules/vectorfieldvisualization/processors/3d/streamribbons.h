@@ -66,7 +66,8 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamRibbons : public Processor {
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
     StreamRibbons();
     virtual ~StreamRibbons() {}
 

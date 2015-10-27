@@ -64,7 +64,8 @@ public:
     ImageSourceSeries();
     ~ImageSourceSeries() = default;
 
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     virtual void onFindFiles();
 

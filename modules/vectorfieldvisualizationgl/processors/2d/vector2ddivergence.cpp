@@ -36,11 +36,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(Vector2DDivergence,  "org.inviwo.Vector2DDivergence");
-ProcessorDisplayName(Vector2DDivergence,  "Vector 2D Divergence");
-ProcessorTags(Vector2DDivergence, Tags::GL);
-ProcessorCategory(Vector2DDivergence, "Vector Field Topology");
-ProcessorCodeState(Vector2DDivergence, CodeState::Experimental);
+const ProcessorInfo Vector2DDivergence::processorInfo_{
+    "org.inviwo.Vector2DDivergence",  // Class identifier
+    "Vector 2D Divergence",           // Display name
+    "Vector Field Topology",          // Category
+    CodeState::Experimental,          // Code state
+    Tags::GL,                         // Tags
+};
+const ProcessorInfo Vector2DDivergence::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 Vector2DDivergence::Vector2DDivergence()
     : Processor()
@@ -67,4 +72,5 @@ void Vector2DDivergence::process() {
 }
 
 } // namespace
+
 

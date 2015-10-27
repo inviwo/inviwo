@@ -32,11 +32,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(FindEdges, "org.inviwo.FindEdges");
-ProcessorDisplayName(FindEdges, "Image Find Edges");
-ProcessorTags(FindEdges, Tags::GL);
-ProcessorCategory(FindEdges, "Image Operation");
-ProcessorCodeState(FindEdges, CodeState::Experimental);
+const ProcessorInfo FindEdges::processorInfo_{
+    "org.inviwo.FindEdges",   // Class identifier
+    "Image Find Edges",       // Display name
+    "Image Operation",        // Category
+    CodeState::Experimental,  // Code state
+    Tags::GL,                 // Tags
+};
+const ProcessorInfo FindEdges::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 FindEdges::FindEdges()
     : ImageGLProcessor("img_findedges.frag")
@@ -51,3 +56,4 @@ void FindEdges::preProcess() {
 }
 
 }  // namespace
+

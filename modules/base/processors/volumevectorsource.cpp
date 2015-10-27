@@ -35,11 +35,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(VolumeVectorSource, "org.inviwo.VolumeVectorSource");
-ProcessorDisplayName(VolumeVectorSource, "Volume Vector Source");
-ProcessorTags(VolumeVectorSource, Tags::CPU);
-ProcessorCategory(VolumeVectorSource, "Data Input");
-ProcessorCodeState(VolumeVectorSource, CodeState::Stable);
+const ProcessorInfo VolumeVectorSource::processorInfo_{
+    "org.inviwo.VolumeVectorSource",  // Class identifier
+    "Volume Vector Source",           // Display name
+    "Data Input",                     // Category
+    CodeState::Stable,                // Code state
+    Tags::CPU,                        // Tags
+};
+const ProcessorInfo VolumeVectorSource::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 VolumeVectorSource::VolumeVectorSource()
     : Processor()
@@ -116,3 +121,4 @@ void VolumeVectorSource::deserialize(IvwDeserializer& d) {
     load(true);
 }
 }  // namespace
+

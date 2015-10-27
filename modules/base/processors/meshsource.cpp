@@ -31,11 +31,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(MeshSource, "org.inviwo.GeometrySource");
-ProcessorDisplayName(MeshSource,  "Mesh Source");
-ProcessorTags(MeshSource, Tags::CPU);
-ProcessorCategory(MeshSource, "Data Input");
-ProcessorCodeState(MeshSource, CodeState::Stable);
+const ProcessorInfo MeshSource::processorInfo_{
+    "org.inviwo.GeometrySource",  // Class identifier
+    "Mesh Source",                // Display name
+    "Data Input",                 // Category
+    CodeState::Stable,            // Code state
+    Tags::CPU,                    // Tags
+};
+const ProcessorInfo MeshSource::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 MeshSource::MeshSource() : DataSource<Mesh, MeshOutport>() {
     DataSource<Mesh, MeshOutport>::file_.setContentType("geometry");
@@ -46,4 +51,5 @@ MeshSource::~MeshSource() {
 }
 
 } // namespace
+
 

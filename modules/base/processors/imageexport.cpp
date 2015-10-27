@@ -36,11 +36,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ImageExport, "org.inviwo.ImageExport");
-ProcessorDisplayName(ImageExport,  "Image Export");
-ProcessorTags(ImageExport, Tags::CPU);
-ProcessorCategory(ImageExport, "Data Output");
-ProcessorCodeState(ImageExport, CodeState::Stable);
+const ProcessorInfo ImageExport::processorInfo_{
+    "org.inviwo.ImageExport",  // Class identifier
+    "Image Export",            // Display name
+    "Data Output",             // Category
+    CodeState::Stable,         // Code state
+    Tags::CPU,                 // Tags
+};
+const ProcessorInfo ImageExport::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageExport::ImageExport()
     : Processor()
@@ -124,3 +129,4 @@ void ImageExport::processExport(){
 }
 
 }// namespace
+

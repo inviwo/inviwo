@@ -31,11 +31,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(DistanceTransformRAM, "org.inviwo.DistanceTransformRAM");
-ProcessorDisplayName(DistanceTransformRAM, "Distance Transform");
-ProcessorTags(DistanceTransformRAM, Tags::CPU);
-ProcessorCategory(DistanceTransformRAM, "Volume Operation");
-ProcessorCodeState(DistanceTransformRAM, CodeState::Experimental);
+const ProcessorInfo DistanceTransformRAM::processorInfo_{
+    "org.inviwo.DistanceTransformRAM",  // Class identifier
+    "Distance Transform",               // Display name
+    "Volume Operation",                 // Category
+    CodeState::Experimental,            // Code state
+    Tags::CPU,                          // Tags
+};
+const ProcessorInfo DistanceTransformRAM::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 DistanceTransformRAM::DistanceTransformRAM()
     : Processor()
@@ -162,3 +167,4 @@ DataFormatIdMacro(UINT64)
 void DistanceTransformRAM::paramChanged() { distTransformDirty_ = true; }
 
 }  // namespace
+

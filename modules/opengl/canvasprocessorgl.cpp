@@ -33,13 +33,19 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(CanvasProcessorGL, "org.inviwo.CanvasGL");
-ProcessorDisplayName(CanvasProcessorGL,  "Canvas");
-ProcessorTags(CanvasProcessorGL, Tags::GL);
-ProcessorCategory(CanvasProcessorGL, "Data Output");
-ProcessorCodeState(CanvasProcessorGL, CodeState::Stable);
+const ProcessorInfo CanvasProcessorGL::processorInfo_{
+    "org.inviwo.CanvasGL",  // Class identifier
+    "Canvas",               // Display name
+    "Data Output",          // Category
+    CodeState::Stable,      // Code state
+    Tags::GL,               // Tags
+};
+const ProcessorInfo CanvasProcessorGL::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 CanvasProcessorGL::CanvasProcessorGL()
     : CanvasProcessor() {}
 
 } // namespace
+

@@ -30,14 +30,20 @@
 #include "imageinvert.h"
 
 namespace inviwo {
-ProcessorClassIdentifier(ImageInvert, "org.inviwo.ImageInvert");
-ProcessorDisplayName(ImageInvert, "Image Invert");
-ProcessorTags(ImageInvert, Tags::GL);
-ProcessorCategory(ImageInvert, "Image Operation");
-ProcessorCodeState(ImageInvert, CodeState::Stable);
+const ProcessorInfo ImageInvert::processorInfo_{
+    "org.inviwo.ImageInvert",  // Class identifier
+    "Image Invert",            // Display name
+    "Image Operation",         // Category
+    CodeState::Stable,         // Code state
+    Tags::GL,                  // Tags
+};
+const ProcessorInfo ImageInvert::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ImageInvert::ImageInvert() : ImageGLProcessor("img_invert.frag") {}
 
 ImageInvert::~ImageInvert() {}
 
 }  // namespace
+

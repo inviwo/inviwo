@@ -78,7 +78,7 @@ public:
     BasisTransform();
     ~BasisTransform();
 
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
 
 protected:
     virtual void process() override;
@@ -92,11 +92,37 @@ private:
 };
 
 template <typename T>
-const Tags BasisTransform<T>::TAGS = Tags::CPU;
-template <typename T>
-const std::string BasisTransform<T>::CATEGORY = "Coordinate Transforms";
-template <typename T>
-const CodeState BasisTransform<T>::CODE_STATE = CodeState::Experimental;
+const ProcessorInfo inviwo::BasisTransform<T>::getProcessorInfo() const {
+    return ProcessorTraits<BasisTransform<T>>::getProcessorInfo();
+}
+
+class Mesh;
+template <>
+struct ProcessorTraits<BasisTransform<Mesh>> {
+    static ProcessorInfo getProcessorInfo() {
+        return {
+            "org.inviwo.BasisTransformGeometry",  // Class identifier
+            "Basis Transform Mesh",               // Display name
+            "Coordinate Transforms",              // Category
+            CodeState::Experimental,              // Code state
+            Tags::CPU                             // Tags
+        };
+    }
+};
+
+class Volume;
+template <>
+struct ProcessorTraits<BasisTransform<Volume>> {
+    static ProcessorInfo getProcessorInfo() {
+        return {
+            "org.inviwo.BasisTransformVolume",  // Class identifier
+            "Basis Transform Volume",           // Display name
+            "Coordinate Transforms",            // Category
+            CodeState::Experimental,            // Code state
+            Tags::CPU                           // Tags
+        };
+    }
+};
 
 template <typename T>
 inviwo::BasisTransform<T>::BasisTransform()

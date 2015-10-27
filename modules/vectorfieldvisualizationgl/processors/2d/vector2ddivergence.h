@@ -61,7 +61,8 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API Vector2DDivergence : public Processor { 
 public:
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
     Vector2DDivergence();
     virtual ~Vector2DDivergence() = default;
      

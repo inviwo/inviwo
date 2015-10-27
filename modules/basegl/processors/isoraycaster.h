@@ -69,7 +69,8 @@ class IVW_MODULE_BASEGL_API ISORaycaster : public Processor {
 public:
     ISORaycaster();
 
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     virtual void initializeResources() override;
     

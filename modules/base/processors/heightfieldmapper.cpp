@@ -33,11 +33,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(HeightFieldMapper, "org.inviwo.HeightFieldMapper");
-ProcessorDisplayName(HeightFieldMapper, "Height Field Mapper");
-ProcessorTags(HeightFieldMapper, Tags::CPU);
-ProcessorCategory(HeightFieldMapper, "Heightfield");
-ProcessorCodeState(HeightFieldMapper, CodeState::Experimental);
+const ProcessorInfo HeightFieldMapper::processorInfo_{
+    "org.inviwo.HeightFieldMapper",  // Class identifier
+    "Height Field Mapper",           // Display name
+    "Heightfield",                   // Category
+    CodeState::Experimental,         // Code state
+    Tags::CPU,                       // Tags
+};
+const ProcessorInfo HeightFieldMapper::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 HeightFieldMapper::HeightFieldMapper()
     : Processor()
@@ -194,3 +199,4 @@ void HeightFieldMapper::scalingModeChanged() {
 }
 
 }  // namespace
+

@@ -32,11 +32,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(ExampleProgressBar, "org.inviwo.ExampleProgressBar");
-ProcessorDisplayName(ExampleProgressBar, "Example Progress Bar");
-ProcessorTags(ExampleProgressBar, Tags::None);
-ProcessorCategory(ExampleProgressBar, "Various");
-ProcessorCodeState(ExampleProgressBar, CodeState::Experimental);
+const ProcessorInfo ExampleProgressBar::processorInfo_{
+    "org.inviwo.ExampleProgressBar",  // Class identifier
+    "Example Progress Bar",           // Display name
+    "Various",                        // Category
+    CodeState::Experimental,          // Code state
+    Tags::None,                       // Tags
+};
+const ProcessorInfo ExampleProgressBar::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 ExampleProgressBar::ExampleProgressBar()
     : Processor(), inport_("image.inport"), outport_("image.outport") {
@@ -73,3 +78,4 @@ void ExampleProgressBar::process() {
 }
 
 }  // inviwo namespace
+

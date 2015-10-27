@@ -85,7 +85,8 @@ public:
     HeightFieldProcessor();
     ~HeightFieldProcessor();
 
-    InviwoProcessorInfo();
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     virtual bool isReady() const override {
         // only the mesh input port is mandatory

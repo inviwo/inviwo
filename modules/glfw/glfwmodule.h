@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_GLFWMODULE_H
@@ -44,14 +44,14 @@ public:
 protected:
     template <typename T>
     void registerProcessorWidgetAndAssociate(std::unique_ptr<ProcessorWidget> processorWidget) {
-        registerProcessorWidget(T::CLASS_IDENTIFIER, std::move(processorWidget));
+        registerProcessorWidget(ProcessorTraits<T>::getProcessorInfo().classIdentifier,
+                                std::move(processorWidget));
     }
 
 private:
     CanvasGLFW* GLFWSharedCanvas_;
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_GLFWMODULE_H
+#endif  // IVW_GLFWMODULE_H

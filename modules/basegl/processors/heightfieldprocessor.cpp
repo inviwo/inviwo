@@ -35,11 +35,16 @@
 
 namespace inviwo {
 
-ProcessorClassIdentifier(HeightFieldProcessor, "org.inviwo.HeightFieldRenderGL");
-ProcessorDisplayName(HeightFieldProcessor,  "Height Field Renderer");
-ProcessorTags(HeightFieldProcessor, Tags::GL); 
-ProcessorCategory(HeightFieldProcessor, "Heightfield");
-ProcessorCodeState(HeightFieldProcessor, CodeState::Experimental); 
+const ProcessorInfo HeightFieldProcessor::processorInfo_{
+    "org.inviwo.HeightFieldRenderGL",  // Class identifier
+    "Height Field Renderer",           // Display name
+    "Heightfield",                     // Category
+    CodeState::Experimental,           // Code state
+    Tags::GL,                          // Tags
+};
+const ProcessorInfo HeightFieldProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
 HeightFieldProcessor::HeightFieldProcessor()
     : MeshRenderProcessorGL()
@@ -131,3 +136,4 @@ void HeightFieldProcessor::heightfieldChanged() {
 }
 
 } // namespace
+

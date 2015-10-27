@@ -61,12 +61,13 @@ namespace inviwo {
  */
 class <api> <name> : public Processor { 
 public:
-    InviwoProcessorInfo();
     <name>();
     virtual ~<name>() = default;
      
     virtual void process() override;
 
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 private:
     ImageOutport outport_;
     FloatVec3Property position_;
