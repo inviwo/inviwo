@@ -1,8 +1,8 @@
 import fnmatch
 import os
-import fileinput
 import re
 import codecs
+import sys
 
 try:
 	import colorama
@@ -42,15 +42,19 @@ def find_matches(files, expr):
 	matches = []
 	for file in files:
 		match_in_file = False
-		with fileinput.input(file) as f:
-			for (i,line) in enumerate(f):
-				match = r.search(line) 
-				if match:
-					if not match_in_file: 
-						print_warn("Match in: " + file)
-						match_in_file = True
-					matched = colorama.Fore.YELLOW + match.group(0) + colorama.Style.RESET_ALL
-					print("{0:5d} {1:s}".format(i,matched))
+		with codecs.open(file, 'r', encoding="UTF-8") as f:
+			try:
+				for (i,line) in enumerate(f):
+					match = r.search(line) 
+					if match:
+						if not match_in_file: 
+							print_warn("Match in: " + file)
+							match_in_file = True
+						matched = colorama.Fore.YELLOW + match.group(0) + colorama.Style.RESET_ALL
+						print("{0:5d} {1:s}".format(i,matched))
+			except UnicodeDecodeError:
+				sys.exit("Encoding error: " + file)
+
 		if match_in_file:
 			matches.append(file)
 	return matches
@@ -99,7 +103,7 @@ def check_file_type(files, enc):
 			fh.readlines()
 			fh.seek(0)
 		except UnicodeDecodeError:
-			print(f)
+			print_warn("Encoding error: " + f)
 			matches.append(f)
 
 	return matches

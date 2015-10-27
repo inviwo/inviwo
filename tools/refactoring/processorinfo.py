@@ -7,7 +7,7 @@ colorama.init()
 sys.path.append(os.path.abspath(r"C:\Users\petst55\Work\Inviwo\Inviwo-dev\tools"))
 import refactoring
 
-paths = ["inviwo-dev/modules/base"]
+paths = ["C:/Users/petst55/Work/Inviwo/Inviwo-dev", "C:/Users/petst55/Work/Inviwo/Inviwo-research"]
 
 # Step 1:
 # replace:
@@ -18,9 +18,13 @@ paths = ["inviwo-dev/modules/base"]
 
 n = refactoring.find_files(paths, ['*.h'], excludes=["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*"])
 
-print("Selected files:")
-list(map(print, n))
-print("\n")
+err = refactoring.check_file_type(n, "UTF-8")
+if len(err)>0: sys.exit("Encoding errors")
+
+n2 = refactoring.find_files(paths, ['*.cpp'], excludes=["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*"])
+
+err2 = refactoring.check_file_type(n2, "UTF-8")
+if len(err2)>0: sys.exit("Encoding errors")
 
 pattern = r"(\s*)InviwoProcessorInfo\(\);"
 replacement = r"\1virtual const ProcessorInfo getProcessorInfo() const override;\n\1static const ProcessorInfo processorInfo_;"
@@ -63,11 +67,11 @@ def cs(var):
 
 def updatecpp(files):
 	patterns = {
-		"cid"   : r"""[ ]*ProcessorClassIdentifier\((\w+),\s+("[\.\w]+")\);""",
-		"name"  : r"""[ ]*ProcessorDisplayName\((\w+),\s+("[ \.\w]+")\);""",
-		"tags"  : r"""[ ]*ProcessorTags\((\w+),\s+([:\w]+)\);""", 
-		"cat"   : r"""[ ]*ProcessorCategory\((\w+),\s+("[ \.\w]+")\);""",
-		"state" : r"""[ ]*ProcessorCodeState\((\w+),\s+([_\w]+)\);"""
+		"cid"   : r"""[ ]*ProcessorClassIdentifier\((\w+),\s+("[&\.\w]+")\);?""",
+		"name"  : r"""[ ]*ProcessorDisplayName\((\w+),\s+("[& \.\w]+")\);?""",
+		"tags"  : r"""[ ]*ProcessorTags\((\w+),\s+([",/:\w]+)\);?""", 
+		"cat"   : r"""[ ]*ProcessorCategory\((\w+),\s+("[ \.\w]+")\);?""",
+		"state" : r"""[ ]*ProcessorCodeState\((\w+),\s+([_:\w]+)\);?"""
 		}
 
 	rs = {k : re.compile(v, re.MULTILINE) for k,v in patterns.items()}
@@ -118,5 +122,4 @@ const ProcessorInfo {0:s}::getProcessorInfo() const {{
 
 
 print("Updating cppfiles")
-n = refactoring.find_files(paths, ['*.cpp'], excludes=["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*"])
-updatecpp(n)
+updatecpp(n2)
