@@ -45,7 +45,7 @@ ProcessorClassIdentifier(RBFVectorFieldGenerator2D, "org.inviwo.RBFVectorFieldGe
 ProcessorDisplayName(RBFVectorFieldGenerator2D, "RBF Based 2D Vector Field Generator");
 ProcessorTags(RBFVectorFieldGenerator2D, Tags::CPU);
 ProcessorCategory(RBFVectorFieldGenerator2D, "Data Creation");
-ProcessorCodeState(RBFVectorFieldGenerator2D, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(RBFVectorFieldGenerator2D, CodeState::Experimental);
 
 RBFVectorFieldGenerator2D::RBFVectorFieldGenerator2D()
     : Processor()

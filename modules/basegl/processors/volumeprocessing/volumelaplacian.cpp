@@ -37,7 +37,7 @@ ProcessorClassIdentifier(VolumeLaplacian, "org.inviwo.VolumeLaplacian");
 ProcessorDisplayName(VolumeLaplacian,  "Volume Laplacian");
 ProcessorTags(VolumeLaplacian, Tags::GL);
 ProcessorCategory(VolumeLaplacian, "Volume Operation");
-ProcessorCodeState(VolumeLaplacian, CODE_STATE_BROKEN);
+ProcessorCodeState(VolumeLaplacian, CodeState::Broken);
 
 VolumeLaplacian::VolumeLaplacian()
     : inport_("inport")

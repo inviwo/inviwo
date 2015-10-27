@@ -41,7 +41,7 @@ ProcessorClassIdentifier(MeshPicking, "org.inviwo.GeometryPicking");
 ProcessorDisplayName(MeshPicking, "Mesh Picking");
 ProcessorTags(MeshPicking, Tags::GL);
 ProcessorCategory(MeshPicking, "Geometry Rendering");
-ProcessorCodeState(MeshPicking, CODE_STATE_STABLE);
+ProcessorCodeState(MeshPicking, CodeState::Stable);
 
 MeshPicking::MeshPicking()
     : CompositeProcessorGL()

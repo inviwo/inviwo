@@ -43,7 +43,7 @@ ProcessorClassIdentifier(SurfaceExtraction, "org.inviwo.SurfaceExtraction");
 ProcessorDisplayName(SurfaceExtraction, "Surface Extraction");
 ProcessorTags(SurfaceExtraction, Tags::CPU);
 ProcessorCategory(SurfaceExtraction, "Geometry Creation");
-ProcessorCodeState(SurfaceExtraction, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(SurfaceExtraction, CodeState::Experimental);
 
 // TODO make changing color not rerun extraction but only change the color, (and run only
 // extraction when volume change or iso change)

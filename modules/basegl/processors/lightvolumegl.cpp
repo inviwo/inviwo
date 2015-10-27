@@ -41,7 +41,7 @@ ProcessorClassIdentifier(LightVolumeGL, "org.inviwo.LightVolumeGL");
 ProcessorDisplayName(LightVolumeGL,  "Light Volume");
 ProcessorTags(LightVolumeGL, Tags::GL);
 ProcessorCategory(LightVolumeGL, "Illumination");
-ProcessorCodeState(LightVolumeGL, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(LightVolumeGL, CodeState::Experimental);
 
 GLfloat borderColor_[4] = {
     1.f, 1.f, 1.f, 1.f

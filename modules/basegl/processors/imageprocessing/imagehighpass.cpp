@@ -37,7 +37,7 @@ ProcessorClassIdentifier(ImageHighPass,  "org.inviwo.ImageHighPass")
 ProcessorDisplayName(ImageHighPass,  "Image High Pass")
 ProcessorTags(ImageHighPass, Tags::GL);
 ProcessorCategory(ImageHighPass, "Image Operation");
-ProcessorCodeState(ImageHighPass, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ImageHighPass, CodeState::Experimental);
 
 ImageHighPass::ImageHighPass()
     : ImageGLProcessor("img_highpass.frag")

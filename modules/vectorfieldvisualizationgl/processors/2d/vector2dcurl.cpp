@@ -40,7 +40,7 @@ ProcessorClassIdentifier(Vector2DCurl,  "org.inviwo.Vector2DCurl");
 ProcessorDisplayName(Vector2DCurl,  "Vector 2D Curl");
 ProcessorTags(Vector2DCurl, Tags::GL);
 ProcessorCategory(Vector2DCurl, "Vector Field Topology");
-ProcessorCodeState(Vector2DCurl, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(Vector2DCurl, CodeState::Experimental);
 
 Vector2DCurl::Vector2DCurl()
     : Processor()

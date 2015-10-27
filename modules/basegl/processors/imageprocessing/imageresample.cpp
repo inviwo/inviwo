@@ -36,7 +36,7 @@ ProcessorClassIdentifier(ImageResample, "org.inviwo.ImageResample");
 ProcessorDisplayName(ImageResample, "Image Resample");
 ProcessorTags(ImageResample, Tags::GL);
 ProcessorCategory(ImageResample, "Image Operation");
-ProcessorCodeState(ImageResample, CODE_STATE_STABLE);
+ProcessorCodeState(ImageResample, CodeState::Stable);
 
 ImageResample::ImageResample()
     : ImageGLProcessor("img_resample.frag")

@@ -37,7 +37,7 @@ ProcessorClassIdentifier(HeightFieldMapper, "org.inviwo.HeightFieldMapper");
 ProcessorDisplayName(HeightFieldMapper, "Height Field Mapper");
 ProcessorTags(HeightFieldMapper, Tags::CPU);
 ProcessorCategory(HeightFieldMapper, "Heightfield");
-ProcessorCodeState(HeightFieldMapper, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(HeightFieldMapper, CodeState::Experimental);
 
 HeightFieldMapper::HeightFieldMapper()
     : Processor()

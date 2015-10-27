@@ -37,7 +37,7 @@ ProcessorClassIdentifier(SpotLightSourceProcessor, "org.inviwo.Spotlightsource")
 ProcessorDisplayName(SpotLightSourceProcessor,  "Spot light source");
 ProcessorTags(SpotLightSourceProcessor, Tags::CPU);
 ProcessorCategory(SpotLightSourceProcessor, "Light source");
-ProcessorCodeState(SpotLightSourceProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(SpotLightSourceProcessor, CodeState::Experimental);
 
 SpotLightSourceProcessor::SpotLightSourceProcessor()
     : Processor()

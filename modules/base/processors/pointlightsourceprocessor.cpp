@@ -40,7 +40,7 @@ ProcessorClassIdentifier(PointLightSourceProcessor, "org.inviwo.Pointlightsource
 ProcessorDisplayName(PointLightSourceProcessor, "Point light source");
 ProcessorTags(PointLightSourceProcessor, Tags::CPU);
 ProcessorCategory(PointLightSourceProcessor, "Light source");
-ProcessorCodeState(PointLightSourceProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(PointLightSourceProcessor, CodeState::Experimental);
 
 PointLightSourceProcessor::PointLightSourceProcessor()
     : Processor()

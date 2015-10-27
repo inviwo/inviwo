@@ -41,7 +41,7 @@ ProcessorClassIdentifier(VolumeLowPass, "org.inviwo.VolumeLowPass");
 ProcessorDisplayName(VolumeLowPass, "Volume Low Pass");
 ProcessorTags(VolumeLowPass, "GL");
 ProcessorCategory(VolumeLowPass, "Volume Operation");
-ProcessorCodeState(VolumeLowPass, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(VolumeLowPass, CodeState::Experimental);
 
 VolumeLowPass::VolumeLowPass()
     : VolumeGLProcessor("volume_lowpass.frag")

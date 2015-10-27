@@ -41,7 +41,7 @@ ProcessorClassIdentifier(VolumeCombiner, "org.inviwo.VolumeCombiner");
 ProcessorDisplayName(VolumeCombiner, "Volume Combiner");
 ProcessorTags(VolumeCombiner, Tags::GL);
 ProcessorCategory(VolumeCombiner, "Volume Operation");
-ProcessorCodeState(VolumeCombiner, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(VolumeCombiner, CodeState::Experimental);
 
 VolumeCombiner::VolumeCombiner()
     : Processor()

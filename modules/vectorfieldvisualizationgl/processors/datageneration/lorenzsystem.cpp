@@ -40,7 +40,7 @@ namespace inviwo {
 ProcessorClassIdentifier(LorenzSystem, "org.inviwo.LorenzSystem")
     ProcessorDisplayName(LorenzSystem, "Lorenz System") ProcessorTags(LorenzSystem, Tags::GL);
 ProcessorCategory(LorenzSystem, "Data Creation");
-ProcessorCodeState(LorenzSystem, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(LorenzSystem, CodeState::Experimental);
 
 LorenzSystem::LorenzSystem()
     : Processor()

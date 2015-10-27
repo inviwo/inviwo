@@ -44,7 +44,7 @@ ProcessorClassIdentifier(SeedPointGenerator, "org.inviwo.SeedPointGenerator");
 ProcessorDisplayName(SeedPointGenerator, "Seed Point Generator");
 ProcessorTags(SeedPointGenerator, Tags::CPU);
 ProcessorCategory(SeedPointGenerator, "Data Creation");
-ProcessorCodeState(SeedPointGenerator, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(SeedPointGenerator, CodeState::Experimental);
 
 SeedPointGenerator::SeedPointGenerator()
     : Processor()

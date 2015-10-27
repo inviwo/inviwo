@@ -40,7 +40,7 @@ ProcessorClassIdentifier(Vector2DDivergence,  "org.inviwo.Vector2DDivergence");
 ProcessorDisplayName(Vector2DDivergence,  "Vector 2D Divergence");
 ProcessorTags(Vector2DDivergence, Tags::GL);
 ProcessorCategory(Vector2DDivergence, "Vector Field Topology");
-ProcessorCodeState(Vector2DDivergence, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(Vector2DDivergence, CodeState::Experimental);
 
 Vector2DDivergence::Vector2DDivergence()
     : Processor()

@@ -40,7 +40,7 @@ ProcessorClassIdentifier(LIC2D,  "org.inviwo.LIC2D")
 ProcessorDisplayName(LIC2D,  "LIC2D")
 ProcessorTags(LIC2D, Tags::GL);
 ProcessorCategory(LIC2D, "Vector Field Visualization");
-ProcessorCodeState(LIC2D, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(LIC2D, CodeState::Experimental);
 
 LIC2D::LIC2D()
     : Processor() 

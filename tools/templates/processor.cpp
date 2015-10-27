@@ -36,7 +36,7 @@ ProcessorClassIdentifier(<name>,  "org.inviwo.<name>");
 ProcessorDisplayName(<name>,  "<dname>");
 ProcessorTags(<name>, Tags::None);
 ProcessorCategory(<name>, "Undefined");
-ProcessorCodeState(<name>, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(<name>, CodeState::Experimental);
 
 <name>::<name>()
     : Processor()

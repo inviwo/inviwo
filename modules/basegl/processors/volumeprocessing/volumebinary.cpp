@@ -37,7 +37,7 @@ ProcessorClassIdentifier(VolumeBinary,  "org.inviwo.VolumeBinary")
 ProcessorDisplayName(VolumeBinary,  "Volume Binary")
 ProcessorTags(VolumeBinary, Tags::None);
 ProcessorCategory(VolumeBinary, "Volume Operation");
-ProcessorCodeState(VolumeBinary, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(VolumeBinary, CodeState::Experimental);
 
 VolumeBinary::VolumeBinary()
     : VolumeGLProcessor("volume_binary.frag")

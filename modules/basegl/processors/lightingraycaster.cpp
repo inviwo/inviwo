@@ -45,7 +45,7 @@ ProcessorClassIdentifier(LightingRaycaster, "org.inviwo.LightingRaycaster");
 ProcessorDisplayName(LightingRaycaster,  "Lighting Raycaster");
 ProcessorTags(LightingRaycaster, Tags::GL);
 ProcessorCategory(LightingRaycaster, "Volume Rendering");
-ProcessorCodeState(LightingRaycaster, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(LightingRaycaster, CodeState::Experimental);
 
 LightingRaycaster::LightingRaycaster()
     : Processor()

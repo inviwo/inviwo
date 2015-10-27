@@ -38,7 +38,7 @@ ProcessorClassIdentifier(ImageCompositeProcessorGL,  "org.inviwo.ImageCompositeP
 ProcessorDisplayName(ImageCompositeProcessorGL,  "Image Composite")
 ProcessorTags(ImageCompositeProcessorGL, Tags::GL);
 ProcessorCategory(ImageCompositeProcessorGL, "Image Operation");
-ProcessorCodeState(ImageCompositeProcessorGL, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ImageCompositeProcessorGL, CodeState::Experimental);
 
 ImageCompositeProcessorGL::ImageCompositeProcessorGL()
     : CompositeProcessorGL()

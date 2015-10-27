@@ -49,7 +49,7 @@ ProcessorClassIdentifier(Mesh2DRenderProcessorGL, "org.inviwo.Mesh2DRenderProces
 ProcessorDisplayName(Mesh2DRenderProcessorGL, "2D Mesh Renderer");
 ProcessorTags(Mesh2DRenderProcessorGL, Tags::GL);
 ProcessorCategory(Mesh2DRenderProcessorGL, "Geometry Rendering");
-ProcessorCodeState(Mesh2DRenderProcessorGL, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(Mesh2DRenderProcessorGL, CodeState::Experimental);
 
 Mesh2DRenderProcessorGL::Mesh2DRenderProcessorGL()
     : Processor()

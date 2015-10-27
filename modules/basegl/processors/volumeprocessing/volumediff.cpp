@@ -41,7 +41,7 @@ ProcessorClassIdentifier(VolumeDiff, "org.inviwo.VolumeDiff");
 ProcessorDisplayName(VolumeDiff, "Volume Difference");
 ProcessorTags(VolumeDiff, Tags::GL);
 ProcessorCategory(VolumeDiff, "Volume Operation");
-ProcessorCodeState(VolumeDiff, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(VolumeDiff, CodeState::Experimental);
 
 VolumeDiff::VolumeDiff() : VolumeGLProcessor("volume_difference.frag"), vol2_("vol2") {
     addPort(vol2_);

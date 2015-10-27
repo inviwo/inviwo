@@ -36,7 +36,7 @@ ProcessorClassIdentifier(Vector3DCurl,  "org.inviwo.Vector3DCurl");
 ProcessorDisplayName(Vector3DCurl,  "Vector 3D Curl");
 ProcessorTags(Vector3DCurl, Tags::GL);
 ProcessorCategory(Vector3DCurl, "Vector Field Topology");
-ProcessorCodeState(Vector3DCurl, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(Vector3DCurl, CodeState::Experimental);
 
 
 Vector3DCurl::Vector3DCurl() : VolumeGLProcessor("vector3dcurl.frag") {

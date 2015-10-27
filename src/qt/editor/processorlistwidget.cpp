@@ -143,13 +143,13 @@ bool ProcessorTreeWidget::processorFits(ProcessorFactoryObject* processor, const
 
 const QIcon* ProcessorTreeWidget::getCodeStateIcon(CodeState state) const {
     switch (state) {
-        case CODE_STATE_STABLE:
+        case CodeState::Stable:
             return &iconStable_;
 
-        case CODE_STATE_BROKEN:
+        case CodeState::Broken:
             return &iconBroken_;
 
-        case CODE_STATE_EXPERIMENTAL:
+        case CodeState::Experimental:
         default:
             return &iconExperimental_;
     }

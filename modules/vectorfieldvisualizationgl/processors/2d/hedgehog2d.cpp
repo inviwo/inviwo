@@ -36,7 +36,7 @@ ProcessorClassIdentifier(HedgeHog2D, "org.inviwo.HedgeHog2D")
 ProcessorDisplayName(HedgeHog2D, "Hedge Hog 2D") 
 ProcessorTags(HedgeHog2D, Tags::GL);
 ProcessorCategory(HedgeHog2D, "Vector Field Visualization");
-ProcessorCodeState(HedgeHog2D, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(HedgeHog2D, CodeState::Experimental);
 
 HedgeHog2D::HedgeHog2D()
     : Processor()

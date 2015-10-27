@@ -36,7 +36,7 @@ ProcessorClassIdentifier(Vector3DDivergence,  "org.inviwo.Vector3DDivergence");
 ProcessorDisplayName(Vector3DDivergence,  "Vector 3D Divergence");
 ProcessorTags(Vector3DDivergence, Tags::GL);
 ProcessorCategory(Vector3DDivergence, "Vector Field Topology");
-ProcessorCodeState(Vector3DDivergence, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(Vector3DDivergence, CodeState::Experimental);
 
 Vector3DDivergence::Vector3DDivergence() : VolumeGLProcessor("vector3ddivergence.frag") {
     this->dataFormat_ = DataFLOAT32::get();

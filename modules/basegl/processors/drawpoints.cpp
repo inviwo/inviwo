@@ -41,7 +41,7 @@ ProcessorClassIdentifier(DrawPoints, "org.inviwo.DrawPoints");
 ProcessorDisplayName(DrawPoints,  "Draw Points");
 ProcessorTags(DrawPoints, Tags::GL);
 ProcessorCategory(DrawPoints, "Drawing");
-ProcessorCodeState(DrawPoints, CODE_STATE_STABLE);
+ProcessorCodeState(DrawPoints, CodeState::Stable);
 
 DrawPoints::DrawPoints()
     : CompositeProcessorGL()

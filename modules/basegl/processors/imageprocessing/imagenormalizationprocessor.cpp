@@ -38,7 +38,7 @@ ProcessorClassIdentifier(ImageNormalizationProcessor, "org.inviwo.ImageNormaliza
 ProcessorDisplayName(ImageNormalizationProcessor,  "Image Normalization");
 ProcessorTags(ImageNormalizationProcessor, Tags::GL);
 ProcessorCategory(ImageNormalizationProcessor, "Image Operation");
-ProcessorCodeState(ImageNormalizationProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ImageNormalizationProcessor, CodeState::Experimental);
 
 ImageNormalizationProcessor::ImageNormalizationProcessor()
     : ImageGLProcessor("img_normalize.frag")

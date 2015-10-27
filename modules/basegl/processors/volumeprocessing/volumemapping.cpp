@@ -44,7 +44,7 @@ ProcessorClassIdentifier(VolumeMapping, "org.inviwo.VolumeMapping");
 ProcessorDisplayName(VolumeMapping, "Volume Mapping");
 ProcessorTags(VolumeMapping, Tags::GL);
 ProcessorCategory(VolumeMapping, "Volume Operation");
-ProcessorCodeState(VolumeMapping, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(VolumeMapping, CodeState::Experimental);
 
 VolumeMapping::VolumeMapping()
     : VolumeGLProcessor("volume_mapping.frag")

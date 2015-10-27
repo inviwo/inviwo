@@ -42,7 +42,7 @@ ProcessorClassIdentifier(ImageSource, "org.inviwo.ImageSource");
 ProcessorDisplayName(ImageSource, "Image Source");
 ProcessorTags(ImageSource, Tags::CPU);
 ProcessorCategory(ImageSource, "Data Input");
-ProcessorCodeState(ImageSource, CODE_STATE_STABLE);
+ProcessorCodeState(ImageSource, CodeState::Stable);
 
 ImageSource::ImageSource()
     : Processor()

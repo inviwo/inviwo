@@ -42,7 +42,7 @@ ProcessorClassIdentifier(ImageSourceSeries, "org.inviwo.ImageSourceSeries");
 ProcessorDisplayName(ImageSourceSeries, "Image Series Source");
 ProcessorTags(ImageSourceSeries, Tags::CPU);
 ProcessorCategory(ImageSourceSeries, "Data Input");
-ProcessorCodeState(ImageSourceSeries, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ImageSourceSeries, CodeState::Experimental);
 
 ImageSourceSeries::ImageSourceSeries()
     : Processor()

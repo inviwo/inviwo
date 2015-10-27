@@ -40,7 +40,7 @@ ProcessorClassIdentifier(Vector2DMagnitude,  "org.inviwo.Vector2DMagnitude");
 ProcessorDisplayName(Vector2DMagnitude,  "Vector 2D Magnitude");
 ProcessorTags(Vector2DMagnitude, Tags::GL);
 ProcessorCategory(Vector2DMagnitude, "Vector Field Topology");
-ProcessorCodeState(Vector2DMagnitude, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(Vector2DMagnitude, CodeState::Experimental);
 
 Vector2DMagnitude::Vector2DMagnitude()
     : Processor()

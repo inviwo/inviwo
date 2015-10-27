@@ -44,7 +44,7 @@ ProcessorClassIdentifier(VolumeRaycasterCLProcessor, "org.inviwo.VolumeRaycaster
 ProcessorDisplayName(VolumeRaycasterCLProcessor, "Volume Raycaster");
 ProcessorTags(VolumeRaycasterCLProcessor, Tags::CL);
 ProcessorCategory(VolumeRaycasterCLProcessor, "Volume Rendering");
-ProcessorCodeState(VolumeRaycasterCLProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(VolumeRaycasterCLProcessor, CodeState::Experimental);
 
 VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
     : Processor()

@@ -40,7 +40,7 @@ ProcessorClassIdentifier(AxisAlignedCutPlane, "org.inviwo.AxisAlignedCutPlane")
 ProcessorDisplayName(AxisAlignedCutPlane, "Axis Aligned Cut Plane")
 ProcessorTags(AxisAlignedCutPlane, Tags::GL);
 ProcessorCategory(AxisAlignedCutPlane, "Volume Operation");
-ProcessorCodeState(AxisAlignedCutPlane, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(AxisAlignedCutPlane, CodeState::Experimental);
 
 AxisAlignedCutPlane::AxisAlignedCutPlane()
     : Processor()

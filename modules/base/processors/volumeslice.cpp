@@ -38,7 +38,7 @@ ProcessorClassIdentifier(VolumeSlice, "org.inviwo.VolumeSlice");
 ProcessorDisplayName(VolumeSlice, "Volume Slice");
 ProcessorTags(VolumeSlice, Tags::CPU);
 ProcessorCategory(VolumeSlice, "Volume Operation");
-ProcessorCodeState(VolumeSlice, CODE_STATE_STABLE);
+ProcessorCodeState(VolumeSlice, CodeState::Stable);
 
 VolumeSlice::VolumeSlice()
     : Processor()

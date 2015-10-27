@@ -34,7 +34,7 @@ ProcessorClassIdentifier(VectorMagnitudeProcessor, "org.inviwo.VectorMagnitude")
 ProcessorDisplayName(VectorMagnitudeProcessor, "Vector Magnitude");
 ProcessorTags(VectorMagnitudeProcessor, Tags::GL);
 ProcessorCategory(VectorMagnitudeProcessor, "Volume Operation");
-ProcessorCodeState(VectorMagnitudeProcessor, CODE_STATE_STABLE);
+ProcessorCodeState(VectorMagnitudeProcessor, CodeState::Stable);
 
 VectorMagnitudeProcessor::VectorMagnitudeProcessor()
     : VolumeGLProcessor("vectormagnitudeprocessor.frag") {

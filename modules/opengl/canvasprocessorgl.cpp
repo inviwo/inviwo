@@ -37,7 +37,7 @@ ProcessorClassIdentifier(CanvasProcessorGL, "org.inviwo.CanvasGL");
 ProcessorDisplayName(CanvasProcessorGL,  "Canvas");
 ProcessorTags(CanvasProcessorGL, Tags::GL);
 ProcessorCategory(CanvasProcessorGL, "Data Output");
-ProcessorCodeState(CanvasProcessorGL, CODE_STATE_STABLE);
+ProcessorCodeState(CanvasProcessorGL, CodeState::Stable);
 
 CanvasProcessorGL::CanvasProcessorGL()
     : CanvasProcessor() {}

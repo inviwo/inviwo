@@ -36,7 +36,7 @@ ProcessorClassIdentifier(ImageLowPass, "org.inviwo.ImageLowPass")
 ProcessorDisplayName(ImageLowPass, "Image Low Pass") 
 ProcessorTags(ImageLowPass, Tags::GL);
 ProcessorCategory(ImageLowPass, "Image Operation");
-ProcessorCodeState(ImageLowPass, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ImageLowPass, CodeState::Experimental);
 
 ImageLowPass::ImageLowPass()
     : ImageGLProcessor("img_lowpass.frag")

@@ -52,7 +52,7 @@ ProcessorClassIdentifier(NoiseProcessor, "org.inviwo.NoiseProcessor")
 ProcessorDisplayName(NoiseProcessor, "NoiseProcessor")
 ProcessorTags(NoiseProcessor, Tags::CPU);
 ProcessorCategory(NoiseProcessor, "Data Creation");
-ProcessorCodeState(NoiseProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(NoiseProcessor, CodeState::Experimental);
 
 NoiseProcessor::NoiseProcessor()
     : Processor()

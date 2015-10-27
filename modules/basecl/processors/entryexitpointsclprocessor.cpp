@@ -40,7 +40,7 @@ ProcessorClassIdentifier(EntryExitPointsCLProcessor, "org.inviwo.EntryExitPoints
 ProcessorDisplayName(EntryExitPointsCLProcessor, "Entry Exit Points");
 ProcessorTags(EntryExitPointsCLProcessor, Tags::CL);
 ProcessorCategory(EntryExitPointsCLProcessor, "Geometry Rendering");
-ProcessorCodeState(EntryExitPointsCLProcessor, CODE_STATE_STABLE);
+ProcessorCodeState(EntryExitPointsCLProcessor, CodeState::Stable);
 
 EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     : Processor()

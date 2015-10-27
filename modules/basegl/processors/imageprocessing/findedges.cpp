@@ -36,7 +36,7 @@ ProcessorClassIdentifier(FindEdges, "org.inviwo.FindEdges");
 ProcessorDisplayName(FindEdges, "Image Find Edges");
 ProcessorTags(FindEdges, Tags::GL);
 ProcessorCategory(FindEdges, "Image Operation");
-ProcessorCodeState(FindEdges, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(FindEdges, CodeState::Experimental);
 
 FindEdges::FindEdges()
     : ImageGLProcessor("img_findedges.frag")

@@ -35,7 +35,7 @@ ProcessorClassIdentifier(DistanceTransformRAM, "org.inviwo.DistanceTransformRAM"
 ProcessorDisplayName(DistanceTransformRAM, "Distance Transform");
 ProcessorTags(DistanceTransformRAM, Tags::CPU);
 ProcessorCategory(DistanceTransformRAM, "Volume Operation");
-ProcessorCodeState(DistanceTransformRAM, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(DistanceTransformRAM, CodeState::Experimental);
 
 DistanceTransformRAM::DistanceTransformRAM()
     : Processor()

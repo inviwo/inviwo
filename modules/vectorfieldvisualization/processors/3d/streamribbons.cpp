@@ -41,7 +41,7 @@ ProcessorClassIdentifier(StreamRibbons, "org.inviwo.StreamRibbons")
 ProcessorDisplayName(StreamRibbons, "Stream Ribbons") 
 ProcessorTags(StreamRibbons, Tags::CPU);
 ProcessorCategory(StreamRibbons, "Vector Field Visualization");
-ProcessorCodeState(StreamRibbons, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(StreamRibbons, CodeState::Experimental);
 
 StreamRibbons::StreamRibbons()
     : Processor()

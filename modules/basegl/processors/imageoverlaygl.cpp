@@ -41,7 +41,7 @@ ProcessorClassIdentifier(ImageOverlayGL, "org.inviwo.ImageOverlayGL");
 ProcessorDisplayName(ImageOverlayGL, "Image Overlay");
 ProcessorTags(ImageOverlayGL, Tags::GL);
 ProcessorCategory(ImageOverlayGL, "Image Operation");
-ProcessorCodeState(ImageOverlayGL, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ImageOverlayGL, CodeState::Experimental);
 
 OverlayProperty::OverlayProperty(std::string identifier, std::string displayName,
                                  InvalidationLevel invalidationLevel, PropertySemantics semantics)

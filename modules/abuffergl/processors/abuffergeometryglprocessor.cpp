@@ -51,7 +51,7 @@ ProcessorClassIdentifier(ABufferGeometryGLProcessor, "org.inviwo.ABufferGeometry
 ProcessorDisplayName(ABufferGeometryGLProcessor, "ABufferGeometryGLProcessor");
 ProcessorTags(ABufferGeometryGLProcessor, Tags::None);
 ProcessorCategory(ABufferGeometryGLProcessor, "ABufferDemo");
-ProcessorCodeState(ABufferGeometryGLProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ABufferGeometryGLProcessor, CodeState::Experimental);
 
 ABufferGeometryGLProcessor::ABufferGeometryGLProcessor()
     : MeshRenderProcessorGL()

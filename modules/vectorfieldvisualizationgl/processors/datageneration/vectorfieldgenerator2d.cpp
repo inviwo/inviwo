@@ -41,7 +41,7 @@ namespace inviwo {
     ProcessorDisplayName(VectorFieldGenerator2D, "Vector Field Generator 2D");
     ProcessorTags(VectorFieldGenerator2D, "GL");
     ProcessorCategory(VectorFieldGenerator2D, "Data Creation");
-    ProcessorCodeState(VectorFieldGenerator2D, CODE_STATE_EXPERIMENTAL);
+    ProcessorCodeState(VectorFieldGenerator2D, CodeState::Experimental);
 
     VectorFieldGenerator2D::VectorFieldGenerator2D()
         : Processor()

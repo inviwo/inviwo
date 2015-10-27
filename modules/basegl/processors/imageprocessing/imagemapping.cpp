@@ -39,7 +39,7 @@ ProcessorClassIdentifier(ImageMapping, "org.inviwo.ImageMapping");
 ProcessorDisplayName(ImageMapping, "Image Mapping");
 ProcessorTags(ImageMapping, Tags::GL);
 ProcessorCategory(ImageMapping, "Image Operation");
-ProcessorCodeState(ImageMapping, CODE_STATE_STABLE);
+ProcessorCodeState(ImageMapping, CodeState::Stable);
 
 ImageMapping::ImageMapping()
     : ImageGLProcessor("img_mapping.frag")

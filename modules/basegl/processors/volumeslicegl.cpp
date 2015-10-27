@@ -52,7 +52,7 @@ ProcessorClassIdentifier(VolumeSliceGL, "org.inviwo.VolumeSliceGL");
 ProcessorDisplayName(VolumeSliceGL, "Volume Slice");
 ProcessorTags(VolumeSliceGL, Tags::GL);
 ProcessorCategory(VolumeSliceGL, "Volume Operation");
-ProcessorCodeState(VolumeSliceGL, CODE_STATE_STABLE);
+ProcessorCodeState(VolumeSliceGL, CodeState::Stable);
 
 VolumeSliceGL::VolumeSliceGL()
     : Processor()

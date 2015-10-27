@@ -41,7 +41,7 @@ ProcessorClassIdentifier(VolumeMaxCLProcessor, "org.inviwo.VolumeMaxCL");
 ProcessorDisplayName(VolumeMaxCLProcessor, "Volume Max");
 ProcessorTags(VolumeMaxCLProcessor, Tags::CL);
 ProcessorCategory(VolumeMaxCLProcessor, "Volume Operation");
-ProcessorCodeState(VolumeMaxCLProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(VolumeMaxCLProcessor, CodeState::Experimental);
 
 VolumeMaxCLProcessor::VolumeMaxCLProcessor()
     : Processor()

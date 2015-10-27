@@ -44,7 +44,7 @@ ProcessorClassIdentifier(RBFVectorFieldGenerator3D, "org.inviwo.RBFBased3DVector
 ProcessorDisplayName(RBFVectorFieldGenerator3D, "RBF Based 3D Vector Field Generator");
 ProcessorTags(RBFVectorFieldGenerator3D, Tags::CPU);
 ProcessorCategory(RBFVectorFieldGenerator3D, "Data Creation");
-ProcessorCodeState(RBFVectorFieldGenerator3D, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(RBFVectorFieldGenerator3D, CodeState::Experimental);
 RBFVectorFieldGenerator3D::RBFVectorFieldGenerator3D()
     : Processor()
     , volume_("volume")

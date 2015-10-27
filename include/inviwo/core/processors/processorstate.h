@@ -34,10 +34,10 @@
 
 namespace inviwo {
 
-enum IVW_CORE_API CodeState {
-    CODE_STATE_BROKEN,
-    CODE_STATE_EXPERIMENTAL,
-    CODE_STATE_STABLE
+enum class IVW_CORE_API CodeState {
+    Broken,
+    Experimental,
+    Stable
 };
 
 } // namespace

@@ -41,7 +41,7 @@ ProcessorClassIdentifier(ImageLayoutGL, "org.inviwo.ImageLayoutGL");
 ProcessorDisplayName(ImageLayoutGL, "Image Layout");
 ProcessorTags(ImageLayoutGL, Tags::GL);
 ProcessorCategory(ImageLayoutGL, "Image Operation");
-ProcessorCodeState(ImageLayoutGL, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ImageLayoutGL, CodeState::Experimental);
 
 ImageLayoutGL::ImageLayoutGL()
     : Processor()

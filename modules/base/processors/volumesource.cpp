@@ -47,7 +47,7 @@ ProcessorClassIdentifier(VolumeSource, "org.inviwo.VolumeSource");
 ProcessorDisplayName(VolumeSource, "Volume Source");
 ProcessorTags(VolumeSource, Tags::CPU);
 ProcessorCategory(VolumeSource, "Data Input");
-ProcessorCodeState(VolumeSource, CODE_STATE_STABLE);
+ProcessorCodeState(VolumeSource, CodeState::Stable);
 
 VolumeSource::VolumeSource()
     : Processor()

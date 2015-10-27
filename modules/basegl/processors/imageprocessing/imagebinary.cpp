@@ -37,7 +37,7 @@ ProcessorClassIdentifier(ImageBinary,  "org.inviwo.ImageBinary")
 ProcessorDisplayName(ImageBinary,  "Image Binary")
 ProcessorTags(ImageBinary, Tags::GL);
 ProcessorCategory(ImageBinary, "Image Operation");
-ProcessorCodeState(ImageBinary, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ImageBinary, CodeState::Experimental);
 
 ImageBinary::ImageBinary()
     : ImageGLProcessor("img_binary.frag")

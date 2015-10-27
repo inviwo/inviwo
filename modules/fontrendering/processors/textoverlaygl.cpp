@@ -38,7 +38,7 @@ ProcessorClassIdentifier(TextOverlayGL, "org.inviwo.TextOverlayGL");
 ProcessorDisplayName(TextOverlayGL, "Text Overlay");
 ProcessorTags(TextOverlayGL, Tags::GL);
 ProcessorCategory(TextOverlayGL, "Drawing");
-ProcessorCodeState(TextOverlayGL, CODE_STATE_STABLE);
+ProcessorCodeState(TextOverlayGL, CodeState::Stable);
 
 TextOverlayGL::TextOverlayGL()
     : Processor()

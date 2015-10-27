@@ -16,7 +16,7 @@ ProcessorClassIdentifier(StreamLines, "org.inviwo.StreamLines")
 ProcessorDisplayName(StreamLines, "Stream Lines")
 ProcessorTags(StreamLines, Tags::CPU);
 ProcessorCategory(StreamLines, "Vector Field Visualization");
-ProcessorCodeState(StreamLines, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(StreamLines, CodeState::Experimental);
 
 StreamLines::StreamLines()
     : Processor()

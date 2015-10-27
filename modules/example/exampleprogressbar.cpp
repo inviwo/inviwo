@@ -36,7 +36,7 @@ ProcessorClassIdentifier(ExampleProgressBar, "org.inviwo.ExampleProgressBar");
 ProcessorDisplayName(ExampleProgressBar, "Example Progress Bar");
 ProcessorTags(ExampleProgressBar, Tags::None);
 ProcessorCategory(ExampleProgressBar, "Various");
-ProcessorCodeState(ExampleProgressBar, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ExampleProgressBar, CodeState::Experimental);
 
 ExampleProgressBar::ExampleProgressBar()
     : Processor(), inport_("image.inport"), outport_("image.outport") {

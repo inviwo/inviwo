@@ -37,7 +37,7 @@ ProcessorClassIdentifier(MeshCreator, "org.inviwo.MeshCreator");
 ProcessorDisplayName(MeshCreator, "Mesh Creator");
 ProcessorTags(MeshCreator, Tags::CPU);
 ProcessorCategory(MeshCreator, "Geometry Creation");
-ProcessorCodeState(MeshCreator, CODE_STATE_STABLE);
+ProcessorCodeState(MeshCreator, CodeState::Stable);
 
 MeshCreator::MeshCreator()
     : Processor()

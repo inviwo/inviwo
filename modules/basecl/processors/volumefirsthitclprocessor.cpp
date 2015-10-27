@@ -41,7 +41,7 @@ ProcessorClassIdentifier(VolumeFirstHitCLProcessor, "org.inviwo.VolumeFirstHitCL
 ProcessorDisplayName(VolumeFirstHitCLProcessor,  "Volume First Hit");
 ProcessorTags(VolumeFirstHitCLProcessor, Tags::CL);
 ProcessorCategory(VolumeFirstHitCLProcessor, "Volume Rendering");
-ProcessorCodeState(VolumeFirstHitCLProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(VolumeFirstHitCLProcessor, CodeState::Experimental);
 
 VolumeFirstHitCLProcessor::VolumeFirstHitCLProcessor()
     : Processor()

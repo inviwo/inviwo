@@ -37,7 +37,7 @@ ProcessorClassIdentifier(OrdinalPropertyAnimator, "org.inviwo.OrdinalPropertyAni
 ProcessorDisplayName(OrdinalPropertyAnimator,  "Property Animator");
 ProcessorTags(OrdinalPropertyAnimator, Tags::CPU);
 ProcessorCategory(OrdinalPropertyAnimator, "Various");
-ProcessorCodeState(OrdinalPropertyAnimator, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(OrdinalPropertyAnimator, CodeState::Experimental);
 
 
 OrdinalPropertyAnimator::OrdinalPropertyAnimator()

@@ -41,7 +41,7 @@ ProcessorClassIdentifier(MeshClipping, "org.inviwo.MeshClipping");
 ProcessorDisplayName(MeshClipping,  "Mesh Clipping");
 ProcessorTags(MeshClipping, Tags::CPU);
 ProcessorCategory(MeshClipping, "Geometry Creation");
-ProcessorCodeState(MeshClipping, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(MeshClipping, CodeState::Experimental);
 
 const float MeshClipping::EPSILON = 0.00001f;
 

@@ -43,7 +43,7 @@ ProcessorClassIdentifier(MultichannelRaycaster, "org.inviwo.MultichannelRaycaste
 ProcessorDisplayName(MultichannelRaycaster,  "Multichannel Raycaster");
 ProcessorTags(MultichannelRaycaster, Tags::GL);
 ProcessorCategory(MultichannelRaycaster, "Volume Rendering");
-ProcessorCodeState(MultichannelRaycaster, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(MultichannelRaycaster, CodeState::Experimental);
 
 MultichannelRaycaster::MultichannelRaycaster()
     : Processor()

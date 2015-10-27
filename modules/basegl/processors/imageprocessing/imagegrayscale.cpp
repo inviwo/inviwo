@@ -37,7 +37,7 @@ ProcessorClassIdentifier(ImageGrayscale, "org.inviwo.ImageGrayscale");
 ProcessorDisplayName(ImageGrayscale, "Image Grayscale");
 ProcessorTags(ImageGrayscale, Tags::GL);
 ProcessorCategory(ImageGrayscale, "Image Operation");
-ProcessorCodeState(ImageGrayscale, CODE_STATE_STABLE);
+ProcessorCodeState(ImageGrayscale, CodeState::Stable);
 
 ImageGrayscale::ImageGrayscale()
     : ImageGLProcessor("img_graysc.frag")

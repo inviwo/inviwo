@@ -96,7 +96,7 @@ const Tags BasisTransform<T>::TAGS = Tags::CPU;
 template <typename T>
 const std::string BasisTransform<T>::CATEGORY = "Coordinate Transforms";
 template <typename T>
-const CodeState BasisTransform<T>::CODE_STATE = CODE_STATE_EXPERIMENTAL;
+const CodeState BasisTransform<T>::CODE_STATE = CodeState::Experimental;
 
 template <typename T>
 inviwo::BasisTransform<T>::BasisTransform()

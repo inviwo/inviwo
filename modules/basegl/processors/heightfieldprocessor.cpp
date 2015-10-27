@@ -39,7 +39,7 @@ ProcessorClassIdentifier(HeightFieldProcessor, "org.inviwo.HeightFieldRenderGL")
 ProcessorDisplayName(HeightFieldProcessor,  "Height Field Renderer");
 ProcessorTags(HeightFieldProcessor, Tags::GL); 
 ProcessorCategory(HeightFieldProcessor, "Heightfield");
-ProcessorCodeState(HeightFieldProcessor, CODE_STATE_EXPERIMENTAL); 
+ProcessorCodeState(HeightFieldProcessor, CodeState::Experimental); 
 
 HeightFieldProcessor::HeightFieldProcessor()
     : MeshRenderProcessorGL()

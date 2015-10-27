@@ -36,7 +36,7 @@ ProcessorClassIdentifier(ImageGamma, "org.inviwo.ImageGamma");
 ProcessorDisplayName(ImageGamma, "Image Gamma");
 ProcessorTags(ImageGamma, Tags::GL);
 ProcessorCategory(ImageGamma, "Image Operation");
-ProcessorCodeState(ImageGamma, CODE_STATE_STABLE);
+ProcessorCodeState(ImageGamma, CodeState::Stable);
 
 ImageGamma::ImageGamma() 
     : ImageGLProcessor("img_gamma.frag")

@@ -36,7 +36,7 @@ ProcessorClassIdentifier(DirectionalLightSourceProcessor, "org.inviwo.Directiona
 ProcessorDisplayName(DirectionalLightSourceProcessor, "Directional light source");
 ProcessorTags(DirectionalLightSourceProcessor, Tags::CPU);
 ProcessorCategory(DirectionalLightSourceProcessor, "Light source");
-ProcessorCodeState(DirectionalLightSourceProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(DirectionalLightSourceProcessor, CodeState::Experimental);
 
 DirectionalLightSourceProcessor::DirectionalLightSourceProcessor()
     : Processor()

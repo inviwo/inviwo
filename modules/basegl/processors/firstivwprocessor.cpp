@@ -37,7 +37,7 @@ ProcessorClassIdentifier(FirstIvwProcessor, "org.inviwo.FirstIVWProcessor");
 ProcessorDisplayName(FirstIvwProcessor,  "First Processor");
 ProcessorTags(FirstIvwProcessor, Tags::GL);
 ProcessorCategory(FirstIvwProcessor, "Various");
-ProcessorCodeState(FirstIvwProcessor, CODE_STATE_STABLE);
+ProcessorCodeState(FirstIvwProcessor, CodeState::Stable);
 
 
 FirstIvwProcessor::FirstIvwProcessor()

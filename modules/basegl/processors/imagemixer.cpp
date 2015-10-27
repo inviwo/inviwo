@@ -38,7 +38,7 @@ ProcessorClassIdentifier(ImageMixer, "org.inviwo.ImageMixer");
 ProcessorDisplayName(ImageMixer, "Image Mixer");
 ProcessorTags(ImageMixer, Tags::GL);
 ProcessorCategory(ImageMixer, "Image Operation");
-ProcessorCodeState(ImageMixer, CODE_STATE_STABLE);
+ProcessorCodeState(ImageMixer, CodeState::Stable);
 
 ImageMixer::ImageMixer()
     : Processor()

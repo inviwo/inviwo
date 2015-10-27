@@ -36,7 +36,7 @@ ProcessorClassIdentifier(RedGreenProcessor, "org.inviwo.RedGreenProcessor");
 ProcessorDisplayName(RedGreenProcessor, "Red Green Processor");
 ProcessorTags(RedGreenProcessor, Tags::GL);
 ProcessorCategory(RedGreenProcessor, "Various");
-ProcessorCodeState(RedGreenProcessor, CODE_STATE_STABLE);
+ProcessorCodeState(RedGreenProcessor, CodeState::Stable);
 
 RedGreenProcessor::RedGreenProcessor()
     : Processor(), outportRed_("outportRed"), outportGreen_("outportGreen") {

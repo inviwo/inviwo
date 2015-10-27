@@ -47,7 +47,7 @@ ProcessorClassIdentifier(MeshRenderProcessorGL, "org.inviwo.GeometryRenderGL");
 ProcessorDisplayName(MeshRenderProcessorGL, "Mesh Renderer");
 ProcessorTags(MeshRenderProcessorGL, Tags::GL);
 ProcessorCategory(MeshRenderProcessorGL, "Geometry Rendering");
-ProcessorCodeState(MeshRenderProcessorGL, CODE_STATE_STABLE);
+ProcessorCodeState(MeshRenderProcessorGL, CodeState::Stable);
 
 MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()

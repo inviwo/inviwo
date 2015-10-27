@@ -35,7 +35,7 @@ ProcessorClassIdentifier(TimeStepSelector, "org.inviwo.TimeStepSelector");
 ProcessorDisplayName(TimeStepSelector, "Time Step Selector");
 ProcessorTags(TimeStepSelector, Tags::CPU);
 ProcessorCategory(TimeStepSelector, "Volume Operation");
-ProcessorCodeState(TimeStepSelector, CODE_STATE_STABLE);
+ProcessorCodeState(TimeStepSelector, CodeState::Stable);
 
 TimeStepSelector::TimeStepSelector()
     : Processor()

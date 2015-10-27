@@ -291,11 +291,11 @@ void Processor::propagateEvent(Event* event) {
 
 const std::string Processor::getCodeStateString(CodeState state) {
     switch (state) {
-        case CODE_STATE_STABLE:
+        case CodeState::Stable:
             return "Stable";
-        case CODE_STATE_BROKEN:
+        case CodeState::Broken:
             return "Broken";
-        case CODE_STATE_EXPERIMENTAL:
+        case CodeState::Experimental:
             return "Experimental";
         default:
             return "Unknown";

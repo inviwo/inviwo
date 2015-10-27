@@ -37,7 +37,7 @@ ProcessorClassIdentifier(VolumeSubsample, "org.inviwo.VolumeSubsample");
 ProcessorDisplayName(VolumeSubsample, "Volume Subsample");
 ProcessorTags(VolumeSubsample, Tags::CPU);
 ProcessorCategory(VolumeSubsample, "Volume Operation");
-ProcessorCodeState(VolumeSubsample, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(VolumeSubsample, CodeState::Experimental);
 
 VolumeSubsample::VolumeSubsample()
     : Processor()

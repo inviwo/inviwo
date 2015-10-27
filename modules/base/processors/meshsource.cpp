@@ -35,7 +35,7 @@ ProcessorClassIdentifier(MeshSource, "org.inviwo.GeometrySource");
 ProcessorDisplayName(MeshSource,  "Mesh Source");
 ProcessorTags(MeshSource, Tags::CPU);
 ProcessorCategory(MeshSource, "Data Input");
-ProcessorCodeState(MeshSource, CODE_STATE_STABLE);
+ProcessorCodeState(MeshSource, CodeState::Stable);
 
 MeshSource::MeshSource() : DataSource<Mesh, MeshOutport>() {
     DataSource<Mesh, MeshOutport>::file_.setContentType("geometry");

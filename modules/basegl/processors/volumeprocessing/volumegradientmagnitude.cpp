@@ -35,7 +35,7 @@ ProcessorClassIdentifier(VolumeGradientMagnitude, "org.inviwo.VolumeGradientMagn
 ProcessorDisplayName(VolumeGradientMagnitude, "Volume Gradient Magnitude");
 ProcessorTags(VolumeGradientMagnitude, Tags::GL);
 ProcessorCategory(VolumeGradientMagnitude, "Volume Operation");
-ProcessorCodeState(VolumeGradientMagnitude, CODE_STATE_STABLE);
+ProcessorCodeState(VolumeGradientMagnitude, CodeState::Stable);
 
 VolumeGradientMagnitude::VolumeGradientMagnitude()
     : VolumeGLProcessor("volumegradientmagnitude.frag")

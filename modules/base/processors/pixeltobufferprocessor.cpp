@@ -39,7 +39,7 @@ ProcessorClassIdentifier(PixelToBufferProcessor, "org.inviwo.PixelToBufferProces
 ProcessorDisplayName(PixelToBufferProcessor, "Pixel to buffer");
 ProcessorTags(PixelToBufferProcessor, Tags::CPU);
 ProcessorCategory(PixelToBufferProcessor, "Image Operation");
-ProcessorCodeState(PixelToBufferProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(PixelToBufferProcessor, CodeState::Experimental);
 
 PixelToBufferProcessor::PixelToBufferProcessor()
     : Processor()

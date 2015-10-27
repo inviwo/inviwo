@@ -35,7 +35,7 @@ ProcessorClassIdentifier(ExampleProcessor, "org.inviwo.ExampleProcessor");
 ProcessorDisplayName(ExampleProcessor,  "Example Processor");
 ProcessorTags(ExampleProcessor, Tags::None);
 ProcessorCategory(ExampleProcessor, "Geometry Creation");
-ProcessorCodeState(ExampleProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(ExampleProcessor, CodeState::Experimental);
 
 ExampleProcessor::ExampleProcessor()
     : Processor()

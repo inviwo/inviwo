@@ -36,7 +36,7 @@ ProcessorClassIdentifier(DiffuseLightSourceProcessor, "org.inviwo.Diffuselightso
 ProcessorDisplayName(DiffuseLightSourceProcessor, "Diffuse light source");
 ProcessorTags(DiffuseLightSourceProcessor, Tags::CPU);
 ProcessorCategory(DiffuseLightSourceProcessor, "Light source");
-ProcessorCodeState(DiffuseLightSourceProcessor, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(DiffuseLightSourceProcessor, CodeState::Experimental);
 
 DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     : Processor()

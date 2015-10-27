@@ -51,7 +51,7 @@ ProcessorClassIdentifier(TubeRendering,  "org.inviwo.TubeRendering")
 ProcessorDisplayName(TubeRendering,  "Tube Rendering")
 ProcessorTags(TubeRendering, Tags::GL);
 ProcessorCategory(TubeRendering, "Rendering");
-ProcessorCodeState(TubeRendering, CODE_STATE_EXPERIMENTAL);
+ProcessorCodeState(TubeRendering, CodeState::Experimental);
 
 TubeRendering::TubeRendering()
     : Processor()

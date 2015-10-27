@@ -47,7 +47,7 @@ const ProcessorInfo VolumeRaycaster::processorInfo_{
     "org.inviwo.VolumeRaycaster",  // Class identifer
     "Volume Raycaster",            // Display name
     "Volume Rendering",            // Category
-    CODE_STATE_STABLE,             // Code state
+    CodeState::Stable,             // Code state
     Tags::GL                       // Tags
 };
 
