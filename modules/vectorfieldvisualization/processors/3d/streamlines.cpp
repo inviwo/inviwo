@@ -98,13 +98,17 @@ void StreamLines::process() {
             vec4 P = m * vec4(p, 1.0f);
             auto indexBuffer =
                 mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::STRIP_ADJACENCY);
-            auto line = tracer.traceFrom(P.xyz(), numberOfSteps_.get() + 2, stepSize_.get(),
+            auto line = tracer.traceFrom(P.xyz(), numberOfSteps_.get(), stepSize_.get(),
                                          stepDirection_.get(), normalizeSamples_.get());
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();
 
             auto size = line.getPositions().size();
+            if (size == 0) continue;
+
+            indexBuffer->add(0);
+
 
             for (size_t i = 0; i < size; i++) {
                 vec3 pos(*position);
@@ -122,6 +126,7 @@ void StreamLines::process() {
                 position++;
                 velocity++;
             }
+            indexBuffer->add(vertices.size() - 1);
         }
     }
 
