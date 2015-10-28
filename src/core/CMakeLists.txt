@@ -253,6 +253,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tooltiphelper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumevectorsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -453,6 +454,7 @@ set(SOURCE_FILES
     util/tinydirinterface.cpp
     util/tooltiphelper.cpp
     util/utilities.cpp
+    util/volumevectorsampler.cpp
     util/volumesampler.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

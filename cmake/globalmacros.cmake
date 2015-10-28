@@ -599,7 +599,7 @@ endmacro()
 #--------------------------------------------------------------------
 # Set module build option to true
 macro(add_dependency_libs_to_module)
-    list(APPEND _preModuleDependencies ${ARGN})
+    list(APPEND _preModuleDependencies "${ARGN}")
 endmacro()
 
 #--------------------------------------------------------------------
@@ -1016,8 +1016,8 @@ macro(ivw_add_dependency_libraries)
     
       #--------------------------------------------------------------------
       # Link library
-      target_link_libraries(${_projectName} ${package})
     endforeach()
+      target_link_libraries(${_projectName} ${ARGN})
 endmacro()
 
 #--------------------------------------------------------------------
