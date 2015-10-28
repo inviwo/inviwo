@@ -170,6 +170,19 @@ drawModeReplacements = {
     "DrawMode::NUMBER_OF_DRAW_MODES" : "DrawMode::NumberOfDrawModes"    
 }
 
+interactionEventTypeReplacements = {
+    "NONE_SUPPORTED" : "InteractionEventType::NoneSupported",
+    "MOUSE_INTERACTION_EVENT" : "InteractionEventType::MouseInteraction",
+    "TOUCH_INTERACTION_EVENT" : "InteractionEventType::TouchInteraction"
+}
+
+glVendorReplacements = {
+ 	"VENDOR_NVIDIA" : "GlVendor::Nvidia",
+ 	"VENDOR_AMD" : "GlVendor::Amd",
+ 	"VENDOR_INTEL" : "GlVendor::Intel",
+ 	"VENDOR_UNKNOWN" : "GlVendor::Unknown"
+}
+
 # order matters here...
 #for k,v in numericTypeReplacements.items():
 #	replace(k,v)
@@ -186,5 +199,11 @@ drawModeReplacements = {
 #for k,v in usageModeReplacements.items():
 #	replace(r"\b"+k+r"\b", v)
 
-for k,v in drawModeReplacements.items():
+#for k,v in drawModeReplacements.items():
+#	replace(r"\b"+k+r"\b", v)
+
+#for k,v in interactionEventTypeReplacements.items():
+#	replace(r"\b"+k+r"\b", v)
+
+for k,v in glVendorReplacements.items():
 	replace(r"\b"+k+r"\b", v)

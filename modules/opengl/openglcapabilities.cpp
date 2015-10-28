@@ -337,11 +337,11 @@ glm::u64 OpenGLCapabilities::getCurrentAvailableTextureMem() {
     try {
         GLint nCurAvailMemoryInKB[4] = {0};
 
-        if (glVendor_ == VENDOR_NVIDIA) {
+        if (glVendor_ == GlVendor::Nvidia) {
 #ifdef GL_NVX_gpu_memory_info
             glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, nCurAvailMemoryInKB);
 #endif
-        } else if (glVendor_ == VENDOR_AMD) {
+        } else if (glVendor_ == GlVendor::Amd) {
 #ifdef GL_ATI_meminfo
             glGetIntegerv(GL_TEXTURE_FREE_MEMORY_ATI, nCurAvailMemoryInKB);
 #endif
@@ -360,14 +360,14 @@ glm::u64 OpenGLCapabilities::getTotalAvailableTextureMem() {
     glm::u64 totalAvailableTexMemInBytes = 0;
 
     try {
-        if (glVendor_ == VENDOR_NVIDIA) {
+        if (glVendor_ == GlVendor::Nvidia) {
 #ifdef GL_NVX_gpu_memory_info
             GLint nTotalAvailMemoryInKB[4] = {0};
             glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, nTotalAvailMemoryInKB);
             totalAvailableTexMemInBytes =
                 KILOBYTES_TO_BYTES(static_cast<glm::u64>(nTotalAvailMemoryInKB[0]));
 #endif
-        } else if (glVendor_ == VENDOR_AMD) {
+        } else if (glVendor_ == GlVendor::Amd) {
 #if defined(WGL_AMD_gpu_association)
             UINT n = wglGetGPUIDsAMD(0, 0);
             UINT* ids = new UINT[n];
@@ -440,15 +440,15 @@ void OpenGLCapabilities::retrieveStaticInfo() {
         std::string((vendor != nullptr ? reinterpret_cast<const char*>(vendor) : "INVALID"));
 
     if (glVendorStr_.find("NVIDIA") != std::string::npos)
-        glVendor_ = VENDOR_NVIDIA;
+        glVendor_ = GlVendor::Nvidia;
     else if (glVendorStr_.find("AMD") != std::string::npos ||
              glVendorStr_.find("ATI") != std::string::npos)
-        glVendor_ = VENDOR_AMD;
+        glVendor_ = GlVendor::Amd;
     else if (glVendorStr_.find("INTEL") != std::string::npos ||
              glVendorStr_.find("Intel") != std::string::npos)
-        glVendor_ = VENDOR_INTEL;
+        glVendor_ = GlVendor::Intel;
     else
-        glVendor_ = VENDOR_UNKNOWN;
+        glVendor_ = GlVendor::Unknown;
 
     const GLubyte* glrender = glGetString(GL_RENDERER);
     glRenderStr_ =

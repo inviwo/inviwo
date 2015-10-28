@@ -42,10 +42,10 @@ namespace inviwo {
  */
 class IVW_CORE_API PickingObject {
 public:
-    enum InteractionEventType {
-        NONE_SUPPORTED = 0,
-        MOUSE_INTERACTION_EVENT = 1,
-        TOUCH_INTERACTION_EVENT = 2
+    enum class InteractionEventType {
+        NoneSupported = 0,
+        MouseInteraction = 1,
+        TouchInteraction = 2
     };
 
     PickingObject(size_t, DataVec3UInt8::type);

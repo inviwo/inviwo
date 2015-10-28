@@ -32,7 +32,7 @@
 namespace inviwo {
 
 PickingObject::PickingObject(size_t id, DataVec3UInt8::type c) : id_(id), colorUINT8_(c),
-    interactionEventType_(NONE_SUPPORTED), pos_(vec2(0.f)), 
+    interactionEventType_(InteractionEventType::NoneSupported), pos_(vec2(0.f)), 
     depth_(0.f), move_(vec2(0.f)) {
     onPickedCallback_ = new PickingCallback();
     color_ = static_cast<vec3>(DataVec3UInt8::get()->valueToNormalizedVec3Double(&c));
@@ -76,7 +76,7 @@ PickingObject::InteractionEventType PickingObject::getPickingInteractionType() c
 
 void PickingObject::setPickingMouseEvent(MouseEvent e){
     mouseEvent_ = e;
-    interactionEventType_ = MOUSE_INTERACTION_EVENT;
+    interactionEventType_ = InteractionEventType::MouseInteraction;
 }
 
 const MouseEvent& PickingObject::getPickingMouseEvent() const {
@@ -85,7 +85,7 @@ const MouseEvent& PickingObject::getPickingMouseEvent() const {
 
 void PickingObject::setPickingTouchEvent(TouchEvent e){
     touchEvent_ = e;
-    interactionEventType_ = TOUCH_INTERACTION_EVENT;
+    interactionEventType_ = InteractionEventType::TouchInteraction;
 }
 
 const TouchEvent& PickingObject::getPickingTouchEvent() const {
