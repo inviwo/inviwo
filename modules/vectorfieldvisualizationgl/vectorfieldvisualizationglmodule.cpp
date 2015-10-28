@@ -41,6 +41,7 @@
 
 #include <modules/vectorfieldvisualizationgl/processors/3d/vector3dcurl.h>
 #include <modules/vectorfieldvisualizationgl/processors/3d/vector3ddivergence.h>
+#include <modules/vectorfieldvisualizationgl/processors/4d/tmip.h>
 
 namespace inviwo {
 
@@ -64,6 +65,7 @@ VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplica
 
     registerProcessor<Vector3DCurl>();
     registerProcessor<Vector3DDivergence>();
+    registerProcessor<TMIP>();
 }
 
 }  // namespace
