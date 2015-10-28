@@ -183,6 +183,19 @@ glVendorReplacements = {
  	"VENDOR_UNKNOWN" : "GlVendor::Unknown"
 }
 
+
+gLFormatsNormalizationReplacements = {
+    "GLFormats::NONE": "GLFormats::Normalization::None",
+    "GLFormats::NORMALIZED": "GLFormats::Normalization::Normalized",
+    "GLFormats::SIGN_NORMALIZED": "GLFormats::Normalization::SignNormalized"
+};
+
+cLFormatsNormalizationReplacements = {
+    "CLFormats::NONE": "CLFormats::Normalization::None",
+    "CLFormats::NORMALIZED": "CLFormats::Normalization::Normalized",
+    "CLFormats::SIGN_NORMALIZED": "CLFormats::Normalization::SignNormalized"
+};
+
 # order matters here...
 #for k,v in numericTypeReplacements.items():
 #	replace(k,v)
@@ -205,5 +218,11 @@ glVendorReplacements = {
 #for k,v in interactionEventTypeReplacements.items():
 #	replace(r"\b"+k+r"\b", v)
 
-for k,v in glVendorReplacements.items():
+#for k,v in glVendorReplacements.items():
+#	replace(r"\b"+k+r"\b", v)
+
+for k,v in gLFormatsNormalizationReplacements.items():
+	replace(r"\b"+k+r"\b", v)
+
+for k,v in cLFormatsNormalizationReplacements.items():
 	replace(r"\b"+k+r"\b", v)

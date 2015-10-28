@@ -67,19 +67,19 @@ vec2 VolumeCLBase::getVolumeDataOffsetAndScaling(const Volume* volume) const {
                                  (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
     switch (getCLFormats()->getCLFormat(volume->getDataFormat()->getId()).normalization) {
-        case CLFormats::NONE:
+        case CLFormats::Normalization::None:
             scalingFactor = invRange;
             offset = -dataRange.x;
             signedScalingFactor = scalingFactor;
             signedOffset = offset;
             break;
-        case CLFormats::NORMALIZED:
+        case CLFormats::Normalization::Normalized:
             scalingFactor = defaultToDataRange;
             offset = -defaultToDataOffset;
             signedScalingFactor = scalingFactor;
             signedOffset = offset;
             break;
-        case CLFormats::SIGN_NORMALIZED:
+        case CLFormats::Normalization::SignNormalized:
             scalingFactor = 0.5 * defaultToDataRange;
             offset = 1.0 - 2 * defaultToDataOffset;
             signedScalingFactor = defaultToDataRange;
@@ -130,19 +130,19 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
                                  (defaultRange.dataRange.y - defaultRange.dataRange.x);
 
     switch (getCLFormats()->getCLFormat(volume->getDataFormat()->getId()).normalization) {
-        case CLFormats::NONE:
+        case CLFormats::Normalization::None:
             formatScalingFactor = invRange;
             formatOffset = -dataRange.x;
             signedFormatScalingFactor = formatScalingFactor;
             signedFormatOffset = formatOffset;
             break;
-        case CLFormats::NORMALIZED:
+        case CLFormats::Normalization::Normalized:
             formatScalingFactor = defaultToDataRange;
             formatOffset = -defaultToDataOffset;
             signedFormatScalingFactor = formatScalingFactor;
             signedFormatOffset = formatOffset;
             break;
-        case CLFormats::SIGN_NORMALIZED:
+        case CLFormats::Normalization::SignNormalized:
             formatScalingFactor = 0.5 * defaultToDataRange;
             formatOffset = 1.0 - 2 * defaultToDataOffset;
             signedFormatScalingFactor = defaultToDataRange;
