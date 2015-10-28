@@ -12,6 +12,8 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+
 namespace inviwo {
 
 class SimpleMesh;
@@ -50,7 +52,7 @@ public:
 
 protected:
     VolumeInport volume_;
-    DataInport<std::vector<vec3>, 0> seedPoints_;
+    SeedPointsInport seedPoints_;
 
     MeshOutport linesStripsMesh_;
 

@@ -8,6 +8,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/eigen)
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/integralline.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pathlinetracer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ports/seedpointsport.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/pathlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamlines.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamribbons.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator2d.h
@@ -21,6 +25,9 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/integralline.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/integrallinetracer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pathlinetracer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/pathlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamlines.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/3d/streamribbons.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/datageneration/rbfvectorfieldgenerator2d.cpp
