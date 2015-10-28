@@ -64,9 +64,12 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATIONGL_API TMIP : public Processor {
 public:
-    InviwoProcessorInfo();
+
     TMIP();
     virtual ~TMIP() = default;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
     virtual void process() override;
 

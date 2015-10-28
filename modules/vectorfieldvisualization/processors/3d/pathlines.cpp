@@ -32,12 +32,18 @@
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(PathLines,  "org.inviwo.PathLines");
-ProcessorDisplayName(PathLines,  "Path Lines");
-ProcessorTags(PathLines, Tags::None);
-ProcessorCategory(PathLines, "Undefined");
-ProcessorCodeState(PathLines, CODE_STATE_EXPERIMENTAL);
+    const ProcessorInfo PathLines::processorInfo_{
+        "org.inviwo.PathLines",  // Class identifier
+        "Path Lines",            // Display name
+        "Undefined",                // Category
+        CodeState::Experimental,  // Code state
+        Tags::CPU,               // Tags
+    };
+
+    const ProcessorInfo PathLines::getProcessorInfo() const {
+        return processorInfo_;
+    }
+
 
 PathLines::PathLines()
     : Processor()

@@ -37,12 +37,18 @@
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-ProcessorClassIdentifier(TMIP, "org.inviwo.TMIP");
-ProcessorDisplayName(TMIP, "TMIP");
-ProcessorTags(TMIP, Tags::GL);
-ProcessorCategory(TMIP, "Volume Operation");
-ProcessorCodeState(TMIP, CODE_STATE_EXPERIMENTAL);
+    // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+    const ProcessorInfo TMIP::processorInfo_{
+        "org.inviwo.TMIP",  // Class identifier
+        "TMIP",           // Display name
+        "Volume Vector Operation",                  // Category
+        CodeState::Experimental,          // Code state
+        Tags::GL,                        // Tags
+    };
+
+    const ProcessorInfo TMIP::getProcessorInfo() const {
+        return processorInfo_;
+    }
 
 TMIP::TMIP()
     : Processor()

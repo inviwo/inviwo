@@ -50,8 +50,8 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
     registerProcessor<PathLines>();
     registerProcessor<StreamRibbons>();
 
-    registerPort < SeedPointsOutport>("std::vector<vec3>");
-    registerPort < SeedPointsInport>("std::vector<vec3>");
+    registerPort < SeedPointsOutport>("SeedPointsOutport");
+    registerPort < SeedPointsInport>("SeedPointsInport");
 }
 
 

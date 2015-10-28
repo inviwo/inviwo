@@ -68,9 +68,11 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLines : public Processor { 
 public:
-    InviwoProcessorInfo();
     PathLines();
     virtual ~PathLines() = default;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
      
     virtual void process() override;
 
