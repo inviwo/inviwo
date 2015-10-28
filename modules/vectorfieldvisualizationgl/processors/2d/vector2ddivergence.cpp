@@ -50,7 +50,7 @@ const ProcessorInfo Vector2DDivergence::getProcessorInfo() const {
 Vector2DDivergence::Vector2DDivergence()
     : Processor()
     , inport_("inport", true)
-    , outport_("outport", DataVec4FLOAT32::get())
+    , outport_("outport", DataVec4Float32::get())
     , shader_("vector2ddivergence.frag")
 {
 

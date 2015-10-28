@@ -38,10 +38,10 @@ RunningImageMeanAndStandardDeviationCL::RunningImageMeanAndStandardDeviationCL(c
     : pingPongIndex_(0)
     , workGroupSize_(workgroupSize)
     , kernel_(nullptr) {
-    standardDeviation_[0] = Layer(layerDimension, DataVec4FLOAT32::get());
-    standardDeviation_[1] = Layer(layerDimension, DataVec4FLOAT32::get());
-    mean_[0] = Layer(layerDimension, DataVec4FLOAT32::get());
-    mean_[1] = Layer(layerDimension, DataVec4FLOAT32::get());
+    standardDeviation_[0] = Layer(layerDimension, DataVec4Float32::get());
+    standardDeviation_[1] = Layer(layerDimension, DataVec4Float32::get());
+    mean_[0] = Layer(layerDimension, DataVec4Float32::get());
+    mean_[1] = Layer(layerDimension, DataVec4Float32::get());
     kernel_ = addKernel("statistics/runningmeanandstandarddeviationkernel.cl", "runningMeanAndStandardDeviationKernel");
 }
 

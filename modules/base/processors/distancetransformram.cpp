@@ -110,8 +110,8 @@ void DistanceTransformRAM::process() {
         volDim_ = glm::max(srcVolume->getDimensions(), size3_t(1u));
 
         if (!volDist_ || (volDist_->getDimensions() != volDim_) || (volDist_ == srcVolume)) {
-            // Volume* volume = new Volume(volDim_, DataUINT32::get());
-            volDist_ = std::make_shared<Volume>(volDim_, DataUINT16::get());
+            // Volume* volume = new Volume(volDim_, DataUInt32::get());
+            volDist_ = std::make_shared<Volume>(volDim_, DataUInt16::get());
             volDist_->setModelMatrix(srcVolume->getModelMatrix());
             volDist_->setWorldMatrix(srcVolume->getWorldMatrix());
             // pass meta data on
@@ -134,27 +134,27 @@ void DistanceTransformRAM::process() {
 
 void DistanceTransformRAM::updateOutport() {
     VolumeRAM* vol = volDist_->getEditableRepresentation<VolumeRAM>();
-    DataFormatEnums::Id dataFormat = vol->getDataFormat()->getId();
+    DataFormatId dataFormat = vol->getDataFormat()->getId();
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (dataFormat) {
-        case DataFormatEnums::NOT_SPECIALIZED:
+        case DataFormatId::NotSpecialized:
             break;
 //#define DataFormatIdMacro(i) case i: computeDistanceTransform<Data##i::type, Data##i::bits>();
 //break;
 //#include <inviwo/core/util/formatsdefinefunc.h>
-#define DataFormatIdMacro(i) case DataFormatEnums::i: computeDistanceTransform<Data##i::type>(); break;
-DataFormatIdMacro(FLOAT16)
-DataFormatIdMacro(FLOAT32)
-DataFormatIdMacro(FLOAT64)
-DataFormatIdMacro(INT8)
-DataFormatIdMacro(INT16)
-DataFormatIdMacro(INT32)
-DataFormatIdMacro(INT64)
-DataFormatIdMacro(UINT8)
-DataFormatIdMacro(UINT16)
-DataFormatIdMacro(UINT32)
-DataFormatIdMacro(UINT64)
+#define DataFormatIdMacro(i) case DataFormatId::i: computeDistanceTransform<Data##i::type>(); break;
+DataFormatIdMacro(Float16)
+DataFormatIdMacro(Float32)
+DataFormatIdMacro(Float64)
+DataFormatIdMacro(Int8)
+DataFormatIdMacro(Int16)
+DataFormatIdMacro(Int32)
+DataFormatIdMacro(Int64)
+DataFormatIdMacro(UInt8)
+DataFormatIdMacro(UInt16)
+DataFormatIdMacro(UInt32)
+DataFormatIdMacro(UInt64)
 #undef DataFormatIdMacro
 
     default:

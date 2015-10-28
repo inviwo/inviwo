@@ -35,27 +35,27 @@ DataFormatBase* DataFormatBase::instance_[] = {nullptr};
 
 DataFormatBase::DataFormatBase() : formatId_(id()), components_(components()), size_(size()), formatStr_("") {}
 
-DataFormatBase::DataFormatBase(DataFormatEnums::Id t, size_t c, size_t size, double max, double min,
-                               DataFormatEnums::NumericType nt, std::string s)
+DataFormatBase::DataFormatBase(DataFormatId t, size_t c, size_t size, double max, double min,
+                               NumericType nt, std::string s)
     : formatId_(t), components_(c), size_(size), numericType_(nt), max_(max), min_(min), formatStr_(s) {}
 
 DataFormatBase::~DataFormatBase() {}
 
 const DataFormatBase* DataFormatBase::get() {
-    if (!instance_[DataFormatEnums::NOT_SPECIALIZED])
-        instance_[DataFormatEnums::NOT_SPECIALIZED] = new DataFormatBase();
+    if (!instance_[static_cast<size_t>(DataFormatId::NotSpecialized)])
+        instance_[static_cast<size_t>(DataFormatId::NotSpecialized)] = new DataFormatBase();
 
-    return instance_[DataFormatEnums::NOT_SPECIALIZED];
+    return instance_[static_cast<size_t>(DataFormatId::NotSpecialized)];
 }
 
-const DataFormatBase* DataFormatBase::get(DataFormatEnums::Id id) {
-    if (!instance_[id]){
-        if (id == DataFormatEnums::NOT_SPECIALIZED) return DataFormatBase::get();
-#define DataFormatIdMacro(i) else if(id == DataFormatEnums::i) return Data##i::get();
+const DataFormatBase* DataFormatBase::get(DataFormatId id) {
+    if (!instance_[static_cast<size_t>(id)]){
+        if (id == DataFormatId::NotSpecialized) return DataFormatBase::get();
+#define DataFormatIdMacro(i) else if(id == DataFormatId::i) return Data##i::get();
 #include <inviwo/core/util/formatsdefinefunc.h>
     }
 
-    return instance_[id];
+    return instance_[static_cast<size_t>(id)];
 }
 
 const DataFormatBase* DataFormatBase::get(std::string name) {
@@ -63,169 +63,169 @@ const DataFormatBase* DataFormatBase::get(std::string name) {
     if (name == "") return DataFormatBase::get();
 #define DataFormatIdMacro(i) else if(name == toLower(#i)) return Data##i::get();
 #include <inviwo/core/util/formatsdefinefunc.h>
-    else if (name == "uchar") return DataUINT8::get();
-    else if (name == "char") return DataINT8::get();
-    else if (name == "ushort") return DataUINT16::get();
-    else if (name == "short") return DataINT16::get();
-    else if (name == "uint") return DataUINT32::get();
-    else if (name == "int") return DataINT32::get();
-    else if (name == "float") return DataFLOAT32::get();
-    else if (name == "double") return DataFLOAT64::get();
+    else if (name == "uchar") return DataUInt8::get();
+    else if (name == "char") return DataInt8::get();
+    else if (name == "ushort") return DataUInt16::get();
+    else if (name == "short") return DataInt16::get();
+    else if (name == "uint") return DataUInt32::get();
+    else if (name == "int") return DataInt32::get();
+    else if (name == "float") return DataFloat32::get();
+    else if (name == "double") return DataFloat64::get();
     else return DataFormatBase::get();
 }
 
-const DataFormatBase* DataFormatBase::get(DataFormatEnums::NumericType type, size_t components,
+const DataFormatBase* DataFormatBase::get(NumericType type, size_t components,
                                           size_t precision) {
     switch (type) {
-        case DataFormatEnums::FLOAT_TYPE:
+        case NumericType::Float:
             switch (components) {
                 case 1:
                     switch (precision) {
                         case 16:
-                            return DataFLOAT16::get();
+                            return DataFloat16::get();
                         case 32:
-                            return DataFLOAT32::get();
+                            return DataFloat32::get();
                         case 64:
-                            return DataFLOAT64::get();
+                            return DataFloat64::get();
                     }
                     break;
                 case 2:
                     switch (precision) {
                         case 16:
-                            return DataVec2FLOAT16::get();
+                            return DataVec2Float16::get();
                         case 32:
-                            return DataVec2FLOAT32::get();
+                            return DataVec2Float32::get();
                         case 64:
-                            return DataVec2FLOAT64::get();
+                            return DataVec2Float64::get();
                     }
                     break;
                 case 3:
                     switch (precision) {
                         case 16:
-                            return DataVec3FLOAT16::get();
+                            return DataVec3Float16::get();
                         case 32:
-                            return DataVec3FLOAT32::get();
+                            return DataVec3Float32::get();
                         case 64:
-                            return DataVec3FLOAT64::get();
+                            return DataVec3Float64::get();
                     }
                     break;
                 case 4:
                     switch (precision) {
                         case 16:
-                            return DataVec4FLOAT16::get();
+                            return DataVec4Float16::get();
                         case 32:
-                            return DataVec4FLOAT32::get();
+                            return DataVec4Float32::get();
                         case 64:
-                            return DataVec4FLOAT64::get();
+                            return DataVec4Float64::get();
                     }
                     break;
             }
             break;
-        case DataFormatEnums::SIGNED_INTEGER_TYPE:
+        case NumericType::SignedInteger:
             switch (components) {
                 case 1:
                     switch (precision) {
                         case 8:
-                            return DataINT8::get();
+                            return DataInt8::get();
                         case 16:
-                            return DataINT16::get();
+                            return DataInt16::get();
                         case 32:
-                            return DataINT32::get();
+                            return DataInt32::get();
                         case 64:
-                            return DataINT64::get();
+                            return DataInt64::get();
                     }
                     break;
                 case 2:
                     switch (precision) {
                         case 8:
-                            return DataVec2INT8::get();
+                            return DataVec2Int8::get();
                         case 16:
-                            return DataVec2INT16::get();
+                            return DataVec2Int16::get();
                         case 32:
-                            return DataVec2INT32::get();
+                            return DataVec2Int32::get();
                         case 64:
-                            return DataVec2INT64::get();
+                            return DataVec2Int64::get();
                     }
                     break;
                 case 3:
                     switch (precision) {
                         case 8:
-                            return DataVec3INT8::get();
+                            return DataVec3Int8::get();
                         case 16:
-                            return DataVec3INT16::get();
+                            return DataVec3Int16::get();
                         case 32:
-                            return DataVec3INT32::get();
+                            return DataVec3Int32::get();
                         case 64:
-                            return DataVec3INT64::get();
+                            return DataVec3Int64::get();
                     }
                     break;
                 case 4:
                     switch (precision) {
                         case 8:
-                            return DataVec4INT8::get();
+                            return DataVec4Int8::get();
                         case 16:
-                            return DataVec4INT16::get();
+                            return DataVec4Int16::get();
                         case 32:
-                            return DataVec4INT32::get();
+                            return DataVec4Int32::get();
                         case 64:
-                            return DataVec4INT64::get();
+                            return DataVec4Int64::get();
                     }
                     break;
             }
             break;
-        case DataFormatEnums::UNSIGNED_INTEGER_TYPE:
+        case NumericType::UnsignedInteger:
             switch (components) {
                 case 1:
                     switch (precision) {
                         case 8:
-                            return DataUINT8::get();
+                            return DataUInt8::get();
                         case 16:
-                            return DataUINT16::get();
+                            return DataUInt16::get();
                         case 32:
-                            return DataUINT32::get();
+                            return DataUInt32::get();
                         case 64:
-                            return DataUINT64::get();
+                            return DataUInt64::get();
                     }
                     break;
                 case 2:
                     switch (precision) {
                         case 8:
-                            return DataVec2UINT8::get();
+                            return DataVec2UInt8::get();
                         case 16:
-                            return DataVec2UINT16::get();
+                            return DataVec2UInt16::get();
                         case 32:
-                            return DataVec2UINT32::get();
+                            return DataVec2UInt32::get();
                         case 64:
-                            return DataVec2UINT64::get();
+                            return DataVec2UInt64::get();
                     }
                     break;
                 case 3:
                     switch (precision) {
                         case 8:
-                            return DataVec3UINT8::get();
+                            return DataVec3UInt8::get();
                         case 16:
-                            return DataVec3UINT16::get();
+                            return DataVec3UInt16::get();
                         case 32:
-                            return DataVec3UINT32::get();
+                            return DataVec3UInt32::get();
                         case 64:
-                            return DataVec3UINT64::get();
+                            return DataVec3UInt64::get();
                     }
                     break;
                 case 4:
                     switch (precision) {
                         case 8:
-                            return DataVec4UINT8::get();
+                            return DataVec4UInt8::get();
                         case 16:
-                            return DataVec4UINT16::get();
+                            return DataVec4UInt16::get();
                         case 32:
-                            return DataVec4UINT32::get();
+                            return DataVec4UInt32::get();
                         case 64:
-                            return DataVec4UINT64::get();
+                            return DataVec4UInt64::get();
                     }
                     break;
             }
             break;
-        case DataFormatEnums::NOT_SPECIALIZED_TYPE:
+        case NumericType::NotSpecialized:
         default:
             break;
     }
@@ -293,7 +293,7 @@ size_t DataFormatBase::getSize() const {
     return size_;
 }
 
-DataFormatEnums::NumericType DataFormatBase::getNumericType() const {
+NumericType DataFormatBase::getNumericType() const {
     return numericType_;
 }
 
@@ -313,7 +313,7 @@ const char* DataFormatBase::getString() const {
     return formatStr_.c_str();
 }
 
-DataFormatEnums::Id DataFormatBase::getId() const {
+DataFormatId DataFormatBase::getId() const {
     return formatId_;
 }
 

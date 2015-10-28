@@ -156,7 +156,7 @@ void RBFVectorFieldGenerator3D::process() {
                                      << (testZ ? "1" : "0"));
     }
 
-    auto volume = std::make_shared<Volume>(size_.get(), DataVec4FLOAT32::get());
+    auto volume = std::make_shared<Volume>(size_.get(), DataVec4Float32::get());
     volume->dataMap_.dataRange = vec2(0, 1);
     volume->dataMap_.valueRange = vec2(-1, 1);
     volume->setBasis(basis);

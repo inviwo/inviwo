@@ -40,9 +40,9 @@ namespace inviwo {
 class IVW_CORE_API VolumeDisk : public VolumeRepresentation, public DiskRepresentation {
 public:
     VolumeDisk(size3_t dimensions = size3_t(128, 128, 128),
-               const DataFormatBase* format = DataUINT8::get());
+               const DataFormatBase* format = DataUInt8::get());
     VolumeDisk(std::string url, size3_t dimensions = size3_t(128, 128, 128),
-               const DataFormatBase* format = DataUINT8::get());
+               const DataFormatBase* format = DataUInt8::get());
     VolumeDisk(const VolumeDisk& rhs);
     VolumeDisk& operator=(const VolumeDisk& that);
     virtual VolumeDisk* clone() const override;

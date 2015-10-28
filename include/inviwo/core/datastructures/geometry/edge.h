@@ -63,9 +63,9 @@ public:
     EdgeDataFormat(T in1, T in2) : Edge<T>(in1, in2){};
 };
 
-typedef EdgeDataFormat<DataUINT32::type> EdgeIndex;
-typedef EdgeDataFormat<DataVec2FLOAT32::type> Edge2D;
-typedef EdgeDataFormat<DataVec3FLOAT32::type> Edge3D;
+typedef EdgeDataFormat<DataUInt32::type> EdgeIndex;
+typedef EdgeDataFormat<DataVec2Float32::type> Edge2D;
+typedef EdgeDataFormat<DataVec3Float32::type> Edge3D;
 
 }  // namespace
 

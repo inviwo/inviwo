@@ -51,7 +51,7 @@ const ProcessorInfo ImageSource::getProcessorInfo() const {
 
 ImageSource::ImageSource()
     : Processor()
-    , outport_("image.outport", DataVec4UINT8::get(), false)
+    , outport_("image.outport", DataVec4UInt8::get(), false)
     , file_("imageFileName", "File name", "", "image")
     , imageDimension_("imageDimension_", "Dimension", ivec2(0), ivec2(0), ivec2(10000), ivec2(1),
                       VALID, PropertySemantics("Text"))

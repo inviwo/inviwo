@@ -43,7 +43,7 @@ TransferFunction::TransferFunction(int textureSize)
     , interpolationType_(InterpolationLinear)
     , textureSize_(textureSize)
     , invalidData_(true)
-    , data_(new Layer(uvec2(textureSize, 1), DataVec4FLOAT32::get())) {
+    , data_(new Layer(uvec2(textureSize, 1), DataVec4Float32::get())) {
 
     // initialize with standard ramp
     addPoint(vec2(0.0f,0.0f), vec4(0.0f,0.0f,0.0f,0.0f));

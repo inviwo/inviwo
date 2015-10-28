@@ -89,9 +89,9 @@ void VolumeMaxCLProcessor::process() {
     // const DataFormatBase* volFormat = inport_.getData()->getDataFormat(); // Not used
 
     if (!volumeOut_ || volumeOut_->getDimensions() != outDim) {
-        volumeOut_ = std::make_shared<Volume>(outDim, DataUINT8::get());
-        // volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataUINT32::get()) );
-        // volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataFLOAT32::get()) );
+        volumeOut_ = std::make_shared<Volume>(outDim, DataUInt8::get());
+        // volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataUInt32::get()) );
+        // volumeOut_ = std::unique_ptr<Volume>( new Volume(outDim, DataFloat32::get()) );
         // Use same transformation to make sure that they are render at the same location
         volumeOut_->setModelMatrix(volume->getModelMatrix());
         volumeOut_->setWorldMatrix(volume->getWorldMatrix());

@@ -351,14 +351,14 @@ bool LightVolumeGL::volumeChanged(bool lightColorChanged) {
 
         if (supportColoredLight_.get()) {
             if (floatPrecision_.get())
-                format = DataVec4FLOAT32::get();
+                format = DataVec4Float32::get();
             else
-                format = DataVec4UINT8::get();
+                format = DataVec4UInt8::get();
         } else {
             if (floatPrecision_.get())
-                format = DataFLOAT32::get();
+                format = DataFloat32::get();
             else
-                format = DataUINT8::get();
+                format = DataUInt8::get();
         }
 
         for (auto& elem : propParams_) {

@@ -46,13 +46,13 @@ public:
     * Loads layer data from a specified filePath.
     **/
     static void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
-        DataFormatEnums::Id& formatId, bool rescaleToDim = false);
+        DataFormatId& formatId, bool rescaleToDim = false);
 
     /**
     * Loads volume data from a specified filePath.
     **/
     static void* loadVolumeData(void* dst, const std::string& filePath, size3_t& out_dim,
-        DataFormatEnums::Id& formatId);
+        DataFormatId& formatId);
    
     /**
     * Saves an layer of an image to a specified filename.

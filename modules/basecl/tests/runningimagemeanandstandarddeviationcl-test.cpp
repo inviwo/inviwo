@@ -52,7 +52,7 @@ namespace inviwo {
 
     void meanAndStd(const int size, vec4& mean, vec4& std, vec4& cl_mean, vec4& cl_std)
     {
-        Layer* layer_sample = new Layer(uvec2(1), DataVec4FLOAT32::get());
+        Layer* layer_sample = new Layer(uvec2(1), DataVec4Float32::get());
         Layer* layer_mean;
         Layer* layer_std;
 

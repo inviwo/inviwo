@@ -76,7 +76,7 @@ struct SinglePropertySetting {
             return locale.toDouble(
                 additionalFields_[i]->text().remove(QChar(' ')).remove(locale.groupSeparator()));
         }
-        return DataFLOAT64::minToDouble();
+        return DataFloat64::minToDouble();
     }
 };
 

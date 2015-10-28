@@ -55,8 +55,8 @@ const ProcessorInfo EntryExitPoints::getProcessorInfo() const {
 EntryExitPoints::EntryExitPoints()
     : Processor()
     , inport_("geometry")
-    , entryPort_("entry", DataVec4UINT16::get())
-    , exitPort_("exit", DataVec4UINT16::get())
+    , entryPort_("entry", DataVec4UInt16::get())
+    , exitPort_("exit", DataVec4UInt16::get())
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f), &inport_)
     , capNearClipping_("capNearClipping", "Cap near plane clipping", true)

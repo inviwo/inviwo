@@ -80,7 +80,7 @@ std::shared_ptr<DataRepresentation> CImgVolumeRAMLoader::createRepresentation() 
     void* data = nullptr;
 
     size3_t dimensions = volumeDisk_->getDimensions();
-    DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
+    DataFormatId formatId = DataFormatId::NotSpecialized;
 
     std::string filePath = volumeDisk_->getSourceFile();
 
@@ -104,7 +104,7 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentatio
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
 
     size3_t dimensions = volumeDisk_->getDimensions();
-    DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
+    DataFormatId formatId = DataFormatId::NotSpecialized;
 
     std::string filePath = volumeDisk_->getSourceFile();
 

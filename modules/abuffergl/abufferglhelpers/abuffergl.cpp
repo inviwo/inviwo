@@ -180,9 +180,9 @@ void Inviwo_ABufferGL4::abuffer_allocateMemory() {
     globalAtomicCounterBuffer_ = 0;
 
     if (settings_.abufferEnable_.get()) {
-        abufferPageIdxImgTexture_ = new Image(dim_, DataUINT32::get());
-        abufferFragCountImgTexture_ = new Image(dim_, DataUINT32::get());
-        semaphoreImgTexture_ = new Image(dim_, DataUINT32::get());
+        abufferPageIdxImgTexture_ = new Image(dim_, DataUInt32::get());
+        abufferFragCountImgTexture_ = new Image(dim_, DataUInt32::get());
+        semaphoreImgTexture_ = new Image(dim_, DataUInt32::get());
 
         globalAtomicCounterBuffer_ = new GLuint[4];
         memset(globalAtomicCounterBuffer_, 0, 4 * sizeof(GLuint));

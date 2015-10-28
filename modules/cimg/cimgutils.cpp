@@ -85,13 +85,13 @@ using namespace cimg_library;
 
 namespace inviwo {
 
-std::unordered_map<std::string, DataFormatEnums::Id> extToBaseTypeMap_ = {
-          { "png", DataFormatEnums::UINT8 }
-        , { "jpg", DataFormatEnums::UINT8 }
-        , { "jpeg", DataFormatEnums::UINT8 }
-        , { "bmp", DataFormatEnums::UINT8 }
-        , { "exr", DataFormatEnums::FLOAT32 }
-        , { "hdr", DataFormatEnums::FLOAT32 }
+std::unordered_map<std::string, DataFormatId> extToBaseTypeMap_ = {
+          { "png", DataFormatId::UInt8 }
+        , { "jpg", DataFormatId::UInt8 }
+        , { "jpeg", DataFormatId::UInt8 }
+        , { "bmp", DataFormatId::UInt8 }
+        , { "exr", DataFormatId::Float32 }
+        , { "hdr", DataFormatId::Float32 }
 };
 
 ////////////////////// Templates ///////////////////////////////////////////////////
@@ -171,7 +171,7 @@ struct CImgNormalizedLayerDispatcher {
 struct CImgLoadLayerDispatcher {
     using type = void*;
     template <typename T>
-    void* dispatch(void* dst, const char* filePath, uvec2& dimensions, DataFormatEnums::Id& formatId, const DataFormatBase* dataFormat, bool rescaleToDim) {
+    void* dispatch(void* dst, const char* filePath, uvec2& dimensions, DataFormatId& formatId, const DataFormatBase* dataFormat, bool rescaleToDim) {
         CImg<typename T::primitive> img(filePath);
 
         size_t components = static_cast<size_t>(img.spectrum());
@@ -203,7 +203,7 @@ struct CImgSaveLayerDispatcher {
         CImg<typename T::primitive>* img = LayerToCImg<typename T::type>::convert(inputLayer);
 
         //Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
-        const DataFormatBase* outFormat = DataFLOAT32::get();
+        const DataFormatBase* outFormat = DataFloat32::get();
         std::string fileExtension = filesystem::getFileExtension(filePath);
         if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
             outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
@@ -222,11 +222,11 @@ struct CImgSaveLayerDispatcher {
         // For float input images, we assume that the range is [0,1] (which is the same as rendered in a Canvas)
         // For float output images, we normalize to [0,1]
         // Note that no normalization is performed if both input and output are float images
-        if (inFormat->getNumericType() == DataFormatEnums::FLOAT_TYPE) {
+        if (inFormat->getNumericType() == NumericType::Float) {
             inMin = 0.0;
             inMax = 1.0;
         }
-        if (outFormat->getNumericType() == DataFormatEnums::FLOAT_TYPE) {
+        if (outFormat->getNumericType() == NumericType::Float) {
             outMin = 0.0;
             outMax = 1.0;
         }
@@ -261,7 +261,7 @@ struct CImgRescaleLayerDispatcher {
 struct CImgLoadVolumeDispatcher {
     using type = void*;
     template <typename T>
-    void* dispatch(void* dst, const char* filePath, size3_t& dimensions, DataFormatEnums::Id& formatId, const DataFormatBase* dataFormat) {
+    void* dispatch(void* dst, const char* filePath, size3_t& dimensions, DataFormatId& formatId, const DataFormatBase* dataFormat) {
         CImg<typename T::primitive> img(filePath);
 
         size_t components = static_cast<size_t>(img.spectrum());
@@ -284,12 +284,12 @@ struct CImgLoadVolumeDispatcher {
 ////////////////////// CImgUtils ///////////////////////////////////////////////////
 
 void* CImgUtils::loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
-                               DataFormatEnums::Id& formatId, bool rescaleToDim) {
+                               DataFormatId& formatId, bool rescaleToDim) {
     std::string fileExtension = filesystem::getFileExtension(filePath);
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
     } else {
-        formatId = DataFormatEnums::FLOAT32;
+        formatId = DataFormatId::Float32;
     }
     const DataFormatBase* dataFormat = DataFormatBase::get(formatId);
 
@@ -299,12 +299,12 @@ void* CImgUtils::loadLayerData(void* dst, const std::string& filePath, uvec2& di
 }
 
 void* CImgUtils::loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions,
-                                DataFormatEnums::Id& formatId) {
+                                DataFormatId& formatId) {
     std::string fileExtension = filesystem::getFileExtension(filePath);
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
     } else {
-        formatId = DataFormatEnums::FLOAT32;
+        formatId = DataFormatId::Float32;
     }
     const DataFormatBase* dataFormat = DataFormatBase::get(formatId);
 

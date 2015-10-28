@@ -65,98 +65,94 @@
 
 namespace inviwo {
 
-namespace DataFormatEnums {
-
-//Do not set enums specifically, as NUMBER_OF_FORMATS is used to count the number of enums
-enum Id {
-    NOT_SPECIALIZED,
-    FLOAT16,
-    FLOAT32,
-    FLOAT64,
-    INT8,
-    INT16,
-    INT32,
-    INT64,
-    UINT8,
-    UINT16,
-    UINT32,
-    UINT64,
-    Vec2FLOAT16,
-    Vec2FLOAT32,
-    Vec2FLOAT64,
-    Vec2INT8,
-    Vec2INT16,
-    Vec2INT32,
-    Vec2INT64,
-    Vec2UINT8,
-    Vec2UINT16,
-    Vec2UINT32,
-    Vec2UINT64,
-    Vec3FLOAT16,
-    Vec3FLOAT32,
-    Vec3FLOAT64,
-    Vec3INT8,
-    Vec3INT16,
-    Vec3INT32,
-    Vec3INT64,
-    Vec3UINT8,
-    Vec3UINT16,
-    Vec3UINT32,
-    Vec3UINT64,
-    Vec4FLOAT16,
-    Vec4FLOAT32,
-    Vec4FLOAT64,
-    Vec4INT8,
-    Vec4INT16,
-    Vec4INT32,
-    Vec4INT64,
-    Vec4UINT8,
-    Vec4UINT16,
-    Vec4UINT32,
-    Vec4UINT64,
-    NUMBER_OF_FORMATS
+//Do not set enums specifically, as NumberOfFormats is used to count the number of enums
+enum class DataFormatId {
+    NotSpecialized,
+    Float16,
+    Float32,
+    Float64,
+    Int8,
+    Int16,
+    Int32,
+    Int64,
+    UInt8,
+    UInt16,
+    UInt32,
+    UInt64,
+    Vec2Float16,
+    Vec2Float32,
+    Vec2Float64,
+    Vec2Int8,
+    Vec2Int16,
+    Vec2Int32,
+    Vec2Int64,
+    Vec2UInt8,
+    Vec2UInt16,
+    Vec2UInt32,
+    Vec2UInt64,
+    Vec3Float16,
+    Vec3Float32,
+    Vec3Float64,
+    Vec3Int8,
+    Vec3Int16,
+    Vec3Int32,
+    Vec3Int64,
+    Vec3UInt8,
+    Vec3UInt16,
+    Vec3UInt32,
+    Vec3UInt64,
+    Vec4Float16,
+    Vec4Float32,
+    Vec4Float64,
+    Vec4Int8,
+    Vec4Int16,
+    Vec4Int32,
+    Vec4Int64,
+    Vec4UInt8,
+    Vec4UInt16,
+    Vec4UInt32,
+    Vec4UInt64,
+    NumberOfFormats,
 };
 
-enum NumericType {
-    NOT_SPECIALIZED_TYPE,
-    FLOAT_TYPE,
-    UNSIGNED_INTEGER_TYPE,
-    SIGNED_INTEGER_TYPE
+enum class NumericType {
+    NotSpecialized,
+    Float,
+    UnsignedInteger,
+    SignedInteger
 };
-
-}
 
 class IVW_CORE_API DataFormatBase {
 public:
     DataFormatBase();
-    DataFormatBase(DataFormatEnums::Id type, size_t components, size_t size, double max, double min,
-                   DataFormatEnums::NumericType nt, std::string s);
+    DataFormatBase(DataFormatId type, size_t components, size_t size, double max, double min,
+                   NumericType nt, std::string s);
     virtual ~DataFormatBase();
 
     static const DataFormatBase* get();
-    static const DataFormatBase* get(DataFormatEnums::Id id);
+    static const DataFormatBase* get(DataFormatId id);
     static const DataFormatBase* get(std::string name);
-    static const DataFormatBase* get(DataFormatEnums::NumericType type, size_t components,
+    static const DataFormatBase* get(NumericType type, size_t components,
                                      size_t precision);
 
     static void cleanDataFormatBases();
 
     static size_t size() { return 0; }
     static size_t components() { return 0; }
-    static DataFormatEnums::NumericType numericType() {
-        return DataFormatEnums::NOT_SPECIALIZED_TYPE;
+    static NumericType numericType() {
+        return NumericType::NotSpecialized;
     }
     static std::string str() { return "Error, type specialization not implemented"; }
-    static DataFormatEnums::Id id() { return DataFormatEnums::NOT_SPECIALIZED; }
+    static DataFormatId id() { return DataFormatId::NotSpecialized; }
 
     size_t getSize() const;
     size_t getComponents() const;
 
-    DataFormatEnums::NumericType getNumericType() const;
+    NumericType getNumericType() const;
     double getMax() const;
     double getMin() const;
     const char* getString() const;
-    DataFormatEnums::Id getId() const;
+    DataFormatId getId() const;
 
     virtual double valueToDouble(void*) const;
     virtual dvec2 valueToVec2Double(void*) const;
@@ -182,13 +178,13 @@ public:
     auto dispatch(T& obj, Args&&... args) const -> typename T::type;
 
 protected:
-    static DataFormatBase* instance_[DataFormatEnums::NUMBER_OF_FORMATS];
-    static DataFormatBase* getNonConst(DataFormatEnums::Id id) { return instance_[id]; }
+    static DataFormatBase* instance_[static_cast<size_t>(DataFormatId::NumberOfFormats)];
+    static DataFormatBase* getNonConst(DataFormatId id) { return instance_[static_cast<size_t>(id)]; }
 
-    DataFormatEnums::Id formatId_;
+    DataFormatId formatId_;
     size_t components_;
     size_t size_;
-    DataFormatEnums::NumericType numericType_;
+    NumericType numericType_;
     double max_;
     double min_;
 
@@ -217,15 +213,15 @@ public:
         DataFormatBase* d = DataFormatBase::getNonConst(id());
         if (!d) {
             d = new DataFormat<T>();
-            instance_[id()] = d;
+            instance_[static_cast<size_t>(id())] = d;
         }
         return static_cast<DataFormat<T>*>(d);
     }
 
     static size_t size() { return typesize; }
     static size_t components() { return comp; }
-    static DataFormatEnums::NumericType numericType() {
-        return DataFormatEnums::NOT_SPECIALIZED_TYPE;
+    static NumericType numericType() {
+        return NumericType::NotSpecialized;
     }
 
     static T max() { return std::numeric_limits<T>::max(); }
@@ -235,7 +231,7 @@ public:
     static double minToDouble() { return static_cast<double>(min()); }
 
     static std::string str() { return DataFormatBase::str(); }
-    static DataFormatEnums::Id id() { return DataFormatBase::id(); }
+    static DataFormatId id() { return DataFormatBase::id(); }
 
     virtual double valueToDouble(void* val) const {
         return util::glm_convert<double>(*static_cast<type*>(val));
@@ -296,14 +292,14 @@ public:
         DataFormatBase* d = DataFormatBase::getNonConst(id());
         if (!d) {
             d = new DataFormat<type>();
-            instance_[id()] = d;
+            instance_[static_cast<size_t>(id())] = d;
         }
         return static_cast<DataFormat<type>*>(d);
     }
 
     static size_t size() { return typesize; }
     static size_t components() { return comp; }
-    static DataFormatEnums::NumericType numericType() { return DataFormat<T>::numericType(); }
+    static NumericType numericType() { return DataFormat<T>::numericType(); }
 
     static type max() { return type(DataFormat<T>::max()); }
     static type min() { return type(DataFormat<T>::min()); }
@@ -312,7 +308,7 @@ public:
     static double minToDouble() { return static_cast<double>(DataFormat<T>::min()); }
 
     static std::string str() { return "Vec" + toString(comp) + DataFormat<T>::str(); }
-    static DataFormatEnums::Id id() { return DataFormat<T>::id(); }
+    static DataFormatId id() { return DataFormat<T>::id(); }
 
     virtual double valueToDouble(void* val) const {
         return util::glm_convert<double>(*static_cast<type*>(val));
@@ -358,292 +354,292 @@ public:
 /*---------------Single Value Formats------------------*/
 
 // Floats
-typedef DataFormat<half_float::half> DataFLOAT16;
-typedef DataFormat<glm::f32> DataFLOAT32;
-typedef DataFormat<glm::f64> DataFLOAT64;
+typedef DataFormat<half_float::half> DataFloat16;
+typedef DataFormat<glm::f32> DataFloat32;
+typedef DataFormat<glm::f64> DataFloat64;
 
 // Integers
-typedef DataFormat<glm::i8>   DataINT8;
-typedef DataFormat<glm::i16>  DataINT16;
-typedef DataFormat<glm::i32>  DataINT32;
-typedef DataFormat<glm::i64>  DataINT64;
+typedef DataFormat<glm::i8>   DataInt8;
+typedef DataFormat<glm::i16>  DataInt16;
+typedef DataFormat<glm::i32>  DataInt32;
+typedef DataFormat<glm::i64>  DataInt64;
 
 // Unsigned Integers
-typedef DataFormat<glm::u8>   DataUINT8;
-typedef DataFormat<glm::u16>  DataUINT16;
-typedef DataFormat<glm::u32>  DataUINT32;
-typedef DataFormat<glm::u64>  DataUINT64;
+typedef DataFormat<glm::u8>   DataUInt8;
+typedef DataFormat<glm::u16>  DataUInt16;
+typedef DataFormat<glm::u32>  DataUInt32;
+typedef DataFormat<glm::u64>  DataUInt64;
 
 /*---------------Vec2 Formats--------------------*/
 
 // Floats
 typedef glm::detail::tvec2<half_float::half, glm::defaultp> f16vec2;
-typedef DataFormat<f16vec2> DataVec2FLOAT16;
-typedef DataFormat<glm::f32vec2> DataVec2FLOAT32;
-typedef DataFormat<glm::f64vec2> DataVec2FLOAT64;
+typedef DataFormat<f16vec2> DataVec2Float16;
+typedef DataFormat<glm::f32vec2> DataVec2Float32;
+typedef DataFormat<glm::f64vec2> DataVec2Float64;
 
 // Integers
-typedef DataFormat<glm::i8vec2>  DataVec2INT8;
-typedef DataFormat<glm::i16vec2> DataVec2INT16;
-typedef DataFormat<glm::i32vec2> DataVec2INT32;
-typedef DataFormat<glm::i64vec2> DataVec2INT64;
+typedef DataFormat<glm::i8vec2>  DataVec2Int8;
+typedef DataFormat<glm::i16vec2> DataVec2Int16;
+typedef DataFormat<glm::i32vec2> DataVec2Int32;
+typedef DataFormat<glm::i64vec2> DataVec2Int64;
 
 // Unsigned Integers
-typedef DataFormat<glm::u8vec2>  DataVec2UINT8;
-typedef DataFormat<glm::u16vec2> DataVec2UINT16;
-typedef DataFormat<glm::u32vec2> DataVec2UINT32;
-typedef DataFormat<glm::u64vec2> DataVec2UINT64;
+typedef DataFormat<glm::u8vec2>  DataVec2UInt8;
+typedef DataFormat<glm::u16vec2> DataVec2UInt16;
+typedef DataFormat<glm::u32vec2> DataVec2UInt32;
+typedef DataFormat<glm::u64vec2> DataVec2UInt64;
 
 /*---------------Vec3 Formats--------------------*/
 
 // Floats
 typedef glm::detail::tvec3<half_float::half, glm::defaultp> f16vec3;
-typedef DataFormat<f16vec3> DataVec3FLOAT16;
-typedef DataFormat<glm::f32vec3> DataVec3FLOAT32;
-typedef DataFormat<glm::f64vec3> DataVec3FLOAT64;
+typedef DataFormat<f16vec3> DataVec3Float16;
+typedef DataFormat<glm::f32vec3> DataVec3Float32;
+typedef DataFormat<glm::f64vec3> DataVec3Float64;
 
 // Integers
-typedef DataFormat<glm::i8vec3>  DataVec3INT8;
-typedef DataFormat<glm::i16vec3> DataVec3INT16;
-typedef DataFormat<glm::i32vec3> DataVec3INT32;
-typedef DataFormat<glm::i64vec3> DataVec3INT64;
+typedef DataFormat<glm::i8vec3>  DataVec3Int8;
+typedef DataFormat<glm::i16vec3> DataVec3Int16;
+typedef DataFormat<glm::i32vec3> DataVec3Int32;
+typedef DataFormat<glm::i64vec3> DataVec3Int64;
 
 // Unsigned Integers
-typedef DataFormat<glm::u8vec3>  DataVec3UINT8;
-typedef DataFormat<glm::u16vec3> DataVec3UINT16;
-typedef DataFormat<glm::u32vec3> DataVec3UINT32;
-typedef DataFormat<glm::u64vec3> DataVec3UINT64;
+typedef DataFormat<glm::u8vec3>  DataVec3UInt8;
+typedef DataFormat<glm::u16vec3> DataVec3UInt16;
+typedef DataFormat<glm::u32vec3> DataVec3UInt32;
+typedef DataFormat<glm::u64vec3> DataVec3UInt64;
 
 /*---------------Vec4 Value Formats------------------*/
 
 // Floats
 typedef glm::detail::tvec4<half_float::half, glm::defaultp> f16vec4;
-typedef DataFormat<f16vec4> DataVec4FLOAT16;
-typedef DataFormat<glm::f32vec4> DataVec4FLOAT32;
-typedef DataFormat<glm::f64vec4> DataVec4FLOAT64;
+typedef DataFormat<f16vec4> DataVec4Float16;
+typedef DataFormat<glm::f32vec4> DataVec4Float32;
+typedef DataFormat<glm::f64vec4> DataVec4Float64;
 
 // Integers
-typedef DataFormat<glm::i8vec4>  DataVec4INT8;
-typedef DataFormat<glm::i16vec4> DataVec4INT16;
-typedef DataFormat<glm::i32vec4> DataVec4INT32;
-typedef DataFormat<glm::i64vec4> DataVec4INT64;
+typedef DataFormat<glm::i8vec4>  DataVec4Int8;
+typedef DataFormat<glm::i16vec4> DataVec4Int16;
+typedef DataFormat<glm::i32vec4> DataVec4Int32;
+typedef DataFormat<glm::i64vec4> DataVec4Int64;
 
 // Unsigned Integers
-typedef DataFormat<glm::u8vec4>  DataVec4UINT8;
-typedef DataFormat<glm::u16vec4> DataVec4UINT16;
-typedef DataFormat<glm::u32vec4> DataVec4UINT32;
-typedef DataFormat<glm::u64vec4> DataVec4UINT64;
+typedef DataFormat<glm::u8vec4>  DataVec4UInt8;
+typedef DataFormat<glm::u16vec4> DataVec4UInt16;
+typedef DataFormat<glm::u32vec4> DataVec4UInt32;
+typedef DataFormat<glm::u64vec4> DataVec4UInt64;
 
 
 /*---------------Single Value Formats------------------*/
 
 // Bit Specializations
-template<> inline size_t DataFLOAT16::size() { return DataFLOAT32::size(); }
+template<> inline size_t DataFloat16::size() { return DataFloat32::size(); }
 
 // Type Function Specializations
-template<> inline DataFormatEnums::Id DataFLOAT16::id() { return DataFormatEnums::FLOAT16; }
-template<> inline DataFormatEnums::Id DataFLOAT32::id() { return DataFormatEnums::FLOAT32; }
-template<> inline DataFormatEnums::Id DataFLOAT64::id() { return DataFormatEnums::FLOAT64; }
+template<> inline DataFormatId DataFloat16::id() { return DataFormatId::Float16; }
+template<> inline DataFormatId DataFloat32::id() { return DataFormatId::Float32; }
+template<> inline DataFormatId DataFloat64::id() { return DataFormatId::Float64; }
 
-template<> inline DataFormatEnums::Id DataINT8::id()  { return DataFormatEnums::INT8; }
-template<> inline DataFormatEnums::Id DataINT16::id() { return DataFormatEnums::INT16; }
-template<> inline DataFormatEnums::Id DataINT32::id() { return DataFormatEnums::INT32; }
-template<> inline DataFormatEnums::Id DataINT64::id() { return DataFormatEnums::INT64; }
+template<> inline DataFormatId DataInt8::id()  { return DataFormatId::Int8; }
+template<> inline DataFormatId DataInt16::id() { return DataFormatId::Int16; }
+template<> inline DataFormatId DataInt32::id() { return DataFormatId::Int32; }
+template<> inline DataFormatId DataInt64::id() { return DataFormatId::Int64; }
 
-template<> inline DataFormatEnums::Id DataUINT8::id()  { return DataFormatEnums::UINT8; }
-template<> inline DataFormatEnums::Id DataUINT16::id() { return DataFormatEnums::UINT16; }
-template<> inline DataFormatEnums::Id DataUINT32::id() { return DataFormatEnums::UINT32; }
-template<> inline DataFormatEnums::Id DataUINT64::id() { return DataFormatEnums::UINT64; }
+template<> inline DataFormatId DataUInt8::id()  { return DataFormatId::UInt8; }
+template<> inline DataFormatId DataUInt16::id() { return DataFormatId::UInt16; }
+template<> inline DataFormatId DataUInt32::id() { return DataFormatId::UInt32; }
+template<> inline DataFormatId DataUInt64::id() { return DataFormatId::UInt64; }
 
 // Numeric type Specializations
-template<> inline DataFormatEnums::NumericType DataFLOAT16::numericType() { return DataFormatEnums::FLOAT_TYPE; }
-template<> inline DataFormatEnums::NumericType DataFLOAT32::numericType() { return DataFormatEnums::FLOAT_TYPE; }
-template<> inline DataFormatEnums::NumericType DataFLOAT64::numericType() { return DataFormatEnums::FLOAT_TYPE; }
+template<> inline NumericType DataFloat16::numericType() { return NumericType::Float; }
+template<> inline NumericType DataFloat32::numericType() { return NumericType::Float; }
+template<> inline NumericType DataFloat64::numericType() { return NumericType::Float; }
 
-template<> inline DataFormatEnums::NumericType DataINT8::numericType()  { return DataFormatEnums::SIGNED_INTEGER_TYPE; }
-template<> inline DataFormatEnums::NumericType DataINT16::numericType() { return DataFormatEnums::SIGNED_INTEGER_TYPE; }
-template<> inline DataFormatEnums::NumericType DataINT32::numericType() { return DataFormatEnums::SIGNED_INTEGER_TYPE; }
-template<> inline DataFormatEnums::NumericType DataINT64::numericType() { return DataFormatEnums::SIGNED_INTEGER_TYPE; }
+template<> inline NumericType DataInt8::numericType()  { return NumericType::SignedInteger; }
+template<> inline NumericType DataInt16::numericType() { return NumericType::SignedInteger; }
+template<> inline NumericType DataInt32::numericType() { return NumericType::SignedInteger; }
+template<> inline NumericType DataInt64::numericType() { return NumericType::SignedInteger; }
 
-template<> inline DataFormatEnums::NumericType DataUINT8::numericType()  { return DataFormatEnums::UNSIGNED_INTEGER_TYPE; }
-template<> inline DataFormatEnums::NumericType DataUINT16::numericType() { return DataFormatEnums::UNSIGNED_INTEGER_TYPE; }
-template<> inline DataFormatEnums::NumericType DataUINT32::numericType() { return DataFormatEnums::UNSIGNED_INTEGER_TYPE; }
-template<> inline DataFormatEnums::NumericType DataUINT64::numericType() { return DataFormatEnums::UNSIGNED_INTEGER_TYPE; }
+template<> inline NumericType DataUInt8::numericType()  { return NumericType::UnsignedInteger; }
+template<> inline NumericType DataUInt16::numericType() { return NumericType::UnsignedInteger; }
+template<> inline NumericType DataUInt32::numericType() { return NumericType::UnsignedInteger; }
+template<> inline NumericType DataUInt64::numericType() { return NumericType::UnsignedInteger; }
 
 // String Function Specializations
-template<> inline std::string DataFLOAT16::str() { return "FLOAT16"; }
-template<> inline std::string DataFLOAT32::str() { return "FLOAT32"; }
-template<> inline std::string DataFLOAT64::str() { return "FLOAT64"; }
+template<> inline std::string DataFloat16::str() { return "FLOAT16"; }
+template<> inline std::string DataFloat32::str() { return "FLOAT32"; }
+template<> inline std::string DataFloat64::str() { return "FLOAT64"; }
 
-template<> inline std::string DataINT8::str() { return "INT8"; }
-template<> inline std::string DataINT16::str() { return "INT16"; }
-template<> inline std::string DataINT32::str() { return "INT32"; }
-template<> inline std::string DataINT64::str() { return "INT64"; }
+template<> inline std::string DataInt8::str() { return "INT8"; }
+template<> inline std::string DataInt16::str() { return "INT16"; }
+template<> inline std::string DataInt32::str() { return "INT32"; }
+template<> inline std::string DataInt64::str() { return "INT64"; }
 
-template<> inline std::string DataUINT8::str() { return "UINT8"; }
-template<> inline std::string DataUINT16::str() { return "UINT16"; }
-template<> inline std::string DataUINT32::str() { return "UINT32"; }
-template<> inline std::string DataUINT64::str() { return "UINT64"; }
+template<> inline std::string DataUInt8::str() { return "UINT8"; }
+template<> inline std::string DataUInt16::str() { return "UINT16"; }
+template<> inline std::string DataUInt32::str() { return "UINT32"; }
+template<> inline std::string DataUInt64::str() { return "UINT64"; }
 
 
 /*---------------Vec2 Formats--------------------*/
 
 // Bit Specializations
-template<> inline size_t DataVec2FLOAT16::size() { return DataVec2FLOAT32::size(); }
+template<> inline size_t DataVec2Float16::size() { return DataVec2Float32::size(); }
 
 // Type Function Specializations
-template<> inline DataFormatEnums::Id DataVec2FLOAT16::id() { return DataFormatEnums::Vec2FLOAT16; }
-template<> inline DataFormatEnums::Id DataVec2FLOAT32::id() { return DataFormatEnums::Vec2FLOAT32; }
-template<> inline DataFormatEnums::Id DataVec2FLOAT64::id() { return DataFormatEnums::Vec2FLOAT64; }
+template<> inline DataFormatId DataVec2Float16::id() { return DataFormatId::Vec2Float16; }
+template<> inline DataFormatId DataVec2Float32::id() { return DataFormatId::Vec2Float32; }
+template<> inline DataFormatId DataVec2Float64::id() { return DataFormatId::Vec2Float64; }
 
-template<> inline DataFormatEnums::Id DataVec2INT8::id() { return DataFormatEnums::Vec2INT8; }
-template<> inline DataFormatEnums::Id DataVec2INT16::id() { return DataFormatEnums::Vec2INT16; }
-template<> inline DataFormatEnums::Id DataVec2INT32::id() { return DataFormatEnums::Vec2INT32; }
-template<> inline DataFormatEnums::Id DataVec2INT64::id() { return DataFormatEnums::Vec2INT64; }
+template<> inline DataFormatId DataVec2Int8::id() { return DataFormatId::Vec2Int8; }
+template<> inline DataFormatId DataVec2Int16::id() { return DataFormatId::Vec2Int16; }
+template<> inline DataFormatId DataVec2Int32::id() { return DataFormatId::Vec2Int32; }
+template<> inline DataFormatId DataVec2Int64::id() { return DataFormatId::Vec2Int64; }
 
-template<> inline DataFormatEnums::Id DataVec2UINT8::id() { return DataFormatEnums::Vec2UINT8; }
-template<> inline DataFormatEnums::Id DataVec2UINT16::id() { return DataFormatEnums::Vec2UINT16; }
-template<> inline DataFormatEnums::Id DataVec2UINT32::id() { return DataFormatEnums::Vec2UINT32; }
-template<> inline DataFormatEnums::Id DataVec2UINT64::id() { return DataFormatEnums::Vec2UINT64; }
+template<> inline DataFormatId DataVec2UInt8::id() { return DataFormatId::Vec2UInt8; }
+template<> inline DataFormatId DataVec2UInt16::id() { return DataFormatId::Vec2UInt16; }
+template<> inline DataFormatId DataVec2UInt32::id() { return DataFormatId::Vec2UInt32; }
+template<> inline DataFormatId DataVec2UInt64::id() { return DataFormatId::Vec2UInt64; }
 
 
 /*---------------Vec3 Formats--------------------*/
 
 // Bit Specializations
-template<> inline size_t DataVec3FLOAT16::size() { return DataVec3FLOAT32::size(); }
+template<> inline size_t DataVec3Float16::size() { return DataVec3Float32::size(); }
 
 // Type Function Specializations
-template<> inline DataFormatEnums::Id DataVec3FLOAT16::id() { return DataFormatEnums::Vec3FLOAT16; }
-template<> inline DataFormatEnums::Id DataVec3FLOAT32::id() { return DataFormatEnums::Vec3FLOAT32; }
-template<> inline DataFormatEnums::Id DataVec3FLOAT64::id() { return DataFormatEnums::Vec3FLOAT64; }
+template<> inline DataFormatId DataVec3Float16::id() { return DataFormatId::Vec3Float16; }
+template<> inline DataFormatId DataVec3Float32::id() { return DataFormatId::Vec3Float32; }
+template<> inline DataFormatId DataVec3Float64::id() { return DataFormatId::Vec3Float64; }
 
-template<> inline DataFormatEnums::Id DataVec3INT8::id() { return DataFormatEnums::Vec3INT8; }
-template<> inline DataFormatEnums::Id DataVec3INT16::id() { return DataFormatEnums::Vec3INT16; }
-template<> inline DataFormatEnums::Id DataVec3INT32::id() { return DataFormatEnums::Vec3INT32; }
-template<> inline DataFormatEnums::Id DataVec3INT64::id() { return DataFormatEnums::Vec3INT64; }
+template<> inline DataFormatId DataVec3Int8::id() { return DataFormatId::Vec3Int8; }
+template<> inline DataFormatId DataVec3Int16::id() { return DataFormatId::Vec3Int16; }
+template<> inline DataFormatId DataVec3Int32::id() { return DataFormatId::Vec3Int32; }
+template<> inline DataFormatId DataVec3Int64::id() { return DataFormatId::Vec3Int64; }
 
-template<> inline DataFormatEnums::Id DataVec3UINT8::id() { return DataFormatEnums::Vec3UINT8; }
-template<> inline DataFormatEnums::Id DataVec3UINT16::id() { return DataFormatEnums::Vec3UINT16; }
-template<> inline DataFormatEnums::Id DataVec3UINT32::id() { return DataFormatEnums::Vec3UINT32; }
-template<> inline DataFormatEnums::Id DataVec3UINT64::id() { return DataFormatEnums::Vec3UINT64; }
+template<> inline DataFormatId DataVec3UInt8::id() { return DataFormatId::Vec3UInt8; }
+template<> inline DataFormatId DataVec3UInt16::id() { return DataFormatId::Vec3UInt16; }
+template<> inline DataFormatId DataVec3UInt32::id() { return DataFormatId::Vec3UInt32; }
+template<> inline DataFormatId DataVec3UInt64::id() { return DataFormatId::Vec3UInt64; }
 
 
 
 /*---------------Vec4 Formats--------------------*/
 
 // Bit Specializations
-template<> inline size_t DataVec4FLOAT16::size() { return DataVec4FLOAT32::size(); }
+template<> inline size_t DataVec4Float16::size() { return DataVec4Float32::size(); }
 
 // Type Function Specializations
-template<> inline DataFormatEnums::Id DataVec4FLOAT16::id() { return DataFormatEnums::Vec4FLOAT16; }
-template<> inline DataFormatEnums::Id DataVec4FLOAT32::id() { return DataFormatEnums::Vec4FLOAT32; }
-template<> inline DataFormatEnums::Id DataVec4FLOAT64::id() { return DataFormatEnums::Vec4FLOAT64; }
+template<> inline DataFormatId DataVec4Float16::id() { return DataFormatId::Vec4Float16; }
+template<> inline DataFormatId DataVec4Float32::id() { return DataFormatId::Vec4Float32; }
+template<> inline DataFormatId DataVec4Float64::id() { return DataFormatId::Vec4Float64; }
 
-template<> inline DataFormatEnums::Id DataVec4INT8::id() { return DataFormatEnums::Vec4INT8; }
-template<> inline DataFormatEnums::Id DataVec4INT16::id() { return DataFormatEnums::Vec4INT16; }
-template<> inline DataFormatEnums::Id DataVec4INT32::id() { return DataFormatEnums::Vec4INT32; }
-template<> inline DataFormatEnums::Id DataVec4INT64::id() { return DataFormatEnums::Vec4INT64; }
+template<> inline DataFormatId DataVec4Int8::id() { return DataFormatId::Vec4Int8; }
+template<> inline DataFormatId DataVec4Int16::id() { return DataFormatId::Vec4Int16; }
+template<> inline DataFormatId DataVec4Int32::id() { return DataFormatId::Vec4Int32; }
+template<> inline DataFormatId DataVec4Int64::id() { return DataFormatId::Vec4Int64; }
 
-template<> inline DataFormatEnums::Id DataVec4UINT8::id() { return DataFormatEnums::Vec4UINT8; }
-template<> inline DataFormatEnums::Id DataVec4UINT16::id() { return DataFormatEnums::Vec4UINT16; }
-template<> inline DataFormatEnums::Id DataVec4UINT32::id() { return DataFormatEnums::Vec4UINT32; }
-template<> inline DataFormatEnums::Id DataVec4UINT64::id() { return DataFormatEnums::Vec4UINT64; }
+template<> inline DataFormatId DataVec4UInt8::id() { return DataFormatId::Vec4UInt8; }
+template<> inline DataFormatId DataVec4UInt16::id() { return DataFormatId::Vec4UInt16; }
+template<> inline DataFormatId DataVec4UInt32::id() { return DataFormatId::Vec4UInt32; }
+template<> inline DataFormatId DataVec4UInt64::id() { return DataFormatId::Vec4UInt64; }
 
 
 template <typename T, typename... Args>
 auto DataFormatBase::dispatch(T& obj, Args&&... args) const -> typename T::type {
     using R = typename T::type;
     switch (formatId_) {
-        case DataFormatEnums::FLOAT16:
-            return obj.template dispatch<DataFLOAT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::FLOAT32:
-            return obj.template dispatch<DataFLOAT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::FLOAT64:
-            return obj.template dispatch<DataFLOAT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::INT8:
-            return obj.template dispatch<DataINT8>(std::forward<Args>(args)...);
-        case DataFormatEnums::INT16:
-            return obj.template dispatch<DataINT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::INT32:
-            return obj.template dispatch<DataINT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::INT64:
-            return obj.template dispatch<DataINT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::UINT8:
-            return obj.template dispatch<DataUINT8>(std::forward<Args>(args)...);
-        case DataFormatEnums::UINT16:
-            return obj.template dispatch<DataUINT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::UINT32:
-            return obj.template dispatch<DataUINT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::UINT64:
-            return obj.template dispatch<DataUINT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2FLOAT16:
-            return obj.template dispatch<DataVec2FLOAT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2FLOAT32:
-            return obj.template dispatch<DataVec2FLOAT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2FLOAT64:
-            return obj.template dispatch<DataVec2FLOAT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2INT8:
-            return obj.template dispatch<DataVec2INT8>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2INT16:
-            return obj.template dispatch<DataVec2INT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2INT32:
-            return obj.template dispatch<DataVec2INT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2INT64:
-            return obj.template dispatch<DataVec2INT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2UINT8:
-            return obj.template dispatch<DataVec2UINT8>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2UINT16:
-            return obj.template dispatch<DataVec2UINT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2UINT32:
-            return obj.template dispatch<DataVec2UINT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec2UINT64:
-            return obj.template dispatch<DataVec2UINT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3FLOAT16:
-            return obj.template dispatch<DataVec3FLOAT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3FLOAT32:
-            return obj.template dispatch<DataVec3FLOAT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3FLOAT64:
-            return obj.template dispatch<DataVec3FLOAT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3INT8:
-            return obj.template dispatch<DataVec3INT8>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3INT16:
-            return obj.template dispatch<DataVec3INT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3INT32:
-            return obj.template dispatch<DataVec3INT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3INT64:
-            return obj.template dispatch<DataVec3INT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3UINT8:
-            return obj.template dispatch<DataVec3UINT8>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3UINT16:
-            return obj.template dispatch<DataVec3UINT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3UINT32:
-            return obj.template dispatch<DataVec3UINT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec3UINT64:
-            return obj.template dispatch<DataVec3UINT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4FLOAT16:
-            return obj.template dispatch<DataVec4FLOAT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4FLOAT32:
-            return obj.template dispatch<DataVec4FLOAT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4FLOAT64:
-            return obj.template dispatch<DataVec4FLOAT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4INT8:
-            return obj.template dispatch<DataVec4INT8>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4INT16:
-            return obj.template dispatch<DataVec4INT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4INT32:
-            return obj.template dispatch<DataVec4INT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4INT64:
-            return obj.template dispatch<DataVec4INT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4UINT8:
-            return obj.template dispatch<DataVec4UINT8>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4UINT16:
-            return obj.template dispatch<DataVec4UINT16>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4UINT32:
-            return obj.template dispatch<DataVec4UINT32>(std::forward<Args>(args)...);
-        case DataFormatEnums::Vec4UINT64:
-            return obj.template dispatch<DataVec4UINT64>(std::forward<Args>(args)...);
-        case DataFormatEnums::NOT_SPECIALIZED:
-        case DataFormatEnums::NUMBER_OF_FORMATS:
+        case DataFormatId::Float16:
+            return obj.template dispatch<DataFloat16>(std::forward<Args>(args)...);
+        case DataFormatId::Float32:
+            return obj.template dispatch<DataFloat32>(std::forward<Args>(args)...);
+        case DataFormatId::Float64:
+            return obj.template dispatch<DataFloat64>(std::forward<Args>(args)...);
+        case DataFormatId::Int8:
+            return obj.template dispatch<DataInt8>(std::forward<Args>(args)...);
+        case DataFormatId::Int16:
+            return obj.template dispatch<DataInt16>(std::forward<Args>(args)...);
+        case DataFormatId::Int32:
+            return obj.template dispatch<DataInt32>(std::forward<Args>(args)...);
+        case DataFormatId::Int64:
+            return obj.template dispatch<DataInt64>(std::forward<Args>(args)...);
+        case DataFormatId::UInt8:
+            return obj.template dispatch<DataUInt8>(std::forward<Args>(args)...);
+        case DataFormatId::UInt16:
+            return obj.template dispatch<DataUInt16>(std::forward<Args>(args)...);
+        case DataFormatId::UInt32:
+            return obj.template dispatch<DataUInt32>(std::forward<Args>(args)...);
+        case DataFormatId::UInt64:
+            return obj.template dispatch<DataUInt64>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2Float16:
+            return obj.template dispatch<DataVec2Float16>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2Float32:
+            return obj.template dispatch<DataVec2Float32>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2Float64:
+            return obj.template dispatch<DataVec2Float64>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2Int8:
+            return obj.template dispatch<DataVec2Int8>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2Int16:
+            return obj.template dispatch<DataVec2Int16>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2Int32:
+            return obj.template dispatch<DataVec2Int32>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2Int64:
+            return obj.template dispatch<DataVec2Int64>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2UInt8:
+            return obj.template dispatch<DataVec2UInt8>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2UInt16:
+            return obj.template dispatch<DataVec2UInt16>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2UInt32:
+            return obj.template dispatch<DataVec2UInt32>(std::forward<Args>(args)...);
+        case DataFormatId::Vec2UInt64:
+            return obj.template dispatch<DataVec2UInt64>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3Float16:
+            return obj.template dispatch<DataVec3Float16>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3Float32:
+            return obj.template dispatch<DataVec3Float32>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3Float64:
+            return obj.template dispatch<DataVec3Float64>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3Int8:
+            return obj.template dispatch<DataVec3Int8>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3Int16:
+            return obj.template dispatch<DataVec3Int16>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3Int32:
+            return obj.template dispatch<DataVec3Int32>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3Int64:
+            return obj.template dispatch<DataVec3Int64>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3UInt8:
+            return obj.template dispatch<DataVec3UInt8>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3UInt16:
+            return obj.template dispatch<DataVec3UInt16>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3UInt32:
+            return obj.template dispatch<DataVec3UInt32>(std::forward<Args>(args)...);
+        case DataFormatId::Vec3UInt64:
+            return obj.template dispatch<DataVec3UInt64>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4Float16:
+            return obj.template dispatch<DataVec4Float16>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4Float32:
+            return obj.template dispatch<DataVec4Float32>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4Float64:
+            return obj.template dispatch<DataVec4Float64>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4Int8:
+            return obj.template dispatch<DataVec4Int8>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4Int16:
+            return obj.template dispatch<DataVec4Int16>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4Int32:
+            return obj.template dispatch<DataVec4Int32>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4Int64:
+            return obj.template dispatch<DataVec4Int64>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4UInt8:
+            return obj.template dispatch<DataVec4UInt8>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4UInt16:
+            return obj.template dispatch<DataVec4UInt16>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4UInt32:
+            return obj.template dispatch<DataVec4UInt32>(std::forward<Args>(args)...);
+        case DataFormatId::Vec4UInt64:
+            return obj.template dispatch<DataVec4UInt64>(std::forward<Args>(args)...);
+        case DataFormatId::NotSpecialized:
+        case DataFormatId::NumberOfFormats:
         default:
             return R();
     }

@@ -40,7 +40,7 @@ namespace inviwo {
 
 class IVW_CORE_API Image : public DataGroup<ImageRepresentation> {
 public:
-    Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UINT8::get());
+    Image(size2_t dimensions = size2_t(8, 8), const DataFormatBase* format = DataVec4UInt8::get());
     Image(std::shared_ptr<Layer> colorLayer);
     Image(const Image&);
     Image& operator=(const Image& that);

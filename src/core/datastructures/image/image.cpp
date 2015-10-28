@@ -36,7 +36,7 @@ namespace inviwo {
 
 Image::Image(size2_t dimensions, const DataFormatBase* format) : DataGroup() {
     colorLayers_.push_back(std::make_shared<Layer>(dimensions, format));
-    depthLayer_ = std::make_shared<Layer>(dimensions, DataFLOAT32::get(), LayerType::Depth);
+    depthLayer_ = std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth);
     pickingLayer_ = std::make_shared<Layer>(dimensions, format, LayerType::Picking);
 }
 
@@ -46,7 +46,7 @@ Image::Image(std::shared_ptr<Layer> colorLayer) : DataGroup() {
     auto dimensions = colorLayer->getDimensions();
     auto format = colorLayer->getDataFormat();
 
-    depthLayer_ = std::make_shared<Layer>(dimensions, DataFLOAT32::get(), LayerType::Depth);
+    depthLayer_ = std::make_shared<Layer>(dimensions, DataFloat32::get(), LayerType::Depth);
     pickingLayer_ = std::make_shared<Layer>(dimensions, format, LayerType::Picking);
 }
 

@@ -76,7 +76,7 @@ LorenzSystem::LorenzSystem()
 LorenzSystem::~LorenzSystem() {}
 
 void LorenzSystem::process() {
-    volume_ = std::make_shared<Volume>(size_.get(), DataVec4FLOAT32::get());
+    volume_ = std::make_shared<Volume>(size_.get(), DataVec4Float32::get());
     volume_->dataMap_.dataRange = vec2(0, 1);
     volume_->dataMap_.valueRange = vec2(-1, 1);
     outport_.setData(volume_);

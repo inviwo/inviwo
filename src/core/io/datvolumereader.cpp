@@ -184,7 +184,7 @@ std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::st
             ss >> formatFlag;
             // Backward support for USHORT_12 key
             if (formatFlag == "USHORT_12") {
-                format_ = DataUINT16::get();
+                format_ = DataUInt16::get();
                 // Check so that data range has not been set before
                 if (glm::all(glm::equal(datarange, dvec2(0)))) {
                     datarange.y = 4095;
@@ -224,7 +224,7 @@ std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::st
         else if (format_ == nullptr)
             throw DataReaderException(
                 "Error: Unable to find \"Format\" tag in .dat file: " + filePath, IvwContext);
-        else if (format_->getId() == DataFormatEnums::NOT_SPECIALIZED)
+        else if (format_->getId() == DataFormatId::NotSpecialized)
             throw DataReaderException(
                 "Error: Invalid format string found: " + formatFlag + " in " + filePath +
                     "\nThe valid formats are:\n" +

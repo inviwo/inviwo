@@ -40,7 +40,7 @@ namespace inviwo {
 class IVW_CORE_API LayerRepresentation : public DataRepresentation {
 public:
     LayerRepresentation(size2_t dimensions = size2_t(32, 32), LayerType type = LayerType::Color,
-                        const DataFormatBase* format = DataVec4UINT8::get());
+                        const DataFormatBase* format = DataVec4UInt8::get());
     LayerRepresentation(const LayerRepresentation& rhs);
     LayerRepresentation& operator=(const LayerRepresentation& that);
     virtual LayerRepresentation* clone() const = 0;

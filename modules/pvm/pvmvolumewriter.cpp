@@ -63,10 +63,10 @@ void PVMVolumeWriter::writeData(const Volume *data, const std::string filePath) 
 #include <warn/push>
 #include <warn/ignore/switch-enum>
     switch (format->getId()) {
-        case inviwo::DataFormatEnums::UINT8:
+        case inviwo::DataFormatId::UInt8:
             components = 1;
             break;
-        case inviwo::DataFormatEnums::UINT16:
+        case inviwo::DataFormatId::UInt16:
             components = 2;
             break;
         default:

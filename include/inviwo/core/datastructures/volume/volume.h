@@ -44,7 +44,7 @@ class CameraProperty;
 class IVW_CORE_API Volume : public Data<VolumeRepresentation>, public StructuredGridEntity<3> {
 public:
     Volume(size3_t dimensions = size3_t(128, 128, 128),
-           const DataFormatBase* format = DataUINT8::get());
+           const DataFormatBase* format = DataUInt8::get());
     Volume(const Volume&);
     Volume(std::shared_ptr<VolumeRepresentation>);
     Volume& operator=(const Volume& that);

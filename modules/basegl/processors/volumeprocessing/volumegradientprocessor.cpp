@@ -47,7 +47,7 @@ VolumeGradientProcessor::VolumeGradientProcessor()
     , channel_("channel", "Render Channel")
     , dataInChannel4_("dataInChannel4_", "Stored voxel values in 4th channel", false,
                       INVALID_RESOURCES) {
-    this->dataFormat_ = DataVec3FLOAT32::get();
+    this->dataFormat_ = DataVec3Float32::get();
 
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();
@@ -71,10 +71,10 @@ void VolumeGradientProcessor::postProcess() {
 void VolumeGradientProcessor::initializeResources() {
     if (dataInChannel4_.get()) {
         shader_.getFragmentShaderObject()->addShaderDefine("ADD_DATA_CHANNEL");
-        this->dataFormat_ = DataVec4FLOAT32::get();
+        this->dataFormat_ = DataVec4Float32::get();
     } else {
         shader_.getFragmentShaderObject()->removeShaderDefine("ADD_DATA_CHANNEL");
-        this->dataFormat_ = DataVec3FLOAT32::get();
+        this->dataFormat_ = DataVec3Float32::get();
     }
     shader_.build();
     internalInvalid_ = true;

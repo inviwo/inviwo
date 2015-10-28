@@ -47,7 +47,7 @@ const ProcessorInfo HeightFieldMapper::getProcessorInfo() const {
 HeightFieldMapper::HeightFieldMapper()
     : Processor()
     , inport_("image.inport", true)
-    , outport_("image.outport", DataFLOAT32::get())
+    , outport_("image.outport", DataFloat32::get())
     , scalingModeProp_("scalingmode", "Scaling Mode")
     , heightRange_("heightrange", "Height Range", 0.0f, 1.0f, -1.0e1f, 1.0e1f)
     , maxHeight_("maxheight", "Maximum Height", 1.0f, 0.0f, 1.0e1f)
@@ -95,9 +95,9 @@ void HeightFieldMapper::process() {
     Image *outImg = nullptr;
 
     // check format of output image
-    if (!outImg || (outImg->getDataFormat()->getId() != DataFormatEnums::FLOAT32)) {
+    if (!outImg || (outImg->getDataFormat()->getId() != DataFormatId::Float32)) {
         // replace with new floating point image
-        Image *img = new Image(dim, DataFLOAT32::get());
+        Image *img = new Image(dim, DataFloat32::get());
         outport_.setData(img);
         outImg = img;
     } else if (outImg->getDimensions() != dim) {
@@ -112,7 +112,7 @@ void HeightFieldMapper::process() {
     const LayerRAM *srcLayer = srcImg->getColorLayer(0)->getRepresentation<LayerRAM>();
 
     // special case: input image is already FLOAT32 with 1 channel
-    if ((numInputChannels == 1) && (format->getId() == DataFormatEnums::FLOAT32)) {
+    if ((numInputChannels == 1) && (format->getId() == DataFormatId::Float32)) {
         const float *srcData = static_cast<const float *>(srcLayer->getData());
         std::copy(srcData, srcData + dim.x * dim.y, data);
     } else {

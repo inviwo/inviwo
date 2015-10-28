@@ -190,8 +190,8 @@ dvec4 LayerRAMPrecision<T>::getValueAsVec4Double(const size2_t& pos) const {
     return util::glm_convert_normalized<dvec4>(data_[posToIndex(pos, dimensions_)]);
 }
 
-#define DataFormatIdMacro(i) typedef LayerRAMPrecision<Data##i::type> LayerRAM_##i;
-#include <inviwo/core/util/formatsdefinefunc.h>
+//#define DataFormatIdMacro(i) typedef LayerRAMPrecision<Data##i::type> LayerRAM_##i;
+//#include <inviwo/core/util/formatsdefinefunc.h>
 
 }  // namespace
 

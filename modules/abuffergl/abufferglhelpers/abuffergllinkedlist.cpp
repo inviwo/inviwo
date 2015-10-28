@@ -77,12 +77,12 @@ Inviwo_ABufferGL4_LinkedList::~Inviwo_ABufferGL4_LinkedList() {
 
 void Inviwo_ABufferGL4_LinkedList::allocateABuffer() {
 
-    abufferPageIdxImgTexture_ = new Image(dim_,  DataUINT32::get());
+    abufferPageIdxImgTexture_ = new Image(dim_,  DataUInt32::get());
    
 
-    abufferFragCountImgTexture_ = new Image(dim_, DataUINT32::get());
+    abufferFragCountImgTexture_ = new Image(dim_, DataUInt32::get());
     
-    semaphoreImgTexture_ = new Image(dim_, DataUINT32::get());    
+    semaphoreImgTexture_ = new Image(dim_, DataUInt32::get());    
 
     curSharedPageAddress_=ABUFFER_PAGE_SIZE;
 

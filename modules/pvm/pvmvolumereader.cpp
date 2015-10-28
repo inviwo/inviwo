@@ -104,13 +104,13 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
 
     switch (bytesPerVoxel) {
         case 1:
-            format = DataUINT8::get();
+            format = DataUInt8::get();
             break;
         case 2:
-            format = DataUINT16::get();
+            format = DataUInt16::get();
             break;
         case 3:
-            format = DataVec3UINT8::get();
+            format = DataVec3UInt8::get();
             break;
         default:
             throw DataReaderException(
@@ -125,14 +125,14 @@ std::shared_ptr<Volume> PVMVolumeReader::readPVMData(std::string filePath) {
 
     auto volume = std::make_shared<Volume>();
 
-    if (format == DataUINT16::get()) {
+    if (format == DataUInt16::get()) {
         size_t bytes = format->getSize();
         size_t size = dim.x * dim.y * dim.z * bytes;
         swapbytes(data, static_cast<unsigned int>(size));
         // This format does not contain information about data range
         // so we need to compute it for correct results
-        auto minmax = std::minmax_element(reinterpret_cast<DataUINT16::type*>(data),
-                                          reinterpret_cast<DataUINT16::type*>(data + size));
+        auto minmax = std::minmax_element(reinterpret_cast<DataUInt16::type*>(data),
+                                          reinterpret_cast<DataUInt16::type*>(data + size));
         volume->dataMap_.dataRange = dvec2(*minmax.first, *minmax.second);
     }
 

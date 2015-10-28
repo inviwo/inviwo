@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-DataRepresentation::DataRepresentation() : isValid_(true), dataFormatBase_(DataUINT8::get()), owner_(nullptr) {}
+DataRepresentation::DataRepresentation() : isValid_(true), dataFormatBase_(DataUInt8::get()), owner_(nullptr) {}
 DataRepresentation::DataRepresentation(const DataFormatBase* format)
     : isValid_(true), dataFormatBase_(format), owner_(nullptr) {}
 DataRepresentation::DataRepresentation(const DataRepresentation& rhs)
@@ -57,7 +57,7 @@ std::string DataRepresentation::getDataFormatString() const {
     return std::string(dataFormatBase_->getString());
 }
 
-DataFormatEnums::Id DataRepresentation::getDataFormatId() const {
+DataFormatId DataRepresentation::getDataFormatId() const {
     return dataFormatBase_->getId();
 }
 

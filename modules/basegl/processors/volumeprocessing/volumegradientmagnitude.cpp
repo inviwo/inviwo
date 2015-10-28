@@ -46,7 +46,7 @@ VolumeGradientMagnitude::VolumeGradientMagnitude()
     : VolumeGLProcessor("volumegradientmagnitude.frag")
     , channel_("channel", "Render Channel")
 {
-    this->dataFormat_ = DataFLOAT32::get();
+    this->dataFormat_ = DataFloat32::get();
 
     channel_.addOption("Channel 1", "Channel 1", 0);
     channel_.setCurrentStateAsDefault();

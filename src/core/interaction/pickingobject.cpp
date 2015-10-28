@@ -31,11 +31,11 @@
 
 namespace inviwo {
 
-PickingObject::PickingObject(size_t id, DataVec3UINT8::type c) : id_(id), colorUINT8_(c),
+PickingObject::PickingObject(size_t id, DataVec3UInt8::type c) : id_(id), colorUINT8_(c),
     interactionEventType_(NONE_SUPPORTED), pos_(vec2(0.f)), 
     depth_(0.f), move_(vec2(0.f)) {
     onPickedCallback_ = new PickingCallback();
-    color_ = static_cast<vec3>(DataVec3UINT8::get()->valueToNormalizedVec3Double(&c));
+    color_ = static_cast<vec3>(DataVec3UInt8::get()->valueToNormalizedVec3Double(&c));
 }
 
 PickingObject::~PickingObject() {
@@ -50,7 +50,7 @@ const vec3& PickingObject::getPickingColor() const {
     return color_;
 }
 
-const DataVec3UINT8::type& PickingObject::getPickingColorAsUINT8() const {
+const DataVec3UInt8::type& PickingObject::getPickingColorAsUINT8() const {
     return colorUINT8_;
 }
 

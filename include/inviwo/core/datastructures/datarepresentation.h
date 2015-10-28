@@ -51,7 +51,7 @@ public:
 
     const DataFormatBase* getDataFormat() const;
     std::string getDataFormatString() const;
-    DataFormatEnums::Id getDataFormatId() const;
+    DataFormatId getDataFormatId() const;
 
     virtual std::type_index getTypeIndex() const = 0;
 

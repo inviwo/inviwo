@@ -63,7 +63,7 @@ bool PickingManager::pickingEnabled() {
     return (pickingEnabledProperty && pickingEnabledProperty->get());
 }
 
-PickingObject* PickingManager::getPickingObjectFromColor(const DataVec3UINT8::type& c) {
+PickingObject* PickingManager::getPickingObjectFromColor(const DataVec3UInt8::type& c) {
     std::vector<PickingObject*>::iterator it =
         std::find_if(pickingObjects_.begin(), pickingObjects_.end(), FindPickingObject(c));
 
@@ -85,13 +85,13 @@ PickingObject* PickingManager::generatePickingObject(size_t id) {
 
     vec3 hsv = vec3(idF * M_PI - floor(idF * M_PI), 0.5f, 0.95f - valueDiff);
     dvec3 rgb = dvec3(hsv2rgb(hsv));
-    DataVec3UINT8::type rgbUINT8;
-    DataVec3UINT8::get()->vec3DoubleToValue(rgb * 255.0, &rgbUINT8);
+    DataVec3UInt8::type rgbUINT8;
+    DataVec3UInt8::get()->vec3DoubleToValue(rgb * 255.0, &rgbUINT8);
     return new PickingObject(id, rgbUINT8);
 }
 
 void PickingManager::performUniqueColorGenerationTest(int iterations) {
-    std::vector<DataVec3UINT8::type> colorVec;
+    std::vector<DataVec3UInt8::type> colorVec;
     bool passed = true;
 
     for (int i = 0; i < iterations; i++) {
@@ -105,8 +105,8 @@ void PickingManager::performUniqueColorGenerationTest(int iterations) {
 
         vec3 hsv = vec3(idF * M_PI - floor(idF * M_PI), 0.5f, 0.95f - valueDiff);
         dvec3 rgb = dvec3(hsv2rgb(hsv));
-        DataVec3UINT8::type rgbUINT8;
-        DataVec3UINT8::get()->vec3DoubleToValue(rgb * 255.0, &rgbUINT8);
+        DataVec3UInt8::type rgbUINT8;
+        DataVec3UInt8::get()->vec3DoubleToValue(rgb * 255.0, &rgbUINT8);
 
         if (std::find(colorVec.begin(), colorVec.end(), rgbUINT8) != colorVec.end()) {
             ivec3 ic = ivec3(rgbUINT8.x, rgbUINT8.y, rgbUINT8.z);

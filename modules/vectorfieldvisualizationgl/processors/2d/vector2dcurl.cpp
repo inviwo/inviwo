@@ -50,7 +50,7 @@ const ProcessorInfo Vector2DCurl::getProcessorInfo() const {
 Vector2DCurl::Vector2DCurl()
     : Processor()
     , inport_("inport", true)
-    , outport_("outport", DataVec4FLOAT32::get())
+    , outport_("outport", DataVec4Float32::get())
     , shader_("vector2dcurl.frag")
 
 {

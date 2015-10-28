@@ -44,7 +44,7 @@ const ProcessorInfo Vector3DDivergence::getProcessorInfo() const {
 }
 
 Vector3DDivergence::Vector3DDivergence() : VolumeGLProcessor("vector3ddivergence.frag") {
-    this->dataFormat_ = DataFLOAT32::get();
+    this->dataFormat_ = DataFloat32::get();
 }
 
 Vector3DDivergence::~Vector3DDivergence() {}

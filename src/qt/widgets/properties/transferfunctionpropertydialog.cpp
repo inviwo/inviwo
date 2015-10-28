@@ -452,7 +452,7 @@ void TransferFunctionPropertyDialog::exportTransferFunction() {
             const Layer* layer = tf.getData();
             vec2 texSize(tf.getTextureSize(), 1);
             const vec4* readData = static_cast<const vec4*>(layer->getRepresentation<LayerRAM>()->getData());
-            Layer writeLayer(layer->getDimensions(), DataVec4UINT8::get());
+            Layer writeLayer(layer->getDimensions(), DataVec4UInt8::get());
             glm::u8vec4* writeData = static_cast<glm::u8vec4*>(writeLayer.getEditableRepresentation<LayerRAM>()->getData());
             
             for (std::size_t i=0; i<texSize.x * texSize.y; ++i) {

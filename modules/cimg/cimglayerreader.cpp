@@ -81,7 +81,7 @@ std::shared_ptr<DataRepresentation> CImgLayerRAMLoader::createRepresentation() c
     void* data = nullptr;
 
     uvec2 dimensions = layerDisk_->getDimensions();
-    DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
+    DataFormatId formatId = DataFormatId::NotSpecialized;
 
     std::string filePath = layerDisk_->getSourceFile();
 
@@ -117,7 +117,7 @@ void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation
     }
 
     uvec2 dimensions = layerDisk_->getDimensions();
-    DataFormatEnums::Id formatId = DataFormatEnums::NOT_SPECIALIZED;
+    DataFormatId formatId = DataFormatId::NotSpecialized;
 
     std::string filePath = layerDisk_->getSourceFile();
 

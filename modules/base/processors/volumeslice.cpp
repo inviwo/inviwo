@@ -48,7 +48,7 @@ const ProcessorInfo VolumeSlice::getProcessorInfo() const {
 VolumeSlice::VolumeSlice()
     : Processor()
     , inport_("volume.inport")
-    , outport_("image.outport", DataVec4UINT8::get(), false)
+    , outport_("image.outport", DataVec4UInt8::get(), false)
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
     , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
     , handleInteractionEvents_("handleEvents", "Handle interaction events", true, VALID)

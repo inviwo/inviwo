@@ -45,7 +45,7 @@ const ProcessorInfo Vector3DCurl::getProcessorInfo() const {
 
 
 Vector3DCurl::Vector3DCurl() : VolumeGLProcessor("vector3dcurl.frag") {
-    this->dataFormat_ = DataVec4FLOAT32::get();
+    this->dataFormat_ = DataVec4Float32::get();
 }
 
 Vector3DCurl::~Vector3DCurl() {}

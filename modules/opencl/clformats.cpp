@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
+cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatId format)
 {
     // Difference between SNORM/UNORM and SIGNED/UNSIGNED INT
     // SNORM/UNORM:
@@ -49,187 +49,187 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
     cl::ImageFormat clFormat;
 
     switch (format) {
-        case DataFormatEnums::NOT_SPECIALIZED:
+        case DataFormatId::NotSpecialized:
             throw OpenCLFormatException("Unsupported data format: NOT_SPECIALIZED", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::FLOAT16:
+        case DataFormatId::Float16:
             clFormat = cl::ImageFormat(CL_R, CL_HALF_FLOAT);
             break;
 
-        case DataFormatEnums::FLOAT32:
+        case DataFormatId::Float32:
             clFormat = cl::ImageFormat(CL_R, CL_FLOAT);
             break;
 
-        case DataFormatEnums::FLOAT64:
+        case DataFormatId::Float64:
             throw OpenCLFormatException("Unsupported data format: FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::INT8:
+        case DataFormatId::Int8:
             clFormat = cl::ImageFormat(CL_R, CL_SNORM_INT8);
             break;
 
-        case DataFormatEnums::INT16:
+        case DataFormatId::Int16:
             clFormat = cl::ImageFormat(CL_R, CL_SNORM_INT16);
             break;
 
-        case DataFormatEnums::INT32:
+        case DataFormatId::Int32:
             clFormat = cl::ImageFormat(CL_R, CL_SIGNED_INT32);
             break;
 
-        case DataFormatEnums::INT64:
+        case DataFormatId::Int64:
             throw OpenCLFormatException("Unsupported data format: INT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::UINT8:
+        case DataFormatId::UInt8:
             clFormat = cl::ImageFormat(CL_R, CL_UNORM_INT8);
             break;
 
-        case DataFormatEnums::UINT16:
+        case DataFormatId::UInt16:
             clFormat = cl::ImageFormat(CL_R, CL_UNORM_INT16);
             break;
 
-        case DataFormatEnums::UINT32:
+        case DataFormatId::UInt32:
             clFormat = cl::ImageFormat(CL_R, CL_UNSIGNED_INT32);
             break;
 
-        case DataFormatEnums::UINT64:
+        case DataFormatId::UInt64:
             throw OpenCLFormatException("Unsupported data format: UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec2FLOAT16:
+        case DataFormatId::Vec2Float16:
             clFormat = cl::ImageFormat(CL_RG, CL_HALF_FLOAT);
             break;
 
-        case DataFormatEnums::Vec2FLOAT32:
+        case DataFormatId::Vec2Float32:
             clFormat = cl::ImageFormat(CL_RG, CL_FLOAT);
             break;
 
-        case DataFormatEnums::Vec2FLOAT64:
+        case DataFormatId::Vec2Float64:
             throw OpenCLFormatException("Unsupported data format: Vec2FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec2INT8:
+        case DataFormatId::Vec2Int8:
             clFormat = cl::ImageFormat(CL_RG, CL_SNORM_INT8);
             break;
 
-        case DataFormatEnums::Vec2INT16:
+        case DataFormatId::Vec2Int16:
             clFormat = cl::ImageFormat(CL_RG, CL_SNORM_INT16);
             break;
 
-        case DataFormatEnums::Vec2INT32:
+        case DataFormatId::Vec2Int32:
             clFormat = cl::ImageFormat(CL_RG, CL_SIGNED_INT32);
             break;
 
-        case DataFormatEnums::Vec2INT64:
+        case DataFormatId::Vec2Int64:
             throw OpenCLFormatException("Unsupported data format: Vec2INT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec2UINT8:
+        case DataFormatId::Vec2UInt8:
             clFormat = cl::ImageFormat(CL_RG, CL_UNORM_INT8);
             break;
 
-        case DataFormatEnums::Vec2UINT16:
+        case DataFormatId::Vec2UInt16:
             clFormat = cl::ImageFormat(CL_RG, CL_UNORM_INT16);
             break;
 
-        case DataFormatEnums::Vec2UINT32:
+        case DataFormatId::Vec2UInt32:
             clFormat = cl::ImageFormat(CL_RG, CL_UNSIGNED_INT32);
             break;
 
-        case DataFormatEnums::Vec2UINT64:
+        case DataFormatId::Vec2UInt64:
             throw OpenCLFormatException("Unsupported data format: Vec2UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3FLOAT16:
+        case DataFormatId::Vec3Float16:
             throw OpenCLFormatException("Unsupported data format: Vec3FLOAT16", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3FLOAT32:
+        case DataFormatId::Vec3Float32:
             throw OpenCLFormatException("Unsupported data format: Vec3FLOAT32", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3FLOAT64:
+        case DataFormatId::Vec3Float64:
             throw OpenCLFormatException("Unsupported data format: Vec3FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3INT8:
+        case DataFormatId::Vec3Int8:
             throw OpenCLFormatException("Unsupported data format: Vec3INT8", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3INT16:
+        case DataFormatId::Vec3Int16:
             throw OpenCLFormatException("Unsupported data format: Vec3INT16", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3INT32:
+        case DataFormatId::Vec3Int32:
             throw OpenCLFormatException("Unsupported data format: Vec3INT32", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3INT64:
+        case DataFormatId::Vec3Int64:
             throw OpenCLFormatException("Unsupported data format: Vec3INT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3UINT8:
+        case DataFormatId::Vec3UInt8:
             throw OpenCLFormatException("Unsupported data format: Vec3UINT8", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3UINT16:
+        case DataFormatId::Vec3UInt16:
             throw OpenCLFormatException("Unsupported data format: Vec3UINT16", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3UINT32:
+        case DataFormatId::Vec3UInt32:
             throw OpenCLFormatException("Unsupported data format: Vec3UINT32", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec3UINT64:
+        case DataFormatId::Vec3UInt64:
             throw OpenCLFormatException("Unsupported data format: Vec3UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec4FLOAT16:
+        case DataFormatId::Vec4Float16:
             clFormat = cl::ImageFormat(CL_RGBA, CL_HALF_FLOAT);
             break;
 
-        case DataFormatEnums::Vec4FLOAT32:
+        case DataFormatId::Vec4Float32:
             clFormat = cl::ImageFormat(CL_RGBA, CL_FLOAT);
             break;
 
-        case DataFormatEnums::Vec4FLOAT64:
+        case DataFormatId::Vec4Float64:
             throw OpenCLFormatException("Unsupported data format: Vec4FLOAT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec4INT8:
+        case DataFormatId::Vec4Int8:
             clFormat = cl::ImageFormat(CL_RGBA, CL_SNORM_INT8);
             break;
 
-        case DataFormatEnums::Vec4INT16:
+        case DataFormatId::Vec4Int16:
             clFormat = cl::ImageFormat(CL_RGBA, CL_SNORM_INT16);
             break;
 
-        case DataFormatEnums::Vec4INT32:
+        case DataFormatId::Vec4Int32:
             clFormat = cl::ImageFormat(CL_RGBA, CL_SIGNED_INT32);
             break;
 
-        case DataFormatEnums::Vec4INT64:
+        case DataFormatId::Vec4Int64:
             throw OpenCLFormatException("Unsupported data format: Vec4INT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::Vec4UINT8:
+        case DataFormatId::Vec4UInt8:
             clFormat = cl::ImageFormat(CL_RGBA, CL_UNORM_INT8);
             break; // TODO: Find out why CL_UNORM_INT8 does not work
 
-        case DataFormatEnums::Vec4UINT16:
+        case DataFormatId::Vec4UInt16:
             clFormat = cl::ImageFormat(CL_RGBA, CL_UNORM_INT16);
             break;
 
-        case DataFormatEnums::Vec4UINT32:
+        case DataFormatId::Vec4UInt32:
             clFormat = cl::ImageFormat(CL_RGBA, CL_UNSIGNED_INT32);
             break;
 
-        case DataFormatEnums::Vec4UINT64:
+        case DataFormatId::Vec4UInt64:
             throw OpenCLFormatException("Unsupported data format: Vec4UINT64", IvwContextCustom("dataFormatToCLImageFormat"));
             break;
 
-        case DataFormatEnums::NUMBER_OF_FORMATS:
+        case DataFormatId::NumberOfFormats:
         default:
             // Should not be able to reach here
             throw OpenCLFormatException("cl::ImageFormat typeToImageFormat. Format not implmented yet");
@@ -248,7 +248,7 @@ cl::ImageFormat dataFormatToCLImageFormat(inviwo::DataFormatEnums::Id format)
     return clFormat;
 }
 
-CLFormats::CLFormat CLFormats::getCLFormat(DataFormatEnums::Id id) const {
+CLFormats::CLFormat CLFormats::getCLFormat(DataFormatId id) const {
     if (CLFormatArray_[static_cast<int>(id)].valid) {
         return CLFormatArray_[static_cast<int>(id)];
     } else {

@@ -48,13 +48,13 @@ public:
         TOUCH_INTERACTION_EVENT = 2
     };
 
-    PickingObject(size_t, DataVec3UINT8::type);
+    PickingObject(size_t, DataVec3UInt8::type);
 
     virtual ~PickingObject();
 
     const size_t& getPickingId() const;
     const vec3& getPickingColor() const;
-    const DataVec3UINT8::type& getPickingColorAsUINT8() const;
+    const DataVec3UInt8::type& getPickingColorAsUINT8() const;
     const vec2& getPickingPosition() const;
     const vec2& getPickingMove() const;
 
@@ -78,7 +78,7 @@ public:
 
 private:
     size_t id_;
-    DataVec3UINT8::type colorUINT8_;
+    DataVec3UInt8::type colorUINT8_;
     vec3 color_;
 
     MouseEvent mouseEvent_;

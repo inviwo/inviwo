@@ -38,10 +38,10 @@ namespace inviwo {
 
 class FindPickingObject {
 public:
-    FindPickingObject(const DataVec3UINT8::type& c) : color_(c) {}
+    FindPickingObject(const DataVec3UInt8::type& c) : color_(c) {}
     bool operator()(PickingObject* obj) { return obj->getPickingColorAsUINT8() == color_; }
 private:
-    DataVec3UINT8::type color_;
+    DataVec3UInt8::type color_;
 };
 
 /** \class PickingManager
@@ -63,7 +63,7 @@ public:
 
 protected:
     void performUniqueColorGenerationTest(int iterations);
-    PickingObject* getPickingObjectFromColor(const DataVec3UINT8::type&);
+    PickingObject* getPickingObjectFromColor(const DataVec3UInt8::type&);
     PickingObject* generatePickingObject(size_t);
 
 private:

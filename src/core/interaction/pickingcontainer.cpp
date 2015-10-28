@@ -223,8 +223,8 @@ PickingObject* PickingContainer::findPickingObject(const uvec2& coord){
             const LayerRAM* pickingLayerRAM = pickingLayer->getRepresentation<LayerRAM>();
             dvec4 value = pickingLayerRAM->getValueAsVec4Double(coord);
             dvec3 pickedColor = (value.a > 0.0 ? value.rgb() : dvec3(0.0));
-            DataVec3UINT8::type pickedColorUINT8;
-            DataVec3UINT8::get()->vec3DoubleToValue(pickedColor*255.0, &pickedColorUINT8);
+            DataVec3UInt8::type pickedColorUINT8;
+            DataVec3UInt8::get()->vec3DoubleToValue(pickedColor*255.0, &pickedColorUINT8);
             return PickingManager::getPtr()->getPickingObjectFromColor(pickedColorUINT8);
         }
     }

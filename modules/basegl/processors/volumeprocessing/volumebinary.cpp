@@ -48,7 +48,7 @@ VolumeBinary::VolumeBinary()
     : VolumeGLProcessor("volume_binary.frag")
     , threshold_("threshold", "Threshold", 0.5) {
     addProperty(threshold_);
-    this->dataFormat_ = DataUINT8::get();
+    this->dataFormat_ = DataUInt8::get();
 }
     
 void VolumeBinary::preProcess(TextureUnitContainer &cont) {
