@@ -121,7 +121,7 @@ void BaseOrdinalMinMaxTextPropertyWidgetQt::showContextMenu(const QPoint& pos) {
     PropertyWidgetQt::updateContextMenu();
     UsageMode appVisibilityMode = getApplicationUsageMode();
 
-    if (appVisibilityMode == DEVELOPMENT) {
+    if (appVisibilityMode == UsageMode::Development) {
         settingsAction_->setVisible(true);
     }
     else {

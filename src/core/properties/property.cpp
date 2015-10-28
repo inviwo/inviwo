@@ -47,7 +47,7 @@ Property::Property(const std::string& identifier, const std::string& displayName
     , displayName_("displayName", displayName)
     , readOnly_("readonly", false)
     , semantics_("semantics", semantics)
-    , usageMode_("usageMode", APPLICATION)
+    , usageMode_("usageMode", UsageMode::Application)
     , visible_("visible", true)
     , propertyModified_(false)
     , invalidationLevel_(invalidationLevel)
@@ -239,7 +239,7 @@ void Property::deserialize(IvwDeserializer& d) {
     semantics_.deserialize(d);
     notifyObserversOnSetSemantics(semantics_);
 
-    int mode = usageMode_;
+    int mode = static_cast<int>(usageMode_.value);
     d.deserialize(usageMode_.name, mode);
     usageMode_ = static_cast<UsageMode>(mode);
     notifyObserversOnSetUsageMode(usageMode_);

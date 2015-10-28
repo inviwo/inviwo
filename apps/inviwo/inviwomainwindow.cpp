@@ -818,13 +818,13 @@ void InviwoMainWindow::showAboutBox() {
 
 void InviwoMainWindow::visibilityModeChangedInSettings() {
     if (appUsageModeProp_) {
-        size_t selectedIdx = appUsageModeProp_->getSelectedIndex();
-        if (selectedIdx == DEVELOPMENT) {
+        auto selectedIdx = static_cast<UsageMode>(appUsageModeProp_->getSelectedIndex());
+        if (selectedIdx == UsageMode::Development) {
             if (visibilityModeAction_->isChecked()) {
                 visibilityModeAction_->setChecked(false);
             }
             networkEditorView_->hideNetwork(false);
-        } else if (selectedIdx == APPLICATION) {
+        } else if (selectedIdx == UsageMode::Application) {
             if (!visibilityModeAction_->isChecked()) {
                 visibilityModeAction_->setChecked(true);
             }
@@ -836,11 +836,13 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
 
 // False == Development, True = Application
 void InviwoMainWindow::setVisibilityMode(bool applicationView) {
-    size_t selectedIdx = appUsageModeProp_->getSelectedIndex();
+    auto selectedIdx = static_cast<UsageMode>(appUsageModeProp_->getSelectedIndex());
     if (applicationView) {
-        if (selectedIdx != APPLICATION) appUsageModeProp_->setSelectedIndex(APPLICATION);
+        if (selectedIdx != UsageMode::Application)
+            appUsageModeProp_->setSelectedIndex(static_cast<int>(UsageMode::Application));
     } else {
-        if (selectedIdx != DEVELOPMENT) appUsageModeProp_->setSelectedIndex(DEVELOPMENT);
+        if (selectedIdx != UsageMode::Development)
+            appUsageModeProp_->setSelectedIndex(static_cast<int>(UsageMode::Development));
     }
 }
 

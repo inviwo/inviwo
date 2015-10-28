@@ -156,7 +156,7 @@ void PropertyWidgetQt::initState() {
 void PropertyWidgetQt::setVisible(bool visible) {
     bool wasVisible = QWidget::isVisible();
     UsageMode appMode = getApplicationUsageMode();
-    if (visible && property_ && property_->getUsageMode() == DEVELOPMENT && appMode == APPLICATION)
+    if (visible && property_ && property_->getUsageMode() == UsageMode::Development && appMode == UsageMode::Application)
         visible = false;
 
     QWidget::setVisible(visible);
@@ -349,11 +349,11 @@ void PropertyWidgetQt::updateModuleMenuActions() {
 
 // connected to developerUsageModeAction_
 void PropertyWidgetQt::setDeveloperUsageMode(bool value) {
-    property_->setUsageMode(DEVELOPMENT);
+    property_->setUsageMode(UsageMode::Development);
 }
 // connected to applicationUsageModeAction_
 void PropertyWidgetQt::setApplicationUsageMode(bool value) {
-    property_->setUsageMode(APPLICATION);
+    property_->setUsageMode(UsageMode::Application);
 }
 
 UsageMode PropertyWidgetQt::getApplicationUsageMode() {
@@ -381,14 +381,14 @@ void PropertyWidgetQt::moduleAction() {
 void PropertyWidgetQt::updateContextMenu() {
     if (usageModeItem_ && property_) {
         // Update the current selection.
-        if (property_->getUsageMode() == DEVELOPMENT)
+        if (property_->getUsageMode() == UsageMode::Development)
             developerUsageModeAction_->setChecked(true);
-        else if (property_->getUsageMode() == APPLICATION)
+        else if (property_->getUsageMode() == UsageMode::Application)
             applicationUsageModeAction_->setChecked(true);
 
         // Disable the view mode buttons in Application mode
         UsageMode appVisibilityMode = getApplicationUsageMode();
-        if (appVisibilityMode == DEVELOPMENT) {
+        if (appVisibilityMode == UsageMode::Development) {
             developerUsageModeAction_->setEnabled(true);
             applicationUsageModeAction_->setEnabled(true);
         } else {

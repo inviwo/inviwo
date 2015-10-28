@@ -160,13 +160,13 @@ void BaseOrdinalPropertyWidgetQt::showContextMenuSlider(int sliderId) {
     PropertyWidgetQt::updateContextMenu();
     UsageMode appVisibilityMode = getApplicationUsageMode();
 
-    if (appVisibilityMode == DEVELOPMENT) {
+    if (appVisibilityMode == UsageMode::Development) {
         settingsAction_->setVisible(true);
     } else {
         settingsAction_->setVisible(false);
     }
 
-    if (appVisibilityMode == DEVELOPMENT && sliderId_ >= 0) {
+    if (appVisibilityMode == UsageMode::Development && sliderId_ >= 0) {
         minAction_->setVisible(true);
         maxAction_->setVisible(true);
     } else {

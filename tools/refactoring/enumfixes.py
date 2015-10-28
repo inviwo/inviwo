@@ -149,6 +149,11 @@ ShadingFunctionReplacements = {
     "ShadingFunctionEnum::ISOTROPIC" : "ShadingFunctionKind::Isotropic"
 }
 
+usageModeReplacements =  {
+    "APPLICATION" : "UsageMode::Application",
+    "DEVELOPMENT" : "UsageMode::Development"
+}
+
 
 # order matters here...
 #for k,v in numericTypeReplacements.items():
@@ -160,6 +165,9 @@ ShadingFunctionReplacements = {
 #for k,v in dataFormatTypeReplacements.items():
 #	replace(k,v)
 
-for k,v in ShadingFunctionReplacements.items():
-	replace(k,v)
+#for k,v in ShadingFunctionReplacements.items():
+#	replace(k,v)
+
+for k,v in usageModeReplacements.items():
+	replace(r"\b"+k+r"\b", v)
 
