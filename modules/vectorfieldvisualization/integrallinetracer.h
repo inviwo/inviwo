@@ -27,32 +27,41 @@
  *
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h>
-#include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
+#ifndef IVW_INTEGRALLINETRACER_H
+#define IVW_INTEGRALLINETRACER_H
 
-#include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
-#include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
-#include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
-
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualization") {
-    registerProcessor<RBFVectorFieldGenerator2D>();
-    registerProcessor<RBFVectorFieldGenerator3D>();
-    registerProcessor<SeedPointGenerator>();
+/**
+ * \class IntegralLineTracer
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineTracer { 
+public:
 
-    registerProcessor<StreamLines>();
-    registerProcessor<PathLines>();
-    registerProcessor<StreamRibbons>();
+    enum class IntegrationScheme {
+        Euler,
+        RK4
+    };
 
-    registerPort < SeedPointsOutport>("std::vector<vec3>");
-    registerPort < SeedPointsInport>("std::vector<vec3>");
-}
+    enum class Direction { FWD = 1, BWD = 2, BOTH = 3 };
 
+    IntegralLineTracer(IntegrationScheme integrationScheme);
+    virtual ~IntegralLineTracer();
 
-}  // namespace
+    IntegrationScheme getIntegrationScheme() const;
+    void setIntegrationScheme(IntegrationScheme scheme);
+
+protected:
+    IntegrationScheme integrationScheme_;
+
+};
+
+} // namespace
+
+#endif // IVW_INTEGRALLINETRACER_H
+

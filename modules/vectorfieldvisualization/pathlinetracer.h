@@ -27,32 +27,42 @@
  *
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h>
-#include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
+#ifndef IVW_PATHLINETRACER_H
+#define IVW_PATHLINETRACER_H
 
-#include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
-#include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
-#include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
-
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <modules/vectorfieldvisualization/integralline.h>
+#include <modules/vectorfieldvisualization/integrallinetracer.h>
+#include <inviwo/core/util/volumevectorsampler.h>
 
 namespace inviwo {
 
-VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualization") {
-    registerProcessor<RBFVectorFieldGenerator2D>();
-    registerProcessor<RBFVectorFieldGenerator3D>();
-    registerProcessor<SeedPointGenerator>();
+/**
+ * \class PathLineTracer
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLineTracer : public IntegralLineTracer {
+public:
+    PathLineTracer(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector,
+                   IntegrationScheme integrationScheme = IntegralLineTracer::IntegrationScheme::RK4)
+        : IntegralLineTracer(integrationScheme), sampler_(volumeVector){}
+    virtual ~PathLineTracer();
 
-    registerProcessor<StreamLines>();
-    registerProcessor<PathLines>();
-    registerProcessor<StreamRibbons>();
+    IntegralLine traceFrom(const vec4 &p, int steps, double dt, Direction dir) {
+        return traceFrom(dvec4(p),steps,dt,dir);
+    }
+    IntegralLine traceFrom(const dvec4 &p, int steps, double dt, Direction dir) {
+        IntegralLine line;
 
-    registerPort < SeedPointsOutport>("std::vector<vec3>");
-    registerPort < SeedPointsInport>("std::vector<vec3>");
-}
+        return line;
+    }
 
+private:
+    VolumeVectorSampler sampler_;
+};
 
 }  // namespace
+
+#endif  // IVW_PATHLINETRACER_H

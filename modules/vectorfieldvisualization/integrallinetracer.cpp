@@ -27,32 +27,27 @@
  *
  *********************************************************************************/
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmodule.h>
-#include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator2d.h>
-#include <modules/vectorfieldvisualization/processors/datageneration/rbfvectorfieldgenerator3d.h>
-#include <modules/vectorfieldvisualization/processors/datageneration/seedpointgenerator.h>
-
-#include <modules/vectorfieldvisualization/processors/3d/streamlines.h>
-#include <modules/vectorfieldvisualization/processors/3d/pathlines.h>
-#include <modules/vectorfieldvisualization/processors/3d/streamribbons.h>
-
-#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
+#include "integrallinetracer.h"
 
 namespace inviwo {
 
-VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
-    : InviwoModule(app, "VectorFieldVisualization") {
-    registerProcessor<RBFVectorFieldGenerator2D>();
-    registerProcessor<RBFVectorFieldGenerator3D>();
-    registerProcessor<SeedPointGenerator>();
-
-    registerProcessor<StreamLines>();
-    registerProcessor<PathLines>();
-    registerProcessor<StreamRibbons>();
-
-    registerPort < SeedPointsOutport>("std::vector<vec3>");
-    registerPort < SeedPointsInport>("std::vector<vec3>");
+IntegralLineTracer::IntegralLineTracer(IntegrationScheme integrationScheme) : integrationScheme_(integrationScheme){
+    
 }
 
+IntegralLineTracer::~IntegralLineTracer()  {
+    
+}
 
-}  // namespace
+inviwo::IntegralLineTracer::IntegrationScheme IntegralLineTracer::getIntegrationScheme() const
+{
+    return integrationScheme_;
+}
+
+void IntegralLineTracer::setIntegrationScheme(IntegrationScheme scheme)
+{
+    integrationScheme_ = scheme;
+}
+
+} // namespace
+

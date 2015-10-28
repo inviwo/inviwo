@@ -24,54 +24,73 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#ifndef IVW_STREAMTRACER_H
-#define IVW_STREAMTRACER_H
+#ifndef IVW_PATHLINES_H
+#define IVW_PATHLINES_H
 
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/vectorfieldvisualization/integralline.h>
-#include <modules/vectorfieldvisualization/integrallinetracer.h>
-#include <inviwo/core/util/volumesampler.h>
+
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/ports/meshport.h>
+#include <modules/vectorfieldvisualization/pathlinetracer.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+
+#include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
 namespace inviwo {
 
-/**
- * \class StreamLineTracer
+/** \docpage{org.inviwo.PathLines, Path Lines}
+ * ![](org.inviwo.PathLines.png?classIdentifier=org.inviwo.PathLines)
+ * Explanation of how to use the processor.
  *
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * ### Inports
+ *   * __<Inport1>__ <description>.
  *
- * DESCRIBE_THE_CLASS
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ * 
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineTracer : public IntegralLineTracer {
+
+
+/**
+ * \class PathLines
+ * \brief <brief description> 
+ * <Detailed description from a developer prespective>
+ */
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API PathLines : public Processor { 
 public:
-
-    StreamLineTracer(const Volume *vol , IntegrationScheme integrationScheme = IntegrationScheme::RK4);
-
-    virtual ~StreamLineTracer();
-
-    void addMetaVolume(const std::string &name, const VolumeRAM *vol);
-
-    IntegralLine traceFrom(const dvec3 &p, int steps, double stepSize, Direction dir,
-                           bool normalzieSample);
-    IntegralLine traceFrom(const vec3 &p, int steps, double stepSize, Direction dir,
-                           bool normalzieSample);
-
+    InviwoProcessorInfo();
+    PathLines();
+    virtual ~PathLines() = default;
+     
+    virtual void process() override;
 
 private:
-    void step(int steps, dvec3 curPos, IntegralLine &line, double stepSize, bool normalzieSample);
-    dvec3 euler(const dvec3 &curPos);
-    dvec3 rk4(const dvec3 &curPos , double stepSize, bool normalzieSample, dmat3 m);
+    VolumeVectorInport volume_;
+    SeedPointsInport seedPoints_;
 
-    dmat3 invBasis_;
-    std::map<std::string, VolumeSampler> metaVolumes_;
-    VolumeSampler volumeSampler_;
-    size3_t dimensions_;
-    
+    MeshOutport linesStripsMesh_;
+
+
+    TemplateOptionProperty<IntegralLineTracer::Direction> stepDirection_;
+    TemplateOptionProperty<IntegralLineTracer::IntegrationScheme> integrationScheme_;
+    TemplateOptionProperty<StructuredCoordinateTransformer<3>::Space> seedPointsSpace_;
+
+    TransferFunctionProperty tf_;
+    FloatProperty velocityScale_;
+    StringProperty maxVelocity_;
 };
 
-}  // namespace
+} // namespace
 
-#endif  // IVW_INTEGRALLINETRACER_H
+#endif // IVW_PATHLINES_H
+

@@ -35,10 +35,10 @@
 namespace inviwo {
 
 StreamLineTracer::StreamLineTracer(const Volume *vol, IntegrationScheme integrationScheme)
-    : volumeSampler_(vol->getRepresentation<VolumeRAM>())
+    : IntegralLineTracer(integrationScheme)
+    , volumeSampler_(vol->getRepresentation<VolumeRAM>())
     , invBasis_(dmat3(glm::inverse(vol->getBasis())))
     , dimensions_(vol->getDimensions())
-    , integrationScheme_(integrationScheme)
 {}
 
 StreamLineTracer::~StreamLineTracer() {}

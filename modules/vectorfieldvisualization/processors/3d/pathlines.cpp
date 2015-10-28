@@ -1,47 +1,64 @@
-#include "streamlines.h"
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2015 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
 
-#include <bitset>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <inviwo/core/datastructures/buffer/buffer.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <modules/opengl/image/layergl.h>
-#include <inviwo/core/datastructures/image/layerram.h>
-
-#include <inviwo/core/util/imagesampler.h>
+#include "pathlines.h"
+#include <inviwo/core/util/volumevectorsampler.h>
 
 namespace inviwo {
 
-const ProcessorInfo StreamLines::processorInfo_{
-    "org.inviwo.StreamLines",      // Class identifier
-    "Stream Lines",                // Display name
-    "Vector Field Visualization",  // Category
-    CodeState::Experimental,       // Code state
-    Tags::CPU,                     // Tags
-};
-const ProcessorInfo StreamLines::getProcessorInfo() const {
-    return processorInfo_;
-}
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+ProcessorClassIdentifier(PathLines,  "org.inviwo.PathLines");
+ProcessorDisplayName(PathLines,  "Path Lines");
+ProcessorTags(PathLines, Tags::None);
+ProcessorCategory(PathLines, "Undefined");
+ProcessorCodeState(PathLines, CODE_STATE_EXPERIMENTAL);
 
-StreamLines::StreamLines()
+PathLines::PathLines()
     : Processor()
     , volume_("vectorvolume")
     , seedPoints_("seedpoints")
     , linesStripsMesh_("linesStripsMesh_")
-    , numberOfSteps_("steps", "Number of Steps", 100, 1, 1000)
-    , normalizeSamples_("normalizeSamples", "Normalize Samples", true)
-    , stepSize_("stepSize", "StepSize", 0.001f, 0.0001f, 1.0f)
+
     , stepDirection_("stepDirection", "Step Direction")
-    , integrationScheme_("integrationScheme","Integration Scheme")
+    , integrationScheme_("integrationScheme", "Integration Scheme")
     , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
+
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
-    , maxVelocity_("minMaxVelocity", "Velocity Range", "0", VALID) {
+    , maxVelocity_("minMaxVelocity", "Velocity Range", "0", VALID)
+
+{
+
     addPort(volume_);
     addPort(seedPoints_);
     addPort(linesStripsMesh_);
 
-    stepSize_.setIncrement(0.0001f);
     stepDirection_.addOption("fwd", "Forward", IntegralLineTracer::Direction::FWD);
     stepDirection_.addOption("bwd", "Backwards", IntegralLineTracer::Direction::BWD);
     stepDirection_.addOption("bi", "Bi Directional", IntegralLineTracer::Direction::BOTH);
@@ -51,22 +68,16 @@ StreamLines::StreamLines()
     integrationScheme_.setSelectedValue(IntegralLineTracer::IntegrationScheme::RK4);
 
     seedPointsSpace_.addOption("texture", "Texture",
-                               StructuredCoordinateTransformer<3>::Space::Texture);
+        StructuredCoordinateTransformer<3>::Space::Texture);
     seedPointsSpace_.addOption("model", "Model", StructuredCoordinateTransformer<3>::Space::Model);
     seedPointsSpace_.addOption("world", "World", StructuredCoordinateTransformer<3>::Space::World);
     seedPointsSpace_.addOption("data", "Data", StructuredCoordinateTransformer<3>::Space::Data);
     seedPointsSpace_.addOption("index", "Index", StructuredCoordinateTransformer<3>::Space::Index);
 
-    stepSize_.setCurrentStateAsDefault();
-    stepDirection_.setCurrentStateAsDefault();
-
     maxVelocity_.setReadOnly(true);
 
-    addProperty(numberOfSteps_);
-    addProperty(stepSize_);
     addProperty(stepDirection_);
     addProperty(integrationScheme_);
-    addProperty(normalizeSamples_);
     addProperty(seedPointsSpace_);
 
     addProperty(tf_);
@@ -80,31 +91,39 @@ StreamLines::StreamLines()
 
     setAllPropertiesCurrentStateAsDefault();
 }
+    
+void PathLines::process() {
+    auto data = volume_.getData();
+    if (data->size() == 0) {
+        return;
+    }
+    
+    auto firstVol = data->at(0);
 
-StreamLines::~StreamLines() {}
-
-void StreamLines::process() {
     auto mesh = util::make_unique<BasicMesh>();
-    mesh->setModelMatrix(volume_.getData()->getModelMatrix());
-    mesh->setWorldMatrix(volume_.getData()->getWorldMatrix());
+    mesh->setModelMatrix(firstVol->getModelMatrix());
+    mesh->setWorldMatrix(firstVol->getWorldMatrix());
 
-    auto m = volume_.getData()->getCoordinateTransformer().getMatrix(
+    auto m = firstVol->getCoordinateTransformer().getMatrix(
         seedPointsSpace_.get(), StructuredCoordinateTransformer<3>::Space::Texture);
 
     ImageSampler tf(tf_.get().getData());
 
     float maxVelocity = 0;
-    StreamLineTracer tracer(volume_.getData().get(),integrationScheme_.get());
+    PathLineTracer tracer(data, integrationScheme_.get());
+
+    float startT_ = 0;
+    int numberOfSteps_ = 100;
+    double dt_ = 0.001;
+   
 
     std::vector<BasicMesh::Vertex> vertices;
-
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
             auto indexBuffer =
                 mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::STRIP_ADJACENCY);
-            auto line = tracer.traceFrom(P.xyz(), numberOfSteps_.get(), stepSize_.get(),
-                                         stepDirection_.get(), normalizeSamples_.get());
+            auto line = tracer.traceFrom(vec4(P.xyz(), startT_), numberOfSteps_, dt_,stepDirection_.get());
 
             auto position = line.getPositions().begin();
             auto velocity = line.getMetaData("velocity").begin();
@@ -126,8 +145,8 @@ void StreamLines::process() {
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 
-                vertices.push_back({pos,glm::normalize(v),pos,c});
-                
+                vertices.push_back({ pos,glm::normalize(v),pos,c });
+
                 position++;
                 velocity++;
             }
@@ -139,7 +158,10 @@ void StreamLines::process() {
 
     linesStripsMesh_.setData(mesh.release());
     maxVelocity_.set(toString(maxVelocity));
+
+
+
 }
 
-}  // namespace
+} // namespace
 
