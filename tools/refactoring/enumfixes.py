@@ -154,6 +154,21 @@ usageModeReplacements =  {
     "DEVELOPMENT" : "UsageMode::Development"
 }
 
+drawModeReplacements = {
+    "DrawMode::NOT_SPECIFIED" : "DrawMode::NotSpecified",
+    "DrawMode::POINTS" : "DrawMode::Points",
+    "DrawMode::LINES" : "DrawMode::Lines",
+    "DrawMode::LINE_STRIP" : "DrawMode::LineStrip",
+    "DrawMode::LINE_LOOP" : "DrawMode::LineLoop",
+    "DrawMode::LINES_ADJACENCY" : "DrawMode::LinesAdjacency",
+    "DrawMode::LINE_STRIP_ADJACENCY" : "DrawMode::LineStripAdjacency",
+    "DrawMode::TRIANGLES" : "DrawMode::Triangles",
+    "DrawMode::TRIANGLE_STRIP" : "DrawMode::TriangleStrip",
+    "DrawMode::TRIANGLE_FAN" : "DrawMode::TriangleFan",
+    "DrawMode::TRIANGLES_ADJACENCY" : "DrawMode::TrianglesAdjacency",
+    "DrawMode::TRIANGLE_STRIP_ADJACENCY" : "DrawMode::TriangleStripAdjacency",
+    "DrawMode::NUMBER_OF_DRAW_MODES" : "DrawMode::NumberOfDrawModes"    
+}
 
 # order matters here...
 #for k,v in numericTypeReplacements.items():
@@ -168,6 +183,8 @@ usageModeReplacements =  {
 #for k,v in ShadingFunctionReplacements.items():
 #	replace(k,v)
 
-for k,v in usageModeReplacements.items():
-	replace(r"\b"+k+r"\b", v)
+#for k,v in usageModeReplacements.items():
+#	replace(r"\b"+k+r"\b", v)
 
+for k,v in drawModeReplacements.items():
+	replace(r"\b"+k+r"\b", v)

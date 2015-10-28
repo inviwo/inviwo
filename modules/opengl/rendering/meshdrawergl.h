@@ -41,19 +41,19 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API MeshDrawerGL : public MeshDrawer {
 public:
     enum class DrawMode {
-        NOT_SPECIFIED = 0,
-        POINTS,
-        LINES,
-        LINE_STRIP,
-        LINE_LOOP,
-        LINES_ADJACENCY,
-        LINE_STRIP_ADJACENCY,
-        TRIANGLES,
-        TRIANGLE_STRIP,
-        TRIANGLE_FAN,
-        TRIANGLES_ADJACENCY,
-        TRIANGLE_STRIP_ADJACENCY,
-        NUMBER_OF_DRAW_MODES
+        NotSpecified = 0,
+        Points,
+        Lines,
+        LineStrip,
+        LineLoop,
+        LinesAdjacency,
+        LineStripAdjacency,
+        Triangles,
+        TriangleStrip,
+        TriangleFan,
+        TrianglesAdjacency,
+        TriangleStripAdjacency,
+        NumberOfDrawModes
     };
 
     MeshDrawerGL();
@@ -92,7 +92,7 @@ protected:
         std::vector<const BufferBase*> elementBufferList;
     };
 
-    DrawMethod drawMethods_[static_cast<size_t>(DrawMode::NUMBER_OF_DRAW_MODES)];
+    DrawMethod drawMethods_[static_cast<size_t>(DrawMode::NumberOfDrawModes)];
     const Mesh* meshToDraw_;
 };
 

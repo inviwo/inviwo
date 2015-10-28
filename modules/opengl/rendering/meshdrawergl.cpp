@@ -70,12 +70,12 @@ void MeshDrawerGL::draw() {
     
     // If default is indices, render all index lists
     if (!drawMethods_[0].elementBufferList.empty()) {
-        for (int i = 1; i < static_cast<int>(DrawMode::NUMBER_OF_DRAW_MODES); i++) {
+        for (int i = 1; i < static_cast<int>(DrawMode::NumberOfDrawModes); i++) {
             if (!drawMethods_[i].elementBufferList.empty())
                 (this->*drawMethods_[i].drawFunc)(static_cast<DrawMode>(i));
         }
     } else {// Render just default one
-        (this->*drawMethods_[0].drawFunc)(DrawMode::NOT_SPECIFIED);
+        (this->*drawMethods_[0].drawFunc)(DrawMode::NotSpecified);
     }
 }
 
@@ -105,7 +105,7 @@ void MeshDrawerGL::drawElements(DrawMode dmenum) const {
 
 void MeshDrawerGL::initialize(Mesh::MeshInfo ai) {
     const auto dm = static_cast<size_t>(getDrawMode(ai.dt, ai.ct));
-    const auto ns = static_cast<size_t>(DrawMode::NOT_SPECIFIED);
+    const auto ns = static_cast<size_t>(DrawMode::NotSpecified);
     
     drawMethods_[ns].drawFunc = &MeshDrawerGL::emptyFunc;
     drawMethods_[ns].drawMode = getGLDrawMode(getDrawMode(ai.dt, ai.ct));
@@ -150,83 +150,83 @@ MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType c
         case DrawType::TRIANGLES:
             switch (ct) {
                 case ConnectivityType::NONE:
-                    return DrawMode::TRIANGLES;
+                    return DrawMode::Triangles;
 
                 case ConnectivityType::STRIP:
-                    return DrawMode::TRIANGLE_STRIP;
+                    return DrawMode::TriangleStrip;
 
                 case ConnectivityType::FAN:
-                    return DrawMode::TRIANGLE_FAN;
+                    return DrawMode::TriangleFan;
 
                 case ConnectivityType::ADJACENCY:
-                    return DrawMode::TRIANGLES_ADJACENCY;
+                    return DrawMode::TrianglesAdjacency;
 
                 case ConnectivityType::STRIP_ADJACENCY:
-                    return DrawMode::TRIANGLE_STRIP_ADJACENCY;
+                    return DrawMode::TriangleStripAdjacency;
 
                 case ConnectivityType::LOOP:
                 case ConnectivityType::NUMBER_OF_CONNECTIVITY_TYPES:
                 default:
-                    return DrawMode::POINTS;
+                    return DrawMode::Points;
             }
 
         case DrawType::LINES:
             switch (ct) {
                 case ConnectivityType::NONE:
-                    return DrawMode::LINES;
+                    return DrawMode::Lines;
 
                 case ConnectivityType::STRIP:
-                    return DrawMode::LINE_STRIP;
+                    return DrawMode::LineStrip;
 
                 case ConnectivityType::LOOP:
-                    return DrawMode::LINE_LOOP;
+                    return DrawMode::LineLoop;
 
                 case ConnectivityType::ADJACENCY:
-                    return DrawMode::LINES_ADJACENCY;
+                    return DrawMode::LinesAdjacency;
 
                 case ConnectivityType::STRIP_ADJACENCY:
-                    return DrawMode::LINE_STRIP_ADJACENCY;
+                    return DrawMode::LineStripAdjacency;
 
                 case ConnectivityType::FAN:
                 case ConnectivityType::NUMBER_OF_CONNECTIVITY_TYPES:
                 default:
-                    return DrawMode::POINTS;
+                    return DrawMode::Points;
             }
 
         case DrawType::POINTS:
         case DrawType::NOT_SPECIFIED:
         case DrawType::NUMBER_OF_DRAW_TYPES:
         default:
-            return DrawMode::POINTS;
+            return DrawMode::Points;
     }
 }
 
 GLenum MeshDrawerGL::getGLDrawMode(DrawMode dm) const {
     switch (dm) {
-        case DrawMode::POINTS:
+        case DrawMode::Points:
             return GL_POINTS;
-        case DrawMode::LINES:
+        case DrawMode::Lines:
             return GL_LINES;
-        case DrawMode::LINE_STRIP:
+        case DrawMode::LineStrip:
             return GL_LINE_STRIP;
-        case DrawMode::LINE_LOOP:
+        case DrawMode::LineLoop:
             return GL_LINE_LOOP;
-        case DrawMode::LINES_ADJACENCY:
+        case DrawMode::LinesAdjacency:
             return GL_LINES_ADJACENCY;
-        case DrawMode::LINE_STRIP_ADJACENCY:
+        case DrawMode::LineStripAdjacency:
             return GL_LINE_STRIP_ADJACENCY;
-        case DrawMode::TRIANGLES:
+        case DrawMode::Triangles:
             return GL_TRIANGLES;
-        case DrawMode::TRIANGLE_STRIP:
+        case DrawMode::TriangleStrip:
             return GL_TRIANGLE_STRIP;
-        case DrawMode::TRIANGLE_FAN:
+        case DrawMode::TriangleFan:
             return GL_TRIANGLE_FAN;
-        case DrawMode::TRIANGLES_ADJACENCY:
+        case DrawMode::TrianglesAdjacency:
             return GL_TRIANGLES_ADJACENCY;
-        case DrawMode::TRIANGLE_STRIP_ADJACENCY:
+        case DrawMode::TriangleStripAdjacency:
             return GL_TRIANGLE_STRIP_ADJACENCY;
-        case DrawMode::NUMBER_OF_DRAW_MODES:
-        case DrawMode::NOT_SPECIFIED:
+        case DrawMode::NumberOfDrawModes:
+        case DrawMode::NotSpecified:
         default:
             return GL_POINTS;
     }
