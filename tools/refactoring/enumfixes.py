@@ -135,13 +135,31 @@ dataFormatTypeReplacements = {
 	"DataVec4UINT64"        : "DataVec4UInt64",
 }
 
+ShadingFunctionReplacements = {
+
+    "ShadingFunctionEnum::Enum" : "ShadingFunctionKind",
+    "ShadingFunctionEnum::HENYEY_GREENSTEIN" : "ShadingFunctionKind::HenyeyGreenstein",
+    "ShadingFunctionEnum::SCHLICK" : "ShadingFunctionKind::Schlick",
+    "ShadingFunctionEnum::BLINN_PHONG" : "ShadingFunctionKind::BlinnPhong",
+    "ShadingFunctionEnum::WARD" : "ShadingFunctionKind::Ward",
+    "ShadingFunctionEnum::COOK_TORRANCE" : "ShadingFunctionKind::CookTorrance",
+    "ShadingFunctionEnum::ABC_MICROFACET" : "ShadingFunctionKind::AbcMicrofacet",
+    "ShadingFunctionEnum::ASHIKHMIN" : "ShadingFunctionKind::Ashikhmin",
+    "ShadingFunctionEnum::MIX" : "ShadingFunctionKind::Mix",
+    "ShadingFunctionEnum::ISOTROPIC" : "ShadingFunctionKind::Isotropic"
+}
+
 
 # order matters here...
-for k,v in numericTypeReplacements.items():
+#for k,v in numericTypeReplacements.items():
+#	replace(k,v)
+
+#for k,v in dataFormatIdReplacements.items():
+#	replace(k,v)
+
+#for k,v in dataFormatTypeReplacements.items():
+#	replace(k,v)
+
+for k,v in ShadingFunctionReplacements.items():
 	replace(k,v)
 
-for k,v in dataFormatIdReplacements.items():
-	replace(k,v)
-
-for k,v in dataFormatTypeReplacements.items():
-	replace(k,v)

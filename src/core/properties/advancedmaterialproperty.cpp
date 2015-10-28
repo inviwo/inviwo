@@ -99,29 +99,29 @@ AdvancedMaterialProperty* AdvancedMaterialProperty::clone() const {
 AdvancedMaterialProperty::~AdvancedMaterialProperty() {}
 
 vec4 AdvancedMaterialProperty::getCombinedMaterialParameters() const {
-    ShadingFunctionEnum::Enum shadingType = getPhaseFunctionEnum();
+    ShadingFunctionKind shadingType = getPhaseFunctionEnum();
     vec4 scaledMaterial(getIndexOfRefractionTerm(1.f, indexOfRefractionProp.get()),
                         roughnessProp.get(), anisotropyProp.get(), 0.f);
 
-    if (shadingType == ShadingFunctionEnum::HENYEY_GREENSTEIN) {
+    if (shadingType == ShadingFunctionKind::HenyeyGreenstein) {
         // scaledMaterial.z = anisotropyProp_.get();
-    } else if (shadingType == ShadingFunctionEnum::SCHLICK) {
+    } else if (shadingType == ShadingFunctionKind::Schlick) {
         scaledMaterial.z = HenyehGreensteinToSchlick(anisotropyProp.get());
-    } else if (shadingType == ShadingFunctionEnum::BLINN_PHONG) {
+    } else if (shadingType == ShadingFunctionKind::BlinnPhong) {
         scaledMaterial.y = roughnessToShininess(roughnessProp.get());
-    } else if (shadingType == ShadingFunctionEnum::WARD) {
+    } else if (shadingType == ShadingFunctionKind::Ward) {
         scaledMaterial.y = WardParameterMapping(roughnessProp.get());
-    } else if (shadingType == ShadingFunctionEnum::COOK_TORRANCE) {
+    } else if (shadingType == ShadingFunctionKind::CookTorrance) {
         // scaledMaterial.y = roughnessToShininess(material.y);
         scaledMaterial.y = WardParameterMapping(roughnessProp.get());
-    } else if (shadingType == ShadingFunctionEnum::ABC_MICROFACET) {
+    } else if (shadingType == ShadingFunctionKind::AbcMicrofacet) {
         // TODO: Use better parameter naming for this
         vec2 bcParameter = BCParameterMapping(vec2(roughnessProp.get(), anisotropyProp.get()));
         scaledMaterial.y = bcParameter.x;
         scaledMaterial.z = bcParameter.y;
-    } else if (shadingType == ShadingFunctionEnum::ASHIKHMIN) {
+    } else if (shadingType == ShadingFunctionKind::Ashikhmin) {
         scaledMaterial.y = roughnessToShininess(roughnessProp.get());
-    } else if (shadingType == ShadingFunctionEnum::MIX) {
+    } else if (shadingType == ShadingFunctionKind::Mix) {
         scaledMaterial.y = roughnessToShininess(roughnessProp.get());
     }
 
@@ -129,38 +129,38 @@ vec4 AdvancedMaterialProperty::getCombinedMaterialParameters() const {
 }
 
 void AdvancedMaterialProperty::phaseFunctionChanged() {
-    ShadingFunctionEnum::Enum shadingType = getPhaseFunctionEnum();
+    ShadingFunctionKind shadingType = getPhaseFunctionEnum();
     indexOfRefractionProp.setVisible(false);
     roughnessProp.setVisible(false);
     specularColorProp.setVisible(false);
     anisotropyProp.setVisible(false);
 
-    if (shadingType == ShadingFunctionEnum::HENYEY_GREENSTEIN) {
+    if (shadingType == ShadingFunctionKind::HenyeyGreenstein) {
         anisotropyProp.setVisible(true);
-    } else if (shadingType == ShadingFunctionEnum::SCHLICK) {
+    } else if (shadingType == ShadingFunctionKind::Schlick) {
         anisotropyProp.setVisible(true);
-    } else if (shadingType == ShadingFunctionEnum::BLINN_PHONG) {
+    } else if (shadingType == ShadingFunctionKind::BlinnPhong) {
         indexOfRefractionProp.setVisible(true);
         roughnessProp.setVisible(true);
         specularColorProp.setVisible(true);
-    } else if (shadingType == ShadingFunctionEnum::WARD) {
+    } else if (shadingType == ShadingFunctionKind::Ward) {
         indexOfRefractionProp.setVisible(true);
         roughnessProp.setVisible(true);
         specularColorProp.setVisible(true);
-    } else if (shadingType == ShadingFunctionEnum::COOK_TORRANCE) {
+    } else if (shadingType == ShadingFunctionKind::CookTorrance) {
         indexOfRefractionProp.setVisible(true);
         roughnessProp.setVisible(true);
         specularColorProp.setVisible(true);
-    } else if (shadingType == ShadingFunctionEnum::ABC_MICROFACET) {
+    } else if (shadingType == ShadingFunctionKind::AbcMicrofacet) {
         // TODO: Use better parameters
         anisotropyProp.setVisible(true);
         roughnessProp.setVisible(true);
         specularColorProp.setVisible(true);
-    } else if (shadingType == ShadingFunctionEnum::ASHIKHMIN) {
+    } else if (shadingType == ShadingFunctionKind::Ashikhmin) {
         indexOfRefractionProp.setVisible(true);
         roughnessProp.setVisible(true);
         specularColorProp.setVisible(true);
-    } else if (shadingType == ShadingFunctionEnum::MIX) {
+    } else if (shadingType == ShadingFunctionKind::Mix) {
         indexOfRefractionProp.setVisible(true);
         roughnessProp.setVisible(true);
         specularColorProp.setVisible(true);
@@ -169,27 +169,27 @@ void AdvancedMaterialProperty::phaseFunctionChanged() {
     propertyModified();
 }
 
-ShadingFunctionEnum::Enum AdvancedMaterialProperty::getPhaseFunctionEnum() const {
+ShadingFunctionKind AdvancedMaterialProperty::getPhaseFunctionEnum() const {
     const std::string& shadingFunction = phaseFunctionProp.get();
 
     if (shadingFunction == "HenyeyGreenstein") {
-        return ShadingFunctionEnum::HENYEY_GREENSTEIN;
+        return ShadingFunctionKind::HenyeyGreenstein;
     } else if (shadingFunction == "Schlick") {
-        return ShadingFunctionEnum::SCHLICK;
+        return ShadingFunctionKind::Schlick;
     } else if (shadingFunction == "Ashikhmin") {
-        return ShadingFunctionEnum::ASHIKHMIN;
+        return ShadingFunctionKind::Ashikhmin;
     } else if (shadingFunction == "mix") {
-        return ShadingFunctionEnum::MIX;
+        return ShadingFunctionKind::Mix;
     } else if (shadingFunction == "BlinnPhong") {
-        return ShadingFunctionEnum::BLINN_PHONG;
+        return ShadingFunctionKind::BlinnPhong;
     } else if (shadingFunction == "Ward") {
-        return ShadingFunctionEnum::WARD;
+        return ShadingFunctionKind::Ward;
     } else if (shadingFunction == "ABCMicrofacet") {
-        return ShadingFunctionEnum::ABC_MICROFACET;
+        return ShadingFunctionKind::AbcMicrofacet;
     } else if (shadingFunction == "CookTorrance") {
-        return ShadingFunctionEnum::COOK_TORRANCE;
+        return ShadingFunctionKind::CookTorrance;
     } else {
-        return ShadingFunctionEnum::ISOTROPIC;
+        return ShadingFunctionKind::Isotropic;
     }
 }
 

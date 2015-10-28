@@ -39,19 +39,18 @@
 
 namespace inviwo {
 
-namespace ShadingFunctionEnum {
-enum Enum {
-    HENYEY_GREENSTEIN=0,
-    SCHLICK,
-    BLINN_PHONG,
-    WARD,
-    COOK_TORRANCE,
-    ABC_MICROFACET,
-    ASHIKHMIN,
-    MIX,
-    ISOTROPIC
+enum class ShadingFunctionKind {
+    HenyeyGreenstein = 0,
+    Schlick,
+    BlinnPhong,
+    Ward,
+    CookTorrance,
+    AbcMicrofacet,
+    Ashikhmin,
+    Mix,
+    Isotropic
 };
-};
+
 /** \class AdvancedMaterialProperty
  *
  * Adds advanced shading properties to a PropertyOwner (Processor).
@@ -70,7 +69,7 @@ public:
     virtual ~AdvancedMaterialProperty();
 
     vec4 getCombinedMaterialParameters() const;
-    ShadingFunctionEnum::Enum getPhaseFunctionEnum() const;
+    ShadingFunctionKind getPhaseFunctionEnum() const;
 
     virtual void phaseFunctionChanged();
     virtual void deserialize(IvwDeserializer& d) override;
