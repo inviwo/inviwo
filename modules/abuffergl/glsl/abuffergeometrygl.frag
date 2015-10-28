@@ -64,8 +64,10 @@ void main() {
 #endif
 
 #if (USE_ABUFFER == 1)
+	u8vec4 abufferFrag = u8vec4(FragData0.xyz * 255.0, (color_.a*globalTransparency_) * 255.0);
+	abufferFrag = clamp(abufferFrag, u8vec4(0), u8vec4(255));
     buildABufferLinkList(ivec2(gl_FragCoord.x, gl_FragCoord.y),
-                         u8vec4(FragData0.xyz * 255.0, (color_.a*globalTransparency_) * 255.0),
+                         abufferFrag,
                          gl_FragCoord.z);
 #endif
 }
