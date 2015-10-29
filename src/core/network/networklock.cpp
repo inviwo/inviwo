@@ -43,18 +43,15 @@ NetworkLock::NetworkLock(ProcessorNetwork* network) : network_(network) {
     if (network_) network_->lock();
 }
 
-NetworkLock::NetworkLock(Processor* processor) : network_(processor->getNetwork()) {
-    if (network_) network_->lock();
-}
+NetworkLock::NetworkLock(Processor* processor)
+    : NetworkLock(processor ? processor->getNetwork() : nullptr) {}
 
 NetworkLock::NetworkLock(Property* property)
-    : network_(property->getOwner()->getProcessor()->getNetwork()) {
-    if (network_) network_->lock();
-}
+    : NetworkLock(property ? (property->getOwner() ? property->getOwner()->getProcessor() : nullptr)
+                           : nullptr) {}
 
 NetworkLock::~NetworkLock() {
     if (network_) network_->unlock();
 }
 
-} // namespace
-
+}  // namespace
