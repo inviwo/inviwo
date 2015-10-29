@@ -78,9 +78,7 @@ class IVW_CORE_API Property : public PropertyObservable,
                               public IvwSerializable,
                               public MetaDataOwner {
 public:
-    // Should be included by all inheriting classes by calling the InviwoPropertyInfo() macro
-    static const std::string CLASS_IDENTIFIER;
-    virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
+    virtual std::string getClassIdentifier() const = 0;
 
     Property(const std::string& identifier = "", const std::string& displayName = "",
              InvalidationLevel invalidationLevel = INVALID_OUTPUT,

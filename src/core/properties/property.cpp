@@ -35,9 +35,7 @@
 
 namespace inviwo {
 
-PropertyClassIdentifier(Property, "org.inviwo.undefined");
-
-Property::Property(const std::string& identifier, const std::string& displayName,
+ Property::Property(const std::string& identifier, const std::string& displayName,
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : PropertyObservable()
     , IvwSerializable()
@@ -92,7 +90,7 @@ Property& Property::operator=(const Property& that) {
 }
 
 Property* Property::clone() const {
-    return new Property(*this);
+    return nullptr; // See ticket #642 //make abstract...
 }
 
 Property::~Property() {}
