@@ -47,7 +47,10 @@ namespace inviwo {
 
 class IVW_QTWIDGETS_API LightPropertyWidgetQt : public PropertyWidgetQt {
 
+    #include <warn/push>
+    #include <warn/ignore/all>
     Q_OBJECT
+    #include <warn/pop>
 
 public:
     LightPropertyWidgetQt(FloatVec3Property* property);
