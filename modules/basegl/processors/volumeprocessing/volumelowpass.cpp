@@ -56,7 +56,7 @@ VolumeLowPass::VolumeLowPass()
     addProperty(kernelSize_);
     addProperty(useGaussianWeights_);
     useGaussianWeights_.addProperty(sigma_);
-    useGaussianWeights_.getBoolProperty()->setInvalidationLevel(INVALID_RESOURCES);
+    useGaussianWeights_.getBoolProperty()->setInvalidationLevel(InvalidationLevel::InvalidResources);
 
     setAllPropertiesCurrentStateAsDefault();
 }

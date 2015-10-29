@@ -33,12 +33,12 @@ namespace inviwo {
 PlaneProperty::PlaneProperty(std::string identifier, std::string displayName,
                              InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , enable_("enable", "Enable", true, INVALID_RESOURCES)
-    , mode_("mode", "Mode", INVALID_RESOURCES)
+    , enable_("enable", "Enable", true, InvalidationLevel::InvalidResources)
+    , mode_("mode", "Mode", InvalidationLevel::InvalidResources)
     , position_("position", "Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
     , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-1.0f), vec3(1.0f))
     , color_("color", "Color", vec4(1.0f, 1.0f, 1.0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-             INVALID_OUTPUT, PropertySemantics::Color) {
+             InvalidationLevel::InvalidOutput, PropertySemantics::Color) {
     addProperty(enable_);
     addProperty(mode_);
     addProperty(position_);

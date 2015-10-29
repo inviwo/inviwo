@@ -60,7 +60,7 @@ ISORaycaster::ISORaycaster()
               vec3(0.0f, 1.0f, 0.0f)) 
     , lighting_("lighting", "Lighting", &camera_)
 {
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");

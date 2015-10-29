@@ -50,7 +50,7 @@ VolumeGLProcessor::VolumeGLProcessor(const std::string &fragmentShader, bool bui
     addPort(outport_);
 
     inport_.onChange(this, &VolumeGLProcessor::inportChanged);
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 VolumeGLProcessor::~VolumeGLProcessor() {}

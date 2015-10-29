@@ -61,14 +61,14 @@ LightingRaycaster::LightingRaycaster()
     , lightVolumePort_("lightVolume")
     , outport_("outport")
     , enableLightColor_("supportColoredLight", "Enable Light Color", false,
-                        INVALID_RESOURCES)
+                        InvalidationLevel::InvalidResources)
     , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &volumePort_)
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera")
     , lighting_("lighting", "Lighting") {
 
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_);
     addPort(entryPort_, "ImagePortGroup1");

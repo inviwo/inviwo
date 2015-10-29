@@ -79,7 +79,7 @@ void VolumeSubsample::process() {
                         auto sample = subsample(volume, f);
                         dispatchFront([this]() {
                             dirty_ = true;
-                            invalidate(INVALID_OUTPUT);
+                            invalidate(InvalidationLevel::InvalidOutput);
                         });
                         return sample;
                     },
@@ -111,7 +111,7 @@ void VolumeSubsample::invalidate(InvalidationLevel invalidationLevel, Property* 
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
 
     if (dirty_ || inport_.isChanged() || !enabled_.get()) {
-        outport_.invalidate(INVALID_OUTPUT);
+        outport_.invalidate(InvalidationLevel::InvalidOutput);
     }
 
     notifyObserversInvalidationEnd(this);

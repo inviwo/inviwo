@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
             std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
 
             for (auto processor : processors) {
-                processor->invalidate(INVALID_RESOURCES);
+                processor->invalidate(InvalidationLevel::InvalidResources);
 
                 if (auto processorWidget =
                     ProcessorWidgetFactory::getPtr()->create(processor).release()) {

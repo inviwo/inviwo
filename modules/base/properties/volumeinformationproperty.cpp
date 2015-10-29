@@ -41,9 +41,9 @@ VolumeInformationProperty::VolumeInformationProperty(std::string identifier,
     , dimensions_("dimensions", "Dimensions")
     , format_("format", "Format", "")
     , dataRange_("dataRange", "Data range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(), 0.0,
-                 0.0, INVALID_OUTPUT, PropertySemantics("Text"))
+                 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
     , valueRange_("valueRange", "Value range", 0., 255.0, -DataFloat64::max(), DataFloat64::max(),
-                  0.0, 0.0, INVALID_OUTPUT, PropertySemantics("Text"))
+                  0.0, 0.0, InvalidationLevel::InvalidOutput, PropertySemantics("Text"))
     , valueUnit_("valueUnit", "Value unit", "arb. unit.") {
     dimensions_.setReadOnly(true);
     format_.setReadOnly(true);

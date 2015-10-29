@@ -71,7 +71,7 @@ class IVW_MODULE_ABUFFERGL_API ABufferGLCompositeProperty : public CompositeProp
 public:
     InviwoPropertyInfo();    
     ABufferGLCompositeProperty(std::string identifier, std::string displayName,
-                      InvalidationLevel invalidationLevel = INVALID_RESOURCES,
+                      InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                       PropertySemantics semantics = PropertySemantics::Default);
 
     ABufferGLCompositeProperty(const ABufferGLCompositeProperty& rhs);

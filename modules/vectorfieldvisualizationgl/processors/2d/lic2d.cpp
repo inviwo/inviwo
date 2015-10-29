@@ -68,7 +68,7 @@ LIC2D::LIC2D()
     addProperty(intensityMapping_);
 
 
-    shader_.onReload([this]() {invalidate(INVALID_OUTPUT); });
+    shader_.onReload([this]() {invalidate(InvalidationLevel::InvalidOutput); });
 }
     
 void LIC2D::process() {

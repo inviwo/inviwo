@@ -42,7 +42,7 @@ public:
     InviwoPropertyInfo();
 
     BoolCompositeProperty(std::string identifier, std::string displayName, bool checked = false,
-                          InvalidationLevel invalidationLevel = INVALID_RESOURCES,
+                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                           PropertySemantics semantics = PropertySemantics::Default);
 
     virtual BoolCompositeProperty* clone() const override;

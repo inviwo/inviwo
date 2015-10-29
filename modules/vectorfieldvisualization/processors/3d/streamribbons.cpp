@@ -57,14 +57,14 @@ StreamRibbons::StreamRibbons()
     , numberOfSteps_("steps", "Number of Steps", 100, 1, 1000)
     , normalizeSamples_("normalizeSamples", "Normalize Samples", true)
     , stepSize_("stepSize", "StepSize", 0.001f, 0.0001f, 1.0f)
-    , stepDirection_("stepDirection", "Step Direction", INVALID_RESOURCES)
+    , stepDirection_("stepDirection", "Step Direction", InvalidationLevel::InvalidResources)
     , integrationScheme_("integrationScheme", "Integration Scheme")
     , ribbonWidth_("ribbonWidth", "Ribbon Width", 0.1f, 0.00001f)
     , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
-    , maxVelocity_("minMaxVelocity", "Max Velocity", "0", VALID)
-    , maxVorticity_("maxVorticity", "Max Vorticity", "0", VALID)
+    , maxVelocity_("minMaxVelocity", "Max Velocity", "0", InvalidationLevel::Valid)
+    , maxVorticity_("maxVorticity", "Max Vorticity", "0", InvalidationLevel::Valid)
 
 {
     addPort(vectorVolume_);

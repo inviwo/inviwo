@@ -42,7 +42,7 @@ class IVW_CORE_API SimpleRaycastingProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();
     SimpleRaycastingProperty(std::string identifier, std::string displayName,
-                             InvalidationLevel = INVALID_RESOURCES,
+                             InvalidationLevel = InvalidationLevel::InvalidResources,
                              PropertySemantics semantics = PropertySemantics::Default);
     
     SimpleRaycastingProperty(const SimpleRaycastingProperty& rhs);

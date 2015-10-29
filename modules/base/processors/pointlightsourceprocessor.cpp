@@ -51,7 +51,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     : Processor()
     , outport_("PointLightSource")
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
-              vec3(0.0f, 1.0f, 0.0f), nullptr, VALID)
+              vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
     , lightPosition_("lightPosition", "Light Source Position",
                      FloatVec3Property("position", "Position", vec3(-2.f, -50.f, 90.f),
                                        vec3(-100.f), vec3(100.f)),

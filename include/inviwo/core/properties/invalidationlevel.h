@@ -38,10 +38,10 @@ namespace inviwo {
 // invalidation level must be sorted based on their complexity,
 // whereby higher numbers (later entry in the list) involve more
 // expensive update operations
-enum InvalidationLevel {
-    VALID,
-    INVALID_OUTPUT,
-    INVALID_RESOURCES
+enum class InvalidationLevel {
+    Valid,              // Do nothing.
+    InvalidOutput,      // Trigger a process call.
+    InvalidResources    // Trigger a call to initializeResources and then process.
 };
 
 } // namespace

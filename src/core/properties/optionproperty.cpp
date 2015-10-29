@@ -43,7 +43,7 @@ void OptionPropertyString::addOption(std::string identifier, std::string display
 
 OptionPropertyString::OptionPropertyString(
     std::string identifier, std::string displayName,
-    InvalidationLevel invalidationLevel /*= INVALID_OUTPUT*/,
+    InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
     PropertySemantics semantics /*= PropertySemantics::Default*/)
     : TemplateOptionProperty<std::string>(identifier, displayName, invalidationLevel, semantics) {}
 
@@ -66,7 +66,7 @@ OptionPropertyString::~OptionPropertyString() {}
 BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) : Property(rhs) {}
 
 BaseOptionProperty::BaseOptionProperty(std::string identifier, std::string displayName,
-                                       InvalidationLevel invalidationLevel /*=INVALID_OUTPUT*/,
+                                       InvalidationLevel invalidationLevel /*=InvalidationLevel::InvalidOutput*/,
                                        PropertySemantics semantics /*=PropertySemantics::Default*/)
     : Property(identifier, displayName, invalidationLevel, semantics) {}
 

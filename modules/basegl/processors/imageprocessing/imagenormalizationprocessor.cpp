@@ -56,8 +56,8 @@ ImageNormalizationProcessor::ImageNormalizationProcessor()
     , max_(1.0)
 {
 
-    minS_.setInvalidationLevel(VALID);
-    maxS_.setInvalidationLevel(VALID);
+    minS_.setInvalidationLevel(InvalidationLevel::Valid);
+    maxS_.setInvalidationLevel(InvalidationLevel::Valid);
     minS_.setReadOnly(true);
     maxS_.setReadOnly(true);
 

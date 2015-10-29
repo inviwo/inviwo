@@ -46,7 +46,7 @@ VolumeGradientProcessor::VolumeGradientProcessor()
     : VolumeGLProcessor("volume_gradient.frag")
     , channel_("channel", "Render Channel")
     , dataInChannel4_("dataInChannel4_", "Stored voxel values in 4th channel", false,
-                      INVALID_RESOURCES) {
+                      InvalidationLevel::InvalidResources) {
     this->dataFormat_ = DataVec3Float32::get();
 
     channel_.addOption("Channel 1", "Channel 1", 0);

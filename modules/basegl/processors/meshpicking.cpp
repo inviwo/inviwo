@@ -76,7 +76,7 @@ MeshPicking::MeshPicking()
     addProperty(camera_);
     addProperty(trackball_);
 
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     widgetPickingObject_ = PickingManager::getPtr()->registerPickingCallback(
         this, &MeshPicking::updateWidgetPositionFromPicking);
@@ -98,7 +98,7 @@ void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
     vec3 startWorld = camera_.getWorldPosFromNormalizedDeviceCoords(startNdc);
     vec3 endWorld = camera_.getWorldPosFromNormalizedDeviceCoords(endNdc);
     position_.set(position_.get() + (endWorld - startWorld));
-    invalidate(INVALID_OUTPUT);
+    invalidate(InvalidationLevel::InvalidOutput);
 }
 
 void MeshPicking::process() {

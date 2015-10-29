@@ -45,17 +45,17 @@ CanvasProcessor::CanvasProcessor()
     : Processor()
     , inport_("inport")
     , dimensions_("dimensions", "Canvas Size", ivec2(256, 256), ivec2(128, 128), ivec2(4096, 4096),
-                  ivec2(1, 1), VALID)
+                  ivec2(1, 1), InvalidationLevel::Valid)
     , enableCustomInputDimensions_("enableCustomInputDimensions", "Separate Image Size", false,
-                                   VALID)
+                                   InvalidationLevel::Valid)
     , customInputDimensions_("customInputDimensions", "Image Size", ivec2(256, 256),
-                             ivec2(128, 128), ivec2(4096, 4096), ivec2(1, 1), VALID)
-    , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, VALID)
-    , aspectRatioScaling_("aspectRatioScaling", "Image Scale", 1.f, 0.1f, 4.f, 0.01f, VALID)
+                             ivec2(128, 128), ivec2(4096, 4096), ivec2(1, 1), InvalidationLevel::Valid)
+    , keepAspectRatio_("keepAspectRatio", "Lock Aspect Ratio", true, InvalidationLevel::Valid)
+    , aspectRatioScaling_("aspectRatioScaling", "Image Scale", 1.f, 0.1f, 4.f, 0.01f, InvalidationLevel::Valid)
     , visibleLayer_("visibleLayer", "Visible Layer")
     , colorLayer_("colorLayer_", "Color Layer ID", 0, 0, 0)
     , saveLayerDirectory_("layerDir", "Output Directory", "", "image")
-    , saveLayerButton_("saveLayer", "Save Image Layer", VALID)
+    , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
     , inputSize_("inputSize", "Input Dimension Parameters")
     , previousImageSize_(customInputDimensions_)
     , evaluator_(nullptr)
@@ -141,7 +141,7 @@ void CanvasProcessor::resizeCanvas() {
     if (canvasWidget_ && canvasWidget_->getDimensions() != dimensions_.get()) {
         canvasWidget_->setDimensions(dimensions_.get());
     }
-    inputSize_.invalidate(VALID, &dimensions_);
+    inputSize_.invalidate(InvalidationLevel::Valid, &dimensions_);
 }
 
 void CanvasProcessor::setCanvasSize(ivec2 dim) {
@@ -175,7 +175,7 @@ void CanvasProcessor::sizeChanged() {
         previousImageSize_ = dimensions_;
     }
 
-    inputSize_.invalidate(VALID, &customInputDimensions_);
+    inputSize_.invalidate(InvalidationLevel::Valid, &customInputDimensions_);
     inport_.propagateResizeEvent(&resizeEvent);
 }
 
@@ -353,7 +353,7 @@ bool CanvasProcessor::propagateResizeEvent(ResizeEvent* event, Outport* source) 
         inport_.propagateResizeEvent(event);
 
         // Make sure this processor is invalidated. 
-        invalidate(INVALID_OUTPUT);
+        invalidate(InvalidationLevel::InvalidOutput);
     }
     
     return false;

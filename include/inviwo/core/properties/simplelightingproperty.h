@@ -68,7 +68,7 @@ public:
 
     SimpleLightingProperty(std::string identifier, std::string displayName,
                            CameraProperty* camera = nullptr,
-                           InvalidationLevel = INVALID_RESOURCES,
+                           InvalidationLevel = InvalidationLevel::InvalidResources,
                            PropertySemantics semantics = PropertySemantics::Default);
     
     SimpleLightingProperty(const SimpleLightingProperty& rhs);

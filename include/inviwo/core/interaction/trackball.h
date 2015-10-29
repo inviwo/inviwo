@@ -206,7 +206,7 @@ Trackball<T>::Trackball(T* object, const Camera* camera)
     , isMouseBeingPressedAndHold_(false)
     , lastMousePos_(ivec2(0))
     , gestureStartNDCDepth_(-1)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, VALID)
+    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, InvalidationLevel::Valid)
 
     , allowHorizontalPanning_("allowHorizontalPanning", "Horizontal panning enabled", true)
     , allowVerticalPanning_("allowVerticalPanning", "Vertical panning enabled", true)

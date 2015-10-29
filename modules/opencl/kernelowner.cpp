@@ -77,7 +77,7 @@ ProcessorKernelOwner::ProcessorKernelOwner(Processor* processor)
 
 void ProcessorKernelOwner::notifyObserversKernelCompiled(const cl::Kernel* kernel) {
     KernelOwner::notifyObserversKernelCompiled(kernel);
-    processor_->invalidate(INVALID_RESOURCES);
+    processor_->invalidate(InvalidationLevel::InvalidResources);
 }
 
 } // namespace

@@ -43,7 +43,7 @@ class IVW_MODULE_BASE_API BasisProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();
     BasisProperty(std::string identifier, std::string displayName,
-                        InvalidationLevel invalidationLevel = INVALID_RESOURCES,
+                        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                         PropertySemantics semantics = PropertySemantics::Default);
     BasisProperty(const BasisProperty& rhs);
     BasisProperty& operator=(const BasisProperty& that);

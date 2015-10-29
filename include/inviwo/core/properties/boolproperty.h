@@ -49,7 +49,7 @@ public:
     InviwoPropertyInfo();
 
     BoolProperty(std::string identifier, std::string displayName, bool value = false,
-                 InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                 InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                  PropertySemantics semantics = PropertySemantics::Default);
 
     BoolProperty(const BoolProperty& rhs);

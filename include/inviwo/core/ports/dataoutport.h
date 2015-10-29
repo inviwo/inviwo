@@ -115,7 +115,7 @@ bool DataOutport<T>::hasData() const {
 
 template <typename T>
 bool DataOutport<T>::isReady() const {
-    return hasData() && invalidationLevel_ == VALID;
+    return hasData() && invalidationLevel_ == InvalidationLevel::Valid;
 }
 
 template <typename T>

@@ -79,7 +79,7 @@ DrawPoints::DrawPoints()
     addProperty(mouseDraw_);
     addProperty(keyEnableDraw_);
 
-    pointShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    pointShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     points_.addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<Buffer<vec2>>());
 }
 
@@ -121,7 +121,7 @@ void DrawPoints::eventDraw(Event* event){
     point -= 1.f;
     point.y = -point.y;
     addPoint(point);
-    invalidate(INVALID_OUTPUT);
+    invalidate(InvalidationLevel::InvalidOutput);
 }
 
 void DrawPoints::eventEnableDraw(Event* event){

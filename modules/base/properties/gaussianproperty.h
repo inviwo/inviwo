@@ -44,7 +44,7 @@ template<typename T>
 class GaussianProperty : public CompositeProperty { 
 public:
     GaussianProperty(const std::string &identifier,const std::string &displayName,
-        InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default) 
         : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
         , height_("height_","Height",1.0)
@@ -75,7 +75,7 @@ private:
 class IVW_MODULE_BASE_API Gaussian1DProperty : public GaussianProperty<double>{
 public:
     Gaussian1DProperty(const std::string &identifier,const std::string &displayName,
-        InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
     virtual ~Gaussian1DProperty();
 
@@ -86,7 +86,7 @@ public:
 class IVW_MODULE_BASE_API Gaussian2DProperty : public GaussianProperty<dvec2>{
 public:
     Gaussian2DProperty(const std::string &identifier,const std::string &displayName,
-        InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
     virtual ~Gaussian2DProperty();
 

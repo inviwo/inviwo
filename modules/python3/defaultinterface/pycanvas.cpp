@@ -121,7 +121,7 @@ PyObject* py_resizecanvas(PyObject* /*self*/, PyObject* args) {
 
     static_cast<IntVec2Property*>(canvas->getPropertyByIdentifier("dimensions"))->set(ivec2(w, h));
 
-    canvas->invalidate(INVALID_OUTPUT);
+    canvas->invalidate(InvalidationLevel::InvalidOutput);
 
     Py_RETURN_NONE;
 }

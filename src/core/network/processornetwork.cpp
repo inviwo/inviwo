@@ -67,7 +67,7 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
     processors_[processor->getIdentifier()] = processor;
     processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
-    processor->invalidate(INVALID_RESOURCES);
+    processor->invalidate(InvalidationLevel::InvalidResources);
     modified();
     notifyObserversProcessorNetworkDidAddProcessor(processor);
     return true;
@@ -344,7 +344,7 @@ void ProcessorNetwork::clear() {
     std::vector<Processor*> processors = getProcessors();
     // Invalidate inports to alert processors that they should stop their calculations.
     for (auto processor : processors) {
-        for (auto inport : processor->getInports()) inport->invalidate(INVALID_OUTPUT);
+        for (auto inport : processor->getInports()) inport->invalidate(InvalidationLevel::InvalidOutput);
     }
 
     for (auto processor : processors) {

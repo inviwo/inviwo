@@ -65,8 +65,11 @@ def replace_matches(files, expr, repl, dummy=False):
 		match_in_file = False
 		
 		with open(file, "r") as f:
-			lines = f.readlines()
-		
+			try: 
+				lines = f.readlines()
+			except UnicodeDecodeError:
+				sys.exit("Encoding error: " + file) 
+
 		if not dummy:
 			with open(file, "w") as f:
 				for (i,line) in enumerate(lines):

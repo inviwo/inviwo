@@ -49,7 +49,7 @@ Processor::Processor()
     , identifier_("")
     , initialized_(false)
     , invalidationEnabled_(true)
-    , invalidationRequestLevel_(VALID) 
+    , invalidationRequestLevel_(InvalidationLevel::Valid) 
     , network_(nullptr) {
     createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 }
@@ -177,7 +177,7 @@ void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifi
     notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
     if (!isValid()) {
-        for (auto& port : outports_) port->invalidate(INVALID_OUTPUT);
+        for (auto& port : outports_) port->invalidate(InvalidationLevel::InvalidOutput);
     }
     notifyObserversInvalidationEnd(this);
 
@@ -271,14 +271,14 @@ void Processor::setValid() {
 
 void Processor::enableInvalidation() {
     invalidationEnabled_ = true;
-    if (invalidationRequestLevel_ > VALID) {
+    if (invalidationRequestLevel_ > InvalidationLevel::Valid) {
         invalidate(invalidationRequestLevel_);
-        invalidationRequestLevel_ = VALID;
+        invalidationRequestLevel_ = InvalidationLevel::Valid;
     }
 }
 
 void Processor::disableInvalidation() {
-    invalidationRequestLevel_ = VALID;
+    invalidationRequestLevel_ = InvalidationLevel::Valid;
     invalidationEnabled_ = false;
 }
 

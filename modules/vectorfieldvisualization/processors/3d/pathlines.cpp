@@ -57,7 +57,7 @@ PathLines::PathLines()
 
     , tf_("transferFunction", "Transfer Function")
     , velocityScale_("velocityScale_", "Velocity Scale (inverse)", 1, 0, 10)
-    , maxVelocity_("minMaxVelocity", "Velocity Range", "0", VALID)
+    , maxVelocity_("minMaxVelocity", "Velocity Range", "0", InvalidationLevel::Valid)
 
 {
 

@@ -39,7 +39,7 @@ SimpleLightingProperty::SimpleLightingProperty(std::string identifier, std::stri
                                                InvalidationLevel invalidationLevel,
                                                PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , shadingMode_("shadingMode", "Shading", INVALID_RESOURCES)
+    , shadingMode_("shadingMode", "Shading", InvalidationLevel::InvalidResources)
     , referenceFrame_("referenceFrame", "Space")
     , lightPosition_("lightPosition", "Position", vec3(0.0f, 5.0f, 5.0f), vec3(-10, -10, -10),
     vec3(10, 10, 10))

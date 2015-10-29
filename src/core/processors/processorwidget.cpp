@@ -53,7 +53,7 @@ void ProcessorWidget::setVisible(bool visible) {
     metaData_->setVisibile(visible);
     if (visible) {
         notifyObserversAboutShow(this);
-        if (processor_) processor_->invalidate(INVALID_OUTPUT);
+        if (processor_) processor_->invalidate(InvalidationLevel::InvalidOutput);
     } else {
         notifyObserversAboutHide(this);
     }

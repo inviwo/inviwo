@@ -85,7 +85,7 @@ public:
     virtual bool isReady() const override;
 
     void onKernelCompiled( const cl::Kernel* kernel ) override {
-        invalidate(INVALID_RESOURCES);
+        invalidate(InvalidationLevel::InvalidResources);
     }
 protected:
     virtual void process() override;

@@ -54,7 +54,7 @@ public:
     InviwoPropertyInfo();
 
     PlaneProperty(std::string identifier, std::string displayName,
-                            InvalidationLevel invalidationLevel = INVALID_RESOURCES,
+                            InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                             PropertySemantics semantics = PropertySemantics::Default);
 
     PlaneProperty(const PlaneProperty& rhs);

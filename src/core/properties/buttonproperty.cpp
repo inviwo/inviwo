@@ -36,7 +36,7 @@ PropertyClassIdentifier(ButtonProperty, "org.inviwo.ButtonProperty");
 
 ButtonProperty::ButtonProperty(
     std::string identifier, std::string displayName,
-    InvalidationLevel invalidationLevel /*=INVALID_OUTPUT*/,
+    InvalidationLevel invalidationLevel /*=InvalidationLevel::InvalidOutput*/,
     PropertySemantics semantics /*= PropertySemantics::Default*/)
     : Property(identifier, displayName, invalidationLevel, semantics) {}
 

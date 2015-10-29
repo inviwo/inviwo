@@ -48,7 +48,7 @@ public:
                    T valueMin = Defaultvalues<T>::getMin(), T valueMax = Defaultvalues<T>::getMax(),
                    T rangeMin = Defaultvalues<T>::getMin(), T rangeMax = Defaultvalues<T>::getMax(),
                    T increment = Defaultvalues<T>::getInc(), T minSeperation = 0,
-                   InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                    PropertySemantics semantics = PropertySemantics::Default);
 
     MinMaxProperty(const MinMaxProperty& rhs);

@@ -56,7 +56,7 @@ public:
         , FloatVec3Property position = FloatVec3Property("position", "Position", vec3(0.0f, 0.0f, 0.0f), vec3(-10, -10, -10),
         vec3(10, 10, 10))
         , const Camera* camera = nullptr
-        , InvalidationLevel = INVALID_RESOURCES
+        , InvalidationLevel = InvalidationLevel::InvalidResources
         , PropertySemantics semantics = PropertySemantics::Default);
     PositionProperty(const PositionProperty& rhs);
     PositionProperty& operator=(const PositionProperty& that);

@@ -44,7 +44,7 @@ class IVW_MODULE_BASE_API VolumeInformationProperty : public CompositeProperty {
 public:
     InviwoPropertyInfo();
     VolumeInformationProperty(std::string identifier, std::string displayName,
-                              InvalidationLevel invalidationLevel = INVALID_RESOURCES,
+                              InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                               PropertySemantics semantics = PropertySemantics::Default);
     VolumeInformationProperty(const VolumeInformationProperty& rhs);
     VolumeInformationProperty& operator=(const VolumeInformationProperty& that);

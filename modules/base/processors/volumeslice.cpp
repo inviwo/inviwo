@@ -51,7 +51,7 @@ VolumeSlice::VolumeSlice()
     , outport_("image.outport", DataVec4UInt8::get(), false)
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
     , sliceNumber_("sliceNumber", "Slice Number", 4, 1, 8)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, VALID)
+    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, InvalidationLevel::Valid)
     , mouseShiftSlice_(
           "mouseShiftSlice", "Mouse Slice Shift",
           new MouseEvent(MouseEvent::MOUSE_BUTTON_NONE, InteractionEvent::MODIFIER_NONE,

@@ -50,11 +50,11 @@ ImageMixer::ImageMixer()
     , inport0_("inport0")
     , inport1_("inport1")
     , outport_("outport")
-    , blendingMode_("blendMode", "Blend Mode", INVALID_RESOURCES)
+    , blendingMode_("blendMode", "Blend Mode", InvalidationLevel::InvalidResources)
     , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
     , shader_("img_mix.frag", false) {
     
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(inport0_);
     addPort(inport1_);

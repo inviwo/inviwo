@@ -49,10 +49,10 @@ TextOverlayGL::TextOverlayGL()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , text_("Text", "Text", "Lorem ipsum etc.", INVALID_OUTPUT,
+    , text_("Text", "Text", "Lorem ipsum etc.", InvalidationLevel::InvalidOutput,
             PropertySemantics::TextEditor)
     , color_("color_", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-                  INVALID_OUTPUT, PropertySemantics::Color)
+                  InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , fontSize_("Font size", "Font size")
     , fontPos_("Position", "Position", vec2(0.0f), vec2(0.0f), vec2(1.0f), vec2(0.01f))
     , anchorPos_("Anchor", "Anchor", vec2(-1.0f), vec2(-1.0f), vec2(1.0f), vec2(0.01f))

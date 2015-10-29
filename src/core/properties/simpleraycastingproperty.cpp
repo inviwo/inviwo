@@ -37,10 +37,10 @@ SimpleRaycastingProperty::SimpleRaycastingProperty(
     std::string identifier, std::string displayName,
     InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , classificationMode_("classificationMode", "Classification", INVALID_RESOURCES)
-    , compositingMode_("compositingMode", "Compositing", INVALID_RESOURCES)
+    , classificationMode_("classificationMode", "Classification", InvalidationLevel::InvalidResources)
+    , compositingMode_("compositingMode", "Compositing", InvalidationLevel::InvalidResources)
     , gradientComputationMode_("gradientComputationMode", "Gradient",
-    INVALID_RESOURCES)
+    InvalidationLevel::InvalidResources)
     , samplingRate_("samplingRate", "Sampling rate", 2.0f, 1.0f, 10.0f)
     , isoValue_("isoValue", "Iso value", 0.5f, 0.0f, 1.0f) {
 

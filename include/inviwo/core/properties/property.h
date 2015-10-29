@@ -58,7 +58,7 @@ namespace inviwo {
  *  Concepts:
  *   - Owner: A property can have a owner, usually a processor. If the property is modified, by
  *     calling propertyModified() then the property will set it's owner's invalidation level to the
- *     property's invalidation level, usually INVALID_OUTPUT. This will in turn trigger a network
+ *     property's invalidation level, usually InvalidationLevel::InvalidOutput. This will in turn trigger a network
  *     evaluation that will update the processors to a valid state again.
  *
  *   - Reset: A property has a default state specified in the constructor, or optionally be calling
@@ -81,7 +81,7 @@ public:
     virtual std::string getClassIdentifier() const = 0;
 
     Property(const std::string& identifier = "", const std::string& displayName = "",
-             InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+             InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
              PropertySemantics semantics = PropertySemantics::Default);
     Property(const Property& rhs);
     Property& operator=(const Property& that);

@@ -52,44 +52,44 @@ SystemSettings::SystemSettings()
 
     , glslSyntax_("glslSyntax", "GLSL Syntax Highlighting")
     , glslTextColor_("glslTextColor", "Text", ivec4(0xAA, 0xAA, 0xAA, 255), ivec4(0, 0, 0, 1),
-                     ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), INVALID_OUTPUT,
+                     ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
                      PropertySemantics::Color)
     , glslBackgroundColor_("glslBackgroundColor", "Background", ivec4(0x4D, 0x4D, 0x4D, 255),
                            ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                           INVALID_OUTPUT, PropertySemantics::Color)
+                           InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , glslQualifierColor_("glslQualifierColor", "Qualifiers", ivec4(0x7D, 0xB4, 0xDF, 255),
                           ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                          INVALID_OUTPUT, PropertySemantics::Color)
+                          InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , glslBuiltinsColor_("glslBultinsColor", "Builtins", ivec4(0x1F, 0xF0, 0x7F, 255),
                          ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                         INVALID_OUTPUT, PropertySemantics::Color)
+                         InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , glslTypeColor_("glslTypeColor", "Types", ivec4(0x56, 0x9C, 0xD6, 255), ivec4(0, 0, 0, 1),
-                     ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), INVALID_OUTPUT,
+                     ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
                      PropertySemantics::Color)
     , glslGlslBuiltinsColor_("glslGlslBultinsColor", "GLSL Builtins", ivec4(0xFF, 0x80, 0x00, 255),
                              ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                             INVALID_OUTPUT, PropertySemantics::Color)
+                             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , glslCommentColor_("glslCommentColor", "Comments", ivec4(0x60, 0x8B, 0x4E, 255),
                         ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                        INVALID_OUTPUT, PropertySemantics::Color)
+                        InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , glslPreProcessorColor_("glslPreProcessorColor", "Pre Processor", ivec4(0x9B, 0x9B, 0x9B, 255),
                              ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                             INVALID_OUTPUT, PropertySemantics::Color)
+                             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
     , pythonSyntax_("pythonSyntax_", "Python Syntax Highlighting")
     , pyFontSize_("pyFontSize_" , "Font Size" , 11 , 1, 72)
     , pyBGColor_("pyBGColor", "Background", ivec4(0xb0, 0xb0, 0xbc, 255), ivec4(0, 0, 0, 1),
-                 ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), INVALID_OUTPUT, 
+                 ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput, 
                  PropertySemantics::Color)
     , pyTextColor_("pyTextColor", "Text", ivec4(0x11, 0x11, 0x11, 255), ivec4(0, 0, 0, 1),
-                   ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), INVALID_OUTPUT,
+                   ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
                    PropertySemantics::Color)
     , pyTypeColor_("pyTypeColor", "Types", ivec4(0x14, 0x3C, 0xA6, 255), ivec4(0, 0, 0, 1),
-                   ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), INVALID_OUTPUT,
+                   ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1), InvalidationLevel::InvalidOutput,
                    PropertySemantics::Color)
     , pyCommentsColor_("pyCommentsColor", "Comments", ivec4(0x00, 0x66, 0x00, 255),
                        ivec4(0, 0, 0, 1), ivec4(255, 255, 255, 1), ivec4(1, 1, 1, 1),
-                       INVALID_OUTPUT, PropertySemantics::Color)
+                       InvalidationLevel::InvalidOutput, PropertySemantics::Color)
 
     , allocTest_(nullptr) {
     applicationUsageModeProperty_.addOption("applicationMode", "Application Mode", 0);

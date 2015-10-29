@@ -45,7 +45,7 @@ namespace inviwo {
 class IVW_CORE_API BaseOptionProperty : public Property {
 public:
     BaseOptionProperty(std::string identifier, std::string displayName,
-                       InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                       InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                        PropertySemantics semantics = PropertySemantics::Default);
 
     BaseOptionProperty(const BaseOptionProperty& rhs);
@@ -138,7 +138,7 @@ public:
     typedef T valueType;
 
     BaseTemplateOptionProperty(std::string identifier, std::string displayName,
-                               InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                               InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                                PropertySemantics semantics = PropertySemantics::Default);
 
     BaseTemplateOptionProperty(const BaseTemplateOptionProperty<T>& rhs);
@@ -211,7 +211,7 @@ class TemplateOptionProperty : public BaseTemplateOptionProperty<T> {
 public:
     InviwoPropertyInfo();
     TemplateOptionProperty(std::string identifier, std::string displayName,
-                           InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                            PropertySemantics semantics = PropertySemantics::Default);
     TemplateOptionProperty(const TemplateOptionProperty<T>& rhs);
     TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that);
@@ -254,7 +254,7 @@ class IVW_CORE_API OptionPropertyString : public TemplateOptionProperty<std::str
 public:
     InviwoPropertyInfo();
     OptionPropertyString(std::string identifier, std::string displayName,
-                         InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                          PropertySemantics semantics = PropertySemantics::Default);
 
     OptionPropertyString(const OptionPropertyString& rhs);
@@ -588,7 +588,7 @@ void BaseTemplateOptionProperty<T>::deserialize(IvwDeserializer& d) {
 template <typename T>
 TemplateOptionProperty<T>::TemplateOptionProperty(
     std::string identifier, std::string displayName,
-    InvalidationLevel invalidationLevel /*= INVALID_OUTPUT*/,
+    InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
     PropertySemantics semantics /*= PropertySemantics::Default*/)
     : BaseTemplateOptionProperty<T>(identifier, displayName, invalidationLevel, semantics) {}
 

@@ -42,7 +42,7 @@ CompositeProperty::CompositeProperty(std::string identifier, std::string display
     : Property(identifier, displayName, invalidationLevel, semantics)
     , PropertyOwner()
     , collapsed_(false)
-    , subPropertyInvalidationLevel_(VALID) {}
+    , subPropertyInvalidationLevel_(InvalidationLevel::Valid) {}
 
 CompositeProperty::CompositeProperty(const CompositeProperty& rhs)
     : Property(rhs), PropertyOwner(rhs), collapsed_(rhs.collapsed_) {}
@@ -117,7 +117,7 @@ void CompositeProperty::invalidate(InvalidationLevel invalidationLevel,
 
 void CompositeProperty::setValid() {
     PropertyOwner::setValid();
-    subPropertyInvalidationLevel_ = VALID;
+    subPropertyInvalidationLevel_ = InvalidationLevel::Valid;
 }
 
 void CompositeProperty::setCurrentStateAsDefault() {

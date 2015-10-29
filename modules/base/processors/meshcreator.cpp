@@ -51,7 +51,7 @@ MeshCreator::MeshCreator()
     , position2_("position2", "Stop Position", vec3(1.0f, 0.0f, 0.0f), vec3(-50.0f), vec3(50.0f))
     , normal_("normal", "Normal", vec3(0.0f, 0.0f, 1.0f), vec3(-50.0f), vec3(50.0f))
     , color_("color", "Color", vec4(1.0f, 1.0f, 1.0f, 1.0f), vec4(0.0f), vec4(1.0f), vec4(0.01f),
-             INVALID_OUTPUT, PropertySemantics::Color)
+             InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , meshScale_("scale", "Size scaling", 1.f, 0.01f, 10.f)
     , meshRes_("res", "Mesh resolution", vec2(16), vec2(1), vec2(1024))
     , meshType_("meshType", "Mesh Type") {

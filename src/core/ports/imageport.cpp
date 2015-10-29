@@ -46,7 +46,7 @@ ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
 ImageOutport::~ImageOutport() {}
 
 void ImageOutport::invalidate(InvalidationLevel invalidationLevel) {
-    if (invalidationLevel > VALID) {
+    if (invalidationLevel > InvalidationLevel::Valid) {
         cache_.setInvalid();
     }
     Outport::invalidate(invalidationLevel);
@@ -128,7 +128,7 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     // Propagate the resize event
     getProcessor()->propagateResizeEvent(newEvent.get(), this);
     
-    if (handleResizeEvents_) getProcessor()->invalidate(INVALID_OUTPUT);
+    if (handleResizeEvents_) getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
 }
 
 size2_t ImageOutport::getDimensions() const { return dimensions_; }

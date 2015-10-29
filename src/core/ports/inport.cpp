@@ -35,7 +35,7 @@
 namespace inviwo {
 
 Inport::Inport(std::string identifier)
-    : Port(identifier), changed_(false), optional_(false), lastInvalidationLevel_(VALID) {}
+    : Port(identifier), changed_(false), optional_(false), lastInvalidationLevel_(InvalidationLevel::Valid) {}
 
 Inport::~Inport() {}
 
@@ -50,7 +50,7 @@ bool Inport::isOptional() const { return optional_; }
 void Inport::setOptional(bool optional) { optional_ = optional; }
 
 void Inport::invalidate(InvalidationLevel invalidationLevel) {
-    if (lastInvalidationLevel_ == VALID && invalidationLevel >= INVALID_OUTPUT)
+    if (lastInvalidationLevel_ == InvalidationLevel::Valid && invalidationLevel >= InvalidationLevel::InvalidOutput)
         onInvalidCallback_.invokeAll();
     lastInvalidationLevel_ = std::max(lastInvalidationLevel_, invalidationLevel);
 
@@ -58,7 +58,7 @@ void Inport::invalidate(InvalidationLevel invalidationLevel) {
 }
 
 void Inport::setValid(const Outport* source) {
-    lastInvalidationLevel_ = VALID;
+    lastInvalidationLevel_ = InvalidationLevel::Valid;
     setChanged(true, source);
 }
 
@@ -98,7 +98,7 @@ void Inport::connectTo(Outport* outport) {
         outport->connectTo(this);   // add this to the outport.
         setChanged(true, outport);  // mark that we should call onChange.
         onConnectCallback_.invokeAll();
-        invalidate(INVALID_OUTPUT);
+        invalidate(InvalidationLevel::InvalidOutput);
     }
 }
 
@@ -109,7 +109,7 @@ void Inport::disconnectFrom(Outport* outport) {
         outport->disconnectFrom(this);  // remove this from outport.
         setChanged(true, outport);      // mark that we should call onChange.
         onDisconnectCallback_.invokeAll();
-        invalidate(INVALID_OUTPUT);
+        invalidate(InvalidationLevel::InvalidOutput);
     }
 }
 

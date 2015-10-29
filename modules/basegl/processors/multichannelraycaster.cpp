@@ -71,7 +71,7 @@ MultichannelRaycaster::MultichannelRaycaster()
     transferFunctions_.addProperty(new TransferFunctionProperty(
         "transferFunction4", "Channel 4", TransferFunction(), &volumePort_), false);
 
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");

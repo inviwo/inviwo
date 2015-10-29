@@ -78,7 +78,7 @@ public:
 
 protected:
     virtual void process() override;
-    void onKernelCompiled( const cl::Kernel* kernel ) override { invalidate(INVALID_RESOURCES); }
+    void onKernelCompiled( const cl::Kernel* kernel ) override { invalidate(InvalidationLevel::InvalidResources); }
 
 
 

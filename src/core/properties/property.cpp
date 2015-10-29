@@ -195,7 +195,7 @@ void Property::propertyModified() {
         }
 
         // Invalidate Owner
-        if (getInvalidationLevel() > VALID) {
+        if (getInvalidationLevel() > InvalidationLevel::Valid) {
             owner->invalidate(getInvalidationLevel(), this);        
         }
     }

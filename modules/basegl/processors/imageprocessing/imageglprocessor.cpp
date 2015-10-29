@@ -48,7 +48,7 @@ ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     inport_.onChange(this, &ImageGLProcessor::inportChanged);
     inport_.setOutportDeterminesSize(true);
     outport_.setHandleResizeEvents(false);
-    shader_.onReload([this](){invalidate(INVALID_RESOURCES);});
+    shader_.onReload([this](){invalidate(InvalidationLevel::InvalidResources);});
 }
 
 ImageGLProcessor::~ImageGLProcessor() {}

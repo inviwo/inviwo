@@ -112,7 +112,7 @@ public:
 
     /**
      * Notifies kernel observers that the kernel was compiled and
-     * calls invalidate(INVALID_RESOURCES) on Processor specified in the constructor.
+     * calls invalidate(InvalidationLevel::InvalidResources) on Processor specified in the constructor.
      * Override this method to perform operations after a successful kernel 
      * compilation. 
      * @param kernel The kernel that was compiled

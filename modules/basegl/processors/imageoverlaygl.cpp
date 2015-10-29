@@ -93,7 +93,7 @@ ImageOverlayGL::ImageOverlayGL()
     , viewManager_()
     , currentDim_(0u, 0u) {
 
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(inport_);
     addPort(overlayPort_);

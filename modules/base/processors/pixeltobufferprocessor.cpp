@@ -53,7 +53,7 @@ PixelToBufferProcessor::PixelToBufferProcessor()
     , pixelValues_("pixelValues")
     , fromPixel_("fromPixel", "From pixel", ivec2(0), ivec2(0), ivec2(1))
     , channel_("channel", "Channel", 0, 0, 3)
-    , clearValues_("clearValues", "Clear collected values", VALID)
+    , clearValues_("clearValues", "Clear collected values", InvalidationLevel::Valid)
     , handleInteractionEvents_("handleEvents", "Enable picking", false)
     , values_(std::make_shared<PosBuffer>()) {
 
@@ -93,7 +93,7 @@ void PixelToBufferProcessor::setPixelToCollectFrom(const ivec2& xy) { fromPixel_
 
 void PixelToBufferProcessor::clearOutput() {
     values_->getEditableRepresentation<BufferRAMPrecision<double>>()->setSize(0);
-    invalidate(INVALID_OUTPUT);
+    invalidate(InvalidationLevel::InvalidOutput);
 }
 
 void PixelToBufferProcessor::handleInteractionEventsChanged() {

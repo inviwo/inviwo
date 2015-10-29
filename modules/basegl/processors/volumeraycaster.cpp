@@ -66,7 +66,7 @@ VolumeRaycaster::VolumeRaycaster()
     , positionIndicator_("positionindicator", "Position Indicator")
     , toggleShading_("toggleShading", "Toggle Shading", new KeyboardEvent('L'),
                      new Action(this, &VolumeRaycaster::toggleShading)) {
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     addPort(volumePort_, "VolumePortGroup");
     addPort(entryPort_, "ImagePortGroup1");
@@ -145,7 +145,7 @@ void VolumeRaycaster::process() {
                 glFlush();
                 dispatchFront([this, newVolume]() {
                     loadedVolume_ = newVolume;
-                    invalidate(INVALID_OUTPUT);
+                    invalidate(InvalidationLevel::InvalidOutput);
                 });
             });
         }

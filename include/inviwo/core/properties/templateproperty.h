@@ -43,7 +43,7 @@ public:
 
     TemplateProperty(
         const std::string& identifier, const std::string& displayName, const T& value = T(),
-        InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
     TemplateProperty(const TemplateProperty& rhs);

@@ -36,8 +36,8 @@ VolumeIndicatorProperty::VolumeIndicatorProperty(std::string identifier, std::st
                                                  InvalidationLevel invalidationLevel,
                                                  PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , enable_("enable", "Enable", false, INVALID_RESOURCES)
-    , mode_("mode", "Mode", INVALID_RESOURCES)
+    , enable_("enable", "Enable", false, InvalidationLevel::InvalidResources)
+    , mode_("mode", "Mode", InvalidationLevel::InvalidResources)
     , plane1_("plane1", "Plane 1")
     , plane2_("plane2", "Plane 2")
     , plane3_("plane3", "Plane 3") {

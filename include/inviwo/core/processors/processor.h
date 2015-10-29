@@ -225,7 +225,7 @@ public:
     bool isInitialized() const;
 
     /**
-     * InitializeResources is called whenever a property with InvalidationLevel INVALID_RESOURCES
+     * InitializeResources is called whenever a property with InvalidationLevel::InvalidResources
      * is changes.
      */
     virtual void initializeResources() {}

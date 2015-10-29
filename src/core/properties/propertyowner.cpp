@@ -40,7 +40,7 @@ namespace inviwo {
 
 PropertyOwner::PropertyOwner()
     : PropertyOwnerObservable()
-    , invalidationLevel_(VALID) {
+    , invalidationLevel_(InvalidationLevel::Valid) {
 }
 
 PropertyOwner::PropertyOwner(const PropertyOwner& rhs)
@@ -205,12 +205,12 @@ PropertyOwner::const_iterator PropertyOwner::cend() const {
 }
 
 bool PropertyOwner::isValid() const {
-    return invalidationLevel_ == VALID;
+    return invalidationLevel_ == InvalidationLevel::Valid;
 }
 
 void PropertyOwner::setValid() {
     for (auto& elem : properties_) elem->setPropertyModified(false);
-    invalidationLevel_ = VALID;
+    invalidationLevel_ = InvalidationLevel::Valid;
 }
 
 inviwo::InvalidationLevel PropertyOwner::getInvalidationLevel() const {
@@ -292,9 +292,9 @@ void PropertyOwner::resetAllPoperties(){
 
 std::string PropertyOwner::invalidationLevelToString(InvalidationLevel level) {
     switch (level) {
-        case VALID: return "Valid";
-        case INVALID_OUTPUT: return "Invalid output";
-        case INVALID_RESOURCES: return "Invalid resources";
+        case InvalidationLevel::Valid: return "Valid";
+        case InvalidationLevel::InvalidOutput: return "Invalid output";
+        case InvalidationLevel::InvalidResources: return "Invalid resources";
         default: return "Unknown";
     }
 }

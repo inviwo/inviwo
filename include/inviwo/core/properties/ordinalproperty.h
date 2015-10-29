@@ -48,7 +48,7 @@ public:
         const T& value = Defaultvalues<T>::getVal(), const T& minValue = Defaultvalues<T>::getMin(),
         const T& maxValue = Defaultvalues<T>::getMax(),
         const T& increment = Defaultvalues<T>::getInc(),
-        InvalidationLevel invalidationLevel = INVALID_OUTPUT,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
     OrdinalProperty(const OrdinalProperty<T>& rhs);

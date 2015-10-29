@@ -33,7 +33,7 @@
 namespace inviwo {
 
 Outport::Outport(std::string identifier)
-    : Port(identifier), invalidationLevel_(VALID) {}
+    : Port(identifier), invalidationLevel_(InvalidationLevel::Valid) {}
 
 Outport::~Outport() {}
 
@@ -61,7 +61,7 @@ void Outport::propagateEvent(Event* event) {
 inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }
 
 void Outport::setValid() {
-    invalidationLevel_ = VALID;
+    invalidationLevel_ = InvalidationLevel::Valid;
     for (auto inport : connectedInports_) inport->setValid(this);
 }
 

@@ -86,7 +86,7 @@ TubeRendering::TubeRendering()
     
     mesh_.onChange([this]() {drawer_ = nullptr; });
 
-    shader_.onReload([this]() { invalidate(INVALID_OUTPUT); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
 }
     
 void TubeRendering::process() {

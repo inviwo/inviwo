@@ -50,7 +50,7 @@ public:
                              const std::string &displayName,
                              const TransferFunction &value = TransferFunction(),
                              VolumeInport* volumeInport = nullptr,
-                             InvalidationLevel invalidationLevel=INVALID_OUTPUT,
+                             InvalidationLevel invalidationLevel=InvalidationLevel::InvalidOutput,
                              PropertySemantics semantics=PropertySemantics::Default);
     
     TransferFunctionProperty(const TransferFunctionProperty& rhs);

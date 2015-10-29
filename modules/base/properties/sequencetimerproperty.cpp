@@ -41,7 +41,7 @@ SequenceTimerProperty::SequenceTimerProperty(std::string identifier, std::string
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , index_("selectedSequenceIndex", "Sequence Index", 1, 1, 1, 1)
     , play_("playSequence", "Play Sequence", false)
-    , framesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, VALID)
+    , framesPerSecond_("volumesPerSecond", "Frame rate", 30, 1, 60, 1, InvalidationLevel::Valid)
     , playPause_(
           "playPause", "Play / Pause",
           new KeyboardEvent('P', InteractionEvent::MODIFIER_NONE, KeyboardEvent::KEY_STATE_PRESS),

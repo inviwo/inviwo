@@ -59,7 +59,7 @@ public:
     CameraProperty(std::string identifier, std::string displayName,
                    vec3 eye = vec3(0.0f, 0.0f, -2.0f), vec3 center = vec3(0.0f),
                    vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), Inport* inport = nullptr,
-                   InvalidationLevel = INVALID_RESOURCES,
+                   InvalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(const CameraProperty& rhs);
@@ -148,7 +148,7 @@ private:
     // Call this function after a property has changed
     // Makes sure that linking is propagated after
     // a property has changed.
-    // Calls CompositeProperty::invalidate(INVALID_OUTPUT, this);
+    // Calls CompositeProperty::invalidate(InvalidationLevel::InvalidOutput, this);
     void invalidateCamera();
     // These functions make sure that the
     // template value (PerspectiveCamera) is

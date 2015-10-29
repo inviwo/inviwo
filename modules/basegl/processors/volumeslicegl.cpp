@@ -69,30 +69,30 @@ VolumeSliceGL::VolumeSliceGL()
     , pickGroup_("pickGroup", "Position Selection")
     , tfGroup_("tfGroup", "Transfer Function")
     , sliceAlongAxis_("sliceAxis", "Slice along axis")
-    , sliceX_("sliceX", "X Volume Position", 128, 1, 256, 1, VALID)
-    , sliceY_("sliceY", "Y Volume Position", 128, 1, 256, 1, VALID)
-    , sliceZ_("sliceZ", "Z Volume Position", 128, 1, 256, 1, VALID)
+    , sliceX_("sliceX", "X Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
+    , sliceY_("sliceY", "Y Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
+    , sliceZ_("sliceZ", "Z Volume Position", 128, 1, 256, 1, InvalidationLevel::Valid)
     , worldPosition_("worldPosition_", "World Position", vec3(0.0f), vec3(-10.0f), vec3(10.0f),
-                     vec3(0.01f), VALID)
+                     vec3(0.01f), InvalidationLevel::Valid)
     , planeNormal_("planeNormal", "Plane Normal", vec3(1.f, 0.f, 0.f), vec3(-1.f, -1.f, -1.f),
                    vec3(1.f, 1.f, 1.f), vec3(0.01f, 0.01f, 0.01f))
     , planePosition_("planePosition", "Plane Position", vec3(0.5f), vec3(0.0f), vec3(1.0f))
     , imageScale_("imageScale", "Scale", 1.0f, 0.1f, 10.0f)
-    , rotationAroundAxis_("rotation", "Rotation (ccw)", VALID)
+    , rotationAroundAxis_("rotation", "Rotation (ccw)", InvalidationLevel::Valid)
     , imageRotation_("imageRotation", "Angle", 0, 0, glm::radians(360.f))
     , flipHorizontal_("flipHorizontal", "Horizontal Flip", false)
     , flipVertical_("flipVertical", "Vertical Flip", false)
     , volumeWrapping_("volumeWrapping", "Volume Texture Wrapping")
     , fillColor_("fillColor", "Fill Color", vec4(0.0f, 0.0f, 0.0f, 0.0f), vec4(0.0f), vec4(1.0f),
-                 vec4(0.01f), INVALID_OUTPUT, PropertySemantics::Color)
+                 vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , posPicking_("posPicking", "Enable Picking", false)
     , showIndicator_("showIndicator", "Show Position Indicator", true)
     , indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
-                      vec4(1.0f), vec4(0.01f), INVALID_OUTPUT, PropertySemantics::Color)
-    , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true, INVALID_RESOURCES)
+                      vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
+    , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true, InvalidationLevel::InvalidResources)
     , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, VALID)
+    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, InvalidationLevel::Valid)
     , mouseShiftSlice_(
           "mouseShiftSlice", "Mouse Slice Shift",
           new MouseEvent(MouseEvent::MOUSE_BUTTON_NONE, InteractionEvent::MODIFIER_NONE,
@@ -176,8 +176,8 @@ VolumeSliceGL::VolumeSliceGL()
         shader_.build();
     });
     shader_.getFragmentShaderObject()->addShaderDefine("COLOR_FILL_ENABLED");
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
-    indicatorShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    indicatorShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
     imageRotation_.setVisible(false);
 

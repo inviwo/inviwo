@@ -146,8 +146,8 @@ LightVolumeGL::LightVolumeGL()
     floatPrecision_.onChange(this, &LightVolumeGL::floatPrecisionChanged);
     addProperty(floatPrecision_);
 
-    propagationShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
-    mergeShader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    propagationShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    mergeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void LightVolumeGL::initialize() {

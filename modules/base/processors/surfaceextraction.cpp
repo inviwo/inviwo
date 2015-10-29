@@ -124,7 +124,7 @@ void SurfaceExtraction::process() {
 
                             dispatchFront([this]() {
                                 dirty_ = true;
-                                invalidate(INVALID_OUTPUT);
+                                invalidate(InvalidationLevel::InvalidOutput);
                             });
 
                             return m;
@@ -199,7 +199,7 @@ void SurfaceExtraction::invalidate(InvalidationLevel invalidationLevel,
     notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
 
-    if (dirty_ || volume_.isChanged()) outport_.invalidate(INVALID_OUTPUT);
+    if (dirty_ || volume_.isChanged()) outport_.invalidate(InvalidationLevel::InvalidOutput);
 
     notifyObserversInvalidationEnd(this);
 }

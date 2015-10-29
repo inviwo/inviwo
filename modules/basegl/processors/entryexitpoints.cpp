@@ -73,8 +73,8 @@ EntryExitPoints::EntryExitPoints()
     addProperty(trackball_);
     entryPort_.addResizeEventListener(&camera_);
 
-    shader_.onReload([this]() { invalidate(INVALID_RESOURCES); });
-    clipping_.onReload([this]() { invalidate(INVALID_RESOURCES); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    clipping_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 EntryExitPoints::~EntryExitPoints() {}

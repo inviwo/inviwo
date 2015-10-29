@@ -47,15 +47,15 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , value_(eye, center, lookUp, 0.1f, 100.f)
-    , lookFrom_("lookFrom", "Look from", eye, -vec3(10.0f), vec3(10.0f), vec3(0.1f), VALID,
+    , lookFrom_("lookFrom", "Look from", eye, -vec3(10.0f), vec3(10.0f), vec3(0.1f), InvalidationLevel::Valid,
                 PropertySemantics("Spherical"))
-    , lookTo_("lookTo", "Look to", center, -vec3(10.0f), vec3(10.0f), vec3(0.1f), VALID)
-    , lookUp_("lookUp", "Look up", lookUp, -vec3(10.0f), vec3(10.0f), vec3(0.1f), VALID)
-    , fovy_("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f, VALID)
-    , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f, VALID)
-    , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f, VALID)
-    , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f, VALID)
-    , fitToBasis_("fitToBasis_", "Fit to basis", true, VALID)
+    , lookTo_("lookTo", "Look to", center, -vec3(10.0f), vec3(10.0f), vec3(0.1f), InvalidationLevel::Valid)
+    , lookUp_("lookUp", "Look up", lookUp, -vec3(10.0f), vec3(10.0f), vec3(0.1f), InvalidationLevel::Valid)
+    , fovy_("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f, InvalidationLevel::Valid)
+    , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f, InvalidationLevel::Valid)
+    , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f, InvalidationLevel::Valid)
+    , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f, InvalidationLevel::Valid)
+    , fitToBasis_("fitToBasis_", "Fit to basis", true, InvalidationLevel::Valid)
     , inport_(inport)
     , data_(nullptr)
     , oldBasis_(0) {
@@ -281,7 +281,7 @@ void CameraProperty::setProjectionMatrix(float fovy, float aspect, float nearPla
 }
 
 void CameraProperty::invalidateCamera() {
-    CompositeProperty::invalidate(INVALID_OUTPUT, this);
+    CompositeProperty::invalidate(InvalidationLevel::InvalidOutput, this);
 }
 
 void CameraProperty::invokeEvent(Event* event) {
