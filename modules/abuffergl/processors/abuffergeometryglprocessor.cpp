@@ -146,7 +146,7 @@ void ABufferGeometryGLProcessor::geometryRender() {
     if (abufferEnabled) {
         ABUFFER_PROFILE("Resolving-abuffer");
         utilgl::activateAndClearTarget(outport_);
-        abuffer_.aBuffer_resolveLinkList(tempImageGL);
+        abuffer_.aBuffer_resolveLinkList(tempImageGL, imageInport_.getData().get());
         utilgl::deactivateCurrentTarget();
     }
 }

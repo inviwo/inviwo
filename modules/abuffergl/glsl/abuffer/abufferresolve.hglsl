@@ -32,6 +32,12 @@
 
 //ABuffer
 #include "abuffer.hglsl"
+#include "utils/sampler2d.glsl"
+
+uniform bool isInputImageGiven;
+uniform ImageParameters inputimageParameters;
+uniform sampler2D inputimageColor;
+uniform sampler2D inputimageDepth;
 
  //Reset ABuffer
  void resetABuffer() {
@@ -66,7 +72,24 @@ void main() {
 	FragData0 = vec4(r/256.0, g/256.0, b/256.0, 1.0); 
 	return;
 #endif
+	
+	if (isInputImageGiven) {
+		vec2 texCoords = gl_FragCoord.xy * inputimageParameters.reciprocalDimensions;
+		vec4 col = texture(inputimageColor, texCoords); //color image
+		vec3 d = texture(inputimageDepth, texCoords).rgb; //depth image
+
+		if (length(col)>0.0) {			
+			u8vec4 abufferFrag = u8vec4(col*255.0);
+			abufferFrag = clamp(abufferFrag, u8vec4(0), u8vec4(255));
+			buildABufferLinkList(ivec2(gl_FragCoord.x, gl_FragCoord.y),
+								 abufferFrag,
+								 d.x);
+		}
+	}
+
 	float abNumFrag=(float)getPixelFragCounter(ivec2(gl_FragCoord.x, gl_FragCoord.y));
+
+
 	if (abNumFrag == 0) return;
 
 	//initialize sorting buffer

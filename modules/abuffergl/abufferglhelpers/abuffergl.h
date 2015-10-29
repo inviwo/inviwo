@@ -114,7 +114,7 @@ public:
     void abuffer_addUniforms(Shader* shader);
     void abuffer_addShaderDefinesAndBuild(Shader* shader);
     void aBuffer_unbind();
-    void aBuffer_resolveLinkList(ImageGL* imageGL);
+    void aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage=nullptr);
     void aBuffer_resetLinkList(ImageGL* imageGL);
     glm::uint abuffer_fetchCurrentAtomicCounterValue();
     void abuffer_printDebugInfo(glm::ivec2 pos);

@@ -440,10 +440,12 @@ void Inviwo_ABufferGL4::aBuffer_unbind() {
     layer->unbindTexture();
 }
 
-void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL) {
+void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL, const Image* inputimage) {
     //TextureUnit* tex1 = texUnits_[0]; //unused
     //TextureUnit* tex2 = texUnits_[1]; //unused
     //TextureUnit* tex3 = texUnits_[2]; //unused
+
+    TextureUnitContainer units;
 
     imageGL->activateBuffer();
     // utilgl::activateTarget(outport_);
@@ -457,9 +459,16 @@ void Inviwo_ABufferGL4::aBuffer_resolveLinkList(ImageGL* imageGL) {
     // setGlobalShaderParameters(resolveABufferShader_);
     // utilgl::setShaderUniforms(&resolveABufferShader_, camera_, "camera_");
     // utilgl::setShaderUniforms(&resolveABufferShader_, lightingProperty_, "light_");
+    
 
     abuffer_addUniforms(&resolveABufferShader_);
     // aBuffer_addUniforms(resolveABufferShader_, tex1, tex2, tex3);
+    if (inputimage) {
+        resolveABufferShader_.setUniform("isInputImageGiven", true);
+        utilgl::bindAndSetUniforms(resolveABufferShader_, units,
+            *inputimage, "inputimage", ImageType::ColorDepth);
+    }
+    else resolveABufferShader_.setUniform("isInputImageGiven", false);
 
     LGL_ERROR;
 
