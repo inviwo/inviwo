@@ -101,10 +101,10 @@ void StreamLineTracer::step(int steps, dvec3 curPos, IntegralLine &line, double 
         dvec3 v;
         switch (integrationScheme_)
         {
-        case inviwo::StreamLineTracer::IntegrationScheme::RK4:
+        case IntegralLineTracer::IntegrationScheme::RK4:
             v = rk4(curPos,stepSize,normalzieSample, invBasis_);
             break;
-        case inviwo::StreamLineTracer::IntegrationScheme::Euler:
+        case IntegralLineTracer::IntegrationScheme::Euler:
         default:
             v = euler(curPos);
             break;
@@ -134,7 +134,7 @@ dvec3 StreamLineTracer::euler(const dvec3 &curPos) {
     return volumeSampler_.sample(curPos).xyz();
 }
 
-dvec3 StreamLineTracer::rk4(const dvec3 &curPos, double stepSize, bool normalzieSample , dmat3 m ) {
+dvec3 StreamLineTracer::rk4(const dvec3 &curPos, double stepSize, bool normalzieSample ,const  dmat3 &m ) {
     auto h = stepSize / 2;
     auto k1 = volumeSampler_.sample(curPos).xyz();
     if (normalzieSample) k1 = glm::normalize(k1);
@@ -147,11 +147,7 @@ dvec3 StreamLineTracer::rk4(const dvec3 &curPos, double stepSize, bool normalzie
     auto K3 = m * k3;
     auto k4 = volumeSampler_.sample(curPos + K3 * stepSize).xyz();
     if (normalzieSample) k4 = glm::normalize(k4);
-    /*
-    auto k1 = volumeSampler_.sample(glm::clamp(curPos, 0.0, 1.0)).xyz();
-    auto k2 = volumeSampler_.sample(glm::clamp(curPos + k1 * h, 0.0, 1.0)).xyz();
-    auto k3 = volumeSampler_.sample(glm::clamp(curPos + k2 * h, 0.0, 1.0)).xyz();
-    auto k4 = volumeSampler_.sample(glm::clamp(curPos + k3 * stepSize, 0.0, 1.0)).xyz(); */
+
     return (k1+2.0*(k2+k3)+k4 )/6.0;
 }
 

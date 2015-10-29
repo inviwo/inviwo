@@ -53,6 +53,11 @@ PathLines::PathLines()
     , seedPoints_("seedpoints")
     , linesStripsMesh_("linesStripsMesh_")
 
+    , startT_("startT", "Start at timestep",0,0,1)
+    , numberOfSteps_("steps", "Number of steps", 100, 1, 1000)
+    , dt_("dt", "Stepsize (dt)", 0.001f, 0.0001f, 1.0f, 0.001f)
+
+
     , stepDirection_("stepDirection", "Step Direction")
     , integrationScheme_("integrationScheme", "Integration Scheme")
     , seedPointsSpace_("seedPointsSpace", "Seed Points Space")
@@ -83,6 +88,10 @@ PathLines::PathLines()
     seedPointsSpace_.addOption("index", "Index", StructuredCoordinateTransformer<3>::Space::Index);
 
     maxVelocity_.setReadOnly(true);
+
+    addProperty(startT_);
+    addProperty(numberOfSteps_);
+    addProperty(dt_);
 
     addProperty(stepDirection_);
     addProperty(integrationScheme_);
@@ -119,18 +128,12 @@ void PathLines::process() {
 
     float maxVelocity = 0;
     PathLineTracer tracer(data, integrationScheme_.get());
-
-    float startT_ = 0;
-    int numberOfSteps_ = 100;
-    double dt_ = 0.001;
    
 
     std::vector<BasicMesh::Vertex> vertices;
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
-            auto indexBuffer =
-                mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::STRIP_ADJACENCY);
             auto line = tracer.traceFrom(vec4(P.xyz(), startT_), numberOfSteps_, dt_,stepDirection_.get());
 
             auto position = line.getPositions().begin();
@@ -139,6 +142,9 @@ void PathLines::process() {
             auto size = line.getPositions().size();
             if (size == 0) continue;
 
+
+            auto indexBuffer =
+                mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::STRIP_ADJACENCY);
             indexBuffer->add(0);
 
 

@@ -44,6 +44,7 @@ namespace inviwo {
  */
 class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLine {
     friend class StreamLineTracer;
+    friend class PathLineTracer;
 
 public:
     IntegralLine();

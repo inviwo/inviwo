@@ -82,6 +82,10 @@ private:
 
     MeshOutport linesStripsMesh_;
 
+    DoubleProperty startT_;
+    IntProperty numberOfSteps_;
+    DoubleProperty dt_;
+
 
     TemplateOptionProperty<IntegralLineTracer::Direction> stepDirection_;
     TemplateOptionProperty<IntegralLineTracer::IntegrationScheme> integrationScheme_;
