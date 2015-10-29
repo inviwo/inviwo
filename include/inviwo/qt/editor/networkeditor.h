@@ -134,7 +134,8 @@ public:
     // Port inspectors
     bool addPortInspector(Outport* port, QPointF pos);
     void removePortInspector(Outport* port);
-    std::vector<unsigned char>* renderPortInspectorImage(Outport* port, std::string& type);
+    std::unique_ptr<std::vector<unsigned char>> renderPortInspectorImage(Outport* port,
+                                                                         std::string& type);
 
     void updateLeds();
 

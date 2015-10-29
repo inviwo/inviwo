@@ -114,7 +114,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     if (inspector) {
         if (auto outport = dynamic_cast<Outport*>(port)) {
-            data.reset(NetworkEditor::getPtr()->renderPortInspectorImage(outport, imageType));
+            data = NetworkEditor::getPtr()->renderPortInspectorImage(outport, imageType);
         }
     }
 
@@ -139,10 +139,10 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
             }
             else if (data->size() == size*size * 4){
                 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-			format = QImage::Format_RGBA8888;
-		#else
-			format = QImage::Format_RGB888;
-		#endif
+            format = QImage::Format_RGBA8888;
+        #else
+            format = QImage::Format_RGB888;
+        #endif
             }
 
             QImage image(reinterpret_cast<const unsigned char*>(&(data->front())), size, size, format);

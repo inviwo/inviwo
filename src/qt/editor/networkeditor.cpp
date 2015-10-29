@@ -352,14 +352,15 @@ void NetworkEditor::removePortInspector(Outport* port) {
     }
 }
 
-std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Outport* outport,
-                                                                    std::string& type) {
+std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorImage(
+    Outport* outport, std::string& type) {
+    std::unique_ptr<std::vector<unsigned char>> data;
+
     try {
         auto portInspector =
             PortInspectorFactory::getPtr()->createAndCache(outport->getClassIdentifier());
 
         auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-        std::unique_ptr<std::vector<unsigned char>> data;
 
         if (portInspector && !portInspector->isActive()) {
             portInspector->setActive(true);
@@ -405,7 +406,7 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Outport* out
                 canvasProcessor->setCanvasSize(ivec2(size, size));
             }  // Network will unlock and evaluate here.
 
-            data.reset(canvasProcessor->getVisibleLayerAsCodedBuffer(type));
+            data = canvasProcessor->getVisibleLayerAsCodedBuffer(type);
 
             // remove the network...
             NetworkLock lock;
@@ -414,14 +415,12 @@ std::vector<unsigned char>* NetworkEditor::renderPortInspectorImage(Outport* out
             wm->setVisibile(true);
             portInspector->setActive(false);
         }
-        return data.release();
-
     } catch (Exception& exception) {
         util::log(exception.getContext(), exception.getMessage(), LogLevel::Error);
     } catch (...) {
         util::log(IvwContext, "Problem using port inspector", LogLevel::Error);
     }
-    return nullptr;
+    return data;
 }
 
 bool NetworkEditor::isModified() const { return modified_; }

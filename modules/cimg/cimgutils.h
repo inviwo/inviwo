@@ -46,14 +46,14 @@ public:
     * Loads layer data from a specified filePath.
     **/
     static void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
-        DataFormatId& formatId, bool rescaleToDim = false);
+                               DataFormatId& formatId, bool rescaleToDim = false);
 
     /**
     * Loads volume data from a specified filePath.
     **/
     static void* loadVolumeData(void* dst, const std::string& filePath, size3_t& out_dim,
-        DataFormatId& formatId);
-   
+                                DataFormatId& formatId);
+
     /**
     * Saves an layer of an image to a specified filename.
     * @param filePath the path including name to file that is to be stored.
@@ -66,7 +66,8 @@ public:
     * @param filetype the requested filetype, which can be altered by this method
     * @param inputImage specifies the image that is to be saved.
     **/
-    static std::vector<unsigned char>* saveLayerToBuffer(std::string& fileType, const Layer* inputImage);
+    static std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(std::string& fileType,
+                                                                         const Layer* inputImage);
 
     /**
      * \brief Rescales Layer of given image data
@@ -85,7 +86,6 @@ public:
      * @param void* rescaled raw data
      */
     static void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_dim);
-
 };
 
 }  // namespace

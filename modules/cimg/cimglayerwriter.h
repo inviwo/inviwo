@@ -50,7 +50,7 @@ public:
     virtual ~CImgLayerWriter() {};
 
     virtual void writeData(const Layer* data, const std::string filePath) const;
-    virtual std::vector<unsigned char>* writeDataToBuffer(const Layer* data, std::string& type) const;
+    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(const Layer* data, std::string& type) const;
     virtual bool writeDataToRepresentation(const DataRepresentation* src, DataRepresentation* dst) const;
 };
 

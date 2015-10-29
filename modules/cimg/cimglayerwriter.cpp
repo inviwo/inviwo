@@ -68,7 +68,7 @@ void CImgLayerWriter::writeData(const Layer* data, const std::string filePath) c
     CImgUtils::saveLayer(filePath, data);
 }
 
-std::vector<unsigned char>* CImgLayerWriter::writeDataToBuffer(const Layer* data, std::string& type) const {
+std::unique_ptr<std::vector<unsigned char>> CImgLayerWriter::writeDataToBuffer(const Layer* data, std::string& type) const {
     return CImgUtils::saveLayerToBuffer(type, data);
 }
 

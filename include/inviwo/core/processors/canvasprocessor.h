@@ -65,12 +65,14 @@ public:
 
     void saveImageLayer();
     void saveImageLayer(std::string filePath);
-    std::vector<unsigned char>* getLayerAsCodedBuffer(LayerType layerType, std::string& type,
-                                                      size_t idx = 0);
-    std::vector<unsigned char>* getColorLayerAsCodedBuffer(std::string& type, size_t idx = 0);
-    std::vector<unsigned char>* getDepthLayerAsCodedBuffer(std::string& type);
-    std::vector<unsigned char>* getPickingLayerAsCodedBuffer(std::string& type);
-    std::vector<unsigned char>* getVisibleLayerAsCodedBuffer(std::string& type);
+    std::unique_ptr<std::vector<unsigned char>> getLayerAsCodedBuffer(LayerType layerType,
+                                                                      std::string& type,
+                                                                      size_t idx = 0);
+    std::unique_ptr<std::vector<unsigned char>> getColorLayerAsCodedBuffer(std::string& type,
+                                                                           size_t idx = 0);
+    std::unique_ptr<std::vector<unsigned char>> getDepthLayerAsCodedBuffer(std::string& type);
+    std::unique_ptr<std::vector<unsigned char>> getPickingLayerAsCodedBuffer(std::string& type);
+    std::unique_ptr<std::vector<unsigned char>> getVisibleLayerAsCodedBuffer(std::string& type);
 
     void triggerQueuedEvaluation();
     virtual bool isReady() const override;
