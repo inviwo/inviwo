@@ -116,11 +116,7 @@ protected:
 
     TransferFunctionEditorControlPoint* getControlPointGraphicsItemAt(const QPointF pos) const;
 
-
-
 private :
-    void addControlPoint(QPointF pos, TransferFunctionDataPoint* dataPoint);
-
     float controlPointSize_ = 15.f; ///< Size of control points
 
     float zoomRangeXMin_;
