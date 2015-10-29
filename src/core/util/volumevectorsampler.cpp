@@ -43,7 +43,7 @@ VolumeVectorSampler::~VolumeVectorSampler()  {
 
 dvec4 VolumeVectorSampler::sample(const dvec4 &pos) const
 {
-    dvec3 spatialPos = pos.xyz;
+    dvec3 spatialPos = pos.xyz();
     double t = pos.w;
 
     int tIndex = static_cast<int>(t);
