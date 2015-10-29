@@ -91,10 +91,7 @@ VolumeCombiner::VolumeCombiner()
             buildEquation(); 
         }
     });
-}
 
-void VolumeCombiner::initialize() {
-    Processor::initialize();
     buildEquation();
 }
 

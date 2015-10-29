@@ -52,14 +52,6 @@ ExampleProcessor::ExampleProcessor()
 
 ExampleProcessor::~ExampleProcessor() {}
 
-void ExampleProcessor::initialize() {
-    Processor::initialize();
-}
-
-void ExampleProcessor::deinitialize() {
-    Processor::deinitialize();
-}
-
 void ExampleProcessor::process() {
 }
 } // namespace

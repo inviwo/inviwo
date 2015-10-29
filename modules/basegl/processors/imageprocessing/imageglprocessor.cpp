@@ -53,8 +53,7 @@ ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
 
 ImageGLProcessor::~ImageGLProcessor() {}
 
-void ImageGLProcessor::initialize() {
-    Processor::initialize();
+void ImageGLProcessor::initializeResources() {
     shader_.build();
     internalInvalid_ = true;
 }

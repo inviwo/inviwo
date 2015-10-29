@@ -55,16 +55,12 @@ FirstIvwProcessor::FirstIvwProcessor()
 
     addProperty(color_);
     addPort(outport_);
-}
-
-void FirstIvwProcessor::initialize() {
-    Processor::initialize();
 
     quad_ = util::makeBuffer<vec2>(
-        {{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
+    { {-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f} });
 
     triangle_ = util::makeBuffer<vec2>(
-        {{0.0f, 1.0f}, {-1.0f, -1.0f}, {1.0f, -1.0f}});
+    { {0.0f, 1.0f}, {-1.0f, -1.0f}, {1.0f, -1.0f} });
 
     quadGL_ = quad_->getRepresentation<BufferGL>();
     triangleGL_ = triangle_->getRepresentation<BufferGL>();

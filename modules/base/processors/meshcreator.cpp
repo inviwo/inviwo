@@ -83,10 +83,6 @@ MeshCreator::MeshCreator()
 
 MeshCreator::~MeshCreator() {}
 
-void MeshCreator::initialize() { Processor::initialize(); }
-
-void MeshCreator::deinitialize() { Processor::deinitialize(); }
-
 std::shared_ptr<Mesh> MeshCreator::createMesh() {
     switch (meshType_.getSelectedIndex()) {
         case SPHERE:

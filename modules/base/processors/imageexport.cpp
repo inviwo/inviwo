@@ -74,14 +74,6 @@ ImageExport::ImageExport()
 
 ImageExport::~ImageExport() {}
 
-void ImageExport::initialize() {
-    Processor::initialize();
-}
-
-void ImageExport::deinitialize() {
-    Processor::deinitialize();
-}
-
 void ImageExport::exportImage() {
     if(!isValid()){
         exportQueued_ = true;

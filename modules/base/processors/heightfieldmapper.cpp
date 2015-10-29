@@ -74,10 +74,6 @@ HeightFieldMapper::HeightFieldMapper()
 
 HeightFieldMapper::~HeightFieldMapper() {}
 
-void HeightFieldMapper::initialize() { Processor::initialize(); }
-
-void HeightFieldMapper::deinitialize() { Processor::deinitialize(); }
-
 void HeightFieldMapper::process() {
     if (!inport_.isReady()) return;
 

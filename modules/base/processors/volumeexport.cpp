@@ -74,14 +74,6 @@ VolumeExport::VolumeExport()
 
 VolumeExport::~VolumeExport() {}
 
-void VolumeExport::initialize() {
-    Processor::initialize();
-}
-
-void VolumeExport::deinitialize() {
-    Processor::deinitialize();
-}
-
 void VolumeExport::exportVolume() {
     auto volume = volumePort_.getData();
 

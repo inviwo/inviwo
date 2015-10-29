@@ -56,7 +56,7 @@ public:
     ImageGLProcessor(std::string fragmentShader);
     virtual ~ImageGLProcessor();
 
-    virtual void initialize() override;
+    virtual void initializeResources() override;
 
     virtual void process() override;
 protected:

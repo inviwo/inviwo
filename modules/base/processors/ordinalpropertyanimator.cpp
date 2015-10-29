@@ -100,7 +100,7 @@ OrdinalPropertyAnimator::~OrdinalPropertyAnimator() {
     for (auto p : properties_) delete p;
 }
 
-void OrdinalPropertyAnimator::initialize() {
+void OrdinalPropertyAnimator::initializeResources() {
     changeProperty();
     updateTimerInterval();
 }

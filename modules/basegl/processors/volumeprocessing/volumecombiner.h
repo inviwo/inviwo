@@ -73,9 +73,7 @@ public:
     VolumeCombiner();
     virtual ~VolumeCombiner() = default;
 
-
     virtual void process() override;
-    virtual void initialize() override;
     virtual bool isReady() const override;
 
 private:

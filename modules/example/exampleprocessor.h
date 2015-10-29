@@ -60,9 +60,6 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    void initialize() override;
-    void deinitialize() override;
-
 protected:
     virtual void process() override;
 

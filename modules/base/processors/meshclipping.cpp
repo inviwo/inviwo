@@ -81,19 +81,11 @@ MeshClipping::MeshClipping()
     addProperty(renderAsPoints_);
 
     addProperty(camera_);
-}
-
-MeshClipping::~MeshClipping() {}
-
-void MeshClipping::initialize() {
-    Processor::initialize();
 
     onMovePointAlongNormalToggled();
 }
 
-void MeshClipping::deinitialize() {
-    Processor::deinitialize();
-}
+MeshClipping::~MeshClipping() {}
 
 void MeshClipping::process() {
     /* Processor overview
