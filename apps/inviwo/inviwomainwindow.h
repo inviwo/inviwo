@@ -148,6 +148,8 @@ private:
     */
     void fillTestWorkspaceMenu();
 
+    virtual void keyPressEvent(QKeyEvent *) override;
+
     NetworkEditor* networkEditor_;
     NetworkEditorView* networkEditorView_;
     OptionPropertyInt* appUsageModeProp_;

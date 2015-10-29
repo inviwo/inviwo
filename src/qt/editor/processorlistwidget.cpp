@@ -71,7 +71,8 @@ void ProcessorTree::mouseMoveEvent(QMouseEvent* e) {
     }
 }
 
-ProcessorTree::ProcessorTree(QWidget* parent) 
+
+ProcessorTree::ProcessorTree(QWidget* parent)
     : QTreeWidget(parent) {
 }
 
@@ -134,6 +135,49 @@ ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget
 }
 
 ProcessorTreeWidget::~ProcessorTreeWidget() {}
+
+void ProcessorTreeWidget::focusSearch() {
+    raise();
+    lineEdit_->setFocus();
+    lineEdit_->selectAll();
+}
+
+void ProcessorTreeWidget::keyPressEvent(QKeyEvent* e) {
+    switch (e->key()) {
+        case Qt::Key_Down: {
+            processorTree_->setFocus();
+            e->accept();
+            break;
+        }
+    }
+
+    switch (e->modifiers()) {
+        case Qt::ControlModifier: {
+            switch (e->key()) {
+                case Qt::Key_F: {
+                    focusSearch();
+                    e->accept();
+                    break;
+                }
+                case Qt::Key_D: {
+                    auto items = processorTree_->selectedItems();
+
+                    if (items.size() > 0) {
+                        auto id = items[0]
+                            ->data(0, ProcessorTree::IDENTIFIER_ROLE)
+                            .toString()
+                            .toStdString();
+                        auto p = ProcessorFactory::getPtr()->create(id);
+                        InviwoApplication::getPtr()->getProcessorNetwork()->addProcessor(
+                            p.release());
+                    }
+                    break;
+                }
+            }
+            break;
+        }
+    }
+}
 
 bool ProcessorTreeWidget::processorFits(ProcessorFactoryObject* processor, const QString& filter) {
     return (QString::fromStdString(processor->getDisplayName()).contains(filter, Qt::CaseInsensitive) ||

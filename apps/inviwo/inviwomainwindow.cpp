@@ -593,6 +593,26 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
     testWorkspaceMenu_->menuAction()->setVisible(!testWorkspaceMenu_->isEmpty());
 }
 
+void InviwoMainWindow::keyPressEvent(QKeyEvent *e) {
+    switch(e->modifiers()){
+        case Qt::ControlModifier: {
+            switch(e->key()) {
+                case Qt::Key_F: {
+                    processorTreeWidget_->focusSearch();
+                    e->accept();
+                    break;
+                }
+                case Qt::Key_E: {
+                    consoleWidget_->clear();
+                    e->accept();
+                    break;
+                }
+            }
+            break;
+        }
+    }
+}
+
 std::string InviwoMainWindow::getCurrentWorkspace() {
     return currentWorkspaceFileName_.toLocal8Bit().constData();
 }

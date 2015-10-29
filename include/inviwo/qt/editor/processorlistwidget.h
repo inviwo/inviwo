@@ -57,8 +57,8 @@ public:
     static const int IDENTIFIER_ROLE;
 
 protected:
-    void mousePressEvent(QMouseEvent* e);
-    void mouseMoveEvent(QMouseEvent* e);
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
 
 private:
     QPoint dragStartPosition_;
@@ -70,9 +70,13 @@ public:
     ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget);
     ~ProcessorTreeWidget();
 
+    void focusSearch();
+
 protected:
     bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
     const QIcon* getCodeStateIcon(CodeState) const;
+
+    virtual void keyPressEvent(QKeyEvent *) override;
 
 private slots:
     void addProcessorsToTree();
