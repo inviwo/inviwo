@@ -34,6 +34,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#define cimg_verbosity 0 //Disable all cimg output
+#define cimg_display 0 // Do not use any gui stuff
 #include <modules/cimg/ext/cimg/CImg.h>
 #include <warn/pop>
 
