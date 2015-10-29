@@ -36,11 +36,15 @@
 namespace inviwo {
 
 class ProcessorNetwork;
+class Property;
+class Processor;
 
 // A RAII utility for locking and unlocking the network
 struct IVW_CORE_API NetworkLock {
     NetworkLock();
     NetworkLock(ProcessorNetwork* network);
+    NetworkLock(Processor* network);
+    NetworkLock(Property* network);
     ~NetworkLock();
 
     NetworkLock(NetworkLock const&) = delete;
@@ -52,8 +56,6 @@ private:
     ProcessorNetwork* network_;
 };
 
+}  // namespace
 
-} // namespace
-
-#endif // IVW_NETWORKLOCK_H
-
+#endif  // IVW_NETWORKLOCK_H
