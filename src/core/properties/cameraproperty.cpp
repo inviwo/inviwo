@@ -166,7 +166,7 @@ CameraProperty::operator const PerspectiveCamera&() const {
 CameraProperty* CameraProperty::clone() const { return new CameraProperty(*this); }
 
 void CameraProperty::updatePropertyFromValue() {
-    NetworkLock lock;
+    NetworkLock lock(this);
     lookFrom_ = value_.getLookFrom();
     lookTo_ = value_.getLookTo();
     lookUp_ = value_.getLookUp();
@@ -190,7 +190,7 @@ void CameraProperty::resetToDefaultState() {
 }
 
 void CameraProperty::resetCamera() {
-    NetworkLock lock;
+    NetworkLock lock(this);
 
     lookFrom_.resetToDefaultState();
     lookTo_.resetToDefaultState();
@@ -228,7 +228,7 @@ void CameraProperty::setAspectRatio(float aspectRatio) {
 }
 
 void CameraProperty::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
-    NetworkLock lock;
+    NetworkLock lock(this);
     setLookFrom(lookFrom);
     setLookTo(lookTo);
     setLookUp(lookUp);
@@ -273,7 +273,7 @@ vec4 CameraProperty::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords)
 
 void CameraProperty::setProjectionMatrix(float fovy, float aspect, float nearPlane,
                                          float farPlane) {
-    NetworkLock lock;
+    NetworkLock lock(this);
     setFovy(fovy);
     setAspectRatio(aspect);
     setFarPlaneDist(farPlane);
@@ -312,7 +312,7 @@ void CameraProperty::fitWithBasis(const mat3& basis) {
 
     if (ratio == 1) return;
 
-    NetworkLock lock;
+    NetworkLock lock(this);
     float newFarPlane = farPlane_.get() * ratio;
     farPlane_.setMaxValue(farPlane_.getMaxValue() * ratio);
     setFarPlaneDist(newFarPlane);

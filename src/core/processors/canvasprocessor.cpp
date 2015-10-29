@@ -137,7 +137,7 @@ void CanvasProcessor::deinitialize() {
 
 // Called by dimensions onChange.
 void CanvasProcessor::resizeCanvas() {
-    NetworkLock lock;
+    NetworkLock lock(this);
     if (canvasWidget_ && canvasWidget_->getDimensions() != dimensions_.get()) {
         canvasWidget_->setDimensions(dimensions_.get());
     }
@@ -145,7 +145,7 @@ void CanvasProcessor::resizeCanvas() {
 }
 
 void CanvasProcessor::setCanvasSize(ivec2 dim) {
-    NetworkLock lock;
+    NetworkLock lock(this);
     dimensions_.set(dim);
     sizeChanged();
 }
@@ -156,7 +156,7 @@ bool CanvasProcessor::getUseCustomDimensions() const { return enableCustomInputD
 ivec2 CanvasProcessor::getCustomDimensions() const { return customInputDimensions_; }
 
 void CanvasProcessor::sizeChanged() {
-    NetworkLock lock;
+    NetworkLock lock(this);
 
     customInputDimensions_.setVisible(enableCustomInputDimensions_);
     customInputDimensions_.setReadOnly(keepAspectRatio_);
@@ -343,7 +343,7 @@ bool CanvasProcessor::isReady() const {
 
 bool CanvasProcessor::propagateResizeEvent(ResizeEvent* event, Outport* source) {
     // avoid continues evaluation when port dimensions changes
-    NetworkLock lock;
+    NetworkLock lock(this);
 
     dimensions_.set(event->size());
 

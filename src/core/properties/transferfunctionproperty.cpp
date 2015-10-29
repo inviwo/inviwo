@@ -95,7 +95,7 @@ VolumeInport* TransferFunctionProperty::getVolumeInport() {
 }
 
 void TransferFunctionProperty::resetToDefaultState() {
-    NetworkLock lock;
+    NetworkLock lock(this);
     zoomH_.reset();
     zoomV_.reset();
     showHistogram_.reset();

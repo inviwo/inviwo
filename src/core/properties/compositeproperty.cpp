@@ -91,7 +91,7 @@ void CompositeProperty::set(const Property* srcProperty) {
 }
 
 void CompositeProperty::set(const CompositeProperty* src) {
-    NetworkLock lock;
+    NetworkLock lock(this);
     auto subProperties = src->getProperties();
     if (subProperties.size() == this->properties_.size()) {
         for (size_t i = 0; i < subProperties.size(); i++) {

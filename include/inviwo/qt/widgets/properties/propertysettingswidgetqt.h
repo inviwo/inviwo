@@ -188,7 +188,7 @@ public:
     }
 
     virtual void apply() {
-        NetworkLock lock;
+        NetworkLock lock(property_);
 
         uvec2 components = OrdinalProperty<T>::getDim();
         size_t count = 0;
@@ -337,7 +337,7 @@ public:
     }
 
     virtual void apply() {
-        NetworkLock lock;
+        NetworkLock lock(property_);
 
         uvec2 components = MinMaxProperty<T>::getDim();
         size_t count = 0;

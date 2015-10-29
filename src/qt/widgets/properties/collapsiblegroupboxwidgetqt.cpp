@@ -213,7 +213,7 @@ void CollapsibleGroupBoxWidgetQt::updateWidgets() {
 }
 
 void CollapsibleGroupBoxWidgetQt::resetPropertyToDefaultState() {
-    NetworkLock lock;  
+    NetworkLock lock(property_);  
     for (auto& elem : propertyWidgets_) elem->resetPropertyToDefaultState();
 }
 

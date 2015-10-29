@@ -469,7 +469,7 @@ void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent, InviwoD
 void PropertyWidgetQt::copy() { copySource = property_; }
 void PropertyWidgetQt::paste() {
     if (copySource) {
-        NetworkLock lock;
+        NetworkLock lock(property_);
         property_->set(copySource);
     }
 }

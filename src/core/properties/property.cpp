@@ -183,7 +183,7 @@ bool Property::hasWidgets() const {
 }
 
 void Property::propertyModified() {
-    NetworkLock lock;
+    NetworkLock lock(this);
     onChangeCallback_.invokeAll();
     setPropertyModified(true);
 
