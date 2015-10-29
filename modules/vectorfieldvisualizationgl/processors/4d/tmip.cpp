@@ -88,7 +88,7 @@ void TMIP::process() {
         volume1_ = std::shared_ptr<Volume>(volume0_->clone());
     }
 
-    int iterations = std::ceil(volumes->size() / static_cast<float>(maxSamplers_));
+    int iterations = static_cast<int>(std::ceil(volumes->size() / static_cast<float>(maxSamplers_)));
     LogInfo(iterations);
 
     std::shared_ptr<Volume> readVol = volume0_;

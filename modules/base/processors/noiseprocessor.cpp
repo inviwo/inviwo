@@ -166,7 +166,7 @@ void NoiseProcessor::perlinNoise(Image *img) {
 
     auto data = static_cast<float *>(
         img->getColorLayer()->getEditableRepresentation<LayerRAM>()->getData());
-    float repri = 1.0 / size;
+    float repri = 1.0f / size;
     // size_t index = 0;
     util::IndexMapper2D index(size_.get());
 #pragma omp parallel for
@@ -205,7 +205,7 @@ http://devmag.org.za/2009/05/03/poisson-disk-sampling/
 */
 void NoiseProcessor::poissonDisk(Image *img) {
     
-    float minDist = size_.get().x;
+    float minDist = static_cast<float>( size_.get().x);
     minDist /= poissonDotsAlongX_; //min pixel distance between samples
     auto minDist2 = minDist*minDist;
     size2_t gridSize = size2_t(1)+ size2_t(vec2(size_.get()) * (1.0f / minDist));
@@ -220,7 +220,7 @@ void NoiseProcessor::poissonDisk(Image *img) {
 
 
     for (size_t i = 0; i < gridSize.x*gridSize.y; i++) {
-        gridData[i] = glm::i32vec2(-2 * minDist);
+        gridData[i] = glm::i32vec2(static_cast<glm::i32>(-2 * minDist));
     }
 
     std::uniform_int_distribution<int> rx(0, size_.get().x);
