@@ -31,6 +31,7 @@
 #define IVW_PROCESSORSTATE_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
+#include <ostream>
 
 namespace inviwo {
 
