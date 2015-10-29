@@ -31,18 +31,16 @@
 
 namespace inviwo {
 
-VolumeVectorSampler::VolumeVectorSampler(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector) {
+VolumeVectorSampler::VolumeVectorSampler(
+    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector) {
     for (const auto &vol : (*volumeVector.get())) {
         samplers_.push_back(VolumeSampler(vol.get()));
     }
 }
 
-VolumeVectorSampler::~VolumeVectorSampler()  {
-    
-}
+VolumeVectorSampler::~VolumeVectorSampler() {}
 
-dvec4 VolumeVectorSampler::sample(const dvec4 &pos) const
-{
+dvec4 VolumeVectorSampler::sample(const dvec4 &pos) const {
     dvec3 spatialPos = pos.xyz();
     double t = pos.w;
 
@@ -56,11 +54,15 @@ dvec4 VolumeVectorSampler::sample(const dvec4 &pos) const
     return Interpolation<dvec4>::linear(v0, v1, tInterpolant);
 }
 
-dvec4 VolumeVectorSampler::getVoxel(const dvec3 &pos, int T) const
-{
+inviwo::dvec4 VolumeVectorSampler::sample(double x, double y, double z, double t) const {
+    return sample(dvec4(x, y, z, t));
+}
+
+inviwo::dvec4 VolumeVectorSampler::sample(const vec4 &pos) const { return sample(dvec4(pos)); }
+
+dvec4 VolumeVectorSampler::getVoxel(const dvec3 &pos, int T) const {
     T = glm::clamp(T, 0, static_cast<int>(samplers_.size()) - 1);
     return samplers_[T].sample(pos);
 }
 
-} // namespace
-
+}  // namespace

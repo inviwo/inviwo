@@ -47,8 +47,8 @@ public:
     virtual ~VolumeVectorSampler();
 
     dvec4 sample(const dvec4 &pos) const;
-    dvec4 sample(double x, double y, double z, double t) const { return sample(dvec4(x, y, z, t)); }
-    dvec4 sample(const vec4 &pos) const { return sample(dvec4(pos)); }
+    dvec4 sample(double x, double y, double z, double t) const;
+    dvec4 sample(const vec4 &pos) const;
 
 private:
     dvec4 getVoxel(const dvec3 &pos, int T) const;
