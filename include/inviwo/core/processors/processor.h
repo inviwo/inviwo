@@ -49,6 +49,7 @@ class Event;
 class InteractionHandler;
 class ProcessorWidget;
 class ResizeEvent;
+class ProcessorNetwork;
 
 #define InviwoProcessorInfo()                                                             \
     virtual const ProcessorInfo getProcessorInfo() const override {                       \
@@ -205,6 +206,9 @@ public:
     ProcessorWidget* getProcessorWidget() const;
     bool hasProcessorWidget() const;
 
+    void setNetwork(ProcessorNetwork* network);
+    ProcessorNetwork* getNetwork() const;
+
     /**
      * Initialize is called once before the first time the process function of the processor
      * is called. It is called by the processor network evaluator. Override to add resource
@@ -333,6 +337,7 @@ private:
     bool initialized_;
     bool invalidationEnabled_;
     InvalidationLevel invalidationRequestLevel_;
+    ProcessorNetwork* network_;
 };
 
 }  // namespace

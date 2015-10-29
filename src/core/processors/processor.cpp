@@ -49,7 +49,8 @@ Processor::Processor()
     , identifier_("")
     , initialized_(false)
     , invalidationEnabled_(true)
-    , invalidationRequestLevel_(VALID) {
+    , invalidationRequestLevel_(VALID) 
+    , network_(nullptr) {
     createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 }
 
@@ -119,6 +120,10 @@ void Processor::setProcessorWidget(ProcessorWidget* processorWidget) {
 ProcessorWidget* Processor::getProcessorWidget() const { return processorWidget_; }
 
 bool Processor::hasProcessorWidget() const { return (processorWidget_ != nullptr); }
+
+void Processor::setNetwork(ProcessorNetwork* network) { network_ = network; }
+
+ProcessorNetwork* Processor::getNetwork() const { return network_; }
 
 Port* Processor::getPort(const std::string& identifier) const {
     for (auto port : inports_) if (port->getIdentifier() == identifier) return port;

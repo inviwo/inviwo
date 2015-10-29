@@ -65,6 +65,7 @@ bool ProcessorNetwork::addProcessor(Processor* processor) {
 
     notifyObserversProcessorNetworkWillAddProcessor(processor);
     processors_[processor->getIdentifier()] = processor;
+    processor->setNetwork(this);
     processor->ProcessorObservable::addObserver(this);
     processor->invalidate(INVALID_RESOURCES);
     modified();
@@ -108,6 +109,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
     notifyObserversProcessorNetworkWillRemoveProcessor(processor);
     processors_.erase(processor->getIdentifier());
     processor->ProcessorObservable::removeObserver(this);
+    processor->setNetwork(nullptr);
     modified();
     notifyObserversProcessorNetworkDidRemoveProcessor(processor);
 }
