@@ -69,7 +69,7 @@ void TransferFunctionEditorControlPoint::paint(QPainter* painter,
     IVW_UNUSED_PARAM(widget);
     painter->setRenderHint(QPainter::Antialiasing, true);
     QPen pen = QPen();
-    pen.setWidth(3);
+    pen.setWidthF(3);
     pen.setCosmetic(true);
     pen.setCapStyle(Qt::RoundCap);
     pen.setStyle(Qt::SolidLine);
@@ -79,7 +79,9 @@ void TransferFunctionEditorControlPoint::paint(QPainter* painter,
                                            dataPoint_->getRGBA().b));
     painter->setPen(pen);
     painter->setBrush(brush);
-    painter->drawEllipse(-size_ / 2.0, -size_ / 2.0, size_, size_);
+    int c = static_cast<int>(-size_ / 2.0f);
+    int s = static_cast<int>(size_);
+    painter->drawEllipse(c, c, s, s);
 
     if (showLabel_) {
         QString label;
@@ -154,7 +156,7 @@ QVariant TransferFunctionEditorControlPoint::itemChange(GraphicsItemChange chang
             currentPos_.setY(qMin(rect.bottom(), qMax(currentPos_.y(), rect.top())));
         }
 
-        float d = 2.0f * rect.width() * std::numeric_limits<float>::epsilon();
+        float d = 2.0f * static_cast<float>(rect.width()) * std::numeric_limits<float>::epsilon();
 
         if (left_) {
             if (left_->left_ && *(left_->left_) > *this) {
@@ -198,8 +200,8 @@ QVariant TransferFunctionEditorControlPoint::itemChange(GraphicsItemChange chang
         if (!isEditingPoint_) {
             isEditingPoint_ = true;
             dataPoint_->setPosA(
-                vec2(currentPos_.x() / rect.width(), currentPos_.y() / rect.height()),
-                currentPos_.y() / rect.height());
+                vec2(static_cast<float>( currentPos_.x() / rect.width()), static_cast<float>(currentPos_.y() / rect.height())),
+                static_cast<float>(currentPos_.y() / rect.height()));
             isEditingPoint_ = false;
         }
 

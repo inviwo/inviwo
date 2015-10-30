@@ -102,6 +102,11 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
 
     registerProperty<Gaussian1DProperty>();
     registerProperty<Gaussian2DProperty>();
+
+    registerPort<DataInport<LightSource>>("LightSourceInport");
+    registerPort<DataOutport<LightSource>>("LightSourceOutport");
+    registerPort<BufferInport>("BufferInport");
+    registerPort<BufferOutport>("BufferOutport");
 }
 
 } // namespace
