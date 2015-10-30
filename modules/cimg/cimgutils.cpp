@@ -30,6 +30,7 @@
 #include <modules/cimg/cimgutils.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/io/datawriter.h>
 #include <algorithm>
 
 #include <warn/push>
@@ -155,7 +156,7 @@ struct CImgNormalizedLayerDispatcher {
     using type = std::unique_ptr<std::vector<unsigned char>>;
     template <typename T>
     std::unique_ptr<std::vector<unsigned char>> dispatch(const LayerRAM* inputLayer) {
-        auto img{LayerToCImg<typename T::type>::convert(inputLayer, false)};
+        auto img = LayerToCImg<typename T::type>::convert(inputLayer, false);
 
         CImg<unsigned char> normalizedImg = img->get_normalize(0, 255);
         normalizedImg.mirror('z');
@@ -255,7 +256,7 @@ struct CImgRescaleLayerDispatcher {
     using type = void*;
     template <typename T>
     void* dispatch(const LayerRAM* inputLayerRAM, uvec2 dst_dim) {
-        auto img{LayerToCImg<typename T::type>::convert(inputLayerRAM)};
+        auto img = LayerToCImg<typename T::type>::convert(inputLayerRAM);
 
         img->resize(dst_dim.x, dst_dim.y, -100, -100, 3);
 

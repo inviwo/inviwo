@@ -29,6 +29,8 @@
 
 #include "pathlines.h"
 #include <inviwo/core/util/volumevectorsampler.h>
+#include <inviwo/core/datastructures/geometry/basicmesh.h>
+#include <inviwo/core/util/imagesampler.h>
 
 namespace inviwo {
 

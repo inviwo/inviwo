@@ -65,7 +65,10 @@ private:
 };
 
 class IVW_QTEDITOR_API ProcessorTreeWidget : public InviwoDockWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget);
     ~ProcessorTreeWidget();

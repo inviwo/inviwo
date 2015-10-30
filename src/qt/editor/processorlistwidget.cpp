@@ -32,6 +32,7 @@
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/core/processors/processorstate.h>
 #include <inviwo/core/processors/processortags.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/tooltiphelper.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>

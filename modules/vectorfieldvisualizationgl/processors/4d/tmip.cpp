@@ -138,7 +138,7 @@ void TMIP::initShader(Shader& s, int samplers) {
     std::stringstream maximum;
 
     uniforms << "uniform VolumeParameters volumeParameters;";
-    int i = 0;
+
     for (int i = 0; i < samplers; i++) {
         std::string id = (i == 0) ? "" : toString(i);
         uniforms << "uniform sampler3D volume" << id << ";";
@@ -168,10 +168,10 @@ std::shared_ptr<Volume> TMIP::iteration(Shader& s, std::shared_ptr<Volume> vol, 
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(shader_, cont, *vol, "volume");
     int i = 1;
-    for (auto vol = start; vol != end; ++vol) {
+    for (auto v = start; v != end; ++v) {
         if (i >= maxSamplers_) break;
         std::string id = (i == 0) ? "" : toString(i);
-        utilgl::bindAndSetUniforms(shader_, cont, *(vol->get()), "volume" + id);
+        utilgl::bindAndSetUniforms(shader_, cont, *(v->get()), "volume" + id);
         i++;
     }
 
