@@ -84,7 +84,7 @@ StreamLines::StreamLines()
 StreamLines::~StreamLines() {}
 
 void StreamLines::process() {
-    auto mesh = util::make_unique<BasicMesh>();
+    auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(volume_.getData()->getModelMatrix());
     mesh->setWorldMatrix(volume_.getData()->getWorldMatrix());
 
@@ -131,13 +131,13 @@ void StreamLines::process() {
                 position++;
                 velocity++;
             }
-            indexBuffer->add(vertices.size() - 1);
+            indexBuffer->add(static_cast<std::uint32_t>(vertices.size()-1));
         }
     }
 
     mesh->addVertices(vertices);
 
-    linesStripsMesh_.setData(mesh.release());
+    linesStripsMesh_.setData(mesh);
     maxVelocity_.set(toString(maxVelocity));
 }
 
