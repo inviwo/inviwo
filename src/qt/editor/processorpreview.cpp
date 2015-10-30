@@ -32,12 +32,16 @@
 
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
+#include <inviwo/qt/editor/processorportgraphicsitem.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QGraphicsTextItem>
+#include <QGraphicsPathItem>
+#include <QGraphicsRectItem>
 #include <warn/pop>
 
 namespace inviwo {
@@ -45,23 +49,80 @@ namespace inviwo {
 QImage utilqt::generatePreview(const QString& classIdentifier) {
     std::string cid = classIdentifier.toLocal8Bit().constData();
 
-    auto processor = ProcessorFactory::getPtr()->create(cid);
-    auto item = new ProcessorGraphicsItem(processor.get());
-    auto scene = util::make_unique<QGraphicsScene>(nullptr);
-    scene->addItem(item);
+    try {
+        auto processor = ProcessorFactory::getPtr()->create(cid);
+        auto item = new ProcessorGraphicsItem(processor.get());
+        auto scene = util::make_unique<QGraphicsScene>(nullptr);
+        scene->addItem(item);
 
-    scene->clearSelection();  // Selections would also render to the file
-    // Re-shrink the scene to it's bounding contents
-    scene->setSceneRect(scene->itemsBoundingRect());
-    QImage image(
-        scene->sceneRect().size().toSize(),
-        QImage::Format_ARGB32);   // Create the image with the exact size of the shrunk scene
-    image.fill(Qt::transparent);  // Start all pixels transparent
+        double yshift = 20.0;
+        double offset = processor->getInports().size()*yshift;
+        
+        for (auto inport : processor->getInports()) {
+            QFont classFont("Segoe", 8, QFont::Bold, true);
+            classFont.setPixelSize(14);
+            auto pl = new QGraphicsTextItem(QString::fromStdString(inport->getIdentifier()));
+            pl->setDefaultTextColor(Qt::lightGray);
+            scene->addItem(pl);
+            auto pos = item->getInportGraphicsItem(inport)->pos();
+            pl->setPos(pos + QPointF(0, -offset));
 
-    QPainter painter(&image);
-    scene->render(&painter);
+            double h = pl->boundingRect().height();
+            auto t = QTransform().translate(1.0, -h / 2.0);
+            pl->setTransform(t);
 
-    return image;
+            auto path = QPainterPath(pos);
+            path.lineTo(pos + QPointF(0, -offset));
+            path.lineTo(pos + QPointF(2, -offset));
+            auto li = new QGraphicsPathItem(path);
+  
+            li->setPen(QPen(Qt::lightGray));
+            scene->addItem(li);
+
+            offset -= yshift;
+        }
+
+        offset = processor->getOutports().size()*yshift;
+        for (auto outport : processor->getOutports()) {
+            QFont classFont("Segoe", 8, QFont::Bold, true);
+            classFont.setPixelSize(14);
+            auto pl = new QGraphicsTextItem(QString::fromStdString(outport->getIdentifier()));
+            pl->setDefaultTextColor(Qt::lightGray);
+            scene->addItem(pl);
+            auto pos = item->getOutportGraphicsItem(outport)->pos();
+            pl->setPos(pos + QPointF(1.0, offset));
+
+            double h = pl->boundingRect().height();
+            auto t = QTransform().translate(0.0, -h / 2.0);
+            pl->setTransform(t);
+
+            auto path = QPainterPath(pos);
+            path.lineTo(pos + QPointF(0, offset));
+            path.lineTo(pos + QPointF(2, offset));
+            auto li = new QGraphicsPathItem(path);
+            
+            li->setPen(QPen(Qt::lightGray));
+            scene->addItem(li);
+
+            offset -= yshift;
+        }
+
+        scene->clearSelection();  // Selections would also render to the file
+        // Re-shrink the scene to it's bounding contents
+        scene->setSceneRect(scene->itemsBoundingRect());
+        QImage image(
+            scene->sceneRect().size().toSize(),
+            QImage::Format_ARGB32);   // Create the image with the exact size of the shrunk scene
+        image.fill(Qt::transparent);  // Start all pixels transparent
+
+        QPainter painter(&image);
+        scene->render(&painter);
+
+        return image;
+    } catch (Exception& exception) {
+        // We will just ignore this...
+        return QImage();
+    }
 }
 
 }  // namespace

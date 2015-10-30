@@ -153,6 +153,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
             return img;
         } else {
             QImage img = utilqt::generatePreview(cid);
+            if (img.isNull()) return QVariant();
             QByteArray data;
             QBuffer buffer(&data);
             buffer.open(QIODevice::WriteOnly);
