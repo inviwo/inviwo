@@ -45,6 +45,7 @@
 #include <QThread>
 #include <QPointF>
 #include <QGraphicsSceneHelpEvent>
+#include <QMimeData>
 #include <warn/pop>
 
 namespace inviwo {
@@ -110,6 +111,10 @@ public:
      */
     bool loadNetwork(std::istream& stream, const std::string& path);
     bool loadNetwork(std::string fileName);
+
+    std::unique_ptr<QMimeData> copy() const;
+    std::unique_ptr<QMimeData> cut();
+    void paste(const QMimeData* data);
 
     std::string getCurrentFilename() const { return filename_; }
 

@@ -71,6 +71,7 @@
 #include <QVarLengthArray>
 #include <QTimer>
 #include <QPainter>
+#include <QMimeData>
 
 
 namespace inviwo {
@@ -1250,6 +1251,51 @@ bool NetworkEditor::event(QEvent* e) {
         return true;
     }
     return QGraphicsScene::event(e);
+}
+
+std::unique_ptr<QMimeData> NetworkEditor::copy() const {
+    auto data = util::make_unique<QMimeData>();
+    std::stringstream ss;
+    
+    auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+    auto processors = network->getProcessors();
+    
+    std::vector<Processor*> selected;
+    util::copy_if(processors, std::back_inserter(selected), [](const Processor* p){
+        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        return m->isSelected();
+    });
+    
+    IvwSerializer xmlSerializer("Copy");
+    xmlSerializer.serialize("Processors", selected, "Processor");
+    xmlSerializer.writeFile(ss);
+    
+    QByteArray byteArray(ss.str().c_str(), ss.str().length());
+
+    data->setData(QString("inviwo/network"), byteArray);
+    
+    return data;
+}
+std::unique_ptr<QMimeData> NetworkEditor::cut() {
+    auto data = util::make_unique<QMimeData>();
+
+    return data;
+}
+void NetworkEditor::paste(const QMimeData* mimeData) {
+    QByteArray data = mimeData->data(QString("inviwo/network"));
+    
+    std::string stdString(data.constData(), data.length());
+    std::stringstream ss(stdString);
+    
+    IvwDeserializer xmlDeserializer(ss, "Paste");
+    std::vector<std::unique_ptr<Processor>> processors;
+    xmlDeserializer.deserialize("Processors", processors, "Processor");
+    
+    auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+    
+    for(auto& p :processors) {
+        network->addProcessor(p.release());
+    }
 }
 
 ////////////////////////

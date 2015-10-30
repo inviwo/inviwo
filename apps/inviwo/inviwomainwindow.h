@@ -166,8 +166,8 @@ private:
     HelpWidget* helpWidget_;
 
     // mainwindow menus
-    QMenuBar* menuBar_;
     QMenu* fileMenuItem_;
+    QMenu* editMenuItem_;
     QMenu* viewMenuItem_;
     QMenu* helpMenuItem_;
 

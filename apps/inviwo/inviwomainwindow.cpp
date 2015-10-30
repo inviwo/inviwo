@@ -61,6 +61,8 @@
 #include <QSettings>
 #include <QUrl>
 #include <QVariant>
+#include <QClipboard>
+#include <QMimeData>
 
 #include <algorithm>
 #include <warn/pop>
@@ -239,18 +241,19 @@ bool InviwoMainWindow::processCommandLineArgs() {
 }
 
 void InviwoMainWindow::addMenus() {
-    menuBar_ = menuBar();
-    QAction* first = 0;
+    auto menu = menuBar();
+    QAction* first = menu->actions().size() > 0 ? menu->actions()[0] : nullptr;
 
-    if (menuBar_->actions().size() > 0) first = menuBar_->actions()[0];
+    fileMenuItem_ = new QMenu(tr("&File"), menu);
+    editMenuItem_ = new QMenu(tr("&Edit"), menu);
+    viewMenuItem_ = new QMenu(tr("&View"), menu);
+    helpMenuItem_ = new QMenu(tr("&Help"), menu);
 
-    fileMenuItem_ = new QMenu(tr("&File"), menuBar_);
-    viewMenuItem_ = new QMenu(tr("&View"), menuBar_);
+    menu->insertMenu(first, fileMenuItem_);
+    menu->insertMenu(first, editMenuItem_);
+    menu->insertMenu(first, viewMenuItem_);
 
-    menuBar_->insertMenu(first, fileMenuItem_);
-    menuBar_->insertMenu(first, viewMenuItem_);
-
-    helpMenuItem_ = menuBar_->addMenu(tr("&Help"));
+    menu->addMenu(helpMenuItem_);
 }
 
 void InviwoMainWindow::addMenuActions() {
@@ -378,6 +381,37 @@ void InviwoMainWindow::addMenuActions() {
     QObject::connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
     helpMenuItem_->addAction(action);
 #endif
+
+    // Edit
+
+    auto cutAction = new QAction(tr("&Cut"), this);
+    cutAction->setShortcut(QKeySequence::Cut);
+    editMenuItem_->addAction(cutAction);
+    connect(cutAction, &QAction::triggered, [&]() { LogInfo("Cut"); });
+
+    auto copyAction = new QAction(tr("&Copy"), this);
+    copyAction->setShortcut(QKeySequence::Copy);
+    editMenuItem_->addAction(copyAction);
+    connect(copyAction, &QAction::triggered, [&]() {
+        LogInfo("Copy");
+        auto data = networkEditor_->copy();
+        
+        auto clipboard = QApplication::clipboard();
+        clipboard->setMimeData(data.release());
+        
+    });
+
+    auto pasteAction = new QAction(tr("&Paste"), this);
+    pasteAction->setShortcut(QKeySequence::Paste);
+    editMenuItem_->addAction(pasteAction);
+    connect(pasteAction, &QAction::triggered, [&]() {
+        LogInfo("Paste");
+
+        auto clipboard = QApplication::clipboard();
+        auto mimeData = clipboard->mimeData();
+
+        networkEditor_->paste(mimeData);
+    });
 }
 
 void InviwoMainWindow::addToolBars() {
@@ -593,10 +627,10 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
     testWorkspaceMenu_->menuAction()->setVisible(!testWorkspaceMenu_->isEmpty());
 }
 
-void InviwoMainWindow::keyPressEvent(QKeyEvent *e) {
-    switch(e->modifiers()){
+void InviwoMainWindow::keyPressEvent(QKeyEvent* e) {
+    switch (e->modifiers()) {
         case Qt::ControlModifier: {
-            switch(e->key()) {
+            switch (e->key()) {
                 case Qt::Key_F: {
                     processorTreeWidget_->focusSearch();
                     e->accept();
