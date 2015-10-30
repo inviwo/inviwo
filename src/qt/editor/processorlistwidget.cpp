@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -36,6 +36,7 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/util/tooltiphelper.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
+#include <inviwo/core/metadata/processormetadata.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -51,11 +52,10 @@
 
 namespace inviwo {
 
-const int ProcessorTree::IDENTIFIER_ROLE = Qt::UserRole+1;
-    
+const int ProcessorTree::IDENTIFIER_ROLE = Qt::UserRole + 1;
+
 void ProcessorTree::mousePressEvent(QMouseEvent* e) {
-    if (e->buttons() & Qt::LeftButton)
-        dragStartPosition_ = e->pos();
+    if (e->buttons() & Qt::LeftButton) dragStartPosition_ = e->pos();
 
     QTreeWidget::mousePressEvent(e);
 }
@@ -72,14 +72,10 @@ void ProcessorTree::mouseMoveEvent(QMouseEvent* e) {
     }
 }
 
+ProcessorTree::ProcessorTree(QWidget* parent) : QTreeWidget(parent) {}
 
-ProcessorTree::ProcessorTree(QWidget* parent)
-    : QTreeWidget(parent) {
-}
-
-ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget) 
-    : InviwoDockWidget(tr("Processors"), parent) 
-    , helpWidget_(helpWidget) {
+ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget)
+    : InviwoDockWidget(tr("Processors"), parent), helpWidget_(helpWidget) {
     setObjectName("ProcessorTreeWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     QWidget* centralWidget = new QWidget();
@@ -90,12 +86,12 @@ ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget
     lineEdit_->setPlaceholderText("Filter processor list...");
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
     lineEdit_->setClearButtonEnabled(true);
-#endif // QT_VERSION
+#endif  // QT_VERSION
 
     connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(addProcessorsToTree()));
     vLayout->addWidget(lineEdit_);
     QHBoxLayout* listViewLayout = new QHBoxLayout();
-    listViewLayout->addWidget(new QLabel("Group by",centralWidget));
+    listViewLayout->addWidget(new QLabel("Group by", centralWidget));
     listView_ = new QComboBox(centralWidget);
     listView_->addItem("Alphabet");
     listView_->addItem("Category");
@@ -110,24 +106,24 @@ ProcessorTreeWidget::ProcessorTreeWidget(QWidget* parent, HelpWidget* helpWidget
     iconStable_ = QIcon(":/icons/processor_stable.png");
     iconExperimental_ = QIcon(":/icons/processor_experimental.png");
     iconBroken_ = QIcon(":/icons/processor_broken.png");
-    
+
     processorTree_ = new ProcessorTree(this);
     processorTree_->setHeaderHidden(true);
     processorTree_->setColumnCount(2);
     processorTree_->setIndentation(10);
     processorTree_->setAnimated(true);
     processorTree_->header()->setStretchLastSection(false);
-    #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     processorTree_->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     processorTree_->header()->setSectionResizeMode(1, QHeaderView::Fixed);
-    #else
+#else
     processorTree_->header()->setResizeMode(0, QHeaderView::Stretch);
     processorTree_->header()->setResizeMode(1, QHeaderView::Fixed);
-    #endif
+#endif
     processorTree_->header()->setDefaultSectionSize(40);
-    
-    connect(processorTree_, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-            this, SLOT(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+
+    connect(processorTree_, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this,
+            SLOT(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
 
     addProcessorsToTree();
     vLayout->addWidget(processorTree_);
@@ -144,17 +140,14 @@ void ProcessorTreeWidget::focusSearch() {
 }
 
 void ProcessorTreeWidget::keyPressEvent(QKeyEvent* e) {
-    switch (e->key()) {
-        case Qt::Key_Down: {
-            processorTree_->setFocus();
-            e->accept();
-            break;
-        }
-    }
-
     switch (e->modifiers()) {
         case Qt::ControlModifier: {
             switch (e->key()) {
+                case Qt::Key_Down: {
+                    processorTree_->setFocus();
+                    e->accept();
+                    break;
+                }
                 case Qt::Key_F: {
                     focusSearch();
                     e->accept();
@@ -162,15 +155,24 @@ void ProcessorTreeWidget::keyPressEvent(QKeyEvent* e) {
                 }
                 case Qt::Key_D: {
                     auto items = processorTree_->selectedItems();
-
                     if (items.size() > 0) {
                         auto id = items[0]
-                            ->data(0, ProcessorTree::IDENTIFIER_ROLE)
-                            .toString()
-                            .toStdString();
-                        auto p = ProcessorFactory::getPtr()->create(id);
-                        InviwoApplication::getPtr()->getProcessorNetwork()->addProcessor(
-                            p.release());
+                                      ->data(0, ProcessorTree::IDENTIFIER_ROLE)
+                                      .toString()
+                                      .toStdString();
+                        addProcessor(id);
+                    } else {
+                        auto count = processorTree_->topLevelItemCount();
+                        if (count == 1) {
+                            auto item = processorTree_->topLevelItem(0);
+                            if (item->childCount() == 1) {
+                                auto id = item->child(0)
+                                              ->data(0, ProcessorTree::IDENTIFIER_ROLE)
+                                              .toString()
+                                              .toStdString();
+                                addProcessor(id);
+                            }
+                        }
                     }
                     break;
                 }
@@ -180,10 +182,41 @@ void ProcessorTreeWidget::keyPressEvent(QKeyEvent* e) {
     }
 }
 
+void ProcessorTreeWidget::addProcessor(std::string className) {
+    try {
+        // create processor, add it to processor network, and generate it's widgets
+        auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+        auto p = ProcessorFactory::getPtr()->create(className);
+
+        auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+
+        auto pos = util::transform(network->getProcessors(), [](Processor* elem) {
+            return elem->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                ->getPosition();
+        });
+        pos.push_back(ivec2(0, 0));
+        auto min = std::min_element(pos.begin(), pos.end(),
+                                    [](const ivec2& a, const ivec2& b) { return a.y > b.y; });
+        meta->setPosition(*min + ivec2(0, 75));
+
+        network->addProcessor(p.get());
+        network->autoLinkProcessor(p.get());
+        p.release();
+
+    } catch (Exception& exception) {
+        util::log(exception.getContext(),
+                  "Unable to create processor " + className + " due to " + exception.getMessage(),
+                  LogLevel::Error);
+    }
+}
+
 bool ProcessorTreeWidget::processorFits(ProcessorFactoryObject* processor, const QString& filter) {
-    return (QString::fromStdString(processor->getDisplayName()).contains(filter, Qt::CaseInsensitive) ||
-            QString::fromStdString(processor->getClassIdentifier()).contains(filter, Qt::CaseInsensitive) ||
-            QString::fromStdString(processor->getTags().getString()).contains(filter, Qt::CaseInsensitive));
+    return (
+        QString::fromStdString(processor->getDisplayName()).contains(filter, Qt::CaseInsensitive) ||
+        QString::fromStdString(processor->getClassIdentifier())
+            .contains(filter, Qt::CaseInsensitive) ||
+        QString::fromStdString(processor->getTags().getString())
+            .contains(filter, Qt::CaseInsensitive));
 }
 
 const QIcon* ProcessorTreeWidget::getCodeStateIcon(CodeState state) const {
@@ -201,13 +234,13 @@ const QIcon* ProcessorTreeWidget::getCodeStateIcon(CodeState state) const {
 }
 QTreeWidgetItem* ProcessorTreeWidget::addToplevelItemTo(QString title) {
     QTreeWidgetItem* newItem = new QTreeWidgetItem(QStringList(title));
-    
+
     processorTree_->addTopLevelItem(newItem);
     processorTree_->setFirstItemColumnSpanned(newItem, true);
-    
+
     return newItem;
 }
-    
+
 QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
                                                          ProcessorFactoryObject* processor,
                                                          std::string moduleId) {
@@ -231,7 +264,7 @@ QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
     QFont font = newItem->font(1);
     font.setWeight(QFont::Bold);
     newItem->setFont(1, font);
-    
+
     item->addChild(newItem);
 
     if (processor->getTags().tags_.size() == 0) {
@@ -240,7 +273,6 @@ QTreeWidgetItem* ProcessorTreeWidget::addProcessorItemTo(QTreeWidgetItem* item,
 
     return newItem;
 }
-    
 
 void ProcessorTreeWidget::addProcessorsToTree() {
     processorTree_->clear();
@@ -312,8 +344,9 @@ void ProcessorTreeWidget::addProcessorsToTree() {
 }
 
 void ProcessorTreeWidget::currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
-    if(!current) return;
-    std::string classname = current->data(0, ProcessorTree::IDENTIFIER_ROLE).toString().toUtf8().constData();
+    if (!current) return;
+    std::string classname =
+        current->data(0, ProcessorTree::IDENTIFIER_ROLE).toString().toUtf8().constData();
     if (!classname.empty()) helpWidget_->showDocForClassName(classname);
 }
 
@@ -333,19 +366,20 @@ ProcessorDragObject::ProcessorDragObject(QWidget* source, const QString classNam
 }
 
 bool ProcessorDragObject::canDecode(const QMimeData* mimeData) {
-    if (mimeData->hasFormat(mimeType)) return true;
-    else return false;
+    if (mimeData->hasFormat(mimeType))
+        return true;
+    else
+        return false;
 }
 
 bool ProcessorDragObject::decode(const QMimeData* mimeData, QString& className) {
     QByteArray byteData = mimeData->data(mimeType);
 
-    if (byteData.isEmpty())
-        return false;
+    if (byteData.isEmpty()) return false;
 
     QDataStream ds(&byteData, QIODevice::ReadOnly);
     ds >> className;
     return true;
 }
 
-} // namespace
+}  // namespace

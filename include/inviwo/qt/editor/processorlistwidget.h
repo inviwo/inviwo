@@ -87,6 +87,8 @@ private slots:
     void currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
 
 private:
+    void addProcessor(std::string className);
+    
     
     QTreeWidgetItem* addToplevelItemTo(QString title);
     QTreeWidgetItem* addProcessorItemTo(QTreeWidgetItem* item,
