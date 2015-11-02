@@ -1254,47 +1254,93 @@ bool NetworkEditor::event(QEvent* e) {
 }
 
 std::unique_ptr<QMimeData> NetworkEditor::copy() const {
-    auto data = util::make_unique<QMimeData>();
-    std::stringstream ss;
-    
     auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-    auto processors = network->getProcessors();
-    
+
     std::vector<Processor*> selected;
-    util::copy_if(processors, std::back_inserter(selected), [](const Processor* p){
+    util::copy_if(network->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
         auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
         return m->isSelected();
     });
-    
+
+    std::vector<PortConnection*> connections;
+    util::copy_if(network->getConnections(), std::back_inserter(connections),
+                  [&selected](PortConnection* c) {
+                      auto in = c->getInport()->getProcessor();
+                      auto out = c->getOutport()->getProcessor();
+                      return util::contains(selected, in) && util::contains(selected, out);
+                  });
+
+    std::vector<PropertyLink*> links;
+    util::copy_if(network->getLinks(), std::back_inserter(links), [&selected](PropertyLink* c) {
+        auto src = c->getSourceProperty()->getOwner()->getProcessor();
+        auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
+        return util::contains(selected, src) && util::contains(selected, dst);
+    });
+
     IvwSerializer xmlSerializer("Copy");
     xmlSerializer.serialize("Processors", selected, "Processor");
-    xmlSerializer.writeFile(ss);
-    
-    QByteArray byteArray(ss.str().c_str(), ss.str().length());
+    xmlSerializer.serialize("Connections", connections, "Connection");
+    xmlSerializer.serialize("PropertyLinks", links, "PropertyLink");
 
-    data->setData(QString("inviwo/network"), byteArray);
-    
+    std::stringstream ss;
+    xmlSerializer.writeFile(ss);
+    QByteArray byteArray(ss.str().c_str(), ss.str().length());
+    auto data = util::make_unique<QMimeData>();
+    data->setData(QString("application/x.vnd.inviwo.network+xml"), byteArray);
     return data;
 }
 std::unique_ptr<QMimeData> NetworkEditor::cut() {
-    auto data = util::make_unique<QMimeData>();
+    auto res = copy();
+    auto network = InviwoApplication::getPtr()->getProcessorNetwork();
 
-    return data;
+    std::vector<Processor*> selected;
+    util::copy_if(network->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
+        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        return m->isSelected();
+    });
+
+    for (auto p : selected) {
+        network->removeAndDeleteProcessor(p);
+    }
+
+    return res;
 }
 void NetworkEditor::paste(const QMimeData* mimeData) {
-    QByteArray data = mimeData->data(QString("inviwo/network"));
-    
+    QByteArray data = mimeData->data(QString("application/x.vnd.inviwo.network+xml"));
+
     std::string stdString(data.constData(), data.length());
     std::stringstream ss(stdString);
-    
-    IvwDeserializer xmlDeserializer(ss, "Paste");
-    std::vector<std::unique_ptr<Processor>> processors;
-    xmlDeserializer.deserialize("Processors", processors, "Processor");
-    
-    auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-    
-    for(auto& p :processors) {
-        network->addProcessor(p.release());
+
+    try {
+        IvwDeserializer xmlDeserializer(ss, "Paste");
+        std::vector<std::unique_ptr<Processor>> processors;
+        std::vector<std::unique_ptr<PortConnection>> connections;
+        std::vector<std::unique_ptr<PropertyLink>> links;
+        xmlDeserializer.deserialize("Processors", processors, "Processor");
+        xmlDeserializer.deserialize("Connections", connections, "Connection");
+        xmlDeserializer.deserialize("PropertyLinks", links, "PropertyLink");
+
+        auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+        for (auto p : network->getProcessors()) {
+            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            m->setSelected(false);
+        }
+
+        for (auto& p : processors) {
+            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            m->setPosition(m->getPosition() + ivec2(50,50));
+            network->addProcessor(p.get());
+            network->autoLinkProcessor(p.get());
+            p.release();
+        }
+        for (auto& c : connections) {
+            network->addConnection(c->getOutport(), c->getInport());
+        }
+        for (auto& l : links) {
+            network->addLink(l->getSourceProperty(), l->getDestinationProperty());
+        }
+    } catch (Exception& e) {
+        util::log(IvwContext, e.getMessage(), LogLevel::Warn, LogAudience::User);
     }
 }
 
