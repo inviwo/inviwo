@@ -186,23 +186,22 @@ void ProcessorTreeWidget::addProcessor(std::string className) {
     try {
         // create processor, add it to processor network, and generate it's widgets
         auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-        auto p = ProcessorFactory::getPtr()->create(className);
+        if (auto p = ProcessorFactory::getPtr()->create(className)) {
+            auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 
-        auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            auto pos = util::transform(network->getProcessors(), [](Processor* elem) {
+                return elem->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
+                    ->getPosition();
+            });
+            pos.push_back(ivec2(0, 0));
+            auto min = std::min_element(pos.begin(), pos.end(),
+                                        [](const ivec2& a, const ivec2& b) { return a.y > b.y; });
+            meta->setPosition(*min + ivec2(0, 75));
 
-        auto pos = util::transform(network->getProcessors(), [](Processor* elem) {
-            return elem->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)
-                ->getPosition();
-        });
-        pos.push_back(ivec2(0, 0));
-        auto min = std::min_element(pos.begin(), pos.end(),
-                                    [](const ivec2& a, const ivec2& b) { return a.y > b.y; });
-        meta->setPosition(*min + ivec2(0, 75));
-
-        network->addProcessor(p.get());
-        network->autoLinkProcessor(p.get());
-        p.release();
-
+            network->addProcessor(p.get());
+            network->autoLinkProcessor(p.get());
+            p.release();
+        }
     } catch (Exception& exception) {
         util::log(exception.getContext(),
                   "Unable to create processor " + className + " due to " + exception.getMessage(),

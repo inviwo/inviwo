@@ -112,9 +112,9 @@ public:
     bool loadNetwork(std::istream& stream, const std::string& path);
     bool loadNetwork(std::string fileName);
 
-    std::unique_ptr<QMimeData> copy() const;
-    std::unique_ptr<QMimeData> cut();
-    void paste(const QMimeData* data);
+    QByteArray copy() const;
+    QByteArray cut();
+    void paste(QByteArray data);
 
     std::string getCurrentFilename() const { return filename_; }
 
@@ -195,6 +195,52 @@ protected:
     virtual bool event(QEvent* e) override;
 
 private:
+    struct PartialInConnection : public IvwSerializable {
+        PartialInConnection() {}
+        PartialInConnection(std::string path, Inport* inport) : outportPath_(path), inport_(inport) {}
+        std::string outportPath_ = "";
+        Inport* inport_ = nullptr;
+
+        virtual void serialize(IvwSerializer& s) const override {
+            s.serialize("OutPortPath", outportPath_);
+            s.serialize("InPort", inport_);
+        }
+        virtual void deserialize(IvwDeserializer& d) override {
+            d.deserialize("OutPortPath", outportPath_);
+            d.deserialize("InPort", inport_);
+        }
+    };
+    struct PartialSrcLink : public IvwSerializable {
+        PartialSrcLink() {}
+        PartialSrcLink(Property* src, std::string path) : dstPath_(path), src_(src) {}
+        Property* src_ = nullptr;
+        std::string dstPath_ = "";
+
+        virtual void serialize(IvwSerializer& s) const override {
+            s.serialize("SourceProperty", src_);
+            s.serialize("DestinationPropertyPath", dstPath_);
+        }
+        virtual void deserialize(IvwDeserializer& d) override {
+            d.deserialize("SourceProperty", src_);
+            d.deserialize("DestinationPropertyPath", dstPath_);
+        }
+    };
+    struct PartialDstLink : public IvwSerializable {
+        PartialDstLink() {}
+        PartialDstLink(std::string path, Property* dst) : dst_(dst), srcPath_(path) {}
+        std::string srcPath_ = "";
+        Property* dst_ = nullptr;
+
+        virtual void serialize(IvwSerializer& s) const override {
+            s.serialize("SourcePropertyPath", srcPath_);
+            s.serialize("DestinationProperty", dst_);
+        }
+        virtual void deserialize(IvwDeserializer& d) override {
+            d.deserialize("SourcePropertyPath", srcPath_);
+            d.deserialize("DestinationProperty", dst_);
+        }
+    };
+
     enum NetworkEditorFlags { None = 0, CanvasHidden = 1, UseOriginalCanvasSize = 1 << 2 };
 
     friend class ProcessorGraphicsItem;

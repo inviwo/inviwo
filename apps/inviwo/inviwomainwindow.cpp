@@ -387,30 +387,38 @@ void InviwoMainWindow::addMenuActions() {
     auto cutAction = new QAction(tr("&Cut"), this);
     cutAction->setShortcut(QKeySequence::Cut);
     editMenuItem_->addAction(cutAction);
-    connect(cutAction, &QAction::triggered, [&]() { LogInfo("Cut"); });
+    connect(cutAction, &QAction::triggered, [&]() {
+        auto data = networkEditor_->cut();
+        
+        auto mimedata = util::make_unique<QMimeData>();
+        mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+        mimedata->setData(QString("text/plain"), data);
+        QApplication::clipboard()->setMimeData(mimedata.release());
+    });
 
     auto copyAction = new QAction(tr("&Copy"), this);
     copyAction->setShortcut(QKeySequence::Copy);
     editMenuItem_->addAction(copyAction);
     connect(copyAction, &QAction::triggered, [&]() {
-        LogInfo("Copy");
         auto data = networkEditor_->copy();
         
-        auto clipboard = QApplication::clipboard();
-        clipboard->setMimeData(data.release());
-        
+        auto mimedata = util::make_unique<QMimeData>();
+        mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+        mimedata->setData(QString("text/plain"), data);
+        QApplication::clipboard()->setMimeData(mimedata.release());   
     });
 
     auto pasteAction = new QAction(tr("&Paste"), this);
     pasteAction->setShortcut(QKeySequence::Paste);
     editMenuItem_->addAction(pasteAction);
     connect(pasteAction, &QAction::triggered, [&]() {
-        LogInfo("Paste");
-
         auto clipboard = QApplication::clipboard();
         auto mimeData = clipboard->mimeData();
-
-        networkEditor_->paste(mimeData);
+        if (mimeData->formats().contains(QString("application/x.vnd.inviwo.network+xml"))) {
+            networkEditor_->paste(mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
+        } else if (mimeData->formats().contains(QString("text/plain"))) {
+            networkEditor_->paste(mimeData->data(QString("text/plain")));
+        }
     });
 }
 

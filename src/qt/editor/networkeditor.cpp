@@ -51,6 +51,7 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 #include <inviwo/qt/editor/linkdialog/linkdialog.h>
 #include <inviwo/qt/editor/linkgraphicsitem.h>
@@ -1253,7 +1254,7 @@ bool NetworkEditor::event(QEvent* e) {
     return QGraphicsScene::event(e);
 }
 
-std::unique_ptr<QMimeData> NetworkEditor::copy() const {
+QByteArray NetworkEditor::copy() const {
     auto network = InviwoApplication::getPtr()->getProcessorNetwork();
 
     std::vector<Processor*> selected;
@@ -1270,6 +1271,20 @@ std::unique_ptr<QMimeData> NetworkEditor::copy() const {
                       return util::contains(selected, in) && util::contains(selected, out);
                   });
 
+    std::vector<PortConnection*> partialInConnections;
+    util::copy_if(network->getConnections(), std::back_inserter(partialInConnections),
+                  [&selected](PortConnection* c) {
+                      auto in = c->getInport()->getProcessor();
+                      auto out = c->getOutport()->getProcessor();
+                      return util::contains(selected, in) && !util::contains(selected, out);
+                  });
+
+    auto partialIn = util::transform(partialInConnections, [](PortConnection* c) {
+        return PartialInConnection{c->getOutport()->getProcessor()->getIdentifier() + "/" +
+                                       c->getOutport()->getIdentifier(),
+                                   c->getInport()};
+    });
+
     std::vector<PropertyLink*> links;
     util::copy_if(network->getLinks(), std::back_inserter(links), [&selected](PropertyLink* c) {
         auto src = c->getSourceProperty()->getOwner()->getProcessor();
@@ -1277,19 +1292,46 @@ std::unique_ptr<QMimeData> NetworkEditor::copy() const {
         return util::contains(selected, src) && util::contains(selected, dst);
     });
 
+    std::vector<PropertyLink*> srcLinks;
+    util::copy_if(network->getLinks(), std::back_inserter(srcLinks),
+                  [&selected](PropertyLink* c) {
+                      auto src = c->getSourceProperty()->getOwner()->getProcessor();
+                      auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
+                      return util::contains(selected, src) && !util::contains(selected, dst);
+                  });
+    auto partialSrcLinks = util::transform(srcLinks, [](PropertyLink* c) {
+        return PartialSrcLink{c->getSourceProperty(),
+                              joinString(c->getDestinationProperty()->getPath(), ".")};
+    });
+
+    std::vector<PropertyLink*> dstLinks;
+    util::copy_if(network->getLinks(), std::back_inserter(dstLinks),
+                  [&selected](PropertyLink* c) {
+                      auto src = c->getSourceProperty()->getOwner()->getProcessor();
+                      auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
+                      return !util::contains(selected, src) && util::contains(selected, dst);
+                  });
+    auto partialDstLinks = util::transform(dstLinks, [](PropertyLink* c) {
+        return PartialDstLink{joinString(c->getSourceProperty()->getPath(), "."),
+                              c->getDestinationProperty()};
+    });
+
     IvwSerializer xmlSerializer("Copy");
     xmlSerializer.serialize("Processors", selected, "Processor");
     xmlSerializer.serialize("Connections", connections, "Connection");
+    xmlSerializer.serialize("PartialInConnections", partialIn, "Connection");
     xmlSerializer.serialize("PropertyLinks", links, "PropertyLink");
+    xmlSerializer.serialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
+    xmlSerializer.serialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 
     std::stringstream ss;
     xmlSerializer.writeFile(ss);
-    QByteArray byteArray(ss.str().c_str(), ss.str().length());
-    auto data = util::make_unique<QMimeData>();
-    data->setData(QString("application/x.vnd.inviwo.network+xml"), byteArray);
-    return data;
+    auto str = ss.str();
+    QByteArray byteArray(str.c_str(), str.length());
+    return byteArray;
 }
-std::unique_ptr<QMimeData> NetworkEditor::cut() {
+
+QByteArray NetworkEditor::cut() {
     auto res = copy();
     auto network = InviwoApplication::getPtr()->getProcessorNetwork();
 
@@ -1305,20 +1347,25 @@ std::unique_ptr<QMimeData> NetworkEditor::cut() {
 
     return res;
 }
-void NetworkEditor::paste(const QMimeData* mimeData) {
-    QByteArray data = mimeData->data(QString("application/x.vnd.inviwo.network+xml"));
 
-    std::string stdString(data.constData(), data.length());
-    std::stringstream ss(stdString);
-
+void NetworkEditor::paste(QByteArray mimeData) {
+    std::stringstream ss;
+    for(auto d: mimeData) ss << d;
+ 
     try {
         IvwDeserializer xmlDeserializer(ss, "Paste");
         std::vector<std::unique_ptr<Processor>> processors;
         std::vector<std::unique_ptr<PortConnection>> connections;
+        std::vector<std::unique_ptr<PartialInConnection>> partialIn;
         std::vector<std::unique_ptr<PropertyLink>> links;
+        std::vector<std::unique_ptr<PartialSrcLink>> partialSrcLinks;
+        std::vector<std::unique_ptr<PartialDstLink>> partialDstLinks;
         xmlDeserializer.deserialize("Processors", processors, "Processor");
         xmlDeserializer.deserialize("Connections", connections, "Connection");
+        xmlDeserializer.deserialize("PartialInConnections", partialIn, "Connection");
         xmlDeserializer.deserialize("PropertyLinks", links, "PropertyLink");
+        xmlDeserializer.deserialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
+        xmlDeserializer.deserialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 
         auto network = InviwoApplication::getPtr()->getProcessorNetwork();
         for (auto p : network->getProcessors()) {
@@ -1336,9 +1383,32 @@ void NetworkEditor::paste(const QMimeData* mimeData) {
         for (auto& c : connections) {
             network->addConnection(c->getOutport(), c->getInport());
         }
+        for (auto& c : partialIn) {
+            auto parts = splitString(c->outportPath_, '/');
+            if (parts.size() != 2) continue;
+            if (auto p = network->getProcessorByIdentifier(parts[0])) {
+                if (auto outport = p->getOutport(parts[1])) {
+                    network->addConnection(outport, c->inport_);
+                }
+            }
+        }
+
         for (auto& l : links) {
             network->addLink(l->getSourceProperty(), l->getDestinationProperty());
         }
+        for (auto& l : partialSrcLinks) {
+            auto path = splitString(l->dstPath_, '.');
+            if (auto dst = network->getProperty(path)) {
+                network->addLink(l->src_, dst);
+            }
+        }
+        for (auto& l : partialDstLinks) {
+            auto path = splitString(l->srcPath_, '.');
+            if (auto src = network->getProperty(path)) {
+                network->addLink(src, l->dst_);
+            }
+        }
+
     } catch (Exception& e) {
         util::log(IvwContext, e.getMessage(), LogLevel::Warn, LogAudience::User);
     }
