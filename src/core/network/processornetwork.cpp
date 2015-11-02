@@ -292,12 +292,7 @@ private:
 void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
     LinkCheck linkChecker;
 
-    std::vector<Property*> destprops = processor->getPropertiesRecursive();
-
-    // remove properties for which auto linking is disabled
-    util::erase_remove_if(destprops, linkChecker);
-    // no candidates for auto linking in the new processor
-    if (destprops.size() == 0) return;
+    std::vector<Property*> allNewPropertes = processor->getPropertiesRecursive();
 
     std::vector<Property*> properties;
     for (auto& elem : processors_) {
@@ -307,11 +302,13 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
         }
     }
 
+    auto destprops = allNewPropertes;
     // remove properties for which auto linking is disabled
     util::erase_remove_if(properties, linkChecker);
-    // no candidates for auto linking in the new processor
-    if (properties.size() == 0) return;
+    util::erase_remove_if(destprops, linkChecker);
 
+
+    //auto link based on global settings
     for (auto& destprop : destprops) {
         std::vector<Property*> candidates = properties;
         AutoLinkCheck autoLinkChecker(destprop, LinkMatchingTypeAndId);
@@ -328,6 +325,34 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
             addLink(destprop, candidates.front());
         }
     }
+
+
+
+    //Auto link based property 
+    for (auto& destprop : allNewPropertes) {
+        std::vector<Property*> candidates;
+        for (auto &srcPropertyIdentifier : destprop->getAutoLinkToProperty()) {
+            for (auto &srcProcessor : processors_) {
+                if (srcProcessor.second != processor && srcProcessor.second->getClassIdentifier() == srcPropertyIdentifier.first) {
+                    auto srcProperty = srcProcessor.second->getPropertyByPath(splitString(srcPropertyIdentifier.second, '.'));
+                    if (srcProperty) {
+                        candidates.push_back(srcProperty);
+                    }
+                }
+            }
+        }
+
+        AutoLinkSort sorter(destprop);
+        std::sort(candidates.begin(), candidates.end(), sorter);
+
+        if (candidates.size() > 0) {
+            addLink(candidates.front(), destprop);
+            // Propagate the link to the new Processor.
+            linkEvaluator_.evaluateLinksFromProperty(candidates.front());
+            addLink(destprop, candidates.front());
+        }
+    }
+
 }
 
 void ProcessorNetwork::evaluateLinksFromProperty(Property* source) {

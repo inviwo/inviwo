@@ -182,6 +182,10 @@ public:
     template <typename T, typename U>
     static void setStateAsDefault(T& property, const U& state);
 
+    template <typename P>
+    void autoLinkToProperty(const std::string& propertyPath);
+    const std::vector<std::pair<std::string, std::string>>& getAutoLinkToProperty() const;
+
 protected:
     void notifyAboutChange();
 
@@ -204,6 +208,9 @@ private:
     std::vector<PropertyWidget*> propertyWidgets_;
 
     PropertyWidget* initiatingWidget_;
+
+    std::vector<std::pair<std::string, std::string>> autoLinkTo_;
+
 };
 
 template <typename T>
@@ -222,6 +229,11 @@ void Property::setStateAsDefault(T& property, const U& state) {
     property = state;
     property.setCurrentStateAsDefault();
     property = tmp;
+}
+
+template <typename P>
+void Property::autoLinkToProperty(const std::string& propertyPath) {
+    autoLinkTo_.push_back(std::make_pair(P::processorInfo_.classIdentifier, propertyPath));
 }
 
 }  // namespace

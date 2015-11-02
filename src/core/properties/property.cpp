@@ -263,6 +263,11 @@ bool Property::getVisible() {
     return visible_;
 }
 
+
+const std::vector<std::pair<std::string, std::string>>& Property::getAutoLinkToProperty() const {
+    return autoLinkTo_;
+}
+
 void Property::setVisible(bool val) {
     visible_ = val;
     notifyObserversOnSetVisible(visible_);
