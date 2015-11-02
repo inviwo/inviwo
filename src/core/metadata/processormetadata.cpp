@@ -24,21 +24,17 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/metadata/processormetadata.h>
 
 namespace inviwo {
 
-    ProcessorMetaData::ProcessorMetaData() : position_(0,0) , visibility_(true), selection_(false){
-}
+ProcessorMetaData::ProcessorMetaData() : position_(0, 0), visibility_(true), selection_(false) {}
 
 ProcessorMetaData::ProcessorMetaData(const ProcessorMetaData& rhs)
-    : position_(rhs.position_)
-    , visibility_(rhs.visibility_)
-    , selection_(rhs.selection_) {
-}
+    : position_(rhs.position_), visibility_(rhs.visibility_), selection_(rhs.selection_) {}
 
 ProcessorMetaData& ProcessorMetaData::operator=(const ProcessorMetaData& that) {
     if (this != &that) {
@@ -46,39 +42,39 @@ ProcessorMetaData& ProcessorMetaData::operator=(const ProcessorMetaData& that) {
         visibility_ = that.visibility_;
         selection_ = that.selection_;
     }
-
     return *this;
 }
 
 ProcessorMetaData::~ProcessorMetaData() {}
 
-ProcessorMetaData* ProcessorMetaData::clone() const {
-    return new ProcessorMetaData(*this);
+ProcessorMetaData* ProcessorMetaData::clone() const { return new ProcessorMetaData(*this); }
+
+void ProcessorMetaData::setPosition(const ivec2& pos) {
+    if (pos != position_) {
+        position_ = pos;
+        for (auto o : observers_) o->onProcessorMetaDataPositionChange();
+    }
 }
 
-void ProcessorMetaData::setPosition(const ivec2 &pos) {
-    position_ = pos;
-}
-
-ivec2 ProcessorMetaData::getPosition() const{
-    return position_;
-}
+ivec2 ProcessorMetaData::getPosition() const { return position_; }
 
 void ProcessorMetaData::setVisibile(bool visibility) {
-    visibility_ = visibility;
+    if (visibility != visibility_) {
+        visibility_ = visibility;
+        for (auto o : observers_) o->onProcessorMetaDataVisibilityChange();
+    }
 }
 
-bool ProcessorMetaData::isVisible() const {
-    return visibility_;
-}
+bool ProcessorMetaData::isVisible() const { return visibility_; }
 
 void ProcessorMetaData::setSelected(bool selection) {
-    selection_ = selection;
+    if (selection != selection_) {
+        selection_ = selection;
+        for (auto o : observers_) o->onProcessorMetaDataSelectionChange();
+    }
 }
 
-bool ProcessorMetaData::isSelected() const {
-    return selection_;
-}
+bool ProcessorMetaData::isSelected() const { return selection_; }
 
 void ProcessorMetaData::serialize(IvwSerializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
@@ -97,10 +93,9 @@ void ProcessorMetaData::deserialize(IvwDeserializer& d) {
 
 bool ProcessorMetaData::equal(const MetaData& rhs) const {
     const ProcessorMetaData* tmp = dynamic_cast<const ProcessorMetaData*>(&rhs);
-    if (tmp) { 
-        return  tmp->position_ == position_ 
-            && tmp->visibility_ == visibility_ 
-            && tmp->selection_ == selection_;
+    if (tmp) {
+        return tmp->position_ == position_ && tmp->visibility_ == visibility_ &&
+               tmp->selection_ == selection_;
     } else {
         return false;
     }
@@ -108,6 +103,4 @@ bool ProcessorMetaData::equal(const MetaData& rhs) const {
 
 const std::string ProcessorMetaData::CLASS_IDENTIFIER = "org.inviwo.ProcessorMetaData";
 
-
-
-} // namespace
+}  // namespace

@@ -35,6 +35,7 @@
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/widgets/labelgraphicsitem.h>
+#include <inviwo/core/metadata/processormetadata.h>
 
 #include <QEvent>
 
@@ -46,14 +47,14 @@ class ProcessorStatusGraphicsItem;
 class ProcessorLinkGraphicsItem;
 class ProcessorInportGraphicsItem;
 class ProcessorOutportGraphicsItem;
-class ProcessorMetaData;
 class Port;
 class Inport;
 class Outport;
 
 class IVW_QTEDITOR_API ProcessorGraphicsItem : public EditorGraphicsItem,
                                                public ProcessorObserver,
-                                               public LabelGraphicsItemObserver {
+                                               public LabelGraphicsItemObserver,
+                                               public ProcessorMetaDataObserver {
 public:
     ProcessorGraphicsItem(Processor* processor);
     ~ProcessorGraphicsItem();
@@ -95,6 +96,10 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
     void addInport(Inport *port);
     void addOutport(Outport *port);
+
+    virtual void onProcessorMetaDataPositionChange() override;
+    virtual void onProcessorMetaDataVisibilityChange() override;
+    virtual void onProcessorMetaDataSelectionChange() override;
 
 private:
     Processor* processor_;

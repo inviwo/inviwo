@@ -121,6 +121,7 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     processor_->ProcessorObservable::addObserver(this);
 
     processorMeta_ = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    processorMeta_->addObserver(this);
 
     linkItem_ = new ProcessorLinkGraphicsItem(this);
 
@@ -177,6 +178,25 @@ void ProcessorGraphicsItem::addOutport(Outport *port){
     outportX += (25 / 2.0);
 }
 
+void ProcessorGraphicsItem::onProcessorMetaDataPositionChange() {
+    auto ipos = processorMeta_->getPosition();
+    auto qpos = QPointF(ipos.x, ipos.y);
+    if (qpos != pos()) {
+        setPos(qpos);
+    }
+}
+
+void ProcessorGraphicsItem::onProcessorMetaDataVisibilityChange() {
+    if (processorMeta_->isVisible() != isVisible()) {
+        setVisible(processorMeta_->isVisible());
+    }
+}
+
+void ProcessorGraphicsItem::onProcessorMetaDataSelectionChange() {
+    if (processorMeta_->isSelected() != isSelected()) {
+        setSelected(processorMeta_->isSelected());
+    }
+}
 
 ProcessorInportGraphicsItem* ProcessorGraphicsItem::getInportGraphicsItem(Inport* port) {
     return inportItems_[port];

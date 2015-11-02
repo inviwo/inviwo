@@ -34,10 +34,18 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/metadata/positionmetadata.h>
+#include <inviwo/core/util/observer.h>
 
 namespace inviwo {
 
-class IVW_CORE_API ProcessorMetaData : public MetaData {
+class IVW_CORE_API ProcessorMetaDataObserver : public Observer {
+public:
+    virtual void onProcessorMetaDataPositionChange() {};
+    virtual void onProcessorMetaDataVisibilityChange() {};
+    virtual void onProcessorMetaDataSelectionChange() {};
+};
+
+class IVW_CORE_API ProcessorMetaData : public MetaData, public Observable<ProcessorMetaDataObserver>{
 public:
     ProcessorMetaData();
     ProcessorMetaData(const ProcessorMetaData& rhs);
