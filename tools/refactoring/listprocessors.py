@@ -4,8 +4,7 @@ import re
 import colorama
 colorama.init()
 
-sys.path.append(os.path.abspath(r"C:\Users\petst55\Work\Inviwo\Inviwo-dev\tools"))
-import refactoring
+import refactoring # Note: refactoring.py need to be in the current working directory
 
 paths = ["C:/Users/petst55/Work/Inviwo/Inviwo-dev", "C:/Users/petst55/Work/Inviwo/Inviwo-research"]
 

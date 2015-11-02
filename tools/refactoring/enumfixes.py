@@ -4,10 +4,9 @@ import re
 import colorama
 colorama.init()
 
-sys.path.append(os.path.abspath(r"C:\Users\petst55\Work\Inviwo\Inviwo-dev\tools"))
-import refactoring
+import refactoring # Note: refactoring.py need to be in the current working directory
 
-paths = ["C:/Users/petst55/Work/Inviwo/Inviwo-dev", "C:/Users/petst55/Work/Inviwo/Inviwo-research"]
+paths = ["C:/inviwo-dev/vistinct"]
 
 excludespatterns = ["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*", "*/vrnbase/*"];
 
@@ -203,35 +202,35 @@ invalidationLevelReplacements = {
 }
 
 # order matters here...
-#for k,v in numericTypeReplacements.items():
-#	replace(k,v)
+for k,v in numericTypeReplacements.items():
+	replace(k,v)
 
-#for k,v in dataFormatIdReplacements.items():
-#	replace(k,v)
+for k,v in dataFormatIdReplacements.items():
+	replace(k,v)
 
-#for k,v in dataFormatTypeReplacements.items():
-#	replace(k,v)
+for k,v in dataFormatTypeReplacements.items():
+	replace(k,v)
 
-#for k,v in ShadingFunctionReplacements.items():
-#	replace(k,v)
+for k,v in ShadingFunctionReplacements.items():
+	replace(k,v)
 
-#for k,v in usageModeReplacements.items():
-#	replace(r"\b"+k+r"\b", v)
+for k,v in usageModeReplacements.items():
+	replace(r"\b"+k+r"\b", v)
 
-#for k,v in drawModeReplacements.items():
-#	replace(r"\b"+k+r"\b", v)
+for k,v in drawModeReplacements.items():
+	replace(r"\b"+k+r"\b", v)
 
-#for k,v in interactionEventTypeReplacements.items():
-#	replace(r"\b"+k+r"\b", v)
+for k,v in interactionEventTypeReplacements.items():
+	replace(r"\b"+k+r"\b", v)
 
-#for k,v in glVendorReplacements.items():
-#	replace(r"\b"+k+r"\b", v)
+for k,v in glVendorReplacements.items():
+	replace(r"\b"+k+r"\b", v)
 
-#for k,v in gLFormatsNormalizationReplacements.items():
-#	replace(r"\b"+k+r"\b", v)
+for k,v in gLFormatsNormalizationReplacements.items():
+	replace(r"\b"+k+r"\b", v)
 
-#for k,v in cLFormatsNormalizationReplacements.items():
-#	replace(r"\b"+k+r"\b", v)
+for k,v in cLFormatsNormalizationReplacements.items():
+	replace(r"\b"+k+r"\b", v)
 
 for k,v in invalidationLevelReplacements.items():
 	replace(r"\b"+k+r"\b", v)

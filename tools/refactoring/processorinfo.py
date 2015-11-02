@@ -4,10 +4,9 @@ import re
 import colorama
 colorama.init()
 
-sys.path.append(os.path.abspath(r"C:\Users\petst55\Work\Inviwo\Inviwo-dev\tools"))
-import refactoring
+import refactoring # Note: refactoring.py need to be in the current working directory
 
-paths = ["C:/Users/petst55/Work/Inviwo/Inviwo-dev", "C:/Users/petst55/Work/Inviwo/Inviwo-research"]
+paths = ["C:/inviwo-dev", "C:/inviwo-research/modules"]
 
 # Step 1:
 # replace:
@@ -68,7 +67,7 @@ def cs(var):
 def updatecpp(files):
 	patterns = {
 		"cid"   : r"""[ ]*ProcessorClassIdentifier\((\w+),\s+("[-&\.\w]+")\);?""",
-		"name"  : r"""[ ]*ProcessorDisplayName\((\w+),\s+("[-& \.\w]+")\);?""",
+		"name"  : r"""[ ]*ProcessorDisplayName\((\w+),\s*("[-& \.\w]+")\);?""",
 		"tags"  : r"""[ ]*ProcessorTags\((\w+),\s+([",/:\w]+)\);?""", 
 		"cat"   : r"""[ ]*ProcessorCategory\((\w+),\s+("[ \.\w]+")\);?""",
 		"state" : r"""[ ]*ProcessorCodeState\((\w+),\s+([_:\w]+)\);?"""
@@ -94,7 +93,7 @@ const ProcessorInfo {0:s}::getProcessorInfo() const {{
 			text = f.read()
 
 		matches = {k : v.search(text) for k,v in rs.items()}
-			
+        	
 		if all(matches.values()):
 			refactoring.print_warn("Match in: " + file)
 			matching_files.append(file)
