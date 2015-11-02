@@ -848,8 +848,7 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
                 connect(&moShowHide, SIGNAL(triggered(EditorGraphicsItem*)), this,
                         SLOT(contextMenuShowHideWidget(EditorGraphicsItem*)));
 
-                ProcessorWidget* processorWidget = processor->getProcessor()->getProcessorWidget();
-                if (processorWidget) {
+                if (auto processorWidget = processor->getProcessor()->getProcessorWidget()) {
                     showAction->setChecked(processorWidget->isVisible());
                 }
             }
@@ -857,9 +856,9 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             break;
         }
 
-        ConnectionGraphicsItem* portconnection =
-            qgraphicsitem_cast<ConnectionGraphicsItem*>(graphicsItem);
-        if (portconnection) {
+        
+        if (auto portconnection =
+            qgraphicsitem_cast<ConnectionGraphicsItem*>(graphicsItem)) {
             QAction* deleteConnection = menu.addAction(tr("Delete Connection"));
             moDeleteConnection.item_ = portconnection;
             connect(deleteConnection, SIGNAL(triggered()), &moDeleteConnection,
@@ -881,9 +880,9 @@ void NetworkEditor::contextMenuEvent(QGraphicsSceneContextMenuEvent* e) {
             break;
         }
 
-        LinkConnectionGraphicsItem* linkconnection =
-            qgraphicsitem_cast<LinkConnectionGraphicsItem*>(graphicsItem);
-        if (linkconnection) {
+        
+        if (auto linkconnection =
+            qgraphicsitem_cast<LinkConnectionGraphicsItem*>(graphicsItem)) {
             QAction* deleteLink = menu.addAction(tr("Delete Links"));
             moDeleteLink.item_ = linkconnection;
             connect(deleteLink, SIGNAL(triggered()), &moDeleteLink, SLOT(tiggerAction()));
@@ -1256,76 +1255,8 @@ bool NetworkEditor::event(QEvent* e) {
 
 QByteArray NetworkEditor::copy() const {
     auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-
-    std::vector<Processor*> selected;
-    util::copy_if(network->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
-        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-        return m->isSelected();
-    });
-
-    std::vector<PortConnection*> connections;
-    util::copy_if(network->getConnections(), std::back_inserter(connections),
-                  [&selected](PortConnection* c) {
-                      auto in = c->getInport()->getProcessor();
-                      auto out = c->getOutport()->getProcessor();
-                      return util::contains(selected, in) && util::contains(selected, out);
-                  });
-
-    std::vector<PortConnection*> partialInConnections;
-    util::copy_if(network->getConnections(), std::back_inserter(partialInConnections),
-                  [&selected](PortConnection* c) {
-                      auto in = c->getInport()->getProcessor();
-                      auto out = c->getOutport()->getProcessor();
-                      return util::contains(selected, in) && !util::contains(selected, out);
-                  });
-
-    auto partialIn = util::transform(partialInConnections, [](PortConnection* c) {
-        return PartialInConnection{c->getOutport()->getProcessor()->getIdentifier() + "/" +
-                                       c->getOutport()->getIdentifier(),
-                                   c->getInport()};
-    });
-
-    std::vector<PropertyLink*> links;
-    util::copy_if(network->getLinks(), std::back_inserter(links), [&selected](PropertyLink* c) {
-        auto src = c->getSourceProperty()->getOwner()->getProcessor();
-        auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
-        return util::contains(selected, src) && util::contains(selected, dst);
-    });
-
-    std::vector<PropertyLink*> srcLinks;
-    util::copy_if(network->getLinks(), std::back_inserter(srcLinks),
-                  [&selected](PropertyLink* c) {
-                      auto src = c->getSourceProperty()->getOwner()->getProcessor();
-                      auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
-                      return util::contains(selected, src) && !util::contains(selected, dst);
-                  });
-    auto partialSrcLinks = util::transform(srcLinks, [](PropertyLink* c) {
-        return PartialSrcLink{c->getSourceProperty(),
-                              joinString(c->getDestinationProperty()->getPath(), ".")};
-    });
-
-    std::vector<PropertyLink*> dstLinks;
-    util::copy_if(network->getLinks(), std::back_inserter(dstLinks),
-                  [&selected](PropertyLink* c) {
-                      auto src = c->getSourceProperty()->getOwner()->getProcessor();
-                      auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
-                      return !util::contains(selected, src) && util::contains(selected, dst);
-                  });
-    auto partialDstLinks = util::transform(dstLinks, [](PropertyLink* c) {
-        return PartialDstLink{joinString(c->getSourceProperty()->getPath(), "."),
-                              c->getDestinationProperty()};
-    });
-
-    IvwSerializer xmlSerializer("Copy");
-    xmlSerializer.serialize("Processors", selected, "Processor");
-    xmlSerializer.serialize("Connections", connections, "Connection");
-    xmlSerializer.serialize("PartialInConnections", partialIn, "Connection");
-    xmlSerializer.serialize("PropertyLinks", links, "PropertyLink");
-    xmlSerializer.serialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
-    xmlSerializer.serialize("PartialDstLinks", partialDstLinks, "PropertyLink");
-
     std::stringstream ss;
-    xmlSerializer.writeFile(ss);
+    util::serializeSelected(network, ss);
     auto str = ss.str();
     QByteArray byteArray(str.c_str(), str.length());
     return byteArray;
@@ -1333,84 +1264,26 @@ QByteArray NetworkEditor::copy() const {
 
 QByteArray NetworkEditor::cut() {
     auto res = copy();
-    auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+    deleteSelectedProcessors();
+    return res;
+}
 
+void NetworkEditor::paste(QByteArray mimeData) {
+    auto network = InviwoApplication::getPtr()->getProcessorNetwork();
+    std::stringstream ss;
+    for(auto d: mimeData) ss << d;
+    util::appendDeserialized(network, ss);
+}
+
+void NetworkEditor::deleteSelectedProcessors() {
+    auto network = InviwoApplication::getPtr()->getProcessorNetwork();
     std::vector<Processor*> selected;
     util::copy_if(network->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
         auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
         return m->isSelected();
     });
-
     for (auto p : selected) {
         network->removeAndDeleteProcessor(p);
-    }
-
-    return res;
-}
-
-void NetworkEditor::paste(QByteArray mimeData) {
-    std::stringstream ss;
-    for(auto d: mimeData) ss << d;
- 
-    try {
-        IvwDeserializer xmlDeserializer(ss, "Paste");
-        std::vector<std::unique_ptr<Processor>> processors;
-        std::vector<std::unique_ptr<PortConnection>> connections;
-        std::vector<std::unique_ptr<PartialInConnection>> partialIn;
-        std::vector<std::unique_ptr<PropertyLink>> links;
-        std::vector<std::unique_ptr<PartialSrcLink>> partialSrcLinks;
-        std::vector<std::unique_ptr<PartialDstLink>> partialDstLinks;
-        xmlDeserializer.deserialize("Processors", processors, "Processor");
-        xmlDeserializer.deserialize("Connections", connections, "Connection");
-        xmlDeserializer.deserialize("PartialInConnections", partialIn, "Connection");
-        xmlDeserializer.deserialize("PropertyLinks", links, "PropertyLink");
-        xmlDeserializer.deserialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
-        xmlDeserializer.deserialize("PartialDstLinks", partialDstLinks, "PropertyLink");
-
-        auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-        for (auto p : network->getProcessors()) {
-            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-            m->setSelected(false);
-        }
-
-        for (auto& p : processors) {
-            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-            m->setPosition(m->getPosition() + ivec2(50,50));
-            network->addProcessor(p.get());
-            network->autoLinkProcessor(p.get());
-            p.release();
-        }
-        for (auto& c : connections) {
-            network->addConnection(c->getOutport(), c->getInport());
-        }
-        for (auto& c : partialIn) {
-            auto parts = splitString(c->outportPath_, '/');
-            if (parts.size() != 2) continue;
-            if (auto p = network->getProcessorByIdentifier(parts[0])) {
-                if (auto outport = p->getOutport(parts[1])) {
-                    network->addConnection(outport, c->inport_);
-                }
-            }
-        }
-
-        for (auto& l : links) {
-            network->addLink(l->getSourceProperty(), l->getDestinationProperty());
-        }
-        for (auto& l : partialSrcLinks) {
-            auto path = splitString(l->dstPath_, '.');
-            if (auto dst = network->getProperty(path)) {
-                network->addLink(l->src_, dst);
-            }
-        }
-        for (auto& l : partialDstLinks) {
-            auto path = splitString(l->srcPath_, '.');
-            if (auto src = network->getProperty(path)) {
-                network->addLink(src, l->dst_);
-            }
-        }
-
-    } catch (Exception& e) {
-        util::log(IvwContext, e.getMessage(), LogLevel::Warn, LogAudience::User);
     }
 }
 
@@ -1568,16 +1441,14 @@ void NetworkEditor::contextMenuShowInspector(EditorGraphicsItem* item) {
 }
 
 void NetworkEditor::contextMenuDeleteProcessor(EditorGraphicsItem* item) {
-    ProcessorGraphicsItem* p = qgraphicsitem_cast<ProcessorGraphicsItem*>(item);
-    if (p) {
+    if (auto p = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
         Processor* processor = p->getProcessor();
         InviwoApplication::getPtr()->getProcessorNetwork()->removeAndDeleteProcessor(processor);
     }
 }
 
 void NetworkEditor::contextMenuShowHideWidget(EditorGraphicsItem* item) {
-    ProcessorGraphicsItem* p = qgraphicsitem_cast<ProcessorGraphicsItem*>(item);
-    if (p) {
+    if (auto p = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
         Processor* processor = p->getProcessor();
         if (processor->getProcessorWidget()->isVisible()) {
             processor->getProcessorWidget()->hide();
@@ -1587,21 +1458,18 @@ void NetworkEditor::contextMenuShowHideWidget(EditorGraphicsItem* item) {
     }
 }
 void NetworkEditor::contextMenuDeleteConnection(EditorGraphicsItem* item) {
-    ConnectionGraphicsItem* c = qgraphicsitem_cast<ConnectionGraphicsItem*>(item);
-    if (c) {
+    if (auto c = qgraphicsitem_cast<ConnectionGraphicsItem*>(item)) {
         removeConnection(c);
     }
 }
 void NetworkEditor::contextMenuDeleteLink(EditorGraphicsItem* item) {
-    LinkConnectionGraphicsItem* l = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item);
-    if (l) {
+    if (auto l = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
         removeLink(l);
     }
 }
 
 void NetworkEditor::contextMenuEditLink(EditorGraphicsItem* item) {
-    LinkConnectionGraphicsItem* l = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item);
-    if (l) {
+    if (auto l = qgraphicsitem_cast<LinkConnectionGraphicsItem*>(item)) {
         showLinkDialog(l->getSrcProcessorGraphicsItem()->getProcessor(),
                        l->getDestProcessorGraphicsItem()->getProcessor());
     }
@@ -1649,7 +1517,7 @@ void NetworkEditor::onProcessorNetworkDidAddLink(PropertyLink* propertyLink) {
     setModified(true);
     Processor* p1 = propertyLink->getSourceProperty()->getOwner()->getProcessor();
     Processor* p2 = propertyLink->getDestinationProperty()->getOwner()->getProcessor();
-    LinkConnectionGraphicsItem* link = getLinkGraphicsItem(p1, p2);
+    auto link = getLinkGraphicsItem(p1, p2);
     if (!link) {
         addLinkGraphicsItem(p1, p2);
     }
