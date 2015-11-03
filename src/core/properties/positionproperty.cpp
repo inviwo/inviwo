@@ -85,6 +85,7 @@ void PositionProperty::set(const vec3& worldSpacePos) {
     case Space::VIEW:
         position_.set( camera_ ? vec3(camera_->viewMatrix() * vec4(worldSpacePos, 1.0f))
             : worldSpacePos);
+        break;
     case Space::WORLD:
     default:
         position_.set(worldSpacePos);
