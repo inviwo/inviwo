@@ -79,8 +79,6 @@ public:
 
     virtual void process() override;
 
-    bool isReady() const override { return meshInport_.isReady(); }
-
     void updateWidgetPositionFromPicking(const PickingObject*);
 
 private:

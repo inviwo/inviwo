@@ -60,6 +60,8 @@ MeshPicking::MeshPicking()
     , trackball_(&camera_)
     , shader_("standard.vert", "picking.frag") {
 
+    imageInport_.setOptional(true);
+
     addPort(meshInport_);
     addPort(imageInport_);
     addPort(outport_);
