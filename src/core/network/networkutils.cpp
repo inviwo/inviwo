@@ -31,12 +31,13 @@
 
 namespace inviwo {
 
-
 bool util::ProcessorStates::hasBeenVisited(Processor* processor) const {
     return visited_.find(processor) != visited_.end();
 }
 
-void util::ProcessorStates::setProcessorVisited(Processor* processor) { visited_.insert(processor); }
+void util::ProcessorStates::setProcessorVisited(Processor* processor) {
+    visited_.insert(processor);
+}
 
 void util::ProcessorStates::clear() { visited_.clear(); }
 
@@ -64,8 +65,8 @@ std::unordered_set<Processor*> util::getPredecessors(Processor* processor) {
     std::unordered_set<Processor*> predecessors;
     ProcessorStates state;
     traverseNetwork<TraversalDirection::Up, VisitPattern::Post>(
-            state, processor, [&predecessors](Processor* p) { predecessors.insert(p); });
-    
+        state, processor, [&predecessors](Processor* p) { predecessors.insert(p); });
+
     return predecessors;
 }
 
@@ -73,8 +74,8 @@ std::unordered_set<Processor*> util::getSuccessors(Processor* processor) {
     std::unordered_set<Processor*> successors;
     ProcessorStates state;
     traverseNetwork<TraversalDirection::Down, VisitPattern::Post>(
-            state, processor, [&successors](Processor* p) { successors.insert(p); });
-    
+        state, processor, [&successors](Processor* p) { successors.insert(p); });
+
     return successors;
 }
 
@@ -94,8 +95,8 @@ std::vector<Processor*> util::topologicalSort(ProcessorNetwork* network) {
     return sorted;
 }
 
-
-IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostream& os) {
+IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostream& os,
+                                          const std::string& refPath) {
     std::vector<Processor*> selected;
     util::copy_if(network->getProcessors(), std::back_inserter(selected), [](const Processor* p) {
         auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
@@ -105,23 +106,23 @@ IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostrea
     std::vector<PortConnection*> connections;
     util::copy_if(network->getConnections(), std::back_inserter(connections),
                   [&selected](PortConnection* c) {
-        auto in = c->getInport()->getProcessor();
-        auto out = c->getOutport()->getProcessor();
-        return util::contains(selected, in) && util::contains(selected, out);
-    });
+                      auto in = c->getInport()->getProcessor();
+                      auto out = c->getOutport()->getProcessor();
+                      return util::contains(selected, in) && util::contains(selected, out);
+                  });
 
     std::vector<PortConnection*> partialInConnections;
     util::copy_if(network->getConnections(), std::back_inserter(partialInConnections),
                   [&selected](PortConnection* c) {
-        auto in = c->getInport()->getProcessor();
-        auto out = c->getOutport()->getProcessor();
-        return util::contains(selected, in) && !util::contains(selected, out);
-    });
+                      auto in = c->getInport()->getProcessor();
+                      auto out = c->getOutport()->getProcessor();
+                      return util::contains(selected, in) && !util::contains(selected, out);
+                  });
 
     auto partialIn = util::transform(partialInConnections, [](PortConnection* c) {
-        return detail::PartialConnection{ c->getOutport()->getProcessor()->getIdentifier() + "/" +
-                                       c->getOutport()->getIdentifier(),
-                                   c->getInport() };
+        return detail::PartialConnection{c->getOutport()->getProcessor()->getIdentifier() + "/" +
+                                             c->getOutport()->getIdentifier(),
+                                         c->getInport()};
     });
 
     std::vector<PropertyLink*> links;
@@ -132,30 +133,28 @@ IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostrea
     });
 
     std::vector<PropertyLink*> srcLinks;
-    util::copy_if(network->getLinks(), std::back_inserter(srcLinks),
-                  [&selected](PropertyLink* c) {
+    util::copy_if(network->getLinks(), std::back_inserter(srcLinks), [&selected](PropertyLink* c) {
         auto src = c->getSourceProperty()->getOwner()->getProcessor();
         auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
         return util::contains(selected, src) && !util::contains(selected, dst);
     });
     auto partialSrcLinks = util::transform(srcLinks, [](PropertyLink* c) {
-        return detail::PartialSrcLink{ c->getSourceProperty(),
-                              joinString(c->getDestinationProperty()->getPath(), ".") };
+        return detail::PartialSrcLink{c->getSourceProperty(),
+                                      joinString(c->getDestinationProperty()->getPath(), ".")};
     });
 
     std::vector<PropertyLink*> dstLinks;
-    util::copy_if(network->getLinks(), std::back_inserter(dstLinks),
-                  [&selected](PropertyLink* c) {
+    util::copy_if(network->getLinks(), std::back_inserter(dstLinks), [&selected](PropertyLink* c) {
         auto src = c->getSourceProperty()->getOwner()->getProcessor();
         auto dst = c->getDestinationProperty()->getOwner()->getProcessor();
         return !util::contains(selected, src) && util::contains(selected, dst);
     });
     auto partialDstLinks = util::transform(dstLinks, [](PropertyLink* c) {
-        return detail::PartialDstLink{ joinString(c->getSourceProperty()->getPath(), "."),
-                              c->getDestinationProperty() };
+        return detail::PartialDstLink{joinString(c->getSourceProperty()->getPath(), "."),
+                                      c->getDestinationProperty()};
     });
 
-    IvwSerializer xmlSerializer("Copy");
+    IvwSerializer xmlSerializer(refPath);
     xmlSerializer.serialize("Processors", selected, "Processor");
     xmlSerializer.serialize("Connections", connections, "Connection");
     xmlSerializer.serialize("PartialInConnections", partialIn, "Connection");
@@ -163,13 +162,14 @@ IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostrea
     xmlSerializer.serialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
     xmlSerializer.serialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 
-
     xmlSerializer.writeFile(os);
 }
 
-IVW_CORE_API void util::appendDeserialized(ProcessorNetwork* network, std::istream& is) {
+IVW_CORE_API std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network, std::istream& is,
+                                           const std::string& refPath) {
+    std::vector<Processor*> addedProcessors;
     try {
-        IvwDeserializer xmlDeserializer(is, "Paste");
+        IvwDeserializer xmlDeserializer(is, refPath);
         std::vector<std::unique_ptr<Processor>> processors;
         std::vector<std::unique_ptr<PortConnection>> connections;
         std::vector<std::unique_ptr<detail::PartialConnection>> partialIn;
@@ -183,17 +183,15 @@ IVW_CORE_API void util::appendDeserialized(ProcessorNetwork* network, std::istre
         xmlDeserializer.deserialize("PartialSrcLinks", partialSrcLinks, "PropertyLink");
         xmlDeserializer.deserialize("PartialDstLinks", partialDstLinks, "PropertyLink");
 
-        
         for (auto p : network->getProcessors()) {
             auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             m->setSelected(false);
         }
 
         for (auto& p : processors) {
-            auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
-            m->setPosition(m->getPosition() + ivec2(50, 50));
             network->addProcessor(p.get());
             network->autoLinkProcessor(p.get());
+            addedProcessors.push_back(p.get());
             p.release();
         }
         for (auto& c : connections) {
@@ -228,6 +226,7 @@ IVW_CORE_API void util::appendDeserialized(ProcessorNetwork* network, std::istre
     } catch (Exception& e) {
         util::log(IvwContextCustom("Paste"), e.getMessage(), LogLevel::Warn, LogAudience::User);
     }
+    return addedProcessors;
 }
 
 }  // namespace

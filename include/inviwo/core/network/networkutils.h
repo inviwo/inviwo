@@ -143,9 +143,12 @@ void traverseNetwork(ProcessorStates& state, Processor* processor, Func f) {
 
 IVW_CORE_API std::vector<Processor*> topologicalSort(ProcessorNetwork* network);
 
-IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os);
+IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
+                                    const std::string& refPath);
 
-IVW_CORE_API void appendDeserialized(ProcessorNetwork* network, std::istream& is);
+// return the appended processors.
+IVW_CORE_API std::vector<Processor*> appendDeserialized(ProcessorNetwork* network, std::istream& is,
+                                     const std::string& refPath);
 
 }  // namespace
 }  // namespace

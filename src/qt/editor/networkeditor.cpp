@@ -139,18 +139,17 @@ ProcessorGraphicsItem* NetworkEditor::addProcessorGraphicsItem(Processor* proces
                                                                bool visible, bool selected) {
     // generate GUI representation and add to editor
     ProcessorGraphicsItem* processorGraphicsItem = new ProcessorGraphicsItem(processor);
+    addItem(processorGraphicsItem);
+    processorGraphicsItems_[processor] = processorGraphicsItem;
     processorGraphicsItem->setVisible(visible);
     processorGraphicsItem->setSelected(selected);
     processorGraphicsItem->setPos(pos);
-    addItem(processorGraphicsItem);
-    processorGraphicsItems_[processor] = processorGraphicsItem;
-
     return processorGraphicsItem;
 }
 
 void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
     // obtain processor graphics item through processor
-    ProcessorGraphicsItem* processorGraphicsItem = getProcessorGraphicsItem(processor);
+    auto processorGraphicsItem = getProcessorGraphicsItem(processor);
 
     if (oldProcessorTarget_ == processorGraphicsItem) oldProcessorTarget_ = nullptr;
 
@@ -1246,7 +1245,7 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
 bool NetworkEditor::event(QEvent* e) {
    if (e->type() == PortInspectorEvent::type()) {
         e->accept();
-        PortInspectorEvent* pie = static_cast<PortInspectorEvent*>(e);
+        auto pie = static_cast<PortInspectorEvent*>(e);
         removePortInspector(pie->port_);
         return true;
     }
@@ -1256,7 +1255,7 @@ bool NetworkEditor::event(QEvent* e) {
 QByteArray NetworkEditor::copy() const {
     auto network = InviwoApplication::getPtr()->getProcessorNetwork();
     std::stringstream ss;
-    util::serializeSelected(network, ss);
+    util::serializeSelected(network, ss, "");
     auto str = ss.str();
     QByteArray byteArray(str.c_str(), str.length());
     return byteArray;
@@ -1272,7 +1271,12 @@ void NetworkEditor::paste(QByteArray mimeData) {
     auto network = InviwoApplication::getPtr()->getProcessorNetwork();
     std::stringstream ss;
     for(auto d: mimeData) ss << d;
-    util::appendDeserialized(network, ss);
+    auto added = util::appendDeserialized(network, ss, "");
+    
+    for (auto p : added){
+        auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+        m->setPosition(m->getPosition() + ivec2(50, 50));
+    }
 }
 
 void NetworkEditor::deleteSelectedProcessors() {
