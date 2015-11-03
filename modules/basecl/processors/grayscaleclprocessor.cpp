@@ -60,21 +60,12 @@ GrayscaleCLProcessor::GrayscaleCLProcessor()
     addPort(outport_, "ImagePortGroup1");
 
     addProperty(useGLSharing_);
-}
 
-GrayscaleCLProcessor::~GrayscaleCLProcessor() {}
-
-void GrayscaleCLProcessor::initialize() {
-    Processor::initialize();
     kernel_ = addKernel("grayscale.cl", "grayscaleKernel");
     if (!InviwoApplication::getPtr()->getSettingsByType<OpenCLSettings>()->isSharingEnabled()) {
         useGLSharing_.setReadOnly(true);
         useGLSharing_.set(false);
     }
-}
-
-void GrayscaleCLProcessor::deinitialize() {
-    Processor::deinitialize();
 }
 
 void GrayscaleCLProcessor::process() {

@@ -69,19 +69,15 @@ namespace inviwo {
 class IVW_MODULE_BASECL_API VolumeMaxCLProcessor : public Processor, public ProcessorKernelOwner {
 public:
     VolumeMaxCLProcessor();
-    ~VolumeMaxCLProcessor();
+    ~VolumeMaxCLProcessor() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    void initialize() override;
-
-    void buildKernel();
-
-    void deinitialize() override;
+    virtual void process() override;
 
 protected:
-    virtual void process() override;
+    void buildKernel();
     void executeVolumeOperation(const Volume* volume, const VolumeCLBase* volumeCL,
                                 VolumeCLBase* volumeOutCL, const size3_t& outDim,
                                 const size3_t& globalWorkGroupSize,
@@ -95,8 +91,8 @@ private:
     IntVec3Property workGroupSize_;
     BoolProperty useGLSharing_;
 
-    bool supportsVolumeWrite_;  // Does the OpenCL device support volume writes?
-    BufferBase* tmpVolume_;         // Used if writing to a volume is not supported
+    bool supportsVolumeWrite_;                  // Does the OpenCL device support volume writes?
+    std::unique_ptr< Buffer<unsigned char> > tmpVolume_;     // Used if writing to a volume is not supported
     std::shared_ptr<Volume> volumeOut_;
     cl::Kernel* kernel_;
 };

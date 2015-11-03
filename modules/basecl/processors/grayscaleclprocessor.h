@@ -64,15 +64,11 @@ namespace inviwo {
 class IVW_MODULE_BASECL_API GrayscaleCLProcessor : public Processor, public ProcessorKernelOwner {
 public:
     GrayscaleCLProcessor();
-    ~GrayscaleCLProcessor();
+    ~GrayscaleCLProcessor() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
-    void initialize() override;
-    void deinitialize() override;
-
-protected:
+    
     virtual void process() override;
 
 private:

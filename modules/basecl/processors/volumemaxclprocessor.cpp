@@ -65,19 +65,8 @@ VolumeMaxCLProcessor::VolumeMaxCLProcessor()
     addProperty(volumeRegionSize_);
     addProperty(workGroupSize_);
     addProperty(useGLSharing_);
-}
 
-VolumeMaxCLProcessor::~VolumeMaxCLProcessor() {}
-
-void VolumeMaxCLProcessor::initialize() {
-    Processor::initialize();
     buildKernel();
-}
-
-void VolumeMaxCLProcessor::deinitialize() {
-    Processor::deinitialize();
-    delete tmpVolume_;
-    tmpVolume_ = nullptr;
 }
 
 void VolumeMaxCLProcessor::process() {
@@ -139,9 +128,8 @@ void VolumeMaxCLProcessor::executeVolumeOperation(const Volume* volume,
             kernel_->setArg(argIndex++, *volumeOutCL);
         } else {
             size_t outDimFlattened = outDim.x * outDim.y * outDim.z;
-            if (tmpVolume_ == nullptr || tmpVolume_->getSize() != outDimFlattened) {
-                delete tmpVolume_;
-                tmpVolume_ = new Buffer<unsigned char>(outDimFlattened);
+            if (tmpVolume_.get() == nullptr || tmpVolume_->getSize() != outDimFlattened) {
+                tmpVolume_ = std::unique_ptr< Buffer<unsigned char> >(new Buffer<unsigned char>(outDimFlattened));
             }
             tmpVolumeCL = tmpVolume_->getEditableRepresentation<BufferCL>();
             kernel_->setArg(argIndex++, *tmpVolumeCL);

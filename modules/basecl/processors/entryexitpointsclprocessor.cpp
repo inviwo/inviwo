@@ -70,20 +70,12 @@ EntryExitPointsCLProcessor::EntryExitPointsCLProcessor()
     entryPort_.addResizeEventListener(&camera_);
     // Will enable the processor to invalidate when the kernel has recompiled
     entryExitPoints_.addObserver(this);
-}
-
-EntryExitPointsCLProcessor::~EntryExitPointsCLProcessor() {}
-
-void EntryExitPointsCLProcessor::initialize() {
-    Processor::initialize();
 
     if (!InviwoApplication::getPtr()->getSettingsByType<OpenCLSettings>()->isSharingEnabled()) {
         useGLSharing_.setReadOnly(true);
         useGLSharing_.set(false);
     }
 }
-
-void EntryExitPointsCLProcessor::deinitialize() {}
 
 void EntryExitPointsCLProcessor::process() {
     auto mesh = geometryPort_.getData();

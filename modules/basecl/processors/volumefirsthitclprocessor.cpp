@@ -68,17 +68,10 @@ VolumeFirstHitCLProcessor::VolumeFirstHitCLProcessor()
     addProperty(transferFunction_);
     addProperty(workGroupSize_);
     addProperty(useGLSharing_);
-}
 
-VolumeFirstHitCLProcessor::~VolumeFirstHitCLProcessor() {}
-
-void VolumeFirstHitCLProcessor::initialize() {
-    Processor::initialize();
     kernel_ = addKernel("volumefirsthit.cl",
-                        "volumeFirstHit");
+        "volumeFirstHit");
 }
-
-void VolumeFirstHitCLProcessor::deinitialize() { Processor::deinitialize(); }
 
 void VolumeFirstHitCLProcessor::process() {
     if (kernel_ == nullptr) {

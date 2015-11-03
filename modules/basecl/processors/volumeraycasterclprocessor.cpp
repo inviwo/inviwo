@@ -84,21 +84,14 @@ VolumeRaycasterCLProcessor::VolumeRaycasterCLProcessor()
 
     volumeRaycaster_.addObserver(this);
     volumeRaycaster_.setCamera(&camera_);
-}
-
-VolumeRaycasterCLProcessor::~VolumeRaycasterCLProcessor() {}
-
-void VolumeRaycasterCLProcessor::initialize() {
-    Processor::initialize();
 
     if (!InviwoApplication::getPtr()->getSettingsByType<OpenCLSettings>()->isSharingEnabled()) {
         useGLSharing_.setReadOnly(true);
         useGLSharing_.set(false);
     }
+    // Set kernel parameters
     onParameterChanged();
 }
-
-void VolumeRaycasterCLProcessor::deinitialize() { Processor::deinitialize(); }
 
 bool VolumeRaycasterCLProcessor::isReady() const {
     return volumePort_.isReady() && entryPort_.isReady() && exitPort_.isReady() &&

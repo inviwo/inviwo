@@ -46,7 +46,7 @@ namespace inviwo {
 /** \docpage{org.inviwo.VolumeFirstHitCL, Volume First Hit}
  * ![](org.inviwo.VolumeFirstHitCL.png?classIdentifier=org.inviwo.VolumeFirstHitCL)
  * Computes the first point with non-zero opacity within a volume given 
- * entry and exit points in texture space. 
+ * entry and exit points. 
  * 
  * ### Inports
  *   * __VolumeInport__ The volume to intersect.
@@ -70,13 +70,10 @@ namespace inviwo {
 class IVW_MODULE_BASECL_API VolumeFirstHitCLProcessor : public Processor, public ProcessorKernelOwner {
 public:
     VolumeFirstHitCLProcessor();
-    ~VolumeFirstHitCLProcessor();
+    ~VolumeFirstHitCLProcessor() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
-    void initialize() override;
-    void deinitialize() override;
 
 protected:
     virtual void process() override;

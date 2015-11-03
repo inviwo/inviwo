@@ -74,21 +74,18 @@ namespace inviwo {
 class IVW_MODULE_BASECL_API VolumeRaycasterCLProcessor : public Processor, public KernelObserver {
 public:
     VolumeRaycasterCLProcessor();
-    ~VolumeRaycasterCLProcessor();
+    ~VolumeRaycasterCLProcessor() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    void initialize() override;
-    void deinitialize() override;
-
     virtual bool isReady() const override;
+
+    virtual void process() override;
 
     void onKernelCompiled( const cl::Kernel* kernel ) override {
         invalidate(InvalidationLevel::InvalidResources);
     }
-protected:
-    virtual void process() override;
 
 private:
     void onParameterChanged();
