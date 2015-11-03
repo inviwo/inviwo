@@ -407,12 +407,36 @@ struct hash<glm::detail::tvec2<T, P>> {
     size_t operator()(const glm::detail::tvec2<T, P>& v) const {
         size_t h = 0;
         for (size_t i = 0; i < inviwo::util::flat_extent<glm::detail::tvec2<T, P>>::value; ++i) {
-            //T& val = 0 //inviwo::util::glmcomp(v, i);
             inviwo::util::hash_combine(h, v[i]);
         }
         return h;
     }
 };
+
+template <typename T, glm::precision P>
+struct hash<glm::detail::tvec3<T, P>>
+{
+    size_t operator()(const glm::detail::tvec3<T, P>& v) const {
+        size_t h = 0;
+        for (size_t i = 0; i < inviwo::util::flat_extent<glm::detail::tvec3<T, P>>::value; ++i) {
+            inviwo::util::hash_combine(h, v[i]);
+        }
+        return h;
+    }
+};
+
+template <typename T, glm::precision P>
+struct hash<glm::detail::tvec4<T, P>>
+{
+    size_t operator()(const glm::detail::tvec4<T, P>& v) const {
+        size_t h = 0;
+        for (size_t i = 0; i < inviwo::util::flat_extent<glm::detail::tvec4<T, P>>::value; ++i) {
+            inviwo::util::hash_combine(h, v[i]);
+        }
+        return h;
+    }
+};
+
 
 template <typename T, typename U>
 struct hash<std::pair<T, U>> {
