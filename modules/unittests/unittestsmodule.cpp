@@ -50,13 +50,11 @@ UnitTestsModule::~UnitTestsModule() {
     LogErrorCounter::deleteInstance();
 }
 
-int UnitTestsModule::runAllTests() {
+int UnitTestsModule::runAllTests(int argc, char** argv) {
     size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
     size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
 
-    int global_argc = InviwoApplication::getPtr()->getCommandLineParser()->getARGC();
-    char **global_argv = InviwoApplication::getPtr()->getCommandLineParser()->getARGV();
-    ::testing::InitGoogleTest(&global_argc, global_argv);
+    ::testing::InitGoogleTest(&argc, argv);
     int res = RUN_ALL_TESTS();
 
     if (res) {

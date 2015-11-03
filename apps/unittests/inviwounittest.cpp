@@ -41,6 +41,7 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
 #include <modules/base/processors/imageexport.h>
@@ -53,12 +54,13 @@ int main(int argc, char** argv) {
     {
         // scope for ivw app
         inviwo::LogCentral::init();
-        inviwo::LogCentral::getPtr()->registerLogger(new inviwo::ConsoleLogger());
+        //inviwo::LogCentral::getPtr()->registerLogger(new inviwo::ConsoleLogger());
 
         // Search for directory containing data folder to find application basepath.
         // Working directory will be used if data folder is not found in parent directories.
         std::string basePath = inviwo::filesystem::findBasePath();
-        InviwoApplication app(argc, argv, "unittest " + IVW_VERSION, basePath);
+        InviwoApplication app("unittest " + IVW_VERSION, basePath);
+        app.setPostEnqueueFront([&]() { app.processFront(); });
 
         if (!glfwInit()) {
             LogErrorCustom("Inviwo Unit Tests Application", "GLFW could not be initialized.");
@@ -67,13 +69,15 @@ int main(int argc, char** argv) {
 
         // Initialize all modules
         app.initialize(&inviwo::registerAllModules);
+        app.getSettingsByType<SystemSettings>()->poolSize_.set(0);
+
 
         // Continue initialization of default context
         CanvasGLFW* sharedCanvas = static_cast<CanvasGLFW*>(RenderContext::getPtr()->getDefaultRenderContext());
         sharedCanvas->initialize();
         sharedCanvas->activate();
 
-        ret = inviwo::UnitTestsModule::runAllTests();
+        ret = inviwo::UnitTestsModule::runAllTests(argc, argv);
 
         app.getProcessorNetwork()->clear();
         sharedCanvas->deinitialize();

@@ -40,7 +40,6 @@ TEST(CommandLineParserTest, DefaultTest) {
     const int argc = 1;
     const char *argv[argc] = {"unittests.exe"};
     CommandLineParser clp(argc, const_cast<char**>(argv));
-    clp.parse();
     EXPECT_STREQ("", clp.getOutputPath().c_str());
     EXPECT_STREQ("", clp.getWorkspacePath().c_str());
     EXPECT_STREQ("", clp.getSnapshotName().c_str());
@@ -78,7 +77,6 @@ TEST(CommandLineParserTest, CommandLineParserTest) {
     const int argc = 3;
     const char *argv[argc] = {"unittests.exe", "-w", "C:/Just/A/Path/"};
     CommandLineParser clp(argc, const_cast<char**>(argv));
-    clp.parse();
     EXPECT_STREQ("", clp.getOutputPath().c_str());
     EXPECT_STREQ("C:/Just/A/Path/", clp.getWorkspacePath().c_str());
     EXPECT_STREQ("", clp.getSnapshotName().c_str());

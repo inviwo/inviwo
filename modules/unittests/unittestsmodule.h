@@ -39,7 +39,7 @@ class IVW_MODULE_UNITTESTS_API UnitTestsModule : public InviwoModule {
 public:
     UnitTestsModule(InviwoApplication* app);
     virtual ~UnitTestsModule();
-    static int runAllTests();
+    static int runAllTests(int argc, char** argv);
 protected:
 };
 } // namespace

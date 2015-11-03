@@ -77,7 +77,7 @@ protected:
 
         p = dynamic_cast<Processor *>(s.get());
         ASSERT_TRUE(p != nullptr);
-
+        s.release();
         EXPECT_EQ(warnCount, LogErrorCounter::getPtr()->getWarnCount());
         EXPECT_EQ(errCount, LogErrorCounter::getPtr()->getErrorCount());
     }
