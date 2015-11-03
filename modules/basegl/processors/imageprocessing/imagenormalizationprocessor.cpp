@@ -78,14 +78,22 @@ ImageNormalizationProcessor::~ImageNormalizationProcessor() {}
 void ImageNormalizationProcessor::preProcess() {
     if (minMaxInvalid_) updateMinMax();
     
+    auto min = min_;
+    auto max = max_;
+
+    if (zeroAtPoint5_) {
+        max.rgb = glm::max(glm::abs(min.rgb()), glm::abs(max.rgb()));
+        min.rgb = -max.rgb();
+    }
+
     if (eachChannelsIndividually_.get()) {
-        shader_.setUniform("min_", static_cast<vec4>(min_));
-        shader_.setUniform("max_", static_cast<vec4>(max_));
+        shader_.setUniform("min_", static_cast<vec4>(min));
+        shader_.setUniform("max_", static_cast<vec4>(max));
     } else {
-        double min = std::min(std::min(min_.x,min_.y),min_.z);
-        double max = std::max(std::max(max_.x,max_.y),max_.z);
-        shader_.setUniform("min_", vec4(min,min,min,0.0f));
-        shader_.setUniform("max_", vec4(max,max,max,1.0f));
+        double minV = std::min(std::min(min.x,min.y),min.z);
+        double maxV = std::max(std::max(max.x,max.y),max.z);
+        shader_.setUniform("min_", vec4(minV, minV, minV,0.0f));
+        shader_.setUniform("max_", vec4(maxV, maxV, maxV,1.0f));
     }
 }
 
@@ -113,10 +121,7 @@ void ImageNormalizationProcessor::invalidateMinMax() {
     maxS_.set(toString(max_));
 
 
-    if (zeroAtPoint5_) {
-        max_ = glm::max(glm::abs(min_), glm::abs(max_));
-        min_ = -max_;
-    }
+    
 
     min_.a = 0.0; //never normalize alpha
     max_.a = 1.0;
