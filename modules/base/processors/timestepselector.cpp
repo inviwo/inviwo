@@ -52,6 +52,8 @@ TimeStepSelector::TimeStepSelector()
 
     addProperty(timeStep_);
 
+    timeStep_.index_.autoLinkToProperty<TimeStepSelector>("timeStep.selectedSequenceIndex");
+
     inport_.onChange([this]() {
         if(inport_.hasData()) timeStep_.updateMax(inport_.getData()->size());
     });
