@@ -78,17 +78,17 @@ ImageNormalizationProcessor::~ImageNormalizationProcessor() {}
 void ImageNormalizationProcessor::preProcess() {
     if (minMaxInvalid_) updateMinMax();
     
-    auto min = min_;
-    auto max = max_;
+    dvec3 min = min_.rgb();
+    dvec3 max = max_.rgb();
 
     if (zeroAtPoint5_) {
-        max.rgb = glm::max(glm::abs(min.rgb()), glm::abs(max.rgb()));
-        min.rgb = -max.rgb();
+        max = glm::max(glm::abs(min), glm::abs(max));
+        min = -max;
     }
 
     if (eachChannelsIndividually_.get()) {
-        shader_.setUniform("min_", static_cast<vec4>(min));
-        shader_.setUniform("max_", static_cast<vec4>(max));
+        shader_.setUniform("min_", static_cast<vec4>(dvec4(min,0.0)));
+        shader_.setUniform("max_", static_cast<vec4>(dvec4(max,1.0)));
     } else {
         double minV = std::min(std::min(min.x,min.y),min.z);
         double maxV = std::max(std::max(max.x,max.y),max.z);
