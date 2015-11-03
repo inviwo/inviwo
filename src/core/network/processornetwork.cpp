@@ -315,10 +315,11 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
 
         util::erase_remove_if(candidates, autoLinkChecker);
 
-        AutoLinkSort sorter(destprop);
-        std::sort(candidates.begin(), candidates.end(), sorter);
 
         if (candidates.size() > 0) {
+            AutoLinkSort sorter(destprop);
+            std::sort(candidates.begin(), candidates.end(), sorter);
+
             addLink(candidates.front(), destprop);
             // Propagate the link to the new Processor.
             linkEvaluator_.evaluateLinksFromProperty(candidates.front());
@@ -342,10 +343,11 @@ void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
             }
         }
 
-        AutoLinkSort sorter(destprop);
-        std::sort(candidates.begin(), candidates.end(), sorter);
 
         if (candidates.size() > 0) {
+            AutoLinkSort sorter(destprop);
+            std::sort(candidates.begin(), candidates.end(), sorter);
+
             addLink(candidates.front(), destprop);
             // Propagate the link to the new Processor.
             linkEvaluator_.evaluateLinksFromProperty(candidates.front());
