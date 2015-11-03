@@ -63,7 +63,7 @@ public:
 */
 class IVW_MODULE_BASE_API PointLightInteractionHandler : public InteractionHandler {
 public:
-    PointLightInteractionHandler(FloatVec3Property*, CameraProperty*, BoolProperty*, FloatVec2Property*);
+    PointLightInteractionHandler(PositionProperty*, CameraProperty*, BoolProperty*, FloatVec2Property*);
     ~PointLightInteractionHandler(){};
 
     virtual std::string getClassIdentifier() const { return "org.inviwo.PointLightInteractionHandler"; }
@@ -99,8 +99,8 @@ public:
     void setLookFrom(vec3 lookFrom) { lightPosition_->set(lookFrom); }
     void setLookUp(vec3 lookUp) { lookUp_ = lookUp; }
 
-    const vec3 getLookFromMinValue() const { return lightPosition_->getMinValue(); }
-    const vec3 getLookFromMaxValue() const { return lightPosition_->getMaxValue(); }
+    const vec3 getLookFromMinValue() const { return lightPosition_->position_.getMinValue(); }
+    const vec3 getLookFromMaxValue() const { return lightPosition_->position_.getMaxValue(); }
 
     const vec3 getLookToMinValue() const { return vec3(-std::numeric_limits < float >::max()); }
     const vec3 getLookToMaxValue() const { return vec3(std::numeric_limits < float >::max()); }
@@ -110,7 +110,7 @@ public:
     void deserialize(IvwDeserializer& d);
 
 private:
-    FloatVec3Property* lightPosition_;
+    PositionProperty* lightPosition_;
     CameraProperty* camera_;
     BoolProperty* screenPosEnabled_;
     FloatVec2Property* screenPos_;
@@ -118,6 +118,7 @@ private:
     vec3 lookTo_; ///< Necessary for trackball
     PointLightTrackball trackball_;
     int interactionEventOption_;
+    vec3 lightPositionWorldSpace_;
 
 };
 
