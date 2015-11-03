@@ -132,7 +132,7 @@ public:
     /**
      * \brief gets the xml file name.
      */
-    virtual std::string getFileName();
+    virtual const std::string& getFileName();
 
     /**
      * \brief Checks whether the given type is a primitive type.

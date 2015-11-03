@@ -194,7 +194,7 @@ void IvwSerializeBase::registerFactories(void) {
     registeredFactories_.push_back(PropertyFactory::getPtr());
 }
 
-std::string IvwSerializeBase::getFileName() {
+const std::string& IvwSerializeBase::getFileName() {
     return fileName_;
 }
 

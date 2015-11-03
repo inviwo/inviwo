@@ -77,18 +77,18 @@ FileProperty::~FileProperty() {}
 void FileProperty::serialize(IvwSerializer& s) const {
     Property::serialize(s);
 
-    std::string basePath = s.getFileName();
-    std::string absoluteFilePath = get();
+    const std::string basePath =
+        !s.getFileName().empty()
+            ? s.getFileName()
+            : InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA);
 
-    if (basePath.empty())
-        basePath = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA);
-
+    const std::string absoluteFilePath = get();
     std::string serializePath;
-
-    if (absoluteFilePath.size() != 0 && filesystem::sameDrive(basePath, absoluteFilePath))
+    if (!absoluteFilePath.empty() && filesystem::sameDrive(basePath, absoluteFilePath)) {
         serializePath = filesystem::getRelativePath(basePath, absoluteFilePath);
-    else
+    } else {
         serializePath = absoluteFilePath;
+    }
 
     s.serialize("url", serializePath);
     s.serialize("nameFilter", nameFilters_, "filter");
@@ -103,12 +103,10 @@ void FileProperty::deserialize(IvwDeserializer& d) {
     d.deserialize("url", serializePath);
 
     if (!filesystem::isAbsolutePath(serializePath) && !serializePath.empty()) {
-        std::string basePath = d.getFileName();
+        const std::string basePath = filesystem::getFileDirectory(
+            !d.getFileName().empty() ? d.getFileName() : InviwoApplication::getPtr()->getPath(
+                                                             InviwoApplication::PATH_DATA));
 
-        if (basePath.empty())
-            basePath = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA);
-
-        basePath = filesystem::getFileDirectory(basePath);
         set(basePath + serializePath);
     } else {
         set(serializePath);
