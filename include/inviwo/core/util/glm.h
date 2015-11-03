@@ -122,6 +122,19 @@ struct rank<glm::detail::tmat3x3<T, P>> : public std::integral_constant<std::siz
 template <typename T, glm::precision P>
 struct rank<glm::detail::tmat4x4<T, P>> : public std::integral_constant<std::size_t, 2> {};
 
+template <typename T, glm::precision P>
+struct rank<glm::detail::tmat2x3<T, P>> : public std::integral_constant<std::size_t, 2> {};
+template <typename T, glm::precision P>
+struct rank<glm::detail::tmat2x4<T, P>> : public std::integral_constant<std::size_t, 2> {};
+template <typename T, glm::precision P>
+struct rank<glm::detail::tmat3x2<T, P>> : public std::integral_constant<std::size_t, 2> {};
+template <typename T, glm::precision P>
+struct rank<glm::detail::tmat3x4<T, P>> : public std::integral_constant<std::size_t, 2> {};
+template <typename T, glm::precision P>
+struct rank<glm::detail::tmat4x2<T, P>> : public std::integral_constant<std::size_t, 2> {};
+template <typename T, glm::precision P>
+struct rank<glm::detail::tmat4x3<T, P>> : public std::integral_constant<std::size_t, 2> {};
+
 
 template <typename T, unsigned N = 0>
 struct extent : public std::extent<T,N> {};
@@ -146,6 +159,32 @@ template <typename T, glm::precision P>
 struct extent<glm::detail::tmat3x3<T, P>, 1> : public std::integral_constant<std::size_t, 3> {};
 template <typename T, glm::precision P>
 struct extent<glm::detail::tmat4x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
+
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat2x3<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat2x4<T, P>, 0> : public std::integral_constant<std::size_t, 2> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat3x2<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat3x4<T, P>, 0> : public std::integral_constant<std::size_t, 3> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat4x2<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat4x3<T, P>, 0> : public std::integral_constant<std::size_t, 4> {};
+
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat2x3<T, P>, 1> : public std::integral_constant<std::size_t, 3> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat2x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat3x2<T, P>, 1> : public std::integral_constant<std::size_t, 2> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat3x4<T, P>, 1> : public std::integral_constant<std::size_t, 4> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat4x2<T, P>, 1> : public std::integral_constant<std::size_t, 2> {};
+template <typename T, glm::precision P>
+struct extent<glm::detail::tmat4x3<T, P>, 1> : public std::integral_constant<std::size_t, 3> {};
 
 template <typename T, int N>
 struct flat_extent_impl
