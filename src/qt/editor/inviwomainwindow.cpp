@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include "inviwomainwindow.h"
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/qt/editor/networkeditorview.h>

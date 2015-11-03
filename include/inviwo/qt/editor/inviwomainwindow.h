@@ -30,6 +30,7 @@
 #ifndef IVW_INVIWOMAINWINDOW_H
 #define IVW_INVIWOMAINWINDOW_H
 
+#include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/qt/editor/networkeditor.h>
 
@@ -56,7 +57,7 @@ class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
 
-class InviwoMainWindow : public QMainWindow,
+class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow,
     public NetworkEditorObserver {
     #include <warn/push>
     #include <warn/ignore/all>

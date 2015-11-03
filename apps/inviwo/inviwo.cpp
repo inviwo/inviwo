@@ -39,7 +39,7 @@
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>
-#include "inviwomainwindow.h"
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include "inviwosplashscreen.h"
 #include <moduleregistration.h>
 

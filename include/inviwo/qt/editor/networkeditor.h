@@ -65,7 +65,7 @@ class LinkConnectionDragGraphicsItem;
 class PropertyListWidget;
 class LinkDialog;
 
-class NetworkEditorObserver : public Observer {
+class IVW_QTEDITOR_API NetworkEditorObserver : public Observer {
 public:
     virtual void onNetworkEditorFileChanged(const std::string& newFilename) = 0;
     virtual void onModifiedStatusChanged(const bool& newStatus) = 0;

@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/processors/processorwidgetqt.h>
-#include <apps/inviwo/inviwomainwindow.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 

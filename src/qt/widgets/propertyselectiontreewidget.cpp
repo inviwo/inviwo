@@ -32,7 +32,6 @@
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
 #include <inviwo/qt/widgets/propertyselectiontreewidget.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
-#include <apps/inviwo/inviwomainwindow.h>
 
 
 #include <warn/push>

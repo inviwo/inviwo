@@ -9,7 +9,6 @@ endif()
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${IVW_APPLICATION_DIR}/inviwo/inviwomainwindow.h
     ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -20,7 +19,6 @@ source_group("MOC Files" FILES ${MOC_FILES})
 # Add source files
 set(SOURCE_FILES
     ${IVW_APPLICATION_DIR}/inviwo/inviwo.cpp
-    ${IVW_APPLICATION_DIR}/inviwo/inviwomainwindow.cpp
     ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
