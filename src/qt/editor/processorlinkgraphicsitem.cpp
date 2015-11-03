@@ -95,7 +95,7 @@ ProcessorLinkGraphicsItem::LinkItem::LinkItem(ProcessorLinkGraphicsItem* parent,
 ProcessorLinkGraphicsItem::LinkItem::~LinkItem() {}
 
 void ProcessorLinkGraphicsItem::LinkItem::mousePressEvent(QGraphicsSceneMouseEvent* e) {
-    NetworkEditor::getPtr()->initiateLink(parent_, e->scenePos());
+    getNetworkEditor()->initiateLink(parent_, e->scenePos());
     e->accept();
 }
 

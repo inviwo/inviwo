@@ -97,6 +97,10 @@ void EditorGraphicsItem::showToolTipHelper(QGraphicsSceneHelpEvent* e, QString s
     QToolTip::showText(e->screenPos(), string, v, viewRect);
 }
 
+NetworkEditor* EditorGraphicsItem::getNetworkEditor() const {
+    return qobject_cast<NetworkEditor*>(scene());
+}
+
 void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) const {
     SystemSettings* settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
     bool portinfo = settings->enablePortInformationProperty_.get();
@@ -114,7 +118,7 @@ void EditorGraphicsItem::showPortInfo(QGraphicsSceneHelpEvent* e, Port* port) co
 
     if (inspector) {
         if (auto outport = dynamic_cast<Outport*>(port)) {
-            data = NetworkEditor::getPtr()->renderPortInspectorImage(outport, imageType);
+            data = getNetworkEditor()->renderPortInspectorImage(outport, imageType);
         }
     }
 

@@ -39,6 +39,8 @@
 
 namespace inviwo {
 
+class NetworkEditor;
+
 enum IVW_QTEDITOR_API InviwoUserGraphicsItemType {
     ProcessorGraphicsType = Number_of_InviwoWidgetGraphicsItemTypes,
     CurveGraphicsType,
@@ -77,6 +79,7 @@ public:
     
 protected:
     void showToolTipHelper(QGraphicsSceneHelpEvent* event, QString string) const;
+    NetworkEditor* getNetworkEditor() const;
 };
 
 }  // namespace

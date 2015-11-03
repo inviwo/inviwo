@@ -315,8 +315,8 @@ void ProcessorGraphicsItem::snapToGrid() {
 }
 
 QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVariant& value) {
-    #include <warn/push>
-    #include <warn/ignore/switch-enum>
+#include <warn/push>
+#include <warn/ignore/switch-enum>
     switch (change) {
         case QGraphicsItem::ItemPositionHasChanged:
             if (processorMeta_) processorMeta_->setPosition(ivec2(x(), y()));
@@ -324,10 +324,16 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         case QGraphicsItem::ItemSelectedHasChanged:
             if (isSelected()) {
                 setZValue(SELECTED_PROCESSORGRAPHICSITEM_DEPTH);
-                if (!highlight_) NetworkEditor::getPtr()->addPropertyWidgets(getProcessor());
+                if (!highlight_) {
+                    if (auto editor = getNetworkEditor()) {
+                        editor->addPropertyWidgets(getProcessor());
+                    }
+                }
             } else {
                 setZValue(PROCESSORGRAPHICSITEM_DEPTH);
-                NetworkEditor::getPtr()->removePropertyWidgets(getProcessor());
+                if (auto editor = getNetworkEditor()) {
+                    editor->removePropertyWidgets(getProcessor());
+                }
             }
             if (!highlight_ && processorMeta_) processorMeta_->setSelected(isSelected());
             break;
@@ -337,7 +343,7 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
         default:
             break;
     }
-    #include <warn/pop>
+#include <warn/pop>
     return QGraphicsItem::itemChange(change, value);
 }
 

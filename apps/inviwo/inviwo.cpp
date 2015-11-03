@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
     QFile styleSheetFile(":/stylesheets/inviwo.qss");
     styleSheetFile.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(styleSheetFile.readAll());
+    QString styleSheet = QString::fromUtf8(styleSheetFile.readAll());
     inviwoApp.setStyleSheet(styleSheet);
     styleSheetFile.close();
 
