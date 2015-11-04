@@ -96,27 +96,19 @@ CanvasProcessor::CanvasProcessor()
     addProperty(saveLayerButton_);
 
     colorLayer_.setSerializationMode(PropertySerializationMode::ALL);
+    colorLayer_.setVisible(false);
 
     visibleLayer_.onChange([&]() {
         if (inport_.hasData()) {
             auto layers = inport_.getData()->getNumberOfColorLayers();
             colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
-        } else {
-            colorLayer_.setVisible(visibleLayer_.get() == LayerType::Color);
-        }
+        } 
     });
 
     inport_.onChange([&]() {
         int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
         colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
         colorLayer_.setMaxValue(layers - 1);
-    });
-    inport_.onConnect([&]() {
-        if (inport_.hasData()) {
-            int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
-            colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
-            colorLayer_.setMaxValue(layers - 1);
-        }
     });
 
     setAllPropertiesCurrentStateAsDefault();
