@@ -78,6 +78,8 @@ protected:
     ImageOutport outport_;
     Shader shader_;
 
+    BoolProperty enableDepthTest_;
+
 
     using DrawerMap = std::multimap<const Outport*, std::unique_ptr<MeshDrawer>>;
     DrawerMap drawers_;
