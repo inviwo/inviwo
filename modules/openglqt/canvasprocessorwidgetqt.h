@@ -33,7 +33,10 @@
 #include <modules/openglqt/openglqtmoduledefine.h>
 #include <inviwo/core/processors/canvasprocessorwidget.h>
 #include <inviwo/core/processors/processorobserver.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QWidget>
+#include <warn/pop>
 
 namespace inviwo {
 

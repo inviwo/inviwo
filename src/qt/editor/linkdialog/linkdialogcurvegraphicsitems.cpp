@@ -27,8 +27,11 @@
  *
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QVector2D>
 #include <QGraphicsSceneMouseEvent>
+#include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>

@@ -39,11 +39,14 @@
 #define IVW_COLORWHEEL_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QWidget>
 #include <QImage>
 #include <QPixmap>
 #include <QColor>
 #include <QPainter>
+#include <warn/pop>
 
 class QMouseEvent;
 class QResizeEvent;

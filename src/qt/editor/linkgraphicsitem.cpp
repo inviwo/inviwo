@@ -27,11 +27,15 @@
  *
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsDropShadowEffect>
 #include <QPainter>
 #include <QString>
 #include <QPainterPath>
 #include <QVector2D>
+#include <warn/pop>
+
 #include <inviwo/qt/editor/linkgraphicsitem.h>
 #include <inviwo/core/ports/port.h>
 #include <inviwo/core/links/propertylink.h>

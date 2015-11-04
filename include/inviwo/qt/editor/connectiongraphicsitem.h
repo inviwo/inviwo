@@ -31,11 +31,14 @@
 #define IVW_CONNECTIONGRAPHICSITEM_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsLineItem>
 #include <QPainterPath>
 #include <QEvent>
 #include <QColor>
 #include <QPointF>
+#include <warn/pop>
 
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 

@@ -36,8 +36,10 @@
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/qt/widgets/labelgraphicsitem.h>
 #include <inviwo/core/metadata/processormetadata.h>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QEvent>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -31,6 +31,8 @@
 #define IVW_LIGHTPOSITIONWIDGETQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QLabel>
 #include <QRadialGradient>
 #include <QPixmap>
@@ -39,6 +41,7 @@
 #include <QMouseEvent>
 #include <QPoint>
 #include <QtCore/qmath.h>
+#include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
 

@@ -31,6 +31,8 @@
 #define IVW_HTMLEDITORYWIDGETQT_H
 
 //QT includes
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QFile>
 #include <QCheckBox>
 #include <QGridLayout>
@@ -47,7 +49,7 @@
 #include <QMainWindow>
 #include <QDesktopServices>
 #include <QUrl>
-
+#include <warn/pop>
 #include <inviwo/qt/widgets/properties/htmllistwidgetqt.h>
 
 namespace inviwo {

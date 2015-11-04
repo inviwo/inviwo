@@ -32,9 +32,12 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsItem>
 #include <QPainterPath>
 #include <QPointF>
+#include <warn/pop>
 
 namespace inviwo {
 class TransferFunctionEditorControlPoint;

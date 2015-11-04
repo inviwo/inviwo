@@ -32,9 +32,11 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/datastructures/datamapper.h>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsScene>
 #include <QPointF>
+#include <warn/pop>
 #include <vector>
 
 class QGraphicsView;

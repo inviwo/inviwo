@@ -38,6 +38,9 @@
 
 #define QT_NO_OPENGL_ES_2
 #define GLEXT_64_TYPES_DEFINED
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QInputEvent>
 #include <QMouseEvent>
 #include <QKeyEvent>
@@ -71,7 +74,7 @@ class QOpenGLContext;
 #define QGLParent QWidget
 #define QGLContextFormat QGLFormat
 #endif
-
+#include <warn/pop>
 
 namespace inviwo {
 

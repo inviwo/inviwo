@@ -191,6 +191,15 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
             fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
                     context.line, context.function);
             abort();
+            break;
+        case QtInfoMsg:
+            inviwo::LogCentral::getPtr()->log("Qt Info", LogLevel::Info, LogAudience::Developer,
+                context.file, context.function, context.line,
+                msg.toUtf8().constData());
+
+            fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
+                context.line, context.function);
+            break;
     }
 #endif
 }

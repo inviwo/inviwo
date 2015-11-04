@@ -31,8 +31,12 @@
 #define IVW_PROCESSORWIDGETQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <QWidget>
 #include <inviwo/core/processors/processorwidget.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QWidget>
+#include <warn/pop>
 
 namespace inviwo {
 

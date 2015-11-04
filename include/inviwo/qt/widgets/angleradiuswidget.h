@@ -31,7 +31,10 @@
 #define IVW_ANGLERADIUSWIDGET_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QWidget>
+#include <warn/pop>
 
 namespace inviwo {
 /** \class AngleRadiusWidget

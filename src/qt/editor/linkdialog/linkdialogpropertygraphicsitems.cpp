@@ -27,8 +27,11 @@
  *
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsDropShadowEffect>
 #include <QVector2D>
+#include <warn/pop>
 
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogprocessorgraphicsitems.h>

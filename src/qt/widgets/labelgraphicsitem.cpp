@@ -27,10 +27,13 @@
  * 
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QFocusEvent>
 #include <QFont>
 #include <QPainter>
 #include <QTextCursor>
+#include <warn/pop>
 
 #include <inviwo/qt/widgets/labelgraphicsitem.h>
 

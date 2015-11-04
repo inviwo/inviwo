@@ -38,9 +38,12 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/qt/editor/connectiongraphicsitem.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QPen>
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
+#include <warn/pop>
 
 namespace inviwo {
 

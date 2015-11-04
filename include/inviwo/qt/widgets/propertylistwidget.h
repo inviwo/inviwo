@@ -33,8 +33,11 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 #include <inviwo/core/properties/propertyvisibility.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QWidget>
 #include <QEvent>
+#include <warn/pop>
 #include <unordered_map>
 
 class QVBoxLayout;

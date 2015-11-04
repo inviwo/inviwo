@@ -40,6 +40,9 @@
 #include <inviwo/core/common/moduleaction.h>
 
 #include <inviwo/qt/widgets/propertylistwidget.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QDesktopWidget>
 
 #include <QStyleOption>
@@ -47,6 +50,7 @@
 #include <QToolTip>
 #include <QHelpEvent>
 #include <QClipboard>
+#include <warn/pop>
 
 namespace inviwo {
 

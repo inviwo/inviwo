@@ -31,10 +31,13 @@
 #define IVW_INVIWOAPPLICATIONQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QApplication>
 #include <QMainWindow>
 #include <QFileSystemWatcher>
 #include <QEvent>
+#include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
 

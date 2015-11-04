@@ -33,7 +33,10 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 
 //QT includes
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QWidget>
+#include <warn/pop>
 
 //Property includes
 #include <inviwo/core/properties/buttonproperty.h>

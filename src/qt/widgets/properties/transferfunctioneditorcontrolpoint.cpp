@@ -32,6 +32,8 @@
 #include <inviwo/core/datastructures/transferfunctiondatapoint.h>
 #include <inviwo/qt/widgets/properties/transferfunctioneditor.h>
 #include <inviwo/qt/widgets/properties/transferfunctioneditorview.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QTextStream>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
@@ -39,6 +41,7 @@
 #include <QGraphicsView>
 #include <QPainter>
 #include <QKeyEvent>
+#include <warn/pop>
 
 namespace inviwo {
 

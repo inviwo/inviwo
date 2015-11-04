@@ -27,10 +27,13 @@
  * 
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsSceneHoverEvent>
 #include <QPainter>
 #include <QPainterPath>
+#include <warn/pop>
 
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/outport.h>

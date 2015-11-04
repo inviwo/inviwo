@@ -28,12 +28,14 @@
  *********************************************************************************/
 
 #include "inviwosplashscreen.h"
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QApplication>
 #include <QPainter>
 #include <QSplashScreen>
 #include <QTextStream>
 #include <QDesktopWidget>
+#include <warn/pop>
 
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>

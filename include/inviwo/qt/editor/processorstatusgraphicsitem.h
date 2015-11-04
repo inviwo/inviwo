@@ -34,8 +34,11 @@
 #include <inviwo/qt/editor/editorgrapicsitem.h>
 #include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/processors/activityindicator.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QEvent>
 #include <QRectF>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -30,10 +30,13 @@
 #include <inviwo/qt/editor/processorstatusgraphicsitem.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QPen>
 #include <QPainter>
 #include <QBrush>
 #include <QColor>
+#include <warn/pop>
 
 namespace inviwo {
 

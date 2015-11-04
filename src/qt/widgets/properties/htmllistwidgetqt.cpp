@@ -27,12 +27,15 @@
  * 
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QApplication>
 #include <QLayout>
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QMimeData>
+#include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processorfactoryobject.h>

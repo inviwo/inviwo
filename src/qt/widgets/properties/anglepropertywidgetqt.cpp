@@ -28,8 +28,11 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/properties/anglepropertywidgetqt.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QLabel>
 #include <QPainter>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -65,6 +65,8 @@
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/widgets/eventconverterqt.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QApplication>
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
@@ -73,6 +75,7 @@
 #include <QTimer>
 #include <QPainter>
 #include <QMimeData>
+#include <warn/pop>
 
 
 namespace inviwo {

@@ -29,10 +29,13 @@
 
 #include <inviwo/qt/widgets/properties/transferfunctioncontrolpointconnection.h>
 #include <inviwo/qt/widgets/properties/transferfunctioneditorcontrolpoint.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QPainterPathStroker>
 #include <QGraphicsScene>
 #include <QRectF>
 #include <QPainter>
+#include <warn/pop>
 
 namespace inviwo {
 

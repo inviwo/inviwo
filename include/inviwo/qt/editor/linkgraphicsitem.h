@@ -32,9 +32,12 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/editorgrapicsitem.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsLineItem>
 #include <QPainterPath>
 #include <QEvent>
+#include <warn/pop>
 
 namespace inviwo {
 
