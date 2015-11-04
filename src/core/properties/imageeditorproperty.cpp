@@ -61,13 +61,13 @@ ImageEditorProperty* ImageEditorProperty::clone() const {
 
 ImageEditorProperty::~ImageEditorProperty() {}
 
-void ImageLabel::serialize(IvwSerializer& s) const {
+void ImageLabel::serialize(Serializer& s) const {
     s.serialize("labelName", name_, true);
     s.serialize("topLeft", startPoint_);
     s.serialize("size", rectSize_);
 }
 
-void ImageLabel::deserialize(IvwDeserializer& d) {
+void ImageLabel::deserialize(Deserializer& d) {
     d.deserialize("labelName", name_, true);
     d.deserialize("topLeft", startPoint_);
     d.deserialize("size", rectSize_);
@@ -98,13 +98,13 @@ void ImageEditorProperty::clearLabels() {
     labels_.clear();
 }
 
-void ImageEditorProperty::serialize(IvwSerializer& s) const {
+void ImageEditorProperty::serialize(Serializer& s) const {
     FileProperty::serialize(s);
     s.serialize("Dimension", dimensions_);
     s.serialize("Labels", labels_, "Label");
 }
 
-void ImageEditorProperty::deserialize(IvwDeserializer& d) {
+void ImageEditorProperty::deserialize(Deserializer& d) {
     FileProperty::deserialize(d);
     d.deserialize("Dimension", dimensions_);
     d.deserialize("Labels", labels_, "Label");

@@ -229,7 +229,7 @@ bool Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) 
     return propagationEnded;
 }
 
-void Processor::serialize(IvwSerializer& s) const {
+void Processor::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("identifier", identifier_, true);
 
@@ -241,7 +241,7 @@ void Processor::serialize(IvwSerializer& s) const {
     MetaDataOwner::serialize(s);
 }
 
-void Processor::deserialize(IvwDeserializer& d) {
+void Processor::deserialize(Deserializer& d) {
     std::string identifier;
     d.deserialize("identifier", identifier, true);
     setIdentifier(identifier);  // Need to use setIdentifier to make sure we get a unique id.

@@ -47,11 +47,11 @@ namespace inviwo {
  *    public:
  *        MyProcessor(): Processor(), ProgressBarOwner() {};
  *        // Need to overload serialize/deseralize
- *        virtual void serialize(IvwSerializer& s) const {
+ *        virtual void serialize(Serializer& s) const {
  *           Processor::serialize(s);
  *           s.serialize("ProgressBar", getProgressBar());
  *        }
- *        virtual void deserialize(IvwDeserializer& d) {
+ *        virtual void deserialize(Deserializer& d) {
  *           Processor::deserialize(d);
  *           d.deserialize("ProgressBar", getProgressBar());
  *        }

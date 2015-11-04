@@ -58,12 +58,12 @@ InteractionEvent* InteractionEvent::clone() const {
 
 InteractionEvent::~InteractionEvent() {}
 
-void InteractionEvent::serialize(IvwSerializer& s) const {
+void InteractionEvent::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("modifiers", modifiers_);
 }
 
-void InteractionEvent::deserialize(IvwDeserializer& d) {
+void InteractionEvent::deserialize(Deserializer& d) {
     d.deserialize("modifiers", modifiers_);
 }
 

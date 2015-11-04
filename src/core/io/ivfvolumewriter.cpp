@@ -62,7 +62,7 @@ void IvfVolumeWriter::writeData(const Volume* volume, const std::string filePath
 
     std::string fileName = filesystem::getFileNameWithoutExtension(filePath);
     const VolumeRAM* vr = volume->getRepresentation<VolumeRAM>();
-    IvwSerializer s(filePath);
+    Serializer s(filePath);
     s.serialize("RawFile", fileName + ".raw");
     s.serialize("Format", vr->getDataFormatString());
     s.serialize("BasisAndOffset", volume->getModelMatrix());

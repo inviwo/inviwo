@@ -214,14 +214,14 @@ void TransferFunction::calcTransferValues() {
     invalidData_ = false;
 }
 
-void TransferFunction::serialize(IvwSerializer& s) const {
+void TransferFunction::serialize(Serializer& s) const {
     s.serialize("maskMin", maskMin_);
     s.serialize("maskMax", maskMax_);
     s.serialize("dataPoints", points_, "point");
     s.serialize("interpolationType_", static_cast<int>(interpolationType_));
 }
 
-void TransferFunction::deserialize(IvwDeserializer& d) {
+void TransferFunction::deserialize(Deserializer& d) {
     d.deserialize("maskMin", maskMin_);
     d.deserialize("maskMax", maskMax_);
     d.deserialize("dataPoints", points_, "point");

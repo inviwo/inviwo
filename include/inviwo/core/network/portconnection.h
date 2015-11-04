@@ -38,7 +38,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API PortConnection : public IvwSerializable {
+class IVW_CORE_API PortConnection : public Serializable {
 
 public:
     PortConnection();
@@ -53,8 +53,8 @@ public:
                 outport_->getProcessor()==processor);
     }
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
 private:
     Inport* inport_;

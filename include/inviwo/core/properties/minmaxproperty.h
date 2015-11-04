@@ -81,8 +81,8 @@ public:
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& s) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& s) override;
 
     static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
 
@@ -272,7 +272,7 @@ void MinMaxProperty<T>::setCurrentStateAsDefault() {
 }
 
 template <typename T>
-void MinMaxProperty<T>::serialize(IvwSerializer& s) const {
+void MinMaxProperty<T>::serialize(Serializer& s) const {
     TemplateProperty<range_type >::serialize(s);
     range_.serialize(s, this->serializationMode_);
     increment_.serialize(s, this->serializationMode_);
@@ -280,7 +280,7 @@ void MinMaxProperty<T>::serialize(IvwSerializer& s) const {
 }
 
 template <typename T>
-void MinMaxProperty<T>::deserialize(IvwDeserializer& d) {
+void MinMaxProperty<T>::deserialize(Deserializer& d) {
     range_.deserialize(d);
     increment_.deserialize(d);
     minSeparation_.deserialize(d);

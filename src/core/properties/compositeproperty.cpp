@@ -134,13 +134,13 @@ void CompositeProperty::resetToDefaultState() {
     Property::resetToDefaultState();
 }
 
-void CompositeProperty::serialize(IvwSerializer& s) const{
+void CompositeProperty::serialize(Serializer& s) const{
     Property::serialize(s);
     PropertyOwner::serialize(s);
     s.serialize("collapsed", collapsed_);
 }
 
-void CompositeProperty::deserialize(IvwDeserializer& d){
+void CompositeProperty::deserialize(Deserializer& d){
     Property::deserialize(d);
     PropertyOwner::deserialize(d);
     d.deserialize("collapsed", collapsed_);

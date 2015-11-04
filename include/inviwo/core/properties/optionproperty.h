@@ -82,7 +82,7 @@ template <typename T>
 class BaseTemplateOptionProperty : public BaseOptionProperty {
 public:
     template <typename U>
-    struct Option : public IvwSerializable {
+    struct Option : public Serializable {
         Option() {}
         Option(const std::string& id, const std::string& name, U value)
             : id_(id), name_(name), value_(value) {}
@@ -91,12 +91,12 @@ public:
         std::string name_;
         U value_;
 
-        virtual void serialize(IvwSerializer& s) const {
+        virtual void serialize(Serializer& s) const {
             s.serialize("id", id_);
             s.serialize("name", name_);
             s.serialize("value", value_);
         }
-        virtual void deserialize(IvwDeserializer& d) {
+        virtual void deserialize(Deserializer& d) {
             d.deserialize("id", id_);
             d.deserialize("name", name_);
             d.deserialize("value", value_);
@@ -194,8 +194,8 @@ public:
     virtual void resetToDefaultState();
 
     virtual std::string getClassIdentifierForWidget() const;
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
 protected:
     size_t selectedIndex_;
@@ -554,7 +554,7 @@ void inviwo::BaseTemplateOptionProperty<T>::setCurrentStateAsDefault() {
 }
 
 template <typename T>
-void BaseTemplateOptionProperty<T>::serialize(IvwSerializer& s) const {
+void BaseTemplateOptionProperty<T>::serialize(Serializer& s) const {
     BaseOptionProperty::serialize(s);
     if ((this->serializationMode_ == PropertySerializationMode::ALL ||
          options_ != defaultOptions_) &&
@@ -569,7 +569,7 @@ void BaseTemplateOptionProperty<T>::serialize(IvwSerializer& s) const {
 }
 
 template <typename T>
-void BaseTemplateOptionProperty<T>::deserialize(IvwDeserializer& d) {
+void BaseTemplateOptionProperty<T>::deserialize(Deserializer& d) {
     BaseOptionProperty::deserialize(d);
 
     d.deserialize("options", options_, "option");

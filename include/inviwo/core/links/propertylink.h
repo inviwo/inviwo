@@ -37,7 +37,7 @@ namespace inviwo {
 
 class Property;
 
-class IVW_CORE_API PropertyLink : public IvwSerializable {
+class IVW_CORE_API PropertyLink : public Serializable {
 public:
     PropertyLink();
     PropertyLink(Property* srcProperty, Property* dstProperty);
@@ -45,8 +45,8 @@ public:
 
     Property* getSourceProperty() const { return srcProperty_; }
     Property* getDestinationProperty() const { return dstProperty_; }
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
     friend bool IVW_CORE_API operator==(const PropertyLink& lhs, const PropertyLink& rhs);
     friend bool IVW_CORE_API operator<(const PropertyLink& lhs, const PropertyLink& rhs);

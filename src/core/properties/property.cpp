@@ -38,7 +38,7 @@ namespace inviwo {
  Property::Property(const std::string& identifier, const std::string& displayName,
                    InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : PropertyObservable()
-    , IvwSerializable()
+    , Serializable()
     , MetaDataOwner()
     , serializationMode_(PropertySerializationMode::DEFAULT)
     , identifier_(identifier)
@@ -54,7 +54,7 @@ namespace inviwo {
 
 Property::Property(const Property& rhs)
     : PropertyObservable(rhs)
-    , IvwSerializable(rhs)
+    , Serializable(rhs)
     , MetaDataOwner(rhs)
     , serializationMode_(rhs.serializationMode_)
     , identifier_(rhs.identifier_)
@@ -72,7 +72,7 @@ Property::Property(const Property& rhs)
 Property& Property::operator=(const Property& that) {
     if (this != &that) {
         PropertyObservable::operator=(that);
-        IvwSerializable::operator=(that);
+        Serializable::operator=(that);
         MetaDataOwner::operator=(that);
         serializationMode_ = that.serializationMode_;
         identifier_ = that.identifier_;
@@ -211,7 +211,7 @@ bool Property::isPropertyModified() const {
     return propertyModified_;
 }
 
-void Property::serialize(IvwSerializer& s) const {
+void Property::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("identifier", identifier_, true);
     if (serializationMode_ == PropertySerializationMode::ALL || !displayName_.isDefault()) {
@@ -225,7 +225,7 @@ void Property::serialize(IvwSerializer& s) const {
     MetaDataOwner::serialize(s);
 }
 
-void Property::deserialize(IvwDeserializer& d) {
+void Property::deserialize(Deserializer& d) {
     std::string className;
     d.deserialize("type", className, true);
     d.deserialize("identifier", identifier_, true);

@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
     try
     {
         if (!workspace.empty()) {
-            IvwDeserializer xmlDeserializer(workspace);
+            Deserializer xmlDeserializer(workspace);
             inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
             std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
 

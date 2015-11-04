@@ -96,12 +96,12 @@ std::string FileExtension::toString() const {
     return ss.str();
 }
 
-void FileExtension::serialize(IvwSerializer& s) const {
+void FileExtension::serialize(Serializer& s) const {
     s.serialize("extension", extension_);
     s.serialize("description", description_);
 }
 
-void FileExtension::deserialize(IvwDeserializer& d) {
+void FileExtension::deserialize(Deserializer& d) {
     d.deserialize("extension", extension_);
     d.deserialize("description", description_);
 }

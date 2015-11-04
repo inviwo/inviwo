@@ -71,8 +71,8 @@ public:
     virtual FileProperty* clone() const override;
     virtual ~FileProperty();
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     virtual void addNameFilter(std::string);
     virtual void addNameFilter(FileExtension);

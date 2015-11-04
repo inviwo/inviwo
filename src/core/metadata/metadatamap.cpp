@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/metadata/metadatamap.h>
-#include <inviwo/core/io/serialization/ivwserializable.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
 namespace inviwo {
 
@@ -113,11 +113,11 @@ MetaDataMap& MetaDataMap::operator=(const MetaDataMap& map) {
     return *this;
 }
 
-void MetaDataMap::serialize(IvwSerializer& s) const {
+void MetaDataMap::serialize(Serializer& s) const {
     if (!metaData_.empty()) s.serialize("MetaDataMap", metaData_, "MetaDataItem");
 }
 
-void MetaDataMap::deserialize(IvwDeserializer& d) {
+void MetaDataMap::deserialize(Deserializer& d) {
     d.deserialize("MetaDataMap", metaData_, "MetaDataItem");
 }
 

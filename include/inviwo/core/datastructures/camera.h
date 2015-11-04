@@ -43,7 +43,7 @@ namespace inviwo {
  * @see PerspectiveCamera
  * @see OrthographicCamera
  */
-class IVW_CORE_API Camera : public IvwSerializable {
+class IVW_CORE_API Camera : public Serializable {
 public:
     /**
      * \brief Default parameters creates a right handed coordinate system
@@ -121,8 +121,8 @@ public:
     */
     vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
 
@@ -175,8 +175,8 @@ public:
     float getAspectRatio() const;
     void setAspectRatio(float val);
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual mat4 calculateProjectionMatrix() const override;
@@ -220,8 +220,8 @@ public:
      */
     void setFrustum(vec4 val);
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual mat4 calculateProjectionMatrix() const override;

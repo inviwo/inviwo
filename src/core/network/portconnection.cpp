@@ -38,12 +38,12 @@ PortConnection::PortConnection(Outport* outport, Inport* inport)
 
 PortConnection::~PortConnection() {}
 
-void PortConnection::serialize(IvwSerializer& s) const {
+void PortConnection::serialize(Serializer& s) const {
     s.serialize("OutPort", outport_);
     s.serialize("InPort", inport_);
 }
 
-void PortConnection::deserialize(IvwDeserializer& d) {
+void PortConnection::deserialize(Deserializer& d) {
     struct SError {
         SError() : error(false), data(){};
         bool error;

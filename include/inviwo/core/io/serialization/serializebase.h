@@ -36,7 +36,7 @@
 #pragma warning(pop)
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/ivwserializeconstants.h>
+#include <inviwo/core/io/serialization/serializeconstants.h>
 #include <inviwo/core/io/serialization/serializationexception.h>
 #include <inviwo/core/util/factory.h>
 #include <map>
@@ -74,12 +74,12 @@ private:
     std::string identifier_;
 };
 
-class IvwSerializable;
+class Serializable;
 
-class IVW_CORE_API IvwSerializeBase {
+class IVW_CORE_API SerializeBase {
 public:
     /**
-     * \brief Base class for IvwSerializer and IvwDeserializer.
+     * \brief Base class for Serializer and Deserializer.
      *
      * This class consists of features that are common to both serializer
      * and de-serializer. Some of them are reference data manager,
@@ -87,10 +87,10 @@ public:
      *
      * @param allowReference disables or enables reference management schemes.
      */
-    IvwSerializeBase(bool allowReference=true);
+    SerializeBase(bool allowReference=true);
 
     /**
-     * \brief Base class for IvwSerializer and IvwDeserializer.
+     * \brief Base class for Serializer and Deserializer.
      *
      * This class consists of features that are common to both serializer
      * and de-serializer. Some of them are reference data manager,
@@ -99,9 +99,9 @@ public:
      * @param s object of similar type.
      * @param allowReference disables or enables reference management schemes.
      */
-    IvwSerializeBase(IvwSerializeBase& s, bool allowReference=true);
+    SerializeBase(SerializeBase& s, bool allowReference=true);
     /**
-     * \brief Base class for IvwSerializer and IvwDeserializer.
+     * \brief Base class for Serializer and Deserializer.
      *
      * This class consists of features that are common to both serializer
      * and de-serializer. Some of them are reference data manager,
@@ -110,9 +110,9 @@ public:
      * @param fileName full path to xml file (for reading or writing).
      * @param allowReference disables or enables reference management schemes.
      */
-    IvwSerializeBase(std::string fileName, bool allowReference=true);
+    SerializeBase(std::string fileName, bool allowReference=true);
     /**
-     * \brief Base class for IvwSerializer and IvwDeserializer.
+     * \brief Base class for Serializer and Deserializer.
      *
      * This class consists of features that are common to both serializer
      * and de-serializer. Some of them are reference data manager,
@@ -122,12 +122,12 @@ public:
      * @param path A path that will be used to decode the location of data during deserialization. 
      * @param allowReference disables or enables reference management schemes.
      */
-    IvwSerializeBase(std::istream& stream, const std::string& path, bool allowReference=true);
+    SerializeBase(std::istream& stream, const std::string& path, bool allowReference=true);
     
     /**
      * \brief Destructor
      */
-    virtual ~IvwSerializeBase();
+    virtual ~SerializeBase();
     
     /**
      * \brief gets the xml file name.
@@ -177,7 +177,7 @@ public:
          * @param serializer reference to serializer or deserializer
          * @param node //Parent (Ticpp Node) element.
          */
-        NodeSwitch(IvwSerializeBase& serializer, TxElement* node, bool retrieveChild = true);
+        NodeSwitch(SerializeBase& serializer, TxElement* node, bool retrieveChild = true);
         
         
         /**
@@ -186,7 +186,7 @@ public:
          * @param serializer reference to serializer or deserializer
          * @param key the child to switch to.
          */
-        NodeSwitch(IvwSerializeBase& serializer, const std::string& key, bool retrieveChild = true);
+        NodeSwitch(SerializeBase& serializer, const std::string& key, bool retrieveChild = true);
         
         /**
          * \brief Destructor
@@ -194,7 +194,7 @@ public:
         ~NodeSwitch();
 
     private:
-        IvwSerializeBase& serializer_;  //reference to serializer or deserializer
+        SerializeBase& serializer_;  //reference to serializer or deserializer
         TxElement* storedNode_; //Parent (Ticpp Node) element.
         bool storedRetrieveChild_;
     };
@@ -204,9 +204,9 @@ public:
         bool isPointer_; //Used to differentiate pointer and object.
     };
 
-    typedef std::pair<const void*, IvwSerializeBase::ReferenceData> RefDataPair;
+    typedef std::pair<const void*, SerializeBase::ReferenceData> RefDataPair;
     typedef std::multimap<const void*,ReferenceData> RefMap;
-    typedef std::vector<IvwSerializeBase::ReferenceData> RefDataList;
+    typedef std::vector<SerializeBase::ReferenceData> RefDataList;
 
     class IVW_CORE_API ReferenceDataContainer {
     public:
@@ -240,7 +240,7 @@ protected:
 };
 
 template <typename T>
-T* IvwSerializeBase::getRegisteredType(const std::string& className) {
+T* SerializeBase::getRegisteredType(const std::string& className) {
     for (auto base : registeredFactories_) {
         if (auto factory = dynamic_cast<Factory<T>*>(base)) {
             if (auto data = factory->create(className)) return data.release();
@@ -250,7 +250,7 @@ T* IvwSerializeBase::getRegisteredType(const std::string& className) {
 }
 
 template <typename T>
-T* IvwSerializeBase::getNonRegisteredType() {
+T* SerializeBase::getNonRegisteredType() {
     return util::defaultConstructType<T>();
 }
 

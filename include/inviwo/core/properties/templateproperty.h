@@ -65,8 +65,8 @@ public:
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     ValueWrapper<T> value_;
@@ -174,13 +174,13 @@ void inviwo::TemplateProperty<T>::set(const TemplateProperty<T>* srcProperty) {
 }
 
 template <typename T>
-void TemplateProperty<T>::serialize(IvwSerializer& s) const {
+void TemplateProperty<T>::serialize(Serializer& s) const {
     Property::serialize(s);
     value_.serialize(s, serializationMode_);
 }
 
 template <typename T>
-void TemplateProperty<T>::deserialize(IvwDeserializer& d) {
+void TemplateProperty<T>::deserialize(Deserializer& d) {
     Property::deserialize(d);
     value_.deserialize(d);
     propertyModified();

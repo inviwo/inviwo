@@ -155,7 +155,7 @@ IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostrea
                                       c->getDestinationProperty()};
     });
 
-    IvwSerializer xmlSerializer(refPath);
+    Serializer xmlSerializer(refPath);
     xmlSerializer.serialize("Processors", selected, "Processor");
     xmlSerializer.serialize("Connections", connections, "Connection");
     xmlSerializer.serialize("PartialInConnections", partialIn, "Connection");
@@ -170,7 +170,7 @@ IVW_CORE_API std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* 
                                            const std::string& refPath) {
     std::vector<Processor*> addedProcessors;
     try {
-        IvwDeserializer xmlDeserializer(is, refPath);
+        Deserializer xmlDeserializer(is, refPath);
         std::vector<std::unique_ptr<Processor>> processors;
         std::vector<std::unique_ptr<PortConnection>> connections;
         std::vector<std::unique_ptr<detail::PartialConnection>> partialIn;

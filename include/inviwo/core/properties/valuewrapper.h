@@ -62,12 +62,12 @@ struct ValueWrapper {
     void reset() { value = defaultValue; }
     void setAsDefault() { defaultValue = value; }
 
-    void serialize(IvwSerializer& s,
+    void serialize(Serializer& s,
                    PropertySerializationMode mode = PropertySerializationMode::DEFAULT) const {
         if (mode == PropertySerializationMode::ALL || !isDefault()) s.serialize(name, value);
     }
 
-    void deserialize(IvwDeserializer& d) { d.deserialize(name, value); }
+    void deserialize(Deserializer& d) { d.deserialize(name, value); }
 
     T value;
     T defaultValue;

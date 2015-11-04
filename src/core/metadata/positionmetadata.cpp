@@ -73,12 +73,12 @@ void PositionMetaData::setY(const int& y) {
     set(value);
 }
 
-void PositionMetaData::serialize(IvwSerializer& s) const {
+void PositionMetaData::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("position", value_);
 }
 
-void PositionMetaData::deserialize(IvwDeserializer& d) {
+void PositionMetaData::deserialize(Deserializer& d) {
     std::string className;
     d.deserialize("type", className, true);
     d.deserialize("position", value_);

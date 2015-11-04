@@ -31,8 +31,8 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
-#include <inviwo/core/io/serialization/ivwdeserializer.h>
-#include <inviwo/core/io/serialization/ivwserializer.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/io/serialization/serializer.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/metadata/processorwidgetmetadata.h>
 #include <inviwo/core/ports/meshport.h>
@@ -445,7 +445,7 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
     ProcessorNetwork* network = InviwoApplication::getPtr()->getProcessorNetwork();
     NetworkLock lock;
 
-    IvwDeserializer xmlDeserializer(fileName);
+    Deserializer xmlDeserializer(fileName);
     ProcessorNetwork* processorNetwork = new ProcessorNetwork();
     processorNetwork->deserialize(xmlDeserializer);
 
@@ -1169,7 +1169,7 @@ void NetworkEditor::clearNetwork() {
 
 bool NetworkEditor::saveNetwork(std::string fileName) {
     try {
-        IvwSerializer xmlSerializer(fileName);
+        Serializer xmlSerializer(fileName);
         InviwoApplication::getPtr()->getProcessorNetwork()->serialize(xmlSerializer);
         InviwoApplication::getPtr()->getProcessorNetwork()->setModified(false);
         xmlSerializer.writeFile();
@@ -1186,7 +1186,7 @@ bool NetworkEditor::saveNetwork(std::string fileName) {
 
 bool NetworkEditor::saveNetwork(std::ostream stream) {
     try {
-        IvwSerializer xmlSerializer(filename_);
+        Serializer xmlSerializer(filename_);
         InviwoApplication::getPtr()->getProcessorNetwork()->serialize(xmlSerializer);
         InviwoApplication::getPtr()->getProcessorNetwork()->setModified(false);
         xmlSerializer.writeFile(stream);
@@ -1222,7 +1222,7 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
 
         // Deserialize processor network
         try {
-            IvwDeserializer xmlDeserializer(stream, path);
+            Deserializer xmlDeserializer(stream, path);
             InviwoApplication::getPtr()->getProcessorNetwork()->deserialize(xmlDeserializer);
         } catch (const AbortException& exception) {
             util::log(exception.getContext(),

@@ -197,7 +197,7 @@ bool util::xmlCopyMatchingCompositeProperty(TxElement* node, const CompositeProp
     return false;
 }
 
-void util::renamePort(IvwDeserializer& d, std::initializer_list<std::pair<const Port*, std::string>> rules) {
+void util::renamePort(Deserializer& d, std::initializer_list<std::pair<const Port*, std::string>> rules) {
     NodeVersionConverter vc([&rules](TxElement* node) {
         for (auto rule : rules) {
             TxElement* elem = nullptr;
@@ -215,7 +215,7 @@ void util::renamePort(IvwDeserializer& d, std::initializer_list<std::pair<const 
     d.convertVersion(&vc);
 }
 
-void util::renameProperty(IvwDeserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules) {
+void util::renameProperty(Deserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules) {
     NodeVersionConverter vc([&rules](TxElement* node) {
         for (auto rule : rules) {
             TxElement* p = util::xmlGetElement(node, "Properties/Property&type=" +

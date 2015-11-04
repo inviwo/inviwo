@@ -39,12 +39,12 @@ PropertyLink::~PropertyLink() {}
 PropertyLink::PropertyLink(Property* srcProperty, Property* destProperty)
     : srcProperty_(srcProperty), dstProperty_(destProperty) {}
 
-void PropertyLink::serialize(IvwSerializer& s) const {
+void PropertyLink::serialize(Serializer& s) const {
     s.serialize("SourceProperty", srcProperty_);
     s.serialize("DestinationProperty", dstProperty_);
 }
 
-void PropertyLink::deserialize(IvwDeserializer& d) {
+void PropertyLink::deserialize(Deserializer& d) {
     struct LinkError {
         LinkError() : error(false), data(){};
         bool error;

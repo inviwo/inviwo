@@ -52,7 +52,7 @@ public:
 };
 
 class IVW_CORE_API TransferFunctionDataPoint : public TransferFunctionPointObservable,
-                                               public IvwSerializable {
+                                               public Serializable {
 public:
     TransferFunctionDataPoint(const vec2& pos = vec2(0), const vec4& rgba = vec4(0));
     TransferFunctionDataPoint(const TransferFunctionDataPoint& rhs);
@@ -71,8 +71,8 @@ public:
     void setNotificationsEnabled(bool enabled) { notify_ = enabled; }
     void notifyTransferFunctionPointObservers() const;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
     friend IVW_CORE_API bool operator==(const TransferFunctionDataPoint& lhs,
                            const TransferFunctionDataPoint& rhs);

@@ -72,8 +72,8 @@ public:
     template<typename T>
     bool hasMetaData(const std::string &key) const;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
 protected:
     MetaDataMap* metaData_;

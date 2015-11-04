@@ -73,7 +73,7 @@ PyObject* py_saveTransferFunction(PyObject* /*self*/, PyObject* args) {
     }
 
     //*
-    IvwSerializer serializer(filename);
+    Serializer serializer(filename);
     tf->serialize(serializer);
     serializer.writeFile();
     //*/
@@ -120,7 +120,7 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
     }
 
     //*
-    IvwDeserializer deserializer(filename);
+    Deserializer deserializer(filename);
     tf->deserialize(deserializer);
     //*/
     Py_RETURN_NONE;

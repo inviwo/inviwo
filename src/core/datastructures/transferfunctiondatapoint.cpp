@@ -94,12 +94,12 @@ void TransferFunctionDataPoint::notifyTransferFunctionPointObservers() const {
     }
 }
 
-void TransferFunctionDataPoint::serialize(IvwSerializer& s) const {
+void TransferFunctionDataPoint::serialize(Serializer& s) const {
     s.serialize("pos", pos_);
     s.serialize("rgba", rgba_);
 }
 
-void TransferFunctionDataPoint::deserialize(IvwDeserializer& d) {
+void TransferFunctionDataPoint::deserialize(Deserializer& d) {
     d.deserialize("pos", pos_);
     d.deserialize("rgba", rgba_);
 }

@@ -78,8 +78,8 @@ public:
     virtual const Processor* getProcessor() const override;
     virtual std::vector<std::string> getPath() const override;
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     bool collapsed_;

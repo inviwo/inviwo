@@ -42,47 +42,47 @@ namespace util {
 
 namespace detail {
 
-struct PartialConnection : public IvwSerializable {
+struct PartialConnection : public Serializable {
     PartialConnection() {}
     PartialConnection(std::string path, Inport* inport) : outportPath_(path), inport_(inport) {}
     std::string outportPath_ = "";
     Inport* inport_ = nullptr;
 
-    virtual void serialize(IvwSerializer& s) const override {
+    virtual void serialize(Serializer& s) const override {
         s.serialize("OutPortPath", outportPath_);
         s.serialize("InPort", inport_);
     }
-    virtual void deserialize(IvwDeserializer& d) override {
+    virtual void deserialize(Deserializer& d) override {
         d.deserialize("OutPortPath", outportPath_);
         d.deserialize("InPort", inport_);
     }
 };
-struct PartialSrcLink : public IvwSerializable {
+struct PartialSrcLink : public Serializable {
     PartialSrcLink() {}
     PartialSrcLink(Property* src, std::string path) : src_(src), dstPath_(path) {}
     Property* src_ = nullptr;
     std::string dstPath_ = "";
 
-    virtual void serialize(IvwSerializer& s) const override {
+    virtual void serialize(Serializer& s) const override {
         s.serialize("SourceProperty", src_);
         s.serialize("DestinationPropertyPath", dstPath_);
     }
-    virtual void deserialize(IvwDeserializer& d) override {
+    virtual void deserialize(Deserializer& d) override {
         d.deserialize("SourceProperty", src_);
         d.deserialize("DestinationPropertyPath", dstPath_);
     }
 };
-struct PartialDstLink : public IvwSerializable {
+struct PartialDstLink : public Serializable {
     PartialDstLink() {}
     PartialDstLink(std::string path, Property* dst) : srcPath_(path), dst_(dst) {}
     std::string srcPath_ = "";
     Property* dst_ = nullptr;
 
-    virtual void serialize(IvwSerializer& s) const override {
+    virtual void serialize(Serializer& s) const override {
         s.serialize("SourcePropertyPath", srcPath_);
         s.serialize("DestinationProperty", dst_);
     }
-    virtual void deserialize(IvwDeserializer& d) override {
+    virtual void deserialize(Deserializer& d) override {
         d.deserialize("SourcePropertyPath", srcPath_);
         d.deserialize("DestinationProperty", dst_);
     }

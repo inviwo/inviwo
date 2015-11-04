@@ -29,7 +29,7 @@
 
 #include "volumeraycaster.h"
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/io/serialization/ivwserialization.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <modules/opengl/volume/volumegl.h>
@@ -181,7 +181,7 @@ void VolumeRaycaster::toggleShading(Event*) {
 }
 
 // override to do member renaming.
-void VolumeRaycaster::deserialize(IvwDeserializer& d) {
+void VolumeRaycaster::deserialize(Deserializer& d) {
     util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
     Processor::deserialize(d);
 }

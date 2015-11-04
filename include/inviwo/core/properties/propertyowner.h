@@ -44,7 +44,7 @@ class EventProperty;
 class CompositeProperty;
 
 class IVW_CORE_API PropertyOwner : public PropertyOwnerObservable,
-                                   public IvwSerializable,
+                                   public Serializable,
                                    public EventListener {
 public:
     using iterator = std::vector<Property*>::iterator;
@@ -91,8 +91,8 @@ public:
     virtual Processor* getProcessor();
     virtual const Processor* getProcessor() const;
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     void setAllPropertiesCurrentStateAsDefault();
     void resetAllPoperties();

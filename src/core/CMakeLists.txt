@@ -99,12 +99,12 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumeramloader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializationerrorhandler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwdeserializer.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwserializable.h  
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwserialization.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwserializebase.h    
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwserializeconstants.h    
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ivwserializer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h  
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serialization.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializebase.h    
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializeconstants.h    
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializationexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ticpp.h
@@ -339,10 +339,10 @@ set(SOURCE_FILES
     io/rawvolumeramloader.cpp
     io/rawvolumereader.cpp
     io/serialization/deserializationerrorhandler.cpp
-    io/serialization/ivwdeserializer.cpp
-    io/serialization/ivwserializebase.cpp
-    io/serialization/ivwserializeconstants.cpp
-    io/serialization/ivwserializer.cpp
+    io/serialization/deserializer.cpp
+    io/serialization/serializebase.cpp
+    io/serialization/serializeconstants.cpp
+    io/serialization/serializer.cpp
     io/serialization/nodedebugger.cpp
     io/serialization/serializationexception.cpp
     io/serialization/versionconverter.cpp

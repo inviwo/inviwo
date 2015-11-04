@@ -32,11 +32,11 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
-#include <inviwo/core/io/serialization/ivwserializable.h>
+#include <inviwo/core/io/serialization/serializable.h>
 
 namespace inviwo {
 
-class IVW_CORE_API InteractionHandler : public EventListener, public IvwSerializable {
+class IVW_CORE_API InteractionHandler : public EventListener, public Serializable {
 
 public:
     InteractionHandler();
@@ -44,8 +44,8 @@ public:
 
     virtual std::string getClassIdentifier() const { return "undefined"; }
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 };
 
 } // namespace

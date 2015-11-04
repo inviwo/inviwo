@@ -114,14 +114,14 @@ void MouseEvent::modify(ivec2 newPosition, uvec2 newCanvasSize) {
     canvasSize_ = newCanvasSize;
 };
 
-void MouseEvent::serialize(IvwSerializer& s) const {
+void MouseEvent::serialize(Serializer& s) const {
     InteractionEvent::serialize(s);
     s.serialize("button", button_);
     s.serialize("state", state_);
     s.serialize("wheelOrientation", wheelOrientation_);
 }
 
-void MouseEvent::deserialize(IvwDeserializer& d) {
+void MouseEvent::deserialize(Deserializer& d) {
     InteractionEvent::deserialize(d);
     d.deserialize("button", button_);
     d.deserialize("state", state_);

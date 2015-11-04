@@ -30,7 +30,7 @@
 #ifndef IVW_SERIALIZER_H
 #define IVW_SERIALIZER_H
 
-#include <inviwo/core/io/serialization/ivwserializebase.h>
+#include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -39,9 +39,9 @@
 #include <list>
 namespace inviwo {
 
-class IvwSerializable;
+class Serializable;
 
-class IVW_CORE_API IvwSerializer : public IvwSerializeBase {
+class IVW_CORE_API Serializer : public SerializeBase {
 public:
     /**
      * Copies parameters from other serializer.
@@ -50,7 +50,7 @@ public:
      * @param allowReference disables or enables reference management schemes.
      * @throws SerializationException
      */
-    IvwSerializer(IvwSerializer& s, bool allowReference = true);
+    Serializer(Serializer& s, bool allowReference = true);
     /**
      * \brief Initializes serializer with a file name that will be used to set relative paths to
      *data.
@@ -60,9 +60,9 @@ public:
      * @param allowReference disables or enables reference management schemes.
      * @throws SerializationException
      */
-    IvwSerializer(const std::string& fileName, bool allowReference = true);
+    Serializer(const std::string& fileName, bool allowReference = true);
 
-    virtual ~IvwSerializer();
+    virtual ~Serializer();
 
     /**
      * \brief Writes serialized data to the file specified by the currently set file name.
@@ -118,7 +118,7 @@ public:
     void serialize(const std::string& key, const Mat& data);
 
     // serializable classes
-    void serialize(const std::string& key, const IvwSerializable& sObj);
+    void serialize(const std::string& key, const Serializable& sObj);
 
     // pointers to something of the above.
     template <class T>
@@ -140,7 +140,7 @@ private:
 };
 
 template <typename T>
-void IvwSerializer::serialize(const std::string& key, const std::vector<T>& vector,
+void Serializer::serialize(const std::string& key, const std::vector<T>& vector,
                               const std::string& itemKey) {
     if (vector.empty()) return;
 
@@ -153,7 +153,7 @@ void IvwSerializer::serialize(const std::string& key, const std::vector<T>& vect
 }
 
 template <typename T>
-void IvwSerializer::serialize(const std::string& key, const std::list<T>& container,
+void Serializer::serialize(const std::string& key, const std::list<T>& container,
                               const std::string& itemKey) {
     if (container.empty()) return;
 
@@ -166,7 +166,7 @@ void IvwSerializer::serialize(const std::string& key, const std::list<T>& contai
 }
 
 template <typename K, typename V, typename C, typename A>
-void IvwSerializer::serialize(const std::string& key, const std::map<K, V, C, A>& map,
+void Serializer::serialize(const std::string& key, const std::map<K, V, C, A>& map,
                               const std::string& itemKey) {
     if (!isPrimitiveType(typeid(K)))
         throw SerializationException("Error: map key has to be a primitive type", IvwContext);
@@ -179,13 +179,13 @@ void IvwSerializer::serialize(const std::string& key, const std::map<K, V, C, A>
 
     for (typename std::map<K, V, C, A>::const_iterator it = map.begin(); it != map.end(); ++it) {
         serialize(itemKey, it->second);
-        rootElement_->LastChild()->ToElement()->SetAttribute(IvwSerializeConstants::KEY_ATTRIBUTE,
+        rootElement_->LastChild()->ToElement()->SetAttribute(SerializeConstants::KeyAttribute,
                                                              it->first);
     }
 }
 
 template <class T>
-inline void IvwSerializer::serialize(const std::string& key, const T* const& data) {
+inline void Serializer::serialize(const std::string& key, const T* const& data) {
     if (!allowRef_)
         serialize(key, *data);
     else {
@@ -206,19 +206,19 @@ template <typename T,
           typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value ||
                                       util::is_string<T>::value,
                                   int>::type>
-void IvwSerializer::serialize(const std::string& key, const T& data, const bool asAttribute) {
+void Serializer::serialize(const std::string& key, const T& data, const bool asAttribute) {
     if (asAttribute) {
         rootElement_->SetAttribute(key, data);
     } else {
         auto node = util::make_unique<TxElement>(key);
         rootElement_->LinkEndChild(node.get());
-        node->SetAttribute(IvwSerializeConstants::CONTENT_ATTRIBUTE, data);
+        node->SetAttribute(SerializeConstants::ContentAttribute, data);
     }
 }
 
 // enum types
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
-void IvwSerializer::serialize(const std::string& key, const T& data, const bool asAttribute) {
+void Serializer::serialize(const std::string& key, const T& data, const bool asAttribute) {
     using ET = typename std::underlying_type<T>::type;
     const ET tmpdata{static_cast<const ET>(data)};
     serialize(key, tmpdata, asAttribute);
@@ -226,17 +226,17 @@ void IvwSerializer::serialize(const std::string& key, const T& data, const bool 
 
 // glm vector types
 template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
-void IvwSerializer::serialize(const std::string& key, const Vec& data) {
+void Serializer::serialize(const std::string& key, const Vec& data) {
     auto node = util::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
     for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
-        node->SetAttribute(IvwSerializeConstants::VECTOR_ATTRIBUTES[i], data[i]);
+        node->SetAttribute(SerializeConstants::VectorAttributes[i], data[i]);
     }
 }
 
 // glm matrix types
 template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type>
-void IvwSerializer::serialize(const std::string& key, const Mat& data) {
+void Serializer::serialize(const std::string& key, const Mat& data) {
     auto node = util::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(node.get());
 

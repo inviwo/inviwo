@@ -41,11 +41,11 @@ InviwoSetupInfo::ModuleSetupInfo::ModuleSetupInfo(const InviwoModule* module) {
     }
 }
 
-void InviwoSetupInfo::ModuleSetupInfo::serialize(IvwSerializer& s) const {
+void InviwoSetupInfo::ModuleSetupInfo::serialize(Serializer& s) const {
     s.serialize("name", name_, true);
     s.serialize("Processors", processors_, "Processor");
 }
-void InviwoSetupInfo::ModuleSetupInfo::deserialize(IvwDeserializer& d) {
+void InviwoSetupInfo::ModuleSetupInfo::deserialize(Deserializer& d) {
     d.deserialize("name", name_, true);
     d.deserialize("Processors", processors_, "Processor");
 }
@@ -57,10 +57,10 @@ InviwoSetupInfo::InviwoSetupInfo(const InviwoApplication* app) {
     }
 }
 
-void InviwoSetupInfo::serialize(IvwSerializer& s) const {
+void InviwoSetupInfo::serialize(Serializer& s) const {
     s.serialize("Modules", modules_, "Module");
 }
-void InviwoSetupInfo::deserialize(IvwDeserializer& d) {
+void InviwoSetupInfo::deserialize(Deserializer& d) {
     d.deserialize("Modules", modules_, "Module");
 }
 

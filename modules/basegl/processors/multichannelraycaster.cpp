@@ -144,7 +144,7 @@ void MultichannelRaycaster::process() {
     LGL_ERROR;
 }
 
-void MultichannelRaycaster::deserialize(IvwDeserializer& d) {
+void MultichannelRaycaster::deserialize(Deserializer& d) {
     util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
 
     NodeVersionConverter vc([](TxElement* node) {      

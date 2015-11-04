@@ -57,7 +57,7 @@ struct port_traits {
  * \brief A abstract base class for all ports.
  * A port can be connected to other ports and is owned by a processor.
  */
-class IVW_CORE_API Port : public IvwSerializable {
+class IVW_CORE_API Port : public Serializable {
     friend class Processor;
 
 public:
@@ -77,8 +77,8 @@ public:
     virtual bool isConnected() const = 0;
     virtual bool isReady() const = 0;
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     /**

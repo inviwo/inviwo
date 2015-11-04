@@ -86,9 +86,9 @@ GestureEvent::~GestureEvent() {}
 
 void GestureEvent::modify(vec2 posNorm) { screenPosNorm_ = posNorm; }
 
-void GestureEvent::serialize(IvwSerializer& s) const { InteractionEvent::serialize(s); }
+void GestureEvent::serialize(Serializer& s) const { InteractionEvent::serialize(s); }
 
-void GestureEvent::deserialize(IvwDeserializer& d) { InteractionEvent::deserialize(d); }
+void GestureEvent::deserialize(Deserializer& d) { InteractionEvent::deserialize(d); }
 
 bool GestureEvent::matching(const Event* aEvent) const {
     const GestureEvent* event = dynamic_cast<const GestureEvent*>(aEvent);

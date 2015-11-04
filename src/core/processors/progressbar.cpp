@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/processors/progressbar.h>
-#include <inviwo/core/io/serialization/ivwserialization.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
@@ -86,9 +86,9 @@ void ProgressBar::hide() {
 
 bool ProgressBar::isVisible() const { return visible_; }
 
-void ProgressBar::serialize(IvwSerializer& s) const { s.serialize("visible", visible_); }
+void ProgressBar::serialize(Serializer& s) const { s.serialize("visible", visible_); }
 
-void ProgressBar::deserialize(IvwDeserializer& d) {
+void ProgressBar::deserialize(Deserializer& d) {
     d.deserialize("visible", visible_);
     notifyVisibilityChanged();
 }

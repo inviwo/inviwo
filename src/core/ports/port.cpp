@@ -44,11 +44,11 @@ void Port::setIdentifier(const std::string& name) { identifier_ = name; }
 
 void Port::setProcessor(Processor* processor) { processor_ = processor; }
 
-void Port::serialize(IvwSerializer& s) const {
+void Port::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("identifier", identifier_, true);
 }
 
-void Port::deserialize(IvwDeserializer& d) { d.deserialize("identifier", identifier_, true); }
+void Port::deserialize(Deserializer& d) { d.deserialize("identifier", identifier_, true); }
 
 }  // namespace

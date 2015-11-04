@@ -62,7 +62,7 @@ public:
     VolumeSource();
     virtual ~VolumeSource() = default;
 
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void deserialize(Deserializer& d) override;
     virtual void process() override;
 
 private:

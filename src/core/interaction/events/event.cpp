@@ -32,7 +32,7 @@
 
 namespace inviwo {
 
-Event::Event() : IvwSerializable(), used_(false) {}
+Event::Event() : Serializable(), used_(false) {}
 
 Event::Event(const Event& rhs)
     : used_(rhs.used_)    {
@@ -68,7 +68,7 @@ bool Event::hasVisitedProcessor(Processor* p){
     return (it != visitedProcessors_.end());
 }
 
-void Event::serialize(IvwSerializer& s) const {}
-void Event::deserialize(IvwDeserializer& d) {}
+void Event::serialize(Serializer& s) const {}
+void Event::deserialize(Deserializer& d) {}
 
 } // namespace

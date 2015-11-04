@@ -65,11 +65,11 @@ void MetaDataOwner::copyMetaDataTo(MetaDataOwner &dst) {
     dst = *this;
 }
 
-void MetaDataOwner::serialize(IvwSerializer& s) const {
+void MetaDataOwner::serialize(Serializer& s) const {
     metaData_->serialize(s);
 }
 
-void MetaDataOwner::deserialize(IvwDeserializer& d) {
+void MetaDataOwner::deserialize(Deserializer& d) {
     metaData_->deserialize(d);
 }
 

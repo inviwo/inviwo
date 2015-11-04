@@ -56,13 +56,13 @@ KeyboardEvent* KeyboardEvent::clone() const { return new KeyboardEvent(*this); }
 
 KeyboardEvent::~KeyboardEvent() {}
 
-void KeyboardEvent::serialize(IvwSerializer& s) const {
+void KeyboardEvent::serialize(Serializer& s) const {
     InteractionEvent::serialize(s);
     s.serialize("state", state_);
     s.serialize("key", key_);
 }
 
-void KeyboardEvent::deserialize(IvwDeserializer& d) {
+void KeyboardEvent::deserialize(Deserializer& d) {
     InteractionEvent::deserialize(d);
     d.deserialize("state", state_);
     d.deserialize("key", key_);

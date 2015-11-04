@@ -80,7 +80,7 @@ protected:
  */
 class IVW_CORE_API ProgressBar : public ActivityIndicator,
                                  public ProgressBarObservable,
-                                 public IvwSerializable {
+                                 public Serializable {
 public:
     ProgressBar();
     virtual ~ProgressBar();
@@ -96,8 +96,8 @@ public:
     void hide();
     bool isVisible() const;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
 private:
     float progress_;

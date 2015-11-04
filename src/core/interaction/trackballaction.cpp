@@ -38,11 +38,11 @@ TrackballAction::TrackballAction(TrackballAction::Actions action)
 
 TrackballAction::~TrackballAction() {}
 
-void TrackballAction::serialize(IvwSerializer& s) const {
+void TrackballAction::serialize(Serializer& s) const {
     Action::serialize(s);
     s.serialize("action", name_);
 }
-void TrackballAction::deserialize(IvwDeserializer& d) {
+void TrackballAction::deserialize(Deserializer& d) {
     d.deserialize("action", name_);
 
     for (int i = 0; i < COUNT; ++i) {

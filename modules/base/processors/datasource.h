@@ -61,7 +61,7 @@ protected:
 
     virtual void invalidateOutput();
 
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void deserialize(Deserializer& d);
 
     PortType port_;
     FileProperty file_;
@@ -151,7 +151,7 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
  * Deserialize everything first then load the data
  */
 template <typename DataType, typename PortType>
-void inviwo::DataSource<DataType, PortType>::deserialize(IvwDeserializer& d) {
+void inviwo::DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     isDeserializing_ = true;
     Processor::deserialize(d);
     auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<DataType>();

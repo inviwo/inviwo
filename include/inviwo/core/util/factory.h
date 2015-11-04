@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-class IvwSerializable;
+class Serializable;
 
 template <typename T>
 class FactoryObserver : public Observer {

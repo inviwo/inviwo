@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API FileExtension : public IvwSerializable {
+class IVW_CORE_API FileExtension : public Serializable {
 public:
     FileExtension();
     FileExtension(const FileExtension&) = default;
@@ -54,8 +54,8 @@ public:
     static FileExtension createFileExtensionFromString(const std::string &str);
     std::string toString() const;
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 
 

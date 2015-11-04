@@ -679,7 +679,7 @@ void VolumeSliceGL::rotationModeChange() {
 }
 
 // override to do member renaming.
-void VolumeSliceGL::deserialize(IvwDeserializer& d) {
+void VolumeSliceGL::deserialize(Deserializer& d) {
     util::renamePort(d, {{&inport_, "volume.inport"}, {&outport_, "image.outport"}});
     Processor::deserialize(d);
 }

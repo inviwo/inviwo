@@ -71,8 +71,8 @@ public:
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     static uvec2 getDim() { return Defaultvalues<T>::getDim(); }
 
@@ -245,7 +245,7 @@ void OrdinalProperty<T>::setCurrentStateAsDefault() {
 }
 
 template <typename T>
-void OrdinalProperty<T>::serialize(IvwSerializer& s) const {
+void OrdinalProperty<T>::serialize(Serializer& s) const {
     minValue_.serialize(s, this->serializationMode_);
     maxValue_.serialize(s, this->serializationMode_);
     increment_.serialize(s, this->serializationMode_);
@@ -253,7 +253,7 @@ void OrdinalProperty<T>::serialize(IvwSerializer& s) const {
 }
 
 template <typename T>
-void OrdinalProperty<T>::deserialize(IvwDeserializer& d) {
+void OrdinalProperty<T>::deserialize(Deserializer& d) {
     minValue_.deserialize(d);
     maxValue_.deserialize(d);
     increment_.deserialize(d);

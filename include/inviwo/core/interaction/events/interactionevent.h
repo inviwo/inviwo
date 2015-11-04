@@ -32,7 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/serialization/ivwserializable.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/interaction/events/event.h>
 
 namespace inviwo {
@@ -59,8 +59,8 @@ public:
  
     virtual std::string getClassIdentifier() const;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
     virtual bool matching(const Event* aEvent) const;
     virtual bool equalSelectors(const Event* event) const;

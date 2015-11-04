@@ -35,12 +35,12 @@
 
 namespace inviwo {
 
-class IVW_CORE_API ImageLabel : public IvwSerializable {
+class IVW_CORE_API ImageLabel : public Serializable {
 public:
     ImageLabel();
     ImageLabel(vec2 startPoint, vec2 rectSize, std::string name);
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
     std::string getName() const { return name_; }
     vec2 getTopLeft() const { return startPoint_; }
     vec2 getSize() const { return rectSize_; }
@@ -75,8 +75,8 @@ public:
     void setDimensions(ivec2 imgSize);
     const std::vector<ImageLabel>& getLabels() const;
     void clearLabels();
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     std::vector<ImageLabel> labels_;

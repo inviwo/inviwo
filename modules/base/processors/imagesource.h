@@ -67,7 +67,7 @@ protected:
 
     void load();
 
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     ImageOutport outport_;

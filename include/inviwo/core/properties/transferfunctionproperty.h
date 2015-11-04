@@ -74,8 +74,8 @@ public:
     virtual void setCurrentStateAsDefault() override;
     virtual void resetToDefaultState() override;
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     // Override
     virtual void set(const TransferFunction& property) override;

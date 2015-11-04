@@ -74,7 +74,7 @@ FileProperty* FileProperty::clone() const {
 
 FileProperty::~FileProperty() {}
 
-void FileProperty::serialize(IvwSerializer& s) const {
+void FileProperty::serialize(Serializer& s) const {
     Property::serialize(s);
 
     const std::string basePath =
@@ -96,7 +96,7 @@ void FileProperty::serialize(IvwSerializer& s) const {
     s.serialize("fileMode", fileMode_);
 }
 
-void FileProperty::deserialize(IvwDeserializer& d) {
+void FileProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
     std::string serializePath;
 

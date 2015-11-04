@@ -64,14 +64,14 @@ def replace_matches(files, expr, repl, dummy=False):
 	for file in files:
 		match_in_file = False
 		
-		with open(file, "r") as f:
+		with codecs.open(file, 'r', encoding="UTF-8") as f:
 			try: 
 				lines = f.readlines()
 			except UnicodeDecodeError:
 				sys.exit("Encoding error: " + file) 
 
 		if not dummy:
-			with open(file, "w") as f:
+			with codecs.open(file, 'w', encoding="UTF-8") as f:
 				for (i,line) in enumerate(lines):
 					match = r.search(line)
 					if match:

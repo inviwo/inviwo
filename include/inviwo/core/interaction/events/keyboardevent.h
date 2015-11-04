@@ -61,8 +61,8 @@ public:
     void setButton(int button);
 
     virtual std::string getClassIdentifier() const;
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
     virtual bool matching(const Event* aEvent) const;
     virtual bool matching(const KeyboardEvent* aEvent) const;

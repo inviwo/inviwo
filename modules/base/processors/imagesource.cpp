@@ -106,7 +106,7 @@ void ImageSource::load() {
 /**
  * Deserialize everything first then load the data
  */
-void ImageSource::deserialize(IvwDeserializer& d) {
+void ImageSource::deserialize(Deserializer& d) {
     isDeserializing_ = true;
     Processor::deserialize(d);
     auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<Layer>();

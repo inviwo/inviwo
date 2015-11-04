@@ -27,36 +27,22 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_SERIALIZE_CONSTANTS_H
-#define IVW_SERIALIZE_CONSTANTS_H
+#ifndef IVW_SERIALIZABLE_H
+#define IVW_SERIALIZABLE_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <string>
 
 namespace inviwo {
 
-class IVW_CORE_API IvwSerializeConstants {
+class Serializer;
+class Deserializer;
+class SerializeBase;
+
+class IVW_CORE_API Serializable {
 public:
-    static const std::string XML_VERSION;
-    static const std::string INVIWO_TREEDATA;
-    static const std::string INVIWO_VERSION;
-    static const std::string NETWORK_VERSION;
-    static const std::string VERSION;
-    static const std::string EDIT_COMMENT;
-    static const std::string ID_ATTRIBUTE;
-    static const std::string REF_ATTRIBUTE;
-    static const std::string VERSION_ATTRIBUTE;
-    static const std::string CONTENT_ATTRIBUTE;
-    static const std::string TYPE_ATTRIBUTE;
-    static const std::string KEY_ATTRIBUTE;
-    static const std::string VECTOR_ATTRIBUTES[4];
-
-    static const std::string PROPERTY_ATTRIBUTE_1;
-    static const std::string PROPERTY_ATTRIBUTE_2;
-    static const std::string PROCESSOR_ATTRIBUTE_1;
-    static const std::string PROCESSOR_ATTRIBUTE_2;
-
-    static bool isReversvedAttribute(const std::string key);
+    virtual ~Serializable() {}
+    virtual void serialize(Serializer& s) const=0;
+    virtual void deserialize(Deserializer& d)=0;
 };
 
 } //namespace

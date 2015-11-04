@@ -65,14 +65,14 @@ EventProperty& EventProperty::operator=(const EventProperty& that) {
 
 EventProperty* EventProperty::clone() const { return new EventProperty(*this); }
 
-void EventProperty::serialize(IvwSerializer& s) const {
+void EventProperty::serialize(Serializer& s) const {
     Property::serialize(s);
     if (!event_->equalSelectors(defaultEvent_.get())) {
         s.serialize("Event", event_.get());
     }
 }
 
-void EventProperty::deserialize(IvwDeserializer& d) {
+void EventProperty::deserialize(Deserializer& d) {
     Property::deserialize(d);
     InteractionEvent* e = event_.get();
     d.deserialize("Event", e); // e has to be a lvalue.

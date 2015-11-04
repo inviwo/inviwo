@@ -28,18 +28,18 @@
  *********************************************************************************/
 
 #pragma warning(disable: 4251)
-#include <inviwo/core/io/serialization/ivwserializebase.h>
+#include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
 #include <inviwo/core/properties/propertyfactory.h>
-#include <inviwo/core/io/serialization/ivwserializable.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
 
 
 namespace inviwo {
 
-IvwSerializeBase::NodeSwitch::NodeSwitch(IvwSerializeBase& serializer, TxElement* node,
+SerializeBase::NodeSwitch::NodeSwitch(SerializeBase& serializer, TxElement* node,
                                          bool retrieveChild)
     : serializer_(serializer)
     , storedNode_(serializer_.rootElement_)
@@ -48,7 +48,7 @@ IvwSerializeBase::NodeSwitch::NodeSwitch(IvwSerializeBase& serializer, TxElement
     serializer_.retrieveChild_ = retrieveChild;
 }
 
-IvwSerializeBase::NodeSwitch::NodeSwitch(IvwSerializeBase& serializer, const std::string& key,
+SerializeBase::NodeSwitch::NodeSwitch(SerializeBase& serializer, const std::string& key,
                                          bool retrieveChild)
     : serializer_(serializer)
     , storedNode_(serializer_.rootElement_)
@@ -60,20 +60,20 @@ IvwSerializeBase::NodeSwitch::NodeSwitch(IvwSerializeBase& serializer, const std
     serializer_.retrieveChild_ = retrieveChild;
 }
 
-IvwSerializeBase::NodeSwitch::~NodeSwitch() {
+SerializeBase::NodeSwitch::~NodeSwitch() {
     serializer_.rootElement_ = storedNode_;
     serializer_.retrieveChild_ = storedRetrieveChild_;
 }
 
-IvwSerializeBase::ReferenceDataContainer::ReferenceDataContainer() {
+SerializeBase::ReferenceDataContainer::ReferenceDataContainer() {
     referenceCount_ = 0;
 }
 
-IvwSerializeBase::ReferenceDataContainer::~ReferenceDataContainer() {
+SerializeBase::ReferenceDataContainer::~ReferenceDataContainer() {
 }
 
-size_t IvwSerializeBase::ReferenceDataContainer::insert(const void* data, TxElement* node, bool isPointer) {
-    IvwSerializeBase::ReferenceData refData;
+size_t SerializeBase::ReferenceDataContainer::insert(const void* data, TxElement* node, bool isPointer) {
+    SerializeBase::ReferenceData refData;
     refData.node_ = node;
     refData.isPointer_ = isPointer;
     referenceMap_.insert(RefDataPair(data, refData));
@@ -81,7 +81,7 @@ size_t IvwSerializeBase::ReferenceDataContainer::insert(const void* data, TxElem
 }
 
 
-void IvwSerializeBase::ReferenceDataContainer::setReferenceAttributes() {
+void SerializeBase::ReferenceDataContainer::setReferenceAttributes() {
     std::pair<RefMap::const_iterator, RefMap::const_iterator> sameKeys;
 
     // Loop over all different key valus.
@@ -100,20 +100,20 @@ void IvwSerializeBase::ReferenceDataContainer::setReferenceAttributes() {
         for (RefMap::const_iterator item = sameKeys.first;
              item != sameKeys.second; ++item) {
             if (item->second.isPointer_)
-                item->second.node_->SetAttribute(IvwSerializeConstants::REF_ATTRIBUTE, ss.str());
+                item->second.node_->SetAttribute(SerializeConstants::RefAttribute, ss.str());
             else
-                item->second.node_->SetAttribute(IvwSerializeConstants::ID_ATTRIBUTE, ss.str());
+                item->second.node_->SetAttribute(SerializeConstants::IDAttribute, ss.str());
         }
 
         referenceCount_++;
     }
 }
 
-size_t IvwSerializeBase::ReferenceDataContainer::find(const void* data) {
+size_t SerializeBase::ReferenceDataContainer::find(const void* data) {
     return referenceMap_.count(data);
 }
 
-void* IvwSerializeBase::ReferenceDataContainer::find(const std::string& type, const std::string& reference_or_id) {
+void* SerializeBase::ReferenceDataContainer::find(const std::string& type, const std::string& reference_or_id) {
     void* data = nullptr;
 
     if (reference_or_id.empty())
@@ -123,9 +123,9 @@ void* IvwSerializeBase::ReferenceDataContainer::find(const std::string& type, co
         std::string type_attrib("");
         std::string ref_attrib("");
         std::string id_attrib("");
-        elem.second.node_->GetAttribute(IvwSerializeConstants::TYPE_ATTRIBUTE, &type_attrib, false);
-        elem.second.node_->GetAttribute(IvwSerializeConstants::REF_ATTRIBUTE, &ref_attrib, false);
-        elem.second.node_->GetAttribute(IvwSerializeConstants::ID_ATTRIBUTE, &id_attrib, false);
+        elem.second.node_->GetAttribute(SerializeConstants::TypeAttribute, &type_attrib, false);
+        elem.second.node_->GetAttribute(SerializeConstants::RefAttribute, &ref_attrib, false);
+        elem.second.node_->GetAttribute(SerializeConstants::IDAttribute, &id_attrib, false);
 
         if (type_attrib == type && (ref_attrib == reference_or_id || id_attrib == reference_or_id)) {
             data = const_cast<void*>(elem.first);
@@ -136,7 +136,7 @@ void* IvwSerializeBase::ReferenceDataContainer::find(const std::string& type, co
     return data;
 }
 
-TxElement* IvwSerializeBase::ReferenceDataContainer::nodeCopy(const void* data) {
+TxElement* SerializeBase::ReferenceDataContainer::nodeCopy(const void* data) {
     std::pair<RefMap::iterator, RefMap::iterator> pIt;
     std::vector<ReferenceData> nodes;
     TxElement* nodeCopy = nullptr;
@@ -154,13 +154,13 @@ TxElement* IvwSerializeBase::ReferenceDataContainer::nodeCopy(const void* data) 
     return nodeCopy;
 }
 
-IvwSerializeBase::IvwSerializeBase(bool allowReference/*=true*/)
+SerializeBase::SerializeBase(bool allowReference/*=true*/)
     : allowRef_(allowReference)
     , retrieveChild_(true) {
     registerFactories();
 }
 
-IvwSerializeBase::IvwSerializeBase(IvwSerializeBase& s, bool allowReference)
+SerializeBase::SerializeBase(SerializeBase& s, bool allowReference)
     : fileName_(s.fileName_)
     , doc_(s.fileName_)
     , allowRef_(allowReference)
@@ -168,7 +168,7 @@ IvwSerializeBase::IvwSerializeBase(IvwSerializeBase& s, bool allowReference)
     registerFactories();
 }
 
-IvwSerializeBase::IvwSerializeBase(std::string fileName, bool allowReference)
+SerializeBase::SerializeBase(std::string fileName, bool allowReference)
     : fileName_(fileName)
     , doc_(fileName)
     , allowRef_(allowReference)
@@ -176,7 +176,7 @@ IvwSerializeBase::IvwSerializeBase(std::string fileName, bool allowReference)
     registerFactories();
 }
 
-IvwSerializeBase::IvwSerializeBase(std::istream& stream, const std::string& path, bool allowReference)
+SerializeBase::SerializeBase(std::istream& stream, const std::string& path, bool allowReference)
     : fileName_(path)
     , allowRef_(allowReference)
     , retrieveChild_(true) {
@@ -184,21 +184,21 @@ IvwSerializeBase::IvwSerializeBase(std::istream& stream, const std::string& path
     registerFactories();
 }
 
-IvwSerializeBase::~IvwSerializeBase() {
+SerializeBase::~SerializeBase() {
 }
 
-void IvwSerializeBase::registerFactories(void) {
+void SerializeBase::registerFactories(void) {
     registeredFactories_.clear();
     registeredFactories_.push_back(ProcessorFactory::getPtr());
     registeredFactories_.push_back(MetaDataFactory::getPtr());
     registeredFactories_.push_back(PropertyFactory::getPtr());
 }
 
-const std::string& IvwSerializeBase::getFileName() {
+const std::string& SerializeBase::getFileName() {
     return fileName_;
 }
 
-bool IvwSerializeBase::isPrimitiveType(const std::type_info& type) const {
+bool SerializeBase::isPrimitiveType(const std::type_info& type) const {
     if (type == typeid(bool)
         || type == typeid(char)
         || type == typeid(int)
@@ -213,7 +213,7 @@ bool IvwSerializeBase::isPrimitiveType(const std::type_info& type) const {
     return false;
 }
 
-std::string IvwSerializeBase::nodeToString(const TxElement& node) {
+std::string SerializeBase::nodeToString(const TxElement& node) {
     try {
         TiXmlPrinter printer;
         printer.SetIndent("    ");

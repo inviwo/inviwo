@@ -62,7 +62,7 @@ namespace inviwo {
  * which means that no graphical representations are generated for the added entities. Adding
  * and removing of the graphical representations is done in the NetworkEditor.
  */
-class IVW_CORE_API ProcessorNetwork : public IvwSerializable,
+class IVW_CORE_API ProcessorNetwork : public Serializable,
                                       public ProcessorNetworkObservable,
                                       public ProcessorObserver {
 public:
@@ -231,8 +231,8 @@ public:
     }
     inline bool islocked() const { return (locked_ != 0); }
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     bool isDeserializing() const;
 

@@ -121,7 +121,7 @@ const PropertyEditorWidgetDockStatus PropertyEditorWidgetMetaData::getDocStatus(
     return PropertyEditorWidgetDockStatus(dockStatus_);
 }
 
-void PropertyEditorWidgetMetaData::serialize(IvwSerializer& s) const {
+void PropertyEditorWidgetMetaData::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("position", position_);
     s.serialize("dimensions", dimensions_);
@@ -129,7 +129,7 @@ void PropertyEditorWidgetMetaData::serialize(IvwSerializer& s) const {
     s.serialize("dockstatus", dockStatus_);
 }
 
-void PropertyEditorWidgetMetaData::deserialize(IvwDeserializer& d) {
+void PropertyEditorWidgetMetaData::deserialize(Deserializer& d) {
     std::string className;
   
     std::string dockStatus("");

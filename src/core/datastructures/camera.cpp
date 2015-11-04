@@ -85,14 +85,14 @@ vec4 Camera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     return vec4(ndcCoords * clipW, clipW);;
 }
 
-void Camera::serialize(IvwSerializer& s) const {
+void Camera::serialize(Serializer& s) const {
     s.serialize("lookFrom", lookFrom_);
     s.serialize("lookTo", lookTo_);
     s.serialize("lookUp", lookUp_);
     s.serialize("nearPlaneDist", nearPlaneDist_);
     s.serialize("farPlaneDist", farPlaneDist_);
 }
-void Camera::deserialize(IvwDeserializer& d) {
+void Camera::deserialize(Deserializer& d) {
     d.deserialize("lookFrom", lookFrom_);
     d.deserialize("lookTo", lookTo_);
     d.deserialize("lookUp", lookUp_);
@@ -128,12 +128,12 @@ bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
         (lhs.aspectRatio_ != rhs.aspectRatio_));
 }
 
-void PerspectiveCamera::serialize(IvwSerializer& s) const {
+void PerspectiveCamera::serialize(Serializer& s) const {
     Camera::serialize(s);
     s.serialize("fovy", fovy_);
     s.serialize("aspectRatio", aspectRatio_);
 }
-void PerspectiveCamera::deserialize(IvwDeserializer& d) {
+void PerspectiveCamera::deserialize(Deserializer& d) {
     d.deserialize("fovy", fovy_);
     d.deserialize("aspectRatio", aspectRatio_);
     Camera::deserialize(d);
@@ -154,11 +154,11 @@ bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs) {
         glm::any(glm::notEqual(lhs.frustum_, rhs.frustum_)));
 }
 
-void OrthographicCamera::serialize(IvwSerializer& s) const {
+void OrthographicCamera::serialize(Serializer& s) const {
     Camera::serialize(s);
     s.serialize("frustum", frustum_);
 }
-void OrthographicCamera::deserialize(IvwDeserializer& d) {
+void OrthographicCamera::deserialize(Deserializer& d) {
     d.deserialize("frustum", frustum_);
     Camera::deserialize(d);
 }

@@ -108,14 +108,14 @@ void TransferFunctionProperty::setCurrentStateAsDefault() {
     showHistogram_.setAsDefault();
 }
 
-void TransferFunctionProperty::serialize(IvwSerializer& s) const {
+void TransferFunctionProperty::serialize(Serializer& s) const {
     TemplateProperty<TransferFunction>::serialize(s);
     zoomH_.serialize(s, this->serializationMode_);
     zoomV_.serialize(s, this->serializationMode_);
     showHistogram_.serialize(s, this->serializationMode_);
 }
 
-void TransferFunctionProperty::deserialize(IvwDeserializer& d) {
+void TransferFunctionProperty::deserialize(Deserializer& d) {
     TemplateProperty<TransferFunction>::deserialize(d);
     zoomH_.deserialize(d);
     zoomV_.deserialize(d);

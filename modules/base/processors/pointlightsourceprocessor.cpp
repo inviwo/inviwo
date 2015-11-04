@@ -161,9 +161,9 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
         [this]() { lightPositionWorldSpace_ = lightPosition_->get(); });
 }
 
-void PointLightInteractionHandler::serialize(IvwSerializer& s) const {}
+void PointLightInteractionHandler::serialize(Serializer& s) const {}
 
-void PointLightInteractionHandler::deserialize(IvwDeserializer& d) {}
+void PointLightInteractionHandler::deserialize(Deserializer& d) {}
 
 void PointLightInteractionHandler::invokeEvent(Event* event) {
     // if(event->hasBeenUsed())

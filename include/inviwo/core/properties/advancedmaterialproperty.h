@@ -72,7 +72,7 @@ public:
     ShadingFunctionKind getPhaseFunctionEnum() const;
 
     virtual void phaseFunctionChanged();
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void deserialize(Deserializer& d) override;
 
 
     // Material properties

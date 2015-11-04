@@ -28,35 +28,35 @@
  *********************************************************************************/
 
 #pragma warning(disable: 4251)
-#include <inviwo/core/io/serialization/ivwserializeconstants.h>
+#include <inviwo/core/io/serialization/serializeconstants.h>
 
 namespace inviwo {
 
-const std::string IvwSerializeConstants::XML_VERSION="1.0";
-const std::string IvwSerializeConstants::INVIWO_TREEDATA="InviwoTreeData";
-const std::string IvwSerializeConstants::INVIWO_VERSION="1.0";
-const std::string IvwSerializeConstants::NETWORK_VERSION="1.0";
-const std::string IvwSerializeConstants::VERSION="version";
-const std::string IvwSerializeConstants::EDIT_COMMENT=" Don't edit the following code ";
-const std::string IvwSerializeConstants::ID_ATTRIBUTE="id";
-const std::string IvwSerializeConstants::REF_ATTRIBUTE="reference";
-const std::string IvwSerializeConstants::VERSION_ATTRIBUTE="version";
-const std::string IvwSerializeConstants::CONTENT_ATTRIBUTE="content";
-const std::string IvwSerializeConstants::TYPE_ATTRIBUTE="type";
-const std::string IvwSerializeConstants::KEY_ATTRIBUTE="key";
+const std::string SerializeConstants::XmlVersion="1.0";
+const std::string SerializeConstants::InviwoTreedata="InviwoTreeData";
+const std::string SerializeConstants::InviwoVersion="1.0";
+const std::string SerializeConstants::NetworkVersion="1.0";
+const std::string SerializeConstants::Version="version";
+const std::string SerializeConstants::EditComment=" Don't edit the following code ";
+const std::string SerializeConstants::IDAttribute="id";
+const std::string SerializeConstants::RefAttribute="reference";
+const std::string SerializeConstants::VersionAttribute="version";
+const std::string SerializeConstants::ContentAttribute="content";
+const std::string SerializeConstants::TypeAttribute="type";
+const std::string SerializeConstants::KeyAttribute="key";
 
-const std::string IvwSerializeConstants::VECTOR_ATTRIBUTES[] = {"x", "y", "z", "w"};
+const std::string SerializeConstants::VectorAttributes[] = {"x", "y", "z", "w"};
 
-const std::string IvwSerializeConstants::PROPERTY_ATTRIBUTE_1="identifier";
-const std::string IvwSerializeConstants::PROPERTY_ATTRIBUTE_2="displayName";
-const std::string IvwSerializeConstants::PROCESSOR_ATTRIBUTE_1="identifier";
-const std::string IvwSerializeConstants::PROCESSOR_ATTRIBUTE_2="displayName";
+const std::string SerializeConstants::PropertyAttribute1="identifier";
+const std::string SerializeConstants::PropertyAttribute2="displayName";
+const std::string SerializeConstants::ProcessorAttribute1="identifier";
+const std::string SerializeConstants::ProcessorAttribute2="displayName";
 
-bool IvwSerializeConstants::isReversvedAttribute(const std::string key) {
-    if (key == PROPERTY_ATTRIBUTE_1
-        || key == PROPERTY_ATTRIBUTE_2
-        || key == PROCESSOR_ATTRIBUTE_1
-        || key == PROCESSOR_ATTRIBUTE_2)
+bool SerializeConstants::isReversvedAttribute(const std::string key) {
+    if (key == PropertyAttribute1
+        || key == PropertyAttribute2
+        || key == ProcessorAttribute1
+        || key == ProcessorAttribute2)
         return true;
 
     return false;

@@ -28,34 +28,34 @@
  *********************************************************************************/
 
 #pragma warning(disable: 4251)
-#include <inviwo/core/io/serialization/ivwserializer.h>
-#include <inviwo/core/io/serialization/ivwserializable.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-IvwSerializer::IvwSerializer(IvwSerializer& s, bool allowReference)
-    : IvwSerializeBase(s.getFileName(), allowReference) {
+Serializer::Serializer(Serializer& s, bool allowReference)
+    : SerializeBase(s.getFileName(), allowReference) {
     initialize();
 }
 
-IvwSerializer::IvwSerializer(const std::string& fileName, bool allowReference)
-    : IvwSerializeBase(fileName, allowReference) {
+Serializer::Serializer(const std::string& fileName, bool allowReference)
+    : SerializeBase(fileName, allowReference) {
     initialize();
 }
 
-IvwSerializer::~IvwSerializer() { delete rootElement_; }
+Serializer::~Serializer() { delete rootElement_; }
 
-void IvwSerializer::initialize() {
+void Serializer::initialize() {
     try {
-        auto decl = util::make_unique<TxDeclaration>(IvwSerializeConstants::XML_VERSION, "", "");
+        auto decl = util::make_unique<TxDeclaration>(SerializeConstants::XmlVersion, "", "");
         doc_.LinkEndChild(decl.get());
-        rootElement_ = new TxElement(IvwSerializeConstants::INVIWO_TREEDATA);
-        rootElement_->SetAttribute(IvwSerializeConstants::VERSION_ATTRIBUTE,
-                                   IvwSerializeConstants::INVIWO_VERSION);
+        rootElement_ = new TxElement(SerializeConstants::InviwoTreedata);
+        rootElement_->SetAttribute(SerializeConstants::VersionAttribute,
+                                   SerializeConstants::InviwoVersion);
         doc_.LinkEndChild(rootElement_);
         auto comment = util::make_unique<TxComment>();
-        comment->SetValue(IvwSerializeConstants::EDIT_COMMENT.c_str());
+        comment->SetValue(SerializeConstants::EditComment.c_str());
         rootElement_->LinkEndChild(comment.get());
 
     } catch (TxException& e) {
@@ -63,7 +63,7 @@ void IvwSerializer::initialize() {
     }
 }
 
-void IvwSerializer::serialize(const std::string& key, const IvwSerializable& sObj) {
+void Serializer::serialize(const std::string& key, const Serializable& sObj) {
     auto newNode = util::make_unique<TxElement>(key);
     rootElement_->LinkEndChild(newNode.get());
     NodeSwitch nodeSwitch(*this, newNode.get());
@@ -71,18 +71,18 @@ void IvwSerializer::serialize(const std::string& key, const IvwSerializable& sOb
 }
 
 
-void IvwSerializer::serialize(const std::string& key, const signed char& data, const bool asAttribute) {
+void Serializer::serialize(const std::string& key, const signed char& data, const bool asAttribute) {
     serialize(key, static_cast<int>(data), asAttribute);
 }
-void IvwSerializer::serialize(const std::string& key, const char& data, const bool asAttribute) {
+void Serializer::serialize(const std::string& key, const char& data, const bool asAttribute) {
     serialize(key, static_cast<int>(data), asAttribute);
 }
-void IvwSerializer::serialize(const std::string& key, const unsigned char& data,
+void Serializer::serialize(const std::string& key, const unsigned char& data,
                               const bool asAttribute) {
     serialize(key, static_cast<unsigned int>(data), asAttribute);
 }
 
-void IvwSerializer::writeFile() {
+void Serializer::writeFile() {
     try {
         refDataContainer_.setReferenceAttributes();
         doc_.SaveFile(getFileName());
@@ -91,7 +91,7 @@ void IvwSerializer::writeFile() {
     }
 }
 
-void IvwSerializer::writeFile(std::ostream& stream) {
+void Serializer::writeFile(std::ostream& stream) {
     try {
         refDataContainer_.setReferenceAttributes();
         stream << doc_;

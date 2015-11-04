@@ -31,11 +31,11 @@
 
 namespace inviwo {
 
-PropertySemantics::PropertySemantics() : IvwSerializable(), semantic_("Default") {}
+PropertySemantics::PropertySemantics() : Serializable(), semantic_("Default") {}
 PropertySemantics::PropertySemantics(std::string semantic)
-    : IvwSerializable(), semantic_(semantic) {}
+    : Serializable(), semantic_(semantic) {}
 PropertySemantics::PropertySemantics(const PropertySemantics& rhs)
-    : IvwSerializable(), semantic_(rhs.semantic_) {};
+    : Serializable(), semantic_(rhs.semantic_) {};
 PropertySemantics& PropertySemantics::operator=(const PropertySemantics& that) {
     if (this != &that) semantic_ = that.semantic_;
 
@@ -44,11 +44,11 @@ PropertySemantics& PropertySemantics::operator=(const PropertySemantics& that) {
 
 const std::string& PropertySemantics::getString() const { return semantic_; }
 
-void PropertySemantics::serialize(IvwSerializer& s) const {
+void PropertySemantics::serialize(Serializer& s) const {
     s.serialize("semantics", semantic_, true);
 }
 
-void PropertySemantics::deserialize(IvwDeserializer& d) {
+void PropertySemantics::deserialize(Deserializer& d) {
     d.deserialize("semantics", semantic_, true);
 }
 

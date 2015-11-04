@@ -27,23 +27,13 @@
  * 
  *********************************************************************************/
 
-#ifndef IVW_SERIALIZABLE_H
-#define IVW_SERIALIZABLE_H
+#ifndef IVW_SERIALIZATION_H
+#define IVW_SERIALIZATION_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/io/serialization/serializebase.h>
+#include <inviwo/core/io/serialization/serializer.h>
+#include <inviwo/core/io/serialization/serializable.h>
+#include <inviwo/core/io/serialization/deserializer.h>
+#include <inviwo/core/util/factory.h>
 
-namespace inviwo {
-
-class IvwSerializer;
-class IvwDeserializer;
-class IvwSerializeBase;
-
-class IVW_CORE_API IvwSerializable {
-public:
-    virtual ~IvwSerializable() {}
-    virtual void serialize(IvwSerializer& s) const=0;
-    virtual void deserialize(IvwDeserializer& d)=0;
-};
-
-} //namespace
 #endif

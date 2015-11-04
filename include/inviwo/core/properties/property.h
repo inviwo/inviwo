@@ -75,7 +75,7 @@ namespace inviwo {
 class PropertyOwner;
 
 class IVW_CORE_API Property : public PropertyObservable,
-                              public IvwSerializable,
+                              public Serializable,
                               public MetaDataOwner {
 public:
     virtual std::string getClassIdentifier() const = 0;
@@ -160,8 +160,8 @@ public:
     virtual bool isPropertyModified() const;
     virtual void set(const Property* src);
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     const BaseCallBack* onChange(std::function<void()> callback);
     void removeOnChange(const BaseCallBack* callback);

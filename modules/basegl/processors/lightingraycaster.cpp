@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "lightingraycaster.h"
-#include <inviwo/core/io/serialization/ivwserialization.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/shader/shader.h>
@@ -138,7 +138,7 @@ void LightingRaycaster::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void LightingRaycaster::deserialize(IvwDeserializer& d) {
+void LightingRaycaster::deserialize(Deserializer& d) {
     NodeVersionConverter tvc([](TxElement* node) {
         TxElement* p = util::xmlGetElement(
             node, "Properties/Property&type=OptionPropertyString&identifier=shadingMode");

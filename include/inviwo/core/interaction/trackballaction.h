@@ -64,8 +64,8 @@ public:
 
     virtual std::string getClassIdentifier() const { return "TrackballAction"; }
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
 private:
     static const std::string actionNames_[COUNT];

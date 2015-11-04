@@ -62,7 +62,7 @@ void Settings::loadFromDisk() {
         // An error is not critical as the default setting will be used.
         try
         {
-            IvwDeserializer d(filename);
+            Deserializer d(filename);
             deserialize(d);
         }
         catch (AbortException& e)
@@ -84,7 +84,7 @@ void Settings::saveToDisk() {
     std::string filename = ss.str();
     replaceInString(filename, " ", "_");
     try {
-        IvwSerializer s(InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_SETTINGS,
+        Serializer s(InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_SETTINGS,
                                                              "/" + filename, true));
         serialize(s);
         s.writeFile();

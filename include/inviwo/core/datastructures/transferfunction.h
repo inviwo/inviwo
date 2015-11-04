@@ -60,7 +60,7 @@ public:
  *  This class holds transfer function data, currently one parameter in the variable data_.
  */
 class IVW_CORE_API TransferFunction
-    : public IvwSerializable
+    : public Serializable
     , public TransferFunctionObservable
     , public TransferFunctionPointObserver {
     
@@ -104,8 +104,8 @@ public:
     
     virtual void onTransferFunctionPointChange(const TransferFunctionDataPoint* p);
     
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
     typedef std::vector<TransferFunctionDataPoint*> TFPoints;
     friend bool operator==(const TransferFunction& lhs, const TransferFunction& rhs);

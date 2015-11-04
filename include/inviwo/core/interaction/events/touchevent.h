@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API TouchPoint : public IvwSerializable {
+class IVW_CORE_API TouchPoint : public Serializable {
 public:
     enum TouchState {
         TOUCH_STATE_NONE = 1 << 0,
@@ -116,8 +116,8 @@ public:
     double getDepth() const { return depth_; }
     void setDepth(double val) { depth_ = val; }
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 protected:
     int id_;
 
@@ -180,8 +180,8 @@ public:
 
     virtual std::string getClassIdentifier() const { return "org.inviwo.TouchEvent"; }
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
     virtual bool matching(const Event* aEvent) const;
     virtual bool matching(const TouchEvent* aEvent) const;

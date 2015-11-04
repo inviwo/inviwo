@@ -47,8 +47,8 @@ public:
     virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
     virtual PositionMetaData* clone() const;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
     ivec2 getXY();
     void setXY(const ivec2& xy);

@@ -32,7 +32,7 @@
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/propertyowner.h>
-#include <inviwo/core/io/serialization/ivwserializable.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 #include <iterator>
 
@@ -229,7 +229,7 @@ const Processor* PropertyOwner::getProcessor() const {
     return nullptr;
 }
 
-void PropertyOwner::serialize(IvwSerializer& s) const {
+void PropertyOwner::serialize(Serializer& s) const {
     std::vector<Property*> props;
     std::copy_if(properties_.begin(), properties_.end(), std::back_inserter(props), [](Property* p) {
         return p->getSerializationMode() != PropertySerializationMode::NONE;
@@ -237,7 +237,7 @@ void PropertyOwner::serialize(IvwSerializer& s) const {
     s.serialize("Properties", props, "Property");
 }
 
-void PropertyOwner::deserialize(IvwDeserializer& d) {
+void PropertyOwner::deserialize(Deserializer& d) {
 
     // This is for finding renamed composites, and moving old properties to new composites.
     NodeVersionConverter tvc(this, &PropertyOwner::findPropsForComposites);

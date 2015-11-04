@@ -96,7 +96,7 @@
 #include <inviwo/core/util/logcentral.h>
 #define IVW_UNUSED_PARAM(param) (void)param
 
-#include <inviwo/core/io/serialization/ivwserialization.h>
+#include <inviwo/core/io/serialization/serialization.h>
 
 //#define IVW_DEPRECATION_WARNINGS
 

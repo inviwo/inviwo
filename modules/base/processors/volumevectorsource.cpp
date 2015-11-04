@@ -111,7 +111,7 @@ void VolumeVectorSource::process() {
     }
 }
 
-void VolumeVectorSource::deserialize(IvwDeserializer& d) {
+void VolumeVectorSource::deserialize(Deserializer& d) {
     {
         isDeserializing_ = true;
         Processor::deserialize(d);

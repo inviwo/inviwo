@@ -55,8 +55,8 @@ public:
     virtual std::string getClassIdentifier() const { return CLASS_IDENTIFIER; }
     virtual ProcessorMetaData* clone() const;
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
     virtual bool equal(const MetaData& rhs) const;
 
     void setPosition(const ivec2& pos);

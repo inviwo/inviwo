@@ -419,7 +419,7 @@ void ProcessorNetwork::onAboutPropertyChange(Property* modifiedProperty) {
     notifyObserversProcessorNetworkChanged();
 }
 
-void ProcessorNetwork::serialize(IvwSerializer& s) const {
+void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("ProcessorNetworkVersion", processorNetworkVersion_);
     s.serialize("Processors", getProcessors(), "Processor");
     s.serialize("Connections", getConnections(), "Connection");
@@ -431,7 +431,7 @@ void ProcessorNetwork::serialize(IvwSerializer& s) const {
 
 const int ProcessorNetwork::processorNetworkVersion_ = 11;
 
-void ProcessorNetwork::deserialize(IvwDeserializer& d) {
+void ProcessorNetwork::deserialize(Deserializer& d) {
     // This will set deserializing_ to true while keepTrueWillAlive is in scope
     // and set it to false no matter how we leave the scope
     util::KeepTrueWhileInScope keepTrueWillAlive(&deserializing_);

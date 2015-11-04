@@ -36,7 +36,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API MetaData : public IvwSerializable {
+class IVW_CORE_API MetaData : public Serializable {
 
 public:
     MetaData();
@@ -45,8 +45,8 @@ public:
     virtual ~MetaData();
     virtual std::string getClassIdentifier() const;
     virtual MetaData* clone() const;
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
     virtual bool equal(const MetaData& rhs) const;
     friend bool IVW_CORE_API operator==(const MetaData& lhs, const MetaData& rhs);
 };
@@ -68,8 +68,8 @@ public:
     virtual ~MetaDataPrimitiveType() {};
     virtual std::string getClassIdentifier() const;
     virtual MetaDataPrimitiveType<T, 0, 0>* clone() const;
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
     virtual void set(T value);
     virtual T get() const;
     virtual bool equal(const MetaData& rhs) const;
@@ -138,13 +138,13 @@ T MetaDataPrimitiveType<T, 0, 0>::get() const {
 }
 
 template <typename T>
-void inviwo::MetaDataPrimitiveType<T, 0, 0>::serialize(IvwSerializer& s) const {
+void inviwo::MetaDataPrimitiveType<T, 0, 0>::serialize(Serializer& s) const {
     s.serialize("MetaData", value_);
-    s.serialize(IvwSerializeConstants::TYPE_ATTRIBUTE, getClassIdentifier(), true);
+    s.serialize(SerializeConstants::TypeAttribute, getClassIdentifier(), true);
 }
 
 template <typename T>
-void inviwo::MetaDataPrimitiveType<T, 0, 0>::deserialize(IvwDeserializer& d) {
+void inviwo::MetaDataPrimitiveType<T, 0, 0>::deserialize(Deserializer& d) {
     d.deserialize("MetaData", value_);
 }
 
@@ -190,8 +190,8 @@ public:
     virtual ~MetaDataPrimitiveType() {};
     virtual std::string getClassIdentifier() const;
     virtual MetaDataPrimitiveType<T, N, 0>* clone() const;
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
     virtual void set(Vector<N, T> value);
     virtual Vector<N, T> get() const;
     virtual bool equal(const MetaData& rhs) const;
@@ -261,13 +261,13 @@ Vector<N, T> MetaDataPrimitiveType<T, N, 0>::get() const {
 }
 
 template <typename T, int N>
-void inviwo::MetaDataPrimitiveType<T, N, 0>::serialize(IvwSerializer& s) const {
-    s.serialize(IvwSerializeConstants::TYPE_ATTRIBUTE, getClassIdentifier(), true);
+void inviwo::MetaDataPrimitiveType<T, N, 0>::serialize(Serializer& s) const {
+    s.serialize(SerializeConstants::TypeAttribute, getClassIdentifier(), true);
     s.serialize("MetaData", value_);
 }
 
 template <typename T, int N>
-void inviwo::MetaDataPrimitiveType<T, N, 0>::deserialize(IvwDeserializer& d) {
+void inviwo::MetaDataPrimitiveType<T, N, 0>::deserialize(Deserializer& d) {
     d.deserialize("MetaData", value_);
 }
 
@@ -299,8 +299,8 @@ public:
     virtual ~MetaDataPrimitiveType() {};
     virtual std::string getClassIdentifier() const;
     virtual MetaDataPrimitiveType<T, N, N>* clone() const;
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
     virtual void set(Matrix<N, T> value);
     virtual Matrix<N, T> get() const;
     virtual bool equal(const MetaData& rhs) const;
@@ -370,13 +370,13 @@ Matrix<N, T> MetaDataPrimitiveType<T, N, N>::get() const {
 }
 
 template <typename T, int N>
-void inviwo::MetaDataPrimitiveType<T, N, N>::serialize(IvwSerializer& s) const {
-    s.serialize(IvwSerializeConstants::TYPE_ATTRIBUTE, getClassIdentifier(), true);
+void inviwo::MetaDataPrimitiveType<T, N, N>::serialize(Serializer& s) const {
+    s.serialize(SerializeConstants::TypeAttribute, getClassIdentifier(), true);
     s.serialize("MetaData", value_);
 }
 
 template <typename T, int N>
-void inviwo::MetaDataPrimitiveType<T, N, N>::deserialize(IvwDeserializer& d) {
+void inviwo::MetaDataPrimitiveType<T, N, N>::deserialize(Deserializer& d) {
     d.deserialize("MetaData", value_);
 }
 

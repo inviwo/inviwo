@@ -143,7 +143,7 @@ void EntryExitPoints::process() {
     }
 }
 
-void EntryExitPoints::deserialize(IvwDeserializer& d) {
+void EntryExitPoints::deserialize(Deserializer& d) {
     util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
     Processor::deserialize(d);
 }

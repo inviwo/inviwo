@@ -29,7 +29,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/ports/portinspector.h>
-#include <inviwo/core/io/serialization/ivwserialization.h>
+#include <inviwo/core/io/serialization/serialization.h>
 #include <inviwo/core/metadata/processormetadata.h>
 
 namespace inviwo {
@@ -107,7 +107,7 @@ void PortInspector::initialize() {
     startFileObservation(inspectorNetworkFileName_);
     try {
         // Deserialize the network
-        IvwDeserializer xmlDeserializer(inspectorNetworkFileName_);
+        Deserializer xmlDeserializer(inspectorNetworkFileName_);
         inspectorNetwork_ = util::make_unique<ProcessorNetwork>();
         inspectorNetwork_->deserialize(xmlDeserializer);
         processors_ = inspectorNetwork_->getProcessors();

@@ -306,8 +306,8 @@ public:
     virtual Processor* getProcessor() override { return this; }
     virtual const Processor* getProcessor() const override { return this; }
 
-    virtual void serialize(IvwSerializer& s) const override;
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
     static const std::string getCodeStateString(CodeState state);
 

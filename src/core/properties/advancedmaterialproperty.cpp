@@ -193,7 +193,7 @@ ShadingFunctionKind AdvancedMaterialProperty::getPhaseFunctionEnum() const {
     }
 }
 
-void AdvancedMaterialProperty::deserialize(IvwDeserializer& d) {
+void AdvancedMaterialProperty::deserialize(Deserializer& d) {
     CompositeProperty::deserialize(d);
     phaseFunctionChanged();
 }

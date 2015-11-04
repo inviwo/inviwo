@@ -31,14 +31,14 @@
 #define IVW_EVENT_H
 
 #include <inviwo/core/common/inviwocoredefine.h>
-#include <inviwo/core/io/serialization/ivwserializable.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <unordered_set>
 
 namespace inviwo {
 
 class Processor;
 
-class IVW_CORE_API Event : public IvwSerializable {
+class IVW_CORE_API Event : public Serializable {
 public:
     Event();
     Event(const Event& rhs);
@@ -57,8 +57,8 @@ public:
     void markAsVisited(Processor*);
     bool hasVisitedProcessor(Processor*);
 
-    virtual void serialize(IvwSerializer& s) const;
-    virtual void deserialize(IvwDeserializer& d);
+    virtual void serialize(Serializer& s) const;
+    virtual void deserialize(Deserializer& d);
 
 private:
     bool used_;

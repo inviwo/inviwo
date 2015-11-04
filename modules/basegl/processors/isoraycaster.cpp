@@ -123,7 +123,7 @@ void ISORaycaster::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void ISORaycaster::deserialize(IvwDeserializer& d) {
+void ISORaycaster::deserialize(Deserializer& d) {
     util::renamePort(d, {{&entryPort_, "entry-points"}, {&exitPort_, "exit-points"}});
     Processor::deserialize(d);
 }

@@ -46,11 +46,11 @@ MetaData* MetaData::clone() const {
     return new MetaData(*this);
 }
 
-void MetaData::serialize(IvwSerializer& s) const {
+void MetaData::serialize(Serializer& s) const {
     IVW_UNUSED_PARAM(s);
 }
 
-void MetaData::deserialize(IvwDeserializer& d) {
+void MetaData::deserialize(Deserializer& d) {
     IVW_UNUSED_PARAM(d);
 }
 

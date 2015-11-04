@@ -110,7 +110,7 @@ public:
     bool positionModeEnabled() const { return posPicking_.get(); }
 
     // override to do member renaming.
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual void process() override;

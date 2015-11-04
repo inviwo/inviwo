@@ -29,7 +29,7 @@
 
 #include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/metadata/metadata.h>
-#include <inviwo/core/io/serialization/ivwserializable.h>
+#include <inviwo/core/io/serialization/serializable.h>
 #include <string.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
@@ -56,10 +56,10 @@ void testserialization(T def, T in) {
     mdo1->setMetaData<M>("data", indata);
     outdata1 = mdo1->getMetaData<M>("data", outdata1);
     EXPECT_EQ(indata, outdata1);
-    IvwSerializer serializer(filename);
+    Serializer serializer(filename);
     mdo1->getMetaDataMap()->serialize(serializer);
     serializer.writeFile();
-    IvwDeserializer deserializer(filename);
+    Deserializer deserializer(filename);
     mdo2->getMetaDataMap()->deserialize(deserializer);
     T outdata2 = def;
     outdata2 = mdo2->getMetaData<M>("data", outdata2);

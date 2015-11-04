@@ -32,7 +32,7 @@
 
 
 
-#include <inviwo/core/io/serialization/ivwserializebase.h>
+#include <inviwo/core/io/serialization/serializebase.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -43,10 +43,10 @@
 
 namespace inviwo {
 
-class IvwSerializable;
+class Serializable;
 class VersionConverter;
 
-class IVW_CORE_API IvwDeserializer : public IvwSerializeBase {
+class IVW_CORE_API Deserializer : public SerializeBase {
 public:
     /**
      * \brief Deserializer constructor
@@ -54,14 +54,14 @@ public:
      * @param s optional reference to existing deserializer.
      * @param allowReference flag to manage references to avoid multiple object creation.
      */
-    IvwDeserializer(IvwDeserializer& s, bool allowReference = true);
+    Deserializer(Deserializer& s, bool allowReference = true);
     /**
      * \brief Deserializer constructor
      *
      * @param fileName path to file that is to be deserialized.
      * @param allowReference flag to manage references to avoid multiple object creation.
      */
-    IvwDeserializer(std::string fileName, bool allowReference = true);
+    Deserializer(std::string fileName, bool allowReference = true);
     /**
      * \brief Deserializes content from the stream using path to calculate relative paths to data.
      *
@@ -70,12 +70,12 @@ public:
      *deserialization.
      * @param bool allowReference flag to manage references to avoid multiple object creation.
      */
-    IvwDeserializer(std::istream& stream, const std::string& path, bool allowReference = true);
+    Deserializer(std::istream& stream, const std::string& path, bool allowReference = true);
 
     void pushErrorHandler(BaseDeserializationErrorHandler*);
     BaseDeserializationErrorHandler* popErrorHandler();
 
-    virtual ~IvwDeserializer();
+    virtual ~Deserializer();
 
     // std containers
     /**
@@ -161,7 +161,7 @@ public:
     template <typename K, typename V, typename C, typename A>
     void deserialize(
         const std::string& key, std::map<K, V, C, A>& sMap, const std::string& itemKey,
-        const std::string& comparisionAttribute = IvwSerializeConstants::KEY_ATTRIBUTE);
+        const std::string& comparisionAttribute = SerializeConstants::KeyAttribute);
 
     // Specializations for chars
     void deserialize(const std::string& key, signed char& data, const bool asAttribute = false);
@@ -190,7 +190,7 @@ public:
     /**
      * \brief  Deserialize any Serializable object
      */
-    void deserialize(const std::string& key, IvwSerializable& sObj);
+    void deserialize(const std::string& key, Serializable& sObj);
     /**
      * \brief  Deserialize pointer data of type T, which is of type
      *         serializeble object or primitive data
@@ -216,15 +216,15 @@ template <typename T>
 class DeserializationErrorHandle {
 public:
     typedef void (T::*Callback)(SerializationException&);
-    DeserializationErrorHandle(IvwDeserializer&, std::string type, T* obj, Callback callback);
+    DeserializationErrorHandle(Deserializer&, std::string type, T* obj, Callback callback);
     virtual ~DeserializationErrorHandle();
 
 private:
-    IvwDeserializer& d_;
+    Deserializer& d_;
 };
 
 template <typename T>
-inviwo::DeserializationErrorHandle<T>::DeserializationErrorHandle(IvwDeserializer& d,
+inviwo::DeserializationErrorHandle<T>::DeserializationErrorHandle(Deserializer& d,
                                                                   std::string type, T* obj,
                                                                   Callback callback)
     : d_(d) {
@@ -241,7 +241,7 @@ template <typename T,
           typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value ||
                                       util::is_string<T>::value,
                                   int>::type>
-void IvwDeserializer::deserialize(const std::string& key, T& data, const bool asAttribute) {
+void Deserializer::deserialize(const std::string& key, T& data, const bool asAttribute) {
     if (asAttribute) {
         try {
             rootElement_->GetAttribute(key, &data);
@@ -250,11 +250,11 @@ void IvwDeserializer::deserialize(const std::string& key, T& data, const bool as
     } else {
         try {
             NodeSwitch ns(*this, key);
-            rootElement_->GetAttribute(IvwSerializeConstants::CONTENT_ATTRIBUTE, &data);
+            rootElement_->GetAttribute(SerializeConstants::ContentAttribute, &data);
         } catch (TxException&) {
             try {
                 NodeSwitch ns(*this, key, true);
-                rootElement_->GetAttribute(IvwSerializeConstants::CONTENT_ATTRIBUTE, &data);
+                rootElement_->GetAttribute(SerializeConstants::ContentAttribute, &data);
             } catch (TxException&) {
             }
         }
@@ -263,7 +263,7 @@ void IvwDeserializer::deserialize(const std::string& key, T& data, const bool as
 
 // enum types
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type>
-void IvwDeserializer::deserialize(const std::string& key, T& data, const bool asAttribute) {
+void Deserializer::deserialize(const std::string& key, T& data, const bool asAttribute) {
     using ET = typename std::underlying_type<T>::type;
     ET tmpdata{static_cast<ET>(data)};
     deserialize(key, tmpdata, asAttribute);
@@ -272,11 +272,11 @@ void IvwDeserializer::deserialize(const std::string& key, T& data, const bool as
 
 // glm vector types
 template <typename Vec, typename std::enable_if<util::rank<Vec>::value == 1, int>::type>
-void IvwDeserializer::deserialize(const std::string& key, Vec& data) {
+void Deserializer::deserialize(const std::string& key, Vec& data) {
     try {
         NodeSwitch ns(*this, key);
         for (size_t i = 0; i < util::extent<Vec, 0>::value; ++i) {
-            rootElement_->GetAttribute(IvwSerializeConstants::VECTOR_ATTRIBUTES[i], &data[i]);
+            rootElement_->GetAttribute(SerializeConstants::VectorAttributes[i], &data[i]);
         }
     } catch (TxException&) {
     }
@@ -284,7 +284,7 @@ void IvwDeserializer::deserialize(const std::string& key, Vec& data) {
 
 // glm matrix types
 template <typename Mat, typename std::enable_if<util::rank<Mat>::value == 2, int>::type>
-void IvwDeserializer::deserialize(const std::string& key, Mat& data) {
+void Deserializer::deserialize(const std::string& key, Mat& data) {
     try {
         NodeSwitch ns(*this, key);
         for (size_t i = 0; i < util::extent<Mat, 0>::value; ++i) {
@@ -295,7 +295,7 @@ void IvwDeserializer::deserialize(const std::string& key, Mat& data) {
 }
 
 template <typename T>
-void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vector,
+void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                                   const std::string& itemKey) {
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
@@ -330,7 +330,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
 }
 
 template <typename T>
-void IvwDeserializer::deserialize(const std::string& key, std::vector<std::unique_ptr<T>>& vector,
+void Deserializer::deserialize(const std::string& key, std::vector<std::unique_ptr<T>>& vector,
                                   const std::string& itemKey) {
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
@@ -366,7 +366,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<std::uniqu
 }
 
 template <typename T, typename C>
-void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vector,
+void Deserializer::deserialize(const std::string& key, std::vector<T*>& vector,
                                   const std::string& itemKey, C identifier) {
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
@@ -406,7 +406,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T*>& vecto
 }
 
 template <typename T>
-void IvwDeserializer::deserialize(const std::string& key, std::vector<T>& vector,
+void Deserializer::deserialize(const std::string& key, std::vector<T>& vector,
                                   const std::string& itemKey) {
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
@@ -436,7 +436,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::vector<T>& vector
 }
 
 template <typename T>
-void IvwDeserializer::deserialize(const std::string& key, std::list<T>& container,
+void Deserializer::deserialize(const std::string& key, std::list<T>& container,
                                   const std::string& itemKey) {
     try {
         NodeSwitch vectorNodeSwitch(*this, key);
@@ -466,7 +466,7 @@ void IvwDeserializer::deserialize(const std::string& key, std::list<T>& containe
 }
 
 template <typename K, typename V, typename C, typename A>
-void IvwDeserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map,
+void Deserializer::deserialize(const std::string& key, std::map<K, V, C, A>& map,
                                   const std::string& itemKey,
                                   const std::string& comparisionAttribute) {
     if (!isPrimitiveType(typeid(K)) || comparisionAttribute.empty())
@@ -498,14 +498,14 @@ void IvwDeserializer::deserialize(const std::string& key, std::map<K, V, C, A>& 
 }
 
 template <class T>
-inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
+inline void Deserializer::deserialize(const std::string& key, T*& data) {
     TxElement* keyNode =
         retrieveChild_ ? rootElement_->FirstChildElement(key, false) : rootElement_;
     if (!keyNode) return;
 
-    const std::string type_attr(keyNode->GetAttribute(IvwSerializeConstants::TYPE_ATTRIBUTE));
-    const std::string ref_attr(keyNode->GetAttribute(IvwSerializeConstants::REF_ATTRIBUTE));
-    const std::string id_attr(keyNode->GetAttribute(IvwSerializeConstants::ID_ATTRIBUTE));
+    const std::string type_attr(keyNode->GetAttribute(SerializeConstants::TypeAttribute));
+    const std::string ref_attr(keyNode->GetAttribute(SerializeConstants::RefAttribute));
+    const std::string id_attr(keyNode->GetAttribute(SerializeConstants::IDAttribute));
 
     if (!data) {
         if (allowRef_ && !ref_attr.empty()) {
@@ -529,7 +529,7 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
             return;
 
         } else if (!type_attr.empty()) {
-            data = IvwSerializeBase::getRegisteredType<T>(type_attr);
+            data = SerializeBase::getRegisteredType<T>(type_attr);
             if (!data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
@@ -539,7 +539,7 @@ inline void IvwDeserializer::deserialize(const std::string& key, T*& data) {
             }
 
         } else {
-            data = IvwSerializeBase::getNonRegisteredType<T>();
+            data = SerializeBase::getNonRegisteredType<T>();
             if (!data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(

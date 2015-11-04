@@ -76,7 +76,7 @@ public:
 
     virtual void initializeResources() override;
 
-    virtual void deserialize(IvwDeserializer& d) override;
+    virtual void deserialize(Deserializer& d) override;
 
 protected:
     virtual void process() override;

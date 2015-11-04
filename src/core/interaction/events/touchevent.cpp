@@ -36,7 +36,7 @@ TouchPoint::TouchPoint(int id, vec2 pos, vec2 posNormalized, vec2 prevPos, vec2 
 
 }
 
-void TouchPoint::serialize(IvwSerializer& s) const {
+void TouchPoint::serialize(Serializer& s) const {
     s.serialize("id", id_);
     s.serialize("pos", pos_);
     s.serialize("posNormalized", posNormalized_);
@@ -47,7 +47,7 @@ void TouchPoint::serialize(IvwSerializer& s) const {
 
 }
 
-void TouchPoint::deserialize(IvwDeserializer& d) {
+void TouchPoint::deserialize(Deserializer& d) {
     d.deserialize("id", id_);
     d.deserialize("pos", pos_);
     d.deserialize("posNormalized", posNormalized_);
@@ -149,12 +149,12 @@ std::vector<const TouchPoint*> TouchEvent::findClosestTwoTouchPoints() const {
     return returnVec;
 }
 
-void TouchEvent::serialize(IvwSerializer& s) const {
+void TouchEvent::serialize(Serializer& s) const {
     s.serialize("touchPoints", touchPoints_, "touchPoint");
     InteractionEvent::serialize(s); 
 }
 
-void TouchEvent::deserialize(IvwDeserializer& d) { 
+void TouchEvent::deserialize(Deserializer& d) { 
     d.deserialize("touchPoints", touchPoints_, "touchPoint");
     InteractionEvent::deserialize(d); 
 }
