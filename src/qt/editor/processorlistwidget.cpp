@@ -140,44 +140,40 @@ void ProcessorTreeWidget::focusSearch() {
 }
 
 void ProcessorTreeWidget::keyPressEvent(QKeyEvent* e) {
-    switch (e->modifiers()) {
-        case Qt::ControlModifier: {
-            switch (e->key()) {
-                case Qt::Key_Down: {
-                    processorTree_->setFocus();
-                    e->accept();
-                    break;
-                }
-                case Qt::Key_F: {
-                    focusSearch();
-                    e->accept();
-                    break;
-                }
-                case Qt::Key_D: {
-                    auto items = processorTree_->selectedItems();
-                    if (items.size() > 0) {
-                        auto id = items[0]
-                                      ->data(0, ProcessorTree::IDENTIFIER_ROLE)
-                                      .toString()
-                                      .toStdString();
-                        addProcessor(id);
-                    } else {
-                        auto count = processorTree_->topLevelItemCount();
-                        if (count == 1) {
-                            auto item = processorTree_->topLevelItem(0);
-                            if (item->childCount() == 1) {
-                                auto id = item->child(0)
-                                              ->data(0, ProcessorTree::IDENTIFIER_ROLE)
-                                              .toString()
-                                              .toStdString();
-                                addProcessor(id);
-                            }
+    if (e->modifiers() & Qt::ControlModifier) {
+        switch (e->key()) {
+            case Qt::Key_F: {
+                focusSearch();
+                e->accept();
+                break;
+            }
+            case Qt::Key_D: {
+                std::string id;
+                auto items = processorTree_->selectedItems();
+                if (items.size() > 0) {
+                    id = items[0]->data(0, ProcessorTree::IDENTIFIER_ROLE).toString().toStdString();
+                } else {
+                    auto count = processorTree_->topLevelItemCount();
+                    if (count == 1) {
+                        auto item = processorTree_->topLevelItem(0);
+                        if (item->childCount() == 1) {
+                            id = item->child(0)
+                                     ->data(0, ProcessorTree::IDENTIFIER_ROLE)
+                                     .toString()
+                                     .toStdString();
                         }
                     }
-                    break;
                 }
+                if (!id.empty()) {
+                    addProcessor(id);
+                } else {
+                    processorTree_->setFocus();
+                    processorTree_->topLevelItem(0)->child(0)->setSelected(true);
+                }
+                e->accept();
+
+                break;
             }
-            break;
         }
     }
 }
