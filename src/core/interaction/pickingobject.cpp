@@ -31,27 +31,35 @@
 
 namespace inviwo {
 
-PickingObject::PickingObject(size_t id, DataVec3UInt8::type c) : id_(id), colorUINT8_(c),
-    interactionEventType_(InteractionEventType::NoneSupported), pos_(vec2(0.f)), 
-    depth_(0.f), move_(vec2(0.f)) {
-    onPickedCallback_ = new PickingCallback();
-    color_ = static_cast<vec3>(DataVec3UInt8::get()->valueToNormalizedVec3Double(&c));
+PickingObject::PickingObject(size_t id, size_t size)
+    : start_(id)
+    , size_(size)
+    , capacity_(size)
+    , interactionEventType_(InteractionEventType::NoneSupported)
+    , pos_(vec2(0.f))
+    , depth_(0.f)
+    , move_(vec2(0.f)) {
 }
 
-PickingObject::~PickingObject() {
-    delete onPickedCallback_;
+PickingObject::~PickingObject() {}
+
+size_t PickingObject::getPickingId(size_t id) const {
+    if (id < size_)
+        return start_ + id;
+    else 
+        throw Exception("Out of range", IvwContext);
 }
 
-const size_t& PickingObject::getPickingId() const {
-    return id_;
+size_t PickingObject::getPickedId() const {
+    return pickedId_;
 }
 
-const vec3& PickingObject::getPickingColor() const {
-    return color_;
+size_t PickingObject::getSize() const {
+    return size_;
 }
 
-const DataVec3UInt8::type& PickingObject::getPickingColorAsUINT8() const {
-    return colorUINT8_;
+vec3 PickingObject::getPickingColor(size_t id) const {
+    return vec3(PickingManager::indexToColor(getPickingId(id))) / 255.0f;
 }
 
 const vec2& PickingObject::getPickingPosition() const {
@@ -67,7 +75,7 @@ const double& PickingObject::getPickingDepth() const {
 }
 
 void PickingObject::picked() const {
-    onPickedCallback_->invoke(this);
+    callback_(this);
 }
 
 PickingObject::InteractionEventType PickingObject::getPickingInteractionType() const {
@@ -104,8 +112,26 @@ void PickingObject::setPickingDepth(double depth) {
     depth_ = depth;
 }
 
-PickingCallback* PickingObject::getCallbackContainer() {
-    return onPickedCallback_;
+void PickingObject::setCallback(std::function<void(const PickingObject*)> func) {
+    callback_ = func;
+}
+
+size_t PickingObject::getCapacity() const {
+    return capacity_;
+}
+
+void PickingObject::setSize(size_t size) {
+    if (size <= capacity_)
+        size_ = size;
+    else
+        throw Exception("Out of range", IvwContext);
+}
+
+void PickingObject::setPickedId(size_t id) {
+    if (id < size_)
+        pickedId_ = id;
+    else
+        throw Exception("Out of range", IvwContext);
 }
 
 } // namespace

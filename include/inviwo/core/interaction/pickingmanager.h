@@ -36,56 +36,47 @@
 
 namespace inviwo {
 
-class FindPickingObject {
-public:
-    FindPickingObject(const DataVec3UInt8::type& c) : color_(c) {}
-    bool operator()(PickingObject* obj) { return obj->getPickingColorAsUINT8() == color_; }
-private:
-    DataVec3UInt8::type color_;
-};
-
 /** \class PickingManager
  * Manager for picking objects.
  */
 class IVW_CORE_API PickingManager : public Singleton<PickingManager> {
     friend class PickingContainer;
+
 public:
-    PickingManager() {};
+    PickingManager(){};
     PickingManager(PickingManager const&) = delete;
     PickingManager& operator=(PickingManager const&) = delete;
     virtual ~PickingManager();
 
     template <typename T>
-    const PickingObject* registerPickingCallback(T* o, void (T::*m)(const PickingObject*));
+    const PickingObject* registerPickingCallback(T* o, void (T::*m)(const PickingObject*),
+                                                 size_t size = 1);
+    const PickingObject* registerPickingCallback(std::function<void(const PickingObject*)> callback,
+                                                 size_t size = 1);
 
     bool unregisterPickingObject(const PickingObject*);
     bool pickingEnabled();
 
+    static uvec3 indexToColor(size_t index);
+    static size_t colorToIndex(uvec3 color);
+
 protected:
-    void performUniqueColorGenerationTest(int iterations);
-    PickingObject* getPickingObjectFromColor(const DataVec3UInt8::type&);
-    PickingObject* generatePickingObject(size_t);
+    PickingObject* getPickingObjectFromColor(const uvec3&);
 
 private:
-    std::vector<PickingObject*> pickingObjects_;
-    std::vector<PickingObject*> unRegisteredPickingObjects_;
+    size_t lastIndex_ = 0;
+    // pickingObjects_ should be sorted on the start index.
+    std::vector<std::unique_ptr<PickingObject>> pickingObjects_;
+    // unusedObjects_ should be sorted on capacity.
+    std::vector<PickingObject*> unusedObjects_;
 };
 
 template <typename T>
 const PickingObject* PickingManager::registerPickingCallback(T* o,
-                                                             void (T::*m)(const PickingObject*)) {
-    PickingObject* pickObj;
-
-    if (unRegisteredPickingObjects_.empty()) {
-        pickObj = generatePickingObject(pickingObjects_.size());
-        pickingObjects_.push_back(pickObj);
-    } else {
-        pickObj = unRegisteredPickingObjects_.back();
-        unRegisteredPickingObjects_.pop_back();
-    }
-
-    pickObj->getCallbackContainer()->addMemberFunction(o, m);
-    return pickObj;
+                                                             void (T::*m)(const PickingObject*),
+                                                             size_t size) {
+    using namespace std::placeholders;
+    return registerPickingCallback(std::bind(m, o, _1), size);
 }
 
 }  // namespace

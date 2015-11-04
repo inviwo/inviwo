@@ -32,7 +32,6 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/interaction/pickingcallback.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 
@@ -42,22 +41,25 @@ namespace inviwo {
  */
 class IVW_CORE_API PickingObject {
 public:
+    friend class PickingManager;
+
     enum class InteractionEventType {
         NoneSupported = 0,
         MouseInteraction = 1,
         TouchInteraction = 2
     };
 
-    PickingObject(size_t, DataVec3UInt8::type);
+    PickingObject(size_t start, size_t size = 1);
 
     virtual ~PickingObject();
 
-    const size_t& getPickingId() const;
-    const vec3& getPickingColor() const;
-    const DataVec3UInt8::type& getPickingColorAsUINT8() const;
+    size_t getPickingId(size_t id = 0) const;
+    size_t getPickedId() const;
+    size_t getSize() const;
+
+    vec3 getPickingColor(size_t id = 0) const;
     const vec2& getPickingPosition() const;
     const vec2& getPickingMove() const;
-
     const double& getPickingDepth() const;
 
     void picked() const;
@@ -74,12 +76,16 @@ public:
     void setPickingPosition(vec2);
     void setPickingDepth(double);
 
-    PickingCallback* getCallbackContainer();
-
 private:
-    size_t id_;
-    DataVec3UInt8::type colorUINT8_;
-    vec3 color_;
+    size_t getCapacity() const;
+    void setSize(size_t size);
+    void setPickedId(size_t id);
+    void setCallback(std::function<void(const PickingObject*)> func);
+
+    size_t start_;
+    size_t size_;
+    size_t capacity_;
+    size_t pickedId_ = 0;
 
     MouseEvent mouseEvent_;
     TouchEvent touchEvent_;
@@ -89,7 +95,7 @@ private:
     double depth_;
     vec2 move_;
 
-    PickingCallback* onPickedCallback_;
+    std::function<void(const PickingObject*)> callback_;
 };
 
 } // namespace

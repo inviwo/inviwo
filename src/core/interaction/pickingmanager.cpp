@@ -35,20 +35,49 @@
 
 namespace inviwo {
 
-PickingManager::~PickingManager() {
-    for (auto& elem : pickingObjects_) delete elem;
+PickingManager::~PickingManager() {}
+
+const PickingObject* PickingManager::registerPickingCallback(
+    std::function<void(const PickingObject*)> callback, size_t size /*= 1*/) {
+    PickingObject* pickObj = nullptr;
+
+    // Find the smallest object with capacity >= size
+    auto it = std::lower_bound(unusedObjects_.begin(), unusedObjects_.end(), size,
+                               [](PickingObject* p, int size) {
+                                   return p->getCapacity() < size;
+                               });
+
+    if (it != unusedObjects_.end()) {
+        pickObj = *it;
+        unusedObjects_.erase(it);
+        pickObj->setSize(size);
+    }
+
+    if (!pickObj) {
+        pickingObjects_.push_back(std::make_unique<PickingObject>(lastIndex_, size));
+        lastIndex_ += size;
+        pickObj = pickingObjects_.back().get();
+    }
+    pickObj->setCallback(callback);
+    return pickObj;
 }
 
 bool PickingManager::unregisterPickingObject(const PickingObject* p) {
-    std::vector<PickingObject*>::iterator it =
-        std::find(unRegisteredPickingObjects_.begin(), unRegisteredPickingObjects_.end(), p);
-
-    if (it == unRegisteredPickingObjects_.end()) {
-        it = std::find(pickingObjects_.begin(), pickingObjects_.end(), p);
+    auto it = std::find(unusedObjects_.begin(), unusedObjects_.end(), p);
+    if (it == unusedObjects_.end()) {
+        auto it = util::find_if(
+            pickingObjects_, [p](const std::unique_ptr<PickingObject>& o) { return p == o.get(); });
 
         if (it != pickingObjects_.end()) {
-            (*it)->getCallbackContainer()->deleteCallback();
-            unRegisteredPickingObjects_.push_back(*it);
+            (*it)->setCallback(nullptr);
+
+            auto insit =
+                std::upper_bound(unusedObjects_.begin(), unusedObjects_.end(), (*it)->getCapacity(),
+                                 [](const size_t& capacity, PickingObject* p) {
+                return capacity < p->getCapacity();
+            });
+
+            unusedObjects_.insert(insit, (*it).get());
             return true;
         }
     }
@@ -63,63 +92,47 @@ bool PickingManager::pickingEnabled() {
     return (pickingEnabledProperty && pickingEnabledProperty->get());
 }
 
-PickingObject* PickingManager::getPickingObjectFromColor(const DataVec3UInt8::type& c) {
-    std::vector<PickingObject*>::iterator it =
-        std::find_if(pickingObjects_.begin(), pickingObjects_.end(), FindPickingObject(c));
+inviwo::uvec3 PickingManager::indexToColor(size_t id) {
+    const size_t Nr = 13;
+    const size_t colors = 256 * 256 * 256;
+    id++; // avoid zero
 
-    if (it != pickingObjects_.end()) return (*it);
+    size_t i = id % Nr;
+    size_t n = static_cast<size_t>(
+        std::floor(i * colors / static_cast<double>(Nr) + id / static_cast<double>(Nr)));
+    return uvec3(static_cast<unsigned char>(std::floor(n / (256.0 * 256.0))),
+              static_cast<unsigned char>(std::floor(static_cast<double>(n) / 256.0)) % 256,
+              static_cast<unsigned char>(n % 256));
+}
+
+size_t PickingManager::colorToIndex(uvec3 color) {
+    const size_t Nr = 13;
+    const size_t colors = 256 * 256 * 256;
+    size_t n = color.r * 256 * 256 + color.g * 256 + color.b;
+    auto i = std::round(n / (colors / static_cast<double>(Nr)));
+    auto o = n - std::round(i * colors / static_cast<double>(Nr));
+    return static_cast<size_t>(o * Nr + i)-1;
+}
+
+PickingObject* PickingManager::getPickingObjectFromColor(const uvec3& c) {
+    auto index = colorToIndex(c);
+
+    // This will find the first picking object with an start greater then index.
+    auto pit = std::upper_bound(pickingObjects_.begin(), pickingObjects_.end(), index,
+                                [](const size_t& index, const std::unique_ptr<PickingObject>& p) {
+                                    return index < p->getPickingId(0);
+                                });
+
+    if (std::distance(pickingObjects_.begin(), pit) > 0) {
+        auto po = (*(--pit)).get();
+        const auto start = po->getPickingId(0);
+        if (index >= start && index < start + po->getSize()) {
+            po->setPickedId(index - start);
+            return po;
+        }
+    }
 
     return nullptr;
-}
-
-PickingObject* PickingManager::generatePickingObject(size_t id) {
-    float idF = static_cast<float>(id);
-    // Hue /Saturation / Value
-    // Hue is based on Golden Ratio for unique and distinct color differences.
-    float valueDiff = 0.05f * std::floor(idF / 100.f);
-
-    if (valueDiff > 0.7f) {
-        LogError("Maximum number of picking colors reached at ID : " << id);
-        return nullptr;
-    }
-
-    vec3 hsv = vec3(idF * M_PI - floor(idF * M_PI), 0.5f, 0.95f - valueDiff);
-    dvec3 rgb = dvec3(hsv2rgb(hsv));
-    DataVec3UInt8::type rgbUINT8;
-    DataVec3UInt8::get()->vec3DoubleToValue(rgb * 255.0, &rgbUINT8);
-    return new PickingObject(id, rgbUINT8);
-}
-
-void PickingManager::performUniqueColorGenerationTest(int iterations) {
-    std::vector<DataVec3UInt8::type> colorVec;
-    bool passed = true;
-
-    for (int i = 0; i < iterations; i++) {
-        float idF = static_cast<float>(i);
-        float valueDiff = 0.05f * std::floor(idF / 100.f);
-
-        if (valueDiff > 0.85f) {
-            LogError("Maximum number of picking colors reached at ID : " << i);
-            return;
-        }
-
-        vec3 hsv = vec3(idF * M_PI - floor(idF * M_PI), 0.5f, 0.95f - valueDiff);
-        dvec3 rgb = dvec3(hsv2rgb(hsv));
-        DataVec3UInt8::type rgbUINT8;
-        DataVec3UInt8::get()->vec3DoubleToValue(rgb * 255.0, &rgbUINT8);
-
-        if (std::find(colorVec.begin(), colorVec.end(), rgbUINT8) != colorVec.end()) {
-            ivec3 ic = ivec3(rgbUINT8.x, rgbUINT8.y, rgbUINT8.z);
-            LogInfo("Duplicate Picking Color : (" << ic.x << "," << ic.y << "," << ic.z
-                                                  << ") at iteration " << i << " with valueDiff "
-                                                  << valueDiff);
-            passed = false;
-        } else
-            colorVec.push_back(rgbUINT8);
-    }
-
-    if (passed)
-        LogInfo("performUniqueColorGenerationTest passed with " << iterations << " iterations");
 }
 
 }  // namespace
