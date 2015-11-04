@@ -86,16 +86,21 @@ void Processor::addPort(Outport& port, const std::string& portDependencySet) {
 }
 
 std::string Processor::setIdentifier(const std::string& identifier) {
-    if (identifier == identifier_)  // nothing changed
-        return identifier_;
+    if (identifier == identifier_) return identifier_;  // nothing changed
 
-    if (usedIdentifiers_.find(identifier_) != usedIdentifiers_.end()) {
-        usedIdentifiers_.erase(identifier_);  // remove old identifier
-    }
+    usedIdentifiers_.erase(identifier_);  // remove old identifier
 
     std::string baseIdentifier = identifier;
     std::string newIdentifier = identifier;
     int i = 2;
+
+    auto parts = splitString(identifier, ' ');
+    if (parts.size() > 1 &&
+        util::all_of(parts.back(), [](const char& c) { return std::isdigit(c); })) {
+        i = std::stoi(parts.back());
+        baseIdentifier = joinString(parts.begin(), parts.end() - 1, " ");
+        newIdentifier = baseIdentifier;
+    }
 
     while (usedIdentifiers_.find(newIdentifier) != usedIdentifiers_.end()) {
         newIdentifier = baseIdentifier + " " + toString(i++);
