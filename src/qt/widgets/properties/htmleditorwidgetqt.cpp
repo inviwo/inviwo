@@ -33,6 +33,8 @@
 
 #include <inviwo/core/util/logcentral.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QCommandLinkButton>
 #include <QSplitter>
 #include <QFileDialog>
@@ -40,6 +42,7 @@
 #include <QVBoxLayout>
 #include <QToolBar>
 #include <QString>
+#include <warn/pop>
 
 namespace inviwo {
 

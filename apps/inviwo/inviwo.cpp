@@ -34,8 +34,10 @@
 #pragma comment(linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 #endif
 #endif
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QFile>
+#include <warn/pop>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>

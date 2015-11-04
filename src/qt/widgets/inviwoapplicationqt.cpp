@@ -36,13 +36,15 @@
 
 #include <thread>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QFile>
-
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 #include <QSound>
 #endif
+#include <warn/pop>
 
 namespace inviwo {
 

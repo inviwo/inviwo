@@ -31,8 +31,12 @@
 #define IVW_LABELGRAPHICSITEM_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
-#include <QGraphicsTextItem>
 #include <inviwo/core/util/observer.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QGraphicsTextItem>
+#include <warn/pop>
+
 
 namespace inviwo {
 

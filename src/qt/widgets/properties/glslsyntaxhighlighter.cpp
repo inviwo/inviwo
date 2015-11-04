@@ -33,9 +33,11 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QTextDocument>
 #include <QTextBlock>
-
+#include <warn/pop>
 
 
 namespace {

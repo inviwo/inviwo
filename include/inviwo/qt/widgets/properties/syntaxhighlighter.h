@@ -33,7 +33,10 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 
 // QT includes
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QSyntaxHighlighter>
+#include <warn/pop>
 
 class QTextDocument;
 

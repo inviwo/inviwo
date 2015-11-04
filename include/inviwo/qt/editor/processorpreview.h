@@ -32,8 +32,11 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QImage>
 #include <QString>
+#include <warn/pop>
 
 namespace inviwo {
 

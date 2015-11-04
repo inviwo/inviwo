@@ -30,7 +30,10 @@
 #ifndef IVW_INVIWOSPLASHSCREEN_H
 #define IVW_INVIWOSPLASHSCREEN_H
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QSplashScreen>
+#include <warn/pop>
 
 namespace inviwo {
 

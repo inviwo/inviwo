@@ -30,7 +30,10 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
+#include <inviwo/qt/widgets/inviwofiledialog.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QStandardPaths>
 #else
@@ -42,7 +45,9 @@
 #include <QList>
 #include <QSettings>
 #include <QUrl>
-#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <warn/pop>
+
+
 
 namespace inviwo {
 

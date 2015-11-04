@@ -32,11 +32,16 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
-#include <QCheckBox>
-
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-
 #include <inviwo/core/properties/boolproperty.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QCheckBox>
+#include <warn/pop>
+
+
+
 
 namespace inviwo {
 

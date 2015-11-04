@@ -31,9 +31,12 @@
 #define IVW_RANGESLIDERQT_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QSplitter>
 #include <QResizeEvent>
 #include <QFrame>
+#include <warn/pop>
 
 namespace inviwo {
 

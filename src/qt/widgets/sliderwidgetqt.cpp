@@ -29,8 +29,10 @@
 
 #include <inviwo/qt/widgets/sliderwidgetqt.h>
 #include <limits>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QStyle>
+#include <warn/pop>
 
 namespace inviwo {
 

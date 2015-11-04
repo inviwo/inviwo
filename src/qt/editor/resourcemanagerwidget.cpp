@@ -29,8 +29,10 @@
 
 #include <inviwo/qt/editor/resourcemanagerwidget.h>
 #include <inviwo/core/resources/resourcemanager.h>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QStandardItem>
+#include <warn/pop>
 #include <string>
 
 namespace inviwo {

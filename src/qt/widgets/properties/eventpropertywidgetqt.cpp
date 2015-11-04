@@ -36,7 +36,10 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QPushButton>
+#include <warn/pop>
 
 namespace inviwo {
 

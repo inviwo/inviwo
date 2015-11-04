@@ -34,10 +34,10 @@
 #include <inviwo/core/datastructures/transferfunctiondatapoint.h>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsItem>
-
 #include <QPainterPath>
 #include <warn/pop>
 

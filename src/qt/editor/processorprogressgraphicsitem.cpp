@@ -28,11 +28,13 @@
  *********************************************************************************/
 
 #include <inviwo/qt/editor/processorprogressgraphicsitem.h>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QApplication>
 #include <QPen>
 #include <QPainter>
 #include <QBrush>
+#include <warn/pop>
 
 namespace inviwo {
 

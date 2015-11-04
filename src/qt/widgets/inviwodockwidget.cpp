@@ -29,7 +29,10 @@
 
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 #include <inviwo/qt/widgets/inviwodockwidgettitlebar.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QKeyEvent>
+#include <warn/pop>
 
 namespace inviwo {
 

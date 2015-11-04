@@ -29,8 +29,10 @@
 
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/core/util/logcentral.h>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QLocale>
+#include <warn/pop>
 #include <ios>
 #include <exception>
 

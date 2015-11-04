@@ -32,12 +32,15 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
+#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <inviwo/core/properties/fileproperty.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QLineEdit>
 #include <QToolButton>
+#include <warn/pop>
 
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-
-#include <inviwo/core/properties/fileproperty.h>
 
 namespace inviwo {
 

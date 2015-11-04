@@ -27,10 +27,13 @@
  * 
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QMatrix>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QScrollBar>
+#include <warn/pop>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/linksettings.h>
 #include <inviwo/core/util/settings/systemsettings.h>

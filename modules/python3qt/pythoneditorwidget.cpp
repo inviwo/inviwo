@@ -39,6 +39,8 @@
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QCommandLinkButton>
 #include <QSplitter>
 #include <QFileDialog>
@@ -50,6 +52,7 @@
 #include <QHBoxLayout>
 #include <QFrame>
 #include <QPalette>
+#include <warn/pop>
 
 namespace inviwo {
 

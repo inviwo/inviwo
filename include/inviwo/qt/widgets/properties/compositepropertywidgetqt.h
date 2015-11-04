@@ -32,13 +32,15 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
-#include <QLineEdit>
-#include <QToolButton>
-
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/compositepropertyobserver.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QLineEdit>
+#include <QToolButton>
+#include <warn/pop>
 
 namespace inviwo {
 

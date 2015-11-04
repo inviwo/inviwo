@@ -31,11 +31,15 @@
 #include <inviwo/qt/editor/linkdialog/linkdialogpropertygraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogcurvegraphicsitems.h>
 #include <inviwo/qt/editor/linkdialog/linkdialogscene.h>
-
-#include <QTimeLine>
-
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/network/processornetwork.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QTimeLine>
+#include <warn/pop>
+
+
 
 namespace inviwo {
 

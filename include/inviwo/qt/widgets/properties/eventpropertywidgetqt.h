@@ -32,8 +32,10 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QObject>
+#include <warn/pop>
 
 namespace inviwo {
 

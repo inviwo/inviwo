@@ -32,7 +32,10 @@
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/properties/transferfunctionpropertydialog.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QHBoxLayout>
+#include <warn/pop>
 
 namespace inviwo {
 

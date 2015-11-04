@@ -31,8 +31,10 @@
 #define IVW_INVIWODOCKWIDGET_H
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QDockWidget>
-
+#include <warn/pop>
 
 class QKeyEvent;
 class QLayout;

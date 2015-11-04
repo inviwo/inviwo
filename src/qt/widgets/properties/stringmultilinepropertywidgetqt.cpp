@@ -29,8 +29,10 @@
 
 #include <inviwo/qt/widgets/properties/stringmultilinepropertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/compositepropertywidgetqt.h>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QFontMetrics>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -43,8 +43,11 @@
 #include <inviwo/core/properties/propertyowner.h>
 
 #include <math.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QMenu>
 #include <QSignalMapper>
+#include <warn/pop>
 
 namespace inviwo {
 

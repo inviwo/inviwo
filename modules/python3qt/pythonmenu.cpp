@@ -32,10 +32,13 @@
 #include <modules/python3qt/pythoneditorwidget.h>
 
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QMenu>
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QAction>
+#include <warn/pop>
 
 namespace inviwo {
 

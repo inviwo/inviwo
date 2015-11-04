@@ -31,11 +31,14 @@
 #define IVW_EDITORGRAPHICSITEM_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-
+#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QGraphicsItem>
 #include <QGraphicsRectItem>
 #include <QGraphicsSceneHelpEvent>
-#include <inviwo/qt/widgets/properties/propertywidgetqt.h>
+#include <warn/pop>
+
 
 namespace inviwo {
 

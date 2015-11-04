@@ -37,11 +37,14 @@
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QTextEdit>
 #include <QColor>
 #include <QToolButton>
 #include <QSettings>
 #include <QPlainTextEdit>
+#include <warn/pop>
 
 class QPlainTextEdit;
 

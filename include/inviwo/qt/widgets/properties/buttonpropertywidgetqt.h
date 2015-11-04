@@ -30,13 +30,13 @@
 #ifndef IVW_BUTTONPROPERTYWIDGETQT_H
 #define IVW_BUTTONPROPERTYWIDGETQT_H
 
-#include <QPushButton>
-
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
-
 #include <inviwo/core/properties/buttonproperty.h>
 
-
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QPushButton>
+#include <warn/pop>
 
 namespace inviwo {
 

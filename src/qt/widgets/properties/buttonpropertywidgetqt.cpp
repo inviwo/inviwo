@@ -28,9 +28,11 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QHBoxLayout>
 #include <QLabel>
-
+#include <warn/pop>
 
 namespace inviwo {
 

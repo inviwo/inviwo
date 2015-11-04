@@ -30,9 +30,14 @@
 #include <inviwo/qt/widgets/properties/colorpropertywidgetqt.h>
 
 #include <inviwo/core/properties/ordinalproperty.h>
+
+#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/core/common/inviwoapplication.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QHBoxLayout>
-#include "inviwo/qt/widgets/inviwoapplicationqt.h"
-#include "inviwo/core/common/inviwoapplication.h"
+#include <warn/pop>
 
 namespace inviwo {
 

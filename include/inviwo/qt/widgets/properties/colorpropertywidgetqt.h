@@ -30,14 +30,19 @@
 #ifndef IVW_COLORPROPERTYWDIGETQT_H
 #define IVW_COLORPROPERTYWDIGETQT_H
 
-#include <QColorDialog>
-#include <QLabel>
-#include <QPushButton>
+
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>
 #include <inviwo/core/properties/buttonproperty.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <QColorDialog>
+#include <QLabel>
+#include <QPushButton>
+#include <warn/pop>
 
 namespace inviwo {
 

@@ -34,11 +34,15 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/util/fileextension.h>
 #include <string>
+#include <unordered_map>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QFileDialog>
 #include <QUrl>
 #include <QSettings>
+#include <warn/pop>
 
-#include <unordered_map>
 
 namespace inviwo {
 

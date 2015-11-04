@@ -27,6 +27,8 @@
  * 
  *********************************************************************************/
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QMenu>
 #include <QTextCursor>
 #include <QVBoxLayout>
@@ -36,6 +38,7 @@
 #include <QLabel>
 #include <QThread>
 #include <QCoreApplication>
+#include <warn/pop>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/editor/consolewidget.h>

@@ -32,6 +32,9 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QFrame>
 #include <QVBoxLayout>
 #include <QTextBrowser>
@@ -50,6 +53,7 @@
 #include <QImageReader>
 #include <QImageWriter>
 #endif
+#include <warn/pop>
 
 namespace inviwo {
 

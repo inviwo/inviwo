@@ -36,6 +36,8 @@
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/qt/widgets/editablelabelqt.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QLineEdit>
 #include <QToolButton>
 #include <QGroupBox>
@@ -43,6 +45,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QCheckBox>
+#include <warn/pop>
 
 namespace inviwo {
     

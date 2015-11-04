@@ -29,6 +29,8 @@
 
 #include <inviwo/qt/widgets/eventconverterqt.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QInputEvent>
@@ -36,6 +38,7 @@
 #ifndef QT_NO_GESTURES
 #include <QGesture>
 #endif
+#include <warn/pop>
 
 namespace inviwo {
 

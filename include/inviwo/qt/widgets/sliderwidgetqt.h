@@ -34,11 +34,15 @@
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/customdoublespinboxqt.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QSlider>
 #include <QHBoxLayout>
+#include <QLocale>
+#include <warn/pop>
+
 #include <math.h>
 #include <sstream>
-#include <QLocale>
 
 namespace inviwo {
 

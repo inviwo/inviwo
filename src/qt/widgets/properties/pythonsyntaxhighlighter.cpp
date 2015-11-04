@@ -34,8 +34,11 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QTextDocument>
 #include <QTextBlock>
+#include <warn/pop>
 
 static const char* python_keywords[] = {
     "\\band\\b",      "\\bas\\b",     "\\bassert\\b",  "\\bbreak\\b", "\\bclass\\b",
