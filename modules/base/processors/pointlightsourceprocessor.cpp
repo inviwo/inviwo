@@ -59,7 +59,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light radius", 1.5f, 0.0f, 3.0f)
-    , lightDiffuse_("lightDiffuse", "Color", vec4(1.0f))
+    , lightDiffuse_("lightDiffuse", "Color", vec3(1.0f))
     , lightEnabled_("lightEnabled", "Enabled", true)
     , lightScreenPosEnabled_("lightScreenPosEnabled", "Screen Pos Enabled", false)
     , lightScreenPos_("lightScreenPos", "Light Screen Pos", vec2(0.7f), vec2(0.f), vec2(1.f))
@@ -127,8 +127,7 @@ void PointLightSourceProcessor::updatePointLightSource(PointLight* lightSource) 
     lightSource->setWorldMatrix(transformationMatrix);
 
     lightSource->setSize(vec2(lightSize_.get()));
-    vec3 diffuseLight = lightDiffuse_.get().xyz();
-    lightSource->setIntensity(lightPowerProp_.get() * diffuseLight);
+    lightSource->setIntensity(lightPowerProp_.get() * lightDiffuse_.get());
     lightSource->setEnabled(lightEnabled_.get());
 }
 

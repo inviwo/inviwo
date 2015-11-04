@@ -54,7 +54,7 @@ DirectionalLightSourceProcessor::DirectionalLightSourceProcessor()
           &camera_.get())
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
-    , lightDiffuse_("lightDiffuse", "Color", vec4(1.0f))
+    , lightDiffuse_("lightDiffuse", "Color", vec3(1.0f))
     , lightEnabled_("lightEnabled", "Enabled", true)
     , lightSource_{std::make_shared<DirectionalLight>()} {
     addPort(outport_);
@@ -93,8 +93,8 @@ void DirectionalLightSourceProcessor::updateDirectionalLightSource(DirectionalLi
     lightSource->setModelMatrix(glm::translate(vec3(0.5f)));
     lightSource->setWorldMatrix(transformationMatrix);
     lightSource->setSize(vec2(1.f));
-    vec3 diffuseLight = lightDiffuse_.get().xyz();
-    lightSource->setIntensity(lightPowerProp_.get() * diffuseLight);
+
+    lightSource->setIntensity(lightPowerProp_.get() * lightDiffuse_.get());
     lightSource->setDirection(dir);
     lightSource->setEnabled(lightEnabled_.get());
 }

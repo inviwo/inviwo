@@ -169,7 +169,7 @@ private:
     CompositeProperty lighting_;
     FloatProperty lightPowerProp_;
     FloatProperty lightSize_;
-    FloatVec4Property lightDiffuse_;
+    FloatVec3Property lightDiffuse_;
     BoolProperty lightEnabled_;
     BoolProperty lightScreenPosEnabled_;
     FloatVec2Property lightScreenPos_;

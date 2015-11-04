@@ -86,7 +86,7 @@ private:
     PositionProperty lightPosition_;
     CompositeProperty lighting_;
     FloatProperty lightPowerProp_;
-    FloatVec4Property lightDiffuse_;
+    FloatVec3Property lightDiffuse_;
     BoolProperty lightEnabled_;
     
     

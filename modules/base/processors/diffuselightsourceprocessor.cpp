@@ -55,7 +55,7 @@ DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))
-    , lightDiffuse_("lightDiffuse", "Color", vec4(1.0f, 1.0f, 1.0f, 1.f)) {
+    , lightDiffuse_("lightDiffuse", "Color", vec3(1.0f)) {
     
     addPort(outport_);
     addProperty(lightPosition_);
@@ -91,8 +91,7 @@ void DiffuseLightSourceProcessor::updateLightSource(DiffuseLight* lightSource) {
     lightSource->setModelMatrix(glm::translate(vec3(0.5f)));
     lightSource->setWorldMatrix(transformationMatrix);
     lightSource->setSize(lightSize_.get());
-    vec3 diffuseLight = lightDiffuse_.get().xyz();
-    lightSource->setIntensity(lightPowerProp_.get() * diffuseLight);
+    lightSource->setIntensity(lightPowerProp_.get() * lightDiffuse_.get());
     lightSource->setNormal(dir);
 }
 

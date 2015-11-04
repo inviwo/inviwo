@@ -54,7 +54,7 @@ SpotLightSourceProcessor::SpotLightSourceProcessor()
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))
-    , lightDiffuse_("lightDiffuse", "Color", vec4(1.0f))
+    , lightDiffuse_("lightDiffuse", "Color", vec3(1.0f))
     , lightConeRadiusAngle_("lightConeRadiusAngle", "Light Cone Radius Angle", 30.f, 1.f, 90.f)
     , lightFallOffAngle_("lightFallOffAngle", "Light Fall Off Angle", 5.f, 0.f, 30.f)
     , lightSource_{std::make_shared<SpotLight>()} {
@@ -95,8 +95,7 @@ void SpotLightSourceProcessor::updateSpotLightSource(SpotLight* lightSource) {
     lightSource->setWorldMatrix(transformationMatrix);
 
     lightSource->setSize(lightSize_.get());
-    vec3 diffuseLight = lightDiffuse_.get().xyz();
-    lightSource->setIntensity(lightPowerProp_.get()*diffuseLight);
+    lightSource->setIntensity(lightPowerProp_.get()*lightDiffuse_.get());
     lightSource->setDirection(dir);
     lightSource->setConeRadiusAngle(lightConeRadiusAngle_.get());
     lightSource->setConeFallOffAngle(lightFallOffAngle_.get());
