@@ -28,8 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/editablelabelqt.h>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QFontMetrics>
+#include <warn/pop>
 
 namespace inviwo {
 

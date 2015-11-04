@@ -34,8 +34,10 @@
 #include <locale>
 #include <ios>
 #include <sstream>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QString>
+#include <warn/pop>
 
 namespace inviwo {
 

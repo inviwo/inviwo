@@ -33,11 +33,15 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
 #include <inviwo/core/properties/propertyobserver.h>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QLabel>
 #include <QLineEdit>
 #include <QHBoxLayout>
 #include <QMouseEvent>
 #include <QMenu>
+#include <warn/pop>
+
 namespace inviwo {
 
 class IVW_QTWIDGETS_API EditableLabelQt : public QWidget, public PropertyObserver {
