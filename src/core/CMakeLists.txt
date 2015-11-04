@@ -253,8 +253,8 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/tooltiphelper.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/utilities.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/vectoroperations.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumevectorsampler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/volumesampler.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/volumevectorsampler.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -455,8 +455,8 @@ set(SOURCE_FILES
     util/tinydirinterface.cpp
     util/tooltiphelper.cpp
     util/utilities.cpp
-    util/volumevectorsampler.cpp
     util/volumesampler.cpp
+    util/volumevectorsampler.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -480,6 +480,7 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/urlparser-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/volume-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/image-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/unittests/picking-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/stacktrace-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/metadata-test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/unittests/network-test.cpp
