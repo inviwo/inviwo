@@ -80,7 +80,6 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/resizeevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/events/touchevent.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/interactionhandler.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcallback.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingcontainer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingmanager.h
     ${IVW_INCLUDE_DIR}/inviwo/core/interaction/pickingobject.h
