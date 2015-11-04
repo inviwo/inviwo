@@ -145,7 +145,7 @@ namespace inviwo {
     AxisAlignedCutPlane::SliceProperty<axis>::SliceProperty(const std::string &identifier,
         const std::string &displayName)
         : BoolCompositeProperty(identifier, displayName, true)
-        , slice_("slice", "Slice", 50, 0, 100)
+        , slice_("slice", "Slice", 50, 1, 100)
         , mesh_(nullptr)
         , drawer_(nullptr) {
         addProperty(slice_);
@@ -155,7 +155,7 @@ namespace inviwo {
     void AxisAlignedCutPlane::SliceProperty<axis>::onVolumeChange(std::shared_ptr<const Volume> vol) {
         double t = static_cast<double>(slice_.get()) / static_cast<double>(slice_.getMaxValue());
         auto max = static_cast<int>(vol->getDimensions()[static_cast<int>(axis)]);
-        slice_.setMaxValue(max-1);
+        slice_.setMaxValue(max);
         slice_.set(static_cast<int>(t * max));
         createDrawer(vol);
     }
