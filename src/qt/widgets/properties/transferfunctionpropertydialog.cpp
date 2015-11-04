@@ -39,11 +39,14 @@
 #include <inviwo/core/io/datawriterfactory.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QImage>
 #include <QDockWidget>
 #include <QGraphicsItem>
 #include <QPushButton>
 #include <QSizePolicy>
+#include <warn/pop>
 
 namespace inviwo {
 

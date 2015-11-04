@@ -33,9 +33,13 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QTextDocument>
 #include <QTextBlock>
 #include <QFileInfo>
+#include <warn/pop>
+
 #include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/qt/widgets/properties/buttonpropertywidgetqt.h>

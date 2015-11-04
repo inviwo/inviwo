@@ -32,9 +32,11 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/common/inviwo.h>
-
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QString>
 #include <QLocale>
+#include <warn/pop>
 
 namespace inviwo {
 

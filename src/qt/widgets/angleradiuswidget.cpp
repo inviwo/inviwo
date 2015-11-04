@@ -32,9 +32,12 @@
 #include <cmath>
 #include <iostream>
 #include <sstream>
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QStylePainter>
 #include <QPointF>
 #include <QMouseEvent>
+#include <warn/pop>
 
 namespace inviwo {
 
