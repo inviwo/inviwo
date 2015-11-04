@@ -44,6 +44,7 @@ class PickingObject;
  */
 class IVW_CORE_API PickingMapper { 
 public:
+    PickingMapper() = default;
     PickingMapper(Processor* p, size_t size, std::function<void(const PickingObject*)> callback);
     PickingMapper(const PickingMapper& rhs) = delete;
     PickingMapper& operator=(const PickingMapper& that) = delete;
@@ -55,8 +56,8 @@ public:
     const PickingObject* getPickingObject() const;
 
 private:
-    Processor* processor_;
-    const PickingObject* pickingObject_;
+    Processor* processor_ = nullptr;
+    const PickingObject* pickingObject_ = nullptr;
 };
 
 } // namespace
