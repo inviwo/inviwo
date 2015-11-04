@@ -58,6 +58,7 @@ MeshPicking::MeshPicking()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
               vec3(0.0f, 1.0f, 0.0f))
     , trackball_(&camera_)
+    , picking_(this, 1, [&](const PickingObject* p){updateWidgetPositionFromPicking(p);})
     , shader_("standard.vert", "picking.frag") {
 
     imageInport_.setOptional(true);
@@ -80,13 +81,9 @@ MeshPicking::MeshPicking()
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    widgetPickingObject_ = PickingManager::getPtr()->registerPickingCallback(
-        this, &MeshPicking::updateWidgetPositionFromPicking);
 }
 
-MeshPicking::~MeshPicking() {
-    PickingManager::getPtr()->unregisterPickingObject(widgetPickingObject_);
-}
+MeshPicking::~MeshPicking() {}
 
 void MeshPicking::updateWidgetPositionFromPicking(const PickingObject* p) {
     vec2 move = p->getPickingMove();
@@ -108,7 +105,7 @@ void MeshPicking::process() {
 
     MeshDrawerGL drawer(meshInport_.getData().get());
     shader_.activate();
-    shader_.setUniform("pickingColor_", widgetPickingObject_->getPickingColor());
+    shader_.setUniform("pickingColor_", picking_.getPickingObject()->getPickingColor());
 
     const auto& ct = meshInport_.getData()->getCoordinateTransformer(camera_.get());
 

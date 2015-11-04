@@ -36,7 +36,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <modules/opengl/image/compositeprocessorgl.h>
-#include <inviwo/core/interaction/pickingobject.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/cameraproperty.h>
@@ -93,7 +93,7 @@ private:
     CameraProperty camera_;
     CameraTrackball trackball_;
 
-    const PickingObject* widgetPickingObject_;
+    PickingMapper picking_;
 
     Shader shader_;
 };
