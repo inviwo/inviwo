@@ -54,7 +54,7 @@ const PickingObject* PickingManager::registerPickingCallback(
     }
 
     if (!pickObj) {
-        pickingObjects_.push_back(std::make_unique<PickingObject>(lastIndex_, size));
+        pickingObjects_.push_back(util::make_unique<PickingObject>(lastIndex_, size));
         lastIndex_ += size;
         pickObj = pickingObjects_.back().get();
     }

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/pickingobject.h>
+#include <inviwo/core/interaction/pickingmanager.h>
 
 namespace inviwo {
 

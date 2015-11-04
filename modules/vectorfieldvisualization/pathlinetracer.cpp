@@ -104,7 +104,7 @@ void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, double dt
         dvec3 worldVelocty = sampler_.sample(curPos).xyz();
 
         dvec3 velocity = invBasis_ * (v * dt);
-        auto test = invBasis_ * v;
+
         line.positions_.push_back(curPos.xyz());
         line.metaData_["velocity"].push_back(worldVelocty);
 

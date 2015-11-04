@@ -59,7 +59,7 @@ struct PartialConnection : public IvwSerializable {
 };
 struct PartialSrcLink : public IvwSerializable {
     PartialSrcLink() {}
-    PartialSrcLink(Property* src, std::string path) : dstPath_(path), src_(src) {}
+    PartialSrcLink(Property* src, std::string path) : src_(src), dstPath_(path) {}
     Property* src_ = nullptr;
     std::string dstPath_ = "";
 
@@ -74,7 +74,7 @@ struct PartialSrcLink : public IvwSerializable {
 };
 struct PartialDstLink : public IvwSerializable {
     PartialDstLink() {}
-    PartialDstLink(std::string path, Property* dst) : dst_(dst), srcPath_(path) {}
+    PartialDstLink(std::string path, Property* dst) : srcPath_(path), dst_(dst) {}
     std::string srcPath_ = "";
     Property* dst_ = nullptr;
 
