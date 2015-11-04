@@ -42,6 +42,8 @@
 #include <inviwo/qt/editor/settingswidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/qt/editor/networkeditor.h>
 
 #include <pathsexternalmodules.h>
 
@@ -80,13 +82,15 @@
 
 namespace inviwo {
 
-InviwoMainWindow::InviwoMainWindow()
+InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     : QMainWindow()
+    , app_(app)
+    , networkEditor_(nullptr)
     , appUsageModeProp_(nullptr)
     , testWorkspaceMenu_(nullptr)  // this menu item is not always available!
     , exampleWorkspaceOpen_(false) {
-    NetworkEditor::init();
-    networkEditor_ = NetworkEditor::getPtr();
+
+    networkEditor_ = new NetworkEditor(this);
     // initialize console widget first to receive log messages
     consoleWidget_ = new ConsoleWidget(this);
     // LogCentral takes ownership of logger
@@ -95,7 +99,7 @@ InviwoMainWindow::InviwoMainWindow()
 
     const QDesktopWidget dw;
     auto screen = dw.screenGeometry(this);
-    const float maxRatio = 0.8;
+    const float maxRatio = 0.8f;
 
     QSize size(1920, 1080);
     size.setWidth(std::min(size.width(), static_cast<int>(screen.width() * maxRatio)));
@@ -109,8 +113,6 @@ InviwoMainWindow::InviwoMainWindow()
 }
 
 InviwoMainWindow::~InviwoMainWindow() {
-    deinitialize();
-    NetworkEditor::deleteInstance();
     LogCentral::getPtr()->unregisterLogger(consoleWidget_);
 }
 
@@ -193,8 +195,6 @@ void InviwoMainWindow::showWindow() {
         show();
 };
 
-void InviwoMainWindow::deinitialize() {}
-void InviwoMainWindow::initializeWorkspace() {}
 
 bool InviwoMainWindow::processCommandLineArgs() {
     auto app = static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
@@ -896,6 +896,10 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
     }
 }
 
+NetworkEditor* InviwoMainWindow::getNetworkEditor() const {
+    return networkEditor_;
+}
+
 // False == Development, True = Application
 void InviwoMainWindow::setVisibilityMode(bool applicationView) {
     auto selectedIdx = static_cast<UsageMode>(appUsageModeProp_->getSelectedIndex());
@@ -987,6 +991,34 @@ void InviwoMainWindow::reloadStyleSheet() {
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
     dynamic_cast<InviwoApplicationQt*>(app)->setStyleSheet(styleSheet);
     styleSheetFile.close();
+}
+
+SettingsWidget* InviwoMainWindow::getSettingsWidget() const {
+    return settingsWidget_;
+}
+
+ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
+    return processorTreeWidget_;
+}
+
+PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const {
+    return propertyListWidget_;
+}
+
+ConsoleWidget* InviwoMainWindow::getConsoleWidget() const {
+    return consoleWidget_;
+}
+
+ResourceManagerWidget* InviwoMainWindow::getResourceManagerWidget() const {
+    return resourceManagerWidget_;
+}
+
+HelpWidget* InviwoMainWindow::getHelpWidget() const {
+    return helpWidget_;
+}
+
+InviwoApplication* InviwoMainWindow::getInviwoApplication() const {
+    return app_;
 }
 
 }  // namespace

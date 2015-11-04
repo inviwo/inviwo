@@ -24,15 +24,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_INVIWOMAINWINDOW_H
 #define IVW_INVIWOMAINWINDOW_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/qt/editor/networkeditor.h>
+#include <inviwo/qt/editor/networkeditorobserver.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -56,23 +55,21 @@ class ResourceManagerWidget;
 class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
+class InviwoApplication;
 
-class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow,
-    public NetworkEditorObserver {
-    #include <warn/push>
-    #include <warn/ignore/all>
+class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
-    #include <warn/pop>
+#include <warn/pop>
 public:
     static const unsigned int maxNumRecentFiles_ = 10;
 
-    InviwoMainWindow();
+    InviwoMainWindow(InviwoApplication* app);
     virtual ~InviwoMainWindow();
 
-    virtual void initialize();
-    virtual void showWindow();
-    virtual void deinitialize();
-    virtual void initializeWorkspace();
+    void initialize();
+    void showWindow();
 
     void openLastWorkspace();
     void openWorkspace(QString workspaceFileName);
@@ -81,11 +78,18 @@ public:
     bool processCommandLineArgs();
 
     virtual void onNetworkEditorFileChanged(const std::string& filename) override;
-    virtual void onModifiedStatusChanged(const bool &newStatus) override;
+    virtual void onModifiedStatusChanged(const bool& newStatus) override;
 
     void visibilityModeChangedInSettings();
 
-    NetworkEditor* getNetworkEditor() { return networkEditor_; }
+    NetworkEditor* getNetworkEditor() const;
+    SettingsWidget*  getSettingsWidget() const;
+    ProcessorTreeWidget*  getProcessorTreeWidget() const;
+    PropertyListWidget*  getPropertyListWidget() const;
+    ConsoleWidget*  getConsoleWidget() const;
+    ResourceManagerWidget*  getResourceManagerWidget() const;
+    HelpWidget*  getHelpWidget() const;
+    InviwoApplication* getInviwoApplication() const;
 
 public slots:
     void newWorkspace();
@@ -100,14 +104,14 @@ public slots:
     void saveWorkspaceAs();
 
     /*
-    * Save the current workspace into a new workspace file, 
+    * Save the current workspace into a new workspace file,
     * leaves the current workspace file as current workspace
     */
     void saveWorkspaceAsCopy();
     void exitInviwo();
     void disableEvaluation(bool);
     void showAboutBox();
-    void setVisibilityMode(bool value); // True = Application, False = Developer
+    void setVisibilityMode(bool value);  // True = Application, False = Developer
 
     void reloadStyleSheet();
 
@@ -131,31 +135,32 @@ private:
     * \brief query the Qt settings for recent workspaces and update internal status
     */
     QStringList getRecentWorkspaceList() const;
-    /** 
+    /**
      * \brief update Qt settings for recent workspaces with internal status
      */
-    void saveRecentWorkspaceList(const QStringList &list);
+    void saveRecentWorkspaceList(const QStringList& list);
     void setCurrentWorkspace(QString workspaceFileName);
 
     void updateWindowTitle();
 
-    /** 
+    /**
      * \brief compile a list of example workspaces and update the menu
      */
     void fillExampleWorkspaceMenu();
     /**
-    * \brief compile a list of test workspaces from inviwo-dev and external 
+    * \brief compile a list of test workspaces from inviwo-dev and external
     * modules and update the menu
     */
     void fillTestWorkspaceMenu();
 
-    virtual void keyPressEvent(QKeyEvent *) override;
+    virtual void keyPressEvent(QKeyEvent*) override;
 
+    InviwoApplication* app_;
     NetworkEditor* networkEditor_;
     NetworkEditorView* networkEditorView_;
     OptionPropertyInt* appUsageModeProp_;
 
-    // mainwindow toolbar
+    // toolbar
     QToolBar* basicToolbar_;
 
     // dock widgets
@@ -166,7 +171,7 @@ private:
     ResourceManagerWidget* resourceManagerWidget_;
     HelpWidget* helpWidget_;
 
-    // mainwindow menus
+    // menus
     QMenu* fileMenuItem_;
     QMenu* editMenuItem_;
     QMenu* viewMenuItem_;
@@ -176,7 +181,7 @@ private:
     QMenu* testWorkspaceMenu_;
     QMenu* exampleWorkspaceMenu_;
 
-    // mainwindow menu actions
+    // menu actions
     QAction* workspaceActionNew_;
     QAction* workspaceActionOpen_;
     QAction* workspaceActionSave_;
@@ -191,7 +196,7 @@ private:
 #if IVW_PROFILING
     QToolButton* resetTimeMeasurementsButton_;
 #endif
-    // mainwindow toolbars
+    // toolbars
     QToolBar* workspaceToolBar_;
     QToolBar* viewModeToolBar_;
 
@@ -206,6 +211,6 @@ private:
     QString workspaceOnLastSuccessfulExit_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_INVIWOMAINWINDOW_H
+#endif  // IVW_INVIWOMAINWINDOW_H

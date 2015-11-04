@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
     inviwoApp.setStyleSheet(styleSheet);
     styleSheetFile.close();
 
-    inviwo::InviwoMainWindow mainWin;
+    inviwo::InviwoMainWindow mainWin(&inviwoApp);
     // setup core application
     inviwoApp.setMainWindow(&mainWin);
     // initialize and show splash screen
@@ -78,7 +78,6 @@ int main(int argc, char** argv) {
     mainWin.initialize();
     inviwoApp.processEvents();
     splashScreen.showMessage("Loading workspace...");
-    mainWin.initializeWorkspace();
     inviwoApp.processEvents();
     mainWin.showWindow();
     inviwoApp.processEvents();    // Make sure the gui is done loading before loading workspace

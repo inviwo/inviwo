@@ -31,8 +31,8 @@
 #define IVW_NETWORKEDITOR_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/qt/editor/networkeditorobserver.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/processors/processorpair.h>
@@ -64,12 +64,7 @@ class LinkConnectionGraphicsItem;
 class LinkConnectionDragGraphicsItem;
 class PropertyListWidget;
 class LinkDialog;
-
-class IVW_QTEDITOR_API NetworkEditorObserver : public Observer {
-public:
-    virtual void onNetworkEditorFileChanged(const std::string& newFilename) = 0;
-    virtual void onModifiedStatusChanged(const bool& newStatus) = 0;
-};
+class InviwoMainWindow;
 
 /**
  * The NetworkEditor supports interactive editing of a ProcessorNetwork. Processors can be added
@@ -79,7 +74,6 @@ public:
  * - inspector networks
  */
 class IVW_QTEDITOR_API NetworkEditor : public QGraphicsScene,
-                                       public Singleton<NetworkEditor>,
                                        public Observable<NetworkEditorObserver>,
                                        public ProcessorNetworkObserver {
 #include <warn/push>
@@ -87,7 +81,7 @@ class IVW_QTEDITOR_API NetworkEditor : public QGraphicsScene,
     Q_OBJECT
 #include <warn/pop>
 public:
-    NetworkEditor();
+    NetworkEditor(InviwoMainWindow* mainwindow);
     virtual ~NetworkEditor();
 
     void clearNetwork();
@@ -265,6 +259,8 @@ private:
     LinkConnectionDragGraphicsItem* linkCurve_;
 
     PropertyListWidget* propertyListWidget_;
+    InviwoMainWindow* mainwindow_;
+    ProcessorNetwork* network_;
 
     static const int GRID_SPACING;
     std::string filename_;

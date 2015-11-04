@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
 #include <inviwo/qt/editor/networkeditor.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/inviwoqtutils.h>
 #include <inviwo/qt/widgets/properties/transferfunctionpropertywidgetqt.h>
@@ -55,7 +56,13 @@ PyObject* py_getPathCurrentWorkspace(PyObject* /*self*/, PyObject* args) {
         return nullptr;
     }
 
-    return PyValueParser::toPyObject(NetworkEditor::getPtr()->getCurrentFilename());
+    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
+        if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
+            return PyValueParser::toPyObject(mw->getNetworkEditor()->getCurrentFilename());
+        }
+    }
+
+    return nullptr;
 }
 
 PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
@@ -87,7 +94,12 @@ PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
         }
     }
 
-    NetworkEditor::getPtr()->loadNetwork(filename);
+    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
+        if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
+            mw->getNetworkEditor()->loadNetwork(filename);
+        }
+    }
+
     Py_RETURN_NONE;
 }
 
@@ -109,13 +121,22 @@ PyObject* py_saveWorkspace(PyObject* /*self*/, PyObject* args) {
 
     std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
 
-    NetworkEditor::getPtr()->saveNetwork(filename);
+    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
+        if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
+            mw->getNetworkEditor()->saveNetwork(filename);
+        }
+    }
+
     Py_RETURN_NONE;
 }
 
 PyObject* py_quitInviwo(PyObject* /*self*/, PyObject* /*args*/) {
-    NetworkEditor::getPtr()->setModified(false);
-    static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow()->close();
+    if (auto qt = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
+        if (auto mw = dynamic_cast<InviwoMainWindow*>(qt->getMainWindow())) {
+            mw->getNetworkEditor()->setModified(false);
+            mw->close();
+        }
+    }
     Py_RETURN_NONE;
 }
 
