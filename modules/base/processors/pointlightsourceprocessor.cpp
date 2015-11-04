@@ -64,7 +64,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , lightScreenPosEnabled_("lightScreenPosEnabled", "Screen Pos Enabled", false)
     , lightScreenPos_("lightScreenPos", "Light Screen Pos", vec2(0.7f), vec2(0.f), vec2(1.f))
     , interactionEvents_("interactionEvents", "Interaction Events")
-    , lightInteractionHandler_(&lightPosition_.position_, &camera_, &lightScreenPosEnabled_,
+    , lightInteractionHandler_(&lightPosition_, &camera_, &lightScreenPosEnabled_,
                                &lightScreenPos_)
     , lightSource_(std::make_shared<PointLight>()) {
     addPort(outport_);
@@ -141,7 +141,7 @@ void PointLightSourceProcessor::handleInteractionEventsChanged() {
     lightInteractionHandler_.setHandleEventsOptions(interactionEvents_.get());
 }
 
-PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl,
+PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
                                                            CameraProperty* cam,
                                                            BoolProperty* screenPosEnabled,
                                                            FloatVec2Property* screenPos)
@@ -153,9 +153,13 @@ PointLightInteractionHandler::PointLightInteractionHandler(FloatVec3Property* pl
     , lookUp_(camera_->getLookUp())
     , lookTo_(0.f)
     , trackball_(this)
-    , interactionEventOption_(0) {
+    , interactionEventOption_(0)
+    , lightPositionWorldSpace_(lightPosition_->get())
+{
     // static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
     camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged);
+    lightPosition_->position_.onChange(
+        [this]() { lightPositionWorldSpace_ = lightPosition_->get(); });
 }
 
 void PointLightInteractionHandler::serialize(IvwSerializer& s) const {}
@@ -229,6 +233,9 @@ void PointLightInteractionHandler::onCameraChanged() {
     // This makes sure that the interaction with the light source is consistent with the direction
     // of the camera
     setLookUp(camera_->getLookUp());
+
+    // Update the light position (this only changes the light position if the reference frame is in view space)
+    lightPosition_->set(lightPositionWorldSpace_);
 }
 
 PointLightTrackball::PointLightTrackball(PointLightInteractionHandler* p)

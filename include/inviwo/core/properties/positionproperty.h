@@ -80,6 +80,8 @@ public:
     OptionPropertyInt referenceFrame_; //< The space in which the position is specified (world or view).
     FloatVec3Property position_; //< Position in specified space (world or view).
 private:
+    void referenceFrameChanged();
+
     const Camera* camera_; //< Non-owning reference.
 };
 

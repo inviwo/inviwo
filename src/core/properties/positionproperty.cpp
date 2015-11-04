@@ -54,6 +54,8 @@ PositionProperty::PositionProperty(std::string identifier, std::string displayNa
     // add properties
     addProperty(referenceFrame_);
     addProperty(position_);
+
+    referenceFrame_.onChange(this, &PositionProperty::referenceFrameChanged);
 }
 
 PositionProperty::PositionProperty(const PositionProperty& rhs) 
@@ -85,6 +87,7 @@ void PositionProperty::set(const vec3& worldSpacePos) {
     case Space::VIEW:
         position_.set( camera_ ? vec3(camera_->viewMatrix() * vec4(worldSpacePos, 1.0f))
             : worldSpacePos);
+        break;
     case Space::WORLD:
     default:
         position_.set(worldSpacePos);
@@ -98,6 +101,22 @@ PositionProperty& PositionProperty::operator=(const PositionProperty& that) {
         position_ = that.position_;
     }
     return *this;
+}
+
+void PositionProperty::referenceFrameChanged() {
+    if (!camera_)
+        return;
+
+    // Transform position between the different reference frames in order
+    // to keep the light at the same world space position
+    switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
+    case Space::VIEW:
+        position_.set(vec3(camera_->viewMatrix() * vec4(position_.get(), 1.0f)));
+        break;
+    case Space::WORLD:
+    default:
+        position_.set(vec3(camera_->inverseViewMatrix() * vec4(position_.get(), 1.0f)));
+    }
 }
 
 } // namespace
