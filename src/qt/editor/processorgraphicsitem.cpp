@@ -164,6 +164,10 @@ ProcessorGraphicsItem::ProcessorGraphicsItem(Processor* processor)
     countLabel_->setFont(classFont);
     countLabel_->setTextWidth(width - 2*labelHeight);
     #endif
+
+    setVisible(processorMeta_->isVisible());
+    setSelected(processorMeta_->isSelected());
+    setPos(QPointF(processorMeta_->getPosition().x, processorMeta_->getPosition().y));
 }
 
 

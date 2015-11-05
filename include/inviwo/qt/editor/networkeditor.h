@@ -152,15 +152,7 @@ public:
     virtual void onProcessorNetworkDidRemoveLink(PropertyLink* propertyLink) override;
 
 public slots:
-    void contextMenuRenameProcessor(EditorGraphicsItem*);
     void contextMenuShowInspector(EditorGraphicsItem*);
-    void contextMenuDeleteProcessor(EditorGraphicsItem*);
-    void contextMenuShowHideWidget(EditorGraphicsItem*);
-    void contextMenuDeleteConnection(EditorGraphicsItem*);
-    void contextMenuDeleteLink(EditorGraphicsItem*);
-    void contextMenuEditLink(EditorGraphicsItem*);
-    void contextMenuResetTimeMeasurements(EditorGraphicsItem*);
-
     void resetAllTimeMeasurements();
 
 protected:
@@ -194,12 +186,9 @@ private:
     friend class ConnectionGraphicsItem;
 
     // Processors
-    ProcessorGraphicsItem* addProcessorRepresentations(Processor* processor, QPointF pos,
-                                                       bool showProcessor = true,
-                                                       bool selectProcessor = true);
+    ProcessorGraphicsItem* addProcessorRepresentations(Processor* processor);
     void removeProcessorRepresentations(Processor* processor);
-    ProcessorGraphicsItem* addProcessorGraphicsItem(Processor* processor, QPointF pos,
-                                                    bool visible = true, bool selected = true);
+    ProcessorGraphicsItem* addProcessorGraphicsItem(Processor* processor);
     void removeProcessorGraphicsItem(Processor* processor);
 
     // Connections
@@ -285,19 +274,19 @@ public:
 class IVW_QTEDITOR_API PortInspectorEvent : public QEvent {
     Q_GADGET
 public:
-    PortInspectorEvent(Outport* port) : QEvent(PORT_INSPECTOR_EVENT), port_(port) {}
+    PortInspectorEvent(Outport* port) : QEvent(PortInspectorEventType), port_(port) {}
 
     static QEvent::Type type() {
-        if (PORT_INSPECTOR_EVENT == QEvent::None) {
-            PORT_INSPECTOR_EVENT = static_cast<QEvent::Type>(QEvent::registerEventType());
+        if (PortInspectorEventType == QEvent::None) {
+            PortInspectorEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
         }
-        return PORT_INSPECTOR_EVENT;
+        return PortInspectorEventType;
     }
 
     Outport* port_;
 
 private:
-    static QEvent::Type PORT_INSPECTOR_EVENT;
+    static QEvent::Type PortInspectorEventType;
 };
 
 class SignalMapperObject : public QObject {
