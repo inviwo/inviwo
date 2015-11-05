@@ -83,6 +83,7 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
                 float3 worldSpacePosition = transformPoint(volumeParams->textureToWorld, pos);
                 // Note that the gradient is reversed since we define the normal of a surface as
                 // the direction towards a lower intensity medium (gradient points in the inreasing direction)
+                #ifdef SHADING_MODE
                 #if SHADING_MODE == 1
                         emissionAbsorption.xyz = shadeAmbient(*light, emissionAbsorption.xyz);
                 #elif SHADING_MODE == 2
@@ -94,7 +95,7 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
                 #elif SHADING_MODE == 5
                        emissionAbsorption.xyz = shadePhong(*light, emissionAbsorption.xyz, emissionAbsorption.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
                 #endif
-            
+                #endif
                 // Taylor expansion approximation
                 float opacity = 1.f - native_powr(1.f - emissionAbsorption.w, tIncr * REF_SAMPLING_INTERVAL);
                 result.xyz = result.xyz + (1.f - result.w) * opacity * emissionAbsorption.xyz;
