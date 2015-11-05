@@ -135,32 +135,38 @@ std::shared_ptr<VolumeRepresentation> Volume::createDefaultRepresentation() cons
     return createVolumeRAM(getDimensions(), getDataFormat());
 }
 
-float Volume::getWorldSpaceGradientSpacing() const {
+vec3 Volume::getWorldSpaceGradientSpacing() const {
     mat3 textureToWorld = mat3(getCoordinateTransformer().getTextureToWorldMatrix());
+    // Basis vectors with a length of one voxel.
+    // Basis vectors may be non-orthogonal
+    auto dimensions = getDimensions();
+    vec3 a = textureToWorld[0] / static_cast<float>(dimensions[0]);
+    vec3 b = textureToWorld[1] / static_cast<float>(dimensions[1]);
+    vec3 c = textureToWorld[2] / static_cast<float>(dimensions[2]);
+    // Project the voxel basis vectors 
+    // onto the world space x/y/z axes,
+    // and choose the longest projected vector
+    // for each axis.
+    // Using the fact that
+    // vec3 x{ 1.f, 0, 0 };
+    // vec3 y{ 0, 1.f, 0 };
+    // vec3 z{ 0, 0, 1.f };
+    // such that 
+    // ax' = dot(x, a) = a.x
+    // bx' = dot(x, b) = b.x
+    // cx' = dot(x, c) = c.x
+    // and so on.
+    vec3 ds{ 
+        std::max(a.x, std::max(b.x, c.x)),
+        std::max(a.y, std::max(b.y, c.y)),
+        std::max(a.z, std::max(b.z, c.z)) };
 
-    // Find the maximum distance we can go from the center of a voxel without ending up outside the voxel
-    // Shorten each basis to the distance from one voxel to the next
-    mat3 voxelSpaceBasis;
-    for (int dim = 0; dim < 3; ++dim) {
-        voxelSpaceBasis[dim] = textureToWorld[dim]/static_cast<float>(getDimensions()[dim]);
-    }
-    
-    // Find the distance three of the sides of a voxel
-    // Project x-axis onto the y-axis. 
-    // Distance from that point to the x-axis will be the shortest distance 
-    vec3 distanceToSide;
-    // Project x onto y axis, x onto z axis and y onto z axis
-    vec3 xOntoY = voxelSpaceBasis[1]*glm::dot(voxelSpaceBasis[0], voxelSpaceBasis[1]);
-    vec3 xOntoZ = voxelSpaceBasis[2]*glm::dot(voxelSpaceBasis[0], voxelSpaceBasis[2]);
-    vec3 yOntoZ = voxelSpaceBasis[2]*glm::dot(voxelSpaceBasis[1], voxelSpaceBasis[2]);
-    distanceToSide[0] = glm::distance(voxelSpaceBasis[0], xOntoY);
-    distanceToSide[1] = glm::distance(voxelSpaceBasis[0], xOntoZ);
-    distanceToSide[2] = glm::distance(voxelSpaceBasis[1], yOntoZ);
-
-    // From the center of the voxel we can go half of the minimum distance without going outside
-    float minimumDistance = 0.5f*std::min(distanceToSide[0], std::min(distanceToSide[1], distanceToSide[2]));
-    // Return the minimum distance we can travel along each basis
-    return minimumDistance;
+    // Return the spacing in world space,
+    // actually given by:
+    // { gradientSpacing.x         0                     0
+    //         0             gradientSpacing.y           0
+    //         0                   0               gradientSpacing.z }
+    return ds;
 }
 
 inviwo::uvec3 Volume::COLOR_CODE = uvec3(188, 101, 101);

@@ -100,13 +100,17 @@ const Buffer<glm::u8>& VolumeCLBase::getVolumeStruct(const Volume* volume) const
     volumeStruct->textureToWorld = volume->getCoordinateTransformer().getTextureToWorldMatrix();
     volumeStruct->textureToIndex = volume->getCoordinateTransformer().getTextureToIndexMatrix();
     volumeStruct->indexToTexture = volume->getCoordinateTransformer().getIndexToTextureMatrix();
-    float gradientSpacing = volume->getWorldSpaceGradientSpacing();
-    // Scale the world matrix by the gradient spacing and the transform it to texture space.
-    // Note that since we are dealing with real values we can multiply the scalar after the
-    // transform as well
+    auto gradientSpacing = volume->getWorldSpaceGradientSpacing();
+    // Transform the world space gradient spacing to texture space.
+    // Wold space gradient spacing is given by:
+    // mat3{ gradientSpacing.x         0                     0
+    //             0             gradientSpacing.y           0
+    //             0                   0               gradientSpacing.z }
+    // which means that the transformation is equal to scaling
+    // the world to texture matrix.
     volumeStruct->textureSpaceGradientSpacing =
-        glm::scale(volumeStruct->worldToTexture, vec3(gradientSpacing));
-    volumeStruct->worldSpaceGradientSampleSpacing = gradientSpacing;
+        glm::scale(volumeStruct->worldToTexture, gradientSpacing);
+    volumeStruct->worldSpaceGradientSampleSpacing = vec4(gradientSpacing, 0.f);
 
     // Compute scaling and offset for datatypes that will be sampled
     // (for instance 12-bit data)

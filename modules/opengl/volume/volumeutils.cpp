@@ -57,13 +57,17 @@ void setShaderUniforms(Shader& shader, const Volume& volume, const std::string& 
     shader.setUniform(samplerID + ".textureToIndex", ct.getTextureToIndexMatrix());
     shader.setUniform(samplerID + ".indexToTexture", ct.getIndexToTextureMatrix());
 
-    float gradientSpacing = volume.getWorldSpaceGradientSpacing();
-    // Scale the world matrix by the gradient spacing and the transform it to texture space.
-    // Note that since we are dealing with real values we can multiply the scalar after the
-    // transform as well
+    auto gradientSpacing = volume.getWorldSpaceGradientSpacing();
+    // Transform the world space gradient spacing to texture space.
+    // Wold space gradient spacing is given by:
+    // mat3{ gradientSpacing.x         0                     0
+    //             0             gradientSpacing.y           0
+    //             0                   0               gradientSpacing.z }
+    // which means that the transformation is equal to scaling
+    // the world to texture matrix.
     shader.setUniform(
         samplerID + ".textureSpaceGradientSpacing",
-        gradientSpacing * mat3(ct.getWorldToTextureMatrix()));
+        mat3(glm::scale(ct.getWorldToTextureMatrix(), gradientSpacing)));
 
     vec3 dimF = static_cast<vec3>(volume.getDimensions());
     shader.setUniform(samplerID + ".dimensions", dimF);

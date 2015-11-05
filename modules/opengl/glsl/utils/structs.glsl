@@ -85,7 +85,7 @@ struct VolumeParameters {
                                            // for volumes with orthogonal basis)
     vec3 dimensions;                       // Number of voxels (dim) per axis 
     vec3 reciprocalDimensions;             // 1 over the number of voxels
-    float worldSpaceGradientSpacing;       // Spacing between gradient samples in world space 
+    vec3 worldSpaceGradientSpacing;       // Spacing between gradient samples in world space 
     float formatScaling;                   // This scaling and offset parameters is used to
     float formatOffset;                    // map value from data range [min,max] to [0,1]
     float signedFormatScaling;             // or to [-1,1] for signed data. It is used by

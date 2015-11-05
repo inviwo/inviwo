@@ -46,12 +46,12 @@ typedef struct VolumeParameters_t {
     float16 textureToIndex;                 // Transform from [0 1] to [-0.5 dim-0.5]
     float16 indexToTexture;                 // Transform from [-0.5 dim-0.5] to [0 1]
     float16 textureSpaceGradientSpacing;    // Maximum possible distance to go without ending up outside of a voxel (half of minimum voxel spacing for volumes with orthogonal basis)
-    float worldSpaceGradientSpacing;        // Spacing between gradient samples in world space 
+    float3 worldSpaceGradientSpacing;        // Spacing between gradient samples in world space 
     float formatScaling;                    // Scaling of data values.
     float formatOffset;                     // Offset of data values.
     float signedFormatScaling;              // Scaling of signed data values.
     float signedFormatOffset;               // Offset of signed data values.
-    char padding__[44];                     // Padding to align to 512 bytes
+    char padding__[32];                     // Padding to align to 512 bytes
 } VolumeParameters;
 
 /*

@@ -82,19 +82,32 @@ public:
      * \brief Computes the spacing to be used for gradient computation. Also works for volume with
      * non-orthogonal basis.
      *
-     * Finds the maximum distance we can go from the center of a voxel without ending up outside the
-     * voxel.
-     * For a volume with orthogonal basis it will be half the minimum voxel spacing in world space.
-     *  _____
-     * |     |
-     * |  .  | <- Computes minimum distance from center point to edges.
-     * |_____|
+     * For orthogonal lattices this will be equal to the world space voxel spacing.
+     * For non-orthogonal lattices it will be the longest of the axes projected 
+     * onto the world space axes.
+     *
+     *        World space
+     *
+     *         b ^           ^
+     *          /            |
+     * y ^     /             dy
+     *   |    /  Voxel       |
+     *   |   /__________>a   \/
+     *   |   <----dx--->
+     *   |____________> x
+     *
+     *
+     * The actual gradient spacing vectors are given by
+     * mat3{ gradientSpacing.x,        0,                    0,
+     *             0,            gradientSpacing.y,          0,
+     *             0,                  0,              gradientSpacing.z }
+     * However, we do not return the zeroes.
      *
      * To get the spacing in texture space use:
-     * getWorldSpaceGradientSpacing()*mat3(worldToTextureMatrix)
+     * mat3(glm::scale(worldToTextureMatrix, getWorldSpaceGradientSpacing()));
      * @return Step size for gradient computation in world space.
      */
-    float getWorldSpaceGradientSpacing() const;
+    vec3 getWorldSpaceGradientSpacing() const;
     DataMapper dataMap_;
 
     static uvec3 COLOR_CODE;
