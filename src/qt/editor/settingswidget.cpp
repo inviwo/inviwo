@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/editor/settingswidget.h>
@@ -43,18 +43,11 @@
 
 namespace inviwo {
 
-SettingsWidget::SettingsWidget(QString title, QWidget* parent) : InviwoDockWidget(title, parent) {
-    generateWidget();
-}
-
-SettingsWidget::SettingsWidget(QWidget* parent) : InviwoDockWidget(tr("Settings"), parent) {
-    generateWidget();
-}
-
-void SettingsWidget::generateWidget() {
+SettingsWidget::SettingsWidget(QString title, InviwoMainWindow* mainwindow)
+    : InviwoDockWidget(title, mainwindow), mainwindow_(mainwindow) {
     setObjectName("SettingsWidget");
     setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    
+
     scrollArea_ = new QScrollArea();
     scrollArea_->setWidgetResizable(true);
     scrollArea_->setMinimumWidth(300);
@@ -70,16 +63,19 @@ void SettingsWidget::generateWidget() {
     scrollArea_->setWidget(mainWidget_);
 
     setWidget(scrollArea_);
-
 }
+
+SettingsWidget::SettingsWidget(InviwoMainWindow* mainwindow)
+    : SettingsWidget(tr("Settings"), mainwindow) {}
 
 SettingsWidget::~SettingsWidget() {}
 
 void SettingsWidget::updateSettingsWidget() {
-    std::vector<Settings*> settings = InviwoApplication::getPtr()->getModuleSettings();
+    auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
 
     for (auto& setting : settings) {
-        CollapsibleGroupBoxWidgetQt* settingsGroup = new CollapsibleGroupBoxWidgetQt(setting->getIdentifier());
+        CollapsibleGroupBoxWidgetQt* settingsGroup =
+            new CollapsibleGroupBoxWidgetQt(setting->getIdentifier());
         settingsGroup->setParentPropertyWidget(nullptr, this);
         layout_->addWidget(settingsGroup);
         settingsGroup->initState();
@@ -88,13 +84,14 @@ void SettingsWidget::updateSettingsWidget() {
 
         for (auto& prop : props) {
             settingsGroup->addProperty(prop);
-            for (auto p : prop->getWidgets()){
-                connect(static_cast<PropertyWidgetQt*>(p), SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
-                    SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
+            for (auto p : prop->getWidgets()) {
+                connect(static_cast<PropertyWidgetQt*>(p),
+                        SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
+                        SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
             }
         }
 
-        if (!settingsGroup->isCollapsed()){
+        if (!settingsGroup->isCollapsed()) {
             settingsGroup->toggleCollapsed();
         }
     }
@@ -102,7 +99,7 @@ void SettingsWidget::updateSettingsWidget() {
 }
 
 void SettingsWidget::saveSettings() {
-    const std::vector<Settings*> settings = InviwoApplication::getPtr()->getModuleSettings();
+    const auto settings = mainwindow_->getInviwoApplication()->getModuleSettings();
     for (auto& setting : settings) {
         setting->saveToDisk();
     }
@@ -113,8 +110,9 @@ void SettingsWidget::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
 
     QVBoxLayout* listLayout = static_cast<QVBoxLayout*>(widget->parentWidget()->layout());
     int layoutPosition = listLayout->indexOf(widget);
-    PropertyWidgetQt* propertyWidget =
-        static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop).release());
+
+    auto factory = mainwindow_->getInviwoApplication()->getPropertyWidgetFactory();
+    auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release());
 
     if (propertyWidget) {
         prop->deregisterWidget(widget);
@@ -133,4 +131,4 @@ void SettingsWidget::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
     }
 }
 
-} // namespace
+}  // namespace

@@ -62,7 +62,6 @@ class ConnectionGraphicsItem;
 class ConnectionDragGraphicsItem;
 class LinkConnectionGraphicsItem;
 class LinkConnectionDragGraphicsItem;
-class PropertyListWidget;
 class LinkDialog;
 class InviwoMainWindow;
 
@@ -139,9 +138,6 @@ public:
                                                                          std::string& type);
 
     void updateLeds();
-
-    void setPropertyListWidget(PropertyListWidget* widget);
-    PropertyListWidget* getPropertyListWidget() const;
 
     // Overrides for ProcessorNetworkObserver
     virtual void onProcessorNetworkChange() override;
@@ -258,7 +254,6 @@ private:
     ConnectionDragGraphicsItem* connectionCurve_;
     LinkConnectionDragGraphicsItem* linkCurve_;
 
-    PropertyListWidget* propertyListWidget_;
     InviwoMainWindow* mainwindow_;
     ProcessorNetwork* network_;
 

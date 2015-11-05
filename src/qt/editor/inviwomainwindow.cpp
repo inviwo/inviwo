@@ -118,7 +118,7 @@ InviwoMainWindow::~InviwoMainWindow() {
 
 void InviwoMainWindow::initialize() {
     networkEditorView_ = new NetworkEditorView(networkEditor_, this);
-    NetworkEditorObserver::addObservation(getNetworkEditor());
+    NetworkEditorObserver::addObservation(networkEditor_);
     setCentralWidget(networkEditorView_);
 
     resourceManagerWidget_ = new ResourceManagerWidget(this);
@@ -137,7 +137,6 @@ void InviwoMainWindow::initialize() {
 
     propertyListWidget_ = new PropertyListWidget(this);
     addDockWidget(Qt::RightDockWidgetArea, propertyListWidget_);
-    networkEditor_->setPropertyListWidget(propertyListWidget_);
 
     addDockWidget(Qt::BottomDockWidgetArea, consoleWidget_);
     // load settings and restore window state

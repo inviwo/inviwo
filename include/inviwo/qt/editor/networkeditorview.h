@@ -48,22 +48,21 @@ public:
 
     void hideNetwork(bool);
 
-    virtual void onNetworkEditorFileChanged(const std::string& newFilename);
-    virtual void onModifiedStatusChanged(const bool &newStatus);
+    virtual void onNetworkEditorFileChanged(const std::string& newFilename) override;
 
 protected:
-    void initialize();
+    virtual void mouseDoubleClickEvent(QMouseEvent* e) override;
+    virtual void resizeEvent(QResizeEvent* re) override;
+    virtual void wheelEvent(QWheelEvent* e) override;
 
-    void mouseDoubleClickEvent(QMouseEvent* e);
-    void resizeEvent(QResizeEvent* re);
-    void wheelEvent(QWheelEvent* e);
+    virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+    virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
 
 private:
     NetworkEditor* networkEditor_;
     ivec2 scrollPos_;
 
-    float zoom_;
-    void setZoom(const float& zoom, const QPointF& pos);
+    void zoom(float dz);
     void fitNetwork();
 };
 

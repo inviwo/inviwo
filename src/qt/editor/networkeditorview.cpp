@@ -33,6 +33,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QScrollBar>
+#include <qmath.h>
 #include <warn/pop>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/linksettings.h>
@@ -45,28 +46,21 @@ namespace inviwo {
 NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, QWidget* parent)
     : QGraphicsView(parent)
     , NetworkEditorObserver()
-    , networkEditor_(networkEditor)
-    , zoom_(1.0f) {
-    initialize();
+    , networkEditor_(networkEditor) {
+
+    NetworkEditorObserver::addObservation(networkEditor_);
+    QGraphicsView::setScene(networkEditor_);
+    
     setRenderHint(QPainter::Antialiasing, true);
     setMouseTracking(true);
     setDragMode(QGraphicsView::RubberBandDrag);
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
 
-    //setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
-    setTransformationAnchor(QGraphicsView::NoAnchor);
-    //setResizeAnchor(QGraphicsView::NoAnchor);
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 }
 
 NetworkEditorView::~NetworkEditorView() { QGraphicsView::setScene(nullptr); }
-
-void NetworkEditorView::initialize() {
-    NetworkEditorObserver::addObservation(networkEditor_);    
-    QGraphicsView::setScene(networkEditor_);
-}
 
 void NetworkEditorView::hideNetwork(bool hide) {
     if (hide) {
@@ -82,26 +76,6 @@ void NetworkEditorView::hideNetwork(bool hide) {
             verticalScrollBar()->setValue(scrollPos_.y);
         }
     }
-}
-
-void NetworkEditorView::setZoom(const float& zoom, const QPointF& pos) {
-    if (zoom < 0.2f) {
-        zoom_ = 0.2f;
-    } else if (zoom > 5.0f) {
-        zoom_ = 5.0f;
-    } else {
-        zoom_ = zoom;
-    }
-
-    QTransform matrix;
-    matrix.scale(zoom_, zoom_);
-    
-    QPointF oldPos = QGraphicsView::mapToScene(pos.toPoint());
-    QGraphicsView::setTransform(matrix);
-    QPointF newPos = QGraphicsView::mapToScene(pos.toPoint());
-    QPointF delta = newPos - oldPos;
-
-    QGraphicsView::translate(delta.x(), delta.y());
 }
 
 void NetworkEditorView::mouseDoubleClickEvent(QMouseEvent* e) {
@@ -136,14 +110,13 @@ void NetworkEditorView::fitNetwork() {
 
             setSceneRect(br);
             fitInView(br, Qt::KeepAspectRatio);
-            zoom_ = transform().m11();
         }
     }
 }
 
 void NetworkEditorView::wheelEvent(QWheelEvent* e) {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    QPoint numPixels = e->pixelDelta();
+    QPoint numPixels = e->pixelDelta() / 5;
     QPoint numDegrees = e->angleDelta() / 8 / 15;
 #else
     QPoint numPixels;
@@ -151,9 +124,10 @@ void NetworkEditorView::wheelEvent(QWheelEvent* e) {
 #endif
     if (e->modifiers() == Qt::ControlModifier) {
         if (!numPixels.isNull()) {
-            setZoom(zoom_ + static_cast<float>(numPixels.y()) / 50.0, e->pos());
+            zoom(qPow(1.05,  static_cast<float>(numPixels.y())));
+
         } else if (!numDegrees.isNull()) {
-            setZoom(zoom_ + static_cast<float>(numDegrees.y()) / 10.0, e->pos());
+            zoom(qPow(1.05,  static_cast<float>(numDegrees.y())));
         }
     } else {
         QGraphicsView::wheelEvent(e);
@@ -161,9 +135,24 @@ void NetworkEditorView::wheelEvent(QWheelEvent* e) {
     e->accept();
 }
 
+void NetworkEditorView::keyPressEvent(QKeyEvent* keyEvent) {
+     if (keyEvent->modifiers() & Qt::ControlModifier) {
+        setDragMode(QGraphicsView::ScrollHandDrag);
+     }
+}
+
+void NetworkEditorView::keyReleaseEvent(QKeyEvent* keyEvent) {
+    setDragMode(QGraphicsView::RubberBandDrag);
+}
+
+void NetworkEditorView::zoom(float dz) {
+    if (matrix().m11() > 2 || matrix().m11() < 0.25) return;
+    scale(dz, dz);
+}
+
+
 void NetworkEditorView::onNetworkEditorFileChanged(const std::string& newFilename) {
     fitNetwork();
 }
-void NetworkEditorView::onModifiedStatusChanged(const bool& newStatus) {}
 
 }  // namespace

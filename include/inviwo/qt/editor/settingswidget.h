@@ -31,6 +31,7 @@
 #define IVW_SETTINGSWIDGET_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 
 #include <warn/push>
@@ -46,10 +47,10 @@ class PropertyWidgetQt;
 class IVW_QTEDITOR_API SettingsWidget : public InviwoDockWidget {
     Q_OBJECT
 public:
-    SettingsWidget(QWidget* parent);
-    SettingsWidget(QString title, QWidget* parent);
+    SettingsWidget(InviwoMainWindow* parent);
+    SettingsWidget(QString title, InviwoMainWindow* parent);
     ~SettingsWidget();
-    virtual void generateWidget();
+  
     virtual void updateSettingsWidget();
     virtual void saveSettings();
 
@@ -57,9 +58,10 @@ public slots:
     void updatePropertyWidgetSemantics(PropertyWidgetQt*);
 
 protected:
-    QVBoxLayout* layout_;
-    QWidget* mainWidget_;
-    QScrollArea* scrollArea_;
+    InviwoMainWindow* mainwindow_;
+    QVBoxLayout* layout_ = nullptr;
+    QWidget* mainWidget_ = nullptr;
+    QScrollArea* scrollArea_ = nullptr;
 };
 
 } // namespace

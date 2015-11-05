@@ -31,6 +31,7 @@
 #define IVW_HELPWIDGET_H
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 
 #include <warn/push>
@@ -46,7 +47,7 @@ namespace inviwo {
 class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
     Q_OBJECT
 public:
-    HelpWidget(QWidget* parent);
+    HelpWidget(InviwoMainWindow* parent);
     virtual ~HelpWidget() {}
 
     void showDocForClassName(std::string className);
@@ -57,16 +58,18 @@ protected slots:
 private:
     class HelpBrowser : public QTextBrowser {
     public:
-        HelpBrowser(QWidget* parent, QHelpEngineCore* helpEngine);
+        HelpBrowser(HelpWidget* parent, QHelpEngineCore* helpEngine);
         virtual ~HelpBrowser();
 
     protected:
         QVariant loadResource(int type, const QUrl& name);
 
     private:
+        HelpWidget* helpwidget_;
         QHelpEngineCore* helpEngine_;
     };
 
+    InviwoMainWindow* mainwindow_;
     HelpBrowser* helpBrowser_;
     QHelpEngineCore* helpEngine_;
 };

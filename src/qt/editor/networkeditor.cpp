@@ -166,27 +166,22 @@ void NetworkEditor::removeProcessorGraphicsItem(Processor* processor) {
 
 void NetworkEditor::addPropertyWidgets(Processor* processor) {
     QCoreApplication::postEvent(
-        propertyListWidget_,
+        mainwindow_->getPropertyListWidget(),
         new PropertyListEvent(PropertyListEvent::ADD, processor->getIdentifier()),
         Qt::LowEventPriority);
 }
 
 void NetworkEditor::removePropertyWidgets(Processor* processor) {
     QCoreApplication::postEvent(
-        propertyListWidget_,
+         mainwindow_->getPropertyListWidget(),
         new PropertyListEvent(PropertyListEvent::REMOVE, processor->getIdentifier()),
         Qt::LowEventPriority);
 }
 
 void NetworkEditor::removeAndDeletePropertyWidgets(Processor* processor) {
     // Will not use events here since we might delete the processor
-    propertyListWidget_->removeAndDeleteProcessorProperties(processor);
+     mainwindow_->getPropertyListWidget()->removeAndDeleteProcessorProperties(processor);
 }
-
-void NetworkEditor::setPropertyListWidget(PropertyListWidget* widget) {
-    propertyListWidget_ = widget;
-}
-PropertyListWidget* NetworkEditor::getPropertyListWidget() const { return propertyListWidget_; }
 
 ConnectionGraphicsItem* NetworkEditor::addConnectionGraphicsItem(PortConnection* connection) {
     Outport* outport = connection->getOutport();
