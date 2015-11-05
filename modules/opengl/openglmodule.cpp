@@ -79,24 +79,3 @@ OpenGLModule::OpenGLModule(InviwoApplication* app) : InviwoModule(app, "OpenGL")
 
 
 } // namespace
-
-
-#ifdef WIN32
-// Prefer high performance GPU for systems with multiple GPUs
-// http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf
-// From Nvidia 302 drivers: The Optimus driver looks for
-// the existence and value of the export. Only the LSB of the DWORD matters at this time.
-// A value of 0x00000001 indicates that rendering should be performed using High
-// Performance Graphics. A value of 0x00000000 indicates that this method should be
-// ignored.
-
-// Corresponding for AMD
-// http://stackoverflow.com/questions/17458803/amd-equivalent-to-nvoptimusenablement
-// Select the high performance GPU as long as no profile exists 
-// that assigns the application to another GPU.
-extern "C" {
-    __declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
-    __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
-}
-
-#endif

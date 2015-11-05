@@ -39,6 +39,7 @@
 #include <QFile>
 #include <warn/pop>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/core/common/defaulttohighperformancegpu.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
