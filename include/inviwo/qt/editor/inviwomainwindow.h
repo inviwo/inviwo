@@ -90,6 +90,7 @@ public:
     ResourceManagerWidget*  getResourceManagerWidget() const;
     HelpWidget*  getHelpWidget() const;
     InviwoApplication* getInviwoApplication() const;
+    const std::unordered_map<std::string, QAction*>& getActions() const;
 
 public slots:
     void newWorkspace();
@@ -153,8 +154,6 @@ private:
     */
     void fillTestWorkspaceMenu();
 
-    virtual void keyPressEvent(QKeyEvent*) override;
-
     InviwoApplication* app_;
     NetworkEditor* networkEditor_;
     NetworkEditorView* networkEditorView_;
@@ -182,6 +181,8 @@ private:
     QMenu* exampleWorkspaceMenu_;
 
     // menu actions
+    std::unordered_map<std::string, QAction*> actions_;
+    
     QAction* workspaceActionNew_;
     QAction* workspaceActionOpen_;
     QAction* workspaceActionSave_;

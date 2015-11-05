@@ -57,13 +57,14 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
+    virtual void focusOutEvent(QFocusEvent *) override;
 
 private:
+    void zoom(double dz);
+    void fitNetwork();
+
     NetworkEditor* networkEditor_;
     ivec2 scrollPos_;
-
-    void zoom(float dz);
-    void fitNetwork();
 };
 
 }  // namespace

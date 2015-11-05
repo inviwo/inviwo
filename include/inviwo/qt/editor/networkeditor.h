@@ -108,8 +108,8 @@ public:
     QByteArray copy() const;
     QByteArray cut();
     void paste(QByteArray data);
-
-    void deleteSelectedProcessors();
+    void selectAll();
+    void deleteSelection();
 
     std::string getCurrentFilename() const { return filename_; }
 
@@ -162,6 +162,10 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* e) override;
 
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
+
+    void progagateEventToSelecedProcessors(KeyboardEvent &pressKeyEvent);
+
+
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent* e) override;
 
@@ -225,6 +229,8 @@ private:
 
     void drawBackground(QPainter* painter, const QRectF& rect) override;
 
+    void deleteItems(QList<QGraphicsItem*> items);
+
     typedef std::map<Processor*, ProcessorGraphicsItem*> ProcessorMap;
     typedef std::map<PortConnection*, ConnectionGraphicsItem*> ConnectionMap;
     typedef std::map<ProcessorPair, LinkConnectionGraphicsItem*> LinkMap;
@@ -238,6 +244,8 @@ private:
     // Drag n drop state
     ConnectionGraphicsItem* oldConnectionTarget_;
     ProcessorGraphicsItem* oldProcessorTarget_;
+
+    QList<QGraphicsItem*> toBeDeleted_;
 
     // Connection and link state
     ConnectionDragGraphicsItem* connectionCurve_;

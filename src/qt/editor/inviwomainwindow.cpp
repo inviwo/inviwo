@@ -89,7 +89,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     , appUsageModeProp_(nullptr)
     , testWorkspaceMenu_(nullptr)  // this menu item is not always available!
     , exampleWorkspaceOpen_(false) {
-
     networkEditor_ = new NetworkEditor(this);
     // initialize console widget first to receive log messages
     consoleWidget_ = new ConsoleWidget(this);
@@ -112,9 +111,7 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     move(pos);
 }
 
-InviwoMainWindow::~InviwoMainWindow() {
-    LogCentral::getPtr()->unregisterLogger(consoleWidget_);
-}
+InviwoMainWindow::~InviwoMainWindow() { LogCentral::getPtr()->unregisterLogger(consoleWidget_); }
 
 void InviwoMainWindow::initialize() {
     networkEditorView_ = new NetworkEditorView(networkEditor_, this);
@@ -193,7 +190,6 @@ void InviwoMainWindow::showWindow() {
     else
         show();
 };
-
 
 bool InviwoMainWindow::processCommandLineArgs() {
     auto app = static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
@@ -382,43 +378,99 @@ void InviwoMainWindow::addMenuActions() {
 #endif
 
     // Edit
+    {
+        auto cutAction = new QAction(tr("&Cut"), this);
+        actions_["Cut"] = cutAction;
+        cutAction->setShortcut(QKeySequence::Cut);
+        editMenuItem_->addAction(cutAction);
+        connect(cutAction, &QAction::triggered, [&]() {
+            auto data = networkEditor_->cut();
 
-    auto cutAction = new QAction(tr("&Cut"), this);
-    cutAction->setShortcut(QKeySequence::Cut);
-    editMenuItem_->addAction(cutAction);
-    connect(cutAction, &QAction::triggered, [&]() {
-        auto data = networkEditor_->cut();
-        
-        auto mimedata = util::make_unique<QMimeData>();
-        mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
-        mimedata->setData(QString("text/plain"), data);
-        QApplication::clipboard()->setMimeData(mimedata.release());
-    });
+            auto mimedata = util::make_unique<QMimeData>();
+            mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+            mimedata->setData(QString("text/plain"), data);
+            QApplication::clipboard()->setMimeData(mimedata.release());
+        });
+    }
 
-    auto copyAction = new QAction(tr("&Copy"), this);
-    copyAction->setShortcut(QKeySequence::Copy);
-    editMenuItem_->addAction(copyAction);
-    connect(copyAction, &QAction::triggered, [&]() {
-        auto data = networkEditor_->copy();
-        
-        auto mimedata = util::make_unique<QMimeData>();
-        mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
-        mimedata->setData(QString("text/plain"), data);
-        QApplication::clipboard()->setMimeData(mimedata.release());   
-    });
+    {
+        auto copyAction = new QAction(tr("&Copy"), this);
+        actions_["Copy"] = copyAction;
+        copyAction->setShortcut(QKeySequence::Copy);
+        editMenuItem_->addAction(copyAction);
+        connect(copyAction, &QAction::triggered, [&]() {
+            auto data = networkEditor_->copy();
 
-    auto pasteAction = new QAction(tr("&Paste"), this);
-    pasteAction->setShortcut(QKeySequence::Paste);
-    editMenuItem_->addAction(pasteAction);
-    connect(pasteAction, &QAction::triggered, [&]() {
-        auto clipboard = QApplication::clipboard();
-        auto mimeData = clipboard->mimeData();
-        if (mimeData->formats().contains(QString("application/x.vnd.inviwo.network+xml"))) {
-            networkEditor_->paste(mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
-        } else if (mimeData->formats().contains(QString("text/plain"))) {
-            networkEditor_->paste(mimeData->data(QString("text/plain")));
-        }
-    });
+            auto mimedata = util::make_unique<QMimeData>();
+            mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+            mimedata->setData(QString("text/plain"), data);
+            QApplication::clipboard()->setMimeData(mimedata.release());
+        });
+    }
+
+    {
+        auto pasteAction = new QAction(tr("&Paste"), this);
+        actions_["Paste"] = pasteAction;
+        pasteAction->setShortcut(QKeySequence::Paste);
+        editMenuItem_->addAction(pasteAction);
+        connect(pasteAction, &QAction::triggered, [&]() {
+            auto clipboard = QApplication::clipboard();
+            auto mimeData = clipboard->mimeData();
+            if (mimeData->formats().contains(QString("application/x.vnd.inviwo.network+xml"))) {
+                networkEditor_->paste(
+                    mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
+            } else if (mimeData->formats().contains(QString("text/plain"))) {
+                networkEditor_->paste(mimeData->data(QString("text/plain")));
+            }
+        });
+    }
+
+    {
+        auto deleteAction = new QAction(tr("&Delete"), this);
+        actions_["Delete"] = deleteAction;
+        deleteAction->setShortcut(QKeySequence::Delete);
+        editMenuItem_->addAction(deleteAction);
+        connect(deleteAction, &QAction::triggered, [&]() { networkEditor_->deleteSelection(); });
+    }
+
+    editMenuItem_->addSeparator();
+
+    {
+        auto selectAlllAction = new QAction(tr("&Select All"), this);
+        actions_["Select All"] = selectAlllAction;
+        selectAlllAction->setShortcut(QKeySequence::SelectAll);
+        editMenuItem_->addAction(selectAlllAction);
+        connect(selectAlllAction, &QAction::triggered, [&]() { networkEditor_->selectAll(); });
+    }
+
+    editMenuItem_->addSeparator();
+
+    {
+        auto findAction = new QAction(tr("&Find Processor"), this);
+        actions_["Find Processor"] = findAction;
+        findAction->setShortcut(QKeySequence::Find);
+        editMenuItem_->addAction(findAction);
+        connect(findAction, &QAction::triggered, [&]() { processorTreeWidget_->focusSearch(); });
+    }
+
+    {
+        auto addProcessorAction = new QAction(tr("&Add Processor"), this);
+        actions_["Add Processor"] = addProcessorAction;
+        addProcessorAction->setShortcut(Qt::ControlModifier + Qt::Key_D);
+        editMenuItem_->addAction(addProcessorAction);
+        connect(addProcessorAction, &QAction::triggered,
+                [&]() { processorTreeWidget_->addSelectedProcessor(); });
+    }
+
+    editMenuItem_->addSeparator();
+
+    {
+        auto clearLogAction = new QAction(tr("&Clear Log"), this);
+        actions_["Clear Log"] = clearLogAction;
+        clearLogAction->setShortcut(Qt::ControlModifier + Qt::Key_E);
+        editMenuItem_->addAction(clearLogAction);
+        connect(clearLogAction, &QAction::triggered, [&]() { consoleWidget_->clear(); });
+    }
 }
 
 void InviwoMainWindow::addToolBars() {
@@ -632,26 +684,6 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
         }
     }
     testWorkspaceMenu_->menuAction()->setVisible(!testWorkspaceMenu_->isEmpty());
-}
-
-void InviwoMainWindow::keyPressEvent(QKeyEvent* e) {
-    switch (e->modifiers()) {
-        case Qt::ControlModifier: {
-            switch (e->key()) {
-                case Qt::Key_F: {
-                    processorTreeWidget_->focusSearch();
-                    e->accept();
-                    break;
-                }
-                case Qt::Key_E: {
-                    consoleWidget_->clear();
-                    e->accept();
-                    break;
-                }
-            }
-            break;
-        }
-    }
 }
 
 std::string InviwoMainWindow::getCurrentWorkspace() {
@@ -895,9 +927,7 @@ void InviwoMainWindow::visibilityModeChangedInSettings() {
     }
 }
 
-NetworkEditor* InviwoMainWindow::getNetworkEditor() const {
-    return networkEditor_;
-}
+NetworkEditor* InviwoMainWindow::getNetworkEditor() const { return networkEditor_; }
 
 // False == Development, True = Application
 void InviwoMainWindow::setVisibilityMode(bool applicationView) {
@@ -992,32 +1022,26 @@ void InviwoMainWindow::reloadStyleSheet() {
     styleSheetFile.close();
 }
 
-SettingsWidget* InviwoMainWindow::getSettingsWidget() const {
-    return settingsWidget_;
-}
+SettingsWidget* InviwoMainWindow::getSettingsWidget() const { return settingsWidget_; }
 
 ProcessorTreeWidget* InviwoMainWindow::getProcessorTreeWidget() const {
     return processorTreeWidget_;
 }
 
-PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const {
-    return propertyListWidget_;
-}
+PropertyListWidget* InviwoMainWindow::getPropertyListWidget() const { return propertyListWidget_; }
 
-ConsoleWidget* InviwoMainWindow::getConsoleWidget() const {
-    return consoleWidget_;
-}
+ConsoleWidget* InviwoMainWindow::getConsoleWidget() const { return consoleWidget_; }
 
 ResourceManagerWidget* InviwoMainWindow::getResourceManagerWidget() const {
     return resourceManagerWidget_;
 }
 
-HelpWidget* InviwoMainWindow::getHelpWidget() const {
-    return helpWidget_;
-}
+HelpWidget* InviwoMainWindow::getHelpWidget() const { return helpWidget_; }
 
-InviwoApplication* InviwoMainWindow::getInviwoApplication() const {
-    return app_;
+InviwoApplication* InviwoMainWindow::getInviwoApplication() const { return app_; }
+
+const std::unordered_map<std::string, QAction*>& InviwoMainWindow::getActions() const {
+    return actions_;
 }
 
 }  // namespace

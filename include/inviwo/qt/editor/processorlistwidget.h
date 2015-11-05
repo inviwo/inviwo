@@ -74,12 +74,11 @@ public:
     ~ProcessorTreeWidget();
 
     void focusSearch();
+    void addSelectedProcessor();
 
 protected:
     bool processorFits(ProcessorFactoryObject* processor, const QString& filter);
     const QIcon* getCodeStateIcon(CodeState) const;
-
-    virtual void keyPressEvent(QKeyEvent *) override;
 
 private slots:
     void addProcessorsToTree();

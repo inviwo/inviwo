@@ -114,20 +114,24 @@ void NetworkEditorView::fitNetwork() {
     }
 }
 
+void NetworkEditorView::focusOutEvent(QFocusEvent *) {
+    setDragMode(QGraphicsView::RubberBandDrag);
+}
+
 void NetworkEditorView::wheelEvent(QWheelEvent* e) {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    QPoint numPixels = e->pixelDelta() / 5;
-    QPoint numDegrees = e->angleDelta() / 8 / 15;
+    QPointF numPixels = e->pixelDelta() / 5.0;
+    QPointF numDegrees = e->angleDelta() / 8.0 / 15;
 #else
-    QPoint numPixels;
-    QPoint numDegrees = QPoint(0, e->delta() / 8 / 15);
+    QPointF numPixels;
+    QPointF numDegrees = QPointF(0.0, e->delta() / 8.0 / 15.0);
 #endif
     if (e->modifiers() == Qt::ControlModifier) {
         if (!numPixels.isNull()) {
-            zoom(qPow(1.05,  static_cast<float>(numPixels.y())));
+            zoom(qPow(1.05,  numPixels.y()));
 
         } else if (!numDegrees.isNull()) {
-            zoom(qPow(1.05,  static_cast<float>(numDegrees.y())));
+            zoom(qPow(1.05,  numDegrees.y()));
         }
     } else {
         QGraphicsView::wheelEvent(e);
@@ -145,7 +149,7 @@ void NetworkEditorView::keyReleaseEvent(QKeyEvent* keyEvent) {
     setDragMode(QGraphicsView::RubberBandDrag);
 }
 
-void NetworkEditorView::zoom(float dz) {
+void NetworkEditorView::zoom(double dz) {
     if (matrix().m11() > 2 || matrix().m11() < 0.25) return;
     scale(dz, dz);
 }

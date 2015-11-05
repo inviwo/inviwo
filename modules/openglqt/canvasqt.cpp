@@ -407,8 +407,15 @@ void CanvasQt::keyPressEvent(QKeyEvent* keyEvent) {
     KeyboardEvent pressKeyEvent(EventConverterQt::getKeyButton(keyEvent),
                                  EventConverterQt::getModifier(keyEvent),
                                  KeyboardEvent::KEY_STATE_PRESS);
-    keyEvent->accept();
+
     Canvas::keyPressEvent(&pressKeyEvent);
+
+    if(pressKeyEvent.hasBeenUsed()) {
+        keyEvent->accept();
+    } else {
+        QGLWindow::keyPressEvent(keyEvent);
+    }
+
 }
 
 void CanvasQt::keyReleaseEvent(QKeyEvent* keyEvent) {
@@ -417,6 +424,12 @@ void CanvasQt::keyReleaseEvent(QKeyEvent* keyEvent) {
                                   KeyboardEvent::KEY_STATE_RELEASE);
     keyEvent->accept();
     Canvas::keyReleaseEvent(&releaseKeyEvent);
+
+    if (releaseKeyEvent.hasBeenUsed()) {
+        keyEvent->accept();
+    } else {
+        QGLWindow::keyReleaseEvent(keyEvent);
+    }
 }
 
 CanvasQt* CanvasQt::getSharedCanvas() { 
@@ -690,9 +703,9 @@ std::unique_ptr<Canvas> CanvasQt::create() {
     auto thread = QThread::currentThread();
     auto res = dispatchFront([&thread]() {
         auto canvas = util::make_unique<HiddenCanvasQt>();
-	#if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
+    #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
         canvas->context()->moveToThread(thread);
-	#endif
+    #endif
         return canvas;
     });
     return res.get();
