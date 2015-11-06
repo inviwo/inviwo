@@ -56,6 +56,7 @@ class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
 class InviwoApplication;
+class OptionPropertyInt;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 #include <warn/push>

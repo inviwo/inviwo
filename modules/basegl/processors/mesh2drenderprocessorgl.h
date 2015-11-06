@@ -37,6 +37,7 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <modules/opengl/shader/shader.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <vector>
 
 namespace inviwo {

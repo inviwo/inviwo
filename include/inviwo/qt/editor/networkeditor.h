@@ -36,7 +36,7 @@
 #include <inviwo/core/util/observer.h>
 #include <inviwo/core/processors/processorwidgetobserver.h>
 #include <inviwo/core/processors/processorpair.h>
-
+#include <inviwo/core/interaction/events/keyboardevent.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsScene>
