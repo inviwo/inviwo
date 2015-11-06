@@ -42,7 +42,6 @@
 #include <inviwo/qt/editor/settingswidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
 #include <inviwo/qt/widgets/inviwofiledialog.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/qt/editor/networkeditor.h>
 
 #include <pathsexternalmodules.h>

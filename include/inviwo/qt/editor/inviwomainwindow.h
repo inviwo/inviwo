@@ -32,7 +32,7 @@
 
 #include <inviwo/qt/editor/inviwoqteditordefine.h>
 #include <inviwo/qt/editor/networkeditorobserver.h>
-
+#include <inviwo/core/properties/optionproperty.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMainWindow>
@@ -56,7 +56,6 @@ class ConsoleWidget;
 class SettingsWidget;
 class HelpWidget;
 class InviwoApplication;
-class OptionPropertyInt;
 
 class IVW_QTEDITOR_API InviwoMainWindow : public QMainWindow, public NetworkEditorObserver {
 #include <warn/push>
