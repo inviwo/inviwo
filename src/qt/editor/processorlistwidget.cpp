@@ -158,6 +158,7 @@ void ProcessorTreeWidget::addSelectedProcessor() {
     }
     if (!id.empty()) {
         addProcessor(id);
+        processorTree_->clearSelection();
     } else {
         processorTree_->setFocus();
         processorTree_->topLevelItem(0)->child(0)->setSelected(true);
