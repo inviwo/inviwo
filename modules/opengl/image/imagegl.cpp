@@ -141,17 +141,17 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
             for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
                 ssUniform << "uniform sampler2D color" << i << ";";
             }
-            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_LayerType::Color_OUT_UNIFORMS", ssUniform.str());
+            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS", ssUniform.str());
 
             std::stringstream ssWrite;
             for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
                 ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord_.xy);";
             }
-            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_LayerType::Color_WRITE", ssWrite.str());
+            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE", ssWrite.str());
         }
         else{
-            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_LayerType::Color_UNIFORMS");
-            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_LayerType::Color_WRITE");
+            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_UNIFORMS");
+            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE");
         }
 
         colorLayerCopyCount_ = colorLayersGL_.size();
