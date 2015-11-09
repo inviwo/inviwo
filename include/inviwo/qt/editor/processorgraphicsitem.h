@@ -70,23 +70,23 @@ public:
     ProcessorStatusGraphicsItem* getStatusItem() const;
 
     void editProcessorName();
-    void onLabelGraphicsItemChange();
+    void onLabelGraphicsItemChange() override;
     bool isEditingProcessorName();
 
     void snapToGrid();
 
     // override for qgraphicsitem_cast (refer qt documentation)
     enum { Type = UserType + ProcessorGraphicsType };
-    int type() const { return Type; }
+    virtual int type() const override { return Type; }
 
-    virtual void showToolTip(QGraphicsSceneHelpEvent* event);
+    virtual void showToolTip(QGraphicsSceneHelpEvent* event) override;
 
     // ProcessorObserver overrides
-    virtual void onProcessorIdentifierChange(Processor*);
-    virtual void onProcessorPortAdded(Processor*, Port*);
+    virtual void onProcessorIdentifierChange(Processor*) override;
+    virtual void onProcessorPortAdded(Processor*, Port*) override;
     #if IVW_PROFILING
-    virtual void onProcessorAboutToProcess(Processor*);
-    virtual void onProcessorFinishedProcess(Processor*);
+    virtual void onProcessorAboutToProcess(Processor*) override;
+    virtual void onProcessorFinishedProcess(Processor*) override;
     void resetTimeMeasurements();
     #endif
 
@@ -94,8 +94,8 @@ public:
 
 protected:
     void setIdentifier(QString text);
-    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget);
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+    void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     void addInport(Inport *port);
     void addOutport(Outport *port);
 

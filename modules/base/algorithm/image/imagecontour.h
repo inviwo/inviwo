@@ -34,7 +34,11 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/core/datastructures/image/layerrepresentation.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/interpolation.h>
 
 namespace inviwo {
 
@@ -122,7 +126,7 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
             outPos[3] = vec3(x, y + 1, 1) * outPosScale;
 
             auto& edges = caseTable[theCase];
-            for (int i = 0; i < edges.size(); i += 2) {
+            for (size_t i = 0; i < edges.size(); i += 2) {
                 auto t = (isoValue - vals[edges[i]]) / (vals[edges[i + 1]] - vals[edges[i]]);
                 auto p =
                     Interpolation<vec3, float>::linear(outPos[edges[i]], outPos[edges[i + 1]], t);
