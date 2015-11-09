@@ -91,6 +91,7 @@ private:
     GLenum pickingAttachmentID_;
     mutable Shader shader_;
     mutable size_t colorLayerCopyCount_;
+    mutable bool singleChanelCopy_;
 };
 
 } // namespace

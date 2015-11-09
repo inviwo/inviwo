@@ -38,15 +38,19 @@ namespace inviwo {
 ImageGL::ImageGL()
     : ImageRepresentation()
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag")
-    , colorLayerCopyCount_(1) {
+    , shader_("standard.vert", "img_copy.frag", false)
+    , colorLayerCopyCount_(-1)
+    , singleChanelCopy_(false)
+{
 }
 
 ImageGL::ImageGL(const ImageGL& rhs)
     : ImageRepresentation(rhs)
     , frameBufferObject_()
-    , shader_("standard.vert", "img_copy.frag")
-    , colorLayerCopyCount_(1) {
+    , shader_("standard.vert", "img_copy.frag", false)
+    , colorLayerCopyCount_(-1)
+    , singleChanelCopy_(false)
+{
 }
 
 ImageGL::~ImageGL() {
@@ -131,30 +135,33 @@ bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
 bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     const ImageGL* source = this;
 
-    // Set shader to copy all color layers 
-    if (colorLayerCopyCount_ != colorLayersGL_.size()){
-        if (colorLayersGL_.size() > 1){
-            std::stringstream ssUniform;
-            for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
-                ssUniform << "layout(location = " << i+1 << ") out vec4 FragData" << i << ";";
-            }
-            for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
-                ssUniform << "uniform sampler2D color" << i << ";";
-            }
-            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS", ssUniform.str());
+    auto singleChannel = getDataFormat()->getComponents() == 1;
 
-            std::stringstream ssWrite;
-            for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
+    // Set shader to copy all color layers
+    if (singleChanelCopy_ != singleChannel || colorLayerCopyCount_ != colorLayersGL_.size()) {
+        std::stringstream ssUniform;
+        for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
+            ssUniform << "layout(location = " << i + 1 << ") out vec4 FragData" << i << ";";
+        }
+        for (size_t i = 0; i < colorLayersGL_.size(); ++i) {
+            ssUniform << "uniform sampler2D color" << i << ";";
+        }
+        shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER_UNIFORMS",
+                                                           ssUniform.str());
+
+        std::stringstream ssWrite;
+        for (size_t i = 0; i < colorLayersGL_.size(); ++i) {
+            if (singleChannel) {
+                ssWrite << "FragData" << i << " = vec4(texture(color" << i << ", texCoord_.xy).r);";
+            } else {
                 ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord_.xy);";
             }
-            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE", ssWrite.str());
         }
-        else{
-            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_UNIFORMS");
-            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE");
-        }
+        shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYERS_SAMPLING",
+                                                           ssWrite.str());
 
         colorLayerCopyCount_ = colorLayersGL_.size();
+        singleChanelCopy_ = singleChannel;
 
         shader_.build();
     }
@@ -168,7 +175,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         source->getPickingLayerGL()->bindTexture(pickingUnit.getEnum());
     }
     TextureUnitContainer additionalColorUnits;
-    for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
+    for (size_t i = 0; i < colorLayersGL_.size(); ++i) {
         TextureUnit unit;
         source->getColorLayerGL(i)->bindTexture(unit.getEnum());
         additionalColorUnits.push_back(std::move(unit));
@@ -188,12 +195,12 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         scale = glm::scale(glm::vec3(ratioSource / ratioTarget, 1.0f, 1.0f));
 
     shader_.activate();
-    shader_.setUniform("color_", colorUnit.getUnitNumber());
+    shader_.setUniform("color0", colorUnit.getUnitNumber());
     if (source->getDepthLayerGL()) {
-        shader_.setUniform("depth_", depthUnit.getUnitNumber());
+        shader_.setUniform("depth", depthUnit.getUnitNumber());
     }
     if (source->getPickingLayerGL()) {
-        shader_.setUniform("picking_", pickingUnit.getUnitNumber());
+        shader_.setUniform("picking", pickingUnit.getUnitNumber());
     }
     for (size_t i = 0; i < additionalColorUnits.size(); ++i) {
         shader_.setUniform("color" + toString<size_t>(i + 1), additionalColorUnits[i].getUnitNumber());

@@ -26,22 +26,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  *********************************************************************************/
-#ifdef ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS
-ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS
-#endif
 
-uniform sampler2D color_;
 uniform sampler2D depth_;
 uniform sampler2D picking_;
+
+COLOR_LAYER_UNIFORMS
 
 in vec3 texCoord_;
 
 void main() {
-    FragData0 = texture(color_, texCoord_.xy);
-
-#ifdef ADDITIONAL_COLOR_LAYER_WRITE
-    ADDITIONAL_COLOR_LAYER_WRITE
-#endif
+    COLOR_LAYERS_SAMPLING
 
     PickingData = texture(picking_, texCoord_.xy);
     gl_FragDepth = texture(depth_, texCoord_.xy).r;
