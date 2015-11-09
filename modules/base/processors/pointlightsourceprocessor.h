@@ -92,7 +92,7 @@ public:
 
     // Necessary for trackball
     const vec3& getLookTo() const { return lookTo_; }
-    const vec3& getLookFrom() const { return lightPosition_->get(); }
+    const vec3 getLookFrom() const { return lightPosition_->get(); }
     const vec3& getLookUp() const { return lookUp_; }
 
     void setLookTo(vec3 lookTo) { lookTo_ = lookTo; }

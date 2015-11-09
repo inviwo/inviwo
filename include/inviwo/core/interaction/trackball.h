@@ -80,7 +80,7 @@ public:
     virtual void invokeEvent(Event* event) override;
 
     const vec3& getLookTo() const { return object_->getLookTo(); }
-    const vec3& getLookFrom() const { return object_->getLookFrom(); }
+    const vec3 getLookFrom() const { return object_->getLookFrom(); }
     const vec3& getLookUp() const { return object_->getLookUp(); }
 
     const vec3 getLookFromMinValue() const { return object_->getLookFromMinValue(); }
