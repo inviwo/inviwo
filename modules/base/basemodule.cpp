@@ -37,6 +37,7 @@
 #include <modules/base/processors/imageexport.h>
 #include <modules/base/processors/imagesource.h>
 #include <modules/base/processors/imagesourceseries.h>
+#include <modules/base/processors/imagecontourprocessor.h>
 #include <modules/base/processors/meshclipping.h>
 #include <modules/base/processors/meshcreator.h>
 #include <modules/base/processors/noiseprocessor.h>
@@ -93,8 +94,10 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSlice>();
     registerProcessor<VolumeSubsample>();
     registerProcessor<VolumeSubset>();
-    registerProcessor<VolumeVectorSource>();
-    registerProcessor<TimeStepSelector>();
+    registerProcessor<VolumeVectorSource>(); 
+    registerProcessor<TimeStepSelector>();  
+
+    registerProcessor<ImageContourProcessor>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();

@@ -5,6 +5,7 @@ ivw_module(Base)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.h
@@ -15,6 +16,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/distancetransformram.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldmapper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagecontourprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.h
@@ -35,9 +37,9 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorsource.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/basisproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumeinformationproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -46,6 +48,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/image/imagecontour.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/marchingtetrahedron.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/algorithm/volume/volumeramsubset.cpp
@@ -54,6 +57,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/directionallightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/distancetransformram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/heightfieldmapper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagecontourprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesource.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imagesourceseries.cpp
@@ -73,9 +77,9 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubsample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesubset.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorsource.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/basisproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/gaussianproperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/properties/sequencetimerproperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/properties/volumeinformationproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
