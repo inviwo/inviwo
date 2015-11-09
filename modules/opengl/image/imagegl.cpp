@@ -135,7 +135,7 @@ bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
 bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     const ImageGL* source = this;
 
-    auto singleChannel = getDataFormat()->getComponents() == 1;
+    auto singleChannel = source->getColorLayerGL()->getDataFormat()->getComponents() == 1;
 
     // Set shader to copy all color layers
     if (singleChanelCopy_ != singleChannel || colorLayerCopyCount_ != colorLayersGL_.size()) {
@@ -171,7 +171,7 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
             shader_.getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
         }
         else {
-            shader_.getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
+            shader_.getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
         }
 
         colorLayerCopyCount_ = colorLayersGL_.size();
