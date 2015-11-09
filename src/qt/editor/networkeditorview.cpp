@@ -143,10 +143,12 @@ void NetworkEditorView::keyPressEvent(QKeyEvent* keyEvent) {
      if (keyEvent->modifiers() & Qt::ControlModifier) {
         setDragMode(QGraphicsView::ScrollHandDrag);
      }
+     QGraphicsView::keyPressEvent(keyEvent);
 }
 
 void NetworkEditorView::keyReleaseEvent(QKeyEvent* keyEvent) {
     setDragMode(QGraphicsView::RubberBandDrag);
+    QGraphicsView::keyReleaseEvent(keyEvent);
 }
 
 void NetworkEditorView::zoom(double dz) {
