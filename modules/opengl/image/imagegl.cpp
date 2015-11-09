@@ -143,22 +143,36 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
             ssUniform << "layout(location = " << i + 1 << ") out vec4 FragData" << i << ";";
         }
-        for (size_t i = 0; i < colorLayersGL_.size(); ++i) {
+        for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
             ssUniform << "uniform sampler2D color" << i << ";";
         }
-        shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYER_UNIFORMS",
+        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_OUT_UNIFORMS",
                                                            ssUniform.str());
 
         std::stringstream ssWrite;
-        for (size_t i = 0; i < colorLayersGL_.size(); ++i) {
+        for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
             if (singleChannel) {
                 ssWrite << "FragData" << i << " = vec4(texture(color" << i << ", texCoord_.xy).r);";
             } else {
                 ssWrite << "FragData" << i << " = texture(color" << i << ", texCoord_.xy);";
             }
         }
-        shader_.getFragmentShaderObject()->addShaderDefine("COLOR_LAYERS_SAMPLING",
+        shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYER_WRITE",
                                                            ssWrite.str());
+
+        if (colorLayersGL_.size() > 1) {
+            shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYERS");
+        }
+        else {
+            shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYERS");
+        }
+
+        if (singleChannel) {
+            shader_.getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
+        }
+        else {
+            shader_.getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
+        }
 
         colorLayerCopyCount_ = colorLayersGL_.size();
         singleChanelCopy_ = singleChannel;
@@ -195,12 +209,12 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         scale = glm::scale(glm::vec3(ratioSource / ratioTarget, 1.0f, 1.0f));
 
     shader_.activate();
-    shader_.setUniform("color0", colorUnit.getUnitNumber());
+    shader_.setUniform("color_", colorUnit.getUnitNumber());
     if (source->getDepthLayerGL()) {
-        shader_.setUniform("depth", depthUnit.getUnitNumber());
+        shader_.setUniform("depth_", depthUnit.getUnitNumber());
     }
     if (source->getPickingLayerGL()) {
-        shader_.setUniform("picking", pickingUnit.getUnitNumber());
+        shader_.setUniform("picking_", pickingUnit.getUnitNumber());
     }
     for (size_t i = 0; i < additionalColorUnits.size(); ++i) {
         shader_.setUniform("color" + toString<size_t>(i + 1), additionalColorUnits[i].getUnitNumber());
