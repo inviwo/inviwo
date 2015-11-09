@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "canvasglfw.h"
@@ -43,27 +43,21 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     , glWindow_(nullptr)
     , mouseButton_(MouseEvent::MOUSE_BUTTON_NONE)
     , mouseState_(MouseEvent::MOUSE_STATE_NONE)
-    , mouseModifiers_(InteractionEvent::MODIFIER_NONE)
-{
-    if(alwaysOnTop_){
+    , mouseModifiers_(InteractionEvent::MODIFIER_NONE) {
+    if (alwaysOnTop_) {
         glfwWindowHint(GLFW_FLOATING, GL_TRUE);
-    }
-    else{
+    } else {
         glfwWindowHint(GLFW_FLOATING, GL_FALSE);
     }
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 }
 
-CanvasGLFW::~CanvasGLFW() {
-    glWindow_ = nullptr;
-}
+CanvasGLFW::~CanvasGLFW() { glfwDestroyWindow(glWindow_); }
 
-void CanvasGLFW::initialize() {
-    CanvasGL::initialize();
-}
+void CanvasGLFW::initialize() { CanvasGL::initialize(); }
 
 void CanvasGLFW::initializeGL() {
-    if(!sharedContext_){
+    if (!sharedContext_) {
         std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
 #ifdef __APPLE__
         if (preferProfile == "core") {
@@ -71,11 +65,12 @@ void CanvasGLFW::initializeGL() {
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        } 
+        }
 #endif
     }
 
-    glWindow_ = glfwCreateWindow(getScreenDimensions().x, getScreenDimensions().y, windowTitle_.c_str(), nullptr, sharedContext_);
+    glWindow_ = glfwCreateWindow(getScreenDimensions().x, getScreenDimensions().y,
+                                 windowTitle_.c_str(), nullptr, sharedContext_);
 
     if (!glWindow_) {
         glfwTerminate();
@@ -95,36 +90,26 @@ void CanvasGLFW::initializeGL() {
     glfwSetWindowCloseCallback(glWindow_, closeWindow);
     glfwSetWindowUserPointer(glWindow_, this);
     glfwSetWindowSizeCallback(glWindow_, reshape);
-    
+
     activate();
 
     OpenGLCapabilities::initializeGLEW();
 }
 
-void CanvasGLFW::initializeSquare() {
-    CanvasGL::initializeSquare();
-}
+void CanvasGLFW::initializeSquare() { CanvasGL::initializeSquare(); }
 
-void CanvasGLFW::deinitialize() {
-    CanvasGL::deinitialize();
-}
+void CanvasGLFW::deinitialize() { CanvasGL::deinitialize(); }
 
-void CanvasGLFW::activate() {
-    glfwMakeContextCurrent(glWindow_);
-}
+void CanvasGLFW::activate() { glfwMakeContextCurrent(glWindow_); }
 
-void CanvasGLFW::glSwapBuffers() {
-    glfwSwapBuffers(glWindow_);
-}
+void CanvasGLFW::glSwapBuffers() { glfwSwapBuffers(glWindow_); }
 
-void CanvasGLFW::show(){
+void CanvasGLFW::show() {
     glfwShowWindow(glWindow_);
     update();
 }
 
-void CanvasGLFW::hide(){
-    glfwHideWindow(glWindow_);
-}
+void CanvasGLFW::hide() { glfwHideWindow(glWindow_); }
 
 void CanvasGLFW::setWindowSize(uvec2 size) {
     glfwSetWindowSize(glWindow_, static_cast<int>(size.x), static_cast<int>(size.y));
@@ -137,36 +122,31 @@ void CanvasGLFW::setWindowTitle(std::string windowTitle) {
 
 void CanvasGLFW::closeWindow(GLFWwindow* window) {
     glfwWindowCount_--;
-    if(sharedContext_ != window)
-        glfwDestroyWindow(window);
+    if (sharedContext_ != window) glfwDestroyWindow(window);
 }
 
-int CanvasGLFW::getWindowCount(){
-    return glfwWindowCount_;
-}
+int CanvasGLFW::getWindowCount() { return glfwWindowCount_; }
 
 void CanvasGLFW::reshape(GLFWwindow* window, int width, int height) {
     getCanvasGLFW(window)->resize(uvec2(width, height));
 }
 
-void CanvasGLFW::setAlwaysOnTopByDefault(bool alwaysOnTop){
-    alwaysOnTop_ = alwaysOnTop;
-}
+void CanvasGLFW::setAlwaysOnTopByDefault(bool alwaysOnTop) { alwaysOnTop_ = alwaysOnTop; }
 
-CanvasGLFW* CanvasGLFW::getCanvasGLFW(GLFWwindow* window){
+CanvasGLFW* CanvasGLFW::getCanvasGLFW(GLFWwindow* window) {
     return static_cast<CanvasGLFW*>(glfwGetWindowUserPointer(window));
 }
 
-CanvasGLFW* CanvasGLFW::getSharedContext(){
-    if(sharedContext_)
+CanvasGLFW* CanvasGLFW::getSharedContext() {
+    if (sharedContext_)
         return getCanvasGLFW(sharedContext_);
     else
         return nullptr;
 }
 
-void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action, int mods){
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
-        //glfwSetWindowShouldClose(window, GL_TRUE);
+void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        // glfwSetWindowShouldClose(window, GL_TRUE);
         glfwTerminate();
         exit(0);
         return;
@@ -174,10 +154,8 @@ void CanvasGLFW::keyboard(GLFWwindow* window, int key, int scancode, int action,
 
     CanvasGLFW* thisCanvas = getCanvasGLFW(window);
 
-    KeyboardEvent keyEvent(
-        toupper(key),
-        KeyboardEvent::MODIFIER_NONE,
-        KeyboardEvent::KEY_STATE_PRESS);
+    KeyboardEvent keyEvent(toupper(key), KeyboardEvent::MODIFIER_NONE,
+                           KeyboardEvent::KEY_STATE_PRESS);
 
     thisCanvas->keyPressEvent(&keyEvent);
 }
@@ -191,28 +169,35 @@ void CanvasGLFW::mouseButton(GLFWwindow* window, int button, int action, int mod
     double y;
     glfwGetCursorPos(window, &x, &y);
     ivec2 screenPos(floor(x), floor(y));
-    ivec2 screenPosInvY(screenPos.x, static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
-    MouseEvent mouseEvent(screenPos, thisCanvas->mouseButton_,
-        thisCanvas->mouseState_, thisCanvas->mouseModifiers_, thisCanvas->getScreenDimensions(),
-        thisCanvas->getDepthValueAtCoord(screenPosInvY));
+    ivec2 screenPosInvY(screenPos.x,
+                        static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
+    MouseEvent mouseEvent(screenPos, thisCanvas->mouseButton_, thisCanvas->mouseState_,
+                          thisCanvas->mouseModifiers_, thisCanvas->getScreenDimensions(),
+                          thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
-    if (thisCanvas->mouseState_ == MouseEvent::MOUSE_STATE_PRESS) thisCanvas->mousePressEvent(&mouseEvent);
-    else if (thisCanvas->mouseState_ == MouseEvent::MOUSE_STATE_RELEASE) thisCanvas->mouseReleaseEvent(&mouseEvent);
+    if (thisCanvas->mouseState_ == MouseEvent::MOUSE_STATE_PRESS)
+        thisCanvas->mousePressEvent(&mouseEvent);
+    else if (thisCanvas->mouseState_ == MouseEvent::MOUSE_STATE_RELEASE)
+        thisCanvas->mouseReleaseEvent(&mouseEvent);
 }
 
 void CanvasGLFW::mouseMotion(GLFWwindow* window, double x, double y) {
     CanvasGLFW* thisCanvas = getCanvasGLFW(window);
     ivec2 screenPos(floor(x), floor(y));
-    ivec2 screenPosInvY(screenPos.x, static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
+    ivec2 screenPosInvY(screenPos.x,
+                        static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
 
-    MouseEvent::MouseState state = (thisCanvas->mouseState_ == MouseEvent::MOUSE_STATE_PRESS
-        ? MouseEvent::MOUSE_STATE_MOVE : thisCanvas->mouseState_);
-    MouseEvent mouseEvent(screenPos, thisCanvas->mouseButton_,
-        state, thisCanvas->mouseModifiers_, thisCanvas->getScreenDimensions(),
-        thisCanvas->getDepthValueAtCoord(screenPosInvY));
+    MouseEvent::MouseState state =
+        (thisCanvas->mouseState_ == MouseEvent::MOUSE_STATE_PRESS ? MouseEvent::MOUSE_STATE_MOVE
+                                                                  : thisCanvas->mouseState_);
+    MouseEvent mouseEvent(screenPos, thisCanvas->mouseButton_, state, thisCanvas->mouseModifiers_,
+                          thisCanvas->getScreenDimensions(),
+                          thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
-    if (state == MouseEvent::MOUSE_STATE_MOVE) thisCanvas->mouseMoveEvent(&mouseEvent);
-    else if (state == MouseEvent::MOUSE_STATE_RELEASE) thisCanvas->mouseReleaseEvent(&mouseEvent);
+    if (state == MouseEvent::MOUSE_STATE_MOVE)
+        thisCanvas->mouseMoveEvent(&mouseEvent);
+    else if (state == MouseEvent::MOUSE_STATE_RELEASE)
+        thisCanvas->mouseReleaseEvent(&mouseEvent);
 }
 
 void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
@@ -224,27 +209,36 @@ void CanvasGLFW::scroll(GLFWwindow* window, double xoffset, double yoffset) {
     double y;
     glfwGetCursorPos(window, &x, &y);
     ivec2 screenPos(floor(x), floor(y));
-    ivec2 screenPosInvY(screenPos.x, static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
+    ivec2 screenPosInvY(screenPos.x,
+                        static_cast<int>(thisCanvas->getScreenDimensions().y) - 1 - screenPos.y);
     int delta = static_cast<int>(yoffset < 0.0 ? floor(yoffset) : ceil(yoffset));
 
-    MouseEvent mouseEvent(screenPos, delta, thisCanvas->mouseButton_,
-        thisCanvas->mouseState_, MouseEvent::MOUSE_WHEEL_VERTICAL, thisCanvas->mouseModifiers_, thisCanvas->getScreenDimensions(),
-        thisCanvas->getDepthValueAtCoord(screenPosInvY));
+    MouseEvent mouseEvent(screenPos, delta, thisCanvas->mouseButton_, thisCanvas->mouseState_,
+                          MouseEvent::MOUSE_WHEEL_VERTICAL, thisCanvas->mouseModifiers_,
+                          thisCanvas->getScreenDimensions(),
+                          thisCanvas->getDepthValueAtCoord(screenPosInvY));
 
     thisCanvas->mouseWheelEvent(&mouseEvent);
 }
 
 MouseEvent::MouseButton CanvasGLFW::mapMouseButton(int mouseButtonGLFW) {
-    if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_LEFT) return MouseEvent::MOUSE_BUTTON_LEFT;
-    else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_MIDDLE) return MouseEvent::MOUSE_BUTTON_MIDDLE;
-    else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_RIGHT) return MouseEvent::MOUSE_BUTTON_RIGHT;
-    else return MouseEvent::MOUSE_BUTTON_NONE;
+    if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_LEFT)
+        return MouseEvent::MOUSE_BUTTON_LEFT;
+    else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_MIDDLE)
+        return MouseEvent::MOUSE_BUTTON_MIDDLE;
+    else if (mouseButtonGLFW == GLFW_MOUSE_BUTTON_RIGHT)
+        return MouseEvent::MOUSE_BUTTON_RIGHT;
+    else
+        return MouseEvent::MOUSE_BUTTON_NONE;
 }
 
 MouseEvent::MouseState CanvasGLFW::mapMouseState(int mouseStateGLFW) {
-    if (mouseStateGLFW == GLFW_PRESS) return MouseEvent::MOUSE_STATE_PRESS;
-    else if (mouseStateGLFW == GLFW_RELEASE) return MouseEvent::MOUSE_STATE_RELEASE;
-    else return MouseEvent::MOUSE_STATE_NONE;
+    if (mouseStateGLFW == GLFW_PRESS)
+        return MouseEvent::MOUSE_STATE_PRESS;
+    else if (mouseStateGLFW == GLFW_RELEASE)
+        return MouseEvent::MOUSE_STATE_RELEASE;
+    else
+        return MouseEvent::MOUSE_STATE_NONE;
 }
 
 InteractionEvent::Modifier CanvasGLFW::mapModifiers(int modifiersGLFW) {
@@ -259,4 +253,13 @@ InteractionEvent::Modifier CanvasGLFW::mapModifiers(int modifiersGLFW) {
     return static_cast<InteractionEvent::Modifier>(result);
 }
 
-} // namespace
+std::unique_ptr<Canvas> CanvasGLFW::create() {
+    auto canvas = util::make_unique<CanvasGLFW>(windowTitle_, screenDimensions_);
+    //glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+    canvas->initializeGL();
+
+    //glfwDefaultWindowHints();
+    return std::move(canvas);
+}
+
+}  // namespace

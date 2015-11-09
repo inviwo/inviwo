@@ -39,7 +39,9 @@ CanvasProcessorWidgetGLFW::CanvasProcessorWidgetGLFW()
     , canvas_(nullptr)
     , hasSharedCanvas_(false) {}
 
-CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() {}
+CanvasProcessorWidgetGLFW::~CanvasProcessorWidgetGLFW() {
+    deinitialize();
+}
 
 CanvasProcessorWidgetGLFW* CanvasProcessorWidgetGLFW::create() const {
     return new CanvasProcessorWidgetGLFW();
@@ -72,14 +74,16 @@ void CanvasProcessorWidgetGLFW::initialize() {
 void CanvasProcessorWidgetGLFW::deinitialize() {
     if (canvas_) {
         this->hide();
-        if(hasSharedCanvas_)
+        if(hasSharedCanvas_) {
             canvas_->setProcessorWidgetOwner(nullptr);
-        else
+        } else {
             delete canvas_;
+        }
+        canvas_->setEventPropagator(nullptr);
         canvas_ = nullptr;
     }
 
-    ProcessorWidget::deinitialize();
+    CanvasProcessorWidget::deinitialize();
 }
 
 void CanvasProcessorWidgetGLFW::setVisible(bool visible) {

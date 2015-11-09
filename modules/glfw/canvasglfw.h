@@ -46,13 +46,13 @@ public:
     CanvasGLFW(std::string title = "", uvec2 dimensions = uvec2(128));
     virtual ~CanvasGLFW();
 
-    virtual void initialize();
+    virtual void initialize() override;
     void initializeGL();
-    virtual void initializeSquare();
-    virtual void deinitialize();
-    virtual void activate();
+    virtual void initializeSquare() override;
+    virtual void deinitialize() override;
+    virtual void activate() override;
 
-    virtual void glSwapBuffers();
+    virtual void glSwapBuffers() override;
 
     void show();
     void hide();
@@ -75,6 +75,8 @@ public:
     static InteractionEvent::Modifier mapModifiers(const int modifiersGLFW);
 
     static void setAlwaysOnTopByDefault(bool);
+    
+    virtual std::unique_ptr<Canvas> create() override;
 
 protected:
     static CanvasGLFW* getCanvasGLFW(GLFWwindow*);
