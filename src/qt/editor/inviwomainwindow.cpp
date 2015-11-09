@@ -110,7 +110,10 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     move(pos);
 }
 
-InviwoMainWindow::~InviwoMainWindow() { LogCentral::getPtr()->unregisterLogger(consoleWidget_); }
+InviwoMainWindow::~InviwoMainWindow() { 
+    LogCentral::getPtr()->unregisterLogger(consoleWidget_); 
+    delete networkEditor_;
+}
 
 void InviwoMainWindow::initialize() {
     networkEditorView_ = new NetworkEditorView(networkEditor_, this);
