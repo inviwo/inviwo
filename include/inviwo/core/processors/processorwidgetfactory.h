@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/singleton.h>
 
@@ -45,12 +46,12 @@ public:
     ProcessorWidgetFactory() = default;
     virtual ~ProcessorWidgetFactory() = default;
 
-    bool registerObject(std::pair<std::string, ProcessorWidget*>);
+    bool registerObject(ProcessorWidgetFactoryObject* widget);
     std::unique_ptr<ProcessorWidget> create(const std::string& processorClassName) const override;
     std::unique_ptr<ProcessorWidget> create(Processor* processor) const;
     bool hasKey(const std::string& className) const override;
 
-    using Map = std::unordered_map<std::string, ProcessorWidget*>;
+    using Map = std::unordered_map<std::string, ProcessorWidgetFactoryObject*>;
 private:
     mutable Map map_;
 };

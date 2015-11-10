@@ -42,13 +42,6 @@ public:
     OpenGLQtModule(InviwoApplication* app);
     virtual ~OpenGLQtModule();
 
-protected:
-    template <typename T>
-    void registerProcessorWidgetAndAssociate(std::unique_ptr<ProcessorWidget> processorWidget) {
-        registerProcessorWidget(ProcessorTraits<T>::getProcessorInfo().classIdentifier,
-                                std::move(processorWidget));
-    }
-
 private:
     std::unique_ptr<CanvasQt> qtGLSharedCanvas_;
     std::unique_ptr<OpenGLQtMenu> menu_;

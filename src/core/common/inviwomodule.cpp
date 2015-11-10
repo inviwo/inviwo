@@ -141,12 +141,8 @@ const std::vector<PortInspectorFactoryObject*> InviwoModule::getPortInspectors()
 const std::vector<ProcessorFactoryObject*> InviwoModule::getProcessors() const {
     return uniqueToPtr(processors_);
 }
-const std::vector<std::pair<std::string, ProcessorWidget*> > InviwoModule::getProcessorWidgets()
-    const {
-    std::vector<std::pair<std::string, ProcessorWidget*> > res;
-    for (auto& elem : processorWidgets_)
-        res.push_back(std::make_pair(elem.first, elem.second.get()));
-    return res;
+const std::vector<ProcessorWidgetFactoryObject*> InviwoModule::getProcessorWidgets() const {
+    return uniqueToPtr(processorWidgets_);
 }
 const std::vector<PropertyFactoryObject*> InviwoModule::getProperties() const {
     return uniqueToPtr(properties_);
@@ -212,14 +208,6 @@ void InviwoModule::registerPortInspector(std::string portClassIdentifier,
 
     if (app_->getPortInspectorFactory()->registerObject(portInspector.get())) {
         portInspectors_.push_back(std::move(portInspector));
-    }
-}
-
-void InviwoModule::registerProcessorWidget(std::string processorClassName,
-                                           std::unique_ptr<ProcessorWidget> processorWidget) {
-    if (app_->getProcessorWidgetFactory()->registerObject(
-            std::make_pair(processorClassName, processorWidget.get()))) {
-        processorWidgets_.push_back(std::make_pair(processorClassName, std::move(processorWidget)));
     }
 }
 

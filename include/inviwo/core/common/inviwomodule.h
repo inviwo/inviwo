@@ -38,6 +38,7 @@
 #include <inviwo/core/ports/portfactoryobject.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
 #include <inviwo/core/properties/propertywidgetfactory.h>
@@ -105,7 +106,7 @@ public:
     const std::vector<RepresentationConverter*> getRepresentationConverters() const;
     const std::vector<Resource*> getResources() const;
     const std::vector<Settings*> getSettings() const;
-    const std::vector<std::pair<std::string, ProcessorWidget*>> getProcessorWidgets() const;
+    const std::vector<ProcessorWidgetFactoryObject*> getProcessorWidgets() const;
 
 protected:
     void registerCapabilities(std::unique_ptr<Capabilities> info);
@@ -125,8 +126,8 @@ protected:
     template <typename T>
     void registerProcessor();
 
-    void registerProcessorWidget(std::string processorClassName,
-                                 std::unique_ptr<ProcessorWidget> processorWidget);
+template <typename T, typename P>
+    void registerProcessorWidget();
 
     void registerPortInspector(std::string portClassIdentifier, std::string inspectorPath);
 
@@ -174,8 +175,7 @@ private:
     std::vector<std::unique_ptr<RepresentationConverter>> representationConverters_;
     std::vector<std::unique_ptr<Resource>> resources_;
     std::vector<std::unique_ptr<Settings>> settings_;
-
-    std::vector<std::pair<std::string, std::unique_ptr<ProcessorWidget>>> processorWidgets_;
+    std::vector<std::unique_ptr<ProcessorWidgetFactoryObject>> processorWidgets_;
 };
 
 template <typename T>
@@ -192,6 +192,14 @@ void InviwoModule::registerProcessor() {
     auto processor = util::make_unique<ProcessorFactoryObjectTemplate<T>>();
     if (app_->getProcessorFactory()->registerObject(processor.get())) {
         processors_.push_back(std::move(processor));
+    }
+}
+
+template <typename T, typename P>
+void InviwoModule::registerProcessorWidget() {
+    auto widget = util::make_unique<ProcessorWidgetFactoryObjectTemplate<T, P>>();
+    if (app_->getProcessorWidgetFactory()->registerObject(widget.get())) {
+        processorWidgets_.push_back(std::move(widget));
     }
 }
 

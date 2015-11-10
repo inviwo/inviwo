@@ -101,13 +101,13 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/io/rawvolumereader.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializationerrorhandler.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/deserializer.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializable.h  
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serialization.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializationexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializebase.h    
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializeconstants.h    
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializer.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/nodedebugger.h
-    ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/serializationexception.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/ticpp.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/serialization/versionconverter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/io/textfilereader.h
@@ -159,6 +159,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processortraits.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactory.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetfactoryobject.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/processorwidgetobserver.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbar.h
     ${IVW_INCLUDE_DIR}/inviwo/core/processors/progressbarowner.h
@@ -341,11 +342,11 @@ set(SOURCE_FILES
     io/rawvolumereader.cpp
     io/serialization/deserializationerrorhandler.cpp
     io/serialization/deserializer.cpp
+    io/serialization/nodedebugger.cpp
+    io/serialization/serializationexception.cpp
     io/serialization/serializebase.cpp
     io/serialization/serializeconstants.cpp
     io/serialization/serializer.cpp
-    io/serialization/nodedebugger.cpp
-    io/serialization/serializationexception.cpp
     io/serialization/versionconverter.cpp
     io/textfilereader.cpp   
     links/linkconditions.cpp    
@@ -385,6 +386,7 @@ set(SOURCE_FILES
     processors/processortags.cpp
     processors/processorwidget.cpp
     processors/processorwidgetfactory.cpp
+    processors/processorwidgetfactoryobject.cpp
     processors/processorwidgetobserver.cpp
     processors/progressbar.cpp
     properties/advancedmaterialproperty.cpp

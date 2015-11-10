@@ -48,7 +48,7 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
     GLFWSharedCanvas_->initializeSquare();
     GLFWSharedCanvas_->defaultGLState();
 
-    registerProcessorWidgetAndAssociate<CanvasProcessorGL>(util::make_unique<CanvasProcessorWidgetGLFW>());
+    registerProcessorWidget<CanvasProcessorWidgetGLFW, CanvasProcessorGL>();
 }
 
 GLFWModule::~GLFWModule() {

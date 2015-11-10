@@ -41,13 +41,6 @@ public:
     GLFWModule(InviwoApplication* app);
     virtual ~GLFWModule();
 
-protected:
-    template <typename T>
-    void registerProcessorWidgetAndAssociate(std::unique_ptr<ProcessorWidget> processorWidget) {
-        registerProcessorWidget(ProcessorTraits<T>::getProcessorInfo().classIdentifier,
-                                std::move(processorWidget));
-    }
-
 private:
     CanvasGLFW* GLFWSharedCanvas_;
 };

@@ -44,8 +44,7 @@ OpenGLQtModule::OpenGLQtModule(InviwoApplication* app) : InviwoModule(app, "Open
     qtGLSharedCanvas_->defaultGLState();
     RenderContext::getPtr()->setDefaultRenderContext(qtGLSharedCanvas_.get());
 
-    registerProcessorWidgetAndAssociate<CanvasProcessorGL>(
-        util::make_unique<CanvasProcessorWidgetQt>());
+    registerProcessorWidget<CanvasProcessorWidgetQt, CanvasProcessorGL>();
     registerCapabilities(util::make_unique<OpenGLQtCapabilities>());
 
     menu_ = util::make_unique<OpenGLQtMenu>();

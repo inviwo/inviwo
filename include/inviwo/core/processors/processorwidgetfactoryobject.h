@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2013-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,39 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/core/processors/processorwidgetfactory.h>
+#ifndef IVW_PROCESSORWIDGETFACTORYOBJECT_H
+#define IVW_PROCESSORWIDGETFACTORYOBJECT_H
+
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
 
-bool ProcessorWidgetFactory::registerObject(ProcessorWidgetFactoryObject* widget) {
-    if (util::insert_unique(map_, widget->getProcessorClassIdentifier(), widget)) {
-        return true;
-    } else {
-        LogWarn("Processor Widget for class name: " << widget->getProcessorClassIdentifier()
-                                                    << " is already registered");
-        return false;
-    }
-}
+class ProcessorWidget;
 
-std::unique_ptr<ProcessorWidget> ProcessorWidgetFactory::create(const std::string& key) const {
-    return std::unique_ptr<ProcessorWidget>(util::map_find_or_null(
-        map_, key, [](ProcessorWidgetFactoryObject* o) { return o->create(); }));
-}
+class IVW_CORE_API ProcessorWidgetFactoryObject {
+public:
+    ProcessorWidgetFactoryObject(const std::string& processorClassIdentifier);
+    virtual ~ProcessorWidgetFactoryObject();
 
-std::unique_ptr<ProcessorWidget> ProcessorWidgetFactory::create(Processor* processor) const {
-    return ProcessorWidgetFactory::create(processor->getClassIdentifier());
-}
+    virtual ProcessorWidget* create() = 0;
+    const std::string& getProcessorClassIdentifier() const { return classIdentifier_; }
 
-bool ProcessorWidgetFactory::hasKey(const std::string& processorClassName) const {
-    return util::has_key(map_, processorClassName);
-}
+private:
+    std::string classIdentifier_;
+};
+
+template <typename T, typename Processor>
+class ProcessorWidgetFactoryObjectTemplate : public ProcessorWidgetFactoryObject {
+public:
+    ProcessorWidgetFactoryObjectTemplate()
+        : ProcessorWidgetFactoryObject(
+              ProcessorTraits<Processor>::getProcessorInfo().classIdentifier) {}
+    virtual ~ProcessorWidgetFactoryObjectTemplate() {}
+
+    virtual ProcessorWidget* create() { return static_cast<ProcessorWidget*>(new T()); }
+};
 
 }  // namespace
+
+#endif  // IVW_PROCESSORWIDGETFACTORYOBJECT_H
