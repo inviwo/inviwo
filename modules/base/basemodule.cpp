@@ -54,6 +54,7 @@
 #include <modules/base/processors/volumesubsample.h>
 #include <modules/base/processors/volumesubset.h>
 #include <modules/base/processors/volumevectorsource.h>
+#include <modules/base/processors/stereocamerasyncer.h>
 
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
@@ -94,10 +95,10 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeSlice>();
     registerProcessor<VolumeSubsample>();
     registerProcessor<VolumeSubset>();
-    registerProcessor<VolumeVectorSource>(); 
-    registerProcessor<TimeStepSelector>();  
-
     registerProcessor<ImageContourProcessor>();
+    registerProcessor<VolumeVectorSource>();
+    registerProcessor<TimeStepSelector>();
+    registerProcessor<StereoCameraSyncer>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();
