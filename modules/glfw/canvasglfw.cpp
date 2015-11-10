@@ -52,7 +52,9 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 }
 
-CanvasGLFW::~CanvasGLFW() { glfwDestroyWindow(glWindow_); }
+CanvasGLFW::~CanvasGLFW() { 
+    glfwDestroyWindow(glWindow_); 
+}
 
 void CanvasGLFW::initialize() { CanvasGL::initialize(); }
 
@@ -122,7 +124,9 @@ void CanvasGLFW::setWindowTitle(std::string windowTitle) {
 
 void CanvasGLFW::closeWindow(GLFWwindow* window) {
     glfwWindowCount_--;
-    if (sharedContext_ != window) glfwDestroyWindow(window);
+    if (sharedContext_ != window) {
+        glfwDestroyWindow(window);
+    }
 }
 
 int CanvasGLFW::getWindowCount() { return glfwWindowCount_; }
@@ -254,12 +258,13 @@ InteractionEvent::Modifier CanvasGLFW::mapModifiers(int modifiersGLFW) {
 }
 
 std::unique_ptr<Canvas> CanvasGLFW::create() {
-    auto canvas = util::make_unique<CanvasGLFW>(windowTitle_, screenDimensions_);
-    //glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-    canvas->initializeGL();
+    auto res = dispatchFront([&]() {
+        auto canvas = util::make_unique<CanvasGLFW>(windowTitle_, screenDimensions_);
+        canvas->initializeGL();
+        return std::move(canvas);
+    });
+    return res.get();
 
-    //glfwDefaultWindowHints();
-    return std::move(canvas);
 }
 
 }  // namespace
