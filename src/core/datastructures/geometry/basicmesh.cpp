@@ -277,9 +277,8 @@ std::shared_ptr<BasicMesh> BasicMesh::line(const vec3& start, const vec3& stop, 
     mesh->setModelMatrix(mat4(1.f));
     auto inds = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
 
-    vec3 right = orthvec(normal);
-    vec3 up = glm::cross(right, normal);
     vec3 direction = stop - start;
+    vec3 up = glm::cross(glm::normalize(direction), normal);
 
     vec3 startCornerPoint = start - 0.5f * width * up;
     ivec2 res = inres + ivec2(1);
