@@ -66,8 +66,8 @@ void AngleRadiusWidget::paintEvent(QPaintEvent *) {
     QPen circleBoundsPen(palette().alternateBase(), 1, Qt::DashLine,  Qt::SquareCap, Qt::MiterJoin);
 
     // x and y in pixel coordinates
-    float x = pixelSpaceRadius*std::cos(getAngle());
-    float y = -pixelSpaceRadius*std::sin(getAngle());
+    auto x = pixelSpaceRadius*std::cos(getAngle());
+    auto y = -pixelSpaceRadius*std::sin(getAngle());
 
     int side = qMin(width(), height());
 
@@ -86,11 +86,11 @@ void AngleRadiusWidget::paintEvent(QPaintEvent *) {
     }
     painter.setPen(circleBoundsPen);
     // Display angle bounds by drawing a pie (pacman) if min/max is not 0/2pi 
-    int innerBoundsCircleRadius = referenceRadius*(getMinRadius()/getMaxRadius());
+    int innerBoundsCircleRadius = static_cast<int>(static_cast<double>(referenceRadius)*(getMinRadius()/getMaxRadius()));
     if (getMinAngle() > 0. || getMaxAngle() < 2.*M_PI) {
         // drawPie wants 16*degrees
-        int pieStart = 16*glm::degrees(getMinAngle());
-        int pieEnd = 16*(glm::degrees(getMaxAngle())-glm::degrees(getMinAngle()));
+        int pieStart = static_cast<int>( 16*glm::degrees(getMinAngle()) );
+        int pieEnd = static_cast<int>( 16*(glm::degrees(getMaxAngle())-glm::degrees(getMinAngle())) );
         painter.drawPie(-referenceRadius, -referenceRadius, 2*referenceRadius, 2*referenceRadius, pieStart, pieEnd);
         if (minRadius_ > 0.) {
             painter.drawPie(-innerBoundsCircleRadius, -innerBoundsCircleRadius, 2*innerBoundsCircleRadius, 2*innerBoundsCircleRadius, pieStart, pieEnd);
@@ -127,7 +127,8 @@ void AngleRadiusWidget::paintEvent(QPaintEvent *) {
     painter.drawText(anglePosX, anglePosY, angleText);
     // Draw radius text
     std::stringstream radiusStream; radiusStream.precision(2); radiusStream << getRadius();
-    painter.drawText(x+angleIndicatorCircleDiameter+angleIndicatorPen.width(), y, QString::fromStdString(radiusStream.str()));
+    painter.drawText(static_cast<int>(x+angleIndicatorCircleDiameter+angleIndicatorPen.width()), 
+                     static_cast<int>(y), QString::fromStdString(radiusStream.str()));
     // Rotated line and circle
     painter.setPen(angleIndicatorPen);   
     painter.drawLine(QLineF(QPointF(0., 0.), QPointF(x, y)));

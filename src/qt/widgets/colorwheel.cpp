@@ -132,9 +132,9 @@ QColor ColorWheel::posColor(const QPoint& point) {
         qreal ir = r-wheelWidth_;
         // left corner of square
         qreal m = w/2.0 - ir/qSqrt(2);
-        QPoint p = point - QPoint(m, m);
+        QPoint p = point - QPoint(static_cast<int>(m), static_cast<int>(m));
         qreal SquareWidth = (ir * qSqrt(2));
-        return QColor::fromHsv(currentColor_.hueF(),
+        return QColor::fromHsv(static_cast<int>(currentColor_.hueF()),
                                clamp(static_cast<int>(p.x() / SquareWidth * 255.0), 0, 255),
                                clamp(static_cast<int>(p.y() / SquareWidth * 255.0), 0, 255));
     }
@@ -194,7 +194,7 @@ void ColorWheel::mouseMoveEvent(QMouseEvent* e) {
             double y1 = r*(y0/vNorm);
             x1 += center.x();
             y1 += center.y();
-            QColor color = posColor(QPoint(x1, y1));
+            QColor color = posColor(QPoint(static_cast<int>(x1), static_cast<int>(y1)));
             hueChanged(color.hue());
         } else if (inSquare_) {
             int w = qMin(width(), height());
@@ -204,25 +204,25 @@ void ColorWheel::mouseMoveEvent(QMouseEvent* e) {
             qreal ir = r-wheelWidth_;
             // left corner of square
             qreal m = w/2.0-ir/qSqrt(2);
-            float x0 = 0.0f;
-            float y0 = 0.0f;
-            float w0 = squareRegion_.boundingRect().width();
+            qreal x0 = 0.0f;
+            qreal y0 = 0.0f;
+            qreal w0 = static_cast<qreal>(squareRegion_.boundingRect().width());
 
             if (lastPos_.x() > m + w0)
                 x0 = m + w0;
             else if (lastPos_.x() < m)
                 x0 = m;
             else
-                x0 = lastPos_.x();
+                x0 = static_cast<qreal>(lastPos_.x());
 
             if (lastPos_.y() > m + w0)
                 y0 = m + w0;
             else if (lastPos_.y() < m)
                 y0 = m;
             else
-                y0 = lastPos_.y();
+                y0 = static_cast<qreal>(lastPos_.y());
 
-            QColor color = posColor(QPoint(x0, y0));
+            QColor color = posColor(QPoint(static_cast<int>(x0), static_cast<int>(y0)));
             svChanged(color);
         }
     }
@@ -361,7 +361,7 @@ void ColorWheel::drawPicker(QPainter &painter) {
     pen.setWidth(2);
     pen.setCosmetic(true);
     painter.setPen(pen);
-    painter.drawEllipse(S,V,10,10);
+    painter.drawEllipse(static_cast<int>(S), static_cast<int>(V), 10, 10);
     painter.restore();
 }
 
