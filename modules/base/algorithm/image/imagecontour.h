@@ -87,6 +87,10 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
     auto data = static_cast<const T*>(ram->getData());
 
     auto dim = ram->getDimensions();
+
+    if (dim.x == 0 || dim.y == 0)
+        return nullptr;
+
     D vals[4];
     vec3 outPos[4];
     vec3 outPosScale =
