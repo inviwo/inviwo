@@ -43,7 +43,7 @@ const ProcessorInfo StereoCameraSyncer::getProcessorInfo() const { return proces
 
 StereoCameraSyncer::StereoCameraSyncer()
     : Processor()
-    , separation_("separation", "Separation", 0.1, 0, 1, 0.01, InvalidationLevel::Valid)
+    , separation_("separation", "Separation", 0.1f, 0.f, 1.f, 0.01f, InvalidationLevel::Valid)
     , master_("master", "Master", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f), vec3(0.0f, 1.0f, 0.0f),
               nullptr, InvalidationLevel::Valid)
     , left_("left", "Left", master_.getLookFrom() + separation_.get() / 2.0f, master_.getLookTo(),
