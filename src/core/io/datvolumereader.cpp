@@ -46,7 +46,9 @@ DatVolumeReader::DatVolumeReader()
     , filePos_(0)
     , littleEndian_(true)
     , dimensions_(0)
-    , format_(nullptr) {
+    , format_(nullptr)
+    , enableLogOutput_(true)
+{
     addExtension(FileExtension("dat", "Inviwo dat file format"));
 }
 
@@ -56,7 +58,8 @@ DatVolumeReader::DatVolumeReader(const DatVolumeReader& rhs)
     , filePos_(rhs.filePos_)
     , littleEndian_(rhs.littleEndian_)
     , dimensions_(rhs.dimensions_)
-    , format_(rhs.format_){};
+    , format_(rhs.format_)
+    , enableLogOutput_(true) {};
 
 DatVolumeReader& DatVolumeReader::operator=(const DatVolumeReader& that) {
     if (this != &that) {
@@ -65,6 +68,7 @@ DatVolumeReader& DatVolumeReader::operator=(const DatVolumeReader& that) {
         littleEndian_ = that.littleEndian_;
         dimensions_ = that.dimensions_;
         format_ = that.format_;
+        enableLogOutput_ = that.enableLogOutput_;
         DataReaderType<VolumeVector>::operator=(that);
     }
 
@@ -211,11 +215,15 @@ std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::st
     if (!datFiles.empty()) {
         for (size_t t = 0; t < datFiles.size(); ++t) {
             auto datVolReader = util::make_unique<DatVolumeReader>();
+            datVolReader->enableLogOutput_ = false;
             auto v = datVolReader->readData(datFiles[t]);
 
             std::copy(v->begin(), v->end(), std::back_inserter(*volumes));
         }
-        LogInfo("Loaded multiple volumes: " << filePath << " volumes: " << datFiles.size());
+        if (enableLogOutput_) {
+            LogInfo("Loaded multiple volumes: " << filePath << " volumes: " << datFiles.size());
+        }
+        
 
     } else {
         if (dimensions_ == size3_t(0))
@@ -304,7 +312,9 @@ std::shared_ptr<DatVolumeReader::VolumeVector> DatVolumeReader::readData(std::st
         }
 
         std::string size = formatBytesToString(bytes * sequences);
-        LogInfo("Loaded volume sequence: " << filePath << " size: " << size);
+        if (enableLogOutput_) {
+            LogInfo("Loaded volume sequence: " << filePath << " size: " << size);
+        }
     }
     return volumes;
 }

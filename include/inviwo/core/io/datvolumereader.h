@@ -73,6 +73,7 @@ private:
     bool littleEndian_;
     size3_t dimensions_;
     const DataFormatBase* format_;
+    bool enableLogOutput_;
 };
 
 }  // namespace
