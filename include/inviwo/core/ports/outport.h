@@ -71,6 +71,17 @@ public:
     bool isConnectedTo(const Inport* port) const;
     const std::vector<Inport*>& getConnectedInports() const;
 
+    /**
+     * Called each time connected to an inport.
+     */
+    const BaseCallBack* onConnect(std::function<void()> lambda) const;
+    /** 
+     * Called each time disconnected from an inport.
+     */
+    const BaseCallBack* onDisconnect(std::function<void()> lambda) const;
+    void removeOnConnect(const BaseCallBack* callback) const;
+    void removeOnDisconnect(const BaseCallBack* callback) const;
+
 protected:
     Outport(std::string identifier = "");
     /**
@@ -84,6 +95,9 @@ protected:
 
     InvalidationLevel invalidationLevel_;
     std::vector<Inport*> connectedInports_;
+
+    mutable CallBackList onConnectCallback_;
+    mutable CallBackList onDisconnectCallback_;
 };
 
 }  // namespace

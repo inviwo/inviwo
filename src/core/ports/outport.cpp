@@ -60,6 +60,19 @@ void Outport::propagateEvent(Event* event) {
 
 inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }
 
+const BaseCallBack* Outport::onConnect(std::function<void()> lambda) const {
+    return onConnectCallback_.addLambdaCallback(lambda);
+}
+void Outport::removeOnConnect(const BaseCallBack* callback) const {
+    onConnectCallback_.remove(callback);
+}
+const BaseCallBack* Outport::onDisconnect(std::function<void()> lambda) const {
+    return onDisconnectCallback_.addLambdaCallback(lambda);
+}
+void Outport::removeOnDisconnect(const BaseCallBack* callback) const {
+    onDisconnectCallback_.remove(callback);
+}
+
 void Outport::setValid() {
     invalidationLevel_ = InvalidationLevel::Valid;
     for (auto inport : connectedInports_) inport->setValid(this);
@@ -68,11 +81,13 @@ void Outport::setValid() {
 // Is called exclusively by Inport, which means a connection has been made.
 void Outport::connectTo(Inport* inport) {
     util::push_back_unique(connectedInports_, inport);
+    onConnectCallback_.invokeAll();
 }
 
 // Is called exclusively by Inport, which means a connection has been removed.
 void Outport::disconnectFrom(Inport* inport) {
     util::erase_remove(connectedInports_, inport);
+    onDisconnectCallback_.invokeAll();
 }
 
 }  // namespace
