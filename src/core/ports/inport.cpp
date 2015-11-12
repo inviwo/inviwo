@@ -134,31 +134,31 @@ void Inport::callOnChangeIfChanged() const {
     }
 }
 
-const BaseCallBack* Inport::onChange(std::function<void()> lambda) const {
+const BaseCallBack* Inport::onChange(std::function<void()> lambda) {
     return onChangeCallback_.addLambdaCallback(lambda);
 }
 
-void Inport::removeOnChange(const BaseCallBack* callback) const {
+void Inport::removeOnChange(const BaseCallBack* callback) {
     onChangeCallback_.remove(callback);
 }
 
-const BaseCallBack* Inport::onInvalid(std::function<void()> lambda) const {
+const BaseCallBack* Inport::onInvalid(std::function<void()> lambda) {
     return onInvalidCallback_.addLambdaCallback(lambda);
 }
-void Inport::removeOnInvalid(const BaseCallBack* callback) const {
+void Inport::removeOnInvalid(const BaseCallBack* callback) {
     onInvalidCallback_.remove(callback);
 }
 
-const BaseCallBack* Inport::onConnect(std::function<void()> lambda) const {
+const BaseCallBack* Inport::onConnect(std::function<void()> lambda) {
     return onConnectCallback_.addLambdaCallback(lambda);
 }
-void Inport::removeOnConnect(const BaseCallBack* callback) const {
+void Inport::removeOnConnect(const BaseCallBack* callback) {
     onConnectCallback_.remove(callback);
 }
-const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) const {
+const BaseCallBack* Inport::onDisconnect(std::function<void()> lambda) {
     return onDisconnectCallback_.addLambdaCallback(lambda);
 }
-void Inport::removeOnDisconnect(const BaseCallBack* callback) const {
+void Inport::removeOnDisconnect(const BaseCallBack* callback) {
     onDisconnectCallback_.remove(callback);
 }
 

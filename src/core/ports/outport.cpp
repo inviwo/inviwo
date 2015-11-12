@@ -60,16 +60,16 @@ void Outport::propagateEvent(Event* event) {
 
 inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }
 
-const BaseCallBack* Outport::onConnect(std::function<void()> lambda) const {
+const BaseCallBack* Outport::onConnect(std::function<void()> lambda) {
     return onConnectCallback_.addLambdaCallback(lambda);
 }
-void Outport::removeOnConnect(const BaseCallBack* callback) const {
+void Outport::removeOnConnect(const BaseCallBack* callback) {
     onConnectCallback_.remove(callback);
 }
-const BaseCallBack* Outport::onDisconnect(std::function<void()> lambda) const {
+const BaseCallBack* Outport::onDisconnect(std::function<void()> lambda) {
     return onDisconnectCallback_.addLambdaCallback(lambda);
 }
-void Outport::removeOnDisconnect(const BaseCallBack* callback) const {
+void Outport::removeOnDisconnect(const BaseCallBack* callback) {
     onDisconnectCallback_.remove(callback);
 }
 

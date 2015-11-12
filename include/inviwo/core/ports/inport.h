@@ -98,30 +98,30 @@ public:
      * going to be called.
      */
     template <typename T>
-    const BaseCallBack* onChange(T* o, void (T::*m)()) const;
-    const BaseCallBack* onChange(std::function<void()> lambda) const;
+    const BaseCallBack* onChange(T* o, void (T::*m)());
+    const BaseCallBack* onChange(std::function<void()> lambda);
 
     /**
      *    the onInvalid callback is called directly after the port has been invalidated. It's only
      *    called once for each transition from valid to invalid.
      */
     template <typename T>
-    const BaseCallBack* onInvalid(T* o, void (T::*m)()) const;
-    const BaseCallBack* onInvalid(std::function<void()> lambda) const;
+    const BaseCallBack* onInvalid(T* o, void (T::*m)());
+    const BaseCallBack* onInvalid(std::function<void()> lambda);
 
-    const BaseCallBack* onConnect(std::function<void()> lambda) const;
-    const BaseCallBack* onDisconnect(std::function<void()> lambda) const;
+    const BaseCallBack* onConnect(std::function<void()> lambda);
+    const BaseCallBack* onDisconnect(std::function<void()> lambda);
 
-    void removeOnChange(const BaseCallBack* callback) const;
+    void removeOnChange(const BaseCallBack* callback);
     template <typename T>
-    void removeOnChange(T* o) const;
+    void removeOnChange(T* o);
 
-    void removeOnInvalid(const BaseCallBack* callback) const;
+    void removeOnInvalid(const BaseCallBack* callback);
     template <typename T>
-    void removeOnInvalid(T* o) const;
+    void removeOnInvalid(T* o);
     
-    void removeOnConnect(const BaseCallBack* callback) const;
-    void removeOnDisconnect(const BaseCallBack* callback) const;
+    void removeOnConnect(const BaseCallBack* callback);
+    void removeOnDisconnect(const BaseCallBack* callback);
 
 protected:
     Inport(std::string identifier = "");
@@ -149,33 +149,33 @@ private:
     bool changed_;
     bool optional_;
     
-    mutable CallBackList onChangeCallback_;
+    CallBackList onChangeCallback_;
     std::vector<const Outport*> changedSources_;
     
-    mutable CallBackList onInvalidCallback_;
+    CallBackList onInvalidCallback_;
     InvalidationLevel lastInvalidationLevel_;  // Used for the onInvalid callback.
     
-    mutable CallBackList onConnectCallback_;
-    mutable CallBackList onDisconnectCallback_;
+    CallBackList onConnectCallback_;
+    CallBackList onDisconnectCallback_;
 };
 
 template <typename T>
-const BaseCallBack* Inport::onChange(T* o, void (T::*m)()) const {
+const BaseCallBack* Inport::onChange(T* o, void (T::*m)()) {
     return onChangeCallback_.addMemberFunction(o, m);
 }
 
 template <typename T>
-const BaseCallBack* Inport::onInvalid(T* o, void (T::*m)()) const {
+const BaseCallBack* Inport::onInvalid(T* o, void (T::*m)()) {
     return onInvalidCallback_.addMemberFunction(o, m);
 }
 
 template <typename T>
-void Inport::removeOnChange(T* o) const {
+void Inport::removeOnChange(T* o) {
     onChangeCallback_.removeMemberFunction(o);
 }
 
 template <typename T>
-void Inport::removeOnInvalid(T* o) const {
+void Inport::removeOnInvalid(T* o) {
     onInvalidCallback_.removeMemberFunction(o);
 }
 
