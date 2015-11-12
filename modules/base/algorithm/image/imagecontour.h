@@ -88,8 +88,7 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
 
     auto dim = ram->getDimensions();
 
-    if (dim.x == 0 || dim.y == 0)
-        return nullptr;
+    if (dim.x == 0 || dim.y == 0) return nullptr;
 
     D vals[4];
     vec3 outPos[4];
@@ -132,8 +131,9 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
             auto& edges = caseTable[theCase];
             for (size_t i = 0; i < edges.size(); i += 2) {
                 auto t = (isoValue - vals[edges[i]]) / (vals[edges[i + 1]] - vals[edges[i]]);
-                auto p =
-                    Interpolation<vec3, float>::linear(outPos[edges[i]], outPos[edges[i + 1]], t);
+                auto p = Interpolation<vec3, float>::linear(outPos[edges[i]] , 
+                                                            outPos[edges[i + 1]] ,
+                                                            static_cast<float>(t));
                 indices->add(mesh->addVertex(p, p, p, color));
             }
         }
