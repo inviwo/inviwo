@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "stereocamerasyncer.h"
+#include <inviwo/core/util/raiiutils.h>
 
 namespace inviwo {
 

@@ -38,6 +38,7 @@
 #include <inviwo/core/ports/portfactoryobject.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/processors/processorfactoryobject.h>
+#include <inviwo/core/processors/processorwidgetfactory.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>

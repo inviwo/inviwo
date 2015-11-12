@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "canvasglfw.h"
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <modules/opengl/openglcapabilities.h>
 

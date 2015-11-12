@@ -115,7 +115,7 @@ inline T Interpolation<T, P>::linearVector(const T &a, const T &b, P x) {
 template <typename T, typename P>
 inline T Interpolation<T, P>::bilinear(
     const T &a, const T &b, const T &c, const T &d, const Vector<2, P> &interpolants,
-    std::function<T(const T &a, const T &b, P x)> linearFunc = &Interpolation::linear) {
+    std::function<T(const T &a, const T &b, P x)> linearFunc) {
     return linearFunc(linearFunc(a, b, interpolants.x), linearFunc(c, d, interpolants.x),
                       interpolants.y);
 }
@@ -123,7 +123,7 @@ inline T Interpolation<T, P>::bilinear(
 template <typename T, typename P>
 inline T Interpolation<T, P>::bilinear(
     const T samples[4], const Vector<2, P> &interpolants,
-    std::function<T(const T &a, const T &b, P x)> linearFunc = &Interpolation::linear) {
+    std::function<T(const T &a, const T &b, P x)> linearFunc) {
     return bilinear(samples[0], samples[1], samples[2], samples[3], interpolants, linearFunc);
 }
 
@@ -131,7 +131,7 @@ template <typename T, typename P>
 inline T Interpolation<T, P>::trilinear(
     const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g, const T &h,
     const Vector<3, P> &interpolants,
-    std::function<T(const T &a, const T &b, P x)> linearFunc = &Interpolation::linear) {
+    std::function<T(const T &a, const T &b, P x)> linearFunc) {
     return linearFunc(bilinear(a, b, c, d, interpolants.xy(), linearFunc),
                       bilinear(e, f, g, h, interpolants.xy(), linearFunc), interpolants.z);
 }
@@ -139,7 +139,7 @@ inline T Interpolation<T, P>::trilinear(
 template <typename T, typename P>
 inline T Interpolation<T, P>::trilinear(
     const T samples[8], const Vector<3, P> &interpolants,
-    std::function<T(const T &a, const T &b, P x)> linearFunc = &Interpolation::linear) {
+    std::function<T(const T &a, const T &b, P x)> linearFunc) {
     return trilinear(samples[0], samples[1], samples[2], samples[3], samples[4], samples[5],
                      samples[6], samples[7], interpolants, linearFunc);
 }
@@ -149,7 +149,7 @@ inline T Interpolation<T, P>::quadlinear(
     const T &a, const T &b, const T &c, const T &d, const T &e, const T &f, const T &g, const T &h,
     const T &i, const T &j, const T &k, const T &l, const T &m, const T &n, const T &o, const T &p,
     const Vector<4, P> &interpolants,
-    std::function<T(const T &a, const T &b, P x)> linearFunc = &Interpolation::linear) {
+    std::function<T(const T &a, const T &b, P x)> linearFunc) {
     return linearFunc(trilinear(a, b, c, d, e, f, g, h, interpolants.xyz(), linearFunc),
                       trilinear(i, j, k, l, m, n, o, p, interpolants.xyz(), linearFunc),
                       interpolants.w);
@@ -158,7 +158,7 @@ inline T Interpolation<T, P>::quadlinear(
 template <typename T, typename P>
 inline T Interpolation<T, P>::quadlinear(
     const T samples[16], const Vector<4, P> &interpolants,
-    std::function<T(const T &a, const T &b, P x)> linearFunc = &Interpolation::linear) {
+    std::function<T(const T &a, const T &b, P x)> linearFunc) {
     return quadlinear(samples[0], samples[1], samples[2], samples[3], samples[4], samples[5],
                       samples[6], samples[7], samples[8], samples[9], samples[10], samples[11],
                       samples[12], samples[13], samples[14], samples[15], interpolants, linearFunc);
