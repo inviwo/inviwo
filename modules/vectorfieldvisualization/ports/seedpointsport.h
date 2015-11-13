@@ -41,17 +41,6 @@ namespace inviwo {
     using SeedPointsInport = DataInport<SeedPointVector, 0>;
     using SeedPointsOutport = DataOutport<SeedPointVector>;
 
-
-
-    template <>
-    struct port_traits<SeedPointVector> {
-        static std::string class_identifier() { return "SeedPointVector"; }
-        static uvec3 color_code() { return uvec3(0, 200, 100); }
-        static std::string data_info(const SeedPointVector* data) { 
-            return "Vector seeds points size of " + toString(data->size());
-        }
-    };
-
 } // namespace
 
 #endif // IVW_SEEDPOINTSPORT_H
