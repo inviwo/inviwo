@@ -151,6 +151,100 @@ struct port_traits<std::vector<std::shared_ptr<T>, A>> {
     }
 };
 
+
+
+template <>
+struct port_traits<Vector<2, float>> {
+    static std::string class_identifier() { return "vec2"; }
+    static uvec3 color_code() { return uvec3(50, 100, 0); }
+    static std::string data_info(const Vector<2, float>* data) {
+        return class_identifier();
+    }
+};
+
+
+template <>
+struct port_traits<Vector<2, double>> {
+    static std::string class_identifier() { return "dvec2"; }
+    static uvec3 color_code() { return uvec3(100, 50, 0); }
+    static std::string data_info(const Vector<2, double>* data) {
+        return class_identifier();
+    }
+};
+
+
+template <>
+struct port_traits<Vector<2, int>> {
+    static std::string class_identifier() { return "ivec2"; }
+    static uvec3 color_code() { return uvec3(0, 50, 100); }
+    static std::string data_info(const Vector<2, int>* data) {
+        return class_identifier();
+    }
+};
+
+
+template <>
+struct port_traits<Vector<3, float>> {
+    static std::string class_identifier() { return "vec3"; }
+    static uvec3 color_code() { return uvec3(75, 150, 0); }
+    static std::string data_info(const Vector<3, float>* data) {
+        return class_identifier();
+    }
+};
+
+
+template <>
+struct port_traits<Vector<3, double>> {
+    static std::string class_identifier() { return "dvec3"; }
+    static uvec3 color_code() { return uvec3(150, 75, 0); }
+    static std::string data_info(const Vector<3, double>* data) {
+        return class_identifier();
+    }
+};
+
+
+template <>
+struct port_traits<Vector<3, int>> {
+    static std::string class_identifier() { return "ivec3"; }
+    static uvec3 color_code() { return uvec3(0, 75, 150); }
+    static std::string data_info(const Vector<3, int>* data) {
+        return class_identifier();
+    }
+};
+
+
+template <>
+struct port_traits<Vector<4, float>> {
+    static std::string class_identifier() { return "vec4"; }
+    static uvec3 color_code() { return uvec3(100, 200, 0); }
+    static std::string data_info(const Vector<4, float>* data) {
+        return class_identifier();
+    }
+};
+
+
+template <>
+struct port_traits<Vector<4, double>> {
+    static std::string class_identifier() { return "dvec4"; }
+    static uvec3 color_code() { return uvec3(200, 100, 0); }
+    static std::string data_info(const Vector<4, double>* data) {
+        return class_identifier();
+    }
+};
+
+
+template <>
+struct port_traits<Vector<4, int>> {
+    static std::string class_identifier() { return "ivec4"; }
+    static uvec3 color_code() { return uvec3(0, 100, 200); }
+    static std::string data_info(const Vector<4, int>* data) {
+        return class_identifier();
+    }
+};
+
 }  // namespace
+
+
+
 
 #endif  // IVW_PORT_H
