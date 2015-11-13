@@ -646,6 +646,7 @@ void Trackball<T>::rotate(Event* event) {
         //update mouse positions
         lastMousePos_ = curMousePos;
     }
+    event->markAsUsed();
 }
 
 template <typename T>
@@ -676,6 +677,7 @@ void Trackball<T>::zoom(Event* event) {
 
         lastMousePos_ = curMousePos;
     }
+    event->markAsUsed();
 }
 
 template <typename T>
@@ -711,6 +713,7 @@ void Trackball<T>::pan(Event* event) {
 
 
     lastMousePos_ = curMousePos;
+    event->markAsUsed();
 }
 
 template <typename T>
@@ -902,51 +905,61 @@ vec3 inviwo::Trackball<T>::getNormalizedDeviceFromNormalizedScreenAtFocusPointDe
 template <typename T>
 void Trackball<T>::rotateLeft(Event* event) {
     stepRotate(LEFT);
+    event->markAsUsed();
 }
 
 template <typename T>
 void Trackball<T>::rotateRight(Event* event) {
     stepRotate(RIGHT);
+    event->markAsUsed();
 }
 
 template <typename T>
 void Trackball<T>::rotateUp(Event* event) {
     stepRotate(UP);
+    event->markAsUsed();
 }
 
 template <typename T>
 void Trackball<T>::rotateDown(Event* event) {
     stepRotate(DOWN);
+    event->markAsUsed();
 }
 
 template <typename T>
 void Trackball<T>::panLeft(Event* event) {
     stepPan(LEFT);
+    event->markAsUsed();
 }
 
 template <typename T>
 void Trackball<T>::panRight(Event* event) {
     stepPan(RIGHT);
+    event->markAsUsed();
 }
 
 template <typename T>
 void Trackball<T>::panUp(Event* event) {
     stepPan(UP);
+    event->markAsUsed();
 }
 
 template <typename T>
 void Trackball<T>::panDown(Event* event) {
     stepPan(DOWN);
+    event->markAsUsed();
 }
 
 template <typename T>
 void Trackball<T>::zoomIn(Event* event) {
     stepZoom(UP);
+    event->markAsUsed();
 }
 
 template <typename T>
 void Trackball<T>::zoomOut(Event* event) {
     stepZoom(DOWN);
+    event->markAsUsed();
 }
 
 template <typename T>
@@ -959,6 +972,7 @@ void Trackball<T>::reset(Event* event) {
             timer_.start();
         }
     }
+    event->markAsUsed();
 }
 
 template< typename T>
