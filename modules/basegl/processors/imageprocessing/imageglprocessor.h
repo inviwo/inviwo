@@ -83,7 +83,8 @@ protected:
 
     ImageInport inport_;
     ImageOutport outport_;
-    
+
+    const DataFormatBase* dataFormat_;
     bool internalInvalid_;
 
     std::string fragmentShader_;

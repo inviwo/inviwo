@@ -39,6 +39,7 @@ ImageGLProcessor::ImageGLProcessor(std::string fragmentShader)
     : Processor()
     , inport_(fragmentShader + "inport")
     , outport_(fragmentShader + "outport")
+    , dataFormat_(nullptr)
     , internalInvalid_(false)
     , fragmentShader_(fragmentShader)
     , shader_(fragmentShader, false) {
@@ -61,7 +62,7 @@ void ImageGLProcessor::initializeResources() {
 void ImageGLProcessor::process() {
     if (internalInvalid_) {
         internalInvalid_ = false;
-        const DataFormatBase* format = inport_.getData()->getDataFormat();
+        const DataFormatBase* format = dataFormat_ ? dataFormat_ : inport_.getData()->getDataFormat();
         size2_t dimensions;
         if (outport_.isHandlingResizeEvents() || !inport_.isOutportDeterminingSize())
             dimensions  = outport_.getData()->getDimensions();
