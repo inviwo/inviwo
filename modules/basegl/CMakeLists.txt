@@ -20,18 +20,19 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagebinary.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageglprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegradient.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/mesh2drenderprocessorgl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.h
@@ -70,18 +71,19 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagebinary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegamma.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageglprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegradient.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagegrayscale.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagehighpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageinvert.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagelowpass.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagemapping.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imagenormalizationprocessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/imageprocessing/imageresample.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/isoraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightingraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/lightvolumegl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/mesh2drenderprocessorgl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshpicking.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/meshrenderprocessorgl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/multichannelraycaster.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/redgreenprocessor.cpp
