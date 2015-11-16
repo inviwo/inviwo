@@ -39,7 +39,6 @@ namespace inviwo{
 TEST(InviwoApplicationTest,initTest) {
     InviwoApplication* app = InviwoApplication::getPtr();
     ASSERT_TRUE(app!=0);
-    EXPECT_TRUE(app->isInitialized());
 }
 
 

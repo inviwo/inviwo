@@ -37,6 +37,7 @@
 #include <inviwo/core/util/threadpool.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/vectoroperations.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -93,8 +94,6 @@ public:
     virtual ~InviwoApplication();
 
     virtual void initialize(registerModuleFuncPtr);
-    virtual void deinitialize();
-    virtual bool isInitialized() { return initialized_; }
 
     enum PathType {
         PATH_DATA,               // /data
@@ -117,8 +116,6 @@ public:
 
     /**
      * Get the base path of the application.
-     *
-     * @return
      */
     const std::string& getBasePath() const;
 
@@ -207,20 +204,16 @@ private:
 
     std::string displayName_;
     std::string basePath_;
-    bool initialized_;
     Tags nonSupportedTags_;
-
+    
     std::function<void(std::string)> progressCallback_;
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
-
-    std::vector<std::unique_ptr<InviwoModule>> modules_;
-    std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
-
-    std::unique_ptr<ProcessorNetwork> processorNetwork_;
-    std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
-
+    
+    util::OnScopeExit clearDataFormats_;
+    util::OnScopeExit clearAllSingeltons_;
+    
     // Factories
     std::unique_ptr<DataReaderFactory> dataReaderFactory_;
     std::unique_ptr<DataWriterFactory> dataWriterFactory_;
@@ -230,11 +223,17 @@ private:
     std::unique_ptr<PortFactory> portFactory_;
     std::unique_ptr<PortInspectorFactory> portInspectorFactory_;
     std::unique_ptr<ProcessorFactory> processorFactory_;
+    std::unique_ptr<ProcessorWidgetFactory> processorWidgetFactory_;
     std::unique_ptr<PropertyConverterManager> propertyConverterManager_;
     std::unique_ptr<PropertyFactory> propertyFactory_;
     std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
     std::unique_ptr<RepresentationConverterFactory> representationConverterFactory_;
-    std::unique_ptr<ProcessorWidgetFactory> processorWidgetFactory_;
+
+    std::vector<std::unique_ptr<InviwoModule>> modules_;
+    std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
+
+    std::unique_ptr<ProcessorNetwork> processorNetwork_;
+    std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
 };
 
 template <class T>
@@ -245,7 +244,7 @@ T* InviwoApplication::getSettingsByType() {
 
 template <class T>
 T* InviwoApplication::getModuleByType() {
-    return getTypeFromVector<T>(getModules());
+    return getTypeFromVector<T>(modules_);
 }
 
 template <class F, class... Args>

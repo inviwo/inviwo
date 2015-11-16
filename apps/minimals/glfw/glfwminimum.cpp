@@ -134,7 +134,5 @@ int main(int argc, char** argv) {
         inviwoApp.processFront();
     }
 
-    inviwoApp.deinitialize();
-
     return 0;
 }
