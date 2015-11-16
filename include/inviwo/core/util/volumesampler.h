@@ -58,6 +58,9 @@ public:
     VolumeSampler(std::shared_ptr<const Volume> sharedVolume);
     virtual ~VolumeSampler();
 
+    void setVectorInterpolation(bool enable);
+    bool getVectorInterpolation()const;
+
     dvec4 sample(const dvec3 &pos) const;
     dvec4 sample(double x, double y, double z) const { return sample(dvec3(x, y, z)); }
     dvec4 sample(const vec3 &pos) const { return sample(dvec3(pos)); }
@@ -66,6 +69,7 @@ private:
     dvec4 getVoxel(const size3_t &pos)const;
     const VolumeRAM *vol_;
     size3_t dims_;
+    bool vectorInterpolation_;
     std::shared_ptr<const Volume> sharedVolume_;
 };
 

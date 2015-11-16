@@ -40,6 +40,12 @@ VolumeVectorSampler::VolumeVectorSampler(
 
 VolumeVectorSampler::~VolumeVectorSampler() {}
 
+void VolumeVectorSampler::setVectorInterpolation(bool enable) {
+    for (auto &s : samplers_) {
+        s.setVectorInterpolation(enable);
+    }
+}
+
 dvec4 VolumeVectorSampler::sample(const dvec4 &pos) const {
     dvec3 spatialPos = pos.xyz();
     double t = pos.w;

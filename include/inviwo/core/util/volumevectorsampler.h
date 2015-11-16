@@ -46,6 +46,8 @@ public:
     VolumeVectorSampler(std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector);
     virtual ~VolumeVectorSampler();
 
+    void setVectorInterpolation(bool enable);
+
     dvec4 sample(const dvec4 &pos) const;
     dvec4 sample(double x, double y, double z, double t) const;
     dvec4 sample(const vec4 &pos) const;

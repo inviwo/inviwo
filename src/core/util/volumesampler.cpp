@@ -34,6 +34,7 @@ namespace inviwo {
 VolumeSampler::VolumeSampler(const VolumeRAM *ram) 
     : vol_(ram)
     , dims_(ram->getDimensions())
+    , vectorInterpolation_(false) 
     , sharedVolume_(nullptr)
 {}
 
@@ -47,8 +48,12 @@ VolumeSampler::VolumeSampler(std::shared_ptr<const Volume> sharedVolume)
 
 VolumeSampler::~VolumeSampler() {}
 
+void VolumeSampler::setVectorInterpolation(bool enable) { vectorInterpolation_ = enable; }
+
+bool VolumeSampler::getVectorInterpolation() const { return vectorInterpolation_; }
+
 dvec4 VolumeSampler::sample(const dvec3 &pos) const {
-    dvec3 samplePos = pos * dvec3(dims_-size3_t(1));
+    dvec3 samplePos = pos * dvec3(dims_ - size3_t(1));
     size3_t indexPos = size3_t(samplePos);
     dvec3 interpolants = samplePos - dvec3(indexPos);
 
@@ -63,7 +68,12 @@ dvec4 VolumeSampler::sample(const dvec3 &pos) const {
     samples[6] = getVoxel(indexPos + size3_t(0, 1, 1));
     samples[7] = getVoxel(indexPos + size3_t(1, 1, 1));
 
-    return Interpolation<dvec4>::trilinear(samples, interpolants);
+    if (vectorInterpolation_) {
+        return Interpolation<dvec4>::trilinear(samples, interpolants, &Interpolation<dvec4>::linearVector);
+    }
+    else {
+        return Interpolation<dvec4>::trilinear(samples, interpolants, &Interpolation<dvec4>::linear);
+    }
 }
 
 dvec4 VolumeSampler::getVoxel(const size3_t &pos) const {
