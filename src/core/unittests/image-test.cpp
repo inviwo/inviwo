@@ -55,7 +55,7 @@ TEST(ImageTests,ImageLoadWhite) {
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
-    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
     auto layer = reader->readData(imgFile);
 
@@ -100,7 +100,7 @@ TEST(ImageTests, ImageLoadRGB) {
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
-    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
     auto layer = reader->readData(imgFile);
 
@@ -145,7 +145,7 @@ TEST(ImageTests, ImageLoadRange) {
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
-    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
     auto layer = reader->readData(imgFile);
 
@@ -180,7 +180,7 @@ TEST(ImageTests, ImageResize) {
     std::string ext = filesystem::getFileExtension(imgFile);
     EXPECT_EQ(ext, "bmp");
 
-    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext);
+    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Layer>(ext);
     ASSERT_TRUE(reader != 0);
     auto layer = reader->readData(imgFile);
 

@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
 
             for (auto processor : processors) {
                 processor->invalidate(InvalidationLevel::InvalidResources);
-                if (auto processorWidget = ProcessorWidgetFactory::getPtr()->create(processor)) {
+                if (auto processorWidget = InviwoApplication::getPtr()->getProcessorWidgetFactory()->create(processor)) {
                     processorWidget->setProcessor(processor);
                     processorWidget->initialize();
                     processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());

@@ -50,7 +50,7 @@ void testVolumeLoad(std::string filename) {
     std::string file = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES)
                        + "/unittests/testdata/" + filename;
     std::string fileExtension = filesystem::getFileExtension(file);
-    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Volume>(fileExtension);
+    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(fileExtension);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volume = reader->readData(file);
     const VolumeRAMPrecision<T>* volumeRAM =
@@ -95,7 +95,7 @@ void testVolumeClone(std::string filename) {
     std::string file = InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES)
         + "/unittests/testdata/" + filename;
     std::string fileExtension = filesystem::getFileExtension(file);
-    auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Volume>(fileExtension);
+    auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(fileExtension);
     ASSERT_TRUE(reader.get() != nullptr);
     auto volume = reader->readData(file);
     Volume* volume1 = volume->clone();

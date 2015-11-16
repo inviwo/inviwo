@@ -72,7 +72,7 @@ protected:
         size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
         size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
 
-        auto s = ProcessorFactory::getPtr()->create(GetParam());
+        auto s = InviwoApplication::getPtr()->getProcessorFactory()->create(GetParam());
         ASSERT_TRUE(s.get() != nullptr);
 
         p = dynamic_cast<Processor *>(s.get());
