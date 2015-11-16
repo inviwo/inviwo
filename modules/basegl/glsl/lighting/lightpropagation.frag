@@ -31,6 +31,7 @@
 #include "utils/sampler2d.glsl"
 #include "utils/sampler3d.glsl"
 #include "utils/classification.glsl"
+#include "utils/compositing.glsl"
 
 uniform sampler3D volume_;
 uniform VolumeParameters volumeParameters_;
@@ -64,12 +65,15 @@ vec4 propagateLight(in vec3 coord, in vec3 coordPerm) {
     vec3 previousPermutedCoord = vec3(coord.xy - permutedLightDirection_.xy * lightVolumeParameters_.reciprocalDimensions.z/max(1e-4,abs(permutedLightDirection_.z)),
                                       coord.z - lightVolumeParameters_.reciprocalDimensions.z);
 #endif
+    
+    float dt = distance(coord, previousPermutedCoord);
+    color.a = 1.0 - pow(1.0 - color.a, dt * REF_SAMPLING_INTERVAL);
     //Retrieve previous light value
     vec4 lightVoxel = getNormalizedVoxel(lightVolume_, lightVolumeParameters_, previousPermutedCoord);
     //Return newly calculated propagate light value
 #ifdef SUPPORT_LIGHT_COLOR
     vec4 newCol = vec4((1.0 - color.a)*lightVoxel.a);
-    newCol.rgb = (1.0 - color.a)*lightVoxel.rgb + color.a*color.rgb;
+    newCol.rgb = (1.0 - color.a)*lightVoxel.rgb;
 #else
     vec4 newCol = vec4((1.0 - color.a)*lightVoxel.r);
 #endif

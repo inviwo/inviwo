@@ -98,9 +98,7 @@ vec4 rayTraversal(vec3 entryPoint, vec3 exitPoint, vec2 texCoords) {
             //Light Volume Compositing
             lightVoxel = getVoxel(lightVolume, lightVolumeParameters, samplePos);
 #ifdef LIGHT_COLOR_ENABLED
-            color.rgb = (color.rgb * 0.6) + (lightVoxel.rgb * color.rgb * 0.8) + 
-                        (0.8 * color.rgb * pow(lightVoxel.rgb, vec3(5.0)));
-            color.rgb *= lightVoxel.a;
+            color.rgb *= lightVoxel.rgb;
 #else
             color.rgb *= lightVoxel.r;
 #endif
