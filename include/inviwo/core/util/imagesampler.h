@@ -83,7 +83,7 @@ public:
 
     TemplateImageSampler(const Image *img) : TemplateImageSampler(img->getColorLayer()) {}
     TemplateImageSampler(std::shared_ptr<const Image> sharedImage)
-        : TemplateImageSampler(img->getColorLayer()) {
+        : TemplateImageSampler(sharedImage->getColorLayer()) {
         sharedImage_ = sharedImage;
     }
     virtual ~TemplateImageSampler(){}
