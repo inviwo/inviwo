@@ -60,7 +60,7 @@ public:
     void addExtension(const std::string &ext, const std::string &description);
     void addExtension(const std::string &extString);
 
-    void addSidebarPath(const InviwoApplication::PathType &path);
+    void addSidebarPath(const PathType &path);
     void addSidebarPath(const std::string &path);
     void addSidebarPath(const QString &path);
 

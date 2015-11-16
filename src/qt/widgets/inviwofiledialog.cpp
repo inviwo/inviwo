@@ -121,7 +121,7 @@ FileExtension InviwoFileDialog::getMatchingFileExtension(const QString &extStr) 
     }
 }
 
-void InviwoFileDialog::addSidebarPath(const InviwoApplication::PathType &path) {
+void InviwoFileDialog::addSidebarPath(const PathType &path) {
     addSidebarPath(InviwoApplication::getPtr()->getPath(path));
 }
 

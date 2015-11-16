@@ -73,6 +73,21 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
+enum class PathType {
+    Data,               // /data
+    Volumes,            // /data/volumes
+    Modules,            // /modules
+    Workspaces,         // /data/workspaces
+    Scripts,            // /data/workspaces
+    PortInspectors,     // /data/workspaces/portinspectors
+    Images,             // /data/images
+    Databases,          // /data/databases
+    Resources,          // /resources
+    TransferFunctions,  // /data/transferfunctions
+    Settings,           //
+    Help                // /data/help
+};
+
 /**
  * \class InviwoApplication
  *
@@ -94,22 +109,6 @@ public:
     virtual ~InviwoApplication();
 
     virtual void initialize(registerModuleFuncPtr);
-
-    enum PathType {
-        PATH_DATA,               // /data
-        PATH_VOLUMES,            // /data/volumes
-        PATH_MODULES,            // /modules
-        PATH_WORKSPACES,         // /data/workspaces
-        PATH_SCRIPTS,            // /data/workspaces
-        PATH_PORTINSPECTORS,     // /data/workspaces/portinspectors
-        PATH_IMAGES,             // /data/images
-        PATH_DATABASES,          // /data/databases
-        PATH_RESOURCES,          // /resources
-        PATH_TRANSFERFUNCTIONS,  // /data/transferfunctions
-        PATH_SETTINGS,           //
-        PATH_HELP                // /data/help
-    };
-
     virtual void closeInviwoApplication() {
         LogWarn("this application have not implemented close inviwo function");
     }
@@ -205,15 +204,15 @@ private:
     std::string displayName_;
     std::string basePath_;
     Tags nonSupportedTags_;
-    
+
     std::function<void(std::string)> progressCallback_;
     CommandLineParser commandLineParser_;
     ThreadPool pool_;
     Queue queue_;  // "Interaction/GUI" queue
-    
+
     util::OnScopeExit clearDataFormats_;
     util::OnScopeExit clearAllSingeltons_;
-    
+
     // Factories
     std::unique_ptr<DataReaderFactory> dataReaderFactory_;
     std::unique_ptr<DataWriterFactory> dataWriterFactory_;

@@ -80,7 +80,7 @@ void FileProperty::serialize(Serializer& s) const {
     const std::string basePath =
         !s.getFileName().empty()
             ? s.getFileName()
-            : InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA);
+            : InviwoApplication::getPtr()->getPath(PathType::Data);
 
     const std::string absoluteFilePath = get();
     std::string serializePath;
@@ -105,7 +105,7 @@ void FileProperty::deserialize(Deserializer& d) {
     if (!filesystem::isAbsolutePath(serializePath) && !serializePath.empty()) {
         const std::string basePath = filesystem::getFileDirectory(
             !d.getFileName().empty() ? d.getFileName() : InviwoApplication::getPtr()->getPath(
-                                                             InviwoApplication::PATH_DATA));
+                                                             PathType::Data));
 
         set(basePath + serializePath);
     } else {

@@ -147,13 +147,13 @@ void InviwoMainWindow::initialize() {
 
     auto app = InviwoApplication::getPtr();
 
-    QString firstWorkspace = app->getPath(InviwoApplication::PATH_WORKSPACES, "/boron.inv").c_str();
+    QString firstWorkspace = app->getPath(PathType::Workspaces, "/boron.inv").c_str();
     workspaceOnLastSuccessfulExit_ =
         settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
             .toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
-    rootDir_ = QString::fromStdString(app->getPath(InviwoApplication::PATH_DATA));
+    rootDir_ = QString::fromStdString(app->getPath(PathType::Data));
     workspaceFileDir_ = rootDir_ + "/workspaces";
     settingsWidget_->updateSettingsWidget();
 
@@ -207,7 +207,7 @@ bool InviwoMainWindow::processCommandLineArgs() {
 
     if (cmdparser->getScreenGrabAfterStartup()) {
         std::string path = cmdparser->getOutputPath();
-        if (path.empty()) path = app->getPath(InviwoApplication::PATH_IMAGES);
+        if (path.empty()) path = app->getPath(PathType::Images);
 
         repaint();
         app->processEvents();
@@ -222,7 +222,7 @@ bool InviwoMainWindow::processCommandLineArgs() {
 
     if (cmdparser->getCaptureAfterStartup()) {
         std::string path = cmdparser->getOutputPath();
-        if (path.empty()) path = app->getPath(InviwoApplication::PATH_IMAGES);
+        if (path.empty()) path = app->getPath(PathType::Images);
 
         repaint();
         app->processEvents();
@@ -573,7 +573,7 @@ void InviwoMainWindow::setCurrentWorkspace(QString workspaceFileName) {
 void InviwoMainWindow::fillExampleWorkspaceMenu() {
     auto app = InviwoApplication::getPtr();
 
-    std::string workspacePath{app->getPath(InviwoApplication::PATH_WORKSPACES)};
+    std::string workspacePath{app->getPath(PathType::Workspaces)};
     // get non-recursive list of contents
     auto fileList = filesystem::getDirectoryContents(workspacePath);
     for (auto item : fileList) {
@@ -596,7 +596,7 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
 
     // add default workspace path
     auto app = InviwoApplication::getPtr();
-    std::string coreWorkspacePath = app->getPath(InviwoApplication::PATH_WORKSPACES) + "/tests";
+    std::string coreWorkspacePath = app->getPath(PathType::Workspaces) + "/tests";
     if (filesystem::directoryExists(coreWorkspacePath)) {
         // check whether path contains at least one workspace
         bool workspaceExists = false;
@@ -763,7 +763,7 @@ void InviwoMainWindow::openWorkspace() {
     if (askToSaveWorkspaceChanges()) {
         InviwoFileDialog openFileDialog(this, "Open Workspace ...", "workspace");
 
-        openFileDialog.addSidebarPath(InviwoApplication::PATH_WORKSPACES);
+        openFileDialog.addSidebarPath(PathType::Workspaces);
         openFileDialog.addSidebarPath(workspaceFileDir_);
 
         openFileDialog.addExtension("inv", "Inviwo File");
@@ -843,7 +843,7 @@ void InviwoMainWindow::saveWorkspaceAs() {
     saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
     saveFileDialog.setConfirmOverwrite(true);
 
-    saveFileDialog.addSidebarPath(InviwoApplication::PATH_WORKSPACES);
+    saveFileDialog.addSidebarPath(PathType::Workspaces);
     saveFileDialog.addSidebarPath(workspaceFileDir_);
 
     saveFileDialog.addExtension("inv", "Inviwo File");
@@ -866,7 +866,7 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
     saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
     saveFileDialog.setConfirmOverwrite(true);
 
-    saveFileDialog.addSidebarPath(InviwoApplication::PATH_WORKSPACES);
+    saveFileDialog.addSidebarPath(PathType::Workspaces);
     saveFileDialog.addSidebarPath(workspaceFileDir_);
 
     saveFileDialog.addExtension("inv", "Inviwo File");
@@ -1016,7 +1016,7 @@ void InviwoMainWindow::reloadStyleSheet() {
     // this code should be removed.
 
     auto app = InviwoApplication::getPtr();
-    QString resourcePath = app->getPath(InviwoApplication::PATH_RESOURCES).c_str();
+    QString resourcePath = app->getPath(PathType::Resources).c_str();
     QFile styleSheetFile(resourcePath + "/stylesheets/inviwo.qss");
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());

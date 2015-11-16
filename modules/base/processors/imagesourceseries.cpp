@@ -55,7 +55,7 @@ ImageSourceSeries::ImageSourceSeries()
     , findFilesButton_("findFiles", "Update File List")
     , imageFileDirectory_(
           "imageFileDirectory", "Image file directory", "",
-          InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES, "/images"))
+          InviwoApplication::getPtr()->getPath(PathType::Images, "/images"))
     , currentImageIndex_("currentImageIndex", "Image index", 1, 1, 1, 1)
     , imageFileName_("imageFileName", "Image file name") {
     addPort(outport_);

@@ -51,7 +51,7 @@ VolumeExport::VolumeExport()
     , volumePort_("volume")
     , volumeFile_(
           "volumeFileName", "Volume file name",
-          InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_VOLUMES, "/newvolume.dat"),
+          InviwoApplication::getPtr()->getPath(PathType::Volumes, "/newvolume.dat"),
           "volume")
     , exportVolumeButton_("snapshot", "Export Volume", InvalidationLevel::Valid)
     , overwrite_("overwrite", "Overwrite", false) {

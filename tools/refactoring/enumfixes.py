@@ -6,7 +6,7 @@ colorama.init()
 
 import refactoring # Note: refactoring.py need to be in the current working directory
 
-paths = ["C:/inviwo-dev/vistinct"]
+paths = ["/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-dev", "/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-research"]
 
 excludespatterns = ["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*", "*/vrnbase/*"];
 
@@ -201,36 +201,59 @@ invalidationLevelReplacements = {
     "INVALID_RESOURCES" : "InvalidationLevel::InvalidResources"
 }
 
+pathTypeReplacements = {
+	"InviwoApplication::PathType" : "PathType",
+    "InviwoApplication::PATH_DATA" : "PathType::Data",
+    "InviwoApplication::PATH_VOLUMES" : "PathType::Volumes",
+    "InviwoApplication::PATH_MODULES" : "PathType::Modules",
+    "InviwoApplication::PATH_WORKSPACES" : "PathType::Workspaces",
+    "InviwoApplication::PATH_SCRIPTS" : "PathType::Scripts",
+    "InviwoApplication::PATH_PORTINSPECTORS" : "PathType::PortInspectors",
+    "InviwoApplication::PATH_IMAGES" : "PathType::Images",
+    "InviwoApplication::PATH_DATABASES" : "PathType::Databases",
+    "InviwoApplication::PATH_RESOURCES" : "PathType::Resources",
+    "InviwoApplication::PATH_TRANSFERFUNCTIONS" : "PathType::TransferFunctions",
+    "InviwoApplication::PATH_SETTINGS" : "PathType::Settings",
+    "InviwoApplication::PATH_HELP" : "PathType::Help"
+}
+
+
 # order matters here...
-for k,v in numericTypeReplacements.items():
-	replace(k,v)
+# for k,v in numericTypeReplacements.items():
+# 	replace(k,v)
 
-for k,v in dataFormatIdReplacements.items():
-	replace(k,v)
+# for k,v in dataFormatIdReplacements.items():
+# 	replace(k,v)
 
-for k,v in dataFormatTypeReplacements.items():
-	replace(k,v)
+# for k,v in dataFormatTypeReplacements.items():
+# 	replace(k,v)
 
-for k,v in ShadingFunctionReplacements.items():
-	replace(k,v)
+# for k,v in ShadingFunctionReplacements.items():
+# 	replace(k,v)
 
-for k,v in usageModeReplacements.items():
+# for k,v in usageModeReplacements.items():
+# 	replace(r"\b"+k+r"\b", v)
+
+# for k,v in drawModeReplacements.items():
+# 	replace(r"\b"+k+r"\b", v)
+
+# for k,v in interactionEventTypeReplacements.items():
+# 	replace(r"\b"+k+r"\b", v)
+
+# for k,v in glVendorReplacements.items():
+# 	replace(r"\b"+k+r"\b", v)
+
+# for k,v in gLFormatsNormalizationReplacements.items():
+# 	replace(r"\b"+k+r"\b", v)
+
+# for k,v in cLFormatsNormalizationReplacements.items():
+# 	replace(r"\b"+k+r"\b", v)
+
+# for k,v in invalidationLevelReplacements.items():
+# 	replace(r"\b"+k+r"\b", v)
+
+for k,v in pathTypeReplacements.items():
 	replace(r"\b"+k+r"\b", v)
 
-for k,v in drawModeReplacements.items():
-	replace(r"\b"+k+r"\b", v)
 
-for k,v in interactionEventTypeReplacements.items():
-	replace(r"\b"+k+r"\b", v)
 
-for k,v in glVendorReplacements.items():
-	replace(r"\b"+k+r"\b", v)
-
-for k,v in gLFormatsNormalizationReplacements.items():
-	replace(r"\b"+k+r"\b", v)
-
-for k,v in cLFormatsNormalizationReplacements.items():
-	replace(r"\b"+k+r"\b", v)
-
-for k,v in invalidationLevelReplacements.items():
-	replace(r"\b"+k+r"\b", v)

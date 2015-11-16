@@ -152,29 +152,29 @@ PyObject* py_getBasePath(PyObject* /*self*/, PyObject* /*args*/) {
 
 PyObject* py_getDataPath(PyObject* /*self*/, PyObject* /*args*/) {
     return PyValueParser::toPyObject(
-        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_DATA));
+        InviwoApplication::getPtr()->getPath(PathType::Data));
 }
 
 PyObject* py_getWorkspaceSavePath(PyObject* /*self*/, PyObject* /*args*/) {
     return PyValueParser::toPyObject(
-        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_WORKSPACES));
+        InviwoApplication::getPtr()->getPath(PathType::Workspaces));
 }
 PyObject* py_getVolumePath(PyObject* /*self*/, PyObject* /*args*/) {
     return PyValueParser::toPyObject(
-        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_VOLUMES));
+        InviwoApplication::getPtr()->getPath(PathType::Volumes));
 }
 PyObject* py_getImagePath(PyObject* /*self*/, PyObject* /*args*/) {
     return PyValueParser::toPyObject(
-        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES));
+        InviwoApplication::getPtr()->getPath(PathType::Images));
 }
 PyObject* py_getModulePath(PyObject* /*self*/, PyObject* /*args*/) {
     return PyValueParser::toPyObject(
-        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES));
+        InviwoApplication::getPtr()->getPath(PathType::Modules));
 }
 
 PyObject* py_getTransferFunctionPath(PyObject* /*self*/, PyObject* /*args*/) {
     return PyValueParser::toPyObject(
-        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_TRANSFERFUNCTIONS));
+        InviwoApplication::getPtr()->getPath(PathType::TransferFunctions));
 }
 
 PyObject* py_getMemoryUsage(PyObject* /*self*/, PyObject* /*args*/) {

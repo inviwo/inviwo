@@ -50,7 +50,7 @@ namespace inviwo {
 VectorFieldVisualizationGLModule::VectorFieldVisualizationGLModule(InviwoApplication* app)
     : InviwoModule(app, "VectorFieldVisualizationGL") {
     // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES,
+    ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules,
                                                  "/vectorfieldvisualizationgl/glsl");
 
     registerProcessor<LorenzSystem>();

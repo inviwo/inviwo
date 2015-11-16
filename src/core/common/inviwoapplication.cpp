@@ -159,51 +159,51 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
     std::string result = getBasePath();
 
     switch (pathType) {
-        case inviwo::InviwoApplication::PATH_DATA:
+        case PathType::Data:
             result += "/data";
             break;
 
-        case inviwo::InviwoApplication::PATH_VOLUMES:
+        case PathType::Volumes:
             result += "/data/volumes";
             break;
 
-        case inviwo::InviwoApplication::PATH_MODULES:
+        case PathType::Modules:
             result += "/modules";
             break;
 
-        case inviwo::InviwoApplication::PATH_WORKSPACES:
+        case PathType::Workspaces:
             result += "/data/workspaces";
             break;
 
-        case inviwo::InviwoApplication::PATH_PORTINSPECTORS:
+        case PathType::PortInspectors:
             result += "/data/workspaces/portinspectors";
             break;
 
-        case inviwo::InviwoApplication::PATH_SCRIPTS:
+        case PathType::Scripts:
             result += "/data/scripts";
             break;
 
-        case inviwo::InviwoApplication::PATH_IMAGES:
+        case PathType::Images:
             result += "/data/images";
             break;
 
-        case inviwo::InviwoApplication::PATH_DATABASES:
+        case PathType::Databases:
             result += "/data/databases";
             break;
 
-        case inviwo::InviwoApplication::PATH_RESOURCES:
+        case PathType::Resources:
             result += "/resources";
             break;
 
-        case inviwo::InviwoApplication::PATH_TRANSFERFUNCTIONS:
+        case PathType::TransferFunctions:
             result += "/data/transferfunctions";
             break;
 
-        case inviwo::InviwoApplication::PATH_SETTINGS:
+        case PathType::Settings:
             result = filesystem::getInviwoUserSettingsPath();
             break;
 
-        case inviwo::InviwoApplication::PATH_HELP:
+        case PathType::Help:
             result += "/data/help";
             break;
 

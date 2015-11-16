@@ -64,7 +64,7 @@ public:
     std::vector<std::string> getShaderSearchPaths();
 
     void addShaderSearchPath(std::string);
-    void addShaderSearchPath(InviwoApplication::PathType, std::string);
+    void addShaderSearchPath(PathType, std::string);
 
     void addShaderResource(std::string, std::string);
 

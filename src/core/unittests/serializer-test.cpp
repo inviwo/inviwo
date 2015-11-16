@@ -40,7 +40,7 @@
 namespace inviwo {
 
 #define SERIALITION_FILE_NAME                                             \
-    InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES, \
+    InviwoApplication::getPtr()->getPath(PathType::Modules, \
                                          "unittests/tmpfiles/serilizationtests.xml")
 
 TEST(SerialitionTest, initTest) {

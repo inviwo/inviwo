@@ -192,7 +192,7 @@ public:
      * @param pathType PathType of directory
      * @param relativePath Relative directory path to include
      */
-    void addCommonIncludeDirectory(InviwoApplication::PathType pathType, const std::string& relativePath);
+    void addCommonIncludeDirectory(PathType pathType, const std::string& relativePath);
 
     /**
      * Remove common include path.

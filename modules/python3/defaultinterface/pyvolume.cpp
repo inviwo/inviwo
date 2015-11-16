@@ -109,9 +109,9 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
 
     if (!filesystem::fileExists(filename)) {
         if (filesystem::fileExists(InviwoApplication::getPtr()->getPath(
-                InviwoApplication::PATH_TRANSFERFUNCTIONS, "/" + filename))) {
+                PathType::TransferFunctions, "/" + filename))) {
             filename = InviwoApplication::getPtr()->getPath(
-                InviwoApplication::PATH_TRANSFERFUNCTIONS, "/" + filename);
+                PathType::TransferFunctions, "/" + filename);
         } else {
             std::string msg = "loadTransferFunction() file not found (" + filename + ")";
             PyErr_SetString(PyExc_TypeError, msg.c_str());

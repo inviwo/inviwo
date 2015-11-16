@@ -83,7 +83,7 @@ BaseGLModule::BaseGLModule(InviwoApplication* app) : InviwoModule(app, "BaseGL")
 #ifdef BASEGL_INCLUDE_SHADER_RESOURCES
     BASEGL_addGeneratedShaderResources();
 #else
-    ShaderManager::getPtr()->addShaderSearchPath(InviwoApplication::PATH_MODULES, "basegl/glsl");
+    ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "basegl/glsl");
 #endif
     
     registerProcessor<Background>();

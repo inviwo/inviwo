@@ -254,10 +254,10 @@ void OpenCL::addCommonIncludeDirectory(const std::string& directoryPath){
         includeDirectories_.push_back(directoryPath);
 }
 
-void OpenCL::addCommonIncludeDirectory(InviwoApplication::PathType pathType, const std::string& relativePath) {
+void OpenCL::addCommonIncludeDirectory(PathType pathType, const std::string& relativePath) {
     addCommonIncludeDirectory(InviwoApplication::getPtr()->getPath(pathType) + "/" + relativePath);
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
-    if(pathType == InviwoApplication::PATH_MODULES){
+    if(pathType == PathType::Modules){
         for(int i=0; i < IVW_EXTERNAL_MODULES_PATH_COUNT; ++i){
             addCommonIncludeDirectory(externalModulePaths_[i] + "/" + relativePath);
         }

@@ -161,10 +161,10 @@ void ShaderManager::addShaderSearchPath(std::string shaderSearchPath) {
     }
 }
 
-void ShaderManager::addShaderSearchPath(InviwoApplication::PathType pathType, std::string relativeShaderSearchPath) {
+void ShaderManager::addShaderSearchPath(PathType pathType, std::string relativeShaderSearchPath) {
     bool added = addShaderSearchPathImpl(InviwoApplication::getPtr()->getPath(pathType) + "/" + relativeShaderSearchPath);
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
-    if(!added && pathType == InviwoApplication::PATH_MODULES){
+    if(!added && pathType == PathType::Modules){
         for (int i = 0; !added && i < IVW_EXTERNAL_MODULES_PATH_COUNT; ++i){
             added |= addShaderSearchPathImpl(externalModulePaths_[i] + "/" + relativeShaderSearchPath);
         }
@@ -175,7 +175,7 @@ void ShaderManager::addShaderSearchPath(InviwoApplication::PathType pathType, st
         LogInfo("Tried with:");
         LogInfo("\t" << InviwoApplication::getPtr()->getPath(pathType)  + "/" + relativeShaderSearchPath);
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
-        if (pathType == InviwoApplication::PATH_MODULES){
+        if (pathType == PathType::Modules){
             for (auto& elem : externalModulePaths_) {
                 LogInfo("\t" << elem << "/" << relativeShaderSearchPath);
             }

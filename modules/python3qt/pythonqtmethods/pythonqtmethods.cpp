@@ -85,7 +85,7 @@ PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
 
     if (!filesystem::fileExists(filename)) {
         filename =
-            InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES) + "/" + filename;
+            InviwoApplication::getPtr()->getPath(PathType::Modules) + "/" + filename;
 
         if (!filesystem::fileExists(filename)) {
             std::string msg = std::string("loadWorkspace() could not find file") + filename;

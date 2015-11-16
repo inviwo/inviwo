@@ -74,7 +74,7 @@ OpenCLModule::OpenCLModule(InviwoApplication* app) : InviwoModule(app, "OpenCL")
     registerRepresentationConverter(util::make_unique<VolumeCLGL2GLConverter>());
 
     OpenCL::init();
-    OpenCL::getPtr()->addCommonIncludeDirectory(InviwoApplication::PATH_MODULES, "opencl/cl");
+    OpenCL::getPtr()->addCommonIncludeDirectory(PathType::Modules, "opencl/cl");
     KernelManager::init();
 
     auto cap = util::make_unique<OpenCLCapabilities>();

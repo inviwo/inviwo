@@ -47,7 +47,7 @@ void testserialization(T def, T in) {
     T indata = in;
     T outdata1 = def;
     std::string filename =
-        InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_MODULES,
+        InviwoApplication::getPtr()->getPath(PathType::Modules,
                 "unittests/tmpfiles/metadatatests.xml");
     MetaDataOwner* mdo1;
     MetaDataOwner* mdo2;

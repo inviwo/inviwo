@@ -292,7 +292,7 @@ void PythonEditorWidget::saveAs() {
     saveFileDialog.setAcceptMode(QFileDialog::AcceptSave);
     saveFileDialog.setConfirmOverwrite(true);
 
-    saveFileDialog.addSidebarPath(InviwoApplication::PATH_SCRIPTS);
+    saveFileDialog.addSidebarPath(PathType::Scripts);
 
     saveFileDialog.addExtension("py", "Python Script");
 
@@ -324,7 +324,7 @@ void PythonEditorWidget::open() {
 
     openFileDialog.setFileMode(QFileDialog::AnyFile);
 
-    openFileDialog.addSidebarPath(InviwoApplication::PATH_SCRIPTS);
+    openFileDialog.addSidebarPath(PathType::Scripts);
 
     openFileDialog.addExtension("py", "Python Script");
 

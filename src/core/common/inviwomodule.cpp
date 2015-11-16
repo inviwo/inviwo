@@ -105,9 +105,9 @@ std::string InviwoModule::getPath() const {
     std::string moduleNameLowerCase = getIdentifier();
     std::transform(moduleNameLowerCase.begin(), moduleNameLowerCase.end(),
                    moduleNameLowerCase.begin(), ::tolower);
-    if (filesystem::directoryExists(app_->getPath(InviwoApplication::PATH_MODULES) + "/" +
+    if (filesystem::directoryExists(app_->getPath(PathType::Modules) + "/" +
                                     moduleNameLowerCase)) {
-        return app_->getPath(InviwoApplication::PATH_MODULES) + "/" + moduleNameLowerCase;
+        return app_->getPath(PathType::Modules) + "/" + moduleNameLowerCase;
     }
 #ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
     for (auto& elem : externalModulePaths_) {
@@ -118,7 +118,7 @@ std::string InviwoModule::getPath() const {
     }
 #endif
     LogWarn(moduleNameLowerCase << " directory was not found");
-    return app_->getPath(InviwoApplication::PATH_MODULES) + "/" + moduleNameLowerCase;
+    return app_->getPath(PathType::Modules) + "/" + moduleNameLowerCase;
 }
 
 const std::vector<Capabilities*> InviwoModule::getCapabilities() const {

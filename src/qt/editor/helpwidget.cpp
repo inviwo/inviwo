@@ -88,7 +88,7 @@ HelpWidget::HelpWidget(InviwoMainWindow* mainwindow)
     vLayout->setContentsMargins(0, 0, 0, 0);
 
     std::string helpfile =
-        mainwindow->getInviwoApplication()->getPath(InviwoApplication::PATH_HELP, "/inviwo.qhc");
+        mainwindow->getInviwoApplication()->getPath(PathType::Help, "/inviwo.qhc");
 
     helpEngine_ = new QHelpEngineCore(QString::fromStdString(helpfile), this);
 
@@ -146,7 +146,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
         QString cid = query.queryItemValue("classIdentifier");
 
         auto imageCache = helpwidget_->mainwindow_->getInviwoApplication()->getPath(
-            InviwoApplication::PATH_SETTINGS);
+            PathType::Settings);
         imageCache += "/image-cache";
         filesystem::createDirectoryRecursively(imageCache);
 
@@ -174,7 +174,7 @@ QVariant HelpWidget::HelpBrowser::loadResource(int type, const QUrl& name) {
 #ifdef IVW_DEBUG  // Look for the html in the doc-qt folder.
     if (type == QTextDocument::HtmlResource || type == QTextDocument::ImageResource) {
         std::string docbase = helpwidget_->mainwindow_->getInviwoApplication()->getPath(
-            InviwoApplication::PATH_DATA, "/../tools/doxygen/doc-qt/html");
+            PathType::Data, "/../tools/doxygen/doc-qt/html");
         QString file = name.toString();
         file.replace("qthelp://org.inviwo/doc", QString::fromStdString(docbase));
         QFile newfile(file);
