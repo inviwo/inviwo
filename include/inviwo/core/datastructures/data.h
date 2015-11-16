@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/datarepresentation.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/metadata/metadatamap.h>
 #include <inviwo/core/metadata/metadataowner.h>
@@ -184,8 +185,7 @@ const T* Data<Repr>::getRepresentation() const {
 template <class Repr>
 template <typename T>
 const T* Data<Repr>::getValidRepresentation() const {
-    auto factory = RepresentationConverterFactory::getPtr();
-
+    auto factory = InviwoApplication::getPtr()->getRepresentationConverterFactory();
     auto package = factory->getRepresentationConverter(lastValidRepresentation_->getTypeIndex(),
                                                        std::type_index(typeid(T)));
 

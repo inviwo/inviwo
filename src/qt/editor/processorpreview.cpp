@@ -29,7 +29,7 @@
 
 #include <inviwo/qt/editor/processorpreview.h>
 #include <inviwo/core/processors/processor.h>
-
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/qt/editor/processorgraphicsitem.h>
 #include <inviwo/qt/editor/processorportgraphicsitem.h>
@@ -50,7 +50,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
     std::string cid = classIdentifier.toLocal8Bit().constData();
 
     try {
-        auto processor = ProcessorFactory::getPtr()->create(cid);
+        auto processor = InviwoApplication::getPtr()->getProcessorFactory()->create(cid);
         auto item = new ProcessorGraphicsItem(processor.get());
         auto scene = util::make_unique<QGraphicsScene>(nullptr);
         scene->addItem(item);

@@ -29,6 +29,7 @@
 
 #pragma warning(disable: 4251)
 #include <inviwo/core/io/serialization/serializebase.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processorfactory.h>
 #include <inviwo/core/metadata/metadatafactory.h>
 #include <inviwo/core/properties/propertyfactory.h>
@@ -189,9 +190,9 @@ SerializeBase::~SerializeBase() {
 
 void SerializeBase::registerFactories(void) {
     registeredFactories_.clear();
-    registeredFactories_.push_back(ProcessorFactory::getPtr());
-    registeredFactories_.push_back(MetaDataFactory::getPtr());
-    registeredFactories_.push_back(PropertyFactory::getPtr());
+    registeredFactories_.push_back(InviwoApplication::getPtr()->getProcessorFactory());
+    registeredFactories_.push_back(InviwoApplication::getPtr()->getMetaDataFactory());
+    registeredFactories_.push_back(InviwoApplication::getPtr()->getPropertyFactory());
 }
 
 const std::string& SerializeBase::getFileName() {

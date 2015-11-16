@@ -33,15 +33,13 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/dialog.h>
 #include <inviwo/core/util/dialogfactory.h>
 #include <inviwo/core/util/dialogfactoryobject.h>
 
 namespace inviwo {
 
-class IVW_CORE_API DialogFactory : public StandardFactory<Dialog, DialogFactoryObject>,
-    public Singleton<DialogFactory> {
+class IVW_CORE_API DialogFactory : public StandardFactory<Dialog, DialogFactoryObject> {
 public:
     DialogFactory() = default;
     virtual ~DialogFactory() = default;

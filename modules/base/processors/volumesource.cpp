@@ -30,6 +30,7 @@
 #include "volumesource.h"
 #include <inviwo/core/resources/resourcemanager.h>
 #include <inviwo/core/resources/templateresource.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -85,7 +86,7 @@ VolumeSource::VolumeSource()
 void VolumeSource::load(bool deserialize) {
     if (isDeserializing_ || file_.get().empty()) return;
 
-    auto rf = DataReaderFactory::getPtr();
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
 
     std::string ext = filesystem::getFileExtension(file_.get());
     if (auto volVecReader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
@@ -118,7 +119,7 @@ void VolumeSource::load(bool deserialize) {
 }
 
 void VolumeSource::addFileNameFilters() {
-    auto rf = DataReaderFactory::getPtr();
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     auto extensions = rf->getExtensionsForType<Volume>();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));

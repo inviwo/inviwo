@@ -32,7 +32,6 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/util/fileextension.h>
@@ -41,8 +40,7 @@ namespace inviwo {
 
 template <typename T>
 class DataWriterType;
-class IVW_CORE_API DataWriterFactory : public Factory<DataWriter>,
-                                       public Singleton<DataWriterFactory> {
+class IVW_CORE_API DataWriterFactory : public Factory<DataWriter> {
 public:
     using Map = std::unordered_map<std::string, DataWriter*>;
     DataWriterFactory() = default;

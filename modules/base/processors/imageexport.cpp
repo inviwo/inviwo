@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "imageexport.h"
@@ -43,22 +43,22 @@ const ProcessorInfo ImageExport::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
 };
-const ProcessorInfo ImageExport::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageExport::getProcessorInfo() const { return processorInfo_; }
 
 ImageExport::ImageExport()
     : Processor()
     , imagePort_("image")
-    , imageFile_("imageFileName", "Image file name",
-                  InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES, "/newimage.png") , "image")
+    , imageFile_(
+          "imageFileName", "Image file name",
+          InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_IMAGES, "/newimage.png"),
+          "image")
     , exportImageButton_("snapshot", "Export Image", InvalidationLevel::Valid)
     , overwrite_("overwrite", "Overwrite", false)
-    , exportQueued_(false){
-    std::vector<FileExtension> ext = DataWriterFactory::getPtr()->getExtensionsForType<Image>();
+    , exportQueued_(false) {
+    std::vector<FileExtension> ext =
+        InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<Image>();
 
-    for (std::vector<FileExtension>::const_iterator it = ext.begin();
-         it != ext.end(); ++it) {
+    for (std::vector<FileExtension>::const_iterator it = ext.begin(); it != ext.end(); ++it) {
         std::stringstream ss;
         ss << it->description_ << " (*." << it->extension_ << ")";
         imageFile_.addNameFilter(ss.str());
@@ -75,7 +75,7 @@ ImageExport::ImageExport()
 ImageExport::~ImageExport() {}
 
 void ImageExport::exportImage() {
-    if(!isValid()){
+    if (!isValid()) {
         exportQueued_ = true;
         return;
     }
@@ -83,20 +83,20 @@ void ImageExport::exportImage() {
 }
 
 void ImageExport::process() {
-    if(exportQueued_)
-        processExport();
+    if (exportQueued_) processExport();
 }
 
-void ImageExport::processExport(){
+void ImageExport::processExport() {
     exportQueued_ = false;
     auto image = imagePort_.getData();
 
     if (image && !imageFile_.get().empty()) {
         const Layer* layer = image->getColorLayer();
-        if (layer){
+        if (layer) {
             std::string fileExtension = filesystem::getFileExtension(imageFile_.get());
-            auto writer = 
-                DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(fileExtension);
+            auto writer = InviwoApplication::getPtr()
+                              ->getDataWriterFactory()
+                              ->getWriterForTypeAndExtension<Layer>(fileExtension);
 
             if (writer) {
                 try {
@@ -107,10 +107,10 @@ void ImageExport::processExport(){
                     util::log(e.getContext(), e.getMessage(), LogLevel::Error);
                 }
             } else {
-                LogError("Error: Could not find a writer for the specified extension and data type");
+                LogError(
+                    "Error: Could not find a writer for the specified extension and data type");
             }
-        }
-        else {
+        } else {
             LogError("Error: Could not find color layer to write out");
         }
     } else if (imageFile_.get().empty()) {
@@ -120,5 +120,4 @@ void ImageExport::processExport(){
     }
 }
 
-}// namespace
-
+}  // namespace

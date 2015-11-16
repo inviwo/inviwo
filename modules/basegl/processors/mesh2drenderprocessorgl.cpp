@@ -33,6 +33,7 @@
 #include <inviwo/core/interaction/trackball.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <modules/opengl/geometry/meshgl.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
@@ -116,7 +117,8 @@ void Mesh2DRenderProcessorGL::updateDrawers() {
                 std::distance(ibegin, iend)) {  // data is changed or new.
 
             for (auto geo : elem.second) {
-                if (auto renderer = MeshDrawerFactory::getPtr()->create(geo.get())) {
+                auto factory = InviwoApplication::getPtr()->getMeshDrawerFactory();
+                if (auto renderer = factory->create(geo.get())) {
                     drawers_.emplace(std::make_pair(elem.first, std::move(renderer)));
                 }
             }

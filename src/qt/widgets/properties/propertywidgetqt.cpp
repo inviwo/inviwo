@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/properties/propertywidgetqt.h>
@@ -101,7 +101,6 @@ PropertyWidgetQt::PropertyWidgetQt()
     , contextMenu_(nullptr)
     , maxNumNestedShades_(4)
     , nestedDepth_(0) {
-
     applicationUsageMode_ = &(InviwoApplication::getPtr()
                                   ->getSettingsByType<SystemSettings>()
                                   ->applicationUsageModeProperty_);
@@ -125,30 +124,26 @@ PropertyWidgetQt::PropertyWidgetQt(Property* property)
     , baseContainer_(nullptr)
     , applicationUsageMode_(nullptr)
     , appModeCallback_(nullptr)
-    , contextMenu_(nullptr) 
+    , contextMenu_(nullptr)
     , maxNumNestedShades_(4)
     , nestedDepth_(0) {
     property_->addObserver(this);
     applicationUsageMode_ = &(InviwoApplication::getPtr()
                                   ->getSettingsByType<SystemSettings>()
                                   ->applicationUsageModeProperty_);
- 
 
-    appModeCallback_ = applicationUsageMode_->onChange([this](){
-        onSetUsageMode(property_->getUsageMode());    
-    });
+    appModeCallback_ =
+        applicationUsageMode_->onChange([this]() { onSetUsageMode(property_->getUsageMode()); });
 
     setNestedDepth(nestedDepth_);
     setObjectName("PropertyWidget");
-      
+
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this,
             SLOT(showContextMenu(const QPoint&)));
 }
 
-PropertyWidgetQt::~PropertyWidgetQt() {
-    applicationUsageMode_->removeOnChange(appModeCallback_);
-}
+PropertyWidgetQt::~PropertyWidgetQt() { applicationUsageMode_->removeOnChange(appModeCallback_); }
 
 void PropertyWidgetQt::initState() {
     if (property_) {
@@ -160,7 +155,8 @@ void PropertyWidgetQt::initState() {
 void PropertyWidgetQt::setVisible(bool visible) {
     bool wasVisible = QWidget::isVisible();
     UsageMode appMode = getApplicationUsageMode();
-    if (visible && property_ && property_->getUsageMode() == UsageMode::Development && appMode == UsageMode::Application)
+    if (visible && property_ && property_->getUsageMode() == UsageMode::Development &&
+        appMode == UsageMode::Application)
         visible = false;
 
     QWidget::setVisible(visible);
@@ -169,9 +165,7 @@ void PropertyWidgetQt::setVisible(bool visible) {
     if (visible != wasVisible && parent_) parent_->onChildVisibilityChange(this);
 }
 
-void PropertyWidgetQt::onSetVisible(bool visible) {
-    setVisible(visible);
-}
+void PropertyWidgetQt::onSetVisible(bool visible) { setVisible(visible); }
 
 void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* child) {
     if (property_) {
@@ -179,13 +173,9 @@ void PropertyWidgetQt::onChildVisibilityChange(PropertyWidgetQt* child) {
     }
 }
 
-void PropertyWidgetQt::onSetUsageMode(UsageMode usageMode) {
-    setVisible(property_->getVisible());
-}
+void PropertyWidgetQt::onSetUsageMode(UsageMode usageMode) { setVisible(property_->getVisible()); }
 
-void PropertyWidgetQt::onSetReadOnly(bool readonly) {
-    setDisabled(readonly);
-}
+void PropertyWidgetQt::onSetReadOnly(bool readonly) { setDisabled(readonly); }
 
 void PropertyWidgetQt::onSetSemantics(const PropertySemantics& semantics) {
     emit updateSemantics(this);
@@ -195,7 +185,7 @@ void PropertyWidgetQt::changeSemantics(QAction* action) {
     PropertySemantics semantics(action->data().toString().toUtf8().constData());
     if (property_) property_->setSemantics(semantics);
 }
-    
+
 void PropertyWidgetQt::showContextMenu(const QPoint& pos) {
     if (!contextMenu_) {
         generateContextMenu();
@@ -234,16 +224,17 @@ void PropertyWidgetQt::generateContextMenu() {
         pasteAction_ = new QAction("Paste", this);
         copyPathAction_ = new QAction("Copy path", this);
 
-        if (property_){
+        if (property_) {
             contextMenu_->addAction(copyAction_);
             contextMenu_->addAction(pasteAction_);
             contextMenu_->addAction(copyPathAction_);
 
             semanicsMenuItem_ = new QMenu(tr("&Semantics"), contextMenu_);
             semanticsActionGroup_ = new QActionGroup(this);
-            
+
+            auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
             std::vector<PropertySemantics> semantics =
-                PropertyWidgetFactory::getPtr()->getSupportedSemanicsForProperty(property_);
+                factory->getSupportedSemanicsForProperty(property_);
 
             for (auto& semantic : semantics) {
                 QAction* semanticAction = new QAction(QString::fromStdString(semantic.getString()),
@@ -257,15 +248,15 @@ void PropertyWidgetQt::generateContextMenu() {
                 }
                 semanticAction->setData(QString::fromStdString(semantic.getString()));
             }
-            
-            connect(semanticsActionGroup_, SIGNAL(triggered(QAction*)),
-                    this, SLOT(changeSemantics(QAction*)));
-        
+
+            connect(semanticsActionGroup_, SIGNAL(triggered(QAction*)), this,
+                    SLOT(changeSemantics(QAction*)));
+
             if (semantics.size() > 1) {
                 contextMenu_->addMenu(semanicsMenuItem_);
             }
         }
-        
+
         QAction* resetAction = new QAction(tr("&Reset to default"), this);
         resetAction->setToolTip(tr("&Reset the property back to it's initial state"));
         contextMenu_->addAction(resetAction);
@@ -302,9 +293,10 @@ void PropertyWidgetQt::generateModuleMenuActions() {
     std::map<std::string, std::vector<const ModuleCallbackAction*> > callbackMapPerModule;
 
     for (auto& moduleAction : moduleActions)
-        callbackMapPerModule[moduleAction->getModule()->getIdentifier()].push_back(moduleAction.get());
+        callbackMapPerModule[moduleAction->getModule()->getIdentifier()].push_back(
+            moduleAction.get());
 
-        for (auto& elem : callbackMapPerModule) {
+    for (auto& elem : callbackMapPerModule) {
         auto moduleActions = elem.second;
 
         if (moduleActions.size()) {
@@ -436,10 +428,7 @@ void PropertyWidgetQt::setSpacingAndMargins(QLayout* layout) {
     layout->setSpacing(SPACING);
 }
 
-
-QSize PropertyWidgetQt::minimumSizeHint() const {
-    return PropertyWidgetQt::sizeHint();
-}
+QSize PropertyWidgetQt::minimumSizeHint() const { return PropertyWidgetQt::sizeHint(); }
 
 QSize PropertyWidgetQt::sizeHint() const { return layout()->sizeHint(); }
 
@@ -453,17 +442,11 @@ void PropertyWidgetQt::setNestedDepth(int depth) {
     }
 }
 
-int PropertyWidgetQt::getNestedDepth() const {
-    return nestedDepth_;
-}
+int PropertyWidgetQt::getNestedDepth() const { return nestedDepth_; }
 
-PropertyWidgetQt* PropertyWidgetQt::getParentPropertyWidget() const {
-    return parent_;
-}
+PropertyWidgetQt* PropertyWidgetQt::getParentPropertyWidget() const { return parent_; }
 
-InviwoDockWidget* PropertyWidgetQt::getBaseContainer() const {
-    return baseContainer_;
-}
+InviwoDockWidget* PropertyWidgetQt::getBaseContainer() const { return baseContainer_; }
 
 void PropertyWidgetQt::setParentPropertyWidget(PropertyWidgetQt* parent, InviwoDockWidget* widget) {
     parent_ = parent;
@@ -480,11 +463,10 @@ void PropertyWidgetQt::paste() {
 
 void PropertyWidgetQt::copyPath() {
     if (!property_) return;
- 
+
     std::string path = joinString(property_->getPath(), ".");
     QApplication::clipboard()->setText(path.c_str());
 }
-
 
 void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
     if (hasEditorWidget()) {
@@ -502,12 +484,10 @@ void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
             if (docStatus == PropertyEditorWidgetDockStatus::DockedLeft) {
                 app->getMainWindow()->addDockWidget(Qt::LeftDockWidgetArea, propertyEditorWidget);
                 propertyEditorWidget->setFloating(false);
-            }
-            else if (docStatus == PropertyEditorWidgetDockStatus::DockedRight) {
+            } else if (docStatus == PropertyEditorWidgetDockStatus::DockedRight) {
                 app->getMainWindow()->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
                 propertyEditorWidget->setFloating(false);
-            }
-            else {
+            } else {
                 app->getMainWindow()->addDockWidget(Qt::RightDockWidgetArea, propertyEditorWidget);
                 propertyEditorWidget->setFloating(true);
             }
@@ -521,12 +501,12 @@ void PropertyWidgetQt::initializeEditorWidgetsMetaData() {
         ivec2 pos = getEditorWidget()->getEditorPositionMetaData();
 
         if (app) {
-            QPoint newPos = app->movePointOntoDesktop(QPoint(pos.x, pos.y), QSize(widgetDimension.x, widgetDimension.y), false);
+            QPoint newPos = app->movePointOntoDesktop(
+                QPoint(pos.x, pos.y), QSize(widgetDimension.x, widgetDimension.y), false);
 
             if (!(newPos.x() == 0 && newPos.y() == 0)) {
                 propertyEditorWidget->move(newPos);
-            }
-            else { // We guess that this is a new widget and give a new position
+            } else {  // We guess that this is a new widget and give a new position
                 newPos = app->getMainWindow()->pos();
                 newPos += app->offsetWidget();
                 propertyEditorWidget->move(newPos);

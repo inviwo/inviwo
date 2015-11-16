@@ -169,7 +169,7 @@ void ProcessorTreeWidget::addProcessor(std::string className) {
     try {
         // create processor, add it to processor network, and generate it's widgets
         auto network = InviwoApplication::getPtr()->getProcessorNetwork();
-        if (auto p = ProcessorFactory::getPtr()->create(className)) {
+        if (auto p = InviwoApplication::getPtr()->getProcessorFactory()->create(className)) {
             auto meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 
             auto pos = util::transform(network->getProcessors(), [](Processor* elem) {

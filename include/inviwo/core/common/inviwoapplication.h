@@ -72,7 +72,6 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
-
 /**
  * \class InviwoApplication
  *
@@ -223,19 +222,19 @@ private:
     std::unique_ptr<ProcessorNetworkEvaluator> processorNetworkEvaluator_;
 
     // Factories
-    DataReaderFactory* dataReaderFactory_;
-    DataWriterFactory* dataWriterFactory_;
-    DialogFactory* dialogFactory_;
-    MeshDrawerFactory* meshDrawerFactory_;
-    MetaDataFactory* metaDataFactory_;
-    PortFactory* portFactory_;
-    PortInspectorFactory* portInspectorFactory_;
-    ProcessorFactory* processorFactory_;
-    PropertyConverterManager* propertyConverterManager_;
-    PropertyFactory* propertyFactory_;
-    PropertyWidgetFactory* propertyWidgetFactory_;
-    RepresentationConverterFactory* representationConverterFactory_;
-    ProcessorWidgetFactory* processorWidgetFactory_;
+    std::unique_ptr<DataReaderFactory> dataReaderFactory_;
+    std::unique_ptr<DataWriterFactory> dataWriterFactory_;
+    std::unique_ptr<DialogFactory> dialogFactory_;
+    std::unique_ptr<MeshDrawerFactory> meshDrawerFactory_;
+    std::unique_ptr<MetaDataFactory> metaDataFactory_;
+    std::unique_ptr<PortFactory> portFactory_;
+    std::unique_ptr<PortInspectorFactory> portInspectorFactory_;
+    std::unique_ptr<ProcessorFactory> processorFactory_;
+    std::unique_ptr<PropertyConverterManager> propertyConverterManager_;
+    std::unique_ptr<PropertyFactory> propertyFactory_;
+    std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
+    std::unique_ptr<RepresentationConverterFactory> representationConverterFactory_;
+    std::unique_ptr<ProcessorWidgetFactory> processorWidgetFactory_;
 };
 
 template <class T>
@@ -285,48 +284,52 @@ auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<
 }
 
 inline DataReaderFactory* InviwoApplication::getDataReaderFactory() const {
-    return dataReaderFactory_;
+    return dataReaderFactory_.get();
 }
 
 inline DataWriterFactory* InviwoApplication::getDataWriterFactory() const {
-    return dataWriterFactory_;
+    return dataWriterFactory_.get();
 }
 
-inline DialogFactory* InviwoApplication::getDialogFactory() const { return dialogFactory_; }
+inline DialogFactory* InviwoApplication::getDialogFactory() const { return dialogFactory_.get(); }
 
 inline MeshDrawerFactory* InviwoApplication::getMeshDrawerFactory() const {
-    return meshDrawerFactory_;
+    return meshDrawerFactory_.get();
 }
 
-inline MetaDataFactory* InviwoApplication::getMetaDataFactory() const { return metaDataFactory_; }
+inline MetaDataFactory* InviwoApplication::getMetaDataFactory() const {
+    return metaDataFactory_.get();
+}
 
-inline PortFactory* InviwoApplication::getPortFactory() const { return portFactory_; }
+inline PortFactory* InviwoApplication::getPortFactory() const { return portFactory_.get(); }
 
 inline PortInspectorFactory* InviwoApplication::getPortInspectorFactory() const {
-    return portInspectorFactory_;
+    return portInspectorFactory_.get();
 }
 
 inline ProcessorFactory* InviwoApplication::getProcessorFactory() const {
-    return processorFactory_;
+    return processorFactory_.get();
 }
 
 inline PropertyConverterManager* InviwoApplication::getPropertyConverterManager() const {
-    return propertyConverterManager_;
+    return propertyConverterManager_.get();
 }
 
-inline PropertyFactory* InviwoApplication::getPropertyFactory() const { return propertyFactory_; }
+inline PropertyFactory* InviwoApplication::getPropertyFactory() const {
+    return propertyFactory_.get();
+}
 
 inline PropertyWidgetFactory* InviwoApplication::getPropertyWidgetFactory() const {
-    return propertyWidgetFactory_;
+    return propertyWidgetFactory_.get();
 }
 
 inline RepresentationConverterFactory* InviwoApplication::getRepresentationConverterFactory()
     const {
-    return representationConverterFactory_;
+    return representationConverterFactory_.get();
 }
 
 inline ProcessorWidgetFactory* InviwoApplication::getProcessorWidgetFactory() const {
-    return processorWidgetFactory_;
+    return processorWidgetFactory_.get();
 }
 
 }  // namespace

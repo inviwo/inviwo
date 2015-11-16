@@ -32,6 +32,7 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
@@ -43,9 +44,7 @@ const ProcessorInfo AxisAlignedCutPlane::processorInfo_{
     CodeState::Experimental,           // Code state
     Tags::GL,                          // Tags
 };
-const ProcessorInfo AxisAlignedCutPlane::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo AxisAlignedCutPlane::getProcessorInfo() const { return processorInfo_; }
 
 AxisAlignedCutPlane::AxisAlignedCutPlane()
     : Processor()
@@ -55,13 +54,14 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     , xSlide_("x", "X Slide")
     , ySlide_("y", "Y Slide")
     , zSlide_("z", "Z Slide")
-    , disableTF_("disableTF", "Disable transfer function", false, InvalidationLevel::InvalidResources)
-    , tf_("transferfunction", "Transfer function" , TransferFunction(), &volume_)
+    , disableTF_("disableTF", "Disable transfer function", false,
+                 InvalidationLevel::InvalidResources)
+    , tf_("transferfunction", "Transfer function", TransferFunction(), &volume_)
     , sliceShader_("geometryrendering.vert", "axisalignedcutplaneslice.frag", false)
     , boundingBoxShader_("geometryrendering.vert", "axisalignedcutplaneboundingbox.frag")
     , showBoundingBox_("boundingBox", "Show Bounding Box", true)
     , boundingBoxColor_("boundingBoxColor", "Bounding Box Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
-    , nearestInterpolation_("nearestInterpolation","Use nearest neighbor interpolation" , false)
+    , nearestInterpolation_("nearestInterpolation", "Use nearest neighbor interpolation", false)
     , camera_("camera", "Camera")
     , trackball_(&camera_) {
     addPort(volume_);
@@ -81,18 +81,21 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 
     imageInport_.setOptional(true);
 
-
-
     tf_.get().clearPoints();
     tf_.get().addPoint(vec2(0.0f, 1.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f));
     tf_.get().addPoint(vec2(1.0f, 1.0f), vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
     tf_.setCurrentStateAsDefault();
 
-    
-    xSlide_.onChange([&]() { if (volume_.hasData()) xSlide_.createDrawer(volume_.getData()); });
-    ySlide_.onChange([&]() { if (volume_.hasData()) ySlide_.createDrawer(volume_.getData()); });
-    zSlide_.onChange([&]() { if (volume_.hasData()) zSlide_.createDrawer(volume_.getData()); });
+    xSlide_.onChange([&]() {
+        if (volume_.hasData()) xSlide_.createDrawer(volume_.getData());
+    });
+    ySlide_.onChange([&]() {
+        if (volume_.hasData()) ySlide_.createDrawer(volume_.getData());
+    });
+    zSlide_.onChange([&]() {
+        if (volume_.hasData()) zSlide_.createDrawer(volume_.getData());
+    });
 
     volume_.onChange([&]() {
         if (!volume_.hasData()) return;
@@ -113,7 +116,7 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
 
 void AxisAlignedCutPlane::process() {
     if (imageInport_.isConnected()) {
-        utilgl::activateTargetAndCopySource(outport_, imageInport_ , ImageType::ColorDepth);
+        utilgl::activateTargetAndCopySource(outport_, imageInport_, ImageType::ColorDepth);
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
@@ -129,8 +132,7 @@ void AxisAlignedCutPlane::process() {
     if (nearestInterpolation_.get()) {
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    }
-    else {
+    } else {
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
@@ -158,7 +160,8 @@ void AxisAlignedCutPlane::createBoundingBox() {
 
     boundingBoxMesh_->addIndices(1, 0, 2, 3, 7, 5, 4, 6, 2, 0, 4, 5, 1, 3, 7, 6);
 
-    boundingBoxDrawer_ = MeshDrawerFactory::getPtr()->create(boundingBoxMesh_.get());
+    boundingBoxDrawer_ =
+        InviwoApplication::getPtr()->getMeshDrawerFactory()->create(boundingBoxMesh_.get());
 }
 
 void AxisAlignedCutPlane::drawBoundingBox() {
@@ -172,4 +175,3 @@ void AxisAlignedCutPlane::drawBoundingBox() {
 }
 
 }  // namespace
-

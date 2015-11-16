@@ -29,6 +29,7 @@
 
 #include "entryexitpoints.h"
 #include <inviwo/core/interaction/cameratrackball.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/datastructures/coordinatetransformer.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
@@ -37,7 +38,6 @@
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
-
 
 namespace inviwo {
 
@@ -48,9 +48,7 @@ const ProcessorInfo EntryExitPoints::processorInfo_{
     CodeState::Stable,             // Code state
     Tags::GL,                      // Tags
 };
-const ProcessorInfo EntryExitPoints::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo EntryExitPoints::getProcessorInfo() const { return processorInfo_; }
 
 EntryExitPoints::EntryExitPoints()
     : Processor()
@@ -82,7 +80,8 @@ EntryExitPoints::~EntryExitPoints() {}
 void EntryExitPoints::process() {
     // Check if no renderer exist or if geometry changed
     if (inport_.isChanged() && inport_.hasData()) {
-        drawer_ = MeshDrawerFactory::getPtr()->create(inport_.getData().get());
+        drawer_ =
+            InviwoApplication::getPtr()->getMeshDrawerFactory()->create(inport_.getData().get());
     }
     if (!drawer_) return;
 
@@ -105,8 +104,7 @@ void EntryExitPoints::process() {
     {
         // generate entry points
         if (capNearClipping_) {
-            if (!tmpEntry_ ||
-                tmpEntry_->getDimensions() != entryPort_.getDimensions() ||
+            if (!tmpEntry_ || tmpEntry_->getDimensions() != entryPort_.getDimensions() ||
                 tmpEntry_->getDataFormat() != entryPort_.getData()->getDataFormat()) {
                 tmpEntry_.reset(
                     new Image(entryPort_.getDimensions(), entryPort_.getData()->getDataFormat()));
@@ -149,4 +147,3 @@ void EntryExitPoints::deserialize(Deserializer& d) {
 }
 
 }  // namespace
-

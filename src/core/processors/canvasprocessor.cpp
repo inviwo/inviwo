@@ -29,6 +29,7 @@
 
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/canvasprocessor.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/canvas.h>
 #include <inviwo/core/util/datetime.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -102,7 +103,7 @@ CanvasProcessor::CanvasProcessor()
         if (inport_.hasData()) {
             auto layers = inport_.getData()->getNumberOfColorLayers();
             colorLayer_.setVisible(layers > 1 && visibleLayer_.get() == LayerType::Color);
-        } 
+        }
     });
 
     inport_.onChange([&]() {
@@ -222,7 +223,8 @@ void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
                 writer = Canvas::generalLayerWriter_;
                 deleteWriter = false;
             } else {
-                writer = DataWriterFactory::getPtr()
+                writer = InviwoApplication::getPtr()
+                             ->getDataWriterFactory()
                              ->getWriterForTypeAndExtension<Layer>(fileExtension)
                              .release();
             }
@@ -257,7 +259,9 @@ std::unique_ptr<std::vector<unsigned char>> CanvasProcessor::getLayerAsCodedBuff
     const Layer* layer = image->getLayer(layerType, idx);
 
     if (layer) {
-        auto writer = DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Layer>(type);
+        auto writer = InviwoApplication::getPtr()
+                          ->getDataWriterFactory()
+                          ->getWriterForTypeAndExtension<Layer>(type);
         if (writer) {
             try {
                 return writer->writeDataToBuffer(layer, type);

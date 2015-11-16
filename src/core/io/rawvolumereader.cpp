@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/dialogfactory.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/rawvolumereader.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
@@ -96,7 +97,7 @@ std::shared_ptr<Volume> RawVolumeReader::readData(std::string filePath) {
 
     if (!parametersSet_) {
         auto readerDialog = util::dynamic_unique_ptr_cast<DataReaderDialog>(
-            DialogFactory::getPtr()->create("RawVolumeReader"));
+            InviwoApplication::getPtr()->getDialogFactory()->create("RawVolumeReader"));
         if (!readerDialog) {
             throw DataReaderException("No data reader dialog found.", IvwContext);
         }

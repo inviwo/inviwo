@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "volumeexport.h"
@@ -44,23 +44,23 @@ const ProcessorInfo VolumeExport::processorInfo_{
     CodeState::Stable,          // Code state
     Tags::CPU,                  // Tags
 };
-const ProcessorInfo VolumeExport::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeExport::getProcessorInfo() const { return processorInfo_; }
 
 VolumeExport::VolumeExport()
     : Processor()
     , volumePort_("volume")
-    , volumeFile_("volumeFileName", "Volume file name",
-                  InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_VOLUMES, "/newvolume.dat") , "volume")
+    , volumeFile_(
+          "volumeFileName", "Volume file name",
+          InviwoApplication::getPtr()->getPath(InviwoApplication::PATH_VOLUMES, "/newvolume.dat"),
+          "volume")
     , exportVolumeButton_("snapshot", "Export Volume", InvalidationLevel::Valid)
     , overwrite_("overwrite", "Overwrite", false) {
-    std::vector<FileExtension> ext = DataWriterFactory::getPtr()->getExtensionsForType<Volume>();
+    std::vector<FileExtension> exts =
+        InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<Volume>();
 
-    for (std::vector<FileExtension>::const_iterator it = ext.begin();
-         it != ext.end(); ++it) {
+    for (auto& ext : exts) {
         std::stringstream ss;
-        ss << it->description_ << " (*." << it->extension_ << ")";
+        ss << ext.description_ << " (*." << ext.extension_ << ")";
         volumeFile_.addNameFilter(ss.str());
     }
 
@@ -79,8 +79,9 @@ void VolumeExport::exportVolume() {
 
     if (volume && !volumeFile_.get().empty()) {
         std::string fileExtension = filesystem::getFileExtension(volumeFile_.get());
-        auto writer =
-            DataWriterFactory::getPtr()->getWriterForTypeAndExtension<Volume>(fileExtension);
+        auto writer = InviwoApplication::getPtr()
+                          ->getDataWriterFactory()
+                          ->getWriterForTypeAndExtension<Volume>(fileExtension);
 
         if (writer) {
             try {
@@ -102,5 +103,4 @@ void VolumeExport::exportVolume() {
 
 void VolumeExport::process() {}
 
-} // namespace
-
+}  // namespace

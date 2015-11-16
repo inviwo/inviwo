@@ -33,12 +33,10 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/metadata/metadata.h>
 #include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
 
 namespace inviwo {
 
-class IVW_CORE_API MetaDataFactory : public CloningFactory<MetaData>,
-                                     public Singleton<MetaDataFactory> {
+class IVW_CORE_API MetaDataFactory : public CloningFactory<MetaData> {
 public:
     MetaDataFactory() = default;
     virtual ~MetaDataFactory() = default;

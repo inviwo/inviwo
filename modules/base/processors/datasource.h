@@ -24,13 +24,14 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_DATASOURCE_H
 #define IVW_DATASOURCE_H
 
 #include <modules/base/basemoduledefine.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
@@ -49,15 +50,15 @@ public:
 
     virtual bool isReady() const;
     void load();
-    
+
 protected:
     void load(bool deserialized);
     bool isDeserializing() const;
 
     // Called when we load new data.
-    virtual void dataLoaded(std::shared_ptr<DataType> data) {};
+    virtual void dataLoaded(std::shared_ptr<DataType> data){};
     // Called when we deserialized old data.
-    virtual void dataDeserialized(std::shared_ptr<DataType> data) {};
+    virtual void dataDeserialized(std::shared_ptr<DataType> data){};
 
     virtual void invalidateOutput();
 
@@ -72,7 +73,6 @@ private:
     bool isDeserializing_;
 };
 
-
 template <typename DataType, typename PortType>
 DataSource<DataType, PortType>::DataSource()
     : Processor()
@@ -81,11 +81,11 @@ DataSource<DataType, PortType>::DataSource()
     , reload_("reload", "Reload data")
     , loadedData_()
     , isDeserializing_(false) {
-    
     addPort(port_);
     file_.onChange(this, &DataSource::load);
 
-    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<DataType>();
+    auto extensions =
+        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<DataType>();
     for (auto& ext : extensions) {
         file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
     }
@@ -128,8 +128,10 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
         return;
     }
 
-    std::string ext = filesystem::getFileExtension(file_.get());  
-    if (auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<DataType>(ext)) {
+    std::string ext = filesystem::getFileExtension(file_.get());
+    if (auto reader = InviwoApplication::getPtr()
+                          ->getDataReaderFactory()
+                          ->getReaderForTypeAndExtension<DataType>(ext)) {
         try {
             auto data = reader->readData(file_.get());
             port_.setData(data);
@@ -154,7 +156,8 @@ template <typename DataType, typename PortType>
 void inviwo::DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     isDeserializing_ = true;
     Processor::deserialize(d);
-    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<DataType>();
+    auto extensions =
+        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<DataType>();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
     for (auto& ext : extensions) {

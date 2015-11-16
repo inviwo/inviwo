@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/timer.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -45,9 +46,9 @@ namespace inviwo {
  * ![](org.inviwo.OrdinalPropertyAnimator.png?classIdentifier=org.inviwo.OrdinalPropertyAnimator)
  *
  * ...
- * 
- * 
- * 
+ *
+ *
+ *
  * ### Properties
  *   * __Property__ ...
  *   * __Active__ ...
@@ -162,8 +163,7 @@ Property* OrdinalPropertyAnimator::VecProp<T>::getProp() {
 }
 
 template <typename T>
-OrdinalPropertyAnimator::VecProp<T>::~VecProp() {
-}
+OrdinalPropertyAnimator::VecProp<T>::~VecProp() {}
 
 template <typename T>
 void OrdinalPropertyAnimator::VecProp<T>::setLimits() {
@@ -186,8 +186,10 @@ void OrdinalPropertyAnimator::VecProp<T>::setLimits() {
 template <typename T>
 OrdinalPropertyAnimator::VecProp<T>::VecProp(std::string classname, std::string displayName)
     : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
+    auto factory = InviwoApplication::getPtr()->getPropertyFactory();
+
     prop_ = dynamic_cast<OrdinalProperty<T>*>(
-        PropertyFactory::getPtr()->create(classname, classname, displayName).release());
+        factory->create(classname, classname, displayName).release());
 
     std::stringstream ss1;
     ss1 << classname << "-"
@@ -195,7 +197,7 @@ OrdinalPropertyAnimator::VecProp<T>::VecProp(std::string classname, std::string 
     std::string identifier = ss1.str();
 
     delta_ = dynamic_cast<OrdinalProperty<T>*>(
-        PropertyFactory::getPtr()->create(classname, identifier, "Delta").release());
+        factory->create(classname, identifier, "Delta").release());
 
     prop_->onChange(this, &VecProp<T>::setLimits);
 }
@@ -236,9 +238,7 @@ Property* OrdinalPropertyAnimator::PrimProp<T>::getProp() {
 }
 
 template <typename T>
-OrdinalPropertyAnimator::PrimProp<T>::~PrimProp() {
-
-}
+OrdinalPropertyAnimator::PrimProp<T>::~PrimProp() {}
 
 template <typename T>
 void OrdinalPropertyAnimator::PrimProp<T>::setLimits() {
@@ -258,8 +258,10 @@ void OrdinalPropertyAnimator::PrimProp<T>::setLimits() {
 template <typename T>
 OrdinalPropertyAnimator::PrimProp<T>::PrimProp(std::string classname, std::string displayName)
     : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
+    auto factory = InviwoApplication::getPtr()->getPropertyFactory();
+
     prop_ = dynamic_cast<OrdinalProperty<T>*>(
-        PropertyFactory::getPtr()->create(classname, classname, displayName).release());
+        factory->create(classname, classname, displayName).release());
 
     std::stringstream ss1;
     ss1 << classname << "-"
@@ -267,7 +269,7 @@ OrdinalPropertyAnimator::PrimProp<T>::PrimProp(std::string classname, std::strin
     std::string identifier = ss1.str();
 
     delta_ = dynamic_cast<OrdinalProperty<T>*>(
-        PropertyFactory::getPtr()->create(classname, identifier, "Delta").release());
+        factory->create(classname, identifier, "Delta").release());
 
     prop_->onChange(this, &PrimProp<T>::setLimits);
 }

@@ -33,8 +33,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/representationconverter.h>
-#include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -44,8 +42,7 @@
 
 namespace inviwo {
 
-class IVW_CORE_API RepresentationConverterFactory
-    : public Singleton<RepresentationConverterFactory> {
+class IVW_CORE_API RepresentationConverterFactory {
 public:
     using ConverterID = RepresentationConverter::ConverterID;
     using RepMap = std::unordered_map<ConverterID, RepresentationConverter*>;

@@ -45,9 +45,7 @@ const ProcessorInfo ImageSource::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::CPU,                 // Tags
 };
-const ProcessorInfo ImageSource::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageSource::getProcessorInfo() const { return processorInfo_; }
 
 ImageSource::ImageSource()
     : Processor()
@@ -58,7 +56,8 @@ ImageSource::ImageSource()
     , isDeserializing_(false) {
     addPort(outport_);
 
-    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<Layer>();
+    auto extensions =
+        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
     for (auto& ext : extensions) file_.addNameFilter(ext);
 
     addProperty(file_);
@@ -79,7 +78,8 @@ void ImageSource::load() {
     }
 
     std::string ext = filesystem::getFileExtension(file_.get());
-    if (auto reader = DataReaderFactory::getPtr()->getReaderForTypeAndExtension<Layer>(ext)) {
+    auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
+    if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
         try {
             auto outLayer = reader->readData(file_.get());
             // Call getRepresentation here to force read a ram representation.
@@ -109,7 +109,8 @@ void ImageSource::load() {
 void ImageSource::deserialize(Deserializer& d) {
     isDeserializing_ = true;
     Processor::deserialize(d);
-    auto extensions = DataReaderFactory::getPtr()->getExtensionsForType<Layer>();
+    auto extensions =
+        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
     for (auto& ext : extensions) {
@@ -120,4 +121,3 @@ void ImageSource::deserialize(Deserializer& d) {
 }
 
 }  // namespace
-

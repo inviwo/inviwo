@@ -73,7 +73,7 @@ VolumeVectorSource::VolumeVectorSource()
 void VolumeVectorSource::load(bool deserialize /*= false*/) {
     if (isDeserializing_ || file_.get().empty()) return;
 
-    auto rf = DataReaderFactory::getPtr();
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     std::string ext = filesystem::getFileExtension(file_.get());
     if (auto reader = rf->getReaderForTypeAndExtension<VolumeVector>(ext)) {
         try {
@@ -92,7 +92,7 @@ void VolumeVectorSource::load(bool deserialize /*= false*/) {
 }
 
 void VolumeVectorSource::addFileNameFilters() {
-    auto rf = DataReaderFactory::getPtr();
+    auto rf = InviwoApplication::getPtr()->getDataReaderFactory();
     auto extensions = rf->getExtensionsForType<VolumeVector>();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));

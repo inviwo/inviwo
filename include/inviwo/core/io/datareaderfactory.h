@@ -33,14 +33,12 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/io/datareader.h>
 
 namespace inviwo {
 
-class IVW_CORE_API DataReaderFactory : public Factory<DataReader, const FileExtension&>,
-                                       public Singleton<DataReaderFactory> {
+class IVW_CORE_API DataReaderFactory : public Factory<DataReader, const FileExtension&> {
 public:
     using Map = std::unordered_map<FileExtension, DataReader*>;
 

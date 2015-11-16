@@ -102,44 +102,19 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
     ResourceManager::init();
     PickingManager::init();
     
-    DataReaderFactory::init();
-    dataReaderFactory_ = DataReaderFactory::getPtr();
-    
-    DataWriterFactory::init();
-    dataWriterFactory_ = DataWriterFactory::getPtr();
-    
-    DialogFactory::init();
-    dialogFactory_ = DialogFactory::getPtr();
-    
-    MeshDrawerFactory::init();
-    meshDrawerFactory_ = MeshDrawerFactory::getPtr();
-    
-    MetaDataFactory::init();
-    metaDataFactory_ = MetaDataFactory::getPtr();
-    
-    PortFactory::init();
-    portFactory_ = PortFactory::getPtr();
-    
-    PortInspectorFactory::init();
-    portInspectorFactory_ = PortInspectorFactory::getPtr();
-    
-    ProcessorFactory::init();
-    processorFactory_ = ProcessorFactory::getPtr();
-    
-    ProcessorWidgetFactory::init();
-    processorWidgetFactory_ = ProcessorWidgetFactory::getPtr();
-    
-    PropertyFactory::init();
-    propertyFactory_ = PropertyFactory::getPtr();
-    
-    PropertyWidgetFactory::init();
-    propertyWidgetFactory_ = PropertyWidgetFactory::getPtr();
-    
-    PropertyConverterManager::init();
-    propertyConverterManager_ = PropertyConverterManager::getPtr();
-    
-    RepresentationConverterFactory::init();
-    representationConverterFactory_ = RepresentationConverterFactory::getPtr();
+    dataReaderFactory_ = util::make_unique<DataReaderFactory>();
+    dataWriterFactory_ = util::make_unique<DataWriterFactory>();
+    dialogFactory_ = util::make_unique<DialogFactory>();
+    meshDrawerFactory_ = util::make_unique<MeshDrawerFactory>();
+    metaDataFactory_ = util::make_unique<MetaDataFactory>();
+    portFactory_ = util::make_unique<PortFactory>();
+    portInspectorFactory_ = util::make_unique<PortInspectorFactory>();
+    processorFactory_ = util::make_unique<ProcessorFactory>();
+    processorWidgetFactory_ = util::make_unique<ProcessorWidgetFactory>();
+    propertyFactory_ = util::make_unique<PropertyFactory>();  
+    propertyWidgetFactory_ = util::make_unique<PropertyWidgetFactory>();
+    propertyConverterManager_ = util::make_unique<PropertyConverterManager>();
+    representationConverterFactory_ = util::make_unique<RepresentationConverterFactory>();
     
     // Create and register core
     InviwoCore* ivwCore = new InviwoCore(this);
@@ -184,19 +159,7 @@ void InviwoApplication::deinitialize() {
     modules_.clear();
 
     ResourceManager::deleteInstance();
-    DataReaderFactory::deleteInstance();
-    DataWriterFactory::deleteInstance();
-    DialogFactory::deleteInstance();
-    MeshDrawerFactory::deleteInstance();
-    MetaDataFactory::deleteInstance();
     PickingManager::deleteInstance();
-    PortFactory::deleteInstance();
-    PortInspectorFactory::deleteInstance();
-    ProcessorWidgetFactory::deleteInstance();
-    PropertyFactory::deleteInstance();
-    PropertyWidgetFactory::deleteInstance();
-    PropertyConverterManager::deleteInstance();
-    RepresentationConverterFactory::deleteInstance();
     RenderContext::deleteInstance();
     
     dataReaderFactory_ = nullptr;

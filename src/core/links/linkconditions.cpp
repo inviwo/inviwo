@@ -24,21 +24,22 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/links/linkconditions.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
 
 namespace inviwo {
 
-bool SimpleCondition::canLink(const Property* src,const Property* dst) {
-    return PropertyConverterManager::getPtr()->canConvert(src,dst);
+bool SimpleCondition::canLink(const Property* src, const Property* dst) {
+    return InviwoApplication::getPtr()->getPropertyConverterManager()->canConvert(src, dst);
 }
 
 bool PartiallyMatchingIdCondition::canLink(const Property* src, const Property* dst) {
     bool canLink = false;
-    //conversion to lower case
+    // conversion to lower case
     std::string srcIdentifier = src->getIdentifier();
     std::transform(srcIdentifier.begin(), srcIdentifier.end(), srcIdentifier.begin(), tolower);
     std::string dstIdentifier = dst->getIdentifier();
@@ -48,14 +49,14 @@ bool PartiallyMatchingIdCondition::canLink(const Property* src, const Property* 
     std::string dstClassName = dst->getClassIdentifier();
     std::transform(dstClassName.begin(), dstClassName.end(), dstClassName.begin(), tolower);
 
-    //does class name occurs in identifiers
-    if (srcIdentifier.find(dstClassName)!=std::string::npos &&
-        dstIdentifier.find(srcClassName)!=std::string::npos)
+    // does class name occurs in identifiers
+    if (srcIdentifier.find(dstClassName) != std::string::npos &&
+        dstIdentifier.find(srcClassName) != std::string::npos)
         canLink = true;
 
-    //does identifier occur in other identifier
-    if (srcIdentifier.find(dstIdentifier)!=std::string::npos ||
-        dstIdentifier.find(srcIdentifier)!=std::string::npos)
+    // does identifier occur in other identifier
+    if (srcIdentifier.find(dstIdentifier) != std::string::npos ||
+        dstIdentifier.find(srcIdentifier) != std::string::npos)
         canLink = true;
 
     return canLink;

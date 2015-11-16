@@ -34,13 +34,11 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/processorwidgetfactoryobject.h>
 #include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
 
 namespace inviwo {
 
 class IVW_CORE_API ProcessorWidgetFactory : 
-    public Factory<ProcessorWidget>, 
-    public Singleton<ProcessorWidgetFactory> {
+    public Factory<ProcessorWidget> {
 
 public:
     ProcessorWidgetFactory() = default;

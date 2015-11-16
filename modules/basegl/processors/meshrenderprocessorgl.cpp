@@ -31,6 +31,7 @@
 #include <modules/opengl/geometry/meshgl.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/interaction/trackball.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <inviwo/core/processors/processor.h>
@@ -50,9 +51,7 @@ const ProcessorInfo MeshRenderProcessorGL::processorInfo_{
     CodeState::Stable,              // Code state
     Tags::GL,                       // Tags
 };
-const ProcessorInfo MeshRenderProcessorGL::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo MeshRenderProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 MeshRenderProcessorGL::MeshRenderProcessorGL()
     : Processor()
@@ -64,8 +63,10 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , setNearFarPlane_("setNearFarPlane", "Calculate Near and Far Plane")
     , resetViewParams_("resetView", "Reset Camera")
     , trackball_(&camera_)
-    , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false , InvalidationLevel::InvalidResources)
-    , overrideColor_("overrideColor", "Override Color", vec4(0.75f, 0.75f, 0.75f, 1.0f), vec4(0.0f), vec4(1.0f))
+    , overrideColorBuffer_("overrideColorBuffer", "Override Color Buffer", false,
+                           InvalidationLevel::InvalidResources)
+    , overrideColor_("overrideColor", "Override Color", vec4(0.75f, 0.75f, 0.75f, 1.0f), vec4(0.0f),
+                     vec4(1.0f))
     , geomProperties_("geometry", "Geometry Rendering Properties")
     , cullFace_("cullFace", "Cull Face")
     , polygonMode_("polygonMode", "Polygon Mode")
@@ -74,11 +75,13 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , lightingProperty_("lighting", "Lighting", &camera_)
     , layers_("layers", "Layers")
     , colorLayer_("colorLayer", "Color", true, InvalidationLevel::InvalidResources)
-    , texCoordLayer_("texCoordLayer", "Texture Coordinates", false, InvalidationLevel::InvalidResources)
-    , normalsLayer_("normalsLayer", "Normals (World Space)", false, InvalidationLevel::InvalidResources)
-    , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)", false, InvalidationLevel::InvalidResources)
+    , texCoordLayer_("texCoordLayer", "Texture Coordinates", false,
+                     InvalidationLevel::InvalidResources)
+    , normalsLayer_("normalsLayer", "Normals (World Space)", false,
+                    InvalidationLevel::InvalidResources)
+    , viewNormalsLayer_("viewNormalsLayer", "Normals (View space)", false,
+                        InvalidationLevel::InvalidResources)
     , shader_("geometryrendering.vert", "geometryrendering.frag", false) {
-
     addPort(inport_);
     addPort(imageInport_);
     addPort(outport_);
@@ -90,7 +93,8 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     addProperty(centerViewOnGeometry_);
     setNearFarPlane_.onChange(this, &MeshRenderProcessorGL::setNearFarPlane);
     addProperty(setNearFarPlane_);
-    resetViewParams_.onChange([this]() { camera_.resetCamera(); });    addProperty(resetViewParams_);
+    resetViewParams_.onChange([this]() { camera_.resetCamera(); });
+    addProperty(resetViewParams_);
     outport_.addResizeEventListener(&camera_);
     inport_.onChange(this, &MeshRenderProcessorGL::updateDrawers);
 
@@ -115,7 +119,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     geomProperties_.addProperty(overrideColor_);
     overrideColor_.setSemantics(PropertySemantics::Color);
     overrideColor_.setVisible(false);
-    overrideColorBuffer_.onChange([&](){overrideColor_.setVisible(overrideColorBuffer_.get()); });
+    overrideColorBuffer_.onChange([&]() { overrideColor_.setVisible(overrideColorBuffer_.get()); });
 
     float lineWidthRange[2];
     float increment;
@@ -143,9 +147,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
 
 MeshRenderProcessorGL::~MeshRenderProcessorGL() {}
 
-void MeshRenderProcessorGL::initializeResources() {
-    addCommonShaderDefines(shader_);
-}
+void MeshRenderProcessorGL::initializeResources() { addCommonShaderDefines(shader_); }
 
 void MeshRenderProcessorGL::addCommonShaderDefines(Shader& shader) {
     // shading defines
@@ -219,14 +221,12 @@ void MeshRenderProcessorGL::changeRenderMode() {
 }
 
 void MeshRenderProcessorGL::process() {
-
-    if (imageInport_.isConnected()){
+    if (imageInport_.isConnected()) {
         utilgl::activateTargetAndCopySource(outport_, imageInport_);
-    }
-    else{
+    } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
-    
+
     shader_.activate();
 
     utilgl::setShaderUniforms(shader_, camera_, "camera_");
@@ -245,7 +245,6 @@ void MeshRenderProcessorGL::process() {
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
-
 
 void MeshRenderProcessorGL::centerViewOnGeometry() {
     if (!inport_.hasData()) return;
@@ -333,12 +332,14 @@ void MeshRenderProcessorGL::updateDrawers() {
         auto iend = temp.upper_bound(elem.first);
 
         if (util::contains(changed, elem.first) || ibegin == temp.end() ||
-            static_cast<long>(elem.second.size()) != std::distance(ibegin, iend)) {  // data is changed or new.
+            static_cast<long>(elem.second.size()) !=
+                std::distance(ibegin, iend)) {  // data is changed or new.
 
             for (auto geo : elem.second) {
-                if (auto renderer = MeshDrawerFactory::getPtr()->create(geo.get())) {
+                auto factory = InviwoApplication::getPtr()->getMeshDrawerFactory();
+                if (auto renderer = factory->create(geo.get())) {
                     drawers_.emplace(std::make_pair(elem.first, std::move(renderer)));
-                } 
+                }
             }
         } else {  // reuse the old data.
             drawers_.insert(std::make_move_iterator(ibegin), std::make_move_iterator(iend));
@@ -347,4 +348,3 @@ void MeshRenderProcessorGL::updateDrawers() {
 }
 
 }  // namespace
-

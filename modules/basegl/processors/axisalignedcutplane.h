@@ -33,6 +33,7 @@
 #include <modules/basegl/baseglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
@@ -179,7 +180,7 @@ namespace inviwo {
         mesh_->setModelMatrix(vol->getModelMatrix());
         mesh_->setWorldMatrix(vol->getWorldMatrix());
 
-        drawer_ = MeshDrawerFactory::getPtr()->create(mesh_.get());
+        drawer_ = InviwoApplication::getPtr()->getMeshDrawerFactory()->create(mesh_.get());
     }
 
     template <AxisAlignedCutPlane::Axis axis>

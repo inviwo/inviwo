@@ -34,13 +34,12 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/rendering/meshdrawer.h>
 #include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
 #include <set>
 
 namespace inviwo {
 
 class IVW_CORE_API MeshDrawerFactory
-    : public Factory<MeshDrawer, const Mesh*>, public Singleton<MeshDrawerFactory> {
+    : public Factory<MeshDrawer, const Mesh*> {
 public:
     MeshDrawerFactory() = default;
     virtual ~MeshDrawerFactory() = default;

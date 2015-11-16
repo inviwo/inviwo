@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/properties/collapsiblegroupboxwidgetqt.h>
@@ -48,7 +48,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-    
+
 CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(std::string displayName, bool isCheckable)
     : PropertyWidgetQt()
     , PropertyOwnerObserver()
@@ -64,7 +64,7 @@ CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(std::string displayName
     updateFromProperty();
 }
 
-CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, bool isCheckable) 
+CollapsibleGroupBoxWidgetQt::CollapsibleGroupBoxWidgetQt(Property* property, bool isCheckable)
     : PropertyWidgetQt(property)
     , PropertyOwnerObserver()
     , displayName_(property->getDisplayName())
@@ -169,12 +169,9 @@ QSize CollapsibleGroupBoxWidgetQt::minimumSizeHint() const {
 void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
     properties_.push_back(prop);
 
-    PropertyWidgetQt* propertyWidget =
-        static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop).release());
-
-    if (propertyWidget) {
-        auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget);
-        if (collapsibleWidget) {
+    auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
+    if (auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
+        if (auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget)) {
             collapsibleWidget->setNestedDepth(this->getNestedDepth() + 1);
             // make the collapsible widget go all the way to the right border
             propertyWidgetGroupLayout_->addWidget(propertyWidget,
@@ -190,7 +187,7 @@ void CollapsibleGroupBoxWidgetQt::addProperty(Property* prop) {
         prop->registerWidget(propertyWidget);
         connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
                 SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
-        
+
         propertyWidget->setParentPropertyWidget(this, getBaseContainer());
         propertyWidget->initState();
 
@@ -203,42 +200,31 @@ std::string CollapsibleGroupBoxWidgetQt::getDisplayName() const { return display
 
 void CollapsibleGroupBoxWidgetQt::setDisplayName(const std::string& displayName) {
     displayName_ = displayName;
-    if (propertyOwner_) {       
+    if (propertyOwner_) {
         if (Processor* p = dynamic_cast<Processor*>(propertyOwner_)) p->setIdentifier(displayName);
     }
 }
 
 std::vector<Property*> CollapsibleGroupBoxWidgetQt::getProperties() { return properties_; }
 
-
 void CollapsibleGroupBoxWidgetQt::updateWidgets() {
     for (auto& elem : propertyWidgets_) elem->updateContextMenu();
 }
 
 void CollapsibleGroupBoxWidgetQt::resetPropertyToDefaultState() {
-    NetworkLock lock(property_);  
+    NetworkLock lock(property_);
     for (auto& elem : propertyWidgets_) elem->resetPropertyToDefaultState();
 }
 
-void CollapsibleGroupBoxWidgetQt::labelDidChange() {
-    setDisplayName(label_->getText());
-}
+void CollapsibleGroupBoxWidgetQt::labelDidChange() { setDisplayName(label_->getText()); }
 
-void CollapsibleGroupBoxWidgetQt::toggleCollapsed() {
-    setCollapsed(!isCollapsed());
-}
+void CollapsibleGroupBoxWidgetQt::toggleCollapsed() { setCollapsed(!isCollapsed()); }
 
-void CollapsibleGroupBoxWidgetQt::checkedStateChanged() {
-    setChecked(checkBox_->isChecked());
-}
+void CollapsibleGroupBoxWidgetQt::checkedStateChanged() { setChecked(checkBox_->isChecked()); }
 
-bool CollapsibleGroupBoxWidgetQt::isCollapsed() const {
-    return collapsed_;
-}
+bool CollapsibleGroupBoxWidgetQt::isCollapsed() const { return collapsed_; }
 
-bool CollapsibleGroupBoxWidgetQt::isChecked() const {
-    return checked_;
-}
+bool CollapsibleGroupBoxWidgetQt::isChecked() const { return checked_; }
 
 void CollapsibleGroupBoxWidgetQt::setChecked(bool checked) {
     if (!checkable_) {
@@ -250,9 +236,7 @@ void CollapsibleGroupBoxWidgetQt::setChecked(bool checked) {
     checkBox_->setChecked(checked_);
 }
 
-bool CollapsibleGroupBoxWidgetQt::isCheckable() const {
-    return checkable_;
-}
+bool CollapsibleGroupBoxWidgetQt::isCheckable() const { return checkable_; }
 
 void CollapsibleGroupBoxWidgetQt::setCheckable(bool checkable) {
     if (checkable_ == checkable) {
@@ -264,9 +248,8 @@ void CollapsibleGroupBoxWidgetQt::setCheckable(bool checkable) {
     checkBox_->setVisible(checkable_);
 }
 
-
 void CollapsibleGroupBoxWidgetQt::setVisible(bool visible) {
-    bool empty = util::all_of(properties_, [](Property* w) {return !w->getVisible();});
+    bool empty = util::all_of(properties_, [](Property* w) { return !w->getVisible(); });
     defaultLabel_->setVisible(empty);
 
     if (showIfEmpty_ || !empty) {
@@ -289,37 +272,34 @@ void CollapsibleGroupBoxWidgetQt::setCollapsed(bool collapse) {
     setUpdatesEnabled(true);
 }
 
-    
 void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt* widget) {
     setUpdatesEnabled(false);
     Property* prop = widget->getProperty();
-        
+
     auto pit = std::find(properties_.begin(), properties_.end(), prop);
     auto wit = std::find(propertyWidgets_.begin(), propertyWidgets_.end(), widget);
-    
+
     if (pit != properties_.end() && wit != propertyWidgets_.end()) {
-        
-        PropertyWidgetQt* newWidget =
-            static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop).release());
-        
-        if (newWidget) {
+        auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
+        if (auto newWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
             prop->deregisterWidget(widget);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-            propertyWidgetGroupLayout_->replaceWidget(widget, newWidget, Qt::FindDirectChildrenOnly);
-#else 
+            propertyWidgetGroupLayout_->replaceWidget(widget, newWidget,
+                                                      Qt::FindDirectChildrenOnly);
+#else
             int layoutPosition = propertyWidgetGroupLayout_->indexOf(widget);
             propertyWidgetGroupLayout_->removeWidget(widget);
             propertyWidgetGroupLayout_->addWidget(newWidget, layoutPosition, 0);
-#endif // QT_VERSION >= 5.2           
+#endif  // QT_VERSION >= 5.2
             widget->deleteLater();
 
-            prop->registerWidget(newWidget);                        
+            prop->registerWidget(newWidget);
             // Replace the item in propertyWidgets_;
             *wit = newWidget;
-            
-            connect(newWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)),
-                    this, SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
+
+            connect(newWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
+                    SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
 
             newWidget->setNestedDepth(this->getNestedDepth());
             newWidget->setParentPropertyWidget(this, getBaseContainer());
@@ -335,38 +315,36 @@ void CollapsibleGroupBoxWidgetQt::updatePropertyWidgetSemantics(PropertyWidgetQt
 void CollapsibleGroupBoxWidgetQt::onDidAddProperty(Property* prop, size_t index) {
     setUpdatesEnabled(false);
     std::vector<Property*>::iterator insertPoint = properties_.begin() + index;
-    if (insertPoint!=properties_.end()) ++insertPoint;
-    
+    if (insertPoint != properties_.end()) ++insertPoint;
+
     properties_.insert(insertPoint, prop);
 
-    PropertyWidgetQt* propertyWidget =
-        static_cast<PropertyWidgetQt*>(PropertyWidgetFactory::getPtr()->create(prop).release());
-
-    if (propertyWidget) {
+    auto factory = InviwoApplication::getPtr()->getPropertyWidgetFactory();
+    if (auto propertyWidget = static_cast<PropertyWidgetQt*>(factory->create(prop).release())) {
         const int insertPos = static_cast<int>(index) + 1;
-        auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt *>(propertyWidget);
-        if (collapsibleWidget) {
+
+        if (auto collapsibleWidget = dynamic_cast<CollapsibleGroupBoxWidgetQt*>(propertyWidget)) {
             collapsibleWidget->setNestedDepth(this->getNestedDepth() + 1);
             // make the collapsible widget go all the way to the right border
             propertyWidgetGroupLayout_->addWidget(propertyWidget, insertPos, 0, 1, -1);
-        
-        } else { // not a collapsible widget
+
+        } else {  // not a collapsible widget
             propertyWidget->setNestedDepth(this->getNestedDepth());
             // property widget should only be added to the left column of the layout
             propertyWidgetGroupLayout_->addWidget(propertyWidget, insertPos, 0);
         }
 
-        auto widgetInsertPoint = propertyWidgets_.begin()+index;
+        auto widgetInsertPoint = propertyWidgets_.begin() + index;
         if (widgetInsertPoint != propertyWidgets_.end()) ++widgetInsertPoint;
 
         propertyWidgets_.insert(widgetInsertPoint, propertyWidget);
         prop->registerWidget(propertyWidget);
-        connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)),
-                this, SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
+        connect(propertyWidget, SIGNAL(updateSemantics(PropertyWidgetQt*)), this,
+                SLOT(updatePropertyWidgetSemantics(PropertyWidgetQt*)));
 
         propertyWidget->setParentPropertyWidget(this, getBaseContainer());
         propertyWidget->initState();
-        
+
     } else {
         LogWarn("Could not find a widget for property: " << prop->getClassIdentifier());
     }
@@ -377,8 +355,8 @@ void CollapsibleGroupBoxWidgetQt::onWillRemoveProperty(Property* prop, size_t in
     PropertyWidgetQt* propertyWidget = propertyWidgets_[index];
 
     propertyWidgetGroupLayout_->removeWidget(propertyWidget);
-    propertyWidgets_.erase(propertyWidgets_.begin()+index);
-    properties_.erase(properties_.begin()+index);
+    propertyWidgets_.erase(propertyWidgets_.begin() + index);
+    properties_.erase(properties_.begin() + index);
     propertyWidget->deleteLater();
 }
 
@@ -391,15 +369,11 @@ void CollapsibleGroupBoxWidgetQt::setPropertyOwner(PropertyOwner* propertyOwner)
     propertyOwner_ = propertyOwner;
 }
 
-PropertyOwner* CollapsibleGroupBoxWidgetQt::getPropertyOwner() const {
-    return propertyOwner_;
-}
+PropertyOwner* CollapsibleGroupBoxWidgetQt::getPropertyOwner() const { return propertyOwner_; }
 
 std::vector<PropertyWidgetQt*> CollapsibleGroupBoxWidgetQt::getPropertyWidgets() {
     return propertyWidgets_;
 }
 
-void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) {
-    showIfEmpty_ = val;
-}
+void CollapsibleGroupBoxWidgetQt::setShowIfEmpty(bool val) { showIfEmpty_ = val; }
 }  // namespace

@@ -42,6 +42,7 @@ http://prideout.net/blog/?p=61
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 
 namespace inviwo {
@@ -91,7 +92,8 @@ TubeRendering::TubeRendering()
     
 void TubeRendering::process() {
     if (!drawer_) {
-        drawer_ = MeshDrawerFactory::getPtr()->create(mesh_.getData().get());
+        auto factory = InviwoApplication::getPtr()->getMeshDrawerFactory();
+        drawer_ =factory->create(mesh_.getData().get());
     }
     if (!drawer_) return;
 

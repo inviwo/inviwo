@@ -34,12 +34,10 @@
 #include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
 
 namespace inviwo {
 
-class IVW_CORE_API ProcessorFactory : public StandardFactory<Processor, ProcessorFactoryObject>,
-                                      public Singleton<ProcessorFactory> {
+class IVW_CORE_API ProcessorFactory : public StandardFactory<Processor, ProcessorFactoryObject> {
 public:
     ProcessorFactory() = default;
     virtual ~ProcessorFactory() = default;

@@ -33,11 +33,10 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/portfactoryobject.h>
-#include <inviwo/core/util/singleton.h>
 
 namespace inviwo {
 
-class IVW_CORE_API PortFactory : public Factory<Port>, public Singleton<PortFactory> {
+class IVW_CORE_API PortFactory : public Factory<Port> {
 public:
     using Map = std::unordered_map<std::string, PortFactoryObject*>;
     PortFactory() = default;

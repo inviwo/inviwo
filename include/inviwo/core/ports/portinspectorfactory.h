@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
 #include <inviwo/core/ports/portinspector.h>
 #include <inviwo/core/ports/portinspectorfactoryobject.h>
 
@@ -41,8 +40,7 @@
 namespace inviwo {
 
 class IVW_CORE_API PortInspectorFactory
-    : public StandardFactory<PortInspector, PortInspectorFactoryObject>,
-      public Singleton<PortInspectorFactory> {
+    : public StandardFactory<PortInspector, PortInspectorFactoryObject> {
 public:
     PortInspectorFactory() = default;
     virtual ~PortInspectorFactory() = default;

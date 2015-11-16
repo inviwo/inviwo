@@ -40,7 +40,7 @@ namespace inviwo {
 
 class Property;
 
-class IVW_CORE_API PropertyConverterManager : public Singleton<PropertyConverterManager> {
+class IVW_CORE_API PropertyConverterManager {
 public:
     PropertyConverterManager();
     virtual ~PropertyConverterManager();

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/links/linkevaluator.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/links/linkconditions.h>
 #include <inviwo/core/properties/propertyconvertermanager.h>
 #include <inviwo/core/properties/propertyconverter.h>
@@ -124,7 +125,8 @@ void LinkEvaluator::secondaryCacheHelper(std::vector<Link>& links, Property* src
     // Check that we don't use a previous source or destination as the new destination.
     if (!util::contains_if(
             links, [dst](const Link& link) { return link.src_ == dst || link.dst_ == dst; })) {
-        if (auto converter = PropertyConverterManager::getPtr()->getConverter(src, dst)) {
+        auto manager = InviwoApplication::getPtr()->getPropertyConverterManager();
+        if (auto converter = manager->getConverter(src, dst)) {
             links.emplace_back(src, dst, converter);
         }
 

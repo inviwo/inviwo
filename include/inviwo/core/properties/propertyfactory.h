@@ -33,14 +33,12 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
 #include <inviwo/core/properties/propertyfactoryobject.h>
 
 namespace inviwo {
 
 class IVW_CORE_API PropertyFactory : public Factory<Property>,
-                                     public FactoryObservable<PropertyFactoryObject>,
-                                     public Singleton<PropertyFactory> {
+                                     public FactoryObservable<PropertyFactoryObject> {
 public:
     using Map = std::unordered_map<std::string, PropertyFactoryObject *>;
 

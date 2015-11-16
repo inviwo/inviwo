@@ -34,13 +34,12 @@
 #include <inviwo/core/properties/propertywidget.h>
 #include <inviwo/core/properties/propertywidgetfactoryobject.h>
 #include <inviwo/core/util/factory.h>
-#include <inviwo/core/util/singleton.h>
+
 
 namespace inviwo {
 
 class IVW_CORE_API PropertyWidgetFactory
-    : public Factory<PropertyWidget, Property*>,
-      public Singleton<PropertyWidgetFactory> {
+    : public Factory<PropertyWidget, Property*> {
 public:
     PropertyWidgetFactory();
     virtual ~PropertyWidgetFactory();
