@@ -33,12 +33,21 @@
 
 namespace inviwo {
 
-ImageSampler::ImageSampler(const LayerRAM *ram) : layer_(ram), dims_(layer_->getDimensions()) {}
+ImageSampler::ImageSampler(const LayerRAM *ram) 
+    : layer_(ram)
+    , dims_(layer_->getDimensions())
+    , sharedImage_(nullptr) {}
 
 ImageSampler::ImageSampler(const Layer *layer)
-    : ImageSampler(layer->getRepresentation<LayerRAM>()) {}
+    : ImageSampler(layer->getRepresentation<LayerRAM>())  {}
 
 ImageSampler::ImageSampler(const Image *img) : ImageSampler(img->getColorLayer()) {}
+
+ImageSampler::ImageSampler(std::shared_ptr<const Image> sharedImage)
+    : ImageSampler(sharedImage->getColorLayer())
+{
+    sharedImage_ = sharedImage;
+}
 
 ImageSampler::~ImageSampler() {}
 

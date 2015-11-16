@@ -58,6 +58,7 @@ public:
     ImageSampler(const LayerRAM *ram);
     ImageSampler(const Layer *layer);
     ImageSampler(const Image *img);
+    ImageSampler(std::shared_ptr<const Image> img);
     virtual ~ImageSampler();
 
     dvec4 sample(const dvec2 &pos) const;
@@ -68,17 +69,23 @@ private:
     dvec4 getPixel(const size2_t &pos)const;
     const LayerRAM *layer_;
     size2_t dims_;
+
+    std::shared_ptr<const Image> sharedImage_;
 };
 
 template <typename T,typename P>
 class TemplateImageSampler {
 public:
     TemplateImageSampler(const LayerRAM *ram)
-        : data_(static_cast<const T *>(ram->getData())), dims_(ram->getDimensions()), ic_(dims_) {}
+        : data_(static_cast<const T *>(ram->getData())), dims_(ram->getDimensions()), ic_(dims_), sharedImage_(nullptr) {}
     TemplateImageSampler(const Layer *layer)
         : TemplateImageSampler(layer->getRepresentation<LayerRAM>()) {}
 
     TemplateImageSampler(const Image *img) : TemplateImageSampler(img->getColorLayer()) {}
+    TemplateImageSampler(std::shared_ptr<const Image> sharedImage)
+        : TemplateImageSampler(img->getColorLayer()) {
+        sharedImage_ = sharedImage;
+    }
     virtual ~TemplateImageSampler(){}
 
     T sample(P x,P y) { return sample(Vector<2, P>(x,y)); }
@@ -107,6 +114,8 @@ private:
     const T *data_;
     size2_t dims_;
     util::IndexMapper2D ic_;
+
+    std::shared_ptr<const Image> sharedImage_;
 };
 
 }  // namespace

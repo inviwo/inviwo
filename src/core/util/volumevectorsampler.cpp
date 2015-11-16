@@ -34,7 +34,7 @@ namespace inviwo {
 VolumeVectorSampler::VolumeVectorSampler(
     std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector) {
     for (const auto &vol : (*volumeVector.get())) {
-        samplers_.push_back(VolumeSampler(vol.get()));
+        samplers_.emplace_back(vol);
     }
 }
 

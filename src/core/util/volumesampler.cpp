@@ -31,10 +31,19 @@
 
 namespace inviwo {
 
-VolumeSampler::VolumeSampler(const VolumeRAM *ram) : vol_(ram), dims_(ram->getDimensions()) {}
+VolumeSampler::VolumeSampler(const VolumeRAM *ram) 
+    : vol_(ram)
+    , dims_(ram->getDimensions())
+    , sharedVolume_(nullptr)
+{}
 
 VolumeSampler::VolumeSampler(const Volume *vol)
     : VolumeSampler(vol->getRepresentation<VolumeRAM>()) {}
+
+VolumeSampler::VolumeSampler(std::shared_ptr<const Volume> sharedVolume)
+    : VolumeSampler(sharedVolume.get()) {
+    sharedVolume_ = sharedVolume;
+}
 
 VolumeSampler::~VolumeSampler() {}
 
@@ -57,8 +66,7 @@ dvec4 VolumeSampler::sample(const dvec3 &pos) const {
     return Interpolation<dvec4>::trilinear(samples, interpolants);
 }
 
-inviwo::dvec4 VolumeSampler::getVoxel(const size3_t &pos) const
-{
+dvec4 VolumeSampler::getVoxel(const size3_t &pos) const {
     auto p = glm::clamp(pos, size3_t(0), dims_ - size3_t(1));
     return vol_->getValueAsVec4Double(p);
 }
