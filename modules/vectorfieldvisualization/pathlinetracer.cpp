@@ -41,6 +41,8 @@ PathLineTracer::PathLineTracer(
         invBasis_ = dmat3(glm::inverse(volumeVector->at(0)->getBasis()));
         dimensions_ = volumeVector->at(0)->getDimensions();
     }
+
+    sampler_.setVectorInterpolation(true);
 }
 
 PathLineTracer::~PathLineTracer() {}
