@@ -88,12 +88,12 @@ vec4 divide(vec4 colorA, vec4 colorB) {
 
 vec4 addition(vec4 colorA, vec4 colorB) {
     // f(a,b) = a + b, clamped to [0,1]
-    return vec4(min(colorA.rgb + colorB.rgb, 1.0), max(colorA.a,colorB.a));
+    return vec4(colorA.rgb + colorB.rgb, max(colorA.a,colorB.a));
 }
 
 vec4 subtraction(vec4 colorA, vec4 colorB) {
     // f(a,b) = a - b, clamped to [0,1]
-    return vec4(max(colorA.rgb - colorB.rgb, 0.0), max(colorA.a,colorB.a));
+    return vec4(colorA.rgb - colorB.rgb), max(colorA.a,colorB.a));
 }
 
 vec4 difference(vec4 colorA, vec4 colorB) {

@@ -70,8 +70,8 @@ ImageMixer::ImageMixer()
     blendingMode_.addOption("addition", "Addition", BlendModes::Addition);
     blendingMode_.addOption("subtraction", "Subtraction", BlendModes::Subtraction);
     blendingMode_.addOption("difference", "Difference", BlendModes::Difference);
-    blendingMode_.addOption("darkenonly", "DarkenOnly", BlendModes::DarkenOnly);
-    blendingMode_.addOption("brightenonly", "BrightenOnly", BlendModes::BrightenOnly);
+    blendingMode_.addOption("darkenonly", "DarkenOnly (min)", BlendModes::DarkenOnly);
+    blendingMode_.addOption("brightenonly", "BrightenOnly (max)", BlendModes::BrightenOnly);
     blendingMode_.setSelectedValue(BlendModes::Mix);
     blendingMode_.setCurrentStateAsDefault();
 
