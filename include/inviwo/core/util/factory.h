@@ -89,6 +89,10 @@ public:
     using Map = std::unordered_map<Key, M*>;
     StandardFactory() = default;
     virtual ~StandardFactory() = default;
+    StandardFactory(const StandardFactory&) = delete;
+    StandardFactory& operator=(const StandardFactory&) = delete;
+    StandardFactory(StandardFactory&&) = default;
+    StandardFactory& operator=(StandardFactory&&) = default;
 
     // The factory will not assume ownership over obj, although is assumes that obj will be
     // valid for the lifetime of the factory
@@ -149,6 +153,10 @@ public:
     using Map = std::unordered_map<Key, T*>;
     CloningFactory() = default;
     virtual ~CloningFactory() = default;
+    CloningFactory(const CloningFactory&) = delete;
+    CloningFactory& operator=(const CloningFactory&) = delete;
+    CloningFactory(CloningFactory&&) = default;
+    CloningFactory& operator=(CloningFactory&&) = default;
 
     // The factory will not assume ownership over obj, although is assumes that obj will be
     // valid for the lifetime of the factory

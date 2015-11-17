@@ -58,8 +58,6 @@
 
 
 namespace inviwo {
-// Helper function to retriever user settings path
-void getInviwoUserSettingsPath();
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName,
                                      std::string basePath)
@@ -71,8 +69,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , pool_(0)
     , queue_()
 
-    , clearDataFormats_{[&](){DataFormatBase::cleanDataFormatBases();}}
-    , clearAllSingeltons_{[&](){SingletonBase::deleteAllSingeltons();}}
+    , clearDataFormats_{[this](){DataFormatBase::cleanDataFormatBases();}}
+    , clearAllSingeltons_{[this](){SingletonBase::deleteAllSingeltons();}}
 
     , dataReaderFactory_{util::make_unique<DataReaderFactory>()}
     , dataWriterFactory_{util::make_unique<DataWriterFactory>()}
