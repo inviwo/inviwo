@@ -1002,22 +1002,13 @@ endmacro()
 #--------------------------------------------------------------------
 # Adds dependancy and includes package variables to the project
 macro(ivw_add_dependency_libraries)
-    foreach (package ${ARGN})
-      #--------------------------------------------------------------------
-      # Add dependcy package variables to this package if shared build
-      #if(NOT BUILD_SHARED_LIBS)         
-          #--------------------------------------------------------------------
-          # Append includes to project list
-          set(uniqueNewLibs ${package})
-          remove_library_list(uniqueNewLibs "${package}" ${_allLibs})
-          set(${package} ${uniqueNewLibs})
-          list (APPEND _allLibs ${package})
-      #endif()
-    
-      #--------------------------------------------------------------------
-      # Link library
-      target_link_libraries(${_projectName} ${package})
-    endforeach()
+    if(${ARGC} GREATER 0)
+        set(uniqueNewLibs ${ARGN})
+        remove_library_list(uniqueNewLibs "${ARGN}" ${_allLibs})
+        set(${ARGN} ${uniqueNewLibs})
+        target_link_libraries(${_projectName} ${ARGN})
+  endif()
+
 endmacro()
 
 #--------------------------------------------------------------------
