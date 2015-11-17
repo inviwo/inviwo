@@ -51,6 +51,7 @@ PathLines::PathLines()
     : Processor()
     , volume_("vectorvolume")
     , seedPoints_("seedpoints")
+    , colors_("colors")
     , linesStripsMesh_("linesStripsMesh_")
 
     , startT_("startT", "Start at timestep",0,0,1)
@@ -68,8 +69,11 @@ PathLines::PathLines()
 
 {
 
+    colors_.setOptional(true);
+
     addPort(volume_);
     addPort(seedPoints_);
+    addPort(colors_);
     addPort(linesStripsMesh_);
 
     stepDirection_.addOption("fwd", "Forward", IntegralLineTracer::Direction::FWD);
@@ -129,6 +133,8 @@ void PathLines::process() {
     float maxVelocity = 0;
     PathLineTracer tracer(data, integrationScheme_.get());
    
+    size_t i = 0;
+    bool hasColors = colors_.hasData();
 
     std::vector<BasicMesh::Vertex> vertices;
     for (const auto &seeds : seedPoints_) {
@@ -147,6 +153,18 @@ void PathLines::process() {
                 mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::STRIP_ADJACENCY);
             indexBuffer->add(0);
 
+            vec4 c;
+            if (hasColors) {
+                if (i >= colors_.getData()->size()) {
+                    LogWarn("The vector of colors is smaller then the vector of seed points");
+                }
+                else {
+                    c = colors_.getData()->at(i);
+                }
+
+
+                i++;
+            }
 
             for (size_t i = 0; i < size; i++) {
                 vec3 pos(*position);
@@ -155,7 +173,9 @@ void PathLines::process() {
                 float l = glm::length(vec3(*velocity));
                 float d = glm::clamp(l / velocityScale_.get(), 0.0f, 1.0f);
                 maxVelocity = std::max(maxVelocity, l);
-                auto c = vec4(tf.sample(dvec2(d, 0.0)));
+                if (!hasColors) {
+                    c = vec4(tf.sample(dvec2(d, 0.0)));
+                }
 
                 indexBuffer->add(static_cast<std::uint32_t>(vertices.size()));
 

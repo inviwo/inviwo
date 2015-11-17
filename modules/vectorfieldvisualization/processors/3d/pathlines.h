@@ -79,6 +79,7 @@ public:
 private:
     VolumeVectorInport volume_;
     SeedPointsInport seedPoints_;
+    DataInport<std::vector<vec4>> colors_;
 
     MeshOutport linesStripsMesh_;
 
