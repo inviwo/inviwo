@@ -91,8 +91,8 @@ public:
     virtual ~StandardFactory() = default;
     StandardFactory(const StandardFactory&) = delete;
     StandardFactory& operator=(const StandardFactory&) = delete;
-    StandardFactory(StandardFactory&&) = default;
-    StandardFactory& operator=(StandardFactory&&) = default;
+    //StandardFactory(StandardFactory&&) = default; TODO enable... No support in VS2013!!! 
+    //StandardFactory& operator=(StandardFactory&&) = default;
 
     // The factory will not assume ownership over obj, although is assumes that obj will be
     // valid for the lifetime of the factory
@@ -155,8 +155,8 @@ public:
     virtual ~CloningFactory() = default;
     CloningFactory(const CloningFactory&) = delete;
     CloningFactory& operator=(const CloningFactory&) = delete;
-    CloningFactory(CloningFactory&&) = default;
-    CloningFactory& operator=(CloningFactory&&) = default;
+    //CloningFactory(CloningFactory&&) = default;
+    //CloningFactory& operator=(CloningFactory&&) = default;
 
     // The factory will not assume ownership over obj, although is assumes that obj will be
     // valid for the lifetime of the factory
