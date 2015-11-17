@@ -1016,8 +1016,8 @@ macro(ivw_add_dependency_libraries)
     
       #--------------------------------------------------------------------
       # Link library
+      target_link_libraries(${_projectName} ${package})
     endforeach()
-      target_link_libraries(${_projectName} ${ARGN})
 endmacro()
 
 #--------------------------------------------------------------------
