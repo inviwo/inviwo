@@ -39,7 +39,7 @@ void main(void) {
     vec4 result;
     GEN_SAMPLING
     GEN_MAX 
-    //result.xyz = texCoord_.xyz; result.a = 1.0;
+    
     FragData0 = result;
     gl_FragDepth = 1.0;
 }
