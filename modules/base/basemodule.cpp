@@ -35,6 +35,7 @@
 #include <modules/base/processors/meshsource.h>
 #include <modules/base/processors/heightfieldmapper.h>
 #include <modules/base/processors/imageexport.h>
+#include <modules/base/processors/imagesnapshot.h>
 #include <modules/base/processors/imagesource.h>
 #include <modules/base/processors/imagesourceseries.h>
 #include <modules/base/processors/imagecontourprocessor.h>
@@ -78,6 +79,7 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<MeshSource>();
     registerProcessor<HeightFieldMapper>();
     registerProcessor<ImageExport>();
+    registerProcessor<ImageSnapshot>();
     registerProcessor<ImageSource>();
     registerProcessor<ImageSourceSeries>();
     registerProcessor<MeshClipping>();
