@@ -119,7 +119,7 @@ QImage utilqt::generatePreview(const QString& classIdentifier) {
         scene->render(&painter);
 
         return image;
-    } catch (Exception& exception) {
+    } catch (Exception&) {
         // We will just ignore this...
         return QImage();
     }

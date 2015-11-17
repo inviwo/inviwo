@@ -80,12 +80,12 @@ QPainterPath CurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endP
     QPointF curvStart = startPoint + QPointF(0, startOff);
     QPointF curvEnd = endPoint - QPointF(0, startOff);
 
-    float delta = std::abs(curvEnd.y() - curvStart.y());
+    double delta = std::abs(curvEnd.y() - curvStart.y());
 
     QPointF o = curvEnd - curvStart;
-    int min = 37 - startOff * 2;
-    min = std::min(min, static_cast<int>(std::sqrt(o.x() * o.x() + o.y() * o.y())));
-    static const int max = 40;
+    double min = 37 - startOff * 2;
+    min = std::min(min, std::sqrt(o.x() * o.x() + o.y() * o.y()));
+    static const double max = 40.0;
     if (delta < min) delta = min;
     if (delta > max) delta = max;
 

@@ -43,7 +43,7 @@ const PickingObject* PickingManager::registerPickingCallback(
 
     // Find the smallest object with capacity >= size
     auto it = std::lower_bound(unusedObjects_.begin(), unusedObjects_.end(), size,
-                               [](PickingObject* p, int size) {
+                               [](PickingObject* p, size_t size) {
                                    return p->getCapacity() < size;
                                });
 
