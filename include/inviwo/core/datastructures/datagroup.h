@@ -108,13 +108,26 @@ std::shared_ptr<T> createGroupRepresentation() {
 }
 
 template <typename Repr>
-DataGroup<Repr>::DataGroup(const DataGroup<Repr>& rhs) : BaseData(rhs) {}
+DataGroup<Repr>::DataGroup(const DataGroup<Repr>& rhs) : BaseData(rhs) {
+    for(const auto& rep : rhs.representations_) {
+        auto clone = std::shared_ptr<Repr>(rep->clone());
+        clone->setOwner(this);
+        representations_.push_back(clone);
+    }
+}
 
 template <typename Repr>
 DataGroup<Repr>& DataGroup<Repr>::operator=(const DataGroup<Repr>& that) {
     if (this != &that) {
         BaseData::operator=(that);
-        clearRepresentations();
+        
+        decltype(representations_) newrepresentation;
+        for (const auto& rep : that.representations_) {
+            auto clone = std::shared_ptr<Repr>(rep->clone());
+            clone->setOwner(this);
+            newrepresentation.push_back(clone);
+        }
+        std::swap(representations_, newrepresentation);
     }
     return *this;
 }
