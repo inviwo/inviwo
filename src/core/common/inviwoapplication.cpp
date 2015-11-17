@@ -56,7 +56,6 @@
 #include <inviwo/core/util/settings/settings.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 
-
 namespace inviwo {
 
 InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName,
@@ -69,8 +68,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , pool_(0)
     , queue_()
 
-    , clearDataFormats_{[](){DataFormatBase::cleanDataFormatBases();}}
-    , clearAllSingeltons_{[this](){this->SingletonBase::deleteAllSingeltons();}}
+    , clearDataFormats_{[]() { DataFormatBase::cleanDataFormatBases(); }}
+    , clearAllSingeltons_{[this]() { cleanupSingletons(); }}
 
     , dataReaderFactory_{util::make_unique<DataReaderFactory>()}
     , dataWriterFactory_{util::make_unique<DataWriterFactory>()}
@@ -88,11 +87,10 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
 
     , modules_()
     , moudleCallbackActions_()
-    
+
     , processorNetwork_{util::make_unique<ProcessorNetwork>()}
     , processorNetworkEvaluator_{
           util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())} {
-    
     if (commandLineParser_.getLogToFile()) {
         LogCentral::getPtr()->registerLogger(
             new FileLogger(commandLineParser_.getLogToFileFileName()));
@@ -104,7 +102,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     RenderContext::init();
     ResourceManager::init();
     PickingManager::init();
-    
+
     // Create and register core
     InviwoCore* ivwCore = new InviwoCore(this);
     registerModule(ivwCore);
@@ -284,14 +282,12 @@ void InviwoApplication::addNonSupportedTags(const Tags t) {
         nonSupportedTags_.addTag(elem);
     }
 }
-
+void InviwoApplication::cleanupSingletons() { SingletonBase::deleteAllSingeltons(); }
 bool InviwoApplication::checkIfAllTagsAreSupported(const Tags t) const {
     return (nonSupportedTags_.getMatches(t) == 0);
 }
 
-std::locale InviwoApplication::getUILocale() const {
-    return std::locale();
-}
+std::locale InviwoApplication::getUILocale() const { return std::locale(); }
 
 void InviwoApplication::processFront() {
     NetworkLock netlock(processorNetwork_.get());

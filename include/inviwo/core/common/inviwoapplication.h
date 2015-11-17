@@ -189,6 +189,7 @@ public:
 protected:
     void printApplicationInfo();
     void postProgress(std::string progress);
+    void cleanupSingletons();
 
 private:
     struct Queue {
