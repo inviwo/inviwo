@@ -110,20 +110,19 @@ void ImageNormalizationProcessor::invalidateMinMax() {
     uvec2 pixel(0, 0);
     min_ = img->getValueAsVec4Double(pixel);
     max_ = img->getValueAsVec4Double(pixel);
-    for(pixel.y = 0;pixel.y< dim.y;pixel.y++)for(pixel.x = 0;pixel.x< dim.x;pixel.x++){
-        dvec4 pixelValue = img->getValueAsVec4Double(pixel);
-        min_ = glm::min(min_, pixelValue);
-        max_ = glm::max(max_, pixelValue);
-    }
-
+    for (pixel.y = 0; pixel.y < dim.y; pixel.y++)
+        for (pixel.x = 0; pixel.x < dim.x; pixel.x++) {
+            dvec4 pixelValue = img->getValueAsVec4Double(pixel);
+            if (!(glm::any(glm::isinf(pixelValue)) || glm::any(glm::isnan(pixelValue)))) {
+                min_ = glm::min(min_, pixelValue);
+                max_ = glm::max(max_, pixelValue);
+            }
+        }
 
     minS_.set(toString(min_));
     maxS_.set(toString(max_));
 
-
-    
-
-    min_.a = 0.0; //never normalize alpha
+    min_.a = 0.0;  // never normalize alpha
     max_.a = 1.0;
     minMaxInvalid_ = false;
 }
