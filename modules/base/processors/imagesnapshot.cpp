@@ -59,6 +59,9 @@ ImageSnapshot::ImageSnapshot()
     addProperty(snapshot_);
     addProperty(clear_);
 
+    outport1ImageIndex_.setSerializationMode(PropertySerializationMode::NONE);
+    outport2ImageIndex_.setSerializationMode(PropertySerializationMode::NONE);
+
     snapshot_.onChange([&]() {
         outport1ImageIndex_.setMaxValue(snapshots_.size());
         outport2ImageIndex_.setMaxValue(snapshots_.size());
