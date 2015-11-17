@@ -69,8 +69,8 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , pool_(0)
     , queue_()
 
-    , clearDataFormats_{[this](){DataFormatBase::cleanDataFormatBases();}}
-    , clearAllSingeltons_{[this](){SingletonBase::deleteAllSingeltons();}}
+    , clearDataFormats_{[](){DataFormatBase::cleanDataFormatBases();}}
+    , clearAllSingeltons_{[this](){this->SingletonBase::deleteAllSingeltons();}}
 
     , dataReaderFactory_{util::make_unique<DataReaderFactory>()}
     , dataWriterFactory_{util::make_unique<DataWriterFactory>()}
