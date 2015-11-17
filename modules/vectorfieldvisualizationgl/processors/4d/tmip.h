@@ -33,6 +33,7 @@
 #include <modules/vectorfieldvisualizationgl/vectorfieldvisualizationglmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/processors/processor.h>
