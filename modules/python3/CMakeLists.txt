@@ -14,17 +14,12 @@ get_filename_component(PYTHON_LIBRARY_DIR "${PYTHON_LIBRARY}" PATH)
 ivw_link_directories(${PYTHON_LIBRARY_DIR})
 
 if(PYTHON_DEBUG_LIBRARY)
-    add_dependency_libs_to_module("${PYTHON_DEBUG_LIBRARY}")
-    set(IVW_PYTHON_LINK_DEBUG ON CACHE BOOL "")
-endif()
-
-if(IVW_PYTHON_LINK_DEBUG )
     ivw_add_definition(IVW_PYTHON_LINK_DEBUG)
 endif()
-    
+
+add_dependency_libs_to_module(${PYTHON_LIBRARIES})
 
 
-add_dependency_libs_to_module("${PYTHON_LIBRARY_RELEASE}")
 
 
 #--------------------------------------------------------------------
