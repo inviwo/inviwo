@@ -1007,6 +1007,7 @@ macro(ivw_add_dependency_libraries)
         remove_library_list(uniqueNewLibs "${ARGN}" ${_allLibs})
         set(${ARGN} ${uniqueNewLibs})
         target_link_libraries(${_projectName} ${ARGN})
+        list (APPEND _allLibs ${ARGN})
   endif()
 
 endmacro()
