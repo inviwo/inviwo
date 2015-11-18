@@ -142,8 +142,6 @@ bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
 bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     const ImageGL* source = this;
 
-    LogInfo("COPY");
-
     auto singleChannel = source->getColorLayerGL()->getDataFormat()->getComponents() == 1;
 
     // Set shader to copy all color layers
