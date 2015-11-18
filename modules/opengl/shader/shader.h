@@ -67,6 +67,7 @@ public:
     void link(bool notifyRebuild = false);
     void build();
     void rebuild();
+    bool isReady() const; // returns whether the shader has been built and linked successfully
 
     unsigned int getID() const { return id_; }
     const ShaderObjectMap& getShaderObjects() { return shaderObjects_; }

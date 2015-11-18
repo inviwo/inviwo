@@ -160,6 +160,12 @@ void Shader::rebuild() {
     link();
 }
 
+bool Shader::isReady() const {
+    GLint res;
+    glGetProgramiv(id_, GL_LINK_STATUS, &res);
+    return res == GL_TRUE;
+}
+
 void Shader::activate() {
     glUseProgram(id_);
     LGL_ERROR;
