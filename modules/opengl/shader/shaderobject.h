@@ -96,9 +96,7 @@ public:
     std::string print(bool showSource = false) const;
 
 private:
-
     void initialize(bool compileShader);
-    void deinitialize();
 
     std::string embeddDefines(std::string source);
     std::string embeddOutDeclarations(std::string source);
