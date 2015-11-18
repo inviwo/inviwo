@@ -79,7 +79,7 @@ LinkDialogProcessorGraphicsItem::LinkDialogProcessorGraphicsItem(Side side, Proc
         item->setParentItem(this);
         item->setPos(newPos);
         size_t count = 1 + item->getTotalVisibleChildCount();
-        newPos += QPointF(0, count * linkdialog::propertyHeight);
+        newPos += QPointF(0, static_cast<float>(count * linkdialog::propertyHeight));
         item->show();
     }
 }
@@ -110,7 +110,7 @@ void LinkDialogProcessorGraphicsItem::updatePositions() {
     for (auto property : properties_) {
         property->setPos(newPos);
         size_t count = 1 + property->getTotalVisibleChildCount();
-        newPos += QPointF(0, count * linkdialog::propertyHeight);
+        newPos += QPointF(0, static_cast<float>(count * linkdialog::propertyHeight));
     }
 }
 

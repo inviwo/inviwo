@@ -56,7 +56,7 @@ void TransferFunctionControlPointConnection::paint(QPainter* p,
     p->setRenderHint(QPainter::Antialiasing, true);
 
     QPen pathPen(QColor(66, 66, 66));
-    pathPen.setWidth(3.0);
+    pathPen.setWidth(3);
     pathPen.setCosmetic(true);
     
     p->setPen(pathPen);

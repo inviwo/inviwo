@@ -63,8 +63,8 @@ ImageSnapshot::ImageSnapshot()
     outport2ImageIndex_.setSerializationMode(PropertySerializationMode::NONE);
 
     snapshot_.onChange([&]() {
-        outport1ImageIndex_.setMaxValue(snapshots_.size());
-        outport2ImageIndex_.setMaxValue(snapshots_.size());
+        outport1ImageIndex_.setMaxValue(static_cast<int>(snapshots_.size()));
+        outport2ImageIndex_.setMaxValue(static_cast<int>(snapshots_.size()));
         snapshots_.emplace_back(inport_.getData()->clone());
     });
 

@@ -56,9 +56,9 @@ void LinkDialogGraphicsView::wheelEvent(QWheelEvent* e) {
     QPoint numDegrees = QPoint(0, e->delta() / 8 / 15);
 #endif
     if (!numPixels.isNull()) {
-        scene_->wheelAction(static_cast<float>(numPixels.y()) / 50.0);
+        scene_->wheelAction(static_cast<float>(numPixels.y()) / 50.f);
     } else if (!numDegrees.isNull()) {
-        scene_->wheelAction(static_cast<float>(numDegrees.y()) / 10.0);
+        scene_->wheelAction(static_cast<float>(numDegrees.y()) / 10.f);
     }
 
     e->accept();

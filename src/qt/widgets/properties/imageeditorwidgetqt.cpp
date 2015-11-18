@@ -480,7 +480,7 @@ void ImageLabelWidget::addBackGroundImage(std::string imagePath) {
     backGroundImage_ = new QImage(imagePath.c_str());
     vec2 unscaledSize(backGroundImage_->width(), backGroundImage_->height());
     vec2 scaledSceneSize(backGroundImage_->width()*sceneScaleFactor_, backGroundImage_->height()*sceneScaleFactor_);
-    backGroundImage_->scaled(QSize(scaledSceneSize.x, scaledSceneSize.y));
+    backGroundImage_->scaled(QSize(static_cast<int>(scaledSceneSize.x), static_cast<int>(scaledSceneSize.y)));
     QGraphicsPixmapItem* i = scene_->addPixmap(QPixmap(imagePath.c_str()));
     i->setZValue(1);
     scene_->setSceneRect(0, 0, unscaledSize.x, unscaledSize.y);
@@ -509,9 +509,7 @@ void ImageLabelWidget::updatePositionY(int y) {
 }
 
 void ImageLabelWidget::onCurrentItemPositionChange(vec2 centerPos) {
-    ivec2 pos;
-    pos[0] = centerPos[0];
-    pos[1] = centerPos[1];
+    ivec2 pos{ centerPos };
     positionX_->setValue(pos[0]);
     positionY_->setValue(pos[1]);
     emit rectItemPositionChanged();

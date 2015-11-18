@@ -89,7 +89,7 @@ LinkDialogPropertyGraphicsItem::LinkDialogPropertyGraphicsItem(LinkDialogParent*
             item->setParentItem(this);
             item->setPos(isExpanded_ ? newPos : QPointF(0.0, 0.0));
             size_t count = 1 + item->getTotalVisibleChildCount();
-            newPos += QPointF(0, count * linkdialog::propertyHeight);
+            newPos += QPointF(0, static_cast<float>(count * linkdialog::propertyHeight));
             subProperties_.push_back(item);
         }
     }
@@ -350,7 +350,7 @@ void LinkDialogPropertyGraphicsItem::updatePositions() {
     for (auto property : subProperties_) {
         property->setPos(isExpanded_? newPos : QPointF(0.0,0.0));
         size_t count = 1 + property->getTotalVisibleChildCount();
-        newPos += QPointF(0, count * linkdialog::propertyHeight);
+        newPos += QPointF(0, static_cast<float>(count * linkdialog::propertyHeight));
     }
 
     dynamic_cast<LinkDialogParent*>(parentItem())->updatePositions();

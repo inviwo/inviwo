@@ -65,7 +65,7 @@ namespace inviwo {
 
 static const int width = 150;
 static const int height = 50;
-static const int roundedCorners = 9;
+static const float roundedCorners = 9.f;
 static const int labelHeight = 8;
 
 int pointSizeToPixelSize(const int pointSize) {

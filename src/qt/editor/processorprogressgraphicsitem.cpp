@@ -40,7 +40,7 @@ namespace inviwo {
 
 ProcessorProgressGraphicsItem::ProcessorProgressGraphicsItem(QGraphicsRectItem* parent,
                                                              ProgressBar* progressBar)
-    : EditorGraphicsItem(parent), size_(126, 5.0f), progressBar_(progressBar) {
+    : EditorGraphicsItem(parent), size_(126, 5), progressBar_(progressBar) {
     setRect(-0.5f * size_.width(), 
             -0.5f * size_.height() + 3,
             size_.width(), size_.height());
@@ -74,8 +74,9 @@ void ProcessorProgressGraphicsItem::paint(QPainter* p, const QStyleOptionGraphic
     p->drawRoundedRect(progressBarRect, 2.0, 2.0);
     QColor shadeColor(128, 128, 128);
     QLinearGradient shadingGrad(progressBarRect.topLeft(), progressBarRect.bottomLeft());
-    shadingGrad.setColorAt(0.0f, QColor(shadeColor.red() * 0.6, shadeColor.green() * 0.6,
-                                        shadeColor.blue() * 0.6, 120));
+    shadingGrad.setColorAt(0.0f, QColor(static_cast<int>(shadeColor.red() * 0.6), 
+        static_cast<int>(shadeColor.green() * 0.6),
+        static_cast<int>(shadeColor.blue() * 0.6), 120));
     shadingGrad.setColorAt(0.3f,
                            QColor(shadeColor.red(), shadeColor.green(), shadeColor.blue(), 120));
     shadingGrad.setColorAt(1.0f,
