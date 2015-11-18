@@ -85,20 +85,17 @@ void bindTextures(const Image& image, bool color, bool depth, bool picking, GLen
                   GLenum depthTexUnit, GLenum pickingTexUnit) {
     auto imageGL = image.getRepresentation<ImageGL>();
     if (color) {
-        const LayerGL* layer = imageGL->getColorLayerGL();
-        if (layer) {
+        if (auto layer = imageGL->getColorLayerGL()) {
             layer->bindTexture(colorTexUnit);
         }
     }
     if (depth) {
-        const LayerGL* layer = imageGL->getDepthLayerGL();
-        if (layer) {
+        if (auto layer = imageGL->getDepthLayerGL()) {
             layer->bindTexture(depthTexUnit);
         }
     }
     if (picking) {
-        const LayerGL* layer = imageGL->getPickingLayerGL();
-        if (layer) {
+        if (auto layer = imageGL->getPickingLayerGL()) {
             layer->bindTexture(pickingTexUnit);
         }
     }
@@ -231,20 +228,17 @@ void bindTextures(const ImageOutport& outport, const TextureUnit& colorTexUnit,
 void unbindTextures(const Image& image, bool color, bool depth, bool picking) {
     auto imageGL = image.getRepresentation<ImageGL>();
     if (color) {
-        const LayerGL* layer = imageGL->getColorLayerGL();
-        if (layer) {
+        if (auto layer = imageGL->getColorLayerGL()) {
             layer->unbindTexture();
         }
     }
     if (depth) {
-        const LayerGL* layer = imageGL->getDepthLayerGL();
-        if (layer) {
+        if (auto layer = imageGL->getDepthLayerGL()) {
             layer->unbindTexture();
         }
     }
     if (picking) {
-        const LayerGL* layer = imageGL->getPickingLayerGL();
-        if (layer) {
+        if (auto layer = imageGL->getPickingLayerGL()) {
             layer->unbindTexture();
         }
     }
