@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -39,6 +39,35 @@
 #include <inviwo/core/util/imagecache.h>
 
 #include <unordered_map>
+
+/*                                                 ImageOutport                              
+ *                                           isHandlingResizeEvents()                        
+ *                                                                                           
+ *                               True (default)                          False               
+ *                    ┌──────────────────────────────────┬──────────────────────────────────┐
+ *                    │ Outport::Size = max(Inports      │ Outport::Size = Outport::size    │
+ *                    │ requested sizes)                 │ (no resize of data)              │
+ *                    │ (resize the data in the outport  │                                  │
+ *             False  │ if needed)                       │                                  │
+ *           (default)│                                  │                                  │
+ *                    │ Inport::Size = Inport requested  │ Inport::Size = Inport requested  │
+ *                    │ size                             │ size                             │
+ *  ImageInport       │ (return a resized copy if        │ (return a resized copy if        │
+ *                    │ needed)                          │ needed)                          │
+ *   isOutport-       │                                  │                                  │
+ *  Determining-      ├──────────────────────────────────┼──────────────────────────────────┤
+ *     Size()         │ Outport::Size = max(all inports  │ Outport::Size = Outport::Size    │
+ *                    │ requested sizes)                 │ (no resize of data)              │
+ *                    │ (resize the data in the outport  │                                  │
+ *              True  │ if needed)                       │                                  │
+ *                    │                                  │                                  │
+ *                    │ Inport::Size = Outport::size     │ Inport::Size = Outport::size     │
+ *                    │ (no copy)                        │ (no copy)                        │
+ *                    │                                  │                                  │
+ *                    │                                  │                                  │
+ *                    └──────────────────────────────────┴──────────────────────────────────┘
+ */                                                                                                                                                                                                                                                                   
+
 
 namespace inviwo {
 

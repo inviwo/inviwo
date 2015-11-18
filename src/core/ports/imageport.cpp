@@ -89,9 +89,8 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     // Allocates space holder, sets largest data, cleans up unused data
 
     std::vector<size2_t> registeredDimensions{resizeEvent->size()};
-    for (auto inport : connectedInports_) {
-        auto imageInport = dynamic_cast<ImagePortBase*>(inport);
-        if (imageInport && !imageInport->isOutportDeterminingSize()) {
+    for (auto inport : connectedInports_) {   
+        if (auto imageInport = dynamic_cast<ImagePortBase*>(inport)) {
             util::push_back_unique(registeredDimensions, imageInport->getRequestedDimensions(this));
         }
     }
