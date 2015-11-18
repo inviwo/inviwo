@@ -141,6 +141,27 @@ protected:
     GLint olddMode_;
 };
 
+struct IVW_MODULE_OPENGL_API Viewport {
+    Viewport() : view_{0, 0, 0, 0} {}
+    Viewport(GLint x, GLint y, GLsizei width, GLsizei height) : view_{x, y, width, height} {}
+    void get();
+    void set();
+
+    GLint x() const { return view_[0]; }
+    GLint y() const { return view_[1]; }
+    GLsizei width() const { return view_[2]; }
+    GLsizei height() const { return view_[3]; }
+
+    friend bool IVW_MODULE_OPENGL_API operator==(const Viewport& a, const Viewport& b);
+private:
+    std::array<GLint, 4> view_;
+};
+
+inline bool IVW_MODULE_OPENGL_API operator==(const Viewport& a, const Viewport& b) {
+    return a.view_ == b.view_;
+}
+inline bool IVW_MODULE_OPENGL_API operator!=(const Viewport& lhs, const Viewport& rhs) { return !(lhs == rhs); }
+
 struct IVW_MODULE_OPENGL_API ViewportState {
     ViewportState() = delete;
     ViewportState(ViewportState const&) = delete;
@@ -155,8 +176,8 @@ struct IVW_MODULE_OPENGL_API ViewportState {
     ~ViewportState();
 
 private:
-    std::array<GLint, 4> coords_;
-    std::array<GLint, 4> oldCoords_;
+    Viewport coords_;
+    Viewport oldCoords_;
 };
 
 template <typename T1, typename T2, GLenum Entity, void (GLAPIENTRY *Getter)(GLenum, T1*),

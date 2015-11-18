@@ -261,9 +261,9 @@ utilgl::BlendModeState::~BlendModeState() {
 
 ViewportState& utilgl::ViewportState::operator=(ViewportState&& that) {
     if (this != &that) {
-        coords_ = { { 0, 0, 0, 0 } };
+        coords_ = { 0, 0, 0, 0 };
         std::swap(coords_, that.coords_);
-        oldCoords_ = { { 0, 0, 0, 0 } };
+        oldCoords_ = { 0, 0, 0, 0 };
         std::swap(oldCoords_, that.oldCoords_);
     }
     return *this;
@@ -274,21 +274,29 @@ utilgl::ViewportState::ViewportState(ViewportState&& rhs)
 }
 
 utilgl::ViewportState::ViewportState(GLint x, GLint y, GLsizei width, GLsizei height)
-    : coords_({ x, y, width, height }), oldCoords_{} {
-    glGetIntegerv(GL_VIEWPORT, &oldCoords_.front());
-    glViewport(coords_[0], coords_[1], coords_[2], coords_[3]);
+    : coords_{ x, y, width, height }, oldCoords_{} {
+    oldCoords_.get();
+    coords_.set();
 }
 
 utilgl::ViewportState::ViewportState(const ivec4 &coords)
-    : coords_({ coords.x, coords.y, coords.z, coords.w }), oldCoords_{} {
-    glGetIntegerv(GL_VIEWPORT, &oldCoords_.front());
-    glViewport(coords_[0], coords_[1], coords_[2], coords_[3]);
+    : coords_{ coords.x, coords.y, coords.z, coords.w }, oldCoords_{} {
+    oldCoords_.get();
+    coords_.set();
 }
 
 utilgl::ViewportState::~ViewportState() {
     if (coords_ != oldCoords_) {
-        glViewport(oldCoords_[0], oldCoords_[1], oldCoords_[2], oldCoords_[3]);
+        oldCoords_.set();
     }
+}
+
+void Viewport::get() {
+    glGetIntegerv(GL_VIEWPORT, view_.data());
+}
+
+void Viewport::set() {
+    glViewport(x(), y(), width(), height());
 }
 
 }  // namespace
