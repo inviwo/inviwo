@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/util/formats.h>
@@ -39,19 +39,15 @@ ImageGL::ImageGL()
     : ImageRepresentation()
     , frameBufferObject_()
     , shader_("standard.vert", "img_copy.frag", false)
-    , colorLayerCopyCount_(-1)
-    , singleChanelCopy_(false)
-{
-}
+    , colorLayerCopyCount_(0)
+    , singleChanelCopy_(false) {}
 
 ImageGL::ImageGL(const ImageGL& rhs)
     : ImageRepresentation(rhs)
     , frameBufferObject_()
     , shader_("standard.vert", "img_copy.frag", false)
-    , colorLayerCopyCount_(-1)
-    , singleChanelCopy_(false)
-{
-}
+    , colorLayerCopyCount_(0)
+    , singleChanelCopy_(false) {}
 
 ImageGL::~ImageGL() {
     LGL_ERROR;
@@ -74,7 +70,7 @@ void ImageGL::reAttachAllLayers(ImageType type) {
     if (depthLayerGL_ && typeContainsDepth(type)) {
         depthLayerGL_->getTexture()->bind();
         frameBufferObject_.attachTexture(depthLayerGL_->getTexture().get(),
-                                          static_cast<GLenum>(GL_DEPTH_ATTACHMENT));
+                                         static_cast<GLenum>(GL_DEPTH_ATTACHMENT));
     }
 
     if (pickingLayerGL_ && typeContainsPicking(type)) {
@@ -92,14 +88,13 @@ void ImageGL::reAttachAllLayers(ImageType type) {
 void ImageGL::activateBuffer(ImageType type) {
     frameBufferObject_.activate();
 
-    std::vector<GLenum> drawBuffers{ frameBufferObject_.getDrawBuffers() };
+    std::vector<GLenum> drawBuffers{frameBufferObject_.getDrawBuffers()};
     if (!drawBuffers.empty()) {
         GLsizei numBuffersToDrawTo = static_cast<GLsizei>(drawBuffers.size());
 
         // remove second render target (location = 1) when picking is disabled
-        if (!typeContainsPicking(type) 
-            && (numBuffersToDrawTo > 1) 
-            && (drawBuffers[1] == GL_COLOR_ATTACHMENT7)) {
+        if (!typeContainsPicking(type) && (numBuffersToDrawTo > 1) &&
+            (drawBuffers[1] == GL_COLOR_ATTACHMENT7)) {
             drawBuffers.erase(drawBuffers.begin() + 1);
             --numBuffersToDrawTo;
         }
@@ -107,6 +102,10 @@ void ImageGL::activateBuffer(ImageType type) {
         glDrawBuffers(numBuffersToDrawTo, &drawBuffers[0]);
         LGL_ERROR;
     }
+
+
+    glGetBooleanv(GL_DEPTH_TEST, &prevDepthMask_);
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &prevDepthTest_);
 
     if (!typeContainsDepth(type)) {
         glDisable(GL_DEPTH_TEST);
@@ -116,16 +115,24 @@ void ImageGL::activateBuffer(ImageType type) {
         glDepthMask(GL_TRUE);
     }
 
+    prevViewport_.get();
+
     uvec2 dim = getDimensions();
     glViewport(0, 0, dim.x, dim.y);
 }
 
-void ImageGL::deactivateBuffer() { 
-    frameBufferObject_.deactivate();
+void ImageGL::deactivateBuffer() {
+    // restore previous state
+    frameBufferObject_.deactivate(); // this will activate the previous frame buffer.
 
-    // Depth writing might have been disabled, enable it again just in case
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
+    glDepthMask(prevDepthMask_);
+
+    if (prevDepthTest_ == GL_TRUE) {
+        glEnable(GL_DEPTH_TEST);
+    } else {
+        glDisable(GL_DEPTH_TEST);
+    }
+    prevViewport_.set();
 }
 
 bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
@@ -135,10 +142,13 @@ bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
 bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     const ImageGL* source = this;
 
+    LogInfo("COPY");
+
     auto singleChannel = source->getColorLayerGL()->getDataFormat()->getComponents() == 1;
 
     // Set shader to copy all color layers
-    if (singleChanelCopy_ != singleChannel || colorLayerCopyCount_ != colorLayersGL_.size()) {
+    if (!shader_.isReady() || singleChanelCopy_ != singleChannel ||
+        colorLayerCopyCount_ != colorLayersGL_.size()) {
         std::stringstream ssUniform;
         for (size_t i = 1; i < colorLayersGL_.size(); ++i) {
             ssUniform << "layout(location = " << i + 1 << ") out vec4 FragData" << i << ";";
@@ -162,15 +172,13 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
 
         if (colorLayersGL_.size() > 1) {
             shader_.getFragmentShaderObject()->addShaderDefine("ADDITIONAL_COLOR_LAYERS");
-        }
-        else {
+        } else {
             shader_.getFragmentShaderObject()->removeShaderDefine("ADDITIONAL_COLOR_LAYERS");
         }
 
         if (singleChannel) {
             shader_.getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
-        }
-        else {
+        } else {
             shader_.getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
         }
 
@@ -208,6 +216,9 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     else
         scale = glm::scale(glm::vec3(ratioSource / ratioTarget, 1.0f, 1.0f));
 
+    GLint prog;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
+
     shader_.activate();
     shader_.setUniform("color_", colorUnit.getUnitNumber());
     if (source->getDepthLayerGL()) {
@@ -217,7 +228,8 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
         shader_.setUniform("picking_", pickingUnit.getUnitNumber());
     }
     for (size_t i = 0; i < additionalColorUnits.size(); ++i) {
-        shader_.setUniform("color" + toString<size_t>(i + 1), additionalColorUnits[i].getUnitNumber());
+        shader_.setUniform("color" + toString<size_t>(i + 1),
+                           additionalColorUnits[i].getUnitNumber());
     }
     shader_.setUniform("dataToClip", scale);
 
@@ -227,6 +239,8 @@ bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     shader_.deactivate();
     target->deactivateBuffer();
     LGL_ERROR;
+
+    glUseProgram(prog);
 
     return true;
 }
@@ -418,9 +432,7 @@ void ImageGL::renderImagePlaneRect() const {
     LGL_ERROR;
 }
 
-std::type_index ImageGL::getTypeIndex() const {
-    return std::type_index(typeid(ImageGL));
-}
+std::type_index ImageGL::getTypeIndex() const { return std::type_index(typeid(ImageGL)); }
 
 GLenum ImageGL::getPickingAttachmentID() const { return pickingAttachmentID_; }
 

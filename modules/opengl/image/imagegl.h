@@ -37,6 +37,7 @@
 #include <modules/opengl/buffer/bufferobjectarray.h>
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/openglutils.h>
 
 namespace inviwo {
 
@@ -92,6 +93,12 @@ private:
     mutable Shader shader_;
     mutable size_t colorLayerCopyCount_;
     mutable bool singleChanelCopy_;
+
+    GLboolean prevDepthTest_;
+    GLboolean prevDepthMask_;
+
+    utilgl::Viewport prevViewport_;
+
 };
 
 } // namespace
