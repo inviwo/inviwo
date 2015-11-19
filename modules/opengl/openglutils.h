@@ -142,8 +142,8 @@ protected:
 };
 
 struct IVW_MODULE_OPENGL_API Viewport {
-    Viewport() : view_{0, 0, 0, 0} {}
-    Viewport(GLint x, GLint y, GLsizei width, GLsizei height) : view_{x, y, width, height} {}
+    Viewport() : view_(std::array<GLint, 4>{0, 0, 0, 0}) {} // Note: we would like to initialize with view_{0,0,0,0}, but it is not implemented in VS2013
+    Viewport(GLint x, GLint y, GLsizei width, GLsizei height) : view_(std::array<GLint, 4>{x, y, width, height}) {}
     void get();
     void set();
 
