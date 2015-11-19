@@ -93,7 +93,6 @@ void TMIP::process() {
     }
 
     int iterations = static_cast<int>(std::ceil(volumes->size() / static_cast<float>(maxSamplers_)));
-    LogInfo(iterations);
 
     std::shared_ptr<Volume> readVol = volume0_;
     std::shared_ptr<Volume> writeVol = volume1_;
@@ -136,7 +135,6 @@ void TMIP::initializeResources() {
 }
 
 void TMIP::initShader(Shader& s, int samplers) {
-    LogInfo("Init shader with " << samplers << "samplers");
     std::stringstream uniforms;
     std::stringstream sampling;
     std::stringstream maximum;
