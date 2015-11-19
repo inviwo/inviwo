@@ -72,7 +72,7 @@ LinkDialog::LinkDialog(Processor* src, Processor* dst, QWidget* parent)
     std::vector<std::string> options;
     options.push_back(SimpleCondition::conditionName());
     options.push_back(PartiallyMatchingIdCondition::conditionName());
-    smartLinkOptions_ = new CheckableQComboBox(this, "AutoLink Filter", options);
+    smartLinkOptions_ = new CheckableQComboBox(this, "SmartLink Filter", options);
     smartLinkPushButtonLayout->addWidget(smartLinkOptions_, 20);
 
     // smart link button
