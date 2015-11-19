@@ -59,8 +59,8 @@ ImageSnapshot::ImageSnapshot()
     addProperty(snapshot_);
     addProperty(clear_);
 
-    outport1ImageIndex_.setSerializationMode(PropertySerializationMode::NONE);
-    outport2ImageIndex_.setSerializationMode(PropertySerializationMode::NONE);
+    //outport1ImageIndex_.setSerializationMode(PropertySerializationMode::NONE);
+    //outport2ImageIndex_.setSerializationMode(PropertySerializationMode::NONE);
 
     snapshot_.onChange([&]() {
         outport1ImageIndex_.setMaxValue(static_cast<int>(snapshots_.size()));
@@ -92,6 +92,14 @@ void ImageSnapshot::process() {
         outport2_.setData(snapshots_[i2]);
     }
 }
+
+
+
+void ImageSnapshot::deserialize(Deserializer& d) {
+    Processor::deserialize(d);
+    clear_.pressButton();
+}
+
 
 
 
