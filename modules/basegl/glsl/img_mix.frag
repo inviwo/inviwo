@@ -44,7 +44,7 @@ uniform float weight;
 // make sure there is a fall-back if COLOR_BLENDING wasn't set before
 #ifndef COLOR_BLENDING
     // if only b is given, regular color mixing will be performed
-#  define COLOR_BLENDING(a, b) (b)
+#  define COLOR_BLENDING(a, b) colorMix(a,b)
 #endif
 
 
@@ -67,15 +67,19 @@ vec4 multiply(vec4 colorA, vec4 colorB) {
 
 vec4 screen(vec4 colorA, vec4 colorB) {
     // f(a,b) = 1 - (1 - a) * (1 - b)
-    return vec4(1.0 - (1.0 - colorA.rgb) * (1.0 - colorB.rgb), max(colorA.a,colorB.a));
+    vec3 a = clamp(colorA.rgb,0,1);
+    vec3 b = clamp(colorB.rgb,0,1);
+    return vec4(1.0 - (1.0 - a) * (1.0 - b), max(colorA.a,colorB.a));
 }
 
 vec4 overlay(vec4 colorA, vec4 colorB) {
     // f(a,b) = 2 * a *b, if a < 0.5,   
     //        = 1 - 2(1 - a)(1 - b), otherwise (combination of Multiply and Screen)
+    vec3 a = clamp(colorA.rgb,0,1);
+    vec3 b = clamp(colorB.rgb,0,1);
     bvec3 less = lessThan(colorA.rgb, vec3(0.5));
-    vec3 high =  1.0 - 2.0 * (1.0 - colorA.rgb) * (1.0 - colorB.rgb);
-    vec3 low = 2.0 * colorA.rgb * colorB.rgb;
+    vec3 high =  1.0 - 2.0 * (1.0 - a) * (1.0 - b);
+    vec3 low = 2.0 * a * b;
 
     return vec4(mix(high, low, less), max(colorA.a,colorB.a));
 }
@@ -86,12 +90,12 @@ vec4 divide(vec4 colorA, vec4 colorB) {
 }
 
 vec4 addition(vec4 colorA, vec4 colorB) {
-    // f(a,b) = a + b, clamped to [0,1]
+    // f(a,b) = a + b
     return vec4(colorA.rgb + colorB.rgb, max(colorA.a,colorB.a));
 }
 
 vec4 subtraction(vec4 colorA, vec4 colorB) {
-    // f(a,b) = a - b, clamped to [0,1]
+    // f(a,b) = a - b
     return vec4(colorA.rgb - colorB.rgb, max(colorA.a,colorB.a));
 }
 
@@ -116,8 +120,7 @@ void main() {
     vec4 color0 = texture(inport0Color, texCoords);
     vec4 color1 = texture(inport1Color, texCoords);
     vec4 result = COLOR_BLENDING(color0, color1);
-    // mix result with original color,
-    // if (weight_ == 1) the final color will be the result of the blending operation
+  
     FragData0 = result;
     gl_FragDepth = min(texture(inport0Depth, texCoords).r,texture(inport1Depth, texCoords).r);
 
