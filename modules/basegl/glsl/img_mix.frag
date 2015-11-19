@@ -47,12 +47,11 @@ uniform float weight;
 #  define COLOR_BLENDING(a, b) (b)
 #endif
 
-/*
-vec4 colorMix(vec4 colorA, vec4 colorB, vec4 param) {
+
+vec4 colorMix(vec4 colorA, vec4 colorB) {
     // f(a,b) = a * (1 - alpha) + b * alpha
-    return mix(colorA, colorB, param);
+    return mix(colorA, colorB, weight);
 }
-*/
 
 vec4 over(vec4 colorB, vec4 colorA) {
     // f(a,b) = b, b over a, regular front-to-back blending
@@ -119,7 +118,7 @@ void main() {
     vec4 result = COLOR_BLENDING(color0, color1);
     // mix result with original color,
     // if (weight_ == 1) the final color will be the result of the blending operation
-    FragData0 = mix(color0, result, weight);
+    FragData0 = result;
     gl_FragDepth = min(texture(inport0Depth, texCoords).r,texture(inport1Depth, texCoords).r);
 
     vec4 picking0 = texture(inport0Picking, texCoords);

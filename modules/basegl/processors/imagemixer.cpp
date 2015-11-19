@@ -77,6 +77,10 @@ ImageMixer::ImageMixer()
 
     addProperty(blendingMode_);
     addProperty(weight_);
+
+    blendingMode_.onChange([&]() {
+        weight_.setVisible(blendingMode_.get() == BlendModes::Mix);
+    });
 }
 
 ImageMixer::~ImageMixer() {}
@@ -147,7 +151,7 @@ void ImageMixer::initializeResources() {
             break;
         case BlendModes::Mix:  //!< f(a,b) = a * (1 - alpha) + b * alpha
         default:
-            compositingValue = "colorB";
+            compositingValue = "colorMix(colorA,colorB)";
             break;
     }
 
