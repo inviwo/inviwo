@@ -310,6 +310,15 @@ OutIt copy_if(const T& cont, OutIt out, P pred) {
     return std::copy_if(begin(cont), end(cont), out, pred);
 }
 
+template <typename T, typename P>
+auto copy_if(const T& cont, P pred) -> std::vector<typename T::value_type> {
+    using std::begin;
+    using std::end;
+    std::vector<typename T::value_type> res;
+    std::copy_if(begin(cont), end(cont), std::back_inserter(res), pred);
+    return res;
+}
+
 template <typename T, typename UnaryOperation>
 auto transform(const T& cont, UnaryOperation op)
     -> std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> {

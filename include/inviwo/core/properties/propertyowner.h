@@ -65,6 +65,7 @@ public:
     virtual std::vector<std::string> getPath() const;
 
     const std::vector<Property*>& getProperties() const;
+    const std::vector<CompositeProperty*>& getCompositeProperties() const;
     std::vector<Property*> getPropertiesRecursive() const;
     Property* getPropertyByIdentifier(const std::string& identifier, bool recursiveSearch = false) const;
     Property* getPropertyByPath(const std::vector<std::string>& path) const;

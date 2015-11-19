@@ -34,6 +34,7 @@
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/processors/processorobserver.h>
+#include <inviwo/core/properties/propertyownerobserver.h>
 #include <inviwo/core/network/portconnection.h>
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/links/propertylink.h>
@@ -64,7 +65,8 @@ namespace inviwo {
  */
 class IVW_CORE_API ProcessorNetwork : public Serializable,
                                       public ProcessorNetworkObservable,
-                                      public ProcessorObserver {
+                                      public ProcessorObserver,
+                                      public PropertyOwnerObserver {
 public:
     using ProcessorMap = std::map<std::string, Processor*>;
     using PortConnectionMap = std::map<std::pair<Outport*, Inport*>, PortConnection*>;
@@ -158,6 +160,8 @@ public:
 
     std::vector<PortConnection*> getConnections() const;
 
+    bool isPortInNetwork(Port* port) const;
+
     /**
      * Create and add Property Link to the network
      * Adds a link between two properties, that are owned by processor network.
@@ -166,6 +170,7 @@ public:
      * @return PropertyLink* Newly added link
      */
     PropertyLink* addLink(Property* sourceProperty, Property* destinationProperty);
+
     /**
      * Remove and delete Property Link from the network
      * Removes a link between two properties, that are owned by processor network.
@@ -174,6 +179,7 @@ public:
      * @return void
      */
     void removeLink(Property* sourceProperty, Property* destinationProperty);
+
     /**
      * Check whether Property Link exists
      * Checks if there is a link between two properties, that are owned by processor network.
@@ -207,6 +213,8 @@ public:
     std::vector<PropertyLink*> getLinksBetweenProcessors(Processor* p1, Processor* p2);
 
     Property* getProperty(std::vector<std::string> path) const;
+    bool isPropertyInNetwork(Property* prop) const;
+
 
     void autoLinkProcessor(Processor* processor);
     void evaluateLinksFromProperty(Property*);
@@ -243,7 +251,12 @@ public:
     */
     void clear();
 
+    virtual void onWillRemoveProperty(Property* property, size_t index) override;
+
 private:
+    void addPropertyOwnerObservation(PropertyOwner*);
+    void removePropertyOwnerObservation(PropertyOwner*);
+
     struct ErrorHandle {
         ErrorHandle(const InviwoSetupInfo& info) : info_(info){};
 
@@ -278,8 +291,8 @@ private:
 
     ProcessorMap processors_;
     PortConnectionMap connections_;
-    // This vector is needed to keep the connections in cronological order, since some processors
-    // depends on the order of connections, idealy we would get rid of this.
+    // This vector is needed to keep the connections in chronological order, since some processors
+    // depends on the order of connections, ideally we would get rid of this.
     std::vector<PortConnection*> connectionsVec_;
     PropertyLinkMap links_;
 

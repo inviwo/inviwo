@@ -131,6 +131,10 @@ Property* PropertyOwner::removeProperty(std::vector<Property*>::iterator it) {
 
 const std::vector<Property*>& PropertyOwner::getProperties() const { return properties_; }
 
+const std::vector<CompositeProperty*>& PropertyOwner::getCompositeProperties() const {
+    return compositeProperties_;
+}
+
 std::vector<Property*> PropertyOwner::getPropertiesRecursive() const {
     std::vector<Property*> result;
     result.reserve(properties_.size());
