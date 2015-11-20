@@ -68,26 +68,6 @@ option(SHARED_LIBS "Build shared libs, else static libs" ON)
 include(cmake/globalconfig.cmake)
 
 #--------------------------------------------------------------------
-# Default setup of options for the build
-
-option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
-
-# Modules
-build_module(Base)
-build_module(BaseGL)
-build_module(CImg)
-build_module(FontRendering)
-build_module(OpenGL)
-build_module(PVM)
-
-# OpenGL Context created with GLFW or Qt within Inviwo by default
-if(IVW_USE_GLFW_NOT_OPENGLQT)
-    build_module(GLFW)
-else()
-    build_module(OpenGLQt)
-endif()
-
-#--------------------------------------------------------------------
 # Applications/Qt
 option(IVW_QT_APPLICATION "Build Inviwo Qt Application" ON)
 option(IVW_QT_EDITOR "Build Inviwo Qt Editor" ON)
@@ -124,6 +104,26 @@ begin_add_modules()
 add_internal_modules()
 add_external_modules()
 end_add_modules()
+
+#--------------------------------------------------------------------
+# Default setup of options for the build
+
+option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
+
+# Modules
+build_module(Base)
+build_module(BaseGL)
+build_module(CImg)
+build_module(FontRendering)
+build_module(OpenGL)
+build_module(PVM)
+
+# OpenGL Context created with GLFW or Qt within Inviwo by default
+if(IVW_USE_GLFW_NOT_OPENGLQT)
+    build_module(GLFW)
+else()
+    build_module(OpenGLQt)
+endif()
 
 #--------------------------------------------------------------------
 # Add applications

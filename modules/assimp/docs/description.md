@@ -1,0 +1,1 @@
+Assimp wrapper module to load various meshes

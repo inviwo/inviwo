@@ -28,25 +28,6 @@
  #################################################################################
 
 #--------------------------------------------------------------------
-# Only output error messages
-function(message)
-    if( GET )
-        list(GET ARGV 0 MessageType)
-        if(MessageType STREQUAL FATAL_ERROR OR
-            MessageType STREQUAL SEND_ERROR OR
-            MessageType STREQUAL WARNING OR
-            MessageType STREQUAL AUTHOR_WARNING)
-                list(REMOVE_AT ARGV 0)
-                _message(STATUS "${ARGV}")
-        endif()
-    endif()
-endfunction()
-
-function(ivw_message)
-    _message(${ARGV})
-endfunction()
-
-#--------------------------------------------------------------------
 # Creates project with initial variables
 macro(ivw_project project_name)
     project(${project_name})
@@ -91,35 +72,6 @@ macro(ivw_add_unittest)
         list(REMOVE_DUPLICATES unittest_files)
         set(unittest_files ${unittest_files} CACHE INTERNAL "Unit test files")
     endif()
-endmacro()
-
-#--------------------------------------------------------------------
-# Convert module name to directory name
-macro(first_case_upper retval in_value)
-    string(TOLOWER ${in_value} value)
-    string(SUBSTRING ${value} 0 1 first_letter)
-    string(TOUPPER ${first_letter} first_letter)
-    string(REGEX REPLACE "^.(.*)" "${first_letter}\\1" result "${value}")
-    set(${retval} ${result})
-endmacro()
-
-#--------------------------------------------------------------------
-# Join list
-macro(join sep glue output)
-    string (REGEX REPLACE "([^\\]|^)${sep}" "\\1${glue}" _TMP_STR "${ARGN}")
-    string (REGEX REPLACE "[\\](.)" "\\1" _TMP_STR "${_TMP_STR}")
-    set(${output} "${_TMP_STR}")
-endmacro()
-
-#--------------------------------------------------------------------
-# Convert module prefix to directory name, i.e. OpenGL -> IVW_MODULE_OPENGL
-macro(ivw_dir_to_mod_prefix retval)
-    set(the_list "")
-    foreach(item ${ARGN})
-        string(TOUPPER ${item} u_item)
-        list(APPEND the_list IVW_MODULE_${u_item})
-    endforeach()
-    set(${retval} ${the_list})
 endmacro()
 
 #--------------------------------------------------------------------
@@ -174,36 +126,6 @@ endif()
 endmacro()
 
 #--------------------------------------------------------------------
-# Convert module prefix to directory name, i.e. IVW_MODULE_OPENGL -> opengl
-macro(ivw_mod_prefix_to_dir retval)
-    set(the_list "")
-    foreach(item ${ARGN})
-        string(REGEX MATCH "(^IVW_MODULE_$)" found_item ${item})
-        if(found_item)
-            string(REGEX REPLACE "(^IVW_MODULE_$)" "" new_item ${item})
-            string(TOLOWER ${new_item} l_new_item)
-            list(APPEND the_list ${l_new_item})
-        endif()
-    endforeach()
-    set(${retval} ${the_list})
-endmacro()
-
-#--------------------------------------------------------------------
-# Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
-macro(ivw_mod_name_to_dir retval)
-    set(the_list "")
-    foreach(item ${ARGN})
-        string(REGEX MATCH "(^Inviwo.*.Module$)" found_item ${item})
-        if(found_item)
-            string(REGEX REPLACE "(^Inviwo)|(Module$)" "" new_item ${item})
-            string(TOLOWER ${new_item} l_new_item)
-            list(APPEND the_list ${l_new_item})
-        endif()
-    endforeach()
-    set(${retval} ${the_list})
-endmacro()
-
-#--------------------------------------------------------------------
 # Creates module
 macro(ivw_module project_name)
     string(TOLOWER ${project_name} l_project_name)
@@ -213,57 +135,6 @@ macro(ivw_module project_name)
     set(IVW_MODULE_CLASS ${project_name} PARENT_SCOPE)
     set(IVW_MODULE_CLASS_PATH "${l_project_name}/${l_project_name}module" PARENT_SCOPE)
     set(IVW_MODULE_PACKAGE_NAME ${_packageName} PARENT_SCOPE)
-endmacro()
-
-#--------------------------------------------------------------------
-# List subdirectories
-macro(list_subdirectories retval curdir return_relative)
-    file(GLOB sub-dir RELATIVE ${curdir} ${curdir}/[^.svn]*)
-    set(list_of_dirs "")
-    foreach(dir ${sub-dir})
-        if(IS_DIRECTORY ${curdir}/${dir})
-            if (${return_relative})
-                set(list_of_dirs ${list_of_dirs} ${dir})
-            else()
-                set(list_of_dirs ${list_of_dirs} ${curdir}/${dir})
-            endif()
-        endif()
-    endforeach()
-    set(${retval} ${list_of_dirs})
-endmacro()
-
-#--------------------------------------------------------------------
-# Clean duplicates from list subdirectories
-macro(remove_duplicates retval)
-    set(list_of_dirs ${ARGN})
-    if(list_of_dirs)
-        list(REMOVE_DUPLICATES list_of_dirs)
-    endif()
-    set(${retval} ${list_of_dirs})
-endmacro()
-
-#--------------------------------------------------------------------
-# Remove entries in one list from another list
-macro(remove_from_list retval thelist)
-    set(new_items ${thelist})
-    set(old_items ${ARGN})
-    if(old_items AND new_items)
-        foreach(item ${old_items})
-            list(REMOVE_ITEM new_items ${item})
-        endforeach()
-    endif()
-    set(${retval} ${new_items})
-endmacro()
-
-#--------------------------------------------------------------------
-# Collect and sort list variables
-macro(list_filter_remove retval pattern)
-    foreach(item ${ARGN})
-        string(REGEX MATCH "^#" found_item ${item})
-        if(NOT found_item)
-            #list(REMOVE_ITEM ${ARGN} ${item})
-        endif()
-    endforeach()
 endmacro()
 
 #--------------------------------------------------------------------
@@ -376,7 +247,7 @@ macro(generate_module_registration_file module_classes modules_class_paths)
         "):\n"
         )
 
-        ivw_message(${factory_object})
+        #ivw_message(${factory_object})
         list(APPEND functions ${factory_object})
     endforeach()
     
@@ -428,23 +299,24 @@ macro(ivw_generate_shader_resource parent_path)
     set(output "${output}ivw_create_shader_resource_header(${_projectName} shader_resource ${shaders})\n")
     set(output "${output}file(WRITE ${CMAKE_BINARY_DIR}/modules/_generated/modules/${_projectName}/shader_resources.h \${shader_resource})\n")
     file(WRITE ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake ${output})
-    add_custom_command(TARGET inviwo-module-${_projectName} PRE_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake)
+    add_custom_command(TARGET inviwo-module-${_projectName} 
+                       PRE_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake)
 endmacro()
 
 #--------------------------------------------------------------------
-# Generate module options (which was not specifed before) and,
+# Generate module options (which was not specified before) and,
 # Sort directories based on dependencies inside directories
 macro(generate_unset_mod_options_and_depend_sort module_root_path retval)
-    file(GLOB sub-dir RELATIVE ${module_root_path} ${module_root_path}/*)
-    list(REMOVE_ITEM sub-dir .svn)
+    file(GLOB sub-dir RELATIVE ${module_root_path} ${module_root_path}/[^.]*)
     set(sorted_dirs ${sub-dir})
     foreach(dir ${sub-dir})
+        ivw_debug_message(STATUS "register module: ${dir}")
         if(IS_DIRECTORY ${module_root_path}/${dir})
             if(EXISTS "${module_root_path}/${dir}/depends.cmake")
-                include(${module_root_path}/${dir}/depends.cmake)
+                include(${module_root_path}/${dir}/depends.cmake) # Defines dependencies
                 foreach(dependency ${dependencies})
                     list(FIND IVW_MODULE_PACKAGE_NAMES ${dependency} module_index)
-                    if(NOT module_index EQUAL -1)
+                    if(NOT module_index EQUAL -1) # dependency in IVW_MODULE_PACKAGE_NAMES 
                        list(REMOVE_ITEM dependencies ${dependency})
                     endif()
                 endforeach()
@@ -454,17 +326,31 @@ macro(generate_unset_mod_options_and_depend_sort module_root_path retval)
                 list(INSERT sorted_dirs ${dir_index} ${depend_folders})
                 list(REMOVE_DUPLICATES sorted_dirs)
             endif()
-            ivw_dir_to_mod_prefix(mod_name ${dir})
-            if(NOT DEFINED ${mod_name})
-                first_case_upper(dir_name_cap ${dir})
-                option(${mod_name} "Build ${dir_name_cap} Module" OFF)
+
+            if(EXISTS "${module_root_path}/${dir}/docs/description.md")
+                file(READ "${module_root_path}/${dir}/docs/description.md" description)
+                ivw_dir_to_mod_dep(mod_dep ${dir})
+                set("${mod_dep}_description" ${description})
             endif()
-         else()
-                list(REMOVE_ITEM sorted_dirs ${dir})
+            ivw_add_module_option_to_cache(${dir} OFF FALSE)
+
+        else()
+            list(REMOVE_ITEM sorted_dirs ${dir})
         endif()
     endforeach()
     set(${retval} ${sorted_dirs})
 endmacro()
+
+
+#--------------------------------------------------------------------
+# Module registrations... 
+# workflow:
+#
+# begin_add_modules()
+# add_internal_modules()
+# add_external_modules()
+# end_add_modules()
+#
 
 #--------------------------------------------------------------------
 # Begin add modules
@@ -479,53 +365,7 @@ macro(begin_add_modules)
 endmacro()
 
 #--------------------------------------------------------------------
-# End add modules
-macro(end_add_modules)
-    list(REMOVE_DUPLICATES IVW_MODULE_CLASSES)
-    list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
-    list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
-    #Generate module registration file
-    generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
-    create_module_package_list(${IVW_MODULE_CLASSES})
-endmacro()
-
-#--------------------------------------------------------------------
-# Add subdirectories of modules based on generated options
-macro(add_modules module_root_path)
-    foreach(module ${ARGN})
-        ivw_dir_to_mod_prefix(mod_name ${module})
-        if(${mod_name})
-            add_subdirectory(${module_root_path}/${module} ${IVW_BINARY_DIR}/modules/${module})
-            list(APPEND IVW_MODULE_CLASSES ${IVW_MODULE_CLASS})
-            list(APPEND IVW_MODULE_CLASS_PATHS ${IVW_MODULE_CLASS_PATH})
-            list(APPEND IVW_MODULE_PACKAGE_NAMES ${IVW_MODULE_PACKAGE_NAME})
-            list(APPEND IVW_MODULE_PATHS ${module_root_path}/${module})
-        endif()
-    endforeach()
-endmacro()
-
-#--------------------------------------------------------------------
-# Add all minimal applications in folder
-macro(add_minimal_applications)
-    file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/minimals ${CMAKE_CURRENT_SOURCE_DIR}/minimals/*)
-    list(REMOVE_ITEM sub-dir .svn)
-    set(sorted_dirs ${sub-dir})
-    foreach(dir ${sub-dir})
-        if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
-            string(TOUPPER ${dir} u_dir)
-            option(IVW_TINY_${u_dir}_APPLICATION "Build Inviwo Tiny ${u_dir} Application" OFF)
-            if(NOT ${u_dir} STREQUAL "QT")
-                build_module_dependency(${u_dir} IVW_TINY_${u_dir}_APPLICATION)
-            endif()
-            if(IVW_TINY_${u_dir}_APPLICATION)
-                add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
-            endif()
-        endif()
-    endforeach()
-endmacro()
-
-#--------------------------------------------------------------------
-# Add all external modules specified in cmake string IVW_EXTERNAL_MODULES
+# Add all internal modules
 macro(add_internal_modules)
     #Generate module options
     generate_unset_mod_options_and_depend_sort(${IVW_MODULE_DIR} IVW_SORTED_MODULES)
@@ -547,7 +387,7 @@ macro(add_internal_modules)
         set(QT_USE_QTOPENGL TRUE)    
     endif()
 
-    #Add modules based on user config file and dependcy resolve
+    #Add modules based on user config file and dependency resolve
     add_modules(${IVW_MODULE_DIR} ${IVW_SORTED_MODULES})
 endmacro()
 
@@ -565,6 +405,53 @@ macro(add_external_modules)
 
             #Add modules based on user config file and dependcy resolve
             add_modules(${module_root_path} ${IVW_EXTERNAL_SORTED_MODULES})
+        endif()
+    endforeach()
+endmacro()
+
+#--------------------------------------------------------------------
+# Add subdirectories of modules based on generated options
+macro(add_modules module_root_path)
+    foreach(module ${ARGN})
+        ivw_dir_to_mod_prefix(mod_name ${module})
+        if(${mod_name})
+            add_subdirectory(${module_root_path}/${module} ${IVW_BINARY_DIR}/modules/${module})
+            list(APPEND IVW_MODULE_CLASSES ${IVW_MODULE_CLASS})
+            list(APPEND IVW_MODULE_CLASS_PATHS ${IVW_MODULE_CLASS_PATH})
+            list(APPEND IVW_MODULE_PACKAGE_NAMES ${IVW_MODULE_PACKAGE_NAME})
+            list(APPEND IVW_MODULE_PATHS ${module_root_path}/${module})
+        endif()
+    endforeach()
+endmacro()
+
+#--------------------------------------------------------------------
+# End add modules
+macro(end_add_modules)
+    list(REMOVE_DUPLICATES IVW_MODULE_CLASSES)
+    list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
+    list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
+    #Generate module registration file
+    generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
+    create_module_package_list(${IVW_MODULE_CLASSES})
+endmacro()
+
+
+#--------------------------------------------------------------------
+# Add all minimal applications in folder
+macro(add_minimal_applications)
+    file(GLOB sub-dir RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/minimals ${CMAKE_CURRENT_SOURCE_DIR}/minimals/*)
+    list(REMOVE_ITEM sub-dir .svn)
+    set(sorted_dirs ${sub-dir})
+    foreach(dir ${sub-dir})
+        if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
+            string(TOUPPER ${dir} u_dir)
+            option(IVW_TINY_${u_dir}_APPLICATION "Build Inviwo Tiny ${u_dir} Application" OFF)
+            if(NOT ${u_dir} STREQUAL "QT")
+                build_module_dependency(${u_dir} IVW_TINY_${u_dir}_APPLICATION)
+            endif()
+            if(IVW_TINY_${u_dir}_APPLICATION)
+                add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/minimals/${dir})
+            endif()
         endif()
     endforeach()
 endmacro()
@@ -592,13 +479,9 @@ macro(resolve_module_dependencies module_root_path)
             if(EXISTS "${module_root_path}/${dir}/depends.cmake")
                 include(${module_root_path}/${dir}/depends.cmake)
                 ivw_mod_name_to_dir(depend_folders ${dependencies})
+                ivw_dir_to_mod_prefix(dir_name ${dir})
                 foreach(depend_folder ${depend_folders})
-                    ivw_dir_to_mod_prefix(depend_mod_name ${depend_folder})
-                    first_case_upper(depend_name_cap ${depend_folder})
-                    if(NOT ${depend_mod_name})
-                        set(${depend_mod_name} ON CACHE BOOL "Build ${depend_name_cap} Module" FORCE)
-                        ivw_message("${depend_mod_name} was set to build, due to dependency towards ${mod_name}")
-                    endif()
+                    build_module_dependency(${depend_folder} ${dir_name})
                 endforeach()
             endif()
         endif()
@@ -608,9 +491,7 @@ endmacro()
 #--------------------------------------------------------------------
 # Set module build option to true
 macro(build_module the_module)
-    ivw_dir_to_mod_prefix(mod_name ${the_module})
-    first_case_upper(dir_name_cap ${the_module})
-    option(${mod_name} "Build ${dir_name_cap} Module" ON)
+    ivw_add_module_option_to_cache(${the_module} ON FALSE)
 endmacro()
 
 #--------------------------------------------------------------------
@@ -619,18 +500,9 @@ macro(build_module_dependency the_module the_owner)
     ivw_dir_to_mod_prefix(mod_name ${the_module})
     first_case_upper(dir_name_cap ${the_module})
     if(${the_owner} AND NOT ${mod_name})
-        set(${mod_name} ON CACHE BOOL "Build ${dir_name_cap} Module" FORCE)
+        ivw_add_module_option_to_cache(${the_module} ON TRUE)
         ivw_message("${mod_name} was set to build, due to dependency towards ${the_owner}")
     endif()
-endmacro()
-
-#--------------------------------------------------------------------
-# Set module build option to true
-macro(hide_module the_module)
-    ivw_dir_to_mod_prefix(mod_name ${the_module})
-    first_case_upper(dir_name_cap ${the_module})
-    option(${mod_name} "Build ${dir_name_cap} Module" OFF)
-    mark_as_advanced(FORCE  ${mod_name})
 endmacro()
 
 #--------------------------------------------------------------------
@@ -728,13 +600,13 @@ macro(ivw_define_standard_definitions project_name)
         # Large memory support
         if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
             if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-              set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE ")
+                set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE ")
             endif()
             if(NOT CMAKE_SHARED_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-              set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
+                set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
             endif()
             if(NOT CMAKE_MODULE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
-              set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+                set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LARGEADDRESSAWARE")
             endif()
         endif()
 
@@ -790,57 +662,52 @@ endmacro()
 #--------------------------------------------------------------------
 # Creates project module from name 
 macro(ivw_create_module)
-  ivw_dir_to_mod_prefix(${mod_name} ${_projectName})
-
-  ivw_define_standard_definitions(${mod_name})
+    ivw_dir_to_mod_prefix(${mod_name} ${_projectName})
   
-  set(HAS_DEPEND FALSE)
-  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")
-    set(HAS_DEPEND TRUE)
-    set(DEPEND_PATH ${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake)
-    source_group("CMake Files" FILES ${DEPEND_PATH})
-  endif()
-  
-  #--------------------------------------------------------------------
-  # Add module class files
-  set(MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.h)
-  list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.cpp)
-  list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}moduledefine.h)
+    ivw_define_standard_definitions(${mod_name})
     
-  #--------------------------------------------------------------------
-  # Create library
-  add_library(inviwo-module-${_projectName} ${ARGN} ${MOD_CLASS_FILES} ${DEPEND_PATH})
-  
-  #--------------------------------------------------------------------
-  # Define standard properties
-  ivw_define_standard_properties(inviwo-module-${_projectName})
-  
-  #--------------------------------------------------------------------
-  # Add dependencies
-  set(tmpProjectName ${_projectName})
-  set(_projectName inviwo-module-${tmpProjectName})
-  ivw_add_dependency_libraries(${_preModuleDependencies})
-  ivw_add_dependencies(InviwoCore)
-  if(HAS_DEPEND)
-    include(${DEPEND_PATH})
-    # Add dependencies to this list
-    ivw_add_dependencies(${dependencies})
-  endif()
-  
-  #--------------------------------------------------------------------
-  # Optimize compilation with pre-compilied headers based on inviwo-core
-  ivw_compile_optimize_inviwo_core()
-  
-  set(_projectName ${tmpProjectName})
-  
-  #--------------------------------------------------------------------
-  # Add project to VS module folder
-  #ivw_folder(inviwo-module-${_projectName} modules)
-  
-  #--------------------------------------------------------------------
-  # Make package (for other modules to find)
-  #string(TOUPPER ${project_name} u_project_name)
-  ivw_make_package(${_packageName} inviwo-module-${_projectName})
+    set(HAS_DEPEND FALSE)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")
+        set(HAS_DEPEND TRUE)
+        set(DEPEND_PATH ${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake)
+        source_group("CMake Files" FILES ${DEPEND_PATH})
+    endif()
+    
+    #--------------------------------------------------------------------
+    # Add module class files
+    set(MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.h)
+    list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.cpp)
+    list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}moduledefine.h)
+      
+    #--------------------------------------------------------------------
+    # Create library
+    add_library(inviwo-module-${_projectName} ${ARGN} ${MOD_CLASS_FILES} ${DEPEND_PATH})
+    
+    #--------------------------------------------------------------------
+    # Define standard properties
+    ivw_define_standard_properties(inviwo-module-${_projectName})
+    
+    #--------------------------------------------------------------------
+    # Add dependencies
+    set(tmpProjectName ${_projectName})
+    set(_projectName inviwo-module-${tmpProjectName})
+    ivw_add_dependency_libraries(${_preModuleDependencies})
+    ivw_add_dependencies(InviwoCore)
+    if(HAS_DEPEND)
+        include(${DEPEND_PATH})
+        # Add dependencies to this list
+        ivw_add_dependencies(${dependencies})
+    endif()
+    
+    #--------------------------------------------------------------------
+    # Optimize compilation with pre-compilied headers based on inviwo-core
+    ivw_compile_optimize_inviwo_core()
+    
+    set(_projectName ${tmpProjectName})
+       
+    #--------------------------------------------------------------------
+    # Make package (for other modules to find)
+    ivw_make_package(${_packageName} inviwo-module-${_projectName})
 endmacro()
 
 #--------------------------------------------------------------------
@@ -967,7 +834,8 @@ macro(ivw_make_package package_name project_name)
     set(_allLinkFlags ${uniqueLinkFlags})
     set(_project_name ${project_name})
   
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_package_template.cmake ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY IMMEDIATE)
+    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_package_template.cmake 
+                   ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY IMMEDIATE)
 endmacro()
 
 #--------------------------------------------------------------------
@@ -985,54 +853,49 @@ endmacro()
 #--------------------------------------------------------------------
 # Add includes
 macro(ivw_link_directories)
-      #--------------------------------------------------------------------
-      # Set includes
-      link_directories("${ARGN}")
+    #--------------------------------------------------------------------
+    # Set includes
+    link_directories("${ARGN}")
           
-      #--------------------------------------------------------------------
-      # Append includes to project list
-      list(APPEND _allLibsDir ${ARGN})
+    #--------------------------------------------------------------------
+    # Append includes to project list
+    list(APPEND _allLibsDir ${ARGN})
 endmacro()
 
 #--------------------------------------------------------------------
 # Add includes
 macro(ivw_add_link_flags)
-      #--------------------------------------------------------------------
-      # Set link flags
-      set_target_properties(${project_name} PROPERTIES LINK_FLAGS "${ARGN}")
+    #--------------------------------------------------------------------
+    # Set link flags
+    set_target_properties(${project_name} PROPERTIES LINK_FLAGS "${ARGN}")
          
-      #--------------------------------------------------------------------
-      # Append includes to project list
-      list(APPEND _allLinkFlags "\"${ARGN}\"")
+    #--------------------------------------------------------------------
+    # Append includes to project list
+    list(APPEND _allLinkFlags "\"${ARGN}\"")
 endmacro()
 
 #--------------------------------------------------------------------
 # Defines option for module and add subdirectory if such is ON
 macro(ivw_add_dependency_directories)
     foreach (package ${ARGN})
-      #--------------------------------------------------------------------
-      # Locate libraries
-      find_package(${package} QUIET REQUIRED)
+        #--------------------------------------------------------------------
+        # Locate libraries
+        find_package(${package} QUIET REQUIRED)
       
-      #--------------------------------------------------------------------
-      # Make string upper case
-      #string(TOUPPER ${package} u_package)
-      ivw_depend_name(u_package ${package})
+        #--------------------------------------------------------------------
+        # Make string upper case
+        ivw_depend_name(u_package ${package})
       
-      #--------------------------------------------------------------------
-      # Add dependcy package variables to this package if shared build
-      #if(NOT BUILD_SHARED_LIBS)
-          #--------------------------------------------------------------------
-          # Append library directories to project list
-          set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
-          remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
-          set(${u_package}_LIBRARY_DIR ${uniqueNewLibDirs})
-          list(APPEND _allLibsDir ${${u_package}_LIBRARY_DIR})
-      #endif()
+        #--------------------------------------------------------------------
+        # Append library directories to project list
+        set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
+        remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
+        set(${u_package}_LIBRARY_DIR ${uniqueNewLibDirs})
+        list(APPEND _allLibsDir ${${u_package}_LIBRARY_DIR})
 
-      #--------------------------------------------------------------------
-      # Set directory links
-      link_directories(${${u_package}_LIBRARY_DIR})
+        #--------------------------------------------------------------------
+        # Set directory links
+        link_directories(${${u_package}_LIBRARY_DIR})
     endforeach()
 endmacro()
 
@@ -1045,136 +908,135 @@ macro(ivw_add_dependency_libraries)
         set(${ARGN} ${uniqueNewLibs})
         target_link_libraries(${_projectName} ${ARGN})
         list (APPEND _allLibs ${ARGN})
-  endif()
-
+    endif()
 endmacro()
 
 #--------------------------------------------------------------------
 # Adds dependency and includes package variables to the project
+# 
+# Defines: for example the OpenGL module
+# INVIWOOPENGLMODULE_DEFINITIONS=
+# INVIWOOPENGLMODULE_FOUND=
+# INVIWOOPENGLMODULE_INCLUDE_DIR=
+# INVIWOOPENGLMODULE_LIBRARIES=
+# INVIWOOPENGLMODULE_LIBRARY_DIR=
+# INVIWOOPENGLMODULE_LINK_FLAGS=
+# INVIWOOPENGLMODULE_USE_FILE=
+#
+# Appends to globals:
+# _allIncludes
+# _allLibsDir
+# _allLibs
+# _allDefinitions
+# _allLinkFlags
+# _allIncludeDirs
+#
 macro(ivw_add_dependencies)
     foreach (package ${ARGN})
-      #--------------------------------------------------------------------
-      # Locate libraries
-      find_package(${package} QUIET REQUIRED)
-      
-      #--------------------------------------------------------------------
-      # Make string upper case
-      #string(TOUPPER ${package} u_package)
-      ivw_depend_name(u_package ${package})
-      if(NOT DEFINED ${u_package}_FOUND AND DEFINED ${package}_FOUND)
-        set(u_package ${package})
-      endif()
-      
-      #--------------------------------------------------------------------
-      # Set includes and append to list
-      if(DEFINED ${u_package}_USE_FILE)
-        if(NOT "${${u_package}_USE_FILE}" STREQUAL "")
-            include(${${u_package}_USE_FILE})
-            list(APPEND _allIncludes \"${${u_package}_USE_FILE}\")
+        #--------------------------------------------------------------------
+        # Locate libraries
+        find_package(${package} QUIET REQUIRED)
+        
+        #--------------------------------------------------------------------
+        # Make string upper case
+        ivw_depend_name(u_package ${package})
+        if(NOT DEFINED ${u_package}_FOUND AND DEFINED ${package}_FOUND)
+            set(u_package ${package})
         endif()
-      endif()
+        
+        #--------------------------------------------------------------------
+        # Set includes and append to list
+        if(DEFINED ${u_package}_USE_FILE)
+            if(NOT "${${u_package}_USE_FILE}" STREQUAL "")
+                include(${${u_package}_USE_FILE})
+                list(APPEND _allIncludes \"${${u_package}_USE_FILE}\")
+            endif()
+        endif()
            
-      #--------------------------------------------------------------------
-      # Append library directories to project list
-      set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
-      remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
-      list(APPEND _allLibsDir ${${u_package}_LIBRARY_DIR})
-      
-      foreach (libDir ${${u_package}_LIBRARY_DIRS})
-        remove_from_list(uniqueNewLibDirs ${libDir} ${_allLibsDir})
-        list(APPEND _allLibsDir ${libDir})
-      endforeach()
-      
-      set(${u_package}_LIBRARY_DIRS ${uniqueNewLibDirs})
-      
-      #--------------------------------------------------------------------
-      # Append includes to project list
-      if(NOT DEFINED ${u_package}_LIBRARIES  AND DEFINED ${u_package}_LIBRARY)
-        if(DEFINED ${u_package}_LIBRARY_DEBUG)
-            set(${u_package}_LIBRARIES optimized "${${u_package}_LIBRARY}" debug "${${u_package}_LIBRARY_DEBUG}")
-        else()
-            set(${u_package}_LIBRARIES "${${u_package}_LIBRARY}")
+        #--------------------------------------------------------------------
+        # Append library directories to project list
+        set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
+        remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
+        list(APPEND _allLibsDir ${${u_package}_LIBRARY_DIR})
+        
+        foreach (libDir ${${u_package}_LIBRARY_DIRS})
+            remove_from_list(uniqueNewLibDirs ${libDir} ${_allLibsDir})
+            list(APPEND _allLibsDir ${libDir})
+        endforeach()
+        
+        set(${u_package}_LIBRARY_DIRS ${uniqueNewLibDirs})
+        
+        #--------------------------------------------------------------------
+        # Append includes to project list
+        if(NOT DEFINED ${u_package}_LIBRARIES  AND DEFINED ${u_package}_LIBRARY)
+            if(DEFINED ${u_package}_LIBRARY_DEBUG)
+                set(${u_package}_LIBRARIES optimized "${${u_package}_LIBRARY}" debug "${${u_package}_LIBRARY_DEBUG}")
+            else()
+                set(${u_package}_LIBRARIES "${${u_package}_LIBRARY}")
+            endif()
         endif()
-      endif()
       
-      set(uniqueNewLibs ${${u_package}_LIBRARIES})
-      remove_library_list(uniqueNewLibs "${${u_package}_LIBRARIES}" ${_allLibs})
-      set(${u_package}_LIBRARIES ${uniqueNewLibs})
-      list (APPEND _allLibs ${${u_package}_LIBRARIES})
-      
-      #--------------------------------------------------------------------
-      # Append definitions to project list
-      set(uniqueNewDefs ${${u_package}_DEFINITIONS})
-      remove_from_list(uniqueNewDefs "${${u_package}_DEFINITIONS}" ${_allDefinitions})
-      set(${u_package}_DEFINITIONS ${uniqueNewDefs})
-      list (APPEND _allDefinitions ${${u_package}_DEFINITIONS})
+        set(uniqueNewLibs ${${u_package}_LIBRARIES})
+        remove_library_list(uniqueNewLibs "${${u_package}_LIBRARIES}" ${_allLibs})
+        set(${u_package}_LIBRARIES ${uniqueNewLibs})
+        list (APPEND _allLibs ${${u_package}_LIBRARIES})
+        
+        #--------------------------------------------------------------------
+        # Append definitions to project list
+        set(uniqueNewDefs ${${u_package}_DEFINITIONS})
+        remove_from_list(uniqueNewDefs "${${u_package}_DEFINITIONS}" ${_allDefinitions})
+        set(${u_package}_DEFINITIONS ${uniqueNewDefs})
+        list (APPEND _allDefinitions ${${u_package}_DEFINITIONS})
 
-      #--------------------------------------------------------------------
-      # Append link flags to project list
-      set(uniqueNewLinkFlags ${${u_package}_LINK_FLAGS})
-      remove_from_list(uniqueNewLinkFlags "${${u_package}_LINK_FLAGS}" ${_allLinkFlags})
-      set(${u_package}_LINK_FLAGS ${uniqueNewLinkFlags})
-      if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
-          list (APPEND _allLinkFlags "\"${${u_package}_LINK_FLAGS}\"")
-      endif()
+        #--------------------------------------------------------------------
+        # Append link flags to project list
+        set(uniqueNewLinkFlags ${${u_package}_LINK_FLAGS})
+        remove_from_list(uniqueNewLinkFlags "${${u_package}_LINK_FLAGS}" ${_allLinkFlags})
+        set(${u_package}_LINK_FLAGS ${uniqueNewLinkFlags})
+        if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
+            list (APPEND _allLinkFlags "\"${${u_package}_LINK_FLAGS}\"")
+        endif()
+    
+        #--------------------------------------------------------------------
+        # Set includes and append to list
+        include_directories(${${u_package}_INCLUDE_DIR})
+        list(APPEND _allIncludeDirs ${${u_package}_INCLUDE_DIR})
+        include_directories(${${u_package}_INCLUDE_DIRS})
+        list(APPEND _allIncludeDirs ${${u_package}_INCLUDE_DIRS})
 
-      #--------------------------------------------------------------------
-      # Set includes and append to list
-      include_directories(${${u_package}_INCLUDE_DIR})
-      list(APPEND _allIncludeDirs ${${u_package}_INCLUDE_DIR})
-      include_directories(${${u_package}_INCLUDE_DIRS})
-      list(APPEND _allIncludeDirs ${${u_package}_INCLUDE_DIRS})
+        #--------------------------------------------------------------------
+        # Set directory links
+        link_directories(${${u_package}_LIBRARY_DIRS})
 
-      #--------------------------------------------------------------------
-      # Set directory links
-      link_directories(${${u_package}_LIBRARY_DIRS})
-
-      #--------------------------------------------------------------------
-      # Set directory links
-      add_definitions(${${u_package}_DEFINITIONS})
+        #--------------------------------------------------------------------
+        # Set directory links
+        add_definitions(${${u_package}_DEFINITIONS})
       
-      #--------------------------------------------------------------------
-      # Add dependency projects
-      if(BUILD_${u_package})
-          if(NOT DEFINED ${u_package}_PROJECT)
-            set(${u_package}_PROJECT ${package})
-          endif()
-          add_dependencies(${_projectName} ${${u_package}_PROJECT})
-      endif(BUILD_${u_package})
+        #--------------------------------------------------------------------
+        # Add dependency projects
+        if(BUILD_${u_package})
+            if(NOT DEFINED ${u_package}_PROJECT)
+                set(${u_package}_PROJECT ${package})
+            endif()
+            add_dependencies(${_projectName} ${${u_package}_PROJECT})
+        endif(BUILD_${u_package})
       
-      #--------------------------------------------------------------------
-      # Link library     
-       target_link_libraries(${_projectName} ${${u_package}_LIBRARIES})
+        #--------------------------------------------------------------------
+        # Link library     
+        target_link_libraries(${_projectName} ${${u_package}_LIBRARIES})
       
-      #--------------------------------------------------------------------
-      # Add library to pack
-      # if(IVW_PACKAGE_PROJECT)  
-          # if(BUILD_SHARED_LIBS)
-                # if(WIN32 AND CMAKE_BUILD_TYPE MATCHES DEBUG)
-                    # set(BINARY_FILE ${${u_package}_LIBRARY_DIR}/${${u_package}_PROJECT}${CMAKE_DEBUG_POSTFIX}.${CMAKE_SHARED_LIBRARY_PREFIX})
-                # else()
-                    # set(BINARY_FILE ${${u_package}_LIBRARY_DIR}/${${u_package}_PROJECT}.${CMAKE_SHARED_LIBRARY_PREFIX})
-                # endif()
-               # #--------------------------------------------------------------------
-               # # Add to package
-               # install(FILES ${BINARY_FILE}
-                         # RUNTIME
-                         # DESTINATION bin)
-           # endif()
-       # endif()
-
-      #--------------------------------------------------------------------
-      # Link flags
-      if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
-          set_target_properties(${_projectName} PROPERTIES LINK_FLAGS "${${u_package}_LINK_FLAGS}")
-      endif()
+        #--------------------------------------------------------------------
+        # Link flags
+        if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
+            set_target_properties(${_projectName} PROPERTIES LINK_FLAGS "${${u_package}_LINK_FLAGS}")
+        endif()
       
-      #--------------------------------------------------------------------
-      # Qt5
-       if(DESIRED_QT_VERSION MATCHES 5)
+        #--------------------------------------------------------------------
+        # Qt5
+        if(DESIRED_QT_VERSION MATCHES 5)
             set(Qt5DependLibs "")
             foreach (package_lib ${${u_package}_LIBRARIES})
-               string(LENGTH "${package_lib}" package_lib_length)
+                string(LENGTH "${package_lib}" package_lib_length)
                 if(${package_lib_length} GREATER 5)
                     string(SUBSTRING "${package_lib}" 0 5 package_lib_start)
                     string(SUBSTRING "${package_lib}" 5 -1 package_lib_end)
@@ -1188,7 +1050,6 @@ macro(ivw_add_dependencies)
                qt5_use_modules(${_projectName} ${uniqueQt5Lib})
             endforeach()
        endif()
-    
     endforeach()
 endmacro()
 
