@@ -36,27 +36,22 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
 
 #--------------------------------------------------------------------
-# Only output error messages
-function(message)
-if( GET )
-  list(GET ARGV 0 MessageType)
-  if(MessageType STREQUAL FATAL_ERROR OR
-     MessageType STREQUAL SEND_ERROR OR
-     MessageType STREQUAL WARNING OR
-     MessageType STREQUAL AUTHOR_WARNING)
-    list(REMOVE_AT ARGV 0)
-    _message(STATUS "${ARGV}")
-  endif()
-endif()
-endfunction()
-function(ivw_message)
-    _message(${ARGV})
-endfunction()
-
-#--------------------------------------------------------------------
 # Add own cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/cmake/")
+
+include(${CMAKE_CURRENT_LIST_DIR}/clean_library_list.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cotire.cmake)
+
+mark_as_advanced(
+    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_EXTENSIONS 
+    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_PATH 
+    COTIRE_DEBUG 
+    COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES 
+    COTIRE_MINIMUM_NUMBER_OF_TARGET_SOURCES
+    COTIRE_UNITY_SOURCE_EXCLUDE_EXTENSIONS
+    COTIRE_VERBOSE
+)
 
 include(${CMAKE_CURRENT_LIST_DIR}/globalmacros.cmake)
 

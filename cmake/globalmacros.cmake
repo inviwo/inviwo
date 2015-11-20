@@ -27,43 +27,49 @@
  # 
  #################################################################################
 
-include(${CMAKE_CURRENT_LIST_DIR}/clean_library_list.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/cotire.cmake)
+#--------------------------------------------------------------------
+# Only output error messages
+function(message)
+    if( GET )
+        list(GET ARGV 0 MessageType)
+        if(MessageType STREQUAL FATAL_ERROR OR
+            MessageType STREQUAL SEND_ERROR OR
+            MessageType STREQUAL WARNING OR
+            MessageType STREQUAL AUTHOR_WARNING)
+                list(REMOVE_AT ARGV 0)
+                _message(STATUS "${ARGV}")
+        endif()
+    endif()
+endfunction()
 
-mark_as_advanced(
-    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_EXTENSIONS 
-    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_PATH 
-    COTIRE_DEBUG 
-    COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES 
-    COTIRE_MINIMUM_NUMBER_OF_TARGET_SOURCES
-    COTIRE_UNITY_SOURCE_EXCLUDE_EXTENSIONS
-    COTIRE_VERBOSE
-)
+function(ivw_message)
+    _message(${ARGV})
+endfunction()
 
 #--------------------------------------------------------------------
 # Creates project with initial variables
 macro(ivw_project project_name)
-  project(${project_name})
-  set(_projectName ${project_name})
-  set(_allIncludes "")
-  set(_allIncludeDirs "")
-  set(_allLibsDir "")
-  set(_allLibs "")
-  set(_allDefinitions "")
-  set(_allLinkFlags "")
-  set(_allPchDirs "")
-  set(_cpackName modules)
-  set(_pchDisabledForThisModule FALSE)
-  string(TOUPPER ${project_name} u_project_name)
-  if(u_project_name MATCHES "QT+")
-    set(_cpackName qt_modules)
-  endif()
+    project(${project_name})
+    set(_projectName ${project_name})
+    set(_allIncludes "")
+    set(_allIncludeDirs "")
+    set(_allLibsDir "")
+    set(_allLibs "")
+    set(_allDefinitions "")
+    set(_allLinkFlags "")
+    set(_allPchDirs "")
+    set(_cpackName modules)
+    set(_pchDisabledForThisModule FALSE)
+    string(TOUPPER ${project_name} u_project_name)
+    if(u_project_name MATCHES "QT+")
+        set(_cpackName qt_modules)
+    endif()
 endmacro()
 
 #--------------------------------------------------------------------
 # Creates project with initial variables
 macro(ivw_set_cpack_name cpack_name)
-  set(_cpackName ${cpack_name})
+    set(_cpackName ${cpack_name})
 endmacro()
 
 #--------------------------------------------------------------------
@@ -100,13 +106,13 @@ endmacro()
 #--------------------------------------------------------------------
 # Join list
 macro(join sep glue output)
-  string (REGEX REPLACE "([^\\]|^)${sep}" "\\1${glue}" _TMP_STR "${ARGN}")
-  string (REGEX REPLACE "[\\](.)" "\\1" _TMP_STR "${_TMP_STR}")
-  set(${output} "${_TMP_STR}")
+    string (REGEX REPLACE "([^\\]|^)${sep}" "\\1${glue}" _TMP_STR "${ARGN}")
+    string (REGEX REPLACE "[\\](.)" "\\1" _TMP_STR "${_TMP_STR}")
+    set(${output} "${_TMP_STR}")
 endmacro()
 
 #--------------------------------------------------------------------
-# Convert module prefix to directory name
+# Convert module prefix to directory name, i.e. OpenGL -> IVW_MODULE_OPENGL
 macro(ivw_dir_to_mod_prefix retval)
     set(the_list "")
     foreach(item ${ARGN})
@@ -168,7 +174,7 @@ endif()
 endmacro()
 
 #--------------------------------------------------------------------
-# Convert module prefix to directory name
+# Convert module prefix to directory name, i.e. IVW_MODULE_OPENGL -> opengl
 macro(ivw_mod_prefix_to_dir retval)
     set(the_list "")
     foreach(item ${ARGN})
@@ -183,7 +189,7 @@ macro(ivw_mod_prefix_to_dir retval)
 endmacro()
 
 #--------------------------------------------------------------------
-# Convert module name to directory name
+# Convert module name to directory name, i.e. InviwoOpenGLModule -> OpenGL
 macro(ivw_mod_name_to_dir retval)
     set(the_list "")
     foreach(item ${ARGN})
@@ -200,30 +206,30 @@ endmacro()
 #--------------------------------------------------------------------
 # Creates module
 macro(ivw_module project_name)
-  string(TOLOWER ${project_name} l_project_name)
-  ivw_project(${l_project_name})
-  set(_packageName Inviwo${project_name}Module)
-  set(_preModuleDependencies "")
-  set(IVW_MODULE_CLASS ${project_name} PARENT_SCOPE)
-  set(IVW_MODULE_CLASS_PATH "${l_project_name}/${l_project_name}module" PARENT_SCOPE)
-  set(IVW_MODULE_PACKAGE_NAME ${_packageName} PARENT_SCOPE)
+    string(TOLOWER ${project_name} l_project_name)
+    ivw_project(${l_project_name})
+    set(_packageName Inviwo${project_name}Module)
+    set(_preModuleDependencies "")
+    set(IVW_MODULE_CLASS ${project_name} PARENT_SCOPE)
+    set(IVW_MODULE_CLASS_PATH "${l_project_name}/${l_project_name}module" PARENT_SCOPE)
+    set(IVW_MODULE_PACKAGE_NAME ${_packageName} PARENT_SCOPE)
 endmacro()
 
 #--------------------------------------------------------------------
 # List subdirectories
 macro(list_subdirectories retval curdir return_relative)
-   file(GLOB sub-dir RELATIVE ${curdir} ${curdir}/[^.svn]*)
-   set(list_of_dirs "")
-   foreach(dir ${sub-dir})
-     if(IS_DIRECTORY ${curdir}/${dir})
-       if (${return_relative})
-         set(list_of_dirs ${list_of_dirs} ${dir})
-       else()
-         set(list_of_dirs ${list_of_dirs} ${curdir}/${dir})
-       endif()
-     endif()
-   endforeach()
-   set(${retval} ${list_of_dirs})
+    file(GLOB sub-dir RELATIVE ${curdir} ${curdir}/[^.svn]*)
+    set(list_of_dirs "")
+    foreach(dir ${sub-dir})
+        if(IS_DIRECTORY ${curdir}/${dir})
+            if (${return_relative})
+                set(list_of_dirs ${list_of_dirs} ${dir})
+            else()
+                set(list_of_dirs ${list_of_dirs} ${curdir}/${dir})
+            endif()
+        endif()
+    endforeach()
+    set(${retval} ${list_of_dirs})
 endmacro()
 
 #--------------------------------------------------------------------
@@ -288,7 +294,8 @@ macro(create_module_package_list)
     foreach(module ${ARGN})
         list(APPEND ALL_MODULE_PACKAGES Inviwo${module}Module)
     endforeach()
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/modules_template.cmake ${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake @ONLY)
+    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/modules_template.cmake 
+                   ${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake @ONLY)
 endmacro()
 
 #--------------------------------------------------------------------
@@ -319,7 +326,8 @@ macro(generate_external_module_header)
             join(":;" "" IVW_EXTERNAL_MODULES_PATHS_ARRAY ${paths})
          endif()
     endif()
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_external_template.h ${CMAKE_BINARY_DIR}/modules/_generated/pathsexternalmodules.h @ONLY IMMEDIATE)
+    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_external_template.h 
+                   ${CMAKE_BINARY_DIR}/modules/_generated/pathsexternalmodules.h @ONLY IMMEDIATE)
 endmacro()
 
 #--------------------------------------------------------------------
@@ -349,7 +357,36 @@ macro(generate_module_registration_file module_classes modules_class_paths)
     set(functions ${functions})
     join(";" "\n" MODULE_HEADERS ${headers})
     join(":;" "\n" MODULE_CLASS_FUNCTIONS ${functions})
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
+    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h 
+                   ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
+
+
+    set(functions "")
+    foreach(val RANGE ${len0})
+        list(GET module_classes ${val} current_name)
+        string(TOUPPER ${current_name} u_current_name)
+        list(GET modules_class_paths ${val} current_path)
+
+        string(CONCAT factory_object
+        "vec.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(\n"
+        "    \"${current_name}\",\n"
+        "    \"${current_path}\",\n" 
+        "    {}\n" 
+        "    )\n"
+        "):\n"
+        )
+
+        ivw_message(${factory_object})
+        list(APPEND functions ${factory_object})
+    endforeach()
+    
+    string(CONCAT functions ${functions})
+    string(REGEX REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
+    set(MODULE_CLASS_FUNCTIONS ${MODULE_CLASS_FUNCTIONS})
+
+    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h 
+                   ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration-new.h @ONLY)
+
 endmacro()
 
 #--------------------------------------------------------------------
