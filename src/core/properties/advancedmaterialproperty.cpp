@@ -44,6 +44,7 @@ AdvancedMaterialProperty::AdvancedMaterialProperty(
     , specularColorProp("specularColor", "Specular color", vec4(1.f))
     , anisotropyProp("anisotropy", "Anisotropy (g)", 0.f, -1.f, 1.f) {
 
+    
     phaseFunctionProp.addOption("isotropic", "Isotropic");
     phaseFunctionProp.addOption("HenyeyGreenstein", "Henyey-Greenstein");
     phaseFunctionProp.addOption("Schlick", "Schlick");
@@ -53,6 +54,7 @@ AdvancedMaterialProperty::AdvancedMaterialProperty(
     phaseFunctionProp.addOption("CookTorrance", "Cook-Torrance");
     phaseFunctionProp.addOption("ABCMicrofacet", "ABC microfacet");
     phaseFunctionProp.addOption("mix", "Mix");
+    phaseFunctionProp.addOption("none", "None");
     phaseFunctionProp.setCurrentStateAsDefault();
     phaseFunctionProp.onChange(this, &AdvancedMaterialProperty::phaseFunctionChanged);
 
@@ -188,6 +190,8 @@ ShadingFunctionKind AdvancedMaterialProperty::getPhaseFunctionEnum() const {
         return ShadingFunctionKind::AbcMicrofacet;
     } else if (shadingFunction == "CookTorrance") {
         return ShadingFunctionKind::CookTorrance;
+    } else if (shadingFunction == "none") {
+        return ShadingFunctionKind::None;
     } else {
         return ShadingFunctionKind::Isotropic;
     }

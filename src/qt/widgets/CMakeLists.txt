@@ -19,6 +19,7 @@ set(MOC_FILES
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/propertylistwidget.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/rangesliderqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/spinboxrangesliderwidgetqt.h
+    ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/processors/processordockwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/processors/processorwidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/anglepropertywidgetqt.h
     ${IVW_INCLUDE_DIR}/inviwo/qt/widgets/properties/boolpropertywidgetqt.h
@@ -82,6 +83,7 @@ set(SOURCE_FILES
     labelgraphicsitem.cpp
     lightpositionwidgetqt.cpp
     ordinaleditorwidget.cpp
+    processors/processordockwidgetqt.cpp
     processors/processorwidgetqt.cpp
     properties/anglepropertywidgetqt.cpp
     properties/boolcompositepropertywidgetqt.cpp
