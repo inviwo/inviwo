@@ -29,99 +29,99 @@
 
 #include <inviwo/core/util/colorconversion.h>
 
+#include <algorithm>
 
 namespace inviwo {
 
 
 IVW_CORE_API vec3 hsv2rgb(vec3 hsv) {
-    float hue = hsv.x;
-    float sat = hsv.y;
-    float val = hsv.z;
-    float x = 0.f, y = 0.f, z = 0.f;
+    double hue = hsv.x;
+    double sat = hsv.y;
+    double val = hsv.z;
+    double r, g, b;
 
-    if (hue == 1.f)
-        hue = 0.f;
-    else
-        hue *= 6.f;
-
-    int i = int(glm::floor(hue));
-    float f = hue-i;
-    float p = val*(1-sat);
-    float q = val*(1-(sat*f));
-    float t = val*(1-(sat*(1-f)));
-
-    switch (i) {
-    case 0:
-        x = val;
-        y = t;
-        z = p;
-        break;
-
-    case 1:
-        x = q;
-        y = val;
-        z = p;
-        break;
-
-    case 2:
-        x = p;
-        y = val;
-        z = t;
-        break;
-
-    case 3:
-        x = p;
-        y = q;
-        z = val;
-        break;
-
-    case 4:
-        x = t;
-        y = p;
-        z = val;
-        break;
-
-    case 5:
-        x = val;
-        y = p;
-        z = q;
-        break;
+    if (sat < 1.0e-8) { // only value, no saturation
+        r = val;
+        g = val;
+        b = val;
+        return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));;
     }
 
-    return vec3(x,y,z);
+    hue *= 360.0;
+    // divide hue into six segments, 60 degree each
+    int h_i = static_cast<int>(std::floor(hue / 60.0)) % 6;
+    double f = hue / 60.0 - std::floor(hue / 60.0);
+    double p = val * (1.0 - sat);
+    double q = val * (1.0 - f * sat);
+    double t = val * (1.0 - (1.0 - f) * sat);
+
+    switch (h_i) {
+    case 0:
+        r = val;
+        g = t;
+        b = p;
+        break;
+    case 1:
+        r = q;
+        g = val;
+        b = p;
+        break;
+    case 2:
+        r = p;
+        g = val;
+        b = t;
+        break;
+    case 3:
+        r = p;
+        g = q;
+        b = val;
+        break;
+    case 4:
+        r = t;
+        g = p;
+        b = val;
+        break;
+    case 5:
+        r = val;
+        g = p;
+        b = q;
+        break;
+    }
+    return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
 }
 
 IVW_CORE_API vec3 rgb2hsv(vec3 rgb) {
-    const float& x = rgb.r;
-    const float& y = rgb.g;
-    const float& z = rgb.b;
-    float maximum = (x > y) ? ((x > z) ? x : z) : ((y > z) ? y : z);
-    float minimum = (x < y) ? ((x < z) ? x : z) : ((y < z) ? y : z);
-    float range = maximum - minimum;
-    float val    = maximum;
-    float sat   = 0.f;
-    float hue   = 0.f;
+    double r = rgb.x;
+    double g = rgb.y;
+    double b = rgb.z;
+    double val = std::max(std::max(r, g), b);
+    double sat = std::min(std::min(r, g), b);
+    double range = val - sat;
 
-    if (maximum != 0.f)
-        sat = range/maximum;
+    // set hue to zero for undefined values
+    bool notGray = (std::abs(val - sat) > 1.0e-8);
+    double hue = 0.0;
 
-    if (sat > 1e-7f) {
-        float h;
-
-        if (x == maximum)
-            h = (y - z) / range;
-        else if (y == maximum)
-            h = 2.f + (z - x) / range;
-        else
-            h = 4.f + (x - y) / range;
-
-        hue = h/6.f;
-
-        if (hue < 0.f)
-            hue += 1.f;
+    // blue hue
+    if (notGray) {
+        if (b == val)
+            hue = 2.0/3.0 + 1.0/6.0 * (r - g) / range;
+        else if (g == val)
+            hue = 1.0/3.0 + 1.0/6.0 * (b - r) / range;
+        else if (r == val)
+            hue = 1.0/6.0 * (g - b) / range;
     }
 
-    return vec3(hue,sat,val);
+    if (hue < 0.0) {
+        hue += 1.0;
+    }
+    if (notGray) {
+        sat = 1.0 - sat / val;
+    }
+    else {
+        sat = 0.0;
+    }
+    return vec3(static_cast<float>(hue), static_cast<float>(sat), static_cast<float>(val));
 }
 
 
@@ -213,6 +213,30 @@ IVW_CORE_API vec3 lab2rgb(const vec3 lab) {
     vec3 xyz = lab2xyz(lab);
 
     return xyz2rgb(xyz);
+}
+
+IVW_CORE_API vec3 rgb2ycbcr(const vec3 &rgb) {
+    double r = rgb.x;
+    double g = rgb.y;
+    double b = rgb.z;
+
+    double y = 0.299 * r + 0.587 * g + 0.114 * b;
+    double cb = (b - y) * 0.565;
+    double cr = (r - y) * 0.713;
+
+    return vec3(static_cast<float>(y), static_cast<float>(cb), static_cast<float>(cr));
+}
+
+IVW_CORE_API vec3 ycbcr2rgb(const vec3 &ycbcr) {
+    double y = ycbcr.x;
+    double cb = ycbcr.y;
+    double cr = ycbcr.z;
+
+    double r = glm::clamp(y + 1.402 * cr, 0.0, 1.0);
+    double g = glm::clamp(y - 0.344136 * cb - 0.714136 * cr, 0.0, 1.0);
+    double b = glm::clamp(y + 1.772 * cb, 0.0, 1.0);
+
+    return vec3(static_cast<float>(r), static_cast<float>(g), static_cast<float>(b));
 }
 
 } // namespace
