@@ -122,6 +122,7 @@ float3 shadePhong(LightParameters light_, float3 materialAmbientColor, float3 ma
 #define PHASE_FUNCTION_ASHIKHMIN 6
 #define PHASE_FUNCTION_MIX 7
 #define PHASE_FUNCTION_ISOTROPIC 8
+#define PHASE_FUNCTION_NONE 9
 
 
 typedef enum ShadingType {
@@ -133,7 +134,8 @@ typedef enum ShadingType {
     ABC_MICROFACET,
     ASHIKHMIN,
     MIX,
-    ISOTROPIC
+    ISOTROPIC,
+    NONE
 } ShadingType;
 
 #define BLINN_EXPONENT 10.0f
@@ -517,8 +519,10 @@ float3 applyShading(const float3 toCameraDir, const float3 toLightDir, const flo
     float3 wo = worldToShading(Nu, Nv, gradient, toCameraDir); 
     float3 wi = worldToShading(Nu, Nv, gradient, toLightDir); 
     f = mix(materialDiffuse*isotropicPhaseFunction(), materialDiffuse*lambertianBRDF()+materialSpecular*AshikimBRDF(wo, wi, gradient, material.x, material.y), material.w)*fabs(wi.z);
-#else  
-    f = materialDiffuse*isotropicPhaseFunction();   
+#elif PHASE_FUNCTION == PHASE_FUNCTION_ISOTROPIC
+    f = materialDiffuse*isotropicPhaseFunction();
+#else
+    f = (float3)(1.f);
 #endif
 #else
     if ( shadingType == HENYEY_GREENSTEIN ) { 
@@ -585,8 +589,10 @@ float3 applyShading(const float3 toCameraDir, const float3 toLightDir, const flo
         float3 wo = worldToShading(Nu, Nv, gradient, toCameraDir); 
         float3 wi = worldToShading(Nu, Nv, gradient, toLightDir); 
         f = mix(materialDiffuse*isotropicPhaseFunction(), materialDiffuse*isotropicPhaseFunction()+materialSpecular*AshikimBRDF(wo, wi, gradient, material.x, material.y)*fabs(wi.z), material.w);
+    } else if (shadingType == ISOTROPIC) {
+        f = materialDiffuse*isotropicPhaseFunction();
     } else {
-        f = materialDiffuse*isotropicPhaseFunction(); 
+        f = (float3)(1.f);
     } 
 #endif
     // No need to use pdf since we are not generating samples based on phase function/BRDF

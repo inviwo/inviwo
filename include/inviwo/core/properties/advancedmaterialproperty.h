@@ -48,7 +48,8 @@ enum class ShadingFunctionKind {
     AbcMicrofacet,
     Ashikhmin,
     Mix,
-    Isotropic
+    Isotropic,
+    None
 };
 
 /** \class AdvancedMaterialProperty
