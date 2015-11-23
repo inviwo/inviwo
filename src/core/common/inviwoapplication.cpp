@@ -104,13 +104,12 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     PickingManager::init();
 
     // Create and register core
-    InviwoCore* ivwCore = new InviwoCore(this);
-    registerModule(ivwCore);
-
+    auto ivwCore = util::make_unique<InviwoCore>(this);
     // Load settings from core
     auto coreSettings = ivwCore->getSettings();
+    registerModule(std::move(ivwCore));
+    
     for (auto setting : coreSettings) setting->loadFromDisk();
-
     auto sys = getSettingsByType<SystemSettings>();
     if (sys && !commandLineParser_.getQuitApplicationAfterStartup()) {
         pool_.setSize(static_cast<size_t>(sys->poolSize_.get()));
@@ -133,8 +132,14 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
     printApplicationInfo();
 
     // Create and register other modules
-    (*regModuleFunc)(this);
+    auto modules = (*regModuleFunc)();
 
+    for (auto& moduleObj : modules) {
+        postProgress("Loading module: " + moduleObj->name_);
+        registerModule(moduleObj->create(this));
+    }
+    
+    postProgress("Loading Capabilities");
     for (auto& module : modules_) {
         for (auto& elem : module->getCapabilities()) {
             elem->retrieveStaticInfo();
@@ -143,7 +148,7 @@ void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
     }
 
     // Load settings from other modules
-    postProgress("Loading settings...");
+    postProgress("Loading Settings");
     auto settings = getModuleSettings(1);
     for (auto setting : settings) setting->loadFromDisk();
 }
@@ -213,9 +218,8 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
     return result + suffix;
 }
 
-void InviwoApplication::registerModule(InviwoModule* module) {
-    postProgress("Loaded module: " + module->getIdentifier());
-    modules_.emplace_back(module);
+void InviwoApplication::registerModule(std::unique_ptr<InviwoModule> module) {
+    modules_.push_back(std::move(module));
 }
 
 const std::vector<std::unique_ptr<InviwoModule>>& InviwoApplication::getModules() const {

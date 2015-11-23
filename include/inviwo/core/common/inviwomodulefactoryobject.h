@@ -32,20 +32,21 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
 class InviwoModule;
+class InviwoApplication;
 
 class IVW_CORE_API InviwoModuleFactoryObject {
 public:
     InviwoModuleFactoryObject(const std::string& name, const std::string& description,
-                              std::vector<std::string>& depends);
+                              std::vector<std::string> depends);
     virtual ~InviwoModuleFactoryObject();
 
-    virtual InviwoModule* create() = 0;
+    virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) = 0;
 
-private:
     const std::string name_;
     const std::string description_;
     const std::vector<std::string> depends_;
@@ -55,14 +56,16 @@ template <typename T>
 class InviwoModuleFactoryObjectTemplate : public InviwoModuleFactoryObject {
 public:
     InviwoModuleFactoryObjectTemplate(const std::string& name, const std::string& description,
-                                      std::vector<std::string>& depends);
+                                      std::vector<std::string> depends);
 
-    virtual InviwoModule* create() { return static_cast<InviwoModule*>(new T()); }
+    virtual std::unique_ptr<InviwoModule> create(InviwoApplication* app) override {
+        return util::make_unique<T>(app);
+    }
 };
 
 template <typename T>
 inviwo::InviwoModuleFactoryObjectTemplate<T>::InviwoModuleFactoryObjectTemplate(
-    const std::string& name, const std::string& description, std::vector<std::string>& depends)
+    const std::string& name, const std::string& description, std::vector<std::string> depends)
     : InviwoModuleFactoryObject(name, description, depends) {}
 
 }  // namespace

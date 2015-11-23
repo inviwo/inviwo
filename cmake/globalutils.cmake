@@ -104,17 +104,39 @@ function(remove_from_list retval thelist)
 endfunction()
 
 #--------------------------------------------------------------------
+# list_to_stringvector(retval item1 item2 ...) -> {"item1", "item2", ...}
+# builds a string vector 
+function(list_to_stringvector retval)
+    set (items ${ARGN})
+    list(LENGTH items len)
+    if (${len} GREATER 0)
+        join(";" "\",\"" res ${items})
+        set(${retval} "{\"${res}\"}" PARENT_SCOPE)
+    else()
+        set(${retval} "{}" PARENT_SCOPE)
+    endif()
+endfunction()
+
+
+#--------------------------------------------------------------------
 # ivw_add_module_option_to_cache(module_dir onoff force)
 # add/update a module to the CMake cache
 function(ivw_add_module_option_to_cache the_module onoff forcemodule)
     ivw_dir_to_mod_prefix(mod_name ${the_module})
     ivw_dir_to_mod_dep(mod_dep ${the_module})
     first_case_upper(dir_name_cap ${the_module})
+
+    if(${${mod_dep}_description})
+        set(desc "Build ${dir_name_cap} Module\n${${mod_dep}_description}")
+    else()
+        set(desc "Build ${dir_name_cap} Module")
+    endif()
+
     if(forcemodule)
-        set(${mod_name} ${onoff} CACHE BOOL "Build ${dir_name_cap} Module\n${${mod_dep}_description}" FORCE)
+        set(${mod_name} ${onoff} CACHE BOOL "${desc}" FORCE)
     else()
         if(NOT DEFINED ${mod_name})
-            option(${mod_name} "Build ${dir_name_cap} Module\n${${mod_dep}_description}" ${onoff})
+            option(${mod_name} "${desc}" ${onoff})
         endif()
     endif()
 endfunction()

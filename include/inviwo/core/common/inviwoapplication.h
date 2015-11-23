@@ -38,6 +38,8 @@
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/common/inviwomodulefactoryobject.h>
+
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -98,7 +100,7 @@ enum class PathType {
  */
 class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
 public:
-    typedef void (*registerModuleFuncPtr)(InviwoApplication*);
+    using registerModuleFuncPtr = std::vector<std::unique_ptr<InviwoModuleFactoryObject>> (*)();
 
     InviwoApplication();
     InviwoApplication(std::string displayName, std::string basePath);
@@ -130,7 +132,7 @@ public:
     std::string getPath(PathType pathType, const std::string& suffix = "",
                         const bool& createFolder = false);
 
-    void registerModule(InviwoModule* module);
+    void registerModule(std::unique_ptr<InviwoModule> module);
     const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
 
     ProcessorNetwork* getProcessorNetwork();

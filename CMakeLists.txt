@@ -100,10 +100,7 @@ add_subdirectory(src/qt)
 
 #--------------------------------------------------------------------
 # Add modules
-begin_add_modules()
-add_internal_modules()
-add_external_modules()
-end_add_modules()
+ivw_register_modules()
 
 #--------------------------------------------------------------------
 # Default setup of options for the build

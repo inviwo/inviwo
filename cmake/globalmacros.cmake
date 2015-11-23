@@ -28,7 +28,38 @@
  #################################################################################
 
 #--------------------------------------------------------------------
+# Creates a inviwo module
+# Defines:  (example project_name = OpenGL)
+#    _packageName           -> InviwoOpenGLModule
+#    _preModuleDependencies -> ""
+#   PARENT_SCOPE:
+#   IVW_MODULE_CLASS        -> OpenGL
+#   IVW_MODULE_CLASS_PATH   -> opengl/openglmodule
+#   IVW_MODULE_PACKAGE_NAME -> InviwoOpenGLModule
+macro(ivw_module project_name)
+    string(TOLOWER ${project_name} l_project_name)
+    ivw_project(${l_project_name})
+    set(_packageName Inviwo${project_name}Module)
+    set(_preModuleDependencies "")
+    set(IVW_MODULE_CLASS ${project_name} PARENT_SCOPE)
+    set(IVW_MODULE_CLASS_PATH "${l_project_name}/${l_project_name}module" PARENT_SCOPE)
+    set(IVW_MODULE_PACKAGE_NAME ${_packageName} PARENT_SCOPE)
+endmacro()
+
+#--------------------------------------------------------------------
 # Creates project with initial variables
+# Creates a CMake projects
+# Defines:  (example project_name = OpenGL)
+# _projectName -> OpenGL
+# _allIncludes -> ""
+# _allIncludeDirs -> ""
+# _allLibsDir -> ""
+# _allLibs -> ""
+# _allDefinitions -> ""
+# _allLinkFlags -> ""
+# _allPchDirs -> ""
+# _cpackName -> modules or qt_modules if QT
+# _pchDisabledForThisModule -> FALSE 
 macro(ivw_project project_name)
     project(${project_name})
     set(_projectName ${project_name})
@@ -126,18 +157,6 @@ endif()
 endmacro()
 
 #--------------------------------------------------------------------
-# Creates module
-macro(ivw_module project_name)
-    string(TOLOWER ${project_name} l_project_name)
-    ivw_project(${l_project_name})
-    set(_packageName Inviwo${project_name}Module)
-    set(_preModuleDependencies "")
-    set(IVW_MODULE_CLASS ${project_name} PARENT_SCOPE)
-    set(IVW_MODULE_CLASS_PATH "${l_project_name}/${l_project_name}module" PARENT_SCOPE)
-    set(IVW_MODULE_PACKAGE_NAME ${_packageName} PARENT_SCOPE)
-endmacro()
-
-#--------------------------------------------------------------------
 # Retrieve all modules as a list
 macro(ivw_retrieve_all_modules module_list)
     if(EXISTS "${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake")
@@ -208,55 +227,48 @@ macro(generate_module_registration_file module_classes modules_class_paths)
     set(modules_class_paths ${modules_class_paths})
     list(LENGTH module_classes len1)
     math(EXPR len0 "${len1} - 1")
+    
     set(headers "")
     set(functions "")
     foreach(val RANGE ${len0})
         list(GET module_classes ${val} current_name)
         string(TOUPPER ${current_name} u_current_name)
         list(GET modules_class_paths ${val} current_path)
-        #Apperance: #include "modules/base/basemodule.h" 
-        #Apperance: (*app).registerModule(new BaseModule());
-        list(APPEND headers "#ifdef REG_INVIWO${u_current_name}MODULE")
-        list(APPEND headers "#include <${current_path}.h>")
-        list(APPEND headers "#endif")
-        list(APPEND functions "    #ifdef REG_INVIWO${u_current_name}MODULE:")
-        list(APPEND functions "    (*app).registerModule(new ${current_name}Module(app));:")
-        list(APPEND functions "    #endif:")
-    endforeach()
-    list(APPEND functions "}")
-    set(headers ${headers})
-    set(functions ${functions})
-    join(";" "\n" MODULE_HEADERS ${headers})
-    join(":;" "\n" MODULE_CLASS_FUNCTIONS ${functions})
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h 
-                   ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
-
-
-    set(functions "")
-    foreach(val RANGE ${len0})
-        list(GET module_classes ${val} current_name)
-        string(TOUPPER ${current_name} u_current_name)
-        list(GET modules_class_paths ${val} current_path)
-
-        string(CONCAT factory_object
-        "vec.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(\n"
-        "    \"${current_name}\",\n"
-        "    \"${current_path}\",\n" 
-        "    {}\n" 
-        "    )\n"
-        "):\n"
+        ivw_dir_to_mod_dep(mod_dep ${current_name})
+        ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
+        list_to_stringvector(module_depdens_vector ${module_dependencies})
+ 
+        string(CONCAT header
+            "#ifdef REG_INVIWO${u_current_name}MODULE\n"
+            "#include <${current_path}.h>\n"
+            "#endif\n"
         )
 
-        #ivw_message(${factory_object})
+        string(CONCAT factory_object
+            "    #ifdef REG_INVIWO${u_current_name}MODULE\n" 
+            "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(\n"
+            "        \"${current_name}\",\n"
+            "        \"${${mod_dep}_description}\",\n" 
+            "        ${module_depdens_vector}\n" 
+            "        )\n"
+            "    ):\n"
+            "    #endif\n"
+            "\n"
+        )
+        list(APPEND headers ${header})
         list(APPEND functions ${factory_object})
     endforeach()
+
+    string(CONCAT headers ${headers})
+    string(REGEX REPLACE ":" ";" MODULE_HEADERS "${headers}")
     
     string(CONCAT functions ${functions})
     string(REGEX REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
-    set(MODULE_CLASS_FUNCTIONS ${MODULE_CLASS_FUNCTIONS})
+
+    #set(MODULE_CLASS_FUNCTIONS ${MODULE_CLASS_FUNCTIONS})
 
     configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h 
-                   ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration-new.h @ONLY)
+                   ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
 
 endmacro()
 
@@ -303,15 +315,90 @@ macro(ivw_generate_shader_resource parent_path)
                        PRE_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake)
 endmacro()
 
+
+#--------------------------------------------------------------------
+# Module registrations... 
+# workflow:
+#
+# ivw_begin_add_modules()
+# ivw_register_modules()
+# ivw_end_add_modules()
+#
+
+#--------------------------------------------------------------------
+# Add all internal modules
+macro(ivw_register_modules)
+    set(IVW_MODULE_CLASSES "")
+    set(IVW_MODULE_CLASS_PATHS "")
+    set(IVW_MODULE_PACKAGE_NAMES "")
+    set(IVW_MODULE_PATHS "")
+    set(IVW_MODULE_CLASS "")
+    set(IVW_MODULE_CLASS_PATH "")
+    set(IVW_MODULE_PACKAGE_NAME "")
+
+    foreach(module_root_path ${IVW_MODULE_DIR} ${IVW_EXTERNAL_MODULES})
+        string(STRIP ${module_root_path} module_root_path)
+
+        #Generate module options
+        generate_unset_mod_options_and_depend_sort(${module_root_path} sorted_modules)
+
+        #Resolve dependencies for selected modules
+        if(DEFINED sorted_modules)
+            resolve_module_dependencies(${module_root_path} ${sorted_modules})
+
+            if(IVW_MODULE_OPENGLQT OR IVW_MODULE_PYTHONQT OR IVW_MODULE_PYTHON3QT)
+                # Find the QtWidgets library
+                if(DESIRED_QT_VERSION MATCHES 5)
+                    find_package(Qt5Widgets QUIET REQUIRED)
+                    find_package(Qt5Help QUIET REQUIRED)     
+                else()
+                    find_package(Qt QUIET REQUIRED)
+                endif()
+            endif()
+            
+            if(IVW_MODULE_OPENGLQT)
+                set(QT_USE_QTOPENGL TRUE)    
+            endif()
+
+            #Add modules based on user config file and dependency resolve
+            foreach(module ${sorted_modules})
+                ivw_dir_to_mod_prefix(mod_name ${module})
+                if(${mod_name})
+                    add_subdirectory(${module_root_path}/${module} ${IVW_BINARY_DIR}/modules/${module})
+                    list(APPEND IVW_MODULE_CLASSES ${IVW_MODULE_CLASS})
+                    list(APPEND IVW_MODULE_CLASS_PATHS ${IVW_MODULE_CLASS_PATH})
+                    list(APPEND IVW_MODULE_PACKAGE_NAMES ${IVW_MODULE_PACKAGE_NAME})
+                    list(APPEND IVW_MODULE_PATHS ${module_root_path}/${module})
+                endif()
+            endforeach()
+
+        endif()
+    endforeach()
+
+    list(REMOVE_DUPLICATES IVW_MODULE_CLASSES)
+    list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
+    list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
+    #Generate module registration file
+    generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
+    create_module_package_list(${IVW_MODULE_CLASSES})
+endmacro()
+
+
 #--------------------------------------------------------------------
 # Generate module options (which was not specified before) and,
 # Sort directories based on dependencies inside directories
+# defines:  (example project_name = OpenGL)
+# INVIWOOPENGLMODULE_description  -> </docs/description.md>
+# INVIWOOPENGLMODULE_dependencies -> </depends.cmake::dependencies>
 macro(generate_unset_mod_options_and_depend_sort module_root_path retval)
     file(GLOB sub-dir RELATIVE ${module_root_path} ${module_root_path}/[^.]*)
     set(sorted_dirs ${sub-dir})
     foreach(dir ${sub-dir})
         ivw_debug_message(STATUS "register module: ${dir}")
         if(IS_DIRECTORY ${module_root_path}/${dir})
+            ivw_dir_to_mod_dep(mod_dep ${dir})
+
+            # Check if there is a dependency file
             if(EXISTS "${module_root_path}/${dir}/depends.cmake")
                 include(${module_root_path}/${dir}/depends.cmake) # Defines dependencies
                 foreach(dependency ${dependencies})
@@ -325,114 +412,45 @@ macro(generate_unset_mod_options_and_depend_sort module_root_path retval)
                 list(FIND sorted_dirs ${dir} dir_index)
                 list(INSERT sorted_dirs ${dir_index} ${depend_folders})
                 list(REMOVE_DUPLICATES sorted_dirs)
+
+                # Save dependencies to INVIWO<NAME>MODULE_dependencies
+                set("${mod_dep}_dependencies" ${dependencies})
             endif()
 
+            # check if there is a description of the module. 
+            # In that case set to INVIWO<NAME>MODULE_description
             if(EXISTS "${module_root_path}/${dir}/docs/description.md")
                 file(READ "${module_root_path}/${dir}/docs/description.md" description)
-                ivw_dir_to_mod_dep(mod_dep ${dir})
                 set("${mod_dep}_description" ${description})
             endif()
+
             ivw_add_module_option_to_cache(${dir} OFF FALSE)
 
         else()
             list(REMOVE_ITEM sorted_dirs ${dir})
         endif()
     endforeach()
+
     set(${retval} ${sorted_dirs})
 endmacro()
 
-
 #--------------------------------------------------------------------
-# Module registrations... 
-# workflow:
-#
-# begin_add_modules()
-# add_internal_modules()
-# add_external_modules()
-# end_add_modules()
-#
-
-#--------------------------------------------------------------------
-# Begin add modules
-macro(begin_add_modules)
-    set(IVW_MODULE_CLASSES "")
-    set(IVW_MODULE_CLASS_PATHS "")
-    set(IVW_MODULE_PACKAGE_NAMES "")
-    set(IVW_MODULE_PATHS "")
-    set(IVW_MODULE_CLASS "")
-    set(IVW_MODULE_CLASS_PATH "")
-    set(IVW_MODULE_PACKAGE_NAME "")
-endmacro()
-
-#--------------------------------------------------------------------
-# Add all internal modules
-macro(add_internal_modules)
-    #Generate module options
-    generate_unset_mod_options_and_depend_sort(${IVW_MODULE_DIR} IVW_SORTED_MODULES)
-
-    #Resolve dependencies for selected modules
-    resolve_module_dependencies(${IVW_MODULE_DIR} ${IVW_SORTED_MODULES})
-
-    if(IVW_MODULE_OPENGLQT OR IVW_MODULE_PYTHONQT OR IVW_MODULE_PYTHON3QT)
-        # Find the QtWidgets library
-        if(DESIRED_QT_VERSION MATCHES 5)
-            find_package(Qt5Widgets QUIET REQUIRED)
-            find_package(Qt5Help QUIET REQUIRED)     
-        else()
-            find_package(Qt QUIET REQUIRED)
-        endif()
-    endif()
-    
-    if(IVW_MODULE_OPENGLQT)
-        set(QT_USE_QTOPENGL TRUE)    
-    endif()
-
-    #Add modules based on user config file and dependency resolve
-    add_modules(${IVW_MODULE_DIR} ${IVW_SORTED_MODULES})
-endmacro()
-
-#--------------------------------------------------------------------
-# Add all external modules specified in cmake string IVW_EXTERNAL_MODULES
-macro(add_external_modules)
-    foreach(module_root_path ${IVW_EXTERNAL_MODULES})
-        string(STRIP ${module_root_path} module_root_path)
-        #Generate module options
-        generate_unset_mod_options_and_depend_sort(${module_root_path} IVW_EXTERNAL_SORTED_MODULES)
-        
-        if(DEFINED IVW_EXTERNAL_SORTED_MODULES)
-            #Resolve dependencies for selected modules
-            resolve_module_dependencies(${module_root_path} ${IVW_EXTERNAL_SORTED_MODULES})
-
-            #Add modules based on user config file and dependcy resolve
-            add_modules(${module_root_path} ${IVW_EXTERNAL_SORTED_MODULES})
-        endif()
-    endforeach()
-endmacro()
-
-#--------------------------------------------------------------------
-# Add subdirectories of modules based on generated options
-macro(add_modules module_root_path)
-    foreach(module ${ARGN})
-        ivw_dir_to_mod_prefix(mod_name ${module})
+# Turn On Dependent Module Options
+macro(resolve_module_dependencies module_root_path)   
+    # Reverse list (as it is depend sorted) and go over dependencies one more time
+    # If build is ON, then switch dependencies ON
+    set(dir_list ${ARGN})
+    list(REVERSE dir_list)
+    foreach(dir ${dir_list})
+        ivw_dir_to_mod_prefix(mod_name ${dir})
         if(${mod_name})
-            add_subdirectory(${module_root_path}/${module} ${IVW_BINARY_DIR}/modules/${module})
-            list(APPEND IVW_MODULE_CLASSES ${IVW_MODULE_CLASS})
-            list(APPEND IVW_MODULE_CLASS_PATHS ${IVW_MODULE_CLASS_PATH})
-            list(APPEND IVW_MODULE_PACKAGE_NAMES ${IVW_MODULE_PACKAGE_NAME})
-            list(APPEND IVW_MODULE_PATHS ${module_root_path}/${module})
+            ivw_dir_to_mod_dep(mod_dep ${dir})
+            ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
+            foreach(dependency ${module_dependencies})
+                build_module_dependency(${dependency} ${mod_name})
+            endforeach()
         endif()
     endforeach()
-endmacro()
-
-#--------------------------------------------------------------------
-# End add modules
-macro(end_add_modules)
-    list(REMOVE_DUPLICATES IVW_MODULE_CLASSES)
-    list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
-    list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
-    #Generate module registration file
-    generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
-    create_module_package_list(${IVW_MODULE_CLASSES})
 endmacro()
 
 
@@ -463,28 +481,6 @@ macro(add_external_projects)
         string(STRIP ${project_root_path} project_root_path)
         get_filename_component(FOLDER_NAME ${project_root_path} NAME)
         add_subdirectory(${project_root_path} ${CMAKE_CURRENT_BINARY_DIR}/ext_${FOLDER_NAME})
-    endforeach()
-endmacro()
-
-#--------------------------------------------------------------------
-# Turn On Dependent Module Options
-macro(resolve_module_dependencies module_root_path)   
-    #Reverse list (as it is depend sorted) and go over dependencies one more time
-    #If build is ON, then switch dependencies ON
-    set(dir_list ${ARGN})
-    list(REVERSE dir_list)
-    foreach(dir ${dir_list})
-        ivw_dir_to_mod_prefix(mod_name ${dir})
-        if(${mod_name})
-            if(EXISTS "${module_root_path}/${dir}/depends.cmake")
-                include(${module_root_path}/${dir}/depends.cmake)
-                ivw_mod_name_to_dir(depend_folders ${dependencies})
-                ivw_dir_to_mod_prefix(dir_name ${dir})
-                foreach(depend_folder ${depend_folders})
-                    build_module_dependency(${depend_folder} ${dir_name})
-                endforeach()
-            endif()
-        endif()
     endforeach()
 endmacro()
 
@@ -552,7 +548,6 @@ macro(ivw_define_standard_properties project_name)
         set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
     endif()
 
-    #--------------------------------------------------------------------
     # Specify warnings
     if(APPLE)
         #https://developer.apple.com/library/mac/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/1-Build_Setting_Reference/build_setting_ref.html
@@ -589,14 +584,12 @@ endmacro()
 #--------------------------------------------------------------------
 # Define standard defintions
 macro(ivw_define_standard_definitions project_name)
-    #--------------------------------------------------------------------
     # Set the compiler flags
     string(TOUPPER ${project_name} u_project_name)
     add_definitions(-D${u_project_name}_EXPORTS)
     add_definitions(-DGLM_EXPORTS)
 
     if(WIN32)          
-        #--------------------------------------------------------------------          
         # Large memory support
         if(CMAKE_SIZEOF_VOID_P MATCHES 4) 
             if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "/LARGEADDRESSAWARE")
@@ -673,21 +666,17 @@ macro(ivw_create_module)
         source_group("CMake Files" FILES ${DEPEND_PATH})
     endif()
     
-    #--------------------------------------------------------------------
     # Add module class files
     set(MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.h)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.cpp)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}moduledefine.h)
       
-    #--------------------------------------------------------------------
     # Create library
     add_library(inviwo-module-${_projectName} ${ARGN} ${MOD_CLASS_FILES} ${DEPEND_PATH})
     
-    #--------------------------------------------------------------------
     # Define standard properties
     ivw_define_standard_properties(inviwo-module-${_projectName})
     
-    #--------------------------------------------------------------------
     # Add dependencies
     set(tmpProjectName ${_projectName})
     set(_projectName inviwo-module-${tmpProjectName})
@@ -699,71 +688,13 @@ macro(ivw_create_module)
         ivw_add_dependencies(${dependencies})
     endif()
     
-    #--------------------------------------------------------------------
     # Optimize compilation with pre-compilied headers based on inviwo-core
     ivw_compile_optimize_inviwo_core()
     
     set(_projectName ${tmpProjectName})
        
-    #--------------------------------------------------------------------
     # Make package (for other modules to find)
     ivw_make_package(${_packageName} inviwo-module-${_projectName})
-endmacro()
-
-#--------------------------------------------------------------------
-# Add directory to precompilied headers
-macro(ivw_add_pch_path)
-    list(APPEND _allPchDirs ${ARGN})
-endmacro()
-
-#--------------------------------------------------------------------
-# Creates project with initial variables
-macro(ivw_set_pch_disabled_for_module)
-    set(_pchDisabledForThisModule TRUE)
-endmacro()
-
-
-#--------------------------------------------------------------------
-# Set header ignore paths for cotire
-macro(cotire_ignore)
-    get_target_property(COTIRE_PREFIX_HEADER_IGNORE_PATH ${_projectName} COTIRE_PREFIX_HEADER_IGNORE_PATH)
-    if(NOT COTIRE_PREFIX_HEADER_IGNORE_PATH)
-        set(COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
-    endif()
-    
-    list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH $IVW_COTIRE_EXCLUDES})
-    list(REMOVE_DUPLICATES COTIRE_PREFIX_HEADER_IGNORE_PATH)
-
-    set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}")  
-endmacro()
-
-#--------------------------------------------------------------------
-# Optimize compilation with pre-compilied headers from inviwo core
-macro(ivw_compile_optimize_inviwo_core)
-    if(PRECOMPILED_HEADERS)
-        if(_pchDisabledForThisModule)
-            set_target_properties(${_projectName} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
-        endif()
-
-        cotire_ignore()
-
-        set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
-        get_target_property(_prefixHeader inviwo-core COTIRE_CXX_PREFIX_HEADER)
-        set_target_properties(${_projectName} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${_prefixHeader}")
-        cotire(${_projectName})
-    endif()
-endmacro()
-
-#--------------------------------------------------------------------
-# Optimize compilation with pre-compilied headers
-macro(ivw_compile_optimize)
-    if(PRECOMPILED_HEADERS)
-        cotire_ignore()
-        set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
-        list(APPEND _allPchDirs ${IVW_EXTENSIONS_DIR})
-        set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${_allPchDirs}")
-        cotire(${_projectName})
-    endif()
 endmacro()
 
 #--------------------------------------------------------------------
@@ -771,7 +702,6 @@ endmacro()
 macro(ivw_make_package package_name project_name)
 
     if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)  
-       #--------------------------------------------------------------------
        # Add to package
         if(WIN32)
            install(TARGETS ${project_name}
@@ -794,16 +724,6 @@ macro(ivw_make_package package_name project_name)
                     COMPONENT ${_cpackName})
         endif()
     endif()
-
-    #--------------------------------------------------------------------
-    # Append headers etc of project to include list
-    #set(REST ${ARGN})
-    #if(NOT REST)
-    #   get_filename_component(CURRENT_PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} PATH)
-    #   list(APPEND _allIncludeDirs ${CURRENT_PARENT_DIR})
-    #else()
-    #   list(APPEND _allIncludeDirs ${ARGN})
-    #endif()
 
     list(APPEND _allLibsDir "${IVW_LIBRARY_DIR}")
     if(WIN32 AND BUILD_SHARED_LIBS)
@@ -841,11 +761,8 @@ endmacro()
 #--------------------------------------------------------------------
 # Add includes
 macro(ivw_include_directories)
-      #--------------------------------------------------------------------
       # Set includes
       include_directories("${ARGN}")
-          
-      #--------------------------------------------------------------------
       # Append includes to project list
       list(APPEND _allIncludeDirs ${ARGN})
 endmacro()
@@ -853,11 +770,8 @@ endmacro()
 #--------------------------------------------------------------------
 # Add includes
 macro(ivw_link_directories)
-    #--------------------------------------------------------------------
     # Set includes
     link_directories("${ARGN}")
-          
-    #--------------------------------------------------------------------
     # Append includes to project list
     list(APPEND _allLibsDir ${ARGN})
 endmacro()
@@ -865,11 +779,8 @@ endmacro()
 #--------------------------------------------------------------------
 # Add includes
 macro(ivw_add_link_flags)
-    #--------------------------------------------------------------------
     # Set link flags
     set_target_properties(${project_name} PROPERTIES LINK_FLAGS "${ARGN}")
-         
-    #--------------------------------------------------------------------
     # Append includes to project list
     list(APPEND _allLinkFlags "\"${ARGN}\"")
 endmacro()
@@ -878,22 +789,18 @@ endmacro()
 # Defines option for module and add subdirectory if such is ON
 macro(ivw_add_dependency_directories)
     foreach (package ${ARGN})
-        #--------------------------------------------------------------------
         # Locate libraries
         find_package(${package} QUIET REQUIRED)
       
-        #--------------------------------------------------------------------
         # Make string upper case
         ivw_depend_name(u_package ${package})
       
-        #--------------------------------------------------------------------
         # Append library directories to project list
         set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
         remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
         set(${u_package}_LIBRARY_DIR ${uniqueNewLibDirs})
         list(APPEND _allLibsDir ${${u_package}_LIBRARY_DIR})
 
-        #--------------------------------------------------------------------
         # Set directory links
         link_directories(${${u_package}_LIBRARY_DIR})
     endforeach()
@@ -933,18 +840,15 @@ endmacro()
 #
 macro(ivw_add_dependencies)
     foreach (package ${ARGN})
-        #--------------------------------------------------------------------
         # Locate libraries
         find_package(${package} QUIET REQUIRED)
         
-        #--------------------------------------------------------------------
         # Make string upper case
         ivw_depend_name(u_package ${package})
         if(NOT DEFINED ${u_package}_FOUND AND DEFINED ${package}_FOUND)
             set(u_package ${package})
         endif()
         
-        #--------------------------------------------------------------------
         # Set includes and append to list
         if(DEFINED ${u_package}_USE_FILE)
             if(NOT "${${u_package}_USE_FILE}" STREQUAL "")
@@ -953,7 +857,6 @@ macro(ivw_add_dependencies)
             endif()
         endif()
            
-        #--------------------------------------------------------------------
         # Append library directories to project list
         set(uniqueNewLibDirs ${${u_package}_LIBRARY_DIR})
         remove_from_list(uniqueNewLibDirs "${${u_package}_LIBRARY_DIR}" ${_allLibsDir})
@@ -966,7 +869,6 @@ macro(ivw_add_dependencies)
         
         set(${u_package}_LIBRARY_DIRS ${uniqueNewLibDirs})
         
-        #--------------------------------------------------------------------
         # Append includes to project list
         if(NOT DEFINED ${u_package}_LIBRARIES  AND DEFINED ${u_package}_LIBRARY)
             if(DEFINED ${u_package}_LIBRARY_DEBUG)
@@ -981,14 +883,12 @@ macro(ivw_add_dependencies)
         set(${u_package}_LIBRARIES ${uniqueNewLibs})
         list (APPEND _allLibs ${${u_package}_LIBRARIES})
         
-        #--------------------------------------------------------------------
         # Append definitions to project list
         set(uniqueNewDefs ${${u_package}_DEFINITIONS})
         remove_from_list(uniqueNewDefs "${${u_package}_DEFINITIONS}" ${_allDefinitions})
         set(${u_package}_DEFINITIONS ${uniqueNewDefs})
         list (APPEND _allDefinitions ${${u_package}_DEFINITIONS})
 
-        #--------------------------------------------------------------------
         # Append link flags to project list
         set(uniqueNewLinkFlags ${${u_package}_LINK_FLAGS})
         remove_from_list(uniqueNewLinkFlags "${${u_package}_LINK_FLAGS}" ${_allLinkFlags})
@@ -997,22 +897,18 @@ macro(ivw_add_dependencies)
             list (APPEND _allLinkFlags "\"${${u_package}_LINK_FLAGS}\"")
         endif()
     
-        #--------------------------------------------------------------------
         # Set includes and append to list
         include_directories(${${u_package}_INCLUDE_DIR})
         list(APPEND _allIncludeDirs ${${u_package}_INCLUDE_DIR})
         include_directories(${${u_package}_INCLUDE_DIRS})
         list(APPEND _allIncludeDirs ${${u_package}_INCLUDE_DIRS})
 
-        #--------------------------------------------------------------------
         # Set directory links
         link_directories(${${u_package}_LIBRARY_DIRS})
 
-        #--------------------------------------------------------------------
         # Set directory links
         add_definitions(${${u_package}_DEFINITIONS})
       
-        #--------------------------------------------------------------------
         # Add dependency projects
         if(BUILD_${u_package})
             if(NOT DEFINED ${u_package}_PROJECT)
@@ -1021,17 +917,14 @@ macro(ivw_add_dependencies)
             add_dependencies(${_projectName} ${${u_package}_PROJECT})
         endif(BUILD_${u_package})
       
-        #--------------------------------------------------------------------
         # Link library     
         target_link_libraries(${_projectName} ${${u_package}_LIBRARIES})
       
-        #--------------------------------------------------------------------
         # Link flags
         if(NOT "${${u_package}_LINK_FLAGS}" STREQUAL "")
             set_target_properties(${_projectName} PROPERTIES LINK_FLAGS "${${u_package}_LINK_FLAGS}")
         endif()
       
-        #--------------------------------------------------------------------
         # Qt5
         if(DESIRED_QT_VERSION MATCHES 5)
             set(Qt5DependLibs "")
@@ -1097,3 +990,62 @@ macro(ivw_clean_tmp_files)
         file(REMOVE ${item})
     endforeach()
 endmacro()
+
+
+#### Precompile headers ####
+
+#--------------------------------------------------------------------
+# Add directory to precompilied headers
+macro(ivw_add_pch_path)
+    list(APPEND _allPchDirs ${ARGN})
+endmacro()
+
+#--------------------------------------------------------------------
+# Creates project with initial variables
+macro(ivw_set_pch_disabled_for_module)
+    set(_pchDisabledForThisModule TRUE)
+endmacro()
+
+#--------------------------------------------------------------------
+# Set header ignore paths for cotire
+macro(cotire_ignore)
+    get_target_property(COTIRE_PREFIX_HEADER_IGNORE_PATH ${_projectName} COTIRE_PREFIX_HEADER_IGNORE_PATH)
+    if(NOT COTIRE_PREFIX_HEADER_IGNORE_PATH)
+        set(COTIRE_PREFIX_HEADER_IGNORE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
+    
+    list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH $IVW_COTIRE_EXCLUDES})
+    list(REMOVE_DUPLICATES COTIRE_PREFIX_HEADER_IGNORE_PATH)
+
+    set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}")  
+endmacro()
+
+#--------------------------------------------------------------------
+# Optimize compilation with pre-compilied headers from inviwo core
+macro(ivw_compile_optimize_inviwo_core)
+    if(PRECOMPILED_HEADERS)
+        if(_pchDisabledForThisModule)
+            set_target_properties(${_projectName} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
+        endif()
+
+        cotire_ignore()
+        set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
+        get_target_property(_prefixHeader inviwo-core COTIRE_CXX_PREFIX_HEADER)
+        set_target_properties(${_projectName} PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${_prefixHeader}")
+        cotire(${_projectName})
+    endif()
+endmacro()
+
+#--------------------------------------------------------------------
+# Optimize compilation with pre-compilied headers
+macro(ivw_compile_optimize)
+    if(PRECOMPILED_HEADERS)
+        cotire_ignore()
+        set_target_properties(${_projectName} PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
+        list(APPEND _allPchDirs ${IVW_EXTENSIONS_DIR})
+        set_target_properties(${_projectName} PROPERTIES COTIRE_PREFIX_HEADER_INCLUDE_PATH "${_allPchDirs}")
+        cotire(${_projectName})
+    endif()
+endmacro()
+
+

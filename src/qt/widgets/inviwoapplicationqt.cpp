@@ -146,8 +146,7 @@ void InviwoApplicationQt::initialize(registerModuleFuncPtr regModuleFunc) {
     LogInfoCustom("InviwoInfo", "Qt Version " << QT_VERSION_STR);
     InviwoApplication::initialize(regModuleFunc);
     // Since QtWidgets are not a module we have to register it our self
-    InviwoModule* module = new QtWidgetModule(this);
-    registerModule(module);
+    registerModule(util::make_unique<QtWidgetModule>(this));
 }
 
 void InviwoApplicationQt::wait(int ms) {

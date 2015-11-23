@@ -33,7 +33,7 @@ namespace inviwo {
 
 InviwoModuleFactoryObject::InviwoModuleFactoryObject(const std::string& name,
                                                      const std::string& description,
-                                                     std::vector<std::string>& depends)
+                                                     std::vector<std::string> depends)
     : name_(name), description_(description), depends_(depends) {}
 
 InviwoModuleFactoryObject::~InviwoModuleFactoryObject() {
