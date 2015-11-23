@@ -110,12 +110,23 @@ function(list_to_stringvector retval)
     set (items ${ARGN})
     list(LENGTH items len)
     if (${len} GREATER 0)
-        join(";" "\",\"" res ${items})
+        join(";" "\", \"" res ${items})
         set(${retval} "{\"${res}\"}" PARENT_SCOPE)
     else()
         set(${retval} "{}" PARENT_SCOPE)
     endif()
 endfunction()
+function(list_to_longstringvector retval) # same but with linebreaks
+    set (items ${ARGN})
+    list(LENGTH items len)
+    if (${len} GREATER 0)
+        join(";" "\",\n    \"" res ${items})
+        set(${retval} "{\n    \"${res}\"\n}" PARENT_SCOPE)
+    else()
+        set(${retval} "{}" PARENT_SCOPE)
+    endif()
+endfunction()
+
 
 
 #--------------------------------------------------------------------

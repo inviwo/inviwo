@@ -34,7 +34,7 @@
 #include <inviwo/core/network/networklock.h>
 #include <modules/opengl/openglsettings.h>
 #include <modules/opengl/openglmodule.h>
-#include <pathsexternalmodules.h>
+#include <inviwomodulespaths.h>
 #include <string>
 
 namespace inviwo {
@@ -166,26 +166,23 @@ void ShaderManager::addShaderSearchPath(std::string shaderSearchPath) {
 void ShaderManager::addShaderSearchPath(PathType pathType, std::string relativeShaderSearchPath) {
     bool added = addShaderSearchPathImpl(InviwoApplication::getPtr()->getPath(pathType) + "/" +
                                          relativeShaderSearchPath);
-#ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
+
     if (!added && pathType == PathType::Modules) {
-        for (int i = 0; !added && i < IVW_EXTERNAL_MODULES_PATH_COUNT; ++i) {
-            added |=
-                addShaderSearchPathImpl(externalModulePaths_[i] + "/" + relativeShaderSearchPath);
+        for (auto& elem : inviwoModulePaths_) {
+            added |= addShaderSearchPathImpl(elem + "/" + relativeShaderSearchPath);
+            if (added) break;
         }
     }
-#endif
     if (!added) {
         LogWarn("Failed to add shader search path: " << relativeShaderSearchPath);
         LogInfo("Tried with:");
         LogInfo("\t" << InviwoApplication::getPtr()->getPath(pathType) + "/" +
                             relativeShaderSearchPath);
-#ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
         if (pathType == PathType::Modules) {
-            for (auto& elem : externalModulePaths_) {
+            for (auto& elem : inviwoModulePaths_) {
                 LogInfo("\t" << elem << "/" << relativeShaderSearchPath);
             }
         }
-#endif
     }
 }
 

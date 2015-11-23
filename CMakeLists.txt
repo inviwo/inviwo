@@ -27,13 +27,8 @@
  # 
  #################################################################################
  
-if(DESIRED_QT_VERSION MATCHES 5)
-    cmake_minimum_required(VERSION 2.8.11)
-    cmake_policy(VERSION 2.8.11)
-else()
-    cmake_minimum_required(VERSION 2.8.4)
-    cmake_policy(VERSION 2.8.4)
-endif()
+cmake_minimum_required(VERSION 2.8.11)
+cmake_policy(VERSION 2.8.11)
 
 if(POLICY CMP0046)
     cmake_policy(SET CMP0046 OLD) # Missing dependencies policy.
@@ -49,7 +44,9 @@ if(CMAKE_VERSION VERSION_GREATER "3.0.0")
 endif()
 
 if (NOT CMAKE_VERSION VERSION_LESS "3.0.2")
-     #The OLD behavior for this policy is to consume the content of the suffixed COMPILE_DEFINITIONS_<CONFIG> target property when generating the compilation command.
+     # The OLD behavior for this policy is to consume the content of the 
+     # suffixed COMPILE_DEFINITIONS_<CONFIG> target property when generating
+     # the compilation command.
     cmake_policy(SET CMP0043 OLD)
 endif()
 
@@ -80,6 +77,8 @@ option(IVW_UNIT_TEST_APPLICATION "Build Inviwo Unit tests Application" OFF)
 #--------------------------------------------------------------------
 # Add externals
 add_subdirectory(ext/ticpp)
+
+option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
 if(IVW_SIGAR)
     add_subdirectory(ext/sigar)
 endif()
@@ -105,21 +104,19 @@ ivw_register_modules()
 #--------------------------------------------------------------------
 # Default setup of options for the build
 
-option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
-
 # Modules
-build_module(Base)
-build_module(BaseGL)
-build_module(CImg)
-build_module(FontRendering)
-build_module(OpenGL)
-build_module(PVM)
+ivw_enable_module(Base)
+ivw_enable_module(BaseGL)
+ivw_enable_module(CImg)
+ivw_enable_module(FontRendering)
+ivw_enable_module(OpenGL)
+ivw_enable_module(PVM)
 
 # OpenGL Context created with GLFW or Qt within Inviwo by default
 if(IVW_USE_GLFW_NOT_OPENGLQT)
-    build_module(GLFW)
+    ivw_enable_module(GLFW)
 else()
-    build_module(OpenGLQt)
+    ivw_enable_module(OpenGLQt)
 endif()
 
 #--------------------------------------------------------------------
@@ -137,3 +134,4 @@ include(cmake/packaging.cmake)
 #--------------------------------------------------------------------
 # Generate Doxygen setup. 
 add_subdirectory(tools/doxygen)
+

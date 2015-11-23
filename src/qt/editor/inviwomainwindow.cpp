@@ -44,7 +44,7 @@
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 #include <inviwo/qt/editor/networkeditor.h>
 
-#include <pathsexternalmodules.h>
+#include <inviwomodulespaths.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -612,9 +612,8 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
         }
     }
 
-// add paths of external modules, avoid duplicates
-#ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
-    for (auto directory : externalModulePaths_) {
+    // add paths of inviwo modules, avoid duplicates
+    for (auto directory : inviwoModulePaths_) {
         std::string moduleName;
         // remove "/modules" from given path
         std::size_t endpos = directory.rfind('/');
@@ -660,7 +659,6 @@ void InviwoMainWindow::fillTestWorkspaceMenu() {
             paths.push_back({directory, moduleName});
         }
     }
-#endif
 
     // add menu entries
     for (auto& elem : paths) {

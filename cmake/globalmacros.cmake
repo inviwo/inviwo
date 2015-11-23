@@ -190,41 +190,30 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Generate header for external modules
-macro(generate_external_module_header)
-    set(IVW_EXTERNAL_MODULES_PATH_COUNT "")
-    set(IVW_EXTERNAL_MODULES_PATHS_ARRAY "")
-    if(DEFINED IVW_EXTERNAL_MODULES)
-        list(LENGTH IVW_EXTERNAL_MODULES modlen)
-        if(NOT ${modlen} EQUAL 0)
-            set(paths "const std::string externalModulePaths_[] = {:")
-            set(first "1")
-            list(APPEND paths "\"${IVW_ROOT_DIR}/modules\":")
-            set(count 1)
-            foreach(dir ${IVW_EXTERNAL_MODULES})
-                string(STRIP ${dir} dir)        
-                if(IS_DIRECTORY ${dir})
-                    list(APPEND paths ", :")
-                    list(APPEND paths "\"${dir}\":")
-                    MATH(EXPR count "${count}+1")
-                else()
-                    ivw_message("Path to external module is not a directory (${dir})")
-                endif()
-            endforeach()
-            list(APPEND paths "}; //Paths")
-            set(IVW_EXTERNAL_MODULES_PATH_COUNT "#define IVW_EXTERNAL_MODULES_PATH_COUNT ${count}")
-            set(paths ${paths})
-            join(":;" "" IVW_EXTERNAL_MODULES_PATHS_ARRAY ${paths})
-         endif()
-    endif()
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_external_template.h 
-                   ${CMAKE_BINARY_DIR}/modules/_generated/pathsexternalmodules.h @ONLY IMMEDIATE)
-endmacro()
+function(generate_module_paths_header)
+    set(dirs "")
+    foreach(dir ${IVW_ROOT_DIR}/modules ${IVW_EXTERNAL_MODULES})
+        if(IS_DIRECTORY ${dir})
+            list(APPEND dirs ${dir})
+        else()
+            ivw_message("Path to external module is not a directory (${dir})")
+        endif()
+    endforeach()
+
+    list_to_longstringvector(vec ${dirs})
+    list(LENGTH IVW_EXTERNAL_MODULES count)
+    math(EXPR count "${count}+1")
+    set(paths "const std::array<const std::string, ${count}> inviwoModulePaths_ = {${vec}}")
+
+    set(IVW_MODULES_PATHS_ARRAY ${paths})
+
+    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/inviwomodulespaths_template.h 
+                   ${CMAKE_BINARY_DIR}/modules/_generated/inviwomodulespaths.h @ONLY IMMEDIATE)
+endfunction()
 
 #--------------------------------------------------------------------
 # Generate a module registration header file (with configure file etc)
 macro(generate_module_registration_file module_classes modules_class_paths)
-    set(module_classes ${module_classes})
-    set(modules_class_paths ${modules_class_paths})
     list(LENGTH module_classes len1)
     math(EXPR len0 "${len1} - 1")
     
@@ -265,8 +254,6 @@ macro(generate_module_registration_file module_classes modules_class_paths)
     string(CONCAT functions ${functions})
     string(REGEX REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
 
-    #set(MODULE_CLASS_FUNCTIONS ${MODULE_CLASS_FUNCTIONS})
-
     configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h 
                    ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
 
@@ -281,10 +268,7 @@ macro(ivw_generate_shader_resource parent_path)
         file(RELATIVE_PATH filepath0 ${parent_path} ${current_path})
         string(REPLACE "/" "_" filepath1 ${filepath0})
         string(REPLACE "." "_" outname ${filepath1})
-        #get_filename_component(filename ${current_path} NAME_WE)
-        #get_filename_component(extension ${current_path} EXT)
-        #string(REPLACE "." "" extension_no_point ${extension})
-        #set(outname "${filename}_${extension_no_point}")
+
         set(outname_with_dollar "\${${outname}}")
         
         set(shaders "${shaders} ${outname}")
@@ -300,8 +284,6 @@ macro(ivw_generate_shader_resource parent_path)
         set(output "${output}string(REPLACE \"?????\" \"\;\" ${outname}_header \"${outname_header_with_dollar}\")\n")
         
         #Add: file(WRITE outname variable)
-        #string(REPLACE ${CMAKE_CURRENT_SOURCE_DIR} "" parent_relative_path ${parent_path})
-        #string(REPLACE "." "_" current_relative_path_underscore ${current_relative_path})
         set(output "${output}file(WRITE ${CMAKE_BINARY_DIR}/modules/_generated/modules/${_projectName}/glsl/${outname}.h \"${outname_header_with_dollar}\")\n")
     endforeach()
     string(STRIP ${shaders} shaders)
@@ -315,15 +297,6 @@ macro(ivw_generate_shader_resource parent_path)
                        PRE_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake)
 endmacro()
 
-
-#--------------------------------------------------------------------
-# Module registrations... 
-# workflow:
-#
-# ivw_begin_add_modules()
-# ivw_register_modules()
-# ivw_end_add_modules()
-#
 
 #--------------------------------------------------------------------
 # Add all internal modules
@@ -486,7 +459,7 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Set module build option to true
-macro(build_module the_module)
+macro(ivw_enable_module the_module)
     ivw_add_module_option_to_cache(${the_module} ON FALSE)
 endmacro()
 

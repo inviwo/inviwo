@@ -50,7 +50,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/settings.h>
 
-#include <pathsexternalmodules.h>
+#include <inviwomodulespaths.h>
 
 #include <algorithm>
 
@@ -105,18 +105,14 @@ std::string InviwoModule::getPath() const {
     std::string moduleNameLowerCase = getIdentifier();
     std::transform(moduleNameLowerCase.begin(), moduleNameLowerCase.end(),
                    moduleNameLowerCase.begin(), ::tolower);
-    if (filesystem::directoryExists(app_->getPath(PathType::Modules) + "/" +
-                                    moduleNameLowerCase)) {
-        return app_->getPath(PathType::Modules) + "/" + moduleNameLowerCase;
-    }
-#ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
-    for (auto& elem : externalModulePaths_) {
+
+    for (auto& elem : inviwoModulePaths_) {
         std::string directory = elem + "/" + moduleNameLowerCase;
         if (filesystem::directoryExists(directory)) {
             return directory;
         }
     }
-#endif
+
     LogWarn(moduleNameLowerCase << " directory was not found");
     return app_->getPath(PathType::Modules) + "/" + moduleNameLowerCase;
 }

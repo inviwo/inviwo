@@ -36,7 +36,7 @@
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/filesystem.h>
-#include <pathsexternalmodules.h>
+#include <inviwomodulespaths.h>
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
@@ -256,13 +256,12 @@ void OpenCL::addCommonIncludeDirectory(const std::string& directoryPath){
 
 void OpenCL::addCommonIncludeDirectory(PathType pathType, const std::string& relativePath) {
     addCommonIncludeDirectory(InviwoApplication::getPtr()->getPath(pathType) + "/" + relativePath);
-#ifdef IVW_EXTERNAL_MODULES_PATH_COUNT
-    if(pathType == PathType::Modules){
-        for(int i=0; i < IVW_EXTERNAL_MODULES_PATH_COUNT; ++i){
-            addCommonIncludeDirectory(externalModulePaths_[i] + "/" + relativePath);
+
+    if (pathType == PathType::Modules){
+        for (auto& elem : inviwoModulePaths_) {
+            addCommonIncludeDirectory(elem + "/" + relativePath);
         }
     }
-#endif
 }
 
 void OpenCL::removeCommonIncludeDirectory(const std::string& directoryPath){
