@@ -137,9 +137,10 @@ private:
 public:
     typedef T valueType;
 
-    BaseTemplateOptionProperty(std::string identifier, std::string displayName,
-                               InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
-                               PropertySemantics semantics = PropertySemantics::Default);
+    BaseTemplateOptionProperty(
+        std::string identifier, std::string displayName,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        PropertySemantics semantics = PropertySemantics::Default);
 
     BaseTemplateOptionProperty(const BaseTemplateOptionProperty<T>& rhs);
     BaseTemplateOptionProperty<T>& operator=(const BaseTemplateOptionProperty<T>& that);
@@ -262,7 +263,8 @@ public:
     virtual OptionPropertyString* clone() const override;
     virtual ~OptionPropertyString();
 
-    virtual void addOption(std::string identifier, std::string displayName, std::string value) override;
+    virtual void addOption(std::string identifier, std::string displayName,
+                           std::string value) override;
     virtual void addOption(std::string identifier, std::string displayName);
 };
 

@@ -128,13 +128,13 @@ InviwoApplication::~InviwoApplication() {
     ResourceManager::getPtr()->clearAllResources();
 }
 
-void InviwoApplication::initialize(registerModuleFuncPtr regModuleFunc) {
+void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
     printApplicationInfo();
 
     // Create and register other modules
-    auto modules = (*regModuleFunc)();
+    modulesFactoryObjects_ = regModuleFunc();
 
-    for (auto& moduleObj : modules) {
+    for (auto& moduleObj : modulesFactoryObjects_) {
         postProgress("Loading module: " + moduleObj->name_);
         registerModule(moduleObj->create(this));
     }
@@ -224,6 +224,11 @@ void InviwoApplication::registerModule(std::unique_ptr<InviwoModule> module) {
 
 const std::vector<std::unique_ptr<InviwoModule>>& InviwoApplication::getModules() const {
     return modules_;
+}
+
+const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>&
+InviwoApplication::getModuleFactoryObjects() const {
+    return modulesFactoryObjects_;
 }
 
 ProcessorNetwork* InviwoApplication::getProcessorNetwork() { return processorNetwork_.get(); }
@@ -317,6 +322,22 @@ void InviwoApplication::waitForPool() {
     pool_.setSize(0);  // This will wait until all tasks are done;
     processFront();
     pool_.setSize(old_size);
+}
+
+void InviwoApplication::closeInviwoApplication() {
+    LogWarn("this application have not implemented the closeInviwoApplication function");
+}
+void InviwoApplication::registerFileObserver(FileObserver* fileObserver) {
+    LogWarn("this application have not implemented the registerFileObserver function");
+}
+void InviwoApplication::startFileObservation(std::string fileName) {
+    LogWarn("this application have not implemented the startFileObservation function");
+}
+void InviwoApplication::stopFileObservation(std::string fileName) {
+    LogWarn("this application have not implemented the stopFileObservation function");
+}
+void InviwoApplication::playSound(Message soundID) {
+    LogWarn("this application have not implemented the playSound function");
 }
 
 }  // namespace

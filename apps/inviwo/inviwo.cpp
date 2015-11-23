@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
     
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
-    inviwoApp.initialize(&inviwo::registerAllModules);
+    inviwoApp.registerModules(&inviwo::registerAllModules);
     inviwoApp.processEvents();
     // setup main window
     mainWin.initialize();

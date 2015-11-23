@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
 
     // Initialize all modules
-    inviwoApp.initialize(&inviwo::registerAllModules);
+    inviwoApp.registerModules(&inviwo::registerAllModules);
 
     // Continue initialization of default context
     Canvas* sharedCanvas = RenderContext::getPtr()->getDefaultRenderContext();

@@ -68,7 +68,7 @@ public:
     InviwoApplicationQt(std::string displayName_, std::string basePath_, int& argc, char** argv, bool movePointsOn = true);
     virtual ~InviwoApplicationQt();
 
-    virtual void initialize(registerModuleFuncPtr) override;
+    virtual void registerModules(RegisterModuleFunc) override;
     
     virtual void registerFileObserver(FileObserver* fileObserver) override;
     virtual void startFileObservation(std::string fileName) override;
@@ -92,6 +92,7 @@ public slots:
     void fileChanged(QString fileName);
 
 protected:
+    virtual void printApplicationInfo() override;
     void wait(int);
 
 private:

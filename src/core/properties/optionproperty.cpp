@@ -41,10 +41,9 @@ void OptionPropertyString::addOption(std::string identifier, std::string display
     TemplateOptionProperty<std::string>::addOption(identifier, displayName, identifier);
 }
 
-OptionPropertyString::OptionPropertyString(
-    std::string identifier, std::string displayName,
-    InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
-    PropertySemantics semantics /*= PropertySemantics::Default*/)
+OptionPropertyString::OptionPropertyString(std::string identifier, std::string displayName,
+                                           InvalidationLevel invalidationLevel,
+                                           PropertySemantics semantics)
     : TemplateOptionProperty<std::string>(identifier, displayName, invalidationLevel, semantics) {}
 
 OptionPropertyString::OptionPropertyString(const OptionPropertyString& rhs)
@@ -66,8 +65,8 @@ OptionPropertyString::~OptionPropertyString() {}
 BaseOptionProperty::BaseOptionProperty(const BaseOptionProperty& rhs) : Property(rhs) {}
 
 BaseOptionProperty::BaseOptionProperty(std::string identifier, std::string displayName,
-                                       InvalidationLevel invalidationLevel /*=InvalidationLevel::InvalidOutput*/,
-                                       PropertySemantics semantics /*=PropertySemantics::Default*/)
+                                       InvalidationLevel invalidationLevel,
+                                       PropertySemantics semantics)
     : Property(identifier, displayName, invalidationLevel, semantics) {}
 
 BaseOptionProperty::~BaseOptionProperty() {}

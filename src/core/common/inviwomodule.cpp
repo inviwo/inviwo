@@ -157,7 +157,14 @@ const std::vector<MeshDrawer*> InviwoModule::getDrawers() const { return uniqueT
 const std::vector<Resource*> InviwoModule::getResources() const { return uniqueToPtr(resources_); }
 const std::vector<Settings*> InviwoModule::getSettings() const { return uniqueToPtr(settings_); }
 
-std::string InviwoModule::getDescription() const { return "No description available"; }
+std::string InviwoModule::getDescription() const {
+    for (auto& item : app_->getModuleFactoryObjects()) {
+        if (item->name_ == identifier_) {
+            return item->description_;
+        }
+    }
+    return "No description available";
+}
 
 void InviwoModule::registerCapabilities(std::unique_ptr<Capabilities> info) {
     capabilities_.push_back(std::move(info));

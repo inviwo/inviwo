@@ -89,7 +89,7 @@ private:
     void addProcessor(std::string className);
     
     
-    QTreeWidgetItem* addToplevelItemTo(QString title);
+    QTreeWidgetItem* addToplevelItemTo(QString title, const std::string& desc);
     QTreeWidgetItem* addProcessorItemTo(QTreeWidgetItem* item,
                                         ProcessorFactoryObject* processor,
                                         std::string moduleId);

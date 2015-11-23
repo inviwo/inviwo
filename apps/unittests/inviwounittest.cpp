@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
         }
 
         // Initialize all modules
-        app.initialize(&inviwo::registerAllModules);
+        app.registerModules(&inviwo::registerAllModules);
         app.getSettingsByType<SystemSettings>()->poolSize_.set(0);
 
 

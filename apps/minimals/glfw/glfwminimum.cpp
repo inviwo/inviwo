@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
     CanvasGLFW::setAlwaysOnTopByDefault(false);
 
     // Initialize all modules
-    inviwoApp.initialize(&inviwo::registerAllModules);
+    inviwoApp.registerModules(&inviwo::registerAllModules);
 
     // Continue initialization of default context
     CanvasGLFW* sharedCanvas =

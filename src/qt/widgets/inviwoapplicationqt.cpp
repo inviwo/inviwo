@@ -48,22 +48,18 @@
 
 namespace inviwo {
 
-
 InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string basePath, int& argc,
-    char** argv, bool movePointsOn)
+                                         char** argv, bool movePointsOn)
     : QApplication(argc, argv)
     , InviwoApplication(argc, argv, displayName, basePath)
     , movePointsOn_(movePointsOn)
-    , mainWindow_(nullptr) 
+    , mainWindow_(nullptr)
     , windowDecorationOffset_(0, 0) {
-
     QCoreApplication::setOrganizationName("Inviwo Foundation");
     QCoreApplication::setOrganizationDomain("inviwo.org");
     QCoreApplication::setApplicationName(displayName.c_str());
 
-    setPostEnqueueFront([this](){
-        postEvent(this, new InviwoQtEvent());
-    });
+    setPostEnqueueFront([this]() { postEvent(this, new InviwoQtEvent()); });
 
     fileWatcher_ = new QFileSystemWatcher(this);
     connect(fileWatcher_, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
@@ -124,29 +120,38 @@ void InviwoApplicationQt::playSound(Message message) {
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     if ((dynamic_cast<BoolProperty*>(InviwoApplication::getPtr()
                                          ->getSettingsByType<SystemSettings>()
-                                         ->getPropertyByIdentifier("enableSound"))->get())) {
+                                         ->getPropertyByIdentifier("enableSound"))
+             ->get())) {
         if (message == Message::Ok)
             QSound::play(QString::fromStdString(
-                InviwoApplication::getPtr()->getPath(PathType::Resources) +
-                "/sounds/ok.wav"));
+                InviwoApplication::getPtr()->getPath(PathType::Resources) + "/sounds/ok.wav"));
         else if (message == Message::Error)
             QSound::play(QString::fromStdString(
-                InviwoApplication::getPtr()->getPath(PathType::Resources) +
-                "/sounds/error.wav"));
+                InviwoApplication::getPtr()->getPath(PathType::Resources) + "/sounds/error.wav"));
     }
 
 #endif
 }
 
-std::locale InviwoApplicationQt::getUILocale() const {
-    return utilqt::getCurrentStdLocale();
+std::locale InviwoApplicationQt::getUILocale() const { return utilqt::getCurrentStdLocale(); }
+
+void InviwoApplicationQt::printApplicationInfo() {
+    InviwoApplication::printApplicationInfo();
+    LogInfoCustom("InviwoInfo", "Qt Version " << QT_VERSION_STR);
 }
 
-void InviwoApplicationQt::initialize(registerModuleFuncPtr regModuleFunc) {
-    LogInfoCustom("InviwoInfo", "Qt Version " << QT_VERSION_STR);
-    InviwoApplication::initialize(regModuleFunc);
-    // Since QtWidgets are not a module we have to register it our self
-    registerModule(util::make_unique<QtWidgetModule>(this));
+void InviwoApplicationQt::registerModules(RegisterModuleFunc regModuleFunc) {
+    auto func = [&]() {
+        auto modules = regModuleFunc();
+
+        // Since QtWidgets are not a module we have to register it our self
+        modules.emplace_back(new InviwoModuleFactoryObjectTemplate<QtWidgetModule>(
+            "QtWidgetModule", "Module with Qt implementation of all propertywidgets etc.", {}));
+
+        return modules;
+    };
+
+    InviwoApplication::registerModules(func);
 }
 
 void InviwoApplicationQt::wait(int ms) {
@@ -196,11 +201,11 @@ void InviwoApplicationQt::logQtMessages(QtMsgType type, const QMessageLogContext
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
         case QtInfoMsg:
             inviwo::LogCentral::getPtr()->log("Qt Info", LogLevel::Info, LogAudience::Developer,
-                context.file, context.function, context.line,
-                msg.toUtf8().constData());
+                                              context.file, context.function, context.line,
+                                              msg.toUtf8().constData());
 
             fprintf(stderr, "Info: %s (%s:%u, %s)\n", localMsg.constData(), context.file,
-                context.line, context.function);
+                    context.line, context.function);
             break;
 #endif
     }
@@ -223,11 +228,12 @@ QPoint InviwoApplicationQt::movePointOntoDesktop(const QPoint& point, const QSiz
         QRect wholeScreen = desktop->screenGeometry(primaryScreenIndex);
 
         for (int i = 0; i < desktop->screenCount(); i++) {
-            if (i != primaryScreenIndex) wholeScreen = wholeScreen.united(desktop->screenGeometry(i));
+            if (i != primaryScreenIndex)
+                wholeScreen = wholeScreen.united(desktop->screenGeometry(i));
         }
 
         wholeScreen.setRect(wholeScreen.x() - 10, wholeScreen.y() - 10, wholeScreen.width() + 20,
-            wholeScreen.height() + 20);
+                            wholeScreen.height() + 20);
         QPoint bottomRight = QPoint(point.x() + size.width(), point.y() + size.height());
         QPoint appPos = getMainWindow()->pos();
 

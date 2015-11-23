@@ -40,7 +40,6 @@
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <queue>
@@ -100,7 +99,8 @@ enum class PathType {
  */
 class IVW_CORE_API InviwoApplication : public Singleton<InviwoApplication> {
 public:
-    using registerModuleFuncPtr = std::vector<std::unique_ptr<InviwoModuleFactoryObject>> (*)();
+    using RegisterModuleFunc =
+        std::function<std::vector<std::unique_ptr<InviwoModuleFactoryObject>>()>;
 
     InviwoApplication();
     InviwoApplication(std::string displayName, std::string basePath);
@@ -110,13 +110,11 @@ public:
 
     virtual ~InviwoApplication();
 
-    virtual void initialize(registerModuleFuncPtr);
-    virtual void closeInviwoApplication() {
-        LogWarn("this application have not implemented close inviwo function");
-    }
+    virtual void registerModules(RegisterModuleFunc func);
 
     /**
      * Get the base path of the application.
+     * i.e. where the core data and modules folder and etc are.
      */
     const std::string& getBasePath() const;
 
@@ -134,6 +132,7 @@ public:
 
     void registerModule(std::unique_ptr<InviwoModule> module);
     const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
+    const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
 
     ProcessorNetwork* getProcessorNetwork();
     ProcessorNetworkEvaluator* getProcessorNetworkEvaluator();
@@ -144,13 +143,6 @@ public:
     const CommandLineParser* getCommandLineParser() const;
     template <class T>
     T* getModuleByType();
-
-    virtual void registerFileObserver(FileObserver* fileObserver) {}
-    virtual void startFileObservation(std::string fileName) {}
-    virtual void stopFileObservation(std::string fileName) {}
-
-    enum class Message { Ok, Error };
-    virtual void playSound(Message soundID) {}
 
     virtual void addCallbackAction(ModuleCallbackAction* callbackAction);
     virtual std::vector<std::unique_ptr<ModuleCallbackAction>>& getCallbackActions();
@@ -174,6 +166,7 @@ public:
     void setPostEnqueueFront(std::function<void()> func);
     void setProgressCallback(std::function<void(std::string)> progressCallback);
 
+    // Factory getters
     DataReaderFactory* getDataReaderFactory() const;
     DataWriterFactory* getDataWriterFactory() const;
     DialogFactory* getDialogFactory() const;
@@ -188,8 +181,16 @@ public:
     RepresentationConverterFactory* getRepresentationConverterFactory() const;
     ProcessorWidgetFactory* getProcessorWidgetFactory() const;
 
+    // Methods to be implemented by deriving classes
+    virtual void closeInviwoApplication();
+    virtual void registerFileObserver(FileObserver* fileObserver);
+    virtual void startFileObservation(std::string fileName);
+    virtual void stopFileObservation(std::string fileName);
+    enum class Message { Ok, Error };
+    virtual void playSound(Message soundID);
+
 protected:
-    void printApplicationInfo();
+    virtual void printApplicationInfo();
     void postProgress(std::string progress);
     void cleanupSingletons();
 
@@ -231,6 +232,7 @@ private:
     std::unique_ptr<PropertyWidgetFactory> propertyWidgetFactory_;
     std::unique_ptr<RepresentationConverterFactory> representationConverterFactory_;
 
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modulesFactoryObjects_;
     std::vector<std::unique_ptr<InviwoModule>> modules_;
     std::vector<std::unique_ptr<ModuleCallbackAction>> moudleCallbackActions_;
 
