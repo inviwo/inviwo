@@ -381,7 +381,6 @@ set(SOURCE_FILES
     ports/portinspectorfactoryobject.cpp
     processors/activityindicator.cpp
     processors/canvasprocessor.cpp
-    processors/canvasprocessorwidget.cpp
     processors/processor.cpp
     processors/processorfactory.cpp
     processors/processorinfo.cpp
