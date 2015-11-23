@@ -31,6 +31,7 @@
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/qt/widgets/propertylistwidget.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
+#include <inviwo/core/processors/processor.h>
 
 #include <QMoveEvent>
 #include <QMainWindow>

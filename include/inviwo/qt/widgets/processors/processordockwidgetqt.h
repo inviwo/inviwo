@@ -33,6 +33,7 @@
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processorwidget.h>
+#include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
 
 
@@ -61,7 +62,7 @@ public:
     ProcessorDockWidgetQt(const QString &title=QString("ProcessorDockWidgetQt"), QWidget *parent=nullptr);
     virtual ~ProcessorDockWidgetQt() = default;
 
-    ProcessorDockWidgetQt* create() const;
+    virtual ProcessorDockWidgetQt* create() const override;
 
     virtual void initialize() override;
 
