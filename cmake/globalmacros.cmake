@@ -976,21 +976,6 @@ macro(ivw_qt_add_to_install qtarget ivw_comp)
     endif()
 endmacro()
 
-#--------------------------------------------------------------------
-# Adds temporary file name to a gobal list (file is to be deleted at the end by ivw_clean_tmp_files)
-macro(ivw_add_tmp_file file)
-    set(IVW_TMP_CONFIGURE_FILES ${IVW_TMP_CONFIGURE_FILES} ${file} PARENT_SCOPE)
-endmacro()
-
-#--------------------------------------------------------------------
-# Deletes all temporary files listed in the global list IVW_TMP_CONFIGURE_FILES_
-macro(ivw_clean_tmp_files)
-    #ivw_message(STATUS "removing tmp files")
-    foreach(item ${IVW_TMP_CONFIGURE_FILES})
-        file(REMOVE ${item})
-    endforeach()
-endmacro()
-
 
 #### Precompile headers ####
 

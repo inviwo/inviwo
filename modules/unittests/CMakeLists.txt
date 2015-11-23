@@ -82,8 +82,6 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/unittestsmodule.cpp
 )
 
-##ivw_add_tmp_file(${CMAKE_BINARY_DIR}/modules/_generated/unittests_temp.h)
-
 ivw_group("Source Files" ${SOURCE_FILES})
 
 if(IVW_MODULE_OPENCL)
