@@ -124,6 +124,33 @@ IVW_CORE_API vec3 rgb2lab(vec3 rgb);
  */
 IVW_CORE_API vec3 lab2rgb(vec3 lab);
 
+/**
+ * \brief Convert from sRGB color to YCbCr
+ *
+ * The sRGB color is converted to to YCbCr (luminance, blue-yellow chroma, 
+ * red-green chroma). The YCbCr color uses the full range and does not 
+ * have a footroom/headroom (0-16 and 236-255).
+ *
+ * See http://en.wikipedia.org/wiki/YCbCr
+ *
+ * @param rgb RGB color, [0, 1]^3
+ * @return YCbCr color, Y in [0, 1], Cb in [-0.5, 0.5], Cr in [-0.5, 0.5]
+ */
+IVW_CORE_API vec3 rgb2ycbcr(const vec3 &rgb);
+
+/**
+* \brief Convert from YCbCr color to sRGB
+*
+* The YCbCr color (luminance, blue-yellow chroma, red-green chroma) is 
+* converted to sRGB without considering footroom and headroom.
+*
+* See http://en.wikipedia.org/wiki/YCbCr
+*
+* @param YCbCr color, Y in [0, 1], Cb in [-0.5, 0.5], Cr in [-0.5, 0.5]
+* @return rgb RGB color, [0, 1]^3
+*/
+IVW_CORE_API vec3 ycbcr2rgb(const vec3 &ycbcr);
+
 }
 
 #endif // IVW_COLORCONVERSION_H
