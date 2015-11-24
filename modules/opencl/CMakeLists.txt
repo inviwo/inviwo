@@ -104,6 +104,7 @@ set(SHADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/shading/shading.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/shading/shadingmath.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/shading/wardbrdf.cl
+	${CMAKE_CURRENT_SOURCE_DIR}/cl/colorconversion.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/gradients.cl
 	${CMAKE_CURRENT_SOURCE_DIR}/cl/image3d_write.cl
     ${CMAKE_CURRENT_SOURCE_DIR}/cl/img_resize.cl
