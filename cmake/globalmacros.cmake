@@ -85,7 +85,7 @@ macro(ivw_set_cpack_name cpack_name)
 endmacro()
 
 #--------------------------------------------------------------------
-# Add cmake moudle path
+# Add cmake module path
 macro(ivw_add_cmake_find_package_path)
     foreach(item ${ARGN})
         set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${item})
@@ -94,20 +94,19 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Add unittests
-macro(ivw_add_unittest)
+function(ivw_add_unittest)
     if(IVW_MODULE_UNITTESTS)
         foreach(item ${ARGN})
-            #file(APPEND ${CMAKE_BINARY_DIR}/modules/_generated/unittests_temp.h "\"${item}\"\n")
             set(unittest_files ${unittest_files};${item} CACHE INTERNAL "Unit test files")
         endforeach()
         list(REMOVE_DUPLICATES unittest_files)
         set(unittest_files ${unittest_files} CACHE INTERNAL "Unit test files")
     endif()
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Convert name to upper (if not certain string)
-macro(ivw_depend_name retval)
+function(ivw_depend_name retval)
     set(result ${ARGN})
     if(DESIRED_QT_VERSION MATCHES 5)
         string(REGEX MATCH "(^Qt5)" found_item ${result})
@@ -117,56 +116,18 @@ macro(ivw_depend_name retval)
     else()
         string(TOUPPER ${result} result)
     endif()
-    set(${retval} ${result})
-endmacro()
-
-#--------------------------------------------------------------------
-# Wrap Qt CPP to create MOC files
-macro(ivw_qt_wrap_cpp retval)
-    set(the_list "")
-if(WIN32)
-    set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/_moc)
-    set(the_arg_list ${ARGN})
-    list(GET the_arg_list 0 first_item)
-    if(${first_item} MATCHES "/include/inviwo/")
-        set(output_dir ${IVW_BINARY_DIR}/src/_moc)
-    elseif(${first_item} MATCHES "/modules/")
-        set(output_dir ${IVW_BINARY_DIR}/modules/_moc)
-    endif()
-    if(DESIRED_QT_VERSION MATCHES 5)
-        foreach(item ${the_arg_list})
-            get_filename_component(_moc_outfile_name "${item}" NAME_WE)
-            qt5_generate_moc(${item} ${output_dir}/moc_${_moc_outfile_name}.cxx)
-            list(APPEND the_list ${output_dir}/moc_${_moc_outfile_name}.cxx)
-        endforeach()
-    else()
-        foreach(item ${the_arg_list})
-            get_filename_component(_moc_outfile_name "${item}" NAME_WE)
-            qt4_generate_moc(${item} ${output_dir}/moc_${_moc_outfile_name}.cxx)
-            list(APPEND the_list ${output_dir}/${_moc_outfile_name})
-        endforeach()
-    endif()
-else()
-    if(DESIRED_QT_VERSION MATCHES 5)
-       qt5_wrap_cpp(the_list ${ARGN})
-    else()
-       qt4_wrap_cpp(the_list ${ARGN})
-    endif()
-endif()
-    set(${retval} ${the_list})
-endmacro()
+    set(${retval} ${result} PARENT_SCOPE)
+endfunction()
 
 #--------------------------------------------------------------------
 # Retrieve all modules as a list
-macro(ivw_retrieve_all_modules module_list)
+function(ivw_retrieve_all_modules module_list)
     if(EXISTS "${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake")
-        include(${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake)
-        foreach(exclude_module ${ARGN})
-            list(REMOVE_ITEM module_packages ${exclude_module})
-        endforeach()
-        set(${module_list} ${module_packages})
+        include(${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake) # defines module_packages
+        remove_from_list(modules "${module_packages}" ${ARGN})
+        set(${module_list} ${modules} PARENT_SCOPE)
     endif()
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Register the use of modules
@@ -179,14 +140,11 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Generate a list of all available module packages
-macro(create_module_package_list)
-    set(ALL_MODULE_PACKAGES "")
-    foreach(module ${ARGN})
-        list(APPEND ALL_MODULE_PACKAGES Inviwo${module}Module)
-    endforeach()
+function(create_module_package_list)
+    ivw_to_mod_name(ALL_MODULE_PACKAGES ${ARGN})
     configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/modules_template.cmake 
                    ${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake @ONLY)
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Generate header for external modules
@@ -213,10 +171,10 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Generate a module registration header file (with configure file etc)
-macro(generate_module_registration_file module_classes modules_class_paths)
+function(generate_module_registration_file module_classes modules_class_paths)
     list(LENGTH module_classes len1)
     math(EXPR len0 "${len1} - 1")
-    
+
     set(headers "")
     set(functions "")
     foreach(val RANGE ${len0})
@@ -257,11 +215,11 @@ macro(generate_module_registration_file module_classes modules_class_paths)
     configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h 
                    ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
 
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Create CMAKE file for pre-process 
-macro(ivw_generate_shader_resource parent_path)
+function(ivw_generate_shader_resource parent_path)
     set(output "include(${IVW_ROOT_DIR}/cmake/txt2h.cmake)\n")
     set(shaders "")
     foreach(current_path ${ARGN})
@@ -295,7 +253,7 @@ macro(ivw_generate_shader_resource parent_path)
     file(WRITE ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake ${output})
     add_custom_command(TARGET inviwo-module-${_projectName} 
                        PRE_BUILD COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/modules/${_projectName}/create_shader_resource.cmake)
-endmacro()
+endfunction()
 
 
 #--------------------------------------------------------------------
@@ -363,7 +321,7 @@ endmacro()
 # defines:  (example project_name = OpenGL)
 # INVIWOOPENGLMODULE_description  -> </docs/description.md>
 # INVIWOOPENGLMODULE_dependencies -> </depends.cmake::dependencies>
-macro(generate_unset_mod_options_and_depend_sort module_root_path retval)
+function(generate_unset_mod_options_and_depend_sort module_root_path retval)
     file(GLOB sub-dir RELATIVE ${module_root_path} ${module_root_path}/[^.]*)
     set(sorted_dirs ${sub-dir})
     foreach(dir ${sub-dir})
@@ -387,14 +345,15 @@ macro(generate_unset_mod_options_and_depend_sort module_root_path retval)
                 list(REMOVE_DUPLICATES sorted_dirs)
 
                 # Save dependencies to INVIWO<NAME>MODULE_dependencies
-                set("${mod_dep}_dependencies" ${dependencies})
+                set("${mod_dep}_dependencies" ${dependencies} PARENT_SCOPE)
             endif()
 
             # check if there is a description of the module. 
             # In that case set to INVIWO<NAME>MODULE_description
             if(EXISTS "${module_root_path}/${dir}/docs/description.md")
                 file(READ "${module_root_path}/${dir}/docs/description.md" description)
-                set("${mod_dep}_description" ${description})
+                join("\n" "\\\\\\\\n\"\n        \"" cdescription ${description})
+                set("${mod_dep}_description" ${cdescription} PARENT_SCOPE)
             endif()
 
             ivw_add_module_option_to_cache(${dir} OFF FALSE)
@@ -404,12 +363,12 @@ macro(generate_unset_mod_options_and_depend_sort module_root_path retval)
         endif()
     endforeach()
 
-    set(${retval} ${sorted_dirs})
-endmacro()
+    set(${retval} ${sorted_dirs} PARENT_SCOPE)
+endfunction()
 
 #--------------------------------------------------------------------
 # Turn On Dependent Module Options
-macro(resolve_module_dependencies module_root_path)   
+function(resolve_module_dependencies module_root_path)   
     # Reverse list (as it is depend sorted) and go over dependencies one more time
     # If build is ON, then switch dependencies ON
     set(dir_list ${ARGN})
@@ -424,7 +383,7 @@ macro(resolve_module_dependencies module_root_path)
             endforeach()
         endif()
     endforeach()
-endmacro()
+endfunction()
 
 
 #--------------------------------------------------------------------
@@ -459,20 +418,20 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Set module build option to true
-macro(ivw_enable_module the_module)
+function(ivw_enable_module the_module)
     ivw_add_module_option_to_cache(${the_module} ON FALSE)
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Set module build option to true if the owner is built
-macro(build_module_dependency the_module the_owner)
+function(build_module_dependency the_module the_owner)
     ivw_dir_to_mod_prefix(mod_name ${the_module})
     first_case_upper(dir_name_cap ${the_module})
     if(${the_owner} AND NOT ${mod_name})
         ivw_add_module_option_to_cache(${the_module} ON TRUE)
         ivw_message("${mod_name} was set to build, due to dependency towards ${the_owner}")
     endif()
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Set module build option to true
@@ -505,12 +464,6 @@ endmacro()
 # Creates VS folder structure
 macro(ivw_folder project_name folder_name)
     set_target_properties(${project_name} PROPERTIES FOLDER ${folder_name})
-endmacro()
-
-#--------------------------------------------------------------------
-# Add console to debug build only
-macro(ivw_qt_automoc project_name)
-    set_target_properties(${project_name} PROPERTIES AUTOMOC TRUE)
 endmacro()
 
 #--------------------------------------------------------------------
@@ -584,13 +537,6 @@ macro(ivw_define_standard_definitions project_name)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
     
     source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
-endmacro()
-
-#--------------------------------------------------------------------
-# Define QT definitions
-macro(ivw_define_qt_definitions)
-    add_definitions(-DQT_CORE_LIB
-                    -DQT_GUI_LIB)
 endmacro()
 
 #--------------------------------------------------------------------
@@ -845,7 +791,8 @@ macro(ivw_add_dependencies)
         # Append includes to project list
         if(NOT DEFINED ${u_package}_LIBRARIES  AND DEFINED ${u_package}_LIBRARY)
             if(DEFINED ${u_package}_LIBRARY_DEBUG)
-                set(${u_package}_LIBRARIES optimized "${${u_package}_LIBRARY}" debug "${${u_package}_LIBRARY_DEBUG}")
+                set(${u_package}_LIBRARIES optimized "${${u_package}_LIBRARY}" 
+                                           debug "${${u_package}_LIBRARY_DEBUG}")
             else()
                 set(${u_package}_LIBRARIES "${${u_package}_LIBRARY}")
             endif()
@@ -919,6 +866,59 @@ macro(ivw_add_dependencies)
     endforeach()
 endmacro()
 
+#-------------------------------------------------------------------#
+#                            QT stuff                               #
+#-------------------------------------------------------------------#
+
+#--------------------------------------------------------------------
+# Wrap Qt CPP to create MOC files
+macro(ivw_qt_wrap_cpp retval)
+    set(the_list "")
+if(WIN32)
+    set(output_dir ${CMAKE_CURRENT_BINARY_DIR}/_moc)
+    set(the_arg_list ${ARGN})
+    list(GET the_arg_list 0 first_item)
+    if(${first_item} MATCHES "/include/inviwo/")
+        set(output_dir ${IVW_BINARY_DIR}/src/_moc)
+    elseif(${first_item} MATCHES "/modules/")
+        set(output_dir ${IVW_BINARY_DIR}/modules/_moc)
+    endif()
+    if(DESIRED_QT_VERSION MATCHES 5)
+        foreach(item ${the_arg_list})
+            get_filename_component(_moc_outfile_name "${item}" NAME_WE)
+            qt5_generate_moc(${item} ${output_dir}/moc_${_moc_outfile_name}.cxx)
+            list(APPEND the_list ${output_dir}/moc_${_moc_outfile_name}.cxx)
+        endforeach()
+    else()
+        foreach(item ${the_arg_list})
+            get_filename_component(_moc_outfile_name "${item}" NAME_WE)
+            qt4_generate_moc(${item} ${output_dir}/moc_${_moc_outfile_name}.cxx)
+            list(APPEND the_list ${output_dir}/${_moc_outfile_name})
+        endforeach()
+    endif()
+else()
+    if(DESIRED_QT_VERSION MATCHES 5)
+       qt5_wrap_cpp(the_list ${ARGN})
+    else()
+       qt4_wrap_cpp(the_list ${ARGN})
+    endif()
+endif()
+    set(${retval} ${the_list})
+endmacro()
+
+#--------------------------------------------------------------------
+# Set automoc on a target
+macro(ivw_qt_automoc project_name)
+    set_target_properties(${project_name} PROPERTIES AUTOMOC TRUE)
+endmacro()
+
+#--------------------------------------------------------------------
+# Define QT definitions
+macro(ivw_define_qt_definitions)
+    add_definitions(-DQT_CORE_LIB
+                    -DQT_GUI_LIB)
+endmacro()
+
 #--------------------------------------------------------------------
 # Adds special qt dependency and includes package variables to the project
 macro(ivw_qt_add_to_install qtarget ivw_comp)
@@ -949,8 +949,9 @@ macro(ivw_qt_add_to_install qtarget ivw_comp)
     endif()
 endmacro()
 
-
-#### Precompile headers ####
+#-------------------------------------------------------------------#
+#                        Precompile headers                         #
+#-------------------------------------------------------------------#
 
 #--------------------------------------------------------------------
 # Add directory to precompilied headers

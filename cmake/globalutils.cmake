@@ -210,3 +210,14 @@ function(ivw_mod_name_to_dir retval)
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()
+
+#--------------------------------------------------------------------
+# ivw_to_mod_name(retval item1 item2 ...)
+# Convert module name to directory name, i.e. OpenGL -> InviwoOpenGLModule
+function(ivw_to_mod_name retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        list(APPEND the_list Inviwo${item}Module)
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()

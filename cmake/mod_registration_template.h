@@ -3,13 +3,13 @@
 @MODULE_HEADERS@
 
 namespace inviwo {
-	
+
 std::vector<std::unique_ptr<InviwoModuleFactoryObject>> registerAllModules() {
-	std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
+    std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
 
 @MODULE_CLASS_FUNCTIONS@
 
-	return modules;
+    return modules;
 }
 
 }  //namespace

@@ -45,15 +45,10 @@ ivw_register_use_of_modules(${package_list})
 ivw_add_dependency_directories(${package_list})
 ivw_register_use_of_modules(${package_list})
 
-
-#configure_file(${CMAKE_BINARY_DIR}/modules/_generated/unittests_temp.h ${CMAKE_BINARY_DIR}/modules/_generated/unittests.h)
-
-
 #--------------------------------------------------------------------
 # Add header files
 
 set(HEADER_FILES
-#    ${CMAKE_BINARY_DIR}/modules/_generated/unittests.h
     ${CMAKE_CURRENT_SOURCE_DIR}/logerrorcounter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/unittestsmodule.h
     ${CMAKE_CURRENT_SOURCE_DIR}/unittestsmoduledefine.h
