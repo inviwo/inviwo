@@ -241,6 +241,10 @@ option(IVW_USE_GENERATED_RESOURCES "Use and Generate File Resources" OFF)
 option(IVW_PROFILING "Enable profiling" OFF)
 
 #--------------------------------------------------------------------
+# Build unittest for all modules
+option(IVW_UNITTESTS "Enable unittests" ON)
+
+#--------------------------------------------------------------------
 # Use Visual Studio memory leak test
 option(IVW_ENABLE_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
 

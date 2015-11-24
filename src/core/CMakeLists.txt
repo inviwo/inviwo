@@ -238,6 +238,7 @@ set(HEADER_FILES
     ${IVW_INCLUDE_DIR}/inviwo/core/util/introspection.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/inviwosetupinfo.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/logcentral.h
+    ${IVW_INCLUDE_DIR}/inviwo/core/util/logerrorcounter.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/observer.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/raiiutils.h
     ${IVW_INCLUDE_DIR}/inviwo/core/util/rendercontext.h
@@ -444,6 +445,7 @@ set(SOURCE_FILES
     util/introspection.cpp
     util/inviwosetupinfo.cpp
     util/logcentral.cpp
+    util/logerrorcounter.cpp
     util/observer.cpp    
     util/raiiutils.cpp
     util/rendercontext.cpp

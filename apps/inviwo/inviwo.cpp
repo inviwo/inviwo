@@ -85,10 +85,6 @@ int main(int argc, char** argv) {
     mainWin.openLastWorkspace();  // open last workspace
     splashScreen.finish(&mainWin);
 
-#if defined(REG_INVIWOUNITTESTSMODULE) && defined(IVW_RUN_UNITTEST_ON_STARTUP)
-    inviwo::UnitTestsModule::runAllTests();
-#endif
-
     // process last arguments
     if (mainWin.processCommandLineArgs()) {
         return inviwoApp.exec();

@@ -27,7 +27,7 @@
  * 
  *********************************************************************************/
 
-#include "logerrorcounter.h"
+#include <inviwo/core/util/logerrorcounter.h>
 
 namespace inviwo {
 

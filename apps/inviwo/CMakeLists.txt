@@ -6,14 +6,19 @@ if(POLICY CMP0043)
     cmake_policy(SET CMP0043 OLD) # Ignore compile definitions.
 endif()
 
+
+#--------------------------------------------------------------------
+# Add MOC files
+set(MOC_FILES
+    ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h
+)
+
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    ${IVW_APPLICATION_DIR}/inviwo/inviwosplashscreen.h
+    ${MOC_FILES}
 )
 ivw_group("Header Files" ${HEADER_FILES})
-ivw_qt_wrap_cpp(MOC_FILES ${HEADER_FILES})
-source_group("MOC Files" FILES ${MOC_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
@@ -23,6 +28,8 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
+ivw_qt_wrap_cpp(MOC_FILES ${HEADER_FILES})
+source_group("MOC Files" FILES ${MOC_FILES})
 source_group("Resource Files" FILES ${IVW_RESOURCES_DIR}/inviwo.qrc)
 
 #--------------------------------------------------------------------
@@ -53,15 +60,6 @@ endif()
 # Remove modules not used by this app
 list(REMOVE_ITEM package_list InviwoGLUTModule)
 list(REMOVE_ITEM package_list InviwoSDLModule)
-
-if(IVW_MODULE_UNITTESTS)
-    option(IVW_RUN_UNITTEST_ON_STARTUP "Run all registered unittest when Inviwo starts" OFF)
-    if(IVW_RUN_UNITTEST_ON_STARTUP)
-        add_definitions(-DIVW_RUN_UNITTEST_ON_STARTUP)
-    else()
-        list(REMOVE_ITEM package_list InviwoUnitTestsModule)
-    endif()
-endif()
 
 #--------------------------------------------------------------------
 # Register the use of modules
