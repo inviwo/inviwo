@@ -1,5 +1,5 @@
-#ifndef IVW_INVIWO_EXTERNAL_MODULES_DEFINES_H
-#define IVW_INVIWO_EXTERNAL_MODULES_DEFINES_H
+#ifndef IVW_INVIWOMODULESPATHS_H
+#define IVW_INVIWOMODULESPATHS_H
 
 #include <array>
 
@@ -9,4 +9,4 @@ namespace inviwo {
 
 }  // namespace
 
-#endif // IVW_INVIWO_EXTERNAL_MODULES_DEFINES_H
+#endif // IVW_INVIWOMODULESPATHS_H
