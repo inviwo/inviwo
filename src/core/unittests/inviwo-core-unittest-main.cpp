@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2013-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,50 +27,25 @@
  * 
  *********************************************************************************/
 
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#endif
+
+#include <inviwo/core/common/inviwo.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+using namespace inviwo;
 
-#include <inviwo/core/util/stacktrace.h>
-
-namespace inviwo{
-
-class D {
-public:
-    void E(std::vector<std::string>& stacktrace) {
-        stacktrace = getStackTrace();
+int main(int argc, char** argv) {
+    int ret = -1;
+    {
+         ::testing::InitGoogleTest(&argc, argv);
+        ret = RUN_ALL_TESTS();
     }
-};
 
-void C(std::vector<std::string>& stacktrace) {
-    D d;
-    d.E(stacktrace);
-};
-
-void B(std::vector<std::string>& stacktrace) {
-    C(stacktrace);
-}
-
-void A(std::vector<std::string>& stacktrace) {
-    B(stacktrace);
-}
-
-void Ap1(std::vector<std::string>& stacktrace) {
-    A(stacktrace);
-}
-//
-//TEST(StackTraceTests,StackTraceTest) {
-//    std::vector<std::string> stacktrace1;
-//    std::vector<std::string> stacktrace2;
-//    A(stacktrace1);
-//    Ap1(stacktrace2);
-//    EXPECT_NE(0,stacktrace1.size());
-//    EXPECT_NE(0,stacktrace2.size());
-//    EXPECT_EQ(1,stacktrace2.size() - stacktrace1.size());
-//}
-
-
-
+    return ret;
 }

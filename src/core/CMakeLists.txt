@@ -479,19 +479,13 @@ set(PCH_PATH_FILES
 )
 ivw_add_pch_path(${PCH_PATH_FILES})
 
-
 set(TEST_FILES
-    ${CMAKE_SOURCE_DIR}/tests/unittests/inviwoapplication-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/commandlineparser-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/processorcreation-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/urlparser-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/volume-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/image-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/picking-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/stacktrace-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/metadata-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/network-test.cpp
-    ${CMAKE_SOURCE_DIR}/tests/unittests/serializer-test.cpp
+    unittests/inviwo-core-unittest-main.cpp
+    unittests/commandlineparser-test.cpp
+    unittests/urlparser-test.cpp
+    unittests/picking-test.cpp
+    unittests/metadata-test.cpp
+    unittests/serializer-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

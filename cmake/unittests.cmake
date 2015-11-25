@@ -51,8 +51,8 @@ function(ivw_make_unittest_target name dependencies)
 	if(NOT ${name}_UNITTEST_FILES)
 		return()
 	endif()
-
 	set(test_name "inviwo-unittests-${name}")
+	ivw_debug_message(STATUS "create unittests: ${test_name}")
 	
 	ivw_retrieve_all_modules(available_modules)
 	ivw_mod_name_to_dir(module_dir_names ${available_modules})
@@ -73,7 +73,6 @@ function(ivw_make_unittest_target name dependencies)
 	#--------------------------------------------------------------------
 	# Add source files
 	set(SOURCE_FILES
-		${CMAKE_SOURCE_DIR}/tests/unittests/main.cpp
 		${${name}_UNITTEST_FILES}
 	)
 	ivw_group("Test Files" ${SOURCE_FILES})

@@ -91,7 +91,9 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Unit tests
 set(TEST_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/kdtree-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/base-unittest-main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/kdtree-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/network-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

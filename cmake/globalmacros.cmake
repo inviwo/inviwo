@@ -444,6 +444,7 @@ function(ivw_group group_name)
         if(NOT folder STREQUAL "")
             string(REGEX REPLACE "/+$" "" folderlast ${folder})
             string(REPLACE "/" "\\" folderlast ${folderlast})
+            ivw_message("${group_name}\\${folderlast} -> ${currentSourceFile}")
             source_group("${group_name}\\${folderlast}" FILES ${currentSourceFile})
         else()
             source_group("${group_name}" FILES ${currentSourceFile})
@@ -571,8 +572,6 @@ macro(ivw_create_module)
     ivw_dir_to_mod_dep(mod_dep ${_projectName})               # opengl -> INVIWOOPENGLMODULE
     ivw_dir_to_module_taget_name(target_name ${_projectName}) # opengl -> inviwo-module-opengl
     ivw_define_standard_definitions(${mod_name})
-    
-    message("${_projectName} -> ${${mod_dep}_dependencies}")
 
     set(CMAKE_FILES "")
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")
@@ -601,8 +600,6 @@ macro(ivw_create_module)
     ivw_add_dependencies(InviwoCore)
     # Add dependencies from depends.cmake
     ivw_add_dependencies(${${mod_dep}_dependencies})
-
-
 
     # Optimize compilation with pre-compilied headers based on inviwo-core
     ivw_compile_optimize_inviwo_core()
