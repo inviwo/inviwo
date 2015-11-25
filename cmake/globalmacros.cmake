@@ -199,7 +199,6 @@ function(generate_module_registration_file module_classes modules_class_paths)
         list(APPEND functions "    #endif:")
     endforeach()
     
-    list(APPEND functions "}")
     set(headers ${headers})
     set(functions ${functions})
     join(";" "\n" MODULE_HEADERS ${headers})
