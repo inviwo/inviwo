@@ -184,33 +184,26 @@ function(generate_module_registration_file module_classes modules_class_paths)
         ivw_dir_to_mod_dep(mod_dep ${current_name})
         ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
         list_to_stringvector(module_depdens_vector ${module_dependencies})
+        
+        list(APPEND headers "#ifdef REG_INVIWO${u_current_name}MODULE")
+        list(APPEND headers "#include <${current_path}.h>")
+        list(APPEND headers "#endif")
  
-        string(CONCAT header
-            "#ifdef REG_INVIWO${u_current_name}MODULE\n"
-            "#include <${current_path}.h>\n"
-            "#endif\n"
-        )
-
-        string(CONCAT factory_object
-            "    #ifdef REG_INVIWO${u_current_name}MODULE\n" 
-            "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(\n"
-            "        \"${current_name}\",\n"
-            "        \"${${mod_dep}_description}\",\n" 
-            "        ${module_depdens_vector}\n" 
-            "        )\n"
-            "    ):\n"
-            "    #endif\n"
-            "\n"
-        )
-        list(APPEND headers ${header})
-        list(APPEND functions ${factory_object})
+        list(APPEND functions "    #ifdef REG_INVIWO${u_current_name}MODULE:")
+        list(APPEND functions "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(:")
+        list(APPEND functions "        \"${current_name}\",:")
+        list(APPEND functions "        \"${${mod_dep}_description}\",:") 
+        list(APPEND functions "        ${module_depdens_vector}:") 
+        list(APPEND functions "        ):")
+        list(APPEND functions "    );:")
+        list(APPEND functions "    #endif:")
     endforeach()
-
-    string(CONCAT headers ${headers})
-    string(REGEX REPLACE ":" ";" MODULE_HEADERS "${headers}")
     
-    string(CONCAT functions ${functions})
-    string(REGEX REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
+    list(APPEND functions "}")
+    set(headers ${headers})
+    set(functions ${functions})
+    join(";" "\n" MODULE_HEADERS ${headers})
+    join(":;" "\n" MODULE_CLASS_FUNCTIONS ${functions})
 
     configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h 
                    ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
