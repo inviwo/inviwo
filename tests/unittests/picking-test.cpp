@@ -32,8 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <modules/unittests/unittestsmodule.h>
-
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/util/stdextensions.h>
 

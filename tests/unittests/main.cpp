@@ -31,11 +31,6 @@
 #pragma comment(linker, "/SUBSYSTEM:CONSOLE")
 #endif
 
-#include <modules/unittests/unittestsmodule.h>
-
-#include <modules/opengl/inviwoopengl.h>
-#include <modules/glfw/canvasglfw.h>
-
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
@@ -44,8 +39,18 @@
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/util/logerrorcounter.h>
+
 #include <modules/base/processors/imageexport.h>
+#include <modules/opengl/inviwoopengl.h>
+//#include <modules/glfw/canvasglfw.h>
+
 #include <moduleregistration.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
 using namespace inviwo;
 
@@ -56,16 +61,19 @@ int main(int argc, char** argv) {
         inviwo::LogCentral::init();
         //inviwo::LogCentral::getPtr()->registerLogger(new inviwo::ConsoleLogger());
 
+        LogErrorCounter::init();
+        LogCentral::getPtr()->registerLogger(LogErrorCounter::getPtr());
+
         // Search for directory containing data folder to find application basepath.
         // Working directory will be used if data folder is not found in parent directories.
         std::string basePath = inviwo::filesystem::findBasePath();
         InviwoApplication app("unittest " + IVW_VERSION, basePath);
         app.setPostEnqueueFront([&]() { app.processFront(); });
 
-        if (!glfwInit()) {
-            LogErrorCustom("Inviwo Unit Tests Application", "GLFW could not be initialized.");
-            return 0;
-        }
+        //if (!glfwInit()) {
+       //     LogErrorCustom("Inviwo Unit Tests Application", "GLFW could not be initialized.");
+       //     return 0;
+       // }
 
         // Initialize all modules
         app.registerModules(&inviwo::registerAllModules);
@@ -73,16 +81,38 @@ int main(int argc, char** argv) {
 
 
         // Continue initialization of default context
-        CanvasGLFW* sharedCanvas = static_cast<CanvasGLFW*>(RenderContext::getPtr()->getDefaultRenderContext());
-        sharedCanvas->initialize();
-        sharedCanvas->activate();
+        //CanvasGLFW* sharedCanvas = static_cast<CanvasGLFW*>(RenderContext::getPtr()->getDefaultRenderContext());
+        //sharedCanvas->initialize();
+        //sharedCanvas->activate();
 
-        ret = inviwo::UnitTestsModule::runAllTests(argc, argv);
+        size_t warnCount = LogErrorCounter::getPtr()->getWarnCount();
+        size_t errCount = LogErrorCounter::getPtr()->getErrorCount();
+
+        ::testing::InitGoogleTest(&argc, argv);
+        ret = RUN_ALL_TESTS();
+
+        if (ret) {
+            LogErrorCustom("UnitTestsModule::runAllTests",
+                           "Some unit tests did not pass, see console output for details");
+        }
+
+        size_t warnCountAfter = LogErrorCounter::getPtr()->getWarnCount();
+        size_t errCountAfter = LogErrorCounter::getPtr()->getErrorCount();
+
+        if (warnCount != warnCountAfter) {
+            LogWarnCustom("UnitTestsModule::runAllTest", "The tnittest runs generated "
+                                                             << (warnCountAfter - warnCount)
+                                                             << " warnings");
+        }
+        if (errCount != errCountAfter) {
+            LogWarnCustom("UnitTestsModule::runAllTest", "The tnittest runs generated "
+                                                             << (errCountAfter - errCount) << " errors");
+        }
 
         app.getProcessorNetwork()->clear();
-        sharedCanvas->deinitialize();
+        //sharedCanvas->deinitialize();
         app.closeInviwoApplication();
-        glfwTerminate();
+        //glfwTerminate();
     }
 
     return ret;

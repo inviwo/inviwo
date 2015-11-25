@@ -242,11 +242,13 @@ option(IVW_PROFILING "Enable profiling" OFF)
 
 #--------------------------------------------------------------------
 # Build unittest for all modules
-option(IVW_UNITTESTS "Enable unittests" ON)
+option(IVW_UNITTESTS "Enable unittests" OFF)
+include(${CMAKE_CURRENT_LIST_DIR}/unittests.cmake)
 
 #--------------------------------------------------------------------
 # Use Visual Studio memory leak test
 option(IVW_ENABLE_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
+include(${CMAKE_CURRENT_LIST_DIR}/memleak.cmake)
 
 #--------------------------------------------------------------------
 # Build shared libs or static libs
@@ -354,10 +356,16 @@ IF(WIN32)
     IF(MSVC)
         SET(CMAKE_DEBUG_POSTFIX "d")
        
-        option(MULTI_PROCESSOR_BUILD "Build with multiple processors" ON)
-        if(MULTI_PROCESSOR_BUILD)
-            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-            SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+        option(IVW_MULTI_PROCESSOR_BUILD "Build with multiple processors" ON)
+        set(IVW_MULTI_PROCESSOR_COUNT 0 CACHE STRING "Number of cores to use (defalt 0 = all)")
+        if(IVW_MULTI_PROCESSOR_BUILD)
+            if(IVW_MULTI_PROCESSOR_COUNT GREATER 1 AND IVW_MULTI_PROCESSOR_COUNT LESS 1024)
+                SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${IVW_MULTI_PROCESSOR_COUNT}")
+                SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP${IVW_MULTI_PROCESSOR_COUNT}")
+            else()
+                SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+                SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+            endif()
         endif()    
     ENDIF(MSVC)
 ENDIF()
@@ -375,19 +383,6 @@ else(BUILD_SHARED_LIBS)
     add_definitions(-DFREEGLUT_STATIC)
     add_definitions(-DGLEW_STATIC)
 endif(BUILD_SHARED_LIBS)
-
-IF(WIN32)
-    IF(MSVC)
-        if(IVW_ENABLE_MSVC_MEMLEAK_TEST)
-            add_definitions(-DIVW_ENABLE_MSVC_MEM_LEAK_TEST)
-            if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-                link_directories(${IVW_EXTENSIONS_DIR}/vld/lib/Win64)
-            else ()
-                link_directories(${IVW_EXTENSIONS_DIR}/vld/lib/Win32)
-            endif()
-        endif(IVW_ENABLE_MSVC_MEMLEAK_TEST)    
-    ENDIF(MSVC)
-ENDIF(WIN32)
 
 if(IVW_PROFILING)
     add_definitions(-DIVW_PROFILING)

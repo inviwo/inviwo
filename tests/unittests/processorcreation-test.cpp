@@ -34,9 +34,9 @@
 
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processorfactory.h>
-#include <modules/unittests/logerrorcounter.h>
-#include "inviwo/core/datastructures/transferfunction.h"
-#include "inviwo/core/properties/transferfunctionproperty.h"
+#include <inviwo/core/util/logerrorcounter.h>
+#include <inviwo/core/datastructures/transferfunction.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/common/inviwomodule.h>
 

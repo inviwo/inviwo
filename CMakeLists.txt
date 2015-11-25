@@ -71,10 +71,6 @@ option(IVW_QT_EDITOR "Build Inviwo Qt Editor" ON)
 option(IVW_QT_WIDGETS "Build Inviwo Qt Widgets" ON)
 
 #--------------------------------------------------------------------
-# Tests
-option(IVW_UNIT_TEST_APPLICATION "Build Inviwo Unit tests Application" OFF)
-
-#--------------------------------------------------------------------
 # Add externals
 add_subdirectory(ext/ticpp)
 

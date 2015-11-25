@@ -103,6 +103,24 @@ function(remove_from_list retval thelist)
     set(${retval} ${new_items} PARENT_SCOPE)
 endfunction()
 
+
+#--------------------------------------------------------------------
+# list_intersection(retval list_a list_b)
+# return items that are in both lists
+function(list_intersection retval list_a list_b)
+    set(intersection "")
+    list(REMOVE_DUPLICATES list_a)
+    list(REMOVE_DUPLICATES list_b)
+    
+    foreach(item ${list_a})
+        list(FIND list_b ${item} index)
+        if(NOT index EQUAL -1)
+            list(APPEND intersection ${item})
+        endif()
+    endforeach()
+    set(${retval} ${intersection} PARENT_SCOPE)
+endfunction()
+
 #--------------------------------------------------------------------
 # list_to_stringvector(retval item1 item2 ...) -> {"item1", "item2", ...}
 # builds a string vector 
@@ -218,6 +236,18 @@ function(ivw_to_mod_name retval)
     set(the_list "")
     foreach(item ${ARGN})
         list(APPEND the_list Inviwo${item}Module)
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
+
+#--------------------------------------------------------------------
+# ivw_dir_to_module_taget_name(retval item1 item2 ...)
+# Convert module name to directory name, i.e. opengl -> inviwo-module-opengl
+function(ivw_dir_to_module_taget_name retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        list(APPEND the_list inviwo-module-${item})
     endforeach()
     set(${retval} ${the_list} PARENT_SCOPE)
 endfunction()

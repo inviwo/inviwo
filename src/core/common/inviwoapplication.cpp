@@ -208,6 +208,10 @@ std::string InviwoApplication::getPath(PathType pathType, const std::string& suf
             result += "/data/help";
             break;
 
+        case PathType::Tests:
+            result += "/tests";
+            break;
+
         default:
             break;
     }

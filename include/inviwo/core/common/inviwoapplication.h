@@ -85,8 +85,9 @@ enum class PathType {
     Databases,          // /data/databases
     Resources,          // /resources
     TransferFunctions,  // /data/transferfunctions
-    Settings,           //
-    Help                // /data/help
+    Settings,           // path to the current users settings
+    Help,               // /data/help
+    Tests               // /tests
 };
 
 /**

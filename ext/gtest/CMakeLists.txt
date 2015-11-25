@@ -1,3 +1,7 @@
+#--------------------------------------------------------------------
+# gtest Package
+ivw_project(gtest)
+
 ########################################################################
 # CMake build script for Google Test.
 #
@@ -74,5 +78,11 @@ else()
     cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 endif()
 
+#--------------------------------------------------------------------
+# Creates VS folder structure
 ivw_folder(gtest ext)
+
+#--------------------------------------------------------------------
+# Make package (for other projects to find)
+ivw_set_cpack_name(gtest)
 ivw_make_package(gtest gtest)

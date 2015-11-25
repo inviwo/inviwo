@@ -163,40 +163,4 @@ ivw_add_dependencies(${package_list})
 # Optimize compilation with pre-compilied headers based on inviwo-core
 ivw_compile_optimize_inviwo_core()
 
-if(IVW_ENABLE_MSVC_MEMLEAK_TEST)
-    IF(WIN32)
-        IF(MSVC)
-            if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-                add_custom_command(TARGET inviwo POST_BUILD 
-                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/vld_x64.dll 
-                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x64.dll)    
-                                        
-                add_custom_command(TARGET inviwo POST_BUILD 
-                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/dbghelp.dll 
-                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
-                                        
-                add_custom_command(TARGET inviwo POST_BUILD 
-                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/Microsoft.DTfW.DHL.manifest 
-                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
-            else ()
-                add_custom_command(TARGET inviwo POST_BUILD 
-                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/vld_x86.dll 
-                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x86.dll)    
-                                        
-                add_custom_command(TARGET inviwo POST_BUILD 
-                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/dbghelp.dll 
-                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
-                                        
-                add_custom_command(TARGET inviwo POST_BUILD 
-                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/Microsoft.DTfW.DHL.manifest 
-                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
-            endif()
-        ENDIF(MSVC)
-    ENDIF(WIN32)
-endif()
+ivw_memleak_setup(inviwo)

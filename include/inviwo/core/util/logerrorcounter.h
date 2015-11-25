@@ -30,14 +30,14 @@
 #ifndef IVW_LOGERRORCOUNTER_H
 #define IVW_LOGERRORCOUNTER_H
 
-#include <modules/unittests/unittestsmoduledefine.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
-class IVW_MODULE_UNITTESTS_API LogErrorCounter : public Singleton<LogErrorCounter>, public Logger {
+class IVW_CORE_API LogErrorCounter : public Singleton<LogErrorCounter>, public Logger {
 public:
     LogErrorCounter();
     virtual ~LogErrorCounter();

@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <modules/unittests/unittestsmoduledefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
@@ -142,7 +141,7 @@ NUMERIC_TESTS(longSerializationTest, long, 650004);
 NUMERIC_TESTS(longLongSerializationTest, long long, 6700089);
 NUMERIC_TESTS(unsignedLongLongSerializationTest, unsigned long long, 99996789);
 
-class IVW_MODULE_UNITTESTS_API MinimumSerilizableClass : public Serializable {
+class MinimumSerilizableClass : public Serializable {
 public:
     MinimumSerilizableClass(float v = 0) : value_(v) {}
 

@@ -93,18 +93,6 @@ macro(ivw_add_cmake_find_package_path)
 endmacro()
 
 #--------------------------------------------------------------------
-# Add unittests
-function(ivw_add_unittest)
-    if(IVW_MODULE_UNITTESTS)
-        foreach(item ${ARGN})
-            set(unittest_files ${unittest_files};${item} CACHE INTERNAL "Unit test files")
-        endforeach()
-        list(REMOVE_DUPLICATES unittest_files)
-        set(unittest_files ${unittest_files} CACHE INTERNAL "Unit test files")
-    endif()
-endfunction()
-
-#--------------------------------------------------------------------
 # Convert name to upper (if not certain string)
 function(ivw_depend_name retval)
     set(result ${ARGN})
@@ -185,13 +173,14 @@ function(generate_module_registration_file module_classes modules_class_paths)
         ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
         list_to_stringvector(module_depdens_vector ${module_dependencies})
  
-        string(CONCAT header
+        set(header
             "#ifdef REG_INVIWO${u_current_name}MODULE\n"
             "#include <${current_path}.h>\n"
             "#endif\n"
         )
+        join(";" "" header ${header})
 
-        string(CONCAT factory_object
+        set(factory_object
             "    #ifdef REG_INVIWO${u_current_name}MODULE\n" 
             "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(\n"
             "        \"${current_name}\",\n"
@@ -202,6 +191,8 @@ function(generate_module_registration_file module_classes modules_class_paths)
             "    #endif\n"
             "\n"
         )
+        join(";" "" factory_object ${factory_object})
+
         list(APPEND headers ${header})
         list(APPEND functions ${factory_object})
     endforeach()
@@ -332,6 +323,9 @@ function(generate_unset_mod_options_and_depend_sort module_root_path retval)
             # Check if there is a dependency file
             if(EXISTS "${module_root_path}/${dir}/depends.cmake")
                 include(${module_root_path}/${dir}/depends.cmake) # Defines dependencies
+                # Save dependencies to INVIWO<NAME>MODULE_dependencies
+                set("${mod_dep}_dependencies" ${dependencies} PARENT_SCOPE)
+
                 foreach(dependency ${dependencies})
                     list(FIND IVW_MODULE_PACKAGE_NAMES ${dependency} module_index)
                     if(NOT module_index EQUAL -1) # dependency in IVW_MODULE_PACKAGE_NAMES 
@@ -343,9 +337,6 @@ function(generate_unset_mod_options_and_depend_sort module_root_path retval)
                 list(FIND sorted_dirs ${dir} dir_index)
                 list(INSERT sorted_dirs ${dir_index} ${depend_folders})
                 list(REMOVE_DUPLICATES sorted_dirs)
-
-                # Save dependencies to INVIWO<NAME>MODULE_dependencies
-                set("${mod_dep}_dependencies" ${dependencies} PARENT_SCOPE)
             endif()
 
             # check if there is a description of the module. 
@@ -441,7 +432,7 @@ endmacro()
 
 #--------------------------------------------------------------------
 # Creates source group structure recursively
-macro(ivw_group group_name)
+function(ivw_group group_name)
     foreach(currentSourceFile ${ARGN})
         if(NOT IS_ABSOLUTE ${currentSourceFile})
             set(currentSourceFile ${CMAKE_CURRENT_SOURCE_DIR}/${currentSourceFile})
@@ -458,17 +449,17 @@ macro(ivw_group group_name)
             source_group("${group_name}" FILES ${currentSourceFile})
         endif(NOT folder STREQUAL "")
     endforeach(currentSourceFile ${ARGN})
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-macro(ivw_folder project_name folder_name)
+function(ivw_folder project_name folder_name)
     set_target_properties(${project_name} PROPERTIES FOLDER ${folder_name})
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Specify console as target
-macro(ivw_define_standard_properties project_name)
+function(ivw_define_standard_properties project_name)
     if(NOT MSVC)
         set_property(TARGET ${project_name} PROPERTY CXX_STANDARD 11)
         set_property(TARGET ${project_name} PROPERTY CXX_STANDARD_REQUIRED ON)
@@ -490,11 +481,11 @@ macro(ivw_define_standard_properties project_name)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_CLANG_WARN_ENUM_CONVERSION YES)
         set_property(TARGET ${project_name}  PROPERTY XCODE_ATTRIBUTE_WARNING_CFLAGS "-Wunreachable-code")
     endif()
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Specify console as target
-macro(ivw_vs_executable_setup project_name)
+function(ivw_vs_executable_setup project_name)
     if(WIN32)
       if(MSVC)
          set_target_properties(${project_name} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
@@ -505,7 +496,7 @@ macro(ivw_vs_executable_setup project_name)
          set_target_properties(${project_name} PROPERTIES MINSIZEREL "/SUBSYSTEM:_CONSOLE")
         endif(MSVC)
     endif(WIN32)
-endmacro()
+endfunction()
 
 #--------------------------------------------------------------------
 # Define standard defintions
@@ -574,46 +565,56 @@ endmacro()
 #--------------------------------------------------------------------
 # Creates project module from name 
 macro(ivw_create_module)
-    ivw_dir_to_mod_prefix(${mod_name} ${_projectName})
-  
+    ivw_debug_message(STATUS "create module: ${_projectName}")
+
+    ivw_dir_to_mod_prefix(${mod_name} ${_projectName})        # opengl -> IVW_MODULE_OPENGL
+    ivw_dir_to_mod_dep(mod_dep ${_projectName})               # opengl -> INVIWOOPENGLMODULE
+    ivw_dir_to_module_taget_name(target_name ${_projectName}) # opengl -> inviwo-module-opengl
     ivw_define_standard_definitions(${mod_name})
     
-    set(HAS_DEPEND FALSE)
+    message("${_projectName} -> ${${mod_dep}_dependencies}")
+
+    set(CMAKE_FILES "")
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")
-        set(HAS_DEPEND TRUE)
-        set(DEPEND_PATH ${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake)
-        source_group("CMake Files" FILES ${DEPEND_PATH})
+        list(APPEND CMAKE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake)
     endif()
-    
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/docs/description.md")
+        list(APPEND CMAKE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/docs/description.md)
+    endif()
+    source_group("CMake Files" FILES ${CMAKE_FILES})
+
     # Add module class files
     set(MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.h)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}module.cpp)
     list(APPEND MOD_CLASS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${_projectName}moduledefine.h)
       
     # Create library
-    add_library(inviwo-module-${_projectName} ${ARGN} ${MOD_CLASS_FILES} ${DEPEND_PATH})
+    add_library(${target_name} ${ARGN} ${MOD_CLASS_FILES} ${CMAKE_FILES})
     
     # Define standard properties
-    ivw_define_standard_properties(inviwo-module-${_projectName})
+    ivw_define_standard_properties(${target_name})
     
     # Add dependencies
     set(tmpProjectName ${_projectName})
-    set(_projectName inviwo-module-${tmpProjectName})
+    set(_projectName ${target_name})
     ivw_add_dependency_libraries(${_preModuleDependencies})
     ivw_add_dependencies(InviwoCore)
-    if(HAS_DEPEND)
-        include(${DEPEND_PATH})
-        # Add dependencies to this list
-        ivw_add_dependencies(${dependencies})
-    endif()
-    
+    # Add dependencies from depends.cmake
+    ivw_add_dependencies(${${mod_dep}_dependencies})
+
+
+
     # Optimize compilation with pre-compilied headers based on inviwo-core
     ivw_compile_optimize_inviwo_core()
     
     set(_projectName ${tmpProjectName})
        
     # Make package (for other modules to find)
-    ivw_make_package(${_packageName} inviwo-module-${_projectName})
+    ivw_make_package(${_packageName} ${target_name})
+
+    if(IVW_UNITTESTS)
+        ivw_make_unittest_target("${_projectName}" "${dependencies}")
+    endif()
 endmacro()
 
 #--------------------------------------------------------------------
