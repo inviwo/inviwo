@@ -72,7 +72,7 @@ function(ivw_make_unittest_target name dependencies)
 
 	#--------------------------------------------------------------------
 	# Add source files
-	set(SOURCE_FILES {${name}_UNITTEST_FILES} )
+	set(SOURCE_FILES ${${name}_UNITTEST_FILES} )
 	ivw_group("Test Files" ${SOURCE_FILES})
 
 	#--------------------------------------------------------------------

@@ -192,10 +192,9 @@ function(generate_module_registration_file module_classes modules_class_paths)
         list(APPEND functions ${factory_object})
     endforeach()
 
-    string(CONCAT headers ${headers})
-    string(REGEX REPLACE ":" ";" MODULE_HEADERS "${headers}")
-    
-    string(CONCAT functions ${functions})
+    join(";" "" headers ${headers})
+    join(";" "" functions ${functions})
+    string(REGEX REPLACE ":" ";" MODULE_HEADERS "${headers}")   
     string(REGEX REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
 
     configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h 
