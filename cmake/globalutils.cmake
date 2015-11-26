@@ -41,6 +41,15 @@ function(first_case_upper retval value)
     set(${retval} ${result} PARENT_SCOPE)
 endfunction()
 
+function(lowercase retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        string(TOLOWER ${item} lowercase)
+        list(APPEND the_list ${lowercase})
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
+
 #--------------------------------------------------------------------
 # join(sep glue output)
 # Joins list

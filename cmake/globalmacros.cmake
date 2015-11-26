@@ -295,8 +295,10 @@ macro(ivw_register_modules)
     list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
     list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
     #Generate module registration file
-    generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
-    create_module_package_list(${IVW_MODULE_CLASSES})
+    if("${IVW_MODULE_CLASSES}")
+        generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
+        create_module_package_list(${IVW_MODULE_CLASSES})
+    endif()
 endmacro()
 
 
@@ -341,8 +343,13 @@ function(generate_unset_mod_options_and_depend_sort module_root_path retval)
                 set("${mod_dep}_description" ${cdescription} PARENT_SCOPE)
             endif()
 
-            ivw_add_module_option_to_cache(${dir} OFF FALSE)
-
+            lowercase(default_dirs ${ivw_default_modules})          
+            list(FIND default_dirs ${dir} index)
+            if(NOT index EQUAL -1)
+                ivw_add_module_option_to_cache(${dir} ON FALSE)
+            else()
+                ivw_add_module_option_to_cache(${dir} OFF FALSE)
+            endif()
         else()
             list(REMOVE_ITEM sorted_dirs ${dir})
         endif()

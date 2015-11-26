@@ -93,20 +93,22 @@ add_subdirectory(src/core)
 # Add Qt
 add_subdirectory(src/qt)
 
+set(ivw_default_modules 
+    "Base"
+    "BaseGL"
+    "CImg"
+    "FontRendering"
+    "OpenGL"
+    "PVM"
+    CACHE INTERNAL "Default inviwo modules"
+)
+
 #--------------------------------------------------------------------
 # Add modules
 ivw_register_modules()
-
 #--------------------------------------------------------------------
 # Default setup of options for the build
 
-# Modules
-ivw_enable_module(Base)
-ivw_enable_module(BaseGL)
-ivw_enable_module(CImg)
-ivw_enable_module(FontRendering)
-ivw_enable_module(OpenGL)
-ivw_enable_module(PVM)
 
 # OpenGL Context created with GLFW or Qt within Inviwo by default
 if(IVW_USE_GLFW_NOT_OPENGLQT)
@@ -129,5 +131,5 @@ include(cmake/packaging.cmake)
 
 #--------------------------------------------------------------------
 # Generate Doxygen setup. 
-add_subdirectory(tools/doxygen)
+#add_subdirectory(tools/doxygen)
 
