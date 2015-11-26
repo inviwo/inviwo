@@ -47,6 +47,10 @@
     // Vec2 types
     #define image_3d_write_vec2_uint16_t __write_only image3d_t
 
+    // Vec4 types
+    #define image_3d_write_vec4_float16_t __write_only image3d_t
+    #define image_3d_write_vec4_float32_t __write_only image3d_t
+
 #else
     #define image_3d_write_uint8_t __global uchar*
     #define image_3d_write_uint16_t __global ushort*
@@ -56,6 +60,10 @@
 
     // vec2 types
     #define image_3d_write_vec2_uint16_t __global ushort2*
+
+    // vec4 types
+    #define image_3d_write_vec4_float16_t __global half*
+    #define image_3d_write_vec4_float32_t __global float4*
 #endif
 
 // 8.3.1.2 Converting floating-point values 
@@ -115,6 +123,27 @@ void writeImageVec2UInt16f(image_3d_write_vec2_uint16_t image, int4 coord, int4 
     write_imagef(image, coord, (float4)(val, val));
 #else
     image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = convert_ushort2_sat_rte(val * 65535.f);
+#endif
+}
+
+
+// ------------ vec4 ---------------- //
+
+// Write value at location coord.
+void writeImageVec4Float16f(image_3d_write_vec4_float16_t image, int4 coord, int4 dimension, float4 val) {
+#ifdef SUPPORTS_VOLUME_WRITE //cl_khr_3d_image_writes 
+    write_imagef(image, coord, val);
+#else
+    vstore_half4(val, coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y, image);
+#endif
+}
+
+// Write value at location coord.
+void writeImageVec4Float32f(image_3d_write_vec4_float32_t image, int4 coord, int4 dimension, float4 val) {
+#ifdef SUPPORTS_VOLUME_WRITE //cl_khr_3d_image_writes 
+    write_imagef(image, coord, val);
+#else
+    image[coord.x + coord.y*dimension.x + coord.z*dimension.x*dimension.y] = val;
 #endif
 }
 
