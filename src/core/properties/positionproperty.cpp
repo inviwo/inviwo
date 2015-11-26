@@ -34,14 +34,15 @@ PropertyClassIdentifier(PositionProperty, "org.inviwo.PositionProperty");
 
 PositionProperty::PositionProperty(std::string identifier, std::string displayName,
     FloatVec3Property position,
-    const Camera* camera,
+    CameraProperty* camera,
     InvalidationLevel invalidationLevel,
     PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , referenceFrame_("referenceFrame", "Space")
     , position_(position)
-    , camera_(camera) {
-
+    , camera_(camera)
+    , positionWorldSpace_(position_.get())
+{
     referenceFrame_.addOption("world", "World", static_cast<int>(Space::WORLD));
     if (camera_) {
         referenceFrame_.addOption("view", "View", static_cast<int>(Space::VIEW));
@@ -51,20 +52,43 @@ PositionProperty::PositionProperty(std::string identifier, std::string displayNa
 
     position_.setSemantics(PropertySemantics::LightPosition);
     position_.setCurrentStateAsDefault();
-    // add properties
+
+    // Add properties
     addProperty(referenceFrame_);
     addProperty(position_);
 
     referenceFrame_.onChange(this, &PositionProperty::referenceFrameChanged);
+    position_.onChange(this, &PositionProperty::positionChanged);
+    if (camera_)
+        camera_->onChange(this, &PositionProperty::cameraChanged);
 }
 
 PositionProperty::PositionProperty(const PositionProperty& rhs) 
     : CompositeProperty(rhs)
     , referenceFrame_(rhs.referenceFrame_)
-    , position_(rhs.position_) {
-    // add properties
+    , position_(rhs.position_)
+    , camera_(rhs.camera_)
+    , positionWorldSpace_(rhs.positionWorldSpace_)
+{
+    // Add properties
     addProperty(referenceFrame_);
     addProperty(position_);
+
+    referenceFrame_.onChange(this, &PositionProperty::referenceFrameChanged);
+    position_.onChange(this, &PositionProperty::positionChanged);
+    if (camera_)
+        camera_->onChange(this, &PositionProperty::cameraChanged);
+}
+
+PositionProperty& PositionProperty::operator=(const PositionProperty& that) {
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        referenceFrame_ = that.referenceFrame_;
+        position_ = that.position_;
+        camera_ = that.camera_;
+        positionWorldSpace_ = that.positionWorldSpace_;
+    }
+    return *this;
 }
 
 PositionProperty* PositionProperty::clone() const {
@@ -72,17 +96,12 @@ PositionProperty* PositionProperty::clone() const {
 }
 
 vec3 PositionProperty::get() const {
-    switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
-    case Space::VIEW:
-        return camera_ ? vec3(camera_->inverseViewMatrix() * vec4(position_.get(), 1.0f))
-            : position_.get();
-    case Space::WORLD:
-    default:
-        return position_.get();
-    }
+    return positionWorldSpace_;
 }
 
 void PositionProperty::set(const vec3& worldSpacePos) {
+    // The onChange callback positionChanged() will update positionWorldSpace_,
+    // so there is no need to update that here
     switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
     case Space::VIEW:
         position_.set( camera_ ? vec3(camera_->viewMatrix() * vec4(worldSpacePos, 1.0f))
@@ -94,28 +113,38 @@ void PositionProperty::set(const vec3& worldSpacePos) {
     }
 }
 
-PositionProperty& PositionProperty::operator=(const PositionProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        referenceFrame_ = that.referenceFrame_;
-        position_ = that.position_;
-    }
-    return *this;
+void PositionProperty::serialize(Serializer& s) const {
+    CompositeProperty::serialize(s);
+    s.serialize("positionWorldSpace", positionWorldSpace_);
+}
+
+void PositionProperty::deserialize(Deserializer& d) {
+    CompositeProperty::deserialize(d);
+    d.deserialize("positionWorldSpace", positionWorldSpace_);
+
+    // After deserialization, we restore position_ from positionWorldSpace_
+    set(positionWorldSpace_);
 }
 
 void PositionProperty::referenceFrameChanged() {
-    if (!camera_)
-        return;
+    set(positionWorldSpace_);
+}
 
-    // Transform position between the different reference frames in order
-    // to keep the light at the same world space position
-    switch (static_cast<Space>(referenceFrame_.getSelectedValue())) {
-    case Space::VIEW:
-        position_.set(vec3(camera_->viewMatrix() * vec4(position_.get(), 1.0f)));
-        break;
-    case Space::WORLD:
-    default:
-        position_.set(vec3(camera_->inverseViewMatrix() * vec4(position_.get(), 1.0f)));
+void PositionProperty::positionChanged() {
+    if (camera_ && static_cast<Space>(referenceFrame_.getSelectedValue()) == Space::VIEW)
+        positionWorldSpace_ = vec3(camera_->inverseViewMatrix() * vec4(position_.get(), 1.0f));
+    else
+        positionWorldSpace_ = position_.get();
+}
+
+void PositionProperty::cameraChanged() {
+    // If the camera changes and the position is in view space, we update the position
+    // given the currently known world space position. We disable the invalidation since
+    // the position (in world space) does not really change
+    if (static_cast<Space>(referenceFrame_.getSelectedValue()) == Space::VIEW) {
+        position_.setInvalidationLevel(InvalidationLevel::Valid);
+        position_.set(vec3(camera_->viewMatrix() * vec4(positionWorldSpace_, 1.0f)));
+        position_.setInvalidationLevel(InvalidationLevel::InvalidOutput);
     }
 }
 

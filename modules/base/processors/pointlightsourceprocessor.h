@@ -118,7 +118,6 @@ private:
     vec3 lookTo_; ///< Necessary for trackball
     PointLightTrackball trackball_;
     int interactionEventOption_;
-    vec3 lightPositionWorldSpace_;
 
 };
 

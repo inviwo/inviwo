@@ -51,7 +51,7 @@ DiffuseLightSourceProcessor::DiffuseLightSourceProcessor()
     , lightPosition_("lightPosition", "Light Source Position",
                      FloatVec3Property("position", "Position", vec3(1.f, 0.65f, 0.65f), vec3(-10.f),
                                        vec3(10.f)),
-                     &camera_.get())
+                     &camera_)
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))
