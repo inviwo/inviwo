@@ -70,16 +70,9 @@ function(ivw_make_unittest_target name dependencies)
     	add_definitions(-DGTEST_LINKED_AS_SHARED_LIBRARY=1)
 	endif()
 
-	message("UT     : ${name}")
-	message("target : ${test_name}")
-	message("dep    : ${dependencies}")
-	message("pre    : ${_preModuleDependencies}")
-
 	#--------------------------------------------------------------------
 	# Add source files
-	set(SOURCE_FILES
-		${${name}_UNITTEST_FILES}
-	)
+	set(SOURCE_FILES {${name}_UNITTEST_FILES} )
 	ivw_group("Test Files" ${SOURCE_FILES})
 
 	#--------------------------------------------------------------------
@@ -90,7 +83,6 @@ function(ivw_make_unittest_target name dependencies)
 	# Register the use of inviwo modules
 	list_intersection(use_inivwo_modules "${test_dependencies}" "${available_modules}")
 	ivw_register_use_of_modules(${use_inivwo_modules})
-	message("use    : ${use_inivwo_modules}")
 
 	#--------------------------------------------------------------------
 	# Include generation directory to register modules etc
@@ -123,11 +115,5 @@ function(ivw_make_unittest_target name dependencies)
 	# ivw_compile_optimize_inviwo_core()
 
 	ivw_memleak_setup(${test_name})
-
-
-	get_directory_property(defs COMPILE_DEFINITIONS)
-	foreach(def ${defs})
-		message("${name} -> ${def}")
-	endforeach()
 
 endfunction()

@@ -434,7 +434,7 @@ function(ivw_group group_name)
         endif()
         string(REPLACE "include/inviwo/" "src/" currentSourceFileModified ${currentSourceFile})
         file(RELATIVE_PATH folder ${CMAKE_CURRENT_SOURCE_DIR} ${currentSourceFileModified})
-        get_filename_component(folder ${folder} DIRECTORY)
+        get_filename_component(folder ${folder} PATH)
 
         if(group_name STREQUAL "Test Files")
             string(REPLACE "tests/unittests" "" folder ${folder})
@@ -504,8 +504,6 @@ macro(ivw_define_standard_definitions project_name target_name)
     string(TOUPPER ${project_name} u_project_name)
     target_compile_definitions(${target_name} PRIVATE -D${u_project_name}_EXPORTS)
     target_compile_definitions(${target_name} PRIVATE -DGLM_EXPORTS)
-    #add_definitions(-D${u_project_name}_EXPORTS)
-    #add_definitions(-DGLM_EXPORTS)
 
     if(WIN32)          
         # Large memory support
@@ -523,16 +521,12 @@ macro(ivw_define_standard_definitions project_name target_name)
 
     else(WIN32)
         target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
-        #add_definitions(-DHAVE_CONFIG_H)
     endif(WIN32)
-    
-
-    
+        
     if(MSVC)
         target_compile_definitions(${target_name} PRIVATE -DUNICODE)
-        target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
-        #add_definitions(-DUNICODE)
-        #add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
+        target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS 
+                                                          -D_CRT_SECURE_NO_DEPRECATE)
     endif()
     source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 endmacro()
@@ -710,7 +704,7 @@ macro(ivw_add_link_flags)
 endmacro()
 
 #--------------------------------------------------------------------
-# Defines option for module and add subdirectory if such is ON
+# adds link_directories for the supplies dependencies
 macro(ivw_add_dependency_directories)
     foreach (package ${ARGN})
         # Locate libraries
@@ -941,7 +935,7 @@ macro(ivw_qt_add_to_install qtarget ivw_comp)
             elseif(APPLE)
                 foreach(plugin ${${qtarget}_PLUGINS})
                     get_target_property(_loc ${plugin} LOCATION)
-                    get_filename_component(_path ${_loc} DIRECTORY)
+                    get_filename_component(_path ${_loc} PATH)
                     get_filename_component(_dirname ${_path} NAME)
                     install(FILES ${_loc} 
                             DESTINATION Inviwo.app/Contents/plugins/${_dirname} 
