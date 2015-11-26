@@ -23,15 +23,15 @@ set(SOURCE_FILES
 ivw_group("Half Source Files" ${SOURCE_FILES} )
 
 #--------------------------------------------------------------------
+# Create library
+add_library(half ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
 # Define defintions
-ivw_define_standard_definitions(half)
+ivw_define_standard_definitions(half half)
 if(BUILD_SHARED_LIBS)
     ivw_add_definition(OPENEXR_DLL)
 endif()
-
-#--------------------------------------------------------------------
-# Create library
-add_library(half ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

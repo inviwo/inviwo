@@ -25,8 +25,12 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
+# Create library
+add_library(ticpp ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
 # Define defintions
-ivw_define_standard_definitions(ticpp)
+ivw_define_standard_definitions(ticpp ticpp)
 ivw_add_definition(TIXML_USE_TICPP)
 if(WIN32)
     if(BUILD_SHARED_LIBS)
@@ -34,10 +38,6 @@ if(WIN32)
         add_definitions(-DBUILD_TICPP_DLL)
     endif()
 endif()
-
-#--------------------------------------------------------------------
-# Create library
-add_library(ticpp ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

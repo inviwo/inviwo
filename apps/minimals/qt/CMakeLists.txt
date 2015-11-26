@@ -14,10 +14,6 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
         
 #--------------------------------------------------------------------
-# Define defintions
-ivw_define_standard_definitions(inviwo_qtminimum)
-
-#--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(package_list)
 list(APPEND package_list InviwoCore)
@@ -52,7 +48,9 @@ if(DESIRED_QT_VERSION MATCHES 5)
 else()
     ivw_add_dependencies(Qt)
 endif()
-
+#--------------------------------------------------------------------
+# Define defintions
+ivw_define_standard_definitions(inviwo_qtminimum inviwo_qtminimum) 
 #--------------------------------------------------------------------
 # Define standard properties
 ivw_define_standard_properties(inviwo_qtminimum)

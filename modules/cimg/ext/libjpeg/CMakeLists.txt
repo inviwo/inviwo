@@ -25,9 +25,7 @@ endif()
 
 ivw_group("Source Files" ${SOURCE_FILES} )
 
-#--------------------------------------------------------------------
-# Define defintions
-ivw_define_standard_definitions(libjpeg)
+
 remove_definitions(-DHAVE_CONFIG_H)
 if(BUILD_SHARED_LIBS)
     add_definitions(-DJPEG_DLL)
@@ -38,6 +36,10 @@ endif()
 #--------------------------------------------------------------------
 # Create library
 add_library(libjpeg ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
+# Define defintions
+ivw_define_standard_definitions(libjpeg libjpeg)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

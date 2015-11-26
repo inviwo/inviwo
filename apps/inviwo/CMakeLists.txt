@@ -41,10 +41,6 @@ else()
 endif()
         
 #--------------------------------------------------------------------
-# Define defintions
-ivw_define_standard_definitions(inviwo)
-
-#--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(package_list)
 list(APPEND package_list InviwoQtEditor)
@@ -88,6 +84,10 @@ endif()
 #--------------------------------------------------------------------
 # Create application
 add_executable(inviwo MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${HEADER_FILES} ${MOC_FILES} ${QRC_FILE} ${RES_FILES})
+
+#--------------------------------------------------------------------
+# Define defintions
+ivw_define_standard_definitions(inviwo inviwo)
 
 #--------------------------------------------------------------------
 # Define standard properties

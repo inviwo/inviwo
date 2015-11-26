@@ -79,21 +79,21 @@ set(SOURCE_FILES 	${CMAKE_CURRENT_SOURCE_DIR}/asd.cpp)
 ivw_group("Source Files" ${SOURCE_FILES} ${HALF_SOURCE_FILES} ${IEX_SOURCE_FILES} ${ILLMIMF_SOURCE_FILES} ${ILMTHREAD_SOURCE_FILES} ${IMATH_SOURCE_FILES})
 
 #--------------------------------------------------------------------
-# Define defintions
-ivw_define_standard_definitions(openexr)
-if(BUILD_SHARED_LIBS)
-    ivw_add_definition(OPENEXR_DLL)
-	add_definitions(-DHALF_EXPORTS)
-    add_definitions(-DIEX_EXPORTS)
-	add_definitions(-DILMIMF_EXPORTS)
-	add_definitions(-DILMTHREAD_EXPORTS)
-	add_definitions(-DIMATH_EXPORTS)
-endif()
-
-#--------------------------------------------------------------------
 # Create library
 #add_library(openexr ${SOURCE_FILES} ${HEADER_FILES})
 add_library(openexr ${HEADER_FILES} ${SOURCE_FILES} ${HALF_HEADER_FILES} ${HALF_SOURCE_FILES} ${IEX_HEADER_FILES} ${IEX_SOURCE_FILES} ${ILLMIMF_HEADER_FILES} ${ILLMIMF_SOURCE_FILES} ${ILMTHREAD_HEADER_FILES} ${ILMTHREAD_SOURCE_FILES} ${IMATH_HEADER_FILES} ${IMATH_SOURCE_FILES})
+
+#--------------------------------------------------------------------
+# Define defintions
+ivw_define_standard_definitions(openexr openexr)
+if(BUILD_SHARED_LIBS)
+    ivw_add_definition(OPENEXR_DLL)
+    add_definitions(-DHALF_EXPORTS)
+    add_definitions(-DIEX_EXPORTS)
+    add_definitions(-DILMIMF_EXPORTS)
+    add_definitions(-DILMTHREAD_EXPORTS)
+    add_definitions(-DIMATH_EXPORTS)
+endif()
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

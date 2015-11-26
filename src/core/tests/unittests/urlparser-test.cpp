@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/core/common/inviwoapplication.h>
-
+#include <inviwo/core/util/formats.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
@@ -42,7 +41,6 @@ TEST(filesystemTest,fileExistsTest) {
 #ifdef __FILE__
     EXPECT_TRUE(filesystem::fileExists(__FILE__));
 #endif
-    EXPECT_TRUE(filesystem::fileExists(InviwoApplication::getPtr()->getCommandLineParser()->getARGV()[0]));//Cant find current executable
 }
 
 TEST(filesystemTest,fileExtensionTest) {

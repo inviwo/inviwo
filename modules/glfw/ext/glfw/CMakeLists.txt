@@ -573,7 +573,7 @@ endif()
 #endif()
 
 # InViWo Macros
-ivw_define_standard_definitions(glfw)
+ivw_define_standard_definitions(glfw glfw)
 ivw_folder(glfw ext)
 
 #--------------------------------------------------------------------

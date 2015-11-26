@@ -480,19 +480,14 @@ set(PCH_PATH_FILES
 ivw_add_pch_path(${PCH_PATH_FILES})
 
 set(TEST_FILES
-    unittests/inviwo-core-unittest-main.cpp
-    unittests/commandlineparser-test.cpp
-    unittests/urlparser-test.cpp
-    unittests/picking-test.cpp
-    unittests/metadata-test.cpp
-    unittests/serializer-test.cpp
+    tests/unittests/inviwo-core-unittest-main.cpp
+    tests/unittests/commandlineparser-test.cpp
+    tests/unittests/urlparser-test.cpp
+    tests/unittests/picking-test.cpp
+    tests/unittests/metadata-test.cpp
+    tests/unittests/serializer-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
-
-
-#--------------------------------------------------------------------
-# Define standard defintions
-ivw_define_standard_definitions(IVW_CORE)
 
 # Special Core Defines
 remove_definitions(-DHAVE_CONFIG_H)
@@ -505,6 +500,10 @@ add_definitions(-DCMAKE_GENERATOR="${CMAKE_GENERATOR}")
 #--------------------------------------------------------------------
 # Create library
 add_library(inviwo-core ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
+# Define standard defintions
+ivw_define_standard_definitions(IVW_CORE inviwo-core)
 
 #--------------------------------------------------------------------
 # Add core folders to includes

@@ -32,37 +32,28 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/serialization/serializable.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
-#define SERIALITION_FILE_NAME                                             \
-    InviwoApplication::getPtr()->getPath(PathType::Modules, \
-                                         "unittests/tmpfiles/serilizationtests.xml")
-
 TEST(SerialitionTest, initTest) {
-    std::string filename = SERIALITION_FILE_NAME;
-    Serializer serializer(filename);
+    std::string refpath = filesystem::findBasePath();
+    std::stringstream ss;
+    Serializer serializer(refpath);
+    serializer.writeFile(ss);
     EXPECT_TRUE(true);
-}
-
-TEST(SerialitionTest, writeFile) {
-    std::string filename = SERIALITION_FILE_NAME;
-    Serializer serializer(filename);
-    serializer.serialize("test", 3.1415f);
-    serializer.writeFile();
-    EXPECT_TRUE(filesystem::fileExists(filename));
 }
 
 template <typename T>
 T serializationOfType(T inValue) {
-    std::string filename = SERIALITION_FILE_NAME;
-    Serializer serializer(filename);
+    std::string refpath = filesystem::findBasePath();
+    std::stringstream ss;
+    Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
-    serializer.writeFile();
-    Deserializer deserializer(filename);
+    serializer.writeFile(ss);
+    Deserializer deserializer(ss, refpath);
     T outValue;
     deserializer.deserialize("serializedValue", outValue);
     return outValue;
@@ -157,11 +148,12 @@ public:
 
 TEST(SerialitionTest, IvwSerializableClassTest) {
     MinimumSerilizableClass inValue(12), outValue;
-    std::string filename = SERIALITION_FILE_NAME;
-    Serializer serializer(filename);
+    std::string refpath = filesystem::findBasePath();
+    std::stringstream ss;
+    Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
-    serializer.writeFile();
-    Deserializer deserializer(filename);
+    serializer.writeFile(ss);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedValue", outValue);
     EXPECT_EQ(inValue.value_, 12);
     EXPECT_NE(outValue.value_, 0);
@@ -170,11 +162,12 @@ TEST(SerialitionTest, IvwSerializableClassTest) {
 
 TEST(SerialitionTest, IvwSerializableClassAsPointerTest) {
     MinimumSerilizableClass* inValue = new MinimumSerilizableClass(12), * outValue = 0;
-    std::string filename = SERIALITION_FILE_NAME;
-    Serializer serializer(filename);
+    std::string refpath = filesystem::findBasePath();
+    std::stringstream ss;
+    Serializer serializer(refpath);
     serializer.serialize("serializedValue", inValue);
-    serializer.writeFile();
-    Deserializer deserializer(filename);
+    serializer.writeFile(ss);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedValue", outValue);
     EXPECT_EQ(inValue->value_, 12);
     EXPECT_NE(outValue->value_, 0);
@@ -188,11 +181,12 @@ TEST(SerialitionTest, floatVectorTest) {
     inVector.push_back(0.1f);
     inVector.push_back(0.2f);
     inVector.push_back(0.3f);
-    std::string filename = SERIALITION_FILE_NAME;
-    Serializer serializer(filename);
+    std::string refpath = filesystem::findBasePath();
+    std::stringstream ss;
+    Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
-    serializer.writeFile();
-    Deserializer deserializer(filename);
+    serializer.writeFile(ss);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 
@@ -204,11 +198,12 @@ TEST(SerialitionTest, vectorOfNonPointersTest) {
     inVector.push_back(MinimumSerilizableClass(0.1f));
     inVector.push_back(MinimumSerilizableClass(0.2f));
     inVector.push_back(MinimumSerilizableClass(0.3f));
-    std::string filename = SERIALITION_FILE_NAME;
-    Serializer serializer(filename);
+    std::string refpath = filesystem::findBasePath();
+    std::stringstream ss;
+    Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
-    serializer.writeFile();
-    Deserializer deserializer(filename);
+    serializer.writeFile(ss);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 
@@ -220,11 +215,12 @@ TEST(SerialitionTest, vectorOfPointersTest) {
     inVector.push_back(new MinimumSerilizableClass(0.1f));
     inVector.push_back(new MinimumSerilizableClass(0.2f));
     inVector.push_back(new MinimumSerilizableClass(0.3f));
-    std::string filename = SERIALITION_FILE_NAME;
-    Serializer serializer(filename);
+    std::string refpath = filesystem::findBasePath();
+    std::stringstream ss;
+    Serializer serializer(refpath);
     serializer.serialize("serializedVector", inVector, "value");
-    serializer.writeFile();
-    Deserializer deserializer(filename);
+    serializer.writeFile(ss);
+    Deserializer deserializer(ss, refpath);
     deserializer.deserialize("serializedVector", outVector, "value");
     ASSERT_EQ(inVector.size(), outVector.size());
 

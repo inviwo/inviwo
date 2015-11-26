@@ -36,15 +36,13 @@
 
 namespace inviwo{
 
-
 TEST(KDTreeTests, init) {
     KDTree<3,char,float> tree;
 }
 
 
 TEST(KDTreeTests, randomPointsTest) {
-
-    srand(0); // seed to alwas be the same random numbers
+    srand(0); // seed to always be the same random numbers
 
     K3DTree<int, float> tree;
     int size = 1000;
@@ -60,7 +58,7 @@ TEST(KDTreeTests, randomPointsTest) {
 
 TEST(KDTreeTests, minMaxTest) {
 
-    srand(0); // seed to alwas be the same random numbers
+    srand(0); // seed to always be the same random numbers
 
     K3DTree<int, float> tree;
     int size = 1000;
@@ -122,7 +120,7 @@ TEST(KDTreeTests, minMaxTest) {
 
 TEST(KDTreeTests, findNClosests) {
 
-    srand(0); // seed to alwas be the same random numbers
+    srand(0); // seed to always be the same random numbers
 
     K3DTree<int, float> tree;
     int size = 1000;

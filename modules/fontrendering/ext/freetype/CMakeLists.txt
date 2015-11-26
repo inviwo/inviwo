@@ -104,7 +104,7 @@ set_target_properties(${FREETYPE_LIBRARIES} PROPERTIES
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
-ivw_define_standard_definitions(freetype)
+ivw_define_standard_definitions(freetype freetype)
 ivw_folder(freetype ext)
 
 #--------------------------------------------------------------------

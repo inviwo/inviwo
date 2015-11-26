@@ -18,14 +18,6 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
-# Define defintions
-ivw_define_standard_definitions(stackwalker)
-
-if(WIN32)
-add_definitions( "/W0 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /wd4748" )
-endif()
-
-#--------------------------------------------------------------------
 # Create library
 
 IF(${SHARED_LIBS})
@@ -33,6 +25,13 @@ IF(${SHARED_LIBS})
 ELSE()
     add_library(stackwalker STATIC ${SOURCE_FILES} ${HEADER_FILES})
 ENDIF()
+
+#--------------------------------------------------------------------
+# Define defintions
+ivw_define_standard_definitions(stackwalker stackwalker)
+if(WIN32)
+	target_compile_definitions(stackwalker PRIVATE /W0 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /wd4748)
+endif()
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

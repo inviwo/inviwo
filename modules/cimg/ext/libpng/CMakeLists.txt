@@ -20,9 +20,7 @@ file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 
 ivw_group("Source Files" ${SOURCE_FILES} )
 
-#--------------------------------------------------------------------
-# Define defintions
-ivw_define_standard_definitions(internallibpng)
+
 if(BUILD_SHARED_LIBS)
     add_definitions(-DPNG_BUILD_DLL)
     ivw_add_definition_to_list(PNG_USE_DLL)
@@ -31,6 +29,10 @@ endif()
 #--------------------------------------------------------------------
 # Create library
 add_library(internallibpng ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
+# Define defintions
+ivw_define_standard_definitions(internallibpng internallibpng)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

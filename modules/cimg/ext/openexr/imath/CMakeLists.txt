@@ -21,15 +21,15 @@ file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 ivw_group("IMath Source Files" ${SOURCE_FILES} )
 
 #--------------------------------------------------------------------
+# Create library
+add_library(imath ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
 # Define defintions
-ivw_define_standard_definitions(imath)
+ivw_define_standard_definitions(imath imath)
 if(BUILD_SHARED_LIBS)
     ivw_add_definition(OPENEXR_DLL)
 endif()
-
-#--------------------------------------------------------------------
-# Create library
-add_library(imath ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

@@ -17,13 +17,14 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
-# Define defintions
-ivw_define_standard_definitions(tidds)
 
 #--------------------------------------------------------------------
 # Create library
 add_library(tidds ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
+# Define defintions
+ivw_define_standard_definitions(tidds tidds)
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

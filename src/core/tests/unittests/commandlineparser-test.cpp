@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2013-2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,52 +27,48 @@
  * 
  *********************************************************************************/
 
-#include <inviwo/core/metadata/metadataowner.h>
-#include <inviwo/core/metadata/metadata.h>
-#include <inviwo/core/io/serialization/serializable.h>
-#include <string.h>
-#include <inviwo/core/common/inviwoapplication.h>
-
+#include <inviwo/core/util/commandlineparser.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
-
 namespace inviwo{
 
+TEST(CommandLineParserTest, DefaultTest) {
+    const int argc = 1;
+    const char *argv[argc] = {"unittests.exe"};
+    CommandLineParser clp(argc, const_cast<char**>(argv));
+    EXPECT_STREQ("", clp.getOutputPath().c_str());
+    EXPECT_STREQ("", clp.getWorkspacePath().c_str());
+    EXPECT_STREQ("", clp.getSnapshotName().c_str());
+    EXPECT_STREQ("", clp.getScreenGrabName().c_str());
+    EXPECT_STREQ("", clp.getPythonScriptName().c_str());
+    EXPECT_FALSE(clp.getCaptureAfterStartup());
+    EXPECT_FALSE(clp.getScreenGrabAfterStartup());
+    EXPECT_FALSE(clp.getRunPythonScriptAfterStartup());
+    EXPECT_FALSE(clp.getQuitApplicationAfterStartup());
+    EXPECT_FALSE(clp.getLoadWorkspaceFromArg());
+    EXPECT_TRUE(clp.getShowSplashScreen());
+}
 
-template<typename T, typename M>
-void testserialization(T def, T in) {
-    T indata = in;
-    T outdata1 = def;
-    std::string filename =
-        InviwoApplication::getPtr()->getPath(PathType::Modules,
-                "unittests/tmpfiles/metadatatests.xml");
-    MetaDataOwner* mdo1;
-    MetaDataOwner* mdo2;
-    mdo1 = new MetaDataOwner();
-    mdo2 = new MetaDataOwner();
-    mdo1->setMetaData<M>("data", indata);
-    outdata1 = mdo1->getMetaData<M>("data", outdata1);
-    EXPECT_EQ(indata, outdata1);
-    Serializer serializer(filename);
-    mdo1->getMetaDataMap()->serialize(serializer);
-    serializer.writeFile();
-    Deserializer deserializer(filename);
-    mdo2->getMetaDataMap()->deserialize(deserializer);
-    T outdata2 = def;
-    outdata2 = mdo2->getMetaData<M>("data", outdata2);
-    EXPECT_EQ(indata, outdata2);
-    delete mdo1;
-    delete mdo2;
+TEST(CommandLineParserTest, CommandLineParserTest) {
+    const int argc = 3;
+    const char *argv[argc] = {"unittests.exe", "-w", "C:/Just/A/Path/"};
+    CommandLineParser clp(argc, const_cast<char**>(argv));
+    EXPECT_STREQ("", clp.getOutputPath().c_str());
+    EXPECT_STREQ("C:/Just/A/Path/", clp.getWorkspacePath().c_str());
+    EXPECT_STREQ("", clp.getSnapshotName().c_str());
+    EXPECT_STREQ("", clp.getScreenGrabName().c_str());
+    EXPECT_STREQ("", clp.getPythonScriptName().c_str());
+    EXPECT_FALSE(clp.getCaptureAfterStartup());
+    EXPECT_FALSE(clp.getScreenGrabAfterStartup());
+    EXPECT_FALSE(clp.getRunPythonScriptAfterStartup());
+    EXPECT_FALSE(clp.getQuitApplicationAfterStartup());
+    EXPECT_TRUE(clp.getLoadWorkspaceFromArg());
+    EXPECT_TRUE(clp.getShowSplashScreen());
 }
 
 
-#define MetaDataMacro(n, t, d, v) \
-    TEST(MetaDataTest, n##SerializationTest) { \
-        testserialization<t, n##MetaData>(d, v); \
-    }
-#include <inviwo/core/metadata/metadatadefinefunc.h>
 
 }

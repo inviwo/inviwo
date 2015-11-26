@@ -51,9 +51,10 @@ function(ivw_make_unittest_target name dependencies)
 	if(NOT ${name}_UNITTEST_FILES)
 		return()
 	endif()
+
 	set(test_name "inviwo-unittests-${name}")
 	ivw_debug_message(STATUS "create unittests: ${test_name}")
-	
+
 	ivw_retrieve_all_modules(available_modules)
 	ivw_mod_name_to_dir(module_dir_names ${available_modules})
 	list(FIND module_dir_names ${name} index)
@@ -61,14 +62,18 @@ function(ivw_make_unittest_target name dependencies)
 		list(GET available_modules ${index} module_name)
 	endif()
 	set(test_dependencies gtest InviwoCore ${module_name} ${dependencies})
-	list_intersection(use_inivwo_modules "${test_dependencies}" "InviwoCore;${available_modules}")
-
+	
 	ivw_project(${test_name})
 
 	add_definitions(-DGTEST_HAS_TR1_TUPLE=0)
 	if(BUILD_SHARED_LIBS)
     	add_definitions(-DGTEST_LINKED_AS_SHARED_LIBRARY=1)
 	endif()
+
+	message("UT     : ${name}")
+	message("target : ${test_name}")
+	message("dep    : ${dependencies}")
+	message("pre    : ${_preModuleDependencies}")
 
 	#--------------------------------------------------------------------
 	# Add source files
@@ -77,22 +82,15 @@ function(ivw_make_unittest_target name dependencies)
 	)
 	ivw_group("Test Files" ${SOURCE_FILES})
 
-	#if(NOT IVW_MODULE_GLFW)
-	#    set(IVW_MODULE_GLFW ON CACHE BOOL "" FORCE)
-	#    ivw_message("IVW_MODULE_GLFW was set to build, due to dependency towards IVW_UNIT_TEST_APPLICATION")
-	#endif()
-
-	#--------------------------------------------------------------------
-	# Define defintions
-	ivw_define_standard_definitions(${test_name})
-
 	#--------------------------------------------------------------------
 	# Need to add dependent directories before creating application
 	ivw_add_dependency_directories(${test_dependencies})
 
 	#--------------------------------------------------------------------
 	# Register the use of inviwo modules
+	list_intersection(use_inivwo_modules "${test_dependencies}" "${available_modules}")
 	ivw_register_use_of_modules(${use_inivwo_modules})
+	message("use    : ${use_inivwo_modules}")
 
 	#--------------------------------------------------------------------
 	# Include generation directory to register modules etc
@@ -100,11 +98,13 @@ function(ivw_make_unittest_target name dependencies)
 	include_directories(${CMAKE_SOURCE_DIR}/ext/gtest/include)
 	ivw_link_directories(${LIBRARY_OUTPUT_PATH})
 
-
 	#--------------------------------------------------------------------
 	# Create application
 	add_executable(${test_name} MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
 
+	#--------------------------------------------------------------------
+	# Define defintions
+	ivw_define_standard_definitions(${test_name} ${test_name})
 	#--------------------------------------------------------------------
 	# Define standard properties
 	ivw_define_standard_properties(${test_name})
@@ -123,5 +123,11 @@ function(ivw_make_unittest_target name dependencies)
 	# ivw_compile_optimize_inviwo_core()
 
 	ivw_memleak_setup(${test_name})
+
+
+	get_directory_property(defs COMPILE_DEFINITIONS)
+	foreach(def ${defs})
+		message("${name} -> ${def}")
+	endforeach()
 
 endfunction()

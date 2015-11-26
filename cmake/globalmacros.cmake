@@ -108,16 +108,6 @@ function(ivw_depend_name retval)
 endfunction()
 
 #--------------------------------------------------------------------
-# Retrieve all modules as a list
-function(ivw_retrieve_all_modules module_list)
-    if(EXISTS "${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake")
-        include(${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake) # defines module_packages
-        remove_from_list(modules "${module_packages}" ${ARGN})
-        set(${module_list} ${modules} PARENT_SCOPE)
-    endif()
-endfunction()
-
-#--------------------------------------------------------------------
 # Register the use of modules
 macro(ivw_register_use_of_modules)
     foreach(module ${ARGN})
@@ -129,9 +119,14 @@ endmacro()
 #--------------------------------------------------------------------
 # Generate a list of all available module packages
 function(create_module_package_list)
-    ivw_to_mod_name(ALL_MODULE_PACKAGES ${ARGN})
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/modules_template.cmake 
-                   ${CMAKE_BINARY_DIR}/modules/_generated/modules.cmake @ONLY)
+    ivw_to_mod_name(modules ${ARGN})
+    set(ivw_all_registered_modules ${modules} CACHE INTERNAL "All registered inviwo modules")
+endfunction()
+
+#--------------------------------------------------------------------
+# Retrieve all modules as a list
+function(ivw_retrieve_all_modules module_list)
+    set(${module_list} ${ivw_all_registered_modules} PARENT_SCOPE)
 endfunction()
 
 #--------------------------------------------------------------------
@@ -439,12 +434,15 @@ function(ivw_group group_name)
         endif()
         string(REPLACE "include/inviwo/" "src/" currentSourceFileModified ${currentSourceFile})
         file(RELATIVE_PATH folder ${CMAKE_CURRENT_SOURCE_DIR} ${currentSourceFileModified})
-        get_filename_component(filename ${folder} NAME)
-        string(REPLACE ${filename} "" folder ${folder})
+        get_filename_component(folder ${folder} DIRECTORY)
+
+        if(group_name STREQUAL "Test Files")
+            string(REPLACE "tests/unittests" "" folder ${folder})
+        endif()
+
         if(NOT folder STREQUAL "")
             string(REGEX REPLACE "/+$" "" folderlast ${folder})
             string(REPLACE "/" "\\" folderlast ${folderlast})
-            ivw_message("${group_name}\\${folderlast} -> ${currentSourceFile}")
             source_group("${group_name}\\${folderlast}" FILES ${currentSourceFile})
         else()
             source_group("${group_name}" FILES ${currentSourceFile})
@@ -501,11 +499,13 @@ endfunction()
 
 #--------------------------------------------------------------------
 # Define standard defintions
-macro(ivw_define_standard_definitions project_name)
+macro(ivw_define_standard_definitions project_name target_name)
     # Set the compiler flags
     string(TOUPPER ${project_name} u_project_name)
-    add_definitions(-D${u_project_name}_EXPORTS)
-    add_definitions(-DGLM_EXPORTS)
+    target_compile_definitions(${target_name} PRIVATE -D${u_project_name}_EXPORTS)
+    target_compile_definitions(${target_name} PRIVATE -DGLM_EXPORTS)
+    #add_definitions(-D${u_project_name}_EXPORTS)
+    #add_definitions(-DGLM_EXPORTS)
 
     if(WIN32)          
         # Large memory support
@@ -522,12 +522,18 @@ macro(ivw_define_standard_definitions project_name)
         endif()
 
     else(WIN32)
-        add_definitions(-DHAVE_CONFIG_H)
+        target_compile_definitions(${target_name} PRIVATE -DHAVE_CONFIG_H)
+        #add_definitions(-DHAVE_CONFIG_H)
     endif(WIN32)
     
-    add_definitions(-DUNICODE)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
+
     
+    if(MSVC)
+        target_compile_definitions(${target_name} PRIVATE -DUNICODE)
+        target_compile_definitions(${target_name} PRIVATE -D_CRT_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
+        #add_definitions(-DUNICODE)
+        #add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
+    endif()
     source_group("CMake Files" FILES ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt)
 endmacro()
 
@@ -571,7 +577,7 @@ macro(ivw_create_module)
     ivw_dir_to_mod_prefix(${mod_name} ${_projectName})        # opengl -> IVW_MODULE_OPENGL
     ivw_dir_to_mod_dep(mod_dep ${_projectName})               # opengl -> INVIWOOPENGLMODULE
     ivw_dir_to_module_taget_name(target_name ${_projectName}) # opengl -> inviwo-module-opengl
-    ivw_define_standard_definitions(${mod_name})
+
 
     set(CMAKE_FILES "")
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")
@@ -591,6 +597,7 @@ macro(ivw_create_module)
     add_library(${target_name} ${ARGN} ${MOD_CLASS_FILES} ${CMAKE_FILES})
     
     # Define standard properties
+    ivw_define_standard_definitions(${mod_name} ${target_name})
     ivw_define_standard_properties(${target_name})
     
     # Add dependencies
@@ -610,7 +617,7 @@ macro(ivw_create_module)
     ivw_make_package(${_packageName} ${target_name})
 
     if(IVW_UNITTESTS)
-        ivw_make_unittest_target("${_projectName}" "${dependencies}")
+        ivw_make_unittest_target("${_projectName}" "${${mod_dep}_dependencies}")
     endif()
 endmacro()
 
@@ -867,8 +874,6 @@ endmacro()
 #-------------------------------------------------------------------#
 #                            QT stuff                               #
 #-------------------------------------------------------------------#
-
-#--------------------------------------------------------------------
 # Wrap Qt CPP to create MOC files
 macro(ivw_qt_wrap_cpp retval)
     set(the_list "")
@@ -950,8 +955,6 @@ endmacro()
 #-------------------------------------------------------------------#
 #                        Precompile headers                         #
 #-------------------------------------------------------------------#
-
-#--------------------------------------------------------------------
 # Add directory to precompilied headers
 macro(ivw_add_pch_path)
     list(APPEND _allPchDirs ${ARGN})
@@ -1004,5 +1007,3 @@ macro(ivw_compile_optimize)
         cotire(${_projectName})
     endif()
 endmacro()
-
-

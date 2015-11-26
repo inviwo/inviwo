@@ -287,7 +287,7 @@ ADD_SUBDIRECTORY( code/ )
 #endif()
 
 # Creates VS folder structure
-ivw_define_standard_definitions(assimp)
+ivw_define_standard_definitions(assimp assimp)
 ivw_folder(assimp ext)
 if(APPLE)
   #Ignore warnings in external packages

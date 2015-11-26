@@ -14,10 +14,6 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
         
 #--------------------------------------------------------------------
-# Define defintions
-ivw_define_standard_definitions(inviwo_glfwminimum)
-
-#--------------------------------------------------------------------
 # Define libraries that should be linked
 ivw_retrieve_all_modules(package_list)
 list(APPEND package_list InviwoCore)
@@ -50,6 +46,10 @@ ivw_add_dependency_directories(${package_list})
 #--------------------------------------------------------------------
 # Create application
 add_executable(inviwo_glfwminimum MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
+
+#--------------------------------------------------------------------
+# Define defintions
+ivw_define_standard_definitions(inviwo_glfwminimum inviwo_glfwminimum)
 
 #--------------------------------------------------------------------
 # Define standard properties

@@ -28,16 +28,16 @@ file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
 ivw_group("Source Files" ${SOURCE_FILES} )
 
 #--------------------------------------------------------------------
+# Create library
+add_library(zlib ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
 # Define defintions
-ivw_define_standard_definitions(zlib)
+ivw_define_standard_definitions(zlib zlib)
 if(BUILD_SHARED_LIBS)
     add_definitions(-DZLIB_INTERNAL)
     ivw_add_definition(ZLIB_DLL)
 endif()
-
-#--------------------------------------------------------------------
-# Create library
-add_library(zlib ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

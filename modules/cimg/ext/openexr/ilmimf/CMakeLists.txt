@@ -21,15 +21,15 @@ file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 ivw_group("Ilmimf Source Files" ${SOURCE_FILES} )
 
 #--------------------------------------------------------------------
+# Create library
+add_library(ilmimf ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
 # Define defintions
-ivw_define_standard_definitions(ilmimf)
+ivw_define_standard_definitions(ilmimf ilmimf)
 if(BUILD_SHARED_LIBS)
     ivw_add_definition(OPENEXR_DLL)
 endif()
-
-#--------------------------------------------------------------------
-# Create library
-add_library(ilmimf ${SOURCE_FILES} ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Creates VS folder structure

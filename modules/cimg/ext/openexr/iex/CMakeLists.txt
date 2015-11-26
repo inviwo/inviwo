@@ -20,16 +20,17 @@ file(GLOB_RECURSE SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 ivw_group("Iex Source Files" ${SOURCE_FILES} )
 
-#--------------------------------------------------------------------
-# Define defintions
-ivw_define_standard_definitions(iex)
-if(BUILD_SHARED_LIBS)
-    ivw_add_definition(OPENEXR_DLL)
-endif()
 
 #--------------------------------------------------------------------
 # Create library
 add_library(iex ${SOURCE_FILES} ${HEADER_FILES})
+
+#--------------------------------------------------------------------
+# Define defintions
+ivw_define_standard_definitions(iex iex)
+if(BUILD_SHARED_LIBS)
+    ivw_add_definition(OPENEXR_DLL)
+endif()
 
 #--------------------------------------------------------------------
 # Creates VS folder structure
