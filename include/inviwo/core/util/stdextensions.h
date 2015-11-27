@@ -36,6 +36,7 @@
 #include <warn/ignore/all>
 #include <memory>
 #include <string>
+#include <iterator>
 #include <algorithm>
 #include <functional>
 #include <vector>

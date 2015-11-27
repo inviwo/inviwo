@@ -29,6 +29,7 @@
 
 #include <inviwo/core/network/networkutils.h>
 #include <inviwo/core/metadata/processormetadata.h>
+#include <iterator>
 
 namespace inviwo {
 

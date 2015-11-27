@@ -33,6 +33,8 @@
 #include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/processors/processor.h>
 
+#include <inviwo/core/processors/processor.h>
+
 #include <QMoveEvent>
 #include <QMainWindow>
 

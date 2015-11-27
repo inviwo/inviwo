@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processorwidget.h>
 #include <inviwo/core/processors/processorobserver.h>
 #include <inviwo/qt/widgets/inviwodockwidget.h>
+#include <inviwo/core/processors/processorobserver.h>
 
 
 namespace inviwo {
