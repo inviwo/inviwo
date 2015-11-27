@@ -66,7 +66,7 @@ LightingRaycaster::LightingRaycaster()
     , channel_("channel", "Render Channel")
     , raycasting_("raycaster", "Raycasting")
     , camera_("camera", "Camera")
-    , lighting_("lighting", "Lighting") {
+    , lighting_("lighting", "Lighting", &camera_) {
 
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
