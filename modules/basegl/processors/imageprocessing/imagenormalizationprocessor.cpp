@@ -108,8 +108,8 @@ void ImageNormalizationProcessor::invalidateMinMax() {
 
     uvec2 dim = img->getDimensions();
     uvec2 pixel(0, 0);
-    min_ = img->getValueAsVec4Double(pixel);
-    max_ = img->getValueAsVec4Double(pixel);
+    min_ = dvec4(std::numeric_limits<double>::max());
+    max_ = dvec4(std::numeric_limits<double>::min());
     for (pixel.y = 0; pixel.y < dim.y; pixel.y++)
         for (pixel.x = 0; pixel.x < dim.x; pixel.x++) {
             dvec4 pixelValue = img->getValueAsVec4Double(pixel);
