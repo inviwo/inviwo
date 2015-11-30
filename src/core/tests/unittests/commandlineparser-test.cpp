@@ -33,6 +33,7 @@
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
+
 namespace inviwo{
 
 TEST(CommandLineParserTest, DefaultTest) {

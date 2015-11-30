@@ -2,6 +2,30 @@
 # Inviwo Python3 Module
 ivw_module(Python3)
 
+# Try and find python 3 installation
+string(FIND "${CMAKE_PREFIX_PATH}" python3 haspython) #Skip if python3 is already in CMAKE_PREFIX_PATH
+if(NOT ${haspython} GREATER 0) 
+   if(APPLE)
+        set(pycellar "/usr/local/Cellar/python3" )
+        if(EXISTS "${pycellar}")
+            file(GLOB pythonversions RELATIVE "${pycellar}" "${pycellar}/?.?.?")
+            list(LENGTH pythonversions len)
+            if(${len} GREATER 0)
+                list(GET pythonversions -1 latest)
+                string(SUBSTRING "${latest}" 0 3 pyversion)
+                set(pypath "${pycellar}/${latest}/Frameworks/Python.framework/Versions/${pyversion}") 
+                if(EXISTS "${pypath}")
+                    ivw_debug_message(STATUS "Found python at: ${pypath}")
+                    list(APPEND CMAKE_PREFIX_PATH "${pypath}")
+                    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} PARENT_SCOPE)
+                    set(PYTHON_INCLUDE_DIR "${pypath}/Headers")         
+                endif()
+             endif()
+        endif()
+    endif()    
+endif()
+
+
 set(Python_ADDITIONAL_VERSIONS 3.5)
 find_package(PythonLibs 3)
 

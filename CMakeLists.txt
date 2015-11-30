@@ -73,6 +73,7 @@ option(IVW_QT_WIDGETS "Build Inviwo Qt Widgets" ON)
 #--------------------------------------------------------------------
 # Add externals
 add_subdirectory(ext/ticpp)
+add_subdirectory(ext/gtest)
 
 option(IVW_SIGAR "Use sigar to detect system capabilities" ON)
 if(IVW_SIGAR)
@@ -93,22 +94,25 @@ add_subdirectory(src/core)
 # Add Qt
 add_subdirectory(src/qt)
 
-set(ivw_default_modules 
+#--------------------------------------------------------------------
+# Add default modules
+set(ivw_default_modules
+    "Assimp" 
     "Base"
     "BaseGL"
     "CImg"
     "FontRendering"
     "OpenGL"
+    "OpenGLQt"
     "PVM"
-    CACHE INTERNAL "Default inviwo modules"
+    "VectorFieldVisualization"
+    "VectorFieldVisualizationGL"
+    CACHE INTERNAL "Default Inviwo Modules"
 )
 
 #--------------------------------------------------------------------
 # Add modules
 ivw_register_modules()
-#--------------------------------------------------------------------
-# Default setup of options for the build
-
 
 # OpenGL Context created with GLFW or Qt within Inviwo by default
 if(IVW_USE_GLFW_NOT_OPENGLQT)
@@ -131,5 +135,5 @@ include(cmake/packaging.cmake)
 
 #--------------------------------------------------------------------
 # Generate Doxygen setup. 
-#add_subdirectory(tools/doxygen)
+add_subdirectory(tools/doxygen)
 

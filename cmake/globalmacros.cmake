@@ -160,37 +160,39 @@ function(generate_module_registration_file module_classes modules_class_paths)
 
     set(headers "")
     set(functions "")
-    foreach(val RANGE ${len0})
-        list(GET module_classes ${val} current_name)
-        string(TOUPPER ${current_name} u_current_name)
-        list(GET modules_class_paths ${val} current_path)
-        ivw_dir_to_mod_dep(mod_dep ${current_name})
-        ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
-        list_to_stringvector(module_depdens_vector ${module_dependencies})
- 
-        set(header
-            "#ifdef REG_INVIWO${u_current_name}MODULE\n"
-            "#include <${current_path}.h>\n"
-            "#endif\n"
-        )
-        join(";" "" header ${header})
-
-        set(factory_object
-            "    #ifdef REG_INVIWO${u_current_name}MODULE\n" 
-            "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(\n"
-            "        \"${current_name}\",\n"
-            "        \"${${mod_dep}_description}\",\n" 
-            "        ${module_depdens_vector}\n" 
-            "        )\n"
-            "    ):\n"
-            "    #endif\n"
-            "\n"
-        )
-        join(";" "" factory_object ${factory_object})
-
-        list(APPEND headers ${header})
-        list(APPEND functions ${factory_object})
-    endforeach()
+    if(${len1} GREATER 0)
+        foreach(val RANGE ${len0})
+            list(GET module_classes ${val} current_name)
+            string(TOUPPER ${current_name} u_current_name)
+            list(GET modules_class_paths ${val} current_path)
+            ivw_dir_to_mod_dep(mod_dep ${current_name})
+            ivw_mod_name_to_dir(module_dependencies ${${mod_dep}_dependencies})
+            list_to_stringvector(module_depdens_vector ${module_dependencies})
+     
+            set(header
+                "#ifdef REG_INVIWO${u_current_name}MODULE\n"
+                "#include <${current_path}.h>\n"
+                "#endif\n"
+            )
+            join(";" "" header ${header})
+    
+            set(factory_object
+                "    #ifdef REG_INVIWO${u_current_name}MODULE\n" 
+                "    modules.emplace_back(new InviwoModuleFactoryObjectTemplate<${current_name}Module>(\n"
+                "        \"${current_name}\",\n"
+                "        \"${${mod_dep}_description}\",\n" 
+                "        ${module_depdens_vector}\n" 
+                "        )\n"
+                "    ):\n"
+                "    #endif\n"
+                "\n"
+            )
+            join(";" "" factory_object ${factory_object})
+    
+            list(APPEND headers ${header})
+            list(APPEND functions ${factory_object})
+        endforeach()
+    endif()
 
     join(";" "" headers ${headers})
     join(";" "" functions ${functions})
@@ -295,10 +297,8 @@ macro(ivw_register_modules)
     list(REMOVE_DUPLICATES IVW_MODULE_CLASS_PATHS)
     list(REMOVE_DUPLICATES IVW_MODULE_PATHS)
     #Generate module registration file
-    if("${IVW_MODULE_CLASSES}")
-        generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
-        create_module_package_list(${IVW_MODULE_CLASSES})
-    endif()
+    generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
+    create_module_package_list(${IVW_MODULE_CLASSES})
 endmacro()
 
 
@@ -577,7 +577,6 @@ macro(ivw_create_module)
     ivw_dir_to_mod_prefix(${mod_name} ${_projectName})        # opengl -> IVW_MODULE_OPENGL
     ivw_dir_to_mod_dep(mod_dep ${_projectName})               # opengl -> INVIWOOPENGLMODULE
     ivw_dir_to_module_taget_name(target_name ${_projectName}) # opengl -> inviwo-module-opengl
-
 
     set(CMAKE_FILES "")
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")

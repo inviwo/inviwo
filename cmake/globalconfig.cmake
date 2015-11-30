@@ -242,7 +242,7 @@ option(IVW_PROFILING "Enable profiling" OFF)
 
 #--------------------------------------------------------------------
 # Build unittest for all modules
-option(IVW_UNITTESTS "Enable unittests" OFF)
+option(IVW_UNITTESTS "Enable unittests" ON)
 include(${CMAKE_CURRENT_LIST_DIR}/unittests.cmake)
 
 #--------------------------------------------------------------------
