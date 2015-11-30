@@ -279,7 +279,7 @@ macro(ivw_register_modules)
             endif()
 
             #Add modules based on user config file and dependency resolve
-            foreach(module ${sorted_modules})
+            foreach(module ${sorted_modules})              
                 ivw_dir_to_mod_prefix(mod_name ${module})
                 if(${mod_name})
                     add_subdirectory(${module_root_path}/${module} ${IVW_BINARY_DIR}/modules/${module})
@@ -306,7 +306,7 @@ endmacro()
 # Generate module options (which was not specified before) and,
 # Sort directories based on dependencies inside directories
 # defines:  (example project_name = OpenGL)
-# INVIWOOPENGLMODULE_description  -> </docs/description.md>
+# INVIWOOPENGLMODULE_description  -> </readme.md>
 # INVIWOOPENGLMODULE_dependencies -> </depends.cmake::dependencies>
 function(generate_unset_mod_options_and_depend_sort module_root_path retval)
     file(GLOB sub-dir RELATIVE ${module_root_path} ${module_root_path}/[^.]*)
@@ -320,7 +320,7 @@ function(generate_unset_mod_options_and_depend_sort module_root_path retval)
             if(EXISTS "${module_root_path}/${dir}/depends.cmake")
                 include(${module_root_path}/${dir}/depends.cmake) # Defines dependencies
                 # Save dependencies to INVIWO<NAME>MODULE_dependencies
-                set("${mod_dep}_dependencies" ${dependencies} PARENT_SCOPE)
+                set("${mod_dep}_dependencies" ${dependencies} CACHE INTERNAL "Module dependencies")
 
                 foreach(dependency ${dependencies})
                     list(FIND IVW_MODULE_PACKAGE_NAMES ${dependency} module_index)
@@ -335,12 +335,12 @@ function(generate_unset_mod_options_and_depend_sort module_root_path retval)
                 list(REMOVE_DUPLICATES sorted_dirs)
             endif()
 
-            # check if there is a description of the module. 
+            # check if there is a readme.md of the module. 
             # In that case set to INVIWO<NAME>MODULE_description
-            if(EXISTS "${module_root_path}/${dir}/docs/description.md")
-                file(READ "${module_root_path}/${dir}/docs/description.md" description)
+            if(EXISTS "${module_root_path}/${dir}/readme.md")
+                file(READ "${module_root_path}/${dir}/readme.md" description)
                 join("\n" "\\\\\\\\n\"\n        \"" cdescription ${description})
-                set("${mod_dep}_description" ${cdescription} PARENT_SCOPE)
+                set("${mod_dep}_description" ${cdescription} CACHE INTERNAL "Module description")
             endif()
 
             lowercase(default_dirs ${ivw_default_modules})          
@@ -582,10 +582,10 @@ macro(ivw_create_module)
 
     set(CMAKE_FILES "")
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")
-        list(APPEND CMAKE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake)
+        list(APPEND CMAKE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/depends.cmake")
     endif()
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/docs/description.md")
-        list(APPEND CMAKE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/docs/description.md)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/readme.md")
+        list(APPEND CMAKE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/readme.md")
     endif()
     source_group("CMake Files" FILES ${CMAKE_FILES})
 
