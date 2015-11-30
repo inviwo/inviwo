@@ -570,7 +570,9 @@ macro(ivw_add_to_module_pack folder)
 endmacro()
 
 #--------------------------------------------------------------------
-# Creates project module from name 
+# Creates project module from name
+# This it called from the inviwo module CMakeLists.txt 
+# that is included from ivw_register_modules. 
 macro(ivw_create_module)
     ivw_debug_message(STATUS "create module: ${_projectName}")
 
@@ -615,9 +617,7 @@ macro(ivw_create_module)
     # Make package (for other modules to find)
     ivw_make_package(${_packageName} ${target_name})
 
-    if(IVW_UNITTESTS)
-        ivw_make_unittest_target("${_projectName}" "${${mod_dep}_dependencies}")
-    endif()
+    ivw_make_unittest_target("${_projectName}" "${${mod_dep}_dependencies}")
 endmacro()
 
 #--------------------------------------------------------------------

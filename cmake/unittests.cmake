@@ -48,7 +48,7 @@ endfunction()
 # Inviwo Unittest Application
 function(ivw_make_unittest_target name dependencies)
 	# Check if there are any tests
-	if(NOT ${name}_UNITTEST_FILES)
+	if(NOT IVW_UNITTESTS OR NOT ${name}_UNITTEST_FILES)
 		return()
 	endif()
 
@@ -113,6 +113,8 @@ function(ivw_make_unittest_target name dependencies)
 	#--------------------------------------------------------------------
 	# Optimize compilation with pre-compilied headers based on inviwo-core
 	# ivw_compile_optimize_inviwo_core()
+
+	add_custom_command(TARGET "${test_name}" POST_BUILD COMMAND "${test_name}" COMMENT "Running unittest for: ${test_name}")
 
 	ivw_memleak_setup(${test_name})
 
