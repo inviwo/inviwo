@@ -27,25 +27,32 @@
  * 
  *********************************************************************************/
 
+
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/linksettings.h>
+#include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/qt/editor/networkeditorview.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
+
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QMatrix>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QScrollBar>
+#include <QApplication>
+#include <QClipboard>
 #include <qmath.h>
 #include <warn/pop>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/util/settings/linksettings.h>
-#include <inviwo/core/util/settings/systemsettings.h>
-#include <inviwo/qt/editor/networkeditorview.h>
-#include <inviwo/core/network/processornetwork.h>
 
 namespace inviwo {
 
-NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, QWidget* parent)
+NetworkEditorView::NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWindow* parent)
     : QGraphicsView(parent)
     , NetworkEditorObserver()
+    , mainwindow_(parent)
     , networkEditor_(networkEditor) {
 
     NetworkEditorObserver::addObservation(networkEditor_);
@@ -114,8 +121,63 @@ void NetworkEditorView::fitNetwork() {
     }
 }
 
-void NetworkEditorView::focusOutEvent(QFocusEvent *) {
+void NetworkEditorView::setupAction(std::string tag, std::function<void()> fun) {
+    auto actions = mainwindow_->getActions();
+    auto action = actions[tag];
+    connections_[tag] = connect(action, &QAction::triggered, fun);
+    action->setEnabled(true);
+}
+
+void NetworkEditorView::takeDownAction(std::string tag) {
+    auto actions = mainwindow_->getActions();
+    auto action = actions[tag];
+    disconnect(connections_[tag]);
+    action->setEnabled(false);
+}
+
+void NetworkEditorView::focusInEvent(QFocusEvent* e) {
+    setupAction("Cut", [&]() {
+        auto data = networkEditor_->cut();
+
+        auto mimedata = util::make_unique<QMimeData>();
+        mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+        mimedata->setData(QString("text/plain"), data);
+        QApplication::clipboard()->setMimeData(mimedata.release());
+    });
+    
+    setupAction("Copy", [&]() {
+        auto data = networkEditor_->copy();
+
+        auto mimedata = util::make_unique<QMimeData>();
+        mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
+        mimedata->setData(QString("text/plain"), data);
+        QApplication::clipboard()->setMimeData(mimedata.release());
+    });
+
+    setupAction("Paste", [&]() {
+        auto clipboard = QApplication::clipboard();
+        auto mimeData = clipboard->mimeData();
+        if (mimeData->formats().contains(QString("application/x.vnd.inviwo.network+xml"))) {
+            networkEditor_->paste(mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
+        } else if (mimeData->formats().contains(QString("text/plain"))) {
+            networkEditor_->paste(mimeData->data(QString("text/plain")));
+        }
+    });
+
+    setupAction("Delete", [&]() { networkEditor_->deleteSelection(); });
+
+    QGraphicsView::focusInEvent(e);
+}
+
+void NetworkEditorView::focusOutEvent(QFocusEvent *e) {
     setDragMode(QGraphicsView::RubberBandDrag);
+    
+    takeDownAction("Cut");
+    takeDownAction("Copy");
+    takeDownAction("Paste");
+    takeDownAction("Delete");
+    
+    QGraphicsView::focusOutEvent(e);
 }
 
 void NetworkEditorView::wheelEvent(QWheelEvent* e) {

@@ -199,6 +199,7 @@ void LinkDialogGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* e) {
 
 void LinkDialogGraphicsScene::keyPressEvent(QKeyEvent* keyEvent) {
     if (keyEvent->key() == Qt::Key_Delete) {
+        keyEvent->accept();
         QList<QGraphicsItem*> selectedGraphicsItems = selectedItems();
 
         for (auto& selectedGraphicsItem : selectedGraphicsItems) {

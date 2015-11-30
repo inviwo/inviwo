@@ -40,10 +40,12 @@
 
 namespace inviwo {
 
+class InviwoMainWindow;
+
 class IVW_QTEDITOR_API NetworkEditorView : public QGraphicsView, public NetworkEditorObserver {
 
 public:
-    NetworkEditorView(NetworkEditor* networkEditor, QWidget* parent = nullptr);
+    NetworkEditorView(NetworkEditor* networkEditor, InviwoMainWindow* parent = nullptr);
     ~NetworkEditorView();
 
     void hideNetwork(bool);
@@ -57,13 +59,20 @@ protected:
 
     virtual void keyPressEvent(QKeyEvent* keyEvent) override;
     virtual void keyReleaseEvent(QKeyEvent* keyEvent) override;
+    
+    virtual void focusInEvent(QFocusEvent *) override;
     virtual void focusOutEvent(QFocusEvent *) override;
 
 private:
+    void setupAction(std::string action, std::function<void()> fun);
+    void takeDownAction(std::string action);
+
     void zoom(double dz);
     void fitNetwork();
 
+    InviwoMainWindow* mainwindow_;
     NetworkEditor* networkEditor_;
+    std::unordered_map<std::string, QMetaObject::Connection> connections_;
     ivec2 scrollPos_;
 };
 

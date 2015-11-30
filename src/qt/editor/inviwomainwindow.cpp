@@ -385,14 +385,6 @@ void InviwoMainWindow::addMenuActions() {
         actions_["Cut"] = cutAction;
         cutAction->setShortcut(QKeySequence::Cut);
         editMenuItem_->addAction(cutAction);
-        connect(cutAction, &QAction::triggered, [&]() {
-            auto data = networkEditor_->cut();
-
-            auto mimedata = util::make_unique<QMimeData>();
-            mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
-            mimedata->setData(QString("text/plain"), data);
-            QApplication::clipboard()->setMimeData(mimedata.release());
-        });
     }
 
     {
@@ -400,14 +392,7 @@ void InviwoMainWindow::addMenuActions() {
         actions_["Copy"] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
         editMenuItem_->addAction(copyAction);
-        connect(copyAction, &QAction::triggered, [&]() {
-            auto data = networkEditor_->copy();
 
-            auto mimedata = util::make_unique<QMimeData>();
-            mimedata->setData(QString("application/x.vnd.inviwo.network+xml"), data);
-            mimedata->setData(QString("text/plain"), data);
-            QApplication::clipboard()->setMimeData(mimedata.release());
-        });
     }
 
     {
@@ -415,16 +400,6 @@ void InviwoMainWindow::addMenuActions() {
         actions_["Paste"] = pasteAction;
         pasteAction->setShortcut(QKeySequence::Paste);
         editMenuItem_->addAction(pasteAction);
-        connect(pasteAction, &QAction::triggered, [&]() {
-            auto clipboard = QApplication::clipboard();
-            auto mimeData = clipboard->mimeData();
-            if (mimeData->formats().contains(QString("application/x.vnd.inviwo.network+xml"))) {
-                networkEditor_->paste(
-                    mimeData->data(QString("application/x.vnd.inviwo.network+xml")));
-            } else if (mimeData->formats().contains(QString("text/plain"))) {
-                networkEditor_->paste(mimeData->data(QString("text/plain")));
-            }
-        });
     }
 
     {
@@ -432,7 +407,6 @@ void InviwoMainWindow::addMenuActions() {
         actions_["Delete"] = deleteAction;
         deleteAction->setShortcut(QKeySequence::Delete);
         editMenuItem_->addAction(deleteAction);
-        connect(deleteAction, &QAction::triggered, [&]() { networkEditor_->deleteSelection(); });
     }
 
     editMenuItem_->addSeparator();
