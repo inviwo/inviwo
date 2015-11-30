@@ -49,6 +49,10 @@ void VolumeVectorSampler::setVectorInterpolation(bool enable) {
 dvec4 VolumeVectorSampler::sample(const dvec4 &pos) const {
     dvec3 spatialPos = pos.xyz();
     double t = pos.w;
+    while (t < 0) t += 1;
+    while (t > 1) t -= 1;
+
+    t *= (samplers_.size() - 1);
 
     int tIndex = static_cast<int>(t);
     double tInterpolant = t - static_cast<float>(tIndex);
