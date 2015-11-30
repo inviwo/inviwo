@@ -32,6 +32,10 @@
 
 #include <sstream>
 
+#ifndef WIN32
+#include <signal.h>
+#endif
+
 #if defined(IVW_DEBUG)
 
 void ivwAssertion(const char* fileName, const char* functionName, long lineNumber,
@@ -39,25 +43,13 @@ void ivwAssertion(const char* fileName, const char* functionName, long lineNumbe
     std::cout << "Assertion in (" << fileName << ", " << functionName << ", Ln " << lineNumber
               << "): ";
     std::cout << message << std::endl;
-    std::cout << "(choose to ";
-#if defined(IVW_DEBUG) && defined(WIN32)
-    std::cout << "(b)reak, ";
+
+#ifdef WIN32
+    __debugbreak();
+#else
+    raise(SIGTRAP);
 #endif
-    std::cout << "(i)gnore or (e)xit):";
-
-    while (true) {
-        std::string keyboardInput = "";
-        std::cin >> keyboardInput;
-
-        switch (keyboardInput[0]) {
-
-#if defined(IVW_DEBUG) && defined(WIN32)
-            case 'b': __debugbreak();
-#endif
-            case 'i': return;
-            case 'e': exit(0);
-        }
-    }
+    exit(0);
 }
 
 #endif  // _DEBUG
