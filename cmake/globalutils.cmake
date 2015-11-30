@@ -177,6 +177,18 @@ function(ivw_add_module_option_to_cache the_module onoff forcemodule)
     endif()
 endfunction()
 
+#--------------------------------------------------------------------
+# ivw_to_macro_name(retval item1 item2 ...)
+# Convert a name to a macro name, i.e. OpenGL-test -> OPENGL_TEST
+function(ivw_to_macro_name retval)
+    set(the_list "")
+    foreach(item ${ARGN})
+        string(TOUPPER ${item} u_item)
+        string(REGEX REPLACE "-" "_" new_item ${u_item})
+        list(APPEND the_list "${new_item}")
+    endforeach()
+    set(${retval} ${the_list} PARENT_SCOPE)
+endfunction()
 
 
 #--------------------------------------------------------------------

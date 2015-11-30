@@ -507,7 +507,8 @@ endfunction()
 # Define standard defintions
 macro(ivw_define_standard_definitions project_name target_name)
     # Set the compiler flags
-    string(TOUPPER ${project_name} u_project_name)
+
+    ivw_to_macro_name(u_project_name ${project_name})
     target_compile_definitions(${target_name} PRIVATE -D${u_project_name}_EXPORTS)
     target_compile_definitions(${target_name} PRIVATE -DGLM_EXPORTS)
 
