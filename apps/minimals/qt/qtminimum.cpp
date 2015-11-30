@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
     try
     {
         if (!workspace.empty()) {
-            Deserializer xmlDeserializer(workspace);
+            Deserializer xmlDeserializer(&inviwoApp, workspace);
             inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
             std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
 
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
                 processor->invalidate(InvalidationLevel::InvalidResources);
 
                 if (auto processorWidget =
-                    InviwoApplication::getPtr()->getProcessorWidgetFactory()->create(processor).release()) {
+                    inviwoApp.getProcessorWidgetFactory()->create(processor).release()) {
                     processorWidget->setProcessor(processor);
                     processorWidget->initialize();
                     processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());

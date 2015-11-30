@@ -45,23 +45,18 @@ namespace inviwo {
 
 class Serializable;
 class VersionConverter;
+class InviwoApplication;
+class FactoryBase;
 
 class IVW_CORE_API Deserializer : public SerializeBase {
 public:
     /**
      * \brief Deserializer constructor
      *
-     * @param s optional reference to existing deserializer.
-     * @param allowReference flag to manage references to avoid multiple object creation.
-     */
-    Deserializer(Deserializer& s, bool allowReference = true);
-    /**
-     * \brief Deserializer constructor
-     *
      * @param fileName path to file that is to be deserialized.
      * @param allowReference flag to manage references to avoid multiple object creation.
      */
-    Deserializer(std::string fileName, bool allowReference = true);
+    Deserializer(InviwoApplication* app, std::string fileName, bool allowReference = true);
     /**
      * \brief Deserializes content from the stream using path to calculate relative paths to data.
      *
@@ -70,7 +65,8 @@ public:
      *deserialization.
      * @param bool allowReference flag to manage references to avoid multiple object creation.
      */
-    Deserializer(std::istream& stream, const std::string& path, bool allowReference = true);
+    Deserializer(InviwoApplication* app, std::istream& stream, const std::string& path,
+                 bool allowReference = true);
 
     void pushErrorHandler(BaseDeserializationErrorHandler*);
     BaseDeserializationErrorHandler* popErrorHandler();
@@ -199,18 +195,54 @@ public:
     void deserialize(const std::string& key, T*& data);
 
     void convertVersion(VersionConverter* converter);
+    
+    /**
+     * \brief For allocating objects such as processors, properties.. using registered factories.
+     *
+     * @param className is used by registered factories to allocate the required object.
+     * @return T* nullptr if allocation fails or className does not exist in any factories.
+     */
+    template <typename T>
+    T* getRegisteredType(const std::string& className);
+
+    /**
+     * \brief For allocating objects that do not belong to any registered factories.
+     *
+     * @return T* Pointer to object of type T.
+     */
+    template <typename T>
+    T* getNonRegisteredType();
 
 protected:
     friend class NodeSwitch;
 
 private:
+    void registerFactories(InviwoApplication* app);
+
     void storeReferences(TxElement* node);
 
     void handleError(SerializationException&);
 
     std::vector<BaseDeserializationErrorHandler*> errorHandlers_;
     std::map<std::string, TxElement*> referenceLookup_;
+    
+    std::vector<FactoryBase*> registeredFactories_;
 };
+
+template <typename T>
+T* Deserializer::getRegisteredType(const std::string& className) {
+    for (auto base : registeredFactories_) {
+        if (auto factory = dynamic_cast<Factory<T>*>(base)) {
+            if (auto data = factory->create(className)) return data.release();
+        }
+    }
+    return nullptr;
+}
+
+template <typename T>
+T* Deserializer::getNonRegisteredType() {
+    return util::defaultConstructType<T>();
+}
 
 template <typename T>
 class DeserializationErrorHandle {
@@ -519,17 +551,18 @@ inline void Deserializer::deserialize(const std::string& key, T*& data) {
                     throw SerializationException(
                         "Reference to " + error[0].key + " not instantiated: \"" +
                             error[0].identifier + "\" of class \"" + error[0].type + "\" at line " +
-                            toString(error[0].line), IvwContext,
-                        error[0].key, error[0].type, error[0].identifier, it->second);
+                            toString(error[0].line),
+                        IvwContext, error[0].key, error[0].type, error[0].identifier, it->second);
                 } else {
                     throw SerializationException(
-                        "Could not find reference to " + key + ": " + type_attr, IvwContext, key, type_attr);
+                        "Could not find reference to " + key + ": " + type_attr, IvwContext, key,
+                        type_attr);
                 }
             }
             return;
 
         } else if (!type_attr.empty()) {
-            data = SerializeBase::getRegisteredType<T>(type_attr);
+            data = getRegisteredType<T>(type_attr);
             if (!data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(
@@ -539,7 +572,7 @@ inline void Deserializer::deserialize(const std::string& key, T*& data) {
             }
 
         } else {
-            data = SerializeBase::getNonRegisteredType<T>();
+            data = getNonRegisteredType<T>();
             if (!data) {
                 NodeDebugger error(keyNode);
                 throw SerializationException(

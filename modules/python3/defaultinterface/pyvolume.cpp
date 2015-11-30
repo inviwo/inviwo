@@ -85,9 +85,10 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
 
     if (!p.testParams(args)) return nullptr;
 
+    auto app = InviwoApplication::getPtr();
+
     std::string path = std::string(PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0)));
-    Property* theProperty =
-        InviwoApplication::getPtr()->getProcessorNetwork()->getProperty(splitString(path, '.'));
+    auto theProperty = app->getProcessorNetwork()->getProperty(splitString(path, '.'));
 
     if (!theProperty) {
         std::string msg = std::string("setPropertyValue() no property with path: ") + path;
@@ -97,7 +98,7 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
 
     std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 1));
 
-    TransferFunctionProperty* tf = dynamic_cast<TransferFunctionProperty*>(theProperty);
+    auto tf = dynamic_cast<TransferFunctionProperty*>(theProperty);
 
     if (!tf) {
         std::string msg =
@@ -108,10 +109,8 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
     }
 
     if (!filesystem::fileExists(filename)) {
-        if (filesystem::fileExists(InviwoApplication::getPtr()->getPath(
-                PathType::TransferFunctions, "/" + filename))) {
-            filename = InviwoApplication::getPtr()->getPath(
-                PathType::TransferFunctions, "/" + filename);
+        if (filesystem::fileExists(app->getPath(PathType::TransferFunctions, "/" + filename))) {
+            filename = app->getPath(PathType::TransferFunctions, "/" + filename);
         } else {
             std::string msg = "loadTransferFunction() file not found (" + filename + ")";
             PyErr_SetString(PyExc_TypeError, msg.c_str());
@@ -119,10 +118,9 @@ PyObject* py_loadTransferFunction(PyObject* /*self*/, PyObject* args) {
         }
     }
 
-    //*
-    Deserializer deserializer(filename);
+    Deserializer deserializer(app, filename);
     tf->deserialize(deserializer);
-    //*/
+
     Py_RETURN_NONE;
 }
 

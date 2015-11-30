@@ -83,13 +83,13 @@ int main(int argc, char** argv) {
     std::vector<std::unique_ptr<ProcessorWidget>> widgets;
     try {
         if (!workspace.empty()) {
-            Deserializer xmlDeserializer(workspace);
+            Deserializer xmlDeserializer(&inviwoApp, workspace);
             inviwoApp.getProcessorNetwork()->deserialize(xmlDeserializer);
             std::vector<Processor*> processors = inviwoApp.getProcessorNetwork()->getProcessors();
 
             for (auto processor : processors) {
                 processor->invalidate(InvalidationLevel::InvalidResources);
-                if (auto processorWidget = InviwoApplication::getPtr()->getProcessorWidgetFactory()->create(processor)) {
+                if (auto processorWidget = inviwoApp.getProcessorWidgetFactory()->create(processor)) {
                     processorWidget->setProcessor(processor);
                     processorWidget->initialize();
                     processorWidget->setVisible(processorWidget->ProcessorWidget::isVisible());

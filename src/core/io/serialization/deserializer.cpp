@@ -31,23 +31,18 @@
 #include <inviwo/core/io/serialization/deserializer.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/processors/processorfactory.h>
+#include <inviwo/core/metadata/metadatafactory.h>
+#include <inviwo/core/properties/propertyfactory.h>
+#include <inviwo/core/util/factory.h>
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
 
-Deserializer::Deserializer(Deserializer& s, bool allowReference)
-    : SerializeBase(s.getFileName(), allowReference) {
-    try {
-        doc_.LoadFile();
-        rootElement_ = doc_.FirstChildElement();
-        storeReferences(rootElement_);
-    } catch (TxException& e) {
-        throw AbortException(e.what(), IvwContext);
-    }
-}
-
-Deserializer::Deserializer(std::string fileName, bool allowReference)
+Deserializer::Deserializer(InviwoApplication* app, std::string fileName, bool allowReference)
     : SerializeBase(fileName, allowReference) {
+    registerFactories(app);
     try {
         doc_.LoadFile();
         rootElement_ = doc_.FirstChildElement();
@@ -57,13 +52,14 @@ Deserializer::Deserializer(std::string fileName, bool allowReference)
     }
 }
 
-Deserializer::Deserializer(std::istream& stream, const std::string& path, bool allowReference)
+Deserializer::Deserializer(InviwoApplication* app, std::istream& stream, const std::string& path,
+                           bool allowReference)
     : SerializeBase(stream, path, allowReference) {
+    registerFactories(app);
     try {
         // Base streamed in the xml data. Get the first node.
         rootElement_ = doc_.FirstChildElement();
         storeReferences(rootElement_);
-
     } catch (TxException& e) {
         throw AbortException(e.what(), IvwContext);
     }
@@ -136,5 +132,15 @@ void Deserializer::storeReferences(TxElement* node) {
         storeReferences(child.Get());
     }
 }
+
+void Deserializer::registerFactories(InviwoApplication* app) {
+    registeredFactories_.clear();
+    if (app) {
+        registeredFactories_.push_back(app->getProcessorFactory());
+        registeredFactories_.push_back(app->getMetaDataFactory());
+        registeredFactories_.push_back(app->getPropertyFactory());
+    }
+}
+
 
 }  // namespace

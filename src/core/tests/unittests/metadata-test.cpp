@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/metadata/metadataowner.h>
@@ -39,10 +39,9 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-namespace inviwo{
+namespace inviwo {
 
-
-template<typename T, typename M>
+template <typename T, typename M>
 void testserialization(T def, T in) {
     T indata = in;
     T outdata1 = def;
@@ -60,7 +59,7 @@ void testserialization(T def, T in) {
     Serializer serializer(filename);
     mdo1->getMetaDataMap()->serialize(serializer);
     serializer.writeFile(ss);
-    Deserializer deserializer(ss, filename);
+    Deserializer deserializer(nullptr, ss, filename);  // probabably we need all the factories here.
     mdo2->getMetaDataMap()->deserialize(deserializer);
     T outdata2 = def;
     outdata2 = mdo2->getMetaData<M>("data", outdata2);
@@ -70,9 +69,6 @@ void testserialization(T def, T in) {
 }
 
 #define MetaDataMacro(n, t, d, v) \
-    TEST(MetaDataTest, n##SerializationTest) { \
-        testserialization<t, n##MetaData>(d, v); \
-    }
+    TEST(MetaDataTest, n##SerializationTest) { testserialization<t, n##MetaData>(d, v); }
 #include <inviwo/core/metadata/metadatadefinefunc.h>
-
 }

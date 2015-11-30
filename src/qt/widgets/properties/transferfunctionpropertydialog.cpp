@@ -410,7 +410,7 @@ void TransferFunctionPropertyDialog::importTransferFunction() {
     if (importFileDialog.exec()) {
         QString file = importFileDialog.selectedFiles().at(0);
         // TODO: we need to check whether it is a valid itf file!
-        Deserializer deserializer(file.toLocal8Bit().constData());
+        Deserializer deserializer(InviwoApplication::getPtr(), file.toLocal8Bit().constData());
         TransferFunction tf;
         tf.deserialize(deserializer);
         tfProperty_->set(tf);

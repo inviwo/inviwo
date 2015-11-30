@@ -145,30 +145,6 @@ public:
      */
     bool isPrimitiveType(const std::type_info& type) const;
 
-    /**
-     * \brief Registers all factories from all modules.
-     */
-    virtual void registerFactories(void);
-
-    /**
-     * \brief For allocating objects such as processors, properties.. using registered factories.
-     *
-     * @param className is used by registered factories to allocate the required object.
-     * @return T* nullptr if allocation fails or className does not exist in any factories.
-     */
-    template <typename T>
-    T* getRegisteredType(const std::string& className);
-
-    /**
-     * \brief For allocating objects that do not belong to any registered factories.
-     *
-     * @return T* Pointer to object of type T.
-     */
-    template <typename T>
-    T* getNonRegisteredType();
-
-
-
     class IVW_CORE_API NodeSwitch {
     public:
         /**
@@ -230,7 +206,6 @@ public:
 protected:
     friend class NodeSwitch;
 
-    std::vector<FactoryBase*> registeredFactories_;
     std::string fileName_;
     TxDocument doc_;
     TxElement* rootElement_;
@@ -239,20 +214,6 @@ protected:
     ReferenceDataContainer refDataContainer_;
 };
 
-template <typename T>
-T* SerializeBase::getRegisteredType(const std::string& className) {
-    for (auto base : registeredFactories_) {
-        if (auto factory = dynamic_cast<Factory<T>*>(base)) {
-            if (auto data = factory->create(className)) return data.release();
-        }
-    }
-    return nullptr;
-}
-
-template <typename T>
-T* SerializeBase::getNonRegisteredType() {
-    return util::defaultConstructType<T>();
-}
 
 
 

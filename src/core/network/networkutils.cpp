@@ -168,10 +168,10 @@ IVW_CORE_API void util::serializeSelected(ProcessorNetwork* network, std::ostrea
 }
 
 IVW_CORE_API std::vector<Processor*> util::appendDeserialized(ProcessorNetwork* network, std::istream& is,
-                                           const std::string& refPath) {
+                                           const std::string& refPath, InviwoApplication* app) {
     std::vector<Processor*> addedProcessors;
     try {
-        Deserializer xmlDeserializer(is, refPath);
+        Deserializer xmlDeserializer(app, is, refPath);
         std::vector<std::unique_ptr<Processor>> processors;
         std::vector<std::unique_ptr<PortConnection>> connections;
         std::vector<std::unique_ptr<detail::PartialConnection>> partialIn;

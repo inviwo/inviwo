@@ -62,7 +62,7 @@ void Settings::loadFromDisk() {
         // An error is not critical as the default setting will be used.
         try
         {
-            Deserializer d(filename);
+            Deserializer d(InviwoApplication::getPtr(), filename);
             deserialize(d);
         }
         catch (AbortException& e)

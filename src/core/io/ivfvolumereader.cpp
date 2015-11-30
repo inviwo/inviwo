@@ -31,6 +31,7 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/io/rawvolumeramloader.h>
 
@@ -62,7 +63,7 @@ std::shared_ptr<Volume> IvfVolumeReader::readData(std::string filePath) {
     std::string fileDirectory = filesystem::getFileDirectory(filePath);
     std::string fileExtension = filesystem::getFileExtension(filePath);
     auto volume = std::make_shared<Volume>();
-    Deserializer d(filePath);
+    Deserializer d(InviwoApplication::getPtr(), filePath);
     d.deserialize("RawFile", rawFile_);
     rawFile_ = fileDirectory + rawFile_;
     std::string formatFlag("");

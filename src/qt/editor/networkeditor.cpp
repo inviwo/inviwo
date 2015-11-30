@@ -380,7 +380,7 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
                     network_->autoLinkProcessor(processor);
                 }
 
-                int size = InviwoApplication::getPtr()
+                int size = mainwindow_->getInviwoApplication()
                                ->getSettingsByType<SystemSettings>()
                                ->portInspectorSize_.get();
                 canvasProcessor->setCanvasSize(ivec2(size, size));
@@ -421,7 +421,7 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
                                        ivec2 canvasSize) {
     NetworkLock lock(network_);
 
-    Deserializer xmlDeserializer(fileName);
+    Deserializer xmlDeserializer(mainwindow_->getInviwoApplication(), fileName);
     ProcessorNetwork* processorNetwork = new ProcessorNetwork();
     processorNetwork->deserialize(xmlDeserializer);
 
@@ -449,9 +449,10 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
 std::vector<std::string> NetworkEditor::saveSnapshotsInExternalNetwork(
     std::string externalNetworkFile, std::string identifierPrefix) {
     // turnoff sound
-    BoolProperty* soundProperty = dynamic_cast<BoolProperty*>(
-        InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->getPropertyByIdentifier(
-            "enableSound"));
+    BoolProperty* soundProperty =
+        dynamic_cast<BoolProperty*>(mainwindow_->getInviwoApplication()
+                                        ->getSettingsByType<SystemSettings>()
+                                        ->getPropertyByIdentifier("enableSound"));
     bool isSoundEnabled = soundProperty->get();
 
     if (isSoundEnabled) soundProperty->set(false);
@@ -498,7 +499,7 @@ std::vector<std::string> NetworkEditor::getSnapshotsOfExternalNetwork(std::strin
         NetworkEditor::UseOriginalCanvasSize | NetworkEditor::CanvasHidden;
     addExternalNetwork(fileName, identifierPrefix, pos, networkEditorFlags);
     network_->setModified(true);
-    InviwoApplication::getPtr()->getProcessorNetworkEvaluator()->requestEvaluate();
+    mainwindow_->getInviwoApplication()->getProcessorNetworkEvaluator()->requestEvaluate();
     // save snapshot
     snapshotFileNames = saveSnapshotsInExternalNetwork(fileName, identifierPrefix);
     // unload external network
@@ -1114,7 +1115,7 @@ bool NetworkEditor::loadNetwork(std::istream& stream, const std::string& path) {
 
         // Deserialize processor network
         try {
-            Deserializer xmlDeserializer(stream, path);
+            Deserializer xmlDeserializer(mainwindow_->getInviwoApplication(), stream, path);
             network_->deserialize(xmlDeserializer);
         } catch (const AbortException& exception) {
             util::log(exception.getContext(),
@@ -1164,7 +1165,7 @@ QByteArray NetworkEditor::cut() {
 void NetworkEditor::paste(QByteArray mimeData) {
     std::stringstream ss;
     for (auto d : mimeData) ss << d;
-    auto added = util::appendDeserialized(network_, ss, "");
+    auto added = util::appendDeserialized(network_, ss, "", mainwindow_->getInviwoApplication());
 
     for (auto p : added) {
         auto m = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);

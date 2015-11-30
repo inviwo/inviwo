@@ -148,7 +148,7 @@ IVW_CORE_API void serializeSelected(ProcessorNetwork* network, std::ostream& os,
 
 // return the appended processors.
 IVW_CORE_API std::vector<Processor*> appendDeserialized(ProcessorNetwork* network, std::istream& is,
-                                     const std::string& refPath);
+                                     const std::string& refPath, InviwoApplication* app);
 
 }  // namespace
 }  // namespace

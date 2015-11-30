@@ -29,13 +29,8 @@
 
 #pragma warning(disable: 4251)
 #include <inviwo/core/io/serialization/serializebase.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/processors/processorfactory.h>
-#include <inviwo/core/metadata/metadatafactory.h>
-#include <inviwo/core/properties/propertyfactory.h>
 #include <inviwo/core/io/serialization/serializable.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/factory.h>
 
 
 namespace inviwo {
@@ -158,7 +153,6 @@ TxElement* SerializeBase::ReferenceDataContainer::nodeCopy(const void* data) {
 SerializeBase::SerializeBase(bool allowReference/*=true*/)
     : allowRef_(allowReference)
     , retrieveChild_(true) {
-    registerFactories();
 }
 
 SerializeBase::SerializeBase(SerializeBase& s, bool allowReference)
@@ -166,7 +160,6 @@ SerializeBase::SerializeBase(SerializeBase& s, bool allowReference)
     , doc_(s.fileName_)
     , allowRef_(allowReference)
     , retrieveChild_(true) {
-    registerFactories();
 }
 
 SerializeBase::SerializeBase(std::string fileName, bool allowReference)
@@ -174,7 +167,6 @@ SerializeBase::SerializeBase(std::string fileName, bool allowReference)
     , doc_(fileName)
     , allowRef_(allowReference)
     , retrieveChild_(true) {
-    registerFactories();
 }
 
 SerializeBase::SerializeBase(std::istream& stream, const std::string& path, bool allowReference)
@@ -182,18 +174,11 @@ SerializeBase::SerializeBase(std::istream& stream, const std::string& path, bool
     , allowRef_(allowReference)
     , retrieveChild_(true) {
     stream >> doc_;
-    registerFactories();
 }
 
 SerializeBase::~SerializeBase() {
 }
 
-void SerializeBase::registerFactories(void) {
-    registeredFactories_.clear();
-    registeredFactories_.push_back(InviwoApplication::getPtr()->getProcessorFactory());
-    registeredFactories_.push_back(InviwoApplication::getPtr()->getMetaDataFactory());
-    registeredFactories_.push_back(InviwoApplication::getPtr()->getPropertyFactory());
-}
 
 const std::string& SerializeBase::getFileName() {
     return fileName_;
