@@ -57,9 +57,9 @@ void testserialization(T def, T in) {
 
     std::stringstream ss;
 
-    Serializer serializer(ss, filename);
+    Serializer serializer(filename);
     mdo1->getMetaDataMap()->serialize(serializer);
-    serializer.writeFile();
+    serializer.writeFile(ss);
     Deserializer deserializer(ss, filename);
     mdo2->getMetaDataMap()->deserialize(deserializer);
     T outdata2 = def;
