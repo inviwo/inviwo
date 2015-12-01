@@ -3,3 +3,4 @@ inviwo-log.html
 tools/doxygen/doc
 tools/doxygen/doc-qt
 *.pyc
+tools/pyconfig.ini

@@ -19,18 +19,18 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Add shaders
-#set(SHADER_FILES
+set(SHADER_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/glsl/<lname>processor.frag
-#)
-#ivw_group("Shader Files" ${SHADER_FILES})
+)
+ivw_group("Shader Files" ${SHADER_FILES})
 
 
 #--------------------------------------------------------------------
 # Add Unittests
-#set(TEST_FILES
-#    ${CMAKE_CURRENT_SOURCE_DIR}/tests/<lname>-test.cpp
-#)
-#ivw_add_unittest(${TEST_FILES})
+set(TEST_FILES
+	#${CMAKE_CURRENT_SOURCE_DIR}/tests/<lname>-test.cpp
+)
+ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module

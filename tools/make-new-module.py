@@ -27,29 +27,15 @@
 # 
 #*********************************************************************************
 
-from __future__ import print_function
+import ivwcommon
 
 import os
-import argparse
-import re
-import subprocess
 import sys
-
-try:
-	import colorama
-	colorama.init()
-	
-	def print_error(mess):
-		print(colorama.Fore.RED + colorama.Style.BRIGHT + mess + colorama.Style.RESET_ALL)
-	def print_warn(mess):
-		print(colorama.Fore.RED + mess + colorama.Style.RESET_ALL)	
-	
-except ImportError:
-	def print_error(mess):
-		print(mess)
-	def print_warn(mess):
-		print(mess)	 
-
+import re
+import inspect
+import argparse
+import subprocess
+import configparser
 
 def test_for_inviwo(path):
 	return (os.path.exists(os.sep.join([path] + ['modules', 'base'])) 
@@ -58,7 +44,7 @@ def test_for_inviwo(path):
 
 
 def find_inv_path():
-	path = os.path.abspath(sys.argv[0])
+	path = ivwcommon.getScriptFolder()
 	folders=[]
 	while 1:
 		path, folder = os.path.split(path)
@@ -82,60 +68,124 @@ def find_inv_path():
 
 def make_module(ivwpath, path, name, verbose, dummy):
 	if os.path.exists(os.sep.join([path, name])):
-		print("Error module: "+ name + ", already exits")
+		ivwcommon.print_error("Error module: "+ name + ", already exits")
 		return
 	
-	print("Make module: " + name)
+	ivwcommon.print_warn("Create module: " + name)
 	uname = name.upper()
 	lname = name.lower()
 	
-	files = ["CMakeLists.txt", "depends.cmake", "module.cpp", "module.h", "moduledefine.h"]
-	prefixes = ["", "", lname, lname, lname]
+	dirs = [
+		{
+			"path" : ["data"], 
+			 "desc" : "Folder for non code stuff"
+		}, 
+		{
+			"path" : ["data", "image"], 
+		 	"desc" : "Image resources"
+		}, 
+		{
+			"path" : ["data", "volumes"], 
+		 	"desc" : "Volume resources "
+		}, 
+		{
+			"path" : ["data", "workspaces"], 
+		 	"desc" : "Workspaces, listed in File::Examples::ExampleModule"
+		}, 
+		{
+			"path" : ["docs"], 
+		 	"desc" : "Put documentation here"
+		}, 
+		{
+			"path" : ["docs", "images"], 
+		 	"desc" : "Put images that should show up in doxygen here"
+		}, 
+		{
+			"path" : ["processors"], 
+		 	"desc" : "Put processors here"
+		},
+		{
+			"path" : ["properties"], 
+		 	"desc" : "Put properties here"
+		},
+		{
+			"path" : ["tests"], 
+		 	"desc" : "Test related things"
+		},
+		{
+			"path" : ["tests", "unittests"], 
+		 	"desc" : "Put unittests here"
+		},
+		{
+			"path" : ["tests", "regression"], 
+		 	"desc" : "Regression Test workspaces, listed in File::Test::ExampleModule." 
+		 			 + " Automatically run in regression tests on Jenkins"
+		}
+	]
+
+	templates = [
+		{"file" : "CMakeLists.txt" , "prefix" : ""    , "desc" : "CMake project definition"},
+		{"file" : "depends.cmake"  , "prefix" : ""    , "desc" : "List of dependencies to other modules / cmake packages"},
+		{"file" : "module.cpp"     , "prefix" : lname , "desc" : "For module registration"},
+		{"file" : "module.h"       , "prefix" : lname , "desc" : "For module registration"},
+		{"file" : "moduledefine.h" , "prefix" : lname , "desc" : "declspec defines"},
+		{"file" : "readme.md"      , "prefix" : ""    , "desc" : "Description of the module, used by CMake"}
+	]
 	
 	module_dir = os.sep.join([path, lname])
 	
-	if not dummy:
-		print("... Create dir: " + module_dir)
-		os.mkdir(module_dir)
+	print("... Create module dir: " + module_dir)
+	if not dummy: os.mkdir(module_dir)
+	for dir in dirs:
+		print("... Create dir:  {0:.<30} {desc:<100}".format(os.sep.join([lname] + dir["path"])+" ", **dir))
+		if not dummy: os.mkdir(os.sep.join([module_dir] + dir["path"]))
 	
-	for prefix, file in zip(prefixes, files):
-		outfile = os.sep.join([module_dir, prefix+file])
-		lines = []
-		with open(os.sep.join([ivwpath, 'tools', 'templates', file]),'r') as f:
-			if verbose:
-				print("")
-				print("FILE: " + os.sep.join([module_dir, prefix+file]))
-				print("#"*60)
-				
-			for line in f:
-				line = line.replace("<name>", name)
-				line = line.replace("<lname>", lname)
-				line = line.replace("<uname>", uname)
-				lines.append(line)
+	for template in templates:
+		try:
+			with open(os.sep.join([ivwpath, 'tools', 'templates', template["file"]]),'r') as f:
 				if verbose:
-					print(line, end='')
+					print("")
+					print("FILE: " + os.sep.join([module_dir, template["prefix"] + template["file"]]))
+					print("#"*60)
+					
+				lines = []
+				for line in f:
+					line = line.replace("<name>", name)
+					line = line.replace("<lname>", lname)
+					line = line.replace("<uname>", uname)
+					lines.append(line)
+					if verbose: print(line, end='')
+				
+				if verbose: print("")
 			
-			if verbose:
-				print("")
-		
-		if not dummy:
-			print("... Write file: " + outfile)
-			with open(outfile,'w') as f:
-				for line in lines:
-					f.write(line)
+				print("... Create file: {0:.<30} {desc:<100}".format(os.sep.join([lname, template["prefix"] + template["file"]])+" ", **template))	
+				if not dummy:
+					with open(os.sep.join([module_dir, template["prefix"] + template["file"]]),'w') as f:
+						for line in lines:
+							f.write(line)
+						if verbose: print(line)
+	
+		except FileNotFoundError as err:
+			ivwcommon.print_error(err)
+			return
+
 					
 	print("... Done")
 
 				
 if __name__ == '__main__':
-	if os.name == 'posix': CMAKE='cmake'
-	else: CMAKE='cmake.exe'
-
-	parser = argparse.ArgumentParser(description='Add new modules to inviwo', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-	parser.add_argument('modules', type=str, nargs='+', action="store", help='Modules to add, form: path/name1 path/name2 ...')
-	parser.add_argument("--dummy", action="store_true", dest="dummy", help="Don't write actual files")
-	parser.add_argument("--verbose", action="store_true", dest="verbose", help="Print extra information")
-	parser.add_argument("--inviwo", type=str, default="", dest="ivwpath", help="Path to the inviwo repository. Tries to find it in the current path")
+	parser = argparse.ArgumentParser(description='Add new modules to inviwo', 
+									 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser.add_argument('modules', type=str, nargs='+', action="store", 
+		                help='Modules to add, form: path/name1 path/name2 ...')
+	parser.add_argument("-d", "--dummy", action="store_true", dest="dummy", 
+		                help="Don't write actual files")
+	parser.add_argument("-v", "--verbose", action="store_true", dest="verbose", 
+		                help="Print extra information")
+	parser.add_argument("-i", "--inviwo", type=str, default="", dest="ivwpath", 
+		                help="Path to the inviwo repository. Tries to find it in the current path")
+	parser.add_argument("-c", "--cmake", type=str, nargs=1, action="store", dest="builddir", 
+						help="Rerun CMake in the specified build directory")
 	args = parser.parse_args()
 
 	if args.ivwpath == "":
@@ -144,7 +194,7 @@ if __name__ == '__main__':
 		ivwpath = args.ivwpath
 
 	if not test_for_inviwo(ivwpath):
-		print_error("Error could not find the inviwo repository")
+		ivwcommon.print_error("Error could not find the inviwo repository")
 		parser.print_help()
 		sys.exit(1)
 	
@@ -154,5 +204,10 @@ if __name__ == '__main__':
 		path, name = os.path.split(pathname)
 		if path == "": path = "."
 		make_module(ivwpath, path, name, args.verbose, args.dummy)
-		
 
+	if args.builddir != None:
+		ivwcommon.runCMake(str(args.builddir[0]), ["-DIVW_MODULE_"+name.upper()+"=1"])
+	else: 
+		ivwcommon.print_warn("Don't forget to rerun CMake with -DIVW_MODULE_"+name.upper()+ " to add the module")
+
+	ivwcommon.print_warn("Done")
