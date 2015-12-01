@@ -34,20 +34,46 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/util/logcentral.h>
+#include <assimp/LogStream.hpp>
+
 namespace inviwo {
 
-class IVW_MODULE_ASSIMP_API AssimpReader : public DataReaderType<Mesh>{
+/** @brief Inviwo Module Assimp
+*
+*  A GeometryReader (DataReaderType<Geometry>) using the Assimp Library.*/
+class IVW_MODULE_ASSIMP_API AssimpReader : public DataReaderType<Mesh> {
 public:
     AssimpReader();
     AssimpReader(const AssimpReader& rhs) = default;
     AssimpReader& operator=(const AssimpReader& that) = default;
-    virtual AssimpReader* clone() const override;
-    virtual ~AssimpReader() = default;
-    
+    virtual AssimpReader* clone() const;
+    virtual ~AssimpReader() {}
+
     virtual std::shared_ptr<Mesh> readData(const std::string filePath) override;
 };
 
-} // namespace
+/** @brief Assimp LogStream => Inviwo LogCentral
+*
+*  derive Assimp::LogStream to forward logged messages from the library to Inviwos LogCentral.*/
+class InviwoAssimpLogStream : public Assimp::LogStream {
+private:
+    LogLevel loglevel;
 
-#endif // IVW_ASSIMPREADER_H
+public:
+    InviwoAssimpLogStream(LogLevel ploglevel) { loglevel = ploglevel; }
 
+    ~InviwoAssimpLogStream() {}
+
+    void write(const char* message) {
+        std::string tmp(message);
+        while ('\n' == tmp.back()) tmp.pop_back();
+
+        inviwo::LogCentral::getPtr()->log("Assimp Geometry Importer", loglevel, LogAudience::User,
+                                          "<Assimp Bibliothek>", "<Funktion>", 0, tmp);
+    }
+};
+
+}  // namespace
+
+#endif  // IVW_ASSIMPREADER_H

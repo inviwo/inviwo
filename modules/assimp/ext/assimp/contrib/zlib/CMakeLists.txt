@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 2.4.4)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
 
-if(POLICY CMP0048)
-    cmake_policy(SET CMP0048 OLD) 
-endif()
+cmake_policy(SET CMP0048 NEW)
 
-project(zlib C)
+project(zlib VERSION 1.2.8 LANGUAGES C)
 
-set(VERSION "1.2.8")
+# set(VERSION "1.2.8")
 
 option(ASM686 "Enable building i686 assembly implementation for zlib")
 option(AMD64 "Enable building amd64 assembly implementation for zlib")

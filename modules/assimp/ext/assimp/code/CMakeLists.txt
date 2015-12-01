@@ -515,6 +515,16 @@ SET( Raw_SRCS
 )
 SOURCE_GROUP( Raw FILES ${Raw_SRCS})
 
+SET( VRML_SRCS
+	VRML1Importer.cpp
+	VRML1Importer.h
+	VRML2Importer.cpp
+	VRML2Importer.h
+	VRMLUtil.cpp
+	VRMLUtil.h
+)
+SOURCE_GROUP( VRML FILES ${VRML_SRCS})
+
 SET( SMD_SRCS
 	SMDLoader.cpp
 	SMDLoader.h
@@ -681,6 +691,7 @@ SET( assimp_src
 	${IFC_SRCS}
 	${XGL_SRCS}
 	${FBX_SRCS}
+	${VRML_SRCS}
 	
 	# Third-party libraries
 	${IrrXML_SRCS}

@@ -62,7 +62,7 @@ AssimpModule::AssimpModule(InviwoApplication* app) : InviwoModule(app, "assimp")
     // Dialogs
     // registerDialog("assimp", assimpDialogQt);
     
-    // Other varius things
+    // Other various things
     // registerCapabilities(Capabilities* info);
     // registerData(Data* data);
     // registerDataRepresentation(DataRepresentation* dataRepresentation);

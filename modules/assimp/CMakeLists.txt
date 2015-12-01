@@ -1,4 +1,10 @@
+ivw_module(Assimp)
+
+# for now we only import...
+SET ( ASSIMP_NO_EXPORT ON CACHE BOOL "Disable Assimp's export functionality." FORCE )
+
 add_subdirectory(ext/assimp)
+ivw_folder(zlibstatic ext/)
 
 #--------------------------------------------------------------------
 # Inviwo assimp Module
