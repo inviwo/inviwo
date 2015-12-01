@@ -50,6 +50,8 @@ ImageMapping::ImageMapping()
     : ImageGLProcessor("img_mapping.frag")
     , transferFunction_("transferFunction", "Transfer Function", TransferFunction()) {
     addProperty(transferFunction_);
+
+    dataFormat_ = DataVec4UInt8::get();
 }
 
 ImageMapping::~ImageMapping() {}
