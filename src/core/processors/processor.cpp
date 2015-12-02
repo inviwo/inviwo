@@ -47,8 +47,6 @@ Processor::Processor()
     , ProcessorObservable()
     , processorWidget_(nullptr)
     , identifier_("")
-    , invalidationEnabled_(true)
-    , invalidationRequestLevel_(InvalidationLevel::Valid) 
     , network_(nullptr) {
     createMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
 }
@@ -167,11 +165,6 @@ std::vector<Port*> Processor::getPortsInSameSet(Port* port) const {
 }
 
 void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
-    if (!invalidationEnabled_) {
-        invalidationRequestLevel_ = invalidationLevel;
-        return;
-    }
-
     notifyObserversInvalidationBegin(this);
     PropertyOwner::invalidate(invalidationLevel, modifiedProperty);
     if (!isValid()) {
@@ -265,19 +258,6 @@ void Processor::setValid() {
     PropertyOwner::setValid();
     for (auto inport : inports_) inport->setChanged(false);
     for (auto outport : outports_) outport->setValid();
-}
-
-void Processor::enableInvalidation() {
-    invalidationEnabled_ = true;
-    if (invalidationRequestLevel_ > InvalidationLevel::Valid) {
-        invalidate(invalidationRequestLevel_);
-        invalidationRequestLevel_ = InvalidationLevel::Valid;
-    }
-}
-
-void Processor::disableInvalidation() {
-    invalidationRequestLevel_ = InvalidationLevel::Valid;
-    invalidationEnabled_ = false;
 }
 
 void Processor::performEvaluateRequest() { notifyObserversRequestEvaluate(this); }

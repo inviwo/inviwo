@@ -29,6 +29,7 @@
 
 #include "volumesubset.h"
 #include <modules/base/algorithm/volume/volumeramsubset.h>
+#include <inviwo/core/network/networklock.h>
 #include <glm/gtx/vector_angle.hpp>
 
 namespace inviwo {
@@ -120,8 +121,8 @@ void VolumeSubset::process() {
 }
 
 void VolumeSubset::onVolumeChange() {
-    disableInvalidation();
-
+    NetworkLock lock(this);
+    
     // Update to the new dimensions.
     dims_ = inport_.getData()->getDimensions();
 
@@ -133,8 +134,6 @@ void VolumeSubset::onVolumeChange() {
     rangeX_.setCurrentStateAsDefault();
     rangeY_.setCurrentStateAsDefault();
     rangeZ_.setCurrentStateAsDefault();
-
-    enableInvalidation();
 }
 
 } // inviwo namespace

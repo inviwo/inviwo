@@ -29,6 +29,7 @@
 
 #include "cubeproxygeometry.h"
 #include <inviwo/core/datastructures/geometry/simplemeshcreator.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
@@ -118,7 +119,7 @@ void CubeProxyGeometry::process() {
 }
 
 void CubeProxyGeometry::onVolumeChange() {
-    disableInvalidation();
+    NetworkLock lock(this);
 
     // Update to the new dimensions.
     dims_ = inport_.getData()->getDimensions();
@@ -131,8 +132,6 @@ void CubeProxyGeometry::onVolumeChange() {
     clipX_.setCurrentStateAsDefault();
     clipY_.setCurrentStateAsDefault();
     clipZ_.setCurrentStateAsDefault();
-
-    enableInvalidation();
 }
 
 } // namespace

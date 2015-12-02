@@ -280,9 +280,6 @@ public:
     static const std::string getCodeStateString(CodeState state);
 
 protected:
-    void enableInvalidation();
-    void disableInvalidation();
-
     void addPort(Inport* port, const std::string& portDependencySet = "default");
     void addPort(Inport& port, const std::string& portDependencySet = "default");
 
@@ -302,8 +299,6 @@ private:
     Group<std::string, Port*> portDependencySets_;
     static std::unordered_set<std::string> usedIdentifiers_;
 
-    bool invalidationEnabled_;
-    InvalidationLevel invalidationRequestLevel_;
     ProcessorNetwork* network_;
 };
 

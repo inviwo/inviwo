@@ -44,6 +44,7 @@
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
+#include <inviwo/core/network/networklock.h>
 #include <limits>
 
 namespace inviwo {
@@ -264,7 +265,7 @@ void VolumeSliceGL::invokeEvent(Event* event) {
 }
 
 void VolumeSliceGL::modeChange() {
-    disableInvalidation();
+    NetworkLock lock(this);
 
     sliceX_.setReadOnly(true);
     sliceY_.setReadOnly(true);
@@ -297,7 +298,6 @@ void VolumeSliceGL::modeChange() {
 
     showIndicator_.setReadOnly(!posPicking_.get());
 
-    enableInvalidation();
     planeSettingsChanged();
 }
 
@@ -555,7 +555,8 @@ void VolumeSliceGL::updateMaxSliceNumber() {
     if (!inport_.hasData()) {
         return;
     }
-    disableInvalidation();
+    NetworkLock lock(this);
+
     const size3_t dims{inport_.getData()->getDimensions()};
     if (static_cast<int>(dims.x) != sliceX_.getMaxValue()) {
         sliceX_.setMaxValue(static_cast<int>(dims.x));
@@ -576,8 +577,6 @@ void VolumeSliceGL::updateMaxSliceNumber() {
     vec3 min(texToWorld * vec4(0.0f, 0.0f, 0.0f, 1.0f));
     worldPosition_.setMaxValue(max);
     worldPosition_.setMinValue(min);
-
-    enableInvalidation();
 }
 
 void VolumeSliceGL::eventShiftSlice(Event* event) {
@@ -638,12 +637,12 @@ void VolumeSliceGL::positionChange() {
     const vec4 texturePos(planePosition_.get(), 1.0);
     const ivec3 indexPos(ivec3(textureToIndex * texturePos) + ivec3(1));
 
-    disableInvalidation();
-    sliceX_.set(indexPos.x);
-    sliceY_.set(indexPos.y);
-    sliceZ_.set(indexPos.z);
-    enableInvalidation();
-
+    {
+        NetworkLock lock(this);
+        sliceX_.set(indexPos.x);
+        sliceY_.set(indexPos.y);
+        sliceZ_.set(indexPos.z);
+    }
     invalidateMesh();
 }
 
