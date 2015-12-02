@@ -53,7 +53,10 @@ class LinkDialogGraphicsView;
 class LinkDialogGraphicsScene;
 
 class IVW_QTEDITOR_API CheckableQComboBox : public QComboBox {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     CheckableQComboBox(QWidget* parent, std::string widgetName, std::vector<std::string> options);
     virtual ~CheckableQComboBox();
@@ -69,7 +72,10 @@ private:
 };
 
 class IVW_QTEDITOR_API LinkDialog : public InviwoDockWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     LinkDialog(Processor* src, Processor* dest, QWidget* parent);
 

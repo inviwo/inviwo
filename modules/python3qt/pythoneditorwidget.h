@@ -63,7 +63,10 @@ class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
                                                     public FileObserver,
                                                     public PythonExecutionOutputObeserver,
                                                     public Singleton<PythonEditorWidget> {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     PythonEditorWidget(QWidget* parent = 0);

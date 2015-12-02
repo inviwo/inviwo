@@ -242,8 +242,8 @@ void TransferFunctionEditor::keyPressEvent(QKeyEvent* keyEvent) {
                (k == Qt::Key_Left || k == Qt::Key_Right || k == Qt::Key_Up || k == Qt::Key_Down || 
                 k == 'I' || k == 'J' || k == 'K' || k == 'L')) {
         QPointF delta;
-        float x = sceneRect().width() / 1000.f;
-        float y = sceneRect().height() / 1000.f;
+        double x = sceneRect().width() / 1000.f;
+        double y = sceneRect().height() / 1000.f;
         switch (k) {
             case Qt::Key_Left:
             case 'J':

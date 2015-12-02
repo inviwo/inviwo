@@ -45,7 +45,10 @@ class QHelpEngineCore;
 namespace inviwo {
 
 class IVW_QTEDITOR_API HelpWidget : public InviwoDockWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     HelpWidget(InviwoMainWindow* parent);
     virtual ~HelpWidget() {}

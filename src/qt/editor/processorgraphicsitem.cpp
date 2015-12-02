@@ -265,7 +265,7 @@ void ProcessorGraphicsItem::paint(QPainter* p, const QStyleOptionGraphicsItem* o
     }
 
     QPainterPath highlightPath;
-    float highlightLength = bRect.width() / 8.0;
+    double highlightLength = bRect.width() / 8.0;
     highlightPath.moveTo(bRect.left(), bRect.top() + roundedCorners);
     highlightPath.lineTo(bRect.left(), bRect.bottom() - roundedCorners);
     highlightPath.arcTo(bRect.left(), bRect.bottom() - (2 * roundedCorners), (2 * roundedCorners),

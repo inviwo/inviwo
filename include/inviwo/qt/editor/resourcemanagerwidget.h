@@ -46,7 +46,10 @@
 namespace inviwo {
 
 class IVW_QTEDITOR_API ResourceManagerWidget : public InviwoDockWidget, public ResourceManagerObserver {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     ResourceManagerWidget(QWidget* parent);
     ~ResourceManagerWidget();

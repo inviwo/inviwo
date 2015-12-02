@@ -45,7 +45,10 @@
 namespace inviwo {
 class PropertyWidgetQt;
 class IVW_QTEDITOR_API SettingsWidget : public InviwoDockWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     SettingsWidget(InviwoMainWindow* parent);
     SettingsWidget(QString title, InviwoMainWindow* parent);
