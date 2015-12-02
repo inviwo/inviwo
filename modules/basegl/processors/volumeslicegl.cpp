@@ -505,10 +505,24 @@ void VolumeSliceGL::updateIndicatorMesh() {
 void VolumeSliceGL::invalidateMesh() { meshDirty_ = true; }
 
 void VolumeSliceGL::shiftSlice(int shift) {
-    vec3 newPos = planePosition_.get() +
-                  static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
-    newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
-    planePosition_.set(newPos);
+    switch (sliceAlongAxis_.get()) {
+        case 0:  // x axis
+            sliceX_.set(sliceX_.get() + shift);
+            break;
+        case 1:  // y axis
+            sliceY_.set(sliceY_.get() + shift);
+            break;
+        case 2:  // z axis
+            sliceZ_.set(sliceZ_.get() + shift);
+            break;
+        case 3: {
+            vec3 newPos = planePosition_.get() +
+                          static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
+            newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
+            planePosition_.set(newPos);
+            break;
+        }
+    }
 }
 
 void VolumeSliceGL::setVolPosFromScreenPos(vec2 pos) {
@@ -570,24 +584,37 @@ void VolumeSliceGL::eventShiftSlice(Event* event) {
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
     int steps = mouseEvent->wheelSteps();
     shiftSlice(steps);
+    event->markAsUsed();
 }
 
 void VolumeSliceGL::eventSetMarker(Event* event) {
     MouseEvent* mouseEvent = static_cast<MouseEvent*>(event);
     vec2 mousePos(mouseEvent->posNormalized());
     setVolPosFromScreenPos(vec2(mousePos.x, 1.0f - mousePos.y));
+    event->markAsUsed();
 }
 
-void VolumeSliceGL::eventStepSliceUp(Event*) { shiftSlice(1); }
+void VolumeSliceGL::eventStepSliceUp(Event* event) {
+    shiftSlice(1);
+    event->markAsUsed();
+}
 
-void VolumeSliceGL::eventStepSliceDown(Event*) { shiftSlice(-1); }
+void VolumeSliceGL::eventStepSliceDown(Event* event) {
+    shiftSlice(-1);
+    event->markAsUsed();
+}
 
 void VolumeSliceGL::eventGestureShiftSlice(Event* event) {
     GestureEvent* gestureEvent = static_cast<GestureEvent*>(event);
-    if (gestureEvent->deltaPos().y < 0)
+    if (gestureEvent->deltaPos().y < 0) {
         shiftSlice(1);
-    else if (gestureEvent->deltaPos().y > 0)
+        event->markAsUsed();
+
+    }
+    else if (gestureEvent->deltaPos().y > 0) {
         shiftSlice(-1);
+        event->markAsUsed();
+    }
 }
 
 void VolumeSliceGL::sliceChange() {
