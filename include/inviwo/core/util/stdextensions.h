@@ -329,6 +329,21 @@ auto transform(const T& cont, UnaryOperation op)
     return res;
 }
 
+
+template <typename Generator>
+auto table(Generator gen, int start, int end, int step = 1) -> 
+std::vector<decltype(gen(std::declval<int>()))> {
+    using type = decltype(gen(std::declval<int>()));
+    std::vector<type> res((end-start)/step);
+    size_t count = 0;
+    for(int i = start; i < end; i+=step){
+        res[count] = gen(i);
+        count++;
+    }
+    return res;
+}
+
+
 template <typename T>
 bool is_future_ready(const std::future<T>& future) {
     return (future.valid() &&
