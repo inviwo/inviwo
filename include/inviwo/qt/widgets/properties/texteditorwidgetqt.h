@@ -60,7 +60,10 @@ class StringPropertyWidgetQt;
 
 class IVW_QTWIDGETS_API ModifiedWidget : public QWidget {
 
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     ModifiedWidget();
@@ -93,7 +96,10 @@ private:
 
 class IVW_QTWIDGETS_API TextEditorWidgetQt : public PropertyWidgetQt {
 
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
 

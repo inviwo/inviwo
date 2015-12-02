@@ -44,7 +44,11 @@
 namespace inviwo {
 
 class IVW_QTWIDGETS_API InviwoQtEvent : public QEvent {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_GADGET
+#include <warn/pop>
+
 public:
     InviwoQtEvent() : QEvent(INVIWO_QT_EVENT) {}
     static QEvent::Type type() {
@@ -59,10 +63,10 @@ private:
 };
 
 class IVW_QTWIDGETS_API InviwoApplicationQt : public QApplication, public InviwoApplication {
-    #include <warn/push>
-    #include <warn/ignore/all>
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
-    #include <warn/pop>
+#include <warn/pop>
 
 public:
     InviwoApplicationQt(std::string displayName_, std::string basePath_, int& argc, char** argv, bool movePointsOn = true);

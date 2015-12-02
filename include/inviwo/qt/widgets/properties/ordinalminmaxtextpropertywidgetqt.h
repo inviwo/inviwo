@@ -45,7 +45,10 @@ namespace inviwo {
 
 class IVW_QTWIDGETS_API BaseOrdinalMinMaxTextPropertyWidgetQt : public PropertyWidgetQt {
 
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     BaseOrdinalMinMaxTextPropertyWidgetQt(Property* property);

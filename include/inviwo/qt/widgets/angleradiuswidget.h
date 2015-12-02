@@ -44,7 +44,10 @@ namespace inviwo {
  * @see AnglePropertyWidgetQt
  */
 class IVW_QTWIDGETS_API AngleRadiusWidget : public QWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     AngleRadiusWidget(QWidget*);
     virtual ~AngleRadiusWidget() {};

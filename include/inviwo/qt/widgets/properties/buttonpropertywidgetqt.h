@@ -43,7 +43,10 @@ namespace inviwo {
 
 class ButtonPropertyWidgetQt : public PropertyWidgetQt {
 
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     ButtonPropertyWidgetQt(ButtonProperty* property);

@@ -43,7 +43,10 @@ namespace inviwo {
     class RangeSliderMiddle;
 
 class IVW_QTWIDGETS_API RangeSliderQt : public QSplitter {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     RangeSliderQt(Qt::Orientation orientation=Qt::Horizontal, QWidget* parent=nullptr);

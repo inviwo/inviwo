@@ -65,7 +65,11 @@ class TransferFunctionPropertyWidgetQt;
 
 class IVW_QTWIDGETS_API TransferFunctionPropertyDialog : public PropertyEditorWidgetQt,
                                                          public TransferFunctionObserver {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
+
 public:
     TransferFunctionPropertyDialog(TransferFunctionProperty* property, QWidget* parent);
     ~TransferFunctionPropertyDialog();

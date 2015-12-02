@@ -46,7 +46,10 @@ class KeyboardEvent;
 class InteractionEvent;
 
 class IVW_QTWIDGETS_API EventPropertyWidgetQt : public PropertyWidgetQt {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     EventPropertyWidgetQt(EventProperty* eventproperty);

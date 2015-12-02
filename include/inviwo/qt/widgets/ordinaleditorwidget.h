@@ -39,7 +39,11 @@
 namespace inviwo {
 
 class IVW_QTWIDGETS_API BaseOrdinalEditorWidget : public QWidget  {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
+
 public:
     BaseOrdinalEditorWidget();
     virtual ~BaseOrdinalEditorWidget();

@@ -201,7 +201,10 @@ private:
 // PropertyEditorWidget owned by PropertyWidget
 class IVW_QTWIDGETS_API PropertyEditorWidgetQt : public InviwoDockWidget,
                                                  public PropertyEditorWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     PropertyEditorWidgetQt(std::string widgetName, QWidget* parent);
     virtual ~PropertyEditorWidgetQt();

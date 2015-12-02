@@ -61,7 +61,10 @@ private:
 };
 
 class IVW_QTWIDGETS_API PropertySelectionTreeWidget : public QWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     PropertySelectionTreeWidget();
     ~PropertySelectionTreeWidget();
@@ -76,7 +79,10 @@ private:
 };
 
 class IVW_QTWIDGETS_API PropertySelectionTreeDialog : public QDialog {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     PropertySelectionTreeDialog(ProcessorNetwork* processorNetwork,
                                 std::vector<Property*>& selectedProperty,

@@ -85,7 +85,7 @@ TransferFunctionPropertyDialog::~TransferFunctionPropertyDialog() {
 }
 
 void TransferFunctionPropertyDialog::generateWidget() {
-    vec2 minEditorDims = vec2(255.0f, 100.0f);
+    ivec2 minEditorDims = vec2(255, 100);
 
     tfEditorView_ = new TransferFunctionEditorView(tfProperty_);
     tfProperty_->get().addObserver(tfEditorView_);
@@ -314,7 +314,7 @@ void TransferFunctionPropertyDialog::updateColorWheel() {
             qgraphicsitem_cast<TransferFunctionEditorControlPoint*>(selection.at(0));
 
         if (selection.size() == 1 && tfPoint) {
-            vec4 color = tfPoint->getPoint()->getRGBA() * 255.0f;
+            ivec4 color{tfPoint->getPoint()->getRGBA() * 255.0f};
             colorWheel_->blockSignals(true);
             colorWheel_->setColor(QColor(color.r, color.g, color.b, color.a));
             colorWheel_->blockSignals(false);

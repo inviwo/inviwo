@@ -60,7 +60,10 @@ private:
 };
 
 class IVW_QTWIDGETS_API HtmlTreeWidget : public QWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     HtmlTreeWidget(QWidget* parent=0);
     ~HtmlTreeWidget();

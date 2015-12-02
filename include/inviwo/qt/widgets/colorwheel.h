@@ -55,7 +55,10 @@ class QPaintEvent;
 namespace inviwo {
 
 class IVW_QTWIDGETS_API ColorWheel : public QWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     explicit ColorWheel(QWidget* parent = 0);
 

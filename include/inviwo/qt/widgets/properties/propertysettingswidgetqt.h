@@ -81,7 +81,10 @@ struct SinglePropertySetting {
 };
 
 class IVW_QTWIDGETS_API PropertySettingsWidgetQt : public QDialog, public PropertyWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     PropertySettingsWidgetQt(Property* property, QWidget*);
     virtual ~PropertySettingsWidgetQt();

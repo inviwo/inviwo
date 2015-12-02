@@ -47,7 +47,10 @@ class TransferFunctionDataPoint;
 class VolumeRAM;
 
 class IVW_QTWIDGETS_API HistogramWorkerQt : public QObject {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     HistogramWorkerQt(const VolumeRAM* volumeRAM, std::size_t numBins = 2048u);
     virtual ~HistogramWorkerQt();

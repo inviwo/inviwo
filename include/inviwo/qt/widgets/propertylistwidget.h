@@ -57,7 +57,10 @@ public:
 };
 
 class IVW_QTWIDGETS_API PropertyListEvent : public QEvent {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_GADGET
+#include <warn/pop>
 public:
     enum Action { ADD = 0, REMOVE = 1};
 
@@ -79,7 +82,11 @@ private:
 };
 
 class IVW_QTWIDGETS_API PropertyListWidget : public InviwoDockWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
+
 public:
     typedef std::unordered_map<Processor*, CollapsibleGroupBoxWidgetQt*> WidgetMap;
 

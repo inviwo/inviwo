@@ -47,7 +47,10 @@
 namespace inviwo {
 
 class IVW_QTWIDGETS_API ColorPropertyWidgetQt : public PropertyWidgetQt {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     ColorPropertyWidgetQt(Property* property);

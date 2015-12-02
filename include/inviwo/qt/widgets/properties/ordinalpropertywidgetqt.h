@@ -57,7 +57,10 @@ class Property;
  *  The Widget should work for FloatProperty and FloatVec(2|3|4)Property
  */
 class IVW_QTWIDGETS_API BaseOrdinalPropertyWidgetQt : public PropertyWidgetQt {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 
 public:
     BaseOrdinalPropertyWidgetQt(Property* property);

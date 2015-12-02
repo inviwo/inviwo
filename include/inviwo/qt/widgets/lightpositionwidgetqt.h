@@ -48,7 +48,11 @@
 namespace inviwo {
 
 class IVW_QTWIDGETS_API LightPositionWidgetQt : public QLabel {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
+
 
 public:
     LightPositionWidgetQt();

@@ -46,7 +46,10 @@ namespace inviwo {
  * Enables displaying a value with a certain precision without truncation the actual value, which QDoubleSpinBox does.
  */
 class IVW_QTWIDGETS_API CustomDoubleSpinBoxQt : public QDoubleSpinBox {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     explicit CustomDoubleSpinBoxQt(QWidget* parent = 0);
     virtual QString textFromValue(double value) const;

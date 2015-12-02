@@ -83,7 +83,10 @@ namespace inviwo {
 /////////////////////////////////////////////////
 // Simple Graphics scene
 class IVW_QTWIDGETS_API SimpleGraphicsScene : public QGraphicsScene {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     SimpleGraphicsScene(QWidget* parent=0);
 signals:
@@ -120,7 +123,10 @@ struct ImgRect {
 };
 
 class IVW_QTWIDGETS_API SimpleGraphicsView : public QGraphicsView {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     SimpleGraphicsView(QWidget* parent=0);
     virtual ~SimpleGraphicsView();
@@ -159,7 +165,10 @@ private:
 // Image Labeling widget
 class ImageEditorWidgetQt;
 class IVW_QTWIDGETS_API ImageLabelWidget : public QWidget {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     ImageLabelWidget();
     virtual ~ImageLabelWidget(){
@@ -206,7 +215,10 @@ protected:
 /////////////////////////////////////////////////
 // Image Editor widget
 class IVW_QTWIDGETS_API ImageEditorWidgetQt : public PropertyWidgetQt {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     ImageEditorWidgetQt(Property* property);
     virtual ~ImageEditorWidgetQt();

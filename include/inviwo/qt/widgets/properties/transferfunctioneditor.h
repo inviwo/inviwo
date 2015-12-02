@@ -32,16 +32,17 @@
 
 #include <inviwo/qt/widgets/inviwoqtwidgetsdefine.h>
 #include <inviwo/core/datastructures/datamapper.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QGraphicsScene>
 #include <QPointF>
 #include <warn/pop>
+
 #include <vector>
 
 class QGraphicsView;
 class QGraphicsPathItem;
-
 
 namespace inviwo {
 
@@ -51,7 +52,10 @@ class TransferFunctionControlPointConnection;
 class TransferFunctionDataPoint;
 
 class IVW_QTWIDGETS_API TransferFunctionEditor : public QGraphicsScene {
+#include <warn/push>
+#include <warn/ignore/all>
     Q_OBJECT
+#include <warn/pop>
 public:
     TransferFunctionEditor(TransferFunction* transferFunction, QGraphicsView* view);
     virtual ~TransferFunctionEditor();
