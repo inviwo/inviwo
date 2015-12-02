@@ -202,7 +202,7 @@ public:
     std::string getIdentifier();
     virtual std::vector<std::string> getPath() const override;
 
-    void setProcessorWidget(ProcessorWidget* processorWidget);
+    virtual void setProcessorWidget(ProcessorWidget* processorWidget);
     ProcessorWidget* getProcessorWidget() const;
     bool hasProcessorWidget() const;
 

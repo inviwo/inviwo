@@ -61,7 +61,6 @@ CanvasProcessor::CanvasProcessor()
     , saveLayerButton_("saveLayer", "Save Image Layer", InvalidationLevel::Valid)
     , inputSize_("inputSize", "Input Dimension Parameters")
     , previousImageSize_(customInputDimensions_)
-    , evaluator_(nullptr)
     , canvasWidget_(nullptr)
     , queuedRequest_(false) {
     addPort(inport_);
@@ -115,25 +114,23 @@ CanvasProcessor::CanvasProcessor()
     setAllPropertiesCurrentStateAsDefault();
 }
 
-CanvasProcessor::~CanvasProcessor() {}
-
-void CanvasProcessor::initialize() {
-    Processor::initialize();
-    if (processorWidget_) {
-        canvasWidget_ = dynamic_cast<CanvasProcessorWidget*>(processorWidget_);
-        canvasWidget_->getCanvas()->setEventPropagator(this);
-    }
-    evaluator_ = InviwoApplication::getPtr()->getProcessorNetworkEvaluator();
-    sizeChanged();
-}
-
-void CanvasProcessor::deinitialize() {
+CanvasProcessor::~CanvasProcessor() {
     if (processorWidget_) {
         processorWidget_->hide();
         canvasWidget_->getCanvas()->setEventPropagator(nullptr);
     }
-    canvasWidget_ = nullptr;
-    Processor::deinitialize();
+}
+
+void CanvasProcessor::setProcessorWidget(ProcessorWidget* processorWidget) {
+    Processor::setProcessorWidget(processorWidget);
+    if (processorWidget) {
+        canvasWidget_ = dynamic_cast<CanvasProcessorWidget*>(processorWidget);
+        canvasWidget_->getCanvas()->setEventPropagator(this);
+    }
+}
+
+void CanvasProcessor::initializeResources() {
+    sizeChanged();
 }
 
 // Called by dimensions onChange.
@@ -207,72 +204,65 @@ void CanvasProcessor::saveImageLayer() {
 }
 
 void CanvasProcessor::saveImageLayer(std::string snapshotPath) {
-    std::shared_ptr<const Image> image = inport_.getData();
-    if (image) {
-        const Layer* layer = nullptr;
-        if (visibleLayer_.get() == LayerType::Color) {
-            layer = image->getColorLayer(colorLayer_.get());
-        } else {
-            layer = image->getLayer(visibleLayer_.get());
-        }
-        if (layer) {
-            std::string fileExtension = filesystem::getFileExtension(snapshotPath);
-            DataWriterType<Layer>* writer = nullptr;
-            bool deleteWriter = true;
-            if (Canvas::generalLayerWriter_ && fileExtension == "png") {
-                writer = Canvas::generalLayerWriter_;
-                deleteWriter = false;
-            } else {
-                writer = InviwoApplication::getPtr()
-                             ->getDataWriterFactory()
-                             ->getWriterForTypeAndExtension<Layer>(fileExtension)
-                             .release();
+    if (auto layer = getSelectedLayer()) {
+        if (auto writer = getWriter(filesystem::getFileExtension(snapshotPath))) {
+            try {
+                writer->setOverwrite(true);
+                writer->writeData(layer, snapshotPath);
+                LogInfo("Canvas layer exported to disk: " << snapshotPath);
+            } catch (DataWriterException const& e) {
+                LogError(e.getMessage());
             }
+        } else {
+            LogError("Error: Could not find a writer for the specified extension and data type");
+        }
+    } else {
+        LogError("Error: Could not find a layer to write out");
+    }
+}
 
-            if (writer) {
-                try {
-                    writer->setOverwrite(true);
-                    writer->writeData(layer, snapshotPath);
-                    LogInfo("Canvas layer exported to disk: " << snapshotPath);
-                    if (deleteWriter) delete writer;
-                } catch (DataWriterException const& e) {
-                    LogError(e.getMessage());
-                }
-            } else {
-                LogError(
-                    "Error: Cound not find a writer for the specified extension and data type");
-            }
+const Layer* CanvasProcessor::getSelectedLayer() const {
+    if (auto image = inport_.getData()) {
+        if (visibleLayer_.get() == LayerType::Color) {
+            return image->getColorLayer(colorLayer_.get());
         } else {
-            LogError("Error: Cound not find color layer to write out");
+            return image->getLayer(visibleLayer_.get());
         }
-    } else if (snapshotPath.empty()) {
-        LogWarn("Error: Please specify a file to write to");
-    } else if (!image) {
-        LogWarn("Error: Please connect an image to export");
+    } else {
+        return nullptr;
+    }
+}
+
+std::shared_ptr<DataWriterType<Layer>> CanvasProcessor::getWriter(
+    const std::string& fileExtension) const {
+    if (Canvas::generalLayerWriter_ && fileExtension == "png") {
+        return std::shared_ptr<DataWriterType<Layer>>(Canvas::generalLayerWriter_,
+                                                      [](DataWriterType<Layer>*) {});
+    } else {
+        return std::shared_ptr<DataWriterType<Layer>>(
+            InviwoApplication::getPtr()
+            ->getDataWriterFactory()
+            ->getWriterForTypeAndExtension<Layer>(fileExtension));
     }
 }
 
 std::unique_ptr<std::vector<unsigned char>> CanvasProcessor::getLayerAsCodedBuffer(
     LayerType layerType, std::string& type, size_t idx) {
     if (!inport_.hasData()) return nullptr;
-    std::shared_ptr<const Image> image = inport_.getData();
-    const Layer* layer = image->getLayer(layerType, idx);
-
-    if (layer) {
-        auto writer = InviwoApplication::getPtr()
-                          ->getDataWriterFactory()
-                          ->getWriterForTypeAndExtension<Layer>(type);
-        if (writer) {
+    auto image = inport_.getData();
+    
+    if (auto layer = image->getLayer(layerType, idx)) {
+        if (auto writer = getWriter(type)) {
             try {
                 return writer->writeDataToBuffer(layer, type);
             } catch (DataWriterException const& e) {
                 LogError(e.getMessage());
             }
         } else {
-            LogError("Error: Cound not find a writer for the specified data type");
+            LogError("Error: Could not find a writer for the specified data type");
         }
     } else {
-        LogError("Error: Cound not find layer to write");
+        LogError("Error: Could not find layer to write");
     }
 
     return nullptr;
@@ -347,7 +337,7 @@ bool CanvasProcessor::isReady() const {
 }
 
 bool CanvasProcessor::propagateResizeEvent(ResizeEvent* event, Outport* source) {
-    // avoid continues evaluation when port dimensions changes
+    // Avoid continues evaluation when port dimensions changes
     NetworkLock lock(this);
 
     dimensions_.set(event->size());
@@ -356,11 +346,9 @@ bool CanvasProcessor::propagateResizeEvent(ResizeEvent* event, Outport* source) 
         sizeChanged();
     } else {
         inport_.propagateResizeEvent(event);
-
         // Make sure this processor is invalidated.
         invalidate(InvalidationLevel::InvalidOutput);
     }
-
     return false;
 }
 
