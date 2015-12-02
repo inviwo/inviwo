@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -47,8 +47,6 @@
 #include <QUrl>
 #include <warn/pop>
 
-
-
 namespace inviwo {
 
 FilePropertyWidgetQt::FilePropertyWidgetQt(FileProperty* property)
@@ -66,36 +64,36 @@ void FilePropertyWidgetQt::generateWidget() {
     hLayout->addWidget(label_);
 
     QHBoxLayout* hWidgetLayout = new QHBoxLayout();
-    hWidgetLayout->setContentsMargins(0,0,0,0);
+    hWidgetLayout->setContentsMargins(0, 0, 0, 0);
     QWidget* widget = new QWidget();
     widget->setLayout(hWidgetLayout);
 
     lineEdit_ = new QLineEdit(this);
     lineEdit_->setReadOnly(true);
-    
+
     QSizePolicy sp = lineEdit_->sizePolicy();
     sp.setHorizontalStretch(3);
     lineEdit_->setSizePolicy(sp);
-    
+
     openButton_ = new QToolButton(this);
     openButton_->setIcon(QIcon(":/icons/open.png"));
     hWidgetLayout->addWidget(lineEdit_);
     hWidgetLayout->addWidget(openButton_);
-    
+
     sp = widget->sizePolicy();
     sp.setHorizontalStretch(3);
     widget->setSizePolicy(sp);
-    
+
     hLayout->addWidget(widget);
     connect(openButton_, SIGNAL(pressed()), this, SLOT(setPropertyValue()));
 }
 
-void FilePropertyWidgetQt::setPropertyValue() {    
-    std::string path{ property_->get() };
+void FilePropertyWidgetQt::setPropertyValue() {
+    std::string path{property_->get()};
     if (!path.empty()) {
         // only accept path if it exists
         if (filesystem::directoryExists(path)) {
-            // TODO: replace with filesystem:: functionality!            
+            // TODO: replace with filesystem:: functionality!
             path = QDir(QString::fromStdString(path)).absolutePath().toStdString();
         }
     }
@@ -103,49 +101,47 @@ void FilePropertyWidgetQt::setPropertyValue() {
     // Setup Extensions
     std::vector<FileExtension> filters = property_->getNameFilters();
     InviwoFileDialog importFileDialog(this, property_->getDisplayName(),
-                                      property_->getContentType(),
-                                      path);
-    
+                                      property_->getContentType(), path);
 
     for (const auto& filter : filters) importFileDialog.addExtension(filter);
 
     switch (property_->getAcceptMode()) {
-    case FileProperty::AcceptMode::Save:
-        importFileDialog.setAcceptMode(QFileDialog::AcceptSave);
-        break;
+        case FileProperty::AcceptMode::Save:
+            importFileDialog.setAcceptMode(QFileDialog::AcceptSave);
+            break;
 
-    case FileProperty::AcceptMode::Open:
-        importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
-        break;
+        case FileProperty::AcceptMode::Open:
+            importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
+            break;
 
-    default:
-        importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
+        default:
+            importFileDialog.setAcceptMode(QFileDialog::AcceptOpen);
     }
 
     switch (property_->getFileMode()) {
-    case FileProperty::FileMode::AnyFile:
-        importFileDialog.setFileMode(QFileDialog::AnyFile);
-        break;
+        case FileProperty::FileMode::AnyFile:
+            importFileDialog.setFileMode(QFileDialog::AnyFile);
+            break;
 
-    case FileProperty::FileMode::ExistingFile:
-        importFileDialog.setFileMode(QFileDialog::ExistingFile);
-        break;
+        case FileProperty::FileMode::ExistingFile:
+            importFileDialog.setFileMode(QFileDialog::ExistingFile);
+            break;
 
-    case FileProperty::FileMode::Directory:
-        importFileDialog.setFileMode(QFileDialog::Directory);
-        break;
+        case FileProperty::FileMode::Directory:
+            importFileDialog.setFileMode(QFileDialog::Directory);
+            break;
 
-    case FileProperty::FileMode::ExistingFiles:
-        importFileDialog.setFileMode(QFileDialog::ExistingFiles);
-        break;
+        case FileProperty::FileMode::ExistingFiles:
+            importFileDialog.setFileMode(QFileDialog::ExistingFiles);
+            break;
 
-    case FileProperty::FileMode::DirectoryOnly:
-        importFileDialog.setFileMode(QFileDialog::DirectoryOnly);
-        break;
+        case FileProperty::FileMode::DirectoryOnly:
+            importFileDialog.setFileMode(QFileDialog::DirectoryOnly);
+            break;
 
-    default:
-        importFileDialog.setFileMode(QFileDialog::AnyFile);
-        break;
+        default:
+            importFileDialog.setFileMode(QFileDialog::AnyFile);
+            break;
     }
 
     if (importFileDialog.exec()) {
@@ -154,6 +150,11 @@ void FilePropertyWidgetQt::setPropertyValue() {
     }
 
     updateFromProperty();
+}
+
+bool FilePropertyWidgetQt::requestFile() {
+   setPropertyValue();
+   return !property_->get().empty();
 }
 
 void FilePropertyWidgetQt::updateFromProperty() {

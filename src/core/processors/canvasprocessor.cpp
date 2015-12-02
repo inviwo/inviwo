@@ -198,6 +198,7 @@ ivec2 CanvasProcessor::calcSize() {
 }
 
 void CanvasProcessor::saveImageLayer() {
+    if (saveLayerDirectory_.get().empty()) saveLayerDirectory_.requestFile();
     std::string snapshotPath(saveLayerDirectory_.get() + "/" + toLower(getIdentifier()) + "-" +
                              currentDateTime() + ".png");
     saveImageLayer(snapshotPath);
