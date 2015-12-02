@@ -42,10 +42,10 @@ BasicMesh::BasicMesh() : Mesh() {
     colors_ = std::make_shared<Buffer<vec4>>();
     normals_ = std::make_shared<Buffer<vec3>>();
 
-    addBuffer(BufferType::POSITION_ATTRIB, vertices_);   // pos 0
-    addBuffer(BufferType::TEXCOORD_ATTRIB, texCoords_);  // pos 1
-    addBuffer(BufferType::COLOR_ATTRIB, colors_);        // pos 2
-    addBuffer(BufferType::NORMAL_ATTRIB, normals_);      // pos 3
+    addBuffer(BufferType::PositionAttrib, vertices_);   // pos 0
+    addBuffer(BufferType::TexcoordAttrib, texCoords_);  // pos 1
+    addBuffer(BufferType::ColorAttrib, colors_);        // pos 2
+    addBuffer(BufferType::NormalAttrib, normals_);      // pos 3
 }
 
 BasicMesh* BasicMesh::clone() const { return new BasicMesh(*this); }
@@ -175,7 +175,7 @@ std::shared_ptr<BasicMesh> BasicMesh::disk(const vec3& center, const vec3& norma
                                            const size_t& segments) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    IndexBufferRAM* inds = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
+    IndexBufferRAM* inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     vec3 orth = orthvec(normal);
 
     mesh->addVertex(center, normal, vec3(0.5f, 0.5f, 0.0f), color);
@@ -204,7 +204,7 @@ std::shared_ptr<BasicMesh> BasicMesh::cone(const vec3& start, const vec3& stop, 
 
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    auto inds = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
+    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     vec3 normal = glm::normalize(stop - start);
     vec3 orth = orthvec(normal);
     double angle = 2.0 * M_PI / segments;
@@ -238,7 +238,7 @@ std::shared_ptr<BasicMesh> BasicMesh::cylinder(const vec3& start, const vec3& st
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
 
-    auto inds = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
+    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
     vec3 normal = glm::normalize(stop - start);
     vec3 orth = orthvec(normal);
     vec3 o;
@@ -275,7 +275,7 @@ std::shared_ptr<BasicMesh> BasicMesh::line(const vec3& start, const vec3& stop, 
                                            const ivec2& inres /*= ivec2(1)*/) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    auto inds = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
+    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
     vec3 direction = stop - start;
     vec3 up = glm::cross(glm::normalize(direction), normal);
@@ -425,7 +425,7 @@ std::shared_ptr<BasicMesh> BasicMesh::colorsphere(const vec3& center, const floa
         for (quad.y = -1.0f; quad.y <= 1.0f; quad.y += 2.0f) {
             for (quad.z = -1.0f; quad.z <= 1.0f; quad.z += 2.0f) {
                 BasicMesh temp;
-                auto inds = temp.addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
+                auto inds = temp.addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
                 vec3 normal;
                 vec3 vertex;
@@ -468,7 +468,7 @@ std::shared_ptr<BasicMesh> BasicMesh::cube(const mat4& m, const vec4& color) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1));
 
-    auto indices = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
+    auto indices = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
     // Front back
     mesh->addVertices({{V(m, vec3(0, 0, 0)), N(m, vec3(0, 0, -1)), vec3(0, 0, 0), color},
@@ -560,7 +560,7 @@ std::shared_ptr<BasicMesh> BasicMesh::boundingbox(const mat4& basisandoffset, co
                        {vec3(1.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 0.0, 1.0), color},
                        {vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), color}});
 
-    auto inds = mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::NONE);
+    auto inds = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
     inds->add({0, 1, 0, 2, 0, 3, 1, 6, 1, 4, 2, 5, 2, 4, 3, 5, 3, 6, 5, 7, 6, 7, 4, 7});
 
     return mesh;
@@ -572,7 +572,7 @@ std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& pos, const vec3& normal
                                              const ivec2& inres /*= ivec2(1)*/) {
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(mat4(1.f));
-    auto inds = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
+    auto inds = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
 
     vec3 right = orthvec(normal);
     vec3 up = glm::cross(right, normal);

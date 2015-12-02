@@ -63,7 +63,7 @@ DrawPoints::DrawPoints()
           "keyEnableDraw", "Enable Draw",
           new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
           new Action(this, &DrawPoints::eventEnableDraw))
-    , points_(DrawType::POINTS, ConnectivityType::NONE)
+    , points_(DrawType::Points, ConnectivityType::None)
     , pointDrawer_(&points_)
     , pointShader_("img_color.frag")
     , drawModeEnabled_(false) {
@@ -80,7 +80,7 @@ DrawPoints::DrawPoints()
     addProperty(keyEnableDraw_);
 
     pointShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    points_.addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<Buffer<vec2>>());
+    points_.addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec2>>());
 }
 
 DrawPoints::~DrawPoints() {}

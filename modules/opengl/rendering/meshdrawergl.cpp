@@ -111,7 +111,7 @@ void MeshDrawerGL::initialize(Mesh::MeshInfo ai) {
     drawMethods_[ns].drawMode = getGLDrawMode(getDrawMode(ai.dt, ai.ct));
     drawMethods_[ns].elementBufferList.clear();
 
-    for (size_t i = 1; i < static_cast<size_t>(DrawType::NUMBER_OF_DRAW_TYPES); i++) {
+    for (size_t i = 1; i < static_cast<size_t>(DrawType::NumberOfDrawTypes); i++) {
         drawMethods_[i].drawFunc = drawMethods_[ns].drawFunc;
         drawMethods_[i].drawMode = drawMethods_[ns].drawMode;
         drawMethods_[i].elementBufferList.clear();
@@ -137,7 +137,7 @@ void MeshDrawerGL::initializeIndexBuffer(const BufferBase* indexBuffer, Mesh::Me
     drawMethods_[dm].elementBufferList.push_back(indexBuffer);
 
     // Specify first element buffer as default rendering method
-    const auto ns = static_cast<int>(DrawType::NOT_SPECIFIED);
+    const auto ns = static_cast<int>(DrawType::NotSpecified);
     if (drawMethods_[ns].elementBufferList.size() == 0) {
         drawMethods_[ns].drawFunc = drawMethods_[dm].drawFunc;
         drawMethods_[ns].drawMode = drawMethods_[dm].drawMode;
@@ -147,55 +147,55 @@ void MeshDrawerGL::initializeIndexBuffer(const BufferBase* indexBuffer, Mesh::Me
 
 MeshDrawerGL::DrawMode MeshDrawerGL::getDrawMode(DrawType dt, ConnectivityType ct) const {
     switch (dt) {
-        case DrawType::TRIANGLES:
+        case DrawType::Triangles:
             switch (ct) {
-                case ConnectivityType::NONE:
+                case ConnectivityType::None:
                     return DrawMode::Triangles;
 
-                case ConnectivityType::STRIP:
+                case ConnectivityType::Strip:
                     return DrawMode::TriangleStrip;
 
-                case ConnectivityType::FAN:
+                case ConnectivityType::Fan:
                     return DrawMode::TriangleFan;
 
-                case ConnectivityType::ADJACENCY:
+                case ConnectivityType::Adjacency:
                     return DrawMode::TrianglesAdjacency;
 
-                case ConnectivityType::STRIP_ADJACENCY:
+                case ConnectivityType::StripAdjacency:
                     return DrawMode::TriangleStripAdjacency;
 
-                case ConnectivityType::LOOP:
-                case ConnectivityType::NUMBER_OF_CONNECTIVITY_TYPES:
+                case ConnectivityType::Loop:
+                case ConnectivityType::NumberOfConnectivityTypes:
                 default:
                     return DrawMode::Points;
             }
 
-        case DrawType::LINES:
+        case DrawType::Lines:
             switch (ct) {
-                case ConnectivityType::NONE:
+                case ConnectivityType::None:
                     return DrawMode::Lines;
 
-                case ConnectivityType::STRIP:
+                case ConnectivityType::Strip:
                     return DrawMode::LineStrip;
 
-                case ConnectivityType::LOOP:
+                case ConnectivityType::Loop:
                     return DrawMode::LineLoop;
 
-                case ConnectivityType::ADJACENCY:
+                case ConnectivityType::Adjacency:
                     return DrawMode::LinesAdjacency;
 
-                case ConnectivityType::STRIP_ADJACENCY:
+                case ConnectivityType::StripAdjacency:
                     return DrawMode::LineStripAdjacency;
 
-                case ConnectivityType::FAN:
-                case ConnectivityType::NUMBER_OF_CONNECTIVITY_TYPES:
+                case ConnectivityType::Fan:
+                case ConnectivityType::NumberOfConnectivityTypes:
                 default:
                     return DrawMode::Points;
             }
 
-        case DrawType::POINTS:
-        case DrawType::NOT_SPECIFIED:
-        case DrawType::NUMBER_OF_DRAW_TYPES:
+        case DrawType::Points:
+        case DrawType::NotSpecified:
+        case DrawType::NumberOfDrawTypes:
         default:
             return DrawMode::Points;
     }

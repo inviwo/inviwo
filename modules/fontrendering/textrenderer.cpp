@@ -184,9 +184,9 @@ void TextRenderer::initMesh() {
     auto indices = util::makeIndexBuffer({0, 1, 2, 3});
 
     mesh_.reset(new Mesh());
-    mesh_->addBuffer(BufferType::POSITION_ATTRIB, verticesBuffer);
-    mesh_->addBuffer(BufferType::TEXCOORD_ATTRIB, texCoordsBuffer);
-    mesh_->addIndicies(Mesh::MeshInfo(DrawType::TRIANGLES, ConnectivityType::STRIP), indices);
+    mesh_->addBuffer(BufferType::PositionAttrib, verticesBuffer);
+    mesh_->addBuffer(BufferType::TexcoordAttrib, texCoordsBuffer);
+    mesh_->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indices);
 
     drawer_.reset(new MeshDrawerGL(mesh_.get()));
 }

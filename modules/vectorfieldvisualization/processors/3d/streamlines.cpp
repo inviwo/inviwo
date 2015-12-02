@@ -102,7 +102,7 @@ void StreamLines::process() {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
             auto indexBuffer =
-                mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::STRIP_ADJACENCY);
+                mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
             auto line = tracer.traceFrom(P.xyz(), numberOfSteps_.get(), stepSize_.get(),
                                          stepDirection_.get(), normalizeSamples_.get());
 

@@ -6,7 +6,15 @@ colorama.init()
 
 import refactoring # Note: refactoring.py need to be in the current working directory
 
-paths = ["/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-dev", "/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-research"]
+#paths = [
+#	"/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-dev", 
+#	"/Users/petst/Work/Projects/Inviwo-Developent/Private/Inviwo-research"
+#]
+
+paths = [
+	"C:/Users/petst55/Work/Inviwo/Inviwo-dev",
+	"C:/Users/petst55/Work/Inviwo/Inviwo-research"
+]
 
 excludespatterns = ["*/ext/*", "*moc_*", "*cmake*", "*/proteindocking/*", "*/proteindocking2/*", "*/genetree/*", "*/vrnbase/*"];
 
@@ -217,6 +225,29 @@ pathTypeReplacements = {
     "InviwoApplication::PATH_HELP" : "PathType::Help"
 }
 
+geometryTypeReplacements = {
+	"BufferType::POSITION_ATTRIB" : "BufferType::PositionAttrib",
+	"BufferType::NORMAL_ATTRIB" : "BufferType::NormalAttrib",
+	"BufferType::COLOR_ATTRIB" : "BufferType::ColorAttrib",
+	"BufferType::TEXCOORD_ATTRIB" : "BufferType::TexcoordAttrib",
+	"BufferType::CURVATURE_ATTRIB" : "BufferType::CurvatureAttrib",
+	"BufferType::INDEX_ATTRIB" : "BufferType::IndexAttrib",
+	"BufferType::NUMBER_OF_BUFFER_TYPES" : "BufferType::NumberOfBufferTypes",
+	"BufferUsage::STATIC" : "BufferUsage::Static",
+	"BufferUsage::DYNAMIC" : "BufferUsage::Dynamic",
+	"DrawType::NOT_SPECIFIED" : "DrawType::NotSpecified",
+	"DrawType::POINTS" : "DrawType::Points",
+	"DrawType::LINES" : "DrawType::Lines",
+	"DrawType::TRIANGLES" : "DrawType::Triangles",
+	"DrawType::NUMBER_OF_DRAW_TYPES" : "DrawType::NumberOfDrawTypes",
+	"ConnectivityType::NONE" : "ConnectivityType::None",
+	"ConnectivityType::STRIP" : "ConnectivityType::Strip",
+	"ConnectivityType::LOOP" : "ConnectivityType::Loop",
+	"ConnectivityType::FAN" : "ConnectivityType::Fan",
+	"ConnectivityType::ADJACENCY" : "ConnectivityType::Adjacency",
+	"ConnectivityType::STRIP_ADJACENCY" : "ConnectivityType::StripAdjacency",
+	"ConnectivityType::NUMBER_OF_CONNECTIVITY_TYPES" : "ConnectivityType::NumberOfConnectivityTypes",
+}
 
 # order matters here...
 # for k,v in numericTypeReplacements.items():
@@ -252,7 +283,12 @@ pathTypeReplacements = {
 # for k,v in invalidationLevelReplacements.items():
 # 	replace(r"\b"+k+r"\b", v)
 
-for k,v in pathTypeReplacements.items():
+#for k,v in pathTypeReplacements.items():
+#	replace(r"\b"+k+r"\b", v)
+
+print("Looking in " + str(len(files)) + " files")
+
+for k,v in geometryTypeReplacements.items():
 	replace(r"\b"+k+r"\b", v)
 
 

@@ -39,9 +39,9 @@ namespace inviwo {
 template <typename T>
 class BufferRAMPrecision : public BufferRAM {
 public:
-    BufferRAMPrecision(BufferUsage usage = BufferUsage::STATIC);
-    BufferRAMPrecision(size_t size, BufferUsage usage = BufferUsage::STATIC);
-    BufferRAMPrecision(std::vector<T> data, BufferUsage usage = BufferUsage::STATIC);
+    BufferRAMPrecision(BufferUsage usage = BufferUsage::Static);
+    BufferRAMPrecision(size_t size, BufferUsage usage = BufferUsage::Static);
+    BufferRAMPrecision(std::vector<T> data, BufferUsage usage = BufferUsage::Static);
     BufferRAMPrecision(const BufferRAMPrecision<T>& rhs);
     BufferRAMPrecision<T>& operator=(const BufferRAMPrecision<T>& that);
     virtual ~BufferRAMPrecision() = default;

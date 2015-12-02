@@ -162,7 +162,7 @@ namespace inviwo {
 
     template <AxisAlignedCutPlane::Axis axis>
     void AxisAlignedCutPlane::SliceProperty<axis>::createDrawer(std::shared_ptr<const Volume> vol) {
-        mesh_ = util::make_unique<SimpleMesh>(DrawType::TRIANGLES, ConnectivityType::STRIP);
+        mesh_ = util::make_unique<SimpleMesh>(DrawType::Triangles, ConnectivityType::Strip);
 
         double z = (static_cast<double>(slice_.get())-0.5) / static_cast<double>(slice_.getMaxValue());
 

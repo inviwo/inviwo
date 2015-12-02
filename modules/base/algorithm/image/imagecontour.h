@@ -75,7 +75,7 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
         std::vector<int>({0, 3, 0, 1, 1, 2, 2, 3})};
 
     auto mesh = std::make_shared<BasicMesh>();
-    auto indices = mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::NONE);
+    auto indices = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
 
     using T = typename DataType::type;
     using P = typename DataType::primitive;

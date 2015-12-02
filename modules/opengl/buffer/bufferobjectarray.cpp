@@ -35,12 +35,12 @@ namespace inviwo {
 int BufferObjectArray::maxVertexAttribSize_ = 0;
 
 BufferObjectArray::BufferObjectArray()
-    : id_(0u), attachedBuffers_(static_cast<size_t>(BufferType::NUMBER_OF_BUFFER_TYPES)) {
+    : id_(0u), attachedBuffers_(static_cast<size_t>(BufferType::NumberOfBufferTypes)) {
     initialize();
 }
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
-    : id_(0u), attachedBuffers_(static_cast<size_t>(BufferType::NUMBER_OF_BUFFER_TYPES)) {
+    : id_(0u), attachedBuffers_(static_cast<size_t>(BufferType::NumberOfBufferTypes)) {
     initialize();
 
     bind();

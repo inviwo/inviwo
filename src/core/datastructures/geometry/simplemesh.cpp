@@ -33,9 +33,9 @@
 namespace inviwo {
 
 SimpleMesh::SimpleMesh(DrawType dt, ConnectivityType ct) : Mesh(dt, ct) {
-    addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<Buffer<vec3>>());  // pos 0
-    addBuffer(BufferType::TEXCOORD_ATTRIB, std::make_shared<Buffer<vec3>>());  // pos 1
-    addBuffer(BufferType::COLOR_ATTRIB, std::make_shared<Buffer<vec4>>());     // pos 2
+    addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec3>>());  // pos 0
+    addBuffer(BufferType::TexcoordAttrib, std::make_shared<Buffer<vec3>>());  // pos 1
+    addBuffer(BufferType::ColorAttrib, std::make_shared<Buffer<vec4>>());     // pos 2
     addIndicies(Mesh::MeshInfo(dt, ct), std::make_shared<IndexBuffer>());
 }
 

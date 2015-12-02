@@ -351,12 +351,12 @@ Mesh* MeshClipping::clipGeometryAgainstPlaneRevised(const Mesh* in, Plane plane)
     }
 
 
-    SimpleMesh* outputMesh = new SimpleMesh(DrawType::TRIANGLES);
+    SimpleMesh* outputMesh = new SimpleMesh(DrawType::Triangles);
 
     //Check if we are using indicies
     if (triangleList->size() > 0) {
         //Check if it is a Triangle Strip
-        if (indexAttrInfo == ConnectivityType::STRIP) {
+        if (indexAttrInfo == ConnectivityType::Strip) {
             // Iterate over edges by edge
             unsigned int idx[3];
             std::vector<vec3> newVertices;
@@ -906,9 +906,9 @@ Mesh* MeshClipping::clipGeometryAgainstPlane(const Mesh* in, Plane plane) {
     //LogInfo("Number of verts in output mesh: " <<
     //  outputList.size());
     if (renderAsPoints_.get())
-        outputMesh->setIndicesInfo(DrawType::POINTS, ConnectivityType::NONE);
+        outputMesh->setIndicesInfo(DrawType::Points, ConnectivityType::None);
     else
-        outputMesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP);
+        outputMesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::Strip);
 
     for (unsigned int i=0; i<outputList.size(); ++i) {
         outputMesh->addIndex(i);

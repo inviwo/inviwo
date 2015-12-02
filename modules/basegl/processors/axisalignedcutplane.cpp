@@ -148,7 +148,7 @@ void AxisAlignedCutPlane::process() {
 }
 
 void AxisAlignedCutPlane::createBoundingBox() {
-    boundingBoxMesh_ = util::make_unique<SimpleMesh>(DrawType::LINES, ConnectivityType::STRIP);
+    boundingBoxMesh_ = util::make_unique<SimpleMesh>(DrawType::Lines, ConnectivityType::Strip);
     boundingBoxMesh_->addVertex(vec3(0, 0, 0), vec3(0, 0, 0), boundingBoxColor_.get());
     boundingBoxMesh_->addVertex(vec3(0, 0, 1), vec3(0, 0, 1), boundingBoxColor_.get());
     boundingBoxMesh_->addVertex(vec3(0, 1, 0), vec3(0, 1, 0), boundingBoxColor_.get());

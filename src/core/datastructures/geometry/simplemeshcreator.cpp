@@ -60,7 +60,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::rectangularPrism(vec3 posLlf, vec
                         vec4(colorUrb.x, colorUrb.y, colorLlf.z, colorUrb.w));
     recPrism->addVertex(posUrb, texCoordUrb, colorUrb);
     // 14 indices (Triangle Strip)
-    recPrism->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP);
+    recPrism->setIndicesInfo(DrawType::Triangles, ConnectivityType::Strip);
     recPrism->addIndex(3);
     recPrism->addIndex(4);
     recPrism->addIndex(2);
@@ -105,7 +105,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::parallelepiped(
     ppd->addVertex(pos + p2 + p3, tex + t2 + t3, col + c2 + c3);                 // (0,1,1)
     ppd->addVertex(pos + p1 + p2 + p3, tex + t1 + t2 + t3, col + c1 + c2 + c3);  // (1,1,1)
     // 14 indices (Triangle Strip)
-    ppd->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP);
+    ppd->setIndicesInfo(DrawType::Triangles, ConnectivityType::Strip);
     ppd->addIndex(0);
     ppd->addIndex(1);
     ppd->addIndex(4);
@@ -139,7 +139,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::rectangle(vec3 posLl, vec3 posUr)
                    vec4(colorLl.x, colorUr.y, colorUr.z, colorLl.w));
     rec->addVertex(posUr, texCoordUr, colorUr);
     // 4 indices (?)
-    rec->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::STRIP);
+    rec->setIndicesInfo(DrawType::Triangles, ConnectivityType::Strip);
     rec->addIndex(1);
     rec->addIndex(3);
     rec->addIndex(0);
@@ -181,11 +181,11 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
             normals->set(i * pointsPerLine + j, normal);
         }
     }
-    spheremesh->addBuffer(BufferType::NORMAL_ATTRIB, normalBuffer);
+    spheremesh->addBuffer(BufferType::NormalAttrib, normalBuffer);
 
     // Create Indices
     // compute indices
-    spheremesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
+    spheremesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
     for (unsigned int y = 0; y < numLoops; ++y) {
         auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
@@ -197,7 +197,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
             indices->set(count++, offset + x + pointsPerLine);
         }
 
-        spheremesh->addIndicies(Mesh::MeshInfo(DrawType::TRIANGLES, ConnectivityType::STRIP),
+        spheremesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
                                 indexBuf);
     }
 
@@ -240,11 +240,11 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
             normals->set(i * pointsPerLine + j, normal);
         }
     }
-    spheremesh->addBuffer(BufferType::NORMAL_ATTRIB, normalBuffer);
+    spheremesh->addBuffer(BufferType::NormalAttrib, normalBuffer);
 
     // Create Indices
     // compute indices
-    spheremesh->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
+    spheremesh->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
     for (unsigned int y = 0; y < numLoops; ++y) {
         auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
@@ -256,7 +256,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::sphere(float radius, unsigned int
             indices->set(count++, offset + x + pointsPerLine);
         }
 
-        spheremesh->addIndicies(Mesh::MeshInfo(DrawType::TRIANGLES, ConnectivityType::STRIP),
+        spheremesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip),
                                 indexBuf);
     }
 
@@ -291,10 +291,10 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 ex
             normals->set(y * pointsPerLine + x, vec3(0.0f, 0.0f, 1.0f));
         }
     }
-    plane->addBuffer(BufferType::NORMAL_ATTRIB, normalBuffer);
+    plane->addBuffer(BufferType::NormalAttrib, normalBuffer);
 
     // compute indices
-    plane->setIndicesInfo(DrawType::TRIANGLES, ConnectivityType::NONE);
+    plane->setIndicesInfo(DrawType::Triangles, ConnectivityType::None);
     for (unsigned int y = 0; y < meshResY; ++y) {
         auto indices = std::make_shared<IndexBufferRAM>(pointsPerLine * 2);
         auto indexBuf = std::make_shared<IndexBuffer>(indices);
@@ -306,7 +306,7 @@ std::shared_ptr<SimpleMesh> SimpleMeshCreator::plane(glm::vec3 pos, glm::vec2 ex
             indices->set(count++, offset + x + pointsPerLine);
         }
 
-        plane->addIndicies(Mesh::MeshInfo(DrawType::TRIANGLES, ConnectivityType::STRIP), indexBuf);
+        plane->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::Strip), indexBuf);
     }
 
     return plane;

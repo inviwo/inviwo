@@ -39,7 +39,7 @@ namespace inviwo {
 class IVW_CORE_API BufferRAM : public BufferRepresentation {
 public:
     BufferRAM(const DataFormatBase* format = DataFormatBase::get(),
-              BufferUsage usage = BufferUsage::STATIC);
+              BufferUsage usage = BufferUsage::Static);
     BufferRAM(const BufferRAM& rhs) = default;
     BufferRAM& operator=(const BufferRAM& that) = default;
     virtual BufferRAM* clone() const override = 0;
@@ -75,7 +75,7 @@ IVW_CORE_API std::shared_ptr<BufferRAM> createBufferRAM(size_t size, const DataF
 template <typename T>
 class BufferRAMPrecision;
 
-template <BufferUsage U = BufferUsage::STATIC, typename T = vec3>
+template <BufferUsage U = BufferUsage::Static, typename T = vec3>
 std::shared_ptr<BufferRAMPrecision<T>> createBufferRAM(std::vector<T> data) {
     return std::make_shared<BufferRAMPrecision<T>>(std::move(data), DataFormat<T>::get(), U);
 }

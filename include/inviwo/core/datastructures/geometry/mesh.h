@@ -44,7 +44,7 @@ namespace inviwo {
 class IVW_CORE_API Mesh : public DataGroup<MeshRepresentation>, public SpatialEntity<3> {
 public:
     struct MeshInfo {
-        MeshInfo() : dt(DrawType::POINTS), ct(ConnectivityType::NONE) {}
+        MeshInfo() : dt(DrawType::Points), ct(ConnectivityType::None) {}
         MeshInfo(DrawType d, ConnectivityType c) : dt(d), ct(c) {}
         DrawType dt;
         ConnectivityType ct;

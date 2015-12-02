@@ -127,15 +127,15 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
     bool use_materials = scene->HasMaterials();
 
     // we have at least one mesh, so get its geometry type
-    DrawType dt = DrawType::NOT_SPECIFIED;
+    DrawType dt = DrawType::NotSpecified;
 
     size_t fst_primitive_type = size_t{scene->mMeshes[0]->mPrimitiveTypes};
     if (fst_primitive_type == aiPrimitiveType_POINT) {
-        dt = DrawType::POINTS;
+        dt = DrawType::Points;
     } else if (fst_primitive_type == aiPrimitiveType_LINE) {
-        dt = DrawType::LINES;
+        dt = DrawType::Lines;
     } else if (fst_primitive_type == aiPrimitiveType_TRIANGLE) {
-        dt = DrawType::TRIANGLES;
+        dt = DrawType::Triangles;
     }
 
     // get the configuration
@@ -151,7 +151,7 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
 
         // check if all meshes have the same geometry type
         if (m->mPrimitiveTypes != fst_primitive_type) {
-            dt = DrawType::NOT_SPECIFIED;
+            dt = DrawType::NotSpecified;
         }
     }
 
@@ -289,21 +289,21 @@ std::shared_ptr<Mesh> AssimpReader::readData(const std::string filePath) {
     }
 
     // add the data to the mesh
-    mesh->addBuffer(BufferType::POSITION_ATTRIB, pbuff);
+    mesh->addBuffer(BufferType::PositionAttrib, pbuff);
 
     if (use_normals) {
-        mesh->addBuffer(BufferType::NORMAL_ATTRIB, nbuff);
+        mesh->addBuffer(BufferType::NormalAttrib, nbuff);
     }
 
     for (size_t i = 0; i < color_channels; ++i) {
-        mesh->addBuffer(BufferType::COLOR_ATTRIB, cbuff[i]);
+        mesh->addBuffer(BufferType::ColorAttrib, cbuff[i]);
     }
 
     for (size_t i = 0; i < texture_channels; ++i) {
-        mesh->addBuffer(BufferType::TEXCOORD_ATTRIB, tbuff[i]);
+        mesh->addBuffer(BufferType::TexcoordAttrib, tbuff[i]);
     }
 
-    mesh->addIndicies(Mesh::MeshInfo(dt, ConnectivityType::NONE), inds);
+    mesh->addIndicies(Mesh::MeshInfo(dt, ConnectivityType::None), inds);
 
     std::clock_t now = std::clock();
     Assimp::DefaultLogger::get()->debug(

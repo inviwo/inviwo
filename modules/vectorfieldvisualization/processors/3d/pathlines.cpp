@@ -150,7 +150,7 @@ void PathLines::process() {
 
 
             auto indexBuffer =
-                mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::STRIP_ADJACENCY);
+                mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
             indexBuffer->add(0);
 
             vec4 c;

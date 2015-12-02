@@ -41,43 +41,43 @@ enum class CartesianCoordinateAxis {
 };
 
 enum class BufferType {
-    POSITION_ATTRIB = 0,
-    NORMAL_ATTRIB,
-    COLOR_ATTRIB,
-    TEXCOORD_ATTRIB,
-    CURVATURE_ATTRIB,
-    INDEX_ATTRIB,
-    NUMBER_OF_BUFFER_TYPES
+    PositionAttrib = 0,
+    NormalAttrib,
+    ColorAttrib,
+    TexcoordAttrib,
+    CurvatureAttrib,
+    IndexAttrib,
+    NumberOfBufferTypes
 };
 
-enum class BufferUsage { STATIC, DYNAMIC };
+enum class BufferUsage { Static, Dynamic };
 
-enum class DrawType { NOT_SPECIFIED = 0, POINTS, LINES, TRIANGLES, NUMBER_OF_DRAW_TYPES };
+enum class DrawType { NotSpecified = 0, Points, Lines, Triangles, NumberOfDrawTypes };
 
 enum class ConnectivityType {
-    NONE = 0,
-    STRIP,
-    LOOP,
-    FAN,
-    ADJACENCY,
-    STRIP_ADJACENCY,
-    NUMBER_OF_CONNECTIVITY_TYPES
+    None = 0,
+    Strip,
+    Loop,
+    Fan,
+    Adjacency,
+    StripAdjacency,
+    NumberOfConnectivityTypes
 };
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, DrawType dt) {
     switch (dt) {
-        case DrawType::POINTS:
+        case DrawType::Points:
             ss << "Points";
             break;
-        case DrawType::LINES:
+        case DrawType::Lines:
             ss << "Lines";
             break;
-        case DrawType::TRIANGLES:
+        case DrawType::Triangles:
             ss << "Triangles";
             break;
-        case DrawType::NOT_SPECIFIED:
-        case DrawType::NUMBER_OF_DRAW_TYPES:
+        case DrawType::NotSpecified:
+        case DrawType::NumberOfDrawTypes:
         default:
             ss << "Not specified";
     }
@@ -88,25 +88,25 @@ template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              ConnectivityType ct) {
     switch (ct) {
-        case ConnectivityType::NONE:
+        case ConnectivityType::None:
             ss << "None";
             break;
-        case ConnectivityType::STRIP:
+        case ConnectivityType::Strip:
             ss << "Strip";
             break;
-        case ConnectivityType::LOOP:
+        case ConnectivityType::Loop:
             ss << "Loop";
             break;
-        case ConnectivityType::FAN:
+        case ConnectivityType::Fan:
             ss << "Fan";
             break;
-        case ConnectivityType::ADJACENCY:
+        case ConnectivityType::Adjacency:
             ss << "Adjacency";
             break;
-        case ConnectivityType::STRIP_ADJACENCY:
+        case ConnectivityType::StripAdjacency:
             ss << "Strip adjacency";
             break;
-        case ConnectivityType::NUMBER_OF_CONNECTIVITY_TYPES:
+        case ConnectivityType::NumberOfConnectivityTypes:
         default:
             ss << "Not specified";
     }
@@ -116,25 +116,25 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BufferType bt) {
     switch (bt) {
-        case BufferType::POSITION_ATTRIB:
+        case BufferType::PositionAttrib:
             ss << "Positions";
             break;
-        case BufferType::NORMAL_ATTRIB:
+        case BufferType::NormalAttrib:
             ss << "Normals";
             break;
-        case BufferType::COLOR_ATTRIB:
+        case BufferType::ColorAttrib:
             ss << "Colors";
             break;
-        case BufferType::TEXCOORD_ATTRIB:
+        case BufferType::TexcoordAttrib:
             ss << "Texture";
             break;
-        case BufferType::CURVATURE_ATTRIB:
+        case BufferType::CurvatureAttrib:
             ss << "Curvature";
             break;
-        case BufferType::INDEX_ATTRIB:
+        case BufferType::IndexAttrib:
             ss << "Index";
             break;
-        case BufferType::NUMBER_OF_BUFFER_TYPES:
+        case BufferType::NumberOfBufferTypes:
         default:
             ss << "Type not specified";
     }
@@ -144,10 +144,10 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, BufferUsage ut) {
     switch (ut) {
-        case BufferUsage::STATIC:
+        case BufferUsage::Static:
             ss << "Static";
             break;
-        case BufferUsage::DYNAMIC:
+        case BufferUsage::Dynamic:
             ss << "Dynamic";
             break;
         default:

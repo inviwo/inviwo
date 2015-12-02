@@ -125,7 +125,7 @@ void StreamRibbons::process() {
     for (const auto &seeds : seedPoints_) {
         for (auto &p : (*seeds)) {
             vec4 P = m * vec4(p, 1.0f);
-            auto indexBuffer = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::STRIP);
+            auto indexBuffer = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::Strip);
             auto line = tracer.traceFrom(P.xyz(), numberOfSteps_.get(), stepSize_.get(),
                                          stepDirection_.get(), normalizeSamples_.get());
 

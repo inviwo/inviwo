@@ -40,7 +40,7 @@ namespace inviwo {
 class IVW_CORE_API BufferRepresentation : public DataRepresentation {
 public:
     BufferRepresentation(const DataFormatBase* format = DataFormatBase::get(),
-                         BufferUsage usage = BufferUsage::STATIC);
+                         BufferUsage usage = BufferUsage::Static);
 
     BufferRepresentation(const BufferRepresentation& rhs) = default;
     BufferRepresentation& operator=(const BufferRepresentation& that) = default;

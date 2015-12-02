@@ -62,7 +62,7 @@ DrawLines::DrawLines()
           "keyEnableDraw", "Enable Draw",
           new KeyboardEvent('D', InteractionEvent::MODIFIER_CTRL, KeyboardEvent::KEY_STATE_ANY),
           new Action(this, &DrawLines::eventEnableDraw))
-    , lines_(DrawType::LINES, ConnectivityType::STRIP)
+    , lines_(DrawType::Lines, ConnectivityType::Strip)
     , lineDrawer_(&lines_)
     , lineShader_("img_color.frag") {
 
@@ -79,7 +79,7 @@ DrawLines::DrawLines()
     addProperty(keyEnableDraw_);
     lineShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    lines_.addBuffer(BufferType::POSITION_ATTRIB, std::make_shared<Buffer<vec2>>());
+    lines_.addBuffer(BufferType::PositionAttrib, std::make_shared<Buffer<vec2>>());
 
     GLint aliasRange[2];
     glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, aliasRange);

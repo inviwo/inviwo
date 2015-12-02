@@ -57,7 +57,7 @@ public:
      * CL_MEM_WRITE_ONLY, CL_MEM_READ_WRITE
      */
     ElementBufferCL(size_t size, const DataFormatBase* format,
-                    BufferUsage usage = BufferUsage::STATIC, const void* data = nullptr,
+                    BufferUsage usage = BufferUsage::Static, const void* data = nullptr,
                     cl_mem_flags readWriteFlag = CL_MEM_READ_WRITE);
     ElementBufferCL(const ElementBufferCL& rhs) = default;
     virtual ~ElementBufferCL() = default;

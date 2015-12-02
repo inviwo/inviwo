@@ -100,8 +100,8 @@ HedgeHog2D::~HedgeHog2D() {}
 
 void HedgeHog2D::process() {
     auto mesh = std::make_shared<BasicMesh>();
-    auto indexTriangles = mesh->addIndexBuffer(DrawType::TRIANGLES, ConnectivityType::NONE);
-    auto indexLines = mesh->addIndexBuffer(DrawType::LINES, ConnectivityType::NONE);
+    auto indexTriangles = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+    auto indexLines = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
 
     float dx = 1.0f / numberOfGlyphs_.get().x;
     float dy = 1.0f / numberOfGlyphs_.get().y;
