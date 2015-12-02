@@ -148,16 +148,12 @@ LightVolumeGL::LightVolumeGL()
 
     propagationShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
     mergeShader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-}
-
-void LightVolumeGL::initialize() {
-    Processor::initialize();
 
     for (auto& elem : propParams_) {
-        elem.fbo.reset(new FrameBufferObject());
+        elem.fbo = util::make_unique<FrameBufferObject>();
     }
 
-    mergeFBO_.reset(new FrameBufferObject());
+    mergeFBO_ = util::make_unique<FrameBufferObject>();
     supportColoredLightChanged();
 }
 
