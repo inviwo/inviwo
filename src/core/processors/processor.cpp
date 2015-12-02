@@ -47,7 +47,6 @@ Processor::Processor()
     , ProcessorObservable()
     , processorWidget_(nullptr)
     , identifier_("")
-    , initialized_(false)
     , invalidationEnabled_(true)
     , invalidationRequestLevel_(InvalidationLevel::Valid) 
     , network_(nullptr) {
@@ -166,12 +165,6 @@ std::string Processor::getPortDependencySet(Port* port) const {
 std::vector<Port*> Processor::getPortsInSameSet(Port* port) const {
     return portDependencySets_.getGroupedData(portDependencySets_.getKey(port));
 }
-
-void Processor::initialize() { initialized_ = true; }
-
-void Processor::deinitialize() { initialized_ = false; }
-
-bool Processor::isInitialized() const { return initialized_; }
 
 void Processor::invalidate(InvalidationLevel invalidationLevel, Property* modifiedProperty) {
     if (!invalidationEnabled_) {

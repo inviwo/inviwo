@@ -71,11 +71,10 @@ ImageResample::ImageResample()
 
 ImageResample::~ImageResample() {}
 
-void ImageResample::initialize() {
-    ImageGLProcessor::initialize();
-
+void ImageResample::initializeResources() {
     interpolationTypeChanged();
     dimensionSourceChanged();
+    ImageGLProcessor::initializeResources();
 }
 
 void ImageResample::interpolationTypeChanged() {

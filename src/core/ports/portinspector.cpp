@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -46,43 +46,23 @@ PortInspector::PortInspector(std::string portClassIdentifier,
 
 PortInspector::~PortInspector() {}
 
-void PortInspector::setActive(bool val) {
-    active_ = val;
-}
+void PortInspector::setActive(bool val) { active_ = val; }
 
-bool PortInspector::isActive() {
-    return active_;
-}
+bool PortInspector::isActive() { return active_; }
 
-std::string PortInspector::getInspectorNetworkFileName() {
-    return inspectorNetworkFileName_;
-}
+std::string PortInspector::getInspectorNetworkFileName() { return inspectorNetworkFileName_; }
 
-std::string PortInspector::getPortClassName() {
-    return portClassIdentifier_;
-}
+std::string PortInspector::getPortClassName() { return portClassIdentifier_; }
 
-std::vector<Inport*>& PortInspector::getInports() {
-    return inPorts_;
-}
+std::vector<Inport*>& PortInspector::getInports() { return inPorts_; }
 
-CanvasProcessor* PortInspector::getCanvasProcessor() {
-    return canvasProcessor_;
-}
+CanvasProcessor* PortInspector::getCanvasProcessor() { return canvasProcessor_; }
 
-std::vector<PortConnection*>&  PortInspector::getConnections() {
-    return connections_;
-}
-std::vector<PropertyLink*>& PortInspector::getPropertyLinks() {
-    return propertyLinks_;
-}
-std::vector<Processor*>& PortInspector::getProcessors() {
-    return processors_;
-}
+std::vector<PortConnection*>& PortInspector::getConnections() { return connections_; }
+std::vector<PropertyLink*>& PortInspector::getPropertyLinks() { return propertyLinks_; }
+std::vector<Processor*>& PortInspector::getProcessors() { return processors_; }
 
-void PortInspector::fileChanged(std::string fileName) {
-    needsUpdate_ = true;
-}
+void PortInspector::fileChanged(std::string fileName) { needsUpdate_ = true; }
 
 void PortInspector::initialize() {
     if (active_ == false && needsUpdate_) {
@@ -117,7 +97,6 @@ void PortInspector::initialize() {
             std::string newIdentifier =
                 getPortClassName() + "_Port_Inspector_" + processor->getIdentifier();
             processor->setIdentifier(newIdentifier);
-            processor->initialize();
             // Find the and save inports.
             std::vector<Inport*> inports = processor->getInports();
 
@@ -125,26 +104,24 @@ void PortInspector::initialize() {
                 if (!inport->isConnected()) inPorts_.push_back(inport);
             }
 
-            ProcessorMetaData* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+            ProcessorMetaData* meta =
+                processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
             meta->setVisibile(false);
             meta->setSelected(false);
-           
 
             // Find and save the canvasProcessor
-            CanvasProcessor* canvasProcessor = dynamic_cast<CanvasProcessor*>(processor);
-
-            if (canvasProcessor) {
+            if (auto canvasProcessor = dynamic_cast<CanvasProcessor*>(processor)) {
                 canvasProcessor_ = canvasProcessor;
             }
         }
 
         // Store the connections and and disconnect them.
         connections_ = inspectorNetwork_->getConnections();
-
         for (auto& elem : connections_) elem->getInport()->disconnectFrom(elem->getOutport());
 
         // store the processor links.
         propertyLinks_ = inspectorNetwork_->getLinks();
+
     } catch (AbortException& e) {
         // Error deserializing file
         needsUpdate_ = true;
@@ -152,5 +129,4 @@ void PortInspector::initialize() {
     }
 }
 
-} // namespace
-
+}  // namespace

@@ -193,21 +193,6 @@ public:
     ProcessorNetwork* getNetwork() const;
 
     /**
-     * Initialize is called once before the first time the process function of the processor
-     * is called. It is called by the processor network evaluator. Override to add resource
-     * allocation in your processor. Make sure to call the base class initialize first.
-     */
-    virtual void initialize();
-
-    /*
-     *    Deinitialize is called once before the processor is deleted by the processor network
-     *    Override to delete resources allocated in initialize. Make sure to call the base class
-     *    deinitialize last.
-     */
-    virtual void deinitialize();
-    bool isInitialized() const;
-
-    /**
      * InitializeResources is called whenever a property with InvalidationLevel::InvalidResources
      * is changes.
      */
@@ -317,7 +302,6 @@ private:
     Group<std::string, Port*> portDependencySets_;
     static std::unordered_set<std::string> usedIdentifiers_;
 
-    bool initialized_;
     bool invalidationEnabled_;
     InvalidationLevel invalidationRequestLevel_;
     ProcessorNetwork* network_;

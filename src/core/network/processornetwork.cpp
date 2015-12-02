@@ -119,10 +119,7 @@ void ProcessorNetwork::removeProcessor(Processor* processor) {
 
 void ProcessorNetwork::removeAndDeleteProcessor(Processor* processor) {
     if (!processor) return;
-
     removeProcessor(processor);
-    if (processor->isInitialized()) processor->deinitialize();
-
     delete processor;
 }
 

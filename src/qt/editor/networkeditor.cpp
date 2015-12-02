@@ -265,7 +265,6 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
         NetworkLock lock(network_);
         // Add processors to the network
         CanvasProcessor* canvasProcessor = portInspector->getCanvasProcessor();
-        canvasProcessor->deinitialize();
 
         for (auto& processor : portInspector->getProcessors()) {
             // For Debugging
@@ -274,8 +273,6 @@ bool NetworkEditor::addPortInspector(Outport* port, QPointF pos) {
             // meta->setVisibile(true);
             network_->addProcessor(processor);
         }
-        canvasProcessor->initialize();  // This is needed since, we need to call initialize after we
-                                        // add the canvas to the processor.
 
         // Connect the port to inspect to the inports of the inspector network
         Outport* outport = dynamic_cast<Outport*>(port);
@@ -355,10 +352,6 @@ std::unique_ptr<std::vector<unsigned char>> NetworkEditor::renderPortInspectorIm
                 for (auto& processor : portInspector->getProcessors()) {
                     network_->addProcessor(processor);
                 }
-
-                // This is needed since, we need to call initialize after we
-                // add the canvas to the processor.
-                canvasProcessor->initialize();
 
                 // Connect the port to inspect to the inports of the inspector network
                 for (auto inport : portInspector->getInports()) {

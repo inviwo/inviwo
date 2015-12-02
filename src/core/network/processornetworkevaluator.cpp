@@ -128,20 +128,9 @@ void ProcessorNetworkEvaluator::evaluate() {
 
     // if the processor network has changed determine the new processor order
     if (processorNetwork_->isModified()) {
-        // make sure all processor are initialized
-        for (auto p : processorNetwork_->getProcessors()) {
-            try {
-                if (!p->isInitialized()) {
-                    p->initialize();
-                }
-            } catch (Exception&) {
-                exceptionHandler_(IvwContext);
-            }
-        }
-        processorNetwork_->setModified(false);
-
         // network topology has changed, update internal processor states
         processorsSorted_ = util::topologicalSort(processorNetwork_);
+        processorNetwork_->setModified(false);
     }
 
     for (auto processor : processorsSorted_) {
