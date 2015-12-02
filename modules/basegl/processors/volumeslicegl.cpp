@@ -55,9 +55,7 @@ const ProcessorInfo VolumeSliceGL::processorInfo_{
     CodeState::Stable,           // Code state
     Tags::GL,                    // Tags
 };
-const ProcessorInfo VolumeSliceGL::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo VolumeSliceGL::getProcessorInfo() const { return processorInfo_; }
 
 VolumeSliceGL::VolumeSliceGL()
     : Processor()
@@ -88,11 +86,14 @@ VolumeSliceGL::VolumeSliceGL()
     , posPicking_("posPicking", "Enable Picking", false)
     , showIndicator_("showIndicator", "Show Position Indicator", true)
     , indicatorColor_("indicatorColor", "Indicator Color", vec4(1.0f, 0.8f, 0.1f, 0.8f), vec4(0.0f),
-                      vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
-    , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true, InvalidationLevel::InvalidResources)
+                      vec4(1.0f), vec4(0.01f), InvalidationLevel::InvalidOutput,
+                      PropertySemantics::Color)
+    , tfMappingEnabled_("tfMappingEnabled", "Enable Transfer Function", true,
+                        InvalidationLevel::InvalidResources)
     , transferFunction_("transferFunction", "Transfer function", TransferFunction(), &inport_)
     , tfAlphaOffset_("alphaOffset", "Alpha Offset", 0.0f, 0.0f, 1.0f, 0.01f)
-    , handleInteractionEvents_("handleEvents", "Handle interaction events", true, InvalidationLevel::Valid)
+    , handleInteractionEvents_("handleEvents", "Handle interaction events", true,
+                               InvalidationLevel::Valid)
     , mouseShiftSlice_(
           "mouseShiftSlice", "Mouse Slice Shift",
           new MouseEvent(MouseEvent::MOUSE_BUTTON_NONE, InteractionEvent::MODIFIER_NONE,
@@ -113,8 +114,6 @@ VolumeSliceGL::VolumeSliceGL()
     , gestureShiftSlice_("gestureShiftSlice", "Gesture Slice Shift",
                          new GestureEvent(GestureEvent::PAN, GestureEvent::GESTURE_STATE_ANY, 3),
                          new Action(this, &VolumeSliceGL::eventGestureShiftSlice))
-    , meshCrossHair_(nullptr)
-    , meshBox_(nullptr)
     , meshDirty_(true)
     , updating_(false)
     , sliceRotation_(1.0f)
@@ -126,9 +125,12 @@ VolumeSliceGL::VolumeSliceGL()
     addPort(outport_);
 
     inport_.onChange(this, &VolumeSliceGL::updateMaxSliceNumber);
-    sliceAlongAxis_.addOption("x", "y-z plane (X axis)", static_cast<int>(CartesianCoordinateAxis::X));
-    sliceAlongAxis_.addOption("y", "z-x plane (Y axis)", static_cast<int>(CartesianCoordinateAxis::Y));
-    sliceAlongAxis_.addOption("z", "x-y plane (Z axis)", static_cast<int>(CartesianCoordinateAxis::Z));
+    sliceAlongAxis_.addOption("x", "y-z plane (X axis)",
+                              static_cast<int>(CartesianCoordinateAxis::X));
+    sliceAlongAxis_.addOption("y", "z-x plane (Y axis)",
+                              static_cast<int>(CartesianCoordinateAxis::Y));
+    sliceAlongAxis_.addOption("z", "x-y plane (Z axis)",
+                              static_cast<int>(CartesianCoordinateAxis::Z));
     sliceAlongAxis_.addOption("p", "plane equation", 3);
     sliceAlongAxis_.set(static_cast<int>(CartesianCoordinateAxis::X));
     sliceAlongAxis_.setCurrentStateAsDefault();
@@ -238,19 +240,11 @@ VolumeSliceGL::VolumeSliceGL()
     addProperty(gestureShiftSlice_);
 }
 
-VolumeSliceGL::~VolumeSliceGL() {
-    delete meshBox_;
-    delete meshCrossHair_;
-}
-
-void VolumeSliceGL::initialize() {
-    Processor::initialize();
-
-    updateMaxSliceNumber();
-    initializeResources();
-}
+VolumeSliceGL::~VolumeSliceGL() {}
 
 void VolumeSliceGL::initializeResources() {
+    updateMaxSliceNumber();
+
     if (tfMappingEnabled_.get()) {
         shader_.getFragmentShaderObject()->addShaderDefine("TF_MAPPING_ENABLED");
         transferFunction_.setVisible(true);
@@ -431,8 +425,7 @@ void VolumeSliceGL::renderPositionIndicator() {
         updateIndicatorMesh();
     }
 
-    MeshDrawerGL drawer(meshCrossHair_);
-    MeshDrawerGL drawerBox(meshBox_);
+    MeshDrawerGL drawer(meshCrossHair_.get());
 
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
@@ -450,7 +443,6 @@ void VolumeSliceGL::renderPositionIndicator() {
 
     glDepthFunc(GL_ALWAYS);
     drawer.draw();
-    drawerBox.draw();
     glDepthFunc(GL_LESS);
     glDisable(GL_BLEND);
     glDisable(GL_LINE_SMOOTH);
@@ -460,77 +452,52 @@ void VolumeSliceGL::renderPositionIndicator() {
 }
 
 void VolumeSliceGL::updateIndicatorMesh() {
-    vec2 pos = getScreenPosFromVolPos();
+    const vec2 pos = getScreenPosFromVolPos();
 
-    size2_t canvasSize(outport_.getDimensions());
+    const size2_t canvasSize(outport_.getDimensions());
     const vec2 indicatorSize = vec2(4.0f / canvasSize.x, 4.0f / canvasSize.y);
-    vec4 color(indicatorColor_.get());
+    const vec4 color(indicatorColor_.get());
 
-    {
-        delete meshCrossHair_;
-        meshCrossHair_ = new Mesh;
-        meshCrossHair_->setModelMatrix(mat4(1.0f));
-        // add two vertical and two horizontal lines with a gap around the selected position
-        auto vertices = std::make_shared<Vec2BufferRAM>();
-        auto posBuf = std::make_shared<Buffer<vec2>>(vertices);
-
+    meshCrossHair_ = util::make_unique<Mesh>();
+    meshCrossHair_->setModelMatrix(mat4(1.0f));
+    // add two vertical and two horizontal lines with a gap around the selected position
+    auto posBuf = util::makeBuffer<vec2>({
         // horizontal
-        vertices->add(vec2(-0.5f, pos.y) * 2.0f - 1.0f);
-        vertices->add(vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f);
-        vertices->add(vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f);
-        vertices->add(vec2(1.5f, pos.y) * 2.0f - 1.0f);
+        vec2(-0.5f, pos.y) * 2.0f - 1.0f, 
+        vec2(pos.x - indicatorSize.x, pos.y) * 2.0f - 1.0f,
+        vec2(pos.x + indicatorSize.x, pos.y) * 2.0f - 1.0f, 
+        vec2(1.5f, pos.y) * 2.0f - 1.0f,
+
         // vertical
-        vertices->add(vec2(pos.x, -0.5f) * 2.0f - 1.0f);
-        vertices->add(vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
-        vertices->add(vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
-        vertices->add(vec2(pos.x, 1.5f) * 2.0f - 1.0f);
+        vec2(pos.x, -0.5f) * 2.0f - 1.0f, 
+        vec2(pos.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+        vec2(pos.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
+        vec2(pos.x, 1.5f) * 2.0f - 1.0f,
 
-        auto colors = std::make_shared<Vec4BufferRAM>();
-        auto colorBuf = std::make_shared<Buffer<vec4>>(colors);
-
-        // indices for cross hair lines
-        auto indices = std::make_shared<IndexBufferRAM>();
-        auto indexBuf = std::make_shared<IndexBuffer>(indices);
-        for (unsigned int i = 0; i < 8; ++i) {
-            colors->add(color);
-            indices->add(i);
-        }
-        // clear up existing attribute buffers
-        // meshCrossHair_->deinitialize();
-        meshCrossHair_->addBuffer(BufferType::POSITION_ATTRIB, posBuf);
-        meshCrossHair_->addBuffer(BufferType::COLOR_ATTRIB, colorBuf);
-        meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::LINES, ConnectivityType::NONE),
-                                    indexBuf);
-    }
-
-    {
-        // mesh for center box
-        delete meshBox_;
-        meshBox_ = new Mesh;
-        meshBox_->setModelMatrix(mat4(1.0f));
-
-        auto vertices = std::make_shared<Vec2BufferRAM>();
-        auto posBuf = std::make_shared<Buffer<vec2>>(vertices);
-        auto colors = std::make_shared<Vec4BufferRAM>();
-        auto colorBuf = std::make_shared<Buffer<vec4>>(colors);
-        auto indices = std::make_shared<IndexBufferRAM>();
-        auto indexBuf = std::make_shared<IndexBuffer>(indices);
         // box
-        vertices->add(vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
-        vertices->add(vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f);
-        vertices->add(vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
-        vertices->add(vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f);
-        for (unsigned int i = 0; i < 4; ++i) {
-            colors->add(color);
-            indices->add(i);
-        }
-        // clear up existing attribute buffers
-        // meshBox_->deinitialize();
-        meshBox_->addBuffer(BufferType::POSITION_ATTRIB, posBuf);
-        meshBox_->addBuffer(BufferType::COLOR_ATTRIB, colorBuf);
-        meshBox_->addIndicies(Mesh::MeshInfo(DrawType::LINES, ConnectivityType::LOOP),
-                              indexBuf);
-    }
+        vec2(pos.x - indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+        vec2(pos.x + indicatorSize.x, pos.y - indicatorSize.y) * 2.0f - 1.0f,
+        vec2(pos.x + indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f,
+        vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f
+    });
+
+    auto colorBuf = util::makeBuffer<vec4>(util::table([&](int i) { return color; }, 0, 12));
+
+    // indices for cross lines
+    auto indexBuf1 =
+        util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 0, 8));
+
+    // indices for box lines
+    auto indexBuf2 =
+        util::makeIndexBuffer(util::table([&](int i) { return static_cast<uint32_t>(i); }, 8, 12));
+
+    // clear up existing attribute buffers
+    // meshCrossHair_->deinitialize();
+    meshCrossHair_->addBuffer(BufferType::POSITION_ATTRIB, posBuf);
+    meshCrossHair_->addBuffer(BufferType::COLOR_ATTRIB, colorBuf);
+    meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::LINES, ConnectivityType::NONE), indexBuf1);
+
+    meshCrossHair_->addIndicies(Mesh::MeshInfo(DrawType::LINES, ConnectivityType::LOOP), indexBuf2);
 
     meshDirty_ = false;
 }
@@ -685,4 +652,3 @@ void VolumeSliceGL::deserialize(Deserializer& d) {
 }
 
 }  // inviwo namespace
-

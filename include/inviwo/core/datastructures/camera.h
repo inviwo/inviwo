@@ -192,7 +192,7 @@ bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
  * \class OrthographicCamera
  *
  * \brief Camera with no perspective projection.
- * Objects far away will apear as large as objects close.
+ * Objects far away will appear as large as objects close.
  * @see Camera
  * @see OrthographicCamera
  */
