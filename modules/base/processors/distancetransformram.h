@@ -73,13 +73,10 @@ namespace inviwo {
 class IVW_MODULE_BASE_API DistanceTransformRAM : public Processor, public ProgressBarOwner {
 public:
     DistanceTransformRAM();
-    ~DistanceTransformRAM();
+    virtual ~DistanceTransformRAM();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
-    void initialize() override;
-    void deinitialize() override;
 
 protected:
     virtual void process() override;

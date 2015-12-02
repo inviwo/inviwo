@@ -51,7 +51,7 @@ DistanceTransformRAM::DistanceTransformRAM()
     , resultDistScale_("distScale", "Scaling Factor", 1.0f, 0.0f, 1.0e3, 0.05f)
     , btnForceUpdate_("forceUpdate", "Update Distance Map")
     , volDim_(1u)
-    , dirty_(false)
+    , dirty_(true)
     , distTransformDirty_(true)
     , numThreads_(8) {
     addPort(volumePort_);
@@ -66,13 +66,6 @@ DistanceTransformRAM::DistanceTransformRAM()
     btnForceUpdate_.onChange(this, &DistanceTransformRAM::paramChanged);
 
     progressBar_.hide();
-}
-
-DistanceTransformRAM::~DistanceTransformRAM() {}
-
-void DistanceTransformRAM::initialize() {
-    Processor::initialize();
-    dirty_ = true;
 
 #ifndef __clang__
     if (numThreads_ == 0) numThreads_ = 2 * omp_get_max_threads();
@@ -90,11 +83,7 @@ void DistanceTransformRAM::initialize() {
 #endif
 }
 
-void DistanceTransformRAM::deinitialize() {
-    Processor::deinitialize();
-
-    numThreads_ = 0;
-}
+DistanceTransformRAM::~DistanceTransformRAM() {}
 
 void DistanceTransformRAM::process() {
     if (!transformEnabled_.get()) {
