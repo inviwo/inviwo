@@ -51,23 +51,6 @@ class ProcessorWidget;
 class ResizeEvent;
 class ProcessorNetwork;
 
-#define InviwoProcessorInfo()                                                             \
-    virtual const ProcessorInfo getProcessorInfo() const override {                       \
-        return ProcessorInfo(CLASS_IDENTIFIER, DISPLAY_NAME, CATEGORY, CODE_STATE, TAGS); \
-    }                                                                                     \
-    static const std::string CLASS_IDENTIFIER;                                            \
-    static const std::string CATEGORY;                                                    \
-    static const std::string DISPLAY_NAME;                                                \
-    static const CodeState CODE_STATE;                                                    \
-    static const Tags TAGS
-
-#define ProcessorClassIdentifier(T, classIdentifier) \
-    const std::string T::CLASS_IDENTIFIER = classIdentifier;
-#define ProcessorDisplayName(T, displayName) const std::string T::DISPLAY_NAME = displayName;
-#define ProcessorTags(T, tags) const Tags T::TAGS = tags;
-#define ProcessorCategory(T, category) const std::string T::CATEGORY = category;
-#define ProcessorCodeState(T, codeState) const CodeState T::CODE_STATE = codeState;
-
 /**
  * \defgroup processors Processors
  * \class Processor
