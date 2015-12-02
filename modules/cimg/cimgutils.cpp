@@ -207,7 +207,7 @@ struct CImgSaveLayerDispatcher {
 
         // Should rescale values based on output format i.e. PNG/JPG is 0-255, HDR different.
         const DataFormatBase* outFormat = DataFloat32::get();
-        std::string fileExtension = filesystem::getFileExtension(filePath);
+        std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
         if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
             outFormat = DataFormatBase::get(extToBaseTypeMap_[fileExtension]);
         }
@@ -291,8 +291,8 @@ struct CImgLoadVolumeDispatcher {
 ////////////////////// CImgUtils ///////////////////////////////////////////////////
 
 void* CImgUtils::loadLayerData(void* dst, const std::string& filePath, uvec2& dimensions,
-                               DataFormatId& formatId, bool rescaleToDim) {
-    std::string fileExtension = filesystem::getFileExtension(filePath);
+    DataFormatId& formatId, bool rescaleToDim) {
+    std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
     } else {
@@ -306,8 +306,8 @@ void* CImgUtils::loadLayerData(void* dst, const std::string& filePath, uvec2& di
 }
 
 void* CImgUtils::loadVolumeData(void* dst, const std::string& filePath, size3_t& dimensions,
-                                DataFormatId& formatId) {
-    std::string fileExtension = filesystem::getFileExtension(filePath);
+    DataFormatId& formatId) {
+    std::string fileExtension = toLower(filesystem::getFileExtension(filePath));
     if (extToBaseTypeMap_.find(fileExtension) != extToBaseTypeMap_.end()) {
         formatId = extToBaseTypeMap_[fileExtension];
     } else {
