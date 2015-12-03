@@ -89,25 +89,12 @@ protected:
 using IndexBuffer = Buffer<std::uint32_t>;
 
 namespace util {
-inline std::shared_ptr<IndexBuffer> makeIndexBuffer(std::initializer_list<std::uint32_t> data) {
-    auto indexBufferRAM =
-        std::make_shared<IndexBufferRAM>(std::vector<std::uint32_t>(std::move(data)));
-    auto indices = std::make_shared<IndexBuffer>(indexBufferRAM);
-    return indices;
-}
 
 inline std::shared_ptr<IndexBuffer> makeIndexBuffer(std::vector<std::uint32_t>&& data) {
     auto indexBufferRAM =
         std::make_shared<IndexBufferRAM>(std::vector<std::uint32_t>(std::move(data)));
     auto indices = std::make_shared<IndexBuffer>(indexBufferRAM);
     return indices;
-}
-
-template <typename T = vec3, BufferUsage U = BufferUsage::Static>
-std::shared_ptr<Buffer<T>> makeBuffer(std::initializer_list<T> data) {
-    auto repr = std::make_shared<BufferRAMPrecision<T>>(std::vector<T>(std::move(data)), U);
-    auto buffer = std::make_shared<Buffer<T>>(repr);
-    return buffer;
 }
 
 template <typename T = vec3, BufferUsage U = BufferUsage::Static>
