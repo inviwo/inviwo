@@ -1,5 +1,3 @@
-ivw_module(Assimp)
-
 # for now we only import...
 SET ( ASSIMP_NO_EXPORT ON CACHE BOOL "Disable Assimp's export functionality." FORCE )
 
