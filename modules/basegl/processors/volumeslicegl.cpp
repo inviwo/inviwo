@@ -481,7 +481,7 @@ void VolumeSliceGL::updateIndicatorMesh() {
         vec2(pos.x - indicatorSize.x, pos.y + indicatorSize.y) * 2.0f - 1.0f
     });
 
-    auto colorBuf = util::makeBuffer<vec4>(util::table([&](int i) { return color; }, 0, 12));
+    auto colorBuf = util::makeBuffer<vec4>(std::vector<vec4>(12, color));
 
     // indices for cross lines
     auto indexBuf1 =
