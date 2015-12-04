@@ -110,16 +110,14 @@ public slots:
     */
     void saveWorkspaceAsCopy();
     void exitInviwo();
-    void disableEvaluation(bool);
     void showAboutBox();
     void setVisibilityMode(bool value);  // True = Application, False = Developer
 
     void reloadStyleSheet();
 
 private:
-    void addMenus();
-    void addMenuActions();
-    void addToolBars();
+    void addActions();
+
     void closeEvent(QCloseEvent* event) override;
 
     void saveWindowState();
@@ -176,30 +174,15 @@ private:
     QMenu* viewMenuItem_;
     QMenu* helpMenuItem_;
 
-    QMenu* recentWorkspaceMenu_;
     QMenu* testWorkspaceMenu_;
     QMenu* exampleWorkspaceMenu_;
 
     // menu actions
     std::unordered_map<std::string, QAction*> actions_;
     
-    QAction* workspaceActionNew_;
-    QAction* workspaceActionOpen_;
-    QAction* workspaceActionSave_;
-    QAction* workspaceActionSaveAs_;
-    QAction* workspaceActionSaveAsCopy_;
-    QAction* exitAction_;
     std::vector<QAction*> workspaceActionRecent_;
     QAction* clearRecentWorkspaces_;
     QAction* visibilityModeAction_;
-    QAction* aboutBoxAction_;
-    QToolButton* enableDisableEvaluationButton_;
-#if IVW_PROFILING
-    QToolButton* resetTimeMeasurementsButton_;
-#endif
-    // toolbars
-    QToolBar* workspaceToolBar_;
-    QToolBar* viewModeToolBar_;
 
     // settings
     bool maximized_;

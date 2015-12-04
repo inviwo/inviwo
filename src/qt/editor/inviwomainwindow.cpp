@@ -27,45 +27,47 @@
  *
  *********************************************************************************/
 
-#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
-#include <inviwo/core/util/utilities.h>
-#include <inviwo/qt/editor/networkeditorview.h>
-#include <inviwo/qt/widgets/inviwoapplicationqt.h>
-#include <inviwo/qt/widgets/propertylistwidget.h>
-#include <inviwo/qt/editor/processorlistwidget.h>
 #include <inviwo/core/util/commandlineparser.h>
-#include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/util/filesystem.h>
-#include <inviwo/qt/editor/resourcemanagerwidget.h>
+#include <inviwo/core/util/settings/systemsettings.h>
+#include <inviwo/core/util/utilities.h>
 #include <inviwo/qt/editor/consolewidget.h>
-#include <inviwo/qt/editor/settingswidget.h>
 #include <inviwo/qt/editor/helpwidget.h>
-#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 #include <inviwo/qt/editor/networkeditor.h>
+#include <inviwo/qt/editor/networkeditorview.h>
+#include <inviwo/qt/editor/processorlistwidget.h>
+#include <inviwo/qt/editor/resourcemanagerwidget.h>
+#include <inviwo/qt/editor/settingswidget.h>
+#include <inviwo/qt/widgets/inviwoapplicationqt.h>
+#include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <inviwo/qt/widgets/propertylistwidget.h>
 
 #include <inviwomodulespaths.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#include <QStandardPaths>
 #include <QScreen>
+#include <QStandardPaths>
 #else
 #include <QDesktopServices>
 #endif
 #include <QActionGroup>
+#include <QClipboard>
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QList>
 #include <QMessageBox>
+#include <QMimeData>
 #include <QSettings>
 #include <QUrl>
 #include <QVariant>
-#include <QClipboard>
-#include <QMimeData>
 
 #include <algorithm>
+
 #include <warn/pop>
 
 #ifdef IVW_PYTHON2_QT
@@ -110,8 +112,8 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
     move(pos);
 }
 
-InviwoMainWindow::~InviwoMainWindow() { 
-    LogCentral::getPtr()->unregisterLogger(consoleWidget_); 
+InviwoMainWindow::~InviwoMainWindow() {
+    LogCentral::getPtr()->unregisterLogger(consoleWidget_);
     delete networkEditor_;
 }
 
@@ -158,9 +160,7 @@ void InviwoMainWindow::initialize() {
     settingsWidget_->updateSettingsWidget();
 
     // initialize menus
-    addMenus();
-    addMenuActions();
-    addToolBars();
+    addActions();
     updateRecentWorkspaceMenu();
 
 #ifdef WIN32
@@ -237,7 +237,7 @@ bool InviwoMainWindow::processCommandLineArgs() {
     return true;
 }
 
-void InviwoMainWindow::addMenus() {
+void InviwoMainWindow::addActions() {
     auto menu = menuBar();
     QAction* first = menu->actions().size() > 0 ? menu->actions()[0] : nullptr;
 
@@ -249,134 +249,170 @@ void InviwoMainWindow::addMenus() {
     menu->insertMenu(first, fileMenuItem_);
     menu->insertMenu(first, editMenuItem_);
     menu->insertMenu(first, viewMenuItem_);
-
     menu->addMenu(helpMenuItem_);
-}
 
-void InviwoMainWindow::addMenuActions() {
+    auto workspaceToolBar = addToolBar("File");
+    workspaceToolBar->setObjectName("fileToolBar");
+    auto viewModeToolBar = addToolBar("View");
+    viewModeToolBar->setObjectName("viewModeToolBar");
+
     // file menu entries
-    workspaceActionNew_ = new QAction(QIcon(":/icons/new.png"), tr("&New Workspace"), this);
-    workspaceActionNew_->setShortcut(QKeySequence::New);
-    connect(workspaceActionNew_, SIGNAL(triggered()), this, SLOT(newWorkspace()));
-    fileMenuItem_->addAction(workspaceActionNew_);
-    workspaceActionOpen_ = new QAction(QIcon(":/icons/open.png"), tr("&Open Workspace"), this);
-    workspaceActionOpen_->setShortcut(QKeySequence::Open);
-    connect(workspaceActionOpen_, SIGNAL(triggered()), this, SLOT(openWorkspace()));
-    fileMenuItem_->addAction(workspaceActionOpen_);
-    workspaceActionSave_ = new QAction(QIcon(":/icons/save.png"), tr("&Save Workspace"), this);
-    workspaceActionSave_->setShortcut(QKeySequence::Save);
-    connect(workspaceActionSave_, SIGNAL(triggered()), this, SLOT(saveWorkspace()));
-    fileMenuItem_->addAction(workspaceActionSave_);
-    workspaceActionSaveAs_ =
-        new QAction(QIcon(":/icons/saveas.png"), tr("&Save Workspace As"), this);
-    workspaceActionSaveAs_->setShortcut(QKeySequence::SaveAs);
-    connect(workspaceActionSaveAs_, SIGNAL(triggered()), this, SLOT(saveWorkspaceAs()));
-    fileMenuItem_->addAction(workspaceActionSaveAs_);
-
-    workspaceActionSaveAsCopy_ =
-        new QAction(QIcon(":/icons/saveas.png"), tr("&Save Workspace As Copy"), this);
-    connect(workspaceActionSaveAsCopy_, SIGNAL(triggered()), this, SLOT(saveWorkspaceAsCopy()));
-    fileMenuItem_->addAction(workspaceActionSaveAsCopy_);
-
-    fileMenuItem_->addSeparator();
-    recentWorkspaceMenu_ = fileMenuItem_->addMenu(tr("&Recent Workspaces"));
-    fileMenuItem_->addSeparator();
-    exampleWorkspaceMenu_ = fileMenuItem_->addMenu(tr("&Example Workspaces"));
-    // TODO: need a DEVELOPER flag here!
-    testWorkspaceMenu_ = fileMenuItem_->addMenu(tr("&Test Workspaces"));
-    // -------
-    fileMenuItem_->addSeparator();
-
-    // create placeholders for recent workspaces
-    workspaceActionRecent_.resize(maxNumRecentFiles_);
-    for (auto& action : workspaceActionRecent_) {
-        action = new QAction(this);
-        action->setVisible(false);
-        recentWorkspaceMenu_->addAction(action);
-        QObject::connect(action, SIGNAL(triggered()), this, SLOT(openRecentWorkspace()));
+    {
+        auto workspaceActionNew = new QAction(QIcon(":/icons/new.png"), tr("&New Workspace"), this);
+        workspaceActionNew->setShortcut(QKeySequence::New);
+        connect(workspaceActionNew, SIGNAL(triggered()), this, SLOT(newWorkspace()));
+        fileMenuItem_->addAction(workspaceActionNew);
+        workspaceToolBar->addAction(workspaceActionNew);
     }
-    // action for clearing the recent file menu
-    clearRecentWorkspaces_ = recentWorkspaceMenu_->addAction("Clear Recent Workspace List");
-    clearRecentWorkspaces_->setEnabled(false);
-    QObject::connect(clearRecentWorkspaces_, SIGNAL(triggered()), this,
-                     SLOT(clearRecentWorkspaceMenu()));
 
-    // create list of all example workspaces
-    fillExampleWorkspaceMenu();
+    {
+        auto workspaceActionOpen =
+            new QAction(QIcon(":/icons/open.png"), tr("&Open Workspace"), this);
+        workspaceActionOpen->setShortcut(QKeySequence::Open);
+        connect(workspaceActionOpen, SIGNAL(triggered()), this, SLOT(openWorkspace()));
+        fileMenuItem_->addAction(workspaceActionOpen);
+        workspaceToolBar->addAction(workspaceActionOpen);
+    }
 
-    // TODO: need a DEVELOPER flag here!
-    // create list of all test workspaces, inviwo-dev and other external modules, i.e. "research"
-    fillTestWorkspaceMenu();
-    // ---------
+    {
+        auto workspaceActionSave =
+            new QAction(QIcon(":/icons/save.png"), tr("&Save Workspace"), this);
+        workspaceActionSave->setShortcut(QKeySequence::Save);
+        connect(workspaceActionSave, SIGNAL(triggered()), this, SLOT(saveWorkspace()));
+        fileMenuItem_->addAction(workspaceActionSave);
+        workspaceToolBar->addAction(workspaceActionSave);
+    }
 
-    exitAction_ = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
-    exitAction_->setShortcut(QKeySequence::Close);
-    connect(exitAction_, SIGNAL(triggered()), this, SLOT(close()));
-    fileMenuItem_->addAction(exitAction_);
-    // dock widget visibility menu entries
-    viewMenuItem_->addAction(settingsWidget_->toggleViewAction());
-    processorTreeWidget_->toggleViewAction()->setText(tr("&Processor List"));
-    viewMenuItem_->addAction(processorTreeWidget_->toggleViewAction());
-    propertyListWidget_->toggleViewAction()->setText(tr("&Property List"));
-    viewMenuItem_->addAction(propertyListWidget_->toggleViewAction());
-    consoleWidget_->toggleViewAction()->setText(tr("&Output Console"));
-    viewMenuItem_->addAction(consoleWidget_->toggleViewAction());
-    helpWidget_->toggleViewAction()->setText(tr("&Help"));
-    viewMenuItem_->addAction(helpWidget_->toggleViewAction());
+    {
+        auto workspaceActionSaveAs =
+            new QAction(QIcon(":/icons/saveas.png"), tr("&Save Workspace As"), this);
+        workspaceActionSaveAs->setShortcut(QKeySequence::SaveAs);
+        connect(workspaceActionSaveAs, SIGNAL(triggered()), this, SLOT(saveWorkspaceAs()));
+        fileMenuItem_->addAction(workspaceActionSaveAs);
+        workspaceToolBar->addAction(workspaceActionSaveAs);
+    }
 
-    // Disabled until we figure out what we want to use it for //Peter
-    // viewMenuItem_->addAction(resourceManagerWidget_->toggleViewAction());
+    {
+        auto workspaceActionSaveAsCopy =
+            new QAction(QIcon(":/icons/saveas.png"), tr("&Save Workspace As Copy"), this);
+        connect(workspaceActionSaveAsCopy, SIGNAL(triggered()), this, SLOT(saveWorkspaceAsCopy()));
+        fileMenuItem_->addAction(workspaceActionSaveAsCopy);
+    }
 
-    // application/developer mode menu entries
-    visibilityModeAction_ = new QAction(tr("&Application Mode"), this);
-    visibilityModeAction_->setCheckable(true);
-    visibilityModeAction_->setChecked(false);
+    {
+        fileMenuItem_->addSeparator();
+        auto recentWorkspaceMenu = fileMenuItem_->addMenu(tr("&Recent Workspaces"));
+        // create placeholders for recent workspaces
+        workspaceActionRecent_.resize(maxNumRecentFiles_);
+        for (auto& action : workspaceActionRecent_) {
+            action = new QAction(this);
+            action->setVisible(false);
+            recentWorkspaceMenu->addAction(action);
+            QObject::connect(action, SIGNAL(triggered()), this, SLOT(openRecentWorkspace()));
+        }
+        // action for clearing the recent file menu
+        clearRecentWorkspaces_ = recentWorkspaceMenu->addAction("Clear Recent Workspace List");
+        clearRecentWorkspaces_->setEnabled(false);
+        QObject::connect(clearRecentWorkspaces_, SIGNAL(triggered()), this,
+                         SLOT(clearRecentWorkspaceMenu()));
+    }
 
-    QIcon visibilityModeIcon;
-    visibilityModeIcon.addFile(":/icons/view-developer.png", QSize(), QIcon::Normal, QIcon::Off);
-    visibilityModeIcon.addFile(":/icons/view-application.png", QSize(), QIcon::Normal, QIcon::On);
-    visibilityModeAction_->setIcon(visibilityModeIcon);
-    viewMenuItem_->addAction(visibilityModeAction_);
+    {
+        // create list of all example workspaces
+        fileMenuItem_->addSeparator();
+        exampleWorkspaceMenu_ = fileMenuItem_->addMenu(tr("&Example Workspaces"));
+        fillExampleWorkspaceMenu();
+    }
 
-    appUsageModeProp_ = &InviwoApplication::getPtr()
-                             ->getSettingsByType<SystemSettings>()
-                             ->applicationUsageModeProperty_;
-    appUsageModeProp_->onChange(this, &InviwoMainWindow::visibilityModeChangedInSettings);
+    {
+        // TODO: need a DEVELOPER flag here!
+        // create list of all test workspaces, inviwo-dev and other external modules, i.e.
+        // "research"
+        fileMenuItem_->addSeparator();
+        testWorkspaceMenu_ = fileMenuItem_->addMenu(tr("&Test Workspaces"));
+        fillTestWorkspaceMenu();
+    }
 
-    connect(visibilityModeAction_, SIGNAL(triggered(bool)), this, SLOT(setVisibilityMode(bool)));
+    {
+        auto exitAction = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
+        exitAction->setShortcut(QKeySequence::Close);
+        connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+        fileMenuItem_->addAction(exitAction);
+    }
 
-    visibilityModeChangedInSettings();
+    // View
+    {
+        // dock widget visibility menu entries
+        viewMenuItem_->addAction(settingsWidget_->toggleViewAction());
+        processorTreeWidget_->toggleViewAction()->setText(tr("&Processor List"));
+        viewMenuItem_->addAction(processorTreeWidget_->toggleViewAction());
+        propertyListWidget_->toggleViewAction()->setText(tr("&Property List"));
+        viewMenuItem_->addAction(propertyListWidget_->toggleViewAction());
+        consoleWidget_->toggleViewAction()->setText(tr("&Output Console"));
+        viewMenuItem_->addAction(consoleWidget_->toggleViewAction());
+        helpWidget_->toggleViewAction()->setText(tr("&Help"));
+        viewMenuItem_->addAction(helpWidget_->toggleViewAction());
+        // Disabled until we figure out what we want to use it for //Peter
+        // viewMenuItem_->addAction(resourceManagerWidget_->toggleViewAction());
+    }
 
-    enableDisableEvaluationButton_ = new QToolButton(this);
-    enableDisableEvaluationButton_->setToolTip(tr("Enable/Disable Evaluation"));
-    enableDisableEvaluationButton_->setCheckable(true);
-    enableDisableEvaluationButton_->setChecked(false);
-    QIcon enableDisableIcon;
-    enableDisableIcon.addFile(":/icons/button_ok.png", QSize(), QIcon::Active, QIcon::Off);
-    enableDisableIcon.addFile(":/icons/button_cancel.png", QSize(), QIcon::Active, QIcon::On);
-    enableDisableEvaluationButton_->setIcon(enableDisableIcon);
-    connect(enableDisableEvaluationButton_, SIGNAL(toggled(bool)), this,
-            SLOT(disableEvaluation(bool)));
+    {
+        // application/developer mode menu entries
+        QIcon visibilityModeIcon;
+        visibilityModeIcon.addFile(":/icons/view-developer.png", QSize(), QIcon::Normal,
+                                   QIcon::Off);
+        visibilityModeIcon.addFile(":/icons/view-application.png", QSize(), QIcon::Normal,
+                                   QIcon::On);
+        visibilityModeAction_ = new QAction(visibilityModeIcon, tr("&Application Mode"), this);
+        visibilityModeAction_->setCheckable(true);
+        visibilityModeAction_->setChecked(false);
+
+        viewMenuItem_->addAction(visibilityModeAction_);
+        viewModeToolBar->addAction(visibilityModeAction_);
+
+        appUsageModeProp_ = &InviwoApplication::getPtr()
+                                 ->getSettingsByType<SystemSettings>()
+                                 ->applicationUsageModeProperty_;
+        appUsageModeProp_->onChange(this, &InviwoMainWindow::visibilityModeChangedInSettings);
+
+        connect(visibilityModeAction_, SIGNAL(triggered(bool)), this,
+                SLOT(setVisibilityMode(bool)));
+
+        visibilityModeChangedInSettings();
+    }
+
+    {
+        QIcon enableDisableIcon;
+        enableDisableIcon.addFile(":/icons/button_ok.png", QSize(), QIcon::Active, QIcon::Off);
+        enableDisableIcon.addFile(":/icons/button_cancel.png", QSize(), QIcon::Active, QIcon::On);
+        auto lockNetworkAction = new QAction(enableDisableIcon, tr("&Lock Network"), this);
+        lockNetworkAction->setCheckable(true);
+        lockNetworkAction->setChecked(false);
+        lockNetworkAction->setToolTip("Enable/Disable Network Evaluation");
+
+        lockNetworkAction->setShortcut(QKeySequence::Cut);
+        viewMenuItem_->addAction(lockNetworkAction);
+        viewModeToolBar->addAction(lockNetworkAction);
+        connect(lockNetworkAction, &QAction::triggered, [lockNetworkAction]() {
+            if (lockNetworkAction->isChecked()) {
+                InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->disableEvaluation();
+            } else {
+                InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->enableEvaluation();
+            }
+        });
+    }
 
 #if IVW_PROFILING
-    resetTimeMeasurementsButton_ = new QToolButton(this);
-    resetTimeMeasurementsButton_->setToolTip(tr("Reset All Time Measurements"));
-    resetTimeMeasurementsButton_->setCheckable(false);
-    resetTimeMeasurementsButton_->setIcon(QIcon(":/icons/stopwatch.png"));
-    connect(resetTimeMeasurementsButton_, SIGNAL(clicked()), networkEditor_,
-            SLOT(resetAllTimeMeasurements()));
-#endif
+    {
+        auto resetTimeMeasurementsAction =
+            new QAction(QIcon(":/icons/stopwatch.png"), tr("Reset All Time Measurements"), this);
+        resetTimeMeasurementsAction->setCheckable(false);
 
-    helpMenuItem_->addAction(helpWidget_->toggleViewAction());
+        connect(resetTimeMeasurementsAction, &QAction::triggered,
+                [&]() { networkEditor_->resetAllTimeMeasurements(); });
 
-    aboutBoxAction_ = new QAction(QIcon(":/icons/about.png"), tr("&About"), this);
-    connect(aboutBoxAction_, SIGNAL(triggered()), this, SLOT(showAboutBox()));
-    helpMenuItem_->addAction(aboutBoxAction_);
-
-#if defined(IVW_STYLESHEET_RELOAD)
-    QAction* action = new QAction(tr("&Reload Stylesheet"), this);
-    QObject::connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
-    helpMenuItem_->addAction(action);
+        viewModeToolBar->addAction(resetTimeMeasurementsAction);
+    }
 #endif
 
     // Edit
@@ -392,7 +428,6 @@ void InviwoMainWindow::addMenuActions() {
         actions_["Copy"] = copyAction;
         copyAction->setShortcut(QKeySequence::Copy);
         editMenuItem_->addAction(copyAction);
-
     }
 
     {
@@ -447,21 +482,22 @@ void InviwoMainWindow::addMenuActions() {
         editMenuItem_->addAction(clearLogAction);
         connect(clearLogAction, &QAction::triggered, [&]() { consoleWidget_->clear(); });
     }
-}
 
-void InviwoMainWindow::addToolBars() {
-    workspaceToolBar_ = addToolBar("File");
-    workspaceToolBar_->setObjectName("fileToolBar");
-    workspaceToolBar_->addAction(workspaceActionNew_);
-    workspaceToolBar_->addAction(workspaceActionOpen_);
-    workspaceToolBar_->addAction(workspaceActionSave_);
-    workspaceToolBar_->addAction(workspaceActionSaveAs_);
-    viewModeToolBar_ = addToolBar("View");
-    viewModeToolBar_->setObjectName("viewModeToolBar");
-    viewModeToolBar_->addAction(visibilityModeAction_);
-    viewModeToolBar_->addWidget(enableDisableEvaluationButton_);
-#if IVW_PROFILING
-    viewModeToolBar_->addWidget(resetTimeMeasurementsButton_);
+    // Help
+    {
+        helpMenuItem_->addAction(helpWidget_->toggleViewAction());
+
+        auto aboutBoxAction = new QAction(QIcon(":/icons/about.png"), tr("&About"), this);
+        connect(aboutBoxAction, SIGNAL(triggered()), this, SLOT(showAboutBox()));
+        helpMenuItem_->addAction(aboutBoxAction);
+    }
+
+#if defined(IVW_STYLESHEET_RELOAD)
+    {
+        QAction* action = new QAction(tr("&Reload Stylesheet"), this);
+        QObject::connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
+        helpMenuItem_->addAction(action);
+    }
 #endif
 }
 
@@ -852,14 +888,6 @@ void InviwoMainWindow::saveWorkspaceAsCopy() {
         addToRecentWorkspaces(path);
     }
     saveWindowState();
-}
-
-void InviwoMainWindow::disableEvaluation(bool disable) {
-    if (disable) {
-        InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->disableEvaluation();
-    } else {
-        InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->enableEvaluation();
-    }
 }
 
 void InviwoMainWindow::showAboutBox() {
