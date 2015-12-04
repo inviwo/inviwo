@@ -145,12 +145,12 @@ private:
     /**
      * \brief compile a list of example workspaces and update the menu
      */
-    void fillExampleWorkspaceMenu();
+    void fillExampleWorkspaceMenu(QMenu* menu);
     /**
     * \brief compile a list of test workspaces from inviwo-dev and external
     * modules and update the menu
     */
-    void fillTestWorkspaceMenu();
+    void fillTestWorkspaceMenu(QMenu* menu);
 
     InviwoApplication* app_;
     NetworkEditor* networkEditor_;
@@ -167,15 +167,6 @@ private:
     ConsoleWidget* consoleWidget_;
     ResourceManagerWidget* resourceManagerWidget_;
     HelpWidget* helpWidget_;
-
-    // menus
-    QMenu* fileMenuItem_;
-    QMenu* editMenuItem_;
-    QMenu* viewMenuItem_;
-    QMenu* helpMenuItem_;
-
-    QMenu* testWorkspaceMenu_;
-    QMenu* exampleWorkspaceMenu_;
 
     // menu actions
     std::unordered_map<std::string, QAction*> actions_;
