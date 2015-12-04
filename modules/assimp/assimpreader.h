@@ -47,8 +47,8 @@ public:
     AssimpReader();
     AssimpReader(const AssimpReader& rhs) = default;
     AssimpReader& operator=(const AssimpReader& that) = default;
-    virtual AssimpReader* clone() const;
-    virtual ~AssimpReader() {}
+    virtual AssimpReader* clone() const override;
+    virtual ~AssimpReader() = default;
 
     virtual std::shared_ptr<Mesh> readData(const std::string filePath) override;
 };
@@ -63,7 +63,7 @@ private:
 public:
     InviwoAssimpLogStream(LogLevel ploglevel) { loglevel = ploglevel; }
 
-    ~InviwoAssimpLogStream() {}
+    virtual ~InviwoAssimpLogStream() = default;
 
     void write(const char* message) {
         std::string tmp(message);

@@ -45,6 +45,8 @@ namespace inviwo {
 
 class CanvasProcessorWidget;
 class ProcessorNetworkEvaluator;
+template<typename T>
+class DataWriterType;
 
 class IVW_CORE_API CanvasProcessor : public Processor {
 public:

@@ -33,6 +33,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -47,6 +48,7 @@
 
 #include <warn/pop>
 
+#include <array>
 #include <ctime>
 
 namespace inviwo {

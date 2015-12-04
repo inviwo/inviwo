@@ -54,7 +54,7 @@ class IVW_QTWIDGETS_API FilePropertyWidgetQt : public PropertyWidgetQt, public F
 public:
     FilePropertyWidgetQt(FileProperty* property);
 
-    void updateFromProperty();
+    virtual void updateFromProperty() override;
     virtual bool requestFile() override;
 private:
     FileProperty* property_;

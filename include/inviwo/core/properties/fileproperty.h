@@ -38,6 +38,7 @@ namespace inviwo {
 
 class IVW_CORE_API FileRequestable {
 public:
+    virtual ~FileRequestable() = default;
     /**
      *	Ask the user to supply a file, return true if successful
      */
