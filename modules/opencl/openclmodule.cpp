@@ -83,5 +83,10 @@ OpenCLModule::OpenCLModule(InviwoApplication* app) : InviwoModule(app, "OpenCL")
     registerSettings(std::move(setting));
 }
 
+OpenCLModule::~OpenCLModule(){
+    OpenCL::deleteInstance();
+    KernelManager::deleteInstance();
+}
+
 
 } // namespace
