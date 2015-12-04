@@ -32,7 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -55,7 +55,7 @@ public:
     PositionProperty(std::string identifier, std::string displayName
         , FloatVec3Property position = FloatVec3Property("position", "Position", vec3(0.0f, 0.0f, 0.0f), vec3(-10, -10, -10),
         vec3(10, 10, 10))
-        , const Camera* camera = nullptr
+        , CameraProperty* camera = nullptr
         , InvalidationLevel = InvalidationLevel::InvalidResources
         , PropertySemantics semantics = PropertySemantics::Default);
     PositionProperty(const PositionProperty& rhs);
@@ -77,12 +77,18 @@ public:
      */
     void set(const vec3& worldSpacePos);
 
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
     OptionPropertyInt referenceFrame_; //< The space in which the position is specified (world or view).
     FloatVec3Property position_; //< Position in specified space (world or view).
 private:
     void referenceFrameChanged();
+    void positionChanged();
+    void cameraChanged();
 
-    const Camera* camera_; //< Non-owning reference.
+    vec3 positionWorldSpace_; //< Used for always keeping track of the current position in world space.
+    CameraProperty* camera_; //< Non-owning reference.
 };
 
 } // namespace

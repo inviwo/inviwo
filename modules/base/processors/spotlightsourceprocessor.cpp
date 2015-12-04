@@ -50,7 +50,7 @@ SpotLightSourceProcessor::SpotLightSourceProcessor()
     , camera_("camera", "Camera", vec3(0.0f, 0.0f, -2.0f), vec3(0.0f, 0.0f, 0.0f),
     vec3(0.0f, 1.0f, 0.0f), nullptr, InvalidationLevel::Valid)
     , lightPosition_("lightPosition", "Light Source Position",
-    FloatVec3Property("position", "Position", vec3(100.f), vec3(-100.f), vec3(100.f)), &camera_.get())
+    FloatVec3Property("position", "Position", vec3(100.f), vec3(-100.f), vec3(100.f)), &camera_)
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light size", vec2(1.5f, 1.5f), vec2(0.0f, 0.0f), vec2(3.0f, 3.0f))

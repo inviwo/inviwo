@@ -55,7 +55,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , lightPosition_("lightPosition", "Light Source Position",
                      FloatVec3Property("position", "Position", vec3(-2.f, -50.f, 90.f),
                                        vec3(-100.f), vec3(100.f)),
-                     &camera_.get())
+                     &camera_)
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightSize_("lightSize", "Light radius", 1.5f, 0.0f, 3.0f)
@@ -153,12 +153,9 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
     , lookTo_(0.f)
     , trackball_(this)
     , interactionEventOption_(0)
-    , lightPositionWorldSpace_(lightPosition_->get())
 {
     // static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
     camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged);
-    lightPosition_->position_.onChange(
-        [this]() { lightPositionWorldSpace_ = lightPosition_->get(); });
 }
 
 void PointLightInteractionHandler::serialize(Serializer& s) const {}
@@ -232,9 +229,6 @@ void PointLightInteractionHandler::onCameraChanged() {
     // This makes sure that the interaction with the light source is consistent with the direction
     // of the camera
     setLookUp(camera_->getLookUp());
-
-    // Update the light position (this only changes the light position if the reference frame is in view space)
-    lightPosition_->set(lightPositionWorldSpace_);
 }
 
 PointLightTrackball::PointLightTrackball(PointLightInteractionHandler* p)

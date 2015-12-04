@@ -51,7 +51,7 @@ DirectionalLightSourceProcessor::DirectionalLightSourceProcessor()
     , lightPosition_(
           "lightPosition", "Light Source Position",
           FloatVec3Property("position", "Position", vec3(100.f), vec3(-100.f), vec3(100.f)),
-          &camera_.get())
+          &camera_)
     , lighting_("lighting", "Light Parameters")
     , lightPowerProp_("lightPower", "Light power (%)", 50.f, 0.f, 100.f)
     , lightDiffuse_("lightDiffuse", "Color", vec3(1.0f))
