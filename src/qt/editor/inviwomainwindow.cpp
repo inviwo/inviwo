@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/core/network/processornetworkevaluator.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -468,9 +468,9 @@ void InviwoMainWindow::addActions() {
         evalToolBar->addAction(lockNetworkAction);
         connect(lockNetworkAction, &QAction::triggered, [lockNetworkAction]() {
             if (lockNetworkAction->isChecked()) {
-                InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->disableEvaluation();
+                InviwoApplicationQt::getPtr()->getProcessorNetwork()->lock();
             } else {
-                InviwoApplicationQt::getPtr()->getProcessorNetworkEvaluator()->enableEvaluation();
+                InviwoApplicationQt::getPtr()->getProcessorNetwork()->unlock();
             }
         });
     }

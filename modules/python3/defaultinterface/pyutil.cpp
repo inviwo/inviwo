@@ -219,8 +219,8 @@ PyObject* py_clearResourceManager(PyObject* /*self*/, PyObject* /*args*/) {
 
 PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
     if (auto app = InviwoApplication::getPtr()) {
-        if (auto evaluator = app->getProcessorNetworkEvaluator()) {
-            evaluator->disableEvaluation();
+        if (auto network = app->getProcessorNetwork()) {
+            network->lock();
             Py_RETURN_NONE;
         }
 
@@ -236,8 +236,8 @@ PyObject* py_disableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
 
 PyObject* py_enableEvaluation(PyObject* /*self*/, PyObject* /*args*/) {
     if (auto app = InviwoApplication::getPtr()) {
-        if (auto evaluator = app->getProcessorNetworkEvaluator()) {
-            evaluator->enableEvaluation();
+        if (auto network = app->getProcessorNetwork()) {
+            network->unlock();
             Py_RETURN_NONE;
         }
 

@@ -48,10 +48,7 @@ public:
     ProcessorNetworkEvaluator(ProcessorNetwork* processorNetwork);
     virtual ~ProcessorNetworkEvaluator();
 
-    void disableEvaluation();
-    void enableEvaluation();
     void requestEvaluate();
-
     void setExceptionHandler(ExceptionHandler handler);
 
     virtual void onProcessorInvalidationEnd(Processor*) override;
@@ -65,7 +62,6 @@ private:
     // the sorted list of processors obtained through topological sorting
     std::vector<Processor*> processorsSorted_;
     bool evaulationQueued_;
-    bool evaluationDisabled_;
     ExceptionHandler exceptionHandler_;
 };
 
