@@ -121,6 +121,11 @@ struct is_string<T, typename void_helper<typename T::value_type, typename T::tra
 template <typename T>
 struct is_string : detail::is_string<T> {};
 
+template <class F, class... Args>
+void for_each_argument(F f, Args&&... args) {
+    [](...){}((f(std::forward<Args>(args)), 0)...);
+}
+
 template <typename T, typename V>
 void erase_remove(T& cont, const V& elem) {
     using std::begin;
