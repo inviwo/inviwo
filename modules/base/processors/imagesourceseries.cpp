@@ -118,11 +118,14 @@ void ImageSourceSeries::process() {
             // Call getRepresentation here to force read a ram representation.
             // Otherwise the default image size, i.e. 256x265, will be reported
             // until you do the conversion. Since the LayerDisk does not have any metadata.
-            outLayer->getRepresentation<LayerRAM>();
-            auto newOutImage = std::make_shared<Image>(outLayer);
-            newOutImage->getRepresentation<ImageRAM>();
+            auto ram = outLayer->getRepresentation<LayerRAM>();
+            // Hack needs to set format here since LayerDisk does not have a format.
+            outLayer->setDataFormat(ram->getDataFormat());
+            
+            auto outImage = std::make_shared<Image>(outLayer);
+            outImage->getRepresentation<ImageRAM>();
 
-            outport_.setData(newOutImage);
+            outport_.setData(outImage);
         } catch (DataReaderException const& e) {
             util::log(e.getContext(),
                       "Could not load data: " + imageFileName_.get() + ", " + e.getMessage(),
