@@ -29,29 +29,28 @@
 
 #include <inviwo/core/util/formats.h>
 #include <modules/opengl/image/layergl.h>
-#include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/texture/texture.h>
 #include <modules/opengl/texture/texture2d.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 
-LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* format, std::shared_ptr<Texture2D> tex)
+LayerGL::LayerGL(size2_t dimensions, LayerType type, const DataFormatBase* format,
+                 std::shared_ptr<Texture2D> tex)
     : LayerRepresentation(dimensions, type, format), texture_(tex) {
     if (!texture_) {
         GLFormats::GLFormat glFormat = getGLFormats()->getGLFormat(getDataFormatId());
 
         if (getLayerType() == LayerType::Depth) {
-            texture_ = std::make_shared<Texture2D>(getDimensions(), GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT24,
-                glFormat.type, GL_NEAREST);
+            texture_ = std::make_shared<Texture2D>(getDimensions(), GL_DEPTH_COMPONENT,
+                                                   GL_DEPTH_COMPONENT24, glFormat.type, GL_NEAREST);
         } else {
             texture_ = std::make_shared<Texture2D>(getDimensions(), glFormat, GL_LINEAR);
         }
     }
 }
 
-LayerGL::LayerGL(const LayerGL& rhs) : LayerRepresentation(rhs), texture_(rhs.texture_->clone()) {
-    //texture_ = rhs.texture_->clone();
-}
+LayerGL::LayerGL(const LayerGL& rhs) : LayerRepresentation(rhs), texture_(rhs.texture_->clone()) {}
 
 LayerGL& LayerGL::operator=(const LayerGL& rhs) {
     if (this != &rhs) {
@@ -62,10 +61,9 @@ LayerGL& LayerGL::operator=(const LayerGL& rhs) {
     return *this;
 }
 
-LayerGL::~LayerGL() { }
+LayerGL::~LayerGL() {}
 
 LayerGL* LayerGL::clone() const { return new LayerGL(*this); }
-
 
 void LayerGL::bindTexture(GLenum texUnit) const {
     texUnit_ = texUnit;
@@ -93,9 +91,7 @@ bool LayerGL::copyRepresentationsTo(DataRepresentation* targetLayerGL) const {
     return false;
 }
 
-std::type_index LayerGL::getTypeIndex() const {
-    return std::type_index(typeid(LayerGL));
-}
+std::type_index LayerGL::getTypeIndex() const { return std::type_index(typeid(LayerGL)); }
 
 void LayerGL::setDimensions(size2_t dimensions) {
     dimensions_ = dimensions;

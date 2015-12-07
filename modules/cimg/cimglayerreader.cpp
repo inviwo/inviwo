@@ -64,10 +64,9 @@ std::shared_ptr<Layer> CImgLayerReader::readData(std::string filePath) {
         }
     }
 
-    auto layer = std::make_shared<Layer>();
     auto layerDisk = std::make_shared<LayerDisk>(filePath);
     layerDisk->setLoader(new CImgLayerRAMLoader(layerDisk.get()));
-    layer->addRepresentation(layerDisk);
+    auto layer = std::make_shared<Layer>(layerDisk);
     return layer;
 }
 
