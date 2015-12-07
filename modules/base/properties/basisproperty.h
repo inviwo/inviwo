@@ -65,6 +65,8 @@ public:
     FloatVec3Property overrideC_;
     FloatVec3Property overrideOffset_;
 
+    mat4 getBasisAndOffset() const;
+
 private:
     void onOverrideChange();
 };

@@ -174,20 +174,25 @@ BasisProperty& BasisProperty::operator=(const BasisProperty& that) {
     return *this;
 }
 
-void inviwo::BasisProperty::updateEntity(SpatialEntity<3>& volume) {
+mat4 BasisProperty::getBasisAndOffset() const {
     if (overRideDefaults_) {
         vec4 offset = vec4(overrideOffset_.get(), 1.0f);
         mat3 basis(overrideA_, overrideB_, overrideC_);
         mat4 basisAndOffset(basis);
         basisAndOffset[3] = offset;
-        volume.setModelMatrix(basisAndOffset);
+        return basisAndOffset;
     } else {
         vec4 offset = vec4(offset_.get(), 1.0f);
         mat3 basis(a_, b_, c_);
         mat4 basisAndOffset(basis);
         basisAndOffset[3] = offset;
-        volume.setModelMatrix(basisAndOffset);
+        return basisAndOffset;
     }
+
+}
+
+void BasisProperty::updateEntity(SpatialEntity<3>& volume) {
+    volume.setModelMatrix(getBasisAndOffset());
 }
 
 }  // namespace
