@@ -111,6 +111,10 @@ CanvasProcessor::CanvasProcessor()
         colorLayer_.setMaxValue(layers - 1);
     });
 
+    inport_.onConnect([&](){
+       sizeChanged();
+    });
+
     setAllPropertiesCurrentStateAsDefault();
 }
 
