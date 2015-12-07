@@ -51,7 +51,7 @@ const ProcessorInfo ImageSourceSeries::getProcessorInfo() const {
 
 ImageSourceSeries::ImageSourceSeries()
     : Processor()
-    , outport_("image.outport")
+    , outport_("image.outport", DataVec4UInt8::get(), false)
     , findFilesButton_("findFiles", "Update File List")
     , imageFileDirectory_(
           "imageFileDirectory", "Image file directory", "",

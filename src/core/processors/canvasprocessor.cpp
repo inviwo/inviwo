@@ -129,10 +129,6 @@ void CanvasProcessor::setProcessorWidget(ProcessorWidget* processorWidget) {
     }
 }
 
-void CanvasProcessor::initializeResources() {
-    sizeChanged();
-}
-
 // Called by dimensions onChange.
 void CanvasProcessor::resizeCanvas() {
     NetworkLock lock(this);

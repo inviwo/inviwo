@@ -211,7 +211,7 @@ bool PickingContainer::performTouchPick(TouchEvent* e) {
     return !touchPickObjs_.empty();
 }
 
-void PickingContainer::setPickingSource(const Image* src) {
+void PickingContainer::setPickingSource(std::shared_ptr<const Image> src) {
     src_ = src;
 }
 

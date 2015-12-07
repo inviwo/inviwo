@@ -113,9 +113,9 @@ protected:
     static void enableDrawImagePlaneRect();
     static void disableDrawImagePlaneRect();
 
-    const ImageGL* imageGL_;
     std::shared_ptr<const Image> image_;
-
+    const ImageGL* imageGL_;
+    
 private:
     static const MeshGL* screenAlignedRectGL_;
 

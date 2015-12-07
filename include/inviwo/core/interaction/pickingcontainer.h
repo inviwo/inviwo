@@ -52,7 +52,7 @@ public:
     bool performMousePick(MouseEvent*);
     bool performTouchPick(TouchEvent*);
 
-    void setPickingSource(const Image* src);
+    void setPickingSource(std::shared_ptr<const Image> src);
 
 protected:
     PickingObject* findPickingObject(const uvec2& coord);
@@ -62,7 +62,7 @@ protected:
     uvec2 mousePosToPixelCoordinates(ivec2 mpos, ivec2 dim);
 
 private:
-    const Image* src_;
+    std::shared_ptr<const Image> src_;
 
     PickingObject* mousePickObj_;
     uvec2 prevMouseCoord_;

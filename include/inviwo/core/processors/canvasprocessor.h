@@ -53,7 +53,6 @@ public:
     CanvasProcessor();
     virtual ~CanvasProcessor();
 
-    virtual void initializeResources() override;
     virtual void process() override;
     virtual void doIfNotReady() override;
 

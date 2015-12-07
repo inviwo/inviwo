@@ -104,7 +104,7 @@ void CanvasGL::activate() {}
 void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, size_t idx) {
     image_ = image;
     layerType_ = layerType;
-    pickingContainer_.setPickingSource(image_.get());
+    pickingContainer_.setPickingSource(image);
     if (image_) {
         imageGL_ = image_->getRepresentation<ImageGL>();
         if (imageGL_ && imageGL_->getLayerGL(layerType_, idx)) {
@@ -116,8 +116,10 @@ void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, s
 
         // Faster async download of textures sampled on interaction
         if (imageGL_->getDepthLayerGL()) imageGL_->getDepthLayerGL()->getTexture()->downloadToPBO();
-        if (pickingContainer_.pickingEnabled() && imageGL_->getPickingLayerGL())
+        if (pickingContainer_.pickingEnabled() && imageGL_->getPickingLayerGL()) {
             imageGL_->getPickingLayerGL()->getTexture()->downloadToPBO();
+        }
+        
     } else {
         imageGL_ = nullptr;
         renderNoise();
