@@ -37,6 +37,8 @@
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/base/properties/basisproperty.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
 
@@ -73,18 +75,29 @@ protected:
     virtual void process() override;
 
 private:
-    enum MeshType {
-        SPHERE,
-        COLOR_SPHERE,
-        CUBE_BASIC_MESH,
-        CUBE_SIMPLE_MESH,
-        LINE_CUBE,
-        PLANE,
-        DISK,
-        CONE,
-        CYLINDER,
-        ARROW,
-        COORD_AXES
+    template <typename... Args>
+    void show(Args&&... args) {
+        util::for_each_argument([](Property& p) { p.setVisible(true); }, std::forward<Args>(args)...);
+    }
+
+    template <typename... Args>
+    void hide(Args&&... args) {
+        util::for_each_argument([](Property& p) { p.setVisible(false); }, std::forward<Args>(args)...);
+    }
+
+    enum class MeshType {
+        Sphere,
+        ColorSphere,
+        CubeBasicMesh,
+        CubeSimpleMesh,
+        LineCube,
+        LineCubeAdjacency,
+        Plane,
+        Disk,
+        Cone,
+        Cylinder,
+        Arrow,
+        CoordAxes
     };
 
     MeshOutport outport_;
@@ -93,10 +106,12 @@ private:
     FloatVec3Property position2_;
     FloatVec3Property normal_;
     FloatVec4Property color_;
+    
+    BasisProperty basis_;
 
     FloatProperty meshScale_; // Scale size of mesh
     IntVec2Property meshRes_; // mesh resolution
-    OptionPropertyInt meshType_;
+    TemplateOptionProperty<MeshType> meshType_;
 };
 
 } // namespace

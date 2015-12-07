@@ -566,6 +566,35 @@ std::shared_ptr<BasicMesh> BasicMesh::boundingbox(const mat4& basisandoffset, co
     return mesh;
 }
 
+std::shared_ptr<BasicMesh> BasicMesh::boundingBoxAdjacency(const mat4& basisandoffset,
+                                                           const vec4& color) {
+    auto mesh = std::make_shared<BasicMesh>();
+    mesh->setModelMatrix(basisandoffset);
+
+    mesh->addVertices({{vec3(0.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.0, 0.0), color},
+                       {vec3(1.0, 0.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 0.0, 0.0), color},
+                       {vec3(1.0, 1.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 0.0), color},
+                       {vec3(0.0, 1.0, 0.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 1.0, 0.0), color},
+                       {vec3(0.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 0.0, 1.0), color},
+                       {vec3(1.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 0.0, 1.0), color},
+                       {vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), color},
+                       {vec3(0.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(0.0, 1.0, 1.0), color}});
+
+    auto inds1 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+    inds1->add({3, 0, 1, 2, 3, 0, 1});
+
+    auto inds2 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+    inds2->add({7, 4, 5, 6, 7, 4, 5});
+
+    auto inds3 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+    inds3->add({3, 0, 4, 7, 3, 0, 4});
+
+    auto inds4 = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+    inds4->add({2, 1, 5, 6, 2, 1, 2});
+
+    return mesh;
+}
+
 std::shared_ptr<BasicMesh> BasicMesh::square(const vec3& pos, const vec3& normal,
                                              const glm::vec2& extent,
                                              const vec4& color /*= vec4(1,1,1,1)*/,

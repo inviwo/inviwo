@@ -105,6 +105,8 @@ public:
 
     static std::shared_ptr<BasicMesh> boundingbox(const mat4& basisandoffset, const vec4& color);
 
+    static std::shared_ptr<BasicMesh> boundingBoxAdjacency(const mat4& basisandoffset, const vec4& color);
+
 protected:
     static vec3 orthvec(const vec3& vec);
     static vec3 calcnormal(const vec3& r, const vec3& p);
