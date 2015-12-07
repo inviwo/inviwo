@@ -49,12 +49,12 @@ const MeshGL* CanvasGL::screenAlignedRectGL_ = nullptr;
 CanvasGL::CanvasGL(uvec2 dimensions)
     : Canvas(dimensions)
     , imageGL_(nullptr)
-    , image_(nullptr)
+    , image_()
     , rectArray_(nullptr)
     , layerType_(LayerType::Color)
     , shader_(nullptr)
     , noiseShader_(nullptr)
-    , singleChannel_(false)
+    , channels_(0)
     , previousRenderedLayerIdx_(0) {}
 
 CanvasGL::~CanvasGL() { deinitialize(); }
@@ -63,9 +63,9 @@ void CanvasGL::initialize() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
 
     defaultGLState();
-    shader_.reset(new Shader("img_texturequad.vert", "img_texturequad.frag"));
+    shader_ = util::make_unique<Shader>("img_texturequad.vert", "img_texturequad.frag");
     LGL_ERROR;
-    noiseShader_.reset(new Shader("img_texturequad.vert", "img_noise.frag"));
+    noiseShader_ = util::make_unique<Shader>("img_texturequad.vert", "img_noise.frag");
     LGL_ERROR;
     Canvas::initialize();
 }
@@ -73,10 +73,8 @@ void CanvasGL::initialize() {
 void CanvasGL::initializeSquare() {
     if (!OpenGLCapabilities::hasSupportedOpenGLVersion()) return;
 
-    const Mesh* screenAlignedRectMesh = dynamic_cast<const Mesh*>(screenAlignedRect_);
-
-    if (screenAlignedRectMesh) {
-        screenAlignedRectGL_ = screenAlignedRectMesh->getRepresentation<MeshGL>();
+    if (screenAlignedRect_) {
+        screenAlignedRectGL_ = screenAlignedRect_->getRepresentation<MeshGL>();
         LGL_ERROR;
     }
 }
@@ -86,7 +84,7 @@ void CanvasGL::deinitialize() {
     noiseShader_.reset();
     rectArray_.reset();
 
-    image_ = nullptr;
+    image_.reset();
     imageGL_ = nullptr;
     Canvas::deinitialize();
 }
@@ -103,10 +101,10 @@ void CanvasGL::defaultGLState() {
 
 void CanvasGL::activate() {}
 
-void CanvasGL::render(const Image* image, LayerType layerType, size_t idx) {
+void CanvasGL::render(std::shared_ptr<const Image> image, LayerType layerType, size_t idx) {
     image_ = image;
     layerType_ = layerType;
-    pickingContainer_.setPickingSource(image_);
+    pickingContainer_.setPickingSource(image_.get());
     if (image_) {
         imageGL_ = image_->getRepresentation<ImageGL>();
         if (imageGL_ && imageGL_->getLayerGL(layerType_, idx)) {
@@ -158,18 +156,15 @@ void CanvasGL::multiDrawImagePlaneRect(int instances) {
 void CanvasGL::renderLayer(size_t idx) {
     previousRenderedLayerIdx_ = idx;
     if (imageGL_) {
-        const LayerGL* layerGL = imageGL_->getLayerGL(layerType_, idx);
-        if (layerGL) {
+        if (auto layerGL = imageGL_->getLayerGL(layerType_, idx)) {
             TextureUnit textureUnit;
             layerGL->bindTexture(textureUnit.getEnum());
             renderTexture(textureUnit.getUnitNumber());
             layerGL->unbindTexture();
             return;
-        } else {
-            renderNoise();
         }
     }
-    if (!image_) renderNoise();
+    renderNoise();
 }
 
 void CanvasGL::renderNoise() {
@@ -212,17 +207,29 @@ void CanvasGL::drawRect() {
 }
 
 void CanvasGL::checkChannels(std::size_t channels) {
-    if (!singleChannel_ && channels == 1) {
-        shader_->getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
-        shader_->getFragmentShaderObject()->build();
-        shader_->link();
-        singleChannel_ = true;
-    } else if (singleChannel_ && channels == 4) {
-        shader_->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
-        shader_->getFragmentShaderObject()->build();
-        shader_->link();
-        singleChannel_ = false;
+    if (channels_ == channels) return;
+    
+    switch(channels) {
+        case 1: {
+            shader_->getFragmentShaderObject()->addShaderDefine("SINGLE_CHANNEL");
+            break;
+        }
+        case 2: {
+            shader_->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
+            break;
+        }
+        case 3: {
+            shader_->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
+            break;
+        }
+        case 4: {
+            shader_->getFragmentShaderObject()->removeShaderDefine("SINGLE_CHANNEL");
+            break;
+        }
     }
+    channels_ = channels;
+    shader_->getFragmentShaderObject()->build();
+    shader_->link();
 }
 
 const LayerRAM* CanvasGL::getDepthLayerRAM() const {
@@ -259,8 +266,9 @@ double CanvasGL::getDepthValueAtCoord(ivec2 coord, const LayerRAM* depthLayerRAM
 
         // Convert to normalized device coordinates
         return 2.0 * depthValue - 1.0;
-    } else
+    } else {
         return 1.0;
+    }
 }
 
 void CanvasGL::enableDrawImagePlaneRect() { screenAlignedRectGL_->enable(); }
@@ -269,7 +277,7 @@ void CanvasGL::disableDrawImagePlaneRect() { screenAlignedRectGL_->disable(); }
 
 void CanvasGL::setProcessorWidgetOwner(ProcessorWidget* widget) {
     // Clear internal state
-    image_ = nullptr;
+    image_.reset();
     imageGL_ = nullptr;
     pickingContainer_.setPickingSource(nullptr);
     Canvas::setProcessorWidgetOwner(widget);

@@ -24,28 +24,29 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CANVAS_H
 #define IVW_CANVAS_H
 
-#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/image/layer.h>
-#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/interaction/pickingcontainer.h>
+#include <inviwo/core/datastructures/image/imagetypes.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/interaction/events/eventhandler.h>
 #include <inviwo/core/interaction/events/gestureevent.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/pickingcontainer.h>
 
 namespace inviwo {
 
 class ProcessorNetworkEvaluator;
-template <class Layer> class DataWriterType;
+template <class Layer>
+class DataWriterType;
 class Image;
 class EventPropagator;
 class ProcessorWidget;
@@ -58,7 +59,8 @@ public:
     virtual void initialize();
     virtual void deinitialize();
     virtual void activate();
-    virtual void render(const Image*, LayerType layerType = LayerType::Color, size_t idx = 0);
+    virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,
+                        size_t idx = 0);
     virtual void resize(uvec2 canvasSize);
 
     uvec2 getScreenDimensions() const;
@@ -71,7 +73,7 @@ public:
     virtual ProcessorWidget* getProcessorWidgetOwner() const;
     virtual void setProcessorWidgetOwner(ProcessorWidget*);
 
-    //TODO, this should not be here...
+    // TODO, this should not be here...
     static DataWriterType<Layer>* generalLayerWriter_;
 
     virtual std::unique_ptr<Canvas> create() = 0;
@@ -99,11 +101,11 @@ protected:
     bool initialized_;
     bool shared_;
     uvec2 screenDimensions_;
-    EventPropagator* propagator_; //< non-owning reference
+    EventPropagator* propagator_;  //< non-owning reference
     PickingContainer pickingContainer_;
-    ProcessorWidget* ownerWidget_; //< non-owning reference
+    ProcessorWidget* ownerWidget_;  //< non-owning reference
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_CANVAS_H
+#endif  // IVW_CANVAS_H

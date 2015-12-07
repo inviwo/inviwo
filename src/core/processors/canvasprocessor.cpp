@@ -297,10 +297,10 @@ void CanvasProcessor::process() {
         canvasWidget_->getCanvas()->activate();
         LayerType layerType = visibleLayer_.get();
         if (visibleLayer_.get() == LayerType::Color) {
-            canvasWidget_->getCanvas()->render(inport_.getData().get(), LayerType::Color,
+            canvasWidget_->getCanvas()->render(inport_.getData(), LayerType::Color,
                                                colorLayer_.get());
         } else {
-            canvasWidget_->getCanvas()->render(inport_.getData().get(), layerType, 0);
+            canvasWidget_->getCanvas()->render(inport_.getData(), layerType, 0);
         }
     }
 }

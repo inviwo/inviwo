@@ -102,7 +102,7 @@ void Canvas::initialize() {
 
 void Canvas::deinitialize() { propagator_ = nullptr; }
 
-void Canvas::render(const Image* im, LayerType layerType, size_t idx) {}
+void Canvas::render(std::shared_ptr<const Image> im, LayerType layerType, size_t idx) {}
 
 void Canvas::activate() {}
 
