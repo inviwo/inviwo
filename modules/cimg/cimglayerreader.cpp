@@ -96,10 +96,10 @@ std::shared_ptr<DataRepresentation> CImgLayerRAMLoader::createRepresentation() c
 
     if (dimensions != uvec2(0)) {
         // Load and rescale to input dimensions
-        data = CImgUtils::loadLayerData(nullptr, filePath, dimensions, formatId, true);
+        data = cimgutil::loadLayerData(nullptr, filePath, dimensions, formatId, true);
     } else {
         // Load to original dimensions
-        data = CImgUtils::loadLayerData(nullptr, filePath, dimensions, formatId, false);
+        data = cimgutil::loadLayerData(nullptr, filePath, dimensions, formatId, false);
         layerDisk_->setDimensions(dimensions);
     }
 
@@ -132,10 +132,10 @@ void CImgLayerRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentation
 
     if (dimensions != uvec2(0)) {
         // Load and rescale to input dimensions
-        CImgUtils::loadLayerData(layerDst->getData(), filePath, dimensions, formatId, true);
+        cimgutil::loadLayerData(layerDst->getData(), filePath, dimensions, formatId, true);
     } else {
         // Load to original dimensions
-        CImgUtils::loadLayerData(layerDst->getData(), filePath, dimensions, formatId, false);
+        cimgutil::loadLayerData(layerDst->getData(), filePath, dimensions, formatId, false);
         layerDisk_->setDimensions(dimensions);
     }
 

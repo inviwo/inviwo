@@ -42,7 +42,7 @@ public:
     FileExtension(const FileExtension&) = default;
     FileExtension& operator=(const FileExtension&) = default;
     FileExtension(std::string extension, std::string description);
-    virtual ~FileExtension() {};
+    virtual ~FileExtension() = default;
 
     /** 
      * \brief extracts a FileExtension object from a string. This function assumes
@@ -56,7 +56,6 @@ public:
 
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
-
 
 
     std::string extension_; ///< File extension in lower case letters.

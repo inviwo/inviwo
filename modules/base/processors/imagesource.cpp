@@ -66,16 +66,12 @@ ImageSource::ImageSource()
     addProperty(imageDimension_);
 }
 
-ImageSource::~ImageSource() {}
+bool ImageSource::isReady() const {
+    return Processor::isReady() && filesystem::fileExists(file_.get());
+}
 
-bool ImageSource::isReady() const { return filesystem::fileExists(file_.get()); }
-
-void ImageSource::process() { load(); }
-
-void ImageSource::load() {
-    if (isDeserializing_ || file_.get() == "") {
-        return;
-    }
+void ImageSource::process() { 
+    if (file_.get().empty()) return;
 
     std::string ext = filesystem::getFileExtension(file_.get());
     auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
@@ -88,7 +84,7 @@ void ImageSource::load() {
             auto ram = outLayer->getRepresentation<LayerRAM>();
             // Hack needs to set format here since LayerDisk does not have a format.
             outLayer->setDataFormat(ram->getDataFormat());
-            
+
             auto outImage = std::make_shared<Image>(outLayer);
             outImage->getRepresentation<ImageRAM>();
 
@@ -110,7 +106,6 @@ void ImageSource::load() {
  * Deserialize everything first then load the data
  */
 void ImageSource::deserialize(Deserializer& d) {
-    isDeserializing_ = true;
     Processor::deserialize(d);
     auto extensions =
         InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
@@ -119,8 +114,6 @@ void ImageSource::deserialize(Deserializer& d) {
     for (auto& ext : extensions) {
         file_.addNameFilter(ext.description_ + " (*." + ext.extension_ + ")");
     }
-    isDeserializing_ = false;
-    load();
 }
 
 }  // namespace

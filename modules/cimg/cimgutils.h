@@ -37,21 +37,29 @@
 
 namespace inviwo {
 
-class IVW_MODULE_CIMG_API CImgUtils {
-public:
-    CImgUtils(){};
-    ~CImgUtils() {}
+namespace cimgutil {
+    enum class InterpolationType : int {
+        RawMemory = -1,       // raw memory resizing.
+        NoInterpolation = 0,  // additional space is filled according to boundary_conditions.
+        Nearset = 1,          // nearest - neighbor interpolation.
+        moving = 2,           // moving average interpolation.
+        Linear = 3,           // linear interpolation.
+        Grid = 4,             // grid interpolation.
+        Cubic = 5,            // cubic interpolation.
+        Lanczos = 6           // lanczos interpolation.
+    };
+
 
     /**
     * Loads layer data from a specified filePath.
     **/
-    static void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
+    void* loadLayerData(void* dst, const std::string& filePath, uvec2& out_dim,
                                DataFormatId& formatId, bool rescaleToDim = false);
 
     /**
     * Loads volume data from a specified filePath.
     **/
-    static void* loadVolumeData(void* dst, const std::string& filePath, size3_t& out_dim,
+    void* loadVolumeData(void* dst, const std::string& filePath, size3_t& out_dim,
                                 DataFormatId& formatId);
 
     /**
@@ -59,14 +67,14 @@ public:
     * @param filePath the path including name to file that is to be stored.
     * @param inputImage specifies the image that is to be saved.
     **/
-    static void saveLayer(const std::string& filePath, const Layer* inputImage);
+    void saveLayer(const std::string& filePath, const Layer* inputImage);
 
     /**
     * Saves an layer of an buffer.
-    * @param filetype the requested filetype, which can be altered by this method
+    * @param file type the requested file type, which can be altered by this method
     * @param inputImage specifies the image that is to be saved.
     **/
-    static std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(std::string& fileType,
+    std::unique_ptr<std::vector<unsigned char>> saveLayerToBuffer(std::string& fileType,
                                                                          const Layer* inputImage);
 
     /**
@@ -76,7 +84,7 @@ public:
      * @param uvec2 dst_dim is destination dimensions
      * @param void* rescaled raw data
      */
-    static void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim);
+    void* rescaleLayer(const Layer* inputLayer, uvec2 dst_dim);
 
     /**
      * \brief Rescales LayerRAM representation uses FILTER_BILINEAR by default.
@@ -85,7 +93,10 @@ public:
      * @param uvec2 dst_dim is destination dimensions
      * @param void* rescaled raw data
      */
-    static void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_dim);
+    void* rescaleLayerRAM(const LayerRAM* layerRam, uvec2 dst_dim);
+
+    bool rescaleLayerRamToLayerRam(const LayerRAM* source, LayerRAM* target);
+
 };
 
 }  // namespace

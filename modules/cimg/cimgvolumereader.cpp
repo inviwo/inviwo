@@ -94,7 +94,7 @@ std::shared_ptr<DataRepresentation> CImgVolumeRAMLoader::createRepresentation() 
         }
     }
 
-    data = CImgUtils::loadVolumeData(nullptr, filePath, dimensions, formatId);
+    data = cimgutil::loadVolumeData(nullptr, filePath, dimensions, formatId);
     volumeDisk_->setDimensions(dimensions);
 
     return volumeDisk_->getDataFormat()->dispatch(*this, data);
@@ -118,7 +118,7 @@ void CImgVolumeRAMLoader::updateRepresentation(std::shared_ptr<DataRepresentatio
         }
     }
 
-    CImgUtils::loadVolumeData(volumeDst->getData(), filePath, dimensions, formatId);
+    cimgutil::loadVolumeData(volumeDst->getData(), filePath, dimensions, formatId);
     volumeDisk_->setDimensions(dimensions);
 }
 

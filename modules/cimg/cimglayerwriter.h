@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CIMGLAYERWRITER_H
@@ -39,21 +39,22 @@ namespace inviwo {
 class Layer;
 
 /** \brief Writer for Images files
- *
  */
 class IVW_MODULE_CIMG_API CImgLayerWriter : public DataWriterType<Layer> {
 public:
     CImgLayerWriter();
-    CImgLayerWriter(const CImgLayerWriter& rhs);
-    CImgLayerWriter& operator=(const CImgLayerWriter& that);
-    virtual CImgLayerWriter* clone() const;
-    virtual ~CImgLayerWriter() {};
+    CImgLayerWriter(const CImgLayerWriter& rhs) = default;
+    CImgLayerWriter& operator=(const CImgLayerWriter& that) = default;
+    virtual CImgLayerWriter* clone() const override;
+    virtual ~CImgLayerWriter() = default;
 
-    virtual void writeData(const Layer* data, const std::string filePath) const;
-    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(const Layer* data, std::string& type) const;
-    virtual bool writeDataToRepresentation(const DataRepresentation* src, DataRepresentation* dst) const;
+    virtual void writeData(const Layer* data, const std::string filePath) const override;
+    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
+        const Layer* data, std::string& type) const override;
+    virtual bool writeDataToRepresentation(const DataRepresentation* src,
+                                           DataRepresentation* dst) const override;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_CIMGLAYERWRITER_H
+#endif  // IVW_CIMGLAYERWRITER_H

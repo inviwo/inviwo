@@ -45,17 +45,14 @@ const ProcessorInfo ImageSourceSeries::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo ImageSourceSeries::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo ImageSourceSeries::getProcessorInfo() const { return processorInfo_; }
 
 ImageSourceSeries::ImageSourceSeries()
     : Processor()
     , outport_("image.outport", DataVec4UInt8::get(), false)
     , findFilesButton_("findFiles", "Update File List")
-    , imageFileDirectory_(
-          "imageFileDirectory", "Image file directory", "",
-          InviwoApplication::getPtr()->getPath(PathType::Images, "/images"))
+    , imageFileDirectory_("imageFileDirectory", "Image file directory", "",
+                          InviwoApplication::getPtr()->getPath(PathType::Images, "/images"))
     , currentImageIndex_("currentImageIndex", "Image index", 1, 1, 1, 1)
     , imageFileName_("imageFileName", "Image file name") {
     addPort(outport_);
@@ -64,14 +61,15 @@ ImageSourceSeries::ImageSourceSeries()
     addProperty(currentImageIndex_);
     addProperty(imageFileName_);
 
-    validExtensions_ = InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
+    validExtensions_ =
+        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
 
-    imageFileDirectory_.onChange(this, &ImageSourceSeries::onFindFiles);
-    findFilesButton_.onChange(this, &ImageSourceSeries::onFindFiles);
+    imageFileDirectory_.onChange([&]() { onFindFiles(); });
+    findFilesButton_.onChange([&]() { onFindFiles(); });
 
     imageFileName_.setReadOnly(true);
 
-    this->onFindFiles();
+    onFindFiles();
 }
 
 void ImageSourceSeries::onFindFiles() {
@@ -121,7 +119,7 @@ void ImageSourceSeries::process() {
             auto ram = outLayer->getRepresentation<LayerRAM>();
             // Hack needs to set format here since LayerDisk does not have a format.
             outLayer->setDataFormat(ram->getDataFormat());
-            
+
             auto outImage = std::make_shared<Image>(outLayer);
             outImage->getRepresentation<ImageRAM>();
 
@@ -163,13 +161,8 @@ void ImageSourceSeries::updateFileName() {
 
 bool ImageSourceSeries::isValidImageFile(std::string fileName) {
     std::string fileExtension = filesystem::getFileExtension(fileName);
-    for (std::vector<FileExtension>::const_iterator it = validExtensions_.begin();
-         it != validExtensions_.end(); ++it) {
-        if (fileExtension == it->extension_) return true;
-    }
-
-    return false;
+    return util::contains_if(validExtensions_, [&](const FileExtension& f){
+        return f.extension_ == fileExtension;});
 }
 
 }  // namespace
-

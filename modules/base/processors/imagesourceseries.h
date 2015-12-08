@@ -62,18 +62,16 @@ class FileExtension;
 class IVW_MODULE_BASE_API ImageSourceSeries : public Processor {
 public:
     ImageSourceSeries();
-    ~ImageSourceSeries() = default;
+    virtual ~ImageSourceSeries() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void onFindFiles();
-
-protected:
     virtual void process() override;
 
+protected:
+    virtual void onFindFiles();
     bool isValidImageFile(std::string);
-
     void updateProperties();
     void updateFileName();
 

@@ -55,18 +55,13 @@ namespace inviwo {
 class IVW_MODULE_BASE_API ImageSource : public Processor {
 public:
     ImageSource();
-    ~ImageSource();
+    virtual ~ImageSource() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
     virtual bool isReady() const override;
-
-protected:
     virtual void process() override;
-
-    void load();
-
     virtual void deserialize(Deserializer& d) override;
 
 private:
