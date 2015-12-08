@@ -65,6 +65,7 @@ public:
 
 protected:
     virtual void preProcess() override;
+    virtual void afterInportChanged() override;
 
 private:
     TransferFunctionProperty transferFunction_;
