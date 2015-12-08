@@ -63,5 +63,20 @@ void ImageMapping::preProcess() {
     shader_.setUniform("transferFunc_", transFuncUnit.getUnitNumber());
 }
 
+void ImageMapping::afterInportChanged() {
+    // Determine the precision of the output format based on the input,
+    // but always output 4 component data representing RGBA
+    const DataFormatBase* inputDataFormat = inport_.getData()->getDataFormat();
+    size_t precision = inputDataFormat->getSize() / inputDataFormat->getComponents() * 8;
+    const DataFormatBase* outputDataFormat = DataFormatBase::get(inputDataFormat->getNumericType(), 4, precision);
+    if (dataFormat_ != outputDataFormat) {
+        dataFormat_ = outputDataFormat;
+
+        // The TF mapping currently only uses the first channel, print warning if we have more channels
+        if (inputDataFormat->getComponents() > 1)
+            LogWarn("Input data has " << inputDataFormat->getComponents() << " components, only the first component will be used in the mapping");
+    }
+}
+
 }  // namespace
 
