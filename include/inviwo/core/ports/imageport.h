@@ -150,7 +150,8 @@ public:
     size2_t getDimensions() const;   
     /**
      * Set the dimensions of this port without propagating the size
-     * through the network. Will resize the image contained within the port.
+     * through the network. Will call setDimensions on the image contained within the port.
+     * This is a destructive operation. The image port has to own it's data for this to work.
      */
     void setDimensions(const size2_t& newDimension);
 

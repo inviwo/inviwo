@@ -146,8 +146,6 @@ void ImageOutport::setDimensions(const size2_t& newDimension) {
         image_->setDimensions(newDimension);
         dimensions_ = newDimension;
         cache_.setInvalid();
-    } else {
-        throw Exception("Trying to resize const Image", IvwContext);
     }
 }
 std::shared_ptr<Image> ImageOutport::getEditableData() const {
