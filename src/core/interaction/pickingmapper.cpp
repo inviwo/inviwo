@@ -29,39 +29,57 @@
 
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/interaction/pickingobject.h>
-#include <inviwo/core/interaction/pickingmanager.h>
 
 namespace inviwo {
 
+PickingMapper::PickingMapper(PickingManager* manager) : manager_(manager) {}
+
 PickingMapper::PickingMapper(Processor* processor, size_t size,
-                             std::function<void(const PickingObject*)> callback)
-    : processor_(processor)
-    , pickingObject_(PickingManager::getPtr()->registerPickingCallback(callback, size)) {}
+                             std::function<void(const PickingObject*)> callback,
+                             PickingManager* manager)
+    : manager_(manager)
+    , processor_(processor)
+    , callback_(callback)
+    , pickingObject_(manager_->registerPickingCallback(callback, size)) {}
 
 PickingMapper::PickingMapper(PickingMapper&& rhs)
-    : processor_(rhs.processor_), pickingObject_(rhs.pickingObject_) {
+    : manager_(rhs.manager_)
+    , processor_(rhs.processor_)
+    , callback_(std::move(rhs.callback_))
+    , pickingObject_(rhs.pickingObject_) {
     rhs.processor_ = nullptr;
     rhs.pickingObject_ = nullptr;
 }
 
 PickingMapper& PickingMapper::operator=(PickingMapper&& that) {
     if (this != &that) {
+        std::swap(that.manager_, manager_);
         std::swap(that.processor_, processor_);
+        std::swap(that.callback_, callback_);
         std::swap(that.pickingObject_, pickingObject_);
 
         that.processor_ = nullptr;
-        PickingManager::getPtr()->unregisterPickingObject(that.pickingObject_);
+        if (manager_) manager_->unregisterPickingObject(that.pickingObject_);
     }
     return *this;
 }
 
 PickingMapper::~PickingMapper() {
-    if (pickingObject_) {
-        PickingManager::getPtr()->unregisterPickingObject(pickingObject_);
+    if (pickingObject_ && manager_) {
+        manager_->unregisterPickingObject(pickingObject_);
+    }
+}
+
+void PickingMapper::resize(size_t newSize) {
+    if (pickingObject_ && manager_) {
+        manager_->unregisterPickingObject(pickingObject_);
+        pickingObject_ = nullptr;
+    }
+    if(newSize > 0 && manager_) {
+        pickingObject_ = manager_->registerPickingCallback(callback_, newSize);
     }
 }
 
 const PickingObject* PickingMapper::getPickingObject() const { return pickingObject_; }
 
-} // namespace
-
+}  // namespace

@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/interaction/pickingmanager.h>
 
 namespace inviwo {
 
@@ -42,21 +43,27 @@ class PickingObject;
  * \class PickingMapper
  * \brief RAII tool for PickingObjects
  */
-class IVW_CORE_API PickingMapper { 
+class IVW_CORE_API PickingMapper {
 public:
-    PickingMapper() = default;
-    PickingMapper(Processor* p, size_t size, std::function<void(const PickingObject*)> callback);
+    PickingMapper(PickingManager* manager = PickingManager::getPtr());
+    PickingMapper(Processor* p, size_t size, std::function<void(const PickingObject*)> callback,
+                  PickingManager* manager = PickingManager::getPtr());
     PickingMapper(const PickingMapper& rhs) = delete;
     PickingMapper& operator=(const PickingMapper& that) = delete;
-    
+
     PickingMapper(PickingMapper&& rhs);
     PickingMapper& operator=(PickingMapper&& that);
     ~PickingMapper();
 
+    // this will invalidate all old indices/colors
+    void resize(size_t newSize);
+
     const PickingObject* getPickingObject() const;
 
 private:
+    PickingManager* manager_ = nullptr;
     Processor* processor_ = nullptr;
+    std::function<void(const PickingObject*)> callback_;
     const PickingObject* pickingObject_ = nullptr;
 };
 

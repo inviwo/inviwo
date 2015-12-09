@@ -43,7 +43,7 @@ class IVW_CORE_API PickingManager : public Singleton<PickingManager> {
     friend class PickingContainer;
 
 public:
-    PickingManager(){};
+    PickingManager() = default;
     PickingManager(PickingManager const&) = delete;
     PickingManager& operator=(PickingManager const&) = delete;
     virtual ~PickingManager();

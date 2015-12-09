@@ -33,6 +33,7 @@
 #include <warn/pop>
 
 #include <inviwo/core/interaction/pickingmanager.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/util/stdextensions.h>
 
 #include <unordered_set>
@@ -69,14 +70,79 @@ TEST(PickingTests, GenerateLots) {
 TEST(PickingTests, Unique) {
     std::unordered_set<uvec3> colors;
 
-    for (size_t i = 0; i < 1000000; ++i) {
+    for (size_t i = 0; i < 100000; ++i) {
         auto c = PickingManager::indexToColor(i);
         colors.insert(c);
     }
 
-    EXPECT_EQ(colors.size(), 1000000);
+    EXPECT_EQ(colors.size(), 100000);
 }
 
+TEST(PickingMapperTests, Create) {
+    PickingManager manager;   
+    PickingMapper mapper(nullptr, 100, [](const PickingObject*){}, &manager);
+
+    auto po = mapper.getPickingObject();
+    EXPECT_NE(po, nullptr);
+
+    EXPECT_EQ(po->getSize(), 100);
+}
+
+
+TEST(PickingMapperTests, Resize) {
+    PickingManager manager;
+
+    PickingMapper mapper(nullptr, 100, [](const PickingObject*){}, &manager);
+    {
+        auto po = mapper.getPickingObject();
+        EXPECT_NE(po, nullptr);
+        EXPECT_EQ(po->getSize(), 100);
+
+        std::unordered_set<vec3> colors;
+
+        for (size_t i = 0; i < po->getSize(); ++i) {
+            colors.insert(po->getPickingColor(i));
+        }
+
+        EXPECT_EQ(colors.size(), 100);
+
+    }
+
+    mapper = PickingMapper(nullptr, 200, [](const PickingObject*){}, &manager);
+
+    {
+        auto po = mapper.getPickingObject();
+        EXPECT_NE(po, nullptr);
+        EXPECT_EQ(po->getSize(), 200);
+
+
+        std::unordered_set<vec3> colors;
+
+        for (size_t i = 0; i < po->getSize(); ++i) {
+            colors.insert(po->getPickingColor(i));
+        }
+
+        EXPECT_EQ(colors.size(), 200);
+    }
+
+    mapper.resize(300);
+
+    {
+        auto po = mapper.getPickingObject();
+        EXPECT_NE(po, nullptr);
+        EXPECT_EQ(po->getSize(), 300);
+
+
+        std::unordered_set<vec3> colors;
+
+        for (size_t i = 0; i < po->getSize(); ++i) {
+            colors.insert(po->getPickingColor(i));
+        }
+
+        EXPECT_EQ(colors.size(), 300);
+    }
+
+}
 
 
 
