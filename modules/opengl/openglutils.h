@@ -180,18 +180,22 @@ private:
     Viewport oldCoords_;
 };
 
-template <typename T1, typename T2, GLenum Entity, void (GLAPIENTRY *Getter)(GLenum, T1*),
-    void (GLAPIENTRY *Setter)(T2)>
-struct SimpleState {
+template <typename T>
+T passThrough(T x) {return x;}
+
+template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
+          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1) = &passThrough<T1>>
+    struct SimpleState {
+    
     SimpleState() = delete;
-    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter> const&) = delete;
-    SimpleState<T1, T2, Entity, Getter, Setter>& operator=(
-        SimpleState<T1, T2, Entity, Getter, Setter> const& that) = delete;
+    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter, Validator> const&) = delete;
+    SimpleState<T1, T2, Entity, Getter, Setter, Validator>& operator=(
+        SimpleState<T1, T2, Entity, Getter, Setter, Validator> const& that) = delete;
 
     SimpleState(T1 value);
-    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter>&& rhs);
-    SimpleState<T1, T2, Entity, Getter, Setter>& operator=(
-        SimpleState<T1, T2, Entity, Getter, Setter>&& that);
+    SimpleState(SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& rhs);
+    SimpleState<T1, T2, Entity, Getter, Setter, Validator>& operator=(
+        SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& that);
 
     operator T1();
     virtual ~SimpleState();
@@ -201,30 +205,35 @@ protected:
     T1 state_;
 };
 
-template <typename T1, typename T2, GLenum Entity, void (GLAPIENTRY *Getter)(GLenum, T1*), void (GLAPIENTRY *Setter)(T2)>
-SimpleState<T1, T2, Entity, Getter, Setter>::SimpleState(T1 value)
-    : state_(value) {
+template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
+          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
+SimpleState<T1, T2, Entity, Getter, Setter, Validator>::SimpleState(T1 value)
+    : state_(Validator(value)) {
     Getter(Entity, &oldState_);
     if (oldState_ != state_) {
         Setter(state_);
     }
 }
 
-template <typename T1, typename T2, GLenum Entity, void (GLAPIENTRY *Getter)(GLenum, T1*), void (GLAPIENTRY *Setter)(T2)>
-SimpleState<T1, T2, Entity, Getter, Setter>::~SimpleState() {
+template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
+          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
+SimpleState<T1, T2, Entity, Getter, Setter, Validator>::~SimpleState() {
     if (state_ != oldState_) {
         Setter(static_cast<T2>(oldState_));
     }
 }
 
-template <typename T1, typename T2, GLenum Entity, void (GLAPIENTRY *Getter)(GLenum, T1*), void (GLAPIENTRY *Setter)(T2)>
-SimpleState<T1, T2, Entity, Getter, Setter>::operator T1() {
+template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
+          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
+SimpleState<T1, T2, Entity, Getter, Setter, Validator>::operator T1() {
     return state_;
 }
 
-template <typename T1, typename T2, GLenum Entity, void (GLAPIENTRY *Getter)(GLenum, T1*), void (GLAPIENTRY *Setter)(T2)>
-SimpleState<T1, T2, Entity, Getter, Setter>& SimpleState<T1, T2, Entity, Getter, Setter>::operator=(
-    SimpleState<T1, T2, Entity, Getter, Setter>&& that) {
+template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
+          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
+SimpleState<T1, T2, Entity, Getter, Setter, Validator>&
+SimpleState<T1, T2, Entity, Getter, Setter, Validator>::operator=(
+    SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& that) {
     if (this != &that) {
         state_ = that.oldState_;
         std::swap(state_, that.state_);
@@ -232,20 +241,23 @@ SimpleState<T1, T2, Entity, Getter, Setter>& SimpleState<T1, T2, Entity, Getter,
     }
     return *this;
 }
-template <typename T1, typename T2, GLenum Entity, void (GLAPIENTRY *Getter)(GLenum, T1*), void (GLAPIENTRY *Setter)(T2)>
-SimpleState<T1, T2, Entity, Getter, Setter>::SimpleState(
-    SimpleState<T1, T2, Entity, Getter, Setter>&& rhs)
+template <typename T1, typename T2, GLenum Entity, void(GLAPIENTRY* Getter)(GLenum, T1*),
+          void(GLAPIENTRY* Setter)(T2), T1 (*Validator)(T1)>
+SimpleState<T1, T2, Entity, Getter, Setter, Validator>::SimpleState(
+    SimpleState<T1, T2, Entity, Getter, Setter, Validator>&& rhs)
     : oldState_(rhs.oldState_), state_(rhs.state_) {
     rhs.state_ = rhs.oldState_;
 }
 
+IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width);
+
 using DepthFuncState = SimpleState<GLint, GLenum, GL_DEPTH_FUNC, glGetIntegerv, glDepthFunc>;
 using DepthMaskState = SimpleState<GLboolean, GLboolean, GL_DEPTH_WRITEMASK, glGetBooleanv, glDepthMask>;
-using LineWidthState = SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth>;
+using LineWidthState = SimpleState<GLfloat, GLfloat, GL_LINE_WIDTH, glGetFloatv, glLineWidth, validateLineWidth>;
 using PointSizeState = SimpleState<GLfloat, GLfloat, GL_POINT_SIZE, glGetFloatv, glPointSize>;
 
 template <typename T>
-// requiers can enable/disable const
+// requires can enable/disable const
 struct Enable {
     Enable(const T* item) : item_(item) { item->enable(); }
     Enable(const Enable&) = delete;

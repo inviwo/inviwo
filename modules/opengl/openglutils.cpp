@@ -299,5 +299,13 @@ void Viewport::set() {
     glViewport(x(), y(), width(), height());
 }
 
+IVW_MODULE_OPENGL_API GLfloat validateLineWidth(GLfloat width) {
+    float s_sizes[2];
+    glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, s_sizes);
+    width = std::max(width, s_sizes[0]);
+    width = std::min(width, s_sizes[1]);
+    return width;
+}
+
 }  // namespace
 }  // namespace
