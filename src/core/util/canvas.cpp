@@ -133,7 +133,7 @@ void Canvas::activateDefaultRenderContext() {
 void Canvas::interactionEvent(Event* event) {
     if (propagator_) {
         NetworkLock lock;
-        propagator_->propagateEvent(event);
+        propagator_->propagateEvent(event, nullptr);
     }
 }
 

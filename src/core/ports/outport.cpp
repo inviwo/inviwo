@@ -51,11 +51,7 @@ void Outport::invalidate(InvalidationLevel invalidationLevel) {
 }
 
 void Outport::propagateEvent(Event* event) {
-    Processor* p = getProcessor();
-    if (!event->hasVisitedProcessor(p)){
-        event->markAsVisited(p);
-        p->propagateEvent(event);
-    }    
+    processor_->propagateEvent(event, this);
 }
 
 inviwo::InvalidationLevel Outport::getInvalidationLevel() const { return invalidationLevel_; }

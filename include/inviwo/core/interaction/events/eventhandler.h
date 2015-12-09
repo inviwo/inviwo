@@ -39,8 +39,8 @@ namespace inviwo {
 class IVW_CORE_API EventHandler {
 
 public:
-    EventHandler();
-    virtual ~EventHandler();
+    EventHandler() = default;
+    virtual ~EventHandler() = default;
 
     void broadcast(Event* event) const;
 

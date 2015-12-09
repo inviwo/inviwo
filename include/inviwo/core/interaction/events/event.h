@@ -40,11 +40,11 @@ class Processor;
 
 class IVW_CORE_API Event : public Serializable {
 public:
-    Event();
-    Event(const Event& rhs);
-    Event& operator=(const Event& that);
+    Event() = default;
+    Event(const Event& rhs) = default;
+    Event& operator=(const Event& that) = default;
     virtual Event* clone() const;
-    virtual ~Event();
+    virtual ~Event() = default;
 
     // Check if this event has the same type and selectors as aEvent.
     // this should be the selector, and aEvent the "real" event.
@@ -52,19 +52,23 @@ public:
     virtual bool equalSelectors(const Event* aEvent) const { return false; }
 
     void markAsUsed();
-    bool hasBeenUsed();
+    bool hasBeenUsed() const;
 
     void markAsVisited(Processor*);
-    bool hasVisitedProcessor(Processor*);
+    bool hasVisitedProcessor(Processor*) const;
 
-    virtual void serialize(Serializer& s) const;
-    virtual void deserialize(Deserializer& d);
+    // Can be used to figure out where an event came from. 
+    // Processors are added in chronological order.
+    const std::vector<Processor*>& getVisitedProcessors() const;
+
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
-    bool used_;
+    bool used_ = false;
     #include <warn/push>
     #include <warn/ignore/dll-interface>
-    std::unordered_set<Processor*> visitedProcessors_;
+    std::vector<Processor*> visitedProcessors_;
     #include <warn/pop>
 };
 

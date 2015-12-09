@@ -29,43 +29,32 @@
 
 #include <inviwo/core/interaction/events/event.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
-
-Event::Event() : Serializable(), used_(false) {}
-
-Event::Event(const Event& rhs)
-    : used_(rhs.used_)    {
-}
-
-Event& Event::operator=(const Event& that) {
-    if (this != &that) {
-        used_ = that.used_;
-    }
-    return *this;
-}
 
 Event* Event::clone() const {
     return new Event(*this);
 }
 
-Event::~Event() {}
-
 void Event::markAsUsed(){
     used_ = true;
 }
 
-bool Event::hasBeenUsed(){
+bool Event::hasBeenUsed() const {
     return used_;
 }
 
-void Event::markAsVisited(Processor* p){
-    visitedProcessors_.insert(p);
+void Event::markAsVisited(Processor* p) {
+    util::push_back_unique(visitedProcessors_, p);
 }
 
-bool Event::hasVisitedProcessor(Processor* p){
-    std::unordered_set<Processor*>::const_iterator it = visitedProcessors_.find(p);
-    return (it != visitedProcessors_.end());
+bool Event::hasVisitedProcessor(Processor* p) const {
+    return util::contains(visitedProcessors_, p);
+}
+
+const std::vector<Processor*>& Event::getVisitedProcessors() const {
+    return visitedProcessors_;
 }
 
 void Event::serialize(Serializer& s) const {}

@@ -28,39 +28,20 @@
  *********************************************************************************/
 
 #include <inviwo/core/interaction/events/eventhandler.h>
+#include <inviwo/core/util/stdextensions.h>
 
 namespace inviwo {
-
-EventHandler::EventHandler() : eventListeners_() {}
-
-EventHandler::~EventHandler() {}
 
 void EventHandler::broadcast(Event* event) const {
     for (auto& elem : eventListeners_) elem->invokeEvent(event);
 }
 
 bool EventHandler::addEventListener(EventListener* listener) {
-    std::vector<EventListener*>::iterator it =
-        std::find(eventListeners_.begin(), eventListeners_.end(), listener);
-
-    if (it == eventListeners_.end()) {
-        eventListeners_.push_back(listener);
-        return true;
-    }
-
-    return false;
+    return util::push_back_unique(eventListeners_, listener);
 }
 
 bool EventHandler::removeEventListener(EventListener* listener) {
-    std::vector<EventListener*>::iterator it =
-        std::find(eventListeners_.begin(), eventListeners_.end(), listener);
-
-    if (it != eventListeners_.end()) {
-        eventListeners_.erase(it);
-        return true;
-    }
-
-    return false;
+    return util::erase_remove(eventListeners_, listener) != 0;
 }
 
 } // namespace

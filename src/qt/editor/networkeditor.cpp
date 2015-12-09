@@ -762,7 +762,7 @@ void NetworkEditor::progagateEventToSelecedProcessors(KeyboardEvent& pressKeyEve
     for (auto& item : selectedItems()) {
         if (auto pgi = qgraphicsitem_cast<ProcessorGraphicsItem*>(item)) {
             Processor* p = pgi->getProcessor();
-            p->propagateEvent(&pressKeyEvent);
+            p->propagateEvent(&pressKeyEvent, nullptr);
             if (pressKeyEvent.hasBeenUsed()) break;
         }
     }

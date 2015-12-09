@@ -267,7 +267,9 @@ public:
     const std::vector<InteractionHandler*>& getInteractionHandlers() const;
 
     virtual void invokeEvent(Event* event) override;
-    virtual void propagateEvent(Event* event) override;
+
+    // Overridden from EventPropagator.
+    virtual void propagateEvent(Event* event, Outport* source) override;
     virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
     // Override from the property owner

@@ -203,23 +203,6 @@ const std::vector<InteractionHandler*>& Processor::getInteractionHandlers() cons
     return interactionHandlers_;
 }
 
-void Processor::invokeEvent(Event* event) {
-    PropertyOwner::invokeEvent(event);
-    for (auto elem : interactionHandlers_) elem->invokeEvent(event);
-}
-
-bool Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
-    bool propagationEnded = true;
-
-    for (auto port : getPortsInSameSet(source)) {
-        if (auto imageInport = dynamic_cast<ImagePortBase*>(port)) {
-            propagationEnded = false;
-            imageInport->propagateResizeEvent(resizeEvent);
-        }
-    }
-    return propagationEnded;
-}
-
 void Processor::serialize(Serializer& s) const {
     s.serialize("type", getClassIdentifier(), true);
     s.serialize("identifier", identifier_, true);
@@ -262,14 +245,34 @@ void Processor::setValid() {
 
 void Processor::performEvaluateRequest() { notifyObserversRequestEvaluate(this); }
 
-void Processor::propagateEvent(Event* event) {
-    invokeEvent(event);
+void Processor::invokeEvent(Event* event) {
+    PropertyOwner::invokeEvent(event);
+    for (auto elem : interactionHandlers_) elem->invokeEvent(event);
+}
 
+void Processor::propagateEvent(Event* event, Outport* source) {
+    if (event->hasVisitedProcessor(this)) return;
+    event->markAsVisited(this);
+    
+    invokeEvent(event);
     if (event->hasBeenUsed()) return;
+
     for (auto inport : getInports()) {
         inport->propagateEvent(event);
         if (event->hasBeenUsed()) return;
     }
+}
+
+bool Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    bool propagationEnded = true;
+
+    for (auto port : getPortsInSameSet(source)) {
+        if (auto imageInport = dynamic_cast<ImagePortBase*>(port)) {
+            propagationEnded = false;
+            imageInport->propagateResizeEvent(resizeEvent);
+        }
+    }
+    return propagationEnded;
 }
 
 const std::string Processor::getCodeStateString(CodeState state) {

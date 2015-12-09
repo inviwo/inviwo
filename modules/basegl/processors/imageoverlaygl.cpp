@@ -118,8 +118,12 @@ ImageOverlayGL::ImageOverlayGL()
 
 ImageOverlayGL::~ImageOverlayGL() {}
 
-void ImageOverlayGL::propagateEvent(Event* event) {
+void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
+    if (event->hasVisitedProcessor(this)) return;
+    event->markAsVisited(this);
+
     invokeEvent(event);
+    if (event->hasBeenUsed()) return;
 
     if (overlayInteraction_.get() && overlayPort_.isConnected()) {
         std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));

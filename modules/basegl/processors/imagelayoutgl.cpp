@@ -111,8 +111,12 @@ ImageLayoutGL::ImageLayoutGL()
 
 ImageLayoutGL::~ImageLayoutGL() {}
 
-void ImageLayoutGL::propagateEvent(Event* event) {
+void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
+    if (event->hasVisitedProcessor(this)) return;
+    event->markAsVisited(this);
+
     invokeEvent(event);
+    if (event->hasBeenUsed()) return;
     
     std::unique_ptr<Event> newEvent(viewManager_.registerEvent(event));
 
