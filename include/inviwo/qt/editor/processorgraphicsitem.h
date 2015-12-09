@@ -96,6 +96,9 @@ protected:
     void setIdentifier(QString text);
     void paint(QPainter* p, const QStyleOptionGraphicsItem* options, QWidget* widget) override;
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+
+    void updateWidgets();
+
     void addInport(Inport *port);
     void addOutport(Outport *port);
 

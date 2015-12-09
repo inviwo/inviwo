@@ -326,29 +326,36 @@ QVariant ProcessorGraphicsItem::itemChange(GraphicsItemChange change, const QVar
             if (processorMeta_) processorMeta_->setPosition(ivec2(x(), y()));
             break;
         case QGraphicsItem::ItemSelectedHasChanged:
-            if (isSelected()) {
-                setZValue(SELECTED_PROCESSORGRAPHICSITEM_DEPTH);
-                if (!highlight_) {
-                    if (auto editor = getNetworkEditor()) {
-                        editor->addPropertyWidgets(getProcessor());
-                    }
-                }
-            } else {
-                setZValue(PROCESSORGRAPHICSITEM_DEPTH);
-                if (auto editor = getNetworkEditor()) {
-                    editor->removePropertyWidgets(getProcessor());
-                }
-            }
+            updateWidgets();
             if (!highlight_ && processorMeta_) processorMeta_->setSelected(isSelected());
             break;
         case QGraphicsItem::ItemVisibleHasChanged:
             if (processorMeta_) processorMeta_->setVisibile(isVisible());
+            break;
+        case QGraphicsItem::ItemSceneHasChanged:
+            updateWidgets();
             break;
         default:
             break;
     }
 #include <warn/pop>
     return QGraphicsItem::itemChange(change, value);
+}
+
+void ProcessorGraphicsItem::updateWidgets() {
+    if (isSelected()) {
+        setZValue(SELECTED_PROCESSORGRAPHICSITEM_DEPTH);
+        if (!highlight_) {
+            if (auto editor = getNetworkEditor()) {
+                editor->addPropertyWidgets(getProcessor());
+            }
+        }
+    } else {
+        setZValue(PROCESSORGRAPHICSITEM_DEPTH);
+        if (auto editor = getNetworkEditor()) {
+            editor->removePropertyWidgets(getProcessor());
+        }
+    }
 }
 
 void ProcessorGraphicsItem::onLabelGraphicsItemChange() {
