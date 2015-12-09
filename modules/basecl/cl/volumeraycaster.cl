@@ -67,14 +67,13 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
         tIncr = tEnd/samples; 
         // Start integrating at the center of the bins
         float t = 0.5f*tIncr; 
-        float4 emissionAbsorption;
-        float3 toCameraDir = normalize(cameraPosition - transformPoint(volumeParams->textureToWorld, entry.xyz));
+        float3 toCameraDir = normalize(transformPoint(volumeParams->textureToWorld, entry.xyz) - transformPoint(volumeParams->textureToWorld, exit.xyz));
         while(t < tEnd) {
             float3 pos = entry.xyz+t*direction;
             float volumeSample = getNormalizedVoxel(volume, volumeParams, as_float4(pos)).x; 
-            // xyz == emission, w = absorption
-            emissionAbsorption = read_imagef(transferFunction, smpNormClampEdgeLinear, (float2)(volumeSample, 0.5f));
-            if (emissionAbsorption.w > 0) {
+            // xyz == emission, w = opacity
+            float4 color = read_imagef(transferFunction, smpNormClampEdgeLinear, (float2)(volumeSample, 0.5f));
+            if (color.w > 0) {
                 float3 gradient = gradientCentralDiff(volume, volumeParams, as_float4(pos));
                 gradient = normalize(gradient);
 
@@ -85,20 +84,20 @@ __kernel void raycaster(read_only image3d_t volume, __constant VolumeParameters*
                 // the direction towards a lower intensity medium (gradient points in the inreasing direction)
                 #ifdef SHADING_MODE
                 #if SHADING_MODE == 1
-                        emissionAbsorption.xyz = shadeAmbient(*light, emissionAbsorption.xyz);
+                        color.xyz = shadeAmbient(*light, color.xyz);
                 #elif SHADING_MODE == 2
-                        emissionAbsorption.xyz = shadeDiffuse(*light, emissionAbsorption.xyz, worldSpacePosition, -gradient);
+                        color.xyz = shadeDiffuse(*light, color.xyz, worldSpacePosition, -gradient);
                 #elif SHADING_MODE == 3
-                        emissionAbsorption.xyz = shadeSpecular(*light, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+                        color.xyz = shadeSpecular(*light, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
                 #elif SHADING_MODE == 4
-                       emissionAbsorption.xyz = shadeBlinnPhong(*light,  emissionAbsorption.xyz, emissionAbsorption.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+                       color.xyz = shadeBlinnPhong(*light,  color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
                 #elif SHADING_MODE == 5
-                       emissionAbsorption.xyz = shadePhong(*light, emissionAbsorption.xyz, emissionAbsorption.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
+                       color.xyz = shadePhong(*light, color.xyz, color.xyz, (float3)(1.f), worldSpacePosition, -gradient, toCameraDir);
                 #endif
                 #endif
                 // Taylor expansion approximation
-                float opacity = 1.f - native_powr(1.f - emissionAbsorption.w, tIncr * REF_SAMPLING_INTERVAL);
-                result.xyz = result.xyz + (1.f - result.w) * opacity * emissionAbsorption.xyz;
+                float opacity = 1.f - native_powr(1.f - color.w, tIncr * REF_SAMPLING_INTERVAL);
+                result.xyz = result.xyz + (1.f - result.w) * opacity * color.xyz;
                 result.w = result.w + (1.f - result.w) * opacity;    
             }
 
