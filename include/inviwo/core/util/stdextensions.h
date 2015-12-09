@@ -127,17 +127,25 @@ void for_each_argument(F f, Args&&... args) {
 }
 
 template <typename T, typename V>
-void erase_remove(T& cont, const V& elem) {
+auto erase_remove(T& cont, const V& elem)
+    -> decltype(std::distance(std::declval<T>().begin(), std::declval<T>().end())) {
     using std::begin;
     using std::end;
-    cont.erase(std::remove(begin(cont), end(cont), elem), cont.end());
+    auto it = std::remove(begin(cont), end(cont), elem);
+    auto nelem = std::distance(it, cont.end());
+    cont.erase(it, cont.end());
+    return nelem;
 }
 
 template <typename T, typename Pred>
-void erase_remove_if(T& cont, Pred pred) {
+auto erase_remove_if(T& cont, Pred pred)
+    -> decltype(std::distance(std::declval<T>().begin(), std::declval<T>().end())) {
     using std::begin;
     using std::end;
-    cont.erase(std::remove_if(begin(cont), end(cont), pred), cont.end());
+    auto it = std::remove_if(begin(cont), end(cont), pred);
+    auto nelem = std::distance(it, cont.end());
+    cont.erase(it, cont.end());
+    return nelem;
 }
 
 template <typename T, typename Pred>
