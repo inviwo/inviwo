@@ -270,7 +270,7 @@ public:
 
     // Overridden from EventPropagator.
     virtual void propagateEvent(Event* event, Outport* source) override;
-    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
+    virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
     // Override from the property owner
     virtual Processor* getProcessor() override { return this; }

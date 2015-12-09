@@ -76,7 +76,7 @@ public:
     void triggerQueuedEvaluation();
     virtual bool isReady() const override;
     virtual void setProcessorWidget(ProcessorWidget* processorWidget) override;
-    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
+    virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) override;
 
 protected:
     void performEvaluationAtNextShow();

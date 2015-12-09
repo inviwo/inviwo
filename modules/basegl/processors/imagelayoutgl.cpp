@@ -130,7 +130,10 @@ void ImageLayoutGL::propagateEvent(Event* event, Outport* source) {
     }
 }
 
-bool ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+void ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    if (resizeEvent->hasVisitedProcessor(this)) return;
+    resizeEvent->markAsVisited(this);
+    
     updateViewports(resizeEvent->size(), true);
     auto outports = multiinport_.getConnectedOutports();
     size_t minNum = std::min(outports.size(), viewManager_.size());
@@ -139,8 +142,6 @@ bool ImageLayoutGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sour
         ResizeEvent e(uvec2(viewManager_[i].z, viewManager_[i].w));
         multiinport_.propagateResizeEvent(&e, static_cast<ImageOutport*>(outports[i]));
     }
-
-    return false;
 }
 
 void ImageLayoutGL::onStatusChange() {

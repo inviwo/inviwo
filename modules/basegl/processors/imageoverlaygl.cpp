@@ -143,7 +143,10 @@ void ImageOverlayGL::propagateEvent(Event* event, Outport* source) {
 
 bool ImageOverlayGL::isReady() const { return inport_.isReady(); }
 
-bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+void ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    if (resizeEvent->hasVisitedProcessor(this)) return;
+    resizeEvent->markAsVisited(this);
+    
     updateViewports(resizeEvent->size(), true);
 
     if (inport_.isConnected()) {
@@ -155,8 +158,6 @@ bool ImageOverlayGL::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* sou
         overlayPort_.propagateResizeEvent(
             &e, static_cast<ImageOutport*>(overlayPort_.getConnectedOutport()));
     }
-
-    return false;
 }
 
 void ImageOverlayGL::onStatusChange() {

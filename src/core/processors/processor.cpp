@@ -263,16 +263,15 @@ void Processor::propagateEvent(Event* event, Outport* source) {
     }
 }
 
-bool Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
-    bool propagationEnded = true;
+void Processor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    if (resizeEvent->hasVisitedProcessor(this)) return;
+    resizeEvent->markAsVisited(this);
 
     for (auto port : getPortsInSameSet(source)) {
         if (auto imageInport = dynamic_cast<ImagePortBase*>(port)) {
-            propagationEnded = false;
             imageInport->propagateResizeEvent(resizeEvent);
         }
     }
-    return propagationEnded;
 }
 
 const std::string Processor::getCodeStateString(CodeState state) {

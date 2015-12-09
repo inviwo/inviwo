@@ -48,7 +48,7 @@ class Outport;
 class IVW_CORE_API EventPropagator { 
 public:
     virtual ~EventPropagator() = default;
-    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) = 0;
+    virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) = 0;
     virtual void propagateEvent(Event* event, Outport* source) = 0;
 };
 

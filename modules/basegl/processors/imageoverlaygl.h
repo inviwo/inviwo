@@ -120,7 +120,7 @@ public:
     const std::vector<ivec4>& getViewCoords() const;
 
     bool isReady() const override;
-    virtual bool propagateResizeEvent(ResizeEvent* event, Outport* source) override;
+    virtual void propagateResizeEvent(ResizeEvent* event, Outport* source) override;
     virtual void propagateEvent(Event*, Outport* source) override;
 
 protected:

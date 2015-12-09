@@ -337,20 +337,22 @@ bool CanvasProcessor::isReady() const {
     return Processor::isReady() && processorWidget_ && processorWidget_->isVisible();
 }
 
-bool CanvasProcessor::propagateResizeEvent(ResizeEvent* event, Outport* source) {
+void CanvasProcessor::propagateResizeEvent(ResizeEvent* resizeEvent, Outport* source) {
+    if (resizeEvent->hasVisitedProcessor(this)) return;
+    resizeEvent->markAsVisited(this);
+    
     // Avoid continues evaluation when port dimensions changes
     NetworkLock lock(this);
 
-    dimensions_.set(event->size());
+    dimensions_.set(resizeEvent->size());
 
     if (enableCustomInputDimensions_) {
         sizeChanged();
     } else {
-        inport_.propagateResizeEvent(event);
+        inport_.propagateResizeEvent(resizeEvent);
         // Make sure this processor is invalidated.
         invalidate(InvalidationLevel::InvalidOutput);
     }
-    return false;
 }
 
 }  // namespace
