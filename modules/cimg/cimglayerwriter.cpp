@@ -39,6 +39,10 @@ CImgLayerWriter::CImgLayerWriter() : DataWriterType<Layer>() {
 #ifdef cimg_use_png
     addExtension(FileExtension("png", "Portable Network Graphics"));
 #endif
+#ifdef cimg_use_tiff
+    addExtension(FileExtension("tif", "Tagged Image File Format"));
+    addExtension(FileExtension("tiff", "Tagged Image File Format"));
+#endif
 #ifdef cimg_use_jpeg
     addExtension(FileExtension("jpg", "Joint Photographic Experts Group"));
     addExtension(FileExtension("jpeg", "Joint Photographic Experts Group"));
