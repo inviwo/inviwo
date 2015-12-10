@@ -51,6 +51,7 @@ void ImageOutport::invalidate(InvalidationLevel invalidationLevel) {
     }
     Outport::invalidate(invalidationLevel);
 }
+
 void ImageOutport::setData(std::shared_ptr<const Image> data) {
     DataOutport<Image>::setData(data);
     image_.reset();
@@ -82,6 +83,16 @@ void ImageOutport::setData(Image* data) {
 bool ImageOutport::hasEditableData() const {
     return static_cast<bool>(image_);
 }
+
+
+void ImageOutport::disconnectFrom(Inport* port) {
+    DataOutport<Image>::disconnectFrom(port);
+
+    // update image size
+    ResizeEvent event(uvec2(0,0));
+    propagateResizeEvent(&event);
+}
+
 
 void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     // This function should check which dimensions request exists, by going through the successors

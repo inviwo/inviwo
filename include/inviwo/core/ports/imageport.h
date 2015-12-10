@@ -169,6 +169,8 @@ public:
 
     virtual void invalidate(InvalidationLevel invalidationLevel) override;
 
+    virtual void disconnectFrom(Inport* port) override;
+
 private:
     std::shared_ptr<Image> image_;
     size2_t dimensions_;

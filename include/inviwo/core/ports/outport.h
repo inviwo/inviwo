@@ -90,8 +90,8 @@ protected:
     virtual void setValid();
 
     // These function are only called by the corresponding inport.
-    void connectTo(Inport* port);
-    void disconnectFrom(Inport* port);
+    virtual void connectTo(Inport* port);
+    virtual void disconnectFrom(Inport* port);
 
     InvalidationLevel invalidationLevel_;
     std::vector<Inport*> connectedInports_;

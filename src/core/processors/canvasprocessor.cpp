@@ -161,7 +161,7 @@ void CanvasProcessor::sizeChanged() {
     keepAspectRatio_.setVisible(enableCustomInputDimensions_);
     aspectRatioScaling_.setVisible(enableCustomInputDimensions_ && keepAspectRatio_);
 
-    if (keepAspectRatio_) customInputDimensions_ = calcSize();
+    if (keepAspectRatio_) customInputDimensions_.get() = calcSize(); // avoid triggering on change
     ResizeEvent resizeEvent(uvec2(0));
     if (enableCustomInputDimensions_) {
         resizeEvent.setSize(static_cast<uvec2>(customInputDimensions_.get()));
