@@ -1,0 +1,1 @@
+Includes the free zlib data compression library, version 1.2.8, and builds it from source if not installed.
