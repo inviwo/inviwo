@@ -427,28 +427,16 @@ void VolumeSliceGL::renderPositionIndicator() {
 
     MeshDrawerGL drawer(meshCrossHair_.get());
 
-    glEnable(GL_LINE_SMOOTH);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    float s_sizes[2];
-    float width = 2.5f;
-    glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, s_sizes);
-    width = std::max(width, s_sizes[0]);
-    width = std::min(width, s_sizes[1]);
-    glLineWidth(width);
+    utilgl::GlBoolState smooth(GL_LINE_SMOOTH, true);
+    utilgl::BlendModeState blend(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    utilgl::LineWidthState linewidth(2.5f);
 
     indicatorShader_.activate();
     indicatorShader_.setUniform("dataToClip", mat4(1.0f));
 
-    glDepthFunc(GL_ALWAYS);
+    utilgl::DepthFuncState depth(GL_ALWAYS);
     drawer.draw();
-    glDepthFunc(GL_LESS);
-    glDisable(GL_BLEND);
-    glDisable(GL_LINE_SMOOTH);
     indicatorShader_.deactivate();
-
-    glLineWidth(1.0f);
 }
 
 void VolumeSliceGL::updateIndicatorMesh() {
