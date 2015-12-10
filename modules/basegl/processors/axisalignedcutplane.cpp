@@ -61,6 +61,8 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     , boundingBoxShader_("geometryrendering.vert", "axisalignedcutplaneboundingbox.frag")
     , showBoundingBox_("boundingBox", "Show Bounding Box", true)
     , boundingBoxColor_("boundingBoxColor", "Bounding Box Color", vec4(0.0f, 0.0f, 0.0f, 1.0f))
+	, renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
+	, renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
     , nearestInterpolation_("nearestInterpolation", "Use nearest neighbor interpolation", false)
     , camera_("camera", "Camera")
     , trackball_(&camera_) {
@@ -74,7 +76,9 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     addProperty(disableTF_);
     addProperty(tf_);
     addProperty(showBoundingBox_);
-    addProperty(boundingBoxColor_);
+	addProperty(boundingBoxColor_);
+	addProperty(renderPointSize_);
+	addProperty(renderLineWidth_);
 
     addProperty(camera_);
     addProperty(trackball_);
@@ -170,6 +174,10 @@ void AxisAlignedCutPlane::drawBoundingBox() {
     utilgl::setShaderUniforms(boundingBoxShader_, camera_, "camera_");
     utilgl::setShaderUniforms(boundingBoxShader_, *boundingBoxMesh_, "geometry_");
     utilgl::setShaderUniforms(boundingBoxShader_, boundingBoxColor_);
+
+	utilgl::PolygonModeState polygon(GL_LINE, renderLineWidth_, renderPointSize_);
+
+
     boundingBoxDrawer_->draw();
     boundingBoxShader_.deactivate();
 }
