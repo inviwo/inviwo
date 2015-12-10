@@ -96,7 +96,7 @@ std::shared_ptr<Mesh> ImageContourDispatcher::dispatch(const LayerRepresentation
         vec3(1.0f / static_cast<float>(dim.x - 1), 1.0f / static_cast<float>(dim.y - 1), 1);
     util::IndexMapper2D index(dim);
     for (size_t y = 0; y < dim.y - 1; y++) {
-        for (size_t x = 0; x < dim.y - 1; x++) {
+        for (size_t x = 0; x < dim.x - 1; x++) {
             auto idx = index(x, y);
             vals[0] = static_cast<D>(util::glm_convert<P, T>(data[idx]));
             vals[1] = static_cast<D>(util::glm_convert<P, T>(data[idx + 1]));
