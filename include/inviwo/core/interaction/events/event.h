@@ -32,7 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/io/serialization/serializable.h>
-#include <unordered_set>
+#include <vector>
 
 namespace inviwo {
 
