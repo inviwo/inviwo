@@ -1,0 +1,1 @@
+Niftilib is a set of i/o libraries for reading and writing files in the NIfTI-1 data format (.nii, .hdr, .img). NIfTI-1 is a binary file format for storing medical image data, e.g. magnetic resonance image (MRI) and functional MRI (fMRI) brain images.
