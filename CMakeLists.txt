@@ -107,6 +107,7 @@ set(ivw_default_modules
     "PVM"
     "VectorFieldVisualization"
     "VectorFieldVisualizationGL"
+	"Nifti" 
     CACHE INTERNAL "Default Inviwo Modules"
 )
 
