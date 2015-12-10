@@ -111,7 +111,6 @@ public:
     PropertyWidgetQt();
     PropertyWidgetQt(Property* property);
     virtual ~PropertyWidgetQt();
-    PropertyWidgetQt* create();
 
     virtual QMenu* getContextMenu();
 
