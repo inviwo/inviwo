@@ -174,10 +174,7 @@ void AxisAlignedCutPlane::drawBoundingBox() {
     utilgl::setShaderUniforms(boundingBoxShader_, camera_, "camera_");
     utilgl::setShaderUniforms(boundingBoxShader_, *boundingBoxMesh_, "geometry_");
     utilgl::setShaderUniforms(boundingBoxShader_, boundingBoxColor_);
-
 	utilgl::PolygonModeState polygon(GL_LINE, renderLineWidth_, renderPointSize_);
-
-
     boundingBoxDrawer_->draw();
     boundingBoxShader_.deactivate();
 }
