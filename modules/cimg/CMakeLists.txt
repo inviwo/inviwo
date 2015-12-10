@@ -1,5 +1,4 @@
 #if(IVW_MODULE_CIMG)
-#    add_subdirectory(ext/zlib)
 #    add_subdirectory(ext/libpng)
 #    add_subdirectory(ext/libjpeg)
 #endif(IVW_MODULE_CIMG)
@@ -13,10 +12,6 @@ ivw_module(CImg)
 if(WIN32)
 add_definitions( "/W0 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo /IGNORE:4006" )
 endif()
-#if(NOT DESIRED_QT_VERSION MATCHES 5)    
-    # Certain zlib functions conflict with Qt4 or less. Hence Z_PREFIX is requried.
-    #add_definitions( "/DZ_PREFIX" )
-#endif()
 
 #--------------------------------------------------------------------
 # Add LIBJPEG files
@@ -128,11 +123,6 @@ set(OPENEXR_SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/asd.cpp)
 
 #--------------------------------------------------------------------
-# Add ZLib files
-file(GLOB_RECURSE ZLIB_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/zlib/*.h)
-file(GLOB_RECURSE ZLIB_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/zlib/*.c)
-
-#--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/ext/cimg/CImg.h
@@ -146,8 +136,7 @@ ivw_group("Header Files" ${HEADER_FILES}
     ${LIBPNG_HEADER_FILES} 
     ${LIBTIFF4_HEADER_FILES}
     ${LIBRAWLITE_HEADER_FILES} 
-    ${OPENEXR_HEADER_FILES} 
-    ${ZLIB_HEADER_FILES})
+    ${OPENEXR_HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
@@ -161,8 +150,7 @@ ivw_group("Source Files" ${SOURCE_FILES}
     ${LIBJPEG_SOURCE_FILES} 
     ${LIBPNG_SOURCE_FILES}
     ${LIBTIFF4_SOURCE_FILES} 
-    ${OPENEXR_SOURCE_FILES} 
-    ${ZLIB_SOURCE_FILES})
+    ${OPENEXR_SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Add all folders as includes
@@ -178,7 +166,9 @@ ivw_add_definition(cimg_use_cpp11)
 ivw_add_definition(cimg_use_png)
 ivw_add_definition(cimg_use_tiff)
 ivw_add_definition(cimg_use_jpeg)
-ivw_add_definition(cimg_use_zlib)
+if (ZLIB_FOUND)
+	ivw_add_definition(cimg_use_zlib)
+endif()
 ivw_add_definition(cimg_use_openexr)
 
 remove_definitions(-DHAVE_CONFIG_H)
@@ -208,7 +198,6 @@ ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/ilmimf)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/ilmthread)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/iex)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr)
-ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/zlib)
 
 #--------------------------------------------------------------------
 # Supress warning from ext...
@@ -217,7 +206,6 @@ set(IGNORE_WARN_FILES
     ${LIBPNG_SOURCE_FILES}
     ${LIBTIFF4_SOURCE_FILES} 
     ${OPENEXR_SOURCE_FILES}
-    ${ZLIB_SOURCE_FILES}
 )
 
 if(MSVC)
@@ -236,11 +224,9 @@ ivw_create_module(
     ${LIBPNG_SOURCE_FILES}
     ${LIBTIFF4_SOURCE_FILES}
     ${OPENEXR_SOURCE_FILES}
-    ${ZLIB_SOURCE_FILES}
     ${HEADER_FILES}
     ${LIBJPEG_HEADER_FILES}
     ${LIBPNG_HEADER_FILES}
     ${LIBTIFF4_HEADER_FILES} 
     ${OPENEXR_HEADER_FILES}
-    ${ZLIB_HEADER_FILES}
 )
