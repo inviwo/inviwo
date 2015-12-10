@@ -32,6 +32,27 @@ set(IVW_MAJOR_VERSION 0)
 set(IVW_MINOR_VERSION 9)
 set(IVW_PATCH_VERSION 5)
 
+#--------------------------------------------------------------------
+# Requirement checks
+if(MSVC) 
+    if(MSVC_VERSION LESS 1800)
+        message(FATAL_ERROR "Inviwo requires C++11 features. " 
+                "You need at least Visual Studio 12 (Microsoft Visual Studio 2013)")
+    endif()
+else()
+    include(CheckCXXCompilerFlag)
+    CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+    CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+    if(COMPILER_SUPPORTS_CXX11)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    elseif(COMPILER_SUPPORTS_CXX0X)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    else()
+        ivw_message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+    endif()
+endif()
+
+
 set_property(GLOBAL PROPERTY USE_FOLDERS On)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER cmake)
 
@@ -86,45 +107,6 @@ endfunction()
 # Add own cmake modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_BINARY_DIR}/cmake/")
-
-#--------------------------------------------------------------------
-# Precompile headers
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    option(PRECOMPILED_HEADERS "Create and use precompilied headers" OFF)
-else()
-    option(PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
-endif()
-
-include(${CMAKE_CURRENT_LIST_DIR}/clean_library_list.cmake)
-if(PRECOMPILED_HEADERS)
-    include(${CMAKE_CURRENT_LIST_DIR}/cotire.cmake)
-endif()
-
-mark_as_advanced(
-    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_EXTENSIONS 
-    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_PATH 
-    COTIRE_DEBUG 
-    COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES 
-    COTIRE_MINIMUM_NUMBER_OF_TARGET_SOURCES
-    COTIRE_UNITY_SOURCE_EXCLUDE_EXTENSIONS
-    COTIRE_VERBOSE
-)
-
-# Exclude stuff from cotire
-set(IVW_COTIRE_EXCLUDES
-    "${IVW_EXTENSIONS_DIR}/warn"
-    "${IVW_MODULE_DIR}/unittests/ext"
-  )
-
-if(WIN32 AND MSVC)
-    if(DEFINED MSVC_ACRO)
-        list(APPEND IVW_COTIRE_EXCLUDES 
-            "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/include/thread"
-            "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/include/thr/xthread")
-    endif()
-endif()
-
 
 #--------------------------------------------------------------------
 # Add globalmacros
@@ -256,74 +238,82 @@ mark_as_advanced(BUILD_SHARED_LIBS)
 mark_as_advanced(FORCE GLM_DIR)
 mark_as_advanced(FORCE CMAKE_CONFIGURATION_TYPES)
 
-if(SHARED_LIBS)
-    set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
-    if(WIN32)
-        if(MSVC)
-            set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-            set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd /Zi")
-            set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
-            set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd /Zi")
-        endif(MSVC)
-    endif()
-else()
-    set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs, else static libs" FORCE)
-    if(WIN32)
-        if(MSVC)
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT")
-        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
-        endif(MSVC)
-    endif()
-endif()
-
-
-#--------------------------------------------------------------------
-# Disable deprecation warnings for standard C functions
 if(WIN32 AND MSVC)
+    if(SHARED_LIBS)
+        set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs, else static libs" FORCE)
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd")
+    else()
+        set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libs, else static libs" FORCE)
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd")
+    endif()
+
+    if(MSVC_VERSION LESS 1900) # Pre visualstdio 2015
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Zi")
+    else()
+        # For >=VS2015 enable edit and continue "ZI"
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /ZI")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /ZI")
+    endif()
+
+    # Disable deprecation warnings for standard C functions
     add_definitions( "/W3 /D_CRT_SECURE_NO_WARNINGS /wd4005 /wd4996 /nologo" )
     string(REGEX REPLACE "[/\\-]Zm[0-9]+" " " CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Ym0x20000000")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm512")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-endif()
 
-
-#--------------------------------------------------------------------
-# MSVC Variable checks and include redist in packs
-if(WIN32)
-    if(MSVC)
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            if(MSVC_VERSION GREATER 1599)
-              # VS 10 and later:
-              set(CMAKE_MSVC_ARCH x64)
-            else()
-              # VS 9 and earlier:
-              set(CMAKE_MSVC_ARCH amd64)
-            endif()
+    # MSVC Variable checks and include redist in packs
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        if(MSVC_VERSION GREATER 1599)
+          # VS 10 and later:
+          set(CMAKE_MSVC_ARCH x64)
         else()
-            set(CMAKE_MSVC_ARCH x86)
+          # VS 9 and earlier:
+          set(CMAKE_MSVC_ARCH amd64)
         endif()
-        if(MSVC90)
-            set(MSVC_ACRO "9")
-        elseif(MSVC10)
-            set(MSVC_ACRO "10")
-        elseif(MSVC11)
-            set(MSVC_ACRO "11")
-        elseif(MSVC12)
-            set(MSVC_ACRO "12")
-        endif()
-        if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
-            if(DEFINED MSVC_ACRO)
-                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/msvcp${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
-                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/msvcr${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
-                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/msvcp${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
-                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/msvcr${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
-            endif()
+    else()
+        set(CMAKE_MSVC_ARCH x86)
+    endif()
+    if(MSVC90)
+        set(MSVC_ACRO "9")
+    elseif(MSVC10)
+        set(MSVC_ACRO "10")
+    elseif(MSVC11)
+        set(MSVC_ACRO "11")
+    elseif(MSVC12)
+        set(MSVC_ACRO "12")
+    elseif(MSVC14)
+        set(MSVC_ACRO "14")
+    endif()
+    if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
+        if(DEFINED MSVC_ACRO)
+            install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/msvcp${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
+            install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugCRT/msvcr${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
+            install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/msvcp${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
+            install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.CRT/msvcr${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
         endif()
     endif()
+
+    # Multicore builds
+    option(IVW_MULTI_PROCESSOR_BUILD "Build with multiple processors" ON)
+    set(IVW_MULTI_PROCESSOR_COUNT 0 CACHE STRING "Number of cores to use (defalt 0 = all)")
+    if(IVW_MULTI_PROCESSOR_BUILD)
+        if(IVW_MULTI_PROCESSOR_COUNT GREATER 1 AND IVW_MULTI_PROCESSOR_COUNT LESS 1024)
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${IVW_MULTI_PROCESSOR_COUNT}")
+            SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP${IVW_MULTI_PROCESSOR_COUNT}")
+        else()
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+            SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
+        endif()
+    endif()  
 endif()
 
 #--------------------------------------------------------------------
@@ -336,13 +326,9 @@ if(OPENMP_FOUND)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
         if(IVW_PACKAGE_PROJECT AND BUILD_SHARED_LIBS)
-            if(WIN32)
-                if(MSVC)
-                    if(DEFINED MSVC_ACRO)
-                        install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugOpenMP/vcomp${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
-                        install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.OPENMP/vcomp${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
-                    endif()
-                endif()
+            if(WIN32 AND MSVC AND DEFINED MSVC_ACRO)
+                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/Debug_NonRedist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.DebugOpenMP/vcomp${MSVC_ACRO}0d.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Debug)
+                install(FILES "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/redist/${CMAKE_MSVC_ARCH}/Microsoft.VC${MSVC_ACRO}0.OPENMP/vcomp${MSVC_ACRO}0.dll" DESTINATION bin COMPONENT core CONFIGURATIONS Release)
             endif()
         endif()
     endif()
@@ -352,22 +338,8 @@ endif()
 # Set preprocessor definition to indicate whether 
 # to use the debug postfix
 # Add debug postfix if WIN32
-IF(WIN32)
-    IF(MSVC)
-        SET(CMAKE_DEBUG_POSTFIX "d")
-       
-        option(IVW_MULTI_PROCESSOR_BUILD "Build with multiple processors" ON)
-        set(IVW_MULTI_PROCESSOR_COUNT 0 CACHE STRING "Number of cores to use (defalt 0 = all)")
-        if(IVW_MULTI_PROCESSOR_BUILD)
-            if(IVW_MULTI_PROCESSOR_COUNT GREATER 1 AND IVW_MULTI_PROCESSOR_COUNT LESS 1024)
-                SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${IVW_MULTI_PROCESSOR_COUNT}")
-                SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP${IVW_MULTI_PROCESSOR_COUNT}")
-            else()
-                SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-                SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-            endif()
-        endif()    
-    ENDIF(MSVC)
+IF(WIN32 AND MSVC)
+    SET(CMAKE_DEBUG_POSTFIX "d")
 ENDIF()
 
 if(DEBUG_POSTFIX)
@@ -388,26 +360,40 @@ if(IVW_PROFILING)
     add_definitions(-DIVW_PROFILING)
 endif(IVW_PROFILING)
 
-IF(NOT MSVC)
-    include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-    CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-    if(COMPILER_SUPPORTS_CXX11)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    elseif(COMPILER_SUPPORTS_CXX0X)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-    else()
-        ivw_message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-    endif()
+
+#--------------------------------------------------------------------
+# Precompile headers
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    option(PRECOMPILED_HEADERS "Create and use precompilied headers" OFF)
 else()
-    if( MSVC_VERSION LESS 1700 )       # VC10-/VS2010- 
-        ivw_message(FATAL_ERROR "Inviwo requires C++11 features. " 
-                        "You need at least Visual Studio 11 (Microsoft Visual Studio 2012), " 
-                        "with Microsoft Visual C++ Compiler Nov 2012 CTP (v120_CTP_Nov2012).") 
-    elseif( MSVC_VERSION EQUAL 1700 )  # VC11/VS2012 
-        set(CMAKE_GENERATOR_TOOLSET "v120_CTP_Nov2012" CACHE STRING "Platform Toolset" FORCE) 
-    endif() 
+    option(PRECOMPILED_HEADERS "Create and use precompilied headers" ON)
 endif()
 
+include(${CMAKE_CURRENT_LIST_DIR}/clean_library_list.cmake)
+if(PRECOMPILED_HEADERS)
+    include(${CMAKE_CURRENT_LIST_DIR}/cotire.cmake)
+endif()
+
+mark_as_advanced(
+    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_EXTENSIONS 
+    COTIRE_ADDITIONAL_PREFIX_HEADER_IGNORE_PATH 
+    COTIRE_DEBUG 
+    COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES 
+    COTIRE_MINIMUM_NUMBER_OF_TARGET_SOURCES
+    COTIRE_UNITY_SOURCE_EXCLUDE_EXTENSIONS
+    COTIRE_VERBOSE
+)
+
+# Exclude stuff from cotire
+set(IVW_COTIRE_EXCLUDES
+    "${IVW_EXTENSIONS_DIR}/warn"
+    "${IVW_MODULE_DIR}/unittests/ext"
+)
+
+if(WIN32 AND MSVC AND DEFINED MSVC_ACRO)
+    list(APPEND IVW_COTIRE_EXCLUDES 
+        "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/include/thread"
+        "C:/Program Files (x86)/Microsoft Visual Studio ${MSVC_ACRO}.0/VC/include/thr/xthread")
+endif()
 
 
