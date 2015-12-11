@@ -34,10 +34,10 @@ ENDIF(NOT NIFTI_INSTALL_NO_DEVELOPMENT)
 
 # Turn off warnings: 
 # conversion from 'size_t' to 'int'
-if(WIN32)
+if(WIN32 AND MSVS)
     add_definitions("/wd4267")
 else()
-	add_definitions("/Wno-conversion")
+	add_definitions("-Wno-conversion")
 endif()
 
 ivw_folder(znz ext/nifti)

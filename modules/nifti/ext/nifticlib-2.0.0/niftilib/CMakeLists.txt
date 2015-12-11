@@ -35,9 +35,9 @@ ENDIF(NOT NIFTI_INSTALL_NO_DEVELOPMENT)
 # Turn off warnings: 
 # conversion from 'double' to 'float'
 # conversion from 'size_t' to 'int'
-if(WIN32)
-    add_definitions("/wd4244 /wd4267")
+if(WIN32 AND MSVS)
+    add_definitions("/wd4267")
 else()
-	add_definitions("/Wno-conversion")
+	add_definitions("-Wno-conversion")
 endif()
 ivw_folder(niftiio ext/nifti)

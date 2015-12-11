@@ -30,44 +30,48 @@
 #ifndef IVW_NIFTIREADER_H
 #define IVW_NIFTIREADER_H
 
-#include <modules/nifti/niftimoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/diskrepresentation.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/io/datareader.h>
+#include <inviwo/core/io/datareaderexception.h>
+#include <modules/nifti/niftimoduledefine.h>
+
+#include <array>
 
 #include <nifti1.h>
 #include <nifti1_io.h>
-
 
 namespace inviwo {
 
 /**
  * \class NiftiReader
  * \brief Volume data reader for Nifti-1 files.
- * 
+ *
  */
-class IVW_MODULE_NIFTI_API NiftiReader : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {
+class IVW_MODULE_NIFTI_API NiftiReader
+    : public DataReaderType<std::vector<std::shared_ptr<Volume>>> {
 public:
     using VolumeVector = std::vector<std::shared_ptr<Volume>>;
     NiftiReader();
     NiftiReader(const NiftiReader& rhs) = default;
     NiftiReader& operator=(const NiftiReader& that) = default;
     virtual NiftiReader* clone() const override;
-    
+
     virtual ~NiftiReader() = default;
-    
+
     virtual std::shared_ptr<VolumeVector> readData(const std::string filePath) override;
 
-    /** 
-     * \brief Convert from Nifti defined data types to inviwo DataFormat. 
-     * 
+    /**
+     * \brief Convert from Nifti defined data types to inviwo DataFormat.
+     *
      * @param int niftiDataType nifti_image::datatype.
      * @return const DataFormatBase* Equivalent data type, null if not found.
      */
     static const DataFormatBase* niftiDataTypeToInviwoDataFormat(int niftiDataType);
 };
-
 
 /**
 * \class NiftiVolumeRAMLoader
@@ -79,8 +83,12 @@ public:
 
 class IVW_MODULE_NIFTI_API NiftiVolumeRAMLoader : public DiskRepresentationLoader {
 public:
-    NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_, std::array<int, 7> start_index_, std::array<int, 7> region_size_);
+    NiftiVolumeRAMLoader(std::shared_ptr<nifti_image> nim_, std::array<int, 7> start_index_,
+                         std::array<int, 7> region_size_);
     virtual NiftiVolumeRAMLoader* clone() const override;
+
+    virtual ~NiftiVolumeRAMLoader() = default;
+
     virtual std::shared_ptr<DataRepresentation> createRepresentation() const override;
     virtual void updateRepresentation(std::shared_ptr<DataRepresentation> dest) const override;
 
@@ -90,23 +98,26 @@ public:
     std::shared_ptr<VolumeRAM> dispatch() const {
         typedef typename T::type F;
 
-        std::size_t size = region_size[0] * region_size[1] * region_size[2] * region_size[3] * region_size[4] * region_size[5] * region_size[6];
+        std::size_t size = region_size[0] * region_size[1] * region_size[2] * region_size[3] *
+                           region_size[4] * region_size[5] * region_size[6];
         auto data = util::make_unique<F[]>(size);
 
         if (!data) {
             throw DataReaderException(
-                "Error: Could not allocate memory for loading raw file: " + std::string(nim->fname), IvwContext);
-        }
-        auto dataPointer = reinterpret_cast<void*>(data.get());
-        auto readBytes = nifti_read_subregion_image(nim.get(), const_cast<int*>(start_index.data()), const_cast<int*>(region_size.data()), &dataPointer);
-        if (readBytes < 0) {
-            throw DataReaderException(
-                "Error: Could not read data from file: " + std::string(nim->fname),
+                "Error: Could not allocate memory for loading raw file: " + std::string(nim->fname),
                 IvwContext);
         }
-        
+        auto dataPointer = reinterpret_cast<void*>(data.get());
+        auto readBytes =
+            nifti_read_subregion_image(nim.get(), const_cast<int*>(start_index.data()),
+                                       const_cast<int*>(region_size.data()), &dataPointer);
+        if (readBytes < 0) {
+            throw DataReaderException(
+                "Error: Could not read data from file: " + std::string(nim->fname), IvwContext);
+        }
 
-        auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), size3_t{ region_size[0], region_size[1], region_size[2] });
+        auto repr = std::make_shared<VolumeRAMPrecision<F>>(
+            data.get(), size3_t{region_size[0], region_size[1], region_size[2]});
         data.release();
         return repr;
     }
@@ -115,10 +126,8 @@ private:
     std::array<int, 7> start_index;
     std::array<int, 7> region_size;
     std::shared_ptr<nifti_image> nim;
-
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_NIFTIREADER_H
-
+#endif  // IVW_NIFTIREADER_H

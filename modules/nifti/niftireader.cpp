@@ -29,6 +29,7 @@
 
 #include "niftireader.h"
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -76,7 +77,7 @@ const DataFormatBase* NiftiReader::niftiDataTypeToInviwoDataFormat(int niftiData
     }
 }
 
-std::shared_ptr<VolumeVector> NiftiReader::readData(const std::string filePath) {
+std::shared_ptr<NiftiReader::VolumeVector> NiftiReader::readData(const std::string filePath) {
     /* read input dataset, but not data */
     std::shared_ptr<nifti_image> niftiImage(nifti_image_read(filePath.c_str(), 0), nifti_image_free);
     if (!niftiImage) {
@@ -86,7 +87,6 @@ std::shared_ptr<VolumeVector> NiftiReader::readData(const std::string filePath) 
     }
 
     const DataFormatBase* format = nullptr;
-    int bytesPerVoxel = niftiImage->nbyper;
     // nim->dim[0] = number of dimensions;
     // ANALYZE supports dim[0] up to 7, but NIFTI-1 reserves
     // dimensions 1, 2, 3 for space(x, y, z), 4 for time(t), and
@@ -111,11 +111,10 @@ std::shared_ptr<VolumeVector> NiftiReader::readData(const std::string filePath) 
     
     auto volume = std::make_shared<Volume>(dim);
 
-    if (niftiImage->descrip != "") {    
+    std::string descrip(niftiImage->descrip);
+    if (!descrip.empty()) {
         // Additional information
-        std::stringstream ss;
-        ss << niftiImage->descrip;
-        volume->setMetaData<StringMetaData>("description", ss.str());
+        volume->setMetaData<StringMetaData>("description", descrip);
     }
     mat4 niftiIndexToModel;
     
