@@ -40,8 +40,8 @@ PositionProperty::PositionProperty(std::string identifier, std::string displayNa
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
     , referenceFrame_("referenceFrame", "Space")
     , position_(position)
-    , camera_(camera)
     , positionWorldSpace_(position_.get())
+    , camera_(camera)
 {
     referenceFrame_.addOption("world", "World", static_cast<int>(Space::WORLD));
     if (camera_) {
@@ -67,8 +67,8 @@ PositionProperty::PositionProperty(const PositionProperty& rhs)
     : CompositeProperty(rhs)
     , referenceFrame_(rhs.referenceFrame_)
     , position_(rhs.position_)
-    , camera_(rhs.camera_)
     , positionWorldSpace_(rhs.positionWorldSpace_)
+    , camera_(rhs.camera_)
 {
     // Add properties
     addProperty(referenceFrame_);

@@ -103,7 +103,6 @@ public:
 
 private:
     std::vector<FileExtension> nameFilters_;
-    bool requestOnEmpty_ = false;
     AcceptMode acceptMode_;
     FileMode fileMode_;
     std::string contentType_;
