@@ -34,10 +34,10 @@ ENDIF(NOT NIFTI_INSTALL_NO_DEVELOPMENT)
 
 # Turn off warnings: 
 # conversion from 'size_t' to 'int'
-if(WIN32 AND MSVS)
-    add_definitions("/wd4267")
-else()
-	add_definitions("-Wno-conversion")
+if(CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+    add_definitions("-Wno-conversion")
+elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
+	add_definitions("/wd4267")
 endif()
 
 ivw_folder(znz ext/nifti)
