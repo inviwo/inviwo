@@ -36,11 +36,11 @@ namespace inviwo {
 ImageOutport::ImageOutport(std::string identifier, const DataFormatBase* format,
                            bool handleResizeEvents)
     : DataOutport<Image>(identifier)
-    , dimensions_(8, 8)
+    , defaultDimensions_(8, 8)
     , handleResizeEvents_(handleResizeEvents) {
  
     // create a default image
-    setData(std::make_shared<Image>(dimensions_, format));
+    setData(std::make_shared<Image>(defaultDimensions_, format));
 }
 
 ImageOutport::~ImageOutport() {}
@@ -55,28 +55,24 @@ void ImageOutport::invalidate(InvalidationLevel invalidationLevel) {
 void ImageOutport::setData(std::shared_ptr<const Image> data) {
     DataOutport<Image>::setData(data);
     image_.reset();
-    dimensions_ = data_->getDimensions();
     cache_.setMaster(data);
 }
 
 void ImageOutport::setData(const Image* data) {
     DataOutport<Image>::setData(data);
     image_.reset();
-    dimensions_ = data_->getDimensions();
     cache_.setMaster(data_);
 }
 
 void ImageOutport::setData(std::shared_ptr<Image> data) {
     DataOutport<Image>::setData(data);
     image_ = data;
-    dimensions_ = data_->getDimensions();
     cache_.setMaster(data);
 }
 
 void ImageOutport::setData(Image* data) {
     image_.reset(data);
     DataOutport<Image>::setData(image_); 
-    dimensions_ = data_->getDimensions();
     cache_.setMaster(data_);
 }
 
@@ -111,13 +107,16 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
         *std::max_element(registeredDimensions.begin(), registeredDimensions.end(),
                           [](const size2_t& a, const size2_t& b) { return a.x * a.y < b.x * b.y; });
 
+    // fallback to default if newDim == 0
+    if (newDimensions == size2_t(0,0)) newDimensions = defaultDimensions_;
+
     std::unique_ptr<ResizeEvent> newEvent {resizeEvent->clone()};
     newEvent->setSize(newDimensions);
 
-    if (image_ && handleResizeEvents_ && newDimensions != data_->getDimensions()) { 
+    if (image_ && handleResizeEvents_ && newDimensions != image_->getDimensions()) { 
         // resize data.
         image_->setDimensions(newDimensions);
-        dimensions_ = image_->getDimensions();
+        //defaultDimensions_ = image_->getDimensions();
         cache_.setInvalid();
 
         broadcast(newEvent.get());
@@ -141,8 +140,6 @@ void ImageOutport::propagateResizeEvent(ResizeEvent* resizeEvent) {
     if (handleResizeEvents_) getProcessor()->invalidate(InvalidationLevel::InvalidOutput);
 }
 
-size2_t ImageOutport::getDimensions() const { return dimensions_; }
-
 std::shared_ptr<const Image> ImageOutport::getResizedImageData(size2_t requiredDimensions) const {
     return cache_.getImage(requiredDimensions);
 }
@@ -152,13 +149,21 @@ bool ImageOutport::addResizeEventListener(EventListener* el) { return addEventLi
 bool ImageOutport::removeResizeEventListener(EventListener* el) { return removeEventListener(el); }
 
 void ImageOutport::setDimensions(const size2_t& newDimension) {
-    // Set new dimensions
+    defaultDimensions_ = newDimension; // update default
     if (image_) {
+        // Set new dimensions
         image_->setDimensions(newDimension);
-        dimensions_ = newDimension;
         cache_.setInvalid();
     }
 }
+
+size2_t ImageOutport::getDimensions() const { 
+    if (image_) return image_->getDimensions();
+    else if(data_) return data_->getDimensions();
+    else return defaultDimensions_; 
+}
+
+
 std::shared_ptr<Image> ImageOutport::getEditableData() const {
     if (image_) {
         return image_;

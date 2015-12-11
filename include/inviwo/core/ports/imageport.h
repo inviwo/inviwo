@@ -173,7 +173,7 @@ public:
 
 private:
     std::shared_ptr<Image> image_;
-    size2_t dimensions_;
+    size2_t defaultDimensions_;
     bool handleResizeEvents_;  // True if data should be resized during a resize propagation,
                                // otherwise false
     ImageCache cache_;
