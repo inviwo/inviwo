@@ -258,6 +258,67 @@ utilgl::BlendModeState::~BlendModeState() {
     }
 }
 
+utilgl::BlendModeEquationState::BlendModeEquationState(GLenum smode, GLenum dmode, GLenum eqn)
+    : BlendModeState(smode, dmode), eqn_(eqn) {
+    if (state_) {
+        glGetIntegerv(GL_BLEND_EQUATION_RGB, &oldEqn_);
+        if (oldEqn_ != eqn_) {
+            glBlendEquation(eqn_);
+        }
+    }
+}
+
+BlendModeEquationState& utilgl::BlendModeEquationState::operator=(BlendModeEquationState&& that) {
+    if (this != &that) {
+        BlendModeState::operator=(std::move(that));
+        eqn_ = that.eqn_;
+        oldEqn_ = that.oldEqn_;
+        that.eqn_ = that.oldEqn_;
+    }
+    return *this;
+}
+
+utilgl::BlendModeEquationState::BlendModeEquationState(BlendModeEquationState&& rhs)
+    : BlendModeState(std::move(rhs))
+    , eqn_(rhs.eqn_)
+    , oldEqn_(rhs.oldEqn_) {
+    rhs.eqn_ = rhs.oldEqn_;
+}
+
+utilgl::BlendModeEquationState::~BlendModeEquationState() {
+    if (state_ && (oldEqn_ != eqn_)) {
+        glBlendEquation(eqn_);
+    }
+}
+
+utilgl::ClearColor::ClearColor(vec4 color) : color_(color) {
+    glGetFloatv(GL_COLOR_CLEAR_VALUE, glm::value_ptr(oldColor_));
+    if (oldColor_ != color_) {
+        glClearColor(color_.x, color_.y, color_.z, color_.w);
+    }
+
+}
+
+utilgl::ClearColor::ClearColor(ClearColor&& rhs)
+    : color_(rhs.color_)
+    , oldColor_(rhs.oldColor_) {
+    rhs.color_ = rhs.oldColor_;
+}
+
+ClearColor& utilgl::ClearColor::operator=(ClearColor&& that) {
+    if (this != &that) {
+        color_ = that.color_;
+        oldColor_ = that.oldColor_;
+        that.color_ = that.oldColor_;
+    }
+    return *this;
+}
+
+utilgl::ClearColor::~ClearColor() {
+    if (oldColor_ != color_) {
+        glClearColor(color_.x, color_.y, color_.z, color_.w);
+    }
+}
 
 ViewportState& utilgl::ViewportState::operator=(ViewportState&& that) {
     if (this != &that) {

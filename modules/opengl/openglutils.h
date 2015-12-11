@@ -141,6 +141,37 @@ protected:
     GLint olddMode_;
 };
 
+struct IVW_MODULE_OPENGL_API BlendModeEquationState : public BlendModeState {
+    BlendModeEquationState() = delete;
+    BlendModeEquationState(BlendModeEquationState const&) = delete;
+    BlendModeEquationState& operator=(BlendModeEquationState const& that) = delete;
+
+    BlendModeEquationState(GLenum smode, GLenum dmode, GLenum eqn);
+    BlendModeEquationState(BlendModeEquationState&& rhs);
+    BlendModeEquationState& operator=(BlendModeEquationState&& that);
+
+    virtual ~BlendModeEquationState();
+
+protected:
+    GLint eqn_;
+    GLint oldEqn_;
+};
+
+struct IVW_MODULE_OPENGL_API ClearColor {
+    ClearColor() = delete;
+    ClearColor(ClearColor const&) = delete;
+    ClearColor& operator=(ClearColor const& that) = delete;
+
+    ClearColor(vec4 color);
+    ClearColor(ClearColor&& rhs);
+    ClearColor& operator=(ClearColor&& that);
+
+    virtual ~ClearColor();
+protected:
+    vec4 color_;
+    vec4 oldColor_;
+};
+
 struct IVW_MODULE_OPENGL_API Viewport {
     Viewport() : view_({ {0, 0, 0, 0} }) {}
     Viewport(GLint x, GLint y, GLsizei width, GLsizei height) : view_({ {x, y, width, height} }) {}
