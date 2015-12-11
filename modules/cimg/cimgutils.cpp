@@ -31,6 +31,7 @@
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datareaderexception.h>
 #include <algorithm>
 
 #include <warn/push>
@@ -177,27 +178,32 @@ struct CImgLoadLayerDispatcher {
                    const DataFormatBase* dataFormat, bool rescaleToDim) {
         using P = typename T::primitive;
 
-        CImg<P> img(filePath);
-        size_t components = static_cast<size_t>(img.spectrum());
+        try {
+            CImg<P> img(filePath);
+            size_t components = static_cast<size_t>(img.spectrum());
 
-        if (rescaleToDim) {
-            img.resize(dimensions.x, dimensions.y, -100, -100, 3);
-        } else {
-            dimensions = uvec2(img.width(), img.height());
+            if (rescaleToDim) {
+                img.resize(dimensions.x, dimensions.y, -100, -100, 3);
+            } else {
+                dimensions = uvec2(img.width(), img.height());
+            }
+
+            auto loadedDataFormat =
+                DataFormatBase::get(dataFormat->getNumericType(), components, sizeof(P) * 8);
+            if (loadedDataFormat) {
+                formatId = loadedDataFormat->getId();
+            } else {
+                throw DataReaderException(
+                    "CImgLoadLayerDispatcher, could not find proper data type", IvwContext);
+            }
+
+            // Image is up-side-down
+            img.mirror('y');
+
+            return CImgToVoidConvert<P>::convert(dst, &img);
+        } catch (CImgIOException& e) {
+            throw DataReaderException(std::string(e.what()), IvwContext);
         }
-
-        auto loadedDataFormat = DataFormatBase::get(
-            dataFormat->getNumericType(), components, sizeof(P) * 8);
-        if (loadedDataFormat) {
-            formatId = loadedDataFormat->getId();
-        } else {
-            throw Exception("CImgLoadLayerDispatcher, could not find proper data type");
-        }
-
-        // Image is up-side-down
-        img.mirror('y');
-
-        return CImgToVoidConvert<P>::convert(dst, &img);
     }
 };
 
