@@ -52,7 +52,7 @@ public:
     virtual void deinitialize() override;
 
     virtual void activate() override;
-    void defaultGLState();
+    static void defaultGLState();
 
     virtual void render(std::shared_ptr<const Image> image, LayerType layerType = LayerType::Color,
                         size_t idx = 0) override;
