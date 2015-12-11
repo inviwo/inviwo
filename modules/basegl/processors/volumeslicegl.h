@@ -192,7 +192,6 @@ private:
     mat4 sliceRotation_;
     mat4 inverseSliceRotation_; // Used to calculate the slice "z position" from the plain point. 
     size3_t volumeDimensions_;
-    size2_t outportDimensions_;
     mat4 texToWorld_;
 };
 }

@@ -43,7 +43,7 @@ const ProcessorInfo ImageContourProcessor::getProcessorInfo() const { return pro
 
 ImageContourProcessor::ImageContourProcessor()
     : Processor()
-    , image_("image")
+    , image_("image", true)
     , mesh_("mesh")
     , isoValue_("iso", "ISO Value", 0.5, 0, 1)
     , color_("color", "Color", vec4(1.0)) {

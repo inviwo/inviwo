@@ -120,7 +120,6 @@ VolumeSliceGL::VolumeSliceGL()
     , sliceRotation_(1.0f)
     , inverseSliceRotation_(1.0f)
     , volumeDimensions_(8u)
-    , outportDimensions_(1u)
     , texToWorld_(1.0f) {
     addPort(inport_);
     addPort(outport_);
@@ -386,10 +385,10 @@ void VolumeSliceGL::process() {
         volumeDimensions_ = inport_.getData()->getDimensions();
         updateMaxSliceNumber();
         modeChange();
+        vec2 dim{glm::length(vec3(volumeDimensions_))};
+        outport_.setDimensions(static_cast<size2_t>(dim));  // set default dimensions.
     }
-    if (outportDimensions_ != outport_.getDimensions() ||
-        texToWorld_ != inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
-        outportDimensions_ = outport_.getDimensions();
+    if (texToWorld_ != inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix()) {
         texToWorld_ = inport_.getData()->getCoordinateTransformer().getTextureToWorldMatrix();
         planeSettingsChanged();
     }
