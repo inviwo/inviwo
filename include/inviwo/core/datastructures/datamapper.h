@@ -34,7 +34,14 @@
 #include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
-
+/**
+ * \class DataMapper
+ *
+ * \brief Map values into data or value ranges.
+ * Data range refer to the range of the data type, i.e. [0 4095] for 12-bit unsigned integer data. 
+ * Value range refer to the physical meaning of the value, i.e. Hounsfield value range is from [-1000 3000].
+ *
+ */
 class IVW_CORE_API DataMapper {
 public:
     DataMapper();
@@ -44,21 +51,21 @@ public:
     virtual DataMapper* clone() const;
     virtual ~DataMapper() {}
 
-    dvec2 dataRange;
-    dvec2 valueRange;
-    std::string valueUnit;
+    dvec2 dataRange;       ///< Minimum and maximum data range
+    dvec2 valueRange;      ///< Minimum and maximum value range
+    std::string valueUnit; ///< Unit, i.e. Hounsfield/absorption/W.
 
     void initWithFormat(const DataFormatBase* format);
 
     template <typename T>
-    T mapFromDataToValue(T val) {
+    T mapFromDataToValue(T val) const {
         return static_cast<T>((static_cast<double>(val) - dataRange.x) /
                                   (dataRange.y - dataRange.x) * (valueRange.y - valueRange.x) +
                               valueRange.x);
     }
     
     template <typename T>
-    T mapFromValueToData(T val) {
+    T mapFromValueToData(T val) const {
         return static_cast<T>((static_cast<double>(val) - valueRange.x) /
                                   (valueRange.y - valueRange.x) * (dataRange.y - dataRange.x) +
                               dataRange.x);
