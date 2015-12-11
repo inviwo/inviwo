@@ -30,29 +30,35 @@
 cmake_minimum_required(VERSION 2.8.11)
 cmake_policy(VERSION 2.8.11)
 
-if(POLICY CMP0046)
-    cmake_policy(SET CMP0046 OLD) # Missing dependencies policy.
-endif()
-
 if(POLICY CMP0020)
     cmake_policy(SET CMP0020 OLD) # Missing dependencies policy.
 endif()
 
-if(CMAKE_VERSION VERSION_GREATER "3.0.0")
-    cmake_policy(SET CMP0042 OLD) # MacOSX rpath policy.
+if(POLICY CMP0028)
     cmake_policy(SET CMP0028 OLD) # allow :: in targets. like Qt5::Sql
 endif()
 
-if (NOT CMAKE_VERSION VERSION_LESS "3.0.2")
-     # The OLD behavior for this policy is to consume the content of the 
-     # suffixed COMPILE_DEFINITIONS_<CONFIG> target property when generating
-     # the compilation command.
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW) # MacOSX rpath policy.
+endif()
+
+if(POLICY CMP0043)
+    # The OLD behavior for this policy is to consume the content of the 
+    # suffixed COMPILE_DEFINITIONS_<CONFIG> target property when generating
+    # the compilation command.
     cmake_policy(SET CMP0043 OLD)
 endif()
 
-if (NOT CMAKE_VERSION VERSION_LESS "3.1.0")
+if(POLICY CMP0046)
+    cmake_policy(SET CMP0046 OLD) # Missing dependencies policy.
+endif()
+
+if(POLICY CMP0051)
     # include TARGET_OBJECTS expressions in a target's SOURCES property
     cmake_policy(SET CMP0051 NEW)
+endif()
+
+if(POLICY CMP0054)
     # only interpret if() arguments as variables or keywords when unquoted
     cmake_policy(SET CMP0054 NEW)
 endif()

@@ -426,7 +426,7 @@ function(build_module_dependency the_module the_owner)
 endfunction()
 
 #--------------------------------------------------------------------
-# Set module build option to true
+# Add a library dependency to module. call before ivw_create_module
 macro(add_dependency_libs_to_module)
     list(APPEND _preModuleDependencies "${ARGN}")
 endmacro()
@@ -731,7 +731,10 @@ macro(ivw_add_dependency_directories)
 endmacro()
 
 #--------------------------------------------------------------------
+# internal function call by ivw_create_module
+# call add_dependency_libs_to_module instead before, ivw_crete_module
 # Adds dependancy and includes package variables to the project
+
 macro(ivw_add_dependency_libraries)
     if(${ARGC} GREATER 0)
         set(uniqueNewLibs ${ARGN})

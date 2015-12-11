@@ -7,8 +7,8 @@
 cmake_minimum_required( VERSION 2.6 )
 SET( HEADER_PATH ../include/assimp )
 
-if(CMAKE_VERSION VERSION_GREATER "3.0.0")
-    cmake_policy(SET CMP0042 OLD) # MacOSX rpath policy.
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW) # MacOSX rpath policy.
 endif()
 
 SET( COMPILER_HEADERS

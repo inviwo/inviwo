@@ -47,8 +47,8 @@ if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()
 endif()
 
-if(CMAKE_VERSION VERSION_GREATER "3.0.0")
-    cmake_policy(SET CMP0042 OLD) # MacOSX rpath policy.
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 NEW) # MacOSX rpath policy.
 endif()
 
 # Define helper functions and macros used by Google Test.
