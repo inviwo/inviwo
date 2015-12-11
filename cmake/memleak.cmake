@@ -30,55 +30,50 @@
 
  ####  Memory leak checks ####
 
-IF(WIN32)
-    IF(MSVC)
-        if(IVW_ENABLE_MSVC_MEMLEAK_TEST)
-            add_definitions(-DIVW_ENABLE_MSVC_MEM_LEAK_TEST)
-            if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-                link_directories(${IVW_EXTENSIONS_DIR}/vld/lib/Win64)
-            else ()
-                link_directories(${IVW_EXTENSIONS_DIR}/vld/lib/Win32)
-            endif()
-        endif(IVW_ENABLE_MSVC_MEMLEAK_TEST)    
-    ENDIF(MSVC)
-ENDIF(WIN32)
+IF(WIN32 AND MSVC)
+   	option(IVW_ENABLE_MSVC_MEMLEAK_TEST "Run memoryleak test within Visual Studio" OFF)
+    if(IVW_ENABLE_MSVC_MEMLEAK_TEST)
+        add_definitions(-DIVW_ENABLE_MSVC_MEM_LEAK_TEST)
+        if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+            link_directories(${IVW_EXTENSIONS_DIR}/vld/lib/Win64)
+        else ()
+    	    link_directories(${IVW_EXTENSIONS_DIR}/vld/lib/Win32)
+        endif()
+    endif()    
+ENDIF()
 
 function(ivw_memleak_setup unittest_target)
-	if(IVW_ENABLE_MSVC_MEMLEAK_TEST)
-	    IF(WIN32)
-	        IF(MSVC)
-	            if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-	                add_custom_command(TARGET ${unittest_target} POST_BUILD 
-	                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-	                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/vld_x64.dll 
-	                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x64.dll)    
-	                                        
-	                add_custom_command(TARGET ${unittest_target} POST_BUILD 
-	                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-	                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/dbghelp.dll 
-	                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
-	                                        
-	                add_custom_command(TARGET ${unittest_target} POST_BUILD 
-	                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-	                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/Microsoft.DTfW.DHL.manifest 
-	                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
-	            else ()
-	                add_custom_command(TARGET ${unittest_target} POST_BUILD 
-	                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-	                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/vld_x86.dll 
-	                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x86.dll)    
-	                                        
-	                add_custom_command(TARGET ${unittest_target} POST_BUILD 
-	                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-	                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/dbghelp.dll 
-	                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
-	                                        
-	                add_custom_command(TARGET ${unittest_target} POST_BUILD 
-	                                    COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
-	                                        ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/Microsoft.DTfW.DHL.manifest 
-	                                        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
-	            endif()
-	        ENDIF(MSVC)
-	    ENDIF(WIN32)
+	if(WIN32 AND MSVC AND IVW_ENABLE_MSVC_MEMLEAK_TEST)
+        if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+            add_custom_command(TARGET ${unittest_target} POST_BUILD 
+                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/vld_x64.dll 
+                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x64.dll)    
+                                    
+            add_custom_command(TARGET ${unittest_target} POST_BUILD 
+                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/dbghelp.dll 
+                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
+                                    
+            add_custom_command(TARGET ${unittest_target} POST_BUILD 
+                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win64/Microsoft.DTfW.DHL.manifest 
+                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
+        else ()
+            add_custom_command(TARGET ${unittest_target} POST_BUILD 
+                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/vld_x86.dll 
+                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/vld_x86.dll)    
+                                    
+            add_custom_command(TARGET ${unittest_target} POST_BUILD 
+                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/dbghelp.dll 
+                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/dbghelp.dll)    
+                                    
+            add_custom_command(TARGET ${unittest_target} POST_BUILD 
+                                COMMAND ${CMAKE_COMMAND}  -E copy_if_different 
+                                    ${IVW_EXTENSIONS_DIR}/vld/bin/Win32/Microsoft.DTfW.DHL.manifest 
+                                    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(ConfigurationName)/Microsoft.DTfW.DHL.manifest)    
+        endif()
 	endif()
 endfunction()
