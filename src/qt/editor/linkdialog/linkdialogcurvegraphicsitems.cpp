@@ -51,7 +51,7 @@ DialogCurveGraphicsItem::DialogCurveGraphicsItem(QPointF startPoint, QPointF end
 DialogCurveGraphicsItem::~DialogCurveGraphicsItem() {}
 
 QPainterPath DialogCurveGraphicsItem::obtainCurvePath(QPointF startPoint, QPointF endPoint) const {
-    float delta = endPoint.x() - startPoint.x();
+    double delta = endPoint.x() - startPoint.x();
     QPointF ctrlPoint1 = QPointF(startPoint.x() + delta / 4.0, startPoint.y());
     QPointF ctrlPoint2 = QPointF(endPoint.x() - delta / 4.0, endPoint.y());
     QPainterPath bezierCurve;

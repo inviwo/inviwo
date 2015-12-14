@@ -480,12 +480,13 @@ void ImageLabelWidget::addBackGroundImage(std::string imagePath) {
     backGroundImage_ = new QImage(imagePath.c_str());
     vec2 unscaledSize(backGroundImage_->width(), backGroundImage_->height());
     vec2 scaledSceneSize(backGroundImage_->width()*sceneScaleFactor_, backGroundImage_->height()*sceneScaleFactor_);
-    backGroundImage_->scaled(QSize(static_cast<int>(scaledSceneSize.x), static_cast<int>(scaledSceneSize.y)));
+    QSize scaledSceneSizei(static_cast<int>(scaledSceneSize.x), static_cast<int>(scaledSceneSize.y));
+    backGroundImage_->scaled(scaledSceneSizei);
     QGraphicsPixmapItem* i = scene_->addPixmap(QPixmap(imagePath.c_str()));
     i->setZValue(1);
     scene_->setSceneRect(0, 0, unscaledSize.x, unscaledSize.y);
     view_->setScaleFactor(sceneScaleFactor_);
-    resize(QSize(scaledSceneSize.x, scaledSceneSize.y));
+    resize(scaledSceneSizei);
 }
 
 void ImageLabelWidget::setParent(ImageEditorWidgetQt* tmp) {

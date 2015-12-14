@@ -226,8 +226,8 @@ public:
 
     virtual V value(V val) {
         return V(
-            std::sqrt(static_cast<double>(val[0] * val[0] + val[1] * val[1] + val[2] * val[2])),
-            arctan(val[2], std::sqrt(static_cast<double>(val[0] * val[0] + val[1] * val[1]))),
+            static_cast<T>(std::sqrt(static_cast<double>(val[0] * val[0] + val[1] * val[1] + val[2] * val[2]))),
+            arctan(val[2], static_cast<T>(std::sqrt(static_cast<double>(val[0] * val[0] + val[1] * val[1])))),
             arctan(val[0], val[1]));
     }
     virtual V min(V val) { return V(std::numeric_limits < T >::epsilon() , 0, -M_PI); }
