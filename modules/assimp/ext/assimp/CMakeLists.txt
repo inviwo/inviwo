@@ -163,9 +163,11 @@ SET ( ASSIMP_NO_EXPORT OFF CACHE BOOL
 #  ADD_DEFINITIONS(-DASSIMP_BUILD_NO_OWN_ZLIB)
 #endif(NOT ZLIB_FOUND)
 
-if(ZLIB_FOUND)
+if(NOT ZLIB_FOUND)
+  ivw_message(FATAL_ERROR "Could not locate zlib which is required by assimp (should be provided by the Inviwo zlib module)")
+else(NOT ZLIB_FOUND)
   ADD_DEFINITIONS(-DASSIMP_BUILD_NO_OWN_ZLIB)
-endif(ZLIB_FOUND)
+endif(NOT ZLIB_FOUND)
 
 INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 
