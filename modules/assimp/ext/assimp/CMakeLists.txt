@@ -148,7 +148,7 @@ SET ( ASSIMP_NO_EXPORT OFF CACHE BOOL
 
 # Search for external dependencies, and build them from source if not found
 # Search for zlib
-find_package(ZLIB)
+#find_package(ZLIB)
 if( NOT ZLIB_FOUND )
   message(STATUS "compiling zlib from souces")
   include(CheckIncludeFile)

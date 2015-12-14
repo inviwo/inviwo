@@ -154,7 +154,12 @@ function(list_to_longstringvector retval) # same but with linebreaks
     endif()
 endfunction()
 
-
+#--------------------------------------------------------------------
+# mark_as_internal(var)
+# hides the given variable in all CMake UIs
+macro ( mark_as_internal _var )
+  set ( ${_var} ${${_var}} CACHE INTERNAL "hide this!" FORCE )
+endmacro( mark_as_internal _var )
 
 #--------------------------------------------------------------------
 # ivw_add_module_option_to_cache(module_dir onoff force)

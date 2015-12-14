@@ -1,8 +1,9 @@
+
 # Search for zlib
-find_package(ZLIB)
+find_package(ZLIB QUIET)
 # Build dependency from source if not found
 if( (NOT ZLIB_FOUND) OR (NOT EXISTS ${ZLIB_INCLUDE_DIRS}))
-	#ivw_message("Compiling zlib from source since it was not found")
+	ivw_message("Compiling zlib from source since it was not found")
 	if(BUILD_SHARED_LIBS)
 		add_definitions(-DZLIB_INTERNAL)
 		ivw_add_definition(ZLIB_DLL)
@@ -14,6 +15,12 @@ if( (NOT ZLIB_FOUND) OR (NOT EXISTS ${ZLIB_INCLUDE_DIRS}))
 	set(ZLIB_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/ext/zlib-1.2.8 ${CMAKE_CURRENT_BINARY_DIR}/ext/zlib-1.2.8)
 	# Some libraries use ZLIB_INCLUDE_DIR even though find_package(ZLIB) specifies that ZLIB_INCLUDE_DIRS should be used
 	set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/zlib-1.2.8 ${CMAKE_CURRENT_BINARY_DIR}/ext/zlib-1.2.8 PARENT_SCOPE)
+	
+	# overwrite the ZLIB_INCLUDE_DIR in the cache (created by find_pacakge(ZLIB)) and hide it
+	set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ext/zlib-1.2.8 ${CMAKE_CURRENT_BINARY_DIR}/ext/zlib-1.2.8 CACHE STRING "zlib_include_dir" FORCE)
+
+	mark_as_internal(ZLIB_LIBRARY_DEBUG)
+	mark_as_internal(ZLIB_LIBRARY_RELEASE)
 	
 	set(ZLIB_VERSION_STRING ${VERSION} PARENT_SCOPE)
 	set(ZLIB_VERSION_MAJOR 1 PARENT_SCOPE)
