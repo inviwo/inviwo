@@ -37,6 +37,23 @@ if( (NOT ZLIB_FOUND) OR (NOT EXISTS ${ZLIB_INCLUDE_DIRS}))
 		set(ZLIB_LIBRARIES zlibstatic PARENT_SCOPE)
 		set(ZLIB_LIBRARIES zlibstatic)
     endif()
+else()
+	## we need to make the ZLIB configuration available to other modules (via PARENT_SCOPE)
+	## in case zlib was found by find_package()
+
+	set(ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS} PARENT_SCOPE)
+	# Some libraries use ZLIB_INCLUDE_DIR even though find_package(ZLIB) specifies that ZLIB_INCLUDE_DIRS should be used
+	set(ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR} PARENT_SCOPE)
+
+	set(ZLIB_LIBRARIES ${ZLIB_LIBRARIES} PARENT_SCOPE)
+	
+	set(ZLIB_VERSION_STRING ${VERSION} PARENT_SCOPE)
+	set(ZLIB_VERSION_MAJOR 1 PARENT_SCOPE)
+	set(ZLIB_VERSION_MINOR 2 PARENT_SCOPE)
+	set(ZLIB_VERSION_PATCH 8 PARENT_SCOPE)
+	set(ZLIB_VERSION_TWEAK 0 PARENT_SCOPE)
+
+	set(ZLIB_FOUND ${ZLIB_FOUND} PARENT_SCOPE)
 endif()
 
 #--------------------------------------------------------------------
