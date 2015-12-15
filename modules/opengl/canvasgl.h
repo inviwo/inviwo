@@ -50,6 +50,7 @@ public:
 
     virtual void initialize() override;
     virtual void deinitialize() override;
+    virtual void initializeSquare();
 
     virtual void activate() override;
     static void defaultGLState();
@@ -82,8 +83,6 @@ public:
     virtual std::unique_ptr<Canvas> create() override;
 
 protected:
-    virtual void initializeSquare();
-
     void renderLayer(size_t idx = 0);
     void renderNoise();
     void renderTexture(int);

@@ -92,9 +92,6 @@ public:
 
     static void defineDefaultContextFormat();
 
-    virtual void initialize() override;
-    virtual void initializeSquare() override;
-    virtual void deinitialize() override;
     virtual void activate() override;
     virtual void glSwapBuffers() override;
     virtual void update() override;

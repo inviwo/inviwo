@@ -195,21 +195,6 @@ void CanvasQt::defineDefaultContextFormat(){
 
 CanvasQt::~CanvasQt() {}
 
-void CanvasQt::initialize() {
-    activate();
-    CanvasGL::initialize();
-}
-
-void CanvasQt::initializeSquare() {
-    activate();
-    CanvasGL::initializeSquare();
-}
-
-void CanvasQt::deinitialize() {
-    activate();
-    CanvasGL::deinitialize();
-}
-
 void CanvasQt::activate() {
 #ifdef USE_QWINDOW
     thisGLContext_->makeCurrent(this);

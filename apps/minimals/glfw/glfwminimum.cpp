@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    while (CanvasGLFW::getWindowCount() > 0) {
+    while (CanvasGLFW::getVisibleWindowCount() > 0) {
         glfwWaitEvents();
         inviwoApp.processFront();
     }

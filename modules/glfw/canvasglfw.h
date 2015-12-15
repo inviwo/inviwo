@@ -46,12 +46,7 @@ public:
     CanvasGLFW(std::string title = "", uvec2 dimensions = uvec2(128));
     virtual ~CanvasGLFW();
 
-    virtual void initialize() override;
-    void initializeGL();
-    virtual void initializeSquare() override;
-    virtual void deinitialize() override;
     virtual void activate() override;
-
     virtual void glSwapBuffers() override;
 
     void show();
@@ -61,7 +56,7 @@ public:
     void setWindowTitle(std::string);
 
     static void closeWindow(GLFWwindow*);
-    static int getWindowCount();
+    static int getVisibleWindowCount();
 
     static void reshape(GLFWwindow*, int, int);
 

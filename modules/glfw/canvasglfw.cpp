@@ -45,32 +45,17 @@ CanvasGLFW::CanvasGLFW(std::string windowTitle, uvec2 dimensions)
     , mouseButton_(MouseEvent::MOUSE_BUTTON_NONE)
     , mouseState_(MouseEvent::MOUSE_STATE_NONE)
     , mouseModifiers_(InteractionEvent::MODIFIER_NONE) {
-    if (alwaysOnTop_) {
-        glfwWindowHint(GLFW_FLOATING, GL_TRUE);
-    } else {
-        glfwWindowHint(GLFW_FLOATING, GL_FALSE);
-    }
+    glfwWindowHint(GLFW_FLOATING, alwaysOnTop_ ? GL_TRUE : GL_FALSE);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-}
 
-CanvasGLFW::~CanvasGLFW() { 
-    glfwDestroyWindow(glWindow_); 
-}
-
-void CanvasGLFW::initialize() { CanvasGL::initialize(); }
-
-void CanvasGLFW::initializeGL() {
-    if (!sharedContext_) {
-        std::string preferProfile = OpenGLCapabilities::getPreferredProfile();
 #ifdef __APPLE__
-        if (preferProfile == "core") {
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        }
-#endif
+    if (!sharedContext_ && OpenGLCapabilities::getPreferredProfile() == "core") {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     }
+#endif
 
     glWindow_ = glfwCreateWindow(getScreenDimensions().x, getScreenDimensions().y,
                                  windowTitle_.c_str(), nullptr, sharedContext_);
@@ -80,12 +65,9 @@ void CanvasGLFW::initializeGL() {
         throw Exception("Could not create GLFW window.", IvwContext);
     }
 
-    if (!sharedContext_) {
-        sharedContext_ = glWindow_;
-    }
+    if (!sharedContext_) sharedContext_ = glWindow_;
 
-    glfwWindowCount_++;
-
+    // register callbacks
     glfwSetKeyCallback(glWindow_, keyboard);
     glfwSetMouseButtonCallback(glWindow_, mouseButton);
     glfwSetCursorPosCallback(glWindow_, mouseMotion);
@@ -95,24 +77,29 @@ void CanvasGLFW::initializeGL() {
     glfwSetWindowSizeCallback(glWindow_, reshape);
 
     activate();
-
     OpenGLCapabilities::initializeGLEW();
 }
 
-void CanvasGLFW::initializeSquare() { CanvasGL::initializeSquare(); }
-
-void CanvasGLFW::deinitialize() { CanvasGL::deinitialize(); }
+CanvasGLFW::~CanvasGLFW() { glfwDestroyWindow(glWindow_); }
 
 void CanvasGLFW::activate() { glfwMakeContextCurrent(glWindow_); }
 
 void CanvasGLFW::glSwapBuffers() { glfwSwapBuffers(glWindow_); }
 
 void CanvasGLFW::show() {
-    glfwShowWindow(glWindow_);
-    update();
+    if (!glfwGetWindowAttrib(glWindow_, GLFW_VISIBLE)) {
+        glfwWindowCount_++;
+        glfwShowWindow(glWindow_);
+        update();
+    }
 }
 
-void CanvasGLFW::hide() { glfwHideWindow(glWindow_); }
+void CanvasGLFW::hide() {
+    if (glfwGetWindowAttrib(glWindow_, GLFW_VISIBLE)) {
+        glfwWindowCount_--;
+        glfwHideWindow(glWindow_);
+    }
+}
 
 void CanvasGLFW::setWindowSize(uvec2 size) {
     glfwSetWindowSize(glWindow_, static_cast<int>(size.x), static_cast<int>(size.y));
@@ -123,14 +110,9 @@ void CanvasGLFW::setWindowTitle(std::string windowTitle) {
     glfwSetWindowTitle(glWindow_, windowTitle_.c_str());
 }
 
-void CanvasGLFW::closeWindow(GLFWwindow* window) {
-    glfwWindowCount_--;
-    if (sharedContext_ != window) {
-        glfwDestroyWindow(window);
-    }
-}
+void CanvasGLFW::closeWindow(GLFWwindow* window) { getCanvasGLFW(window)->hide(); }
 
-int CanvasGLFW::getWindowCount() { return glfwWindowCount_; }
+int CanvasGLFW::getVisibleWindowCount() { return glfwWindowCount_; }
 
 void CanvasGLFW::reshape(GLFWwindow* window, int width, int height) {
     getCanvasGLFW(window)->resize(uvec2(width, height));
@@ -261,11 +243,9 @@ InteractionEvent::Modifier CanvasGLFW::mapModifiers(int modifiersGLFW) {
 std::unique_ptr<Canvas> CanvasGLFW::create() {
     auto res = dispatchFront([&]() {
         auto canvas = util::make_unique<CanvasGLFW>(windowTitle_, screenDimensions_);
-        canvas->initializeGL();
         return std::move(canvas);
     });
     return res.get();
-
 }
 
 }  // namespace
