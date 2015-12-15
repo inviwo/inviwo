@@ -59,6 +59,9 @@ ImageSnapshot::ImageSnapshot()
     addProperty(snapshot_);
     addProperty(clear_);
 
+    outport1_.setHandleResizeEvents(false);
+    outport2_.setHandleResizeEvents(false);
+
     //outport1ImageIndex_.setSerializationMode(PropertySerializationMode::NONE);
     //outport2ImageIndex_.setSerializationMode(PropertySerializationMode::NONE);
 
@@ -82,13 +85,15 @@ void ImageSnapshot::process() {
     auto i2 = outport2ImageIndex_.get();
     if (i1 == -1) {
         outport1_.setData(inport_.getData());
-    } else {
+    }
+    else {
         outport1_.setData(snapshots_[i1]);
     }
 
     if (i2 == -1) {
         outport2_.setData(inport_.getData());
-    } else {
+    }
+    else {
         outport2_.setData(snapshots_[i2]);
     }
 }
