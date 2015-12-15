@@ -52,7 +52,7 @@ float Clock::getElapsedSeconds() const {
     return (duration_cast<duration<float>>(tickTime_ - startTime_)).count();
 }
 
-ScopedClockCPU::~ScopedClockCPU() {
+void ScopedClockCPU::print() {
     clock_.tick();
     if (clock_.getElapsedMiliseconds() > logIfAtLeastMilliSec_) {
         std::stringstream message;
@@ -60,6 +60,19 @@ ScopedClockCPU::~ScopedClockCPU() {
         LogCentral::getPtr()->log(logSource_, LogLevel::Info, LogAudience::Developer, __FILE__,
                                   __FUNCTION__, __LINE__, message.str());
     }
+}
+
+void ScopedClockCPU::reset() {
+    clock_.start();
+}
+
+void ScopedClockCPU::printAndReset() {
+    print();
+    reset();
+}
+
+ScopedClockCPU::~ScopedClockCPU() {
+    print();
 }
 
 }  // namespace

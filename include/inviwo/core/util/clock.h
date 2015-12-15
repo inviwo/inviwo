@@ -88,6 +88,11 @@ public:
         : logSource_(logSource), logMessage_(message), logIfAtLeastMilliSec_(logIfAtLeastMilliSec) {
         clock_.start();
     }
+
+    void print();
+    void reset();
+    void printAndReset();
+
     virtual ~ScopedClockCPU();
 
 private:
