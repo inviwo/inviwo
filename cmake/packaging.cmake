@@ -179,7 +179,7 @@ if(IVW_PACKAGE_PROJECT)
 
     elseif(APPLE)
         if(IVW_PACKAGE_INSTALLER)
-            configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/info_plist_template.txt
+            configure_file(${IVW_CMAKE_TEMPLATES}/info_plist_template.txt
                ${CMAKE_BINARY_DIR}/Info.plist
                @ONLY IMMEDIATE)
         

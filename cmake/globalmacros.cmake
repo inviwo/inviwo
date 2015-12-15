@@ -148,7 +148,7 @@ function(generate_module_paths_header)
 
     set(IVW_MODULES_PATHS_ARRAY ${paths})
 
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/inviwomodulespaths_template.h 
+    configure_file(${IVW_CMAKE_TEMPLATES}/inviwomodulespaths_template.h 
                    ${CMAKE_BINARY_DIR}/modules/_generated/inviwomodulespaths.h @ONLY IMMEDIATE)
 endfunction()
 
@@ -199,7 +199,7 @@ function(generate_module_registration_file module_classes modules_class_paths)
     string(REGEX REPLACE ":" ";" MODULE_HEADERS "${headers}")   
     string(REGEX REPLACE ":" ";" MODULE_CLASS_FUNCTIONS "${functions}")
 
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_registration_template.h 
+    configure_file(${IVW_CMAKE_TEMPLATES}/mod_registration_template.h 
                    ${CMAKE_BINARY_DIR}/modules/_generated/moduleregistration.h @ONLY)
 
 endfunction()
@@ -207,7 +207,7 @@ endfunction()
 #--------------------------------------------------------------------
 # Create CMAKE file for pre-process 
 function(ivw_generate_shader_resource parent_path)
-    set(output "include(${IVW_ROOT_DIR}/cmake/txt2h.cmake)\n")
+    set(output "include(${IVW_ROOT_DIR}/cmake/utilities/txt2h.cmake)\n")
     set(shaders "")
     foreach(current_path ${ARGN})
         file(RELATIVE_PATH filepath0 ${parent_path} ${current_path})
@@ -678,7 +678,7 @@ macro(ivw_make_package package_name project_name)
     set(_allLinkFlags ${uniqueLinkFlags})
     set(_project_name ${project_name})
   
-    configure_file(${IVW_CMAKE_SOURCE_MODULE_DIR}/mod_package_template.cmake 
+    configure_file(${IVW_CMAKE_TEMPLATES}/mod_package_template.cmake 
                    ${IVW_CMAKE_BINARY_MODULE_DIR}/Find${package_name}.cmake @ONLY IMMEDIATE)
 endmacro()
 
