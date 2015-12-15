@@ -117,7 +117,7 @@ void Mesh2DRenderProcessorGL::updateDrawers() {
                 std::distance(ibegin, iend)) {  // data is changed or new.
 
             for (auto geo : elem.second) {
-                auto factory = InviwoApplication::getPtr()->getMeshDrawerFactory();
+                auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
                 if (auto renderer = factory->create(geo.get())) {
                     drawers_.emplace(std::make_pair(elem.first, std::move(renderer)));
                 }

@@ -241,9 +241,10 @@ std::shared_ptr<DataWriterType<Layer>> CanvasProcessor::getWriter(
                                                       [](DataWriterType<Layer>*) {});
     } else {
         return std::shared_ptr<DataWriterType<Layer>>(
-            InviwoApplication::getPtr()
-            ->getDataWriterFactory()
-            ->getWriterForTypeAndExtension<Layer>(fileExtension));
+            getNetwork()
+                ->getApplication()
+                ->getDataWriterFactory()
+                ->getWriterForTypeAndExtension<Layer>(fileExtension));
     }
 }
 

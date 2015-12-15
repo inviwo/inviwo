@@ -46,6 +46,8 @@
 
 namespace inviwo {
 
+    class InviwoApplication;
+
 /**
  * This class manages the current processor network. It can be thought of as a container of
  * Processor instances, which Port instances are connected through PortConnection instances,
@@ -72,7 +74,7 @@ public:
     using PortConnectionMap = std::map<std::pair<Outport*, Inport*>, PortConnection*>;
     using PropertyLinkMap = std::map<std::pair<Property*, Property*>, PropertyLink*>;
 
-    ProcessorNetwork();
+    ProcessorNetwork(InviwoApplication* application = InviwoApplication::getPtr());
     virtual ~ProcessorNetwork();
 
     /**
@@ -215,6 +217,7 @@ public:
     Property* getProperty(std::vector<std::string> path) const;
     bool isPropertyInNetwork(Property* prop) const;
 
+    InviwoApplication* getApplication() const;
 
     void autoLinkProcessor(Processor* processor);
     void evaluateLinksFromProperty(Property*);
@@ -285,9 +288,11 @@ private:
 
     static const int processorNetworkVersion_;
 
-    bool modified_;
-    unsigned int locked_;
-    bool deserializing_;
+    bool modified_ = true;
+    unsigned int locked_ = 0;
+    bool deserializing_ = false;
+
+    InviwoApplication* application_;
 
     ProcessorMap processors_;
     PortConnectionMap connections_;

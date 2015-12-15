@@ -122,8 +122,8 @@ namespace inviwo {
 
         BoolProperty showBoundingBox_;
         FloatVec4Property boundingBoxColor_;
-		FloatProperty renderPointSize_;
-		FloatProperty renderLineWidth_;
+        FloatProperty renderPointSize_;
+        FloatProperty renderLineWidth_;
 
         BoolProperty  nearestInterpolation_;
 

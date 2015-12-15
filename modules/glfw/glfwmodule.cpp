@@ -42,7 +42,7 @@ GLFWModule::GLFWModule(InviwoApplication* app) : InviwoModule(app, "GLFW") {
         return;
     }
 
-    GLFWSharedCanvas_ = new CanvasGLFW(InviwoApplication::getPtr()->getDisplayName());
+    GLFWSharedCanvas_ = new CanvasGLFW(app->getDisplayName());
 
     RenderContext::getPtr()->setDefaultRenderContext(GLFWSharedCanvas_);
     GLFWSharedCanvas_->initializeSquare();

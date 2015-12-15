@@ -92,7 +92,7 @@ TubeRendering::TubeRendering()
     
 void TubeRendering::process() {
     if (!drawer_) {
-        auto factory = InviwoApplication::getPtr()->getMeshDrawerFactory();
+        auto factory = getNetwork()->getApplication()->getMeshDrawerFactory();
         drawer_ =factory->create(mesh_.getData().get());
     }
     if (!drawer_) return;

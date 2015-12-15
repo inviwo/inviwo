@@ -125,7 +125,7 @@ void LinkEvaluator::secondaryCacheHelper(std::vector<Link>& links, Property* src
     // Check that we don't use a previous source or destination as the new destination.
     if (!util::contains_if(
             links, [dst](const Link& link) { return link.src_ == dst || link.dst_ == dst; })) {
-        auto manager = InviwoApplication::getPtr()->getPropertyConverterManager();
+        auto manager = network_->getApplication()->getPropertyConverterManager();
         if (auto converter = manager->getConverter(src, dst)) {
             links.emplace_back(src, dst, converter);
         }

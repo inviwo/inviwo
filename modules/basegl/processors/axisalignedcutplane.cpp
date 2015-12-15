@@ -165,7 +165,7 @@ void AxisAlignedCutPlane::createBoundingBox() {
     boundingBoxMesh_->addIndices(1, 0, 2, 3, 7, 5, 4, 6, 2, 0, 4, 5, 1, 3, 7, 6);
 
     boundingBoxDrawer_ =
-        InviwoApplication::getPtr()->getMeshDrawerFactory()->create(boundingBoxMesh_.get());
+        getNetwork()->getApplication()->getMeshDrawerFactory()->create(boundingBoxMesh_.get());
 }
 
 void AxisAlignedCutPlane::drawBoundingBox() {

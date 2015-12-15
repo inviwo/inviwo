@@ -56,8 +56,8 @@ ImageSource::ImageSource()
     , isDeserializing_(false) {
     addPort(outport_);
 
-    auto extensions =
-        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
+    auto app = getNetwork()->getApplication();
+    auto extensions = app->getDataReaderFactory()->getExtensionsForType<Layer>();
     for (auto& ext : extensions) file_.addNameFilter(ext);
 
     addProperty(file_);
@@ -74,7 +74,7 @@ void ImageSource::process() {
     if (file_.get().empty()) return;
 
     std::string ext = filesystem::getFileExtension(file_.get());
-    auto factory = InviwoApplication::getPtr()->getDataReaderFactory();
+    auto factory = getNetwork()->getApplication()->getDataReaderFactory();
     if (auto reader = factory->getReaderForTypeAndExtension<Layer>(ext)) {
         try {
             auto outLayer = reader->readData(file_.get());
@@ -107,8 +107,8 @@ void ImageSource::process() {
  */
 void ImageSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    auto extensions =
-        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
+    auto app = getNetwork()->getApplication();
+    auto extensions = app->getDataReaderFactory()->getExtensionsForType<Layer>();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
     for (auto& ext : extensions) {

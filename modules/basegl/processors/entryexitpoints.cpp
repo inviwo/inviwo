@@ -81,7 +81,7 @@ void EntryExitPoints::process() {
     // Check if no renderer exist or if geometry changed
     if (inport_.isChanged() && inport_.hasData()) {
         drawer_ =
-            InviwoApplication::getPtr()->getMeshDrawerFactory()->create(inport_.getData().get());
+           getNetwork()->getApplication()->getMeshDrawerFactory()->create(inport_.getData().get());
     }
     if (!drawer_) return;
 

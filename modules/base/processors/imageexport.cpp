@@ -48,19 +48,15 @@ const ProcessorInfo ImageExport::getProcessorInfo() const { return processorInfo
 ImageExport::ImageExport()
     : Processor()
     , imagePort_("image")
-    , imageFile_(
-          "imageFileName", "Image file name",
-          InviwoApplication::getPtr()->getPath(PathType::Images, "/newimage.png"),
-          "image")
+    , imageFile_("imageFileName", "Image file name",
+                 filesystem::getPath(PathType::Images, "/newimage.png"), "image")
     , exportImageButton_("snapshot", "Export Image", InvalidationLevel::Valid)
     , overwrite_("overwrite", "Overwrite", false)
     , exportQueued_(false) {
-    std::vector<FileExtension> ext =
-        InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<Image>();
-
-    for (std::vector<FileExtension>::const_iterator it = ext.begin(); it != ext.end(); ++it) {
+    auto app = InviwoApplication::getPtr();
+    for (auto& ext : app->getDataWriterFactory()->getExtensionsForType<Image>()) {
         std::stringstream ss;
-        ss << it->description_ << " (*." << it->extension_ << ")";
+        ss << ext.description_ << " (*." << ext.extension_ << ")";
         imageFile_.addNameFilter(ss.str());
     }
 
@@ -91,14 +87,11 @@ void ImageExport::processExport() {
     auto image = imagePort_.getData();
 
     if (image && !imageFile_.get().empty()) {
-        const Layer* layer = image->getColorLayer();
-        if (layer) {
+        if (auto layer = image->getColorLayer()) {
             std::string fileExtension = filesystem::getFileExtension(imageFile_.get());
-            auto writer = InviwoApplication::getPtr()
-                              ->getDataWriterFactory()
-                              ->getWriterForTypeAndExtension<Layer>(fileExtension);
-
-            if (writer) {
+            auto app = getNetwork()->getApplication();
+            if (auto writer = app->getDataWriterFactory()->getWriterForTypeAndExtension<Layer>(
+                    fileExtension)) {
                 try {
                     writer->setOverwrite(overwrite_.get());
                     writer->writeData(layer, imageFile_.get());

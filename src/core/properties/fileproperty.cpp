@@ -77,10 +77,9 @@ FileProperty::~FileProperty() {}
 void FileProperty::serialize(Serializer& s) const {
     Property::serialize(s);
 
+    auto app = InviwoApplication::getPtr();
     const std::string basePath =
-        !s.getFileName().empty()
-            ? s.getFileName()
-            : InviwoApplication::getPtr()->getPath(PathType::Data);
+        !s.getFileName().empty() ? s.getFileName() : app->getPath(PathType::Data);
 
     const std::string absoluteFilePath = get();
     std::string serializePath;
@@ -103,9 +102,9 @@ void FileProperty::deserialize(Deserializer& d) {
     d.deserialize("url", serializePath);
 
     if (!filesystem::isAbsolutePath(serializePath) && !serializePath.empty()) {
+        auto app = InviwoApplication::getPtr();
         const std::string basePath = filesystem::getFileDirectory(
-            !d.getFileName().empty() ? d.getFileName() : InviwoApplication::getPtr()->getPath(
-                                                             PathType::Data));
+            !d.getFileName().empty() ? d.getFileName() : app->getPath(PathType::Data));
 
         set(basePath + serializePath);
     } else {

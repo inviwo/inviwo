@@ -49,16 +49,12 @@ const ProcessorInfo VolumeExport::getProcessorInfo() const { return processorInf
 VolumeExport::VolumeExport()
     : Processor()
     , volumePort_("volume")
-    , volumeFile_(
-          "volumeFileName", "Volume file name",
-          InviwoApplication::getPtr()->getPath(PathType::Volumes, "/newvolume.dat"),
-          "volume")
+    , volumeFile_("volumeFileName", "Volume file name",
+                  filesystem::getPath(PathType::Volumes, "/newvolume.dat"), "volume")
     , exportVolumeButton_("snapshot", "Export Volume", InvalidationLevel::Valid)
     , overwrite_("overwrite", "Overwrite", false) {
-    std::vector<FileExtension> exts =
-        InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<Volume>();
-
-    for (auto& ext : exts) {
+    for (auto& ext :
+        InviwoApplication::getPtr()->getDataWriterFactory()->getExtensionsForType<Volume>()) {
         std::stringstream ss;
         ss << ext.description_ << " (*." << ext.extension_ << ")";
         volumeFile_.addNameFilter(ss.str());
@@ -79,11 +75,9 @@ void VolumeExport::exportVolume() {
 
     if (volume && !volumeFile_.get().empty()) {
         std::string fileExtension = filesystem::getFileExtension(volumeFile_.get());
-        auto writer = InviwoApplication::getPtr()
-                          ->getDataWriterFactory()
-                          ->getWriterForTypeAndExtension<Volume>(fileExtension);
 
-        if (writer) {
+        auto factory = getNetwork()->getApplication()->getDataWriterFactory();
+        if (auto writer = factory->getWriterForTypeAndExtension<Volume>(fileExtension)) {
             try {
                 writer->setOverwrite(overwrite_.get());
                 writer->writeData(volume.get(), volumeFile_.get());

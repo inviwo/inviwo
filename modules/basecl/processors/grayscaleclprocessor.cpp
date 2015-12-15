@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "grayscaleclprocessor.h"
@@ -45,17 +45,15 @@ const ProcessorInfo GrayscaleCLProcessor::processorInfo_{
     CodeState::Stable,         // Code state
     Tags::CL,                  // Tags
 };
-const ProcessorInfo GrayscaleCLProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo GrayscaleCLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 GrayscaleCLProcessor::GrayscaleCLProcessor()
-    : Processor(), ProcessorKernelOwner(this)
+    : Processor()
+    , ProcessorKernelOwner(this)
     , input_("color image")
     , outport_("outport")
     , useGLSharing_("glsharing", "Use OpenGL sharing", true)
-    , kernel_(nullptr)
-{
+    , kernel_(nullptr) {
     addPort(input_, "ImagePortGroup1");
     addPort(outport_, "ImagePortGroup1");
 
@@ -75,7 +73,7 @@ void GrayscaleCLProcessor::process() {
 
     auto outImage = outport_.getEditableData();
 
-    //outImage->resize(inImage->getDimensions());
+    // outImage->resize(inImage->getDimensions());
     uvec2 outportDim = outImage->getDimensions();
     auto inImage = input_.getData();
     try {
@@ -90,19 +88,20 @@ void GrayscaleCLProcessor::process() {
             cl_uint arg = 0;
             kernel_->setArg(arg++, *colorImageCL);
             kernel_->setArg(arg++, *outImageCL);
-            OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, static_cast<glm::size2_t>(outportDim));
+            OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(
+                *kernel_, cl::NullRange, static_cast<glm::size2_t>(outportDim));
         } else {
             const ImageCL* colorImageCL = inImage->getRepresentation<ImageCL>();
             ImageCL* outImageCL = outImage->getEditableRepresentation<ImageCL>();
             cl_uint arg = 0;
             kernel_->setArg(arg++, *colorImageCL);
             kernel_->setArg(arg++, *outImageCL);
-            OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(*kernel_, cl::NullRange, static_cast<glm::size2_t>(outportDim));
+            OpenCL::getPtr()->getQueue().enqueueNDRangeKernel(
+                *kernel_, cl::NullRange, static_cast<glm::size2_t>(outportDim));
         }
     } catch (cl::Error& err) {
         LogError(getCLErrorString(err));
     }
 }
 
-} // namespace
-
+}  // namespace

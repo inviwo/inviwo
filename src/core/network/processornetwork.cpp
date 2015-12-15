@@ -41,13 +41,11 @@
 
 namespace inviwo {
 
-ProcessorNetwork::ProcessorNetwork()
+ProcessorNetwork::ProcessorNetwork(InviwoApplication* application)
     : ProcessorNetworkObservable()
     , ProcessorObserver()
     , PropertyOwnerObserver()
-    , modified_(true)
-    , locked_(0)
-    , deserializing_(false)
+    , application_(application)
     , linkEvaluator_(this) {}
 
 ProcessorNetwork::~ProcessorNetwork() {
@@ -58,7 +56,7 @@ ProcessorNetwork::~ProcessorNetwork() {
 bool ProcessorNetwork::addProcessor(Processor* processor) {
     NetworkLock lock(this);
 
-    if (!InviwoApplication::getPtr()->checkIfAllTagsAreSupported(processor->getTags())) {
+    if (!application_->checkIfAllTagsAreSupported(processor->getTags())) {
         LogNetworkWarn("Processor '" << processor->getDisplayName()
                                      << "' was considered as not supported by the application.");
         return false;
@@ -253,7 +251,7 @@ std::vector<PropertyLink*> ProcessorNetwork::getLinksBetweenProcessors(Processor
 }
 
 struct LinkCheck {
-    LinkCheck() : linkSettings_(*InviwoApplication::getPtr()->getSettingsByType<LinkSettings>()) {}
+    LinkCheck(const LinkSettings& settings) : linkSettings_(settings) {}
     bool operator()(const Property* p) const { return !linkSettings_.isLinkable(p); }
 
 private:
@@ -307,7 +305,7 @@ private:
 };
 
 void ProcessorNetwork::autoLinkProcessor(Processor* processor) {
-    LinkCheck linkChecker;
+    LinkCheck linkChecker(*(application_->getSettingsByType<LinkSettings>()));
 
     std::vector<Property*> allNewPropertes = processor->getPropertiesRecursive();
 
@@ -378,7 +376,7 @@ void ProcessorNetwork::clear() {
     NetworkLock lock(this);
 
     // make sure the pool is not doing any work.
-    InviwoApplication::getPtr()->waitForPool();
+    application_->waitForPool();
 
     std::vector<Processor*> processors = getProcessors();
     // Invalidate inports to alert processors that they should stop their calculations.
@@ -440,7 +438,7 @@ void ProcessorNetwork::serialize(Serializer& s) const {
     s.serialize("Connections", getConnections(), "Connection");
     s.serialize("PropertyLinks", getLinks(), "PropertyLink");
 
-    InviwoSetupInfo info(InviwoApplication::getPtr());
+    InviwoSetupInfo info(application_);
     s.serialize("InviwoSetup", info);
 }
 
@@ -597,6 +595,10 @@ bool ProcessorNetwork::isPropertyInNetwork(Property* prop) const {
         }
     }
     return false;
+}
+
+InviwoApplication* ProcessorNetwork::getApplication() const {
+    return application_;
 }
 
 }  // namespace

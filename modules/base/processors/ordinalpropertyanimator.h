@@ -186,6 +186,7 @@ void OrdinalPropertyAnimator::VecProp<T>::setLimits() {
 template <typename T>
 OrdinalPropertyAnimator::VecProp<T>::VecProp(std::string classname, std::string displayName)
     : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
+    
     auto factory = InviwoApplication::getPtr()->getPropertyFactory();
 
     prop_ = dynamic_cast<OrdinalProperty<T>*>(
@@ -258,6 +259,7 @@ void OrdinalPropertyAnimator::PrimProp<T>::setLimits() {
 template <typename T>
 OrdinalPropertyAnimator::PrimProp<T>::PrimProp(std::string classname, std::string displayName)
     : BaseProp(classname, displayName), prop_(nullptr), delta_(nullptr) {
+    
     auto factory = InviwoApplication::getPtr()->getPropertyFactory();
 
     prop_ = dynamic_cast<OrdinalProperty<T>*>(
