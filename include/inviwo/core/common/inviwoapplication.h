@@ -38,6 +38,7 @@
 #include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/vectoroperations.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/pathtype.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
 
 #include <warn/push>
@@ -74,21 +75,7 @@ class InviwoModule;
 class ModuleCallbackAction;
 class FileObserver;
 
-enum class PathType {
-    Data,               // /data
-    Volumes,            // /data/volumes
-    Modules,            // /modules
-    Workspaces,         // /data/workspaces
-    Scripts,            // /data/workspaces
-    PortInspectors,     // /data/workspaces/portinspectors
-    Images,             // /data/images
-    Databases,          // /data/databases
-    Resources,          // /resources
-    TransferFunctions,  // /data/transferfunctions
-    Settings,           // path to the current users settings
-    Help,               // /data/help
-    Tests               // /tests
-};
+
 
 /**
  * \class InviwoApplication
@@ -104,8 +91,8 @@ public:
         std::function<std::vector<std::unique_ptr<InviwoModuleFactoryObject>>()>;
 
     InviwoApplication();
-    InviwoApplication(std::string displayName, std::string basePath);
-    InviwoApplication(int argc, char** argv, std::string displayName, std::string basePath);
+    InviwoApplication(std::string displayName);
+    InviwoApplication(int argc, char** argv, std::string displayName);
     InviwoApplication(const InviwoApplication& rhs) = delete;
     InviwoApplication& operator=(const InviwoApplication& that) = delete;
 
@@ -207,7 +194,6 @@ private:
     };
 
     std::string displayName_;
-    std::string basePath_;
     Tags nonSupportedTags_;
 
     std::function<void(std::string)> progressCallback_;

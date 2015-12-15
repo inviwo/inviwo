@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->registerLogger(new ConsoleLogger());
 
     std::string appName = "Inviwo v" + IVW_VERSION + " - QtApp";
-    InviwoApplicationQt inviwoApp(appName, inviwo::filesystem::findBasePath(), argc, argv, false);
+    InviwoApplicationQt inviwoApp(appName, argc, argv, false);
     inviwoApp.setAttribute(Qt::AA_NativeWindows);
 
     // Initialize all modules

@@ -57,8 +57,7 @@ int main(int argc, char** argv) {
     LogCentral::init();
     LogCentral::getPtr()->registerLogger(new ConsoleLogger());
 
-    InviwoApplication inviwoApp(argc, argv, "Inviwo v" + IVW_VERSION + " - GLFWApp",
-                                inviwo::filesystem::findBasePath());
+    InviwoApplication inviwoApp(argc, argv, "Inviwo v" + IVW_VERSION + " - GLFWApp");
     inviwoApp.setPostEnqueueFront([]() { glfwPostEmptyEvent(); });
 
     CanvasGLFW::setAlwaysOnTopByDefault(false);

@@ -29,7 +29,6 @@
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/tinydirinterface.h>
-#include <inviwo/core/common/inviwoapplication.h>
 
 // For directory exists
 #include <sys/types.h>
@@ -276,6 +275,72 @@ std::string findBasePath() {
     return basePath;
 }
 
+IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix, const bool& createFolder) {
+    std::string result = findBasePath();
+
+    switch (pathType) {
+        case PathType::Data:
+            result += "/data";
+            break;
+
+        case PathType::Volumes:
+            result += "/data/volumes";
+            break;
+
+        case PathType::Modules:
+            result += "/modules";
+            break;
+
+        case PathType::Workspaces:
+            result += "/data/workspaces";
+            break;
+
+        case PathType::PortInspectors:
+            result += "/data/workspaces/portinspectors";
+            break;
+
+        case PathType::Scripts:
+            result += "/data/scripts";
+            break;
+
+        case PathType::Images:
+            result += "/data/images";
+            break;
+
+        case PathType::Databases:
+            result += "/data/databases";
+            break;
+
+        case PathType::Resources:
+            result += "/resources";
+            break;
+
+        case PathType::TransferFunctions:
+            result += "/data/transferfunctions";
+            break;
+
+        case PathType::Settings:
+            result = getInviwoUserSettingsPath();
+            break;
+
+        case PathType::Help:
+            result += "/data/help";
+            break;
+
+        case PathType::Tests:
+            result += "/tests";
+            break;
+
+        default:
+            break;
+    }
+
+    if (createFolder) {
+        createDirectoryRecursively(result);
+    }
+    return result + suffix;
+}
+
 void createDirectoryRecursively(std::string path) {
     replaceInString(path, "\\", "/");
     std::vector<std::string> v = splitString(path, '/');
@@ -354,8 +419,8 @@ std::string getInviwoUserSettingsPath() {
 }
 
 std::string addBasePath(const std::string& url) {
-    if (url.empty()) return InviwoApplication::getPtr()->getBasePath();
-    return InviwoApplication::getPtr()->getBasePath() + "/" + url;
+    if (url.empty()) return findBasePath();
+    return findBasePath() + "/" + url;
 }
 
 std::string getFileDirectory(const std::string& url) {
@@ -405,7 +470,7 @@ std::string getRelativePath(const std::string& bPath, const std::string& absolut
     std::string relativePath("");
 
     // if given base path is empty use system base path
-    if (basePath.empty()) basePath = InviwoApplication::getPtr()->getBasePath();
+    if (basePath.empty()) basePath = findBasePath();
 
     // path as string tokens
     std::vector<std::string> basePathTokens;
@@ -525,7 +590,7 @@ bool sameDrive(const std::string& refPath, const std::string& queryPath) {
         } else {
             // reference path is relative, but queryPath is absolute
             // use base path as reference
-            referencePath = InviwoApplication::getPtr()->getBasePath();
+            referencePath = findBasePath();
         }
     } else if (queryPathIsRelative) {
         // refPath is absolute, queryPath is relative

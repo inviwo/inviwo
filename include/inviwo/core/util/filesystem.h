@@ -32,6 +32,7 @@
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/pathtype.h>
 
 #include <vector>
 
@@ -131,6 +132,16 @@ IVW_CORE_API std::string getParentFolderPath(const std::string& path,
  * @return The directory considered to be the basePath.
  */
 IVW_CORE_API std::string findBasePath();
+
+/**
+ * Get basePath +  pathType + suffix.
+ * @see PathType
+ * @param pathType Enum for type of path
+ * @param suffix Path extension
+ * @return basePath +  pathType + suffix
+ */
+IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix = "",
+                                 const bool& createFolder = false);
 
 IVW_CORE_API void createDirectoryRecursively(std::string path);
 

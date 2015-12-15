@@ -48,10 +48,10 @@
 
 namespace inviwo {
 
-InviwoApplicationQt::InviwoApplicationQt(std::string displayName, std::string basePath, int& argc,
+InviwoApplicationQt::InviwoApplicationQt(std::string displayName, int& argc,
                                          char** argv, bool movePointsOn)
     : QApplication(argc, argv)
-    , InviwoApplication(argc, argv, displayName, basePath)
+    , InviwoApplication(argc, argv, displayName)
     , movePointsOn_(movePointsOn)
     , mainWindow_(nullptr)
     , windowDecorationOffset_(0, 0) {

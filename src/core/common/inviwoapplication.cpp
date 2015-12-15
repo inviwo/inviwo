@@ -58,10 +58,8 @@
 
 namespace inviwo {
 
-InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName,
-                                     std::string basePath)
+InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayName)
     : displayName_(displayName)
-    , basePath_(basePath)
     , nonSupportedTags_()
     , progressCallback_()
     , commandLineParser_(argc, argv)
@@ -88,7 +86,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , modules_()
     , moudleCallbackActions_()
 
-    , processorNetwork_{util::make_unique<ProcessorNetwork>()}
+    , processorNetwork_{util::make_unique<ProcessorNetwork>(this)}
     , processorNetworkEvaluator_{
           util::make_unique<ProcessorNetworkEvaluator>(processorNetwork_.get())} {
     if (commandLineParser_.getLogToFile()) {
@@ -118,10 +116,10 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     }
 }
 
-InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo", "") {}
+InviwoApplication::InviwoApplication() : InviwoApplication(0, nullptr, "Inviwo") {}
 
-InviwoApplication::InviwoApplication(std::string displayName, std::string basePath)
-    : InviwoApplication(0, nullptr, displayName, basePath) {}
+InviwoApplication::InviwoApplication(std::string displayName)
+    : InviwoApplication(0, nullptr, displayName) {}
 
 InviwoApplication::~InviwoApplication() {
     pool_.setSize(0);
@@ -153,73 +151,11 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
     for (auto setting : settings) setting->loadFromDisk();
 }
 
-const std::string& InviwoApplication::getBasePath() const { return basePath_; }
+const std::string& InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
 
 std::string InviwoApplication::getPath(PathType pathType, const std::string& suffix,
                                        const bool& createFolder) {
-    std::string result = getBasePath();
-
-    switch (pathType) {
-        case PathType::Data:
-            result += "/data";
-            break;
-
-        case PathType::Volumes:
-            result += "/data/volumes";
-            break;
-
-        case PathType::Modules:
-            result += "/modules";
-            break;
-
-        case PathType::Workspaces:
-            result += "/data/workspaces";
-            break;
-
-        case PathType::PortInspectors:
-            result += "/data/workspaces/portinspectors";
-            break;
-
-        case PathType::Scripts:
-            result += "/data/scripts";
-            break;
-
-        case PathType::Images:
-            result += "/data/images";
-            break;
-
-        case PathType::Databases:
-            result += "/data/databases";
-            break;
-
-        case PathType::Resources:
-            result += "/resources";
-            break;
-
-        case PathType::TransferFunctions:
-            result += "/data/transferfunctions";
-            break;
-
-        case PathType::Settings:
-            result = filesystem::getInviwoUserSettingsPath();
-            break;
-
-        case PathType::Help:
-            result += "/data/help";
-            break;
-
-        case PathType::Tests:
-            result += "/tests";
-            break;
-
-        default:
-            break;
-    }
-
-    if (createFolder) {
-        filesystem::createDirectoryRecursively(result);
-    }
-    return result + suffix;
+    return filesystem::getPath(pathType, suffix, createFolder);
 }
 
 void InviwoApplication::registerModule(std::unique_ptr<InviwoModule> module) {

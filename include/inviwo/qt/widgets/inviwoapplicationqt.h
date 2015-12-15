@@ -69,7 +69,7 @@ class IVW_QTWIDGETS_API InviwoApplicationQt : public QApplication, public Inviwo
 #include <warn/pop>
 
 public:
-    InviwoApplicationQt(std::string displayName_, std::string basePath_, int& argc, char** argv, bool movePointsOn = true);
+    InviwoApplicationQt(std::string displayName, int& argc, char** argv, bool movePointsOn = true);
     virtual ~InviwoApplicationQt();
 
     virtual void registerModules(RegisterModuleFunc) override;
