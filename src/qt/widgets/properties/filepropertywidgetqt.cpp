@@ -89,12 +89,17 @@ void FilePropertyWidgetQt::generateWidget() {
 }
 
 void FilePropertyWidgetQt::setPropertyValue() {
-    std::string path{property_->get()};
+    std::string path{ property_->get() };
+
     if (!path.empty()) {
-        // only accept path if it exists
-        if (filesystem::directoryExists(path)) {
+        if (filesystem::directoryExists(path)) {  // if a folder is selected
             // TODO: replace with filesystem:: functionality!
             path = QDir(QString::fromStdString(path)).absolutePath().toStdString();
+        } else if (filesystem::fileExists(path)) {
+            // if a file is selected, set path the the folder, not the file
+            path = QDir(QString::fromStdString(filesystem::getFileDirectory(path)))
+                       .absolutePath()
+                       .toStdString();
         }
     }
 
