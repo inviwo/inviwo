@@ -104,7 +104,7 @@ public:
      * Get the base path of the application.
      * i.e. where the core data and modules folder and etc are.
      */
-    const std::string& getBasePath() const;
+    std::string getBasePath() const;
 
     std::string getDisplayName() const;
 

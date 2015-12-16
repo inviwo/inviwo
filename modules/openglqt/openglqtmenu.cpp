@@ -60,7 +60,7 @@ namespace inviwo {
 void OpenGLQtMenu::updateShadersMenu() {
     if (!shadersItem_) return;
 
-    const auto shaders{ShaderManager::getPtr()->getShaders()};
+    const auto shaders = ShaderManager::getPtr()->getShaders();
     std::vector<QMenu*> reused;
 
     for (auto shader : shaders) {

@@ -151,7 +151,7 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
     for (auto setting : settings) setting->loadFromDisk();
 }
 
-const std::string& InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
+std::string InviwoApplication::getBasePath() const { return filesystem::findBasePath(); }
 
 std::string InviwoApplication::getPath(PathType pathType, const std::string& suffix,
                                        const bool& createFolder) {
