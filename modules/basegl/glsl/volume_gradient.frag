@@ -39,10 +39,10 @@ in vec4 texCoord_;
 
 void main() {
 #ifdef ADD_DATA_CHANNEL
-    float v = getVoxel(volume, volumeParameters, texCoord_.xyz)[channel];
+    float v = getNormalizedVoxel(volume, volumeParameters, texCoord_.xyz)[channel];
 #else
     float v = 1.0f;
 #endif
     FragData0 =
-        vec4(gradientCentralDiff(vec4(1.0f), volume, volumeParameters, texCoord_.xyz, channel), v);
+        vec4(gradientCentralDiff(vec4(1.0f), volume, volumeParameters, texCoord_.xyz, channel), v*2-1);
 }
