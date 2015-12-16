@@ -42,7 +42,7 @@
 namespace inviwo {
 
 struct TestImgs {
-    static std::string testdir() { return InviwoApplication::getPtr()->getPath(PathType::Tests); }
+    static std::string testdir() { return filesystem::getPath(PathType::Tests); }
     static std::string rgb() { return testdir() + "/images/2x2.bmp"; }
     static std::string white() { return testdir() + "/images/white.bmp"; }
     static std::string range() { return testdir() + "/images/range.bmp"; }

@@ -124,10 +124,10 @@ void InviwoApplicationQt::playSound(Message message) {
              ->get())) {
         if (message == Message::Ok)
             QSound::play(QString::fromStdString(
-                InviwoApplication::getPtr()->getPath(PathType::Resources) + "/sounds/ok.wav"));
+                filesystem::getPath(PathType::Resources) + "/sounds/ok.wav"));
         else if (message == Message::Error)
             QSound::play(QString::fromStdString(
-                InviwoApplication::getPtr()->getPath(PathType::Resources) + "/sounds/error.wav"));
+                filesystem::getPath(PathType::Resources) + "/sounds/error.wav"));
     }
 
 #endif

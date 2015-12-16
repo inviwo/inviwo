@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <inviwo/core/util/filesystem.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -122,7 +123,7 @@ FileExtension InviwoFileDialog::getMatchingFileExtension(const QString &extStr) 
 }
 
 void InviwoFileDialog::addSidebarPath(const PathType &path) {
-    addSidebarPath(InviwoApplication::getPtr()->getPath(path));
+    addSidebarPath(filesystem::getPath(path));
 }
 
 void InviwoFileDialog::addSidebarPath(const std::string &path) {

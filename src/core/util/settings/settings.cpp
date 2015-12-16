@@ -54,7 +54,7 @@ void Settings::loadFromDisk() {
     ss << identifier_ << ".ivs";
     std::string filename = ss.str();
     replaceInString(filename, " ", "_");
-    filename = InviwoApplication::getPtr()->getPath(PathType::Settings, "/" + filename);
+    filename = filesystem::getPath(PathType::Settings, "/" + filename);
 
     isDeserializing_ = true;
     if (filesystem::fileExists(filename)) {
@@ -80,7 +80,7 @@ void Settings::saveToDisk() {
     replaceInString(filename, " ", "_");
     try {
         Serializer s(
-            InviwoApplication::getPtr()->getPath(PathType::Settings, "/" + filename, true));
+            filesystem::getPath(PathType::Settings, "/" + filename, true));
         serialize(s);
         s.writeFile();
     } catch (std::exception e) {

@@ -164,7 +164,7 @@ void ShaderManager::addShaderSearchPath(std::string shaderSearchPath) {
 }
 
 void ShaderManager::addShaderSearchPath(PathType pathType, std::string relativeShaderSearchPath) {
-    bool added = addShaderSearchPathImpl(InviwoApplication::getPtr()->getPath(pathType) + "/" +
+    bool added = addShaderSearchPathImpl(filesystem::getPath(pathType) + "/" +
                                          relativeShaderSearchPath);
 
     if (!added && pathType == PathType::Modules) {
@@ -176,7 +176,7 @@ void ShaderManager::addShaderSearchPath(PathType pathType, std::string relativeS
     if (!added) {
         LogWarn("Failed to add shader search path: " << relativeShaderSearchPath);
         LogInfo("Tried with:");
-        LogInfo("\t" << InviwoApplication::getPtr()->getPath(pathType) + "/" +
+        LogInfo("\t" << filesystem::getPath(pathType) + "/" +
                             relativeShaderSearchPath);
         if (pathType == PathType::Modules) {
             for (auto& elem : inviwoModulePaths_) {

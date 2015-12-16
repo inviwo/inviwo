@@ -47,7 +47,7 @@ namespace inviwo {
 
 template<typename T>
 void testVolumeLoad(std::string filename) {
-    std::string file = InviwoApplication::getPtr()->getPath(PathType::Modules)
+    std::string file = filesystem::getPath(PathType::Modules)
                        + "/unittests/testdata/" + filename;
     std::string fileExtension = filesystem::getFileExtension(file);
     auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(fileExtension);
@@ -92,7 +92,7 @@ void testVolumeLoad(std::string filename) {
 
 template<typename T>
 void testVolumeClone(std::string filename) {
-    std::string file = InviwoApplication::getPtr()->getPath(PathType::Modules)
+    std::string file = filesystem::getPath(PathType::Modules)
         + "/unittests/testdata/" + filename;
     std::string fileExtension = filesystem::getFileExtension(file);
     auto reader = InviwoApplication::getPtr()->getDataReaderFactory()->getReaderForTypeAndExtension<Volume>(fileExtension);
