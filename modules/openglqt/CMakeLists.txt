@@ -8,6 +8,7 @@ set(MOC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvasprocessorwidgetqt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmenu.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaderwidget.h
 )
 
 #--------------------------------------------------------------------
@@ -33,6 +34,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtcapabilities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmenu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/openglqtmodule.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaderwidget.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

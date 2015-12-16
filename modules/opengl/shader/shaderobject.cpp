@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "shaderobject.h"
@@ -40,10 +40,7 @@
 namespace inviwo {
 
 ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compileShader)
-    : shaderType_(shaderType)
-    , fileName_(fileName)
-    , id_(glCreateShader(shaderType)) {
-
+    : shaderType_(shaderType), fileName_(fileName), id_(glCreateShader(shaderType)) {
     initialize(compileShader);
 }
 
@@ -63,10 +60,7 @@ ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
     return *this;
 }
 
-
-ShaderObject::~ShaderObject() {
-    glDeleteShader(id_);
-}
+ShaderObject::~ShaderObject() { glDeleteShader(id_); }
 
 ShaderObject* ShaderObject::clone(bool compileShader) {
     return new ShaderObject(*this, compileShader);
@@ -75,12 +69,12 @@ ShaderObject* ShaderObject::clone(bool compileShader) {
 void ShaderObject::initialize(bool compileShader) {
     // Help developer to spot errors
     std::string fileExtension = filesystem::getFileExtension(fileName_);
-    if ((fileExtension == "vert" && shaderType_ != GL_VERTEX_SHADER)
-        || (fileExtension == "geom" && shaderType_ != GL_GEOMETRY_SHADER)
-        || (fileExtension == "frag" && shaderType_ != GL_FRAGMENT_SHADER)) {
+    if ((fileExtension == "vert" && shaderType_ != GL_VERTEX_SHADER) ||
+        (fileExtension == "geom" && shaderType_ != GL_GEOMETRY_SHADER) ||
+        (fileExtension == "frag" && shaderType_ != GL_FRAGMENT_SHADER)) {
         LogWarn("File extension does not match shader type: " << fileName_);
     }
-    
+
     loadSource(fileName_);
     preprocess();
     upload();
@@ -111,19 +105,20 @@ void ShaderObject::preprocess() {
 
 std::string ShaderObject::embeddDefines(std::string source) {
     std::string globalGLSLHeader = ShaderManager::getPtr()->getGlobalGLSLHeader();
-    
+
     std::string curLine;
     std::istringstream globalGLSLHeaderStream(globalGLSLHeader);
     while (std::getline(globalGLSLHeaderStream, curLine)) {
         lineNumberResolver_.emplace_back("GlobalGLSLSHeader", 0);
     }
-    
+
     std::ostringstream extensions;
-    for(const auto& se : shaderExtensions_) {
-        extensions << "#extension " << se.first << " : " << (se.second ? "enable" : "disable") << "\n";
+    for (const auto& se : shaderExtensions_) {
+        extensions << "#extension " << se.first << " : " << (se.second ? "enable" : "disable")
+                   << "\n";
         lineNumberResolver_.emplace_back("Extension", 0);
     }
-    
+
     std::ostringstream defines;
     for (const auto& sd : shaderDefines_) {
         defines << "#define " << sd.first << " " << sd.second << "\n";
@@ -136,12 +131,12 @@ std::string ShaderObject::embeddDefines(std::string source) {
     } else if (shaderType_ == GL_FRAGMENT_SHADER) {
         globalDefines += ShaderManager::getPtr()->getGlobalGLSLFragmentDefines();
     }
-    
+
     std::istringstream globalGLSLDefinesStream(globalDefines);
     while (std::getline(globalGLSLDefinesStream, curLine)) {
         lineNumberResolver_.emplace_back("GlobalGLSLSDefines", 0);
     }
-    
+
     return globalGLSLHeader + extensions.str() + defines.str() + globalDefines;
 }
 
@@ -211,8 +206,9 @@ std::string ShaderObject::embeddIncludes(std::string source, std::string fileNam
             }
 
             if (!includeFileFound) {
-                throw OpenGLException("Include file " + includeFileName +
-                                      " not found in shader search paths.", IvwContext);
+                throw OpenGLException(
+                    "Include file " + includeFileName + " not found in shader search paths.",
+                    IvwContext);
             }
 
         } else {
@@ -248,24 +244,27 @@ void ShaderObject::loadSource(std::string fileName) {
             }
         }
 
-        if (!absoluteFileName_.empty()) { // Load file
+        if (!absoluteFileName_.empty()) {  // Load file
             try {
                 TextFileReader fileReader(absoluteFileName_);
                 source_ = fileReader.read();
             } catch (std::ifstream::failure&) {
                 throw OpenGLException("Could not read shader file: " + fileName, IvwContext);
             }
-        } else { // try finding a Shader Resource
+        } else {  // try finding a Shader Resource
             std::string fileresourcekey = fileName;
             std::replace(fileresourcekey.begin(), fileresourcekey.end(), '/', '_');
             std::replace(fileresourcekey.begin(), fileresourcekey.end(), '.', '_');
             source_ = ShaderManager::getPtr()->getShaderResource(fileresourcekey);
-            if (source_.empty()){
-                throw OpenGLException("Shader file: " + fileName + " not found in shader search paths or shader resources.", IvwContext);
+            if (source_.empty()) {
+                throw OpenGLException("Shader file: " + fileName +
+                                          " not found in shader search paths or shader resources.",
+                                      IvwContext);
             }
         }
     } else {
-        throw OpenGLException("Shader file: " + fileName + " not found in shader search paths.", IvwContext);
+        throw OpenGLException("Shader file: " + fileName + " not found in shader search paths.",
+                              IvwContext);
     }
 }
 
@@ -288,7 +287,8 @@ std::string ShaderObject::getShaderInfoLog() {
         std::istringstream shaderInfoLogStr(shaderInfoLog);
         delete[] shaderInfoLog;
         return shaderInfoLogStr.str();
-    } else return "";
+    } else
+        return "";
 }
 
 int ShaderObject::getLogLineNumber(const std::string& compileLogLine) {
@@ -296,17 +296,16 @@ int ShaderObject::getLogLineNumber(const std::string& compileLogLine) {
     std::istringstream input(compileLogLine);
     int num;
 
-    if (input>>num) {
+    if (input >> num) {
         char c;
 
-        if (input>>c && c=='(') {
-            if (input>>result) {
+        if (input >> c && c == '(') {
+            if (input >> result) {
                 return result;
             }
         }
     }
-    
-    
+
     // ATI parsing:
     // ATI error: "ERROR: 0:145: Call to undeclared function 'texelFetch'\n"
     std::vector<std::string> elems;
@@ -320,7 +319,7 @@ int ShaderObject::getLogLineNumber(const std::string& compileLogLine) {
         number << elems[2];
         number >> result;
     }
-    
+
     return result;
 }
 
@@ -360,33 +359,25 @@ void ShaderObject::addShaderDefine(std::string name, std::string value) {
     shaderDefines_[name] = value;
 }
 
-void ShaderObject::removeShaderDefine(std::string name) {
-    shaderDefines_.erase(name);
-}
+void ShaderObject::removeShaderDefine(std::string name) { shaderDefines_.erase(name); }
 
 bool ShaderObject::hasShaderDefine(const std::string& name) const {
     return shaderDefines_.find(name) != shaderDefines_.end();
 }
 
-void ShaderObject::clearShaderDefines() {
-    shaderDefines_.clear();
-}
+void ShaderObject::clearShaderDefines() { shaderDefines_.clear(); }
 
 void ShaderObject::addShaderExtension(std::string extName, bool enabled) {
     shaderExtensions_[extName] = enabled;
 }
 
-void ShaderObject::removeShaderExtension(std::string extName) {
-    shaderExtensions_.erase(extName);
-}
+void ShaderObject::removeShaderExtension(std::string extName) { shaderExtensions_.erase(extName); }
 
 bool ShaderObject::hasShaderExtension(const std::string& extName) const {
     return shaderExtensions_.find(extName) != shaderExtensions_.end();
 }
 
-void ShaderObject::clearShaderExtensions() {
-    shaderExtensions_.clear();
-}
+void ShaderObject::clearShaderExtensions() { shaderExtensions_.clear(); }
 
 void ShaderObject::addOutDeclaration(std::string name, int location) {
     bool outExists = false;
@@ -404,37 +395,54 @@ void ShaderObject::addOutDeclaration(std::string name, int location) {
     }
 }
 
-void ShaderObject::clearOutDeclarations() {
-    outDeclarations_.clear();
-}
+void ShaderObject::clearOutDeclarations() { outDeclarations_.clear(); }
 
-std::string ShaderObject::print(bool showSource) const {
-    if (showSource) {
-        std::string::size_type width = 0;
-        for (auto l : lineNumberResolver_) {
-            std::string file = splitString(l.first, '/').back();
-            width = std::max(width, file.length());
+std::string ShaderObject::print(bool showSource, bool preprocess) const {
+    if (preprocess) {
+        if (showSource) {
+            std::string::size_type width = 0;
+            for (auto l : lineNumberResolver_) {
+                std::string file = splitString(l.first, '/').back();
+                width = std::max(width, file.length());
+            }
+
+            size_t i = 0;
+            std::string line;
+            std::stringstream out;
+            std::istringstream in(sourceProcessed_);
+            while (std::getline(in, line)) {
+                std::string file = i < lineNumberResolver_.size()
+                                       ? splitString(lineNumberResolver_[i].first, '/').back()
+                                       : "";
+                unsigned int lineNumber =
+                    i < lineNumberResolver_.size() ? lineNumberResolver_[i].second : 0;
+
+                out << std::left << std::setw(width + 1) << file << std::right << std::setw(4)
+                    << lineNumber << ": " << std::left << line << "\n";
+                ++i;
+            }
+            return out.str();
+        } else {
+            return sourceProcessed_;
         }
-
-        size_t i = 0;
-        std::string line;
-        std::stringstream out;
-        std::istringstream in(sourceProcessed_);
-        while (std::getline(in, line)) {
-            std::string file = i < lineNumberResolver_.size()
-                                   ? splitString(lineNumberResolver_[i].first, '/').back()
-                                   : "";
-            unsigned int lineNumber =
-                i < lineNumberResolver_.size() ? lineNumberResolver_[i].second : 0;
-
-            out << std::left << std::setw(width + 1) << file << std::right << std::setw(4)
-                << lineNumber << ": " << std::left << line << "\n";
-            ++i;
-        }
-        return out.str();
     } else {
-        return sourceProcessed_;
+        if (showSource) {
+            size_t lineNumber = 0;
+            std::string line;
+            std::stringstream out;
+            std::istringstream in(source_);
+            while (std::getline(in, line)) {
+                std::string file = fileName_;
+
+                out << std::left << std::setw(file.length() + 1) << file << std::right
+                    << std::setw(4) << lineNumber << ": " << std::left << line << "\n";
+                ++lineNumber;
+            }
+            return out.str();
+        } else {
+            return source_;
+        }
     }
 }
 
-} // namespace
+}  // namespace

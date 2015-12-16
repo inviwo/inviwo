@@ -69,7 +69,7 @@ class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
 #include <warn/pop>
 
 public:
-    PythonEditorWidget(QWidget* parent = 0);
+    PythonEditorWidget(QWidget* parent = nullptr);
     virtual ~PythonEditorWidget();
 
     void appendToOutput(const std::string& msg, bool error = false);

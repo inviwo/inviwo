@@ -32,31 +32,27 @@
 #include <modules/opengl/shader/shadermanager.h>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/core/network/processornetwork.h>
-#include <QTextBrowser>
-#include <QDialog>
-#include <QVariant>
+#include <inviwo/core/util/stdextensions.h>
+#include <modules/openglqt/shaderwidget.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
 #include <QMainWindow>
 #include <QMenuBar>
-#include <QGridLayout>
+
+#include <warn/pop>
 
 namespace inviwo {
 
- OpenGLQtMenu::OpenGLQtMenu() : shadersItem_(nullptr), shaderMapper_(nullptr) {
-    InviwoApplicationQt* qtApp = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
-
-    if (qtApp) {
-        QMainWindow* win = qtApp->getMainWindow();
-
-        if (win) {
-            InviwoApplication::getPtr()->getProcessorNetwork()->addObserver(this);
+ OpenGLQtMenu::OpenGLQtMenu() : shadersItem_(nullptr) {
+    if (auto qtApp = dynamic_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())) {
+        if (auto win = qtApp->getMainWindow()) {
+            qtApp->getProcessorNetwork()->addObserver(this);
 
             shadersItem_ = win->menuBar()->addMenu(tr("&Shaders"));
 
-            shaderMapper_ = new QSignalMapper(this);
-            connect(shaderMapper_, SIGNAL(mapped(QObject*)), this, SLOT(shaderMenuCallback(QObject*)));
-
             QAction* reloadShaders = shadersItem_->addAction("Reload All");
-            connect(reloadShaders, SIGNAL(triggered()), this, SLOT(shadersReload()));
+            connect(reloadShaders, &QAction::triggered,[&](){ shadersReload(); });
         }
     }
 }
@@ -64,100 +60,52 @@ namespace inviwo {
 void OpenGLQtMenu::updateShadersMenu() {
     if (!shadersItem_) return;
 
-    const std::vector<Shader*> shaders{ShaderManager::getPtr()->getShaders()};
+    const auto shaders{ShaderManager::getPtr()->getShaders()};
+    std::vector<QMenu*> reused;
 
-    for (Shader* shader : shaders) {
+    for (auto shader : shaders) {
         QMenu*& shaderSubMenu = shadersItems_[shader->getID()];
 
         if (!shaderSubMenu) {
-            shaderSubMenu =
-                shadersItem_->addMenu(QString::fromStdString("Shader " + toString(shader->getID())));
-            
-            ShaderObject* obj;
-            if ((obj = shader->getVertexShaderObject()) != nullptr) {
-                QAction* action =
-                    shaderSubMenu->addAction(QString::fromStdString(obj->getFileName()));
-                action->setData(QSize(shader->getID(), 1));
-                connect(action, SIGNAL(triggered()), shaderMapper_, SLOT(map()));
-                shaderMapper_->setMapping(action, action);
-            }
-            if ((obj = shader->getGeometryShaderObject()) != nullptr) {
-                QAction* action =
-                    shaderSubMenu->addAction(QString::fromStdString(obj->getFileName()));
-                action->setData(QSize(shader->getID(), 2));
-                connect(action, SIGNAL(triggered()), shaderMapper_, SLOT(map()));
-                shaderMapper_->setMapping(action, action);
-                shaderSubMenu->addAction(action);
-            }
-            if ((obj = shader->getFragmentShaderObject()) != nullptr) {
-                QAction* action =
-                    shaderSubMenu->addAction(QString::fromStdString(obj->getFileName()));
-                action->setData(QSize(shader->getID(), 3));
-                connect(action, SIGNAL(triggered()), shaderMapper_, SLOT(map()));
-                shaderMapper_->setMapping(action, action);
-                shaderSubMenu->addAction(action);
+            shaderSubMenu = shadersItem_->addMenu(QString("Id %1").arg(shader->getID(), 2));
+
+            for (auto& item : shader->getShaderObjects()) {
+                auto action = shaderSubMenu->addAction(
+                    QString::fromStdString(item.second->getAbsoluteFileName()));
+                shaderSubMenu->setTitle(shaderSubMenu->title() + QString(", ") +
+                                        QString::fromStdString(item.second->getFileName()));
+                connect(action, &QAction::triggered, [&]() { showShader(item.second.get()); });
             }
         }
+        reused.push_back(shaderSubMenu);
     }
 
-    auto it = shadersItems_.begin();
-    while (it != shadersItems_.end()) {
-        auto sit = std::find_if(shaders.begin(), shaders.end(), [&it](Shader* shader) -> bool {
-            return shader->getID() == it->first;
-        });
-        if (sit == shaders.end()) {
-            delete it->second;
-            it = shadersItems_.erase(it);
+    util::map_erase_remove_if(shadersItems_, [&](std::pair<const unsigned int, QMenu*> item) {
+        if (!util::contains(reused, item.second)) {
+            shadersItem_->removeAction(item.second->menuAction());
+            delete item.second;
+            return true;
         } else {
-            ++it;
+            return false;
         }
-    }
+    });
 }
 
-void OpenGLQtMenu::shaderMenuCallback(QObject* obj) {
-    QSize id = qobject_cast<QAction*>(obj)->data().toSize();
-    int shaderId = id.width();
-    int type = id.height();
+void OpenGLQtMenu::showShader(const ShaderObject* obj) {
+    auto win = static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
 
-    const std::vector<Shader*> shaders{ShaderManager::getPtr()->getShaders()};
-    auto it = std::find_if(shaders.begin(), shaders.end(), [shaderId](Shader* shader) -> bool {
-        return static_cast<int>(shader->getID()) == shaderId;
-    });
-
-    if (it != shaders.end()) {
-        ShaderObject* shaderObj;
-        switch (type) {
-            case 1:
-                shaderObj = (*it)->getVertexShaderObject();
-                break;
-            case 2:
-                shaderObj = (*it)->getGeometryShaderObject();
-                break;
-            case 3:
-                shaderObj = (*it)->getFragmentShaderObject();
-                break;
-            default:
-                return;
+    auto editor = [&]() {
+        if (auto res = util::map_find_or_null(editors_, obj)) {
+            return res;
+        } else {
+            res = new ShaderWidget(obj, win);
+            editors_[obj] = res;
+            res->resize(900, 800);
+            return res;
         }
-
-        QMainWindow* win =
-            static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr())->getMainWindow();
-        
-        QTextBrowser* shadercode = new QTextBrowser(nullptr);
-        shadercode->setText(shaderObj->print(true).c_str());
-        shadercode->setStyleSheet("font: 12pt \"Courier\";");
-
-        QDialog* dialog = new QDialog(win);
-        QGridLayout* layout = new QGridLayout(dialog);
-        layout->setContentsMargins(0, 0, 0, 0);
-        layout->setSpacing(0);
-        layout->addWidget(shadercode);
-        dialog->setLayout(layout);
-        dialog->resize(600, 800);
-        dialog->exec();
-
-        delete dialog;
-    }
+    }();
+    editor->show();
+    connect(editor, &ShaderWidget::widgetClosed, [this, obj](){editors_.erase(obj);});
 }
 
 void OpenGLQtMenu::shadersReload() { ShaderManager::getPtr()->rebuildAllShaders(); }

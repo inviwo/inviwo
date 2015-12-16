@@ -47,11 +47,11 @@ public:
 
     ShaderObject* clone(bool compileShader=true);
 
-    GLuint getID() { return id_; }
-    std::string getFileName() { return fileName_; }
-    std::string getAbsoluteFileName() { return absoluteFileName_; }
-    std::vector<std::string>& getIncludeFileNames() { return includeFileNames_; }
-    GLenum getShaderType() { return shaderType_; }
+    GLuint getID() const { return id_; }
+    std::string getFileName() const { return fileName_; }
+    std::string getAbsoluteFileName() const { return absoluteFileName_; }
+    const std::vector<std::string>& getIncludeFileNames() const { return includeFileNames_; }
+    GLenum getShaderType() const { return shaderType_; }
 
     void loadSource(std::string fileName);
     void preprocess();
@@ -93,7 +93,7 @@ public:
 
     void clearOutDeclarations();
 
-    std::string print(bool showSource = false) const;
+    std::string print(bool showSource = false, bool preprocess = true) const;
 
 private:
     void initialize(bool compileShader);
