@@ -56,18 +56,13 @@ BufferCLGL::BufferCLGL(size_t size, const DataFormatBase* format, BufferUsage us
 
 BufferCLGL::BufferCLGL(const BufferCLGL& rhs)
     : BufferRepresentation(rhs)
-    , bufferObject_(rhs.getBufferGL())
+    , bufferObject_(std::make_shared<BufferObject>(*rhs.getBufferGL().get()))
     , readWriteFlag_(rhs.readWriteFlag_)
     , size_(rhs.size_) {
-    CLBufferSharingMap::iterator it = BufferCLGL::clBufferSharingMap_.find(bufferObject_);
-
-    if (it == BufferCLGL::clBufferSharingMap_.end()) {
-        clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_,
-                                                   bufferObject_->getId());
-        BufferCLGL::clBufferSharingMap_.insert(BufferSharingPair(bufferObject_, clBuffer_));
-    } else {
-        clBuffer_ = it->second;
-    }
+    // Share the copied BufferObject
+    clBuffer_ = std::make_shared<cl::BufferGL>(OpenCL::getPtr()->getContext(), readWriteFlag_,
+        bufferObject_->getId());
+    BufferCLGL::clBufferSharingMap_.insert(BufferSharingPair(bufferObject_, clBuffer_));
 
     bufferObject_->addObserver(this);
 }

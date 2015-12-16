@@ -75,7 +75,9 @@ BufferObject::BufferObject(BufferObject&& rhs)
 
 BufferObject& BufferObject::operator=(const BufferObject& rhs) {
     if (this != &rhs) {
-        Observable<BufferObjectObserver>::operator=(rhs);
+        // Note: do not copy observers since we are using this object's id_.
+        // Observable<BufferObjectObserver>::operator=(rhs);
+
         usageGL_ = rhs.usageGL_;
         target_ = rhs.target_;
         glFormat_ = rhs.glFormat_;
@@ -87,12 +89,17 @@ BufferObject& BufferObject::operator=(const BufferObject& rhs) {
         glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
         // Copy data (OpenGL 3.1 functionality...)
         glCopyBufferSubData(GL_COPY_READ_BUFFER, target_, 0, 0, sizeInBytes_);
+
     }
     return *this;
 }
 
 BufferObject& BufferObject::operator=(BufferObject&& rhs) {
     if (this != &rhs) {
+        // Notify observers
+        for (auto observer : observers_) {
+            observer->onBeforeBufferInitialization();
+        }
         // Free existing resources
         glDeleteBuffers(1, &id_);
 
@@ -107,6 +114,9 @@ BufferObject& BufferObject::operator=(BufferObject&& rhs) {
 
         // Release resources from source object
         rhs.id_ = 0;
+        for (auto observer : observers_) {
+            observer->onAfterBufferInitialization();
+        }
     }
     return *this;
 }
