@@ -56,8 +56,8 @@ ImageSource::ImageSource()
     , isDeserializing_(false) {
     addPort(outport_);
 
-    auto app = getNetwork()->getApplication();
-    auto extensions = app->getDataReaderFactory()->getExtensionsForType<Layer>();
+    auto extensions =
+        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
     for (auto& ext : extensions) file_.addNameFilter(ext);
 
     addProperty(file_);
@@ -107,8 +107,8 @@ void ImageSource::process() {
  */
 void ImageSource::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    auto app = getNetwork()->getApplication();
-    auto extensions = app->getDataReaderFactory()->getExtensionsForType<Layer>();
+    auto extensions =
+        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));
     for (auto& ext : extensions) {

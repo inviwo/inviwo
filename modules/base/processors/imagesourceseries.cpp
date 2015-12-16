@@ -61,8 +61,8 @@ ImageSourceSeries::ImageSourceSeries()
     addProperty(currentImageIndex_);
     addProperty(imageFileName_);
 
-    auto app = getNetwork()->getApplication();
-    validExtensions_ = app->getDataReaderFactory()->getExtensionsForType<Layer>();
+    validExtensions_ =
+        InviwoApplication::getPtr()->getDataReaderFactory()->getExtensionsForType<Layer>();
 
     imageFileDirectory_.onChange([&]() { onFindFiles(); });
     findFilesButton_.onChange([&]() { onFindFiles(); });
