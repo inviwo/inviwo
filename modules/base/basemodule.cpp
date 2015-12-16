@@ -57,6 +57,8 @@
 #include <modules/base/processors/volumevectorsource.h>
 #include <modules/base/processors/stereocamerasyncer.h>
 
+#include <modules/base/processors/volumeboundingbox.h>
+
 #include <modules/base/properties/basisproperty.h>
 #include <modules/base/properties/gaussianproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
@@ -101,6 +103,8 @@ BaseModule::BaseModule(InviwoApplication* app) : InviwoModule(app, "Base") {
     registerProcessor<VolumeVectorSource>();
     registerProcessor<TimeStepSelector>();
     registerProcessor<StereoCameraSyncer>();
+
+    registerProcessor<VolumeBoundingBox>();
 
     registerProperty<SequenceTimerProperty>();
     registerProperty<BasisProperty>();

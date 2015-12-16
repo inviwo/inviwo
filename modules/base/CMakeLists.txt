@@ -33,6 +33,7 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/timestepselector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumebasistransformer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.h
@@ -75,6 +76,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/timestepselector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumesource.cpp
