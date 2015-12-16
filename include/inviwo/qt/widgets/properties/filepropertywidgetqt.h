@@ -57,24 +57,25 @@ public:
 
     virtual void updateFromProperty() override;
     virtual bool requestFile() override;
-private:
-    FileProperty* property_;
-    QLineEdit* lineEdit_;
-    QToolButton* openButton_;
-    EditableLabelQt* label_;
 
-    void generateWidget();
+    virtual std::string getToolTipText() override;
 
 public slots:
     void setPropertyValue();
 
+protected:
     virtual void dropEvent(QDropEvent *) override;
-
     virtual void dragEnterEvent(QDragEnterEvent *) override;
-
     virtual void dragMoveEvent(QDragMoveEvent *) override;
+    virtual bool eventFilter(QObject *, QEvent *) override;
 
+private:
+    void generateWidget();
 
+    FileProperty* property_;
+    QLineEdit* lineEdit_;
+    QToolButton* openButton_;
+    EditableLabelQt* label_;
 };
 
 } // namespace

@@ -71,7 +71,11 @@ void FilePropertyWidgetQt::generateWidget() {
     widget->setLayout(hWidgetLayout);
 
     lineEdit_ = new QLineEdit(this);
-    lineEdit_->setReadOnly(true);
+    lineEdit_->installEventFilter(this);
+
+    connect(lineEdit_, &QLineEdit::returnPressed, [&]() {
+        lineEdit_->clearFocus();
+    });
 
     QSizePolicy sp = lineEdit_->sizePolicy();
     sp.setHorizontalStretch(3);
@@ -234,9 +238,53 @@ void FilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent *event) {
     else event->ignore();
 }
 
+bool FilePropertyWidgetQt::eventFilter(QObject * obj, QEvent * event) {
+    if(obj == lineEdit_ && event->type() == QEvent::FocusIn) {
+        auto path = QString::fromStdString(property_->get());
+        lineEdit_->setText(path);
+        lineEdit_->setCursorPosition(path.length());
+    } else if(obj == lineEdit_ && event->type() == QEvent::FocusOut) {
+        auto path = lineEdit_->text().toStdString();
+        property_->set(path);
+        lineEdit_->setText(QFileInfo(QString::fromStdString(path)).fileName());
+    }
+    return false; // let the event continue;
+}
+
 bool FilePropertyWidgetQt::requestFile() {
    setPropertyValue();
    return !property_->get().empty();
+}
+
+std::string FilePropertyWidgetQt::getToolTipText() {
+    if (property_) {
+        ToolTipHelper t(property_->getDisplayName());
+        t.tableTop();
+        t.row("Identifier", property_->getIdentifier());
+        t.row("Path", joinString(property_->getPath(), "."));
+        t.row("Semantics", property_->getSemantics().getString());
+        t.row("Validation Level",
+              PropertyOwner::invalidationLevelToString(property_->getInvalidationLevel()));
+
+        switch (property_->getFileMode()) {
+            case FileProperty::FileMode::AnyFile:
+            case FileProperty::FileMode::ExistingFile:
+            case FileProperty::FileMode::ExistingFiles: {
+                t.row("File", property_->get());
+                break;
+            }
+
+            case FileProperty::FileMode::Directory:
+            case FileProperty::FileMode::DirectoryOnly: {
+                t.row("Directory", property_->get());
+                break;
+            }
+        }
+        t.tableBottom();
+        return t;
+    } else {
+        return "";
+    }
 }
 
 void FilePropertyWidgetQt::updateFromProperty() {
