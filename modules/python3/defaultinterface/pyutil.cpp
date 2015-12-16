@@ -39,6 +39,7 @@
 #include <modules/opengl/canvasprocessorgl.h>
 #include <inviwo/core/network/processornetworkevaluator.h>
 #include <inviwo/core/common/inviwocore.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 

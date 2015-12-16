@@ -36,10 +36,9 @@
 #include <warn/ignore/all>
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QStandardPaths>
-#else
-#include <QDesktopServices>
 #endif
 
+#include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
 #include <QList>
@@ -74,18 +73,29 @@ void FilePropertyWidgetQt::generateWidget() {
     QSizePolicy sp = lineEdit_->sizePolicy();
     sp.setHorizontalStretch(3);
     lineEdit_->setSizePolicy(sp);
+    hWidgetLayout->addWidget(lineEdit_);
+
+    auto revealButton = new QToolButton(this);
+    revealButton->setIcon(QIcon(":/icons/reveal.png"));
+    hWidgetLayout->addWidget(revealButton);
+    connect(revealButton, &QToolButton::pressed, [&]() {
+        auto dir = filesystem::directoryExists(property_->get())
+                       ? property_->get()
+                       : filesystem::getFileDirectory(property_->get());
+
+        QDesktopServices::openUrl(
+            QUrl(QString::fromStdString("file:///" + dir), QUrl::TolerantMode));
+    });
 
     openButton_ = new QToolButton(this);
     openButton_->setIcon(QIcon(":/icons/open.png"));
-    hWidgetLayout->addWidget(lineEdit_);
     hWidgetLayout->addWidget(openButton_);
+    connect(openButton_, SIGNAL(pressed()), this, SLOT(setPropertyValue()));
 
     sp = widget->sizePolicy();
     sp.setHorizontalStretch(3);
     widget->setSizePolicy(sp);
-
     hLayout->addWidget(widget);
-    connect(openButton_, SIGNAL(pressed()), this, SLOT(setPropertyValue()));
 }
 
 void FilePropertyWidgetQt::setPropertyValue() {
