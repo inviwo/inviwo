@@ -44,6 +44,8 @@
 #include <QList>
 #include <QSettings>
 #include <QUrl>
+#include <QDropEvent>
+#include <QMimeData>
 #include <warn/pop>
 
 namespace inviwo {
@@ -58,6 +60,7 @@ void FilePropertyWidgetQt::generateWidget() {
     QHBoxLayout* hLayout = new QHBoxLayout();
     setSpacingAndMargins(hLayout);
     setLayout(hLayout);
+    setAcceptDrops(true);
 
     label_ = new EditableLabelQt(this, property_);
     hLayout->addWidget(label_);
@@ -165,6 +168,70 @@ void FilePropertyWidgetQt::setPropertyValue() {
     }
 
     updateFromProperty();
+}
+
+void FilePropertyWidgetQt::dropEvent(QDropEvent* drop) {
+    auto data = drop->mimeData();
+    if (data->hasUrls()) {
+        if(data->urls().size()>0) {
+            auto url = data->urls().first();
+            property_->set(url.toLocalFile().toStdString());
+
+            drop->accept();
+        }
+    }
+}
+
+void FilePropertyWidgetQt::dragEnterEvent(QDragEnterEvent* event) {
+    switch (property_->getAcceptMode()) {
+        case FileProperty::AcceptMode::Save: {
+            event->ignore();
+            return;
+        }
+        case FileProperty::AcceptMode::Open: {
+            if (event->mimeData()->hasUrls()) {
+                auto data = event->mimeData();
+                if (data->hasUrls()) {
+                    if (data->urls().size() > 0) {
+                        auto url = data->urls().first();
+                        auto file = url.toLocalFile().toStdString();
+                        
+                        switch (property_->getFileMode()) {
+                            case FileProperty::FileMode::AnyFile:
+                            case FileProperty::FileMode::ExistingFile:
+                            case FileProperty::FileMode::ExistingFiles: {
+                                auto ext = toLower(filesystem::getFileExtension(file));
+                                for (const auto& filter : property_->getNameFilters()) {
+                                    if (filter.extension_ == ext) {
+                                        event->accept();
+                                        return;
+                                    }
+                                }
+                                break;
+                            }
+                        
+                            case FileProperty::FileMode::Directory:
+                            case FileProperty::FileMode::DirectoryOnly: {
+                                if(filesystem::directoryExists(file)) {
+                                    event->accept();
+                                    return;
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            event->ignore();
+            return;
+        }      
+    }
+}
+
+
+void FilePropertyWidgetQt::dragMoveEvent(QDragMoveEvent *event) {
+    if(event->mimeData()->hasUrls()) event->accept();
+    else event->ignore();
 }
 
 bool FilePropertyWidgetQt::requestFile() {

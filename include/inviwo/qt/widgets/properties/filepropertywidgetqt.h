@@ -41,6 +41,7 @@
 #include <QToolButton>
 #include <warn/pop>
 
+class QDropEvent;
 
 namespace inviwo {
 
@@ -67,6 +68,11 @@ private:
 public slots:
     void setPropertyValue();
 
+    virtual void dropEvent(QDropEvent *) override;
+
+    virtual void dragEnterEvent(QDragEnterEvent *) override;
+
+    virtual void dragMoveEvent(QDragMoveEvent *) override;
 
 
 };
