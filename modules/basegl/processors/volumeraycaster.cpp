@@ -74,6 +74,7 @@ VolumeRaycaster::VolumeRaycaster()
     addPort(outport_, "ImagePortGroup1");
 
     channel_.addOption("Channel 1", "Channel 1", 0);
+    channel_.setSerializationMode(PropertySerializationMode::ALL);
     channel_.setCurrentStateAsDefault();
 
     volumePort_.onChange(this, &VolumeRaycaster::onVolumeChange);
@@ -121,7 +122,7 @@ void VolumeRaycaster::onVolumeChange() {
 
         std::vector<OptionPropertyIntOption> channelOptions;
         for (size_t i = 0; i < channels; i++) {
-            channelOptions.emplace_back("Channel " + toString(i), "Channel " + toString(i),
+            channelOptions.emplace_back("Channel " + toString(i+1), "Channel " + toString(i+1),
                                         static_cast<int>(i));
         }
         channel_.replaceOptions(channelOptions);
