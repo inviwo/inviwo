@@ -96,7 +96,7 @@ bool cylinderIntersect(vec3 origin , vec3 dir, out float t){
 
 void main() {
 	vec3 camPos = (camera.viewToWorld * vec4(0,0,0,1)).xyz;
-	vec3 dir = -normalize(camPos - worldPos_);
+	vec3 dir = normalize(camPos - worldPos_);
 
 	float d;
 	if(!cylinderIntersect(worldPos_ , dir , d)){
@@ -128,12 +128,12 @@ void main() {
     vec3 v = (x2 - x1) / length;
     float t = dot(x0 - x1, v);
     vec3 spinePoint = x1 + t * v;
-    vec3 N = -normalize(hitPoint - spinePoint);
+    vec3 N = normalize(hitPoint - spinePoint);
 
     
-    vec3 color = APPLY_LIGHTING(light, color_.rgb, color_.rgb, vec3(1.0f), worldPos_, N, dir);
+    vec3 color = APPLY_LIGHTING(light, color_.rgb, color_.rgb, vec3(1.0f), hitPoint, N, dir);
 
     vec4 ndc = camera.worldToClip * vec4(hitPoint, 1);
     gl_FragDepth = ((ndc.z / ndc.w) + 1 ) /2;
-    FragData0 = vec4(color, color_.a);
+    FragData0 = vec4(color.rgb, color_.a);
 }
