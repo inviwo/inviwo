@@ -55,10 +55,10 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f, InvalidationLevel::Valid)
     , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f, InvalidationLevel::Valid)
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f, InvalidationLevel::Valid)
-    , fitToBasis_("fitToBasis_", "Fit to basis", true, InvalidationLevel::Valid)
+    , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true, InvalidationLevel::Valid)
     , inport_(inport)
     , data_(nullptr)
-    , oldBasis_(0) {
+    , prevDataToWorldMatrix_(0) {
     lookFrom_.onChange(this, &CameraProperty::lookFromChangedFromProperty);
     lookTo_.onChange(this, &CameraProperty::lookToChangedFromProperty);
     lookUp_.onChange(this, &CameraProperty::lookUpChangedFromProperty);
@@ -74,8 +74,8 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
     addProperty(nearPlane_);
     addProperty(farPlane_);
 
-    fitToBasis_.onChange(this, &CameraProperty::fitReset);
-    addProperty(fitToBasis_);
+    adjustCameraOnDataChange_.onChange(this, &CameraProperty::resetAdjustCameraToData);
+    addProperty(adjustCameraOnDataChange_);
 
     if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
 }
@@ -90,10 +90,10 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , aspectRatio_(rhs.aspectRatio_)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
-    , fitToBasis_(rhs.fitToBasis_)
+    , adjustCameraOnDataChange_(rhs.adjustCameraOnDataChange_)
     , inport_(rhs.inport_)
     , data_(nullptr)
-    , oldBasis_(0) {
+    , prevDataToWorldMatrix_(0) {
     lookFrom_.onChange(this, &CameraProperty::lookFromChangedFromProperty);
     lookTo_.onChange(this, &CameraProperty::lookToChangedFromProperty);
     lookUp_.onChange(this, &CameraProperty::lookUpChangedFromProperty);
@@ -109,8 +109,8 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     addProperty(nearPlane_);
     addProperty(farPlane_);
 
-    fitToBasis_.onChange(this, &CameraProperty::fitReset);
-    addProperty(fitToBasis_);
+    adjustCameraOnDataChange_.onChange(this, &CameraProperty::resetAdjustCameraToData);
+    addProperty(adjustCameraOnDataChange_);
 
     if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
 
@@ -134,7 +134,7 @@ CameraProperty& CameraProperty::operator=(const CameraProperty& that) {
         inport_ = that.inport_;
         if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
         data_ = nullptr;
-        oldBasis_ = mat3(0);
+        prevDataToWorldMatrix_ = mat4(0);
         updatePropertyFromValue();
 
         inportChanged();
@@ -305,38 +305,45 @@ void CameraProperty::setInport(Inport* inport) {
     inport_ = inport;
 }
 
-void CameraProperty::fitWithBasis(const mat3& basis) {
-    float newSize = glm::length(basis * vec3(1, 1, 1));
-    float oldSize = glm::length(oldBasis_ * vec3(1, 1, 1));
-    float ratio = newSize / oldSize;
+void CameraProperty::adjustCameraToData(const mat4& prevDataToWorldMatrix, const mat4& newDataToWorldMatrix) {
+    if (newDataToWorldMatrix != prevDataToWorldMatrix_) {
+        // Transform to data space of old basis and then to world space in new basis.
+        auto toNewSpace = newDataToWorldMatrix*glm::inverse(prevDataToWorldMatrix_);
 
-    if (ratio == 1) return;
+        auto newLookFrom = (toNewSpace*vec4(lookFrom_.get(), 1.f)).xyz();
+        auto newLookTo = (toNewSpace*vec4(lookTo_.get(), 1.f)).xyz();
+        float depthRatio = glm::length(newLookTo - newLookFrom) / glm::length(value_.getDirection());
+        NetworkLock lock(this);
+        // Compute temporary values such that they do not get clamped when set
+        auto nearPlane = nearPlane_*depthRatio;
+        auto farPlane = farPlane_*depthRatio;
+        farPlane_.setMaxValue(farPlane_.getMaxValue() * depthRatio);
+        farPlane_.set(farPlane);
+        nearPlane_.setMaxValue(nearPlane_.getMaxValue()*depthRatio);
+        nearPlane_.set(nearPlane);
 
-    NetworkLock lock(this);
-    float newFarPlane = farPlane_.get() * ratio;
-    farPlane_.setMaxValue(farPlane_.getMaxValue() * ratio);
-    setFarPlaneDist(newFarPlane);
-    vec3 oldOffset = lookFrom_.get() - lookTo_.get();
-    vec3 newPos = lookTo_.get() + (oldOffset * ratio);
-    lookFrom_.setMinValue(lookFrom_.getMinValue() * ratio);
-    lookFrom_.setMaxValue(lookFrom_.getMaxValue() * ratio);
-    lookTo_.setMinValue(lookTo_.getMinValue() * ratio);
-    lookTo_.setMaxValue(lookTo_.getMaxValue() * ratio);
-    setLookFrom(newPos);
+        lookFrom_.setMinValue((toNewSpace*vec4(lookFrom_.getMinValue(), 1.f)).xyz());
+        lookFrom_.setMaxValue((toNewSpace*vec4(lookFrom_.getMaxValue(), 1.f)).xyz());
+        lookTo_.setMinValue((toNewSpace*vec4(lookTo_.getMinValue(), 1.f)).xyz());
+        lookTo_.setMaxValue((toNewSpace*vec4(lookTo_.getMaxValue(), 1.f)).xyz());
 
-    oldBasis_ = basis;
+        setLookFrom(newLookFrom);
+        setLookTo(newLookTo);
+
+        prevDataToWorldMatrix_ = newDataToWorldMatrix;
+    } 
 }
 
-void CameraProperty::fitReset() {
+void CameraProperty::resetAdjustCameraToData() {
     data_ = nullptr;
-    oldBasis_ = mat3(0.0f);
-    if (fitToBasis_) {
+    prevDataToWorldMatrix_ = mat4(0.0f);
+    if (adjustCameraOnDataChange_) {
         inportChanged();
     }
 }
 
 void CameraProperty::inportChanged() {
-    if (!fitToBasis_) return;
+    if (!adjustCameraOnDataChange_) return;
 
     VolumeInport* volumeInport = dynamic_cast<VolumeInport*>(inport_);
     MeshInport* meshInport = dynamic_cast<MeshInport*>(inport_);
@@ -350,14 +357,14 @@ void CameraProperty::inportChanged() {
         data = meshInport->getData().get();
     }
 
-    if (data_ == nullptr && oldBasis_ == mat3(0.0f)) {  // first time only
+    if (data_ == nullptr && prevDataToWorldMatrix_ == mat4(0.0f)) {  // first time only
         if (volumeInport && volumeInport->hasData()) {
-            oldBasis_ = volumeInport->getData()->getBasis();
+            prevDataToWorldMatrix_ = volumeInport->getData()->getCoordinateTransformer().getDataToWorldMatrix();
         } else if (meshInport && meshInport->hasData()) {
-            oldBasis_ = meshInport->getData()->getBasis();
+            prevDataToWorldMatrix_ = meshInport->getData()->getCoordinateTransformer().getDataToWorldMatrix();
         }
     } else if (data && data_ != data) {
-        fitWithBasis(data->getBasis());
+        adjustCameraToData(prevDataToWorldMatrix_, data->getCoordinateTransformer().getDataToWorldMatrix());
     }
 
     data_ = data;

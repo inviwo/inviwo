@@ -140,8 +140,20 @@ public:
     void invokeEvent(Event* event) override;
 
     void setInport(Inport* inport);
-    void fitWithBasis(const mat3& basis);
-    void fitReset();
+
+    /** 
+     * \brief Translates and scales camera to match new data and fit new object into view.
+     *
+     * @note requires that adjustCameraOnDataChange_ is true
+     * and that an inport has been supplied during construction.
+     * @param const mat4 & prevDataToWorldMatrix Matrix of previous object
+     * @param const mat4 & newDataToWorldMatrix Matrix of new object
+     */
+    void adjustCameraToData(const mat4& prevDataToWorldMatrix, const mat4& newDataToWorldMatrix);
+    /** 
+     * \brief Reset the camera adjustment matrix to currently set inport data.
+     */
+    void resetAdjustCameraToData();
     void inportChanged();
 
 private:
@@ -176,12 +188,12 @@ private:
     FloatProperty nearPlane_;
     FloatProperty farPlane_;
 
-    BoolProperty fitToBasis_;
+    BoolProperty adjustCameraOnDataChange_;
 
     Inport* inport_;  ///< Allows the camera to be positioned relative to new data (VolumeInport,
                       ///MeshInport)
     const SpatialEntity<3>* data_;  //< non-owning reference;
-    mat3 oldBasis_;
+    mat4 prevDataToWorldMatrix_; //< Data-to-world matrix of object currently being viewed
 };
 
 }  // namespace
