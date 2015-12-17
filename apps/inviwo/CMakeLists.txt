@@ -83,7 +83,12 @@ endif()
 
 #--------------------------------------------------------------------
 # Create application
-add_executable(inviwo MACOSX_BUNDLE WIN32 ${SOURCE_FILES} ${HEADER_FILES} ${MOC_FILES} ${QRC_FILE} ${RES_FILES})
+add_executable(inviwo MACOSX_BUNDLE WIN32 
+    ${SOURCE_FILES} 
+    ${HEADER_FILES} 
+    ${MOC_FILES} 
+    ${QRC_FILE} 
+    ${RES_FILES})
 
 #--------------------------------------------------------------------
 # Define defintions
@@ -120,11 +125,6 @@ if(IVW_PACKAGE_PROJECT)
         # get link errors with out this line.
         install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/${qtconf_dest_dir}/qt.conf\" \"\")" COMPONENT qt_app)
         
-        #install(
-        #    DIRECTORY ${CMAKE_INSTALL_PREFIX}/lib/
-        #    DESTINATION ${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}
-        #    COMPONENT qt_app
-        #)
         install(CODE "set(BU_CHMOD_BUNDLE_ITEMS ON)
                       include(BundleUtilities)
                       file(GLOB_RECURSE LIBS1 \"\${CMAKE_INSTALL_PREFIX}/${plugin_dest_dir}\")
@@ -132,11 +132,6 @@ if(IVW_PACKAGE_PROJECT)
                       fixup_bundle(\"${APPS}\" \"\${LIBS1};\${LIBS2}\" \"${DIRS}\")"
                 COMPONENT qt_app
         )
-        #install(
-        #    DIRECTORY ${CMAKE_INSTALL_PREFIX}/modules/
-        #    DESTINATION Inviwo.app/Contents/Resources/modules
-        #    COMPONENT qt_app
-        #)
         install(
             DIRECTORY ${IVW_ROOT_DIR}/data/ 
             DESTINATION Inviwo.app/Contents/Resources/data
@@ -161,6 +156,35 @@ ivw_add_dependencies(${package_list})
 
 #--------------------------------------------------------------------
 # Optimize compilation with pre-compilied headers based on inviwo-core
-ivw_compile_optimize_inviwo_core()
+#ivw_compile_optimize_inviwo_core()
 
 ivw_memleak_setup(inviwo)
+
+#--------------------------------------------------------------------
+# and a console version of inviwo.exe called inviwo-cli.exe
+if(WIN32)
+    set_target_properties(inviwo PROPERTIES LINK_FLAGS 
+        "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+
+    ivw_project(inviwo-cli)
+
+    #set(_pchDisabledForThisModule TRUE)
+
+    add_executable(inviwo-cli MACOSX_BUNDLE WIN32 
+        ${SOURCE_FILES} 
+        ${HEADER_FILES} 
+        ${MOC_FILES} 
+        ${QRC_FILE} 
+        ${RES_FILES})
+
+    set_target_properties(inviwo-cli PROPERTIES LINK_FLAGS 
+        "/SUBSYSTEM:CONSOLE /ENTRY:mainCRTStartup")
+    
+    add_dependencies(inviwo-cli inviwo)
+
+    ivw_define_standard_definitions(inviwo-cli inviwo-cli)
+    ivw_define_standard_properties(inviwo-cli)
+    ivw_add_dependencies(${package_list})
+    #ivw_compile_optimize_inviwo_core()
+    ivw_memleak_setup(inviwo-cli)
+endif()

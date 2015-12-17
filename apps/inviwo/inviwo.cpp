@@ -27,13 +27,6 @@
  * 
  *********************************************************************************/
 
-#ifdef _MSC_VER
-#ifdef IVW_DEBUG
-#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
-#else
-#pragma comment(linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-#endif
-#endif
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QFile>
