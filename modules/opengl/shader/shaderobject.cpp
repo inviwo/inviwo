@@ -74,13 +74,17 @@ void ShaderObject::initialize(bool compileShader) {
         (fileExtension == "frag" && shaderType_ != GL_FRAGMENT_SHADER)) {
         LogWarn("File extension does not match shader type: " << fileName_);
     }
-
-    loadSource(fileName_);
-    preprocess();
-    upload();
-
-    if (compileShader) {
-        compile();
+    
+    try {
+        loadSource(fileName_);
+        preprocess();
+        upload();
+        
+        if (compileShader) {
+            compile();
+        }
+    } catch (const OpenGLException& exception) {
+        LogError("ShaderObject initialize error: " << exception.getMessage());
     }
 }
 
