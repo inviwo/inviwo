@@ -107,6 +107,9 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
         xSlide_.onVolumeChange(vol);
         ySlide_.onVolumeChange(vol);
         zSlide_.onVolumeChange(vol);
+        if (!boundingBoxMesh_) {
+            createBoundingBox();
+        }
         boundingBoxMesh_->setModelMatrix(vol->getModelMatrix());
         boundingBoxMesh_->setWorldMatrix(vol->getWorldMatrix());
     });
@@ -114,6 +117,8 @@ AxisAlignedCutPlane::AxisAlignedCutPlane()
     boundingBoxColor_.setSemantics(PropertySemantics::Color);
 
     setAllPropertiesCurrentStateAsDefault();
+
+    createBoundingBox();
 
 }
 
@@ -123,9 +128,10 @@ void AxisAlignedCutPlane::process() {
     } else {
         utilgl::activateAndClearTarget(outport_, ImageType::ColorDepth);
     }
-
-    if (!boundingBoxMesh_) {
-        createBoundingBox();
+    
+    if (!boundingBoxDrawer_) {
+        boundingBoxDrawer_ =
+            getNetwork()->getApplication()->getMeshDrawerFactory()->create(boundingBoxMesh_.get());
     }
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
@@ -166,9 +172,6 @@ void AxisAlignedCutPlane::createBoundingBox() {
     boundingBoxMesh_->addVertex(vec3(1, 1, 1), vec3(1, 1, 1), boundingBoxColor_.get());
 
     boundingBoxMesh_->addIndices(1, 0, 2, 3, 7, 5, 4, 6, 2, 0, 4, 5, 1, 3, 7, 6);
-
-    boundingBoxDrawer_ =
-        getNetwork()->getApplication()->getMeshDrawerFactory()->create(boundingBoxMesh_.get());
 }
 
 void AxisAlignedCutPlane::drawBoundingBox() {
