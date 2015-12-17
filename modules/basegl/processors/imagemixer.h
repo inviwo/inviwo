@@ -117,6 +117,7 @@ private:
 
     OptionPropertyInt blendingMode_; //!< blend mode from BlendModes::Mode
     FloatProperty weight_; //!< weighting factor
+    BoolProperty clamp_;
     Shader shader_;
 };
 

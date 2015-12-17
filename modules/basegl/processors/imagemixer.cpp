@@ -52,6 +52,7 @@ ImageMixer::ImageMixer()
     , outport_("outport")
     , blendingMode_("blendMode", "Blend Mode", InvalidationLevel::InvalidResources)
     , weight_("weight", "Weight", 0.5f, 0.0f, 1.0f)
+    , clamp_("clamp","Clamp values to zero and one",false)
     , shader_("img_mix.frag", false) {
     
     shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -77,6 +78,7 @@ ImageMixer::ImageMixer()
 
     addProperty(blendingMode_);
     addProperty(weight_);
+    addProperty(clamp_);
 
     blendingMode_.onChange([&]() {
         weight_.setVisible(blendingMode_.get() == BlendModes::Mix);
@@ -153,6 +155,13 @@ void ImageMixer::initializeResources() {
         default:
             compositingValue = "colorMix(colorA,colorB)";
             break;
+    }
+
+    if (clamp_) {
+        shader_.getFragmentShaderObject()->addShaderDefine("CLAMP_VALUES");
+    }
+    else {
+        shader_.getFragmentShaderObject()->removeShaderDefine("CLAMP_VALUES");
     }
 
     shader_.getFragmentShaderObject()->addShaderDefine(compositingKey, compositingValue);

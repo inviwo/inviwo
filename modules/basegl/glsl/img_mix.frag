@@ -121,6 +121,10 @@ void main() {
     vec4 color1 = texture(inport1Color, texCoords);
     vec4 result = COLOR_BLENDING(color0, color1);
   
+#ifdef CLAMP_VALUES
+    result = clamp(result,0,1);
+#endif
+
     FragData0 = result;
     gl_FragDepth = min(texture(inport0Depth, texCoords).r,texture(inport1Depth, texCoords).r);
 
