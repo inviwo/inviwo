@@ -79,8 +79,6 @@ private:
     IntMinMaxProperty clipX_;
     IntMinMaxProperty clipY_;
     IntMinMaxProperty clipZ_;
-
-    uvec3 dims_;
 };
 
 } // namespace

@@ -59,7 +59,7 @@ CubeProxyGeometry::CubeProxyGeometry()
     addProperty(clipX_);
     addProperty(clipY_);
     addProperty(clipZ_);
-    dims_ = uvec3(1, 1, 1);
+    
 
     // Since the clips depend on the input volume dimensions, we make sure to always
     // serialize them so we can do a proper renormalization when we load new data.
@@ -87,26 +87,27 @@ void CubeProxyGeometry::process() {
     glm::vec4 c1(t1,0.0f);
     glm::vec4 c2(t2,0.0f);
     glm::vec4 c3(t3,0.0f);
+    auto dims = inport_.getData()->getDimensions();
 
     if (clippingEnabled_.get()) {
-        pos = pos + p1*static_cast<float>(clipX_.get().x)/static_cast<float>(dims_.x)
-                  + p2*static_cast<float>(clipY_.get().x)/static_cast<float>(dims_.y)
-                  + p3*static_cast<float>(clipZ_.get().x)/static_cast<float>(dims_.z);
-        p1 = p1*(static_cast<float>(clipX_.get().y)-static_cast<float>(clipX_.get().x))/static_cast<float>(dims_.x);
-        p2 = p2*(static_cast<float>(clipY_.get().y)-static_cast<float>(clipY_.get().x))/static_cast<float>(dims_.y);
-        p3 = p3*(static_cast<float>(clipZ_.get().y)-static_cast<float>(clipZ_.get().x))/static_cast<float>(dims_.z);
-        tex = tex + t1*static_cast<float>(clipX_.get().x)/static_cast<float>(dims_.x)
-                  + t2*static_cast<float>(clipY_.get().x)/static_cast<float>(dims_.y)
-                  + t3*static_cast<float>(clipZ_.get().x)/static_cast<float>(dims_.z);
-        t1 = t1*(static_cast<float>(clipX_.get().y)-static_cast<float>(clipX_.get().x))/static_cast<float>(dims_.x);
-        t2 = t2*(static_cast<float>(clipY_.get().y)-static_cast<float>(clipY_.get().x))/static_cast<float>(dims_.y);
-        t3 = t3*(static_cast<float>(clipZ_.get().y)-static_cast<float>(clipZ_.get().x))/static_cast<float>(dims_.z);
-        col = col + c1*static_cast<float>(clipX_.get().x)/static_cast<float>(dims_.x)
-                  + c2*static_cast<float>(clipY_.get().x)/static_cast<float>(dims_.y)
-                  + c3*static_cast<float>(clipZ_.get().x)/static_cast<float>(dims_.z);
-        c1 = c1*(static_cast<float>(clipX_.get().y)-static_cast<float>(clipX_.get().x))/static_cast<float>(dims_.x);
-        c2 = c2*(static_cast<float>(clipY_.get().y)-static_cast<float>(clipY_.get().x))/static_cast<float>(dims_.y);
-        c3 = c3*(static_cast<float>(clipZ_.get().y)-static_cast<float>(clipZ_.get().x))/static_cast<float>(dims_.z);
+        pos = pos + p1*static_cast<float>(clipX_.get().x)/static_cast<float>(dims.x)
+                  + p2*static_cast<float>(clipY_.get().x)/static_cast<float>(dims.y)
+                  + p3*static_cast<float>(clipZ_.get().x)/static_cast<float>(dims.z);
+        p1 = p1*(static_cast<float>(clipX_.get().y)-static_cast<float>(clipX_.get().x))/static_cast<float>(dims.x);
+        p2 = p2*(static_cast<float>(clipY_.get().y)-static_cast<float>(clipY_.get().x))/static_cast<float>(dims.y);
+        p3 = p3*(static_cast<float>(clipZ_.get().y)-static_cast<float>(clipZ_.get().x))/static_cast<float>(dims.z);
+        tex = tex + t1*static_cast<float>(clipX_.get().x)/static_cast<float>(dims.x)
+                  + t2*static_cast<float>(clipY_.get().x)/static_cast<float>(dims.y)
+                  + t3*static_cast<float>(clipZ_.get().x)/static_cast<float>(dims.z);
+        t1 = t1*(static_cast<float>(clipX_.get().y)-static_cast<float>(clipX_.get().x))/static_cast<float>(dims.x);
+        t2 = t2*(static_cast<float>(clipY_.get().y)-static_cast<float>(clipY_.get().x))/static_cast<float>(dims.y);
+        t3 = t3*(static_cast<float>(clipZ_.get().y)-static_cast<float>(clipZ_.get().x))/static_cast<float>(dims.z);
+        col = col + c1*static_cast<float>(clipX_.get().x)/static_cast<float>(dims.x)
+                  + c2*static_cast<float>(clipY_.get().x)/static_cast<float>(dims.y)
+                  + c3*static_cast<float>(clipZ_.get().x)/static_cast<float>(dims.z);
+        c1 = c1*(static_cast<float>(clipX_.get().y)-static_cast<float>(clipX_.get().x))/static_cast<float>(dims.x);
+        c2 = c2*(static_cast<float>(clipY_.get().y)-static_cast<float>(clipY_.get().x))/static_cast<float>(dims.y);
+        c3 = c3*(static_cast<float>(clipZ_.get().y)-static_cast<float>(clipZ_.get().x))/static_cast<float>(dims.z);
     }
 
     // Create parallelepiped and set it to the outport. The outport will own the data.
@@ -119,19 +120,21 @@ void CubeProxyGeometry::process() {
 }
 
 void CubeProxyGeometry::onVolumeChange() {
-    NetworkLock lock(this);
-
     // Update to the new dimensions.
-    dims_ = inport_.getData()->getDimensions();
+    auto dims = inport_.getData()->getDimensions();
+    if (dims != size3_t(clipX_.getRangeMax(), clipY_.getRangeMax(), clipZ_.getRangeMax())) {
+        NetworkLock lock(this);
 
-    clipX_.setRangeNormalized(ivec2(0, dims_.x));
-    clipY_.setRangeNormalized(ivec2(0, dims_.y));
-    clipZ_.setRangeNormalized(ivec2(0, dims_.z));
+        clipX_.setRangeNormalized(ivec2(0, dims.x));
+        clipY_.setRangeNormalized(ivec2(0, dims.y));
+        clipZ_.setRangeNormalized(ivec2(0, dims.z));
 
-    // set the new dimensions to default if we were to press reset
-    clipX_.setCurrentStateAsDefault();
-    clipY_.setCurrentStateAsDefault();
-    clipZ_.setCurrentStateAsDefault();
+        // set the new dimensions to default if we were to press reset
+        clipX_.setCurrentStateAsDefault();
+        clipY_.setCurrentStateAsDefault();
+        clipZ_.setCurrentStateAsDefault();
+    }
+
 }
 
 } // namespace
