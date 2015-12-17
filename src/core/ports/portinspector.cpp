@@ -87,8 +87,9 @@ void PortInspector::initialize() {
     startFileObservation(inspectorNetworkFileName_);
     try {
         // Deserialize the network
-        Deserializer xmlDeserializer(InviwoApplication::getPtr(), inspectorNetworkFileName_);
-        inspectorNetwork_ = util::make_unique<ProcessorNetwork>();
+        auto app = InviwoApplication::getPtr();
+        Deserializer xmlDeserializer(app, inspectorNetworkFileName_);
+        inspectorNetwork_ = util::make_unique<ProcessorNetwork>(app);
         inspectorNetwork_->deserialize(xmlDeserializer);
         processors_ = inspectorNetwork_->getProcessors();
 

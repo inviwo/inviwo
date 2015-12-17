@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/links/propertylink.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/properties/compositeproperty.h>
 

@@ -414,8 +414,9 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
                                        ivec2 canvasSize) {
     NetworkLock lock(network_);
 
-    Deserializer xmlDeserializer(mainwindow_->getInviwoApplication(), fileName);
-    ProcessorNetwork* processorNetwork = new ProcessorNetwork();
+    auto app = mainwindow_->getInviwoApplication();
+    Deserializer xmlDeserializer(app, fileName);
+    ProcessorNetwork* processorNetwork = new ProcessorNetwork(app);
     processorNetwork->deserialize(xmlDeserializer);
 
     for (auto& processor : processorNetwork->getProcessors()) {
@@ -442,9 +443,9 @@ void NetworkEditor::addExternalNetwork(std::string fileName, std::string identif
 std::vector<std::string> NetworkEditor::saveSnapshotsInExternalNetwork(
     std::string externalNetworkFile, std::string identifierPrefix) {
     // turnoff sound
+    auto app = mainwindow_->getInviwoApplication();
     BoolProperty* soundProperty =
-        dynamic_cast<BoolProperty*>(mainwindow_->getInviwoApplication()
-                                        ->getSettingsByType<SystemSettings>()
+        dynamic_cast<BoolProperty*>(app->getSettingsByType<SystemSettings>()
                                         ->getPropertyByIdentifier("enableSound"));
     bool isSoundEnabled = soundProperty->get();
 

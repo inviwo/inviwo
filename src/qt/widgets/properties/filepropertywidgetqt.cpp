@@ -31,6 +31,8 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/qt/widgets/properties/filepropertywidgetqt.h>
 #include <inviwo/qt/widgets/inviwofiledialog.h>
+#include <inviwo/core/util/tooltiphelper.h>
+#include <inviwo/core/properties/propertyowner.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

@@ -74,7 +74,7 @@ public:
     using PortConnectionMap = std::map<std::pair<Outport*, Inport*>, PortConnection*>;
     using PropertyLinkMap = std::map<std::pair<Property*, Property*>, PropertyLink*>;
 
-    ProcessorNetwork(InviwoApplication* application = InviwoApplication::getPtr());
+    ProcessorNetwork(InviwoApplication* application);
     virtual ~ProcessorNetwork();
 
     /**

@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include "volumeboundingbox.h"
+#include <inviwo/core/datastructures/geometry/basicmesh.h>
 
 namespace inviwo {
 
