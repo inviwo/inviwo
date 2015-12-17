@@ -31,36 +31,6 @@ file(GLOB_RECURSE LIBPNG_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libpng/*.h
 file(GLOB_RECURSE LIBPNG_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libpng/*.c)
 
 #--------------------------------------------------------------------
-# Add LIBTIFF files
-file(GLOB_RECURSE LIBTIFF4_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/*.h)
-list(REMOVE_ITEM LIBTIFF4_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_config.wince.h)
-list(REMOVE_ITEM LIBTIFF4_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_config.vc.h)
-
-file(GLOB_RECURSE LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.c)
-list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/mkg3states.c)
-list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/mkspans.c)
-list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_msdos.c)
-list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_wince.c)
-list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_win3.c)
-list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_vms.c)
-list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_atari.c)
-list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_acorn.c)
-
-if(WIN32)
-    list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_apple.c)
-    list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_unix.c)
-elseif(APPLE)
-    list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_win32.c)
-    list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tiffconf.vc.h)
-    list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_config.vc.h)
-else()
-    list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_apple.c)
-    list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_win32.c)
-    list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tiffconf.vc.h)
-    list(REMOVE_ITEM LIBTIFF4_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff/tif_config.vc.h)
-endif()
-
-#--------------------------------------------------------------------
 # Add OpenEXR files
 file(GLOB_RECURSE HALF_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/half/*.h)
 set(HALF_SOURCE_FILES
@@ -134,7 +104,6 @@ set(HEADER_FILES
 ivw_group("Header Files" ${HEADER_FILES} 
     ${LIBJPEG_HEADER_FILES} 
     ${LIBPNG_HEADER_FILES} 
-    ${LIBTIFF4_HEADER_FILES}
     ${LIBRAWLITE_HEADER_FILES} 
     ${OPENEXR_HEADER_FILES})
 
@@ -149,7 +118,6 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES} 
     ${LIBJPEG_SOURCE_FILES} 
     ${LIBPNG_SOURCE_FILES}
-    ${LIBTIFF4_SOURCE_FILES} 
     ${OPENEXR_SOURCE_FILES})
 
 #--------------------------------------------------------------------
@@ -164,7 +132,6 @@ include_directories(${LIB_IMAGE_DIRS})
 #endif()
 ivw_add_definition(cimg_use_cpp11)
 ivw_add_definition(cimg_use_png)
-ivw_add_definition(cimg_use_tiff)
 ivw_add_definition(cimg_use_jpeg)
 if (ZLIB_FOUND)
 	ivw_add_definition(cimg_use_zlib)
@@ -191,7 +158,6 @@ endif()
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/libjpeg)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/libpng)
-ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/libtiff)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/half)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/imath)
 ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr/ilmimf)
@@ -204,7 +170,6 @@ ivw_include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ext/openexr)
 set(IGNORE_WARN_FILES 
     ${LIBJPEG_SOURCE_FILES} 
     ${LIBPNG_SOURCE_FILES}
-    ${LIBTIFF4_SOURCE_FILES} 
     ${OPENEXR_SOURCE_FILES}
 )
 
@@ -222,11 +187,9 @@ ivw_create_module(
     ${SOURCE_FILES} 
     ${LIBJPEG_SOURCE_FILES} 
     ${LIBPNG_SOURCE_FILES}
-    ${LIBTIFF4_SOURCE_FILES}
     ${OPENEXR_SOURCE_FILES}
     ${HEADER_FILES}
     ${LIBJPEG_HEADER_FILES}
     ${LIBPNG_HEADER_FILES}
-    ${LIBTIFF4_HEADER_FILES} 
     ${OPENEXR_HEADER_FILES}
 )
