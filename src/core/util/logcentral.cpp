@@ -104,6 +104,10 @@ void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience audie
             break;
     }
 
+    replaceInString(logMsg, "\\n", "<br />");
+    replaceInString(logMsg, "\\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+    replaceInString(logMsg, "\\s", "&nbsp;");
+
     (*fileStream_) << "(" << logSource << ":" << lineNumber << ") " << logMsg;
     (*fileStream_) << "</font><br>" << std::endl;
 }
