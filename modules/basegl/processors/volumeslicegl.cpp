@@ -493,22 +493,37 @@ void VolumeSliceGL::invalidateMesh() { meshDirty_ = true; }
 
 void VolumeSliceGL::shiftSlice(int shift) {
     switch (sliceAlongAxis_.get()) {
-        case 0:  // x axis
-            sliceX_.set(sliceX_.get() + shift);
-            break;
-        case 1:  // y axis
-            sliceY_.set(sliceY_.get() + shift);
-            break;
-        case 2:  // z axis
-            sliceZ_.set(sliceZ_.get() + shift);
-            break;
-        case 3: {
-            vec3 newPos = planePosition_.get() +
-                          static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
-            newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
-            planePosition_.set(newPos);
+    case 0:  // x axis
+        {
+            int newValue = sliceX_.get() + shift;
+            newValue = glm::clamp(newValue, sliceX_.getMinValue(), sliceX_.getMaxValue());
+            sliceX_.set(newValue);
             break;
         }
+    case 1:  // y axis
+        {
+            int newValue = sliceY_.get() + shift;
+            newValue = glm::clamp(newValue, sliceY_.getMinValue(), sliceY_.getMaxValue());
+            sliceY_.set(newValue);
+            break;
+
+        }
+    case 2:  // z axis
+        {
+            int newValue = sliceZ_.get() + shift;
+            newValue = glm::clamp(newValue, sliceZ_.getMinValue(), sliceZ_.getMaxValue());
+            sliceZ_.set(newValue);
+            break;
+
+        }
+    default:
+    case 3: {
+        vec3 newPos = planePosition_.get() +
+                        static_cast<float>(shift) / 100.0f * glm::normalize(planeNormal_.get());
+        newPos = glm::clamp(newPos, vec3(0.0f), vec3(1.0f));
+        planePosition_.set(newPos);
+        break;
+    }
     }
 }
 
