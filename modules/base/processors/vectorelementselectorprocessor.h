@@ -57,7 +57,7 @@ template< typename T>
 class VectorElementSelectorProcessor : public Processor {
 public:
     VectorElementSelectorProcessor();
-    virtual ~VectorElementSelectorProcessor() = default;
+    virtual ~VectorElementSelectorProcessor() {};
 
     virtual const ProcessorInfo getProcessorInfo() const = 0;
 
