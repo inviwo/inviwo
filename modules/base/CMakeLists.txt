@@ -31,7 +31,8 @@ set(HEADER_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/timestepselector.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorelementselectorprocessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/vectorelementselectorprocessor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumebasistransformer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.h
@@ -75,7 +76,7 @@ set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/spotlightsourceprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/stereocamerasyncer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/surfaceextraction.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/processors/timestepselector.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumevectorelementselectorprocessor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeboundingbox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeexport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/processors/volumeslice.cpp

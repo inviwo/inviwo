@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2015 Inviwo Foundation
+ * Copyright (c) 2015 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,49 +27,78 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TIMESTEPSELECTOR_H
-#define IVW_TIMESTEPSELECTOR_H
+#ifndef IVW_VECTORELEMENTSELECTORPROCESSOR_H
+#define IVW_VECTORELEMENTSELECTORPROCESSOR_H
 
 #include <modules/base/basemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <modules/base/properties/sequencetimerproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TimeStepSelector, Time Step Selector}
- * ![](org.inviwo.TimeStepSelector.png?classIdentifier=org.inviwo.TimeStepSelector)
+/** \docpage{org.inviwo.VectorElementSelectorProcessor, Vector Element Selector Processor}
+ * ![](org.inviwo.VectorElementSelectorProcessor.png?classIdentifier=org.inviwo.VectorElementSelectorProcessor)
  *
- *
+ * Template for processors that want to select an element from an input vector and set it as output.
+ * @see VolumeVectorElementSelectorProcessor for an example
+ * ### Inports
+ *   * __inport__ ... Vector of data
  * ### Outports
- *   * __outport__ ...
+ *   * __outport__ ... Selected element from input vector
  *
  * ### Properties
  *   * __Time Step__ ...
  *
  */
-class IVW_MODULE_BASE_API TimeStepSelector : public Processor {
+template< typename T>
+class VectorElementSelectorProcessor : public Processor {
 public:
-    TimeStepSelector();
-    virtual ~TimeStepSelector();
+    VectorElementSelectorProcessor();
+    virtual ~VectorElementSelectorProcessor() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    virtual const ProcessorInfo getProcessorInfo() const = 0;
 
     void process() override;
 
-    void volumeChange();
-
 protected:
-    DataInport<std::vector<std::shared_ptr<Volume>>> inport_;
-    VolumeOutport outport_;
+    DataInport<std::vector<std::shared_ptr<T>>> inport_;
+    DataOutport<T> outport_;
     SequenceTimerProperty timeStep_;
 };
 
-}  // namespace
+template < typename T>
+VectorElementSelectorProcessor<T>::VectorElementSelectorProcessor()
+    : Processor()
+    , inport_("inport")
+    , outport_("outport")
+    , timeStep_("timeStep", "Step") {
+    addPort(inport_);
+    addPort(outport_);
 
-#endif  // IVW_TIMESTEPSELECTOR_H
+    addProperty(timeStep_);
+    // This needs to be added by the child class
+    //timeStep_.index_.autoLinkToProperty<VectorElementSelectorProcessor<T>>("timeStep.selectedSequenceIndex");
+
+    inport_.onChange([this]() {
+        if (inport_.hasData()) timeStep_.updateMax(inport_.getData()->size());
+    });
+}
+
+template < typename T>
+void VectorElementSelectorProcessor<T>::process() {
+    if (!inport_.isReady()) return;
+
+    if (auto data = inport_.getData()) {
+        size_t index = std::min(data->size() - 1, static_cast<size_t>(timeStep_.index_.get() - 1));
+
+        outport_.setData((*data)[index]);
+    }
+}
+
+} // namespace
+
+#endif // IVW_VECTORELEMENTSELECTORPROCESSOR_H
+

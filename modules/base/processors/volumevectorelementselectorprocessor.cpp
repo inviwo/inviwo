@@ -27,48 +27,24 @@
  * 
  *********************************************************************************/
 
-#include "timestepselector.h"
+#include "volumevectorelementselectorprocessor.h"
 
 namespace inviwo {
 
-const ProcessorInfo TimeStepSelector::processorInfo_{
+const ProcessorInfo VolumeVectorElementSelectorProcessor::processorInfo_{
     "org.inviwo.TimeStepSelector",  // Class identifier
-    "Time Step Selector",           // Display name
+    "Volume Sequence/Time Selector",// Display name
     "Volume Operation",             // Category
     CodeState::Stable,              // Code state
     Tags::CPU,                      // Tags
 };
-const ProcessorInfo TimeStepSelector::getProcessorInfo() const {
+const ProcessorInfo VolumeVectorElementSelectorProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
+VolumeVectorElementSelectorProcessor::VolumeVectorElementSelectorProcessor()
+    : VectorElementSelectorProcessor<Volume>() {
+    timeStep_.index_.autoLinkToProperty<VolumeVectorElementSelectorProcessor>("timeStep.selectedSequenceIndex");
 
-TimeStepSelector::TimeStepSelector()
-    : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , timeStep_("timeStep", "Step") {
-    addPort(inport_);
-    addPort(outport_);
-
-    addProperty(timeStep_);
-
-    timeStep_.index_.autoLinkToProperty<TimeStepSelector>("timeStep.selectedSequenceIndex");
-
-    inport_.onChange([this]() {
-        if(inport_.hasData()) timeStep_.updateMax(inport_.getData()->size());
-    });
-}
-
-TimeStepSelector::~TimeStepSelector() {}
-
-void TimeStepSelector::process() {
-    if (!inport_.isReady()) return;
-
-    if (auto data = inport_.getData()) {
-        size_t index = std::min(data->size() - 1, static_cast<size_t>(timeStep_.index_.get() - 1));
-
-        outport_.setData((*data)[index]);
-    }
 }
 
 }  // namespace
