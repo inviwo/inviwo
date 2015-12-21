@@ -54,22 +54,21 @@ class IVW_MODULE_PYTHON3QT_API PythonTextEditor : public QPlainTextEdit {
 public:
     PythonTextEditor(QWidget* parent) : QPlainTextEdit(parent) {}
     virtual ~PythonTextEditor() {}
-
     virtual void keyPressEvent(QKeyEvent* keyEvent);
 };
 
+class InviwoMainWindow;
 class SyntaxHighligther;
 class IVW_MODULE_PYTHON3QT_API PythonEditorWidget : public InviwoDockWidget,
                                                     public FileObserver,
-                                                    public PythonExecutionOutputObeserver,
-                                                    public Singleton<PythonEditorWidget> {
+                                                    public PythonExecutionOutputObeserver {
 #include <warn/push>
 #include <warn/ignore/all>
     Q_OBJECT
 #include <warn/pop>
 
 public:
-    PythonEditorWidget(QWidget* parent = nullptr);
+    PythonEditorWidget(InviwoMainWindow* parent, InviwoApplication* app);
     virtual ~PythonEditorWidget();
 
     void appendToOutput(const std::string& msg, bool error = false);
@@ -84,10 +83,15 @@ public:
     static PythonEditorWidget* getPtr();
 
     void updateStyle();
+    void save();
+    void saveAs();
+    void open();
+    void run();
+    void show();
+    void setDefaultText();
+    void clearOutput();
 
 private:
-    void buildWidget();
-
     QSettings settings_;
     PythonTextEditor* pythonCode_;
     QTextEdit* pythonOutput_;
@@ -106,13 +110,6 @@ private:
     static PythonEditorWidget* instance_;
 
 public slots:
-    void save();
-    void saveAs();
-    void open();
-    void run();
-    void show();
-    void setDefaultText();
-    void clearOutput();
     void onTextChange();
 };
 

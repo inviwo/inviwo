@@ -70,13 +70,6 @@
 
 #include <warn/pop>
 
-#ifdef IVW_PYTHON2_QT
-#define IVW_PYTHON_QT
-#include <modules/pythonqt/pythoneditorwidget.h>
-#elif IVW_PYTHON3_QT
-#define IVW_PYTHON_QT
-#include <modules/python3qt/pythoneditorwidget.h>
-#endif
 
 // enable menu entry to reload the application stylesheet
 //#define IVW_STYLESHEET_RELOAD
@@ -95,7 +88,6 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
                    false, "", "file name")
     , screenGrabArg_("g", "screengrab", "Specify default name of each screen grab.", false, "",
                      "file name") {
-
     networkEditor_ = new NetworkEditor(this);
     // initialize console widget first to receive log messages
     consoleWidget_ = new ConsoleWidget(this);
@@ -246,43 +238,53 @@ void InviwoMainWindow::addActions() {
     workspaceToolBar->setObjectName("fileToolBar");
     auto viewModeToolBar = addToolBar("View");
     viewModeToolBar->setObjectName("viewModeToolBar");
-    auto evalToolBar = addToolBar("Evalulation");
+    auto evalToolBar = addToolBar("Evaluation");
     evalToolBar->setObjectName("evalToolBar");
 
     // file menu entries
     {
-        auto workspaceActionNew = new QAction(QIcon(":/icons/new.png"), tr("&New Workspace"), this);
-        workspaceActionNew->setShortcut(QKeySequence::New);
-        connect(workspaceActionNew, SIGNAL(triggered()), this, SLOT(newWorkspace()));
-        fileMenuItem->addAction(workspaceActionNew);
-        workspaceToolBar->addAction(workspaceActionNew);
+        auto newAction = new QAction(QIcon(":/icons/new.png"), tr("&New Workspace"), this);
+        actions_["New"] = newAction;
+        newAction->setShortcut(QKeySequence::New);
+        newAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        this->addAction(newAction);
+        connect(newAction, SIGNAL(triggered()), this, SLOT(newWorkspace()));
+        fileMenuItem->addAction(newAction);
+        workspaceToolBar->addAction(newAction);
     }
 
     {
-        auto workspaceActionOpen =
-            new QAction(QIcon(":/icons/open.png"), tr("&Open Workspace"), this);
-        workspaceActionOpen->setShortcut(QKeySequence::Open);
-        connect(workspaceActionOpen, SIGNAL(triggered()), this, SLOT(openWorkspace()));
-        fileMenuItem->addAction(workspaceActionOpen);
-        workspaceToolBar->addAction(workspaceActionOpen);
+        auto openAction = new QAction(QIcon(":/icons/open.png"), tr("&Open Workspace"), this);
+        openAction->setShortcut(QKeySequence::Open);
+        openAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        this->addAction(openAction);
+        actions_["Open"] = openAction;
+        connect(openAction, SIGNAL(triggered()), this, SLOT(openWorkspace()));
+        fileMenuItem->addAction(openAction);
+        workspaceToolBar->addAction(openAction);
     }
 
     {
-        auto workspaceActionSave =
-            new QAction(QIcon(":/icons/save.png"), tr("&Save Workspace"), this);
-        workspaceActionSave->setShortcut(QKeySequence::Save);
-        connect(workspaceActionSave, SIGNAL(triggered()), this, SLOT(saveWorkspace()));
-        fileMenuItem->addAction(workspaceActionSave);
-        workspaceToolBar->addAction(workspaceActionSave);
+        auto saveAction = new QAction(QIcon(":/icons/save.png"), tr("&Save Workspace"), this);
+        saveAction->setShortcut(QKeySequence::Save);
+        saveAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        this->addAction(saveAction);
+        actions_["Save"] = saveAction;
+        connect(saveAction, SIGNAL(triggered()), this, SLOT(saveWorkspace()));
+        fileMenuItem->addAction(saveAction);
+        workspaceToolBar->addAction(saveAction);
     }
 
     {
-        auto workspaceActionSaveAs =
+        auto saveAsAction =
             new QAction(QIcon(":/icons/saveas.png"), tr("&Save Workspace As"), this);
-        workspaceActionSaveAs->setShortcut(QKeySequence::SaveAs);
-        connect(workspaceActionSaveAs, SIGNAL(triggered()), this, SLOT(saveWorkspaceAs()));
-        fileMenuItem->addAction(workspaceActionSaveAs);
-        workspaceToolBar->addAction(workspaceActionSaveAs);
+        saveAsAction->setShortcut(QKeySequence::SaveAs);
+        saveAsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        this->addAction(saveAsAction);
+        actions_["Save As"] = saveAsAction;
+        connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveWorkspaceAs()));
+        fileMenuItem->addAction(saveAsAction);
+        workspaceToolBar->addAction(saveAsAction);
     }
 
     {
@@ -696,14 +698,6 @@ std::string InviwoMainWindow::getCurrentWorkspace() {
 }
 
 void InviwoMainWindow::newWorkspace() {
-#ifdef IVW_PYTHON_QT
-    if (PythonEditorWidget::getPtr()->isActiveWindow() &&
-        PythonEditorWidget::getPtr()->hasFocus()) {
-        PythonEditorWidget::getPtr()->setDefaultText();
-        return;
-    }
-#endif
-
     if (currentWorkspaceFileName_ != "")
         if (!askToSaveWorkspaceChanges()) return;
 
@@ -807,16 +801,6 @@ void InviwoMainWindow::openExampleWorkspace() {
 }
 
 void InviwoMainWindow::saveWorkspace() {
-#ifdef IVW_PYTHON_QT
-
-    if (PythonEditorWidget::getPtr()->isActiveWindow() &&
-        PythonEditorWidget::getPtr()->hasFocus()) {
-        PythonEditorWidget::getPtr()->save();
-        return;
-    }  // only save workspace if python editor does not have focus
-
-#endif
-
     if (currentWorkspaceFileName_.contains("untitled.inv"))
         saveWorkspaceAs();
     else {

@@ -40,7 +40,7 @@ namespace inviwo {
 Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt")
     , inviwoPyQtModule_(util::make_unique<PyModule>("inviwoqt"))
-    , menu_(util::make_unique<PythonMenu>())
+    , menu_(util::make_unique<PythonMenu>(app))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
                        "Path to the file containing the script") {
     inviwoPyQtModule_->addMethod(new PyGetPathCurrentWorkspace());
@@ -52,8 +52,8 @@ Python3QtModule::Python3QtModule(InviwoApplication* app)
     PyInviwo::getPtr()->registerPyModule(inviwoPyQtModule_.get());
 
     app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
-        PythonEditorWidget::getPtr()->loadFile(pythonScriptArg_.getValue(), false);
-        PythonEditorWidget::getPtr()->run();
+        menu_->getEditor()->loadFile(pythonScriptArg_.getValue(), false);
+        menu_->getEditor()->run();
     }, 100);
 }
 

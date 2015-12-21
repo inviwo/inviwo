@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <modules/python3qt/pythoneditorwidget.h>
@@ -35,6 +35,7 @@
 #include <modules/python3/python3module.h>
 #include <inviwo/core/util/clock.h>
 #include <inviwo/qt/widgets/properties/syntaxhighlighter.h>
+#include <inviwo/qt/editor/inviwomainwindow.h>
 
 #include <inviwo/qt/widgets/inviwofiledialog.h>
 #include <inviwo/core/util/settings/systemsettings.h>
@@ -47,7 +48,9 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QButtonGroup>
-#include <QToolButton>
+#include <QToolBar>
+#include <QMainWindow>
+#include <QMenuBar>
 #include <QSpacerItem>
 #include <QHBoxLayout>
 #include <QFrame>
@@ -56,37 +59,115 @@
 
 namespace inviwo {
 
+
 const static std::string defaultSource =
     "# Inviwo Python script \nimport inviwo \nimport inviwoqt \n\ninviwo.info() \ninviwoqt.info() "
     "\n";
-PythonEditorWidget* PythonEditorWidget::instance_ = nullptr;
-PythonEditorWidget* PythonEditorWidget::getPtr() {
-    ivwAssert(instance_ != nullptr, "Singleton not yet created");
-    return instance_;
-}
 
-
-PythonEditorWidget::PythonEditorWidget(QWidget* parent)
-    : InviwoDockWidget(tr("Python Editor"), parent)
+PythonEditorWidget::PythonEditorWidget(InviwoMainWindow* ivwwin, InviwoApplication* app)
+    : InviwoDockWidget(tr("Python Editor"), ivwwin)
     , settings_("Inviwo", "Inviwo")
     , infoTextColor_(153, 153, 153)
     , errorTextColor_(255, 107, 107)
     , script_()
     , unsavedChanges_(false) {
-    ivwAssert(instance_ == nullptr, "This is a Singelton, constructor may only be called once")
-        instance_ = this;
+
     setObjectName("PythonEditor");
     settings_.beginGroup("PythonEditor");
     QString lastFile = settings_.value("lastScript", "").toString();
     settings_.endGroup();
     setVisible(false);
-    buildWidget();
-    resize(500, 700);
+    setWindowIcon(QIcon(":/icons/python.png"));
+
+    QMainWindow* mainWindow = new QMainWindow();
+    mainWindow->setContextMenuPolicy(Qt::NoContextMenu);
+    QToolBar* toolBar = new QToolBar();
+    mainWindow->addToolBar(toolBar);
+    toolBar->setFloatable(false);
+    toolBar->setMovable(false);
+    setWidget(mainWindow);
+
+    {
+        auto action = toolBar->addAction(QIcon(":/icons/python.png"), "Compile and run");
+        action->setShortcut(QKeySequence(tr("F5")));
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        mainWindow->addAction(action);
+        connect(action, &QAction::triggered, [this](){run();});
+    }
+    {
+        auto action = toolBar->addAction(QIcon(":/icons/new.png"), tr("&New Script"));
+        action->setShortcut(QKeySequence::New);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        mainWindow->addAction(action);
+        connect(action, &QAction::triggered, [this](){setDefaultText();});
+    }
+
+    {
+        auto action = toolBar->addAction(QIcon(":/icons/open.png"), tr("&Open Script"));
+        action->setShortcut(QKeySequence::Open);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        mainWindow->addAction(action);
+        connect(action, &QAction::triggered, [this](){open();});
+    }
+
+    {
+        auto action = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save Script"));
+        action->setShortcut(QKeySequence::Save);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        mainWindow->addAction(action);
+        connect(action, &QAction::triggered, [this](){save();});
+    }
+    {
+        auto action = toolBar->addAction(QIcon(":/icons/saveas.png"), tr("&Save Script As"));
+        action->setShortcut(QKeySequence::SaveAs);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        mainWindow->addAction(action);
+        connect(action, &QAction::triggered, [this](){saveAs();});
+    }
+    {
+        auto action = toolBar->addAction("Clear Output");
+        action->setShortcut(Qt::ControlModifier + Qt::Key_E);
+        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+        mainWindow->addAction(action);
+        connect(action, &QAction::triggered, [this](){clearOutput();});
+    }
+
+    // Done creating buttons
+    QSplitter* splitter = new QSplitter(nullptr);
+    splitter->setOrientation(Qt::Vertical);
+    pythonCode_ = new PythonTextEditor(nullptr);
+    pythonCode_->setObjectName("pythonEditor");
+    pythonCode_->setUndoRedoEnabled(true);
+    setDefaultText();
+    pythonOutput_ = new QTextEdit(nullptr);
+    pythonOutput_->setObjectName("pythonConsole");
+    pythonOutput_->setReadOnly(true);
+    pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    syntaxHighligther_ =
+        SyntaxHighligther::createSyntaxHighligther<Python>(pythonCode_->document());
+
+    splitter->addWidget(pythonCode_);
+    splitter->addWidget(pythonOutput_);
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 0);
+    splitter->setHandleWidth(2);
+    // enable QSplitter:hover stylesheet
+    // QTBUG-13768 https://bugreports.qt.io/browse/QTBUG-13768
+    splitter->handle(1)->setAttribute(Qt::WA_Hover);
+    mainWindow->setCentralWidget(splitter);
+
+    connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));
+
+    updateStyle();
+    app->getSettingsByType<SystemSettings>()->pythonSyntax_.onChange(
+        this, &PythonEditorWidget::updateStyle);
+    app->getSettingsByType<SystemSettings>()->pyFontSize_.onChange(
+        this, &PythonEditorWidget::updateStyle);
     
-    InviwoApplication::getPtr()->registerFileObserver(this);
+    resize(500, 700);
+
+    app->registerFileObserver(this);
     unsavedChanges_ = false;
-
-
 
     if (lastFile.size() != 0) loadFile(lastFile.toLocal8Bit().constData(), false);
 
@@ -95,103 +176,15 @@ PythonEditorWidget::PythonEditorWidget(QWidget* parent)
 }
 
 
-void PythonEditorWidget::buildWidget() {
-    setWindowIcon(QIcon(":/icons/python.png"));
-    QWidget* content = new QWidget(this);
-    QVBoxLayout* verticalLayout = new QVBoxLayout(content);
-    ////Create Buttons
-    QHBoxLayout* horizontalLayout = new QHBoxLayout();
-    QToolButton* runButton = new QToolButton(content);
-    QToolButton* newButton = new QToolButton(content);
-    QToolButton* openButton = new QToolButton(content);
-    QToolButton* saveButton = new QToolButton(content);
-    QToolButton* saveAsButton = new QToolButton(content);
-    QPushButton* clearOutputButton = new QPushButton(content);
-    runButton->setShortcut(QKeySequence(tr("F5")));
-    runButton->setIcon(QIcon(":/icons/python.png"));
-    runButton->setToolTip("Compile and run (F5)");
-    newButton->setIcon(QIcon(":/icons/new.png"));
-    newButton->setToolTip("New file (Ctrl+N)");
-    openButton->setIcon(QIcon(":/icons/open.png"));
-    openButton->setToolTip("Open Python script");
-    saveButton->setIcon(QIcon(":/icons/save.png"));
-    saveButton->setToolTip("Save (Ctrl+S)");
-    saveAsButton->setIcon(QIcon(":/icons/saveas.png"));
-    saveAsButton->setToolTip("Save as");
-    clearOutputButton->setText("Clear Output");
-   
-    QFrame* line1 = new QFrame(content);
-    line1->setFrameShape(QFrame::VLine);
-    line1->setFrameShadow(QFrame::Sunken);
-    QFrame* line2 = new QFrame(content);
-    line2->setFrameShape(QFrame::VLine);
-    line2->setFrameShadow(QFrame::Sunken);
-    QFrame* line3 = new QFrame(content);
-    line3->setFrameShape(QFrame::VLine);
-    line3->setFrameShadow(QFrame::Sunken);
-    horizontalLayout->addWidget(runButton);
-    horizontalLayout->addWidget(line1);
-    horizontalLayout->addWidget(newButton);
-    horizontalLayout->addWidget(openButton);
-    horizontalLayout->addWidget(saveButton);
-    horizontalLayout->addWidget(saveAsButton);
-    horizontalLayout->addWidget(line2);
-    horizontalLayout->addWidget(clearOutputButton);
-    horizontalLayout->addWidget(line3);
-    QSpacerItem* horizontalSpacer =
-        new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    horizontalLayout->addItem(horizontalSpacer);
-    // Done creating buttons
-    QSplitter* splitter = new QSplitter(content);
-
-    splitter->setOrientation(Qt::Vertical);
-    pythonCode_ = new PythonTextEditor(content);
-    pythonCode_->setObjectName("pythonEditor");
-    pythonCode_->setUndoRedoEnabled(true);
-    setDefaultText();
-    pythonOutput_ = new QTextEdit(content);
-    pythonOutput_->setObjectName("pythonConsole");
-    pythonOutput_->setReadOnly(true);
-    pythonOutput_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    syntaxHighligther_ =
-        SyntaxHighligther::createSyntaxHighligther<Python>(pythonCode_->document());
-    verticalLayout->addLayout(horizontalLayout);
-    splitter->addWidget(pythonCode_);
-    splitter->addWidget(pythonOutput_);
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 0);
-    splitter->setHandleWidth(2);
-    // enable QSplitter:hover stylesheet 
-    // QTBUG-13768 https://bugreports.qt.io/browse/QTBUG-13768
-    splitter->handle(1)->setAttribute(Qt::WA_Hover);
-
-    verticalLayout->addWidget(splitter);
-    setWidget(content);
-    connect(pythonCode_, SIGNAL(textChanged()), this, SLOT(onTextChange()));
-    connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
-    connect(newButton, SIGNAL(clicked()), this, SLOT(setDefaultText()));
-    connect(openButton, SIGNAL(clicked()), this, SLOT(open()));
-    connect(saveButton, SIGNAL(clicked()), this, SLOT(save()));
-    connect(saveAsButton, SIGNAL(clicked()), this, SLOT(saveAs()));
-    connect(clearOutputButton, SIGNAL(clicked()), this, SLOT(clearOutput()));
-
-
-    updateStyle();
-    InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pythonSyntax_.onChange(this, &PythonEditorWidget::updateStyle);
-    InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pyFontSize_.onChange(this, &PythonEditorWidget::updateStyle);
-}
-
-
-void PythonEditorWidget::updateStyle()
-{
+void PythonEditorWidget::updateStyle() {
     auto color = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pyBGColor_.get();
     auto size = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->pyFontSize_.get();
     std::stringstream ss;
-    ss << "background-color: rgb(" << color.r << ", " << color.g << ", " << color.b << ");" << std::endl;
+    ss << "background-color: rgb(" << color.r << ", " << color.g << ", " << color.b << ");"
+       << std::endl;
     ss << "font-size: " << size << "px;";
     pythonCode_->setStyleSheet(ss.str().c_str());
     syntaxHighligther_->rehighlight();
-
 }
 
 PythonEditorWidget::~PythonEditorWidget() {}
@@ -232,7 +225,8 @@ void PythonEditorWidget::loadFile(std::string fileName, bool askForSave) {
     readFile();
 }
 
-void PythonEditorWidget::onPyhonExecutionOutput(const std::string &msg,const  PythonExecutionOutputStream &outputType) {
+void PythonEditorWidget::onPyhonExecutionOutput(const std::string& msg,
+                                                const PythonExecutionOutputStream& outputType) {
     appendToOutput(msg, outputType != sysstdout);
     LogInfo(msg);
 }
@@ -274,11 +268,11 @@ bool PythonEditorWidget::hasFocus() const {
     return false;
 }
 
-void PythonTextEditor::keyPressEvent(QKeyEvent* keyEvent){
-    if (keyEvent->key() == Qt::Key_Tab){
+void PythonTextEditor::keyPressEvent(QKeyEvent* keyEvent) {
+    if (keyEvent->key() == Qt::Key_Tab) {
         keyEvent->accept();
         insertPlainText("    ");
-    } else{
+    } else {
         QPlainTextEdit::keyPressEvent(keyEvent);
     }
 }
@@ -394,6 +388,5 @@ void PythonEditorWidget::onTextChange() {
     script_.setSource(source);
     unsavedChanges_ = true;
 }
-
 
 }  // namespace

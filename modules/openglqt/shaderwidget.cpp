@@ -69,7 +69,9 @@ ShaderWidget::ShaderWidget(const ShaderObject* obj, QWidget* parent)
     shadercode->setWordWrapMode(QTextOption::NoWrap);
 
     auto save = toolBar->addAction(QIcon(":/icons/save.png"), tr("&Save shader"));
-    //save->setShortcut(QKeySequence::Save); This is ambigious with save workspace
+    save->setShortcut(QKeySequence::Save); 
+    save->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mainWindow->addAction(save);
     connect(save, &QAction::triggered,[=]() {
         std::ofstream file(obj->getAbsoluteFileName());
         file << shadercode->toPlainText().toLocal8Bit().constData();
