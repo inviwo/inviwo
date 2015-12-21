@@ -65,6 +65,21 @@ int main(int argc, char** argv) {
     // Initialize all modules
     inviwoApp.registerModules(&inviwo::registerAllModules);
 
+    auto& cmdparser = inviwoApp.getCommandLineParser();
+    TCLAP::ValueArg<std::string> snapshotArg(
+        "s", "snapshot",
+        "Specify default name of each snapshot, or empty string for processor name.", false, "",
+        "Snapshot default name: UPN=Use Processor name.");
+
+    cmdparser.add(&snapshotArg, [&]() {
+        std::string path = cmdparser.getOutputPath();
+        if (path.empty()) path = inviwoApp.getPath(PathType::Images);
+        util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, snapshotArg.getValue());
+    }, 1000);
+
+    // Do this after registerModules if some arguments were added
+    cmdparser.parse(inviwo::CommandLineParser::Mode::Normal);
+
     // Continue initialization of default context
     CanvasGLFW* sharedCanvas =
         static_cast<CanvasGLFW*>(RenderContext::getPtr()->getDefaultRenderContext());
@@ -73,10 +88,9 @@ int main(int argc, char** argv) {
 
     // Load simple scene
     inviwoApp.getProcessorNetwork()->lock();
-    const CommandLineParser* cmdparser = inviwoApp.getCommandLineParser();
     const std::string workspace =
-        cmdparser->getLoadWorkspaceFromArg()
-            ? cmdparser->getWorkspacePath()
+        cmdparser.getLoadWorkspaceFromArg()
+            ? cmdparser.getWorkspacePath()
             : inviwoApp.getPath(PathType::Workspaces, "/boron.inv");
 
     std::vector<std::unique_ptr<ProcessorWidget>> widgets;
@@ -116,14 +130,9 @@ int main(int argc, char** argv) {
     inviwoApp.getProcessorNetwork()->setModified(true);
     inviwoApp.getProcessorNetwork()->unlock();
 
-    if (cmdparser->getCaptureAfterStartup()) {
-        std::string path = cmdparser->getOutputPath();
-        if (path.empty()) path = inviwoApp.getPath(PathType::Images);
+    cmdparser.processCallbacks(); // run any command line callbacks from modules.
 
-        util::saveAllCanvases(inviwoApp.getProcessorNetwork(), path, cmdparser->getSnapshotName());
-    }
-
-    if (cmdparser->getQuitApplicationAfterStartup()) {
+    if (cmdparser.getQuitApplicationAfterStartup()) {
         glfwTerminate();
         return 0;
     }

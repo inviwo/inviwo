@@ -83,12 +83,19 @@
 
 namespace inviwo {
 
-InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
+InviwoMainWindow::InviwoMainWindow(InviwoApplicationQt* app)
     : QMainWindow()
     , app_(app)
     , networkEditor_(nullptr)
     , appUsageModeProp_(nullptr)
-    , exampleWorkspaceOpen_(false) {
+    , exampleWorkspaceOpen_(false)
+
+    , snapshotArg_("s", "snapshot",
+                   "Specify base name of each snapshot, or \"UPN\" string for processor name.",
+                   false, "", "file name")
+    , screenGrabArg_("g", "screengrab", "Specify default name of each screen grab.", false, "",
+                     "file name") {
+
     networkEditor_ = new NetworkEditor(this);
     // initialize console widget first to receive log messages
     consoleWidget_ = new ConsoleWidget(this);
@@ -109,6 +116,14 @@ InviwoMainWindow::InviwoMainWindow(InviwoApplication* app)
 
     resize(size);
     move(pos);
+
+    app->getCommandLineParser().add(&snapshotArg_, [this]() {
+        saveCanvases(app_->getCommandLineParser().getOutputPath(), snapshotArg_.getValue());
+    }, 1000);
+
+    app->getCommandLineParser().add(&screenGrabArg_, [this]() {
+        getScreenGrab(app_->getCommandLineParser().getOutputPath(), screenGrabArg_.getValue());
+    }, 1000);
 }
 
 InviwoMainWindow::~InviwoMainWindow() {
@@ -146,15 +161,13 @@ void InviwoMainWindow::initialize() {
     restoreState(settings.value("state", saveState()).toByteArray());
     maximized_ = settings.value("maximized", false).toBool();
 
-    auto app = InviwoApplication::getPtr();
-
-    QString firstWorkspace = app->getPath(PathType::Workspaces, "/boron.inv").c_str();
+    QString firstWorkspace = filesystem::getPath(PathType::Workspaces, "/boron.inv").c_str();
     workspaceOnLastSuccessfulExit_ =
         settings.value("workspaceOnLastSuccessfulExit", QVariant::fromValue(firstWorkspace))
             .toString();
     settings.setValue("workspaceOnLastSuccessfulExit", "");
     settings.endGroup();
-    rootDir_ = QString::fromStdString(app->getPath(PathType::Data));
+    rootDir_ = QString::fromStdString(filesystem::getPath(PathType::Data));
     workspaceFileDir_ = rootDir_ + "/workspaces";
     settingsWidget_->updateSettingsWidget();
 
@@ -180,7 +193,7 @@ void InviwoMainWindow::initialize() {
     w->hide();
     delete w;
 
-    static_cast<InviwoApplicationQt*>(app)->setWindowDecorationOffset(offset);
+    app_->setWindowDecorationOffset(offset);
 #endif
 #endif
 }
@@ -192,53 +205,30 @@ void InviwoMainWindow::showWindow() {
         show();
 };
 
-bool InviwoMainWindow::processCommandLineArgs() {
-    auto app = static_cast<InviwoApplicationQt*>(InviwoApplication::getPtr());
-    const auto cmdparser = app->getCommandLineParser();
-#ifdef IVW_PYTHON_QT
+void InviwoMainWindow::saveCanvases(std::string path, std::string fileName) {
+    if (path.empty()) path = app_->getPath(PathType::Images);
 
-    if (cmdparser->getRunPythonScriptAfterStartup()) {
-        PythonEditorWidget::getPtr()->loadFile(cmdparser->getPythonScriptName(), false);
-        PythonEditorWidget::getPtr()->run();
-    }
+    repaint();
+    app_->processEvents();
+    util::saveAllCanvases(app_->getProcessorNetwork(), path, fileName);
+}
 
-#endif
+void InviwoMainWindow::getScreenGrab(std::string path, std::string fileName) {
+    if (path.empty()) path = filesystem::getPath(PathType::Images);
 
-    if (cmdparser->getScreenGrabAfterStartup()) {
-        std::string path = cmdparser->getOutputPath();
-        if (path.empty()) path = app->getPath(PathType::Images);
-
-        repaint();
-        app->processEvents();
+    repaint();
+    app_->processEvents();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-        QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(this->winId());
+    QPixmap screenGrab = QGuiApplication::primaryScreen()->grabWindow(this->winId());
 #else
-        QPixmap screenGrab = QPixmap::grabWindow(this->winId());
+    QPixmap screenGrab = QPixmap::grabWindow(this->winId());
 #endif
-        std::string fileName = cmdparser->getScreenGrabName();
-        screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
-    }
-
-    if (cmdparser->getCaptureAfterStartup()) {
-        std::string path = cmdparser->getOutputPath();
-        if (path.empty()) path = app->getPath(PathType::Images);
-
-        repaint();
-        app->processEvents();
-        util::saveAllCanvases(app->getProcessorNetwork(), path, cmdparser->getSnapshotName());
-    }
-
-    if (cmdparser->getQuitApplicationAfterStartup()) {
-        getNetworkEditor()->setModified(false);
-        return false;
-    }
-
-    return true;
+    screenGrab.save(QString::fromStdString(path + "/" + fileName), "png");
 }
 
 void InviwoMainWindow::addActions() {
     auto menu = menuBar();
-    
+
     auto fileMenuItem = new QMenu(tr("&File"), menu);
     auto editMenuItem = new QMenu(tr("&Edit"), menu);
     auto viewMenuItem = new QMenu(tr("&View"), menu);
@@ -410,8 +400,7 @@ void InviwoMainWindow::addActions() {
         editMenuItem->addAction(clearLogAction);
         connect(clearLogAction, &QAction::triggered, [&]() { consoleWidget_->clear(); });
     }
-    
-    
+
     // View
     {
         // dock widget visibility menu entries
@@ -505,8 +494,6 @@ void InviwoMainWindow::addActions() {
         helpMenuItem->addAction(action);
     }
 #endif
-
-
 }
 
 void InviwoMainWindow::updateWindowTitle() {
@@ -761,13 +748,9 @@ void InviwoMainWindow::onNetworkEditorFileChanged(const std::string& filename) {
 
 void InviwoMainWindow::onModifiedStatusChanged(const bool& newStatus) { updateWindowTitle(); }
 
-void InviwoMainWindow::openLastWorkspace() {
-    // if a workspace is defined by an argument, that workspace is opened, otherwise, the last
-    // opened workspace is used
-    const auto cmdparser = InviwoApplicationQt::getPtr()->getCommandLineParser();
-
-    if (cmdparser->getLoadWorkspaceFromArg()) {
-        openWorkspace(static_cast<const QString>(cmdparser->getWorkspacePath().c_str()));
+void InviwoMainWindow::openLastWorkspace(std::string workspace) {
+    if (!workspace.empty()) {
+        openWorkspace(QString::fromStdString(workspace));
     } else if (!workspaceOnLastSuccessfulExit_.isEmpty()) {
         openWorkspace(workspaceOnLastSuccessfulExit_);
     } else {

@@ -36,17 +36,16 @@
 namespace inviwo {
     class PyModule;
     class PythonMenu;
+
 class IVW_MODULE_PYTHON3QT_API Python3QtModule : public InviwoModule {
 public:
     Python3QtModule(InviwoApplication* app);
     virtual ~Python3QtModule();
 
 private:
-    void initPyQtModule();
-
-    PyModule* inviwoPyQtModule_;
-    PythonMenu* menu_;
-
+    std::unique_ptr<PyModule> inviwoPyQtModule_;
+    std::unique_ptr<PythonMenu> menu_;
+    TCLAP::ValueArg<std::string> pythonScriptArg_;
 };
 
 } // namespace

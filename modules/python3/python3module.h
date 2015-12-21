@@ -33,6 +33,8 @@
 #include <modules/python3/python3moduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
+#include <string>
+
 namespace inviwo {
 
 class PyInviwo;

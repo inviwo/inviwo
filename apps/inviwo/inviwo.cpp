@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <warn/push>
@@ -33,6 +33,7 @@
 #include <warn/pop>
 #include <inviwo/qt/widgets/inviwoapplicationqt.h>
 #include <inviwo/core/common/defaulttohighperformancegpu.h>
+#include <inviwo/core/util/commandlineparser.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/qt/editor/inviwomainwindow.h>
@@ -53,33 +54,43 @@ int main(int argc, char** argv) {
     inviwoApp.setStyleSheet(styleSheet);
     styleSheetFile.close();
 
+    auto& clp = inviwoApp.getCommandLineParser();
+
     inviwo::InviwoMainWindow mainWin(&inviwoApp);
     // setup core application
     inviwoApp.setMainWindow(&mainWin);
     // initialize and show splash screen
-    inviwo::InviwoSplashScreen splashScreen(
-        &mainWin, inviwoApp.getCommandLineParser()->getShowSplashScreen());
-    inviwoApp.setProgressCallback([&splashScreen](std::string s){splashScreen.showMessage(s);});
+    inviwo::InviwoSplashScreen splashScreen(&mainWin, clp.getShowSplashScreen());
+    inviwoApp.setProgressCallback([&splashScreen](std::string s) { splashScreen.showMessage(s); });
 
     splashScreen.show();
     splashScreen.showMessage("Loading application...");
-    
+
     // Initialize application and register modules
     splashScreen.showMessage("Initializing modules...");
     inviwoApp.registerModules(&inviwo::registerAllModules);
     inviwoApp.processEvents();
+
+    // Do this after registerModules if some arguments were added
+    clp.parse(inviwo::CommandLineParser::Mode::Normal); 
+
     // setup main window
     mainWin.initialize();
     inviwoApp.processEvents();
     splashScreen.showMessage("Loading workspace...");
     inviwoApp.processEvents();
     mainWin.showWindow();
-    inviwoApp.processEvents();    // Make sure the gui is done loading before loading workspace
-    mainWin.openLastWorkspace();  // open last workspace
+    inviwoApp.processEvents();  // Make sure the gui is done loading before loading workspace
+
+    mainWin.openLastWorkspace(clp.getWorkspacePath());  // open last workspace
     splashScreen.finish(&mainWin);
 
+    inviwoApp.processEvents();
+    clp.processCallbacks(); // run any command line callbacks from modules.
+    inviwoApp.processEvents();
+
     // process last arguments
-    if (mainWin.processCommandLineArgs()) {
+    if (!clp.getQuitApplicationAfterStartup()) {
         return inviwoApp.exec();
     } else {
         mainWin.exitInviwo();

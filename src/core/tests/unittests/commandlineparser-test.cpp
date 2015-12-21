@@ -42,12 +42,6 @@ TEST(CommandLineParserTest, DefaultTest) {
     CommandLineParser clp(argc, const_cast<char**>(argv));
     EXPECT_STREQ("", clp.getOutputPath().c_str());
     EXPECT_STREQ("", clp.getWorkspacePath().c_str());
-    EXPECT_STREQ("", clp.getSnapshotName().c_str());
-    EXPECT_STREQ("", clp.getScreenGrabName().c_str());
-    EXPECT_STREQ("", clp.getPythonScriptName().c_str());
-    EXPECT_FALSE(clp.getCaptureAfterStartup());
-    EXPECT_FALSE(clp.getScreenGrabAfterStartup());
-    EXPECT_FALSE(clp.getRunPythonScriptAfterStartup());
     EXPECT_FALSE(clp.getQuitApplicationAfterStartup());
     EXPECT_FALSE(clp.getLoadWorkspaceFromArg());
     EXPECT_TRUE(clp.getShowSplashScreen());
@@ -59,12 +53,6 @@ TEST(CommandLineParserTest, CommandLineParserTest) {
     CommandLineParser clp(argc, const_cast<char**>(argv));
     EXPECT_STREQ("", clp.getOutputPath().c_str());
     EXPECT_STREQ("C:/Just/A/Path/", clp.getWorkspacePath().c_str());
-    EXPECT_STREQ("", clp.getSnapshotName().c_str());
-    EXPECT_STREQ("", clp.getScreenGrabName().c_str());
-    EXPECT_STREQ("", clp.getPythonScriptName().c_str());
-    EXPECT_FALSE(clp.getCaptureAfterStartup());
-    EXPECT_FALSE(clp.getScreenGrabAfterStartup());
-    EXPECT_FALSE(clp.getRunPythonScriptAfterStartup());
     EXPECT_FALSE(clp.getQuitApplicationAfterStartup());
     EXPECT_TRUE(clp.getLoadWorkspaceFromArg());
     EXPECT_TRUE(clp.getShowSplashScreen());

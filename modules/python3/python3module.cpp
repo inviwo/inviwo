@@ -28,15 +28,19 @@
  *********************************************************************************/
 
 #include <modules/python3/pythonincluder.h>
-
 #include <modules/python3/python3module.h>
 #include <modules/python3/pyinviwo.h>
 #include <modules/python3/pythonexecutionoutputobservable.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/commandlineparser.h>
+
 namespace inviwo {
 
 Python3Module::Python3Module(InviwoApplication* app)
-    : InviwoModule(app, "Python3"), pyInviwo_(nullptr) {
+    : InviwoModule(app, "Python3")
+    , pyInviwo_(nullptr) {
+
     PythonExecutionOutputObservable::init();
     pyInviwo_ = util::make_unique<PyInviwo>(this);
 }

@@ -128,7 +128,8 @@ public:
     template <class T>
     T* getSettingsByType();
 
-    const CommandLineParser* getCommandLineParser() const;
+    CommandLineParser& getCommandLineParser();
+    const CommandLineParser& getCommandLineParser() const;
     template <class T>
     T* getModuleByType();
 

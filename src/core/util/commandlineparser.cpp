@@ -33,104 +33,112 @@ namespace inviwo {
 
 CommandLineParser::CommandLineParser() : CommandLineParser(0, nullptr) {}
 
-CommandLineParser::CommandLineParser(int argc, char** argv) try
-    : argc_(argc),
-      argv_(argv),
-      cmd_("Inviwo description...", ' ', IVW_VERSION),
-      workspaceValueArg_("w", "workspacePath", "Specify workspace to open", false, "",
-                         "Name of workspace"),
-      outputValueArg_("o", "outputPath", "Specify output path", false, "", "Output path"),
-      snapshotArg_("s", "snapshot",
-                   "Specify default name of each snapshot, or empty string for processor name.",
-                   false, "", "Snapshot default name: UPN=Use Processor name."),
-      screenGrabArg_("g", "screengrab", "Specify default name of each screengrab.", false, "", ""),
-      pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
-                       "Path to the file containing the script"),
-      logToFileArg_("l", "logtofile", "Write log messages to file.", false, "", ""),
-      noSplashScreenArg_("n", "nosplash",
-                         "Pass this flag if you do not want to show a splash screen."),
-      quitArg_("q", "quit", "Pass this flag if you want to close inviwo after startup.") {
-    cmd_.add(workspaceValueArg_);
-#if defined(IVW_MODULE_PYTHON3)
-    cmd_.add(pythonScriptArg_);
-#endif
-    cmd_.add(outputValueArg_);
-    cmd_.add(snapshotArg_);
-    cmd_.add(screenGrabArg_);
-    cmd_.add(quitArg_);
-    cmd_.add(noSplashScreenArg_);
-    cmd_.add(logToFileArg_);
+CommandLineParser::CommandLineParser(int argc, char** argv)
+    : argc_(argc)
+    , argv_(argv)
+    , cmdQuiet_(
+          "Inviwo, Interactive Visualization Workshop, a rapid prototyping environment for "
+          "interactive visualizations",
+          ' ', IVW_VERSION, false)
+    , cmd_(
+          "Inviwo, Interactive Visualization Workshop, a rapid prototyping environment for "
+          "interactive visualizations",
+          ' ', IVW_VERSION)
+    , workspace_("w", "workspace", "Specify workspace to open", false, "", "workspace file")
+    , outputPath_("o", "output", "Specify output path", false, "", "output path")
+    , logfile_("l", "logfile", "Write log messages to file.", false, "", "logfile")
+    , noSplashScreen_("n", "nosplash", "Pass this flag if you do not want to show a splash screen.")
+    , quitAfterStartup_("q", "quit", "Pass this flag if you want to close inviwo after startup.")
+    , wildcard_()
+    , helpQuiet_("h", "help", "")
+    , versionQuiet_("v", "version", "") {
+    cmdQuiet_.add(workspace_);
+    cmdQuiet_.add(outputPath_);
+    cmdQuiet_.add(quitAfterStartup_);
+    cmdQuiet_.add(noSplashScreen_);
+    cmdQuiet_.add(logfile_);
+    cmdQuiet_.add(helpQuiet_);
+    cmdQuiet_.add(versionQuiet_);
+    cmdQuiet_.add(wildcard_);
 
-    parse();
+    cmd_.add(workspace_);
+    cmd_.add(outputPath_);
+    cmd_.add(quitAfterStartup_);
+    cmd_.add(noSplashScreen_);
+    cmd_.add(logfile_);
 
-} catch (TCLAP::ArgException& e) {
-    LogError(e.error() << " for arg " << e.argId());
+    parse(Mode::Quiet);
 }
 
 CommandLineParser::~CommandLineParser() {}
 
 const std::string CommandLineParser::getOutputPath() const {
-    if (outputValueArg_.isSet()) return (outputValueArg_.getValue());
+    if (outputPath_.isSet()) return (outputPath_.getValue());
 
     return "";
 }
 
 const std::string CommandLineParser::getWorkspacePath() const {
-    if (workspaceValueArg_.isSet()) return (workspaceValueArg_.getValue());
+    if (workspace_.isSet()) return (workspace_.getValue());
 
     return "";
 }
 
-void CommandLineParser::parse(int argc, char** argv) {
-    try {
-        if (argc > 0){
-            cmd_.parse(argc, argv);
+void CommandLineParser::parse(int argc, char** argv, Mode mode) {
+    switch (mode) {
+        case inviwo::CommandLineParser::Mode::Normal: {
+            helpQuiet_.reset();
+            versionQuiet_.reset();
+            try {
+                if (argc > 0) {
+                    cmd_.reset();
+                    cmd_.parse(argc, argv);
+                }
+            } catch (TCLAP::ArgException& e) {
+                std::cerr << "error: " << e.error() << " for arg " << e.argId()
+                          << std::endl;  // catch exceptions
+            }
+            break;
         }
-    } catch (TCLAP::ArgException& e) {
-        std::cerr << "error: " << e.error() << " for arg " << e.argId()
-                  << std::endl;  // catch exceptions
+
+        case inviwo::CommandLineParser::Mode::Quiet: {
+            try {
+                if (argc > 0) {
+                    cmdQuiet_.reset();
+                    cmdQuiet_.parse(argc, argv);
+                }
+            } catch (...) {
+            }
+            break;
+        }
+        default:
+            break;
     }
 }
 
-void CommandLineParser::parse() { parse(argc_, argv_); }
-
-bool CommandLineParser::getCaptureAfterStartup() const { return snapshotArg_.isSet(); }
-
-const std::string CommandLineParser::getSnapshotName() const {
-    if (snapshotArg_.isSet()) return (snapshotArg_.getValue());
-
-    return "";
-}
-
-bool CommandLineParser::getScreenGrabAfterStartup() const { return screenGrabArg_.isSet(); }
-
-const std::string CommandLineParser::getScreenGrabName() const {
-    if (screenGrabArg_.isSet()) return (screenGrabArg_.getValue());
-
-    return "";
-}
-
-bool CommandLineParser::getRunPythonScriptAfterStartup() const { return pythonScriptArg_.isSet(); }
-
-const std::string CommandLineParser::getPythonScriptName() const {
-    if (pythonScriptArg_.isSet()) return (pythonScriptArg_.getValue());
-
-    return "";
-}
+void CommandLineParser::parse(Mode mode) { parse(argc_, argv_, mode); }
 
 const std::string CommandLineParser::getLogToFileFileName() const {
-    if (logToFileArg_.isSet()) return (logToFileArg_.getValue());
-
-    return "";
+    if (logfile_.isSet())
+        return (logfile_.getValue());
+    else
+        return "";
 }
 
-bool CommandLineParser::getQuitApplicationAfterStartup() const { return quitArg_.getValue(); }
+bool CommandLineParser::getQuitApplicationAfterStartup() const {
+    return quitAfterStartup_.getValue();
+}
 
-bool CommandLineParser::getShowSplashScreen() const { return !(noSplashScreenArg_.isSet()); }
+bool CommandLineParser::getShowSplashScreen() const {
+    if (versionQuiet_.isSet() || helpQuiet_.isSet())
+        return false;
+    else
+        return !(noSplashScreen_.isSet());
+}
 
 bool CommandLineParser::getLoadWorkspaceFromArg() const {
-    if (workspaceValueArg_.isSet()) {
-        std::string values = workspaceValueArg_.getValue();
+    if (workspace_.isSet()) {
+        std::string values = workspace_.getValue();
         assert(values.size() != 0);
         return true;
     }
@@ -139,13 +147,33 @@ bool CommandLineParser::getLoadWorkspaceFromArg() const {
 }
 
 bool CommandLineParser::getLogToFile() const {
-    if (logToFileArg_.isSet()) {
-        std::string values = logToFileArg_.getValue();
+    if (logfile_.isSet()) {
+        std::string values = logfile_.getValue();
         assert(values.size() != 0);
         return true;
     }
 
     return false;
+}
+
+void CommandLineParser::processCallbacks() {
+    std::sort(callbacks_.begin(), callbacks_.end(),
+              [](typename decltype(callbacks_)::value_type& a,
+                 typename decltype(callbacks_)::value_type& b) {
+                  return std::get<0>(a) < std::get<0>(b);
+              });
+    for (auto& elem : callbacks_) {
+        if (std::get<1>(elem)->isSet()) {
+            std::get<2>(elem)();
+        }
+    }
+}
+
+void CommandLineParser::add(TCLAP::Arg* arg) { cmd_.add(arg); }
+
+void CommandLineParser::add(TCLAP::Arg* arg, std::function<void()> callback, int priority) {
+    cmd_.add(arg);
+    callbacks_.push_back(std::make_tuple(priority, arg, callback));
 }
 
 }  // namespace

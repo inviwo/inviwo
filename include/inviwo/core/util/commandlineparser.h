@@ -34,6 +34,7 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 
 #if defined(HAVE_CONFIG_H)
 #  define HAVE_CONFIG_H_ENABLED
@@ -50,6 +51,21 @@
 
 namespace inviwo {
 
+class WildCardArg : public TCLAP::Arg {
+public:
+    WildCardArg();
+    virtual bool processArg(int *i, std::vector<std::string>& args) override;
+
+    const std::vector<std::string>& getMatches() const;
+
+    virtual void addToList(std::list<Arg*>& argList) const override;
+
+private:
+    std::vector<std::string> matches_;
+};
+
+
+
 /** \brief Wrapper class to handle command line parsing.
  *
  *  Wraps around TCLAP to provide command line argument parsing.
@@ -60,15 +76,19 @@ namespace inviwo {
  *  TODO2: Not yet fully implemented
  */
 class IVW_CORE_API CommandLineParser {
-
 public:
+    enum class Mode {
+        Normal,
+        Quiet
+    };
+
     CommandLineParser();
     CommandLineParser(int argc, char** argv);
     ~CommandLineParser();
 
-    void parse(int argc, char** argv);
+    void parse(int argc, char** argv, Mode mode = Mode::Normal);
 
-    void parse();
+    void parse(Mode mode = Mode::Normal);
 
     void setArgc(int argc) {
         argc_ = argc;
@@ -79,12 +99,6 @@ public:
     }
     const std::string getOutputPath() const;
     const std::string getWorkspacePath() const;
-    bool getCaptureAfterStartup() const;
-    const std::string getSnapshotName() const;
-    bool getScreenGrabAfterStartup() const;
-    const std::string getScreenGrabName() const;
-    bool getRunPythonScriptAfterStartup() const;
-    const std::string getPythonScriptName() const;
     const std::string getLogToFileFileName() const;
     bool getQuitApplicationAfterStartup() const;
     bool getLoadWorkspaceFromArg() const;
@@ -93,21 +107,45 @@ public:
 
     int getARGC()const {return argc_;}
     char** getARGV()const {return argv_;}
+
+    void processCallbacks();
+    void add(TCLAP::Arg* arg);
+    void add(TCLAP::Arg* arg, std::function<void()> callback, int priority = 0);
     
 private:
     int argc_;
     char** argv_;
+    TCLAP::CmdLine cmdQuiet_;
     TCLAP::CmdLine cmd_;
-    TCLAP::ValueArg<std::string> workspaceValueArg_;
-    TCLAP::ValueArg<std::string> outputValueArg_;
-    TCLAP::ValueArg<std::string> snapshotArg_;
-    TCLAP::ValueArg<std::string> screenGrabArg_;
-    TCLAP::ValueArg<std::string> pythonScriptArg_;
-    TCLAP::ValueArg<std::string> logToFileArg_;
-    TCLAP::SwitchArg noSplashScreenArg_;
-    TCLAP::SwitchArg quitArg_;
-    std::string workspaceName_;
+    TCLAP::ValueArg<std::string> workspace_;
+    TCLAP::ValueArg<std::string> outputPath_;
+    TCLAP::ValueArg<std::string> logfile_;
+    TCLAP::SwitchArg noSplashScreen_;
+    TCLAP::SwitchArg quitAfterStartup_;
+    WildCardArg wildcard_;
+    TCLAP::SwitchArg helpQuiet_;
+    TCLAP::SwitchArg versionQuiet_;
+
+    std::vector<std::tuple<int, TCLAP::Arg*, std::function<void()>>> callbacks_; 
 };
+
+
+inline bool WildCardArg::processArg(int* i, std::vector<std::string>& args) {
+    matches_.push_back(args[*i]);
+    return true;
+}
+
+inline WildCardArg::WildCardArg()
+    : TCLAP::Arg("*", "wildcard", "matches everything", false, false, nullptr) {}
+
+inline const std::vector<std::string>& WildCardArg::getMatches() const { return matches_; }
+
+// make sure we add the wildcard at the back.
+inline void WildCardArg::addToList(std::list<TCLAP::Arg*>& argList) const {
+    argList.push_back( const_cast<WildCardArg*>(this) );    
+}
+
+
 
 } // namespace
 

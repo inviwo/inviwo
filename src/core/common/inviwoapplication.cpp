@@ -136,7 +136,7 @@ void InviwoApplication::registerModules(RegisterModuleFunc regModuleFunc) {
         postProgress("Loading module: " + moduleObj->name_);
         registerModule(moduleObj->create(this));
     }
-    
+
     postProgress("Loading Capabilities");
     for (auto& module : modules_) {
         for (auto& elem : module->getCapabilities()) {
@@ -177,8 +177,12 @@ ProcessorNetworkEvaluator* InviwoApplication::getProcessorNetworkEvaluator() {
     return processorNetworkEvaluator_.get();
 }
 
-const CommandLineParser* InviwoApplication::getCommandLineParser() const {
-    return &commandLineParser_;
+const CommandLineParser& InviwoApplication::getCommandLineParser() const {
+    return commandLineParser_;
+}
+
+CommandLineParser& InviwoApplication::getCommandLineParser() {
+    return commandLineParser_;
 }
 
 void InviwoApplication::printApplicationInfo() {
