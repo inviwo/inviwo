@@ -158,8 +158,8 @@ bool CommandLineParser::getLogToFile() const {
 
 void CommandLineParser::processCallbacks() {
     std::sort(callbacks_.begin(), callbacks_.end(),
-              [](typename decltype(callbacks_)::value_type& a,
-                 typename decltype(callbacks_)::value_type& b) {
+              [](const typename decltype(callbacks_)::value_type& a,
+                 const typename decltype(callbacks_)::value_type& b) {
                   return std::get<0>(a) < std::get<0>(b);
               });
     for (auto& elem : callbacks_) {
