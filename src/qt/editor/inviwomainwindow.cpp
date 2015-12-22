@@ -918,7 +918,8 @@ void InviwoMainWindow::setVisibilityMode(bool applicationView) {
     }
 }
 
-void InviwoMainWindow::exitInviwo() {
+void InviwoMainWindow::exitInviwo(bool saveIfModified) {
+    if(!saveIfModified) getNetworkEditor()->setModified(false);
     QMainWindow::close();
     InviwoApplication::getPtr()->closeInviwoApplication();
 }

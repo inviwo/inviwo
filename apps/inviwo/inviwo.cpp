@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
     if (!clp.getQuitApplicationAfterStartup()) {
         return inviwoApp.exec();
     } else {
-        mainWin.exitInviwo();
+        mainWin.exitInviwo(false);
         return 0;
     }
 }

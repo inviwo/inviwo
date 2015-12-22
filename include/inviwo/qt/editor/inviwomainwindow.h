@@ -109,7 +109,7 @@ public slots:
     * leaves the current workspace file as current workspace
     */
     void saveWorkspaceAsCopy();
-    void exitInviwo();
+    void exitInviwo(bool saveIfModified = true);
     void showAboutBox();
     void setVisibilityMode(bool value);  // True = Application, False = Developer
 

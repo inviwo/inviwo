@@ -27,6 +27,7 @@
 # 
 #*********************************************************************************
 import subprocess
+import io
 
 from . import test
 
@@ -36,6 +37,9 @@ class InviwoApp:
 
 	def runTest(self, test):
 		print(test.toString())
+		
+		log = io.StringIO("some initial text data")
+
 		try:
 			process = subprocess.Popen(
 				[self.appPath,  "-q"],
