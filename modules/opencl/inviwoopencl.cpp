@@ -220,12 +220,34 @@ cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string&
     // build the program from the source in the file
     std::ifstream file(fileName.c_str());
     TextFileReader fileReader(fileName);
-    std::string prog = header;
+    std::string prog;
 
     try {
-        prog += fileReader.read();
+        prog = fileReader.read();
     } catch (std::ifstream::failure&) {}
+    if (prog.size() > 3 && !header.empty()) {
+        size_t offset = 0;
+        // https://en.wikipedia.org/wiki/Byte_order_mark
+        std::array<char, 3> utf8 = { 0xEF, 0xBB, 0xBF };
+        std::array<char, 2> utf16BE = { 0xFE, 0xFF};
+        std::array<char, 2> utf16LE = { 0xFE, 0xFE };
+        std::array<char, 4> utf32BE = { 0x00, 0x00, 0xFE, 0xFF };
+        std::array<char, 4> utf32LE = { 0xFF, 0xFE, 0x00, 0x00 };
+        if (std::equal(std::begin(utf8), std::end(utf8), std::begin(prog))) 
+            offset = utf8.size();
+        else if (std::equal(std::begin(utf16BE), std::end(utf16BE), std::begin(prog))) 
+            offset = utf16BE.size();
+        else if (std::equal(std::begin(utf16LE), std::end(utf16LE), std::begin(prog))) 
+            offset = utf16LE.size();
+        else if (std::equal(std::begin(utf16LE), std::end(utf16LE), std::begin(prog))) 
+            offset = utf16LE.size();
+        else if (std::equal(std::begin(utf32BE), std::end(utf32BE), std::begin(prog))) 
+            offset = utf32BE.size();
+        else if (std::equal(std::begin(utf32LE), std::end(utf32LE), std::begin(prog))) 
+            offset = utf32LE.size();
 
+        prog.insert(offset, header);
+    }
     std::string concatenatedDefines = OpenCL::getPtr()->getIncludeDefine() + defines;
     cl::Program::Sources source(1, std::make_pair(prog.c_str(), prog.length()+1));
     cl::Program program(context, source);
