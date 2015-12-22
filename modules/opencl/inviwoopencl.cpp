@@ -214,16 +214,16 @@ std::vector<cl::Device> OpenCL::getAllDevices() {
     return allDevices;
 }
 
-cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string& defines, const cl::CommandQueue& queue) {
+cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string& header, const std::string& defines, const cl::CommandQueue& queue) {
     cl::Context context = queue.getInfo<CL_QUEUE_CONTEXT>();
     cl::Device device = queue.getInfo<CL_QUEUE_DEVICE>();
     // build the program from the source in the file
     std::ifstream file(fileName.c_str());
     TextFileReader fileReader(fileName);
-    std::string prog;
+    std::string prog = header;
 
     try {
-        prog = fileReader.read();
+        prog += fileReader.read();
     } catch (std::ifstream::failure&) {}
 
     std::string concatenatedDefines = OpenCL::getPtr()->getIncludeDefine() + defines;
@@ -245,8 +245,8 @@ cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string&
     return program;
 }
 
-cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string& defines /*= ""*/){
-    return OpenCL::buildProgram(fileName, defines, OpenCL::getPtr()->getQueue());
+cl::Program OpenCL::buildProgram(const std::string& fileName, const std::string& header /*= ""*/, const std::string& defines /*= ""*/){
+    return OpenCL::buildProgram(fileName, header, defines, OpenCL::getPtr()->getQueue());
 }
 
 void OpenCL::addCommonIncludeDirectory(const std::string& directoryPath){

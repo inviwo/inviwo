@@ -44,7 +44,7 @@ KernelManager::~KernelManager() {
     clear();
 }
 
-cl::Program* KernelManager::buildProgram(const std::string& fileName, const std::string& defines /*= ""*/, bool& wasBuilt) {
+cl::Program* KernelManager::buildProgram(const std::string& fileName, const std::string& header /*= ""*/, const std::string& defines /*= ""*/, bool& wasBuilt) {
     wasBuilt = false;
     std::string absoluteFileName = fileName;
     if (!filesystem::fileExists(absoluteFileName)) {
@@ -70,7 +70,7 @@ cl::Program* KernelManager::buildProgram(const std::string& fileName, const std:
     cl::Program* program = new cl::Program();
 
     try {
-        *program = cl::Program(OpenCL::buildProgram(absoluteFileName, defines));
+        *program = cl::Program(OpenCL::buildProgram(absoluteFileName, header, defines));
 
         try {
             std::vector<cl::Kernel> kernels;

@@ -78,11 +78,12 @@ public:
      *
      * @param fileName Name of file. Added search paths will be used to find the file
      * @param wasBuilt Outputs true if program was built, false if a previously built (cached) program is used.
-     * @param defines Compiler defines
+     * @param header Added before file contents. Example usage "#define DataType float \n"
+     * @param defines Compiler defines, i.e #define FOO 1
      * @return Pointer to a program no matter if it was succesfully built or not. Do not delete it.
      */
-    cl::Program* buildProgram(const std::string& fileName, const std::string& defines, bool& wasBuilt);
-    cl::Program* buildProgram(const std::string& fileName, const std::string& defines = "") { bool wasBuilt; return buildProgram(fileName, defines, wasBuilt); }
+    cl::Program* buildProgram(const std::string& fileName, const std::string& header, const std::string& defines, bool& wasBuilt);
+    cl::Program* buildProgram(const std::string& fileName, const std::string& header = "", const std::string& defines = "") { bool wasBuilt; return buildProgram(fileName, header, defines, wasBuilt); }
 
     /**
      * Creates a kernel from a previously created cl::Program.

@@ -142,8 +142,8 @@ public:
      */
     void setDevice(cl::Device device, bool glSharing);
 
-    static cl::Program buildProgram(const std::string& fileName, const std::string& defines = "");
-    static cl::Program buildProgram(const std::string& fileName, const std::string& defines, const cl::CommandQueue& queue);
+    static cl::Program buildProgram(const std::string& fileName, const std::string& header = "", const std::string& defines = "");
+    static cl::Program buildProgram(const std::string& fileName, const std::string& header, const std::string& defines, const cl::CommandQueue& queue);
 
     /**
      * Check if image format combination is valid.

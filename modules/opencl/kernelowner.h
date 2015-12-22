@@ -81,10 +81,11 @@ public:
      * @note Do not delete the returned kernel
      * @param filePath Name of the file containing kernel, i.e. myfile.cl
      * @param kernelName Name of kernel
+     * @param header Added before file contents. Example usage "#define DataType float \n"
      * @param defines Defines to be set when building kernel
      * @return bool Kernel if successfully built, otherwise nullptr
      */
-    cl::Kernel* addKernel(const std::string& fileName, const std::string& kernelName, const std::string& defines = "");
+    cl::Kernel* addKernel(const std::string& fileName, const std::string& kernelName, const std::string& header = "", const std::string& defines = "");
 
     /** 
      * \brief Remove kernel and effectively stop observing the kernel 

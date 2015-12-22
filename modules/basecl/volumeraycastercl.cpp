@@ -244,7 +244,7 @@ void VolumeRaycasterCL::compileKernel() {
     // Will compile kernel and make sure that it it
     // recompiled whenever the file changes
     // If the kernel fails to compile it will be set to nullptr
-    kernel_ = addKernel("volumeraycaster.cl", "raycaster", defines.str());
+    kernel_ = addKernel("volumeraycaster.cl", "raycaster", "", defines.str());
     setKernelArguments();
 }
 

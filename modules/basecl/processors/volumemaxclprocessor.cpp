@@ -177,7 +177,7 @@ void VolumeMaxCLProcessor::buildKernel() {
     } else {
         supportsVolumeWrite_ = false;
     }
-    kernel_ = addKernel("volumemax.cl", "volumeMaxKernel", defines.str());
+    kernel_ = addKernel("volumemax.cl", "volumeMaxKernel", "", defines.str());
 }
 
 }  // inviwo namespace
