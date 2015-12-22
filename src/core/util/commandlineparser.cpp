@@ -158,10 +158,18 @@ bool CommandLineParser::getLogToFile() const {
 
 void CommandLineParser::processCallbacks() {
     std::sort(callbacks_.begin(), callbacks_.end(),
-              [](const typename decltype(callbacks_)::value_type& a,
-                 const typename decltype(callbacks_)::value_type& b) {
-                  return std::get<0>(a) < std::get<0>(b);
-              });
+#if defined(_MSC_VER) && _MSC_VER < 1900 
+    // Fix for compile error in VS 2013:
+    // C2899: typename cannot be used outside a template declaration
+    [](const decltype(callbacks_)::value_type& a,
+       const decltype(callbacks_)::value_type& b) 
+#else
+    [](const typename decltype(callbacks_)::value_type& a,
+       const typename decltype(callbacks_)::value_type& b)
+#endif
+    {
+        return std::get<0>(a) < std::get<0>(b);
+    });
     for (auto& elem : callbacks_) {
         if (std::get<1>(elem)->isSet()) {
             std::get<2>(elem)();
