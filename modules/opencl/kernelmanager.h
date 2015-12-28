@@ -54,6 +54,7 @@ public:
     // Multiple programs can be created from the same file but with different defines
     struct ProgramIdentifier {
         cl::Program* program;
+        std::string header;
         std::string defines;
     };
     typedef std::multimap<std::string, ProgramIdentifier> ProgramMap; ///< File name and unique identifier for program

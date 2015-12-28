@@ -86,9 +86,7 @@ cl::Program* KernelManager::buildProgram(const std::string& fileName, const std:
     } catch (cl::Error&) {
     }
 
-    ProgramIdentifier uniqueProgram;
-    uniqueProgram.defines = defines;
-    uniqueProgram.program = program;
+    ProgramIdentifier uniqueProgram{ program, header, defines };
     programs_.insert(std::pair<std::string, ProgramIdentifier>(absoluteFileName, uniqueProgram));
     startFileObservation(absoluteFileName);
     wasBuilt = true;
@@ -135,7 +133,7 @@ void KernelManager::fileChanged(std::string fileName) {
 
         try {
             LogInfo(fileName + " building program with defines: " + programIt->second.defines);
-            *program = OpenCL::buildProgram(fileName, programIt->second.defines);
+            *program = OpenCL::buildProgram(fileName, programIt->second.header, programIt->second.defines);
             LogInfo(fileName + " finished building program");
             std::vector<cl::Kernel> newKernels;
 
