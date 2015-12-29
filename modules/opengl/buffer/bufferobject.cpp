@@ -78,13 +78,15 @@ BufferObject& BufferObject::operator=(const BufferObject& rhs) {
         // Note: do not copy observers since we are using this object's id_.
         // Observable<BufferObjectObserver>::operator=(rhs);
 
-        usageGL_ = rhs.usageGL_;
-        target_ = rhs.target_;
-        glFormat_ = rhs.glFormat_;
-
-        // TODO: Verify that data copying works. What about backwards compability?
-        // Initialize size of buffer
-        initialize(nullptr, rhs.sizeInBytes_);
+        // Only do expensive initialization if necessary
+        if (sizeInBytes_ != rhs.sizeInBytes_ || usageGL_ != rhs.usageGL_ ||
+            target_ != rhs.target_ || glFormat_ != rhs.glFormat_) {
+            usageGL_ = rhs.usageGL_;
+            target_ = rhs.target_;
+            glFormat_ = rhs.glFormat_;
+            // Initialize size of buffer
+            initialize(nullptr, rhs.sizeInBytes_);
+        }
         // Now bind the second buffer, this buffer is already bound
         glBindBuffer(GL_COPY_READ_BUFFER, rhs.getId());
         // Copy data (OpenGL 3.1 functionality...)

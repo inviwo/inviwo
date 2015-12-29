@@ -127,6 +127,19 @@ private:
     GLFormat glFormatArray_[static_cast<size_t>(DataFormatId::NumberOfFormats)];
 };
 
+inline bool operator==(const GLFormats::GLFormat& a, const GLFormats::GLFormat& b)
+{
+
+    return  a.format    == b.format   && a.internalFormat == b.internalFormat &&
+            a.type      == b.type     && a.channels       == b.channels &&
+            a.typeSize  == b.typeSize && a.normalization  == b.normalization &&
+            a.scaling   == b.scaling  && a.valid          == b.valid;
+}
+inline bool operator!=(const GLFormats::GLFormat& a, const GLFormats::GLFormat& b)
+{
+    return !(a == b);
+}
+
 static const GLFormats glFormats_ = GLFormats();
 #include <warn/push>
 #include <warn/ignore/unused-function>
