@@ -43,6 +43,8 @@ class InviwoApplication;
 class IVW_CORE_API InviwoCore : public InviwoModule {
 public:
     InviwoCore(InviwoApplication* app);
+    
+    virtual std::string getPath() const override;
 };
 
 }  // namespace

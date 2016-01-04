@@ -109,7 +109,7 @@ public:
      * @note Assumes that getIdentifier() returns the module folder name.
      * @return std::string Path to module directory
      */
-    std::string getPath() const;
+    virtual std::string getPath() const;
     std::string getPath(ModulePath type) const;
 
     const std::vector<Capabilities*> getCapabilities() const;

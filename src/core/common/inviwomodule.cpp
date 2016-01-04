@@ -116,11 +116,6 @@ std::string InviwoModule::getPath() const {
                 return path;
             }
         }
-        
-        // Do we have anything better to return here?
-        if (moduleNameLowerCase == "core") return filesystem::findBasePath();
-        if (moduleNameLowerCase == "qtwidget") return "";
-        if (moduleNameLowerCase == "qteditor") return "";
     }
     
     throw Exception("Unable to find path to Module: " + identifier_, IvwContext);

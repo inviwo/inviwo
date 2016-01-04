@@ -152,5 +152,7 @@ QtWidgetModule::QtWidgetModule(InviwoApplication* app) : InviwoModule(app, "QtWi
     registerDialog<RawDataReaderDialogQt>("RawVolumeReader");
 }
 
+std::string QtWidgetModule::getPath() const { return ""; }
+
 } // namespace
 

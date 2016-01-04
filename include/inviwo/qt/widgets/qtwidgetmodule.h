@@ -40,6 +40,8 @@ class IVW_QTWIDGETS_API QtWidgetModule : public InviwoModule {
 public:
     QtWidgetModule(InviwoApplication* app);
     virtual ~QtWidgetModule() {}
+    
+    virtual std::string getPath() const override;
 };
 
 }  // namespace
