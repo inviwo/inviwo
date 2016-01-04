@@ -216,10 +216,18 @@ void ProcessorNetwork::removeLink(Property* src, Property* dst) {
 }
 
 void ProcessorNetwork::onWillRemoveProperty(Property* property, size_t index) {
+    if (auto comp = dynamic_cast<PropertyOwner*>(property)) {
+        size_t index = 0;
+        for (auto p : comp->getProperties()) {
+            onWillRemoveProperty(p, index);
+            index++;
+        }
+    }
+
     auto toDelete = util::copy_if(links_, [&](const PropertyLinkMap::value_type& elem) {
         return elem.first.first == property || elem.first.second == property;
     });
-    for(auto& item : toDelete) {
+    for (auto& item : toDelete) {
         removeLink(item.first.first, item.first.second);
     }
 }
