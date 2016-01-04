@@ -35,7 +35,7 @@ namespace inviwo {
 
 AssimpModule::AssimpModule(InviwoApplication* app) : InviwoModule(app, "assimp") {
     // Add a directory to the search path of the Shadermanager
-    //ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "assimp/glsl");
+    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
     
     // Register objects that can be shared with the rest of inviwo here:
     

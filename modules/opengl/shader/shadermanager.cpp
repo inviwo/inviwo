@@ -182,29 +182,6 @@ void ShaderManager::addShaderSearchPath(std::string shaderSearchPath) {
     }
 }
 
-void ShaderManager::addShaderSearchPath(PathType pathType, std::string relativeShaderSearchPath) {
-    bool added = addShaderSearchPathImpl(filesystem::getPath(pathType) + "/" +
-                                         relativeShaderSearchPath);
-
-    if (!added && pathType == PathType::Modules) {
-        for (auto& elem : inviwoModulePaths_) {
-            added |= addShaderSearchPathImpl(elem + "/" + relativeShaderSearchPath);
-            if (added) break;
-        }
-    }
-    if (!added) {
-        LogWarn("Failed to add shader search path: " << relativeShaderSearchPath);
-        LogInfo("Tried with:");
-        LogInfo("\t" << filesystem::getPath(pathType) + "/" +
-                            relativeShaderSearchPath);
-        if (pathType == PathType::Modules) {
-            for (auto& elem : inviwoModulePaths_) {
-                LogInfo("\t" << elem << "/" << relativeShaderSearchPath);
-            }
-        }
-    }
-}
-
 void ShaderManager::addShaderResource(std::string key, std::string src) {
     size_t start_pos = 0;
     std::string from = "NEWLINE";

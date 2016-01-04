@@ -33,8 +33,8 @@ namespace inviwo {
 
 <name>Module::<name>Module(InviwoApplication* app) : InviwoModule(app, "<name>") {   
     // Add a directory to the search path of the Shadermanager
-    //ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "/<lname>/glsl");
-    
+    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+
     // Register objects that can be shared with the rest of inviwo here:
     
     // Processors

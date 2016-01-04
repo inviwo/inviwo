@@ -41,7 +41,7 @@ FontRenderingModule::FontRenderingModule(InviwoApplication* app) : InviwoModule(
 #ifdef FONTRENDERING_INCLUDE_SHADER_RESOURCES
     FONTRENDERING_addGeneratedShaderResources();
 #else
-    ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "fontrendering/glsl");
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 #endif
     
     registerProcessor<TextOverlayGL>();

@@ -52,7 +52,7 @@ OpenGLModule::OpenGLModule(InviwoApplication* app) : InviwoModule(app, "OpenGL")
 #ifdef OPENGL_INCLUDE_SHADER_RESOURCES
     OPENGL_addGeneratedShaderResources();
 #else
-    ShaderManager::getPtr()->addShaderSearchPath(PathType::Modules, "opengl/glsl");
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 #endif
 
     registerDrawer(util::make_unique<MeshDrawerGL>());

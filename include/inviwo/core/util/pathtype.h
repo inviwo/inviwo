@@ -37,7 +37,6 @@ namespace inviwo {
 enum class PathType {
     Data,               // /data
     Volumes,            // /data/volumes
-    Modules,            // /modules
     Workspaces,         // /data/workspaces
     Scripts,            // /data/workspaces
     PortInspectors,     // /data/workspaces/portinspectors

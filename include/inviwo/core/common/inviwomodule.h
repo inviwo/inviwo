@@ -60,6 +60,24 @@ class PortInspectorFactoryObject;
 class MeshDrawer;
 class PropertyConverter;
 
+
+enum class ModulePath {
+    Data,               // /data
+    Images,             // /data/images
+    PortInspectors,     // /data/portinspectors
+    Scripts,            // /data/workspaces
+    Volumes,            // /data/volumes
+    Workspaces,         // /data/workspaces
+    Docs,               // /docs
+    Tests,              // /tests
+    TestImages,         // /tests/images
+    TestVolumes,        // /tests/volumes
+    UnitTests,          // /tests/unittests
+    RegressionTests,    // /tests/regression
+    GLSL,               // /glsl
+    CL                  // /cl
+};
+
 /**
  * \class InviwoModule
  * \brief A module class contains registrations of functionality, such as processors, ports,
@@ -92,6 +110,7 @@ public:
      * @return std::string Path to module directory
      */
     std::string getPath() const;
+    std::string getPath(ModulePath type) const;
 
     const std::vector<Capabilities*> getCapabilities() const;
     const std::vector<DataReader*> getDataReaders() const;

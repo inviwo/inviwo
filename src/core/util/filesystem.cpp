@@ -287,10 +287,6 @@ IVW_CORE_API std::string getPath(PathType pathType, const std::string& suffix, c
             result += "/data/volumes";
             break;
 
-        case PathType::Modules:
-            result += "/modules";
-            break;
-
         case PathType::Workspaces:
             result += "/data/workspaces";
             break;
