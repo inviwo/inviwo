@@ -578,20 +578,26 @@ void InviwoMainWindow::setCurrentWorkspace(QString workspaceFileName) {
 }
 
 void InviwoMainWindow::fillExampleWorkspaceMenu(QMenu* menu) {
-    auto app = InviwoApplication::getPtr();
+    for (const auto& module : app_->getModules()) {
+        QMenu* moduleMenu = nullptr;
+        auto moduleWorkspacePath = module->getPath(ModulePath::Workspaces);
+        if (filesystem::directoryExists(moduleWorkspacePath)) {
+            for (auto item : filesystem::getDirectoryContents(moduleWorkspacePath)) {
+                // only accept inviwo workspace files
+                if (filesystem::getFileExtension(item) == "inv") {
+                    if(!moduleMenu)
+                        moduleMenu = menu->addMenu(QString::fromStdString(module->getIdentifier()));
+                
+                    QString filename(QString::fromStdString(item));
+                    QAction* action = moduleMenu->addAction(filename);
+                    QString path(
+                        QString("%1/%2").arg(QString::fromStdString(moduleWorkspacePath)).arg(filename));
+                    action->setData(path);
 
-    std::string workspacePath{app->getPath(PathType::Workspaces)};
-    // get non-recursive list of contents
-    auto fileList = filesystem::getDirectoryContents(workspacePath);
-    for (auto item : fileList) {
-        // only accept inviwo workspace files
-        if (filesystem::getFileExtension(item) == "inv") {
-            QString filename(QString::fromStdString(item));
-            QAction* action = menu->addAction(filename);
-            QString path(QString("%1/%2").arg(QString::fromStdString(workspacePath)).arg(filename));
-            action->setData(path);
-
-            QObject::connect(action, SIGNAL(triggered()), this, SLOT(openExampleWorkspace()));
+                    QObject::connect(action, SIGNAL(triggered()), this,
+                                     SLOT(openExampleWorkspace()));
+                }
+            }
         }
     }
     menu->menuAction()->setVisible(!menu->isEmpty());
@@ -602,8 +608,7 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
     std::vector<std::pair<std::string, std::string> > paths;  // we need to keep the order...
 
     // add default workspace path
-    auto app = InviwoApplication::getPtr();
-    std::string coreWorkspacePath = app->getPath(PathType::Workspaces) + "/tests";
+    std::string coreWorkspacePath = app_->getPath(PathType::Workspaces) + "/tests";
     if (filesystem::directoryExists(coreWorkspacePath)) {
         // check whether path contains at least one workspace
         bool workspaceExists = false;
@@ -616,6 +621,24 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
         }
         if (workspaceExists) {
             paths.push_back({coreWorkspacePath, "core"});
+        }
+    }
+
+    for (const auto& module : app_->getModules()) {
+        auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
+        if (filesystem::directoryExists(moduleTestPath)) {
+            // check whether path contains at least one workspace
+            bool workspaceExists = false;
+            for (auto item : filesystem::getDirectoryContents(moduleTestPath)) {
+                // only accept inviwo workspace files
+                workspaceExists = (filesystem::getFileExtension(item) == "inv");
+                if (workspaceExists) {
+                    break;
+                }
+            }
+            if (workspaceExists) {
+                paths.push_back({moduleTestPath, module->getIdentifier()});
+            }
         }
     }
 
