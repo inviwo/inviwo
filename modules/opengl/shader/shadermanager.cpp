@@ -44,7 +44,7 @@ ShaderManager::ShaderManager() : FileObserver(), uniformWarnings_(nullptr) {
     openGLInfoRef_ = nullptr;
 }
 
-void ShaderManager::setUniformWarningLevel(OpenGLSettings* settings) {
+void ShaderManager::setOpenGLSettings(OpenGLSettings* settings) {
     uniformWarnings_ = &(settings->uniformWarnings_);
 
     for (auto shader : shaders_) {
@@ -55,6 +55,25 @@ void ShaderManager::setUniformWarningLevel(OpenGLSettings* settings) {
             shader->setUniformWarningLevel(uniformWarnings_->get());
         }
     });
+
+    shaderObjectErrors_ = &(settings->shaderObjectErrors_);
+
+    for (auto shader : shaders_) {
+        for (auto& obj : shader->getShaderObjects()) {
+            obj.second->setError(shaderObjectErrors_->get());
+        }
+    }
+    shaderObjectErrors_->onChange([this]() {
+        for (auto shader : shaders_) {
+            for (auto& obj : shader->getShaderObjects()) {
+                obj.second->setError(shaderObjectErrors_->get());
+            }
+        }
+    });
+}
+
+ShaderObject::Error ShaderManager::getShaderObjectError() const {
+    return shaderObjectErrors_->get();
 }
 
 void ShaderManager::registerShader(Shader* shader) {

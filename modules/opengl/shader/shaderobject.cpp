@@ -27,26 +27,33 @@
  *
  *********************************************************************************/
 
-#include "shaderobject.h"
 #include <stdio.h>
 #include <fstream>
 #include <string>
+#include "shaderobject.h"
 
 #include <inviwo/core/io/textfilereader.h>
 #include <inviwo/core/util/filesystem.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <modules/opengl/openglexception.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
-ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compileShader)
-    : shaderType_(shaderType), fileName_(fileName), id_(glCreateShader(shaderType)) {
-    initialize(compileShader);
+ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, Compile compile, Error error)
+    : shaderType_(shaderType), fileName_(fileName), id_(glCreateShader(shaderType)), error_(error) {
+    initialize(compile);
 }
 
+ShaderObject::ShaderObject(GLenum shaderType, std::string fileName, bool compileShader)
+    : ShaderObject(shaderType, fileName, compileShader ? Compile::Yes : Compile::No, Error::Warn) {}
+
 ShaderObject::ShaderObject(const ShaderObject& rhs, bool compileShader)
-    : shaderType_(rhs.shaderType_), fileName_(rhs.fileName_), id_(glCreateShader(rhs.shaderType_)) {
-    initialize(compileShader);
+    : shaderType_(rhs.shaderType_)
+    , fileName_(rhs.fileName_)
+    , id_(glCreateShader(rhs.shaderType_))
+    , error_(rhs.error_) {
+    initialize(compileShader ? Compile::Yes : Compile::No);
 }
 
 ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
@@ -55,7 +62,7 @@ ShaderObject& ShaderObject::operator=(const ShaderObject& that) {
         shaderType_ = that.shaderType_;
         fileName_ = that.fileName_;
         id_ = glCreateShader(shaderType_);
-        initialize(true);
+        initialize(Compile::Yes);
     }
     return *this;
 }
@@ -66,7 +73,7 @@ ShaderObject* ShaderObject::clone(bool compileShader) {
     return new ShaderObject(*this, compileShader);
 }
 
-void ShaderObject::initialize(bool compileShader) {
+void ShaderObject::initialize(Compile shouldCompile) {
     // Help developer to spot errors
     std::string fileExtension = filesystem::getFileExtension(fileName_);
     if ((fileExtension == "vert" && shaderType_ != GL_VERTEX_SHADER) ||
@@ -74,18 +81,11 @@ void ShaderObject::initialize(bool compileShader) {
         (fileExtension == "frag" && shaderType_ != GL_FRAGMENT_SHADER)) {
         LogWarn("File extension does not match shader type: " << fileName_);
     }
-    
-    try {
-        loadSource(fileName_);
-        preprocess();
-        upload();
-        
-        if (compileShader) {
-            compile();
-        }
-    } catch (const OpenGLException& exception) {
-        LogError("ShaderObject initialize error: " << exception.getMessage());
-    }
+
+    loadSource(fileName_);
+    preprocess();
+    upload();
+    if (shouldCompile == Compile::Yes) compile();
 }
 
 void ShaderObject::build() {
@@ -284,15 +284,13 @@ std::string ShaderObject::getShaderInfoLog() {
     LGL_ERROR;
 
     if (maxLogLength > 1) {
-        GLchar* shaderInfoLog = new GLchar[maxLogLength];
-        ivwAssert(shaderInfoLog != nullptr, "could not allocate memory for compiler log");
-        GLsizei logLength;
-        glGetShaderInfoLog(id_, maxLogLength, &logLength, shaderInfoLog);
-        std::istringstream shaderInfoLogStr(shaderInfoLog);
-        delete[] shaderInfoLog;
-        return shaderInfoLogStr.str();
-    } else
+        auto shaderInfoLog = util::make_unique<GLchar[]>(maxLogLength);
+        GLsizei logLength{0};
+        glGetShaderInfoLog(id_, maxLogLength, &logLength, shaderInfoLog.get());
+        return std::string(shaderInfoLog.get(), logLength);
+    } else {
         return "";
+    }
 }
 
 int ShaderObject::getLogLineNumber(const std::string& compileLogLine) {
@@ -355,9 +353,19 @@ void ShaderObject::compile() {
     if (!compiledOk) {
         std::string compilerLog = getShaderInfoLog();
         compilerLog = reformatShaderInfoLog(compilerLog);
-        throw OpenGLException(compilerLog, IvwContext);
+
+        switch (error_) {
+            case Error::Warn:
+                LogError("ShaderObject initialize error: " << compilerLog);
+                break;
+            case Error::Throw:
+                throw OpenGLException(compilerLog, IvwContext);
+        }
     }
 }
+
+void ShaderObject::setError(Error error) { error_ = error; }
+ShaderObject::Error ShaderObject::getError() const { return error_; }
 
 void ShaderObject::addShaderDefine(std::string name, std::string value) {
     shaderDefines_[name] = value;

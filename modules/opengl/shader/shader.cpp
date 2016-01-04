@@ -35,55 +35,47 @@ namespace inviwo {
 
 Shader::Shader(std::string fragmentFilename, bool linkShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    createAndAddShader(GL_VERTEX_SHADER, "img_identity.vert", linkShader);
-    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
+    
+    const auto compile = linkShader ? ShaderObject::Compile::Yes : ShaderObject::Compile::No;
+    createAndAddShader(GL_VERTEX_SHADER, "img_identity.vert", compile);
+    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, compile);
     attachAllShaderObjects();
-    linkAndRegister(linkShader);
+    if (linkShader) link();
+    registerShader();
 }
 
 Shader::Shader(std::string vertexFilename, std::string fragmentFilename, bool linkShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    createAndAddShader(GL_VERTEX_SHADER, vertexFilename, linkShader);
-    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
+    
+    const auto compile = linkShader ? ShaderObject::Compile::Yes : ShaderObject::Compile::No;
+    createAndAddShader(GL_VERTEX_SHADER, vertexFilename, compile);
+    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, compile);
     attachAllShaderObjects();
-    linkAndRegister(linkShader);
+    if (linkShader) link();
+    registerShader();
 }
 
 Shader::Shader(std::string vertexFilename, std::string geometryFilename,
                std::string fragmentFilename, bool linkShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    createAndAddShader(GL_VERTEX_SHADER, vertexFilename, linkShader);
-    createAndAddShader(GL_GEOMETRY_SHADER, geometryFilename, linkShader);
-    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
+    
+    const auto compile = linkShader ? ShaderObject::Compile::Yes : ShaderObject::Compile::No;
+    createAndAddShader(GL_VERTEX_SHADER, vertexFilename, compile);
+    createAndAddShader(GL_GEOMETRY_SHADER, geometryFilename, compile);
+    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, compile);
     attachAllShaderObjects();
-    linkAndRegister(linkShader);
+    if (linkShader) link();
+    registerShader();
 }
 
 Shader::Shader(const char *fragmentFilename, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    createAndAddShader(GL_VERTEX_SHADER, "img_identity.vert", linkShader);
-    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
-    attachAllShaderObjects();
-    linkAndRegister(linkShader);
-}
-
+    : Shader(std::string(fragmentFilename), linkShader) {}
 Shader::Shader(const char *vertexFilename, const char *fragmentFilename, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    createAndAddShader(GL_VERTEX_SHADER, vertexFilename, linkShader);
-    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
-    attachAllShaderObjects();
-    linkAndRegister(linkShader);
-}
-
+    : Shader(std::string(vertexFilename), std::string(fragmentFilename), linkShader) {}
 Shader::Shader(const char *vertexFilename, const char *geometryFilename,
                const char *fragmentFilename, bool linkShader)
-    : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
-    createAndAddShader(GL_VERTEX_SHADER, vertexFilename, linkShader);
-    createAndAddShader(GL_GEOMETRY_SHADER, geometryFilename, linkShader);
-    createAndAddShader(GL_FRAGMENT_SHADER, fragmentFilename, linkShader);
-    attachAllShaderObjects();
-    linkAndRegister(linkShader);
-}
+    : Shader(std::string(vertexFilename), std::string(geometryFilename),
+             std::string(fragmentFilename), linkShader) {}
 
 Shader::Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader)
     : id_{glCreateProgram()}, warningLevel_{UniformWarning::Ignore} {
@@ -91,7 +83,8 @@ Shader::Shader(std::vector<ShaderObject *> &shaderObjects, bool linkShader)
         shaderObjects_[shaderObject->getShaderType()].reset(shaderObject);
 
     attachAllShaderObjects();
-    linkAndRegister(linkShader);
+    if (linkShader) link();
+    registerShader();
 }
 
 Shader::Shader(const Shader &rhs, bool linkShader)
@@ -100,7 +93,8 @@ Shader::Shader(const Shader &rhs, bool linkShader)
         this->shaderObjects_[it.first].reset(it.second->clone(false));
     }
     attachAllShaderObjects();
-    linkAndRegister(linkShader);
+    if (linkShader) link();
+    registerShader();
 }
 
 Shader &Shader::operator=(const Shader &that) {
@@ -110,7 +104,7 @@ Shader &Shader::operator=(const Shader &that) {
         }
         warningLevel_ = that.warningLevel_;
         attachAllShaderObjects();
-        linkAndRegister(true);
+        link();
     }
     return *this;
 }
@@ -126,18 +120,18 @@ Shader::~Shader() {
 
 Shader *Shader::clone(bool linkShader) { return new Shader(*this, linkShader); }
 
-void Shader::linkAndRegister(bool linkShader) {
-    if (linkShader) link();
-
+void Shader::registerShader() {
     ShaderManager::getPtr()->registerShader(this);
 }
 
-void Shader::createAndAddShader(GLenum shaderType, std::string fileName, bool linkShader) {
-    shaderObjects_[shaderType] = ShaderObjectPtr(new ShaderObject(shaderType, fileName, linkShader),
-                                                 [this](ShaderObject *shaderObject) {
-                                                     detachShaderObject(shaderObject);
-                                                     delete shaderObject;
-                                                 });
+void Shader::createAndAddShader(GLenum shaderType, std::string fileName,
+                                ShaderObject::Compile compile) {
+    auto err = ShaderManager::getPtr()->getShaderObjectError();
+    shaderObjects_[shaderType] = ShaderObjectPtr(
+        new ShaderObject(shaderType, fileName, compile, err), [this](ShaderObject *shaderObject) {
+            detachShaderObject(shaderObject);
+            delete shaderObject;
+        });
 }
 
 void Shader::link(bool notifyRebuild) {

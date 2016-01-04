@@ -39,6 +39,10 @@ namespace inviwo {
 class IVW_MODULE_OPENGL_API ShaderObject {
 
 public:
+    enum class Compile { Yes, No };
+    enum class Error { Warn, Throw };
+
+    ShaderObject(GLenum shaderType, std::string fileName, Compile compile = Compile::Yes, Error error = Error::Warn);
     ShaderObject(GLenum shaderType, std::string fileName, bool compileShader=true);
     ShaderObject(const ShaderObject& rhs, bool compileShader=true);
     ShaderObject& operator=(const ShaderObject& that);
@@ -52,6 +56,8 @@ public:
     std::string getAbsoluteFileName() const { return absoluteFileName_; }
     const std::vector<std::string>& getIncludeFileNames() const { return includeFileNames_; }
     GLenum getShaderType() const { return shaderType_; }
+    void setError(Error error);
+    Error getError() const;
 
     void loadSource(std::string fileName);
     void preprocess();
@@ -96,7 +102,7 @@ public:
     std::string print(bool showSource = false, bool preprocess = true) const;
 
 private:
-    void initialize(bool compileShader);
+    void initialize(Compile compile);
 
     std::string embeddDefines(std::string source);
     std::string embeddOutDeclarations(std::string source);
@@ -122,6 +128,7 @@ private:
     ShaderExtensionContainer shaderExtensions_;
 
     std::vector<std::pair<std::string, unsigned int> > lineNumberResolver_;
+    Error error_;
 };
 
 } // namespace

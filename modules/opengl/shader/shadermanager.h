@@ -36,6 +36,7 @@
 #include <modules/opengl/inviwoopengl.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderobject.h>
 #include <inviwo/core/util/fileobserver.h>
 #include <inviwo/core/util/singleton.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -72,7 +73,8 @@ public:
     const std::vector<Shader*> getShaders() const;
     void rebuildAllShaders();
 
-    void setUniformWarningLevel(OpenGLSettings* settings);
+    void setOpenGLSettings(OpenGLSettings* settings);
+    ShaderObject::Error getShaderObjectError() const;
 
 protected:
     OpenGLCapabilities* getOpenGLCapabilitiesObject();
@@ -85,6 +87,8 @@ private:
     std::map<std::string, std::string> shaderResources_;
     
     TemplateOptionProperty<Shader::UniformWarning>* uniformWarnings_; // non-owning reference
+    TemplateOptionProperty<ShaderObject::Error>* shaderObjectErrors_; // non-owning reference
+
 };
 
 } // namespace

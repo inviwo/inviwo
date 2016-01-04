@@ -71,7 +71,7 @@ OpenGLModule::OpenGLModule(InviwoApplication* app) : InviwoModule(app, "OpenGL")
 
     auto settings = util::make_unique<OpenGLSettings>();
     auto openGLCap = util::make_unique<OpenGLCapabilities>(settings.get());
-    ShaderManager::getPtr()->setUniformWarningLevel(settings.get());
+    ShaderManager::getPtr()->setOpenGLSettings(settings.get());
 
     registerSettings(std::move(settings));
     registerCapabilities(std::move(openGLCap));

@@ -49,11 +49,14 @@ public:
     Shader(std::string vertexFilename, std::string fragmentFilename, bool linkShader = true);
     Shader(std::string vertexFilename, std::string geometryFilename, std::string fragmentFilename,
            bool linkShader = true);
+    
+    // We need these to avoid strange implicit conversions...
     Shader(const char *fragmentFilename, bool linkShader = true);
     Shader(const char *vertexFilename, const char *fragmentFilename, bool linkShader = true);
     Shader(const char *vertexFilename, const char *geometryFilename, const char *fragmentFilename,
            bool linkShader = true);
 
+    
     Shader(const Shader &rhs, bool linkShader = true);
     Shader &operator=(const Shader &that);
 
@@ -99,9 +102,9 @@ public:
     void removeOnReload(const BaseCallBack* callback);
 
 private:
-    void linkAndRegister(bool linkShader);
+    void registerShader();
 
-    void createAndAddShader(GLenum, std::string, bool);
+    void createAndAddShader(GLenum, std::string, ShaderObject::Compile compile);
 
     void attachShaderObject(ShaderObject *shaderObject);
     void detachShaderObject(ShaderObject *shaderObject);

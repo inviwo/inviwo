@@ -41,7 +41,8 @@ OpenGLSettings::OpenGLSettings()
     , shaderReloadingProperty_("shaderReloading", "Automatically reload shaders", true)
     , btnOpenGLInfo_("printOpenGLInfo", "Print OpenGL Info")
     , selectedOpenGLProfile_("selectedOpenGLProfile", "OpenGL Profile")
-    , uniformWarnings_("uniformWarnings", "Uniform Warnings") {
+    , uniformWarnings_("uniformWarnings", "Uniform Warnings")
+    , shaderObjectErrors_("compileWarnings", "Shader Errros") {
     
     selectedOpenGLProfile_.addOption("core", "Core");
     selectedOpenGLProfile_.addOption("compatibility", "Compatibility");
@@ -54,10 +55,16 @@ OpenGLSettings::OpenGLSettings()
     uniformWarnings_.setSelectedIndex(0);
     uniformWarnings_.setCurrentStateAsDefault();
 
+    shaderObjectErrors_.addOption("warn", "Print warning", ShaderObject::Error::Warn);
+    shaderObjectErrors_.addOption("throw", "Throw error", ShaderObject::Error::Throw);
+    shaderObjectErrors_.setSelectedIndex(0);
+    shaderObjectErrors_.setCurrentStateAsDefault();
+
     addProperty(shaderReloadingProperty_);
     addProperty(btnOpenGLInfo_);
     addProperty(selectedOpenGLProfile_);
     addProperty(uniformWarnings_);
+    addProperty(shaderObjectErrors_);
     
     loadFromDisk();
 }
