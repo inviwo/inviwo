@@ -84,8 +84,7 @@ PyObject* py_loadWorkspace(PyObject* /*self*/, PyObject* args) {
     std::string filename = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
 
     if (!filesystem::fileExists(filename)) {
-        filename =
-            filesystem::getPath(PathType::Modules) + "/" + filename;
+        filename = filesystem::getPath(PathType::Workspaces) + "/" + filename;
 
         if (!filesystem::fileExists(filename)) {
             std::string msg = std::string("loadWorkspace() could not find file") + filename;

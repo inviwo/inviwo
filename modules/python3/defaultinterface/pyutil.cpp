@@ -168,9 +168,16 @@ PyObject* py_getImagePath(PyObject* /*self*/, PyObject* /*args*/) {
     return PyValueParser::toPyObject(
         filesystem::getPath(PathType::Images));
 }
-PyObject* py_getModulePath(PyObject* /*self*/, PyObject* /*args*/) {
-    return PyValueParser::toPyObject(
-        filesystem::getPath(PathType::Modules));
+PyObject* py_getModulePath(PyObject* /*self*/, PyObject* args) {
+    static PyGetModulePathMethod p;
+    if (!p.testParams(args)) return nullptr;
+
+    auto name = PyValueParser::parse<std::string>(PyTuple_GetItem(args, 0));
+    if (auto module = InviwoApplication::getPtr()->getModuleByIdentifier(name)) {
+        return PyValueParser::toPyObject(module->getPath());
+    } else {
+        return nullptr;
+    }
 }
 
 PyObject* py_getTransferFunctionPath(PyObject* /*self*/, PyObject* /*args*/) {
@@ -268,4 +275,9 @@ PySnapshotAllCanvasesMethod::PySnapshotAllCanvasesMethod()
     addParam(&prefix_);
     addParam(&fileEnding_);
 }
+
+PyGetModulePathMethod::PyGetModulePathMethod() : moduleName_("moduleName", false) {
+    addParam(&moduleName_);
+}
+
 }

@@ -154,9 +154,14 @@ public:
 
 class IVW_MODULE_PYTHON3_API PyGetModulePathMethod : public PyMethod {
 public:
+    PyGetModulePathMethod();
+    virtual ~PyGetModulePathMethod() {}
     virtual std::string getName() const { return "getModulePath"; }
-    virtual std::string getDesc() const { return "Returns the path to Inviwo module folder."; }
+    virtual std::string getDesc() const { return "Returns the path to the given module."; }
     virtual PyCFunction getFunc() { return py_getModulePath; }
+
+private:
+    PyParamString moduleName_;
 };
 
 class IVW_MODULE_PYTHON3_API PyGetTransferFunctionPath : public PyMethod {
