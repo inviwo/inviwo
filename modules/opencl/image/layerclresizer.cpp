@@ -27,17 +27,20 @@
  * 
  *********************************************************************************/
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/logcentral.h>
+#include <modules/opencl/openclmodule.h>
 #include <modules/opencl/image/layerclresizer.h>
 #include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
-
 LayerCLResizer::LayerCLResizer() {
     try {
-        cl::Program program = OpenCL::buildProgram(filesystem::getPath(PathType::Modules)+"/opencl/cl/img_resize.cl");
+        auto path =
+            InviwoApplication::getPtr()->getModuleByType<OpenCLModule>()->getPath(ModulePath::CL);
+        cl::Program program = OpenCL::buildProgram(path + "/img_resize.cl");
         resizeKernel_ = cl::Kernel(program, "resizeLayer");
     } catch (cl::Error&) {
     }

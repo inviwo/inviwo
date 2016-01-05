@@ -187,14 +187,6 @@ public:
     void addCommonIncludeDirectory(const std::string& directoryPath);
 
     /**
-     * Add a relative directory as an include path to be used when compiling OpenCL kernels.
-     *
-     * @param pathType PathType of directory
-     * @param relativePath Relative directory path to include
-     */
-    void addCommonIncludeDirectory(PathType pathType, const std::string& relativePath);
-
-    /**
      * Remove common include path.
      *
      * @param directoryPath Directory path to remove

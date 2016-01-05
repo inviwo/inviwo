@@ -45,7 +45,7 @@ BaseCLModule::BaseCLModule(InviwoApplication* app) : InviwoModule(app, "BaseCL")
     registerProcessor<VolumeMaxCLProcessor>();
     registerProcessor<VolumeRaycasterCLProcessor>();
     
-    OpenCL::getPtr()->addCommonIncludeDirectory(PathType::Modules, "basecl/cl");
+    OpenCL::getPtr()->addCommonIncludeDirectory(getPath(ModulePath::CL));
 }
 
 BaseCLModule::~BaseCLModule() {}
