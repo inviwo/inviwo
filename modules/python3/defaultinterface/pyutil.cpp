@@ -176,6 +176,8 @@ PyObject* py_getModulePath(PyObject* /*self*/, PyObject* args) {
     if (auto module = InviwoApplication::getPtr()->getModuleByIdentifier(name)) {
         return PyValueParser::toPyObject(module->getPath());
     } else {
+        auto err = "Could not find a module with id: " + name;
+        PyErr_SetString(PyExc_TypeError, err.c_str());
         return nullptr;
     }
 }
