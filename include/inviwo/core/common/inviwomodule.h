@@ -65,7 +65,7 @@ enum class ModulePath {
     Data,               // /data
     Images,             // /data/images
     PortInspectors,     // /data/portinspectors
-    Scripts,            // /data/workspaces
+    Scripts,            // /data/scripts
     Volumes,            // /data/volumes
     Workspaces,         // /data/workspaces
     Docs,               // /docs

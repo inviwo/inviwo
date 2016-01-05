@@ -171,6 +171,17 @@ InviwoApplication::getModuleFactoryObjects() const {
     return modulesFactoryObjects_;
 }
 
+InviwoModule* InviwoApplication::getModuleByIdentifier(const std::string& identifier) const {
+    const auto it = std::find_if(
+        modules_.begin(), modules_.end(),
+        [&](const std::unique_ptr<InviwoModule>& m) { return m->getIdentifier() == identifier; });
+    if (it != modules_.end()) {
+        return it->get();
+    } else {
+        return nullptr;
+    }
+}
+
 ProcessorNetwork* InviwoApplication::getProcessorNetwork() { return processorNetwork_.get(); }
 
 ProcessorNetworkEvaluator* InviwoApplication::getProcessorNetworkEvaluator() {

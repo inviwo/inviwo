@@ -127,7 +127,7 @@ std::string InviwoModule::getPath(ModulePath type) const {
         case ModulePath::Data:               return path + "/data";
         case ModulePath::Images:             return path + "/data/images";
         case ModulePath::PortInspectors:     return path + "/data/portinspectors";
-        case ModulePath::Scripts:            return path + "/data/workspaces";
+        case ModulePath::Scripts:            return path + "/data/scripts";
         case ModulePath::Volumes:            return path + "/data/volumes";
         case ModulePath::Workspaces:         return path + "/data/workspaces";
         case ModulePath::Docs:               return path + "/docs";

@@ -121,6 +121,9 @@ public:
     void registerModule(std::unique_ptr<InviwoModule> module);
     const std::vector<std::unique_ptr<InviwoModule>>& getModules() const;
     const std::vector<std::unique_ptr<InviwoModuleFactoryObject>>& getModuleFactoryObjects() const;
+    template <class T>
+    T* getModuleByType() const;
+    InviwoModule* getModuleByIdentifier(const std::string& identifier) const;
 
     ProcessorNetwork* getProcessorNetwork();
     ProcessorNetworkEvaluator* getProcessorNetworkEvaluator();
@@ -130,8 +133,6 @@ public:
 
     CommandLineParser& getCommandLineParser();
     const CommandLineParser& getCommandLineParser() const;
-    template <class T>
-    T* getModuleByType();
 
     virtual void addCallbackAction(ModuleCallbackAction* callbackAction);
     virtual std::vector<std::unique_ptr<ModuleCallbackAction>>& getCallbackActions();
@@ -235,7 +236,7 @@ T* InviwoApplication::getSettingsByType() {
 }
 
 template <class T>
-T* InviwoApplication::getModuleByType() {
+T* InviwoApplication::getModuleByType() const {
     return getTypeFromVector<T>(modules_);
 }
 
