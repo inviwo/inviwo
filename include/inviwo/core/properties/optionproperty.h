@@ -142,6 +142,12 @@ public:
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
+    BaseTemplateOptionProperty(
+        std::string identifier, std::string displayName,
+        std::vector<Option<T>> options, size_t selectedIndex = 0,
+        InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+        PropertySemantics semantics = PropertySemantics::Default);
+
     BaseTemplateOptionProperty(const BaseTemplateOptionProperty<T>& rhs);
     BaseTemplateOptionProperty<T>& operator=(const BaseTemplateOptionProperty<T>& that);
     // virtual BaseTemplateOptionProperty<T>* clone() const = 0;
@@ -214,6 +220,12 @@ public:
     TemplateOptionProperty(std::string identifier, std::string displayName,
                            InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                            PropertySemantics semantics = PropertySemantics::Default);
+
+    TemplateOptionProperty(std::string identifier, std::string displayName,
+                           std::vector<Option<T>> options, size_t selectedIndex = 0,
+                           InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                           PropertySemantics semantics = PropertySemantics::Default);
+
     TemplateOptionProperty(const TemplateOptionProperty<T>& rhs);
     TemplateOptionProperty<T>& operator=(const TemplateOptionProperty<T>& that);
     //    virtual TemplateOptionProperty<T>* clone() const;
@@ -258,6 +270,11 @@ public:
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                          PropertySemantics semantics = PropertySemantics::Default);
 
+    OptionPropertyString(std::string identifier, std::string displayName,
+                         std::vector<Option<std::string>> options, size_t selectedIndex = 0,
+                         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
+                         PropertySemantics semantics = PropertySemantics::Default);
+
     OptionPropertyString(const OptionPropertyString& rhs);
     OptionPropertyString& operator=(const OptionPropertyString& that);
     virtual OptionPropertyString* clone() const override;
@@ -287,6 +304,17 @@ BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(std::string identifier
     : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
     , selectedIndex_(0)
     , defaultSelectedIndex_(0) {}
+
+template <typename T>
+inviwo::BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(
+    std::string identifier, std::string displayName, std::vector<Option<T>> options, size_t selectedIndex,
+    InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
+    PropertySemantics semantics /*= PropertySemantics::Default*/)
+    : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
+    , selectedIndex_(std::min(selectedIndex, options.size()-1))
+    , options_(options)
+    , defaultSelectedIndex_(selectedIndex_)
+    , defaultOptions_(options_) {}
 
 template <typename T>
 inviwo::BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(
@@ -588,11 +616,17 @@ void BaseTemplateOptionProperty<T>::deserialize(Deserializer& d) {
 }
 
 template <typename T>
-TemplateOptionProperty<T>::TemplateOptionProperty(
-    std::string identifier, std::string displayName,
-    InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
-    PropertySemantics semantics /*= PropertySemantics::Default*/)
+TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier, std::string displayName,
+                                                  InvalidationLevel invalidationLevel,
+                                                  PropertySemantics semantics)
     : BaseTemplateOptionProperty<T>(identifier, displayName, invalidationLevel, semantics) {}
+
+template <typename T>
+inviwo::TemplateOptionProperty<T>::TemplateOptionProperty(
+    std::string identifier, std::string displayName, std::vector<Option<T>> options,
+    size_t selectedIndex, InvalidationLevel invalidationLevel, PropertySemantics semantics)
+    : BaseTemplateOptionProperty<T>(identifier, displayName, options, selectedIndex,
+                                    invalidationLevel, semantics) {}
 
 template <typename T>
 TemplateOptionProperty<T>::TemplateOptionProperty(const TemplateOptionProperty<T>& rhs)

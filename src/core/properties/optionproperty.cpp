@@ -46,6 +46,14 @@ OptionPropertyString::OptionPropertyString(std::string identifier, std::string d
                                            PropertySemantics semantics)
     : TemplateOptionProperty<std::string>(identifier, displayName, invalidationLevel, semantics) {}
 
+OptionPropertyString::OptionPropertyString(std::string identifier, std::string displayName,
+                                           std::vector<Option<std::string>> options,
+                                           size_t selectedIndex,
+                                           InvalidationLevel invalidationLevel,
+                                           PropertySemantics semantics)
+    : TemplateOptionProperty<std::string>(identifier, displayName, options, selectedIndex,
+                                          invalidationLevel, semantics) {}
+
 OptionPropertyString::OptionPropertyString(const OptionPropertyString& rhs)
     : TemplateOptionProperty<std::string>(rhs) {}
 
