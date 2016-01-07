@@ -33,27 +33,9 @@
 
 namespace inviwo {
 
-bool ProcessorWidgetFactory::registerObject(ProcessorWidgetFactoryObject* widget) {
-    if (util::insert_unique(map_, widget->getProcessorClassIdentifier(), widget)) {
-        return true;
-    } else {
-        LogWarn("Processor Widget for class name: " << widget->getProcessorClassIdentifier()
-                                                    << " is already registered");
-        return false;
-    }
-}
-
-std::unique_ptr<ProcessorWidget> ProcessorWidgetFactory::create(const std::string& key) const {
-    return std::unique_ptr<ProcessorWidget>(util::map_find_or_null(
-        map_, key, [](ProcessorWidgetFactoryObject* o) { return o->create(); }));
-}
-
 std::unique_ptr<ProcessorWidget> ProcessorWidgetFactory::create(Processor* processor) const {
-    return ProcessorWidgetFactory::create(processor->getClassIdentifier());
-}
-
-bool ProcessorWidgetFactory::hasKey(const std::string& processorClassName) const {
-    return util::has_key(map_, processorClassName);
+    return StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject>::create(
+        processor->getClassIdentifier());
 }
 
 }  // namespace

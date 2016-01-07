@@ -45,7 +45,7 @@ public:
     virtual ~ProcessorWidgetFactoryObject();
 
     virtual ProcessorWidget* create() = 0;
-    const std::string& getProcessorClassIdentifier() const { return classIdentifier_; }
+    const std::string& getClassIdentifier() const { return classIdentifier_; }
 
 private:
     std::string classIdentifier_;

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_PROCESSORWIDGETFACTORY_H
@@ -37,23 +37,14 @@
 
 namespace inviwo {
 
-class IVW_CORE_API ProcessorWidgetFactory : 
-    public Factory<ProcessorWidget> {
-
+class IVW_CORE_API ProcessorWidgetFactory
+    : public StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject> {
 public:
     ProcessorWidgetFactory() = default;
     virtual ~ProcessorWidgetFactory() = default;
-
-    bool registerObject(ProcessorWidgetFactoryObject* widget);
-    std::unique_ptr<ProcessorWidget> create(const std::string& processorClassName) const override;
     std::unique_ptr<ProcessorWidget> create(Processor* processor) const;
-    bool hasKey(const std::string& className) const override;
-
-    using Map = std::unordered_map<std::string, ProcessorWidgetFactoryObject*>;
-private:
-    mutable Map map_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_PROCESSORWIDGETFACTORY_H
+#endif  // IVW_PROCESSORWIDGETFACTORY_H

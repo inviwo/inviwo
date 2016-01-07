@@ -89,6 +89,9 @@ InviwoModule::~InviwoModule() {
     for (auto& elem : processors_) {
         app_->getProcessorFactory()->unRegisterObject(elem.get());
     }
+    for (auto& elem : processorWidgets_) {
+        app_->getProcessorWidgetFactory()->unRegisterObject(elem.get());
+    }
     for (auto& elem : propertyConverters_) {
         app_->getPropertyConverterManager()->unRegisterObject(elem.get());
     }
