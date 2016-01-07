@@ -56,6 +56,7 @@ namespace inviwo {
 class ProcessorNetwork;
 class ProcessorNetworkEvaluator;
 
+class CameraFactory;
 class DataReaderFactory;
 class DataWriterFactory;
 class MeshDrawerFactory;
@@ -157,6 +158,7 @@ public:
     void setProgressCallback(std::function<void(std::string)> progressCallback);
 
     // Factory getters
+    CameraFactory* getCameraFactory() const;
     DataReaderFactory* getDataReaderFactory() const;
     DataWriterFactory* getDataWriterFactory() const;
     DialogFactory* getDialogFactory() const;
@@ -207,6 +209,7 @@ private:
     util::OnScopeExit clearAllSingeltons_;
 
     // Factories
+    std::unique_ptr<CameraFactory> cameraFactory_;
     std::unique_ptr<DataReaderFactory> dataReaderFactory_;
     std::unique_ptr<DataWriterFactory> dataWriterFactory_;
     std::unique_ptr<DialogFactory> dialogFactory_;
@@ -273,6 +276,10 @@ template <class F, class... Args>
 auto dispatchPool(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
     return InviwoApplication::getPtr()->dispatchPool(std::forward<F>(f),
                                                      std::forward<Args>(args)...);
+}
+
+inline CameraFactory* InviwoApplication::getCameraFactory() const {
+    return cameraFactory_.get();
 }
 
 inline DataReaderFactory* InviwoApplication::getDataReaderFactory() const {

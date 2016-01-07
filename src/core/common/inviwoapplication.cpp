@@ -31,6 +31,7 @@
 #include <inviwo/core/common/inviwocore.h>
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/core/common/moduleaction.h>
+#include <inviwo/core/datastructures/camerafactory.h>
 #include <inviwo/core/datastructures/representationconverterfactory.h>
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/io/datareaderfactory.h>
@@ -69,6 +70,7 @@ InviwoApplication::InviwoApplication(int argc, char** argv, std::string displayN
     , clearDataFormats_{[]() { DataFormatBase::cleanDataFormatBases(); }}
     , clearAllSingeltons_{[this]() { cleanupSingletons(); }}
 
+    , cameraFactory_{util::make_unique<CameraFactory>()}
     , dataReaderFactory_{util::make_unique<DataReaderFactory>()}
     , dataWriterFactory_{util::make_unique<DataWriterFactory>()}
     , dialogFactory_{util::make_unique<DialogFactory>()}

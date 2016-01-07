@@ -31,6 +31,9 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/filesystem.h>
 
+//Cameras
+#include <inviwo/core/datastructures/camera.h>
+
 //Data Structures
 #include <inviwo/core/datastructures/volume/volumeramconverter.h>
 #include <inviwo/core/datastructures/image/layerramconverter.h>
@@ -142,6 +145,11 @@ InviwoCore::InviwoCore(InviwoApplication* app) : InviwoModule(app, "Core") {
     registerMetaData(util::make_unique<ProcessorMetaData>());
     registerMetaData(util::make_unique<ProcessorWidgetMetaData>());
     registerMetaData(util::make_unique<PropertyEditorWidgetMetaData>());
+    
+    // Register Cameras
+    registerCamera<PerspectiveCamera>("PerspectiveCamera");
+    registerCamera<OrthographicCamera>("OrthographicCamera");
+    
     // Register Capabilities
     auto syscap = util::make_unique<SystemCapabilities>();
     syscap->retrieveStaticInfo();

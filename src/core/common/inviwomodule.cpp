@@ -62,6 +62,9 @@ InviwoModule::InviwoModule(InviwoApplication* app, const std::string& identifier
 
 InviwoModule::~InviwoModule() {
     // unregister everything...
+    for (auto& elem : cameras_) {
+        app_->getCameraFactory()->unRegisterObject(elem.get());
+    }
     for (auto& elem : dataReaders_) {
         app_->getDataReaderFactory()->unRegisterObject(elem.get());
     }
@@ -145,6 +148,11 @@ std::string InviwoModule::getPath(ModulePath type) const {
 const std::vector<Capabilities*> InviwoModule::getCapabilities() const {
     return uniqueToPtr(capabilities_);
 }
+
+const std::vector<CameraFactoryObject*> InviwoModule::getCameras() const {
+    return uniqueToPtr(cameras_);
+}
+
 const std::vector<DataReader*> InviwoModule::getDataReaders() const {
     return uniqueToPtr(dataReaders_);
 }
