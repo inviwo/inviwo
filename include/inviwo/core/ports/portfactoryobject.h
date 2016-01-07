@@ -59,7 +59,7 @@ public:
 
     virtual ~PortFactoryObjectTemplate() {}
 
-    virtual Port* create(std::string identifier) {
+    virtual Port* create(std::string identifier) override{
         return static_cast<Port*>(new T(identifier));
     }
 };

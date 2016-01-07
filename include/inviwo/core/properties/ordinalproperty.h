@@ -84,36 +84,36 @@ private:
 };
 
 // Scalar properties
-typedef OrdinalProperty<float> FloatProperty;
-typedef OrdinalProperty<int> IntProperty;
-typedef OrdinalProperty<glm::i64> Int64Property;
-typedef OrdinalProperty<double> DoubleProperty;
+using FloatProperty = OrdinalProperty<float>;
+using IntProperty = OrdinalProperty<int>;
+using Int64Property = OrdinalProperty<glm::i64>;
+using DoubleProperty = OrdinalProperty<double>;
 
 // Vector properties
-typedef OrdinalProperty<vec2> FloatVec2Property;
-typedef OrdinalProperty<vec3> FloatVec3Property;
-typedef OrdinalProperty<vec4> FloatVec4Property;
+using FloatVec2Property = OrdinalProperty<vec2>;
+using FloatVec3Property = OrdinalProperty<vec3>;
+using FloatVec4Property = OrdinalProperty<vec4>;
 
-typedef OrdinalProperty<dvec2> DoubleVec2Property;
-typedef OrdinalProperty<dvec3> DoubleVec3Property;
-typedef OrdinalProperty<dvec4> DoubleVec4Property;
+using DoubleVec2Property = OrdinalProperty<dvec2>;
+using DoubleVec3Property = OrdinalProperty<dvec3>;
+using DoubleVec4Property = OrdinalProperty<dvec4>;
 
-typedef OrdinalProperty<ivec2> IntVec2Property;
-typedef OrdinalProperty<ivec3> IntVec3Property;
-typedef OrdinalProperty<ivec4> IntVec4Property;
+using IntVec2Property = OrdinalProperty<ivec2>;
+using IntVec3Property = OrdinalProperty<ivec3>;
+using IntVec4Property = OrdinalProperty<ivec4>;
 
-typedef OrdinalProperty<size2_t> IntSize2Property;
-typedef OrdinalProperty<size3_t> IntSize3Property;
-typedef OrdinalProperty<size4_t> IntSize4Property;
+using IntSize2Property = OrdinalProperty<size2_t>;
+using IntSize3Property = OrdinalProperty<size3_t>;
+using IntSize4Property = OrdinalProperty<size4_t>;
 
 // Matrix properties
-typedef OrdinalProperty<mat2> FloatMat2Property;
-typedef OrdinalProperty<mat3> FloatMat3Property;
-typedef OrdinalProperty<mat4> FloatMat4Property;
+using FloatMat2Property = OrdinalProperty<mat2>;
+using FloatMat3Property = OrdinalProperty<mat3>;
+using FloatMat4Property = OrdinalProperty<mat4>;
 
-typedef OrdinalProperty<dmat2> DoubleMat2Property;
-typedef OrdinalProperty<dmat3> DoubleMat3Property;
-typedef OrdinalProperty<dmat4> DoubleMat4Property;
+using DoubleMat2Property = OrdinalProperty<dmat2>;
+using DoubleMat3Property = OrdinalProperty<dmat3>;
+using DoubleMat4Property = OrdinalProperty<dmat4>;
 
 template <typename T> PropertyClassIdentifier(OrdinalProperty<T>,  "org.inviwo." + Defaultvalues<T>::getName() + "Property");
 
