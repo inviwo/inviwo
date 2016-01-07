@@ -68,7 +68,7 @@ public:
 
     virtual std::string getClassIdentifier() const { return "org.inviwo.PointLightInteractionHandler"; }
 
-    const PerspectiveCamera& getCamera() { return camera_->get(); }
+    const Camera& getCamera() { return camera_->get(); }
 
     void invokeEvent(Event* event);
     void setHandleEventsOptions(int);

@@ -57,25 +57,30 @@ public:
     InviwoPropertyInfo();
 
     CameraProperty(std::string identifier, std::string displayName,
+                   std::unique_ptr<Camera> camera,
+                   Inport* inport = nullptr,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
+                   PropertySemantics semantics = PropertySemantics::Default);
+
+    CameraProperty(std::string identifier, std::string displayName,
                    vec3 eye = vec3(0.0f, 0.0f, -2.0f), vec3 center = vec3(0.0f),
                    vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), Inport* inport = nullptr,
-                   InvalidationLevel = InvalidationLevel::InvalidResources,
+                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
                    PropertySemantics semantics = PropertySemantics::Default);
 
     CameraProperty(const CameraProperty& rhs);
     CameraProperty& operator=(const CameraProperty& that);
-    CameraProperty& operator=(const PerspectiveCamera& value);
 
-    // virtual operator PerspectiveCamera&() { return value_; }; // Do not allow user to get
+    // virtual operator Camera&() { return value_; }; // Do not allow user to get
     // non-const reference since no notification mechanism exist.
-    virtual operator const PerspectiveCamera&() const;
+    virtual operator const Camera&() const;
 
     virtual CameraProperty* clone() const override;
     virtual ~CameraProperty() = default;
 
-    virtual PerspectiveCamera& get();
-    virtual const PerspectiveCamera& get() const;
-    virtual void set(const PerspectiveCamera& value);
+    virtual Camera& get();
+    virtual const Camera& get() const;
+    virtual void set(std::unique_ptr<Camera> camera);
     virtual void set(const Property* srcProperty) override;
 
     virtual void resetToDefaultState() override;
@@ -93,8 +98,8 @@ public:
     void setLookUp(vec3 lookUp);
     vec3 getLookRight() const;
 
-    float getFovy() const;
-    void setFovy(float fovy);
+    //float getFovy() const;
+    //void setFovy(float fovy);
 
     void setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
@@ -135,8 +140,6 @@ public:
     const mat4& inverseViewMatrix() const;
     const mat4& inverseProjectionMatrix() const;
 
-    void setProjectionMatrix(float fovy, float aspect, float farPlane, float nearPlane);
-
     void invokeEvent(Event* event) override;
 
     void setInport(Inport* inport);
@@ -157,28 +160,14 @@ public:
     void inportChanged();
 
 private:
-    // Call this function after a property has changed
-    // Makes sure that linking is propagated after
-    // a property has changed.
-    // Calls CompositeProperty::invalidate(InvalidationLevel::InvalidOutput, this);
-    void invalidateCamera();
-    // These functions make sure that the
-    // template value (PerspectiveCamera) is
-    // in sync with the property values.
-    void lookFromChangedFromProperty();
-    void lookToChangedFromProperty();
-    void lookUpChangedFromProperty();
-    void verticalFieldOfViewChangedFromProperty();
-    void aspectRatioChangedFromProperty();
-    void nearPlaneChangedFromProperty();
-    void farPlaneChangedFromProperty();
+    void setupProperties();
 
     void updatePropertyFromValue();
 
-    PerspectiveCamera value_;
+    std::unique_ptr<Camera> camera_;
     // These properties enable linking of individual
     // camera properties but requires them to be synced
-    // with the template value_ (PerspectiveCamera).
+    // with the camera
     FloatVec3Property lookFrom_;
     FloatVec3Property lookTo_;
     FloatVec3Property lookUp_;

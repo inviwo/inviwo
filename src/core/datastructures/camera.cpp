@@ -40,7 +40,6 @@ Camera::Camera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane, float f
     , invalidViewMatrix_(true)
     , invalidProjectionMatrix_(true) {}
 
-
 const mat4& Camera::viewMatrix() const {
     if (invalidViewMatrix_) {
         viewMatrix_ = glm::lookAt(lookFrom_, lookTo_, lookUp_);
@@ -64,8 +63,6 @@ const mat4& Camera::inverseViewMatrix() const {
     return inverseViewMatrix_;
 }
 
-
-
 const mat4& Camera::inverseProjectionMatrix() const {
     if (invalidProjectionMatrix_) projectionMatrix();
     return inverseProjectionMatrix_;
@@ -81,8 +78,8 @@ vec3 Camera::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const 
 
 vec4 Camera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     float clipW = projectionMatrix_[2][3] /
-        (ndcCoords.z - (projectionMatrix_[2][2] / projectionMatrix_[3][2]));
-    return vec4(ndcCoords * clipW, clipW);;
+                  (ndcCoords.z - (projectionMatrix_[2][2] / projectionMatrix_[3][2]));
+    return vec4(ndcCoords * clipW, clipW);
 }
 
 void Camera::serialize(Serializer& s) const {
@@ -104,9 +101,8 @@ void Camera::deserialize(Deserializer& d) {
 
 bool Camera::equalTo(const Camera& other) const {
     return !(glm::any(glm::notEqual(lookFrom_, other.lookFrom_)) |
-        glm::any(glm::notEqual(lookTo_, other.lookTo_)) |
-        (nearPlaneDist_ != other.nearPlaneDist_) |
-        (farPlaneDist_ != other.farPlaneDist_));
+             glm::any(glm::notEqual(lookTo_, other.lookTo_)) |
+             (nearPlaneDist_ != other.nearPlaneDist_) | (farPlaneDist_ != other.farPlaneDist_));
 }
 
 PerspectiveCamera::PerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, float nearPlane,
@@ -115,17 +111,23 @@ PerspectiveCamera::PerspectiveCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, fl
     , fovy_(fieldOfView)
     , aspectRatio_(aspectRatio){};
 
+PerspectiveCamera* PerspectiveCamera::clone() const { return new PerspectiveCamera(*this); }
+
+bool PerspectiveCamera::update(const Camera* source) {
+    if (auto perspectiveCamera = dynamic_cast<const PerspectiveCamera*>(source)) {
+        *this = *perspectiveCamera;
+        return true;
+    } else {
+        return false;
+    }
+}
 
 bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
-    return !(lhs.equalTo(rhs) |
-             (lhs.fovy_ != rhs.fovy_) |
-             (lhs.aspectRatio_ != rhs.aspectRatio_));
+    return !(lhs.equalTo(rhs) | (lhs.fovy_ != rhs.fovy_) | (lhs.aspectRatio_ != rhs.aspectRatio_));
 }
 
 bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
-    return (lhs.equalTo(rhs) |
-        (lhs.fovy_ != rhs.fovy_) |
-        (lhs.aspectRatio_ != rhs.aspectRatio_));
+    return (lhs.equalTo(rhs) | (lhs.fovy_ != rhs.fovy_) | (lhs.aspectRatio_ != rhs.aspectRatio_));
 }
 
 void PerspectiveCamera::serialize(Serializer& s) const {
@@ -143,15 +145,39 @@ OrthographicCamera::OrthographicCamera(vec3 lookFrom, vec3 lookTo, vec3 lookUp, 
                                        float farPlane, vec4 frustum)
     : Camera(lookFrom, lookTo, lookUp, nearPlane, farPlane), frustum_(frustum){};
 
+OrthographicCamera* OrthographicCamera::clone() const { return new OrthographicCamera(*this); }
+
+bool OrthographicCamera::update(const Camera* source) {
+    if (auto orthographicCamera = dynamic_cast<const OrthographicCamera*>(source)) {
+        *this = *orthographicCamera;
+        return true;
+    } else {
+        return false;
+    }
+}
 
 bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs) {
-    return !(lhs.equalTo(rhs) |
-        glm::any(glm::notEqual(lhs.frustum_, rhs.frustum_)));
+    return !(lhs.equalTo(rhs) | glm::any(glm::notEqual(lhs.frustum_, rhs.frustum_)));
 }
 
 bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs) {
-    return (lhs.equalTo(rhs) |
-        glm::any(glm::notEqual(lhs.frustum_, rhs.frustum_)));
+    return (lhs.equalTo(rhs) | glm::any(glm::notEqual(lhs.frustum_, rhs.frustum_)));
+}
+
+float OrthographicCamera::getAspectRatio() const {
+    // Left, right, bottom, top view volume
+    const float width{frustum_.y - frustum_.x};
+    const float height{frustum_.w - frustum_.z};
+    return width / height;
+}
+
+void OrthographicCamera::setAspectRatio(float val) {
+    // Left, right, bottom, top view volume
+    const float width{ frustum_.y - frustum_.x };
+    const float height{width / val };
+    frustum_.z = - height/2.0f;
+    frustum_.w = + height/2.0f;
+    invalidateProjectionMatrix();
 }
 
 void OrthographicCamera::serialize(Serializer& s) const {
