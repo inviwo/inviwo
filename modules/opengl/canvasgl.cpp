@@ -50,7 +50,6 @@ CanvasGL::CanvasGL(uvec2 dimensions)
     : Canvas(dimensions)
     , imageGL_(nullptr)
     , image_()
-    , rectArray_(nullptr)
     , layerType_(LayerType::Color)
     , shader_(nullptr)
     , noiseShader_(nullptr)
@@ -82,7 +81,6 @@ void CanvasGL::initializeSquare() {
 void CanvasGL::deinitialize() {
     shader_.reset();
     noiseShader_.reset();
-    rectArray_.reset();
 
     image_.reset();
     imageGL_ = nullptr;
@@ -198,14 +196,14 @@ void CanvasGL::renderTexture(int unitNumber) {
 }
 
 void CanvasGL::drawRect() {
-    rectArray_.reset(new BufferObjectArray());
-    rectArray_->bind();
-    rectArray_->attachBufferObject(screenAlignedRectGL_->getBufferGL(0)->getBufferObject().get(),
+    BufferObjectArray rectArray;
+    rectArray.bind();
+    rectArray.attachBufferObject(screenAlignedRectGL_->getBufferGL(0)->getBufferObject().get(),
                                    static_cast<GLuint>(BufferType::PositionAttrib));
-    rectArray_->attachBufferObject(screenAlignedRectGL_->getBufferGL(1)->getBufferObject().get(),
+    rectArray.attachBufferObject(screenAlignedRectGL_->getBufferGL(1)->getBufferObject().get(),
                                    static_cast<GLuint>(BufferType::TexcoordAttrib));
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    rectArray_->unbind();
+    rectArray.unbind();
 }
 
 void CanvasGL::checkChannels(std::size_t channels) {

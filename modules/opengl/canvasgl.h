@@ -118,7 +118,6 @@ protected:
 private:
     static const MeshGL* screenAlignedRectGL_;
 
-    std::unique_ptr<BufferObjectArray> rectArray_;
     LayerType layerType_;
     std::unique_ptr<Shader> shader_;
     std::unique_ptr<Shader> noiseShader_;
