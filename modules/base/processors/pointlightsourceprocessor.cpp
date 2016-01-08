@@ -43,9 +43,7 @@ const ProcessorInfo PointLightSourceProcessor::processorInfo_{
     CodeState::Experimental,        // Code state
     Tags::CPU,                      // Tags
 };
-const ProcessorInfo PointLightSourceProcessor::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo PointLightSourceProcessor::getProcessorInfo() const { return processorInfo_; }
 
 PointLightSourceProcessor::PointLightSourceProcessor()
     : Processor()
@@ -64,8 +62,7 @@ PointLightSourceProcessor::PointLightSourceProcessor()
     , lightScreenPosEnabled_("lightScreenPosEnabled", "Screen Pos Enabled", false)
     , lightScreenPos_("lightScreenPos", "Light Screen Pos", vec2(0.7f), vec2(0.f), vec2(1.f))
     , interactionEvents_("interactionEvents", "Interaction Events")
-    , lightInteractionHandler_(&lightPosition_, &camera_, &lightScreenPosEnabled_,
-                               &lightScreenPos_)
+    , lightInteractionHandler_(&lightPosition_, &camera_, &lightScreenPosEnabled_, &lightScreenPos_)
     , lightSource_(std::make_shared<PointLight>()) {
     addPort(outport_);
     addProperty(lightPosition_);
@@ -152,15 +149,68 @@ PointLightInteractionHandler::PointLightInteractionHandler(PositionProperty* pl,
     , lookUp_(camera_->getLookUp())
     , lookTo_(0.f)
     , trackball_(this)
-    , interactionEventOption_(0)
-{
+    , interactionEventOption_(0) {
     // static_cast<TrackballObservable*>(&trackball_)->addObserver(this);
     camera_->onChange(this, &PointLightInteractionHandler::onCameraChanged);
 }
 
+PointLightInteractionHandler::~PointLightInteractionHandler() {}
+
 void PointLightInteractionHandler::serialize(Serializer& s) const {}
 
 void PointLightInteractionHandler::deserialize(Deserializer& d) {}
+
+const vec3& PointLightInteractionHandler::getLookFrom() const { return lightPosition_->get(); }
+
+const vec3& PointLightInteractionHandler::getLookUp() const { return lookUp_; }
+
+void PointLightInteractionHandler::setLookTo(vec3 lookTo) { lookTo_ = lookTo; }
+
+void PointLightInteractionHandler::setLookFrom(vec3 lookFrom) { lightPosition_->set(lookFrom); }
+
+void PointLightInteractionHandler::setLookUp(vec3 lookUp) { lookUp_ = lookUp; }
+
+inviwo::vec3 PointLightInteractionHandler::getLookFromMinValue() const {
+    return lightPosition_->position_.getMinValue();
+}
+
+inviwo::vec3 PointLightInteractionHandler::getLookFromMaxValue() const {
+    return lightPosition_->position_.getMaxValue();
+}
+
+inviwo::vec3 PointLightInteractionHandler::getLookToMinValue() const {
+    return vec3(-std::numeric_limits<float>::max());
+}
+
+inviwo::vec3 PointLightInteractionHandler::getLookToMaxValue() const {
+    return vec3(std::numeric_limits<float>::max());
+}
+
+void PointLightInteractionHandler::setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) {
+    lightPosition_->set(lookFrom);
+    lookTo_ = lookTo;
+    lookUp = lookUp;
+}
+
+float PointLightInteractionHandler::getNearPlaneDist() const { return camera_->getNearPlaneDist(); }
+
+float PointLightInteractionHandler::getFarPlaneDist() const { return camera_->getFarPlaneDist(); }
+
+inviwo::vec3 PointLightInteractionHandler::getWorldPosFromNormalizedDeviceCoords(
+    const vec3& ndcCoords) const {
+    return camera_->getWorldPosFromNormalizedDeviceCoords(ndcCoords);
+}
+
+inviwo::vec3 PointLightInteractionHandler::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+    const vec2& normalizedScreenCoord) const {
+    return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
+}
+
+std::string PointLightInteractionHandler::getClassIdentifier() const {
+    return "org.inviwo.PointLightInteractionHandler";
+}
+
+const Camera& PointLightInteractionHandler::getCamera() { return camera_->get(); }
 
 void PointLightInteractionHandler::invokeEvent(Event* event) {
     // if(event->hasBeenUsed())
@@ -231,8 +281,8 @@ void PointLightInteractionHandler::onCameraChanged() {
     setLookUp(camera_->getLookUp());
 }
 
-PointLightTrackball::PointLightTrackball(PointLightInteractionHandler* p)
-    : Trackball<PointLightInteractionHandler>(p, &(p->getCamera())) {}
+const vec3& PointLightInteractionHandler::getLookTo() const { return lookTo_; }
+
+PointLightTrackball::PointLightTrackball(PointLightInteractionHandler* p) : Trackball(p) {}
 
 }  // namespace
-

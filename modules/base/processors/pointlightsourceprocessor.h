@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_POINT_LIGHT_SOURCE_PROCESSOR_H
@@ -43,13 +43,14 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/positionproperty.h>
 #include <modules/base/basemoduledefine.h>
+#include <inviwo/core/interaction/trackballobject.h>
 
 namespace inviwo {
 
 class PointLight;
 class PointLightInteractionHandler;
 
-class IVW_MODULE_BASE_API PointLightTrackball : public Trackball<PointLightInteractionHandler> {
+class IVW_MODULE_BASE_API PointLightTrackball : public Trackball {
 public:
     InviwoPropertyInfo();
 
@@ -58,17 +59,21 @@ public:
 };
 
 /*
-* Enables light source to be placed relative to camera using middle mouse button or pan gesture with two fingers.
+* Enables light source to be placed relative to camera using middle mouse button or pan gesture with
+* two fingers.
 * Uses trackball interaction for all other types of interaction.
 */
-class IVW_MODULE_BASE_API PointLightInteractionHandler : public InteractionHandler {
+class IVW_MODULE_BASE_API PointLightInteractionHandler : public InteractionHandler,
+                                                         public TrackballObject {
 public:
-    PointLightInteractionHandler(PositionProperty*, CameraProperty*, BoolProperty*, FloatVec2Property*);
-    ~PointLightInteractionHandler(){};
+    PointLightInteractionHandler(PositionProperty*, CameraProperty*, BoolProperty*,
+                                 FloatVec2Property*);
+    ~PointLightInteractionHandler();
+    ;
 
-    virtual std::string getClassIdentifier() const { return "org.inviwo.PointLightInteractionHandler"; }
+    virtual std::string getClassIdentifier() const;
 
-    const Camera& getCamera() { return camera_->get(); }
+    const Camera& getCamera();
 
     void invokeEvent(Event* event);
     void setHandleEventsOptions(int);
@@ -83,7 +88,8 @@ public:
     * to the camera at the same distance as before.
     *
     *
-    * @param vec2 normalizedScreenCoord Coordinates in [0 1], where y coordinate is 0 at top of screen.
+    * @param vec2 normalizedScreenCoord Coordinates in [0 1], where y coordinate is 0 at top of
+    * screen.
     */
     void setLightPosFromScreenCoords(const vec2& normalizedScreenCoord);
 
@@ -91,21 +97,29 @@ public:
     void onCameraChanged();
 
     // Necessary for trackball
-    const vec3& getLookTo() const { return lookTo_; }
-    const vec3 getLookFrom() const { return lightPosition_->get(); }
-    const vec3& getLookUp() const { return lookUp_; }
+    virtual const vec3& getLookTo() const override;
+    virtual const vec3& getLookFrom() const override;
+    virtual const vec3& getLookUp() const override;
 
-    void setLookTo(vec3 lookTo) { lookTo_ = lookTo; }
-    void setLookFrom(vec3 lookFrom) { lightPosition_->set(lookFrom); }
-    void setLookUp(vec3 lookUp) { lookUp_ = lookUp; }
+    virtual void setLookTo(vec3 lookTo) override;
+    virtual void setLookFrom(vec3 lookFrom) override;
+    virtual void setLookUp(vec3 lookUp) override;
 
-    const vec3 getLookFromMinValue() const { return lightPosition_->position_.getMinValue(); }
-    const vec3 getLookFromMaxValue() const { return lightPosition_->position_.getMaxValue(); }
+    virtual vec3 getLookFromMinValue() const override;
+    virtual vec3 getLookFromMaxValue() const override;
 
-    const vec3 getLookToMinValue() const { return vec3(-std::numeric_limits < float >::max()); }
-    const vec3 getLookToMaxValue() const { return vec3(std::numeric_limits < float >::max()); }
+    virtual vec3 getLookToMinValue() const override;
+    virtual vec3 getLookToMaxValue() const override;
 
-    void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) { lightPosition_->set(lookFrom); lookTo_ = lookTo; lookUp = lookUp; }
+    virtual void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
+
+    virtual float getNearPlaneDist() const override;
+    virtual float getFarPlaneDist() const override;
+
+    virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
+    virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+        const vec2& normalizedScreenCoord) const override;
+
     void serialize(Serializer& s) const;
     void deserialize(Deserializer& d);
 
@@ -114,19 +128,18 @@ private:
     CameraProperty* camera_;
     BoolProperty* screenPosEnabled_;
     FloatVec2Property* screenPos_;
-    vec3 lookUp_; ///< Necessary for trackball
-    vec3 lookTo_; ///< Necessary for trackball
+    vec3 lookUp_;  ///< Necessary for trackball
+    vec3 lookTo_;  ///< Necessary for trackball
     PointLightTrackball trackball_;
     int interactionEventOption_;
-
 };
 
 /** \docpage{org.inviwo.Pointlightsource, Point light source}
  * ![](org.inviwo.Pointlightsource.png?classIdentifier=org.inviwo.Pointlightsource)
  *
  * Produces a point light source, spreading light in all directions the given position.
- * 
- * 
+ *
+ *
  * ### Properties
  *   * __Light power (%)__ Increases/decreases light strength
  *   * __Light radius__ Radius of the sphere used to determine the size of the point light
@@ -149,8 +162,6 @@ protected:
     virtual void process() override;
 
     void handleInteractionEventsChanged();
-
-
 
     /**
      * Update light source parameters. Transformation will be given in texture space.
@@ -178,6 +189,6 @@ private:
     std::shared_ptr<PointLight> lightSource_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_POINT_LIGHT_SOURCE_PROCESSOR_H
+#endif  // IVW_POINT_LIGHT_SOURCE_PROCESSOR_H

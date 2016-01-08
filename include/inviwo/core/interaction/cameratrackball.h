@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_CAMERATRACKBALL_H
@@ -36,26 +36,21 @@
 
 namespace inviwo {
 
-class IVW_CORE_API CameraTrackball : public Trackball<CameraProperty> {
+class IVW_CORE_API CameraTrackball : public Trackball {
 public:
     InviwoPropertyInfo();
     /**
-     * Convenience clas for trackball using camera properties. Calls propertyModified() on camera when any of the positions or vectors change.
-     * Rotates and moves the camera around a sphere. 
+     * Convenience clas for trackball using camera properties. Calls propertyModified() on camera
+     * when any of the positions or vectors change.
+     * Rotates and moves the camera around a sphere.
      * This object does not take ownership of pointers handed to it.
      * @see Trackball
      * @param CameraProperty* cameraProp Pointer to the camera that will be controlled.
      */
     CameraTrackball(CameraProperty* cameraProp);
     virtual ~CameraTrackball();
-    virtual CameraTrackball* clone() const override;
-protected:
-
-    CameraProperty* cameraProp_; //< non-owning reference
 };
 
+}  // namespace
 
-
-} // namespace
-
-#endif // IVW_CAMERATRACKBALL_H
+#endif  // IVW_CAMERATRACKBALL_H

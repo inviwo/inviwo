@@ -42,17 +42,22 @@ namespace inviwo {
 
 PropertyClassIdentifier(CameraProperty, "org.inviwo.CameraProperty");
 
-
 CameraProperty::CameraProperty(std::string identifier, std::string displayName,
                                std::unique_ptr<Camera> camera, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
+    , cameraType_("cameraType", "Camera Type", [](){
+        std::vector<OptionPropertyStringOption> options;
+        for( auto& key : InviwoApplication::getPtr()->getCameraFactory()->getKeys()) {
+            options.emplace_back(key,key,key);
+        }
+        return options;
+    }(), 0)
     , camera_(std::move(camera))
     , lookFrom_("lookFrom", "Look from", camera_->getLookFrom(), -vec3(10.0f), vec3(10.0f),
                 vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics("Spherical"))
     , lookTo_("lookTo", "Look to", camera_->getLookTo(), -vec3(10.0f), vec3(10.0f), vec3(0.1f))
     , lookUp_("lookUp", "Look up", camera_->getLookUp(), -vec3(10.0f), vec3(10.0f), vec3(0.1f))
-    , fovy_("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f)
     , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f)
     , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
@@ -61,7 +66,6 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName,
     , inport_(inport)
     , data_(nullptr)
     , prevDataToWorldMatrix_(0) {
-
     setupProperties();
 
     if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
@@ -76,11 +80,11 @@ CameraProperty::CameraProperty(std::string identifier, std::string displayName, 
 
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
+    , cameraType_(rhs.cameraType_)
     , camera_(std::unique_ptr<Camera>(rhs.camera_->clone()))
     , lookFrom_(rhs.lookFrom_)
     , lookTo_(rhs.lookTo_)
     , lookUp_(rhs.lookUp_)
-    , fovy_(rhs.fovy_)
     , aspectRatio_(rhs.aspectRatio_)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
@@ -99,29 +103,46 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
 void CameraProperty::setupProperties() {
     // Make sure that the Camera) is
     // in sync with the property values.
+   addProperty(cameraType_);
+    cameraType_.onChange([&](){
+        changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
+    });
+
     lookFrom_.onChange([&](){camera_->setLookFrom(lookFrom_.get());});
     lookTo_.onChange([&](){camera_->setLookTo(lookTo_.get());});
     lookUp_.onChange([&](){camera_->setLookUp(lookUp_.get());});
     addProperty(lookFrom_);
     addProperty(lookTo_);
     addProperty(lookUp_);
-    fovy_.onChange([&](){ /* value_.setFovy(fovy_.get()); */});
     aspectRatio_.onChange([&](){camera_->setAspectRatio(aspectRatio_.get());});
     nearPlane_.onChange([&](){camera_->setNearPlaneDist(nearPlane_.get());});
     farPlane_.onChange([&](){camera_->setFarPlaneDist(farPlane_.get());});
-    addProperty(fovy_);
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
 
     adjustCameraOnDataChange_.onChange([&](){resetAdjustCameraToData();});
     addProperty(adjustCameraOnDataChange_);
+
+    camera_->configureProperties(this);
+}
+
+void CameraProperty::changeCamera(std::unique_ptr<Camera> newCamera) {
+    NetworkLock lock(this);
+    camera_ = std::move(newCamera);
+    camera_->setLookFrom(lookFrom_.get());
+    camera_->setLookTo(lookTo_.get());
+    camera_->setLookUp(lookUp_.get());
+    camera_->setAspectRatio(aspectRatio_.get());
+    camera_->setNearPlaneDist(nearPlane_.get());
+    camera_->setFarPlaneDist(farPlane_.get());
+    camera_->configureProperties(this);
 }
 
 CameraProperty& CameraProperty::operator=(const CameraProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
-        camera_ = std::unique_ptr<Camera>(that.camera_->clone());
+        changeCamera(std::unique_ptr<Camera>(that.camera_->clone()));
 
         if (inport_) inport_->removeOnChange(this);
         inport_ = that.inport_;
@@ -136,21 +157,13 @@ CameraProperty& CameraProperty::operator=(const CameraProperty& that) {
 }
 
 const Camera& CameraProperty::get() const { return *camera_; }
-
 Camera& CameraProperty::get() { return *camera_; }
-
-void CameraProperty::set(std::unique_ptr<Camera> camera) {
-    if (camera) {  // camera_ should never be nullptr
-        camera_ = std::move(camera);
-        updatePropertyFromValue();
-    }
-}
 
 void CameraProperty::set(const Property* srcProperty) {
     if (const auto cameraSrcProp = dynamic_cast<const CameraProperty*>(srcProperty)) {
         if(!camera_->update(cameraSrcProp->camera_.get())) {
             // update failed, make a clone
-            camera_ = std::unique_ptr<Camera>(cameraSrcProp->camera_->clone());
+            changeCamera(std::unique_ptr<Camera>(cameraSrcProp->camera_->clone()));
         }
         CompositeProperty::set(static_cast<const CompositeProperty*>(srcProperty));
     }
@@ -165,24 +178,11 @@ void CameraProperty::updatePropertyFromValue() {
     lookFrom_ = camera_->getLookFrom();
     lookTo_ = camera_->getLookTo();
     lookUp_ = camera_->getLookUp();
-    /*fovy_ = value_.getFovy();*/
     aspectRatio_ = camera_->getAspectRatio();
     nearPlane_ = camera_->getNearPlaneDist();
     farPlane_ = camera_->getFarPlaneDist();
 
     propertyModified();
-}
-
-void CameraProperty::resetToDefaultState() {
-    // Override CompositeProperty function to avoid
-    // invalidation before value_ (perspective camera) has been set.
-    for (auto& elem : properties_) {
-        elem->resetToDefaultState();
-    }
-    camera_ = util::make_unique<PerspectiveCamera>(lookFrom_.get(), lookTo_.get(), lookUp_.get(),
-                                                   nearPlane_.get(), farPlane_.get(), fovy_.get(),
-                                                   aspectRatio_.get());
-    Property::resetToDefaultState();
 }
 
 void CameraProperty::resetCamera() {
@@ -191,14 +191,11 @@ void CameraProperty::resetCamera() {
     lookFrom_.resetToDefaultState();
     lookTo_.resetToDefaultState();
     lookUp_.resetToDefaultState();
-    fovy_.resetToDefaultState();
 
     // Update template value
     camera_->setLookFrom(lookFrom_.get());
     camera_->setLookTo(lookTo_.get());
     camera_->setLookUp(lookUp_.get());
-
-    // get().setFovy(fovy_.get());
 }
 
 // It seems like it is a job for the code managing interaction to consider the boundaries.
@@ -253,6 +250,11 @@ vec3 CameraProperty::getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords
 
 vec4 CameraProperty::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     return get().getClipPosFromNormalizedDeviceCoords(ndcCoords);
+}
+
+vec3 CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+    const vec2& normalizedScreenCoord) const {
+    return camera_->getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(normalizedScreenCoord);
 }
 
 void CameraProperty::invokeEvent(Event* event) {

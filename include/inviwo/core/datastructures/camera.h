@@ -35,6 +35,8 @@
 
 namespace inviwo {
 
+class CompositeProperty;
+
 /**
  * \class Camera
  *
@@ -64,6 +66,8 @@ public:
     
     virtual Camera* clone() const = 0;
     virtual bool update(const Camera* source) = 0;
+
+    virtual void configureProperties(CompositeProperty* comp) {};
 
     vec3& getLookFrom() { return lookFrom_; }
     const vec3& getLookFrom() const;
@@ -127,6 +131,9 @@ public:
     */
     vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
 
+    vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+        const vec2& normalizedScreenCoord) const;
+
     virtual void serialize(Serializer& s) const override;
     virtual void deserialize(Deserializer& d) override;
 
@@ -173,6 +180,8 @@ public:
     PerspectiveCamera& operator=(const PerspectiveCamera& other) = default;
     virtual PerspectiveCamera* clone() const override;
     virtual bool update(const Camera* source) override;
+    virtual void configureProperties(CompositeProperty* comp) override;
+
 
     friend bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
     friend bool operator!=(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs);
@@ -207,13 +216,14 @@ class IVW_CORE_API OrthographicCamera : public Camera {
 public:
     OrthographicCamera(vec3 lookFrom = vec3(0.0f, 0.0f, 2.0f), vec3 lookTo = vec3(0.0f),
                        vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), float nearPlane = 0.01f,
-                       float farPlane = 10000.0f, vec4 frustum = vec4(-1, 1, -1, 1));
+                       float farPlane = 10000.0f, vec4 frustum = vec4(-01, 10, -10, 10));
     virtual ~OrthographicCamera() = default;
     OrthographicCamera(const OrthographicCamera& other) = default;
     // Camera(Camera&& other) = default;
     OrthographicCamera& operator=(const OrthographicCamera& other) = default;
     virtual OrthographicCamera* clone() const override;
     virtual bool update(const Camera* source) override;
+    virtual void configureProperties(CompositeProperty* comp) override;
 
     friend bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs);
     friend bool operator!=(const OrthographicCamera& lhs, const OrthographicCamera& rhs);

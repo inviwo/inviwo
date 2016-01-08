@@ -128,6 +128,7 @@ void CompositeProperty::setCurrentStateAsDefault() {
 }
 
 void CompositeProperty::resetToDefaultState() {
+    NetworkLock lock(this);
     for (auto& elem : properties_) {
         elem->resetToDefaultState();
     }
@@ -148,8 +149,7 @@ void CompositeProperty::deserialize(Deserializer& d){
 
 std::vector<std::string> CompositeProperty::getPath() const {
     std::vector<std::string> path;
-    const PropertyOwner* owner = getOwner();
-    if (owner) {
+    if (const auto owner = getOwner()) {
         path = owner->getPath();
     }
     path.push_back(getIdentifier());
@@ -157,8 +157,7 @@ std::vector<std::string> CompositeProperty::getPath() const {
 }
 
 Processor* CompositeProperty::getProcessor() {
-    PropertyOwner* owner = getOwner();
-    if (owner) {
+    if (auto owner = getOwner()) {
         return owner->getProcessor();
     } else {
         return nullptr;
@@ -166,8 +165,7 @@ Processor* CompositeProperty::getProcessor() {
 }
 
 const Processor* CompositeProperty::getProcessor() const {
-    const PropertyOwner* owner = getOwner();
-    if (owner) {
+    if (const auto owner = getOwner()) {
         return owner->getProcessor();
     } else {
         return nullptr;
@@ -183,7 +181,5 @@ void CompositeProperty::setCollapsed(bool value) {
         notifyObserversOnSetCollapsed(collapsed_);
     }
 }
-
-
 
 } // namespace

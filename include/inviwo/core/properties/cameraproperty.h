@@ -35,8 +35,10 @@
 #include <inviwo/core/datastructures/camera.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/interaction/events/eventlistener.h>
+#include <inviwo/core/interaction/trackballobject.h>
 
 namespace inviwo {
 
@@ -52,7 +54,7 @@ class Inport;
 * it also enables linking individual camera properties.
 * @see PerspectiveCamera
 */
-class IVW_CORE_API CameraProperty : public CompositeProperty {
+class IVW_CORE_API CameraProperty : public CompositeProperty, public TrackballObject {
 public:
     InviwoPropertyInfo();
 
@@ -80,43 +82,38 @@ public:
 
     virtual Camera& get();
     virtual const Camera& get() const;
-    virtual void set(std::unique_ptr<Camera> camera);
     virtual void set(const Property* srcProperty) override;
 
-    virtual void resetToDefaultState() override;
-
     /**
-     * Reset camera position, direction and field of view to default state.
+     * Reset camera position, direction to default state.
      */
     void resetCamera();
 
-    const vec3& getLookFrom() const;
-    void setLookFrom(vec3 lookFrom);
-    const vec3& getLookTo() const;
-    void setLookTo(vec3 lookTo);
-    const vec3& getLookUp() const;
-    void setLookUp(vec3 lookUp);
-    vec3 getLookRight() const;
+    virtual const vec3& getLookFrom() const override;
+    virtual void setLookFrom(vec3 lookFrom) override;
+    virtual const vec3& getLookTo() const override;
+    virtual void setLookTo(vec3 lookTo) override;
+    virtual const vec3& getLookUp() const override;
+    virtual void setLookUp(vec3 lookUp) override;
 
-    //float getFovy() const;
-    //void setFovy(float fovy);
+    vec3 getLookRight() const;
 
     void setAspectRatio(float aspectRatio);
     float getAspectRatio() const;
 
-    void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp);
+    virtual void setLook(vec3 lookFrom, vec3 lookTo, vec3 lookUp) override;
 
-    float getNearPlaneDist() const;
-    float getFarPlaneDist() const;
+    virtual float getNearPlaneDist() const override;
+    virtual float getFarPlaneDist() const override;
 
     void setNearPlaneDist(float v);
     void setFarPlaneDist(float v);
 
-    vec3 getLookFromMinValue() const;
-    vec3 getLookFromMaxValue() const;
+    virtual vec3 getLookFromMinValue() const override;
+    virtual vec3 getLookFromMaxValue() const override;
 
-    vec3 getLookToMinValue() const;
-    vec3 getLookToMaxValue() const;
+    virtual vec3 getLookToMinValue() const override;
+    virtual vec3 getLookToMaxValue() const override;
 
     /**
      * \brief Convert from normalized device coordinates (xyz in [-1 1]) to world coordinates.
@@ -124,7 +121,7 @@ public:
      * @param ndcCoords Coordinates in [-1 1]
      * @return World space position
      */
-    vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
+    virtual vec3 getWorldPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const override;
 
     /**
     * \brief Convert from normalized device coordinates (xyz in [-1 1]) to clip coordinates.
@@ -134,6 +131,9 @@ public:
     * @return Clip space position
     */
     vec4 getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const;
+
+    virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+        const vec2& normalizedScreenCoord) const override;
 
     const mat4& viewMatrix() const;
     const mat4& projectionMatrix() const;
@@ -161,18 +161,19 @@ public:
 
 private:
     void setupProperties();
+    void changeCamera(std::unique_ptr<Camera> newCamera);
 
     void updatePropertyFromValue();
-
+    OptionPropertyString cameraType_;
     std::unique_ptr<Camera> camera_;
     // These properties enable linking of individual
     // camera properties but requires them to be synced
     // with the camera
+
     FloatVec3Property lookFrom_;
     FloatVec3Property lookTo_;
     FloatVec3Property lookUp_;
 
-    FloatProperty fovy_;
     FloatProperty aspectRatio_;
     FloatProperty nearPlane_;
     FloatProperty farPlane_;

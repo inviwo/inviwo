@@ -82,6 +82,13 @@ vec4 Camera::getClipPosFromNormalizedDeviceCoords(const vec3& ndcCoords) const {
     return vec4(ndcCoords * clipW, clipW);
 }
 
+vec3 Camera::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
+    const vec2& normalizedScreenCoord) const {
+    // Default to using focus point for depth
+    vec4 lookToClipCoord = projectionMatrix() * viewMatrix() * vec4(getLookTo(), 1.f);
+    return vec3(2.f * normalizedScreenCoord - 1.f, lookToClipCoord.z / lookToClipCoord.w);
+}
+
 void Camera::serialize(Serializer& s) const {
     s.serialize("lookFrom", lookFrom_);
     s.serialize("lookTo", lookTo_);
@@ -122,6 +129,22 @@ bool PerspectiveCamera::update(const Camera* source) {
     }
 }
 
+void PerspectiveCamera::configureProperties(CompositeProperty* comp) {
+    auto fov = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("fov"));
+    if(fov) {
+        setFovy(fov->get());
+        invalidateProjectionMatrix();
+    } else {
+        fov = new FloatProperty("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f);
+        comp->addProperty(fov, true);
+    }
+
+    fov->onChange([this,fov](){ 
+        setFovy(fov->get());
+        invalidateProjectionMatrix();
+    });
+}
+
 bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
     return !(lhs.equalTo(rhs) | (lhs.fovy_ != rhs.fovy_) | (lhs.aspectRatio_ != rhs.aspectRatio_));
 }
@@ -154,6 +177,29 @@ bool OrthographicCamera::update(const Camera* source) {
     } else {
         return false;
     }
+}
+
+void OrthographicCamera::configureProperties(CompositeProperty* comp) {
+    auto width = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"));
+    if (width) {
+        const float width{ frustum_.y - frustum_.x };
+        const float height{ frustum_.w - frustum_.z };
+        auto aspect = width / height;
+        frustum_ = { -width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect };
+        invalidateProjectionMatrix();
+    } else {
+        width = new FloatProperty("width", "Width", 10, 0.01f, 1000.0f, 0.1f);
+        comp->addProperty(width, true);
+    }
+
+    width->onChange([this, width]() { 
+        // Left, right, bottom, top view volume
+        const float width{ frustum_.y - frustum_.x };
+        const float height{ frustum_.w - frustum_.z };
+        auto aspect = width / height;
+        frustum_ = {-width/2.0f, width/2.0f, -width/2.0f/aspect, +width/2.0f/aspect};
+        invalidateProjectionMatrix();
+    });
 }
 
 bool operator==(const OrthographicCamera& lhs, const OrthographicCamera& rhs) {

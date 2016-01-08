@@ -29,40 +29,13 @@
 
 #include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/datastructures/camera.h>
-//#include <glm/gtx/decomposition.hpp>
-// Dependencies
-#include <glm/mat4x4.hpp>
-#include "glm/vec3.hpp"
-#include "glm/vec4.hpp"
-#include "glm/gtc/quaternion.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
 namespace inviwo {
 PropertyClassIdentifier(CameraTrackball, "org.inviwo.Trackball");
 
 CameraTrackball::CameraTrackball(CameraProperty* cameraProp)
-    : Trackball(cameraProp, &(cameraProp->get()))
-    , cameraProp_(cameraProp)
-{
-}
+    : Trackball(cameraProp) {}
 
 CameraTrackball::~CameraTrackball() {}
-
-CameraTrackball* CameraTrackball::clone() const {
-    return new CameraTrackball(*this);
-}
-
-//
-//void CameraTrackball::onLookFromChanged() {
-//    // Don't allow zooming such that the lookAt point is further away then the far plane.
-//    float maxDistance = cameraProp_->getFarPlaneDist() - (cameraProp_->getFarPlaneDist()*0.3f);
-//    float dist = glm::distance(cameraProp_->getLookTo(), cameraProp_->getLookFrom());
-//    if (maxDistance < dist)
-//        cameraProp_->setLookFrom(
-//            cameraProp_->getLookTo() +
-//            (glm::normalize(cameraProp_->getLookFrom() - cameraProp_->getLookTo()) * maxDistance));
-//
-//    //cameraProp_->updateViewMatrix();
-//}
 
 }  // namespace
