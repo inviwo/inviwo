@@ -59,7 +59,7 @@ public:
     VectorElementSelectorProcessor();
     virtual ~VectorElementSelectorProcessor() {};
 
-    virtual const ProcessorInfo getProcessorInfo() const = 0;
+    virtual const ProcessorInfo getProcessorInfo() const override = 0;
 
     void process() override;
 

@@ -42,6 +42,8 @@ class IVW_CORE_API ProcessorWidgetFactory
 public:
     ProcessorWidgetFactory() = default;
     virtual ~ProcessorWidgetFactory() = default;
+    
+    using StandardFactory<ProcessorWidget, ProcessorWidgetFactoryObject>::create;
     std::unique_ptr<ProcessorWidget> create(Processor* processor) const;
 };
 

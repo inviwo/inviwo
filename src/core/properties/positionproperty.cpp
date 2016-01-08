@@ -95,7 +95,7 @@ PositionProperty* PositionProperty::clone() const {
     return new PositionProperty(*this);
 }
 
-vec3 PositionProperty::get() const {
+const vec3& PositionProperty::get() const {
     return positionWorldSpace_;
 }
 

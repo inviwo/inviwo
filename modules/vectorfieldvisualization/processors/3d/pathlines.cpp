@@ -166,7 +166,7 @@ void PathLines::process() {
                 i++;
             }
 
-            for (size_t i = 0; i < size; i++) {
+            for (size_t ii = 0; ii < size; ii++) {
                 vec3 pos(*position);
                 vec3 v(*velocity);
 

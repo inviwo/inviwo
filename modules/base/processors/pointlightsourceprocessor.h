@@ -68,14 +68,14 @@ class IVW_MODULE_BASE_API PointLightInteractionHandler : public InteractionHandl
 public:
     PointLightInteractionHandler(PositionProperty*, CameraProperty*, BoolProperty*,
                                  FloatVec2Property*);
-    ~PointLightInteractionHandler();
-    ;
+    virtual ~PointLightInteractionHandler();
 
-    virtual std::string getClassIdentifier() const;
+
+    virtual std::string getClassIdentifier() const override;
 
     const Camera& getCamera();
 
-    void invokeEvent(Event* event);
+    virtual void invokeEvent(Event* event) override;
     void setHandleEventsOptions(int);
 
     /**
@@ -120,8 +120,8 @@ public:
     virtual vec3 getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
         const vec2& normalizedScreenCoord) const override;
 
-    void serialize(Serializer& s) const;
-    void deserialize(Deserializer& d);
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
 private:
     PositionProperty* lightPosition_;

@@ -65,10 +65,9 @@ public:
 
     /** 
      * \brief Get position in world space.
-     *
      * @return vec3 World space position.
      */
-    vec3 get() const;
+    const vec3& get() const;
 
     using CompositeProperty::set; // Enable calling CompositeProperty::set(...) functions even though overriding with set(const vec3& value)
     /** 
