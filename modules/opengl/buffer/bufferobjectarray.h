@@ -41,11 +41,8 @@ class IVW_MODULE_OPENGL_API BufferObjectArray {
 public:
     BufferObjectArray();
     BufferObjectArray(const BufferObjectArray& rhs);
-    virtual ~BufferObjectArray();
-    virtual BufferObjectArray* clone() const;
-
-    void initialize();
-    void deinitialize();
+    BufferObjectArray& operator=(const BufferObjectArray& that);
+    ~BufferObjectArray();
 
     GLuint getId() const;
 
@@ -58,6 +55,8 @@ public:
     void attachBufferObject(const BufferObject*, GLuint);
 
     const BufferObject* getBufferObject(size_t idx = 0) const;
+    
+    size_t maxSize() const;
 
 private:
     void pointToObject(const BufferObject*, GLuint);
@@ -65,8 +64,6 @@ private:
 private:
     GLuint id_;
     std::vector<const BufferObject*> attachedBuffers_;
-
-    static int maxVertexAttribSize_;
 };
 
 }  // namespace

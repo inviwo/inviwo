@@ -31,44 +31,52 @@
 #include <modules/opengl/buffer/bufferobject.h>
 
 namespace inviwo {
-
-int BufferObjectArray::maxVertexAttribSize_ = 0;
+   
+size_t BufferObjectArray::maxSize() const {
+    static size_t size = [](){
+        GLint glsize = static_cast<GLint>(BufferType::NumberOfBufferTypes);
+        #ifdef GL_VERSION_2_0
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&glsize);
+        #endif
+        return static_cast<size_t>(glsize);
+    }();
+    
+    return size;
+}
 
 BufferObjectArray::BufferObjectArray()
-    : id_(0u), attachedBuffers_(static_cast<size_t>(BufferType::NumberOfBufferTypes)) {
-    initialize();
+    : id_(0u), attachedBuffers_(maxSize(), nullptr) {
+    glGenVertexArrays(1, &id_);
 }
 
 BufferObjectArray::BufferObjectArray(const BufferObjectArray& rhs)
-    : id_(0u), attachedBuffers_(static_cast<size_t>(BufferType::NumberOfBufferTypes)) {
-    initialize();
+    : id_(0u), attachedBuffers_(maxSize(), nullptr) {
+    glGenVertexArrays(1, &id_);
 
     bind();
-
-    for (auto it = rhs.attachedBuffers_.cbegin(); it != rhs.attachedBuffers_.cend(); it++) {
-        attachBufferObject(*it, static_cast<GLuint>(it - attachedBuffers_.cbegin()));
+    GLuint count = 0;
+    for (const auto& buff : rhs.attachedBuffers_) {
+        attachBufferObject(buff, count);
+        count++;
     }
     unbind();
 }
 
-BufferObjectArray* BufferObjectArray::clone() const { return new BufferObjectArray(*this); }
-
-BufferObjectArray::~BufferObjectArray() { deinitialize(); }
-
-void BufferObjectArray::initialize() {
-    glGenVertexArrays(1, &id_);
-
-#ifdef GL_VERSION_2_0
-    if (maxVertexAttribSize_ < 1) {
-        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint*)&maxVertexAttribSize_);
+BufferObjectArray& BufferObjectArray::operator=(const BufferObjectArray& that) {
+    if (this != &that) {
+        bind();
+        clear();
+        GLuint count = 0;
+        for (const auto& buff : that.attachedBuffers_) {
+            attachBufferObject(buff, count);
+            count++;
+        }
+        unbind();
     }
-#endif
-
-    if (maxVertexAttribSize_ > 0) attachedBuffers_.resize(maxVertexAttribSize_);
-    std::fill(attachedBuffers_.begin(), attachedBuffers_.end(), nullptr);
+    return *this;
 }
 
-void BufferObjectArray::deinitialize() { glDeleteVertexArrays(1, &id_); }
+BufferObjectArray::~BufferObjectArray() { glDeleteVertexArrays(1, &id_); }
 
 GLuint BufferObjectArray::getId() const { return id_; }
 
