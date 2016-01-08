@@ -28,61 +28,80 @@
  *********************************************************************************/
 
 #include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/ports/inport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/camerafactory.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/volume/volume.h>
-#include <inviwo/core/properties/cameraproperty.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/cameraproperty.h>
 
 namespace inviwo {
 
 PropertyClassIdentifier(CameraProperty, "org.inviwo.CameraProperty");
 
-CameraProperty::CameraProperty(std::string identifier, std::string displayName,
-                               std::unique_ptr<Camera> camera, Inport* inport,
+CameraProperty::CameraProperty(std::string identifier, std::string displayName, vec3 eye,
+                               vec3 center, vec3 lookUp, Inport* inport,
                                InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : CompositeProperty(identifier, displayName, invalidationLevel, semantics)
-    , cameraType_("cameraType", "Camera Type", [](){
-        std::vector<OptionPropertyStringOption> options;
-        for( auto& key : InviwoApplication::getPtr()->getCameraFactory()->getKeys()) {
-            options.emplace_back(key,key,key);
-        }
-        return options;
-    }(), 0)
-    , camera_(std::move(camera))
-    , lookFrom_("lookFrom", "Look from", camera_->getLookFrom(), -vec3(10.0f), vec3(10.0f),
-                vec3(0.1f), InvalidationLevel::InvalidOutput, PropertySemantics("Spherical"))
-    , lookTo_("lookTo", "Look to", camera_->getLookTo(), -vec3(10.0f), vec3(10.0f), vec3(0.1f))
-    , lookUp_("lookUp", "Look up", camera_->getLookUp(), -vec3(10.0f), vec3(10.0f), vec3(0.1f))
+    , cameraType_("cameraType", "Camera Type",
+                  []() {
+                      std::vector<OptionPropertyStringOption> options;
+                      for (auto& key : InviwoApplication::getPtr()->getCameraFactory()->getKeys()) {
+                          options.emplace_back(key, key, key);
+                      }
+                      return options;
+                  }(),
+                  0)
+    , lookFrom_("lookFrom", "Look from", eye, -vec3(100.0f), vec3(100.0f), vec3(0.1f),
+                InvalidationLevel::InvalidOutput, PropertySemantics("Spherical"))
+    , lookTo_("lookTo", "Look to", center, -vec3(100.0f), vec3(100.0f), vec3(0.1f))
+    , lookUp_("lookUp", "Look up", lookUp, -vec3(100.0f), vec3(100.0f), vec3(0.1f))
     , aspectRatio_("aspectRatio", "Aspect Ratio", 1.0f, 0.01f, 100.0f, 0.01f)
     , nearPlane_("near", "Near Plane", 0.1f, 0.001f, 10.f, 0.001f)
     , farPlane_("far", "Far Plane", 100.0f, 1.0f, 1000.0f, 1.0f)
     , adjustCameraOnDataChange_("fitToBasis_", "Adjust camera on data change", true,
                                 InvalidationLevel::Valid)
+    , camera_()
     , inport_(inport)
     , data_(nullptr)
     , prevDataToWorldMatrix_(0) {
-    setupProperties();
+    // Make sure that the Camera) is
+    // in sync with the property values.
+    cameraType_.setSelectedIdentifier("PerspectiveCamera");
+    cameraType_.setCurrentStateAsDefault();
+    addProperty(cameraType_);
+    cameraType_.onChange([&]() {
+        changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
+    });
+
+    lookFrom_.onChange([&]() { camera_->setLookFrom(lookFrom_.get()); });
+    lookTo_.onChange([&]() { camera_->setLookTo(lookTo_.get()); });
+    lookUp_.onChange([&]() { camera_->setLookUp(lookUp_.get()); });
+    addProperty(lookFrom_);
+    addProperty(lookTo_);
+    addProperty(lookUp_);
+    aspectRatio_.onChange([&]() { camera_->setAspectRatio(aspectRatio_.get()); });
+    nearPlane_.onChange([&]() { camera_->setNearPlaneDist(nearPlane_.get()); });
+    farPlane_.onChange([&]() { camera_->setFarPlaneDist(farPlane_.get()); });
+    addProperty(aspectRatio_);
+    addProperty(nearPlane_);
+    addProperty(farPlane_);
+
+    adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
+    addProperty(adjustCameraOnDataChange_);
+
+    changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
 
     if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
 }
 
-CameraProperty::CameraProperty(std::string identifier, std::string displayName, vec3 eye,
-                               vec3 center, vec3 lookUp, Inport* inport,
-                               InvalidationLevel invalidationLevel, PropertySemantics semantics)
-    : CameraProperty(identifier, displayName,
-                    util::make_unique<PerspectiveCamera>(eye, center, lookUp, 0.1f, 100.f),
-                    inport, invalidationLevel, semantics) {}
-
 CameraProperty::CameraProperty(const CameraProperty& rhs)
     : CompositeProperty(rhs)
     , cameraType_(rhs.cameraType_)
-    , camera_(std::unique_ptr<Camera>(rhs.camera_->clone()))
     , lookFrom_(rhs.lookFrom_)
     , lookTo_(rhs.lookTo_)
     , lookUp_(rhs.lookUp_)
@@ -90,42 +109,38 @@ CameraProperty::CameraProperty(const CameraProperty& rhs)
     , nearPlane_(rhs.nearPlane_)
     , farPlane_(rhs.farPlane_)
     , adjustCameraOnDataChange_(rhs.adjustCameraOnDataChange_)
+    , camera_()
     , inport_(rhs.inport_)
     , data_(nullptr)
     , prevDataToWorldMatrix_(0) {
-
-    setupProperties();
-
-    if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
-
-    inportChanged();
-}
-
-void CameraProperty::setupProperties() {
     // Make sure that the Camera) is
     // in sync with the property values.
-   addProperty(cameraType_);
-    cameraType_.onChange([&](){
+    addProperty(cameraType_);
+    cameraType_.onChange([&]() {
         changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
     });
 
-    lookFrom_.onChange([&](){camera_->setLookFrom(lookFrom_.get());});
-    lookTo_.onChange([&](){camera_->setLookTo(lookTo_.get());});
-    lookUp_.onChange([&](){camera_->setLookUp(lookUp_.get());});
+    lookFrom_.onChange([&]() { camera_->setLookFrom(lookFrom_.get()); });
+    lookTo_.onChange([&]() { camera_->setLookTo(lookTo_.get()); });
+    lookUp_.onChange([&]() { camera_->setLookUp(lookUp_.get()); });
     addProperty(lookFrom_);
     addProperty(lookTo_);
     addProperty(lookUp_);
-    aspectRatio_.onChange([&](){camera_->setAspectRatio(aspectRatio_.get());});
-    nearPlane_.onChange([&](){camera_->setNearPlaneDist(nearPlane_.get());});
-    farPlane_.onChange([&](){camera_->setFarPlaneDist(farPlane_.get());});
+    aspectRatio_.onChange([&]() { camera_->setAspectRatio(aspectRatio_.get()); });
+    nearPlane_.onChange([&]() { camera_->setNearPlaneDist(nearPlane_.get()); });
+    farPlane_.onChange([&]() { camera_->setFarPlaneDist(farPlane_.get()); });
     addProperty(aspectRatio_);
     addProperty(nearPlane_);
     addProperty(farPlane_);
 
-    adjustCameraOnDataChange_.onChange([&](){resetAdjustCameraToData();});
+    adjustCameraOnDataChange_.onChange([&]() { resetAdjustCameraToData(); });
     addProperty(adjustCameraOnDataChange_);
 
-    camera_->configureProperties(this);
+    changeCamera(InviwoApplication::getPtr()->getCameraFactory()->create(cameraType_.get()));
+
+    if (inport_) inport_->onChange(this, &CameraProperty::inportChanged);
+
+    inportChanged();
 }
 
 void CameraProperty::changeCamera(std::unique_ptr<Camera> newCamera) {
@@ -162,7 +177,7 @@ Camera& CameraProperty::get() { return *camera_; }
 
 void CameraProperty::set(const Property* srcProperty) {
     if (const auto cameraSrcProp = dynamic_cast<const CameraProperty*>(srcProperty)) {
-        if(!camera_->update(cameraSrcProp->camera_.get())) {
+        if (!camera_->update(cameraSrcProp->camera_.get())) {
             // update failed, make a clone
             changeCamera(std::unique_ptr<Camera>(cameraSrcProp->camera_->clone()));
         }
@@ -259,7 +274,7 @@ vec3 CameraProperty::getNormalizedDeviceFromNormalizedScreenAtFocusPointDepth(
 }
 
 void CameraProperty::invokeEvent(Event* event) {
-   if (auto resizeEvent = dynamic_cast<ResizeEvent*>(event)) {
+    if (auto resizeEvent = dynamic_cast<ResizeEvent*>(event)) {
         uvec2 canvasSize = resizeEvent->size();
         // Do not set aspect ratio if canvas size is 0 in any dimension.
         if (canvasSize.x > 0 && canvasSize.y > 0) {
@@ -345,7 +360,6 @@ void CameraProperty::inportChanged() {
 
     data_ = data;
 }
-
 
 const vec3& CameraProperty::getLookFrom() const { return camera_->getLookFrom(); }
 

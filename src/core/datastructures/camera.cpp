@@ -28,8 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/camera.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
@@ -133,18 +133,14 @@ bool PerspectiveCamera::update(const Camera* source) {
 
 void PerspectiveCamera::configureProperties(CompositeProperty* comp) {
     auto fov = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("fov"));
-    if(fov) {
+    if (fov) {
         setFovy(fov->get());
-        invalidateProjectionMatrix();
     } else {
         fov = new FloatProperty("fov", "FOV", 60.0f, 30.0f, 360.0f, 0.1f);
         comp->addProperty(fov, true);
     }
 
-    fov->onChange([this,fov](){ 
-        setFovy(fov->get());
-        invalidateProjectionMatrix();
-    });
+    fov->onChange([this, fov]() { setFovy(fov->get()); });
 }
 
 bool operator==(const PerspectiveCamera& lhs, const PerspectiveCamera& rhs) {
@@ -182,25 +178,25 @@ bool OrthographicCamera::update(const Camera* source) {
 }
 
 void OrthographicCamera::configureProperties(CompositeProperty* comp) {
-    auto width = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"));
-    if (width) {
-        const float width{ frustum_.y - frustum_.x };
-        const float height{ frustum_.w - frustum_.z };
-        auto aspect = width / height;
-        frustum_ = { -width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect };
-        invalidateProjectionMatrix();
+    auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"));
+    if (widthProp) {
+        const float oldWidth{frustum_.y - frustum_.x};
+        const float oldHeight{frustum_.w - frustum_.z};
+        auto aspect = oldWidth / oldHeight;
+        const float width = widthProp->get();
+        setFrustum({-width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect});
     } else {
-        width = new FloatProperty("width", "Width", 10, 0.01f, 1000.0f, 0.1f);
-        comp->addProperty(width, true);
+        widthProp = new FloatProperty("width", "Width", 10, 0.01f, 1000.0f, 0.1f);
+        comp->addProperty(widthProp, true);
     }
 
-    width->onChange([this, width]() { 
+    widthProp->onChange([this, widthProp]() {
         // Left, right, bottom, top view volume
-        const float width{ frustum_.y - frustum_.x };
-        const float height{ frustum_.w - frustum_.z };
-        auto aspect = width / height;
-        frustum_ = {-width/2.0f, width/2.0f, -width/2.0f/aspect, +width/2.0f/aspect};
-        invalidateProjectionMatrix();
+        const float oldWidth{frustum_.y - frustum_.x};
+        const float oldHeight{frustum_.w - frustum_.z};
+        auto aspect = oldWidth / oldHeight;
+        const float width = widthProp->get();
+        setFrustum({-width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect});
     });
 }
 
@@ -221,10 +217,10 @@ float OrthographicCamera::getAspectRatio() const {
 
 void OrthographicCamera::setAspectRatio(float val) {
     // Left, right, bottom, top view volume
-    const float width{ frustum_.y - frustum_.x };
-    const float height{width / val };
-    frustum_.z = - height/2.0f;
-    frustum_.w = + height/2.0f;
+    const float width{frustum_.y - frustum_.x};
+    const float height{width / val};
+    frustum_.z = -height / 2.0f;
+    frustum_.w = +height / 2.0f;
     invalidateProjectionMatrix();
 }
 

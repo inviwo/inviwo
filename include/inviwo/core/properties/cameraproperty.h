@@ -59,12 +59,6 @@ public:
     InviwoPropertyInfo();
 
     CameraProperty(std::string identifier, std::string displayName,
-                   std::unique_ptr<Camera> camera,
-                   Inport* inport = nullptr,
-                   InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
-                   PropertySemantics semantics = PropertySemantics::Default);
-
-    CameraProperty(std::string identifier, std::string displayName,
                    vec3 eye = vec3(0.0f, 0.0f, -2.0f), vec3 center = vec3(0.0f),
                    vec3 lookUp = vec3(0.0f, 1.0f, 0.0f), Inport* inport = nullptr,
                    InvalidationLevel invalidationLevel = InvalidationLevel::InvalidResources,
@@ -160,12 +154,10 @@ public:
     void inportChanged();
 
 private:
-    void setupProperties();
     void changeCamera(std::unique_ptr<Camera> newCamera);
 
     void updatePropertyFromValue();
     OptionPropertyString cameraType_;
-    std::unique_ptr<Camera> camera_;
     // These properties enable linking of individual
     // camera properties but requires them to be synced
     // with the camera
@@ -179,6 +171,8 @@ private:
     FloatProperty farPlane_;
 
     BoolProperty adjustCameraOnDataChange_;
+
+    std::unique_ptr<Camera> camera_;
 
     Inport* inport_;  ///< Allows the camera to be positioned relative to new data (VolumeInport,
                       ///MeshInport)
