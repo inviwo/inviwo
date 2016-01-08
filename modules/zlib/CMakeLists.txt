@@ -1,12 +1,8 @@
 
 # Search for zlib
 find_package(ZLIB QUIET)
-
-# Force Inviwo zlib
-option(IVW_FORCE_INVIWO_ZLIB "Use ZLib shipped with Inviwo" ON)
-
 # Build dependency from source if not found
-if( (NOT ZLIB_FOUND) OR (NOT EXISTS ${ZLIB_INCLUDE_DIRS}) OR (IVW_FORCE_INVIWO_ZLIB) )
+if( (NOT ZLIB_FOUND) OR (NOT EXISTS ${ZLIB_INCLUDE_DIRS}))
 	ivw_message("Compiling zlib from source since it was not found")
 	if(BUILD_SHARED_LIBS)
 		add_definitions(-DZLIB_INTERNAL)
