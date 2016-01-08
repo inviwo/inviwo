@@ -31,6 +31,7 @@
 #include <inviwo/core/ports/inport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/datastructures/camerafactory.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/properties/cameraproperty.h>

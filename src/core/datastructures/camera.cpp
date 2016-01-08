@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/core/datastructures/camera.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
 namespace inviwo {
 
