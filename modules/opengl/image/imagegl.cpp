@@ -139,6 +139,10 @@ bool ImageGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
     return copyRepresentationsTo(dynamic_cast<ImageGL*>(targetRep));
 }
 
+size_t ImageGL::priority() const {
+    return 300;
+}
+
 bool ImageGL::copyRepresentationsTo(ImageGL* target) const {
     const ImageGL* source = this;
 

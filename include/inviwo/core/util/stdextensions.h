@@ -39,6 +39,7 @@
 #include <iterator>
 #include <algorithm>
 #include <functional>
+#include <numeric>
 #include <vector>
 #include <type_traits>
 #include <future>
@@ -340,6 +341,25 @@ auto transform(const T& cont, UnaryOperation op)
     std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> res;
     std::transform(cont.begin(), cont.end(), std::back_inserter(res), op);
     return res;
+}
+
+template <typename T, typename Pred>
+auto ordering(T& cont, Pred pred) -> std::vector<size_t> {
+    using std::begin;
+    using std::end;
+    
+    std::vector<size_t> res(cont.size());
+    std::iota(res.begin(), res.end(), 0);
+    std::sort(res.begin(), res.end(), [&](const size_t& a, const size_t& b){
+        return pred(cont[a], cont[b]);
+    });
+    
+    return res;
+}
+
+template <typename T>
+auto ordering(T& cont) -> std::vector<size_t> {
+    return ordering(cont, std::less<typename T::value_type>());
 }
 
 

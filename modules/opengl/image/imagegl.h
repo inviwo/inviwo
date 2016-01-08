@@ -57,6 +57,8 @@ public:
     void deactivateBuffer();
 
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
+    virtual size_t priority() const override;
+    
     bool copyRepresentationsTo(ImageGL* target) const;
     bool updateFrom(const ImageGL*);
 

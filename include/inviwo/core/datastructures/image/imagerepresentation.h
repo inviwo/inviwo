@@ -52,6 +52,13 @@ public:
      * Copy and resize the representations of this onto the target.
      */
     virtual bool copyRepresentationsTo(DataRepresentation* target) const = 0;
+    
+    /**
+     * returns a number representing the general efficiency of the representation.
+     * Larger value means more efficient representation. Used for selection which representation
+     * to operate on when resizing for example.
+     */
+    virtual size_t priority() const = 0;
 
 protected:
     virtual void update(bool) override = 0;

@@ -53,6 +53,10 @@ bool ImageCLGL::copyRepresentationsTo(DataRepresentation* targetRep) const {
     return layerCLGL_->copyRepresentationsTo(targetCLGL->getLayerCL());
 }
 
+size_t ImageCLGL::priority() const {
+    return 225;
+}
+
 std::type_index ImageCLGL::getTypeIndex() const { return std::type_index(typeid(ImageCLGL)); }
 
 void ImageCLGL::update(bool editable) {

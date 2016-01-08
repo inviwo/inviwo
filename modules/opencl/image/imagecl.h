@@ -49,6 +49,7 @@ public:
     const LayerCL* getLayerCL() const;
 
     virtual bool copyRepresentationsTo(DataRepresentation*) const override;
+    virtual size_t priority() const override;
     virtual std::type_index getTypeIndex() const override final;
 
 protected:

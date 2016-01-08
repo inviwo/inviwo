@@ -78,6 +78,10 @@ bool ImageRAM::copyRepresentationsTo(DataRepresentation* targetRep) const {
     return true;
 }
 
+size_t ImageRAM::priority() const {
+    return 200;
+}
+
 void ImageRAM::update(bool editable) {
     colorLayersRAM_.clear();
     depthLayerRAM_ = nullptr;

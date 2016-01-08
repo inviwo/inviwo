@@ -55,6 +55,9 @@ ImageDisk::~ImageDisk() {
 bool ImageDisk::copyRepresentationsTo(DataRepresentation*) const {
     return false;
 }
+size_t ImageDisk::priority() const {
+    return 100;
+}
 
 std::type_index ImageDisk::getTypeIndex() const {
     return std::type_index(typeid(ImageDisk));

@@ -49,6 +49,7 @@ public:
     virtual ~ImageRAM();
 
     virtual bool copyRepresentationsTo(DataRepresentation* target) const override;
+    virtual size_t priority() const override;
 
     LayerRAM* getColorLayerRAM(size_t idx = 0);
     LayerRAM* getDepthLayerRAM();

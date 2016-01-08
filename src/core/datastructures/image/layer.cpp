@@ -86,12 +86,12 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
     bool copyDone = false;
 
     for (auto& sourceElem : representations_) {
-        auto sourceRepr = sourceElem.second;
+        auto sourceRepr = sourceElem.second.get();
         if (sourceRepr->isValid()) {
             for (auto& targetElem : targets) {
-                auto targetRepr = targetElem.second;
+                auto targetRepr = targetElem.second.get();
                 if (typeid(*sourceRepr) == typeid(*targetRepr)) {
-                    if (sourceRepr->copyRepresentationsTo(targetRepr.get())) {
+                    if (sourceRepr->copyRepresentationsTo(targetRepr)) {
                         targetRepr->setValid(true);
                         targetLayer->lastValidRepresentation_ = targetElem.second;
                         copyDone = true;
@@ -102,7 +102,6 @@ void Layer::copyRepresentationsTo(Layer* targetLayer) {
     }
 
     if (!copyDone) {  // Fallback
-        ivwAssert(lastValidRepresentation_, "Last valid representation is expected.");
         for (auto& targetElem : targets) targetElem.second->setValid(false);
         targetLayer->createDefaultRepresentation();
 
