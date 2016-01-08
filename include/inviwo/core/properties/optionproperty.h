@@ -73,6 +73,33 @@ public:
     virtual void set(const Property* srcProperty);
 };
 
+template <typename T>
+struct OptionPropertyOption : public Serializable {
+    OptionPropertyOption() {}
+    OptionPropertyOption(const std::string& id, const std::string& name, T value)
+        : id_(id), name_(name), value_(value) {}
+
+    std::string id_;
+    std::string name_;
+    T value_;
+
+    virtual void serialize(Serializer& s) const {
+        s.serialize("id", id_);
+        s.serialize("name", name_);
+        s.serialize("value", value_);
+    }
+    virtual void deserialize(Deserializer& d) {
+        d.deserialize("id", id_);
+        d.deserialize("name", name_);
+        d.deserialize("value", value_);
+    }
+
+    bool operator==(const OptionPropertyOption<T>& rhs) const {
+        return id_ == rhs.id_ && name_ == rhs.name_ && value_ == rhs.value_;
+    }
+    bool operator!=(const OptionPropertyOption<T>& rhs) const { return !operator==(rhs); }
+};
+
 /** \class TemplateOptionProperty
  *  Template class for option properties
  *  @see OptionProperties
@@ -80,39 +107,12 @@ public:
  */
 template <typename T>
 class BaseTemplateOptionProperty : public BaseOptionProperty {
-public:
-    template <typename U>
-    struct Option : public Serializable {
-        Option() {}
-        Option(const std::string& id, const std::string& name, U value)
-            : id_(id), name_(name), value_(value) {}
-
-        std::string id_;
-        std::string name_;
-        U value_;
-
-        virtual void serialize(Serializer& s) const {
-            s.serialize("id", id_);
-            s.serialize("name", name_);
-            s.serialize("value", value_);
-        }
-        virtual void deserialize(Deserializer& d) {
-            d.deserialize("id", id_);
-            d.deserialize("name", name_);
-            d.deserialize("value", value_);
-        }
-
-        bool operator==(const Option<U>& rhs) const {
-            return id_ == rhs.id_ && name_ == rhs.name_ && value_ == rhs.value_;
-        }
-        bool operator!=(const Option<U>& rhs) const { return !operator==(rhs); }
-    };
 
 private:
     template <typename U>
     struct MatchId {
         MatchId(const std::string& s) : s_(s) {}
-        bool operator()(const Option<U>& obj) const { return obj.id_ == s_; }
+        bool operator()(const OptionPropertyOption<U>& obj) const { return obj.id_ == s_; }
 
     private:
         const std::string& s_;
@@ -120,7 +120,7 @@ private:
     template <typename U>
     struct MatchName {
         MatchName(const std::string& s) : s_(s) {}
-        bool operator()(const Option<U>& obj) const { return obj.name_ == s_; }
+        bool operator()(const OptionPropertyOption<U>& obj) const { return obj.name_ == s_; }
 
     private:
         const std::string& s_;
@@ -128,7 +128,7 @@ private:
     template <typename U>
     struct MatchValue {
         MatchValue(const T& s) : s_(s) {}
-        bool operator()(const Option<U>& obj) const { return obj.value_ == s_; }
+        bool operator()(const OptionPropertyOption<U>& obj) const { return obj.value_ == s_; }
 
     private:
         const U& s_;
@@ -144,7 +144,7 @@ public:
 
     BaseTemplateOptionProperty(
         std::string identifier, std::string displayName,
-        std::vector<Option<T>> options, size_t selectedIndex = 0,
+        std::vector<OptionPropertyOption<T>> options, size_t selectedIndex = 0,
         InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
         PropertySemantics semantics = PropertySemantics::Default);
 
@@ -181,7 +181,7 @@ public:
     virtual bool setSelectedValue(T val);
     virtual void replaceOptions(std::vector<std::string> ids, std::vector<std::string> displayNames,
                                 std::vector<T> values);
-    virtual void replaceOptions(std::vector<Option<T>> options);
+    virtual void replaceOptions(std::vector<OptionPropertyOption<T>> options);
 
     virtual bool isSelectedIndex(size_t index) const;
     virtual bool isSelectedIdentifier(std::string identifier) const;
@@ -206,11 +206,11 @@ public:
 
 protected:
     size_t selectedIndex_;
-    std::vector<Option<T>> options_;
+    std::vector<OptionPropertyOption<T>> options_;
 
 private:
     size_t defaultSelectedIndex_;
-    std::vector<Option<T>> defaultOptions_;
+    std::vector<OptionPropertyOption<T>> defaultOptions_;
 };
 
 template <typename T>
@@ -222,7 +222,7 @@ public:
                            PropertySemantics semantics = PropertySemantics::Default);
 
     TemplateOptionProperty(std::string identifier, std::string displayName,
-                           std::vector<Option<T>> options, size_t selectedIndex = 0,
+                           std::vector<OptionPropertyOption<T>> options, size_t selectedIndex = 0,
                            InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                            PropertySemantics semantics = PropertySemantics::Default);
 
@@ -271,7 +271,7 @@ public:
                          PropertySemantics semantics = PropertySemantics::Default);
 
     OptionPropertyString(std::string identifier, std::string displayName,
-                         std::vector<Option<std::string>> options, size_t selectedIndex = 0,
+                         std::vector<OptionPropertyOption<std::string>> options, size_t selectedIndex = 0,
                          InvalidationLevel invalidationLevel = InvalidationLevel::InvalidOutput,
                          PropertySemantics semantics = PropertySemantics::Default);
 
@@ -285,16 +285,16 @@ public:
     virtual void addOption(std::string identifier, std::string displayName);
 };
 
-typedef TemplateOptionProperty<int> OptionPropertyInt;
-typedef TemplateOptionProperty<size_t> OptionPropertySize_t;
-typedef TemplateOptionProperty<float> OptionPropertyFloat;
-typedef TemplateOptionProperty<double> OptionPropertyDouble;
+using OptionPropertyInt = TemplateOptionProperty<int>;
+using OptionPropertySize_t = TemplateOptionProperty<size_t>;
+using OptionPropertyFloat = TemplateOptionProperty<float>;
+using OptionPropertyDouble = TemplateOptionProperty<double>;
 
-typedef TemplateOptionProperty<int>::Option<int> OptionPropertyIntOption;
-typedef TemplateOptionProperty<size_t>::Option<size_t> OptionPropertySize_tOption;
-typedef TemplateOptionProperty<float>::Option<float> OptionPropertyFloatOption;
-typedef TemplateOptionProperty<double>::Option<double> OptionPropertyDoubleOption;
-typedef OptionPropertyString::Option<std::string> OptionPropertyStringOption;
+using OptionPropertyIntOption = OptionPropertyOption<int>;
+using OptionPropertySize_tOption = OptionPropertyOption<size_t>;
+using OptionPropertyFloatOption = OptionPropertyOption<float>;
+using OptionPropertyDoubleOption = OptionPropertyOption<double>;
+using OptionPropertyStringOption = OptionPropertyOption<std::string>;
 
 template <typename T>
 BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(std::string identifier,
@@ -307,7 +307,7 @@ BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(std::string identifier
 
 template <typename T>
 inviwo::BaseTemplateOptionProperty<T>::BaseTemplateOptionProperty(
-    std::string identifier, std::string displayName, std::vector<Option<T>> options, size_t selectedIndex,
+    std::string identifier, std::string displayName, std::vector<OptionPropertyOption<T>> options, size_t selectedIndex,
     InvalidationLevel invalidationLevel /*= InvalidationLevel::InvalidOutput*/,
     PropertySemantics semantics /*= PropertySemantics::Default*/)
     : BaseOptionProperty(identifier, displayName, invalidationLevel, semantics)
@@ -347,7 +347,7 @@ BaseTemplateOptionProperty<T>::~BaseTemplateOptionProperty() {}
 template <typename T>
 void BaseTemplateOptionProperty<T>::addOption(std::string identifier, std::string displayName,
                                               T value) {
-    options_.push_back(Option<T>(identifier, displayName, value));
+    options_.push_back(OptionPropertyOption<T>(identifier, displayName, value));
 
     // in case we add the first option, we also select it
     if (options_.size() == 1) {
@@ -442,8 +442,7 @@ bool BaseTemplateOptionProperty<T>::setSelectedIndex(size_t option) {
 
 template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::setSelectedIdentifier(std::string identifier) {
-    typename std::vector<Option<T>>::iterator it =
-        std::find_if(options_.begin(), options_.end(), MatchId<T>(identifier));
+    auto it = std::find_if(options_.begin(), options_.end(), MatchId<T>(identifier));
     if (it != options_.end()) {
         size_t dist = std::distance(options_.begin(), it);
         if (selectedIndex_ != dist) {
@@ -458,8 +457,7 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedIdentifier(std::string id
 
 template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::setSelectedDisplayName(std::string name) {
-    typename std::vector<Option<T>>::iterator it =
-        std::find_if(options_.begin(), options_.end(), MatchName<T>(name));
+    auto it = std::find_if(options_.begin(), options_.end(), MatchName<T>(name));
     if (it != options_.end()) {
         size_t dist = std::distance(options_.begin(), it);
         if (selectedIndex_ != dist) {
@@ -474,8 +472,7 @@ bool inviwo::BaseTemplateOptionProperty<T>::setSelectedDisplayName(std::string n
 
 template <typename T>
 bool inviwo::BaseTemplateOptionProperty<T>::setSelectedValue(T val) {
-    typename std::vector<Option<T>>::iterator it =
-        std::find_if(options_.begin(), options_.end(), MatchValue<T>(val));
+    auto it = std::find_if(options_.begin(), options_.end(), MatchValue<T>(val));
     if (it != options_.end()) {
         size_t dist = std::distance(options_.begin(), it);
         if (selectedIndex_ != dist) {
@@ -509,7 +506,7 @@ void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<std::stri
 }
 
 template <typename T>
-void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<Option<T>> options) {
+void inviwo::BaseTemplateOptionProperty<T>::replaceOptions(std::vector<OptionPropertyOption<T>> options) {
     std::string selectId{};
     if (!options_.empty()) selectId = getSelectedIdentifier();
 
@@ -621,12 +618,14 @@ TemplateOptionProperty<T>::TemplateOptionProperty(std::string identifier, std::s
                                                   PropertySemantics semantics)
     : BaseTemplateOptionProperty<T>(identifier, displayName, invalidationLevel, semantics) {}
 
+
 template <typename T>
 inviwo::TemplateOptionProperty<T>::TemplateOptionProperty(
-    std::string identifier, std::string displayName, std::vector<Option<T>> options,
+    std::string identifier, std::string displayName, std::vector<OptionPropertyOption<T>> options,
     size_t selectedIndex, InvalidationLevel invalidationLevel, PropertySemantics semantics)
     : BaseTemplateOptionProperty<T>(identifier, displayName, options, selectedIndex,
                                     invalidationLevel, semantics) {}
+
 
 template <typename T>
 TemplateOptionProperty<T>::TemplateOptionProperty(const TemplateOptionProperty<T>& rhs)
