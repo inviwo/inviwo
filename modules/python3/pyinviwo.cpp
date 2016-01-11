@@ -127,6 +127,8 @@ void PyInviwo::addModulePath(const std::string& path) {
     if (ret != 0) LogWarn("Failed to add '" + pathConv + "' to Python module search path");
 }
 
+std::vector<PyModule*> PyInviwo::getAllPythonModules() { return registeredModules_; }
+
 void PyInviwo::initPythonCInterface(Python3Module* module) {
     if (isInit_) return;
 

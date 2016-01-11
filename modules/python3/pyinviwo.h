@@ -72,7 +72,7 @@ public:
     //PyObject* getMainDictionary();
     //PyObject* getModulesDictionary();
 
-    std::vector<PyModule*> getAllPythonModules() { return registeredModules_; }
+    std::vector<PyModule*> getAllPythonModules();
 
     void importModule(const std::string& moduleName);
 
