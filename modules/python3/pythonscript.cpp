@@ -68,7 +68,6 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
     }
 
     bool PythonScript::run(bool outputInfo) {
-        //PyObject* glb = PyInviwo::getPtr()->getModulesDictionary();
         PyObject* main_module = PyImport_AddModule("__main__");
         PyObject* glb = PyModule_GetDict(main_module);
 

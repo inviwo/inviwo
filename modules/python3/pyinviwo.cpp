@@ -117,7 +117,7 @@ std::vector<PyModule*> PyInviwo::getAllPythonModules() { return registeredModule
 
 static PyMethodDef Inviwo_Internals_METHODS[] =
 {
-    { "ivwPrint",py_stdout , METH_VARARGS, "A simple example of an embedded function." },
+    { "ivwPrint" , py_stdout , METH_VARARGS, "A simple example of an embedded function." },
     nullptr
 };
 
@@ -134,6 +134,7 @@ PyMODINIT_FUNC
 Iniviwo_internals_init()
 {
     auto a = PyInviwo::getPtr()->getAllPythonModules()[0];
+   // Inviwo_Internals_Module_Def.m_methods = a->getPyMethodDefs();
     PyObject* obj = PyModule_Create(&Inviwo_Internals_Module_Def);
     if (!obj) {
         LogErrorCustom("Iniviwo_internals_init" , "Failed to init inviwo_internal")
@@ -157,17 +158,6 @@ void PyInviwo::initPythonCInterface(Python3Module* module) {
    // Py_NoSiteFlag = 1;
 #endif
 
-    auto a = inviwoInternalPyModule_;
-    auto test = []()->PyObject* {
-        auto a = PyInviwo::getPtr()->getAllPythonModules()[0];
-        PyObject* obj = PyModule_Create(&Inviwo_Internals_Module_Def);
-
-        a->setPyObject(obj);
-
-        return obj;//*/
-    };
-    PyImport_AppendInittab("inviwo_internal", Iniviwo_internals_init);
-
     Py_InitializeEx(false);
 
     if (!Py_IsInitialized()) {
@@ -178,6 +168,15 @@ void PyInviwo::initPythonCInterface(Python3Module* module) {
     PyEval_InitThreads();
     importModule("builtins");
     importModule("sys");
+
+
+//*    
+    auto main = PyImport_AddModule("__main__");
+    auto dict = PyImport_GetModuleDict();
+    auto pobj = Iniviwo_internals_init();
+    PyDict_SetItemString(dict, "inviwo_internal", pobj);
+   // */
+
 
     addModulePath(module->getPath() + "/scripts");
    // initDefaultInterfaces();
