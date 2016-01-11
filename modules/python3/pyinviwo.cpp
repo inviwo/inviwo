@@ -90,26 +90,12 @@ PyInviwo::PyInviwo(Python3Module* module)
 PyInviwo::~PyInviwo() {
     delete inviwoPyModule_;
     delete inviwoInternalPyModule_;
+    Py_Finalize();
 }
 
 void PyInviwo::registerPyModule(PyModule* pyModule) {
-    if (Py_IsInitialized()) {
-        struct PyModuleDef moduleDef = {PyModuleDef_HEAD_INIT, pyModule->getModuleName(), nullptr,
-                                        -1, pyModule->getPyMethodDefs()};
-
-        PyObject* obj = PyModule_Create(&moduleDef);
-
-        if (!obj) {
-            LogWarn("Failed to init python module '" << pyModule->getModuleName() << "' ");
-        }
-
-        pyModule->setPyObject(obj);
-        registeredModules_.push_back(pyModule);
-
-        for (auto o : observers_) o->onModuleRegistered(pyModule);
-    } else {
-        LogError("Python environment not initialized");
-    }
+    registeredModules_.push_back(pyModule);
+    return;
 }
 
 void PyInviwo::addModulePath(const std::string& path) {
@@ -129,16 +115,59 @@ void PyInviwo::addModulePath(const std::string& path) {
 
 std::vector<PyModule*> PyInviwo::getAllPythonModules() { return registeredModules_; }
 
+static PyMethodDef Inviwo_Internals_METHODS[] =
+{
+    { "ivwPrint",py_stdout , METH_VARARGS, "A simple example of an embedded function." },
+    nullptr
+};
+
+struct PyModuleDef Inviwo_Internals_Module_Def =  { 
+    PyModuleDef_HEAD_INIT, 
+    "inviwo_internal", 
+    nullptr,
+    -1, 
+    Inviwo_Internals_METHODS,
+    nullptr, nullptr, nullptr, nullptr
+};
+
+PyMODINIT_FUNC
+Iniviwo_internals_init()
+{
+    auto a = PyInviwo::getPtr()->getAllPythonModules()[0];
+    PyObject* obj = PyModule_Create(&Inviwo_Internals_Module_Def);
+    if (!obj) {
+        LogErrorCustom("Iniviwo_internals_init" , "Failed to init inviwo_internal")
+    }
+
+    a->setPyObject(obj);
+
+    return obj;
+}
+
 void PyInviwo::initPythonCInterface(Python3Module* module) {
     if (isInit_) return;
+
+    initDefaultInterfaces();
 
     isInit_ = true;
     LogInfo("Python version: " + toString(Py_GetVersion()));
     wchar_t programName[] = L"PyInviwo";
     Py_SetProgramName(programName);
 #ifdef WIN32
-    Py_NoSiteFlag = 1;
+   // Py_NoSiteFlag = 1;
 #endif
+
+    auto a = inviwoInternalPyModule_;
+    auto test = []()->PyObject* {
+        auto a = PyInviwo::getPtr()->getAllPythonModules()[0];
+        PyObject* obj = PyModule_Create(&Inviwo_Internals_Module_Def);
+
+        a->setPyObject(obj);
+
+        return obj;//*/
+    };
+    PyImport_AppendInittab("inviwo_internal", Iniviwo_internals_init);
+
     Py_InitializeEx(false);
 
     if (!Py_IsInitialized()) {
@@ -149,12 +178,9 @@ void PyInviwo::initPythonCInterface(Python3Module* module) {
     PyEval_InitThreads();
     importModule("builtins");
     importModule("sys");
-    importModule("os");
-    importModule("glob");
-    importModule("random");
 
     addModulePath(module->getPath() + "/scripts");
-    initDefaultInterfaces();
+   // initDefaultInterfaces();
     initOutputRedirector(module);
 }
 
@@ -213,8 +239,10 @@ void PyInviwo::initDefaultInterfaces() {
     inviwoPyModule_->addMethod(new PyClearTransferfunction());
     inviwoPyModule_->addMethod(new PyAddTransferFunction());
 
-    registerPyModule(inviwoPyModule_);
+  
+
     registerPyModule(inviwoInternalPyModule_);
+    registerPyModule(inviwoPyModule_);
 }
 
 void PyInviwo::initOutputRedirector(Python3Module* module) {
