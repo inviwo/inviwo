@@ -66,13 +66,19 @@ IVW_CORE_API bool fileExists(const std::string& filePath);
  */
 IVW_CORE_API bool directoryExists(const std::string& path);
 
+
+enum class IVW_CORE_API ListMode {
+    Files,
+    Directories,
+    FilesAndDirectories,
+};
 /**
  * Returns the file listing of a directory
  *
  * @param path Files are listed for this directory
  * @return List of files residing in the given path
  */
-IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path);
+IVW_CORE_API std::vector<std::string> getDirectoryContents(const std::string& path, ListMode mode = ListMode::Files);
 
 
 /** 

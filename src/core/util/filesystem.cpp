@@ -90,12 +90,24 @@ bool directoryExists(const std::string& path) {
     }
 }
 
-std::vector<std::string> getDirectoryContents(const std::string& path) {
+std::vector<std::string> getDirectoryContents(const std::string& path, ListMode mode) {
     if (path.empty()) {
         return{};
     }
     TinyDirInterface tinydir;
+    switch(mode){
+        case ListMode::Files:
+            tinydir.setListMode(TinyDirInterface::ListMode::FilesOnly);
+            break;
+        case ListMode::Directories:
+            tinydir.setListMode(TinyDirInterface::ListMode::DirectoriesOnly);
+            break;
+        case ListMode::FilesAndDirectories:
+            tinydir.setListMode(TinyDirInterface::ListMode::FilesAndDirectories);
+            break;
+    }
     tinydir.open(path);
+    
     return tinydir.getContents();
 }
 
