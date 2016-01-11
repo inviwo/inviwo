@@ -604,6 +604,33 @@ void InviwoMainWindow::fillExampleWorkspaceMenu(QMenu* menu) {
 }
 
 void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
+    for (const auto& module : app_->getModules()) {
+        auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
+        if (filesystem::directoryExists(moduleTestPath)) {
+            QMenu* moduleMenu = nullptr;
+
+            for (auto test : filesystem::getDirectoryContents(moduleTestPath,
+                                                              filesystem::ListMode::Directories)) {
+                std::string testdir = moduleTestPath + "/" + test;
+                // only accept inviwo workspace files
+                if (filesystem::directoryExists(testdir)) {
+                    for (auto item : filesystem::getDirectoryContents(testdir)) {
+                        if (filesystem::getFileExtension(item) == "inv") {
+                            if (!moduleMenu) {
+                                moduleMenu =
+                                    menu->addMenu(QString::fromStdString(module->getIdentifier()));
+                            }
+                            QAction* action = moduleMenu->addAction(QString::fromStdString(item));
+                            action->setData(QString::fromStdString(testdir + "/" + item));
+                            QObject::connect(action, SIGNAL(triggered()), this,
+                                             SLOT(openRecentWorkspace()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // store path and extracted module name
     std::vector<std::pair<std::string, std::string> > paths;  // we need to keep the order...
 
@@ -621,24 +648,6 @@ void InviwoMainWindow::fillTestWorkspaceMenu(QMenu* menu) {
         }
         if (workspaceExists) {
             paths.push_back({coreWorkspacePath, "core"});
-        }
-    }
-
-    for (const auto& module : app_->getModules()) {
-        auto moduleTestPath = module->getPath(ModulePath::RegressionTests);
-        if (filesystem::directoryExists(moduleTestPath)) {
-            // check whether path contains at least one workspace
-            bool workspaceExists = false;
-            for (auto item : filesystem::getDirectoryContents(moduleTestPath)) {
-                // only accept inviwo workspace files
-                workspaceExists = (filesystem::getFileExtension(item) == "inv");
-                if (workspaceExists) {
-                    break;
-                }
-            }
-            if (workspaceExists) {
-                paths.push_back({moduleTestPath, module->getIdentifier()});
-            }
         }
     }
 

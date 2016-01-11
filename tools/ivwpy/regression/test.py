@@ -27,6 +27,9 @@
 # 
 #*********************************************************************************
 
+import glob
+
+
 class Test:
 	def __init__(self, kind, name = "", module = "", repo = "", path=""):
 		self.kind = kind
@@ -38,7 +41,12 @@ class Test:
 
 	def toString(self):
 		if self.kind == "module":
-			return "Module: " + self.module + " Test: " + self.name + " : " + self.path
+			return "Module: " + self.module + " Test: " + self.name
 		elif self.kind == "repo":
-			return "Repo: " + self.repo + " Test: " + self.name + " : " + self.path
+			return "Repo: " + self.repo + " Test: " + self.name
+
+
+	def getWorkspaces(self):
+		paths = glob.glob(self.path +"/*.inv")
+		return paths
 		

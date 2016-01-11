@@ -26,30 +26,93 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 #*********************************************************************************
-import subprocess
-import io
 
-from . import test
+import io
+import os
+import time
+import subprocess
+import datetime
+
+from . error import *
+from .. util import *
+
+def mkdir(path):
+	if isinstance(path, (list, tuple)):
+		path = "/".join(path)
+	if not os.path.isdir(path):
+		os.mkdir(path)
+
+def makeOutputDir(base, test):
+	if not os.path.isdir(base):
+		raise RegressionError("Output dir does not exsist: " + dir)
+
+	if test.kind == "module" :
+		mkdir([base, test.module])
+		mkdir([base, test.module, test.name])
+		return "/".join([base, test.module, test.name])
+
+	elif test.kind == "repo":
+		mkdir([base, test.repo])
+		mkdir([base, test.repo, test.name])
+		return "/".join([base, test.repo, test.name])
+
+	raise RegressionError("Invalid Test kind")
 
 class InviwoApp:
 	def __init__(self, appPath):
-		self.path = appPath
+		self.program = appPath
 
-	def runTest(self, test):
-		print(test.toString())
+	def runTest(self, test, output):
+		print_info("#"*80)
+
 		
-		log = io.StringIO("some initial text data")
+				
+		outputdir = makeOutputDir(output, test)
 
-		try:
+		for workspace in test.getWorkspaces():
+
+			starttime = time.time()
+
+			report = {}
+			report['module'] = test.module
+			report['name'] = test.name
+			report['date'] = datetime.datetime.now().isoformat()
+
+			command = [self.program, 
+						"-q",
+						"-o", outputdir, 
+						"-g", "screenshot.png",
+						"-s", "UPN", 
+						"-l", "log.txt",
+						"-w", workspace]
+			report['command'] = " ".join(command)
+
+			report['timeout'] = False
+
 			process = subprocess.Popen(
-				[self.appPath,  "-q"],
-				shell = True,
-				timeout = 60,  
-				stdout = log, 
-				stderr = log
+				command,
+				cwd = os.path.dirname(self.program),
+				stdout=subprocess.PIPE, 
+				stderr=subprocess.PIPE,
+				universal_newlines = True
 			)
 
-		except subprocess.TimeoutExpired e:
-			print("Timeout...")
+			try:
+				report["output"], report["errors"] = process.communicate(timeout=15)
+			except subprocess.TimeoutExpired as e:
+				report['timeout'] = True
+				process.kill()
+				report["output"], report["errors"] = process.communicate()
+			
+			report['log'] = outputdir + "log.txt"
+			report['returncode'] = process.returncode
+			report['elapsed_time'] = time.time() - starttime
+
+			for k,v in report.items():
+				print_pair(k,str(v))
+
+			print()
+
+
 
 		

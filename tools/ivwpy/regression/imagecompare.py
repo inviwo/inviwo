@@ -26,55 +26,21 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 #*********************************************************************************
-import os
-import itertools
-
-from . import inviwoapp
-from . import test
-from .. import util
 
 
-def findModuleTest(path):
-	# assume path points to a folder of modules.
-	# look in folder path/<module>/tests/regression/*
-	tests = []
-	for moduleDir in util.subDirs(path):
-		regressionDir = util.toPath([path, moduleDir, "tests", "regression"])
-		for testDir in util.subDirs(regressionDir):
-			tests.append(test.Test(
-				kind = "module", 
-				name = testDir,
-				module = moduleDir,
-				path = util.toPath([regressionDir, testDir]) 
-				))
-	return tests
-
-def findRepoTest(path):
-	# assume path points to a repo.
-	# look for tests in path/tests/regression
-	tests = []
-	regressionDir = util.toPath([path, "tests", "regression"])
-	for testDir in util.subDirs(regressionDir):
-		tests.append(test.Test(
-					kind = "repo", 
-					name = testDir,
-					repo = path.split("/")[-1],
-					path = util.toPath([regressionDir, testDir]) 
-					))
-	return tests
-
-
-class App:
-	def __init__(self, appPath, outputPath, moduleTestPaths = [], repoTestPaths = []):
-		self.app = inviwoapp.InviwoApp(appPath)
-		self.output = outputPath
-		tests = [findModuleTest(p) for p in moduleTestPaths] + [findRepoTest(p) for p in repoTestPaths]
-		self.tests = list(itertools.chain(*tests))
-
-
-
-	def runTests(self):
-		for test in self.tests:
-			self.app.runTest(test, self.output)
-
-
+import PIL.Image as Image
+ 
+i1 = Image.open("/Users/petst/Work/Projects/Inviwo-Developent/Private/regress/basegl/depthpassthrough/Color.png")
+i2 = Image.open("/Users/petst/Work/Projects/Inviwo-Developent/Private/regress/basegl/depthpassthrough/Color & Invert.png")
+assert i1.mode == i2.mode, "Different kinds of images."
+assert i1.size == i2.size, "Different sizes."
+ 
+pairs = zip(i1.getdata(), i2.getdata())
+if len(i1.getbands()) == 1:
+    # for gray-scale jpegs
+    dif = sum(abs(p1-p2) for p1,p2 in pairs)
+else:
+    dif = sum(abs(c1-c2) for p1,p2 in pairs for c1,c2 in zip(p1,p2))
+ 
+ncomponents = i1.size[0] * i1.size[1] * 3
+print("Difference (percentage):", (dif / 255.0 * 100) / ncomponents)

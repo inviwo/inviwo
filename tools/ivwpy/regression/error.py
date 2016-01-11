@@ -26,55 +26,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 #*********************************************************************************
-import os
-import itertools
 
-from . import inviwoapp
-from . import test
-from .. import util
-
-
-def findModuleTest(path):
-	# assume path points to a folder of modules.
-	# look in folder path/<module>/tests/regression/*
-	tests = []
-	for moduleDir in util.subDirs(path):
-		regressionDir = util.toPath([path, moduleDir, "tests", "regression"])
-		for testDir in util.subDirs(regressionDir):
-			tests.append(test.Test(
-				kind = "module", 
-				name = testDir,
-				module = moduleDir,
-				path = util.toPath([regressionDir, testDir]) 
-				))
-	return tests
-
-def findRepoTest(path):
-	# assume path points to a repo.
-	# look for tests in path/tests/regression
-	tests = []
-	regressionDir = util.toPath([path, "tests", "regression"])
-	for testDir in util.subDirs(regressionDir):
-		tests.append(test.Test(
-					kind = "repo", 
-					name = testDir,
-					repo = path.split("/")[-1],
-					path = util.toPath([regressionDir, testDir]) 
-					))
-	return tests
-
-
-class App:
-	def __init__(self, appPath, outputPath, moduleTestPaths = [], repoTestPaths = []):
-		self.app = inviwoapp.InviwoApp(appPath)
-		self.output = outputPath
-		tests = [findModuleTest(p) for p in moduleTestPaths] + [findRepoTest(p) for p in repoTestPaths]
-		self.tests = list(itertools.chain(*tests))
-
-
-
-	def runTests(self):
-		for test in self.tests:
-			self.app.runTest(test, self.output)
-
-
+class RegressionError:
+	def __init__(self, error):
+		self.error = error
