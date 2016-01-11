@@ -39,17 +39,17 @@ namespace inviwo {
 
 Python3QtModule::Python3QtModule(InviwoApplication* app)
     : InviwoModule(app, "Python3Qt")
-    , inviwoPyQtModule_(util::make_unique<PyModule>("inviwoqt"))
+ //   , inviwoPyQtModule_(util::make_unique<PyModule>("inviwoqt"))
     , menu_(util::make_unique<PythonMenu>(app))
     , pythonScriptArg_("p", "pythonScript", "Specify a python script to run at startup", false, "",
                        "Path to the file containing the script") {
-    inviwoPyQtModule_->addMethod(new PyGetPathCurrentWorkspace());
+   /* inviwoPyQtModule_->addMethod(new PyGetPathCurrentWorkspace());
     inviwoPyQtModule_->addMethod(new PyLoadNetworkMethod());
     inviwoPyQtModule_->addMethod(new PySaveNetworkMethod());
     inviwoPyQtModule_->addMethod(new PyQuitInviwoMethod());
     inviwoPyQtModule_->addMethod(new PyPromptMethod());
-    inviwoPyQtModule_->addMethod(new PyShowPropertyWidgetMethod());
-    PyInviwo::getPtr()->registerPyModule(inviwoPyQtModule_.get());
+    inviwoPyQtModule_->addMethod(new PyShowPropertyWidgetMethod());*/
+    //PyInviwo::getPtr()->registerPyModule(inviwoPyQtModule_.get());
 
     app->getCommandLineParser().add(&pythonScriptArg_, [this]() {
         menu_->getEditor()->loadFile(pythonScriptArg_.getValue(), false);
