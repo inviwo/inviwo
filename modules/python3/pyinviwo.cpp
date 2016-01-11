@@ -81,8 +81,7 @@ PyInviwo::PyInviwo(Python3Module* module)
     : isInit_(false)
     , inviwoPyModule_(nullptr)
     , inviwoInternalPyModule_(nullptr)
-    , mainDict_(nullptr)
-    , modulesDict_(nullptr) {
+{
     init(this);
 
     initPythonCInterface(module);
@@ -103,8 +102,6 @@ void PyInviwo::registerPyModule(PyModule* pyModule) {
         if (!obj) {
             LogWarn("Failed to init python module '" << pyModule->getModuleName() << "' ");
         }
-        PyDict_SetItemString(modulesDict_, pyModule->getModuleName(), obj);
-        PyDict_SetItemString(mainDict_, pyModule->getModuleName(), obj);
 
         pyModule->setPyObject(obj);
         registeredModules_.push_back(pyModule);
@@ -148,8 +145,6 @@ void PyInviwo::initPythonCInterface(Python3Module* module) {
     }
 
     PyEval_InitThreads();
-    mainDict_ = PyDict_New();
-    modulesDict_ = PyImport_GetModuleDict();
     importModule("builtins");
     importModule("sys");
     importModule("os");
@@ -162,13 +157,14 @@ void PyInviwo::initPythonCInterface(Python3Module* module) {
 }
 
 void PyInviwo::importModule(const std::string& moduleName) {
+    auto mainDict = PyImport_GetModuleDict();
     const static std::string __key__ = "__";
     char* key = new char[moduleName.size() + 5];
     sprintf(key, "__%s__", moduleName.c_str());
-    if (PyDict_GetItemString(mainDict_, key) == nullptr) {
+    if (PyDict_GetItemString(mainDict, key) == nullptr) {
         PyObject* pMod = PyImport_ImportModule(moduleName.c_str());
         if (nullptr != pMod) {
-            PyDict_SetItemString(mainDict_, key, pMod);
+            PyDict_SetItemString(mainDict, key, pMod);
         } else {
             LogWarn("Failed to import python module: " << moduleName);
         }

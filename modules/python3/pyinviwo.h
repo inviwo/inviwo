@@ -69,8 +69,8 @@ public:
     * @param PyMethodDef * module static array of registered classes in a module
     */
     void addModulePath(const std::string& path);
-    PyObject* getMainDictionary() { return mainDict_; }
-    PyObject* getModulesDictionary() { return modulesDict_; }
+    //PyObject* getMainDictionary();
+    //PyObject* getModulesDictionary();
 
     std::vector<PyModule*> getAllPythonModules() { return registeredModules_; }
 
@@ -85,9 +85,6 @@ private:
     bool isInit_;
     PyModule* inviwoPyModule_;
     PyModule* inviwoInternalPyModule_;
-
-    PyObject* mainDict_;
-    PyObject* modulesDict_;
 
     std::vector<PyModule*> registeredModules_;
 };
