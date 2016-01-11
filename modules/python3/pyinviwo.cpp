@@ -233,6 +233,7 @@ void PyInviwo::initOutputRedirector(Python3Module* module) {
 
     PythonScript outputCatcher;
     outputCatcher.setSource(text);
+    outputCatcher.setFilename(directorFileName);
 
     if (!outputCatcher.run(false)) {
         LogWarn("Python init script failed to run");

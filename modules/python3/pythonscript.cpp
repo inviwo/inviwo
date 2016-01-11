@@ -56,7 +56,7 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
             LogInfo("Compiling script");
 
         Py_XDECREF(BYTE_CODE);
-        byteCode_ = Py_CompileString(source_.c_str(), "", Py_file_input);
+        byteCode_ = Py_CompileString(source_.c_str(), filename_.c_str(), Py_file_input);
         isCompileNeeded_ = !checkCompileError();
 
         if (isCompileNeeded_) {
@@ -87,6 +87,10 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
         Py_XDECREF(ret);
         Py_XDECREF(loc);
         return success;
+    }
+
+    void PythonScript::setFilename(std::string filename) {
+        filename_ = filename;
     }
 
     std::string PythonScript::getSource() const {

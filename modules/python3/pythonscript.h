@@ -72,6 +72,8 @@ namespace inviwo {
         */
         bool run(bool outputInfo = true);
 
+        void setFilename(std::string filename);
+
     private:
         bool checkCompileError();
         bool checkRuntimeError();
@@ -90,6 +92,7 @@ namespace inviwo {
         bool compile(bool outputInfo = true);
 
         std::string source_;
+        std::string filename_;
         void* byteCode_;
         bool isCompileNeeded_;
     };

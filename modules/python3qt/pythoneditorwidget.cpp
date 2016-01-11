@@ -257,6 +257,7 @@ void PythonEditorWidget::readFile() {
     replaceInString(text, "\t", "    ");
     pythonCode_->setPlainText(text.c_str());
     script_.setSource(text);
+    script_.setFilename(scriptFileName_);
     unsavedChanges_ = false;
 }
 
@@ -372,6 +373,7 @@ void PythonEditorWidget::setDefaultText() {
 
     pythonCode_->setPlainText(defaultSource.c_str());
     script_.setSource(defaultSource);
+    script_.setFilename("");
     stopFileObservation(scriptFileName_);
     scriptFileName_ = "";
     settings_.beginGroup("PythonEditor");
