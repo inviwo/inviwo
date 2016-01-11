@@ -68,8 +68,9 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
     }
 
     bool PythonScript::run(bool outputInfo) {
-        PyObject* glb = PyInviwo::getPtr()->getMainDictionary();
-
+        //PyObject* glb = PyInviwo::getPtr()->getModulesDictionary();
+        PyObject* main_module = PyImport_AddModule("__main__");
+        PyObject* glb = PyModule_GetDict(main_module);
 
         if (isCompileNeeded_ && !compile(outputInfo)) {
             LogError("Failed to run script, script could not be compiled");
@@ -80,9 +81,13 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
 
         if (outputInfo)
             LogInfo("Running compiled script ...");
+        auto m = PyImport_AddModule("__main__");
+        if (m == NULL)
+            return -1;
+        auto d = PyModule_GetDict(m);
 
-        PyObject* loc = PyDict_New();
-        PyObject* ret = PyEval_EvalCode(BYTE_CODE, glb, loc);
+        PyObject* loc = PyDict_Copy(d);
+        PyObject* ret = PyEval_EvalCode(BYTE_CODE, loc, loc);
         bool success = checkRuntimeError();
         Py_XDECREF(ret);
         Py_XDECREF(loc);
