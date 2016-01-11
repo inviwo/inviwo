@@ -86,11 +86,11 @@ PythonScript::PythonScript() : source_(""), byteCode_(nullptr), isCompileNeeded_
             return -1;
         auto d = PyModule_GetDict(m);
 
-        PyObject* loc = PyDict_Copy(d);
-        PyObject* ret = PyEval_EvalCode(BYTE_CODE, loc, loc);
+        PyObject* copy = PyDict_Copy(d);
+        PyObject* ret = PyEval_EvalCode(BYTE_CODE, copy, copy);
         bool success = checkRuntimeError();
         Py_XDECREF(ret);
-        Py_XDECREF(loc);
+        Py_XDECREF(copy);
         return success;
     }
 
