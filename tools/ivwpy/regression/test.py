@@ -49,4 +49,8 @@ class Test:
 	def getWorkspaces(self):
 		paths = glob.glob(self.path +"/*.inv")
 		return paths
+
+	def getImages(self):
+		imgs = glob.glob(self.path +"/*.png")
+		return imgs
 		

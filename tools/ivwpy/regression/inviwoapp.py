@@ -30,10 +30,12 @@
 import io
 import os
 import time
+import glob
 import subprocess
 import datetime
 
 from . error import *
+from . imagecompare import *
 from .. util import *
 
 def mkdir(path):
@@ -110,6 +112,14 @@ class InviwoApp:
 
 			for k,v in report.items():
 				print_pair(k,str(v))
+
+
+			refimgs = test.getImages()
+			imgs = glob.glob(outputdir +"/*.png")
+
+			print(refimgs)
+			print(imgs)
+
 
 			print()
 
