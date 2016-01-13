@@ -5,7 +5,7 @@
     <Processors>
         <Processor type="org.inviwo.CanvasGL" identifier="CanvasGL">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref4" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref0" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -50,7 +50,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="1128" y="282" />
+                    <position x="1120" y="256" />
                     <dimensions x="256" y="256" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -58,10 +58,10 @@
         </Processor>
         <Processor type="org.inviwo.CubeProxyGeometry" identifier="CubeProxyGeometry">
             <InPorts>
-                <InPort type="org.inviwo.VolumeInport" identifier="volume.inport" id="ref5" />
+                <InPort type="org.inviwo.VolumeInport" identifier="volume.inport" id="ref1" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.MeshOutport" identifier="geometry.outport" id="ref6" />
+                <OutPort type="org.inviwo.MeshOutport" identifier="geometry.outport" id="ref2" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.BoolProperty" identifier="clippingEnabled" />
@@ -106,15 +106,15 @@
         </Processor>
         <Processor type="org.inviwo.EntryExitPoints" identifier="EntryExitPoints">
             <InPorts>
-                <InPort type="org.inviwo.MeshInport" identifier="geometry" id="ref7" />
+                <InPort type="org.inviwo.MeshInport" identifier="geometry" id="ref3" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="entry" id="ref8" />
-                <OutPort type="org.inviwo.ImageOutport" identifier="exit" id="ref9" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="entry" id="ref4" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="exit" id="ref5" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.BoolProperty" identifier="capNearClipping" />
-                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref10">
+                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref6">
                     <Properties>
                         <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
                         <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
@@ -180,11 +180,11 @@
         </Processor>
         <Processor type="org.inviwo.ImageOverlayGL" identifier="Image Overlay">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref1" />
-                <InPort type="org.inviwo.ImageInport" identifier="overlay" id="ref2" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref7" />
+                <InPort type="org.inviwo.ImageInport" identifier="overlay" id="ref8" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref3" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref9" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.BoolProperty" identifier="overlayInteraction">
@@ -210,27 +210,15 @@
         </Processor>
         <Processor type="org.inviwo.ImageSource" identifier="Image Source">
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" id="ref11" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" id="ref16" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.FileProperty" identifier="imageFileName">
-                    <url content="../../../../../../inviwo-research/data/images/swirl.png" />
+                    <url content="../../../../../tests/images/swirl.png" />
                     <nameFilter>
                         <filter>
                             <extension content="*" />
                             <description content="All Files" />
-                        </filter>
-                        <filter>
-                            <extension content="bimg" />
-                            <description content="Binary Image" />
-                        </filter>
-                        <filter>
-                            <extension content="bmp" />
-                            <description content="Windows bitmap" />
-                        </filter>
-                        <filter>
-                            <extension content="jpg" />
-                            <description content="Joint Photographic Experts Group" />
                         </filter>
                         <filter>
                             <extension content="raw" />
@@ -241,12 +229,24 @@
                             <description content="Portable Network Graphics" />
                         </filter>
                         <filter>
-                            <extension content="exr" />
-                            <description content="OpenEXR" />
+                            <extension content="jpg" />
+                            <description content="Joint Photographic Experts Group" />
                         </filter>
                         <filter>
                             <extension content="jpeg" />
                             <description content="Joint Photographic Experts Group" />
+                        </filter>
+                        <filter>
+                            <extension content="bmp" />
+                            <description content="Windows bitmap" />
+                        </filter>
+                        <filter>
+                            <extension content="exr" />
+                            <description content="OpenEXR" />
+                        </filter>
+                        <filter>
+                            <extension content="bimg" />
+                            <description content="Binary Image" />
                         </filter>
                     </nameFilter>
                     <acceptMode content="0" />
@@ -261,18 +261,18 @@
                 <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
                     <position x="-825" y="-475" />
                     <visibility content="1" />
-                    <selection content="1" />
+                    <selection content="0" />
                 </MetaDataItem>
             </MetaDataMap>
         </Processor>
         <Processor type="org.inviwo.VolumeRaycaster" identifier="VolumeRaycaster">
             <InPorts>
-                <InPort type="org.inviwo.VolumeInport" identifier="volume" id="ref12" />
-                <InPort type="org.inviwo.ImageInport" identifier="entry" id="ref13" />
-                <InPort type="org.inviwo.ImageInport" identifier="exit" id="ref14" />
+                <InPort type="org.inviwo.VolumeInport" identifier="volume" id="ref10" />
+                <InPort type="org.inviwo.ImageInport" identifier="entry" id="ref11" />
+                <InPort type="org.inviwo.ImageInport" identifier="exit" id="ref12" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref15" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref13" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.OptionPropertyInt" identifier="channel" displayName="Render Channel">
@@ -334,7 +334,7 @@
                     </Properties>
                     <collapsed content="0" />
                 </Property>
-                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref16">
+                <Property type="org.inviwo.CameraProperty" identifier="camera" id="ref14">
                     <Properties>
                         <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
                         <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
@@ -436,39 +436,35 @@
         </Processor>
         <Processor type="org.inviwo.VolumeSource" identifier="VolumeSource">
             <OutPorts>
-                <OutPort type="org.inviwo.VolumeOutport" identifier="data" id="ref0" />
+                <OutPort type="org.inviwo.VolumeOutport" identifier="data" id="ref15" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.FileProperty" identifier="filename" displayName="Volume file">
-                    <url content="../../../../../../inviwo-research/data/volumes/hydrogenatom.dat" />
+                    <url content="../../../../../tests/volumes/hydrogenatom.dat" />
                     <nameFilter>
                         <filter>
                             <extension content="*" />
                             <description content="All Files" />
                         </filter>
                         <filter>
-                            <extension content="am" />
-                            <description content="AmiraMesh file format" />
-                        </filter>
-                        <filter>
-                            <extension content="multiple pvms) file format (*.mpvm" />
-                            <description content="MPVM" />
-                        </filter>
-                        <filter>
-                            <extension content="pvm" />
-                            <description content="PVM file format" />
+                            <extension content="ivf" />
+                            <description content="Inviwo ivf file format" />
                         </filter>
                         <filter>
                             <extension content="raw" />
                             <description content="Raw binary file" />
                         </filter>
                         <filter>
-                            <extension content="ivf" />
-                            <description content="Inviwo ivf file format" />
+                            <extension content="pvm" />
+                            <description content="PVM file format" />
                         </filter>
                         <filter>
-                            <extension content="nii.gz" />
-                            <description content="NIfTI-1 file format" />
+                            <extension content="multiple pvms) file format (*.mpvm" />
+                            <description content="MPVM" />
+                        </filter>
+                        <filter>
+                            <extension content="am" />
+                            <description content="AmiraMesh file format" />
                         </filter>
                         <filter>
                             <extension content="dat" />
@@ -479,15 +475,19 @@
                             <description content="NIfTI-1 file format" />
                         </filter>
                         <filter>
+                            <extension content="hdr" />
+                            <description content="ANALYZE file format" />
+                        </filter>
+                        <filter>
                             <extension content="img" />
                             <description content="ANALYZE file format" />
                         </filter>
                         <filter>
-                            <extension content="hdr.gz" />
-                            <description content="ANALYZE file format" />
+                            <extension content="nii.gz" />
+                            <description content="NIfTI-1 file format" />
                         </filter>
                         <filter>
-                            <extension content="hdr" />
+                            <extension content="hdr.gz" />
                             <description content="ANALYZE file format" />
                         </filter>
                         <filter>
@@ -605,53 +605,53 @@
                 <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
                     <position x="-625" y="-700" />
                     <visibility content="1" />
-                    <selection content="0" />
+                    <selection content="1" />
                 </MetaDataItem>
             </MetaDataMap>
         </Processor>
     </Processors>
     <Connections>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="entry" reference="ref8" />
-            <InPort type="org.inviwo.ImageInport" identifier="entry" reference="ref13" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="entry" reference="ref4" />
+            <InPort type="org.inviwo.ImageInport" identifier="entry" reference="ref11" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="exit" reference="ref9" />
-            <InPort type="org.inviwo.ImageInport" identifier="exit" reference="ref14" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="exit" reference="ref5" />
+            <InPort type="org.inviwo.ImageInport" identifier="exit" reference="ref12" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.MeshOutport" identifier="geometry.outport" reference="ref6" />
-            <InPort type="org.inviwo.MeshInport" identifier="geometry" reference="ref7" />
+            <OutPort type="org.inviwo.MeshOutport" identifier="geometry.outport" reference="ref2" />
+            <InPort type="org.inviwo.MeshInport" identifier="geometry" reference="ref3" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref0" />
-            <InPort type="org.inviwo.VolumeInport" identifier="volume.inport" reference="ref5" />
+            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref15" />
+            <InPort type="org.inviwo.VolumeInport" identifier="volume.inport" reference="ref1" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref0" />
-            <InPort type="org.inviwo.VolumeInport" identifier="volume" reference="ref12" />
+            <OutPort type="org.inviwo.VolumeOutport" identifier="data" reference="ref15" />
+            <InPort type="org.inviwo.VolumeInport" identifier="volume" reference="ref10" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref11" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref1" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref16" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref7" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref3" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref4" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref9" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref0" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref15" />
-            <InPort type="org.inviwo.ImageInport" identifier="overlay" reference="ref2" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref13" />
+            <InPort type="org.inviwo.ImageInport" identifier="overlay" reference="ref8" />
         </Connection>
     </Connections>
     <PropertyLinks>
         <PropertyLink>
-            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref10" />
-            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref16" />
+            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref6" />
+            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref14" />
         </PropertyLink>
         <PropertyLink>
-            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref16" />
-            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref10" />
+            <SourceProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref14" />
+            <DestinationProperty type="org.inviwo.CameraProperty" identifier="camera" reference="ref6" />
         </PropertyLink>
     </PropertyLinks>
     <InviwoSetup>
@@ -708,6 +708,11 @@
                     <Processor content="org.inviwo.VolumeBinary" />
                 </Processors>
             </Module>
+            <Module name="ABufferGL">
+                <Processors>
+                    <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
+                </Processors>
+            </Module>
             <Module name="zlib" />
             <Module name="assimp" />
             <Module name="Base">
@@ -755,6 +760,12 @@
                 </Processors>
             </Module>
             <Module name="CImg" />
+            <Module name="Example">
+                <Processors>
+                    <Processor content="org.inviwo.ExampleProcessor" />
+                    <Processor content="org.inviwo.ExampleProgressBar" />
+                </Processors>
+            </Module>
             <Module name="FontRendering">
                 <Processors>
                     <Processor content="org.inviwo.TextOverlayGL" />

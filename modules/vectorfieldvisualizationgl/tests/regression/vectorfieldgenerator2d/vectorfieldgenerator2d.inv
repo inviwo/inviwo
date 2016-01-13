@@ -17,7 +17,7 @@
                         <Property type="org.inviwo.IntVec2Property" identifier="customInputDimensions">
                             <visible content="0" />
                             <readonly content="1" />
-                            <value x="571" y="586" />
+                            <value x="128" y="128" />
                         </Property>
                         <Property type="org.inviwo.BoolProperty" identifier="keepAspectRatio">
                             <visible content="0" />
@@ -56,10 +56,10 @@
                 <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
                     <position x="-300" y="125" />
                     <visibility content="1" />
-                    <selection content="1" />
+                    <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="615" y="414" />
+                    <position x="607" y="388" />
                     <dimensions x="128" y="128" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -86,7 +86,7 @@
                 <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
                     <position x="-300" y="-50" />
                     <visibility content="1" />
-                    <selection content="1" />
+                    <selection content="0" />
                 </MetaDataItem>
             </MetaDataMap>
         </Processor>
@@ -151,11 +151,13 @@
                     <Processor content="org.inviwo.VolumeBinary" />
                 </Processors>
             </Module>
-            <Module name="ABufferGLModule">
+            <Module name="ABufferGL">
                 <Processors>
                     <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
                 </Processors>
             </Module>
+            <Module name="zlib" />
+            <Module name="assimp" />
             <Module name="Base">
                 <Processors>
                     <Processor content="org.inviwo.CubeProxyGeometry" />
@@ -187,14 +189,32 @@
                     <Processor content="org.inviwo.VolumeVectorSource" />
                     <Processor content="org.inviwo.TimeStepSelector" />
                     <Processor content="org.inviwo.StereoCameraSyncer" />
+                    <Processor content="org.inviwo.VolumeBoundingBox" />
+                </Processors>
+            </Module>
+            <Module name="OpenCL" />
+            <Module name="BaseCL">
+                <Processors>
+                    <Processor content="org.inviwo.EntryExitPointsCL" />
+                    <Processor content="org.inviwo.GrayscaleCL" />
+                    <Processor content="org.inviwo.VolumeFirstHitCL" />
+                    <Processor content="org.inviwo.VolumeMaxCL" />
+                    <Processor content="org.inviwo.VolumeRaycasterCL" />
                 </Processors>
             </Module>
             <Module name="CImg" />
+            <Module name="Example">
+                <Processors>
+                    <Processor content="org.inviwo.ExampleProcessor" />
+                    <Processor content="org.inviwo.ExampleProgressBar" />
+                </Processors>
+            </Module>
             <Module name="FontRendering">
                 <Processors>
                     <Processor content="org.inviwo.TextOverlayGL" />
                 </Processors>
             </Module>
+            <Module name="Nifti" />
             <Module name="OpenGLQt" />
             <Module name="PVM" />
             <Module name="Python3" />
@@ -207,7 +227,6 @@
                     <Processor content="org.inviwo.StreamLines" />
                     <Processor content="org.inviwo.PathLines" />
                     <Processor content="org.inviwo.StreamRibbons" />
-                    <Processor content="org.inviwo.CriticalPoints2D" />
                 </Processors>
             </Module>
             <Module name="VectorFieldVisualizationGL">
@@ -220,14 +239,11 @@
                     <Processor content="org.inviwo.Vector2DMagnitude" />
                     <Processor content="org.inviwo.Vector2DCurl" />
                     <Processor content="org.inviwo.Vector2DDivergence" />
-                    <Processor content="org.inviwo.LIC3D" />
                     <Processor content="org.inviwo.Vector3DCurl" />
                     <Processor content="org.inviwo.Vector3DDivergence" />
-                    <Processor content="org.inviwo.StreamLinesGL" />
                     <Processor content="org.inviwo.TMIP" />
                 </Processors>
             </Module>
-            <Module name="EigenUtils" />
             <Module name="Experimental">
                 <Processors>
                     <Processor content="org.inviwo.FloatPropertyToString" />
@@ -294,45 +310,6 @@
                     <Processor content="org.inviwo.MeshTest" />
                 </Processors>
             </Module>
-            <Module name="Topology">
-                <Processors>
-                    <Processor content="org.inviwo.ContourTreeCreator" />
-                </Processors>
-            </Module>
-            <Module name="TopologyQT">
-                <Processors>
-                    <Processor content="org.inviwo.ContourTreeViewer" />
-                </Processors>
-            </Module>
-            <Module name="VectorFieldVisualizationExperimental">
-                <Processors>
-                    <Processor content="org.inviwo.SeedPointsFromMask" />
-                    <Processor content="org.inviwo.ToComputationalSpace2D" />
-                    <Processor content="org.inviwo.VectorGradientProcessor" />
-                    <Processor content="org.inviwo.FTLESeedPlane" />
-                    <Processor content="org.inviwo.FTLE" />
-                    <Processor content="org.inviwo.ImageLocalMinimum" />
-                    <Processor content="org.inviwo.TwoDPointsToSeedPoints" />
-                    <Processor content="org.inviwo.Glyph2D" />
-                    <Processor content="org.inviwo.SeedPointSelector" />
-                </Processors>
-            </Module>
-            <Module name="VTK">
-                <Processors>
-                    <Processor content="org.inviwo.VTKEnsightGoldReader" />
-                </Processors>
-            </Module>
-            <Module name="MRIVisualization">
-                <Processors>
-                    <Processor content="org.inviwo.LinePredicates" />
-                    <Processor content="org.inviwo.MRIPathLines" />
-                    <Processor content="org.inviwo.SeedpointsFromMaskMRI" />
-                    <Processor content="org.inviwo.Contour" />
-                    <Processor content="org.inviwo.IntegralLinePostProcessing" />
-                    <Processor content="org.inviwo.SimulateVolumeSequence" />
-                </Processors>
-            </Module>
-            <Module name="Web" />
             <Module name="QtWidget" />
         </Modules>
     </InviwoSetup>

@@ -5,7 +5,7 @@
     <Processors>
         <Processor type="org.inviwo.CanvasGL" identifier="Diff">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref11" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref8" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -50,7 +50,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="453" y="739" />
+                    <position x="445" y="713" />
                     <dimensions x="256" y="256" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -58,7 +58,7 @@
         </Processor>
         <Processor type="org.inviwo.CanvasGL" identifier="Edges">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref8" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref7" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -103,7 +103,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="446" y="143" />
+                    <position x="438" y="117" />
                     <dimensions x="256" y="256" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -111,10 +111,10 @@
         </Processor>
         <Processor type="org.inviwo.FindEdges" identifier="FindEdges">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="img_findedges.fraginport" id="ref9" />
+                <InPort type="org.inviwo.ImageInport" identifier="img_findedges.fraginport" id="ref5" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="img_findedges.fragoutport" id="ref10" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="img_findedges.fragoutport" id="ref6" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.FloatProperty" identifier="alpha">
@@ -131,7 +131,7 @@
         </Processor>
         <Processor type="org.inviwo.CanvasGL" identifier="Grayscale">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref7" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref3" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -176,7 +176,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="171" y="736" />
+                    <position x="163" y="710" />
                     <dimensions x="256" y="256" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -184,11 +184,11 @@
         </Processor>
         <Processor type="org.inviwo.ImageMixer" identifier="Image Mixer">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport0" id="ref4" />
-                <InPort type="org.inviwo.ImageInport" identifier="inport1" id="ref5" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport0" id="ref15" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport1" id="ref16" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref6" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref17" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.OptionPropertyInt" identifier="blendMode">
@@ -210,10 +210,10 @@
         </Processor>
         <Processor type="org.inviwo.ImageGrayscale" identifier="ImageGrayscale">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="img_graysc.fraginport" id="ref0" />
+                <InPort type="org.inviwo.ImageInport" identifier="img_graysc.fraginport" id="ref12" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="img_graysc.fragoutport" id="ref1" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="img_graysc.fragoutport" id="ref13" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.OptionPropertyInt" identifier="luminanceModel">
@@ -230,10 +230,10 @@
         </Processor>
         <Processor type="org.inviwo.ImageNormalization" identifier="ImageNormalization">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="img_normalize.fraginport" id="ref2" />
+                <InPort type="org.inviwo.ImageInport" identifier="img_normalize.fraginport" id="ref0" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="img_normalize.fragoutport" id="ref3" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="img_normalize.fragoutport" id="ref1" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.BoolProperty" identifier="eachChannelsIndividually" />
@@ -255,27 +255,15 @@
         </Processor>
         <Processor type="org.inviwo.ImageSource" identifier="ImageSource">
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" id="ref12" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" id="ref14" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.FileProperty" identifier="imageFileName">
-                    <url content="../../../../../../inviwo-research/data/images/swirl.png" />
+                    <url content="../../../../../tests/images/swirl.png" />
                     <nameFilter>
                         <filter>
                             <extension content="*" />
                             <description content="All Files" />
-                        </filter>
-                        <filter>
-                            <extension content="bimg" />
-                            <description content="Binary Image" />
-                        </filter>
-                        <filter>
-                            <extension content="bmp" />
-                            <description content="Windows bitmap" />
-                        </filter>
-                        <filter>
-                            <extension content="jpg" />
-                            <description content="Joint Photographic Experts Group" />
                         </filter>
                         <filter>
                             <extension content="raw" />
@@ -286,12 +274,24 @@
                             <description content="Portable Network Graphics" />
                         </filter>
                         <filter>
-                            <extension content="exr" />
-                            <description content="OpenEXR" />
+                            <extension content="jpg" />
+                            <description content="Joint Photographic Experts Group" />
                         </filter>
                         <filter>
                             <extension content="jpeg" />
                             <description content="Joint Photographic Experts Group" />
+                        </filter>
+                        <filter>
+                            <extension content="bmp" />
+                            <description content="Windows bitmap" />
+                        </filter>
+                        <filter>
+                            <extension content="exr" />
+                            <description content="OpenEXR" />
+                        </filter>
+                        <filter>
+                            <extension content="bimg" />
+                            <description content="Binary Image" />
                         </filter>
                     </nameFilter>
                     <acceptMode content="0" />
@@ -312,27 +312,15 @@
         </Processor>
         <Processor type="org.inviwo.ImageSource" identifier="ImageSource2">
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" id="ref14" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" id="ref11" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.FileProperty" identifier="imageFileName">
-                    <url content="../../../../../../inviwo-research/data/images/swirl1.png" />
+                    <url content="../../../../../tests/images/swirl1.png" />
                     <nameFilter>
                         <filter>
                             <extension content="*" />
                             <description content="All Files" />
-                        </filter>
-                        <filter>
-                            <extension content="bimg" />
-                            <description content="Binary Image" />
-                        </filter>
-                        <filter>
-                            <extension content="bmp" />
-                            <description content="Windows bitmap" />
-                        </filter>
-                        <filter>
-                            <extension content="jpg" />
-                            <description content="Joint Photographic Experts Group" />
                         </filter>
                         <filter>
                             <extension content="raw" />
@@ -343,12 +331,24 @@
                             <description content="Portable Network Graphics" />
                         </filter>
                         <filter>
-                            <extension content="exr" />
-                            <description content="OpenEXR" />
+                            <extension content="jpg" />
+                            <description content="Joint Photographic Experts Group" />
                         </filter>
                         <filter>
                             <extension content="jpeg" />
                             <description content="Joint Photographic Experts Group" />
+                        </filter>
+                        <filter>
+                            <extension content="bmp" />
+                            <description content="Windows bitmap" />
+                        </filter>
+                        <filter>
+                            <extension content="exr" />
+                            <description content="OpenEXR" />
+                        </filter>
+                        <filter>
+                            <extension content="bimg" />
+                            <description content="Binary Image" />
                         </filter>
                     </nameFilter>
                     <acceptMode content="0" />
@@ -369,10 +369,10 @@
         </Processor>
         <Processor type="org.inviwo.MichelsonContrast" identifier="MichelsonContrast">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref17" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref9" />
             </InPorts>
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref18" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="outport" id="ref10" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.DoubleProperty" identifier="michelsonContrast_">
@@ -397,7 +397,7 @@
         </Processor>
         <Processor type="org.inviwo.CanvasGL" identifier="NormalizedEdges">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref15" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref2" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -442,7 +442,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="447" y="441" />
+                    <position x="439" y="415" />
                     <dimensions x="256" y="256" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -450,7 +450,7 @@
         </Processor>
         <Processor type="org.inviwo.CanvasGL" identifier="Orig1">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref16" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref18" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -495,7 +495,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="165" y="144" />
+                    <position x="157" y="118" />
                     <dimensions x="256" y="256" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -503,7 +503,7 @@
         </Processor>
         <Processor type="org.inviwo.CanvasGL" identifier="Orig2">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref13" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref4" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -548,7 +548,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="168" y="439" />
+                    <position x="160" y="413" />
                     <dimensions x="256" y="256" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -557,52 +557,52 @@
     </Processors>
     <Connections>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="img_findedges.fragoutport" reference="ref10" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref8" />
-        </Connection>
-        <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref6" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref11" />
-        </Connection>
-        <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="img_graysc.fragoutport" reference="ref1" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="img_findedges.fragoutport" reference="ref6" />
             <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref7" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref14" />
-            <InPort type="org.inviwo.ImageInport" identifier="img_findedges.fraginport" reference="ref9" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref17" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref8" />
+        </Connection>
+        <Connection>
+            <OutPort type="org.inviwo.ImageOutport" identifier="img_graysc.fragoutport" reference="ref13" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref3" />
+        </Connection>
+        <Connection>
+            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref11" />
+            <InPort type="org.inviwo.ImageInport" identifier="img_findedges.fraginport" reference="ref5" />
+        </Connection>
+        <Connection>
+            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref11" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport1" reference="ref16" />
+        </Connection>
+        <Connection>
+            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref11" />
+            <InPort type="org.inviwo.ImageInport" identifier="img_graysc.fraginport" reference="ref12" />
+        </Connection>
+        <Connection>
+            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref11" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref4" />
+        </Connection>
+        <Connection>
+            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref10" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref18" />
         </Connection>
         <Connection>
             <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref14" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport1" reference="ref5" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport0" reference="ref15" />
         </Connection>
         <Connection>
             <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref14" />
-            <InPort type="org.inviwo.ImageInport" identifier="img_graysc.fraginport" reference="ref0" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref9" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref14" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref13" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="img_findedges.fragoutport" reference="ref6" />
+            <InPort type="org.inviwo.ImageInport" identifier="img_normalize.fraginport" reference="ref0" />
         </Connection>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="outport" reference="ref18" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref16" />
-        </Connection>
-        <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref12" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport0" reference="ref4" />
-        </Connection>
-        <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref12" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref17" />
-        </Connection>
-        <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="img_findedges.fragoutport" reference="ref10" />
-            <InPort type="org.inviwo.ImageInport" identifier="img_normalize.fraginport" reference="ref2" />
-        </Connection>
-        <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="img_normalize.fragoutport" reference="ref3" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref15" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="img_normalize.fragoutport" reference="ref1" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref2" />
         </Connection>
     </Connections>
     <InviwoSetup>
@@ -659,6 +659,11 @@
                     <Processor content="org.inviwo.VolumeBinary" />
                 </Processors>
             </Module>
+            <Module name="ABufferGL">
+                <Processors>
+                    <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
+                </Processors>
+            </Module>
             <Module name="zlib" />
             <Module name="assimp" />
             <Module name="Base">
@@ -706,6 +711,12 @@
                 </Processors>
             </Module>
             <Module name="CImg" />
+            <Module name="Example">
+                <Processors>
+                    <Processor content="org.inviwo.ExampleProcessor" />
+                    <Processor content="org.inviwo.ExampleProgressBar" />
+                </Processors>
+            </Module>
             <Module name="FontRendering">
                 <Processors>
                     <Processor content="org.inviwo.TextOverlayGL" />
