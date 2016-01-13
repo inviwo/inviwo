@@ -28,7 +28,9 @@
 #*********************************************************************************
 
 import glob
+import os
 
+from .. util import *
 
 class Test:
 	def __init__(self, kind, name = "", module = "", repo = "", path=""):
@@ -45,12 +47,34 @@ class Test:
 		elif self.kind == "repo":
 			return "Repo: " + self.repo + " Test: " + self.name
 
-
 	def getWorkspaces(self):
 		paths = glob.glob(self.path +"/*.inv")
 		return paths
 
 	def getImages(self):
 		imgs = glob.glob(self.path +"/*.png")
+		imgs = [os.path.relpath(x, self.path) for x in imgs]
 		return imgs
 		
+	def report(self, report):
+		report['module'] = self.module
+		report['name'] = self.name
+		report['path'] = self.path
+		report['script'] = self.script
+		return report
+
+	def makeOutputDir(self, base):
+		if not os.path.isdir(base):
+			raise RegressionError("Output dir does not exsist: " + dir)
+
+		if self.kind == "module" :
+			mkdir([base, self.module])
+			mkdir([base, self.module, self.name])
+			return toPath([base, self.module, self.name])
+
+		elif self.kind == "repo":
+			mkdir([base, self.repo])
+			mkdir([base, self.repo, self.name])
+			return toPath([base, self.repo, self.name])
+
+		raise RegressionError("Invalid Test kind")

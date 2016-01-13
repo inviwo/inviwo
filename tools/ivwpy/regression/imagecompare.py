@@ -39,9 +39,9 @@ class ImageCompare:
 
 		self.diff = 100
 		if image1.mode == image2.mode and image1.size == image2.size:
-			ncomponents = i1.size[0] * i1.size[1] * 3
-			pairs = zip(i1.getdata(), i2.getdata())
-			if len(i1.getbands()) == 1: # for gray-scale jpegs
+			ncomponents = image1.size[0] * image1.size[1] * 3
+			pairs = zip(image1.getdata(), image2.getdata())
+			if len(image1.getbands()) == 1: # for gray-scale jpegs
 				self.diff = sum(abs(p1-p2) for p1,p2 in pairs) * 100.0 / 255.0 / ncomponents
 			else:
 				self.diff = sum(abs(c1-c2) for p1,p2 in pairs for c1,c2 in zip(p1,p2)) * 100.0 / 255.0 / ncomponents

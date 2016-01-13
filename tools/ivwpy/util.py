@@ -39,6 +39,11 @@ def subDirs(path):
 def toPath(list):
 	return "/".join(list)
 
+def mkdir(path):
+	if isinstance(path, (list, tuple)):
+		path = "/".join(path)
+	if not os.path.isdir(path):
+		os.mkdir(path)
 
 def partition(l, n):
     """Yield successive n-sized chunks from l."""
@@ -102,12 +107,20 @@ def print_warn(mess, **kwargs):
 def print_info(mess, **kwargs):
 		cprint(Color.cyan, mess, **kwargs)
 
-def print_pair(a,b, width=20):
+def print_pair(a,b, width=15):
 	print_info("{:>{width}} : ".format(a, width=width), end="")
 	print("{:<}".format(b))
 
 
+def dict2css(data):
+	res = ""
+	for k,v in data.items():
+		res += k + " {\n"
+		for k,v in v.items():
+			res += "    " + k + " : " + v + ";\n"
+		res += "}\n"
 
+	return res		
 
 
 

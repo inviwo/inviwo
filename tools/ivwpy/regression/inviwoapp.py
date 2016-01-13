@@ -30,55 +30,27 @@
 import io
 import os
 import time
-import glob
 import subprocess
-import datetime
 
 from . error import *
-from . imagecompare import *
 from .. util import *
 
-def mkdir(path):
-	if isinstance(path, (list, tuple)):
-		path = "/".join(path)
-	if not os.path.isdir(path):
-		os.mkdir(path)
-
-def makeOutputDir(base, test):
-	if not os.path.isdir(base):
-		raise RegressionError("Output dir does not exsist: " + dir)
-
-	if test.kind == "module" :
-		mkdir([base, test.module])
-		mkdir([base, test.module, test.name])
-		return "/".join([base, test.module, test.name])
-
-	elif test.kind == "repo":
-		mkdir([base, test.repo])
-		mkdir([base, test.repo, test.name])
-		return "/".join([base, test.repo, test.name])
-
-	raise RegressionError("Invalid Test kind")
+class RunSettings:
+	def __init__(self, timeout = 15):
+		self.timeout = timeout
 
 class InviwoApp:
-	def __init__(self, appPath):
+	def __init__(self, appPath, settings = RunSettings()):
 		self.program = appPath
+		self.settings = settings
 
-	def runTest(self, test, output):
-		print_info("#"*80)
-
-		
-				
-		outputdir = makeOutputDir(output, test)
+	def runTest(self, test, report, output):
+		outputdir = test.makeOutputDir(output)
 
 		for workspace in test.getWorkspaces():
 
 			starttime = time.time()
-
-			report = {}
-			report['module'] = test.module
-			report['name'] = test.name
-			report['date'] = datetime.datetime.now().isoformat()
+			report['outputdir'] = outputdir
 
 			command = [self.program, 
 						"-q",
@@ -100,28 +72,18 @@ class InviwoApp:
 			)
 
 			try:
-				report["output"], report["errors"] = process.communicate(timeout=15)
+				report["output"], report["errors"] = process.communicate(timeout=self.settings.timeout)
 			except subprocess.TimeoutExpired as e:
 				report['timeout'] = True
 				process.kill()
 				report["output"], report["errors"] = process.communicate()
 			
-			report['log'] = outputdir + "log.txt"
+			report['log'] = outputdir + "/log.txt"
+			report['screenshot'] = outputdir + "/screenshot.png"
 			report['returncode'] = process.returncode
 			report['elapsed_time'] = time.time() - starttime
 
-			for k,v in report.items():
-				print_pair(k,str(v))
-
-
-			refimgs = test.getImages()
-			imgs = glob.glob(outputdir +"/*.png")
-
-			print(refimgs)
-			print(imgs)
-
-
-			print()
+			return report
 
 
 

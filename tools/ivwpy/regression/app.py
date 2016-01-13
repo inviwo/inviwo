@@ -28,24 +28,31 @@
 #*********************************************************************************
 import os
 import itertools
+import glob
+import datetime
+import json
+
+from pdb import set_trace as bp
 
 from . import inviwoapp
 from . import test
-from .. import util
+from .. util import *
+from . imagecompare import *
+from . generatereport import *
 
 
 def findModuleTest(path):
 	# assume path points to a folder of modules.
 	# look in folder path/<module>/tests/regression/*
 	tests = []
-	for moduleDir in util.subDirs(path):
-		regressionDir = util.toPath([path, moduleDir, "tests", "regression"])
-		for testDir in util.subDirs(regressionDir):
+	for moduleDir in subDirs(path):
+		regressionDir = toPath([path, moduleDir, "tests", "regression"])
+		for testDir in subDirs(regressionDir):
 			tests.append(test.Test(
 				kind = "module", 
 				name = testDir,
 				module = moduleDir,
-				path = util.toPath([regressionDir, testDir]) 
+				path = toPath([regressionDir, testDir]) 
 				))
 	return tests
 
@@ -53,28 +60,136 @@ def findRepoTest(path):
 	# assume path points to a repo.
 	# look for tests in path/tests/regression
 	tests = []
-	regressionDir = util.toPath([path, "tests", "regression"])
-	for testDir in util.subDirs(regressionDir):
+	regressionDir = toPath([path, "tests", "regression"])
+	for testDir in subDirs(regressionDir):
 		tests.append(test.Test(
 					kind = "repo", 
 					name = testDir,
 					repo = path.split("/")[-1],
-					path = util.toPath([regressionDir, testDir]) 
+					path = toPath([regressionDir, testDir]) 
 					))
 	return tests
 
+class ReportTest:
+	def __init__(self, key, testfun, message):
+		self.key = key
+		self.testfun = testfun
+		self.message = message
+
+	def test(self, report):
+		return self.testfun(report[self.key])
+
+	def failures(self):
+		return [self.message]
+
+class ReportImageTest(ReportTest):
+	def __init__(self, key):
+		self.key = key
+		self.message = []
+
+	def test(self, report):
+		imgs = report[self.key]
+		for img in imgs:
+			if img["difference"] != 0.0:
+				self.message.append(
+					"Image {image} has non-zero ({difference}%) difference".format(**img))
+
+		return len(self.message) == 0
+
+	def failures(self):
+		return self.message
+
 
 class App:
-	def __init__(self, appPath, outputPath, moduleTestPaths = [], repoTestPaths = []):
-		self.app = inviwoapp.InviwoApp(appPath)
+	def __init__(self, appPath, outputPath, moduleTestPaths = [], 
+				 repoTestPaths = [], settings = inviwoapp.RunSettings()):
+		self.app = inviwoapp.InviwoApp(appPath, settings)
 		self.output = outputPath
-		tests = [findModuleTest(p) for p in moduleTestPaths] + [findRepoTest(p) for p in repoTestPaths]
+		tests = ([findModuleTest(p) for p in moduleTestPaths] 
+				 + [findRepoTest(p) for p in repoTestPaths])
 		self.tests = list(itertools.chain(*tests))
 
+	def runTest(self, test):
+		print_info("#"*80)
+		print_pair("Regression", test.toString())
+
+		report = {}
+		report['date'] = datetime.datetime.now().isoformat()
+		report = test.report(report)
+
+		report = self.app.runTest(test, report, self.output)
+		report = self.compareImages(test, report)
+
+		report = self.checkReport(report)
+
+		for k,v in report.items():
+			print_pair(k,str(v))
+		print()
+		return report
+
+	def runTests(self, testrange = slice(0,None), testfilter = lambda x: True):
+		tests = self.tests[testrange]
+		tests = list(filter(testfilter, tests))
+
+		print_info("Running {} tests".format(len(tests)))
+		self.reports = []
+		for test in tests:
+			report = self.runTest(test)
+			self.reports.append(report)
+
+	def compareImages(self, test, report):
+		refimgs = test.getImages()
+		refs = set(refimgs)
+
+		outputdir = test.makeOutputDir(self.output)
+		imgs = glob.glob(outputdir +"/*.png")
+		imgs = [os.path.relpath(x, outputdir) for x in imgs]
+		imgs = set(imgs) - set(["screenshot.png"])
+
+		report["refs"] = list(refimgs)
+		report["imgs"] = list(imgs)
+		report['missing_refs'] = list(imgs - refs)
+		report['missing_imgs'] = list(refs - imgs)
+
+		imgtests = []
+		for img in imgs:
+			if img in refs:
+				comp = ImageCompare(toPath([outputdir, img]), toPath([test.path, img]))
+				diff = comp.difference()
+				imgtest = {
+					'image' : img,
+					'difference' : diff
+				}
+				imgtests.append(imgtest)
+
+		report['image_tests'] = imgtests
+
+		return report
 
 
-	def runTests(self):
-		for test in self.tests:
-			self.app.runTest(test, self.output)
+	def checkReport(self, report):
+		tests = [
+			ReportTest('returncode', lambda x : x == 0, "Non zero retuncode"),
+			ReportTest('timeout', lambda x : x == False, "Inviwo ran out of time"),
+			ReportTest('missing_refs', lambda x : len(x) == 0, "Missing refecence image"),
+			ReportTest('missing_imgs', lambda x : len(x) == 0, "Missing test image"),
+			ReportImageTest('image_tests')
+		]
+		failures = []
+		for t in tests:
+			if not t.test(report):
+				failures += t.failures()
+
+		report['failures'] = failures
+
+		return report
 
 
+	def saveJson(self, file):
+		with open(file, 'w') as f:
+			json.dump(self.reports, f, indent=4, separators=(',', ': '))
+
+	def saveHtml(self, file):
+	    with open(file, 'w') as f:
+	    	html = HtmlReport(self.reports)
+    		f.write(html.getHtml())
