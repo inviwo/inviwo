@@ -49,9 +49,8 @@ def findModuleTest(path):
 		regressionDir = toPath([path, moduleDir, "tests", "regression"])
 		for testDir in subDirs(regressionDir):
 			tests.append(test.Test(
-				kind = "module", 
 				name = testDir,
-				module = moduleDir,
+				group = moduleDir,
 				path = toPath([regressionDir, testDir]) 
 				))
 	return tests
@@ -63,9 +62,8 @@ def findRepoTest(path):
 	regressionDir = toPath([path, "tests", "regression"])
 	for testDir in subDirs(regressionDir):
 		tests.append(test.Test(
-					kind = "repo", 
 					name = testDir,
-					repo = path.split("/")[-1],
+					group = path.split("/")[-1],
 					path = toPath([regressionDir, testDir]) 
 					))
 	return tests
@@ -80,7 +78,7 @@ class ReportTest:
 		return self.testfun(report[self.key])
 
 	def failures(self):
-		return [self.message]
+		return [self.key, [self.message]]
 
 class ReportImageTest(ReportTest):
 	def __init__(self, key):
@@ -97,7 +95,24 @@ class ReportImageTest(ReportTest):
 		return len(self.message) == 0
 
 	def failures(self):
-		return self.message
+		return [self.key, self.message]
+
+class ReportLogTest(ReportTest):
+	def __init__(self, key):
+		self.key = key
+		self.message = []
+
+	def test(self, report):
+		with open(report[self.key], 'r') as f:
+			lines = f.readlines()
+			for line in lines:
+				if "Error:" in line:
+					self.message.append(line)
+			
+		return len(self.message) == 0
+
+	def failures(self):
+		return [self.key, self.message]
 
 
 class App:
@@ -173,14 +188,20 @@ class App:
 			ReportTest('timeout', lambda x : x == False, "Inviwo ran out of time"),
 			ReportTest('missing_refs', lambda x : len(x) == 0, "Missing refecence image"),
 			ReportTest('missing_imgs', lambda x : len(x) == 0, "Missing test image"),
-			ReportImageTest('image_tests')
+			ReportImageTest('image_tests'),
+			ReportLogTest('log')
 		]
 		failures = []
+		successes = []
 		for t in tests:
 			if not t.test(report):
-				failures += t.failures()
+				failures.append(t.failures())
+			else:
+				successes.append(t.key)
+
 
 		report['failures'] = failures
+		report['successes'] = successes
 
 		return report
 
@@ -191,5 +212,10 @@ class App:
 
 	def saveHtml(self, file):
 	    with open(file, 'w') as f:
-	    	html = HtmlReport(self.reports)
+	    	reltopath = os.path.dirname(file)
+	    	html = HtmlReport(self.reports, reltopath)
     		f.write(html.getHtml())
+
+	def updateDatabase(self, file):
+		1+1
+		return

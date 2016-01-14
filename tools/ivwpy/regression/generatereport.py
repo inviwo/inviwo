@@ -34,9 +34,10 @@ import os
 from .. util import *
 
 class HtmlReport:
-	def __init__(self, reports):
+	def __init__(self, reports, relto = None):
 		self.doc, tag, text = yattag.Doc().tagtext()
 		self.style = self.reportStyle()
+		self.relto = relto
 
 		self.doc.asis("<!DOCTYPE html>")
 		self.doc.stag("meta", charset = "utf-8")
@@ -58,13 +59,12 @@ class HtmlReport:
 				with tag('dl'):
 					for report in reports:
 						ok = len(report['failures']) == 0
-						with tag('dt', klass=("toggle test " + ("ok" if ok else "fail"))):
-							text(("OK " if ok else "Fail ") + report['module'] + "/" + report['name'])
-						with tag('dd'):
-							with tag('div', klass = "holder"):
-								text("")
-							with tag('div', klass = "content"):
-								self.doc.asis(self.reportToHtml(report))
+						self.doc.asis(
+							dd(("OK " if ok else "Fail ") + report['group'] + "/" + report['name'],
+								self.reportToHtml(report),
+								toggle = True,
+								status = ("ok" if ok else "fail")
+							))
 
 	def reportStyle(self):
 		css = {
@@ -78,18 +78,6 @@ class HtmlReport:
 		  },
 		  "dt.test": {
 		    "font-weight": "bold"
-		  },
-		  "dt.inline": {
-		    "float": "left",
-		    "width": "15%",
-		    "padding": "0",
-		    "margin": "0"
-		  },
-		  "dd.inline": {
-		    "float": "left",
-		    "width": "85%",
-		    "padding": "0",
-		    "margin": "0"
 		  },
 		  ".ok": {
 		    "background-color": "#ddffdd"
@@ -109,97 +97,45 @@ class HtmlReport:
 	def reportToHtml(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
 
-		def content(a):
-			with tag('div', klass = "holder"):
-				text(a.split("\n")[0][:50] + "...")
-			with tag('div', klass = "content"):
-				text(a)
-
-		def dlpair(a,b, inline = False, toggle = False):
-			ic = "inline" if inline else ""
-			tc = "toggle" if toggle else ""
-			
-			with tag('dt', klass = ic + " " + tc): text(a)
-			with tag('dd', klass = ic): content(b) if toggle else text(b)
-
-		def kvpair(key, opts = {}):
-			if isinstance(report[key], str):
-				if len(report[key]) == 0: val = "None"
-				else: val = report[key]
-			elif isinstance(report[key], list):
-				if len(report[key]) == 0: val = "None"
-				else: val = ", ".join(report[key])
-			elif isinstance(report[key], float):
-				val = "{:6f}".format(report[key])
-			elif isinstance(report[key], int):
-				val = "{:}".format(report[key])
-
-			dlpair(key.capitalize().replace("_", " "), val, **opts)
-
-
-		def image(img):
-			doc.stag('img', src = "file://" + report["outputdir"] + "/" + img["image"], alt = "img" )
-			doc.stag('img', src = "file://" + report["path"] + "/" + img["image"] , alt = "ref")
-			
-		def screenshot():
-			with tag('dt', klass = "toggle"): 
-				text("Screenshot")
-			with tag('dd'):
-				with tag('div', klass = "holder"):
-					text("...")
-				with tag('div', klass = "content"):
-					doc.stag('img', src = "file://" + report["screenshot"], alt = "img" )
-			
-
 		with tag('dl'):
 			keys = [
-				["date"         , {"toggle" : False , "inline" : True}],
-				["failures"     , {"toggle" : False , "inline" : True}],
-				["path"         , {"toggle" : False , "inline" : True}],
-				["elapsed_time" , {"toggle" : False , "inline" : True}],
-				["command"      , {"toggle" : True , "inline" : True}],
-				["returncode"   , {"toggle" : False , "inline" : True}],
-				["missing_imgs" , {"toggle" : False , "inline" : True}],
-				["missing_refs" , {"toggle" : False , "inline" : True}],
-				["output"       , {"toggle" : True ,  "inline" : True}],
-				["errors"       , {"toggle" : True ,  "inline" : True}]
+				["date"         , {"toggle" : False}],
+				["failures"     , {"toggle" : False}],
+				["path"         , {"toggle" : False}],
+				["elapsed_time" , {"toggle" : False}],
+				["command"      , {"toggle" : True}],
+				["returncode"   , {"toggle" : False}],
+				["missing_imgs" , {"toggle" : False}],
+				["missing_refs" , {"toggle" : False}],
+				["output"       , {"toggle" : True }],
+				["errors"       , {"toggle" : True }]
 			]
 
 			for key, opts in keys:
-				kvpair(key, opts)
-			
-			with open(report['log'], 'r') as f:
-				with tag('dt', klass = "toggle"): 
-					text("Log")
-				with tag('dd'):
-					loghtml = f.read()
-					with tag('div', klass = "holder"):
-						doc.asis("Error: " + str(loghtml.count("Error:")) 
-							      + ", Warnings: " + str(loghtml.count("Warn:"))
-							      + ", Information: " + str(loghtml.count("Info:"))
-							      )
-					with tag('div', klass = "content"):
-						doc.asis(loghtml)
-				
-			screenshot()
+				val = toString(report[key])
+				if key in report['successes']: opts["status"] = "ok"
+				if key in [x[0] for x in report['failures']]: opts["status"] = "fail"
 
-			with tag('dt', klass = "toggle"): text("Images")
-			with tag('dd'):
-				with tag('div', klass = "holder"):
-					ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
-					fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
-					text(str(ok) + " ok images, " + str(fail) + " failed image tests")
-				with tag('div', klass = "content"):
-					with tag('dl'):
-						for img in report["image_tests"]:
-							ok = img["difference"] == 0.0
-							with tag('dt', klass=("toggle image " + "ok" if ok else "fail")):
-								text("{} Diff: {:3.3f}% {}".format("Ok" if ok else "Fail",img["difference"], img["image"]))
-							with tag('dd'):
-								with tag('div', klass = "holder"):
-									text("")
-								with tag('div', klass = "content"):
-									image(img)
+				doc.asis(dd(formatKey(key), val, abr(val), **opts))
+							
+			with open(report['log'], 'r') as f:
+				loghtml = f.read()
+				err = loghtml.count("Error:")
+				warn = loghtml.count("Warn:")
+				info = loghtml.count("Info:")
+
+				short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
+				doc.asis(dd("Log", loghtml, short, toggle=True,
+					status = "ok" if err == 0 else "fail")) 
+
+			doc.asis(dd("Screenshot", image(report["screenshot"], "Screenshot"), "...", toggle=True))	
+
+			ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
+			fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
+			short = (str(ok) + " ok images, " + str(fail) + " failed image tests")
+			doc.asis(dd("Images", 
+				genImages(report["image_tests"], report["outputdir"], report["path"]),
+				short, toggle=True, status = "ok" if fail == 0 else "fail"))
 
 		return doc.getvalue()
 
@@ -211,19 +147,80 @@ class HtmlReport:
 		return """
 $(document).ready(function() {
    	$('dt.toggle').click(function() {
-   			if($(this).next().children("div.content").is(':visible')) {
-   				$(this).next().children("div.content").hide()
+   			if($(this).next().children("div.longform").is(':visible')) {
+   				$(this).next().children("div.longform").hide()
    			}else {
-           		$(this).next().children("div.content").fadeToggle(500)
+           		$(this).next().children("div.longform").fadeToggle(500)
            	}
 
-           	if($(this).next().children("div.holder").is(':visible')) {
-   				$(this).next().children("div.holder").hide()
+           	if($(this).next().children("div.shortform").is(':visible')) {
+   				$(this).next().children("div.shortform").hide()
    			}else {
-           		$(this).next().children("div.holder").fadeToggle(500)
+           		$(this).next().children("div.shortform").fadeToggle(500)
            	}
     });
-	$('div.content').hide()
-	$('div.holder').show()
+	$('div.longform').hide()
+	$('div.shortform').show()
  });
 """
+
+
+def toString(val):
+	if val is None:
+		return "None"
+	if isinstance(val, str):
+		if len(val) == 0: return "None"
+		else: return val
+	elif isinstance(val, list):
+		if len(val) == 0: return "None"
+		else: return "(" + ", ".join(map(toString, val)) +")"
+	elif isinstance(val, float):
+		return "{:6f}".format(val)
+	elif isinstance(val, int):
+		return "{:}".format(val)
+
+def abr(text):
+	abr = text.split("\n")[0][:50]
+	return abr + ("..." if len(text.split("\n")) > 1 or len(text) > 50 else "")
+
+def formatKey(key):
+	return key.capitalize().replace("_", " ")
+
+def image(path, alt = ""):
+	doc, tag, text = yattag.Doc().tagtext()
+	doc.stag('img', src = "file://" + os.path.abspath(path), alt = alt)
+	return doc.getvalue()
+
+def dd(name, content, alt = "", status="", toggle = False):
+	doc, tag, text = yattag.Doc().tagtext()
+	tc = "toggle" if toggle else ""
+	with tag('dt', klass = tc + " " + status): 
+		text(name)
+	with tag('dd'):
+		if toggle:
+			with tag('div', klass = "shortform"):
+				doc.asis(alt)
+			with tag('div', klass = "longform"):
+				doc.asis(content)
+		else:
+			doc.asis(content)
+
+	return doc.getvalue()
+
+def testImages(testimg, refimg):
+	doc, tag, text = yattag.Doc().tagtext()
+	doc.asis(image(testimg, "test image"))
+	doc.asis(image(refimg, "reference image"))
+	return doc.getvalue()
+
+def genImages(imgs, testdir, refdir):
+	doc, tag, text = yattag.Doc().tagtext()
+	with tag('dl'):
+		for img in imgs:
+			ok = img["difference"] == 0.0
+			doc.asis(dd("{} Diff: {:3.3f}% {}".format("Ok" if ok else "Fail",img["difference"], img["image"]),
+				testImages(toPath([testdir, img["image"]]), toPath([refdir, img["image"]])),
+				toggle = True,
+				status = "ok" if ok else "fail"
+				))
+	return doc.getvalue()

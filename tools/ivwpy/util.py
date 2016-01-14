@@ -28,6 +28,7 @@
 #*********************************************************************************
 
 import os
+import itertools
 from enum import Enum, unique
 
 def subDirs(path):
@@ -123,5 +124,17 @@ def dict2css(data):
 	return res		
 
 
+def pad_infinite(iterable, padding=None):
+   return itertools.chain(iterable, itertools.repeat(padding))
 
+def pad(iterable, size, padding=None):
+   return itertools.islice(pad_infinite(iterable, padding), size)
 
+def makeSlice(string):
+	def toInt(s):
+		try:
+			return int(s)
+		except ValueError:
+			return None
+
+	return slice(*list(pad(map(toInt, string.split(":")), 3)))

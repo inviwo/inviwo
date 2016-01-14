@@ -27,46 +27,19 @@
 # 
 #*********************************************************************************
 
-import glob
 import os
+import sys
 
-from .. util import *
+import datetime
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-class Test:
-	def __init__(self, name, group, path):
-		self.group = group
-		self.path = path
-		self.name = name
-		self.script = ""
+# Table declarations
 
-	def __str__(self):
-		return self.toString()
+SqlBase = declarative_base()
 
-	def toString(self):
-		return self.group + "/" + self.name
-
-	def getWorkspaces(self):
-		paths = glob.glob(self.path +"/*.inv")
-		return paths
-
-	def getImages(self):
-		imgs = glob.glob(self.path +"/*.png")
-		imgs = [os.path.relpath(x, self.path) for x in imgs]
-		return imgs
-		
-	def report(self, report):
-		report['group'] = self.group
-		report['name'] = self.name
-		report['path'] = self.path
-		report['script'] = self.script
-		return report
-
-	def makeOutputDir(self, base):
-		if not os.path.isdir(base):
-			raise RegressionError("Output dir does not exsist: " + dir)
-
-		mkdir([base, self.group])
-		mkdir([base, self.group, self.name])
-		return toPath([base, self.group, self.name])
-
-		raise RegressionError("Invalid Test kind")
+class Test(SqlBase):
+	__tablename__ = 'Test'
+	
