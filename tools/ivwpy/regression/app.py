@@ -39,6 +39,7 @@ from . import test
 from .. util import *
 from . imagecompare import *
 from . generatereport import *
+from . database import *
 
 
 def findModuleTest(path):
@@ -168,13 +169,13 @@ class App:
 		for img in imgs:
 			if img in refs:
 				comp = ImageCompare(toPath([outputdir, img]), toPath([test.path, img]))
-				comp.saveDifferenceImage(toPath([outputdir, addPostfix(img, "-diff")]))
+				mkdir(toPath([outputdir, "imgdiff"]))
+				comp.saveDifferenceImage(toPath([outputdir, "imgdiff", img]))
 
 				diff = comp.difference()
 				imgtest = {
 					'image' : img,
 					'difference' : diff,
-					'imagediff' : addPostfix(img, "-diff")
 				}
 				imgtests.append(imgtest)
 
@@ -225,5 +226,33 @@ class App:
     		f.write(html.getHtml())
 
 	def updateDatabase(self, file):
-		1+1
-		return
+		db = Database(file)
+		for report in self.reports:
+			dbtest = db.getOrAddTest(report["group"], report["name"])
+			dbtime = db.getOrAddQuantity("time", "s")
+			db_elapsed_time = db.getOrAddTSeries(dbtest, dbtime, "elapsed_time")
+			db.addMeasurement(db_elapsed_time, report["elapsed_time"])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

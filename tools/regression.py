@@ -163,6 +163,7 @@ if __name__ == '__main__':
 
 	try: 
 		app.runTests(testrange = testrange, testfilter = testfilter)
+		app.updateDatabase(output + "/report.sqlite")
 		app.saveJson(output+"/report.json")
 		app.saveHtml(output+"/report.html")
 	except ivwpy.regression.error.MissingInivioAppError as err:

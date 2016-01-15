@@ -242,7 +242,7 @@ def genImages(imgs, testdir, refdir):
 			doc.asis(dd("{} Diff: {:3.3f}% {}".format("Ok" if ok else "Fail",img["difference"], img["image"]),
 				testImages(toPath([testdir, img["image"]]), 
 						   toPath([refdir, img["image"]]),
-						   toPath([testdir, img["imagediff"]])),
+						   toPath([testdir, "imgdiff", img["image"]])),
 				toggle = True,
 				status = "ok" if ok else "fail"
 				))

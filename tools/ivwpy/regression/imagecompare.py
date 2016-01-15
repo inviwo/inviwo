@@ -53,7 +53,9 @@ class ImageCompare:
 		diffimg = ImageChops.difference(self.image1, self.image2)
 		if showBox:
 			imageDraw = ImageDraw.Draw(diffimg)
-			imageDraw.rectangle(diffimg.getbbox(), outline = "red")
+			bbox = diffimg.getbbox()
+			if bbox != None:
+				imageDraw.rectangle(bbox, outline = "red")
 
 		diffimg.save(file)
 

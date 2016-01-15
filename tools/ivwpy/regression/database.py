@@ -33,13 +33,163 @@ import sys
 import datetime
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import sessionmaker, relationship, backref 
+from sqlalchemy import func
 
 # Table declarations
 
 SqlBase = declarative_base()
 
+class Group(SqlBase):
+	__tablename__ = 'group'
+	id = Column(Integer, primary_key=True)
+	created = Column(DateTime, nullable=False, default=datetime.datetime.now)
+	name = Column(String, nullable=False, unique=True)
+
+class Quantity(SqlBase):
+	__tablename__ = "quantity"
+	id = Column(Integer, primary_key=True)
+	created = Column(DateTime(), nullable=False, default=datetime.datetime.now)
+	name = Column(String(), nullable=False, unique=True)
+	unit = Column(String(), nullable=False)
+
 class Test(SqlBase):
-	__tablename__ = 'Test'
+	__tablename__ = 'test'
+	id = Column(Integer, primary_key=True)
+	created = Column(DateTime, nullable=False, default=datetime.datetime.now)
+	group_id = Column(Integer, ForeignKey('group.id'))
+	group = relationship(Group, backref=backref('tests', uselist=True))
+	name = Column(String, nullable=False)
+
+class Series(SqlBase):
+	__tablename__ = "series"
+	id = Column(Integer, primary_key=True)
+	created = Column(DateTime, nullable=False, default=datetime.datetime.now)
+
+	test_id = Column(Integer, ForeignKey('test.id'))
+	test = relationship(Test, backref=backref('serieses', uselist=True))
+
+	quantity_id = Column(Integer, ForeignKey('quantity.id'))
+	quantity = relationship(Quantity, backref=backref('serieses', uselist=True))
+
+	name = Column(String(), nullable=False)
+
+class Measurement(SqlBase):
+	__tablename__ = "measurement"
+	id = Column(Integer, primary_key=True)
+	created = Column(DateTime, nullable=False, default=datetime.datetime.now)
+	series_id = Column(Integer, ForeignKey('series.id'))
+	series = relationship(Series, backref=backref('measurements', uselist=True))
+	value = Column(Float, nullable=False)
 	
+
+class Database():
+	def __init__(self, dbfile):
+		self.dbfile = dbfile
+		if not os.path.exists(self.dbfile):  # open 
+			self.engine = create_engine('sqlite:///' + dbfile)
+			SqlBase.metadata.create_all(self.engine)
+		else:                            # create db 
+			self.engine = create_engine('sqlite:///' + dbfile)
+			SqlBase.metadata.bind = self.engine
+
+		self.session = sessionmaker(bind=self.engine)()
+
+	def getOrAddGroup(self, name):
+		group = self.session.query(Group).filter(Group.name == name).one_or_none();
+		if group == None:
+			group = Group(name = name)
+			self.session.add(group)
+			self.session.commit()
+		return group
+
+	def getOrAddTest(self, group, name):
+		if isinstance(group, str): group = self.getOrAddGroup(group)
+		test = self.session.query(Test).filter(Test.name == name, Test.group == group).one_or_none();
+		if test == None:
+			test = Test(name = name, group = group)
+			self.session.add(test)
+			self.session.commit()
+		return test
+
+	def getOrAddQuantity(self, name, unit):
+		quantity = self.session.query(Quantity).filter(Quantity.name == name).one_or_none();
+		if quantity == None:
+			quantity = Quantity(name = name, unit = unit)
+			self.session.add(quantity)
+			self.session.commit()
+		return quantity
+
+	def getOrAddTSeries(self, test, quantity, name):
+		series = self.session.query(Series).filter(Series.name == name, Series.test == test, Series.quantity == quantity).one_or_none();
+		if series == None:
+			series = Series(name = name, test = test, quantity = quantity)
+			self.session.add(series)
+			self.session.commit()
+		return series
+
+	def addMeasurement(self, series, value):
+		m = Measurement(series = series, value = value)
+		self.session.add(m)
+		self.session.commit()
+
+	def getGroups(self):
+		return self.session.query(Group).all()
+
+	def getSeries(self, groupname, testname):
+		return self.session.query(Series).join(Test).join(Group).filter(Test.name == testname, Group.name == groupname).all()
+
+
+if __name__ == '__main__':
+	print("Start")
+	#db = DataBase("/Users/petst/Work/Projects/Inviwo-Developent/Private/regress/regress-test.sqlite")
+	db = Database("")
+
+
+	grp1 = Group(name="base")
+
+	test1 = Test(name = "test1", group = grp1)
+	test2 = Test(name = "test2", group = grp1)
+	
+	qtime = Quantity(name = "time", unit = "s")
+	qfreq = Quantity(name = "frequency", unit = "Hz")
+
+	s1 = Series(name = "runtime", test = test1, quantity = qtime)
+	s2 = Series(name = "framerate", test = test1, quantity = qfreq)
+
+	s3 = Series(name = "runtime", test = test2, quantity = qtime)
+	s4 = Series(name = "framerate", test = test2, quantity = qfreq)
+
+	m1 = [Measurement(series = s1, value = x) for x in range(0,10)]
+	m2 = [Measurement(series = s2, value = 2*x) for x in range(0,10)]
+
+	m3 = [Measurement(series = s3, value = x/10) for x in range(0,10)]
+	m4 = [Measurement(series = s4, value = 100*x) for x in range(0,10)]
+
+	s = db.session
+	s.add(test1)
+	s.add(test2)
+	s.add(qtime)
+	s.add(qfreq)
+
+	s.add(s1)
+	s.add(s2)
+	s.add(s3)
+	s.add(s4)
+
+	s.add_all(m1)
+	s.add_all(m2)
+	s.add_all(m3)
+	s.add_all(m4)
+	s.commit()
+
+	for t in s.query(Test):
+		print(t.name)
+
+	for s in db.getSeries("base", "test1"):
+		print(s.name)
+		for m in s.measurements:
+   			print(m.value, s.quantity.unit)
+
+	print("End")
