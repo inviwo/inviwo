@@ -165,7 +165,8 @@ if __name__ == '__main__':
 		app.runTests(testrange = testrange, testfilter = testfilter)
 		app.updateDatabase(output + "/report.sqlite")
 		app.saveJson(output+"/report.json")
-		app.saveHtml(output+"/report.html")
+		app.saveHtml(output+"/report.html", output + "/report.sqlite")
+		
 	except ivwpy.regression.error.MissingInivioAppError as err:
 		print_error(err.error)
 		print_info("Check that option '-i' is correct")

@@ -137,7 +137,11 @@ class Database():
 	def getGroups(self):
 		return self.session.query(Group).all()
 
-	def getSeries(self, groupname, testname):
+	def getSeries(self, groupname, testname, seriesname):
+		return self.session.query(Series).join(Test).join(Group).filter(Test.name == testname, Group.name == groupname, Series.name == seriesname).one()
+
+
+	def getSerieses(self, groupname, testname):
 		return self.session.query(Series).join(Test).join(Group).filter(Test.name == testname, Group.name == groupname).all()
 
 
@@ -187,7 +191,7 @@ if __name__ == '__main__':
 	for t in s.query(Test):
 		print(t.name)
 
-	for s in db.getSeries("base", "test1"):
+	for s in db.getSerieses("base", "test1"):
 		print(s.name)
 		for m in s.measurements:
    			print(m.value, s.quantity.unit)

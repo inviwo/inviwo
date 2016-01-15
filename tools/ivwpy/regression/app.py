@@ -219,10 +219,9 @@ class App:
 		with open(file, 'w') as f:
 			json.dump(self.reports, f, indent=4, separators=(',', ': '))
 
-	def saveHtml(self, file):
+	def saveHtml(self, file, dbfile):
 	    with open(file, 'w') as f:
-	    	reltopath = os.path.dirname(file)
-	    	html = HtmlReport(self.reports, reltopath)
+	    	html = HtmlReport(self.reports, dbfile)
     		f.write(html.getHtml())
 
 	def updateDatabase(self, file):
@@ -232,6 +231,8 @@ class App:
 			dbtime = db.getOrAddQuantity("time", "s")
 			db_elapsed_time = db.getOrAddTSeries(dbtest, dbtime, "elapsed_time")
 			db.addMeasurement(db_elapsed_time, report["elapsed_time"])
+
+
 
 
 

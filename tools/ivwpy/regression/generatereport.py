@@ -27,17 +27,20 @@
 # 
 #*********************************************************************************
 
+# javascript http://omnipotent.net/jquery.sparkline/
+
 import yattag # http://www.yattag.org
 import sys
 import os
 
 from .. util import *
+from . database import *
 
 class HtmlReport:
-	def __init__(self, reports, relto = None):
+	def __init__(self, reports, dbfile):
 		self.doc, tag, text = yattag.Doc().tagtext()
 		self.style = self.reportStyle()
-		self.relto = relto
+		self.db = Database(dbfile)
 
 		self.doc.asis("<!DOCTYPE html>")
 		self.doc.stag("meta", charset = "utf-8")
@@ -50,12 +53,16 @@ class HtmlReport:
 				with tag('script',language="javascript", type="text/javascript", 
 					src="https://code.jquery.com/jquery-2.2.0.min.js"): text("")
 
+				with tag('script',language="javascript", type="text/javascript", 
+					src="http://omnipotent.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js"): text("")
+
 				with tag('script',language="javascript", type="text/javascript"):
 					self.doc.asis(self.reportScrips())
 
 			with tag('body'):
 				with tag('h1'):
 					text("Regressions")
+
 				with tag('dl'):
 					for report in reports:
 						ok = len(report['failures']) == 0
@@ -108,6 +115,17 @@ class HtmlReport:
 		}
 		return dict2css(css)
 
+	def timeseries(self, report):
+		doc, tag, text = yattag.Doc().tagtext()
+		data = self.db.getSeries(report["group"], report["name"], "elapsed_time")
+		datastr = ", ".join([str(x.value) for x in data.measurements])
+
+		with tag('div'):
+			text("{:3.3f}s ".format(report["elapsed_time"]))
+			with tag('span', klass="sparkline"): text(datastr)
+		return doc.getvalue()
+
+
 	def reportToHtml(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
 
@@ -115,7 +133,6 @@ class HtmlReport:
 			keys = [
 				["date"         , {"toggle" : False}],
 				["path"         , {"toggle" : False}],
-				["elapsed_time" , {"toggle" : False}],
 				["command"      , {"toggle" : True}],
 				["returncode"   , {"toggle" : False}],
 				["missing_imgs" , {"toggle" : False}],
@@ -130,6 +147,9 @@ class HtmlReport:
 				if key in report['failures'].keys(): opts["status"] = "fail"
 
 				doc.asis(dd(formatKey(key), val, abr(val), **opts))
+
+			doc.asis(dd("Elapsed time", self.timeseries(report)))
+
 
 			nfail = len(report["failures"])
 			short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
@@ -178,9 +198,11 @@ $(document).ready(function() {
    			}else {
            		$(this).next().children("div.shortform").fadeToggle(500)
            	}
+           	$.sparkline_display_visible()
     });
-	$('div.longform').hide()
-	$('div.shortform').show()
+	$('div.longform').hide();
+	$('div.shortform').show();
+	$('.sparkline').sparkline();
  });
 """
 
@@ -229,9 +251,18 @@ def dd(name, content, alt = "", status="", toggle = False):
 
 def testImages(testimg, refimg, diffimg):
 	doc, tag, text = yattag.Doc().tagtext()
-	doc.asis(image(testimg, alt = "test image", klass ="test"))
-	doc.asis(image(refimg, alt = "reference image", klass ="test"))
-	doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
+	with tag('table'):
+		with tag('tr'):
+			with tag('th'): text("Test")
+			with tag('th'): text("Reference")
+			with tag('th'): text("Difference") 
+		with tag('tr'):
+			with tag('th'):
+				doc.asis(image(testimg, alt = "test image", klass ="test"))
+			with tag('th'):
+				doc.asis(image(refimg, alt = "reference image", klass ="test"))
+			with tag('th'):
+				doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
 	return doc.getvalue()
 
 def genImages(imgs, testdir, refdir):
