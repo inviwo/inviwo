@@ -30,10 +30,40 @@
 import os
 import argparse
 
-import ivwpy.regression.app
-import ivwpy.regression.inviwoapp
-
 from ivwpy.util import *
+
+# requirements
+# python3
+# yattag, http://www.yattag.org for html report generation
+# PIL for image comparison
+# sqlalchemy for database connection
+
+missing_modules = {}
+
+try:
+	import yattag
+except ImportError:
+	missing_modules['yattag'] = "needed for html generation"
+
+try:
+	import PIL
+except ImportError:
+	missing_modules['PIL'] = "needed for image comparison"
+
+try:
+	import sqlalchemy
+except ImportError:
+	missing_modules['sqlalchemy'] = "needed for database connection"
+
+if len(missing_modules)>0: 
+	print_error("Error: Missing python modules:")
+	for k,v in missing_modules.items():
+		print_error("    {:20s} {}".format(k,v))	
+	print_info("    To install run: 'pip3 install {}'".format(" ".join(missing_modules.keys())))
+	exit()
+
+import ivwpy.regression.app
+import ivwpy.regression.error
 
 # Ipython auto reaload
 # %load_ext autoreload
@@ -108,7 +138,8 @@ if __name__ == '__main__':
 	modulePaths = map(os.path.abspath, modulePaths)
 	repoPaths = map(os.path.abspath, repoPaths)
 	output = os.path.abspath(args.output)
-	
+	inviwopath = os.path.abspath(args.inviwo)
+
 	#base = "/Users/petst/Work/Projects/Inviwo-Developent/Private"
 	#ivwapp = base + "/builds/cmake-test/bin/Debug/inviwo.app/Contents/MacOS/inviwo"
 
@@ -120,21 +151,26 @@ if __name__ == '__main__':
 
 	#out = base + "/regress"
 
-	app = ivwpy.regression.app.App(args.inviwo, output, modulePaths, repoPaths, 
+	app = ivwpy.regression.app.App(inviwopath, output, modulePaths, repoPaths, 
 		settings=ivwpy.regression.inviwoapp.RunSettings(timeout=60))
 
 	testfilter = makeFilter(args.include, args.exclude)
 	testrange = makeSlice(args.slice)
 
 	if args.list:
-		print("List of regression tests")
-		print("-"*80)
-		selected = range(len(app.tests))[testrange]
-		for i, test in enumerate(app.tests):
-			active = "Enabled" if i in selected and testfilter(test) else "Disabled"
-			print("{:3d} {:8s} {}".format(i, active, test))
+		app.printTestList(testrange = testrange, testfilter = testfilter)
 		exit()
 
-	app.runTests(testrange = testrange, testfilter = testfilter)
-	app.saveJson(output+"/report.json")
-	app.saveHtml(output+"/report.html")
+	try: 
+		app.runTests(testrange = testrange, testfilter = testfilter)
+		app.saveJson(output+"/report.json")
+		app.saveHtml(output+"/report.html")
+	except ivwpy.regression.error.MissingInivioAppError as err:
+		print_error(err.error)
+		print_info("Check that option '-i' is correct")
+
+
+
+
+
+

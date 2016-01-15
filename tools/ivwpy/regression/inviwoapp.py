@@ -63,13 +63,16 @@ class InviwoApp:
 
 			report['timeout'] = False
 
-			process = subprocess.Popen(
-				command,
-				cwd = os.path.dirname(self.program),
-				stdout=subprocess.PIPE, 
-				stderr=subprocess.PIPE,
-				universal_newlines = True
-			)
+			try:
+				process = subprocess.Popen(
+					command,
+					cwd = os.path.dirname(self.program),
+					stdout=subprocess.PIPE, 
+					stderr=subprocess.PIPE,
+					universal_newlines = True
+				)
+			except FileNotFoundError:
+				raise MissingInivioAppError("Could not find inviwo app at: {}".format(self.program))
 
 			try:
 				report["output"], report["errors"] = process.communicate(timeout=self.settings.timeout)

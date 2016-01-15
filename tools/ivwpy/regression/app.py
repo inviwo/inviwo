@@ -78,7 +78,7 @@ class ReportTest:
 		return self.testfun(report[self.key])
 
 	def failures(self):
-		return [self.key, [self.message]]
+		return {self.key : [self.message]}
 
 class ReportImageTest(ReportTest):
 	def __init__(self, key):
@@ -95,7 +95,7 @@ class ReportImageTest(ReportTest):
 		return len(self.message) == 0
 
 	def failures(self):
-		return [self.key, self.message]
+		return {self.key : self.message}
 
 class ReportLogTest(ReportTest):
 	def __init__(self, key):
@@ -112,7 +112,7 @@ class ReportLogTest(ReportTest):
 		return len(self.message) == 0
 
 	def failures(self):
-		return [self.key, self.message]
+		return {self.key : self.message}
 
 
 class App:
@@ -125,32 +125,30 @@ class App:
 		self.tests = list(itertools.chain(*tests))
 
 	def runTest(self, test):
-		print_info("#"*80)
-		print_pair("Regression", test.toString())
-
 		report = {}
 		report['date'] = datetime.datetime.now().isoformat()
 		report = test.report(report)
 
 		report = self.app.runTest(test, report, self.output)
 		report = self.compareImages(test, report)
-
 		report = self.checkReport(report)
 
-		for k,v in report.items():
-			print_pair(k,str(v))
-		print()
 		return report
 
 	def runTests(self, testrange = slice(0,None), testfilter = lambda x: True):
-		tests = self.tests[testrange]
-		tests = list(filter(testfilter, tests))
-
-		print_info("Running {} tests".format(len(tests)))
+		selected = range(len(self.tests))[testrange]
 		self.reports = []
-		for test in tests:
-			report = self.runTest(test)
-			self.reports.append(report)
+		for i,test in enumerate(self.tests):
+			print_info("#"*80)
+			if i in selected and testfilter(test):
+				print_pair("Running test {:3d}".format(i), test.toString())
+				report = self.runTest(test)
+				self.reports.append(report)
+				for k,v in report.items():
+					print_pair(k,str(v))
+				print()
+			else:
+				print_pair("Skipping test {:3d}".format(i), test.toString())
 
 	def compareImages(self, test, report):
 		refimgs = test.getImages()
@@ -170,10 +168,13 @@ class App:
 		for img in imgs:
 			if img in refs:
 				comp = ImageCompare(toPath([outputdir, img]), toPath([test.path, img]))
+				comp.saveDifferenceImage(toPath([outputdir, addPostfix(img, "-diff")]))
+
 				diff = comp.difference()
 				imgtest = {
 					'image' : img,
-					'difference' : diff
+					'difference' : diff,
+					'imagediff' : addPostfix(img, "-diff")
 				}
 				imgtests.append(imgtest)
 
@@ -191,11 +192,11 @@ class App:
 			ReportImageTest('image_tests'),
 			ReportLogTest('log')
 		]
-		failures = []
+		failures = {}
 		successes = []
 		for t in tests:
 			if not t.test(report):
-				failures.append(t.failures())
+				failures.update(t.failures())
 			else:
 				successes.append(t.key)
 
@@ -205,6 +206,13 @@ class App:
 
 		return report
 
+	def printTestList(self, testrange = slice(0,None), testfilter = lambda x: True, printfun = print):
+		printfun("List of regression tests")
+		printfun("-"*80)
+		selected = range(len(self.tests))[testrange]
+		for i, test in enumerate(self.tests):
+			active = "Enabled" if i in selected and testfilter(test) else "Disabled"
+			printfun("{:3d} {:8s} {}".format(i, active, test))
 
 	def saveJson(self, file):
 		with open(file, 'w') as f:

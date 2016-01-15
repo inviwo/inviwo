@@ -27,6 +27,10 @@
 # 
 #*********************************************************************************
 
-class RegressionError:
+class RegressionError(BaseException):
+	def __init__(self, error):
+		self.error = error
+
+class MissingInivioAppError(RegressionError):
 	def __init__(self, error):
 		self.error = error

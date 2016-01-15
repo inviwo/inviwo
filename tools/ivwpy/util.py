@@ -40,6 +40,12 @@ def subDirs(path):
 def toPath(list):
 	return "/".join(list)
 
+def addPostfix(file, postfix):
+	parts = file.split(os.path.extsep)
+	parts[0]+= postfix
+	return os.path.extsep.join(parts)
+
+
 def mkdir(path):
 	if isinstance(path, (list, tuple)):
 		path = "/".join(path)

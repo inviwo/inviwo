@@ -90,6 +90,20 @@ class HtmlReport:
 		  },
 		  "dt.toggle:hover" : {
 		    "color": "#555555"
+		  },
+		  "img.test" : {
+   			"padding" : "1px",
+   			"border" : "1px solid #000000",
+    		"padding" : "0px",
+    		"background-image" : ("linear-gradient(90deg, rgba(200,200,200,.5) 50%, transparent 50%)," 
+    		                     + "linear-gradient(rgba(200,200,200,.5) 50%, transparent 50%)"),
+    		"background-size" : "30px 30px,30px 30px",
+    		"background-position" : "0, 0, 15 15px"
+		  },
+		  "img.diff" : {
+   			"padding" : "1px",
+   			"border" : "1px solid #000000",
+    		"padding" : "0px",
 		  }
 		}
 		return dict2css(css)
@@ -100,7 +114,6 @@ class HtmlReport:
 		with tag('dl'):
 			keys = [
 				["date"         , {"toggle" : False}],
-				["failures"     , {"toggle" : False}],
 				["path"         , {"toggle" : False}],
 				["elapsed_time" , {"toggle" : False}],
 				["command"      , {"toggle" : True}],
@@ -114,9 +127,16 @@ class HtmlReport:
 			for key, opts in keys:
 				val = toString(report[key])
 				if key in report['successes']: opts["status"] = "ok"
-				if key in [x[0] for x in report['failures']]: opts["status"] = "fail"
+				if key in report['failures'].keys(): opts["status"] = "fail"
 
 				doc.asis(dd(formatKey(key), val, abr(val), **opts))
+
+			nfail = len(report["failures"])
+			short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
+			doc.asis(dd("Faliures", 
+				genFailures(report["failures"]),
+				short, toggle=True, status = "ok" if nfail == 0 else "fail"))
+
 							
 			with open(report['log'], 'r') as f:
 				loghtml = f.read()
@@ -128,7 +148,7 @@ class HtmlReport:
 				doc.asis(dd("Log", loghtml, short, toggle=True,
 					status = "ok" if err == 0 else "fail")) 
 
-			doc.asis(dd("Screenshot", image(report["screenshot"], "Screenshot"), "...", toggle=True))	
+			doc.asis(dd("Screenshot", image(report["screenshot"], alt = "Screenshot", width="100%"), "...", toggle=True))	
 
 			ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
 			fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
@@ -186,9 +206,9 @@ def abr(text):
 def formatKey(key):
 	return key.capitalize().replace("_", " ")
 
-def image(path, alt = ""):
+def image(path, **opts):
 	doc, tag, text = yattag.Doc().tagtext()
-	doc.stag('img', src = "file://" + os.path.abspath(path), alt = alt)
+	doc.stag('img', src = "file://" + os.path.abspath(path), **opts)
 	return doc.getvalue()
 
 def dd(name, content, alt = "", status="", toggle = False):
@@ -207,10 +227,11 @@ def dd(name, content, alt = "", status="", toggle = False):
 
 	return doc.getvalue()
 
-def testImages(testimg, refimg):
+def testImages(testimg, refimg, diffimg):
 	doc, tag, text = yattag.Doc().tagtext()
-	doc.asis(image(testimg, "test image"))
-	doc.asis(image(refimg, "reference image"))
+	doc.asis(image(testimg, alt = "test image", klass ="test"))
+	doc.asis(image(refimg, alt = "reference image", klass ="test"))
+	doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
 	return doc.getvalue()
 
 def genImages(imgs, testdir, refdir):
@@ -219,8 +240,30 @@ def genImages(imgs, testdir, refdir):
 		for img in imgs:
 			ok = img["difference"] == 0.0
 			doc.asis(dd("{} Diff: {:3.3f}% {}".format("Ok" if ok else "Fail",img["difference"], img["image"]),
-				testImages(toPath([testdir, img["image"]]), toPath([refdir, img["image"]])),
+				testImages(toPath([testdir, img["image"]]), 
+						   toPath([refdir, img["image"]]),
+						   toPath([testdir, img["imagediff"]])),
 				toggle = True,
 				status = "ok" if ok else "fail"
 				))
 	return doc.getvalue()
+
+
+def failureList(errors):
+	doc, tag, text = yattag.Doc().tagtext()
+	with tag('ul'):
+		for error in errors:
+			with tag('li'):
+				text(error)
+	return doc.getvalue()
+
+def genFailures(failures):
+	doc, tag, text = yattag.Doc().tagtext()
+	with tag('dl'):
+		for key, errors in failures.items():
+			doc.asis(dd(key, failureList(errors), toggle = True, status = "fail"))
+	return doc.getvalue()
+
+
+
+
