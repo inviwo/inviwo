@@ -129,7 +129,7 @@ void DataSource<DataType, PortType>::load(bool deserialized) {
     }
 
     std::string ext = filesystem::getFileExtension(file_.get());
-    auto app = getNetwork()->getApplication();
+    auto app = InviwoApplication::getPtr();
     if (auto reader =
             app->getDataReaderFactory()->template getReaderForTypeAndExtension<DataType>(ext)) {
         try {
@@ -156,7 +156,7 @@ template <typename DataType, typename PortType>
 void inviwo::DataSource<DataType, PortType>::deserialize(Deserializer& d) {
     isDeserializing_ = true;
     Processor::deserialize(d);
-    auto app = getNetwork()->getApplication();
+    auto app = InviwoApplication::getPtr();
     auto extensions = app->getDataReaderFactory()->template getExtensionsForType<DataType>();
     file_.clearNameFilters();
     file_.addNameFilter(FileExtension("*", "All Files"));

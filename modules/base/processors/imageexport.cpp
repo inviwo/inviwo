@@ -89,7 +89,7 @@ void ImageExport::processExport() {
     if (image && !imageFile_.get().empty()) {
         if (auto layer = image->getColorLayer()) {
             std::string fileExtension = filesystem::getFileExtension(imageFile_.get());
-            auto app = getNetwork()->getApplication();
+            auto app = InviwoApplication::getPtr();
             if (auto writer = app->getDataWriterFactory()->getWriterForTypeAndExtension<Layer>(
                     fileExtension)) {
                 try {
