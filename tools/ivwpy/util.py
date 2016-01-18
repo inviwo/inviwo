@@ -29,6 +29,7 @@
 
 import os
 import itertools
+import datetime
 from enum import Enum, unique
 
 def subDirs(path):
@@ -144,3 +145,7 @@ def makeSlice(string):
 			return None
 
 	return slice(*list(pad(map(toInt, string.split(":")), 3)))
+
+def datetimeFromISO(datatimestring):
+	return datetime.datetime.strptime(datatimestring, "%Y-%m-%dT%H:%M:%S.%f" )
+

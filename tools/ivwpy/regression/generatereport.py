@@ -36,6 +36,10 @@ import os
 from .. util import *
 from . database import *
 
+# Javascript packages
+# jQuery Zoom        http://www.jacklmoore.com/zoom/
+# jQuery Sparklines  http://omnipotent.net/jquery.sparkline/
+
 class HtmlReport:
 	def __init__(self, reports, dbfile):
 		self.doc, tag, text = yattag.Doc().tagtext()
@@ -56,6 +60,9 @@ class HtmlReport:
 				with tag('script',language="javascript", type="text/javascript", 
 					src="http://omnipotent.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js"): text("")
 
+				with tag('script',language="javascript", type="text/javascript", 
+					src="https://raw.githubusercontent.com/jackmoore/zoom/master/jquery.zoom.min.js"): text("")
+
 				with tag('script',language="javascript", type="text/javascript"):
 					self.doc.asis(self.reportScrips())
 
@@ -63,11 +70,23 @@ class HtmlReport:
 				with tag('h1'):
 					text("Regressions")
 
+				with tag("div", klass = "head"):
+					with tag("div", klass = "wcell"):
+						text("Group")
+					with tag("div", klass = "wcell"):
+						text("Name")
+					with tag("div", klass = "cell"):
+						text("Faliures")
+					with tag("div", klass = "cell"):
+						text("Elapsed Time")
+					with tag("div", klass = "cell"):
+						text("Date")
+
 				with tag('dl'):
 					for report in reports:
 						ok = len(report['failures']) == 0
 						self.doc.asis(
-							dd(("OK " if ok else "Fail ") + report['group'] + "/" + report['name'],
+							dd(self.shortrow(report),
 								self.reportToHtml(report),
 								toggle = True,
 								status = ("ok" if ok else "fail")
@@ -76,7 +95,6 @@ class HtmlReport:
 	def reportStyle(self):
 		css = {
 		  "dl": {	   
-		    "overflow": "hidden",
 		    "padding": "0",
 		    "margin": "0"
 		  },
@@ -102,6 +120,8 @@ class HtmlReport:
    			"padding" : "1px",
    			"border" : "1px solid #000000",
     		"padding" : "0px",
+    		"max-width" : "100%",
+    		"max-height" : "100%",
     		"background-image" : ("linear-gradient(90deg, rgba(200,200,200,.5) 50%, transparent 50%)," 
     		                     + "linear-gradient(rgba(200,200,200,.5) 50%, transparent 50%)"),
     		"background-size" : "30px 30px,30px 30px",
@@ -110,28 +130,83 @@ class HtmlReport:
 		  "img.diff" : {
    			"padding" : "1px",
    			"border" : "1px solid #000000",
+   			"max-width" : "100%",
+    		"max-height" : "100%",
     		"padding" : "0px",
+		  },
+
+		  "div.head" : {
+		  	"font-size" : "130%",
+		    "border-bottom-style" : "solid",
+		    "border-bottom-width" : "2px", 
+		    "border-bottom-color" : "#dddddd"
+		  },
+		  
+		  "div.row" : {
+		    "border-top-style" : "solid",
+		    "border-top-width" : "1px", 
+		    "border-top-color" : "#dddddd"
+		  },
+		  
+		  "div.cell" : {
+		    "display" : "inline-block",
+		    "padding" : "3px 3px 3px 3px",
+		    "margin" : "0px 0px 0px 0px",
+		    "width" : "130px",
+		  },
+		  "div.wcell" : {
+		    "display" : "inline-block",
+		    "padding" : "3px 3px 3px 3px",
+		    "margin" : "0px 0px 0px 0px",
+		    "width" : "170px",
 		  }
+
 		}
 		return dict2css(css)
 
-	def timeseries(self, report):
+	def timeSeries(self, report, length = 20):
 		doc, tag, text = yattag.Doc().tagtext()
 		data = self.db.getSeries(report["group"], report["name"], "elapsed_time")
-		datastr = ", ".join([str(x.value) for x in data.measurements])
-
+		datastrShort = ", ".join([str(x.value) for x in data.measurements[:length]])
+		
 		with tag('div'):
-			text("{:3.3f}s ".format(report["elapsed_time"]))
-			with tag('span', klass="sparkline"): text(datastr)
+			text("{:3.2f}s ".format(report["elapsed_time"]))
+			with tag('span', klass="sparkline"): text(datastrShort)
 		return doc.getvalue()
 
+
+	def failueSeries(self, report, length = 30):
+		doc, tag, text = yattag.Doc().tagtext()
+		data = self.db.getSeries(report["group"], report["name"], "number_of_test_failures")
+		datastr = ", ".join([str(x.value) for x in data.measurements[:length]])
+		nfail = len(report["failures"])
+		
+		with tag('div'):
+			text(str(nfail) + " ")
+			with tag('span', klass="sparkline-failues"): text(datastr)
+		return doc.getvalue()
+
+
+	def shortrow(self, report):
+		doc, tag, text = yattag.Doc().tagtext()
+		with tag("div", klass = "row"):
+			with tag("div", klass = "wcell"):
+				text(report["group"])
+			with tag("div", klass = "wcell"):
+				text(report["name"])
+			with tag("div", klass = "cell"):
+				doc.asis(self.failueSeries(report))
+			with tag("div", klass = "cell"):
+				doc.asis(self.timeSeries(report))
+			with tag("div", klass = "cell"):
+				text(datetimeFromISO(report["date"]).strftime('%Y-%m-%d %H:%M'))
+		return doc.getvalue()
 
 	def reportToHtml(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
 
 		with tag('dl'):
 			keys = [
-				["date"         , {"toggle" : False}],
 				["path"         , {"toggle" : False}],
 				["command"      , {"toggle" : True}],
 				["returncode"   , {"toggle" : False}],
@@ -147,9 +222,6 @@ class HtmlReport:
 				if key in report['failures'].keys(): opts["status"] = "fail"
 
 				doc.asis(dd(formatKey(key), val, abr(val), **opts))
-
-			doc.asis(dd("Elapsed time", self.timeseries(report)))
-
 
 			nfail = len(report["failures"])
 			short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
@@ -203,6 +275,10 @@ $(document).ready(function() {
 	$('div.longform').hide();
 	$('div.shortform').show();
 	$('.sparkline').sparkline();
+	$('.sparkline-box').sparkline('html', {type : 'box', showOutliers : false});
+	$('.sparkline-failues').sparkline('html', {type : 'line', chartRangeMin : 0});
+
+	$('div.zoom').zoom({magnify : 4, on : 'grab', duration : 400});
  });
 """
 
@@ -230,14 +306,15 @@ def formatKey(key):
 
 def image(path, **opts):
 	doc, tag, text = yattag.Doc().tagtext()
-	doc.stag('img', src = "file://" + os.path.abspath(path), **opts)
+	with tag('div', klass='zoom'):
+		doc.stag('img', src = "file://" + os.path.abspath(path), **opts)
 	return doc.getvalue()
 
 def dd(name, content, alt = "", status="", toggle = False):
 	doc, tag, text = yattag.Doc().tagtext()
 	tc = "toggle" if toggle else ""
-	with tag('dt', klass = tc + " " + status): 
-		text(name)
+	with tag('dt', klass = tc + " " + status):
+		doc.asis(name)
 	with tag('dd'):
 		if toggle:
 			with tag('div', klass = "shortform"):

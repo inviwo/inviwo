@@ -229,8 +229,12 @@ class App:
 		for report in self.reports:
 			dbtest = db.getOrAddTest(report["group"], report["name"])
 			dbtime = db.getOrAddQuantity("time", "s")
+			dbcount = db.getOrAddQuantity("count", "")
 			db_elapsed_time = db.getOrAddTSeries(dbtest, dbtime, "elapsed_time")
+			db_test_failures = db.getOrAddTSeries(dbtest, dbtime, "number_of_test_failures")
+
 			db.addMeasurement(db_elapsed_time, report["elapsed_time"])
+			db.addMeasurement(db_test_failures, len(report["failures"]))
 
 
 
