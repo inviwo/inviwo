@@ -71,38 +71,28 @@ class HtmlReport:
 					text("Regressions")
 
 				with tag("div", klass = "head"):
-					with tag("div", klass = "wcell"):
+					with tag("div", klass = "cell testgroup"):
 						text("Group")
-					with tag("div", klass = "wcell"):
+					with tag("div", klass = "cell testname"):
 						text("Name")
-					with tag("div", klass = "cell"):
+					with tag("div", klass = "cell infocell"):
 						text("Faliures")
-					with tag("div", klass = "cell"):
+					with tag("div", klass = "cell infocell"):
 						text("Elapsed Time")
-					with tag("div", klass = "cell"):
+					with tag("div", klass = "cell infocell"):
 						text("Date")
 
-				with tag('dl'):
+				with tag('ul'):
 					for report in reports:
-						ok = len(report['failures']) == 0
-						self.doc.asis(
-							dd(self.shortrow(report),
-								self.reportToHtml(report),
-								toggle = True,
-								status = ("ok" if ok else "fail")
-							))
+						ok = ("ok" if len(report['failures']) == 0 else "fail")
+						self.doc.asis(li(self.testhead(report), self.reportToHtml(report), status = ok))
 
 	def reportStyle(self):
 		css = {
-		  "dl": {	   
-		    "padding": "0",
-		    "margin": "0"
-		  },
-		  "dt": {
-		    "font-weight": "bold"
-		  },
-		  "dt.test": {
-		    "font-weight": "bold"
+		  "ul" : {
+		    "padding": "0px",
+		    "margin": "0px",
+		  	"list-style-type" : "none"
 		  },
 		  ".ok": {
 		    "background-color": "#ddffdd"
@@ -110,10 +100,10 @@ class HtmlReport:
 		  ".fail": {
 		    "background-color": "#ffdddd"
 		  },
-		  "dt.toggle": {
+		  ".toggle": {
 		    "cursor": "pointer"
 		  },
-		  "dt.toggle:hover" : {
+		  ".toggle:hover" : {
 		    "color": "#555555"
 		  },
 		  "img.test" : {
@@ -134,7 +124,9 @@ class HtmlReport:
     		"max-height" : "100%",
     		"padding" : "0px",
 		  },
-
+		  "div.libody" : {
+		    "margin-left" : "20px"
+		  },
 		  "div.head" : {
 		  	"font-size" : "130%",
 		    "border-bottom-style" : "solid",
@@ -150,15 +142,29 @@ class HtmlReport:
 		  
 		  "div.cell" : {
 		    "display" : "inline-block",
-		    "padding" : "3px 3px 3px 3px",
+		    "padding" : "0px 3px 0px 3px",
 		    "margin" : "0px 0px 0px 0px",
-		    "width" : "130px",
 		  },
-		  "div.wcell" : {
-		    "display" : "inline-block",
-		    "padding" : "3px 3px 3px 3px",
-		    "margin" : "0px 0px 0px 0px",
-		    "width" : "170px",
+		  "div.infocell" : {
+		    "width" : "130px"
+		  },
+		  "div.testname" : {
+		    "width" : "170px"
+		  },
+		  "div.testgroup" : {
+		    "width" : "170px"
+		  },
+		  "div.imageinfo" : {
+		    "width" : "100px",
+		  },
+		  "div.imagename" : {
+		    "width" : "200px",
+		  },
+		  "div.itemname" : {
+		    "width" : "100px",
+		  },
+		  "div.key" : {
+		    "width" : "150px",
 		  }
 
 		}
@@ -187,47 +193,70 @@ class HtmlReport:
 		return doc.getvalue()
 
 
-	def shortrow(self, report):
+
+	def testhead(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
 		with tag("div", klass = "row"):
-			with tag("div", klass = "wcell"):
+			with tag("div", klass = "cell testgroup"):
 				text(report["group"])
-			with tag("div", klass = "wcell"):
+			with tag("div", klass = "cell testname"):
 				text(report["name"])
-			with tag("div", klass = "cell"):
+			with tag("div", klass = "cell infocell"):
 				doc.asis(self.failueSeries(report))
-			with tag("div", klass = "cell"):
+			with tag("div", klass = "cell infocell"):
 				doc.asis(self.timeSeries(report))
-			with tag("div", klass = "cell"):
+			with tag("div", klass = "cell testgroup"):
 				text(datetimeFromISO(report["date"]).strftime('%Y-%m-%d %H:%M'))
+		return doc.getvalue()
+
+
+	def imageShort(self, group, name, img, length = 20):
+		doc, tag, text = yattag.Doc().tagtext()
+
+		data = self.db.getSeries(group, name , "image_test_diff." + img["image"])
+		datastrShort = ", ".join([str(x.value) for x in data.measurements[:length]])
+		
+		with tag('div'):
+			with tag('div', klass="cell imagename"):
+				text(img["image"])
+			with tag('div', klass="cell imageinfo"):
+				text("Diff: {:3.3f}%".format(img["difference"]))
+			with tag('div', klass="cell imageinfo"):
+				with tag('span', klass="sparkline"): text(datastrShort)
+		return doc.getvalue()
+
+
+	def genImages(self, group, name, imgs, testdir, refdir):
+		doc, tag, text = yattag.Doc().tagtext()
+		with tag('ol'):
+			for img in imgs:
+				ok = img["difference"] == 0.0
+						
+				doc.asis(li(self.imageShort(group, name, img),
+					testImages(toPath([testdir, img["image"]]), 
+							   toPath([refdir, img["image"]]),
+							   toPath([testdir, "imgdiff", img["image"]])),
+					status = "ok" if ok else "fail"
+					))
 		return doc.getvalue()
 
 	def reportToHtml(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
 
-		with tag('dl'):
-			keys = [
-				["path"         , {"toggle" : False}],
-				["command"      , {"toggle" : True}],
-				["returncode"   , {"toggle" : False}],
-				["missing_imgs" , {"toggle" : False}],
-				["missing_refs" , {"toggle" : False}],
-				["output"       , {"toggle" : True }],
-				["errors"       , {"toggle" : True }]
-			]
+		with tag('ul'):
+			keys = ["path", "command","returncode","missing_imgs", "missing_refs","output","errors"]
 
-			for key, opts in keys:
+			for key in keys:
 				val = toString(report[key])
-				if key in report['successes']: opts["status"] = "ok"
-				if key in report['failures'].keys(): opts["status"] = "fail"
-
-				doc.asis(dd(formatKey(key), val, abr(val), **opts))
+				status = ""
+				if key in report['successes']: status = "ok"
+				if key in report['failures'].keys(): status = "fail"
+				vabr = abr(val)
+				doc.asis(li(keyval(formatKey(key), vabr), val, status = status, toggle = vabr != val))
 
 			nfail = len(report["failures"])
 			short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
-			doc.asis(dd("Faliures", 
-				genFailures(report["failures"]),
-				short, toggle=True, status = "ok" if nfail == 0 else "fail"))
+			doc.asis(li(keyval("Faliures", short), genFailures(report["failures"]), status = "ok" if nfail == 0 else "fail"))
 
 							
 			with open(report['log'], 'r') as f:
@@ -237,17 +266,16 @@ class HtmlReport:
 				info = loghtml.count("Info:")
 
 				short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
-				doc.asis(dd("Log", loghtml, short, toggle=True,
-					status = "ok" if err == 0 else "fail")) 
+				doc.asis(li(keyval("Log", short), loghtml, status = "ok" if err == 0 else "fail")) 
 
-			doc.asis(dd("Screenshot", image(report["screenshot"], alt = "Screenshot", width="100%"), "...", toggle=True))	
+			doc.asis(li(keyval("Screenshot", ""), image(report["screenshot"], alt = "Screenshot", width="100%")))	
 
 			ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
 			fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
 			short = (str(ok) + " ok images, " + str(fail) + " failed image tests")
-			doc.asis(dd("Images", 
-				genImages(report["image_tests"], report["outputdir"], report["path"]),
-				short, toggle=True, status = "ok" if fail == 0 else "fail"))
+			doc.asis(li(keyval("Images", short), 
+				self.genImages(report["group"], report["name"], report["image_tests"], report["outputdir"], report["path"]),
+				status = "ok" if fail == 0 else "fail"))
 
 		return doc.getvalue()
 
@@ -258,22 +286,14 @@ class HtmlReport:
 	def reportScrips(self):
 		return """
 $(document).ready(function() {
-   	$('dt.toggle').click(function() {
-   			if($(this).next().children("div.longform").is(':visible')) {
-   				$(this).next().children("div.longform").hide()
-   			}else {
-           		$(this).next().children("div.longform").fadeToggle(500)
-           	}
-
-           	if($(this).next().children("div.shortform").is(':visible')) {
-   				$(this).next().children("div.shortform").hide()
-   			}else {
-           		$(this).next().children("div.shortform").fadeToggle(500)
-           	}
+   	$('div.lihead').click(function() {
+   			body = $(this).next(".libody")
+   			body.slideToggle(100);
+    
            	$.sparkline_display_visible()
     });
-	$('div.longform').hide();
-	$('div.shortform').show();
+	$('div.libody').hide();
+
 	$('.sparkline').sparkline();
 	$('.sparkline-box').sparkline('html', {type : 'box', showOutliers : false});
 	$('.sparkline-failues').sparkline('html', {type : 'line', chartRangeMin : 0});
@@ -281,6 +301,7 @@ $(document).ready(function() {
 	$('div.zoom').zoom({magnify : 4, on : 'grab', duration : 400});
  });
 """
+
 
 
 def toString(val):
@@ -304,25 +325,30 @@ def abr(text):
 def formatKey(key):
 	return key.capitalize().replace("_", " ")
 
+def keyval(key, val):
+	doc, tag, text = yattag.Doc().tagtext()
+	with tag("div", klass = "row"):
+		with tag("div", klass = "cell key"):
+			text(key)
+		with tag("div", klass = "cell"):
+			doc.asis(val)
+	return doc.getvalue()
+
 def image(path, **opts):
 	doc, tag, text = yattag.Doc().tagtext()
 	with tag('div', klass='zoom'):
 		doc.stag('img', src = "file://" + os.path.abspath(path), **opts)
 	return doc.getvalue()
 
-def dd(name, content, alt = "", status="", toggle = False):
+def li(head, body="", status="", toggle = True):
 	doc, tag, text = yattag.Doc().tagtext()
-	tc = "toggle" if toggle else ""
-	with tag('dt', klass = tc + " " + status):
-		doc.asis(name)
-	with tag('dd'):
+	toggleclass = "toggle" if toggle else ""
+	with tag('li'):
+		with tag('div', klass='lihead ' + status + ' ' + toggleclass):
+			doc.asis(head)
 		if toggle:
-			with tag('div', klass = "shortform"):
-				doc.asis(alt)
-			with tag('div', klass = "longform"):
-				doc.asis(content)
-		else:
-			doc.asis(content)
+			with tag('div', klass='libody'):
+				doc.asis(body)
 
 	return doc.getvalue()
 
@@ -342,21 +368,6 @@ def testImages(testimg, refimg, diffimg):
 				doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
 	return doc.getvalue()
 
-def genImages(imgs, testdir, refdir):
-	doc, tag, text = yattag.Doc().tagtext()
-	with tag('dl'):
-		for img in imgs:
-			ok = img["difference"] == 0.0
-			doc.asis(dd("{} Diff: {:3.3f}% {}".format("Ok" if ok else "Fail",img["difference"], img["image"]),
-				testImages(toPath([testdir, img["image"]]), 
-						   toPath([refdir, img["image"]]),
-						   toPath([testdir, "imgdiff", img["image"]])),
-				toggle = True,
-				status = "ok" if ok else "fail"
-				))
-	return doc.getvalue()
-
-
 def failureList(errors):
 	doc, tag, text = yattag.Doc().tagtext()
 	with tag('ul'):
@@ -367,9 +378,9 @@ def failureList(errors):
 
 def genFailures(failures):
 	doc, tag, text = yattag.Doc().tagtext()
-	with tag('dl'):
+	with tag('ol'):
 		for key, errors in failures.items():
-			doc.asis(dd(key, failureList(errors), toggle = True, status = "fail"))
+			doc.asis(li(formatKey(key), failureList(errors), status = "fail"))
 	return doc.getvalue()
 
 

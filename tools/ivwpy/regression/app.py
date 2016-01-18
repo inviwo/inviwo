@@ -230,11 +230,17 @@ class App:
 			dbtest = db.getOrAddTest(report["group"], report["name"])
 			dbtime = db.getOrAddQuantity("time", "s")
 			dbcount = db.getOrAddQuantity("count", "")
+			dbfrac = db.getOrAddQuantity("fraction", "%")
+			
 			db_elapsed_time = db.getOrAddTSeries(dbtest, dbtime, "elapsed_time")
-			db_test_failures = db.getOrAddTSeries(dbtest, dbtime, "number_of_test_failures")
+			db_test_failures = db.getOrAddTSeries(dbtest, dbcount, "number_of_test_failures")
 
 			db.addMeasurement(db_elapsed_time, report["elapsed_time"])
 			db.addMeasurement(db_test_failures, len(report["failures"]))
+
+			for img in report["image_tests"]:
+				db_img_test = db.getOrAddTSeries(dbtest, dbfrac, "image_test_diff." + img["image"])
+				db.addMeasurement(db_img_test, img["difference"])
 
 
 
