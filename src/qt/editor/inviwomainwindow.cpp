@@ -314,7 +314,6 @@ void InviwoMainWindow::addActions() {
 
     {
         // create list of all example workspaces
-        fileMenuItem->addSeparator();
         auto exampleWorkspaceMenu = fileMenuItem->addMenu(tr("&Example Workspaces"));
         fillExampleWorkspaceMenu(exampleWorkspaceMenu);
     }
@@ -323,12 +322,12 @@ void InviwoMainWindow::addActions() {
         // TODO: need a DEVELOPER flag here!
         // create list of all test workspaces, inviwo-dev and other external modules, i.e.
         // "research"
-        fileMenuItem->addSeparator();
         auto testWorkspaceMenu = fileMenuItem->addMenu(tr("&Test Workspaces"));
         fillTestWorkspaceMenu(testWorkspaceMenu);
     }
 
     {
+        fileMenuItem->addSeparator();
         auto exitAction = new QAction(QIcon(":/icons/button_cancel.png"), tr("&Exit"), this);
         exitAction->setShortcut(QKeySequence::Close);
         connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
