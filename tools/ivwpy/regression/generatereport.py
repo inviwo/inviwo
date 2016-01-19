@@ -39,6 +39,7 @@ from . database import *
 # Javascript packages
 # jQuery Zoom        http://www.jacklmoore.com/zoom/
 # jQuery Sparklines  http://omnipotent.net/jquery.sparkline/
+# List.js            http://www.listjs.com/
 
 class HtmlReport:
 	def __init__(self, reports, dbfile):
@@ -63,50 +64,71 @@ class HtmlReport:
 				with tag('script',language="javascript", type="text/javascript", 
 					src="https://raw.githubusercontent.com/jackmoore/zoom/master/jquery.zoom.min.js"): text("")
 
+				with tag('script',language="javascript", type="text/javascript", 
+					src="http://listjs.com/no-cdn/list.js"): text("")
+
 				with tag('script',language="javascript", type="text/javascript"):
 					self.doc.asis(self.reportScrips())
 
 			with tag('body'):
-				with tag('h1'):
-					text("Regressions")
+				with tag('div', id='reportlist'):
+					with tag("div"):
+						with tag('div', klass='title') : text("Regressions")
+						self.doc.stag('input', klass='search', placeholder="Search")
+					 
+					with tag("div", klass = "head"):
+						with tag("div", klass = "cell testgroup"):
+							with tag('button', ('data-sort','testgroup'), klass='sort'):
+								text("Group")
+						with tag("div", klass = "cell testname"):
+							with tag('button', ('data-sort', 'testname'), klass='sort'):
+								text("Name")
+						with tag("div", klass = "cell testfailures"):
+							with tag('button', ('data-sort', 'testfailures'), klass='sort'):
+								text("Failures")
+						with tag("div", klass = "cell testruntime"):
+							with tag('button', ('data-sort', 'testruntime'), klass='sort'):
+								text("Time")
+						with tag("div", klass = "cell testdate"):
+							with tag('button', ('data-sort', 'testdate'), klass='sort'):
+								text("Date")
 
-				with tag("div", klass = "head"):
-					with tag("div", klass = "cell testgroup"):
-						text("Group")
-					with tag("div", klass = "cell testname"):
-						text("Name")
-					with tag("div", klass = "cell infocell"):
-						text("Faliures")
-					with tag("div", klass = "cell infocell"):
-						text("Elapsed Time")
-					with tag("div", klass = "cell infocell"):
-						text("Date")
+					with tag('ul', klass='list'):
+						for report in reports:
+							ok = ("ok" if len(report['failures']) == 0 else "fail")
+							self.doc.asis(li(self.testhead(report), self.reportToHtml(report), status = ok))
 
-				with tag('ul'):
-					for report in reports:
-						ok = ("ok" if len(report['failures']) == 0 else "fail")
-						self.doc.asis(li(self.testhead(report), self.reportToHtml(report), status = ok))
-
+				with tag('script'):
+					self.doc.asis("var keys = ["+\
+						"'testgroup', 'testname', 'testfailures', 'testruntime', 'testdate'];" + \
+						"var userList = new List('reportlist', {valueNames: keys });")
+					
 	def reportStyle(self):
-		css = {
-		  "ul" : {
+		css = [
+		  ["ul" , {
 		    "padding": "0px",
 		    "margin": "0px",
 		  	"list-style-type" : "none"
-		  },
-		  ".ok": {
+		  }],[
+		  ".ok", {
 		    "background-color": "#ddffdd"
-		  },
-		  ".fail": {
+		  }],[
+		  ".fail" , {
 		    "background-color": "#ffdddd"
-		  },
-		  ".toggle": {
+		  }],[	
+		  ".toggle", {
 		    "cursor": "pointer"
-		  },
-		  ".toggle:hover" : {
+		  }],[
+		  ".toggle:hover" , {
 		    "color": "#555555"
-		  },
-		  "img.test" : {
+		  }],[
+		  "div.title" , {
+		  	"padding" :  "10px 10px 10px 10px",
+		    "display" : "inline-block",
+		    "font-size" : "250%",
+            "vertical-align" : "middle"
+		  }],[
+		  "img.test" , {
    			"padding" : "1px",
    			"border" : "1px solid #000000",
     		"padding" : "0px",
@@ -116,58 +138,118 @@ class HtmlReport:
     		                     + "linear-gradient(rgba(200,200,200,.5) 50%, transparent 50%)"),
     		"background-size" : "30px 30px,30px 30px",
     		"background-position" : "0, 0, 15 15px"
-		  },
-		  "img.diff" : {
+		  }],[
+		  "img.diff" , {
    			"padding" : "1px",
    			"border" : "1px solid #000000",
    			"max-width" : "100%",
     		"max-height" : "100%",
     		"padding" : "0px",
-		  },
-		  "div.libody" : {
-		    "margin-left" : "20px"
-		  },
-		  "div.head" : {
-		  	"font-size" : "130%",
+		  }],[
+		  "div.libody" , {
+		    "margin-left" : "20px",
+		    "padding-bottom" : "15px"
+		  }],[
+		  "div.head" , {
 		    "border-bottom-style" : "solid",
 		    "border-bottom-width" : "2px", 
 		    "border-bottom-color" : "#dddddd"
-		  },
-		  
-		  "div.row" : {
+		  }],[
+		  "div.row" , {
 		    "border-top-style" : "solid",
 		    "border-top-width" : "1px", 
 		    "border-top-color" : "#dddddd"
-		  },
-		  
-		  "div.cell" : {
+		  }],[		  
+		  "div.cell" , {
 		    "display" : "inline-block",
-		    "padding" : "0px 3px 0px 3px",
-		    "margin" : "0px 0px 0px 0px",
-		  },
-		  "div.infocell" : {
+		  }],[
+		  "div.testname" , {
+		    "width" : "170px"
+		  }],[
+		  "div.testgroup" , {
+		    "width" : "170px"
+		  }],[
+		  "div.testfailures" , {
 		    "width" : "130px"
-		  },
-		  "div.testname" : {
-		    "width" : "170px"
-		  },
-		  "div.testgroup" : {
-		    "width" : "170px"
-		  },
-		  "div.imageinfo" : {
+		  }],[
+		  "div.testruntime" , {
+		    "width" : "130px"
+		  }],[
+		  "div.testdate" , {
+		    "width" : "150px"
+		  }],[
+		  "div.imageinfo" , {
 		    "width" : "100px",
-		  },
-		  "div.imagename" : {
+		  }],[
+		  "div.imagename" , {
 		    "width" : "200px",
-		  },
-		  "div.itemname" : {
+		  }],[
+		  "div.itemname" , {
 		    "width" : "100px",
-		  },
-		  "div.key" : {
+		  }],[
+		  "div.key" , {
 		    "width" : "150px",
+		  }],[
+		  "input" , {
+		  	"font-size" : "100%",
+		    "padding" :  "10px 10px 10px 10px",
+		    "border" : "solid 1px #ccc",
+		    "border-radius" : "5px",
+			"vertical-align" : "middle"
+		  }],[
+		  "input:focus" , {
+		    "outline" : "none",
+		    "border-color" : "#aaa"
+		  }],[
+		  ".sort" , {
+		    "font-size" : "100%",
+		    "padding" : "0px 30px 0px 0px",
+		    "display" : "inline-block",
+		    "background" : "none",
+    		"border" : "none",
+    		"cursor" : "pointer"
+		  }],[
+		  ".sort:hover" , {
+		    "background-color" : "#dddddd"
+		  }],[
+		  ".sort:active" , {
+		    "background-color" : "#bbbbbb"
+		  }],[
+		  ".sort:after" , {
+		    "width" : "0",
+		    "height" : "0",
+		    "border-left" : "5px solid transparent",
+		    "border-right" : "5px solid transparent",
+		    "border-bottom" : "5px solid transparent",
+		    "content" : "\"\"",
+		    "position" : "relative",
+		    "top" : "-10px",
+		    "right" : "-5px"
+		  }],[
+		  ".sort.asc:after" , {
+		    "width" : "0",
+		    "height" : "0",
+		    "border-left" : "5px solid transparent",
+		    "border-right" : "5px solid transparent",
+		    "border-top" : "5px solid #000",
+		    "content" : "\"\"",
+		    "position" : "relative",
+		    "top" : "13px",
+		    "right" : "-5px"
+		  }],[
+		  ".sort.desc:after" , {
+		    "width" : "0",
+		    "height" : "0",
+		    "border-left" : "5px solid transparent",
+		    "border-right" : "5px solid transparent",
+		    "border-bottom" : "5px solid #000",
+		    "content" : "\"\"",
+		    "position" : "relative",
+		    "top" : "-10px",
+		    "right" : "-5px"
 		  }
-
-		}
+		  ]
+		]
 		return dict2css(css)
 
 	def timeSeries(self, report, length = 20):
@@ -201,12 +283,12 @@ class HtmlReport:
 				text(report["group"])
 			with tag("div", klass = "cell testname"):
 				text(report["name"])
-			with tag("div", klass = "cell infocell"):
+			with tag("div", klass = "cell testfailures"):
 				doc.asis(self.failueSeries(report))
-			with tag("div", klass = "cell infocell"):
+			with tag("div", klass = "cell testruntime"):
 				doc.asis(self.timeSeries(report))
-			with tag("div", klass = "cell testgroup"):
-				text(datetimeFromISO(report["date"]).strftime('%Y-%m-%d %H:%M'))
+			with tag("div", klass = "cell testdate"):
+				text(datetimeFromISO(report["date"]).strftime('%Y-%m-%d %H:%M:%S'))
 		return doc.getvalue()
 
 
@@ -256,7 +338,7 @@ class HtmlReport:
 
 			nfail = len(report["failures"])
 			short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
-			doc.asis(li(keyval("Faliures", short), genFailures(report["failures"]), status = "ok" if nfail == 0 else "fail"))
+			doc.asis(li(keyval("Failures", short), genFailures(report["failures"]), status = "ok" if nfail == 0 else "fail"))
 
 							
 			with open(report['log'], 'r') as f:
@@ -319,7 +401,7 @@ def toString(val):
 		return "{:}".format(val)
 
 def abr(text):
-	abr = text.split("\n")[0][:50]
+	abr = text.split("\n")[0][:85]
 	return abr + ("..." if len(text.split("\n")) > 1 or len(text) > 50 else "")
 
 def formatKey(key):
@@ -354,7 +436,7 @@ def li(head, body="", status="", toggle = True):
 
 def testImages(testimg, refimg, diffimg):
 	doc, tag, text = yattag.Doc().tagtext()
-	with tag('table'):
+	with tag('table', klass='imagetable'):
 		with tag('tr'):
 			with tag('th'): text("Test")
 			with tag('th'): text("Reference")

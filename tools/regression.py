@@ -35,8 +35,8 @@ from ivwpy.util import *
 # requirements
 # python3
 # yattag, http://www.yattag.org for html report generation
-# PIL for image comparison
-# sqlalchemy for database connection
+# Pillow (PIL) for image comparison https://python-pillow.github.io/
+# sqlalchemy for database connection 
 
 missing_modules = {}
 
@@ -47,8 +47,9 @@ except ImportError:
 
 try:
 	import PIL
+	import PIL.Image
 except ImportError:
-	missing_modules['PIL'] = "needed for image comparison"
+	missing_modules['Pillow'] = "needed for image comparison (Pillow is a fork of PIL https://python-pillow.github.io/)"
 
 try:
 	import sqlalchemy

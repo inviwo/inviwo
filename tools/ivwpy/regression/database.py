@@ -121,7 +121,7 @@ class Database():
 			self.session.commit()
 		return quantity
 
-	def getOrAddTSeries(self, test, quantity, name):
+	def getOrAddSeries(self, test, quantity, name):
 		series = self.session.query(Series).filter(Series.name == name, Series.test == test, Series.quantity == quantity).one_or_none();
 		if series == None:
 			series = Series(name = name, test = test, quantity = quantity)

@@ -122,7 +122,7 @@ def print_pair(a,b, width=15):
 
 def dict2css(data):
 	res = ""
-	for k,v in data.items():
+	for k,v in data:
 		res += k + " {\n"
 		for k,v in v.items():
 			res += "    " + k + " : " + v + ";\n"
