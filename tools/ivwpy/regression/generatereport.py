@@ -43,6 +43,9 @@ from . database import *
 # jQuery Sparklines  http://omnipotent.net/jquery.sparkline/
 # List.js            http://www.listjs.com/
 
+# Jenkins note:
+# System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "default-src 'self';script-src 'self' 'unsafe-inline'")
+
 class HtmlReport:
 	def __init__(self, basedir, reports, dbfile):
 		self.doc, tag, text = yattag.Doc().tagtext()
@@ -53,8 +56,10 @@ class HtmlReport:
 		self.scripts = ["jquery-2.2.0.min.js", 
 						"jquery.sparkline.min.js", 
 						"jquery.zoom.min.js", 
-						"list.min.js", 
+						"list.min.js",
+						"make-list.js", 
 						"main.js"]
+
 
 		self.doc.asis("<!DOCTYPE html>")
 		self.doc.stag("meta", charset = "utf-8")
@@ -98,11 +103,9 @@ class HtmlReport:
 							ok = ("ok" if len(report['failures']) == 0 else "fail")
 							self.doc.asis(li(self.testhead(report), self.reportToHtml(report), status = ok))
 
-				with tag('script'):
-					self.doc.asis("var keys = ["+\
-						"'testgroup', 'testname', 'testfailures', 'testruntime', 'testdate'];" + \
-						"var userList = new List('reportlist', {valueNames: keys });")
-			
+				with tag('script', language="javascript", 
+					src = self.scriptDirname + "/make-list.js"): text("")
+				
 	def timeSeries(self, report, length = 20):
 		doc, tag, text = yattag.Doc().tagtext()
 		data = self.db.getSeries(report["group"], report["name"], "elapsed_time")
