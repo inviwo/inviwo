@@ -46,7 +46,6 @@ from . database import *
 class HtmlReport:
 	def __init__(self, basedir, reports, dbfile):
 		self.doc, tag, text = yattag.Doc().tagtext()
-		self.style = self.reportStyle()
 		self.db = Database(dbfile)
 		self.basedir = basedir
 
@@ -62,11 +61,10 @@ class HtmlReport:
 		
 		with tag('html'):
 			with tag('head'):
-				with tag('style'):
-					text(self.style)
+				self.doc.stag('link', rel='stylesheet', href="report.css")
 
 				for script in self.scripts:
-					with tag('script',language="javascript", type="text/javascript", 
+					with tag('script', language="javascript", type="text/javascript", 
 					src = self.scriptDirname + "/" + script): text("")
 
 			with tag('body'):
@@ -105,10 +103,6 @@ class HtmlReport:
 						"'testgroup', 'testname', 'testfailures', 'testruntime', 'testdate'];" + \
 						"var userList = new List('reportlist', {valueNames: keys });")
 			
-	def reportStyle(self):
-		cssdata = pkgutil.get_data('ivwpy', 'regression/resources/report.css')
-		return cssdata.decode('utf-8')
-
 	def timeSeries(self, report, length = 20):
 		doc, tag, text = yattag.Doc().tagtext()
 		data = self.db.getSeries(report["group"], report["name"], "elapsed_time")
@@ -232,6 +226,10 @@ class HtmlReport:
 		imgdir = mkdir([self.basedir, "_images"])
 		with open(toPath([imgdir, "inviwo.png"]), 'wb') as f:
 			f.write(imgdata)
+
+		cssdata = pkgutil.get_data('ivwpy', 'regression/resources/report.css')
+		with open(toPath([self.basedir, "report.css"]), 'wb') as f:
+			f.write(cssdata)
 
 		with open(file, 'w') as f:
 			f.write(yattag.indent(self.doc.getvalue()))
