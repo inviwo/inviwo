@@ -43,8 +43,8 @@ from . database import *
 # jQuery Sparklines  http://omnipotent.net/jquery.sparkline/
 # List.js            http://www.listjs.com/
 
-# Jenkins note:
-# System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "default-src 'self';script-src 'self' 'unsafe-inline'")
+# Jenkins note: https://wiki.jenkins-ci.org/display/JENKINS/Configuring+Content+Security+Policy
+# System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "default-src 'self';script-src 'self'")
 
 class HtmlReport:
 	def __init__(self, basedir, reports, dbfile):
@@ -167,7 +167,7 @@ class HtmlReport:
 						
 				doc.asis(li(self.imageShort(group, name, img),
 					testImages(os.path.relpath(toPath([testdir, img["image"]]), self.basedir),
-							   "file://" + os.path.abspath(toPath([refdir, img["image"]])),
+							   os.path.relpath(toPath([testdir, "imgref", img["image"]]), self.basedir),
 							   os.path.relpath(toPath([testdir, "imgdiff", img["image"]]), self.basedir)),
 					status = "ok" if ok else "fail"
 					))

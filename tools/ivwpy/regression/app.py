@@ -169,8 +169,10 @@ class App:
 		for img in imgs:
 			if img in refs:
 				comp = ImageCompare(toPath([outputdir, img]), toPath([test.path, img]))
-				mkdir(toPath([outputdir, "imgdiff"]))
-				comp.saveDifferenceImage(toPath([outputdir, "imgdiff", img]))
+				diffpath = mkdir(toPath([outputdir, "imgdiff"]))
+				comp.saveDifferenceImage(toPath([diffpath, img]))
+				refpath = mkdir(toPath([outputdir, "imgref"]))
+				comp.saveReferenceImage(toPath([refpath, img]))
 
 				diff = comp.difference()
 				imgtest = {

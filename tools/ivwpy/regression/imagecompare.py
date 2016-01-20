@@ -34,23 +34,23 @@ import PIL.ImageDraw as ImageDraw
 
 
 class ImageCompare:
-	def __init__(self, img1, img2):
+	def __init__(self, testImage, refImage):
 
-		self.image1 = Image.open(img1)
-		self.image2 = Image.open(img2)
+		self.testImage = Image.open(testImage)
+		self.refImage = Image.open(refImage)
 
 		self.diff = 100
-		if self.image1.mode == self.image2.mode and self.image1.size == self.image2.size:
-			ncomponents = self.image1.size[0] * self.image1.size[1] * 3
-			pairs = zip(self.image1.getdata(), self.image2.getdata())
-			if len(self.image1.getbands()) == 1: # for gray-scale jpegs
+		if self.testImage.mode == self.refImage.mode and self.testImage.size == self.refImage.size:
+			ncomponents = self.testImage.size[0] * self.testImage.size[1] * 3
+			pairs = zip(self.testImage.getdata(), self.refImage.getdata())
+			if len(self.testImage.getbands()) == 1: # for gray-scale jpegs
 				self.diff = sum(abs(p1-p2) for p1,p2 in pairs) * 100.0 / 255.0 / ncomponents
 			else:
 				self.diff = sum(abs(c1-c2) for p1,p2 in pairs for c1,c2 in zip(p1,p2)) * 100.0 / 255.0 / ncomponents
 
 
 	def saveDifferenceImage(self, file, showBox = True):
-		diffimg = ImageChops.difference(self.image1, self.image2)
+		diffimg = ImageChops.difference(self.testImage, self.refImage)
 		if showBox:
 			imageDraw = ImageDraw.Draw(diffimg)
 			bbox = diffimg.getbbox()
@@ -59,11 +59,14 @@ class ImageCompare:
 
 		diffimg.save(file)
 
+	def saveReferenceImage(self, file):
+		self.refImage.save(file)
+
 	def difference(self):
 		return self.diff
 
 	def same_size(self):
-		return self.image1.size == self.image2.size
+		return self.testImage.size == self.refImage.size
 
 	def same_mode(self):
-		return self.image1.mode == self.image2.mode
+		return self.testImage.mode == self.refImage.mode
