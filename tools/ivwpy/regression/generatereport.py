@@ -64,7 +64,7 @@ class HtmlReport:
 				self.doc.stag('link', rel='stylesheet', href="report.css")
 
 				for script in self.scripts:
-					with tag('script', language="javascript", type="text/javascript", 
+					with tag('script', language="javascript", 
 					src = self.scriptDirname + "/" + script): text("")
 
 			with tag('body'):
