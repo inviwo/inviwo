@@ -1,0 +1,151 @@
+ul {
+    margin : 0px;
+    list-style-type : none;
+    padding : 0px;
+}
+.ok {
+    background-color : #ddffdd;
+}
+.fail {
+    background-color : #ffdddd;
+}
+.toggle {
+    cursor : pointer;
+}
+.toggle:hover {
+    color : #555555;
+}
+div.title {
+    font-family: sans-serif;
+    font-weight: bold;
+    font-variant: small-caps;
+    vertical-align : middle;
+    font-size : 250%;
+    padding : 10px 10px 10px 10px;
+    display : inline-block;
+}
+div.titleimg {
+    vertical-align : middle;
+    padding : 0px 0px 0px 0px;
+    display : inline-block;
+}
+img.test {
+    background-position : 0, 0, 15 15px;
+    max-height : 100%;
+    max-width : 100%;
+    background-image : linear-gradient(90deg, rgba(200,200,200,.5) 50%, transparent 50%),linear-gradient(rgba(200,200,200,.5) 50%, transparent 50%);
+    background-size : 30px 30px,30px 30px;
+    padding : 0px;
+    border : 1px solid #000000;
+}
+img.diff {
+    max-height : 100%;
+    max-width : 100%;
+    padding : 0px;
+    border : 1px solid #000000;
+}
+div.libody {
+    margin-left : 20px;
+    padding-bottom : 15px;
+}
+div.head {
+    border-bottom-style : solid;
+    border-bottom-color : #dddddd;
+    border-bottom-width : 2px;
+}
+div.row {
+    border-top-style : solid;
+    border-top-width : 1px;
+    border-top-color : #dddddd;
+}
+div.cell {
+    display : inline-block;
+}
+div.testname {
+    width : 170px;
+}
+div.testgroup {
+    width : 170px;
+}
+div.testfailures {
+    width : 130px;
+}
+div.testruntime {
+    width : 130px;
+}
+div.testdate {
+    width : 150px;
+}
+div.imageinfo {
+    width : 100px;
+}
+div.imagename {
+    width : 200px;
+}
+div.itemname {
+    width : 100px;
+}
+div.key {
+    width : 150px;
+}
+input {
+    vertical-align : middle;
+    border-radius : 5px;
+    font-size : 100%;
+    padding : 10px 10px 10px 10px;
+    border : solid 1px #ccc;
+}
+input:focus {
+    outline : none;
+    border-color : #aaa;
+}
+.sort {
+    background : none;
+    font-size : 100%;
+    cursor : pointer;
+    display : inline-block;
+    padding : 0px 30px 0px 0px;
+    border : none;
+}
+.sort:hover {
+    background-color : #dddddd;
+}
+.sort:active {
+    background-color : #bbbbbb;
+}
+.sort:focus {
+  outline:none;
+}
+.sort:after {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  content:"";
+  position: relative;
+  top:-10px;
+  right:-5px;
+}
+.sort.asc:after {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #000;
+  content:"";
+  position: relative;
+  top:13px;
+  right:-5px;
+}
+.sort.desc:after {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #000;
+  content:"";
+  position: relative;
+  top:-10px;
+  right:-5px;
+}

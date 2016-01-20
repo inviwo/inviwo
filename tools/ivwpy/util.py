@@ -46,12 +46,21 @@ def addPostfix(file, postfix):
 	parts[0]+= postfix
 	return os.path.extsep.join(parts)
 
+def in_directory(file, directory):
+    #make both absolute    
+    directory = os.path.join(os.path.realpath(directory), '')
+    file = os.path.realpath(file)
+
+    #return true, if the common prefix of both is equal to directory
+    #e.g. /a/b/c/d.rst and directory is /a/b, the common prefix is /a/b
+    return os.path.commonprefix([file, directory]) == directory
 
 def mkdir(path):
 	if isinstance(path, (list, tuple)):
-		path = "/".join(path)
+		path = toPath(path)
 	if not os.path.isdir(path):
 		os.mkdir(path)
+	return path
 
 def partition(l, n):
     """Yield successive n-sized chunks from l."""
@@ -118,17 +127,6 @@ def print_info(mess, **kwargs):
 def print_pair(a,b, width=15):
 	print_info("{:>{width}} : ".format(a, width=width), end="")
 	print("{:<}".format(b))
-
-
-def dict2css(data):
-	res = ""
-	for k,v in data:
-		res += k + " {\n"
-		for k,v in v.items():
-			res += "    " + k + " : " + v + ";\n"
-		res += "}\n"
-
-	return res		
 
 
 def pad_infinite(iterable, padding=None):

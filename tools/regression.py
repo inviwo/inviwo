@@ -28,6 +28,7 @@
 #*********************************************************************************
 
 import os
+import sys
 import argparse
 
 from ivwpy.util import *
@@ -93,6 +94,9 @@ def makeCmdParser():
 						help="Exclude filter")
 	parser.add_argument("-l", "--list", action="store_true", dest="list", 
 						help="List all tests")
+	parser.add_argument("-j", "--json", action="store_true", dest="json", 
+						help="Load json report")
+	
 
 	return parser.parse_args()
 
@@ -141,17 +145,6 @@ if __name__ == '__main__':
 	output = os.path.abspath(args.output)
 	inviwopath = os.path.abspath(args.inviwo)
 
-	#base = "/Users/petst/Work/Projects/Inviwo-Developent/Private"
-	#ivwapp = base + "/builds/cmake-test/bin/Debug/inviwo.app/Contents/MacOS/inviwo"
-
-	#base = "C:/Users/petst55/Work/Inviwo"
-	#ivwapp = base + "/Builds/build-git-VS2015-64bit-Qt5.5.0/bin/Debug/inviwo-cli.exe"
-
-	#modulepaths = [base + "/inviwo-dev/modules", base + "/inviwo-research/modules"]
-	#repopaths = [] #[base + "/inviwo-research/data/workspaces/tests/"]
-
-	#out = base + "/regress"
-
 	app = ivwpy.regression.app.App(inviwopath, output, modulePaths, repoPaths, 
 		settings=ivwpy.regression.inviwoapp.RunSettings(timeout=60))
 
@@ -163,14 +156,24 @@ if __name__ == '__main__':
 		exit()
 
 	try: 
-		app.runTests(testrange = testrange, testfilter = testfilter)
-		app.updateDatabase(output + "/report.sqlite")
-		app.saveJson(output+"/report.json")
+		if args.json:
+			app.loadJson(output+"/report.json")
+		else:
+			app.runTests(testrange = testrange, testfilter = testfilter)
+			app.updateDatabase(output + "/report.sqlite")
+			app.saveJson(output+"/report.json")
+		
 		app.saveHtml(output+"/report.html", output + "/report.sqlite")
+
+		if app.success():
+			sys.exit(0)
+		else: 
+			sys.exit(1)
 		
 	except ivwpy.regression.error.MissingInivioAppError as err:
 		print_error(err.error)
 		print_info("Check that option '-i' is correct")
+		sys.exit(1)
 
 
 

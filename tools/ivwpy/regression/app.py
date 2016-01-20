@@ -219,10 +219,19 @@ class App:
 		with open(file, 'w') as f:
 			json.dump(self.reports, f, indent=4, separators=(',', ': '))
 
+	def loadJson(self, file):
+		with open(file, 'r') as f:
+			self.reports = json.load(f)
+
 	def saveHtml(self, file, dbfile):
-	    with open(file, 'w') as f:
-	    	html = HtmlReport(self.reports, dbfile)
-    		f.write(html.getHtml())
+	    html = HtmlReport(os.path.dirname(file), self.reports, dbfile)
+	    html.saveHtml(file)
+    		
+	def success(self):
+		for report in self.reports:
+			if len(report['failures']) != 0:
+				return False
+		return True
 
 	def updateDatabase(self, file):
 		db = Database(file)

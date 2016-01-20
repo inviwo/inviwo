@@ -27,25 +27,35 @@
 # 
 #*********************************************************************************
 
-# javascript http://omnipotent.net/jquery.sparkline/
-
-import yattag # http://www.yattag.org
 import sys
 import os
+import pkgutil
+
+# Yattag for HTML generation, http://www.yattag.org
+import yattag 
 
 from .. util import *
 from . database import *
 
 # Javascript packages
+# jQuary			 http://jquery.com
 # jQuery Zoom        http://www.jacklmoore.com/zoom/
 # jQuery Sparklines  http://omnipotent.net/jquery.sparkline/
 # List.js            http://www.listjs.com/
 
 class HtmlReport:
-	def __init__(self, reports, dbfile):
+	def __init__(self, basedir, reports, dbfile):
 		self.doc, tag, text = yattag.Doc().tagtext()
 		self.style = self.reportStyle()
 		self.db = Database(dbfile)
+		self.basedir = basedir
+
+		self.scriptDirname = "_scripts"
+		self.scripts = ["jquery-2.2.0.min.js", 
+						"jquery.sparkline.min.js", 
+						"jquery.zoom.min.js", 
+						"list.min.js", 
+						"main.js"]
 
 		self.doc.asis("<!DOCTYPE html>")
 		self.doc.stag("meta", charset = "utf-8")
@@ -55,25 +65,17 @@ class HtmlReport:
 				with tag('style'):
 					text(self.style)
 
-				with tag('script',language="javascript", type="text/javascript", 
-					src="https://code.jquery.com/jquery-2.2.0.min.js"): text("")
-
-				with tag('script',language="javascript", type="text/javascript", 
-					src="http://omnipotent.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js"): text("")
-
-				with tag('script',language="javascript", type="text/javascript", 
-					src="https://raw.githubusercontent.com/jackmoore/zoom/master/jquery.zoom.min.js"): text("")
-
-				with tag('script',language="javascript", type="text/javascript", 
-					src="http://listjs.com/no-cdn/list.js"): text("")
-
-				with tag('script',language="javascript", type="text/javascript"):
-					self.doc.asis(self.reportScrips())
+				for script in self.scripts:
+					with tag('script',language="javascript", type="text/javascript", 
+					src = self.scriptDirname + "/" + script): text("")
 
 			with tag('body'):
 				with tag('div', id='reportlist'):
 					with tag("div"):
-						with tag('div', klass='title') : text("Regressions")
+						with tag('div', klass='titleimg'):
+							self.doc.stag('img', src= "_images/inviwo.png")
+						with tag('div', klass='title'):
+							text("Inviwo Regressions")
 						self.doc.stag('input', klass='search', placeholder="Search")
 					 
 					with tag("div", klass = "head"):
@@ -102,155 +104,10 @@ class HtmlReport:
 					self.doc.asis("var keys = ["+\
 						"'testgroup', 'testname', 'testfailures', 'testruntime', 'testdate'];" + \
 						"var userList = new List('reportlist', {valueNames: keys });")
-					
+			
 	def reportStyle(self):
-		css = [
-		  ["ul" , {
-		    "padding": "0px",
-		    "margin": "0px",
-		  	"list-style-type" : "none"
-		  }],[
-		  ".ok", {
-		    "background-color": "#ddffdd"
-		  }],[
-		  ".fail" , {
-		    "background-color": "#ffdddd"
-		  }],[	
-		  ".toggle", {
-		    "cursor": "pointer"
-		  }],[
-		  ".toggle:hover" , {
-		    "color": "#555555"
-		  }],[
-		  "div.title" , {
-		  	"padding" :  "10px 10px 10px 10px",
-		    "display" : "inline-block",
-		    "font-size" : "250%",
-            "vertical-align" : "middle"
-		  }],[
-		  "img.test" , {
-   			"padding" : "1px",
-   			"border" : "1px solid #000000",
-    		"padding" : "0px",
-    		"max-width" : "100%",
-    		"max-height" : "100%",
-    		"background-image" : ("linear-gradient(90deg, rgba(200,200,200,.5) 50%, transparent 50%)," 
-    		                     + "linear-gradient(rgba(200,200,200,.5) 50%, transparent 50%)"),
-    		"background-size" : "30px 30px,30px 30px",
-    		"background-position" : "0, 0, 15 15px"
-		  }],[
-		  "img.diff" , {
-   			"padding" : "1px",
-   			"border" : "1px solid #000000",
-   			"max-width" : "100%",
-    		"max-height" : "100%",
-    		"padding" : "0px",
-		  }],[
-		  "div.libody" , {
-		    "margin-left" : "20px",
-		    "padding-bottom" : "15px"
-		  }],[
-		  "div.head" , {
-		    "border-bottom-style" : "solid",
-		    "border-bottom-width" : "2px", 
-		    "border-bottom-color" : "#dddddd"
-		  }],[
-		  "div.row" , {
-		    "border-top-style" : "solid",
-		    "border-top-width" : "1px", 
-		    "border-top-color" : "#dddddd"
-		  }],[		  
-		  "div.cell" , {
-		    "display" : "inline-block",
-		  }],[
-		  "div.testname" , {
-		    "width" : "170px"
-		  }],[
-		  "div.testgroup" , {
-		    "width" : "170px"
-		  }],[
-		  "div.testfailures" , {
-		    "width" : "130px"
-		  }],[
-		  "div.testruntime" , {
-		    "width" : "130px"
-		  }],[
-		  "div.testdate" , {
-		    "width" : "150px"
-		  }],[
-		  "div.imageinfo" , {
-		    "width" : "100px",
-		  }],[
-		  "div.imagename" , {
-		    "width" : "200px",
-		  }],[
-		  "div.itemname" , {
-		    "width" : "100px",
-		  }],[
-		  "div.key" , {
-		    "width" : "150px",
-		  }],[
-		  "input" , {
-		  	"font-size" : "100%",
-		    "padding" :  "10px 10px 10px 10px",
-		    "border" : "solid 1px #ccc",
-		    "border-radius" : "5px",
-			"vertical-align" : "middle"
-		  }],[
-		  "input:focus" , {
-		    "outline" : "none",
-		    "border-color" : "#aaa"
-		  }],[
-		  ".sort" , {
-		    "font-size" : "100%",
-		    "padding" : "0px 30px 0px 0px",
-		    "display" : "inline-block",
-		    "background" : "none",
-    		"border" : "none",
-    		"cursor" : "pointer"
-		  }],[
-		  ".sort:hover" , {
-		    "background-color" : "#dddddd"
-		  }],[
-		  ".sort:active" , {
-		    "background-color" : "#bbbbbb"
-		  }],[
-		  ".sort:after" , {
-		    "width" : "0",
-		    "height" : "0",
-		    "border-left" : "5px solid transparent",
-		    "border-right" : "5px solid transparent",
-		    "border-bottom" : "5px solid transparent",
-		    "content" : "\"\"",
-		    "position" : "relative",
-		    "top" : "-10px",
-		    "right" : "-5px"
-		  }],[
-		  ".sort.asc:after" , {
-		    "width" : "0",
-		    "height" : "0",
-		    "border-left" : "5px solid transparent",
-		    "border-right" : "5px solid transparent",
-		    "border-top" : "5px solid #000",
-		    "content" : "\"\"",
-		    "position" : "relative",
-		    "top" : "13px",
-		    "right" : "-5px"
-		  }],[
-		  ".sort.desc:after" , {
-		    "width" : "0",
-		    "height" : "0",
-		    "border-left" : "5px solid transparent",
-		    "border-right" : "5px solid transparent",
-		    "border-bottom" : "5px solid #000",
-		    "content" : "\"\"",
-		    "position" : "relative",
-		    "top" : "-10px",
-		    "right" : "-5px"
-		  }
-		  ]
-		]
-		return dict2css(css)
+		cssdata = pkgutil.get_data('ivwpy', 'regression/resources/report.css')
+		return cssdata.decode('utf-8')
 
 	def timeSeries(self, report, length = 20):
 		doc, tag, text = yattag.Doc().tagtext()
@@ -274,8 +131,6 @@ class HtmlReport:
 			with tag('span', klass="sparkline-failues"): text(datastr)
 		return doc.getvalue()
 
-
-
 	def testhead(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
 		with tag("div", klass = "row"):
@@ -290,7 +145,6 @@ class HtmlReport:
 			with tag("div", klass = "cell testdate"):
 				text(datetimeFromISO(report["date"]).strftime('%Y-%m-%d %H:%M:%S'))
 		return doc.getvalue()
-
 
 	def imageShort(self, group, name, img, length = 20):
 		doc, tag, text = yattag.Doc().tagtext()
@@ -315,9 +169,9 @@ class HtmlReport:
 				ok = img["difference"] == 0.0
 						
 				doc.asis(li(self.imageShort(group, name, img),
-					testImages(toPath([testdir, img["image"]]), 
-							   toPath([refdir, img["image"]]),
-							   toPath([testdir, "imgdiff", img["image"]])),
+					testImages(os.path.relpath(toPath([testdir, img["image"]]), self.basedir),
+							   "file://" + os.path.abspath(toPath([refdir, img["image"]])),
+							   os.path.relpath(toPath([testdir, "imgdiff", img["image"]]), self.basedir)),
 					status = "ok" if ok else "fail"
 					))
 		return doc.getvalue()
@@ -350,7 +204,8 @@ class HtmlReport:
 				short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
 				doc.asis(li(keyval("Log", short), loghtml, status = "ok" if err == 0 else "fail")) 
 
-			doc.asis(li(keyval("Screenshot", ""), image(report["screenshot"], alt = "Screenshot", width="100%")))	
+			doc.asis(li(keyval("Screenshot", ""), 
+				image(os.path.relpath(report["screenshot"], self.basedir), alt = "Screenshot", width="100%")))	
 
 			ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
 			fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
@@ -361,29 +216,25 @@ class HtmlReport:
 
 		return doc.getvalue()
 
-	def getHtml(self):
-		return yattag.indent(self.doc.getvalue())
 
+	def saveScripts(self):
+		scriptdir = toPath([self.basedir, self.scriptDirname])
+		mkdir(scriptdir)
+		for script in self.scripts:
+			scriptdata = pkgutil.get_data('ivwpy', 'regression/resources/' + script)
+			with open(toPath([scriptdir, script]), 'wb') as f:
+				f.write(scriptdata)
 
-	def reportScrips(self):
-		return """
-$(document).ready(function() {
-   	$('div.lihead').click(function() {
-   			body = $(this).next(".libody")
-   			body.slideToggle(100);
-    
-           	$.sparkline_display_visible()
-    });
-	$('div.libody').hide();
+	def saveHtml(self, file):
+		self.saveScripts()
 
-	$('.sparkline').sparkline();
-	$('.sparkline-box').sparkline('html', {type : 'box', showOutliers : false});
-	$('.sparkline-failues').sparkline('html', {type : 'line', chartRangeMin : 0});
+		imgdata = pkgutil.get_data('ivwpy', 'regression/resources/inviwo.png')
+		imgdir = mkdir([self.basedir, "_images"])
+		with open(toPath([imgdir, "inviwo.png"]), 'wb') as f:
+			f.write(imgdata)
 
-	$('div.zoom').zoom({magnify : 4, on : 'grab', duration : 400});
- });
-"""
-
+		with open(file, 'w') as f:
+			f.write(yattag.indent(self.doc.getvalue()))
 
 
 def toString(val):
@@ -419,7 +270,7 @@ def keyval(key, val):
 def image(path, **opts):
 	doc, tag, text = yattag.Doc().tagtext()
 	with tag('div', klass='zoom'):
-		doc.stag('img', src = "file://" + os.path.abspath(path), **opts)
+		doc.stag('img', src = path, **opts)
 	return doc.getvalue()
 
 def li(head, body="", status="", toggle = True):
@@ -436,7 +287,7 @@ def li(head, body="", status="", toggle = True):
 
 def testImages(testimg, refimg, diffimg):
 	doc, tag, text = yattag.Doc().tagtext()
-	with tag('table', klass='imagetable'):
+	with tag('table'):
 		with tag('tr'):
 			with tag('th'): text("Test")
 			with tag('th'): text("Reference")
