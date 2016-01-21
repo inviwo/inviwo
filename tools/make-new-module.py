@@ -27,51 +27,22 @@
 # 
 #*********************************************************************************
 
-import ivwcommon
-
 import os
 import sys
 import re
-import inspect
 import argparse
-import subprocess
-import configparser
 
-def test_for_inviwo(path):
-	return (os.path.exists(os.sep.join([path] + ['modules', 'base'])) 
-		and os.path.exists(os.sep.join([path] + ['include', 'inviwo']))
-		and os.path.exists(os.sep.join([path] + ['tools', 'templates'])))
-
-
-def find_inv_path():
-	path = ivwcommon.getScriptFolder()
-	folders=[]
-	while 1:
-		path, folder = os.path.split(path)
-		if folder != "":
-			folders.append(folder)
-		else:
-			if path != "":
-				folders.append(path)
-			break
-
-	folders.reverse()
-	
-	basepath = ""
-	for i in range(len(folders), 0 ,-1):
-		if test_for_inviwo(os.sep.join(folders[:i])):
-			basepath = os.sep.join(folders[:i])
-			break
-
-	return basepath
-
+import ivwpy.colorprint as cp
+import ivwpy.util
+import ivwpy.ivwpaths
+import ivwpy.cmake
 
 def make_module(ivwpath, path, name, verbose, dummy):
 	if os.path.exists(os.sep.join([path, name])):
-		ivwcommon.print_error("Error module: "+ name + ", already exits")
+		cp.print_error("Error module: "+ name + ", already exits")
 		return
 	
-	ivwcommon.print_warn("Create module: " + name)
+	cp.print_warn("Create module: " + name)
 	uname = name.upper()
 	lname = name.lower()
 	
@@ -166,7 +137,7 @@ def make_module(ivwpath, path, name, verbose, dummy):
 						if verbose: print(line)
 	
 		except FileNotFoundError as err:
-			ivwcommon.print_error(err)
+			cp.print_error(err)
 			return
 
 					
@@ -189,12 +160,12 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 
 	if args.ivwpath == "":
-		ivwpath = find_inv_path()
+		ivwpath = ivwpy.ivwpaths.find_inv_path()
 	else:
 		ivwpath = args.ivwpath
 
-	if not test_for_inviwo(ivwpath):
-		ivwcommon.print_error("Error could not find the inviwo repository")
+	if not ivwpy.ivwpaths.test_for_inviwo(ivwpath):
+		cp.print_error("Error could not find the inviwo repository")
 		parser.print_help()
 		sys.exit(1)
 	
@@ -206,8 +177,8 @@ if __name__ == '__main__':
 		make_module(ivwpath, path, name, args.verbose, args.dummy)
 
 	if args.builddir != None:
-		ivwcommon.runCMake(str(args.builddir[0]), ["-DIVW_MODULE_"+name.upper()+"=1"])
+		ivwpy.cmake.runCMake(str(args.builddir[0]), ["-DIVW_MODULE_"+name.upper()+"=1"])
 	else: 
-		ivwcommon.print_warn("Don't forget to rerun CMake with -DIVW_MODULE_"+name.upper()+ " to add the module")
+		cp.print_warn("Don't forget to rerun CMake with -DIVW_MODULE_"+name.upper()+ " to add the module")
 
-	ivwcommon.print_warn("Done")
+	cp.print_warn("Done")

@@ -28,58 +28,12 @@
 #*********************************************************************************
 
 import os
-import sys
 import re
-import inspect
-import argparse
-import subprocess
-import configparser
+from . import util
 
-try:
-	import colorama
-	colorama.init()	
-	def print_error(mess, **kwargs):
-		print(colorama.Fore.RED + colorama.Style.BRIGHT + mess + colorama.Style.RESET_ALL, **kwargs)
-	def print_warn(mess, **kwargs):
-		print(colorama.Fore.YELLOW + colorama.Style.BRIGHT + mess + colorama.Style.RESET_ALL, **kwargs)	
-	
-except ImportError:
-	def print_error(mess, **kwargs):
-		print(mess, **kwargs)
-	def print_warn(mess, **kwargs):
-		print(mess, **kwargs) 		
-
-def getScriptFolder():
-	return os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) # script directory
-
-def findCMake():
-	config = configparser.ConfigParser()
-	config.read(os.sep.join([getScriptFolder(), "pyconfig.ini"]))
-	if config.has_option("CMake", "path"):
-		cmake = config.get("CMake", "path")
-	elif os.name == 'posix': 
-		cmake='cmake'
-	else: 
-		cmake='cmake.exe'
-
-	return cmake
-
-def runCMake(path, options = []):
-	print_warn("Running CMake:")
-	cmake = findCMake()
-	try:
-		with subprocess.Popen([cmake] + options + [path], 
-	  						  stdout=subprocess.PIPE, 
-							  stderr=subprocess.STDOUT,
-							  universal_newlines=True) as proc:
-			for line in proc.stdout:
-				print(line, end='', flush=True)
-	except FileNotFoundError:
-		print_error("... Could not find " + cmake + " in the path")
-
-class Paths:
+class IvwPaths:
 	""" 
-	Figure out all the relevent paths and stuff
+	Given a path to a file try and find all related files.
 	"""
 	def __init__(self, filepath):
 		(path, file)  = os.path.split(filepath)
@@ -148,55 +102,31 @@ class Paths:
 		print("... CMake source: " + self.get_cmake_source())
 
 
-class CMakefile:
-	"""
-	Represent a cmake file
-	"""
-	def __init__(self, filepath):
-		self.filepath = filepath
-		self.lines = []
-		with open(filepath, "r") as f:
-			for l in f:
-				self.lines.append(l)
+def test_for_inviwo(path):
+	return (os.path.exists(os.sep.join([path] + ['modules', 'base'])) 
+		and os.path.exists(os.sep.join([path] + ['include', 'inviwo']))
+		and os.path.exists(os.sep.join([path] + ['tools', 'templates'])))
+
+def find_inv_path():
+	path = util.getScriptFolder()
+	folders=[]
+	while 1:
+		path, folder = os.path.split(path)
+		if folder != "":
+			folders.append(folder)
+		else:
+			if path != "":
+				folders.append(path)
+			break
+
+	folders.reverse()
 	
-	def add_file(self, group, file):
-		m1 = re.compile(r"\s*set\(" + group + "\s*")
-		m0 = re.compile(r"\s*\)\s*")
-		it = iter(self.lines)
-		self.found_group = False
-		def sort_and_insert_line(f, line):
-			lines = []
-			for l in f:
-				if m0.match(l):
-					self.found_group = True
-					lines.append("    " + line + "\n")
-					lines.sort()
-					
-					# remove duplicates
-					seen = set()
-					lines = [x for x in lines if not ( x in seen or seen.add(x))]
-					
-					lines.append(l)
-					break
-				elif l.strip() != "":	
-					lines.append(l.replace("\t","    "))
-				
-			return lines
-		
-		lines = []
-		for line in it:
-			if m1.match(line):
-				lines.append(line)
-				lines.extend(sort_and_insert_line(it, file))						
-			else:
-				lines.append(line)
-			
-		if not self.found_group:
-			print_error("... Could not find group " + group + " in cmakelist: " + self.filepath)
-		self.lines = lines
-	
-	def write(self, file = ""):
-		with open(file if file != "" else self.filepath, "w") as f:
-			print("... Updating cmakelists: " + f.name)
-			for l in self.lines:
-				f.write(l)
+	basepath = ""
+	for i in range(len(folders), 0 ,-1):
+		if test_for_inviwo(os.sep.join(folders[:i])):
+			basepath = os.sep.join(folders[:i])
+			break
+
+	return basepath
+
+

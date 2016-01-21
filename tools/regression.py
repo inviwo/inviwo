@@ -32,6 +32,7 @@ import sys
 import argparse
 
 from ivwpy.util import *
+from ivwpy.colorprint import *
 
 # requirements
 # python3

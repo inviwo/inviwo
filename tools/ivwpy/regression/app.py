@@ -37,6 +37,7 @@ from pdb import set_trace as bp
 from . import inviwoapp
 from . import test
 from .. util import *
+from .. colorprint import *
 from . imagecompare import *
 from . generatereport import *
 from . database import *

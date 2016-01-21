@@ -27,42 +27,15 @@
 # 
 #*********************************************************************************
  
-import ivwcommon
-
 import os
 import sys
 import re
-import inspect
 import argparse
-import subprocess
-import configparser
 
-def test_for_inviwo(path):
-	return (os.path.exists(os.sep.join([path] + ['modules', 'base'])) 
-		and os.path.exists(os.sep.join([path] + ['include', 'inviwo']))
-		and os.path.exists(os.sep.join([path] + ['tools', 'templates'])))
-
-def find_inv_path():
-	path = os.path.abspath(sys.argv[0])
-	folders=[]
-	while 1:
-		path, folder = os.path.split(path)
-		if folder != "":
-			folders.append(folder)
-		else:
-			if path != "":
-				folders.append(path)
-			break
-
-	folders.reverse()
-	
-	basepath = ""
-	for i in range(len(folders), 0 ,-1):
-		if test_for_inviwo(os.sep.join(folders[:i])):
-			basepath = os.sep.join(folders[:i])
-			break
-
-	return basepath
+import ivwpy.colorprint as cp
+import ivwpy.util
+import ivwpy.ivwpaths
+import ivwpy.cmake
 
 def make_template(file, name, define, api, incfile, author = "<Author>" ):
 	lines = []
@@ -82,10 +55,10 @@ def make_template(file, name, define, api, incfile, author = "<Author>" ):
     
 def write_file(paths, template, file, comment, force=False):
 	if os.path.exists(file) and not force:
-		ivwcommon.print_error("... File exists: " + file + ", use --force or overwrite")
+		cp.print_error("... File exists: " + file + ", use --force or overwrite")
 		return
 	elif os.path.exists(file) and force:
-		ivwcommon.print_warn("... Overwriting existing file")
+		cp.print_warn("... Overwriting existing file")
 	
 	with open(file, "w") as f:	
 		print(comment + f.name)
@@ -127,20 +100,20 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	ivwcommon.print_warn("Adding files to inwivo")
-	ivwpath = find_inv_path() if args.ivwpath == None else args.ivwpath
+	cp.print_warn("Adding files to inwivo")
+	ivwpath = ivwpy.ivwpaths.find_inv_path() if args.ivwpath == None else args.ivwpath
 
-	if not test_for_inviwo(ivwpath):
-		ivwcommon.print_error("Error could not find the inviwo repository, use --inviwo to specify where the inviwo repository is.")
+	if not ivwpy.ivwpaths.test_for_inviwo(ivwpath):
+		cp.print_error("Error could not find the inviwo repository, use --inviwo to specify where the inviwo repository is.")
 		sys.exit(1)
 
 	templates = os.sep.join([ivwpath, 'tools', 'templates'])
 		
 	for name in args.names:
-		paths = ivwcommon.Paths(name)
+		paths = ivwpy.ivwpaths.IvwPaths(name)
 		paths.info()
 			
-		cmakefile = ivwcommon.CMakefile(paths.cmake_file)
+		cmakefile = ivwpy.cmake.CMakefile(paths.cmake_file)
 			
 		if not args.header:
 			cmakefile.add_file("HEADER_FILES", paths.cmake_header_file)
@@ -181,12 +154,12 @@ if __name__ == '__main__':
 		
 		
 	if args.builddir != None:
-		ivwcommon.runCMake(str(args.builddir[0]))
+		ivwpy.cmake.runCMake(str(args.builddir[0]))
 	else:
-		ivwcommon.print_warn("Don't forget to rerun CMake")
+		cp.print_warn("Don't forget to rerun CMake")
 	
-	if args.processor: ivwcommon.print_warn("Don't forget to register the processor in the module")
-	ivwcommon.print_warn("Done")
+	if args.processor: cp.print_warn("Don't forget to register the processor in the module")
+	cp.print_warn("Done")
 
 
 

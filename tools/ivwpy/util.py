@@ -30,7 +30,6 @@
 import os
 import itertools
 import datetime
-from enum import Enum, unique
 
 def subDirs(path):
 	if os.path.isdir(path):
@@ -55,6 +54,11 @@ def in_directory(file, directory):
     #e.g. /a/b/c/d.rst and directory is /a/b, the common prefix is /a/b
     return os.path.commonprefix([file, directory]) == directory
 
+def getScriptFolder():
+	import inspect
+	""" Get the directory of the script is calling this function """
+	return os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe().f_back))) 
+
 def mkdir(path):
 	if isinstance(path, (list, tuple)):
 		path = toPath(path)
@@ -66,68 +70,6 @@ def partition(l, n):
     """Yield successive n-sized chunks from l."""
     for i in range(0, len(l), n):
         yield l[i:i+n]
-
-@unique
-class Color(Enum):
-	black = 0
-	blue = 1
-	cyan = 2
-	green = 3
-	magenta = 4
-	red = 5
-	white = 6
-	yellow = 7
-	light_black = 8
-	light_blue = 9
-	light_cyan = 10
-	light_green = 11
-	light_magenta = 12
-	light_red = 13
-	light_white = 14
-	light_yellow = 15
-
-try:
-	import colorama
-	colorama.init()	
-
-	def cprint(color, mess, **kwargs):
-		colors = {
-			Color.black : colorama.Fore.BLACK,
-			Color.blue : colorama.Fore.BLUE,
-			Color.cyan : colorama.Fore.CYAN,
-			Color.green : colorama.Fore.GREEN,
-			Color.magenta : colorama.Fore.MAGENTA,
-			Color.red : colorama.Fore.RED,
-			Color.white : colorama.Fore.WHITE,
-			Color.yellow : colorama.Fore.YELLOW,
-			Color.light_black : colorama.Fore.LIGHTBLACK_EX,
-			Color.light_blue : colorama.Fore.LIGHTBLUE_EX,
-			Color.light_cyan : colorama.Fore.LIGHTCYAN_EX,
-			Color.light_green : colorama.Fore.LIGHTGREEN_EX,
-			Color.light_magenta : colorama.Fore.LIGHTMAGENTA_EX,
-			Color.light_red : colorama.Fore.LIGHTRED_EX,
-			Color.light_white : colorama.Fore.LIGHTWHITE_EX,
-			Color.light_yellow : colorama.Fore.LIGHTYELLOW_EX
-		}
-		print(colors[color] + colorama.Style.BRIGHT + str(mess) + colorama.Style.RESET_ALL, **kwargs)
-	
-except ImportError:
-	def cprint(color, mess, **kwargs):
-		print(str(mess), **kwargs)
-
-def print_error(mess, **kwargs):
-		cprint(Color.red, mess, **kwargs)
-
-def print_warn(mess, **kwargs):
-		cprint(Color.yellow, mess, **kwargs)
-
-def print_info(mess, **kwargs):
-		cprint(Color.cyan, mess, **kwargs)
-
-def print_pair(a,b, width=15):
-	print_info("{:>{width}} : ".format(a, width=width), end="")
-	print("{:<}".format(b))
-
 
 def pad_infinite(iterable, padding=None):
    return itertools.chain(iterable, itertools.repeat(padding))
