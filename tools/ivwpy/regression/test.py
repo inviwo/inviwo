@@ -29,6 +29,7 @@
 
 import glob
 import os
+import json
 
 from .. util import *
 
@@ -38,6 +39,12 @@ class Test:
 		self.path = path
 		self.name = name
 		self.script = ""
+		self.config = {}
+
+		configfile = toPath([self.path, "config.json"])
+		if os.path.exists(configfile):
+			with open(configfile, 'r') as f:
+				self.config = json.load(f)
 
 	def __str__(self):
 		return self.toString()
@@ -59,6 +66,7 @@ class Test:
 		report['name'] = self.name
 		report['path'] = self.path
 		report['script'] = self.script
+		report['config'] = self.config
 		return report
 
 	def makeOutputDir(self, base):

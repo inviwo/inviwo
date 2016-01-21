@@ -89,3 +89,10 @@ def makeSlice(string):
 def datetimeFromISO(datatimestring):
 	return datetime.datetime.strptime(datatimestring, "%Y-%m-%dT%H:%M:%S.%f" )
 
+def safeget(dct, *keys, failure = None):
+    for key in keys:
+        if key in dct.keys():
+            dct = dct[key]
+        else: 
+            return failure
+    return dct

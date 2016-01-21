@@ -125,6 +125,7 @@ class App:
 		tests = ([findModuleTest(p) for p in moduleTestPaths] 
 				 + [findRepoTest(p) for p in repoTestPaths])
 		self.tests = list(itertools.chain(*tests))
+		self.reports = {}
 
 	def runTest(self, test):
 		report = {}
@@ -139,18 +140,24 @@ class App:
 
 	def runTests(self, testrange = slice(0,None), testfilter = lambda x: True):
 		selected = range(len(self.tests))[testrange]
-		self.reports = []
+		selected = list(filter(lambda i: testfilter(self.tests[i]), selected))
+
 		for i,test in enumerate(self.tests):
 			print_info("#"*80)
-			if i in selected and testfilter(test):
-				print_pair("Running test {:3d}".format(i), test.toString())
+			if i in selected:
+				print_pair("Running test {:3d} (Enabled: {:d}, Total: {:d})"
+							.format(i, len(selected), len(self.tests)),
+					test.toString())
 				report = self.runTest(test)
-				self.reports.append(report)
+				report['status'] = "new"
+				self.reports[test.toString()] = report
 				for k,v in report.items():
 					print_pair(k,str(v))
 				print()
 			else:
-				print_pair("Skipping test {:3d}".format(i), test.toString())
+				print_pair("Skipping test {:3d} (Enabled: {:d}, Total: {:d})"
+							.format(i, len(selected), len(self.tests)),
+					test.toString())
 
 	def compareImages(self, test, report):
 		refimgs = test.getImages()
@@ -225,34 +232,40 @@ class App:
 	def loadJson(self, file):
 		with open(file, 'r') as f:
 			self.reports = json.load(f)
+		for name, report in self.reports.items():
+			report['status'] = "old"
+
+
 
 	def saveHtml(self, file, dbfile):
 	    html = HtmlReport(os.path.dirname(file), self.reports, dbfile)
 	    html.saveHtml(file)
     		
 	def success(self):
-		for report in self.reports:
+		for name, report in self.reports.items():
 			if len(report['failures']) != 0:
-				return False
+				if safeget(report, "config", "enabled", failure = True):
+					return False
 		return True
 
 	def updateDatabase(self, file):
 		db = Database(file)
-		for report in self.reports:
-			dbtest = db.getOrAddTest(report["group"], report["name"])
-			dbtime = db.getOrAddQuantity("time", "s")
-			dbcount = db.getOrAddQuantity("count", "")
-			dbfrac = db.getOrAddQuantity("fraction", "%")
+		for name, report in self.reports.items():
+			if report['status'] == "new":
+				dbtest = db.getOrAddTest(report["group"], report["name"])
+				dbtime = db.getOrAddQuantity("time", "s")
+				dbcount = db.getOrAddQuantity("count", "")
+				dbfrac = db.getOrAddQuantity("fraction", "%")
 			
-			db_elapsed_time = db.getOrAddSeries(dbtest, dbtime, "elapsed_time")
-			db_test_failures = db.getOrAddSeries(dbtest, dbcount, "number_of_test_failures")
+				db_elapsed_time = db.getOrAddSeries(dbtest, dbtime, "elapsed_time")
+				db_test_failures = db.getOrAddSeries(dbtest, dbcount, "number_of_test_failures")
 
-			db.addMeasurement(db_elapsed_time, report["elapsed_time"])
-			db.addMeasurement(db_test_failures, len(report["failures"]))
+				db.addMeasurement(db_elapsed_time, report["elapsed_time"])
+				db.addMeasurement(db_test_failures, len(report["failures"]))
 
-			for img in report["image_tests"]:
-				db_img_test = db.getOrAddSeries(dbtest, dbfrac, "image_test_diff." + img["image"])
-				db.addMeasurement(db_img_test, img["difference"])
+				for img in report["image_tests"]:
+					db_img_test = db.getOrAddSeries(dbtest, dbfrac, "image_test_diff." + img["image"])
+					db.addMeasurement(db_img_test, img["difference"])
 
 
 

@@ -99,7 +99,7 @@ class HtmlReport:
 								text("Date")
 
 					with tag('ul', klass='list'):
-						for report in reports:
+						for name, report in reports.items():
 							ok = ("ok" if len(report['failures']) == 0 else "fail")
 							self.doc.asis(li(self.testhead(report), self.reportToHtml(report), status = ok))
 

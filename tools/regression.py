@@ -95,9 +95,6 @@ def makeCmdParser():
 						help="Exclude filter")
 	parser.add_argument("-l", "--list", action="store_true", dest="list", 
 						help="List all tests")
-	parser.add_argument("-j", "--json", action="store_true", dest="json", 
-						help="Load json report")
-	
 
 	return parser.parse_args()
 
@@ -154,21 +151,23 @@ if __name__ == '__main__':
 
 	if args.list:
 		app.printTestList(testrange = testrange, testfilter = testfilter)
-		exit()
+		exit(0)
 
 	try: 
-		if args.json:
-			app.loadJson(output+"/report.json")
-		else:
-			app.runTests(testrange = testrange, testfilter = testfilter)
-			app.updateDatabase(output + "/report.sqlite")
-			app.saveJson(output+"/report.json")
-		
+		#load any old report
+		if os.path.exists(output+"/report.json"): app.loadJson(output+"/report.json")
+
+		app.runTests(testrange = testrange, testfilter = testfilter)
+		app.updateDatabase(output + "/report.sqlite")
+		app.saveJson(output+"/report.json")	
 		app.saveHtml(output+"/report.html", output + "/report.sqlite")
 
 		if app.success():
+			print_info("Regression was successful")
 			sys.exit(0)
 		else: 
+			print_error("Regression was unsuccessful see report for details")
+			print_info("Report: " + output+"/report.html")
 			sys.exit(1)
 		
 	except ivwpy.regression.error.MissingInivioAppError as err:
