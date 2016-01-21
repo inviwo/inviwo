@@ -421,7 +421,7 @@ function(build_module_dependency the_module the_owner)
     first_case_upper(dir_name_cap ${the_module})
     if(${the_owner} AND NOT ${mod_name})
         ivw_add_module_option_to_cache(${the_module} ON TRUE)
-        ivw_message("${mod_name} was set to build, due to dependency towards ${the_owner}")
+        ivw_message(STATUS "${mod_name} was set to build, due to dependency towards ${the_owner}")
     endif()
 endfunction()
 

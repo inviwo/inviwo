@@ -32,7 +32,7 @@ if (ZLIB_FOUND)
 
 	set(ZLIB_FOUND ${ZLIB_FOUND} PARENT_SCOPE)
 else()
-	ivw_message("Compiling zlib from source since it was not found")
+	ivw_debug_message(STATUS "Compiling zlib from source since it was not found")
 	if(BUILD_SHARED_LIBS)
 		add_definitions(-DZLIB_INTERNAL)
 		ivw_add_definition(ZLIB_DLL)
