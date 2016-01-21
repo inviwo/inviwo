@@ -5,7 +5,7 @@
     <Processors>
         <Processor type="org.inviwo.CanvasGL" identifier="CanvasGL">
             <InPorts>
-                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref0" />
+                <InPort type="org.inviwo.ImageInport" identifier="inport" id="ref1" />
             </InPorts>
             <Properties>
                 <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
@@ -53,7 +53,7 @@
                     <selection content="0" />
                 </MetaDataItem>
                 <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
-                    <position x="1182" y="442" />
+                    <position x="1277" y="464" />
                     <dimensions x="512" y="512" />
                     <visibility content="1" />
                 </MetaDataItem>
@@ -61,18 +61,18 @@
         </Processor>
         <Processor type="org.inviwo.ImageSourceSeries" identifier="Image Series Source">
             <OutPorts>
-                <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" id="ref1" />
+                <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" id="ref0" />
             </OutPorts>
             <Properties>
                 <Property type="org.inviwo.DirectoryProperty" identifier="imageFileDirectory">
-                    <url content="../../images" />
+                    <url content="../../../../../tests/images" />
                     <acceptMode content="0" />
                     <fileMode content="4" />
                 </Property>
                 <Property type="org.inviwo.ButtonProperty" identifier="findFiles" />
                 <Property type="org.inviwo.IntProperty" identifier="currentImageIndex">
-                    <maxvalue content="6" />
-                    <value content="6" />
+                    <maxvalue content="9" />
+                    <value content="8" />
                 </Property>
                 <Property type="org.inviwo.StringProperty" identifier="imageFileName">
                     <readonly content="1" />
@@ -83,15 +83,15 @@
                 <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
                     <position x="-475" y="-600" />
                     <visibility content="1" />
-                    <selection content="1" />
+                    <selection content="0" />
                 </MetaDataItem>
             </MetaDataMap>
         </Processor>
     </Processors>
     <Connections>
         <Connection>
-            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref1" />
-            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref0" />
+            <OutPort type="org.inviwo.ImageOutport" identifier="image.outport" reference="ref0" />
+            <InPort type="org.inviwo.ImageInport" identifier="inport" reference="ref1" />
         </Connection>
     </Connections>
     <InviwoSetup>
@@ -148,11 +148,12 @@
                     <Processor content="org.inviwo.VolumeBinary" />
                 </Processors>
             </Module>
-            <Module name="ABufferGLModule">
+            <Module name="ABufferGL">
                 <Processors>
                     <Processor content="org.inviwo.ABufferGeometryGLProcessor" />
                 </Processors>
             </Module>
+            <Module name="zlib" />
             <Module name="assimp" />
             <Module name="Base">
                 <Processors>
@@ -185,6 +186,7 @@
                     <Processor content="org.inviwo.VolumeVectorSource" />
                     <Processor content="org.inviwo.TimeStepSelector" />
                     <Processor content="org.inviwo.StereoCameraSyncer" />
+                    <Processor content="org.inviwo.VolumeBoundingBox" />
                 </Processors>
             </Module>
             <Module name="OpenCL" />
@@ -209,6 +211,7 @@
                     <Processor content="org.inviwo.TextOverlayGL" />
                 </Processors>
             </Module>
+            <Module name="Nifti" />
             <Module name="OpenGLQt" />
             <Module name="PVM" />
             <Module name="Python3" />
