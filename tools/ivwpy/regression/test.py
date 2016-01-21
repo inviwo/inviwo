@@ -40,6 +40,7 @@ class Test:
 		self.name = name
 		self.script = ""
 		self.config = {}
+		self.workspaces = glob.glob(self.path +"/*.inv")
 
 		configfile = toPath([self.path, "config.json"])
 		if os.path.exists(configfile):
@@ -53,8 +54,7 @@ class Test:
 		return self.group + "/" + self.name
 
 	def getWorkspaces(self):
-		paths = glob.glob(self.path +"/*.inv")
-		return paths
+		return self.workspaces
 
 	def getImages(self):
 		imgs = glob.glob(self.path +"/*.png")
