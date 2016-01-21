@@ -38,6 +38,9 @@
 #include <inviwo/core/interaction/events/eventpropagator.h>
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/settings/systemsettings.h>
 
 namespace inviwo {
 
@@ -157,6 +160,9 @@ void Canvas::keyReleaseEvent(KeyboardEvent* e) { interactionEvent(e); }
 void Canvas::gestureEvent(GestureEvent* e) { interactionEvent(e); }
 
 void Canvas::touchEvent(TouchEvent* e) {
+    if(!touchEnabled())
+        return;
+    
     NetworkLock lock;
 
     if (!pickingContainer_.performTouchPick(e)) {
@@ -177,6 +183,11 @@ void Canvas::touchEvent(TouchEvent* e) {
             interactionEvent(e);
         }
     }
+}
+    
+bool Canvas::touchEnabled() {
+    BoolProperty* touchEnabledProperty = dynamic_cast<BoolProperty*>(InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->getPropertyByIdentifier("enableTouch"));
+        return (touchEnabledProperty && touchEnabledProperty->get());
 }
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }

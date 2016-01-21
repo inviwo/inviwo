@@ -95,6 +95,8 @@ protected:
 
     void gestureEvent(GestureEvent* e);
     void touchEvent(TouchEvent* e);
+    
+    bool touchEnabled();
 
     static Mesh* screenAlignedRect_;
 

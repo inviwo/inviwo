@@ -43,6 +43,11 @@ SystemSettings::SystemSettings()
     , enablePortInformationProperty_("enablePortInformation", "Enable port information", true)
     , enablePortInspectorsProperty_("enablePortInspectors", "Enable port inspectors", true)
     , portInspectorSize_("portInspectorSize", "Port inspector size", 128, 1, 1024)
+#if __APPLE__
+    , enableTouchProperty_("enableTouch", "Enable touch", false)
+#else
+    , enableTouchProperty_("enableTouch", "Enable touch", true)
+#endif
     , enablePickingProperty_("enablePicking", "Enable picking", true)
     , enableSoundProperty_("enableSound", "Enable sound", true)
     , useRAMPercentProperty_("useRAMPercent", "Max memory usage (%)", 50, 1, 100)
@@ -102,6 +107,7 @@ SystemSettings::SystemSettings()
     addProperty(enablePortInformationProperty_);
     addProperty(enablePortInspectorsProperty_);
     addProperty(portInspectorSize_);
+    addProperty(enableTouchProperty_);
     addProperty(enablePickingProperty_);
     addProperty(enableSoundProperty_);
     addProperty(useRAMPercentProperty_);
