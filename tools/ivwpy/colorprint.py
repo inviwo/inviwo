@@ -86,6 +86,9 @@ def print_error(mess, **kwargs):
 def print_warn(mess, **kwargs):
 		cprint(Color.yellow, mess, **kwargs)
 
+def print_good(mess, **kwargs):
+		cprint(Color.green, mess, **kwargs)
+
 def print_info(mess, **kwargs):
 		cprint(Color.cyan, mess, **kwargs)
 

@@ -82,9 +82,9 @@ class HtmlReport:
 						self.doc.stag('input', klass='search', placeholder="Search")
 					 
 					with tag("div", klass = "head"):
-						with tag("div", klass = "cell testgroup"):
-							with tag('button', ('data-sort','testgroup'), klass='sort'):
-								text("Group")
+						with tag("div", klass = "cell testmodule"):
+							with tag('button', ('data-sort','testmodule'), klass='sort'):
+								text("Module")
 						with tag("div", klass = "cell testname"):
 							with tag('button', ('data-sort', 'testname'), klass='sort'):
 								text("Name")
@@ -108,7 +108,7 @@ class HtmlReport:
 				
 	def timeSeries(self, report, length = 20):
 		doc, tag, text = yattag.Doc().tagtext()
-		data = self.db.getSeries(report["group"], report["name"], "elapsed_time")
+		data = self.db.getSeries(report["module"], report["name"], "elapsed_time")
 		datastrShort = ", ".join([str(x.value) for x in data.measurements[:length]])
 		
 		with tag('div'):
@@ -119,7 +119,7 @@ class HtmlReport:
 
 	def failueSeries(self, report, length = 30):
 		doc, tag, text = yattag.Doc().tagtext()
-		data = self.db.getSeries(report["group"], report["name"], "number_of_test_failures")
+		data = self.db.getSeries(report["module"], report["name"], "number_of_test_failures")
 		datastr = ", ".join([str(x.value) for x in data.measurements[:length]])
 		nfail = len(report["failures"])
 		
@@ -131,8 +131,8 @@ class HtmlReport:
 	def testhead(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
 		with tag("div", klass = "row"):
-			with tag("div", klass = "cell testgroup"):
-				text(report["group"])
+			with tag("div", klass = "cell testmodule"):
+				text(report["module"])
 			with tag("div", klass = "cell testname"):
 				text(report["name"])
 			with tag("div", klass = "cell testfailures"):
@@ -143,10 +143,10 @@ class HtmlReport:
 				text(datetimeFromISO(report["date"]).strftime('%Y-%m-%d %H:%M:%S'))
 		return doc.getvalue()
 
-	def imageShort(self, group, name, img, length = 20):
+	def imageShort(self, module, name, img, length = 20):
 		doc, tag, text = yattag.Doc().tagtext()
 
-		data = self.db.getSeries(group, name , "image_test_diff." + img["image"])
+		data = self.db.getSeries(module, name , "image_test_diff." + img["image"])
 		datastrShort = ", ".join([str(x.value) for x in data.measurements[:length]])
 		
 		with tag('div'):
@@ -159,13 +159,13 @@ class HtmlReport:
 		return doc.getvalue()
 
 
-	def genImages(self, group, name, imgs, testdir, refdir):
+	def genImages(self, module, name, imgs, testdir, refdir):
 		doc, tag, text = yattag.Doc().tagtext()
 		with tag('ol'):
 			for img in imgs:
 				ok = img["difference"] == 0.0
 						
-				doc.asis(li(self.imageShort(group, name, img),
+				doc.asis(li(self.imageShort(module, name, img),
 					testImages(os.path.relpath(toPath([testdir, img["image"]]), self.basedir),
 							   os.path.relpath(toPath([testdir, "imgref", img["image"]]), self.basedir),
 							   os.path.relpath(toPath([testdir, "imgdiff", img["image"]]), self.basedir)),
@@ -208,7 +208,7 @@ class HtmlReport:
 			fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
 			short = (str(ok) + " ok images, " + str(fail) + " failed image tests")
 			doc.asis(li(keyval("Images", short), 
-				self.genImages(report["group"], report["name"], report["image_tests"], report["outputdir"], report["path"]),
+				self.genImages(report["module"], report["name"], report["image_tests"], report["outputdir"], report["path"]),
 				status = "ok" if fail == 0 else "fail"))
 
 		return doc.getvalue()
@@ -235,8 +235,10 @@ class HtmlReport:
 			f.write(cssdata)
 
 		with open(file, 'w') as f:
-			f.write(yattag.indent(self.doc.getvalue()))
-
+			# problem with unexcaped chars in the inviwo log
+			# need to escape the log first...
+			#f.write(yattag.indent(self.doc.getvalue())) 
+			f.write(self.doc.getvalue())
 
 def toString(val):
 	if val is None:

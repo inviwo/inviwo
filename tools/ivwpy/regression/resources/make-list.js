@@ -27,5 +27,5 @@
  *
  *********************************************************************************/
 
-var keys = ['testgroup', 'testname', 'testfailures', 'testruntime', 'testdate'];
+var keys = ['testmodule', 'testname', 'testfailures', 'testruntime', 'testdate'];
 var userList = new List('reportlist', {valueNames: keys });

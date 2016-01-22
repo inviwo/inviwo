@@ -30,6 +30,7 @@
 import os
 import sys
 import argparse
+import configparser
 
 from ivwpy.util import *
 from ivwpy.colorprint import *
@@ -79,14 +80,14 @@ def makeCmdParser():
 	)
 	parser.add_argument('-i', '--inviwo', type=str, required=True, action="store", dest="inviwo",
 						help='Paths to inviwo executable')
-	parser.add_argument('-o', '--output', type=str, required=True, action="store", dest="output",
-						help='Path to output')
+	parser.add_argument('-c', '--config', type=str, action="store", dest="config", help='A configure file', default="")
+	parser.add_argument('-o', '--output', type=str, action="store", dest="output", help='Path to output')
+	
 	parser.add_argument('-r', '--repos', type=str, nargs='*', action="store", dest="repos",
 						help='Paths to inviwo repos')
 	parser.add_argument("-m", "--modules", type=str, nargs='*', action="store", dest="modules", default=[],
 						help="Paths to folders with modules")
-	parser.add_argument("-t", "--tests", type=str, nargs='*', action="store", dest="tests", default=[],
-						help="Paths to folders with tests")
+
 	parser.add_argument("-s", "--slice", type=str, nargs='?', action="store", dest="slice", default = "", 
 						help="Specifiy a specific slice of tests to run")
 	parser.add_argument("--include", type=str, nargs='?', action="store", dest="include", default = "",
@@ -101,14 +102,10 @@ def makeCmdParser():
 
 def searchRepoPaths(paths):
 	modulePaths = []
-	repoPaths = []
 	for path in paths:
 		if os.path.isdir(toPath([path, "modules"])):
 			modulePaths.append(toPath([path, "modules"]))
-		if os.path.isdir(toPath([path, "test", "regression"])):
-			repoPaths.append(toPath([path, "test", "regression"]))
-
-	return modulePaths, repoPaths
+	return modulePaths
 
 def makeFilter(inc, exc):
 	if inc != "":
@@ -130,21 +127,56 @@ def makeFilter(inc, exc):
 
 	return filter
 
+def find_pyconfig(path):
+	while path != "":
+		if os.path.exists(toPath([path, "pyconfig.ini"])): 
+			return toPath([path, "pyconfig.ini"])
+		else:
+			path = os.path.split(path)[0];
+
 if __name__ == '__main__':
 
 	args = makeCmdParser();
 
-	modulePaths, repoPaths = searchRepoPaths(args.repos)
-	modulePaths += args.modules
-	repoPaths += args.tests
-
-	modulePaths = map(os.path.abspath, modulePaths)
-	repoPaths = map(os.path.abspath, repoPaths)
-	output = os.path.abspath(args.output)
 	inviwopath = os.path.abspath(args.inviwo)
+	if not os.path.exists(inviwopath):
+		print_error("Regression.py was unable to find inviwo executable at " + inviwopath)
+		sys.exit(1)
 
-	app = ivwpy.regression.app.App(inviwopath, output, modulePaths, repoPaths, 
-		settings=ivwpy.regression.inviwoapp.RunSettings(timeout=60))
+	print("Find " + find_pyconfig(inviwopath))
+	configpath = find_pyconfig(inviwopath)
+	print("cfigpath " + str(configpath))
+
+	config = configparser.ConfigParser(converters = {"list" : lambda x: x.split(";")})
+	config.read([
+		configpath if configpath else "", 
+		args.config if args.config else ""
+	])
+
+	modulePaths = []
+	if args.repos: 
+		modulePaths = searchRepoPaths(args.repos)
+	elif config.has_option("Inviwo", "modulepaths"):
+		modulePaths = config.getlist("Inviwo", "modulepaths")
+
+	if args.modules:
+		modulePaths += args.modules
+
+	modulePaths = list(map(os.path.abspath, modulePaths))
+
+	if args.output:
+		output = os.path.abspath(args.output)
+	elif config.has_option("CMake","binary_dir"):
+		output = config.get("CMake","binary_dir") + "/regress"
+	else:
+		print_error("Regression.py was unable to decide on a output dir, please specify \"-o <output path>\"")
+		sys.exit(1)
+
+	settings=ivwpy.regression.inviwoapp.RunSettings(
+		timeout=60,
+		activeModules = config.getlist("Inviwo", "activemodules", fallback=None)
+	)
+	app = ivwpy.regression.app.App(inviwopath, output, modulePaths, settings=settings)
 
 	testfilter = makeFilter(args.include, args.exclude)
 	testrange = makeSlice(args.slice)

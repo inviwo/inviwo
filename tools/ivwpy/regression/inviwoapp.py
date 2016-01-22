@@ -36,13 +36,21 @@ from . error import *
 from .. util import *
 
 class RunSettings:
-	def __init__(self, timeout = 15):
+	def __init__(self, timeout = 15, activeModules = None):
 		self.timeout = timeout
+		self.activeModules = None if activeModules is None else [x.casefold() for x in activeModules]
+
 
 class InviwoApp:
 	def __init__(self, appPath, settings = RunSettings()):
 		self.program = appPath
 		self.settings = settings
+
+	def isModuleActive(self, name):
+		if self.settings.activeModules is None: 
+			return True
+		else:
+			return name.casefold() in self.settings.activeModules
 
 	def runTest(self, test, report, output):
 		outputdir = test.makeOutputDir(output)

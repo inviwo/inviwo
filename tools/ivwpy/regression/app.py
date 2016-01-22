@@ -52,22 +52,9 @@ def findModuleTest(path):
 		for testDir in subDirs(regressionDir):
 			tests.append(test.Test(
 				name = testDir,
-				group = moduleDir,
+				module = moduleDir,
 				path = toPath([regressionDir, testDir]) 
 				))
-	return tests
-
-def findRepoTest(path):
-	# assume path points to a repo.
-	# look for tests in path/tests/regression
-	tests = []
-	regressionDir = toPath([path, "tests", "regression"])
-	for testDir in subDirs(regressionDir):
-		tests.append(test.Test(
-					name = testDir,
-					group = path.split("/")[-1],
-					path = toPath([regressionDir, testDir]) 
-					))
 	return tests
 
 class ReportTest:
@@ -118,12 +105,10 @@ class ReportLogTest(ReportTest):
 
 
 class App:
-	def __init__(self, appPath, outputPath, moduleTestPaths = [], 
-				 repoTestPaths = [], settings = inviwoapp.RunSettings()):
+	def __init__(self, appPath, outputPath, moduleTestPaths = [], settings = inviwoapp.RunSettings()):
 		self.app = inviwoapp.InviwoApp(appPath, settings)
 		self.output = outputPath
-		tests = ([findModuleTest(p) for p in moduleTestPaths] 
-				 + [findRepoTest(p) for p in repoTestPaths])
+		tests = [findModuleTest(p) for p in moduleTestPaths]
 		self.tests = list(itertools.chain(*tests))
 		self.reports = {}
 
@@ -138,9 +123,17 @@ class App:
 
 		return report
 
-	def runTests(self, testrange = slice(0,None), testfilter = lambda x: True):
+
+	def filterTests(self, testrange, testfilter):
 		selected = range(len(self.tests))[testrange]
 		selected = list(filter(lambda i: testfilter(self.tests[i]), selected))
+
+		# don't run test from modules that we have not built
+		selected = list(filter(lambda i: self.app.isModuleActive(self.tests[i].module), selected))
+		return selected
+
+	def runTests(self, testrange = slice(0,None), testfilter = lambda x: True):
+		selected = self.filterTests(testrange, testfilter)
 
 		for i,test in enumerate(self.tests):
 			print_info("#"*80)
@@ -148,11 +141,18 @@ class App:
 				print_pair("Running test {:3d} (Enabled: {:d}, Total: {:d})"
 							.format(i, len(selected), len(self.tests)),
 					test.toString())
+
 				report = self.runTest(test)
+				
 				report['status'] = "new"
 				self.reports[test.toString()] = report
 				for k,v in report.items():
-					print_pair(k,str(v))
+					print_pair(k,str(v), width=15)
+
+				if len(report["failures"])>0:
+					print_error("{:>15} : {}".format("Result", "Failed " + ", ".join(report["failures"].keys())))
+				else:
+					print_good("{:>15} : {}".format("Result", "Success"))
 				print()
 			else:
 				print_pair("Skipping test {:3d} (Enabled: {:d}, Total: {:d})"
@@ -220,7 +220,8 @@ class App:
 	def printTestList(self, testrange = slice(0,None), testfilter = lambda x: True, printfun = print):
 		printfun("List of regression tests")
 		printfun("-"*80)
-		selected = range(len(self.tests))[testrange]
+
+		selected = self.filterTests(testrange, testfilter)
 		for i, test in enumerate(self.tests):
 			active = "Enabled" if i in selected and testfilter(test) else "Disabled"
 			printfun("{:3d} {:8s} {}".format(i, active, test))
@@ -252,7 +253,7 @@ class App:
 		db = Database(file)
 		for name, report in self.reports.items():
 			if report['status'] == "new":
-				dbtest = db.getOrAddTest(report["group"], report["name"])
+				dbtest = db.getOrAddTest(report["module"], report["name"])
 				dbtime = db.getOrAddQuantity("time", "s")
 				dbcount = db.getOrAddQuantity("count", "")
 				dbfrac = db.getOrAddQuantity("fraction", "%")

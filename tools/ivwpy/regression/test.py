@@ -34,8 +34,8 @@ import json
 from .. util import *
 
 class Test:
-	def __init__(self, name, group, path):
-		self.group = group
+	def __init__(self, name, module, path):
+		self.module = module
 		self.path = path
 		self.name = name
 		self.script = ""
@@ -51,7 +51,7 @@ class Test:
 		return self.toString()
 
 	def toString(self):
-		return self.group + "/" + self.name
+		return self.module + "/" + self.name
 
 	def getWorkspaces(self):
 		return self.workspaces
@@ -62,7 +62,7 @@ class Test:
 		return imgs
 		
 	def report(self, report):
-		report['group'] = self.group
+		report['module'] = self.module
 		report['name'] = self.name
 		report['path'] = self.path
 		report['script'] = self.script
@@ -73,8 +73,8 @@ class Test:
 		if not os.path.isdir(base):
 			raise RegressionError("Output dir does not exsist: " + dir)
 
-		mkdir([base, self.group])
-		mkdir([base, self.group, self.name])
-		return toPath([base, self.group, self.name])
+		mkdir([base, self.module])
+		mkdir([base, self.module, self.name])
+		return toPath([base, self.module, self.name])
 
 		raise RegressionError("Invalid Test kind")
