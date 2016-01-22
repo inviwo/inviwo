@@ -204,6 +204,18 @@ function(generate_module_registration_file module_classes modules_class_paths)
 
 endfunction()
 
+function(ivw_create_pyconfig modulepaths activemodules)
+       
+    # template vars:
+    set(MODULEPATHS ${modulepaths})
+    set(ACTIVEMODULES ${activemodules})
+
+    configure_file(${IVW_CMAKE_TEMPLATES}/pyconfig_template.ini 
+                   ${CMAKE_BINARY_DIR}/pyconfig.ini @ONLY)
+
+endfunction()
+
+
 #--------------------------------------------------------------------
 # Create CMAKE file for pre-process 
 function(ivw_generate_shader_resource parent_path)
@@ -299,6 +311,8 @@ macro(ivw_register_modules)
     #Generate module registration file
     generate_module_registration_file("${IVW_MODULE_CLASSES}" "${IVW_MODULE_CLASS_PATHS}")
     create_module_package_list(${IVW_MODULE_CLASSES})
+
+    ivw_create_pyconfig("${IVW_MODULE_DIR};${IVW_EXTERNAL_MODULES}" "${IVW_MODULE_CLASSES}")
 endmacro()
 
 
