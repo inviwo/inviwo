@@ -253,7 +253,7 @@ bool SkewedPerspectiveCamera::update(const Camera* source) {
 
 
 void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
-	auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("width"));
+	auto widthProp = dynamic_cast<FloatProperty*>(comp->getPropertyByIdentifier("skewed-frustum-width"));
 	if (widthProp) {
 		const float oldWidth{ frustum_.y - frustum_.x };
 		const float oldHeight{ frustum_.w - frustum_.z };
@@ -262,7 +262,7 @@ void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
 		setFrustum({ -width / 2.0f, width / 2.0f, -width / 2.0f / aspect, +width / 2.0f / aspect });
 	}
 	else {
-		widthProp = new FloatProperty("width", "Width", 0.1f, 0.001f, 10.0f, 0.0001f);
+		widthProp = new FloatProperty("skewed-frustum-width", "Skewed Frustum Width", 0.1f, 0.001f, 10.0f, 0.0001f);
 		comp->addProperty(widthProp, true);
 	}
 
@@ -276,13 +276,13 @@ void SkewedPerspectiveCamera::configureProperties(CompositeProperty* comp) {
 	});
 
 
-	auto offsetProp = dynamic_cast<FloatVec2Property*>(comp->getPropertyByIdentifier("offset"));
+	auto offsetProp = dynamic_cast<FloatVec2Property*>(comp->getPropertyByIdentifier("seperation"));
 	if (offsetProp) {		
 		const vec2 offset = offsetProp->get();
 		setFrustumOffset(offset);
 	}
 	else {
-		offsetProp = new FloatVec2Property("offset", "Offset", vec2(0.0f), vec2(-10.0f), vec2(10.0f), vec2(0.01f));
+		offsetProp = new FloatVec2Property("seperation", "Separation", vec2(0.0f), vec2(-10.0f), vec2(10.0f), vec2(0.01f));
 		comp->addProperty(offsetProp, true);
 	}
 
