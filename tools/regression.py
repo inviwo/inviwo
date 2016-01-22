@@ -143,10 +143,7 @@ if __name__ == '__main__':
 		print_error("Regression.py was unable to find inviwo executable at " + inviwopath)
 		sys.exit(1)
 
-	print("Find " + find_pyconfig(inviwopath))
 	configpath = find_pyconfig(inviwopath)
-	print("cfigpath " + str(configpath))
-
 	config = configparser.ConfigParser()
 	config.read([
 		configpath if configpath else "", 

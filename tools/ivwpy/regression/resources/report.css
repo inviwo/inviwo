@@ -59,7 +59,10 @@ div.row {
     border-top-color : #dddddd;
 }
 div.cell {
+    margin : 0px 5px 0px 5px;
     display : inline-block;
+    overflow: hidden;
+
 }
 div.testname {
     width : 170px;
