@@ -29,3 +29,7 @@
 
 var keys = ['testmodule', 'testname', 'testfailures', 'testruntime', 'testdate'];
 var userList = new List('reportlist', {valueNames: keys });
+
+userList.sort('valueName')
+userList.sort('testfailures', { order: "desc" })
+userList.sort('testmodule')

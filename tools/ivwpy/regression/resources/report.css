@@ -88,6 +88,19 @@ div.itemname {
 div.key {
     width : 150px;
 }
+
+div.log {
+  font-family: monospace;
+}
+div.log .info {
+}
+div.log .warn {
+  color : orange;
+}
+div.log .error {
+  color : red;
+}
+
 input {
     vertical-align : middle;
     border-radius : 5px;

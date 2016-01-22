@@ -50,14 +50,15 @@ class ImageCompare:
 
 
 	def saveDifferenceImage(self, file, showBox = True):
-		diffimg = ImageChops.difference(self.testImage, self.refImage)
-		if showBox:
-			imageDraw = ImageDraw.Draw(diffimg)
-			bbox = diffimg.getbbox()
-			if bbox != None:
-				imageDraw.rectangle(bbox, outline = "red")
+		if self.testImage.mode == self.refImage.mode and self.testImage.size == self.refImage.size:
+			diffimg = ImageChops.difference(self.testImage, self.refImage)
+			if showBox:
+				imageDraw = ImageDraw.Draw(diffimg)
+				bbox = diffimg.getbbox()
+				if bbox != None:
+					imageDraw.rectangle(bbox, outline = "red")
 
-		diffimg.save(file)
+			diffimg.save(file)
 
 	def saveReferenceImage(self, file):
 		self.refImage.save(file)

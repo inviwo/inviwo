@@ -173,6 +173,13 @@ class HtmlReport:
 					))
 		return doc.getvalue()
 
+
+	def formatLog(self, htmllog):
+		doc, tag, text = yattag.Doc().tagtext()
+		with tag('div', klass='log'):
+			doc.asis(htmllog)
+		return doc.getvalue()
+
 	def reportToHtml(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
 
@@ -199,7 +206,7 @@ class HtmlReport:
 				info = loghtml.count("Info:")
 
 				short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
-				doc.asis(li(keyval("Log", short), loghtml, status = "ok" if err == 0 else "fail")) 
+				doc.asis(li(keyval("Log", short), self.formatLog(loghtml), status = "ok" if err == 0 else "fail")) 
 
 			doc.asis(li(keyval("Screenshot", ""), 
 				image(os.path.relpath(report["screenshot"], self.basedir), alt = "Screenshot", width="100%")))	
