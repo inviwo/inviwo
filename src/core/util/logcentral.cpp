@@ -70,16 +70,13 @@ FileLogger::FileLogger(std::string logPath) : Logger() {
     } else {
         fileStream_ = new std::ofstream(logPath.append("/inviwo-log.html").c_str());
     }
-    (*fileStream_) << "<p><font size='+1'>Inviwo (V " << IVW_VERSION << ") Log File</font></p><br>"
+    (*fileStream_) << "<div class ='info'>Inviwo (V " << IVW_VERSION << ") Log File</div>"
                    << std::endl;
-    (*fileStream_) << "<p>" << std::endl;
 }
 
 FileLogger::~FileLogger() {
-    (*fileStream_) << "</p>" << std::endl;
     fileStream_->close();
     delete fileStream_;
-    fileStream_ = nullptr;
 }
 
 void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience audience,
@@ -92,24 +89,26 @@ void FileLogger::log(std::string logSource, LogLevel logLevel, LogAudience audie
 
     switch (logLevel) {
         case LogLevel::Info:
-            (*fileStream_) << "<font color='#000000'>Info: ";
+            (*fileStream_) << "<div class ='info'><span class='level'>Info: </span>";
             break;
 
         case LogLevel::Warn:
-            (*fileStream_) << "<font color='#FF8000'>Warn: ";
+            (*fileStream_) << "<div class ='warn'><span class='level'>Warn: </span>";
             break;
 
         case LogLevel::Error:
-            (*fileStream_) << "<font color='#FF0000'>Error: ";
+            (*fileStream_) << "<div class ='error'><span class='level'>Error: </span>";
             break;
     }
+    
+    logMsg = htmlEncode(logMsg);
 
-    replaceInString(logMsg, "\\n", "<br />");
-    replaceInString(logMsg, "\\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
-    replaceInString(logMsg, "\\s", "&nbsp;");
+    replaceInString(logMsg, " ", "&nbsp;");
+    replaceInString(logMsg, "\n", "<br/>");
+    replaceInString(logMsg, "\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 
     (*fileStream_) << "(" << logSource << ":" << lineNumber << ") " << logMsg;
-    (*fileStream_) << "</font><br>" << std::endl;
+    (*fileStream_) << "</div>" << std::endl;
 }
 
 LogCentral::LogCentral() : 
