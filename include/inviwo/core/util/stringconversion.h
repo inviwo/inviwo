@@ -82,6 +82,8 @@ std::string joinString(Iterator begin, Iterator end, std::string delimeter = " "
     return ss.str();
 }
 
+IVW_CORE_API std::string htmlEncode(const std::string& data);
+
 IVW_CORE_API std::vector<std::string> splitStringWithMultipleDelimiters(
     const std::string& str, std::vector<char> delimiters = std::vector<char>());
 
