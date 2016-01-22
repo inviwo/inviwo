@@ -147,7 +147,7 @@ if __name__ == '__main__':
 	configpath = find_pyconfig(inviwopath)
 	print("cfigpath " + str(configpath))
 
-	config = configparser.ConfigParser(converters = {"list" : lambda x: x.split(";")})
+	config = configparser.ConfigParser()
 	config.read([
 		configpath if configpath else "", 
 		args.config if args.config else ""
@@ -157,7 +157,7 @@ if __name__ == '__main__':
 	if args.repos: 
 		modulePaths = searchRepoPaths(args.repos)
 	elif config.has_option("Inviwo", "modulepaths"):
-		modulePaths = config.getlist("Inviwo", "modulepaths")
+		modulePaths = config.get("Inviwo", "modulepaths").split(";")
 
 	if args.modules:
 		modulePaths += args.modules
@@ -172,9 +172,13 @@ if __name__ == '__main__':
 		print_error("Regression.py was unable to decide on a output dir, please specify \"-o <output path>\"")
 		sys.exit(1)
 
+	activeModules = None
+	if config.has_option("Inviwo", "activemodules"):
+		activeModules = config.get("Inviwo", "activemodules").split(";")
+
 	settings=ivwpy.regression.inviwoapp.RunSettings(
 		timeout=60,
-		activeModules = config.getlist("Inviwo", "activemodules", fallback=None)
+		activeModules = activeModules
 	)
 	app = ivwpy.regression.app.App(inviwopath, output, modulePaths, settings=settings)
 
