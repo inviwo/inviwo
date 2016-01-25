@@ -117,6 +117,7 @@ protected:
     OptionPropertyInt polygonMode_;
     FloatProperty renderPointSize_;
     FloatProperty renderLineWidth_;
+    BoolProperty enableDepthTest_;
     SimpleLightingProperty lightingProperty_;
 
 

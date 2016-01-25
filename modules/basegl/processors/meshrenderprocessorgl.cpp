@@ -72,6 +72,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     , polygonMode_("polygonMode", "Polygon Mode")
     , renderPointSize_("renderPointSize", "Point Size", 1.0f, 0.001f, 15.0f, 0.001f)
     , renderLineWidth_("renderLineWidth", "Line Width", 1.0f, 0.001f, 15.0f, 0.001f)
+    , enableDepthTest_("enableDepthTest_","Enable Depth Test" , true)
     , lightingProperty_("lighting", "Lighting", &camera_)
     , layers_("layers", "Layers")
     , colorLayer_("colorLayer", "Color", true, InvalidationLevel::InvalidResources)
@@ -114,6 +115,7 @@ MeshRenderProcessorGL::MeshRenderProcessorGL()
     geomProperties_.addProperty(polygonMode_);
     geomProperties_.addProperty(renderPointSize_);
     geomProperties_.addProperty(renderLineWidth_);
+    geomProperties_.addProperty(enableDepthTest_);
 
     geomProperties_.addProperty(overrideColorBuffer_);
     geomProperties_.addProperty(overrideColor_);
@@ -233,7 +235,7 @@ void MeshRenderProcessorGL::process() {
     utilgl::setShaderUniforms(shader_, lightingProperty_, "light_");
     utilgl::setShaderUniforms(shader_, overrideColor_);
 
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, true);
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, enableDepthTest_.get());
     utilgl::CullFaceState culling(cullFace_.get());
     utilgl::PolygonModeState polygon(polygonMode_.get(), renderLineWidth_, renderPointSize_);
 
