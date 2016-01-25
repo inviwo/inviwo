@@ -178,7 +178,8 @@ class App:
 			if img in refs:
 				comp = ImageCompare(toPath([outputdir, img]), toPath([test.path, img]))
 				diffpath = mkdir(toPath([outputdir, "imgdiff"]))
-				comp.saveDifferenceImage(toPath([diffpath, img]))
+				maskpath = mkdir(toPath([outputdir, "imgmask"]))
+				comp.saveDifferenceImage(toPath([diffpath, img]), toPath([maskpath, img]))
 				refpath = mkdir(toPath([outputdir, "imgref"]))
 				comp.saveReferenceImage(toPath([refpath, img]))
 

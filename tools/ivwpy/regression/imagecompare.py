@@ -29,7 +29,6 @@
 
 
 import PIL.Image as Image
-import PIL.ImageChops as ImageChops
 import PIL.ImageDraw as ImageDraw
 
 
@@ -41,7 +40,7 @@ class ImageCompare:
 
 		self.diff = 100
 		if self.testImage.mode == self.refImage.mode and self.testImage.size == self.refImage.size:
-			ncomponents = self.testImage.size[0] * self.testImage.size[1] * 3
+			ncomponents = self.testImage.size[0] * self.testImage.size[1] * len(self.testImage.getbands())
 			pairs = zip(self.testImage.getdata(), self.refImage.getdata())
 			if len(self.testImage.getbands()) == 1: # for gray-scale jpegs
 				self.diff = sum(abs(p1-p2) for p1,p2 in pairs) * 100.0 / 255.0 / ncomponents
@@ -49,16 +48,44 @@ class ImageCompare:
 				self.diff = sum(abs(c1-c2) for p1,p2 in pairs for c1,c2 in zip(p1,p2)) * 100.0 / 255.0 / ncomponents
 
 
-	def saveDifferenceImage(self, file, showBox = True):
+	def saveDifferenceImage(self, difffile, maskfile, showBox = True, enhance = 10):
+
 		if self.testImage.mode == self.refImage.mode and self.testImage.size == self.refImage.size:
-			diffimg = ImageChops.difference(self.testImage, self.refImage)
+			if len(self.testImage.getbands()) == 1:
+				def issame(x,y): return abs(x-y) == 0.0
+			else:
+				def issame(x,y): return sum([abs(i-j) for i,j in zip(x,y)]) == 0.0
+
+			if len(self.testImage.getbands()) == 1:
+				def tocolor(x,y): return (255-enhance*abs(x-y),0,0,255)
+			elif len(self.testImage.getbands()) == 2:
+				def tocolor(x,y): return (255-enhance*abs(x[0]-y[0]),255-enhance*abs(x[1]-y[1]), 0, 255)
+			elif len(self.testImage.getbands()) >= 3:
+				def tocolor(x,y): return (255-enhance*abs(x[0]-y[0]),255-enhance*abs(x[1]-y[1]),255-enhance*abs(x[2]-y[2]), 255)
+
+			mask = Image.new('1', self.refImage.size)
+			diff = Image.new('RGBA', self.refImage.size)
+
+			d = diff.load()
+			m = mask.load()
+
+			t = self.testImage.load()
+			r = self.refImage.load()
+
+			for i in range(diff.size[0]):
+				for j in range(diff.size[1]):
+					m[i,j] = 1 if issame(t[i,j], r[i,j]) else 0		
+					d[i,j] = tocolor(t[i,j], r[i,j])
+
 			if showBox:
-				imageDraw = ImageDraw.Draw(diffimg)
-				bbox = diffimg.getbbox()
+				imageDraw = ImageDraw.Draw(diff)
+				bbox = diff.getbbox()
 				if bbox != None:
 					imageDraw.rectangle(bbox, outline = "red")
 
-			diffimg.save(file)
+			diff.save(difffile)
+			mask.save(maskfile)
+
 
 	def saveReferenceImage(self, file):
 		self.refImage.save(file)

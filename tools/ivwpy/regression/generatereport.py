@@ -168,7 +168,8 @@ class HtmlReport:
 				doc.asis(li(self.imageShort(module, name, img),
 					testImages(os.path.relpath(toPath([testdir, img["image"]]), self.basedir),
 							   os.path.relpath(toPath([testdir, "imgref", img["image"]]), self.basedir),
-							   os.path.relpath(toPath([testdir, "imgdiff", img["image"]]), self.basedir)),
+							   os.path.relpath(toPath([testdir, "imgdiff", img["image"]]), self.basedir),
+							   os.path.relpath(toPath([testdir, "imgmask", img["image"]]), self.basedir)),
 					status = "ok" if ok else "fail"
 					))
 		return doc.getvalue()
@@ -295,20 +296,23 @@ def li(head, body="", status="", toggle = True):
 
 	return doc.getvalue()
 
-def testImages(testimg, refimg, diffimg):
+def testImages(testimg, refimg, diffimg, maskimg):
 	doc, tag, text = yattag.Doc().tagtext()
 	with tag('table'):
 		with tag('tr'):
 			with tag('th'): text("Test")
 			with tag('th'): text("Reference")
-			with tag('th'): text("Difference") 
+			with tag('th'): text("Difference * 10") 
+			with tag('th'): text("Mask") 
 		with tag('tr'):
-			with tag('th'):
+			with tag('td'):
 				doc.asis(image(testimg, alt = "test image", klass ="test"))
-			with tag('th'):
+			with tag('td'):
 				doc.asis(image(refimg, alt = "reference image", klass ="test"))
-			with tag('th'):
+			with tag('td'):
 				doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
+			with tag('td'):
+				doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
 	return doc.getvalue()
 
 def failureList(errors):
