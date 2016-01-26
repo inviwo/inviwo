@@ -37,11 +37,12 @@ from . import util
 from . import colorprint as cp
 from . import ivwpaths
 
-def findGit(pyconf = ""):
+def findGit(pyconfsearchpath = ""):
+	pyconfig = util.find_pyconfig(pyconfsearchpath)
 	config = configparser.ConfigParser()
 	config.read([
 		util.toPath(ivwpaths.find_inv_path(), "pyconfig.ini"),
-		pyconf
+		pyconfig if pyconfig is not None else ""
 		])
 	if config.has_option("Git", "path"):
 		git = config.get("Git", "path")
@@ -54,8 +55,8 @@ def findGit(pyconf = ""):
 
 
 class Git:
-	def __init__(self, pyconf = ""):
-		self.gitexe = findGit(pyconf)
+	def __init__(self, pyconfsearchpath = ""):
+		self.gitexe = findGit(pyconfsearchpath)
 
 	def run(self, path, command):
 		try:
@@ -93,3 +94,11 @@ class Git:
 	def message(self, path):
 		out, err = self.run(path, ["log", "-n1", "--pretty=format:%B"])
 		return out
+
+	def info(self, path):
+		return {
+			'commit' : self.commit(path),
+			'date'   : util.dateToString(self.date(path)),
+			'author' : self.author(path),
+			'message': self.message(path)
+		}

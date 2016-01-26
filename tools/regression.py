@@ -127,13 +127,6 @@ def makeFilter(inc, exc):
 
 	return filter
 
-def find_pyconfig(path):
-	while path != "":
-		if os.path.exists(toPath(path, "pyconfig.ini")): 
-			return toPath(path, "pyconfig.ini")
-		else:
-			path = os.path.split(path)[0];
-
 if __name__ == '__main__':
 
 	args = makeCmdParser();

@@ -85,8 +85,11 @@ def makeSlice(string):
 
 	return slice(*list(pad(map(toInt, string.split(":")), 3)))
 
-def datetimeFromISO(datatimestring):
-	return datetime.datetime.strptime(datatimestring, "%Y-%m-%dT%H:%M:%S.%f" )
+def dateToString(date):
+	return date.strftime("%Y-%m-%dT%H:%M:%S.%f")
+
+def stringToDate(string):
+	return datetime.datetime.strptime(string, "%Y-%m-%dT%H:%M:%S.%f" )
 
 def safeget(dct, *keys, failure = None):
     for key in keys:
@@ -95,3 +98,11 @@ def safeget(dct, *keys, failure = None):
         else: 
             return failure
     return dct
+
+def find_pyconfig(path):
+	while path != "":
+		if os.path.exists(toPath(path, "pyconfig.ini")): 
+			return toPath(path, "pyconfig.ini")
+		else:
+			path = os.path.split(path)[0];
+	return None

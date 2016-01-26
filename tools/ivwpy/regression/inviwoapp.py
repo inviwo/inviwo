@@ -80,8 +80,8 @@ class InviwoApp:
 					) as process:
 
 					try:
-						report["output"], report["errors"] =
-							process.communicate(timeout=self.settings.timeout)
+						report["output"], report["errors"] = process.communicate(
+							timeout=self.settings.timeout)
 					except subprocess.TimeoutExpired as e:
 						report['timeout'] = True
 						process.kill()

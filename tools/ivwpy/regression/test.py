@@ -34,7 +34,6 @@ import json
 from . error import *
 from .. util import *
 
-
 class Test:
 	def __init__(self, name, module, path):
 		self.module = module

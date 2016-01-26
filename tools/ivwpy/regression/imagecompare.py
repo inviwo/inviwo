@@ -27,10 +27,7 @@
 # 
 #*********************************************************************************
 
-
 import PIL.Image as Image
-import PIL.ImageDraw as ImageDraw
-
 
 class ImageCompare:
 	def __init__(self, testImage, refImage):
@@ -48,8 +45,7 @@ class ImageCompare:
 				self.diff = sum(abs(c1-c2) for p1,p2 in pairs for c1,c2 in zip(p1,p2)) * 100.0 / 255.0 / ncomponents
 
 
-	def saveDifferenceImage(self, difffile, maskfile, showBox = True, enhance = 10):
-
+	def saveDifferenceImage(self, difffile, maskfile, enhance = 10):
 		if self.testImage.mode == self.refImage.mode and self.testImage.size == self.refImage.size:
 			if len(self.testImage.getbands()) == 1:
 				def issame(x,y): return abs(x-y) == 0.0
@@ -76,12 +72,6 @@ class ImageCompare:
 				for j in range(diff.size[1]):
 					m[i,j] = 1 if issame(t[i,j], r[i,j]) else 0		
 					d[i,j] = tocolor(t[i,j], r[i,j])
-
-			if showBox:
-				imageDraw = ImageDraw.Draw(diff)
-				bbox = diff.getbbox()
-				if bbox != None:
-					imageDraw.rectangle(bbox, outline = "red")
 
 			diff.save(difffile)
 			mask.save(maskfile)

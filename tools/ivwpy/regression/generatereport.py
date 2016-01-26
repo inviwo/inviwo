@@ -30,6 +30,7 @@
 import sys
 import os
 import pkgutil
+import glob
 
 # Yattag for HTML generation, http://www.yattag.org
 import yattag 
@@ -105,6 +106,21 @@ class HtmlReport:
 
 				with tag('script', language="javascript", 
 					src = self.scriptDirname + "/make-list.js"): text("")
+
+				with tag('div', id='old'):
+					with tag('a', href="report.html"):
+						text("latest")
+
+					oldreports = glob.glob(self.basedir + "/report-*.html")
+					oldreports.reverse()
+					
+					for i,old in enumerate(oldreports[:10]):
+						prev = os.path.relpath(old, self.basedir)
+						with tag('a', href=prev):
+							text("-"+str(i+1))
+							text(" ")
+					
+
 				
 	def timeSeries(self, report, length = 20):
 		doc, tag, text = yattag.Doc().tagtext()
@@ -140,7 +156,7 @@ class HtmlReport:
 			with tag("div", klass = "cell testruntime"):
 				doc.asis(self.timeSeries(report))
 			with tag("div", klass = "cell testdate"):
-				text(datetimeFromISO(report["date"]).strftime('%Y-%m-%d %H:%M:%S'))
+				text(stringToDate(report["date"]).strftime('%Y-%m-%d %H:%M:%S'))
 		return doc.getvalue()
 
 	def imageShort(self, module, name, img, length = 20):
@@ -174,6 +190,17 @@ class HtmlReport:
 					))
 		return doc.getvalue()
 
+	def genGit(self, git):
+		doc, tag, text = yattag.Doc().tagtext()
+		with tag('ul'):
+			doc.asis(li(keyval("Author", git["author"]), toggle=False))
+			gdate = stringToDate(git["date"]).strftime('%Y-%m-%d %H:%M:%S')
+			doc.asis(li(keyval("Date", gdate), toggle=False))
+			doc.asis(li(keyval("Commit", git["commit"]), toggle=False))
+			val = git["message"]
+			vabr = abr(val)
+			doc.asis(li(keyval("Message", vabr), val, toggle = vabr != val))
+		return doc.getvalue()
 
 	def formatLog(self, htmllog):
 		doc, tag, text = yattag.Doc().tagtext()
@@ -185,7 +212,7 @@ class HtmlReport:
 		doc, tag, text = yattag.Doc().tagtext()
 
 		with tag('ul'):
-			keys = ["path", "command","returncode","missing_imgs", "missing_refs","output","errors"]
+			keys = ["path", "command", "returncode", "missing_imgs", "missing_refs", "output", "errors"]
 
 			for key in keys:
 				val = toString(report[key])
@@ -195,10 +222,14 @@ class HtmlReport:
 				vabr = abr(val)
 				doc.asis(li(keyval(formatKey(key), vabr), val, status = status, toggle = vabr != val))
 
+			shortgit = safeget(report, "git", "message", failure ="")
+			doc.asis(li(keyval("Git", shortgit), self.genGit(report["git"])))
+			
+
 			nfail = len(report["failures"])
 			short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
-			doc.asis(li(keyval("Failures", short), genFailures(report["failures"]), status = "ok" if nfail == 0 else "fail"))
-
+			doc.asis(li(keyval("Failures", short), genFailures(report["failures"]), 
+				status = "ok" if nfail == 0 else "fail"))
 							
 			with open(toPath(report['outputdir'], report['log']), 'r') as f:
 				loghtml = f.read()
@@ -207,7 +238,8 @@ class HtmlReport:
 				info = loghtml.count("Info:")
 
 				short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
-				doc.asis(li(keyval("Log", short), self.formatLog(loghtml), status = "ok" if err == 0 else "fail")) 
+				doc.asis(li(keyval("Log", short), self.formatLog(loghtml), 
+					status = "ok" if err == 0 else "fail")) 
 
 			doc.asis(li(keyval("Screenshot", ""), 
 				image(os.path.relpath(toPath(report['outputdir'], report["screenshot"]), self.basedir), 
@@ -244,11 +276,8 @@ class HtmlReport:
 			f.write(cssdata)
 
 		with open(file, 'w') as f:
-			# problem with unexcaped chars in the inviwo log
-			# need to escape the log first...
-			#f.write(yattag.indent(self.doc.getvalue())) 
-			f.write(self.doc.getvalue())
-
+			f.write(yattag.indent(self.doc.getvalue())) 
+			
 def toString(val):
 	if val is None:
 		return "None"

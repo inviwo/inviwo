@@ -32,12 +32,11 @@ import glob
 import datetime
 import json
 
-from pdb import set_trace as bp
-
 from . import inviwoapp
 from . import test
 from .. util import *
 from .. colorprint import *
+from .. git import *
 from . imagecompare import *
 from . generatereport import *
 from . database import *
@@ -65,6 +64,7 @@ class App:
 		tests = [findModuleTest(p) for p in moduleTestPaths]
 		self.tests = list(itertools.chain(*tests))
 		self.reports = {}
+		self.git = Git(pyconfsearchpath = appPath)
 
 	def runTest(self, test):
 		report = {}
@@ -98,8 +98,9 @@ class App:
 					test.toString())
 
 				report = self.runTest(test)
-				
 				report['status'] = "new"
+				report['git'] = self.git.info(report['path'])
+
 				self.reports[test.toString()] = report
 				for k,v in report.items():
 					print_pair(k,str(v), width=15)
@@ -120,7 +121,7 @@ class App:
 
 		outputdir = report['outputdir']
 		imgs = glob.glob(outputdir +"/imgtest/*.png")
-		imgs = [os.path.relpath(x, toPath(outputdir, 'imgtest')) for x in imgs]
+		imgs = set([os.path.relpath(x, toPath(outputdir, 'imgtest')) for x in imgs])
 
 		report["refs"] = list(refimgs)
 		report["imgs"] = list(imgs)
@@ -174,7 +175,7 @@ class App:
 		html = HtmlReport(dirname, self.reports, dbfile)
 		html.saveHtml(file)
 		html.saveHtml(toPath(dirname, 
-	    	"report-"+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')+".html"))
+	    	"report-"+datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S')+".html"))
     		
 	def success(self):
 		for name, report in self.reports.items():
