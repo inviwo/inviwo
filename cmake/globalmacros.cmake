@@ -210,6 +210,13 @@ function(ivw_create_pyconfig modulepaths activemodules)
     set(MODULEPATHS ${modulepaths})
     set(ACTIVEMODULES ${activemodules})
 
+    find_package(Git QUIET)
+    if(GIT_FOUND)
+        ivw_debug_message(STATUS "git found: ${GIT_EXECUTABLE}")
+    else()
+        set(GIT_EXECUTABLE "")
+    endif()
+
     configure_file(${IVW_CMAKE_TEMPLATES}/pyconfig_template.ini 
                    ${CMAKE_BINARY_DIR}/pyconfig.ini @ONLY)
 
