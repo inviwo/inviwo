@@ -38,7 +38,7 @@ def subDirs(path):
 		return []
 
 def toPath(*list):
-	return "/".join([*list])
+	return "/".join(list)
 
 def addPostfix(file, postfix):
 	parts = file.split(os.path.extsep)
