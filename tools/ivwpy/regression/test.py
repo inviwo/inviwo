@@ -31,7 +31,9 @@ import glob
 import os
 import json
 
+from . error import *
 from .. util import *
+
 
 class Test:
 	def __init__(self, name, module, path):
@@ -42,7 +44,7 @@ class Test:
 		self.config = {}
 		self.workspaces = glob.glob(self.path +"/*.inv")
 
-		configfile = toPath([self.path, "config.json"])
+		configfile = toPath(self.path, "config.json")
 		if os.path.exists(configfile):
 			with open(configfile, 'r') as f:
 				self.config = json.load(f)
@@ -71,10 +73,10 @@ class Test:
 
 	def makeOutputDir(self, base):
 		if not os.path.isdir(base):
-			raise RegressionError("Output dir does not exsist: " + dir)
+			raise RegressionError("Output dir does not exsist: " + base)
 
-		mkdir([base, self.module])
-		mkdir([base, self.module, self.name])
-		return toPath([base, self.module, self.name])
+		mkdir(base, self.module)
+		mkdir(base, self.module, self.name)
+		return toPath(base, self.module, self.name)
 
 		raise RegressionError("Invalid Test kind")

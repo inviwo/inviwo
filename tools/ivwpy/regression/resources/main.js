@@ -38,7 +38,13 @@ $(document).ready(function() {
 
 	$('.sparkline').sparkline();
 	$('.sparkline-box').sparkline('html', {type : 'box', showOutliers : false});
-	$('.sparkline-failues').sparkline('html', {type : 'line', chartRangeMin : 0});
+	$('.sparkline-failues').sparkline('html', 
+		{type : 'line', chartRangeMin : 0, chartRangeMax : 6}
+	);
 
 	$('div.zoom').zoom({magnify : 4, on : 'grab', duration : 400});
+
+	userList.sort('testname');
+	userList.sort('testfailures', { order: "desc" });
+	userList.sort('testmodule');
  });

@@ -36,9 +36,12 @@ from . import util
 from . import colorprint as cp
 from . import ivwpaths
 
-def findCMake():
+def findCMake(pyconf = ""):
 	config = configparser.ConfigParser()
-	config.read(util.toPath([ivwpaths.find_inv_path(), "pyconfig.ini"]))
+	config.read([
+		util.toPath(ivwpaths.find_inv_path(), "pyconfig.ini"),
+		pyconf
+		])
 	if config.has_option("CMake", "path"):
 		cmake = config.get("CMake", "path")
 	elif os.name == 'posix': 

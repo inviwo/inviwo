@@ -103,8 +103,8 @@ def makeCmdParser():
 def searchRepoPaths(paths):
 	modulePaths = []
 	for path in paths:
-		if os.path.isdir(toPath([path, "modules"])):
-			modulePaths.append(toPath([path, "modules"]))
+		if os.path.isdir(toPath(path, "modules")):
+			modulePaths.append(toPath(path, "modules"))
 	return modulePaths
 
 def makeFilter(inc, exc):
@@ -129,8 +129,8 @@ def makeFilter(inc, exc):
 
 def find_pyconfig(path):
 	while path != "":
-		if os.path.exists(toPath([path, "pyconfig.ini"])): 
-			return toPath([path, "pyconfig.ini"])
+		if os.path.exists(toPath(path, "pyconfig.ini")): 
+			return toPath(path, "pyconfig.ini")
 		else:
 			path = os.path.split(path)[0];
 

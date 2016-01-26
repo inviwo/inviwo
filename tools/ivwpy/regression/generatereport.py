@@ -166,10 +166,10 @@ class HtmlReport:
 				ok = img["difference"] == 0.0
 						
 				doc.asis(li(self.imageShort(module, name, img),
-					testImages(os.path.relpath(toPath([testdir, img["image"]]), self.basedir),
-							   os.path.relpath(toPath([testdir, "imgref", img["image"]]), self.basedir),
-							   os.path.relpath(toPath([testdir, "imgdiff", img["image"]]), self.basedir),
-							   os.path.relpath(toPath([testdir, "imgmask", img["image"]]), self.basedir)),
+					testImages(os.path.relpath(toPath(testdir, "imgtest", img["image"]), self.basedir),
+							   os.path.relpath(toPath(testdir, "imgref", img["image"]), self.basedir),
+							   os.path.relpath(toPath(testdir, "imgdiff", img["image"]), self.basedir),
+							   os.path.relpath(toPath(testdir, "imgmask", img["image"]), self.basedir)),
 					status = "ok" if ok else "fail"
 					))
 		return doc.getvalue()
@@ -200,7 +200,7 @@ class HtmlReport:
 			doc.asis(li(keyval("Failures", short), genFailures(report["failures"]), status = "ok" if nfail == 0 else "fail"))
 
 							
-			with open(report['log'], 'r') as f:
+			with open(toPath(report['outputdir'], report['log']), 'r') as f:
 				loghtml = f.read()
 				err = loghtml.count("Error:")
 				warn = loghtml.count("Warn:")
@@ -210,7 +210,8 @@ class HtmlReport:
 				doc.asis(li(keyval("Log", short), self.formatLog(loghtml), status = "ok" if err == 0 else "fail")) 
 
 			doc.asis(li(keyval("Screenshot", ""), 
-				image(os.path.relpath(report["screenshot"], self.basedir), alt = "Screenshot", width="100%")))	
+				image(os.path.relpath(toPath(report['outputdir'], report["screenshot"]), self.basedir), 
+					alt = "Screenshot", width="100%")))	
 
 			ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
 			fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
@@ -223,23 +224,23 @@ class HtmlReport:
 
 
 	def saveScripts(self):
-		scriptdir = toPath([self.basedir, self.scriptDirname])
+		scriptdir = toPath(self.basedir, self.scriptDirname)
 		mkdir(scriptdir)
 		for script in self.scripts:
 			scriptdata = pkgutil.get_data('ivwpy', 'regression/resources/' + script)
-			with open(toPath([scriptdir, script]), 'wb') as f:
+			with open(toPath(scriptdir, script), 'wb') as f:
 				f.write(scriptdata)
 
 	def saveHtml(self, file):
 		self.saveScripts()
 
 		imgdata = pkgutil.get_data('ivwpy', 'regression/resources/inviwo.png')
-		imgdir = mkdir([self.basedir, "_images"])
-		with open(toPath([imgdir, "inviwo.png"]), 'wb') as f:
+		imgdir = mkdir(self.basedir, "_images")
+		with open(toPath(imgdir, "inviwo.png"), 'wb') as f:
 			f.write(imgdata)
 
 		cssdata = pkgutil.get_data('ivwpy', 'regression/resources/report.css')
-		with open(toPath([self.basedir, "report.css"]), 'wb') as f:
+		with open(toPath(self.basedir, "report.css"), 'wb') as f:
 			f.write(cssdata)
 
 		with open(file, 'w') as f:

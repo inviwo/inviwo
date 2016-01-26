@@ -41,6 +41,7 @@ from .. colorprint import *
 from . imagecompare import *
 from . generatereport import *
 from . database import *
+from . reporttest import *
 
 
 def findModuleTest(path):
@@ -48,61 +49,14 @@ def findModuleTest(path):
 	# look in folder path/<module>/tests/regression/*
 	tests = []
 	for moduleDir in subDirs(path):
-		regressionDir = toPath([path, moduleDir, "tests", "regression"])
+		regressionDir = toPath(path, moduleDir, "tests", "regression")
 		for testDir in subDirs(regressionDir):
 			tests.append(test.Test(
 				name = testDir,
 				module = moduleDir,
-				path = toPath([regressionDir, testDir]) 
+				path = toPath(regressionDir, testDir) 
 				))
 	return tests
-
-class ReportTest:
-	def __init__(self, key, testfun, message):
-		self.key = key
-		self.testfun = testfun
-		self.message = message
-
-	def test(self, report):
-		return self.testfun(report[self.key])
-
-	def failures(self):
-		return {self.key : [self.message]}
-
-class ReportImageTest(ReportTest):
-	def __init__(self, key):
-		self.key = key
-		self.message = []
-
-	def test(self, report):
-		imgs = report[self.key]
-		for img in imgs:
-			if img["difference"] != 0.0:
-				self.message.append(
-					"Image {image} has non-zero ({difference}%) difference".format(**img))
-
-		return len(self.message) == 0
-
-	def failures(self):
-		return {self.key : self.message}
-
-class ReportLogTest(ReportTest):
-	def __init__(self, key):
-		self.key = key
-		self.message = []
-
-	def test(self, report):
-		with open(report[self.key], 'r') as f:
-			lines = f.readlines()
-			for line in lines:
-				if "Error:" in line:
-					self.message.append(line)
-			
-		return len(self.message) == 0
-
-	def failures(self):
-		return {self.key : self.message}
-
 
 class App:
 	def __init__(self, appPath, outputPath, moduleTestPaths = [], settings = inviwoapp.RunSettings()):
@@ -119,7 +73,8 @@ class App:
 
 		report = self.app.runTest(test, report, self.output)
 		report = self.compareImages(test, report)
-		report = self.checkReport(report)
+		testsuite = ReportTestSuite()
+		report = testsuite.checkReport(report)
 
 		return report
 
@@ -163,10 +118,9 @@ class App:
 		refimgs = test.getImages()
 		refs = set(refimgs)
 
-		outputdir = test.makeOutputDir(self.output)
-		imgs = glob.glob(outputdir +"/*.png")
-		imgs = [os.path.relpath(x, outputdir) for x in imgs]
-		imgs = set(imgs) - set(["screenshot.png"])
+		outputdir = report['outputdir']
+		imgs = glob.glob(outputdir +"/imgtest/*.png")
+		imgs = [os.path.relpath(x, toPath(outputdir, 'imgtest')) for x in imgs]
 
 		report["refs"] = list(refimgs)
 		report["imgs"] = list(imgs)
@@ -176,12 +130,14 @@ class App:
 		imgtests = []
 		for img in imgs:
 			if img in refs:
-				comp = ImageCompare(toPath([outputdir, img]), toPath([test.path, img]))
-				diffpath = mkdir(toPath([outputdir, "imgdiff"]))
-				maskpath = mkdir(toPath([outputdir, "imgmask"]))
-				comp.saveDifferenceImage(toPath([diffpath, img]), toPath([maskpath, img]))
-				refpath = mkdir(toPath([outputdir, "imgref"]))
-				comp.saveReferenceImage(toPath([refpath, img]))
+				comp = ImageCompare(testImage = toPath(outputdir, "imgtest", img), 
+					                refImage = toPath(test.path, img))
+
+				diffpath = mkdir(toPath(outputdir, "imgdiff"))
+				maskpath = mkdir(toPath(outputdir, "imgmask"))
+				comp.saveDifferenceImage(toPath(diffpath, img), toPath(maskpath, img))
+				refpath = mkdir(toPath(outputdir, "imgref"))
+				comp.saveReferenceImage(toPath(refpath, img))
 
 				diff = comp.difference()
 				imgtest = {
@@ -191,30 +147,6 @@ class App:
 				imgtests.append(imgtest)
 
 		report['image_tests'] = imgtests
-
-		return report
-
-
-	def checkReport(self, report):
-		tests = [
-			ReportTest('returncode', lambda x : x == 0, "Non zero retuncode"),
-			ReportTest('timeout', lambda x : x == False, "Inviwo ran out of time"),
-			ReportTest('missing_refs', lambda x : len(x) == 0, "Missing refecence image"),
-			ReportTest('missing_imgs', lambda x : len(x) == 0, "Missing test image"),
-			ReportImageTest('image_tests'),
-			ReportLogTest('log')
-		]
-		failures = {}
-		successes = []
-		for t in tests:
-			if not t.test(report):
-				failures.update(t.failures())
-			else:
-				successes.append(t.key)
-
-
-		report['failures'] = failures
-		report['successes'] = successes
 
 		return report
 
@@ -237,11 +169,12 @@ class App:
 		for name, report in self.reports.items():
 			report['status'] = "old"
 
-
-
 	def saveHtml(self, file, dbfile):
-	    html = HtmlReport(os.path.dirname(file), self.reports, dbfile)
-	    html.saveHtml(file)
+		dirname = os.path.dirname(file)
+		html = HtmlReport(dirname, self.reports, dbfile)
+		html.saveHtml(file)
+		html.saveHtml(toPath(dirname, 
+	    	"report-"+datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')+".html"))
     		
 	def success(self):
 		for name, report in self.reports.items():

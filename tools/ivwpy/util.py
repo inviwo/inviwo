@@ -37,8 +37,8 @@ def subDirs(path):
 	else:
 		return []
 
-def toPath(list):
-	return "/".join(list)
+def toPath(*list):
+	return "/".join([*list])
 
 def addPostfix(file, postfix):
 	parts = file.split(os.path.extsep)
@@ -59,12 +59,11 @@ def getScriptFolder():
 	""" Get the directory of the script is calling this function """
 	return os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe().f_back))) 
 
-def mkdir(path):
-	if isinstance(path, (list, tuple)):
-		path = toPath(path)
-	if not os.path.isdir(path):
-		os.mkdir(path)
-	return path
+def mkdir(*path):
+	res = toPath(*path)	
+	if not os.path.isdir(res):
+		os.mkdir(res)
+	return res
 
 def partition(l, n):
     """Yield successive n-sized chunks from l."""

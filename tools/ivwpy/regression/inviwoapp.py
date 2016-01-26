@@ -53,44 +53,45 @@ class InviwoApp:
 			return name.casefold() in self.settings.activeModules
 
 	def runTest(self, test, report, output):
-		outputdir = test.makeOutputDir(output)
+		report['outputdir'] = mkdir(test.makeOutputDir(base=output), report['date'].replace(":","_"))
+
+		mkdir(report['outputdir'], "imgtest")
 
 		for workspace in test.getWorkspaces():
-
 			starttime = time.time()
-			report['outputdir'] = outputdir
-
+		
 			command = [self.program, 
 						"-q",
-						"-o", outputdir, 
+						"-o", report['outputdir'], 
 						"-g", "screenshot.png",
-						"-s", "UPN", 
+						"-s", "imgtest/UPN", 
 						"-l", "log.txt",
 						"-w", workspace]
 			report['command'] = " ".join(command)
-
 			report['timeout'] = False
 
 			try:
-				process = subprocess.Popen(
+				with subprocess.Popen(
 					command,
 					cwd = os.path.dirname(self.program),
 					stdout=subprocess.PIPE, 
 					stderr=subprocess.PIPE,
 					universal_newlines = True
-				)
+					) as process:
+
+					try:
+						report["output"], report["errors"] =
+							process.communicate(timeout=self.settings.timeout)
+					except subprocess.TimeoutExpired as e:
+						report['timeout'] = True
+						process.kill()
+						report["output"], report["errors"] = process.communicate()
+
 			except FileNotFoundError:
 				raise MissingInivioAppError("Could not find inviwo app at: {}".format(self.program))
 
-			try:
-				report["output"], report["errors"] = process.communicate(timeout=self.settings.timeout)
-			except subprocess.TimeoutExpired as e:
-				report['timeout'] = True
-				process.kill()
-				report["output"], report["errors"] = process.communicate()
-			
-			report['log'] = outputdir + "/log.txt"
-			report['screenshot'] = outputdir + "/screenshot.png"
+			report['log'] = "log.txt"
+			report['screenshot'] = "screenshot.png"
 			report['returncode'] = process.returncode
 			report['elapsed_time'] = time.time() - starttime
 
