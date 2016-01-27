@@ -31,6 +31,7 @@ import sys
 import os
 import pkgutil
 import glob
+import datetime
 
 # Yattag for HTML generation, http://www.yattag.org
 import yattag 
@@ -52,7 +53,7 @@ class HtmlReport:
 		self.doc, tag, text = yattag.Doc().tagtext()
 		self.db = Database(dbfile)
 		self.basedir = basedir
-
+		self.created = datetime.datetime.now()
 		self.scriptDirname = "_scripts"
 		self.scripts = ["jquery-2.2.0.min.js", 
 						"jquery.sparkline.min.js", 
@@ -60,6 +61,7 @@ class HtmlReport:
 						"list.min.js",
 						"make-list.js", 
 						"main.js"]
+		self.history_days = 1
 
 
 		self.doc.asis("<!DOCTYPE html>")
@@ -81,7 +83,23 @@ class HtmlReport:
 						with tag('div', klass='title'):
 							text("Inviwo Regressions")
 						self.doc.stag('input', klass='search', placeholder="Search")
-					 
+					
+					with tag('div', klass='subtitle'):
+						with tag('div', klass="cell testdate"):
+							text(self.created.strftime('%Y-%m-%d %H:%M:%S'))
+
+						with tag('div', klass="cell"):
+							with tag('a', klass='version', href="report.html"):
+								text("latest")
+
+							oldreports = glob.glob(self.basedir + "/report-*.html")
+							oldreports.reverse()
+					
+							for i,old in enumerate(oldreports[:10]):
+								prev = os.path.relpath(old, self.basedir)
+								with tag('a', klass='version', href=prev):
+									text("-"+str(i+1))
+
 					with tag("div", klass = "head"):
 						with tag("div", klass = "cell testmodule"):
 							with tag('button', ('data-sort','testmodule'), klass='sort'):
@@ -94,10 +112,10 @@ class HtmlReport:
 								text("Failures")
 						with tag("div", klass = "cell testruntime"):
 							with tag('button', ('data-sort', 'testruntime'), klass='sort'):
-								text("Time")
+								text("Run Time")
 						with tag("div", klass = "cell testdate"):
 							with tag('button', ('data-sort', 'testdate'), klass='sort'):
-								text("Date")
+								text("Last Run")
 
 					with tag('ul', klass='list'):
 						for name, report in reports.items():
@@ -106,42 +124,45 @@ class HtmlReport:
 
 				with tag('script', language="javascript", 
 					src = self.scriptDirname + "/make-list.js"): text("")
-
-				with tag('div', id='old'):
-					with tag('a', href="report.html"):
-						text("latest")
-
-					oldreports = glob.glob(self.basedir + "/report-*.html")
-					oldreports.reverse()
 					
-					for i,old in enumerate(oldreports[:10]):
-						prev = os.path.relpath(old, self.basedir)
-						with tag('a', href=prev):
-							text("-"+str(i+1))
-							text(" ")
-					
+
+	def makeSparkLine(self, module, name, series, klass, normalRange = True):
+		doc, tag, text = yattag.Doc().tagtext()
+		data = self.db.getSeries(module, name, series)
+
+		xmax = self.created.timestamp()
+		xmin = xmax - 60*60*24*self.history_days
+		mean, std = stats([x.value for x in data.measurements])
+
+		datastr = ", ".join([str(x.created.timestamp()) + ":" + str(x.value) 
+			for x in data.measurements if x.created.timestamp() > xmin])
+
+		opts = {"sparkChartRangeMinX" : str(xmin), "sparkChartRangeMaxX" : str(xmax)}
+		if normalRange:
+			opts.update({
+				"sparkNormalRangeMin" : str(mean-std), 
+				"sparkNormalRangeMax" : str(mean+std)
+			})
+		with tag('span', klass=klass, **opts ): text(datastr)
+		return doc.getvalue()
 
 				
-	def timeSeries(self, report, length = 20):
+	def timeSeries(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
-		data = self.db.getSeries(report["module"], report["name"], "elapsed_time")
-		datastrShort = ", ".join([str(x.value) for x in data.measurements[:length]])
-		
 		with tag('div'):
 			text("{:3.2f}s ".format(report["elapsed_time"]))
-			with tag('span', klass="sparkline"): text(datastrShort)
+			doc.asis(self.makeSparkLine(report["module"], report["name"], "elapsed_time", 
+						                "sparkline_elapsed_time"))
 		return doc.getvalue()
 
 
 	def failueSeries(self, report, length = 30):
 		doc, tag, text = yattag.Doc().tagtext()
-		data = self.db.getSeries(report["module"], report["name"], "number_of_test_failures")
-		datastr = ", ".join([str(x.value) for x in data.measurements[:length]])
-		nfail = len(report["failures"])
-		
+		nfail = len(report["failures"])	
 		with tag('div'):
 			text(str(nfail) + " ")
-			with tag('span', klass="sparkline-failues"): text(datastr)
+			doc.asis(self.makeSparkLine(report["module"], report["name"], "number_of_test_failures", 
+						                "sparkline-failues", normalRange = False))
 		return doc.getvalue()
 
 	def testhead(self, report):
@@ -159,28 +180,23 @@ class HtmlReport:
 				text(stringToDate(report["date"]).strftime('%Y-%m-%d %H:%M:%S'))
 		return doc.getvalue()
 
-	def imageShort(self, module, name, img, length = 20):
+	def imageShort(self, module, name, img):
 		doc, tag, text = yattag.Doc().tagtext()
-
-		data = self.db.getSeries(module, name , "image_test_diff." + img["image"])
-		datastrShort = ", ".join([str(x.value) for x in data.measurements[:length]])
-		
-		with tag('div'):
-			with tag('div', klass="cell imagename"):
-				text(img["image"])
-			with tag('div', klass="cell imageinfo"):
-				text("Diff: {:3.3f}%".format(img["difference"]))
-			with tag('div', klass="cell imageinfo"):
-				with tag('span', klass="sparkline"): text(datastrShort)
+	
+		with tag('div', klass="cell imagename"):
+			text(img["image"])
+		with tag('div', klass="cell imageinfo"):
+			text("Diff: {:3.8f}%".format(img["difference"]))
+		with tag('div', klass="cell imageinfo"):
+			doc.asis(self.makeSparkLine(module, name , "image_test_diff." + img["image"], 
+					                    "sparkline_img_diff"))
 		return doc.getvalue()
-
 
 	def genImages(self, module, name, imgs, testdir, refdir):
 		doc, tag, text = yattag.Doc().tagtext()
 		with tag('ol'):
 			for img in imgs:
-				ok = img["difference"] == 0.0
-						
+				ok = img["difference"] == 0.0					
 				doc.asis(li(self.imageShort(module, name, img),
 					testImages(os.path.relpath(toPath(testdir, "imgtest", img["image"]), self.basedir),
 							   os.path.relpath(toPath(testdir, "imgref", img["image"]), self.basedir),
@@ -317,7 +333,7 @@ def image(path, **opts):
 def li(head, body="", status="", toggle = True):
 	doc, tag, text = yattag.Doc().tagtext()
 	toggleclass = "toggle" if toggle else ""
-	with tag('li'):
+	with tag('li', klass='row'):
 		with tag('div', klass='lihead ' + status + ' ' + toggleclass):
 			doc.asis(head)
 		if toggle:

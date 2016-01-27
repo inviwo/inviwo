@@ -30,6 +30,7 @@
 import os
 import itertools
 import datetime
+import math
 
 def subDirs(path):
 	if os.path.isdir(path):
@@ -106,3 +107,8 @@ def find_pyconfig(path):
 		else:
 			path = os.path.split(path)[0];
 	return None
+
+def stats(l):
+	mean = sum(l)/len(l)
+	std = math.sqrt(sum([pow(mean-x,2) for x in l])/len(l))
+	return mean, std

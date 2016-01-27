@@ -36,11 +36,68 @@ $(document).ready(function() {
     });
 	$('div.libody').hide();
 
-	$('.sparkline').sparkline();
-	$('.sparkline-box').sparkline('html', {type : 'box', showOutliers : false});
-	$('.sparkline-failues').sparkline('html', 
-		{type : 'line', chartRangeMin : 0, chartRangeMax : 6}
-	);
+	$('.sparkline_elapsed_time').sparkline('html', {
+		type : 'line', 
+		width : '75px', 
+		enableTagOptions: true,
+		fillColor : false,
+		normalRangeColor: '#88ff88',
+		drawNormalOnTop: false,
+		tooltipFormatFieldlist : ['x', 'y'],
+		tooltipFormatter :  function(sp, options, fields) {
+			var retval = "";
+			if (!fields.isNull) {
+				var dateString = new Date(1000*fields.x).toLocaleString();
+				retval += '<div class="jqsfield">';
+				retval += 'Run time ' + dateString + ' : ' + fields.y.toPrecision(6) + 's';
+			    retval += '</div>';
+			}
+			return retval;
+		}
+	});
+
+	$('.sparkline_img_diff').sparkline('html', {
+		type : 'line', 
+		width : '75px', 
+		enableTagOptions: true,
+		fillColor : false,
+		normalRangeColor: '#88ff88',
+		drawNormalOnTop: false,
+		tooltipFormatFieldlist : ['x', 'y'],
+		tooltipFormatter :  function(sp, options, fields) {
+			var retval = "";
+			if (!fields.isNull) {
+				var dateString = new Date(1000*fields.x).toLocaleString();
+				retval += '<div class="jqsfield">';
+				retval += 'Diff ' + dateString + ' : ' + fields.y.toPrecision(8) + '%';
+			    retval += '</div>';
+			}
+			return retval;
+		}
+	});
+	
+	$('.sparkline-failues').sparkline('html', {
+		type : 'line', 
+		width : '75px', 
+		enableTagOptions: true,
+		fillColor : false,
+		chartRangeMin : 0, 
+		chartRangeMax : 6,
+		normalRangeColor: '#88ff88',
+		normalRangeMin : -0.5,
+		normalRangeMax : 0.5,
+		drawNormalOnTop: true,
+		tooltipFormatter :  function(sp, options, fields) {
+			var retval = "";
+			if (!fields.isNull) {
+				var dateString = new Date(1000*fields.x).toLocaleString();
+				retval += '<div class="jqsfield">';
+				retval += 'Failures ' + dateString + ' : ' + fields.y.toPrecision(8);
+			    retval += '</div>';
+			}
+			return retval;
+		}
+	});
 
 	$('div.zoom').zoom({magnify : 4, on : 'grab', duration : 400});
 
