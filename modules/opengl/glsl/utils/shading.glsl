@@ -58,8 +58,12 @@ vec3 shadeSpecularPhongCalculation(LightParameters light_, vec3 materialSpecular
     // Equivalent to: 2.0*dot(toLightDir, normal)*normal - toLightDir;
     vec3 r = reflect(-toLightDir, normal);
    
-    return materialSpecularColor * light_.specularColor *
-           pow(max(dot(r, toCameraDir), 0.0), light_.specularExponent * 0.25);
+    if (dot(toLightDir, normal) < 0.0) {
+        return vec3(0.0);
+    } else {
+        return materialSpecularColor * light_.specularColor *
+            pow(max(dot(r, toCameraDir), 0.0), light_.specularExponent * 0.25);
+    }
 }
 
 // Functions to apply different shading modes.
