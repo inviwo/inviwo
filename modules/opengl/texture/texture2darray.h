@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TEXTURE2DARRAY_H
@@ -38,13 +38,14 @@
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture2DArray : public Texture {
-
 public:
-    Texture2DArray(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
-    Texture2DArray(uvec3 dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
+    Texture2DArray(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+                   GLint level = 0);
+    Texture2DArray(uvec3 dimensions, GLint format, GLint internalformat, GLenum dataType,
+                   GLenum filtering, GLint level = 0);
     Texture2DArray(const Texture2DArray& other);
     Texture2DArray& operator=(const Texture2DArray& other);
-    virtual ~Texture2DArray();
+    virtual ~Texture2DArray() = default;
 
     Texture2DArray* clone() const;
 
@@ -65,6 +66,6 @@ private:
     uvec3 dimensions_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_TEXTURE2DARRAY_H
+#endif  // IVW_TEXTURE2DARRAY_H

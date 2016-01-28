@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TEXTURE2D_H
@@ -39,15 +39,15 @@
 namespace inviwo {
 
 class IVW_MODULE_OPENGL_API Texture2D : public Texture {
-
 public:
     Texture2D(uvec2 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level = 0);
-    Texture2D(uvec2 dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level = 0);
+    Texture2D(uvec2 dimensions, GLint format, GLint internalformat, GLenum dataType,
+              GLenum filtering, GLint level = 0);
     Texture2D(const Texture2D& other);
-    Texture2D(Texture2D&& other); // move constructor
+    Texture2D(Texture2D&& other);  // move constructor
     Texture2D& operator=(const Texture2D& other);
     Texture2D& operator=(Texture2D&& other);
-    virtual ~Texture2D();
+    virtual ~Texture2D() = default;
 
     Texture2D* clone() const;
 
@@ -57,7 +57,7 @@ public:
 
     void upload(const void* data);
 
-    const uvec2& getDimensions() const { return dimensions_;}
+    const uvec2& getDimensions() const { return dimensions_; }
     int getWidth() const { return dimensions_.x; }
     int getHeight() const { return dimensions_.y; }
     void resize(uvec2 dimensions);
@@ -69,6 +69,6 @@ private:
     uvec2 dimensions_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_TEXTURE2D_H
+#endif  // IVW_TEXTURE2D_H

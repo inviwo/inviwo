@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include "texture2darray.h"
@@ -32,33 +32,29 @@
 
 namespace inviwo {
 
-Texture2DArray::Texture2DArray(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering, GLint level)
-    : Texture(GL_TEXTURE_2D_ARRAY, glFormat, filtering, level)
-    , dimensions_(dimensions)
-{
+Texture2DArray::Texture2DArray(uvec3 dimensions, GLFormats::GLFormat glFormat, GLenum filtering,
+                               GLint level)
+    : Texture(GL_TEXTURE_2D_ARRAY, glFormat, filtering, level), dimensions_(dimensions) {
     setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
 }
 
-Texture2DArray::Texture2DArray(uvec3 dimensions, GLint format, GLint internalformat, GLenum dataType, GLenum filtering, GLint level)
+Texture2DArray::Texture2DArray(uvec3 dimensions, GLint format, GLint internalformat,
+                               GLenum dataType, GLenum filtering, GLint level)
     : Texture(GL_TEXTURE_2D_ARRAY, format, internalformat, dataType, filtering, level)
-    , dimensions_(dimensions)
-{
+    , dimensions_(dimensions) {
     setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
 }
 
 Texture2DArray::Texture2DArray(const Texture2DArray& rhs)
-    : Texture(rhs)
-    , dimensions_(rhs.dimensions_)
-{
+    : Texture(rhs), dimensions_(rhs.dimensions_) {
     setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
     initialize(nullptr);
-    if(OpenGLCapabilities::getOpenGLVersion() >= 430){
-        //GPU memcpy
-        glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), 
-            target_, 0, 0, 0, 0, dimensions_.x, dimensions_.y, dimensions_.z);
-    }
-    else{
-        //Copy data through PBO
+    if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
+        // GPU memcpy
+        glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0, 0,
+                           dimensions_.x, dimensions_.y, dimensions_.z);
+    } else {
+        // Copy data through PBO
         loadFromPBO(&rhs);
     }
 }
@@ -69,13 +65,12 @@ Texture2DArray& Texture2DArray::operator=(const Texture2DArray& rhs) {
         dimensions_ = rhs.dimensions_;
         setTextureParameterFunction(this, &Texture2DArray::default2DArrayTextureParameterFunction);
         initialize(nullptr);
-        if(OpenGLCapabilities::getOpenGLVersion() >= 430){
-            //GPU memcpy
-            glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), 
-                target_, 0, 0, 0, 0, rhs.dimensions_.x, rhs.dimensions_.y, rhs.dimensions_.z);
-        }
-        else{
-            //Copy data through PBO
+        if (OpenGLCapabilities::getOpenGLVersion() >= 430) {
+            // GPU memcpy
+            glCopyImageSubData(rhs.getID(), rhs.getTarget(), 0, 0, 0, 0, getID(), target_, 0, 0, 0,
+                               0, rhs.dimensions_.x, rhs.dimensions_.y, rhs.dimensions_.z);
+        } else {
+            // Copy data through PBO
             loadFromPBO(&rhs);
         }
     }
@@ -83,11 +78,7 @@ Texture2DArray& Texture2DArray::operator=(const Texture2DArray& rhs) {
     return *this;
 }
 
-Texture2DArray::~Texture2DArray() {}
-
-Texture2DArray* Texture2DArray::clone() const {
-    return new Texture2DArray(*this);
-}
+Texture2DArray* Texture2DArray::clone() const { return new Texture2DArray(*this); }
 
 void Texture2DArray::initialize(const void* data) {
     // Notify observers
@@ -97,20 +88,22 @@ void Texture2DArray::initialize(const void* data) {
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     texParameterCallback_->invoke(this);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, level_, internalformat_, dimensions_.x, dimensions_.y, dimensions_.z, 0, format_, dataType_, data);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, level_, internalformat_, dimensions_.x, dimensions_.y,
+                 dimensions_.z, 0, format_, dataType_, data);
     LGL_ERROR;
 
     for (auto o : observers_) o->notifyAfterTextureInitialization();
 }
 
 size_t Texture2DArray::getNumberOfValues() const {
-    return static_cast<size_t>(dimensions_.x*dimensions_.y*dimensions_.z);
+    return static_cast<size_t>(dimensions_.x * dimensions_.y * dimensions_.z);
 }
 
 void Texture2DArray::upload(const void* data) {
     bind();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, dimensions_.x, dimensions_.y, dimensions_.z, format_, dataType_, data);
+    glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, dimensions_.x, dimensions_.y, dimensions_.z,
+                    format_, dataType_, data);
     LGL_ERROR;
 }
 
@@ -127,5 +120,4 @@ void Texture2DArray::default2DArrayTextureParameterFunction(Texture* tex) {
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, tex->getFiltering());
 }
 
-
-} // namespace
+}  // namespace
