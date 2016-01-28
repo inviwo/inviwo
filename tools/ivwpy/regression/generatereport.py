@@ -46,7 +46,8 @@ from . database import *
 # List.js            http://www.listjs.com/
 
 # Jenkins note: https://wiki.jenkins-ci.org/display/JENKINS/Configuring+Content+Security+Policy
-# System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "default-src 'self';script-src 'self'")
+# System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "default-src 'self';script-src 'self';style-src 'self' 'unsafe-inline';")
+# added to /etc/default/jenkins
 
 class HtmlReport:
 	def __init__(self, basedir, reports, dbfile):
@@ -61,7 +62,7 @@ class HtmlReport:
 						"list.min.js",
 						"make-list.js", 
 						"main.js"]
-		self.history_days = 1
+		self.history_days = 3
 
 
 		self.doc.asis("<!DOCTYPE html>")
@@ -206,16 +207,29 @@ class HtmlReport:
 					))
 		return doc.getvalue()
 
+
+	def genGitLink(self, git):
+		doc, tag, text = yattag.Doc().tagtext()
+		if "server" in git.keys() and git["server"] != "":
+			with tag('a', href = git["server"] + "/commit/"+ git['commit']):
+				text(git["commit"])
+		else:
+			text(git["commit"])
+		return doc.getvalue()
+
 	def genGit(self, git):
 		doc, tag, text = yattag.Doc().tagtext()
 		with tag('ul'):
 			doc.asis(li(keyval("Author", git["author"]), toggle=False))
 			gdate = stringToDate(git["date"]).strftime('%Y-%m-%d %H:%M:%S')
-			doc.asis(li(keyval("Date", gdate), toggle=False))
-			doc.asis(li(keyval("Commit", git["commit"]), toggle=False))
+			doc.asis(li(keyval("Date", gdate), toggle=False)) 
+			doc.asis(li(keyval("Commit", self.genGitLink(git)), toggle=False))
 			val = git["message"]
 			vabr = abr(val)
 			doc.asis(li(keyval("Message", vabr), val, toggle = vabr != val))
+			if "server" in git.keys():
+				doc.asis(li(keyval("Server", git['server']), toggle=False)) 
+
 		return doc.getvalue()
 
 	def formatLog(self, htmllog):
