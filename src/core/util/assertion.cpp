@@ -49,7 +49,7 @@ void ivwAssertion(const char* fileName, const char* functionName, long lineNumbe
 #else
     raise(SIGTRAP);
 #endif
-    exit(0);
+    exit(-1);
 }
 
 #endif  // _DEBUG
