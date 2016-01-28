@@ -43,7 +43,7 @@ void main() {
     color_ = in_Color;
     texCoord_ = in_TexCoord;
     worldPosition_ = geometry_.dataToWorld * in_Vertex;
-    normal_ = geometry_.dataToWorldNormalMatrix * in_Normal;
-    viewNormal_ = (camera_.worldToView * vec4(geometry_.dataToWorldNormalMatrix * in_Normal,0)).xyz;
+    normal_ = geometry_.dataToWorldNormalMatrix * in_Normal * vec3(1.0);
+    viewNormal_ = (camera_.worldToView * vec4(normal_,0)).xyz;
     gl_Position = camera_.worldToClip * worldPosition_;
 }
