@@ -46,6 +46,13 @@ LayerRAM& LayerRAM::operator=(const LayerRAM& that) {
 LayerRAM::~LayerRAM() {}
 
 bool LayerRAM::copyRepresentationsTo(DataRepresentation* targetLayerRam) const {
+    if (!Canvas::generalLayerWriter_) {
+        LogWarn("Canvas::generalLayerWriter_ null, getting new one")
+        Canvas::generalLayerWriter_ = InviwoApplication::getPtr()
+            ->getDataWriterFactory()
+            ->getWriterForTypeAndExtension<Layer>("png")
+            .release();
+    }
     return Canvas::generalLayerWriter_->writeDataToRepresentation(this, targetLayerRam);
 }
 
