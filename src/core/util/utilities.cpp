@@ -46,8 +46,9 @@ void util::saveAllCanvases(ProcessorNetwork* network, std::string dir,
         if (name == "") {
             ss << cp->getIdentifier();
         } else if(name.find("UPN") != std::string::npos) {
-            replaceInString(name, "UPN", cp->getIdentifier());
-            ss << name;
+            std::string tmp = name;
+            replaceInString(tmp, "UPN", cp->getIdentifier());
+            ss << tmp;
         } else {
             ss << name << i + 1;
         }
