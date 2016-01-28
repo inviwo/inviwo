@@ -49,7 +49,7 @@ public:
     size2_t getDimensions() const;
     
     /**
-     * Reeize the representation to dimension. This is destructive, the data will not be
+     * Resize the representation to dimension. This is destructive, the data will not be
      * preserved. Use copyRepresentationsTo to update the data.
      * Needs to be overloaded by child classes.
      */

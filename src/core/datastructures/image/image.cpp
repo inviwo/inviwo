@@ -179,16 +179,20 @@ void Image::copyRepresentationsTo(Image* targetImage) const {
             if (typeid(*sourceRepr) == typeid(*targetRepr)) {
                 sourceRepr->update(false);
                 targetRepr->update(true);
-                sourceRepr->copyRepresentationsTo(targetRepr);
-
-                return;
+                if (sourceRepr->copyRepresentationsTo(targetRepr)) {
+                    return;
+                } else {
+                    LogError("Copy representation failed!")
+                }
             }
         }
     }
 
     // Fallback. If no representation exist, create ImageRAM one
     const ImageRAM* imageRAM = this->getRepresentation<ImageRAM>();
-    imageRAM->copyRepresentationsTo(targetImage->getEditableRepresentation<ImageRAM>());
+    if (!imageRAM->copyRepresentationsTo(targetImage->getEditableRepresentation<ImageRAM>())) {
+        throw Exception("Failed to copy Image Representation", IvwContext);
+    }
 }
 
 const DataFormatBase* Image::getDataFormat() const {

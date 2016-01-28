@@ -58,24 +58,21 @@ public:
 
     virtual void initialize();
     virtual void deinitialize();
+    bool isInitialized();
+
     virtual void activate();
     virtual void render(std::shared_ptr<const Image>, LayerType layerType = LayerType::Color,
                         size_t idx = 0);
     virtual void resize(uvec2 canvasSize);
 
     uvec2 getScreenDimensions() const;
-
     virtual void update();
-
-    bool isInitialized();
 
     void setEventPropagator(EventPropagator* propagator);
     virtual ProcessorWidget* getProcessorWidgetOwner() const;
     virtual void setProcessorWidgetOwner(ProcessorWidget*);
 
-    // TODO, this should not be here...
-    static DataWriterType<Layer>* generalLayerWriter_;
-
+    // used to create hidden canvases used for context in background threads.
     virtual std::unique_ptr<Canvas> create() = 0;
 
 protected:

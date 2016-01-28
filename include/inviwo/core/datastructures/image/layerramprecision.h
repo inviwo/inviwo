@@ -145,9 +145,11 @@ void inviwo::LayerRAMPrecision<T>::setData(void* d, size2_t dimensions) {
 
 template <typename T>
 void LayerRAMPrecision<T>::setDimensions(size2_t dimensions) {
-    auto data = util::make_unique<T[]>(dimensions.x * dimensions.y);
-    data_.swap(data);
-    std::swap(dimensions, dimensions_);
+    if (dimensions != dimensions_) {
+        auto data = util::make_unique<T[]>(dimensions.x * dimensions.y);
+        data_.swap(data);
+        std::swap(dimensions, dimensions_);
+    }
 }
 
 template <typename T>

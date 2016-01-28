@@ -54,6 +54,7 @@ public:
     LayerRAM* getColorLayerRAM(size_t idx = 0);
     LayerRAM* getDepthLayerRAM();
     LayerRAM* getPickingLayerRAM();
+    size_t getNumberOfColorLayers() const;
 
     const LayerRAM* getColorLayerRAM(size_t idx = 0) const;
     const LayerRAM* getDepthLayerRAM() const;

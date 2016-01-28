@@ -44,10 +44,7 @@
 
 namespace inviwo {
 
-EventHandler* eventHandler_();
-
 Mesh* Canvas::screenAlignedRect_ = nullptr;
-DataWriterType<Layer>* Canvas::generalLayerWriter_ = nullptr;
 
 Canvas::Canvas(uvec2 dimensions)
     : initialized_(false)
@@ -61,10 +58,8 @@ Canvas::Canvas(uvec2 dimensions)
 
         auto verticesBuffer =
             util::makeBuffer<vec2>({{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}});
-
         auto texCoordsBuffer =
             util::makeBuffer<vec2>({{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 1.0f}});
-
         auto indices_ = util::makeIndexBuffer({0, 1, 2, 3});
 
         Mesh* screenAlignedRectMesh = new Mesh();
@@ -75,22 +70,12 @@ Canvas::Canvas(uvec2 dimensions)
 
         screenAlignedRect_ = screenAlignedRectMesh;
     }
-
-    if (!generalLayerWriter_) {
-        generalLayerWriter_ = InviwoApplication::getPtr()
-                                  ->getDataWriterFactory()
-                                  ->getWriterForTypeAndExtension<Layer>("png")
-                                  .release();
-    }
 }
 
 Canvas::~Canvas() {
     if (!shared_) {
         delete screenAlignedRect_;
         screenAlignedRect_ = nullptr;
-
-        delete generalLayerWriter_;
-        generalLayerWriter_ = nullptr;
     }
 
     if (this == RenderContext::getPtr()->getDefaultRenderContext()) {
@@ -184,10 +169,11 @@ void Canvas::touchEvent(TouchEvent* e) {
         }
     }
 }
-    
+
 bool Canvas::touchEnabled() {
-    BoolProperty* touchEnabledProperty = dynamic_cast<BoolProperty*>(InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->getPropertyByIdentifier("enableTouch"));
-        return (touchEnabledProperty && touchEnabledProperty->get());
+    auto touchEnabledProperty =
+        InviwoApplication::getPtr()->getSettingsByType<SystemSettings>()->enableTouchProperty_;
+    return (touchEnabledProperty.get());
 }
 
 void Canvas::setEventPropagator(EventPropagator* propagator) { propagator_ = propagator; }

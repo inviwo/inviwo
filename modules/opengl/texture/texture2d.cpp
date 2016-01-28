@@ -109,7 +109,8 @@ void Texture2D::initialize(const void* data) {
 
     bind();
     texParameterCallback_->invoke(this);
-    glTexImage2D(GL_TEXTURE_2D, level_, internalformat_, dimensions_.x, dimensions_.y, 0, format_, dataType_, data);
+    glTexImage2D(GL_TEXTURE_2D, level_, internalformat_, dimensions_.x, dimensions_.y, 0, format_,
+                 dataType_, data);
     LGL_ERROR;
 
     for (auto o : observers_) o->notifyAfterTextureInitialization();

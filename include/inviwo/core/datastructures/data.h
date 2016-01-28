@@ -112,8 +112,8 @@ public:
     
     
     /**
-     * This call will make all other represenations invalid. You need to call this function if
-     * you are modifing a representation directly without calling getEditableRepresentation.
+     * This call will make all other representations invalid. You need to call this function if
+     * you are modifying a representation directly without calling getEditableRepresentation.
      * getEditableRepresentation will automatically invalidate all other representations.
      * @see getEditableRepresentation
      */
