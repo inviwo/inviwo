@@ -346,6 +346,7 @@ auto transform(const T& cont, UnaryOperation op)
     -> std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> {
 
     std::vector<typename std::result_of<UnaryOperation(typename T::value_type)>::type> res;
+    res.reserve(cont.size());
     std::transform(cont.begin(), cont.end(), std::back_inserter(res), op);
     return res;
 }
