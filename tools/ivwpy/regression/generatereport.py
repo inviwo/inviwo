@@ -94,6 +94,7 @@ class HtmlReport:
 								text("latest")
 
 							oldreports = glob.glob(self.basedir + "/report-*.html")
+							oldreports.sort()
 							oldreports.reverse()
 					
 							for i,old in enumerate(oldreports[:10]):
