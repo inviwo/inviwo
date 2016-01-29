@@ -62,7 +62,7 @@ class HtmlReport:
 						"list.min.js",
 						"make-list.js", 
 						"main.js"]
-		self.history_days = 3
+		self.history_days = 31
 
 
 		self.doc.asis("<!DOCTYPE html>")
@@ -133,7 +133,12 @@ class HtmlReport:
 		data = self.db.getSeries(module, name, series)
 
 		xmax = self.created.timestamp()
+
+		data.created.timestamp()
 		xmin = xmax - 60*60*24*self.history_days
+		if xmin < data.created.timestamp():
+			xmin = data.created.timestamp()
+
 		mean, std = stats([x.value for x in data.measurements])
 
 		datastr = ", ".join([str(x.created.timestamp()) + ":" + str(x.value) 

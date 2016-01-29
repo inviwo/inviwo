@@ -140,7 +140,6 @@ class Database():
 	def getSeries(self, groupname, testname, seriesname):
 		return self.session.query(Series).join(Test).join(Group).filter(Test.name == testname, Group.name == groupname, Series.name == seriesname).one()
 
-
 	def getSerieses(self, groupname, testname):
 		return self.session.query(Series).join(Test).join(Group).filter(Test.name == testname, Group.name == groupname).all()
 
