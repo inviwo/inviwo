@@ -54,13 +54,16 @@ div.subtitle {
     font-size : 90%;
 }
 
-img.test {
-    background-position : 0 0, 25px 25px;
+img.test{
     max-height : 100%;
     max-width : 100%;
-    background-image: linear-gradient(45deg, gray 25%, transparent 25%, transparent 75%, gray 75%, gray), 
-                      linear-gradient(45deg, gray 25%, transparent 25%, transparent 75%, gray 75%, gray);
-    background-size : 50px 50px;
+    background: 
+        linear-gradient(45deg, gray 25%, transparent 25%, transparent 75%, gray 75%), 
+        linear-gradient(45deg, gray 25%, transparent 25%, transparent 75%, gray 75%), 
+        linear-gradient(45deg, white 25%, transparent 25%, transparent 75%, white 75%), 
+        linear-gradient(45deg, white 25%, transparent 25%, transparent 75%, white 75%);
+    background-position: 0 0, 15px 15px, -15px 0, 0 15px;
+    background-size: 30px 30px;
     padding : 0px;
     border : 1px solid #000000;
 }
@@ -70,6 +73,7 @@ img.diff {
     padding : 0px;
     border : 1px solid #000000;
 }
+
 div.libody {
     margin-left : 20px;
     padding-bottom : 15px;

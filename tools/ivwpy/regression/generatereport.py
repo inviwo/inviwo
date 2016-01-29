@@ -41,7 +41,7 @@ from . database import *
 
 # Javascript packages
 # jQuary			 http://jquery.com
-# jQuery Zoom        http://www.jacklmoore.com/zoom/
+# wheelzoom          http://www.jacklmoore.com/wheelzoom
 # jQuery Sparklines  http://omnipotent.net/jquery.sparkline/
 # List.js            http://www.listjs.com/
 
@@ -58,7 +58,7 @@ class HtmlReport:
 		self.scriptDirname = "_scripts"
 		self.scripts = ["jquery-2.2.0.min.js", 
 						"jquery.sparkline.min.js", 
-						"jquery.zoom.min.js", 
+						"jquery.zoom.js", 
 						"list.min.js",
 						"make-list.js", 
 						"main.js"]
@@ -340,8 +340,7 @@ def keyval(key, val):
 
 def image(path, **opts):
 	doc, tag, text = yattag.Doc().tagtext()
-	with tag('div', klass='zoom'):
-		doc.stag('img', src = path, **opts)
+	doc.stag('img', src = path, **opts)
 	return doc.getvalue()
 
 def li(head, body="", status="", toggle = True):
@@ -358,20 +357,20 @@ def li(head, body="", status="", toggle = True):
 
 def testImages(testimg, refimg, diffimg, maskimg):
 	doc, tag, text = yattag.Doc().tagtext()
-	with tag('table'):
+	with tag('table', klass='zoomset'):
 		with tag('tr'):
 			with tag('th'): text("Test")
 			with tag('th'): text("Reference")
 			with tag('th'): text("Difference * 10") 
 			with tag('th'): text("Mask") 
 		with tag('tr'):
-			with tag('td'):
+			with tag('td', klass ="zoom"):
 				doc.asis(image(testimg, alt = "test image", klass ="test"))
-			with tag('td'):
-				doc.asis(image(refimg, alt = "reference image", klass ="test"))
-			with tag('td'):
+			with tag('td', klass ="zoom"):
+				doc.asis(image(refimg,  alt = "reference image", klass ="test"))
+			with tag('td', klass ="zoom"):
 				doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
-			with tag('td'):
+			with tag('td', klass ="zoom"):
 				doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
 	return doc.getvalue()
 

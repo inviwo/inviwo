@@ -29,9 +29,8 @@
  
 $(document).ready(function() {
    	$('div.lihead').click(function() {
-   			body = $(this).next(".libody")
+   			body = $(this).next(".libody") 			
    			body.slideToggle(100);
-    
            	$.sparkline_display_visible()
     });
 	$('div.libody').hide();
@@ -99,8 +98,8 @@ $(document).ready(function() {
 		}
 	});
 
-	$('div.zoom').zoom({magnify : 4, on : 'grab', duration : 400});
-
+	$('.zoomset').zoom({magnify : 4, on : 'grab', duration : 400});
+	
 	userList.sort('testname');
 	userList.sort('testfailures', { order: "desc" });
 	userList.sort('testmodule');

@@ -53,9 +53,9 @@ class ImageCompare:
 				def issame(x,y): return sum([abs(i-j) for i,j in zip(x,y)]) == 0.0
 
 			if len(self.testImage.getbands()) == 1:
-				def tocolor(x,y): return (255-enhance*abs(x-y),0,0,255)
+				def tocolor(x,y): return (255-enhance*abs(x-y),255-enhance*abs(x-y),255-enhance*abs(x-y),255)
 			elif len(self.testImage.getbands()) == 2:
-				def tocolor(x,y): return (255-enhance*abs(x[0]-y[0]),255-enhance*abs(x[1]-y[1]), 0, 255)
+				def tocolor(x,y): return (255-enhance*abs(x[0]-y[0]),255-enhance*abs(x[1]-y[1]), 255, 255)
 			elif len(self.testImage.getbands()) >= 3:
 				def tocolor(x,y): return (255-enhance*abs(x[0]-y[0]),255-enhance*abs(x[1]-y[1]),255-enhance*abs(x[2]-y[2]), 255)
 
