@@ -170,7 +170,15 @@ if __name__ == '__main__':
 		timeout=60,
 		activeModules = activeModules
 	)
-	app = ivwpy.regression.app.App(inviwopath, output, modulePaths, settings=settings)
+
+	app = ivwpy.regression.app.App(appPath         = inviwopath,
+								   moduleTestPaths = modulePaths, 
+								   outputDir       = output,
+								   jsonFile		   = "report",
+								   htmlFile        = "report",
+								   sqlFile         = "report",
+								   runSettings     = settings)
+
 
 	testfilter = makeFilter(args.include, args.exclude)
 	testrange = makeSlice(args.slice)
@@ -179,14 +187,10 @@ if __name__ == '__main__':
 		app.printTestList(testrange = testrange, testfilter = testfilter)
 		exit(0)
 
-	try: 
-		#load any old report
-		if os.path.exists(output+"/report.json"): app.loadJson(output+"/report.json")
-
+	try:
 		app.runTests(testrange = testrange, testfilter = testfilter)
-		app.updateDatabase(output + "/report.sqlite")
-		app.saveJson(output+"/report.json")	
-		app.saveHtml(output+"/report.html", output + "/report.sqlite")
+		app.saveJson()	
+		app.saveHtml()
 
 		if app.success():
 			print_info("Regression was successful")

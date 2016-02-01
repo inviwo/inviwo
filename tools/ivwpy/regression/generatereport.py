@@ -50,9 +50,9 @@ from . database import *
 # added to /etc/default/jenkins
 
 class HtmlReport:
-	def __init__(self, basedir, reports, dbfile):
+	def __init__(self, basedir, reports, database):
 		self.doc, tag, text = yattag.Doc().tagtext()
-		self.db = Database(dbfile)
+		self.db = database
 		self.basedir = basedir
 		self.created = datetime.datetime.now()
 		self.scriptDirname = "_scripts"
@@ -150,7 +150,7 @@ class HtmlReport:
 				"sparkNormalRangeMin" : str(mean-std), 
 				"sparkNormalRangeMax" : str(mean+std)
 			})
-		with tag('span', klass=klass, **opts ): text(datastr)
+		with tag('span', klass=klass, **opts ): doc.asis("<!-- " + datastr + " -->")
 		return doc.getvalue()
 
 				
@@ -214,27 +214,26 @@ class HtmlReport:
 		return doc.getvalue()
 
 
-	def genGitLink(self, git):
+	def genGitLink(self, commit):
 		doc, tag, text = yattag.Doc().tagtext()
-		if "server" in git.keys() and git["server"] != "":
-			with tag('a', href = git["server"] + "/commit/"+ git['commit']):
-				text(git["commit"])
+		if commit.server != "":
+			with tag('a', href = commit.server + "/commit/"+ commit.hash):
+				text(commit.hash)
 		else:
-			text(git["commit"])
+			text(commit.hash)
 		return doc.getvalue()
 
-	def genGit(self, git):
+	def genCommit(self, commit):
 		doc, tag, text = yattag.Doc().tagtext()
 		with tag('ul'):
-			doc.asis(li(keyval("Author", git["author"]), toggle=False))
-			gdate = stringToDate(git["date"]).strftime('%Y-%m-%d %H:%M:%S')
+			doc.asis(li(keyval("Author", commit.author), toggle=False))
+			gdate = commit.date.strftime('%Y-%m-%d %H:%M:%S')
 			doc.asis(li(keyval("Date", gdate), toggle=False)) 
-			doc.asis(li(keyval("Commit", self.genGitLink(git)), toggle=False))
-			val = git["message"]
+			doc.asis(li(keyval("Commit", self.genGitLink(commit)), toggle=False))
+			val = commit.message
 			vabr = abr(val)
 			doc.asis(li(keyval("Message", vabr), val, toggle = vabr != val))
-			if "server" in git.keys():
-				doc.asis(li(keyval("Server", git['server']), toggle=False)) 
+			doc.asis(li(keyval("Server", commit.server), toggle=False)) 
 
 		return doc.getvalue()
 
@@ -244,23 +243,41 @@ class HtmlReport:
 			doc.asis(htmllog)
 		return doc.getvalue()
 
+
+	def reportSimple(self, key, report):
+		val = toString(report[key])
+		status = ""
+		if key in report['successes']: status = "ok"
+		if key in report['failures'].keys(): status = "fail"
+		vabr = abr(val)
+		return li(keyval(formatKey(key), vabr), val, status = status, toggle = vabr != val)
+
+
 	def reportToHtml(self, report):
 		doc, tag, text = yattag.Doc().tagtext()
 
 		with tag('ul'):
 			keys = ["path", "command", "returncode", "missing_imgs", "missing_refs", "output", "errors"]
-
-			for key in keys:
-				val = toString(report[key])
-				status = ""
-				if key in report['successes']: status = "ok"
-				if key in report['failures'].keys(): status = "fail"
-				vabr = abr(val)
-				doc.asis(li(keyval(formatKey(key), vabr), val, status = status, toggle = vabr != val))
+			for key in keys: doc.asis(self.reportSimple(key, report))
 
 			shortgit = safeget(report, "git", "message", failure ="")
-			doc.asis(li(keyval("Git", shortgit), self.genGit(report["git"])))
+
+			testrun = self.db.getLastTestRun(report["module"], report["name"])
+			doc.asis(li(keyval("Git", shortgit), self.genCommit(testrun.commit)))
 			
+			lastSuccess, firstFailure = self.db.getLastSuccessFirstFailure(report["module"], 
+																		   report["name"])
+			if lastSuccess is not None:
+				doc.asis(li(keyval("Last Succsess", lastSuccess.commit.hash),
+					self.genCommit(lastSuccess.commit))) 			
+			else:
+				doc.asis(li(keyval("Last Succsess", "None"), toggle=False)) 	
+
+			if firstFailure is not None:
+				doc.asis(li(keyval("First Failure", firstFailure.commit.hash), 
+					self.genCommit(firstFailure.commit))) 
+			else:
+				doc.asis(li(keyval("First Failure", "None"), toggle=False)) 	
 
 			nfail = len(report["failures"])
 			short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
@@ -299,7 +316,9 @@ class HtmlReport:
 			with open(toPath(scriptdir, script), 'wb') as f:
 				f.write(scriptdata)
 
-	def saveHtml(self, file):
+	def saveHtml(self, filename):
+		file = self.basedir + "/" + filename + ".html"
+
 		self.saveScripts()
 
 		imgdata = pkgutil.get_data('ivwpy', 'regression/resources/inviwo.png')
@@ -313,6 +332,8 @@ class HtmlReport:
 
 		with open(file, 'w') as f:
 			f.write(yattag.indent(self.doc.getvalue())) 
+
+		return file
 			
 def toString(val):
 	if val is None:

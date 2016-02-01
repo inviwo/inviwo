@@ -31,6 +31,7 @@ import itertools
 import glob
 import datetime
 import json
+import shutil
 
 from . import inviwoapp
 from . import test
@@ -58,13 +59,29 @@ def findModuleTest(path):
 	return tests
 
 class App:
-	def __init__(self, appPath, outputPath, moduleTestPaths = [], settings = inviwoapp.RunSettings()):
-		self.app = inviwoapp.InviwoApp(appPath, settings)
-		self.output = outputPath
+	def __init__(self, 
+		         appPath, 
+				 moduleTestPaths, 
+				 outputDir,
+				 jsonFile = "report",
+				 htmlFile = "report",
+				 sqlFile = "report",
+				 runSettings = inviwoapp.RunSettings()):
+
+		self.app = inviwoapp.InviwoApp(appPath, runSettings)
+		self.output = outputDir
+		self.jsonFile = jsonFile
+		self.htmlFile = htmlFile
+		self.sqlFile = sqlFile
+
 		tests = [findModuleTest(p) for p in moduleTestPaths]
 		self.tests = list(itertools.chain(*tests))
 		self.reports = {}
 		self.git = Git(pyconfsearchpath = appPath)
+		self.db = Database(self.output+ "/" + self.sqlFile + ".sqlite")
+
+		self.loadJson()
+
 
 	def runTest(self, test):
 		report = {}
@@ -76,6 +93,10 @@ class App:
 		testsuite = ReportTestSuite()
 		report = testsuite.checkReport(report)
 
+		report['status'] = "new"
+		report['git'] = self.git.info(report['path'])
+
+		self.updateDatabase(report)
 		return report
 
 
@@ -98,8 +119,6 @@ class App:
 					test.toString())
 
 				report = self.runTest(test)
-				report['status'] = "new"
-				report['git'] = self.git.info(report['path'])
 
 				self.reports[test.toString()] = report
 				for k,v in report.items():
@@ -160,22 +179,22 @@ class App:
 			active = "Enabled" if i in selected and testfilter(test) else "Disabled"
 			printfun("{:3d} {:8s} {}".format(i, active, test))
 
-	def saveJson(self, file):
-		with open(file, 'w') as f:
+	def saveJson(self):
+		with open(self.output+ "/" + self.jsonFile + ".json", 'w') as f:
 			json.dump(self.reports, f, indent=4, separators=(',', ': '))
 
-	def loadJson(self, file):
-		with open(file, 'r') as f:
-			self.reports = json.load(f)
-		for name, report in self.reports.items():
-			report['status'] = "old"
+	def loadJson(self):
+		if os.path.exists(self.output+ "/" + self.jsonFile + ".json"):
+			with open(self.output+ "/" + self.jsonFile + ".json", 'r') as f:
+				self.reports = json.load(f)
+			for name, report in self.reports.items():
+				report['status'] = "old"
 
-	def saveHtml(self, file, dbfile):
-		dirname = os.path.dirname(file)
-		html = HtmlReport(dirname, self.reports, dbfile)
-		html.saveHtml(file)
-		html.saveHtml(toPath(dirname, 
-	    	"report-"+datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S')+".html"))
+	def saveHtml(self):
+		html = HtmlReport(basedir = self.output, reports = self.reports, database = self.db)
+		filepath = html.saveHtml(self.htmlFile)
+		shutil.copyfile(filepath, toPath(self.output, 
+	    	self.htmlFile + "-" + datetime.datetime.now().strftime('%Y-%m-%dT%H_%M_%S')+".html"))
     		
 	def success(self):
 		for name, report in self.reports.items():
@@ -184,24 +203,41 @@ class App:
 					return False
 		return True
 
-	def updateDatabase(self, file):
-		db = Database(file)
-		for name, report in self.reports.items():
-			if report['status'] == "new":
-				dbtest = db.getOrAddTest(report["module"], report["name"])
-				dbtime = db.getOrAddQuantity("time", "s")
-				dbcount = db.getOrAddQuantity("count", "")
-				dbfrac = db.getOrAddQuantity("fraction", "%")
-			
-				db_elapsed_time = db.getOrAddSeries(dbtest, dbtime, "elapsed_time")
-				db_test_failures = db.getOrAddSeries(dbtest, dbcount, "number_of_test_failures")
+	def updateDatabase(self, report):
+		dbtest = self.db.getOrAddTest(report["module"], report["name"])
+		dbtime = self.db.getOrAddQuantity("time", "s")
+		dbcount = self.db.getOrAddQuantity("count", "")
+		dbfrac = self.db.getOrAddQuantity("fraction", "%")
+		
+		db_elapsed_time = self.db.getOrAddSeries(dbtest, dbtime, "elapsed_time")
+		db_test_failures = self.db.getOrAddSeries(dbtest, dbcount, "number_of_test_failures")
 
-				db.addMeasurement(db_elapsed_time, report["elapsed_time"])
-				db.addMeasurement(db_test_failures, len(report["failures"]))
+		git = report["git"]
+		dbcommit = self.db.getOrAddCommit(hash    = git["commit"],
+				                     	  date    = stringToDate(git['date']), 
+				                    	  author  = git['author'], 
+				                     	  message = git['message'], 
+				                          server  = git['server']) 
 
-				for img in report["image_tests"]:
-					db_img_test = db.getOrAddSeries(dbtest, dbfrac, "image_test_diff." + img["image"])
-					db.addMeasurement(db_img_test, img["difference"])
+		dbtestrun = self.db.addTestRun(test = dbtest, commit = dbcommit)
+
+		self.db.addMeasurement(series  = db_elapsed_time, 
+							   testrun = dbtestrun, 
+							   value   = report["elapsed_time"])
+		self.db.addMeasurement(series = db_test_failures, 
+			                   testrun = dbtestrun, 
+			                   value = len(report["failures"]))
+
+
+		for key, messages in report['failures'].items():
+			for message in messages:
+				self.db.addTestFailure(testrun = dbtestrun, key = key, message = message)
+
+		for img in report["image_tests"]:
+			db_img_test = self.db.getOrAddSeries(dbtest, dbfrac, "image_test_diff." + img["image"])
+			self.db.addMeasurement(series = db_img_test, 
+				                   testrun = dbtestrun, 
+				                   value = img["difference"])
 
 
 
