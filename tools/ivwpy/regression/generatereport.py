@@ -170,6 +170,7 @@ def testImages(testimg, refimg, diffimg, maskimg):
 
 
 class TestRun:
+	"""Generate a html report for one Test Run"""
 	def __init__(self, htmlReport, report):
 		self.report = report
 		self.db = htmlReport.db
