@@ -54,6 +54,8 @@ VolumeCombiner::VolumeCombiner()
     , outport_("outport")
     , eqn_("eqn", "Equation", "s1*v1")
     , scales_("scales", "Scale factors")
+    , useWorldSpaceCoordinateSystem_("useWorldSpaceCoordinateSystem", "World space", false)
+    , borderValue_("borderValue", "Border value", vec4(0.f), vec4(0.f), vec4(1.f), vec4(0.1))
     , shader_("volume_gpu.vert", "volume_gpu.geom", "volume_combiner.frag", false)
     , fbo_()
     , validEquation_(false) {
@@ -62,6 +64,8 @@ VolumeCombiner::VolumeCombiner()
     addPort(outport_);
     addProperty(eqn_);
     addProperty(scales_);
+    addProperty(useWorldSpaceCoordinateSystem_);
+    addProperty(borderValue_);
 
     inport_.onChange([this]() {
         size_t i = 0;
@@ -92,6 +96,19 @@ VolumeCombiner::VolumeCombiner()
         }
     });
 
+    useWorldSpaceCoordinateSystem_.onChange([this]() {
+        if (Processor::isReady()) {
+            buildEquation();
+        }
+        borderValue_.setVisible(useWorldSpaceCoordinateSystem_);
+    });
+    borderValue_.setVisible(useWorldSpaceCoordinateSystem_);
+    borderValue_.onChange([this]() {
+        if (Processor::isReady()) {
+            buildEquation();
+        }
+    });
+
     buildEquation();
 }
 
@@ -109,6 +126,7 @@ void VolumeCombiner::buildEquation() {
         std::stringstream sample;
         
         int i = 0;
+        uniforms << "uniform vec4 " << borderValue_.getIdentifier() << ";";
         for (const auto& dummy : inport_) {
             const std::string id(i == 0 ? "" : toString(i));
             
@@ -118,9 +136,21 @@ void VolumeCombiner::buildEquation() {
             uniforms << "uniform sampler3D volume" << id << ";";
             uniforms << "uniform VolumeParameters volume" << id << "Parameters;";
             uniforms << "uniform float scale" << id << ";";
+            if (useWorldSpaceCoordinateSystem_) {
+                // Retrieve data from world space 
+                // and use border value if outside of volume
+                sample << "vec4 coord" << id << " = volume" << id << "Parameters.worldToTexture*volumeParameters.textureToWorld*texCoord_; ";
+                sample << "vec4 vol" << id << ";";
+                sample << "if (any(lessThan(coord.xyz, vec3(0))) || any(greaterThan(coord.xyz, vec3(1)))) { vol" << id << " = borderValue; }";
+                sample << "else { ";
+                sample << "vol" << id << "= getNormalizedVoxel(volume" << id << ", volume" << id
+                       << "Parameters, coord" << id << ".xyz); ";
+                sample << "}";
+            } else {
+                sample << "vec4 vol" << id << "= getNormalizedVoxel(volume" << id << ", volume" << id
+                    << "Parameters, texCoord_.xyz); ";
+            }
 
-            sample << "vec4 vol" << id << "= getNormalizedVoxel(volume" << id << ", volume" << id
-                   << "Parameters, texCoord_.xyz);";
             i++;
         }
 
@@ -164,13 +194,16 @@ void VolumeCombiner::process() {
         const FloatProperty& prop2 = *static_cast<FloatProperty*>(prop);
         utilgl::setUniforms(shader_, prop2);
     }
+    utilgl::setUniforms(shader_, borderValue_);
 
     const size3_t dim{inport_.getData()->getDimensions()};
     fbo_.activate();
     glViewport(0, 0, static_cast<GLsizei>(dim.x), static_cast<GLsizei>(dim.y));
 
+    // We always need to ask for a editable representation
+    // this will invalidate any other representations
+    VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
     if (inport_.isChanged()) {
-        VolumeGL* outVolumeGL = volume_->getEditableRepresentation<VolumeGL>();
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
     }
 

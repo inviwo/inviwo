@@ -43,8 +43,8 @@
 namespace inviwo {
 
 /** \docpage{org.inviwo.VolumeCombiner, Volume Combiner}
-* Combines two volumes into a single volume. Resolution and data type of the 
-* result match the one of input volume A. The input volumes can be scaled individually.
+* Combines/fuses volumes into a single volume. Resolution and data type of the 
+* result match the first input volume. The input volumes can be scaled individually.
 * ![](org.inviwo.VolumeCombiner.png?classIdentifier=org.inviwo.VolumeCombiner)
 *
 * ### Inports
@@ -59,6 +59,8 @@ namespace inviwo {
 * ### Properties
 *   * __Volume 1 Scaling__ Scaling factor for volume 1.
 *   * __Volume 2 Scaling__ Scaling factor for volume 2.
+*   * __useWorldSpaceCoordinateSystem__ Retrieve data in world space. 
+*   * __borderValue__ Value to use for coordinates outside the first volume.
 */
 
 /*! \class VolumeCombiner
@@ -84,6 +86,8 @@ private:
     std::shared_ptr<Volume> volume_;
     StringProperty eqn_;
     CompositeProperty scales_;
+    BoolProperty useWorldSpaceCoordinateSystem_;
+    FloatVec4Property borderValue_;
 
     Shader shader_;
     FrameBufferObject fbo_;
