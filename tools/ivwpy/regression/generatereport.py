@@ -32,6 +32,7 @@ import os
 import pkgutil
 import glob
 import datetime
+import contextlib
 
 # Yattag for HTML generation, http://www.yattag.org
 import yattag 
@@ -49,6 +50,294 @@ from . database import *
 # System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "default-src 'self';script-src 'self';style-src 'self' 'unsafe-inline';")
 # added to /etc/default/jenkins
 
+
+def toString(val):
+	if val is None:
+		return "None"
+	if isinstance(val, str):
+		if len(val) == 0: return "None"
+		else: return val
+	elif isinstance(val, list):
+		if len(val) == 0: return "None"
+		else: return "(" + ", ".join(map(toString, val)) +")"
+	elif isinstance(val, float):
+		return "{:6f}".format(val)
+	elif isinstance(val, int):
+		return "{:}".format(val)
+
+def abr(text, length=85):
+	abr = text.split("\n")[0][:length]
+	return abr + ("..." if len(text.split("\n")) > 1 or len(text) > length else "")
+
+def formatKey(key):
+	return key.capitalize().replace("_", " ")
+
+def keyval(key, val):
+	doc, tag, text = yattag.Doc().tagtext()
+	with tag("div", klass = "row"):
+		with tag("div", klass = "cell key"):
+			text(key)
+		with tag("div", klass = "cell"):
+			doc.asis(val)
+	return doc.getvalue()
+
+def listItem(head, body="", status="", toggle = True, hide = True):
+	doc, tag, text = yattag.Doc().tagtext()
+	toggleclass = "toggle" if toggle else ""
+	opts = {"style" : "display: none;"} if hide else {}  
+	with tag('li', klass='row'):
+		with tag('div', klass='lihead ' + status + ' ' + toggleclass):
+			doc.asis(head)
+		if toggle:
+			with tag('div', klass='libody', **opts):
+				if callable(body): body(doc, tag, text)
+				else: doc.asis(body)
+
+	return doc.getvalue()
+
+def gitLink(commit):
+	doc, tag, text = yattag.Doc().tagtext()
+	if commit.server != "":
+		with tag('a', href = commit.server + "/commit/"+ commit.hash):
+			text(commit.server + "/commit/"+ commit.hash)
+	else:
+		text(commit.hash)
+	return doc.getvalue()
+
+def getDiffLink(start, stop):
+	doc, tag, text = yattag.Doc().tagtext()
+	if start.server != "":
+		with tag('a', href = start.server + "/compare/"+ start.hash + "..." + stop.hash):
+			text(start.server + "/compare/"+ start.hash + "..." + stop.hash)
+	else:
+		text(commit.hash)
+	return doc.getvalue()
+
+def commitInfo(commit):
+	doc, tag, text = yattag.Doc().tagtext()
+	with tag('ul'):
+		val = commit.message
+		vabr = abr(val)
+		gdate = commit.date.strftime('%Y-%m-%d %H:%M:%S')
+
+		doc.asis(listItem(keyval("Message", vabr), val, toggle = vabr != val))
+		doc.asis(listItem(keyval("Author", commit.author), toggle=False))
+		doc.asis(listItem(keyval("Date", gdate), toggle=False)) 
+		doc.asis(listItem(keyval("Repository", gitLink(commit)), toggle=False)) 
+	
+	return doc.getvalue()
+
+
+def formatLog(file):
+	doc, tag, text = yattag.Doc().tagtext()
+	with open(file, 'r') as f:
+		loghtml = f.read()
+		err  = loghtml.count("Error:")
+		warn = loghtml.count("Warn:")
+		info = loghtml.count("Info:")
+		short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
+				
+		def log(doc, tag, text): 
+			with tag('div', klass='log'): 
+				doc.asis(loghtml)
+
+		doc.asis(listItem(keyval("Log", short), log, status = "ok" if err == 0 else "fail")) 
+	return doc.getvalue()
+
+def image(path, **opts):
+	doc, tag, text = yattag.Doc().tagtext()
+	doc.stag('img', src = path, **opts)
+	return doc.getvalue()
+
+def testImages(testimg, refimg, diffimg, maskimg):
+	doc, tag, text = yattag.Doc().tagtext()
+	with tag('table', klass='zoomset'):
+		with tag('tr'):
+			with tag('th'): text("Test")
+			with tag('th'): text("Reference")
+			with tag('th'): text("Difference * 10") 
+			with tag('th'): text("Mask") 
+		with tag('tr'):
+			with tag('td', klass ="zoom"):
+				doc.asis(image(testimg, alt = "test image", klass ="test"))
+			with tag('td', klass ="zoom"):
+				doc.asis(image(refimg,  alt = "reference image", klass ="test"))
+			with tag('td', klass ="zoom"):
+				doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
+			with tag('td', klass ="zoom"):
+				doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
+	return doc.getvalue()
+
+
+class TestRun:
+	def __init__(self, htmlReport, report):
+		self.report = report
+		self.db = htmlReport.db
+		self.basedir = htmlReport.basedir
+		self.created = htmlReport.created
+		self.doc, self.tag, self.text = yattag.Doc().tagtext()
+
+		self.name = report['name']
+		self.module = report['module']
+		self.history_days = 31
+
+		testrun = self.db.getLastTestRun(self.report["module"], self.report["name"])
+		lastSuccess, firstFailure = self.db.getLastSuccessFirstFailure(self.report["module"], 
+																	   self.report["name"])
+
+		with self.item(self.head(), self.totalstatus()):
+			with self.tag('ul'):
+
+				ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
+				fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
+				short = (str(ok) + " ok images, " + str(fail) + " failed image tests")
+				self.doc.asis(listItem(keyval("Images", short), 
+					self.images(report["image_tests"], report["outputdir"]),
+					status = "ok" if fail == 0 else "fail"))
+
+				self.testRunInfo("Current Version", testrun)
+				if self.totalstatus() != "ok":
+					self.testRunInfo("Last Succsess", lastSuccess)
+					self.testRunInfo("First Failure", firstFailure)
+					self.gitDiff(lastSuccess, firstFailure)
+				
+				self.doc.asis(formatLog(toPath(report['outputdir'], report['log'])))
+				self.doc.asis(self.screenshot())
+
+				for key in ["path", "command", "returncode", "missing_imgs", 
+							"missing_refs", "output", "errors"]:
+					self.simple(key)
+
+
+	def getvalue(self):
+		return self.doc.getvalue()
+
+	@contextlib.contextmanager
+	def item(self, head, status="", hide = True):
+		opts = {"style" : "display: none;"} if hide else {}  
+		with self.doc.tag('li', klass='row'):
+			with self.doc.tag('div', klass='lihead toggle ' + status):
+				self.doc.asis(head)
+			with self.doc.tag('div', klass='libody', **opts):
+				yield None
+
+	def totalstatus(self):
+		return ("ok" if len(self.report['failures']) == 0 else "fail")
+
+	def status(self, key):
+		status = ""
+		if key in self.report['successes']: status = "ok"
+		if key in self.report['failures'].keys(): status = "fail"
+		return status
+
+	def simple(self, key):
+		value = toString(self.report[key])
+		short = abr(value)
+		self.doc.asis(listItem(keyval(formatKey(key), short), value, 
+			                   status = self.status(key), 
+			             	   toggle = short != value))
+
+	def testRunInfo(self, key, testrun):
+		if testrun is not None:
+			date = testrun.commit.date.strftime('%Y-%m-%d %H:%M:%S')
+			self.doc.asis(listItem(keyval(key, date + " " + abr(testrun.commit.message, 50)),
+				commitInfo(testrun.commit)))
+		else:
+			self.doc.asis(listItem(keyval(key, "None"), toggle=False)) 	
+
+	def gitDiff(self, lastSuccess, firstFailure):
+		if (lastSuccess is not None) and (firstFailure is not None):
+			self.doc.asis(listItem(keyval("Diff", 
+				getDiffLink(lastSuccess.commit, firstFailure.commit)), toggle = False))
+
+	def sparkLine(self, series, klass, normalRange = True):
+		doc, tag, text = yattag.Doc().tagtext()
+		data = self.db.getSeries(self.module, self.name, series)
+		xmax = self.created.timestamp()
+
+		xmin = xmax - 60*60*24*self.history_days
+		if xmin < data.created.timestamp():
+			xmin = data.created.timestamp()
+
+		mean, std = stats([x.value for x in data.measurements])
+
+		datastr = ", ".join([str(x.created.timestamp()) + ":" + str(x.value) 
+			for x in data.measurements if x.created.timestamp() > xmin])
+
+		opts = { "sparkChartRangeMinX" : str(xmin), "sparkChartRangeMaxX" : str(xmax)}
+		if normalRange:
+			opts.update({
+				"sparkNormalRangeMin" : str(mean-std), 
+				"sparkNormalRangeMax" : str(mean+std)
+			})
+
+		with tag('span', klass=klass, **opts ): doc.asis("<!-- " + datastr + " -->")
+		return doc.getvalue()
+
+	def imageShort(self, img):
+		doc, tag, text = yattag.Doc().tagtext()
+	
+		with tag('div', klass="cell imagename"):
+			text(img["image"])
+		with tag('div', klass="cell imageinfo"):
+			text("Diff: {:3.8f}%".format(img["difference"]))
+		with tag('div', klass="cell imageinfo"):
+			doc.asis(self.sparkLine("image_test_diff." + img["image"], "sparkline_img_diff"))
+		return doc.getvalue()
+
+	def images(self, imgs, testdir):
+		doc, tag, text = yattag.Doc().tagtext()
+
+		def path(type, img):
+			return os.path.relpath(toPath(testdir, type, img), self.basedir)
+
+		with tag('ol'):
+			for img in imgs:
+				doc.asis(listItem(self.imageShort(img),
+					testImages(path("imgtest", img["image"]), path("imgref", img["image"]),
+							   path("imgdiff", img["image"]), path("imgmask", img["image"])),
+					status = "ok" if img["difference"] == 0.0 else "fail", hide=False))
+		return doc.getvalue()
+
+	def screenshot(self):
+		return listItem(keyval("Screenshot", "..."), 
+				image(os.path.relpath(toPath(self.report['outputdir'], self.report["screenshot"]), self.basedir), 
+					alt = "Screenshot", width="100%"))	
+
+	def timeSeries(self):
+		doc, tag, text = yattag.Doc().tagtext()
+		with tag('div'):
+			with tag('span', klass="runtime"):
+				text("{:3.2f}s".format(self.report["elapsed_time"]))
+			doc.asis(self.sparkLine("elapsed_time", "sparkline_elapsed_time"))
+		return doc.getvalue()
+
+
+	def failueSeries(self, length = 30):
+		doc, tag, text = yattag.Doc().tagtext()
+		with tag('div'):
+			text("{:1d} ".format(len(self.report["failures"])) + " ")
+			doc.asis(self.sparkLine("number_of_test_failures", 
+						            "sparkline-failues", normalRange = False))
+		return doc.getvalue()
+
+	def head(self):
+		doc, tag, text = yattag.Doc().tagtext()
+		with tag("div", klass = "row"):
+			with tag("div", klass = "cell testmodule"):
+				text(self.report["module"])
+			with tag("div", klass = "cell testname"):
+				text(self.report["name"])
+			with tag("div", klass = "cell testfailures"):
+				doc.asis(self.failueSeries())
+			with tag("div", klass = "cell testruntime"):
+				doc.asis(self.timeSeries())
+			with tag("div", klass = "cell testdate"):
+				text(stringToDate(self.report["date"]).strftime('%Y-%m-%d %H:%M:%S'))
+		return doc.getvalue()
+
+
+
 class HtmlReport:
 	def __init__(self, basedir, reports, database):
 		self.doc, tag, text = yattag.Doc().tagtext()
@@ -62,9 +351,7 @@ class HtmlReport:
 						"list.min.js",
 						"make-list.js", 
 						"main.js"]
-		self.history_days = 31
-
-
+		
 		self.doc.asis("<!DOCTYPE html>")
 		self.doc.stag("meta", charset = "utf-8")
 		
@@ -121,191 +408,12 @@ class HtmlReport:
 
 					with tag('ul', klass='list'):
 						for name, report in reports.items():
-							ok = ("ok" if len(report['failures']) == 0 else "fail")
-							self.doc.asis(li(self.testhead(report), self.reportToHtml(report), status = ok))
+							tr = TestRun(self, report)
+							self.doc.asis(tr.getvalue())
 
 				with tag('script', language="javascript", 
 					src = self.scriptDirname + "/make-list.js"): text("")
 					
-
-	def makeSparkLine(self, module, name, series, klass, normalRange = True):
-		doc, tag, text = yattag.Doc().tagtext()
-		data = self.db.getSeries(module, name, series)
-
-		xmax = self.created.timestamp()
-
-		data.created.timestamp()
-		xmin = xmax - 60*60*24*self.history_days
-		if xmin < data.created.timestamp():
-			xmin = data.created.timestamp()
-
-		mean, std = stats([x.value for x in data.measurements])
-
-		datastr = ", ".join([str(x.created.timestamp()) + ":" + str(x.value) 
-			for x in data.measurements if x.created.timestamp() > xmin])
-
-		opts = {"sparkChartRangeMinX" : str(xmin), "sparkChartRangeMaxX" : str(xmax)}
-		if normalRange:
-			opts.update({
-				"sparkNormalRangeMin" : str(mean-std), 
-				"sparkNormalRangeMax" : str(mean+std)
-			})
-		with tag('span', klass=klass, **opts ): doc.asis("<!-- " + datastr + " -->")
-		return doc.getvalue()
-
-				
-	def timeSeries(self, report):
-		doc, tag, text = yattag.Doc().tagtext()
-		with tag('div'):
-			text("{:3.2f}s ".format(report["elapsed_time"]))
-			doc.asis(self.makeSparkLine(report["module"], report["name"], "elapsed_time", 
-						                "sparkline_elapsed_time"))
-		return doc.getvalue()
-
-
-	def failueSeries(self, report, length = 30):
-		doc, tag, text = yattag.Doc().tagtext()
-		nfail = len(report["failures"])	
-		with tag('div'):
-			text(str(nfail) + " ")
-			doc.asis(self.makeSparkLine(report["module"], report["name"], "number_of_test_failures", 
-						                "sparkline-failues", normalRange = False))
-		return doc.getvalue()
-
-	def testhead(self, report):
-		doc, tag, text = yattag.Doc().tagtext()
-		with tag("div", klass = "row"):
-			with tag("div", klass = "cell testmodule"):
-				text(report["module"])
-			with tag("div", klass = "cell testname"):
-				text(report["name"])
-			with tag("div", klass = "cell testfailures"):
-				doc.asis(self.failueSeries(report))
-			with tag("div", klass = "cell testruntime"):
-				doc.asis(self.timeSeries(report))
-			with tag("div", klass = "cell testdate"):
-				text(stringToDate(report["date"]).strftime('%Y-%m-%d %H:%M:%S'))
-		return doc.getvalue()
-
-	def imageShort(self, module, name, img):
-		doc, tag, text = yattag.Doc().tagtext()
-	
-		with tag('div', klass="cell imagename"):
-			text(img["image"])
-		with tag('div', klass="cell imageinfo"):
-			text("Diff: {:3.8f}%".format(img["difference"]))
-		with tag('div', klass="cell imageinfo"):
-			doc.asis(self.makeSparkLine(module, name , "image_test_diff." + img["image"], 
-					                    "sparkline_img_diff"))
-		return doc.getvalue()
-
-	def genImages(self, module, name, imgs, testdir, refdir):
-		doc, tag, text = yattag.Doc().tagtext()
-		with tag('ol'):
-			for img in imgs:
-				ok = img["difference"] == 0.0					
-				doc.asis(li(self.imageShort(module, name, img),
-					testImages(os.path.relpath(toPath(testdir, "imgtest", img["image"]), self.basedir),
-							   os.path.relpath(toPath(testdir, "imgref", img["image"]), self.basedir),
-							   os.path.relpath(toPath(testdir, "imgdiff", img["image"]), self.basedir),
-							   os.path.relpath(toPath(testdir, "imgmask", img["image"]), self.basedir)),
-					status = "ok" if ok else "fail"
-					))
-		return doc.getvalue()
-
-
-	def genGitLink(self, commit):
-		doc, tag, text = yattag.Doc().tagtext()
-		if commit.server != "":
-			with tag('a', href = commit.server + "/commit/"+ commit.hash):
-				text(commit.hash)
-		else:
-			text(commit.hash)
-		return doc.getvalue()
-
-	def genCommit(self, commit):
-		doc, tag, text = yattag.Doc().tagtext()
-		with tag('ul'):
-			doc.asis(li(keyval("Author", commit.author), toggle=False))
-			gdate = commit.date.strftime('%Y-%m-%d %H:%M:%S')
-			doc.asis(li(keyval("Date", gdate), toggle=False)) 
-			doc.asis(li(keyval("Commit", self.genGitLink(commit)), toggle=False))
-			val = commit.message
-			vabr = abr(val)
-			doc.asis(li(keyval("Message", vabr), val, toggle = vabr != val))
-			doc.asis(li(keyval("Server", commit.server), toggle=False)) 
-
-		return doc.getvalue()
-
-	def formatLog(self, htmllog):
-		doc, tag, text = yattag.Doc().tagtext()
-		with tag('div', klass='log'):
-			doc.asis(htmllog)
-		return doc.getvalue()
-
-
-	def reportSimple(self, key, report):
-		val = toString(report[key])
-		status = ""
-		if key in report['successes']: status = "ok"
-		if key in report['failures'].keys(): status = "fail"
-		vabr = abr(val)
-		return li(keyval(formatKey(key), vabr), val, status = status, toggle = vabr != val)
-
-
-	def reportToHtml(self, report):
-		doc, tag, text = yattag.Doc().tagtext()
-
-		with tag('ul'):
-			keys = ["path", "command", "returncode", "missing_imgs", "missing_refs", "output", "errors"]
-			for key in keys: doc.asis(self.reportSimple(key, report))
-
-			shortgit = safeget(report, "git", "message", failure ="")
-
-			testrun = self.db.getLastTestRun(report["module"], report["name"])
-			doc.asis(li(keyval("Git", shortgit), self.genCommit(testrun.commit)))
-			
-			lastSuccess, firstFailure = self.db.getLastSuccessFirstFailure(report["module"], 
-																		   report["name"])
-			if lastSuccess is not None:
-				doc.asis(li(keyval("Last Succsess", lastSuccess.commit.hash),
-					self.genCommit(lastSuccess.commit))) 			
-			else:
-				doc.asis(li(keyval("Last Succsess", "None"), toggle=False)) 	
-
-			if firstFailure is not None:
-				doc.asis(li(keyval("First Failure", firstFailure.commit.hash), 
-					self.genCommit(firstFailure.commit))) 
-			else:
-				doc.asis(li(keyval("First Failure", "None"), toggle=False)) 	
-
-			nfail = len(report["failures"])
-			short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
-			doc.asis(li(keyval("Failures", short), genFailures(report["failures"]), 
-				status = "ok" if nfail == 0 else "fail"))
-							
-			with open(toPath(report['outputdir'], report['log']), 'r') as f:
-				loghtml = f.read()
-				err = loghtml.count("Error:")
-				warn = loghtml.count("Warn:")
-				info = loghtml.count("Info:")
-
-				short = "Error: {}, Warnings: {}, Information: {}".format(err, warn, info)
-				doc.asis(li(keyval("Log", short), self.formatLog(loghtml), 
-					status = "ok" if err == 0 else "fail")) 
-
-			doc.asis(li(keyval("Screenshot", ""), 
-				image(os.path.relpath(toPath(report['outputdir'], report["screenshot"]), self.basedir), 
-					alt = "Screenshot", width="100%")))	
-
-			ok = sum([1 if img["difference"] == 0.0 else 0 for img in report["image_tests"]])
-			fail = sum([1 if img["difference"] != 0.0 else 0 for img in report["image_tests"]])
-			short = (str(ok) + " ok images, " + str(fail) + " failed image tests")
-			doc.asis(li(keyval("Images", short), 
-				self.genImages(report["module"], report["name"], report["image_tests"], report["outputdir"], report["path"]),
-				status = "ok" if fail == 0 else "fail"))
-
-		return doc.getvalue()
 
 
 	def saveScripts(self):
@@ -335,87 +443,5 @@ class HtmlReport:
 
 		return file
 			
-def toString(val):
-	if val is None:
-		return "None"
-	if isinstance(val, str):
-		if len(val) == 0: return "None"
-		else: return val
-	elif isinstance(val, list):
-		if len(val) == 0: return "None"
-		else: return "(" + ", ".join(map(toString, val)) +")"
-	elif isinstance(val, float):
-		return "{:6f}".format(val)
-	elif isinstance(val, int):
-		return "{:}".format(val)
-
-def abr(text):
-	abr = text.split("\n")[0][:85]
-	return abr + ("..." if len(text.split("\n")) > 1 or len(text) > 50 else "")
-
-def formatKey(key):
-	return key.capitalize().replace("_", " ")
-
-def keyval(key, val):
-	doc, tag, text = yattag.Doc().tagtext()
-	with tag("div", klass = "row"):
-		with tag("div", klass = "cell key"):
-			text(key)
-		with tag("div", klass = "cell"):
-			doc.asis(val)
-	return doc.getvalue()
-
-def image(path, **opts):
-	doc, tag, text = yattag.Doc().tagtext()
-	doc.stag('img', src = path, **opts)
-	return doc.getvalue()
-
-def li(head, body="", status="", toggle = True):
-	doc, tag, text = yattag.Doc().tagtext()
-	toggleclass = "toggle" if toggle else ""
-	with tag('li', klass='row'):
-		with tag('div', klass='lihead ' + status + ' ' + toggleclass):
-			doc.asis(head)
-		if toggle:
-			with tag('div', klass='libody'):
-				doc.asis(body)
-
-	return doc.getvalue()
-
-def testImages(testimg, refimg, diffimg, maskimg):
-	doc, tag, text = yattag.Doc().tagtext()
-	with tag('table', klass='zoomset'):
-		with tag('tr'):
-			with tag('th'): text("Test")
-			with tag('th'): text("Reference")
-			with tag('th'): text("Difference * 10") 
-			with tag('th'): text("Mask") 
-		with tag('tr'):
-			with tag('td', klass ="zoom"):
-				doc.asis(image(testimg, alt = "test image", klass ="test"))
-			with tag('td', klass ="zoom"):
-				doc.asis(image(refimg,  alt = "reference image", klass ="test"))
-			with tag('td', klass ="zoom"):
-				doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
-			with tag('td', klass ="zoom"):
-				doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
-	return doc.getvalue()
-
-def failureList(errors):
-	doc, tag, text = yattag.Doc().tagtext()
-	with tag('ul'):
-		for error in errors:
-			with tag('li'):
-				text(error)
-	return doc.getvalue()
-
-def genFailures(failures):
-	doc, tag, text = yattag.Doc().tagtext()
-	with tag('ol'):
-		for key, errors in failures.items():
-			doc.asis(li(formatKey(key), failureList(errors), status = "fail"))
-	return doc.getvalue()
-
-
 
 

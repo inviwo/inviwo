@@ -33,7 +33,6 @@ $(document).ready(function() {
    			body.slideToggle(100);
            	$.sparkline_display_visible()
     });
-	$('div.libody').hide();
 
 	$('.sparkline_elapsed_time').sparkline('html', {
 		type : 'line', 

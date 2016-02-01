@@ -96,6 +96,11 @@ div.cell {
     overflow: hidden;
 
 }
+span.runtime {
+    float: left;
+    padding-right: 5px;
+    width : 40px;
+}
 div.testname {
     width : 170px;
 }
