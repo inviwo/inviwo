@@ -281,6 +281,7 @@ class TestRun:
 	def imageShort(self, img):
 		doc, tag, text = yattag.Doc().tagtext()
 	
+
 		with tag('div', klass="imagename"):
 			text(img["image"])
 		with tag('div', klass="imagedifference"):
@@ -288,13 +289,15 @@ class TestRun:
 		with tag('div', klass="imagespark"):
 			doc.asis(self.sparkLine("image_test_diff." + img["image"], "sparkline_img_diff"))
 		with tag('div', klass="imagepixels"):
-			text("Pixels: {:d}".format(safeget(img, "different_pixels", failure = 0)))
+			if img["different_pixels"] is not None:
+				text("Pixels: {:d}".format(img["different_pixels"]))
 		with tag('div', klass="imagepercent"):
-			text("({:2.4f}%)".format(100.0 * safeget(img, "different_pixels", failure = 0) /\
-				(safeget(img,'test_size', failure = [1,1])[0] *\
-				 safeget(img,'test_size', failure = [1,1])[1])))
+			if img["different_pixels"] is not None:
+				text("({:2.4f}%)".format(100.0 * img["different_pixels"] /\
+					(img['test_size'][0] * img['test_size'][1])))
 		with tag('div', klass="imagedelta"):
-			text("Largest delta: {:1.8f}".format(safeget(img, "max_difference", failure=0)))
+			if img["max_difference"] is not None:
+				text("Largest delta: {:1.8f}".format(img["max_difference"]))
 		return doc.getvalue()
 
 	def images(self, imgs, testdir):
