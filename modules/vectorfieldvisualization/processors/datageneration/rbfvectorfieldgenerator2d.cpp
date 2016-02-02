@@ -178,12 +178,13 @@ void RBFVectorFieldGenerator2D::deserialize(Deserializer& d) {
     std::vector<dvec2> sy;
     d.deserialize("samplesx", sx, "samplex");
     d.deserialize("samplesy", sy, "sampley");
+
+    Processor::deserialize(d);
     
     for (size_t i = 0; i < sx.size(); i++) {
         samples_.emplace_back(sx[i], sy[i]);
     }
 
-    Processor::deserialize(d);
 }
 
 }  // namespace
