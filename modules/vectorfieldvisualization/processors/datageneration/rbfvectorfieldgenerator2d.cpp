@@ -146,7 +146,6 @@ dvec2 RBFVectorFieldGenerator2D::randomVector() {
 
 void RBFVectorFieldGenerator2D::createSamples()
 {
-    LogInfo("Crating samples");
     samples_.clear();
 
     if (useSameSeed_.get()) {
@@ -175,7 +174,6 @@ void RBFVectorFieldGenerator2D::serialize(Serializer& s) const {
 }
 
 void RBFVectorFieldGenerator2D::deserialize(Deserializer& d) {
-    LogInfo("deserialize");
     std::vector<dvec2> sx;
     std::vector<dvec2> sy;
     d.deserialize("samplesx", sx, "samplex");
@@ -187,7 +185,6 @@ void RBFVectorFieldGenerator2D::deserialize(Deserializer& d) {
         samples_.emplace_back(sx[i], sy[i]);
     }
 
-    LogInfo("deserialize done");
 }
 
 }  // namespace
