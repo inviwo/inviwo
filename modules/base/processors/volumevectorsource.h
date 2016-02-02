@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/stringproperty.h>
 
 namespace inviwo {
 
@@ -86,7 +87,7 @@ private:
     TemplateOptionProperty<InputType> inputType_;
     FileProperty file_;
     DirectoryProperty folder_;
-    StringProperty pattern_;
+    StringProperty filter_;
 
     ButtonProperty reload_;
 
