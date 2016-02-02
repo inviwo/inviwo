@@ -35,6 +35,8 @@
 #include <modules/base/properties/volumeinformationproperty.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/volumeport.h>
