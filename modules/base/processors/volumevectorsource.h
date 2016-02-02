@@ -60,6 +60,10 @@ namespace inviwo {
  * \brief Loads a vector of volumes
  */
 class IVW_MODULE_BASE_API VolumeVectorSource : public Processor { 
+    enum class InputType {
+        SingleFile,
+        Folder
+    };
 public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -71,12 +75,19 @@ public:
 
 private:
     void load(bool deserialize = false);
+    void loadFile(bool deserialize = false);
+    void loadFolder(bool deserialize = false);
     void addFileNameFilters();
 
     std::shared_ptr<VolumeVector> volumes_;
 
     VolumeVectorOutport outport_;
+
+    TemplateOptionProperty<InputType> inputType_;
     FileProperty file_;
+    DirectoryProperty folder_;
+    StringProperty pattern_;
+
     ButtonProperty reload_;
 
     BasisProperty basis_;
