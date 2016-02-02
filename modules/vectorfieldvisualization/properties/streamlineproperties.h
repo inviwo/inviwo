@@ -27,39 +27,39 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINETRACER_H
-#define IVW_INTEGRALLINETRACER_H
+#ifndef IVW_STREAMLINEPROPERTIES_H
+#define IVW_STREAMLINEPROPERTIES_H
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
 namespace inviwo {
 
 /**
- * \class IntegralLineTracer
+ * \class StreamLineProperties
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineTracer { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API StreamLineProperties : public IntegralLineProperties {
 public:
+    InviwoPropertyInfo();
 
-    IntegralLineTracer(const IntegralLineProperties &properties);
-    virtual ~IntegralLineTracer();
+    StreamLineProperties(std::string identifier, std::string displayName);
+    StreamLineProperties(const StreamLineProperties& rhs);
+    StreamLineProperties& operator=(const StreamLineProperties& that);
+    virtual StreamLineProperties* clone() const override;
+    virtual ~StreamLineProperties();
 
-    IntegralLineProperties::IntegrationScheme getIntegrationScheme() const;
-    void setIntegrationScheme(IntegralLineProperties::IntegrationScheme scheme);
+    bool getNormalizeSamples() const;
+
+private:
+    void setUpProperties();
 
 protected:
-    IntegralLineProperties::IntegrationScheme integrationScheme_;
-
-    int steps_;
-    double stepSize_;
-    IntegralLineProperties::Direction dir_;
-
+    BoolProperty normalizeSamples_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_INTEGRALLINETRACER_H
-
+#endif  // IVW_STREAMLINEPROPERTIES_H

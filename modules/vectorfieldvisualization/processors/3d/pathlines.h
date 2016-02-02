@@ -88,8 +88,8 @@ private:
     DoubleProperty dt_;
 
 
-    TemplateOptionProperty<IntegralLineTracer::Direction> stepDirection_;
-    TemplateOptionProperty<IntegralLineTracer::IntegrationScheme> integrationScheme_;
+    TemplateOptionProperty<IntegralLineProperties::Direction> stepDirection_;
+    TemplateOptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
     TemplateOptionProperty<StructuredCoordinateTransformer<3>::Space> seedPointsSpace_;
 
     TransferFunctionProperty tf_;

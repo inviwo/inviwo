@@ -32,9 +32,8 @@
 namespace inviwo {
 
 PathLineTracer::PathLineTracer(
-    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector,
-    IntegrationScheme integrationScheme)
-    : IntegralLineTracer(integrationScheme), sampler_(volumeVector), dimensions_(0) {
+    std::shared_ptr<const std::vector<std::shared_ptr<Volume>>> volumeVector, const IntegralLineProperties &properties)
+    : IntegralLineTracer(properties), sampler_(volumeVector), dimensions_(0) {
     if (volumeVector->empty()) {
         LogWarn("Initializing PathLineTracer with an empty vector");
     } else {
@@ -47,17 +46,17 @@ PathLineTracer::PathLineTracer(
 
 PathLineTracer::~PathLineTracer() {}
 
-inviwo::IntegralLine PathLineTracer::traceFrom(const vec4 &p, int steps, double dt, Direction dir) {
+inviwo::IntegralLine PathLineTracer::traceFrom(const vec4 &p, int steps, double dt, IntegralLineProperties::Direction dir) {
     return traceFrom(dvec4(p), steps, dt, dir);
 }
 
 inviwo::IntegralLine PathLineTracer::traceFrom(const dvec4 &p, int steps, double dt,
-                                               Direction dir) {
+    IntegralLineProperties::Direction dir) {
     IntegralLine line;
 
     auto direction = dir;
-    bool fwd = direction == Direction::BOTH || direction == Direction::FWD;
-    bool bwd = direction == Direction::BOTH || direction == Direction::BWD;
+    bool fwd = direction == IntegralLineProperties::Direction::BOTH || direction == IntegralLineProperties::Direction::FWD;
+    bool bwd = direction == IntegralLineProperties::Direction::BOTH || direction == IntegralLineProperties::Direction::BWD;
     bool both = fwd && bwd;
 
     line.positions_.reserve(steps + 2);
@@ -90,10 +89,10 @@ void PathLineTracer::step(int steps, dvec4 curPos, IntegralLine &line, double dt
 
         dvec3 v;
         switch (integrationScheme_) {
-            case IntegralLineTracer::IntegrationScheme::RK4:
                 v = rk4(curPos, dt);
+            case IntegralLineProperties::IntegrationScheme::RK4:
                 break;
-            case IntegralLineTracer::IntegrationScheme::Euler:
+            case IntegralLineProperties::IntegrationScheme::Euler:
             default:
                 v = euler(curPos);
                 break;

@@ -76,13 +76,13 @@ PathLines::PathLines()
     addPort(colors_);
     addPort(linesStripsMesh_);
 
-    stepDirection_.addOption("fwd", "Forward", IntegralLineTracer::Direction::FWD);
-    stepDirection_.addOption("bwd", "Backwards", IntegralLineTracer::Direction::BWD);
-    stepDirection_.addOption("bi", "Bi Directional", IntegralLineTracer::Direction::BOTH);
+    stepDirection_.addOption("fwd", "Forward", IntegralLineProperties::Direction::FWD);
+    stepDirection_.addOption("bwd", "Backwards", IntegralLineProperties::Direction::BWD);
+    stepDirection_.addOption("bi", "Bi Directional", IntegralLineProperties::Direction::BOTH);
 
-    integrationScheme_.addOption("euler", "Euler", IntegralLineTracer::IntegrationScheme::Euler);
-    integrationScheme_.addOption("rk4", "Runge-Kutta (RK4)", IntegralLineTracer::IntegrationScheme::RK4);
-    integrationScheme_.setSelectedValue(IntegralLineTracer::IntegrationScheme::RK4);
+    integrationScheme_.addOption("euler", "Euler", IntegralLineProperties::IntegrationScheme::Euler);
+    integrationScheme_.addOption("rk4", "Runge-Kutta (RK4)", IntegralLineProperties::IntegrationScheme::RK4);
+    integrationScheme_.setSelectedValue(IntegralLineProperties::IntegrationScheme::RK4);
 
     seedPointsSpace_.addOption("texture", "Texture",
         StructuredCoordinateTransformer<3>::Space::Texture);
@@ -114,6 +114,7 @@ PathLines::PathLines()
 }
     
 void PathLines::process() {
+    /*
     auto data = volume_.getData();
     if (data->size() == 0) {
         return;
@@ -193,7 +194,7 @@ void PathLines::process() {
     linesStripsMesh_.setData(mesh);
     maxVelocity_.set(toString(maxVelocity));
 
-
+    */
 
 }
 

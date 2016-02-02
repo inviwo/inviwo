@@ -27,39 +27,37 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINETRACER_H
-#define IVW_INTEGRALLINETRACER_H
-
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
+#include "pathlineproperties.h"
 
 namespace inviwo {
 
-/**
- * \class IntegralLineTracer
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineTracer { 
-public:
+PropertyClassIdentifier(PathLineProperties, "org.inviwo.PathLineProperties");
 
-    IntegralLineTracer(const IntegralLineProperties &properties);
-    virtual ~IntegralLineTracer();
+PathLineProperties::PathLineProperties(std::string identifier, std::string displayName)
+    : IntegralLineProperties(identifier, displayName)
+    , normalizeSamples_("normalizesamples", "Normalize Samples", true) {
+    setUpProperties();
+}
 
-    IntegralLineProperties::IntegrationScheme getIntegrationScheme() const;
-    void setIntegrationScheme(IntegralLineProperties::IntegrationScheme scheme);
+PathLineProperties::PathLineProperties(const PathLineProperties& rhs)
+    : IntegralLineProperties(rhs), normalizeSamples_(rhs.normalizeSamples_) {
+    setUpProperties();
+}
 
-protected:
-    IntegralLineProperties::IntegrationScheme integrationScheme_;
+PathLineProperties& PathLineProperties::operator=(const PathLineProperties& that) {
+    if (this != &that) {
+        PathLineProperties::operator=(that);
+        normalizeSamples_ = that.normalizeSamples_;
+    }
+    return *this;
+}
 
-    int steps_;
-    double stepSize_;
-    IntegralLineProperties::Direction dir_;
+PathLineProperties* PathLineProperties::clone() const { return new PathLineProperties(*this); }
 
-};
+PathLineProperties::~PathLineProperties() {}
 
-} // namespace
+bool PathLineProperties::getNormalizeSamples() const { return normalizeSamples_; }
 
-#endif // IVW_INTEGRALLINETRACER_H
+void PathLineProperties::setUpProperties() { addProperty(normalizeSamples_); }
 
+}  // namespace

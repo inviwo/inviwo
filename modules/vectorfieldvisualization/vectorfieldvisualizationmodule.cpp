@@ -38,6 +38,9 @@
 
 #include <modules/vectorfieldvisualization/ports/seedpointsport.h>
 
+#include <modules/vectorfieldvisualization/properties/streamlineproperties.h>
+#include <modules/vectorfieldvisualization/properties/pathlineproperties.h>
+
 namespace inviwo {
 
 VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication* app)
@@ -52,6 +55,9 @@ VectorFieldVisualizationModule::VectorFieldVisualizationModule(InviwoApplication
 
     registerPort < SeedPointsOutport>("SeedPointsOutport");
     registerPort < SeedPointsInport>("SeedPointsInport");
+
+    registerProperty<StreamLineProperties>();
+    registerProperty<PathLineProperties>();
 }
 
 

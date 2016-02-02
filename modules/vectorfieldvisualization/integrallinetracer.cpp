@@ -31,7 +31,12 @@
 
 namespace inviwo {
 
-IntegralLineTracer::IntegralLineTracer(IntegrationScheme integrationScheme) : integrationScheme_(integrationScheme){
+IntegralLineTracer::IntegralLineTracer(const IntegralLineProperties &properties) 
+    : integrationScheme_(properties.getIntegrationScheme())
+    , steps_(properties.getNumberOfSteps())
+    , stepSize_(properties.getStepSize())
+    , dir_(properties.getStepDirection())
+{
     
 }
 
@@ -39,12 +44,12 @@ IntegralLineTracer::~IntegralLineTracer()  {
     
 }
 
-inviwo::IntegralLineTracer::IntegrationScheme IntegralLineTracer::getIntegrationScheme() const
+inviwo::IntegralLineProperties::IntegrationScheme IntegralLineTracer::getIntegrationScheme() const
 {
     return integrationScheme_;
 }
 
-void IntegralLineTracer::setIntegrationScheme(IntegrationScheme scheme)
+void IntegralLineTracer::setIntegrationScheme(IntegralLineProperties::IntegrationScheme scheme)
 {
     integrationScheme_ = scheme;
 }

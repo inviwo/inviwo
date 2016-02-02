@@ -27,39 +27,56 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINETRACER_H
-#define IVW_INTEGRALLINETRACER_H
+#ifndef IVW_INTEGRALLINEPROPERTIES_H
+#define IVW_INTEGRALLINEPROPERTIES_H
 
-#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
+#include <inviwo/core/datastructures/coordinatetransformer.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
 /**
- * \class IntegralLineTracer
+ * \class IntegralLineProperties
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS
  */
-class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineTracer { 
+class IVW_MODULE_VECTORFIELDVISUALIZATION_API IntegralLineProperties : public CompositeProperty {
 public:
+    enum class IntegrationScheme { Euler, RK4 };
 
-    IntegralLineTracer(const IntegralLineProperties &properties);
-    virtual ~IntegralLineTracer();
+    enum class Direction { FWD = 1, BWD = 2, BOTH = 3 };
 
+    IntegralLineProperties(std::string identifier, std::string displayName);
+    IntegralLineProperties(const IntegralLineProperties& rhs);
+    IntegralLineProperties& operator=(const IntegralLineProperties& that);
+    virtual IntegralLineProperties* clone() const override;
+    virtual ~IntegralLineProperties();
+
+    mat4 getSeedPointTransformationMatrix(const StructuredCoordinateTransformer<3>& T) const;
+
+    int getNumberOfSteps() const;
+    float getStepSize() const;
+
+    IntegralLineProperties::Direction getStepDirection() const;
     IntegralLineProperties::IntegrationScheme getIntegrationScheme() const;
-    void setIntegrationScheme(IntegralLineProperties::IntegrationScheme scheme);
+    StructuredCoordinateTransformer<3>::Space getSeedPointsSpace() const;
+
+private:
+    void setUpProperties();
 
 protected:
-    IntegralLineProperties::IntegrationScheme integrationScheme_;
+    IntProperty numberOfSteps_;
+    FloatProperty stepSize_;
 
-    int steps_;
-    double stepSize_;
-    IntegralLineProperties::Direction dir_;
-
+    TemplateOptionProperty<IntegralLineProperties::Direction> stepDirection_;
+    TemplateOptionProperty<IntegralLineProperties::IntegrationScheme> integrationScheme_;
+    TemplateOptionProperty<StructuredCoordinateTransformer<3>::Space> seedPointsSpace_;
 };
 
-} // namespace
+}  // namespace
 
-#endif // IVW_INTEGRALLINETRACER_H
-
+#endif  // IVW_INTEGRALLINEPROPERTIES_H

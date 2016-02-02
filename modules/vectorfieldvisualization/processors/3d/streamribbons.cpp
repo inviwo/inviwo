@@ -73,13 +73,13 @@ StreamRibbons::StreamRibbons()
     addPort(mesh_);
 
     stepSize_.setIncrement(0.0001f);
-    stepDirection_.addOption("fwd", "Forward", StreamLineTracer::Direction::FWD);
-    stepDirection_.addOption("bwd", "Backwards", StreamLineTracer::Direction::BWD);
-    stepDirection_.addOption("bi", "Bi Directional", StreamLineTracer::Direction::BOTH);
+    stepDirection_.addOption("fwd", "Forward", IntegralLineProperties::Direction::FWD);
+    stepDirection_.addOption("bwd", "Backwards", IntegralLineProperties::Direction::BWD);
+    stepDirection_.addOption("bi", "Bi Directional", IntegralLineProperties::Direction::BOTH);
 
-    integrationScheme_.addOption("euler", "Euler", StreamLineTracer::IntegrationScheme::Euler);
-    integrationScheme_.addOption("rk4", "Runge-Kutta (RK4)", StreamLineTracer::IntegrationScheme::RK4);
-    integrationScheme_.setSelectedValue(StreamLineTracer::IntegrationScheme::RK4);
+    integrationScheme_.addOption("euler", "Euler", IntegralLineProperties::IntegrationScheme::Euler);
+    integrationScheme_.addOption("rk4", "Runge-Kutta (RK4)", IntegralLineProperties::IntegrationScheme::RK4);
+    integrationScheme_.setSelectedValue(IntegralLineProperties::IntegrationScheme::RK4);
 
     seedPointsSpace_.addOption("texture", "Texture",
                                StructuredCoordinateTransformer<3>::Space::Texture);
@@ -109,6 +109,7 @@ StreamRibbons::StreamRibbons()
 }
 
 void StreamRibbons::process() {
+    /*
     auto mesh = std::make_shared<BasicMesh>();
     mesh->setModelMatrix(vectorVolume_.getData()->getModelMatrix());
     mesh->setWorldMatrix(vectorVolume_.getData()->getWorldMatrix());
@@ -168,6 +169,7 @@ void StreamRibbons::process() {
     }
     mesh->addVertices(vertices);
     mesh_.setData(mesh);
+    */
 }
 
 }  // namespace
