@@ -209,17 +209,20 @@ class TestRun:
 							"missing_refs", "output", "errors"]:
 					self.simple(key)
 
+				self.doc.asis(self.failures())
+
 
 	def getvalue(self):
 		return self.doc.getvalue()
 
 	@contextlib.contextmanager
-	def item(self, head, status="", hide = True):
+	def item(self, head, status="", hide = True, doc = None):
+		if doc is None: doc = self.doc
 		opts = {"style" : "display: none;"} if hide else {}  
-		with self.doc.tag('li', klass='row'):
-			with self.doc.tag('div', klass='lihead toggle ' + status):
-				self.doc.asis(head)
-			with self.doc.tag('div', klass='libody', **opts):
+		with doc.tag('li', klass='row'):
+			with doc.tag('div', klass='lihead toggle ' + status):
+				doc.asis(head)
+			with doc.tag('div', klass='libody', **opts):
 				yield None
 
 	def totalstatus(self):
@@ -278,12 +281,19 @@ class TestRun:
 	def imageShort(self, img):
 		doc, tag, text = yattag.Doc().tagtext()
 	
-		with tag('div', klass="cell imagename"):
+		with tag('div', klass="imagename"):
 			text(img["image"])
-		with tag('div', klass="cell imageinfo"):
-			text("Diff: {:3.8f}%".format(img["difference"]))
-		with tag('div', klass="cell imageinfo"):
+		with tag('div', klass="imagedifference"):
+			text("Difference: {:2.8f}%".format(img["difference"]))
+		with tag('div', klass="imagespark"):
 			doc.asis(self.sparkLine("image_test_diff." + img["image"], "sparkline_img_diff"))
+		with tag('div', klass="imagepixels"):
+			text("Pixels: {:d}".format(img["different_pixels"]))
+		with tag('div', klass="imagepercent"):
+			text("({:2.4f}%)".format(100.0 * img["different_pixels"] /\
+				(img['test_size'][0] * img['test_size'][1])))
+		with tag('div', klass="imagedelta"):
+			text("Largest delta: {:1.8f}".format(img["max_difference"]))
 		return doc.getvalue()
 
 	def images(self, imgs, testdir):
@@ -338,6 +348,21 @@ class TestRun:
 		return doc.getvalue()
 
 
+	def failureList(self):
+		doc, tag, text = yattag.Doc().tagtext()
+		with tag('ol'):
+			for key, errors in self.report["failures"].items():
+				for error in errors:
+					with self.item(keyval(formatKey(key), abr(error)), doc = doc, status = "fail"):
+						text(error)
+
+		return doc.getvalue()
+
+	def failures(self):
+		nfail = len(self.report["failures"])
+		short = "No failues" if nfail == 0 else  "{} failures".format(nfail)
+		return listItem(keyval("Failures", short), self.failureList(), 
+						status = "ok" if nfail == 0 else "fail")
 
 class HtmlReport:
 	def __init__(self, basedir, reports, database):

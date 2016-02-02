@@ -147,26 +147,30 @@ class App:
 		report['missing_refs'] = list(imgs - refs)
 		report['missing_imgs'] = list(refs - imgs)
 
-		imgtests = []
-		for img in imgs:
-			if img in refs:
-				comp = ImageCompare(testImage = toPath(outputdir, "imgtest", img), 
-					                refImage = toPath(test.path, img))
+		report['image_tests'] = []
+		for img in imgs & refs:
+			comp = ImageCompare(testImage = toPath(outputdir, "imgtest", img), 
+				                refImage = toPath(test.path, img))
 
-				diffpath = mkdir(toPath(outputdir, "imgdiff"))
-				maskpath = mkdir(toPath(outputdir, "imgmask"))
-				comp.saveDifferenceImage(toPath(diffpath, img), toPath(maskpath, img))
-				refpath = mkdir(toPath(outputdir, "imgref"))
-				comp.saveReferenceImage(toPath(refpath, img))
-
-				diff = comp.difference()
-				imgtest = {
-					'image' : img,
-					'difference' : diff,
-				}
-				imgtests.append(imgtest)
-
-		report['image_tests'] = imgtests
+			refpath = mkdir(toPath(outputdir, "imgref"))
+			diffpath = mkdir(toPath(outputdir, "imgdiff"))
+			maskpath = mkdir(toPath(outputdir, "imgmask"))
+			
+			comp.saveReferenceImage(toPath(refpath, img))
+			comp.saveDifferenceImage(toPath(diffpath, img))
+			comp.saveMaskImage(toPath(maskpath, img))
+							
+			imgtest = {
+				'image' : img,
+				'difference' : comp.getDifference(),
+				'max_difference' : comp.getMaxDifference(),
+				'different_pixels' : comp.getNumberOfDifferentPixels(),
+				'test_size' : comp.getTestSize(),
+				'ref_size' : comp.getRefSize(),
+				'test_mode' : comp.getTestMode(),
+				'ref_mode' : comp.getRefMode()
+			}
+			report['image_tests'].append(imgtest)
 
 		return report
 

@@ -49,9 +49,19 @@ class ReportImageTest(ReportTest):
 	def test(self, report):
 		imgs = report[self.key]
 		for img in imgs:
-			if img["difference"] != 0.0:
+			if img['test_mode'] != img['ref_mode']:
 				self.message.append(
-					"Image {image} has non-zero ({difference}%) difference".format(**img))
+					("Image {image} has different modes, " +
+					"Test: {test_mode} vs Reference:{ref_mode}").format(**img))
+			elif img['test_size'] != img['ref_size']:
+				self.message.append(
+					("Image {image} has different sizes, " +
+					"Test: {test_size} vs Reference:{ref_size}").format(**img))
+			elif img["difference"] != 0.0:
+				self.message.append(
+					("Image {image} has non-zero ({difference}%) " +
+					"difference, {different_pixels} different pixels, " +
+					"largest difference {max_difference}").format(**img))
 
 		return len(self.message) == 0
 

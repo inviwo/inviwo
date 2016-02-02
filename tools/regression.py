@@ -157,7 +157,7 @@ if __name__ == '__main__':
 	if args.output:
 		output = os.path.abspath(args.output)
 	elif config.has_option("CMake","binary_dir"):
-		output = config.get("CMake","binary_dir") + "/regress"
+		output = mkdir(config.get("CMake","binary_dir"), "regress")
 	else:
 		print_error("Regression.py was unable to decide on a output dir, please specify \"-o <output path>\"")
 		sys.exit(1)

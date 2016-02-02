@@ -177,7 +177,7 @@
 								return;
 							} else {
 								clicked = true;
-								start(e);
+								start(e, source);
 								$(document).on(mousemove, move);
 								$(document).one('click.zoom',
 									function () {
@@ -196,7 +196,7 @@
 							if (clicked) {
 								stop();
 							} else {
-								start(e);
+								start(e, source);
 							}
 							clicked = !clicked;
 						}
@@ -205,7 +205,7 @@
 						zoom.init(); // Preemptively call init because IE7 will fire the mousemove handler before the hover handler.
 	
 						$source
-							.on('mouseenter.zoom', start)
+							.on('mouseenter.zoom', function(e){start(e,source)})
 							.on('mouseleave.zoom', stop)
 							.on(mousemove, move);
 					}
@@ -220,7 +220,7 @@
 								stop();
 							} else {
 								touched = true;
-								start( e.originalEvent.touches[0] || e.originalEvent.changedTouches[0] );
+								start( e.originalEvent.touches[0] || e.originalEvent.changedTouches[0], source);
 							}
 						})
 						.on('touchmove.zoom', function (e) {
