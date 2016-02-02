@@ -139,8 +139,6 @@ void VolumeVectorSource::loadFolder(bool deserialize) {
     for (auto f : files) {
         auto file = folder_.get() + "/" + f;
         if (filesystem::wildcardStringMatch(filter_, file)) {
-            LogInfo(f);
-
             std::string ext = filesystem::getFileExtension(file);
             if (auto reader = rf->getReaderForTypeAndExtension<Volume>(ext)) {
                 try {
