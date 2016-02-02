@@ -44,15 +44,8 @@
 				opacity: 0,
 				width: img.width * magnify,
 				height: img.height * magnify,
-				border: '1px solid #000000',
 				maxWidth: 'none',
-				maxHeight: 'none',
-				'background-image' : 'linear-gradient(45deg, gray 25%, transparent 25%, transparent 75%, gray 75%), ' 
-    							   + 'linear-gradient(45deg, gray 25%, transparent 25%, transparent 75%, gray 75%), ' 
-    							   + 'linear-gradient(45deg, white 25%, transparent 25%, transparent 75%, white 75%), ' 
-    							   + 'linear-gradient(45deg, white 25%, transparent 25%, transparent 75%, white 75%)',
-                'background-position' : '0 0, 60px 60px, -60px 0, 0 60px',
-                'background-size' : '120px 120px',
+				maxHeight: 'none'
 			})
 			.appendTo(target);
 
