@@ -60,9 +60,9 @@ public:
 
 
 private:
-    void step(int steps, dvec3 curPos, IntegralLine &line);
+    void step(int steps, dvec3 curPos, IntegralLine &line,bool fwd);
     dvec3 euler(const dvec3 &curPos);
-    dvec3 rk4(const dvec3 &curPos , const dmat3 &m);
+    dvec3 rk4(const dvec3 &curPos , const dmat3 &m , bool fwd);
 
     dmat3 invBasis_;
     std::map<std::string, VolumeSampler> metaVolumes_;
