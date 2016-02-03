@@ -108,6 +108,9 @@ public:
      * Get the path to this module directory.
      * For instance: C:/inviwo/modules/mymodule/
      * @note Assumes that getIdentifier() returns the module folder name.
+     *       The folder name should always be lower case.
+     * @note The returned directory might not exist in the case that the app is
+     *       deployed and the module does not contain any resources.
      * @return std::string Path to module directory
      */
     virtual std::string getPath() const;

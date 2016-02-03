@@ -113,9 +113,11 @@ std::string InviwoModule::getPath() const {
 
     const auto defaultPath = filesystem::findBasePath() + "/modules/" + moduleNameLowerCase;
     
+    // By default always use this one. i.e. the module folder in the deployed app
     if (filesystem::directoryExists(defaultPath)) {
         return defaultPath;
     } else {
+        // try to use the module folder from the source location
         for (auto& elem : inviwoModulePaths_) {
             const auto path = elem + "/" + moduleNameLowerCase;
             if (filesystem::directoryExists(path)) {
@@ -123,8 +125,9 @@ std::string InviwoModule::getPath() const {
             }
         }
     }
-    
-    throw Exception("Unable to find path to Module: " + identifier_, IvwContext);
+    // In the case that there was no module folder, just return the default path
+    // This can happen in a deployed app without any installed resources in the module. 
+    return defaultPath;
 }
 
 std::string InviwoModule::getPath(ModulePath type) const {
