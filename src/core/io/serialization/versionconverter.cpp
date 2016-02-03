@@ -239,4 +239,22 @@ void util::renameProperty(Deserializer& d, std::initializer_list<std::pair<const
     d.convertVersion(&vc);
 }
 
+void util::changePropertyType(
+    Deserializer& d, std::initializer_list<std::pair<const Property*, std::string>> rules) {
+    NodeVersionConverter vc([&rules](TxElement* node) {
+        for (auto rule : rules) {
+            std::ofstream f1("D:/temp/before.xml");
+            std::ofstream f2("D:/temp/after.xml");
+            f1 << *(node);
+            TxElement* p = util::xmlGetElement(
+                node, "Properties/Property&type=" + rule.first->getClassIdentifier() +
+                "&identifier=" + rule.first->getIdentifier());
+            if (p) p->SetAttribute("type", rule.second);
+            f2 << *(node);
+        }
+        return true;
+    });
+    d.convertVersion(&vc);
+}
+
 }  // namespace
