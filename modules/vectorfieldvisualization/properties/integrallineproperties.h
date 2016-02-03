@@ -35,6 +35,7 @@
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 
 #include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
