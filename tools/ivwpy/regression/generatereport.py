@@ -151,23 +151,23 @@ def image(path, **opts):
 
 def testImages(testimg, refimg, diffimg, maskimg):
 	doc, tag, text = yattag.Doc().tagtext()
-	with tag('table', klass='zoomset'):
-		with tag('tr'):
-			with tag('th'): text("Test")
-			with tag('th'): text("Reference")
-			with tag('th'): text("Difference * 10") 
-			with tag('th'): text("Mask") 
-		with tag('tr'):
-			with tag('td', klass ="zoom"):
+
+	with tag('div', klass="zoomset"):
+		with tag('div', klass="slider"):
+			with tag('div', klass="imgtestlabel"): text("Test")
+			with tag('div', klass="imgtestlabel"): text("Reference")
+			with tag('div', klass="imgtestlabel"): text("Difference * 10") 
+			with tag('div', klass="imgtestlabel"): text("Mask") 
+		with tag('div', klass="slider"):
+			with tag('div', klass ="zoom"):
 				doc.asis(image(testimg, alt = "test image", klass ="test"))
-			with tag('td', klass ="zoom"):
+			with tag('div', klass ="zoom"):
 				doc.asis(image(refimg,  alt = "reference image", klass ="test"))
-			with tag('td', klass ="zoom"):
+			with tag('div', klass ="zoom"):
 				doc.asis(image(diffimg, alt = "difference image", klass ="diff"))
-			with tag('td', klass ="zoom"):
+			with tag('div', klass ="zoom"):
 				doc.asis(image(maskimg, alt = "mask image", klass ="diff"))
 	return doc.getvalue()
-
 
 class TestRun:
 	"""Generate a html report for one Test Run"""
