@@ -35,19 +35,22 @@ PropertyClassIdentifier(PathLineProperties, "org.inviwo.PathLineProperties");
 
 PathLineProperties::PathLineProperties(std::string identifier, std::string displayName)
     : IntegralLineProperties(identifier, displayName)
-    , normalizeSamples_("normalizesamples", "Normalize Samples", true) {
+
+    , startT_("startT", "Start at timestep", 0, 0, 1)
+
+{
     setUpProperties();
 }
 
 PathLineProperties::PathLineProperties(const PathLineProperties& rhs)
-    : IntegralLineProperties(rhs), normalizeSamples_(rhs.normalizeSamples_) {
+    : IntegralLineProperties(rhs), startT_(rhs.startT_) {
     setUpProperties();
 }
 
 PathLineProperties& PathLineProperties::operator=(const PathLineProperties& that) {
     if (this != &that) {
         PathLineProperties::operator=(that);
-        normalizeSamples_ = that.normalizeSamples_;
+        startT_ = that.startT_;
     }
     return *this;
 }
@@ -56,8 +59,12 @@ PathLineProperties* PathLineProperties::clone() const { return new PathLinePrope
 
 PathLineProperties::~PathLineProperties() {}
 
-bool PathLineProperties::getNormalizeSamples() const { return normalizeSamples_; }
+void PathLineProperties::deserialize(Deserializer& d) {
+    IntegralLineProperties::deserialize(d);
+}
 
-void PathLineProperties::setUpProperties() { addProperty(normalizeSamples_); }
+void PathLineProperties::setUpProperties() {
+    addProperty(startT_);
+}
 
 }  // namespace

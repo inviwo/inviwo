@@ -51,13 +51,16 @@ public:
     virtual PathLineProperties* clone() const override;
     virtual ~PathLineProperties();
 
-    bool getNormalizeSamples() const;
+    double getStartT()const { return startT_.get(); }
+
+
+    void deserialize(Deserializer& d);
 
 private:
     void setUpProperties();
 
 protected:
-    BoolProperty normalizeSamples_;
+    DoubleProperty startT_;
 };
 
 }  // namespace
