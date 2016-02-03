@@ -33,6 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <modules/vectorfieldvisualization/properties/integrallineproperties.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
