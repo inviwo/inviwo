@@ -64,12 +64,14 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
     propitem.SetAttribute("key", prop.getIdentifier());
     TxElement list("Properties");
 
-    propitem.InsertEndChild(list);
-    node->InsertEndChild(propitem);
 
     std::vector<Property*> props = prop.getProperties();
 
     bool res = false;
+
+
+    // temp list
+    std::vector<TxElement*> toBeDeleted;
 
     for (auto& p : props) {
         bool match = false;
@@ -89,12 +91,21 @@ bool util::xmlCopyMatchingSubPropsIntoComposite(TxElement* node, const Composite
                                                           " found in type: "
                                                       << type << " id: " << id);
 
-                list.InsertEndChild(*(child.Get()));
+                list.InsertEndChild(*(child->Clone()));
+                toBeDeleted.push_back(child.Get());
                 match = true;
             }
         }
         res = res && match;
     }
+
+    for (auto& elem : toBeDeleted) {
+        node->RemoveChild(elem);
+    }
+
+    propitem.InsertEndChild(list);
+    node->InsertEndChild(propitem);
+
     return res;
 }
 
