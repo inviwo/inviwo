@@ -79,6 +79,17 @@ class Git:
 	
 		return out, err
 
+	def foundGit(self):
+		try:
+			self.gitversion():
+		except:
+			return False
+		return True
+
+	def gitversion(self):
+		out, err = self.run(path, ["--version"])
+		return out
+
 	def commit(self, path):
 		out, err = self.run(path, ["log", "-n1", "--pretty=format:%H"])
 		return out
@@ -97,9 +108,9 @@ class Git:
 
 	def server(self, path):
 		out, err = self.run(path, ["config", "--local", "remote.origin.url"])
-		m = re.match(r"(https?:\/\/)\w+@?([_\w.\d/-]+)\.git", out)
+		m = re.match(r"(?P<proto>https?:\/\/)(\w+@)?(?P<url>[_\w.\d/-]+)\.git", out)
 		if m:
-			return m.group(1)+m.group(2)
+			m.group("proto") + m.group("url")
 		else:
 			""
 

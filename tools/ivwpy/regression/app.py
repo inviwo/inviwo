@@ -78,8 +78,11 @@ class App:
 		self.tests = list(itertools.chain(*tests))
 		self.reports = {}
 		self.git = Git(pyconfsearchpath = appPath)
+		if not self.git.foundGit():
+			print_error("Git not found")
+			exit(1)
+		
 		self.db = Database(self.output+ "/" + self.sqlFile + ".sqlite")
-
 		self.loadJson()
 
 
