@@ -81,13 +81,13 @@ class Git:
 
 	def foundGit(self):
 		try:
-			self.gitversion():
+			self.gitversion()
 		except:
 			return False
 		return True
 
 	def gitversion(self):
-		out, err = self.run(path, ["--version"])
+		out, err = self.run(".", ["--version"])
 		return out
 
 	def commit(self, path):
