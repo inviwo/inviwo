@@ -475,10 +475,13 @@ std::string getRelativePath(const std::string& basePath, const std::string& abso
     
     // path as string tokens
     const auto basePathTokens = splitStringWithMultipleDelimiters(basePath, {'\\', '/'}); 
-    const auto absolutePathTokens = splitStringWithMultipleDelimiters(absPath, {'\\', '/'});
+    auto absolutePathTokens = splitStringWithMultipleDelimiters(absPath, {'\\', '/'});
+    if (absolutePathTokens.size() < basePathTokens.size()){
+        absolutePathTokens.resize(basePathTokens.size());
+    }
 
     auto start = std::mismatch(basePathTokens.begin(), basePathTokens.end(),
-                               absolutePathTokens.begin(), absolutePathTokens.end());
+                               absolutePathTokens.begin());
 
     // add one ".." for each unique folder in basePathTokens
     std::vector<std::string> relativePath(std::distance(start.first, basePathTokens.end()), "..");

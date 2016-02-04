@@ -42,8 +42,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <QInputEvent>
-#include <QMouseEvent>
-#include <QKeyEvent>
+#i #include <QKeyEvent>
 #include <QEvent>
 
 #ifndef QT_NO_GESTURES

@@ -43,6 +43,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/qt/editor/consolewidget.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/processors/processor.h>
 
 namespace inviwo {
 
