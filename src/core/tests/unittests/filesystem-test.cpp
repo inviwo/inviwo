@@ -55,13 +55,17 @@ TEST(filesystemTest,fileExtensionTest) {
 #endif
 }
 
-
-
 TEST(filesystemTest,FileDirectoryTest) {
-    EXPECT_STREQ("C:/a/directory/for/test/",filesystem::getFileDirectory("C:/a/directory/for/test/file.txt").c_str());
-    EXPECT_STREQ("C:\\a\\directory\\for\\test\\",filesystem::getFileDirectory("C:\\a\\directory\\for\\test\\file.txt").c_str());
+    EXPECT_STREQ("C:/a/directory/for/test/",
+                 filesystem::getFileDirectory("C:/a/directory/for/test/file.txt").c_str());
+    EXPECT_STREQ("C:\\a\\directory\\for\\test\\",
+                 filesystem::getFileDirectory("C:\\a\\directory\\for\\test\\file.txt").c_str());
     EXPECT_STREQ("",filesystem::getFileDirectory("justafile.txt").c_str());
-    // EXPECT_STREQ("C:/a/directory/for/test/",filesystem::getFileDirectory("C:/a/directory/for/test//withdoubleslahs.txt").c_str());
+}
+
+TEST(filesystemTest, RelativePath) {
+    EXPECT_STREQ("../test/file.txt", 
+                 filesystem::getRelativePath("C:/foo/bar", "C:/foo/test/file.txt").c_str());
 }
 
 }

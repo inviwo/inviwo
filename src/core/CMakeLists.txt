@@ -489,10 +489,10 @@ ivw_add_pch_path(${PCH_PATH_FILES})
 set(TEST_FILES
     tests/unittests/inviwo-core-unittest-main.cpp
     tests/unittests/commandlineparser-test.cpp
-    tests/unittests/urlparser-test.cpp
     tests/unittests/picking-test.cpp
     tests/unittests/metadata-test.cpp
     tests/unittests/serializer-test.cpp
+    tests/unittests/filesystem-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

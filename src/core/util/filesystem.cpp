@@ -50,6 +50,9 @@
 #include <unistd.h>
 #endif
 
+
+#include <algorithm>
+
 namespace inviwo {
 
 namespace filesystem {
@@ -466,67 +469,28 @@ std::string replaceFileExtension(const std::string& url, const std::string& newF
     return newUrl;
 }
 
-std::string getRelativePath(const std::string& bPath, const std::string& absolutePath) {
-    // FIXME: is the case that the bath path and the absolute path are lying on different drives
-    // considered?
-    // FIXME: different drives don't matter, since the first path token will be different (split
-    // only for '/' and '\\')
-    // FIXME: however, we have to make sure, both paths are absolute!
-    std::string basePath(getFileDirectory(bPath));
-    std::string absPath(getFileDirectory(absolutePath));
-    std::string fileName(getFileNameWithExtension(absolutePath));
-    std::string relativePath("");
-
-    // if given base path is empty use system base path
-    if (basePath.empty()) basePath = findBasePath();
-
+std::string getRelativePath(const std::string& basePath, const std::string& absolutePath) {
+    const std::string absPath(getFileDirectory(absolutePath));
+    const std::string fileName(getFileNameWithExtension(absolutePath));
+    
     // path as string tokens
-    std::vector<std::string> basePathTokens;
-    std::vector<std::string> absolutePathTokens;
-    size_t pos = 0, pos1 = std::string::npos;
+    const auto basePathTokens = splitStringWithMultipleDelimiters(basePath, {'\\', '/'}); 
+    const auto absolutePathTokens = splitStringWithMultipleDelimiters(absPath, {'\\', '/'});
 
-    while (pos != std::string::npos) {
-        pos1 = basePath.find_first_of("\\/", pos);
+    auto start = std::mismatch(basePathTokens.begin(), basePathTokens.end(),
+                               absolutePathTokens.begin(), absolutePathTokens.end());
 
-        if (pos1 != pos) basePathTokens.push_back(basePath.substr(pos, pos1 - pos));
+    // add one ".." for each unique folder in basePathTokens
+    std::vector<std::string> relativePath(std::distance(start.first, basePathTokens.end()), "..");
 
-        pos = basePath.find_first_not_of("\\/", pos1);
+    // add append the unique folders in absolutePathTokens
+    std::copy(start.second, absolutePathTokens.end(), std::back_inserter(relativePath));
+
+    if (!fileName.empty()) {
+        relativePath.push_back(fileName);
     }
 
-    pos = 0, pos1 = std::string::npos;
-
-    while (pos != std::string::npos) {
-        pos1 = absPath.find_first_of("\\/", pos);
-
-        if (pos1 != pos) absolutePathTokens.push_back(absPath.substr(pos, pos1 - pos));
-
-        pos = absPath.find_first_not_of("\\/", pos1);
-    }
-
-    // discard matching tokens
-    for (size_t i = 0; (i < basePathTokens.size() && i < absolutePathTokens.size()); i++) {
-        if (basePathTokens[i] == absolutePathTokens[i])
-            basePathTokens[i] = absolutePathTokens[i] = "";
-        else
-            break;
-    }
-
-    // handle non-matching tokens
-    for (auto& basePathToken : basePathTokens)
-        if (basePathToken != "") relativePath += "../";
-
-    for (auto& absolutePathToken : absolutePathTokens)
-        if (absolutePathToken != "") relativePath += (absolutePathToken + "/");
-
-    if (fileName.empty() && !relativePath.empty()) {
-        // remove trailing '/' from path
-        std::size_t pathLen{ relativePath.size() };
-        if (relativePath[pathLen - 1] == '/') {
-            return relativePath.substr(0, pathLen);
-        }
-    }
-
-    return relativePath + fileName;
+    return joinString(relativePath, "/");
 }
 
 std::string getCanonicalPath(const std::string& url) {

@@ -174,6 +174,18 @@ IVW_CORE_API std::string getFileNameWithoutExtension(const std::string& url);
 IVW_CORE_API std::string getFileExtension(const std::string& url);
 IVW_CORE_API std::string replaceFileExtension(const std::string& url,
                                               const std::string& newFileExtension);
+
+
+/**
+ *	\brief Make a path relative to basePath.
+ * Requirement: basePath and absulutePath has to be absolute paths.
+ * basePath should point at directory.
+ *
+ * Example:
+ * basePath = "C:/foo/bar"
+ * absolutePath = "C:/foo/test/file.txt"
+ * returns "../test/file.txt"
+ */
 IVW_CORE_API std::string getRelativePath(const std::string& basePath,
                                          const std::string& absolutePath);
 IVW_CORE_API std::string getCanonicalPath(const std::string& url);
