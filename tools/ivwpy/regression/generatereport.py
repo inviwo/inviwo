@@ -123,8 +123,7 @@ def gitLink(commit):
 		with tag('a', href = commit.server + "/commit/"+ commit.hash):
 			text(commit.server + "/commit/"+ commit.hash)
 	else:
-		#text(commit.hash)
-		test("None")
+		text("None")
 	return doc.getvalue()
 
 def getDiffLink(start, stop):
@@ -133,8 +132,7 @@ def getDiffLink(start, stop):
 		with tag('a', href = start.server + "/compare/"+ start.hash + "..." + stop.hash):
 			text(start.server + "/compare/"+ start.hash + "..." + stop.hash)
 	else:
-		#text(commit.hash)
-		test("None")
+		text("None")
 	return doc.getvalue()
 
 def commitInfo(commit):
