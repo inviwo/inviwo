@@ -110,9 +110,9 @@ class Git:
 		out, err = self.run(path, ["config", "--local", "remote.origin.url"])
 		m = re.match(r"(?P<proto>https?:\/\/)(\w+@)?(?P<url>[_\w.\d/-]+)\.git", out)
 		if m:
-			m.group("proto") + m.group("url")
+			return m.group("proto") + m.group("url")
 		else:
-			""
+			return ""
 
 	def info(self, path):
 		return {
